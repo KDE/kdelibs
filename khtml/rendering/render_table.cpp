@@ -231,8 +231,6 @@ void RenderTable::startRow()
 
 void RenderTable::closeRow()
 {
-    bool recalc = false;
-
     while ( col < totalCols && cells[row][col] != 0L )
         col++;
 
@@ -241,18 +239,6 @@ void RenderTable::closeRow()
     RenderTableCell* cell = cells[row][col-1];
 
     if (!cell) return;
-
-    while ( col < totalCols && cells[row][col] == 0L )
-    {
-        cells[row][col] = cell;
-        col++;
-        recalc = true;
-    }
-
-    if (recalc)
-    {
-        recalcColInfos();
-    }
 }
 
 void RenderTable::addCell( RenderTableCell *cell )
@@ -267,31 +253,6 @@ void RenderTable::addCell( RenderTableCell *cell )
     col++;
 }
 
-int RenderTable::realSpan( RenderTableCell* cell)
-{
-    unsigned int r = cell->row();
-    unsigned int c = cell->col();
-    unsigned int sp = cell->colSpan();
-
-    int span=1;
-
-    if (c+sp==totalCols || cells[r][c+sp]!=cell)
-        span = sp;
-    else
-    {
-        while (c>0 && cells[r][c-1]==cell) c--;
-        while (c<totalCols && cells[r][c+1]==cell) { c++ ; span++; }
-    }
-
-//    kdDebug(0) << "realspan(" << r << "," << c << ")=" << span << endl;
-
-    return span;
-}
-
-int RenderTable::realSpan( unsigned int r, unsigned int c)
-{
-    return realSpan(cells[r][c]);
-}
 
 void RenderTable::setCells( unsigned int r, unsigned int c,
                                      RenderTableCell *cell )
@@ -392,32 +353,7 @@ void RenderTable::addColumns( int num )
         colInfos.insert(c, new ColInfoLine(newCols-c+1));
     }
 
-    // check if adding of cols means that we have to
-    // spread some existing columns to cover the new cols
-    bool recalc = false;
-    for ( unsigned int r=0 ; r < row ; r++)
-    {
-        RenderTableCell* cell = cells[r][totalCols-1];
-        if (cell && cell->rowSpan()==1) //might need to be more generic
-        {
-            for ( unsigned int c = totalCols; (int)c < newCols; c++ )
-            {
-                if (cells[r][c]==0L)
-                {
-                    cells[r][c] = cell;
-                    recalc=true;
-                }
-            }
-        }
-    }
-
     totalCols = newCols;
-
-    if (recalc)
-    {
-        recalcColInfos();
-    }
-
 }
 
 
@@ -463,7 +399,7 @@ void RenderTable::addColInfo(RenderTableCell *cell)
 {
 
     int _startCol = cell->col();
-    int _colSpan = realSpan(cell);
+    int _colSpan = cell->colSpan();
     int _minSize = cell->minWidth();
     int _maxSize = cell->maxWidth();
 
@@ -493,6 +429,7 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         addColumns(totalCols - _startCol + _colSpan);
 
     ColInfo* col = colInfos[_colSpan-1]->at(_startCol);
+    
     if (!col)
     {
         col = new ColInfo;
@@ -567,19 +504,6 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 
     if (hasUsableCols)
     {
-        // first target unused columns
-        for(c=col; c<col+span; ++c)
-        {
-            if (colInfos[0]->at(c)==0)
-            {
-                colMaxWidth[c]+=tmax;
-                colMinWidth[c]+=tmin;
-                colType[c]=type;
-                tmax=0;
-                tmin=0;
-                break;
-            }
-        }
         // spread span maxWidth
         LengthType tt = Undefined;
         bool out=false;
@@ -647,15 +571,18 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 
     int tdis = distrib;
 
-    // first target unused columns
-    for(; c<start+span; ++c)
+    if (!mlim)
     {
-        if (colInfos[0]->at(c)==0)
+        // first target unused columns
+        for(; c<start+span; ++c)
         {
-            colMinWidth[c]+=tdis;
-            colType[c]=distType;
-            tdis=0;
-            break;
+            if (colInfos[0]->at(c)==0)
+            {
+                colMinWidth[c]+=tdis;
+                colType[c]=distType;
+                tdis=0;
+                break;
+            }
         }
     }
 
@@ -773,7 +700,9 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
     else
     {
         int spreadmin = smin-oldmin-(span-1)*spacing;
-//      int spreadmax = smax-oldmax-(span-1)*spacing;
+//        kdDebug( 6040 ) << "colmin " << smin  << endl;
+//        kdDebug( 6040 ) << "oldmin " << oldmin  << endl;
+//        kdDebug( 6040 ) << "oldmax " << oldmax  << endl;
 //      kdDebug( 6040 ) << "spreading span " << spreadmin  << endl;
         spreadSpanMinMax
             (c, span, spreadmin, 0 , col->type);
@@ -1482,7 +1411,7 @@ void RenderTable::layoutRow(int r, int yoff)
         if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
             continue;
 
-        if ( ( indx = c-realSpan(cell)+1 ) < 0 )
+        if ( ( indx = c-cell->colSpan()+1 ) < 0 )
             indx = 0;
 
         if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
@@ -1547,7 +1476,7 @@ void RenderTable::setCellWidths()
     int indx;
     FOR_EACH_CELL( r, c, cell)
         {
-            if ( ( indx = c-realSpan(cell)+1) < 0 )
+            if ( ( indx = c-cell->colSpan()+1) < 0 )
                 indx = 0;
             int w = columnPos[c+1] - columnPos[ indx ] - spacing ; //- padding*2;
 

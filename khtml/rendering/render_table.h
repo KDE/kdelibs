@@ -184,9 +184,6 @@ protected:
     void addRows( int num );
     void addColumns( int num );
 
-    int realSpan(RenderTableCell* cell);
-    int realSpan(unsigned int r, unsigned int col);
-
     RenderTableCell ***cells;
 
     class ColInfoLine : public QVector<ColInfo>
@@ -380,22 +377,22 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
     virtual void absolutePosition(int &xPos, int &yPos, bool f = false);
 
-
 protected:
     RenderTable *m_table;
 
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
                                      int _w, int _h, int _tx, int _ty);
 
-    int _row;
-    int _col;
-    int rSpan;
-    int cSpan;
+    short _row;
+    short _col;
+    short rSpan;
+    short cSpan;
     int _id;
     int rowHeight;
     int _topExtra;
     int _bottomExtra;
     bool nWrap;
+    bool _implicitCell:1; 
 
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
