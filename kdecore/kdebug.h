@@ -156,6 +156,7 @@ class kndbgstream {
     kndbgstream &operator<<(const QString& ) { return *this; }
     kndbgstream &operator<<(const QCString& ) { return *this; }
     kndbgstream &operator<<(const char *) { return *this; }
+    kndbgstream& operator<<(const void *) { return *this; }
     kndbgstream& operator<<(void *) { return *this; }
     kndbgstream& operator<<(double) { return *this; }
     kndbgstream& operator<<(long) { return *this; }
