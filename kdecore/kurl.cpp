@@ -410,6 +410,10 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
     m_strRef_encoded = QString::null;
     if ( rUrl[0] == '/')
     {
+        if ((rUrl.length() > 1) && (rUrl[1] == '/'))
+        {
+           m_strHost = QString::null;
+        }
         m_strPath = QString::null;
         m_strPath_encoded = QString::null;
     }
