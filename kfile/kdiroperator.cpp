@@ -304,26 +304,34 @@ void KDirOperator::mkdir()
     // and insert it into the ListBox
     lMakeDir->setMinimumSize( 300, 120); // default size
     ed->grabKeyboard();
-    if ( lMakeDir->exec() == QDialog::Accepted && !ed->text().isEmpty() ) {
-        bool writeOk = false;
-	KURL url( dir->url(), ed->text() );
-	if ( url.isLocalFile() ) {
-	    // check if we are allowed to create local directories
-	    writeOk = checkAccess( url.path(), W_OK );
-	    if ( writeOk )
-		writeOk = QDir().mkdir( url.path() );
-        }
-        else
-	    writeOk = KIO::NetAccess::mkdir( url );
+    if ( lMakeDir->exec() == QDialog::Accepted && !ed->text().isEmpty() )
+        mkdir( ed->text(), true );
 
-        if ( !writeOk )
-            KMessageBox::sorry(0, i18n("You don't have permissions to create "
-				       "that directory." ));
-	else
-	    setURL( url, true );
-    }
-	
     delete lMakeDir;
+}
+
+bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
+{
+    bool writeOk = false;
+    KURL url( dir->url(), directory );
+    if ( url.isLocalFile() ) {
+        // check if we are allowed to create local directories
+        writeOk = checkAccess( url.path(), W_OK );
+        if ( writeOk )
+            writeOk = QDir().mkdir( url.path() );
+    }
+    else
+        writeOk = KIO::NetAccess::mkdir( url );
+
+    if ( !writeOk )
+        KMessageBox::sorry(0, i18n("You don't have permissions to create "
+                                   "that directory." ));
+    else {
+        if ( enterDirectory )
+            setURL( url, true );
+    }
+
+    return writeOk;
 }
 
 void KDirOperator::close()
@@ -787,8 +795,10 @@ void KDirOperator::setCurrentItem( const QString& filename )
         item = static_cast<KFileViewItem *>(dir->findByName( filename ));
 
     fileView->clearSelection();
-    if ( item )
+    if ( item ) {
         fileView->setCurrentItem( QString::null, item );
+	fileView->ensureItemVisible( item );
+    }
 }
 
 QString KDirOperator::makeCompletion(const QString& string)
@@ -1110,7 +1120,7 @@ void KDirOperator::slotStarted()
 {
     if ( !dir->job() )
 	return;
-	
+
     progress->setValue( 0 );
     // delay showing the progressbar for one second
     d->progressDelayTimer->start( 1000, true );

@@ -44,7 +44,7 @@ class KProgress;
 
 class KDirOperator : public QWidget {
     Q_OBJECT
-	
+
  public:
     /**
      * You need to call listDirectory() to actually load the directory,
@@ -99,7 +99,7 @@ class KDirOperator : public QWidget {
      * You can for example reparent() it to put it into a statusbar.
      */
     KProgress * progressBar() const;
-    
+
     /**
      * Sets the listing/selection mode for the views, an OR'ed combination of
      * @li File
@@ -115,6 +115,10 @@ class KDirOperator : public QWidget {
 
     void setPreviewWidget(const QWidget *w);
 
+    /**
+     * @returns a list of all currently selected items. If there is no view, then
+     * 0L is returned.
+     */
     const KFileViewItemList * selectedItems() const {
 	return ( fileView ? fileView->selectedItems() : 0L );
     }
@@ -218,6 +222,16 @@ class KDirOperator : public QWidget {
      * @see #setOnlyDoubleClickSelectsFiles
      */
     bool onlyDoubleClickSelectsFiles() const;
+
+    /**
+     * Creates the given directory/url. If it is a relative path,
+     * it will be completed with the current directory.
+     * If enterDirectory is true, the directory will be entered after a
+     * successful operation. If unsuccessful, a messagebox will be presented
+     * to the user.
+     * @returns true if the directory could be created.
+     */
+    bool mkdir( const QString& directory, bool enterDirectory=true );
 
 protected:
     void setFileReader( KFileReader *reader );
