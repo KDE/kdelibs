@@ -28,7 +28,7 @@ class KHTMLFind : public KEdFind
 {
   Q_OBJECT
 public:
-  KHTMLFind( KHTMLPart *part, const char *name );
+  KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name );
   virtual ~KHTMLFind();
 
 private slots:

@@ -1341,8 +1341,26 @@ void KHTMLPart::updateActions()
   d->m_paViewFrame->setEnabled( frames );
   d->m_paSaveFrame->setEnabled( frames );
 
-  QString bgURL;
+  if ( frames )
+    d->m_paFind->setText( i18n( "&Find in Frame" ) );
+  else
+    d->m_paFind->setText( i18n( "&Find" ) );
 
+  KParts::Part *frame = 0;
+  
+  if ( frames )
+    frame = partManager()->activePart();
+  
+  bool enableFind = true;
+  
+  if ( frame )
+    enableFind = frame->inherits( "KHTMLPart" );
+    
+  d->m_paFind->setEnabled( enableFind );
+
+  
+  QString bgURL;
+  
   // ### frames
 
   if ( d->m_doc && d->m_doc->body() && !d->m_bClearing )
@@ -2321,7 +2339,12 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 
 void KHTMLPart::slotFind()
 {
-  KHTMLFind *findDlg = new KHTMLFind( this, "khtmlfind" );
+  KHTMLPart *part = this;
+  
+  if ( d->m_frames.count() > 0 )
+    part = static_cast<KHTMLPart *>( partManager()->activePart() );
+ 
+  KHTMLFind *findDlg = new KHTMLFind( part, d->m_view, "khtmlfind" );
 
   findDlg->exec();
 

@@ -24,8 +24,8 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-KHTMLFind::KHTMLFind( KHTMLPart *part, const char *name )
-: KEdFind( part->widget(), name )
+KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
+: KEdFind( parent, name )
 {
   connect( this, SIGNAL( done() ),
 	   this, SLOT( slotDone() ) );
@@ -37,13 +37,13 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, const char *name )
 }
 
 KHTMLFind::~KHTMLFind()
-{ 
+{
 }
 
 void KHTMLFind::slotDone()
 {
-  accept(); 
-} 
+  accept();
+}
 
 void KHTMLFind::slotSearch()
 {
@@ -52,9 +52,9 @@ void KHTMLFind::slotSearch()
     m_part->findTextBegin();
     m_first = false;
   }
-  
+
   bool forward = !get_direction();
-  
+
   if ( m_part->findTextNext( getText(), forward, case_sensitive() ) )
     m_found = true;
   else if ( m_found )
