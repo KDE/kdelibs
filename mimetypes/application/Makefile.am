@@ -16,7 +16,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	msexcel.desktop smil.desktop x-rar.desktop x-zoo.desktop \
 	x-tzo.desktop x-lzop.desktop x-mswinurl.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
-	msexcel2.desktop \
+	msexcel2.desktop xhtml+xml.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
 	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
 	pkcs7-signature.desktop pgp-signature.desktop pgp-encrypted.desktop \
