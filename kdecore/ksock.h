@@ -42,14 +42,21 @@
 #undef __STRICT_ANSI__
 #undef _WE_DEFINED_IT_
 #endif
+
 #include <sys/un.h>
+
+#ifdef HAVE_NETINET6_IN6_H
+#include <netinet6/in6.h> // This is wholly unnecesary for me, dunno about others
+#endif
 #include <netinet/in.h>
 class QSocketNotifier;
 
-#ifdef INET6
+#ifdef PF_INET6
 typedef sockaddr_in6 ksockaddr_in;
+#define KSOCK_DEFAULT_DOMAIN PF_INET6
 #else
 typedef sockaddr_in ksockaddr_in;
+#define KSOCK_DEFAULT_DOMAIN PF_INET
 #endif
 
 /** 
@@ -80,10 +87,7 @@ public:
      * Create a KSocket with the provided file descriptor.
      * @param _sock	The file descriptor to use.
      */
-    KSocket( int _sock )
-	: sock(_sock), domain(0), 
-	readNotifier(0), writeNotifier(0) {}
-    
+    KSocket( int _sock );    
     /** 
      * Create a socket and connect to a host.
      * @param _host	The remote host to which to connect.
@@ -286,5 +290,25 @@ private:
     KServerSocket(const KServerSocket&);
     KServerSocket& operator=(const KServerSocket&);
 };
+
+
+// Here are a whole bunch of hackish macros that allow one to
+// get at the correct member of ksockaddr_in
+
+#ifdef PF_INET6
+#define get_sin_addr(x) x.sin6_addr
+#define get_sin_port(x) x.sin6_port
+#define get_sin_family(x) x.sin6_family
+#define get_sin_paddr(x) x->sin6_addr
+#define get_sin_pport(x) x->sin6_port
+#define get_sin_pfamily(x) x->sin6_family
+#else
+#define get_sin_addr(x) x.sin_addr
+#define get_sin_port(x) x.sin_port
+#define get_sin_family(x) x.sin_family
+#define get_sin_paddr(x) x->sin_addr
+#define get_sin_pport(x) x->sin_port
+#define get_sin_pfamily(x) x->sin_family
+#endif
 
 #endif

@@ -69,32 +69,41 @@
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
-#ifdef INET6
-#define get_sin_addr(x) x.sin6_addr
-#define get_sin_port(x) x.sin6_port
-#define get_sin_family(x) x.sin6_family
+// I moved this into here so we could accurately detect the domain, for
+// posterity.  Really.
+KSocket::KSocket( int _sock)
+ : sock(_sock), readNotifier(0), writeNotifier(0)
+{
+  struct sockaddr_in sin;
+  socklen_t len = sizeof(sin);
 
-#define get_sin_paddr(x) x->sin6_addr
-#define get_sin_pport(x) x->sin6_port
-#define get_sin_pfamily(x) x->sin6_family
-#else
-#define get_sin_addr(x) x.sin_addr
-#define get_sin_port(x) x.sin_port
-#define get_sin_family(x) x.sin_family
+  memset(&sin, 0, len);
 
-#define get_sin_paddr(x) x->sin_addr
-#define get_sin_pport(x) x->sin_port
-#define get_sin_pfamily(x) x->sin_family
-#endif
+  // getsockname will fill in all the appropiate details, and
+  // since sockaddr_in will exist everywhere and is somewhat compatible
+  // with sockaddr_in6, we can use it to avoid needless ifdefs.
+  getsockname(_sock, (struct sockaddr *)&sin, &len);
+
+  // Now that we've got the domain, remember it
+  domain = sin.sin_family;
+}
 
 KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
     timeOut = _timeout;
 #ifdef INET6
-    // Setup the resolver to use IPv6 addresses
+    // Setup the resolver to look for IPv6 addresses and then
+    // as a fall back, look for IPv4.  This means we don't need further
+    // ifdefs to use gethostbyname2. (Taken from rfc2133)
     res_init();
     _res.options |= RES_USE_INET6;
+
+    // Also we do this because gethostbyname will return IPv4 mapped on to
+    // IPv6 addresses when set like this and use 16 byte hostents, so we
+    // should be safe and use sockaddr_in6, etc, and by setting the domain to
+    // PF_INET6, anyone who checks our sockaddr stuff will avoid buffer
+    // overflows by seeing that it's new style.
     domain = PF_INET6;
 #else
     domain = PF_INET;
@@ -166,25 +175,26 @@ void KSocket::slotWrite( int )
  */
 bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
 {
-#ifdef INET6
-  if ( (domain != PF_INET)  && (domain != PF_INET6) )
-#else
-  if ( domain != PF_INET )
+  if (
+#ifdef PF_INET6
+     ( domain != PF_INET6 ) &&
 #endif
+     ( domain != PF_INET ) )
     return false;
   
   struct hostent *hostinfo;
   memset(&server_name, 0, sizeof(server_name));
 
-//  hostinfo = gethostbyname( hostname.ascii() );
-hostinfo = gethostbyname2(hostname.ascii(), AF_INET6);  
+  hostinfo = gethostbyname( hostname.ascii() );
   if ( !hostinfo ) {
 	  warning("Unknown host %s.\n", hostname.ascii());
 	  return false;	
     }
+
   get_sin_family(server_name) = domain;
   get_sin_port(server_name) = htons(port);
   memcpy(&get_sin_addr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
+
   return true;
 }
 
