@@ -160,6 +160,11 @@ public:
    */
   virtual void close();
 
+  /**
+   * The name of the tar file, as passed to the constructor
+   */
+  QString fileName() { return m_filename; }
+
 private:
   /**
    * Read @p len data into @p buffer
@@ -244,8 +249,8 @@ class KTarEntry
 {
 public:
   KTarEntry( KTarBase* tar, const QString& name, int access, int date,
-	     const QString& user, const QString& group,
-	     const QString &symlink );
+             const QString& user, const QString& group,
+             const QString &symlink );
 
   virtual ~KTarEntry() { }
 
@@ -310,11 +315,11 @@ class KTarFile : public KTarEntry
 {
 public:
   KTarFile( KTarBase* tar, const QString& name, int access, int date,
-	    const QString& user, const QString& group, const QString &symlink,
-	    int pos, int size, const QByteArray& data );
-  
+            const QString& user, const QString& group, const QString &symlink,
+            int pos, int size, const QByteArray& data );
+
   virtual ~KTarFile() { }
-  
+
   /**
    * Position of the data in the uncompressed tar file.
    */
@@ -323,7 +328,7 @@ public:
    * Size of the data.
    */
   int size() const;
-  
+
   /**
    * @return the content of this file.
    */
@@ -350,8 +355,8 @@ class KTarDirectory : public KTarEntry
 {
 public:
   KTarDirectory( KTarBase* tar, const QString& name, int access, int date,
-		 const QString& user, const QString& group,
-		 const QString& symlink);
+                 const QString& user, const QString& group,
+                 const QString& symlink);
 
   virtual ~KTarDirectory() { }
 
