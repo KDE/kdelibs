@@ -51,12 +51,12 @@ private:
 
 
 /**
- * The filetreeview offers a treeview on the file system which behaves like  
+ * The filetreeview offers a treeview on the file system which behaves like
  * a QTreeView showing files and/or directories in the file system.
  *
  * KFileTreeView is able to handle more than one URL, represented by
  * @ref KFileTreeBranch.
- * 
+ *
  * Typical usage:
  * 1. create a KFileTreeView fitting in your layout and add columns to it
  * 2. call addBranch to create one or more branches
@@ -124,7 +124,7 @@ public:
     *  @returns a list of pointers to all existing branches in the treeview.
     **/
    KFileTreeBranchList& branches();
-   
+
    /**
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
     *  @param branch is a pointer to a @ref KFileTreeBranch
@@ -145,14 +145,14 @@ public:
     * see method above, differs only in the first parameter. Finds the branch by its name.
     */
    KFileTreeViewItem *findItem( const QString& branchName, const QString& relUrl );
-   
+
    /**
     * @returns a flag indicating if extended folder pixmaps are displayed or not.
     */
    bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; };
-   
+
 public slots:
-   
+
    /**
     * set the flag to show 'extended' folder icons on or off. If switched on, folders will
     * have an open folder pixmap displayed if their children are visible, and the standard
@@ -162,7 +162,7 @@ public slots:
     */
    virtual void setShowFolderOpenPixmap( bool showIt = true )
       { m_wantOpenFolderPixmaps = showIt; }
-   
+
 protected:
    /**
     * @returns true if we can decode the drag and support the action
@@ -186,12 +186,12 @@ protected slots:
       { m_nextUrlToSelect = url; }
 
     virtual QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
-   
+
 private slots:
     void slotExecuted( QListViewItem * );
     void slotExpanded( QListViewItem * );
     void slotCollapsed( QListViewItem *item );
-   
+
     void slotSelectionChanged();
 
     void slotAnimation();
@@ -203,7 +203,7 @@ private slots:
 
    void slotPopulateFinished( KFileTreeViewItem* );
 
-   
+
 signals:
 
    void onItem( const QString& );
@@ -211,16 +211,18 @@ signals:
    void dropped( QWidget*, QDropEvent* );
    void dropped( QWidget*, QDropEvent*, KURL::List& );
    void dropped( KURL::List&, KURL& );
+   // The drop event allows to differenciate between move and copy
+   void dropped( QWidget*, QDropEvent*, KURL::List&, KURL& );
 
    void dropped( QDropEvent *, QListViewItem * );
-   void dropped (KFileTreeView *, QDropEvent *, QListViewItem *);
-   void dropped (QDropEvent *, QListViewItem *, QListViewItem *);
-   void dropped (KFileTreeView *, QDropEvent *, QListViewItem *, QListViewItem *);
+   void dropped(KFileTreeView *, QDropEvent *, QListViewItem *);
+   void dropped(QDropEvent *, QListViewItem *, QListViewItem *);
+   void dropped(KFileTreeView *, QDropEvent *, QListViewItem *, QListViewItem *);
 
 protected:
    KURL m_nextUrlToSelect;
 
-   
+
 private:
     void clearTree();
 
@@ -249,7 +251,7 @@ private:
     bool m_bDrag;
 
    bool m_wantOpenFolderPixmaps; // Flag weather the folder should have open-folder pixmaps
-   
+
     QListViewItem *m_currentBeforeDropItem; // The item that was current before the drag-enter event happened
     QListViewItem *m_dropItem; // The item we are moving the mouse over (during a drag)
     QStrList m_lstDropFormats;
@@ -258,7 +260,7 @@ private:
 
     KFileTreeViewToolTip m_toolTip;
 
-   
+
 protected:
    virtual void virtual_hook( int id, void* data );
 private:

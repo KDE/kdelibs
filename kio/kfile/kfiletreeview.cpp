@@ -198,10 +198,11 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
 	     parentURL = static_cast<KFileTreeViewItem*>(parent)->url();
        }
 
-    KURL::List urls;
-    KURLDrag::decode( e, urls );
-    emit dropped( this, e, urls );
+       KURL::List urls;
+       KURLDrag::decode( e, urls );
+       emit dropped( this, e, urls );
        emit dropped( urls, parentURL );
+       emit dropped( this , e, urls, parentURL );
     }
 }
 
