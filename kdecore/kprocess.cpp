@@ -75,6 +75,11 @@
 // public member functions //
 /////////////////////////////
 
+class KProcessPrivate {
+public:
+   QMap<QString,QString> env;
+};
+
 
 KProcess::KProcess()
   : QObject(),
@@ -90,7 +95,8 @@ KProcess::KProcess()
     communication(NoCommunication),
     input_data(0),
     input_sent(0),
-    input_total(0)
+    input_total(0),
+    d(0)
 {
   if (0 == KProcessController::theKProcessController) {
         (void) new KProcessController();
@@ -98,6 +104,26 @@ KProcess::KProcess()
   }
 
   KProcessController::theKProcessController->addKProcess(this);
+}
+
+void
+KProcess::setEnvironment(const QString &name, const QString &value)
+{
+   if (!d)
+      d = new KProcessPrivate;
+   d->env.insert(name, value);
+}
+
+void 
+KProcess::setupEnvironment()
+{
+   if (d)
+   {
+      QMap<QString,QString>::Iterator it;
+      for(it = d->env.begin(); it != d->env.end(); ++it)
+         setenv(QFile::encodeName(it.key()).data(),
+                QFile::encodeName(it.data()).data(), 1);
+   }
 }
 
 void
@@ -133,6 +159,7 @@ KProcess::~KProcess()
   closeStderr();
 
   // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
+  delete d;
 }
 
 void KProcess::detach()
@@ -231,6 +258,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
         // The child process
         if(!commSetupDoneC())
           kdDebug() << "Could not finish comm setup in child!" << endl;
+          
+        setupEnvironment();
 
         // Matthias
         if (run_mode == DontCare)
@@ -817,6 +846,8 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 
         if(!commSetupDoneC())
           kdDebug() << "Could not finish comm setup in child!" << endl;
+          
+        setupEnvironment();
 
         // Matthias
         if (run_mode == DontCare)

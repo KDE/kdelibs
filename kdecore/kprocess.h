@@ -388,6 +388,12 @@ public:
    * setuid/segid privileges or whether it will keep them
    */
   bool runPrivileged() const;
+  
+  /**
+   * Modifies the environment of the process to be started.
+   * This function must be called before starting the process.
+   */
+  void setEnvironment(const QString &name, const QString &value);
 
   /**
    * Detaches KProcess from child process. All communication is closed.
@@ -491,6 +497,12 @@ protected slots:
   void slotSendData(int dummy);
 
 protected:
+
+  /**
+     Sets up the environment according to the data passed via 
+     setEnvironment(...)
+  */
+  void setupEnvironment();
 
   /**
      The list of the process' command line arguments. The first entry
