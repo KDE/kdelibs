@@ -144,7 +144,7 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
       if (newServiceType && newServiceType->isType( KST_KMimeType ))
       {
          KMimeType * mimeType = (KMimeType *) newServiceType;
-         list.append( (const KSharedPtr<KServiceType>) KMimeType::Ptr( mimeType ) );
+         list.append( KMimeType::Ptr( mimeType ) );
       }
 
       offset = str->device()->at();
