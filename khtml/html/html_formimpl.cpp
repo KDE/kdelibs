@@ -478,6 +478,7 @@ void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_READONLY:
         m_readOnly = attr->val() != 0;
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -1113,6 +1114,8 @@ void HTMLInputElementImpl::setValue(DOMString val)
     case FILE:
         // sorry, can't change this!
         m_value = m_filename;
+        setChanged(true);
+        break;
     default:
         setAttribute(ATTR_VALUE,val);
     }
