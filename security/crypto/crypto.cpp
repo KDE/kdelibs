@@ -59,6 +59,7 @@
 #include <kdatepik.h>
 #include <kurllabel.h>
 #include <kmdcodec.h>
+#include <kgenericfactory.h>
 
 #include <qframe.h>
 
@@ -87,6 +88,8 @@
 #include "kdatetimedlg.h"
 #include <kaboutdata.h>
 
+typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
+K_EXPORT_COMPONENT_FACTORY( libkcm_crypto, KryptoFactory );
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
@@ -209,7 +212,7 @@ QString CAItem::configName() const
 
 
 
-KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name)
+KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name, const QStringList &)
   : KCModule(parent, name)
 {
 QGridLayout *grid;
@@ -2409,7 +2412,7 @@ bool noneDef, noneHost;
   
 }
 
-
+/*
 extern "C"
 {
   KCModule *create_crypto(QWidget *parent, const char *name)
@@ -2418,6 +2421,8 @@ extern "C"
     return new KCryptoConfig(parent, name);
   };
 }
-
+*/
 #include "crypto.moc"
+
+
 
