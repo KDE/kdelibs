@@ -18,6 +18,7 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 <LI><A HREF="#gettingstarted">Getting Started</A></LI>
 <LI><A HREF="#kdecore">Changes in kdecore</A></LI>
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
+<LI><A HREF="#kparts">Changes in kparts</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 </UL>
 
@@ -59,6 +60,12 @@ This is to help finding out header files from classnames and the other
 way round. Compatibility headers have been created. You can use them as 
 long as you don't compile with KDE_NO_COMPAT.
 
+<H4>KLibFactory</H4>
+KLibFactory's create method is no more virtual and the createObject method
+is now pure virtual. The former was marked as deprecated since KDE 2.0.
+All it takes in your component is to rename your existing create implementation
+to createObject and remove the 'emit objectCreated( yourObject );' line.
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
@@ -81,6 +88,24 @@ for more informations on this new extension.
 The KRootPixmap class has been extended to make it more flexible, and the
 <i>checkAvailable(bool ignored)</i> method has been renamed <i>isAvailable()</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="kparts">Changes in kparts</A></H3>
+
+<H4>KParts::Factory</H4>
+The createPart method is no more virtual and the createPartObject method
+is now pure virtual. The former was marked as deprecated since KDE 2.0.
+All it takes in your component is to rename your existing createPart implementation
+to createPartObject and remove the 'emit objectCreated( yourObject );' line.
+
+<H4>KParts::Part</H4>
+The <code>bool isSelectable() const</code> is no more virtual. So when you want to
+change the behaviour of the selectable property you don't need to re-implement
+both virtual functions, setSelectable and isSelectable, but instead just
+re-implementing setSelectable does the job. The very same applies for
+the <code>KURL url() const</code> and ReadWritePart's <code>bool isReadWrite const</code>
+and <code>bool isModified() const</code> methods.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
