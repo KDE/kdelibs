@@ -71,6 +71,20 @@ namespace KJS {
   };
 
   /**
+   * Base class for object prototypes
+   */
+  class DOMObjectProto : public DOMObject
+  {
+  public:
+    // Constructor taking "exec", for uniform api needed by IMPLEMENT_PROTOTYPE
+    DOMObjectProto(ExecState *exec)
+      : DOMObject( exec->interpreter()->builtinObjectPrototype() ) {}
+    // Simply needed for ParentClass::info in the IMPLEMENT_PROTOTYPE macro
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+  };
+
+  /**
    * We inherit from Interpreter, to save a pointer to the HTML part
    * that the interpreter runs for.
    */
@@ -184,11 +198,11 @@ namespace KJS {
    *
    * Using those macros is very simple: define the hashtable (e.g. "DOMNodeProtoTable"), then
    * IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-   * IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc)
+   * IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc,DOMObjectProto)
    * and use DOMNodeProto::self(exec) as prototype in the DOMNode constructor.
    */
-#define IMPLEMENT_PROTOTYPE(Class,ClassProto,ClassFunc) \
-  class ClassProto : public DOMObject { \
+#define IMPLEMENT_PROTOTYPE(Class,ClassProto,ClassFunc,ParentClass) \
+  class ClassProto : public ParentClass { \
   public: \
     static Object self(ExecState *exec) \
     { \
@@ -204,17 +218,18 @@ namespace KJS {
     } \
   protected: \
     ClassProto( ExecState *exec ) \
-    : DOMObject( exec->interpreter()->builtinObjectPrototype() ) {} \
+    : ParentClass( exec ) {} \
     \
   public: \
-    Value get(ExecState *exec, const UString &propertyName) const \
+    Value tryGet(ExecState *exec, const UString &propertyName) const \
     { \
-      return DOMObjectLookupGetFunction<ClassFunc,ClassProto,DOMObject>(exec, propertyName, &ClassProto##Table, this ); \
+      /*fprintf( stderr, Class "Proto::tryGet(%s) [in macro]\n", propertyName.ascii()); */ \
+      return DOMObjectLookupGetFunction<ClassFunc,ClassProto,ParentClass>(exec, propertyName, &ClassProto##Table, this ); \
     } \
     virtual const ClassInfo *classInfo() const { return &info; } \
     static const ClassInfo info; \
   }; \
-  const ClassInfo ClassProto::info = { Class, 0, &ClassProto##Table, 0 };
+  const ClassInfo ClassProto::info = { Class, &ParentClass::info, &ClassProto##Table, 0 };
 
 #define IMPLEMENT_PROTOFUNC(ClassFunc) \
   class ClassFunc : public DOMFunction { \

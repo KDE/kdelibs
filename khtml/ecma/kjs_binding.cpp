@@ -79,6 +79,8 @@ String DOMObject::toString(ExecState *) const
   return String("[object " + getClass() + "]");
 }
 
+const ClassInfo DOMObjectProto::info = { "DOMObjectProto", 0, 0, 0 };
+
 Value DOMFunction::get(ExecState *exec, const UString &propertyName) const
 {
   Value result;

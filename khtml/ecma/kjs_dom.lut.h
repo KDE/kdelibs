@@ -114,41 +114,87 @@ const struct HashTable DOMAttrTable = { 2, 5, DOMAttrTableEntries, 5 };
 
 namespace KJS {
 
-const struct HashEntry DOMDocumentTableEntries[] = {
+const struct HashEntry DOMDocumentProtoTableEntries[] = {
+   { "createCDATASection", DOMDocument::CreateCDATASection, DontDelete|Function, 1, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[30] },
+   { 0, 0, 0, 0, 0 },
+   { "getElementsByTagName", DOMDocument::GetElementsByTagName, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[25] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, 0 },
-   { "getElementsByTagName", DOMDocument::GetElementsByTagName, DontDelete|ReadOnly|Function, 1, &DOMDocumentTableEntries[30] },
-   { "createTreeWalker", DOMDocument::CreateTreeWalker, DontDelete|ReadOnly|Function, 4, 0 },
    { 0, 0, 0, 0, 0 },
-   { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, 0 },
-   { "createProcessingInstruction", DOMDocument::CreateProcessingInstruction, DontDelete|ReadOnly|Function, 1, 0 },
-   { "getElementsByTagNameNS", DOMDocument::GetElementsByTagNameNS, DontDelete|ReadOnly|Function, 2, 0 },
-   { "createTextNode", DOMDocument::CreateTextNode, DontDelete|ReadOnly|Function, 1, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "styleSheets", DOMDocument::StyleSheets, DontDelete|ReadOnly|Function, 0, 0 },
-   { "createCDATASection", DOMDocument::CreateCDATASection, DontDelete|ReadOnly|Function, 1, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "createNodeIterator", DOMDocument::CreateNodeIterator, DontDelete|ReadOnly|Function, 3, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "createElement", DOMDocument::CreateElement, DontDelete|ReadOnly|Function, 1, &DOMDocumentTableEntries[27] },
-   { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[26] },
-   { "createEntityReference", DOMDocument::CreateEntityReference, DontDelete|ReadOnly|Function, 1, 0 },
+   { "createElement", DOMDocument::CreateElement, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[23] },
+   { "createTreeWalker", DOMDocument::CreateTreeWalker, DontDelete|Function, 4, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createElementNS", DOMDocument::CreateElementNS, DontDelete|ReadOnly|Function, 2, &DOMDocumentTableEntries[28] },
+   { "createAttribute", DOMDocument::CreateAttribute, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[24] },
+   { "createTextNode", DOMDocument::CreateTextNode, DontDelete|Function, 1, 0 },
+   { "createEntityReference", DOMDocument::CreateEntityReference, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[26] },
+   { "createProcessingInstruction", DOMDocument::CreateProcessingInstruction, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[28] },
+   { 0, 0, 0, 0, 0 },
+   { "createComment", DOMDocument::CreateComment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[27] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createEvent", DOMDocument::CreateEvent, DontDelete|ReadOnly|Function, 1, 0 },
-   { "createComment", DOMDocument::CreateComment, DontDelete|ReadOnly|Function, 1, 0 },
-   { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|ReadOnly|Function, 1, &DOMDocumentTableEntries[31] },
-   { "createAttribute", DOMDocument::CreateAttribute, DontDelete|ReadOnly|Function, 1, &DOMDocumentTableEntries[29] },
-   { "createAttributeNS", DOMDocument::CreateAttributeNS, DontDelete|ReadOnly|Function, 2, 0 },
-   { "getElementById", DOMDocument::GetElementById, DontDelete|ReadOnly|Function, 1, 0 },
-   { "createRange", DOMDocument::CreateRange, DontDelete|ReadOnly|Function, 0, 0 },
-   { "getOverrideStyle", DOMDocument::GetOverrideStyle, DontDelete|ReadOnly|Function, 2, 0 }
+   { "createNodeIterator", DOMDocument::CreateNodeIterator, DontDelete|Function, 3, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "createElementNS", DOMDocument::CreateElementNS, DontDelete|Function, 2, &DOMDocumentProtoTableEntries[29] },
+   { "createAttributeNS", DOMDocument::CreateAttributeNS, DontDelete|Function, 2, 0 },
+   { "getElementsByTagNameNS", DOMDocument::GetElementsByTagNameNS, DontDelete|Function, 2, 0 },
+   { "getElementById", DOMDocument::GetElementById, DontDelete|Function, 1, 0 },
+   { "createRange", DOMDocument::CreateRange, DontDelete|Function, 0, 0 },
+   { "createEvent", DOMDocument::CreateEvent, DontDelete|Function, 1, 0 },
+   { "styleSheets", DOMDocument::StyleSheets, DontDelete|Function, 0, 0 },
+   { "getOverrideStyle", DOMDocument::GetOverrideStyle, DontDelete|Function, 2, 0 }
 };
 
-const struct HashTable DOMDocumentTable = { 2, 32, DOMDocumentTableEntries, 26 };
+const struct HashTable DOMDocumentProtoTable = { 2, 31, DOMDocumentProtoTableEntries, 23 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMDocumentTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[3] },
+   { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, 0 },
+   { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMDocumentTable = { 2, 4, DOMDocumentTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMElementProtoTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "removeAttributeNode", DOMElement::RemoveAttributeNode, DontDelete|Function, 1, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "getAttribute", DOMElement::GetAttribute, DontDelete|Function, 1, &DOMElementProtoTableEntries[11] },
+   { "setAttribute", DOMElement::SetAttribute, DontDelete|Function, 2, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "removeAttribute", DOMElement::RemoveAttribute, DontDelete|Function, 1, 0 },
+   { "getAttributeNode", DOMElement::GetAttributeNode, DontDelete|Function, 1, 0 },
+   { "setAttributeNode", DOMElement::SetAttributeNode, DontDelete|Function, 2, &DOMElementProtoTableEntries[12] },
+   { "hasAttribute", DOMElement::HasAttribute, DontDelete|Function, 1, 0 },
+   { "getElementsByTagName", DOMElement::GetElementsByTagName, DontDelete|Function, 1, 0 },
+   { "normalize", DOMElement::Normalize, DontDelete|Function, 0, 0 }
+};
+
+const struct HashTable DOMElementProtoTable = { 2, 13, DOMElementProtoTableEntries, 11 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMElementTableEntries[] = {
+   { "style", DOMElement::Style, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "tagName", DOMElement::TagName, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
 
 }; // namespace

@@ -32,7 +32,10 @@ namespace KJS {
 
   class DOMNode : public DOMObject {
   public:
+    // Build a DOMNode
     DOMNode(ExecState *exec, DOM::Node n);
+    // Constructor for inherited classes
+    DOMNode(Object proto, DOM::Node n);
     ~DOMNode();
     virtual Boolean toBoolean(ExecState *) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
@@ -93,7 +96,10 @@ namespace KJS {
 
   class DOMDocument : public DOMNode {
   public:
-    DOMDocument(ExecState *exec, DOM::Document d) : DOMNode(exec, d) { }
+    // Build a DOMDocument
+    DOMDocument(ExecState *exec, DOM::Document d);
+    // Constructor for inherited classes
+    DOMDocument(Object proto, DOM::Document d);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValue(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -106,14 +112,6 @@ namespace KJS {
            CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
            CreateRange, CreateNodeIterator, CreateTreeWalker, DefaultView,
            CreateEvent, StyleSheets, GetOverrideStyle };
-  };
-
-  class DOMDocFunction : public DOMFunction {
-  public:
-    DOMDocFunction(ExecState *, int id, int len);
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-  private:
-    int id;
   };
 
   class DOMAttr : public DOMNode {
@@ -130,26 +128,20 @@ namespace KJS {
 
   class DOMElement : public DOMNode {
   public:
-    DOMElement(ExecState *exec, DOM::Element e) : DOMNode(exec, e) { }
+    // Build a DOMElement
+    DOMElement(ExecState *exec, DOM::Element e);
+    // Constructor for inherited classes
+    DOMElement(Object proto, DOM::Element e);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMElementFunction : public DOMFunction {
-  public:
-    DOMElementFunction(DOM::Element e, int i)
-      : DOMFunction(), element(e), id(i) {}
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-    enum { GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
+    enum { TagName, Style,
+           GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
            Normalize };
-  private:
-    DOM::Element element;
-    int id;
   };
 
   class DOMDOMImplementation : public DOMObject {

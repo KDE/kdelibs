@@ -67,12 +67,17 @@ QPtrDict<DOMDOMImplementation> domImplementations;
 @end
 */
 IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc)
+IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc,DOMObjectProto)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
 DOMNode::DOMNode(ExecState *exec, DOM::Node n)
   : DOMObject(DOMNodeProto::self(exec)), node(n)
+{
+}
+
+DOMNode::DOMNode(Object proto, DOM::Node n)
+  : DOMObject(proto), node(n)
 {
 }
 
@@ -474,8 +479,16 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
 
   if (p == "length")
     result = Number(list.length());
-  else if (p == "item")
-    result = new DOMNodeListFunc(exec, DOMNodeListFunc::Item, 1);
+  else if (p == "item") {
+    // No need for a complete hashtable for a single func, but we still want
+    // to use the caching feature of lookupOrCreateFunction.
+    HashEntry entry;
+    entry.value = DOMNodeListFunc::Item;
+    entry.params = 1;
+    entry.attr = DontDelete|Function;
+    result = lookupOrCreateFunction<DOMNodeListFunc, DOMNodeList>(exec, p, this, &entry);
+    //result = new DOMNodeListFunc(exec, DOMNodeListFunc::Item, 1);
+  }
   else {
     // array index ?
     bool ok;
@@ -509,6 +522,7 @@ DOMNodeListFunc::DOMNodeListFunc(ExecState *exec, int i, int len)
   put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
+// Not a prototype class currently, but should probably be converted to one
 Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   DOM::NodeList list = static_cast<DOMNodeList *>(thisObj.imp())->nodeList();
@@ -577,43 +591,56 @@ void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*att
 
 // -------------------------------------------------------------------------
 
+/*
+@begin DOMDocumentProtoTable 23
+  createElement   DOMDocument::CreateElement                   DontDelete|Function 1
+  createDocumentFragment DOMDocument::CreateDocumentFragment   DontDelete|Function 1
+  createTextNode  DOMDocument::CreateTextNode                  DontDelete|Function 1
+  createComment   DOMDocument::CreateComment                   DontDelete|Function 1
+  createCDATASection DOMDocument::CreateCDATASection           DontDelete|Function 1
+  createProcessingInstruction DOMDocument::CreateProcessingInstruction DontDelete|Function 1
+  createAttribute DOMDocument::CreateAttribute                 DontDelete|Function 1
+  createEntityReference DOMDocument::CreateEntityReference     DontDelete|Function 1
+  getElementsByTagName  DOMDocument::GetElementsByTagName      DontDelete|Function 1
+#  importNode           DOMDocument::ImportNode                 DontDelete|Function ?
+  createElementNS      DOMDocument::CreateElementNS            DontDelete|Function 2
+  createAttributeNS    DOMDocument::CreateAttributeNS          DontDelete|Function 2
+  getElementsByTagNameNS  DOMDocument::GetElementsByTagNameNS  DontDelete|Function 2
+  getElementById     DOMDocument::GetElementById               DontDelete|Function 1
+  createRange        DOMDocument::CreateRange                  DontDelete|Function 0
+  createNodeIterator DOMDocument::CreateNodeIterator           DontDelete|Function 3
+  createTreeWalker   DOMDocument::CreateTreeWalker             DontDelete|Function 4
+#  defaultView        DOMDocument::DefaultView                  DontDelete|Function ?
+  createEvent        DOMDocument::CreateEvent                  DontDelete|Function 1
+  styleSheets        DOMDocument::StyleSheets                  DontDelete|Function 0
+  getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|Function 2
+@end
+*/
+IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
+IMPLEMENT_PROTOTYPE("DOMDocument", DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
+
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
 /*
-@begin DOMDocumentTable 26
+@begin DOMDocumentTable 3
   doctype         DOMDocument::DocType                         DontDelete|ReadOnly
   implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
   documentElement DOMDocument::DocumentElement                 DontDelete|ReadOnly
-  createElement   DOMDocument::CreateElement                   DontDelete|ReadOnly|Function 1
-  createDocumentFragment DOMDocument::CreateDocumentFragment   DontDelete|ReadOnly|Function 1
-  createTextNode  DOMDocument::CreateTextNode                  DontDelete|ReadOnly|Function 1
-  createComment   DOMDocument::CreateComment                   DontDelete|ReadOnly|Function 1
-  createCDATASection DOMDocument::CreateCDATASection           DontDelete|ReadOnly|Function 1
-  createProcessingInstruction DOMDocument::CreateProcessingInstruction DontDelete|ReadOnly|Function 1
-  createAttribute DOMDocument::CreateAttribute                 DontDelete|ReadOnly|Function 1
-  createEntityReference DOMDocument::CreateEntityReference     DontDelete|ReadOnly|Function 1
-  getElementsByTagName  DOMDocument::GetElementsByTagName      DontDelete|ReadOnly|Function 1
-#  importNode           DOMDocument::ImportNode                 DontDelete|ReadOnly|Function ?
-  createElementNS      DOMDocument::CreateElementNS            DontDelete|ReadOnly|Function 2
-  createAttributeNS    DOMDocument::CreateAttributeNS          DontDelete|ReadOnly|Function 2
-  getElementsByTagNameNS  DOMDocument::GetElementsByTagNameNS  DontDelete|ReadOnly|Function 2
-  getElementById     DOMDocument::GetElementById               DontDelete|ReadOnly|Function 1
-  createRange        DOMDocument::CreateRange                  DontDelete|ReadOnly|Function 0
-  createNodeIterator DOMDocument::CreateNodeIterator           DontDelete|ReadOnly|Function 3
-  createTreeWalker   DOMDocument::CreateTreeWalker             DontDelete|ReadOnly|Function 4
-#  defaultView        DOMDocument::DefaultView                  DontDelete|ReadOnly|Function ?
-  createEvent        DOMDocument::CreateEvent                  DontDelete|ReadOnly|Function 1
-  styleSheets        DOMDocument::StyleSheets                  DontDelete|ReadOnly|Function 0
-  getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|ReadOnly|Function 2
 @end
 */
+
+DOMDocument::DOMDocument(ExecState *exec, DOM::Document d)
+  : DOMNode(DOMDocumentProto::self(exec), d) { }
+
+DOMDocument::DOMDocument(Object proto, DOM::Document d)
+  : DOMNode(proto, d) { }
 
 Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMDocument::tryGet " << propertyName.qstring() << endl;
 #endif
-  return DOMObjectLookupGet<DOMDocFunction, DOMDocument, DOMNode>(
+  return DOMObjectLookupGetValue<DOMDocument, DOMNode>(
     exec, propertyName, &DOMDocumentTable, this);
 }
 
@@ -634,14 +661,7 @@ Value DOMDocument::getValue(ExecState *exec, int token) const
   }
 }
 
-DOMDocFunction::DOMDocFunction(ExecState *exec, int i, int len)
-  : DOMFunction(), id(i)
-{
-  Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
-}
-
-Value DOMDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
   DOM::Document doc = static_cast<DOM::Document>(node);
@@ -737,108 +757,118 @@ Value DOMDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMElement::info = { "Element", &DOMNode::info, 0, 0 };
+/*
+@begin DOMElementProtoTable 11
+  getAttribute		DOMElement::GetAttribute	DontDelete|Function 1
+  setAttribute		DOMElement::SetAttribute	DontDelete|Function 2
+  removeAttribute	DOMElement::RemoveAttribute	DontDelete|Function 1
+  getAttributeNode	DOMElement::GetAttributeNode	DontDelete|Function 1
+  setAttributeNode	DOMElement::SetAttributeNode	DontDelete|Function 2
+  removeAttributeNode	DOMElement::RemoveAttributeNode	DontDelete|Function 1
+  getElementsByTagName	DOMElement::GetElementsByTagName	DontDelete|Function 1
+  hasAttribute		DOMElement::HasAttribute	DontDelete|Function 1
+# this is moved to Node in DOM2
+  normalize		DOMElement::Normalize		DontDelete|Function 0
+#### new for DOM2 - not yet in khtml
+#  getAttributeNS	DOMElement::GetAttributeNS	DontDelete|Function 2?
+#  setAttributeNS	DOMElement::SetAttributeNS	DontDelete|Function 3?
+#  removeAttributeNS	DOMElement::RemoveAttributeNS	DontDelete|Function 2?
+#  getAttributeNodeNS	DOMElement::GetAttributeNodeNS	DontDelete|Function 2?
+#  setAttributeNodeNS	DOMElement::SetAttributeNodeNS	DontDelete|Function 3?
+#  removeAttributeNodeNS DOMElement::RemoveAttributeNodeNS	DontDelete|Function 2?
+#  getElementsByTagNameNS DOMElement::GetElementsByTagNameNS	DontDelete|Function 2?
+#  hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2?
+@end
+*/
+IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
+IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc, DOMNodeProto)
 
-// No hasProperty for DOMElement ??
+const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
+/*
+@begin DOMElementTable 3
+  tagName	DOMElement::TagName                         DontDelete|ReadOnly
+  style		DOMElement::Style                           DontDelete|ReadOnly
+@end
+*/
+DOMElement::DOMElement(ExecState *exec, DOM::Element e)
+  : DOMNode(DOMElementProto::self(exec), e) { }
 
-Value DOMElement::tryGet(ExecState *exec, const UString &p) const
+DOMElement::DOMElement(Object proto, DOM::Element e)
+  : DOMNode(proto, e) { }
+
+Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMElement::tryGet " << p.qstring() << endl;
+  kdDebug(6070) << "DOMElement::tryGet " << propertyName.qstring() << endl;
 #endif
   DOM::Element element = static_cast<DOM::Element>(node);
 
-  if (p == "tagName")
-    return getString(element.tagName());
-  else if (p == "getAttribute")
-    return new DOMElementFunction(element, DOMElementFunction::GetAttribute);
-  else if (p == "setAttribute")
-    return new DOMElementFunction(element, DOMElementFunction::SetAttribute);
-  else if (p == "removeAttribute")
-    return new DOMElementFunction(element, DOMElementFunction::RemoveAttribute);
-  else if (p == "getAttributeNode")
-    return new DOMElementFunction(element, DOMElementFunction::GetAttributeNode);
-  else if (p == "setAttributeNode")
-    return new DOMElementFunction(element, DOMElementFunction::SetAttributeNode);
-  else if (p == "removeAttributeNode")
-    return new DOMElementFunction(element, DOMElementFunction::RemoveAttributeNode);
-  else if (p == "getElementsByTagName")
-    return new DOMElementFunction(element, DOMElementFunction::GetElementsByTagName);
-  else if (p == "normalize") // this is moved to Node in DOM2
-    return new DOMElementFunction(element, DOMElementFunction::Normalize);
-  else if (p == "style")
-    return getDOMCSSStyleDeclaration(element.style());
-//    return new DOMCSSStyleDeclaration(element.style()));
-/*  else if (p == "getAttributeNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::GetAttributeNS);
-  else if (p == "setAttributeNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::SetAttributeNS);
-  else if (p == "removeAttributeNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::RemoveAttributeNS);
-  else if (p == "getAttributeNodeNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::GetAttributeNodeNS);
-  else if (p == "setAttributeNodeNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::SetAttributeNodeNS);
-  else if (p == "getElementsByTagNameNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::GetElementsByTagNameNS);
-  else if (p == "hasAttributeNS") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::HasAttributeNS);*/
-  else if (p == "hasAttribute") // DOM2
-    return new DOMElementFunction(element, DOMElementFunction::HasAttribute);
-  else
+  const HashEntry* entry = Lookup::findEntry(&DOMElementTable, propertyName);
+  if (entry)
   {
-    DOM::DOMString attr = element.getAttribute( p.string() );
-    // Give access to attributes
-    if ( !attr.isNull() )
-      return getString( attr );
-    else
-      return DOMNode::tryGet(exec, p);
+    switch( entry->value ) {
+    case TagName:
+      return getString(element.tagName());
+    case Style:
+      return getDOMCSSStyleDeclaration(element.style());
+    default:
+      fprintf(stderr, "Unhandled token in DOMElement::tryGet : %d\n", entry->value);
+      break;
+    }
   }
+  DOM::DOMString attr = element.getAttribute( propertyName.string() );
+  // Give access to attributes
+  if ( !attr.isNull() )
+    return getString( attr );
+  else
+    return DOMNode::tryGet(exec, propertyName);
 }
 
-Value DOMElementFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
+Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
+  DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
+  DOM::Element element = static_cast<DOM::Element>(node);
   Value result;
 
   switch(id) {
-    case GetAttribute:
+    case DOMElement::GetAttribute:
       result = String(element.getAttribute(args[0].toString(exec).value().string()));
       break;
-    case SetAttribute:
+    case DOMElement::SetAttribute:
       element.setAttribute(args[0].toString(exec).value().string(),args[1].toString(exec).value().string());
       result = Undefined();
       break;
-    case RemoveAttribute:
+    case DOMElement::RemoveAttribute:
       element.removeAttribute(args[0].toString(exec).value().string());
       result = Undefined();
       break;
-    case GetAttributeNode:
+    case DOMElement::GetAttributeNode:
       result = getDOMNode(exec,element.getAttributeNode(args[0].toString(exec).value().string()));
       break;
-    case SetAttributeNode:
+    case DOMElement::SetAttributeNode:
       result = getDOMNode(exec,element.setAttributeNode((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
       break;
-    case RemoveAttributeNode:
+    case DOMElement::RemoveAttributeNode:
       result = getDOMNode(exec,element.removeAttributeNode((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
       break;
-    case GetElementsByTagName:
+    case DOMElement::GetElementsByTagName:
       result = getDOMNodeList(exec,element.getElementsByTagName(args[0].toString(exec).value().string()));
       break;
-    case Normalize: {  // this is moved to Node in DOM2
+    case DOMElement::HasAttribute: // DOM2
+      result = Boolean(element.hasAttribute(args[0].toString(exec).value().string()));
+      break;
+    case DOMElement::Normalize: {  // this is moved to Node in DOM2
         element.normalize();
         result = Undefined();
       }
       break;
-/*    case GetAttributeNS: // new for DOM2 - not yet in khtml
-    case SetAttributeNS: // new for DOM2 - not yet in khtml
-    case RemoveAttributeNS: // new for DOM2 - not yet in khtml
-    case GetAttributeNodeNS: // new for DOM2 - not yet in khtml
-    case SetAttributeNodeNS: // new for DOM2 - not yet in khtml
-    case GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
-    case HasAttributeNS: // new for DOM2 - not yet in khtml*/
-    case HasAttribute: // DOM2
-      result = Boolean(element.hasAttribute(args[0].toString(exec).value().string()));
-      break;
+/*    case DOMElement::GetAttributeNS: // new for DOM2 - not yet in khtml
+    case DOMElement::SetAttributeNS: // new for DOM2 - not yet in khtml
+    case DOMElement::RemoveAttributeNS: // new for DOM2 - not yet in khtml
+    case DOMElement::GetAttributeNodeNS: // new for DOM2 - not yet in khtml
+    case DOMElement::SetAttributeNodeNS: // new for DOM2 - not yet in khtml
+    case DOMElement::GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
+    case DOMElement::HasAttributeNS: // new for DOM2 - not yet in khtml*/
   default:
     result = Undefined();
   }
