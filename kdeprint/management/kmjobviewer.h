@@ -79,6 +79,7 @@ protected:
 	void loadPluginActions();
 	void removePluginActions();
 	void reload();
+	void closeEvent(QCloseEvent*);
 
 private:
 	QListView		*m_view;

@@ -502,4 +502,15 @@ void KMJobViewer::reload()
 		slotRefresh();
 }
 
+void KMJobViewer::closeEvent(QCloseEvent *e)
+{
+	if (!parentWidget())
+	{
+		hide();
+		e->ignore();
+	}
+	else
+		e->accept();
+}
+
 #include "kmjobviewer.moc"
