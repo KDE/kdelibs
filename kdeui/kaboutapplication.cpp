@@ -41,7 +41,7 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 
 KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent,
                                       const char *name, bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, kapp->caption(), Close, Close,
+  :KAboutDialog( AbtTabbed|AbtProduct, aboutData->programName(), Close, Close,
 		 parent, name, modal )
 {
   buildDialog(aboutData);
