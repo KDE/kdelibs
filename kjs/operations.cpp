@@ -112,3 +112,45 @@ double KJS::min(double d1, double d2)
   /* TODO: check for NaN */
   return (d1 < d2) ? d1 : d2;
 }
+
+// ECMA 11.6
+KJSO KJS::add(const KJSO &v1, const KJSO &v2, char oper)
+{
+  KJSO p1 = v1.toPrimitive();
+  KJSO p2 = v2.toPrimitive();
+
+  if ((p1.isA(StringType) || p2.isA(StringType)) && oper == '+') {
+    String s1 = p1.toString();
+    String s2 = p2.toString();
+
+    UString s = s1.value() + s2.value();
+
+    return String(s);
+  }
+
+  Number n1 = p1.toNumber();
+  Number n2 = p2.toNumber();
+
+  if (oper == '+')
+    return Number(n1.value() + n2.value());
+  else
+    return Number(n1.value() - n2.value());
+}
+
+// ECMA 11.5
+KJSO KJS::mult(const KJSO &v1, const KJSO &v2, char oper)
+{
+  Number n1 = v1.toNumber();
+  Number n2 = v2.toNumber();
+
+  double result;
+
+  if (oper == '*')
+    result = n1.value() * n2.value();
+  else if (oper == '/')
+    result = n1.value() / n2.value();
+  else
+    result = fmod(n1.value(), n2.value());
+
+  return Number(result);
+}

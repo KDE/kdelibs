@@ -37,6 +37,21 @@ namespace KJS {
   int relation(const KJSO& v1, const KJSO& v2);
   double max(double d1, double d2);
   double min(double d1, double d2);
+  /**
+   * Additive operator. Either performs an addition or substraction of v1
+   * and v2.
+   * @param oper '+' or '-' for an addition or substraction, respectively.
+   * @return The result of the operation.
+   */
+  KJSO add(const KJSO &v1, const KJSO &v2, char oper);
+  /**
+   * Multiplicative operator. Either multiplies/divides v1 and v2 or
+   * calculates the remainder from an division.
+   * @param oper '*', '/' or '%' for a multiplication, division or
+   * modulo operation.
+   * @return The result of the operation.
+   */
+  KJSO mult(const KJSO &v1, const KJSO &v2, char oper);
 
 };
 

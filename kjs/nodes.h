@@ -330,20 +330,20 @@ namespace KJS {
 
   class MultNode : public Node {
   public:
-    MultNode(Node *t1, Node *t2, int op) : term1(t1), term2(t2), oper(op) {}
+    MultNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
     KJSO evaluate();
   private:
     Node *term1, *term2;
-    int oper;
+    char oper;
   };
 
   class AddNode : public Node {
   public:
-    AddNode(Node *t1, Node *t2, int op) : term1(t1), term2(t2), oper(op) {}
+    AddNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
     KJSO evaluate();
   private:
     Node *term1, *term2;
-    int oper;
+    char oper;
   };
 
   class ShiftNode : public Node {

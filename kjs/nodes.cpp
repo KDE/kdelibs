@@ -403,23 +403,40 @@ KJSO AssignNode::evaluate()
 {
   KJSO l, e, v;
   ErrorType err;
-  switch (oper)
-    {
-    case OpEqual:
-      l = left->evaluate();
-      e = expr->evaluate();
-      v = e.getValue();
-      //      printf("value: %f\n", v.toNumber().value());
-      err = l.putValue(v);
-      if (err == NoError)
-	return v;
-      else
-	return throwError(err, "Invalid reference.");
+  if (oper == OpEqual) {
+    l = left->evaluate();
+    e = expr->evaluate();
+    v = e.getValue();
+  } else {
+    l = left->evaluate();
+    KJSO v1 = l.getValue();
+    e = expr->evaluate();
+    KJSO v2 = e.getValue();
+    switch (oper) {
+    case OpMultEq:
+      v = mult(v1, v2, '*');
       break;
+    case OpDivEq:
+      v = mult(v1, v2, '/');
+      break;
+    case OpPlusEq:
+      v = add(v1, v2, '+');
+      break;
+    case OpMinusEq:
+      v = add(v1, v2, '-');
+      break;
+      /* TODO */
     default:
-      assert(!"AssignNode: unhandled switch case");
-      return Undefined();
-    };
+      v = Undefined();
+    } 
+    err = l.putValue(v);
+  };
+
+  err = l.putValue(v);
+  if (err == NoError)
+    return v;
+  else
+    return throwError(err, "Invalid reference.");
 }
 
 // ECMA 11.3
@@ -562,19 +579,7 @@ KJSO MultNode::evaluate()
   KJSO t2 = term2->evaluate();
   KJSO v2 = t2.getValue();
 
-  Number n1 = v1.toNumber();
-  Number n2 = v2.toNumber();
-
-  double result;
-
-  if (oper == '*')
-    result = n1.value() * n2.value();
-  else if (oper == '/')
-    result = n1.value() / n2.value();
-  else
-    result = fmod(n1.value(), n2.value());
-
-  return Number(result);
+  return mult(v1, v2, oper);
 }
 
 // ECMA 11.7
@@ -615,25 +620,7 @@ KJSO AddNode::evaluate()
   KJSO t2 = term2->evaluate();
   KJSO v2 = t2.getValue();
 
-  KJSO p1 = v1.toPrimitive();
-  KJSO p2 = v2.toPrimitive();
-
-  if ((p1.isA(StringType) || p2.isA(StringType)) && oper == '+') {
-    String s1 = p1.toString();
-    String s2 = p2.toString();
-
-    UString s = s1.value() + s2.value();
-
-    return String(s);
-  }
-
-  Number n1 = p1.toNumber();
-  Number n2 = p2.toNumber();
-
-  if (oper == '+')
-    return Number(n1.value() + n2.value());
-  else
-    return Number(n1.value() - n2.value());
+  return add(v1, v2, oper);
 }
 
 // ECMA 11.14
