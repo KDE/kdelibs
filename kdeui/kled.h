@@ -20,8 +20,8 @@
  * $Id$
  *************************************************************************/
 
-#ifndef LED_H
-#define LED_H
+#ifndef _KLED_H_
+#define _KLED_H_
 
 #include <qwidget.h>
 
@@ -35,12 +35,20 @@ class QColor;
 * It may display itself in a performant flat view, a round view with
 * light spot or a round view sunken in the screen.
 *
-* @short A round LED widget.
+* @short An LED widget.
 * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
 */
 class KLed : public QWidget
 {
-Q_OBJECT
+    Q_OBJECT
+    Q_ENUMS( State )
+    Q_ENUMS( Shape )
+    Q_ENUMS( Look )
+    Q_PROPERTY( State state READ state WRITE setState )
+    Q_PROPERTY( Shape shape READ shape WRITE setShape )
+    Q_PROPERTY( Look look READ look WRITE setLook )
+    Q_PROPERTY( QColor color READ color WRITE setColor )
+    Q_PROPERTY( int darkFactor READ darkFactor WRITE setDarkFactor )
 
 public:
 
@@ -81,6 +89,11 @@ public:
    */
   enum Look  { NoLook, Flat, Raised, Sunken, NoOfLooks=Sunken };
 
+  /**
+   * Constructs a green, round LED widget which will initially
+   * be turned on.
+   */
+  KLed(QWidget *parent=0, const char *name=0);
   /**
    * Constructor with the ledcolor, the parent widget, and the name.
    *
@@ -124,6 +137,8 @@ public:
    */
   State state() const;
 
+  Shape shape() const;
+   
   /**
    * Hand back the color of the widget
    *
@@ -146,7 +161,7 @@ public:
    * @see setDarkFactor()
    * @short Returns dark factor
    */
-  int getDarkFactor() const;
+  int darkFactor() const;
 
   /**
    * Sets the state of the widget to On or Off.
@@ -257,23 +272,36 @@ public slots:
   void off();
 
 protected:
+  /**
+   * Paints a circular, flat LED.
+   */
+  virtual void paintFlat();
+  /**
+   * Paints a circular, raised LED.
+   */
+  virtual void paintRound();
+  /**
+   * Paints a circular, sunken LED.
+   */
+  virtual void paintSunken();
+  /**
+   * Paints a rectangular, flat LED.
+   */
+  virtual void paintRect();
+  /**
+   * Paints a rectangular LED, either raised or 
+   * sunken, depending on its argument.
+   */
+  virtual void paintRectFrame(bool raised);
+
   void paintEvent( QPaintEvent * );
   
-  void paintflat();
-  void paintround();
-  void paintsunken();
-  void paintrect();
-  // paints the LED lamp with a frame, either raised (true) or sunken(false)
-  void paintrectframe(bool raised);
-
-// will get private in kdelibs 2.1xx
-// private :
+private:
   State led_state;
   QColor led_color;
   Look  led_look;
   Shape led_shape;
 
-private:
   class KLedPrivate;
   KLedPrivate *d;
 };

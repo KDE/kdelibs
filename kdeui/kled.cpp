@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2000/05/08 19:38:49  sschiman
+ * Calling setColor before setting up the private data is a bad idea ;-)
+ *
  * Revision 1.12  2000/05/07 09:49:57  habenich
  * provided method to set the factor to dark the LED
  * precalculated the dark color, is just retrieved at paint events
@@ -88,6 +91,20 @@ class KLed::KLedPrivate
 
 
 
+KLed::KLed(QWidget *parent, const char *name)
+  : QWidget( parent, name),
+    led_state(On),
+    led_look(Raised),
+    led_shape(Circular)
+{
+  QColor col(green);
+  d = new KLed::KLedPrivate;
+  d->dark_factor = 300;
+  d->offcolor = col.dark(300);
+
+  setColor(col);
+}
+
 
 KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   : QWidget( parent, name),
@@ -133,13 +150,13 @@ KLed::paintEvent(QPaintEvent *)
       switch (led_look) 
 	{
 	case Sunken :
-	  paintrectframe(false); 
+	  paintRectFrame(false); 
 	  break;
 	case Raised :
-	  paintrectframe(true);
+	  paintRectFrame(true);
 	  break;
 	case Flat   :
-	  paintrect();
+	  paintRect();
 	  break;
 	default  :
 	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
@@ -149,13 +166,13 @@ KLed::paintEvent(QPaintEvent *)
       switch (led_look) 
 	{
 	case Flat   :
-	  paintflat();
+	  paintFlat();
 	  break;
 	case Raised :
-	  paintround();
+	  paintRound();
 	  break;
 	case Sunken :
-	  paintsunken();
+	  paintSunken();
 	  break;
 	default: 
 	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
@@ -168,7 +185,7 @@ KLed::paintEvent(QPaintEvent *)
 }
 
 void
-KLed::paintflat() // paint a ROUND FLAT led lamp
+KLed::paintFlat() // paint a ROUND FLAT led lamp
 {
   QPainter p(this);
   int w=width(), h=height();
@@ -216,7 +233,7 @@ KLed::paintflat() // paint a ROUND FLAT led lamp
 }
 
 void
-KLed::paintround() // paint a ROUND RAISED led lamp
+KLed::paintRound() // paint a ROUND RAISED led lamp
 {
   QPainter p(this);
   int x, y, w=width(), h=height();
@@ -308,7 +325,7 @@ KLed::paintround() // paint a ROUND RAISED led lamp
 
 
 void
-KLed::paintsunken() // paint a ROUND SUNKEN led lamp
+KLed::paintSunken() // paint a ROUND SUNKEN led lamp
 {
   QPainter p(this);
   //int x=this->x(), y=this->y(), w=width(), h=height();
@@ -410,7 +427,7 @@ KLed::paintsunken() // paint a ROUND SUNKEN led lamp
 }
 
 void 
-KLed::paintrect()
+KLed::paintRect()
 {
   QPainter painter(this);
   QBrush lightBrush(led_color);
@@ -441,7 +458,7 @@ KLed::paintrect()
 }
 
 void 
-KLed::paintrectframe(bool raised)
+KLed::paintRectFrame(bool raised)
 {
   QPainter painter(this);
   QBrush lightBrush(led_color);
@@ -476,6 +493,12 @@ KLed::State
 KLed::state() const
 { 
   return led_state; 
+}
+
+KLed::Shape
+KLed::shape() const
+{
+  return led_shape;
 }
 
 const QColor
@@ -539,7 +562,7 @@ KLed::setDarkFactor(int darkfactor)
 }
 
 int 
-KLed::getDarkFactor() const
+KLed::darkFactor() const
 {
   return d->dark_factor;
 }
@@ -573,4 +596,3 @@ KLed::off()
 }
 
 #include "kled.moc"
-
