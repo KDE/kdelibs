@@ -389,29 +389,39 @@ void KFM::slotDirEntry(const char* _name, const char* _access, const char* _owne
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
         : QDialog( parent, 0L, TRUE )
 {
-    setGeometry( x(), y(), 200, 110 );
 
     QLabel *label = new QLabel( _text , this );
-    label->setGeometry( 10, 10, 180, 15 );
-    
+    label->adjustSize(); // depends on the text length
+    label->move(10,10);
+
     edit = new QLineEdit( this, 0L );
-    edit->setGeometry( 10, 40, 180, 20 );
     connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
 
-    QPushButton *ok;
-    QPushButton *cancel;
     ok = new QPushButton( i18n("OK"), this );
-    ok->setGeometry( 10,70, 50,30 );
     connect( ok, SIGNAL(clicked()), SLOT(accept()) );
+    ok->adjustSize();
 
     cancel = new QPushButton( i18n("Cancel"), this );
-    cancel->setGeometry( 140, 70, 50, 30 );
     connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
+    cancel->adjustSize();
 
     edit->setText( _value );
     edit->setFocus();
+
+    int w = label->width()+20;
+    if ( w < 200 ) w = 200; // A minimum width
+    setGeometry( x(), y(), w, 110 );
 }
 
+void DlgLocation::resizeEvent(QResizeEvent *e)
+{
+    QDialog::resizeEvent(e);
+    int w = rect().width();
+    int h = rect().height();
+    edit->setGeometry (10, 40, w-20, 20);
+    ok->move( 10, h-10-ok->height() );
+    cancel->move( w-10-cancel->width(), h-10-cancel->height() );
+}
 #include "kfm.moc"
 
 

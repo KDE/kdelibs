@@ -168,10 +168,16 @@ public:
 
     /// Return the value the user entered
     const char * getText() { return edit->text(); }
-    
+
+    /// The dialog is being resized
+    void resizeEvent(QResizeEvent *e);
+
 protected:
-    /// The line edit widget
+    /// The line edit widget and the two buttons
     QLineEdit *edit;
+    QPushButton *ok;
+    QPushButton *cancel;
+
 };
 
 #endif
