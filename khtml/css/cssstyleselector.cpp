@@ -622,8 +622,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         return false;
 
 //     qDebug("element: %d", e->id());
-
-    sel->print();
+//     sel->print();
 
 
     if((e->id() & NodeImpl::IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
