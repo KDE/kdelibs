@@ -688,7 +688,8 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     }
 #endif
 
-    int maxHeight = 0;
+    int maxPositionTop = 0;
+    int maxPositionBottom = 0;
     int maxAscent = 0;
     int maxDescent = 0;
     r = runs.first();
@@ -697,20 +698,44 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	r->baseline = r->obj->baselinePosition();
         r->vertical = r->obj->verticalPositionHint();
         //kdDebug(6041) << "object="<< r->obj << " height="<<r->height<<" baseline="<< r->baseline << " vertical=" << r->vertical <<endl;
-        int ascent;
-        if ( r->vertical == PositionTop )
-            ascent = 0;
-        else if ( r->vertical == PositionBottom )
-            ascent = r->height;
-        else
-            ascent = r->baseline - r->vertical;
-        int descent = r->height - ascent;
-        if(maxAscent < ascent) maxAscent = ascent;
-        if(maxDescent < descent) maxDescent = descent;
+        //int ascent;
+        if ( r->vertical == PositionTop ) {
+            if ( maxPositionTop < r->height ) maxPositionTop = r->height;
+        }
+        else if ( r->vertical == PositionBottom ) {
+            if ( maxPositionBottom < r->height ) maxPositionBottom = r->height;
+        }
+        else {
+            int ascent = r->baseline - r->vertical;
+            int descent = r->height - ascent;
+            if(maxAscent < ascent) maxAscent = ascent;
+            if(maxDescent < descent) maxDescent = descent;
+        }
         r = runs.next();
     }
-    if(maxHeight < maxAscent + maxDescent) maxHeight = maxAscent + maxDescent;
+    if ( maxAscent+maxDescent < QMAX( maxPositionTop, maxPositionBottom ) ) {
+        // now the computed lineheight needs to be extended for the
+        // positioned elements
+        // see khtmltests/rendering/html_align.html
+        // ### only iterate over the positioned ones!
+        for ( r = runs.first(); r; r = runs.next() ) {
+            if ( r->vertical == PositionTop ) {
+                if ( maxAscent + maxDescent < r->height )
+                    maxDescent = r->height - maxAscent;
+            }
+            else if ( r->vertical == PositionBottom ) {
+                if ( maxAscent + maxDescent < r->height )
+                    maxAscent = r->height - maxDescent;
+            }
+            else
+                continue;
 
+            if ( maxAscent + maxDescent >= QMAX( maxPositionTop, maxPositionBottom ) )
+                break;
+
+        }
+    }
+    int maxHeight = maxAscent + maxDescent;
     r = runs.first();
     int totWidth = 0;
     while ( r ) {
