@@ -1,8 +1,8 @@
-kdelibs (4:3.2.0-0+cvs20030319) unstable; urgency=low
+kdelibs (4:3.1.92-1) unstable; urgency=low
 
-  * CVS HEAD.
+  * New upstream release (KDE 3.2 Alpha 2).
 
- -- Christopher L Cheney <ccheney@debian.org>  Wed, 19 Mar 2003 21:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Wed, 03 Oct 2003 23:00:00 +0100
 
 kdelibs (4:3.1.1-1) unstable; urgency=low
 
