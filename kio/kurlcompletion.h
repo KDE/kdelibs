@@ -30,7 +30,6 @@
 
 class KURL;
 class KURLCompletionPrivate;
-class MyURL;
 
 /**
  * This class does completion of URLs including user directories (~user)
@@ -83,17 +82,17 @@ public:
 	 * Sets the current directory (used as base for completion)
 	 * Default = $HOME.
 	 */
-	virtual void setDir( QString dir) { m_cwd = dir; };
+	virtual void setDir(const QString &dir) { m_cwd = dir; };
 	
 	/**
 	 * Returns the current directory.
 	 */
-	virtual QString dir() { return m_cwd; };
+	virtual QString dir() const { return m_cwd; };
 
 	/**
 	 * Returns true if asyncronous completion is in progress.
 	 */
-	virtual bool isRunning();
+	virtual bool isRunning() const;
 
 	/**
 	 * Stops asyncronous completion.
@@ -103,7 +102,7 @@ public:
 	/**
 	 * Returns the completion mode: exe or file completion (default FileCompletion)
 	 */
-	virtual Mode mode() { return m_mode; };
+	virtual Mode mode() const { return m_mode; };
 
 	/**
 	 * Changes the completion mode: exe or file completion
@@ -115,7 +114,7 @@ public:
 	 * whether they are replaced internally while finding completions.
 	 * Default is enabled.
 	 */
-	virtual bool replaceEnv() { return m_replace_env; };
+	virtual bool replaceEnv() const { return m_replace_env; };
 	
 	/**
 	 * Enables/disables completion and replacement (internally) of
@@ -158,7 +157,10 @@ private slots:
 	void slotTimer();
 
 private:
-	bool isAutoCompletion();
+        class MyURL;
+        class DirLister;
+
+        bool isAutoCompletion();
 	
 	bool userCompletion(const MyURL &url, QString *match);
 	bool envCompletion(const MyURL &url, QString *match);

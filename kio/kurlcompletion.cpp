@@ -67,7 +67,7 @@ enum ComplType {CTNone=0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
 // MyURL - wrapper for KURL with some different functionality
 //
 
-class MyURL
+class KURLCompletion::MyURL
 {
 public:
 	MyURL(const QString &url);
@@ -99,12 +99,12 @@ protected:
 	QString m_file;
 };
 
-MyURL::MyURL(const QString &url)
+KURLCompletion::MyURL::MyURL(const QString &url)
 {
 	init(url);
 }
 
-MyURL::MyURL(const MyURL &url)
+KURLCompletion::MyURL::MyURL(const MyURL &url)
 {
 	m_kurl = new KURL( *(url.m_kurl) );
 	m_url = url.m_url;
@@ -114,7 +114,7 @@ MyURL::MyURL(const MyURL &url)
 	m_file = url.m_file;
 }
 
-void MyURL::init(const QString &url)
+void KURLCompletion::MyURL::init(const QString &url)
 {
 	// Save the original text
 	m_url = url;
@@ -168,12 +168,12 @@ void MyURL::init(const QString &url)
         //kdDebug() << "m_orgUrlWithoutFile=" << m_orgUrlWithoutFile << endl;
 }	
 
-MyURL::~MyURL()
+KURLCompletion::MyURL::~MyURL()
 {
 	delete m_kurl;
 }
 			
-void MyURL::filter()
+void KURLCompletion::MyURL::filter()
 {
 	if ( !m_dir.isEmpty() ) {
 		expandTilde( m_dir );
@@ -187,7 +187,7 @@ void MyURL::filter()
 // DirLister - list files with timeout
 //
 
-class DirLister
+class KURLCompletion::DirLister
 {
 public:
 	DirLister() : m_dp(0L), m_timeout(50) { };
@@ -230,13 +230,13 @@ private:
 	bool  timeout();
 };
 
-DirLister::~DirLister()
+KURLCompletion::DirLister::~DirLister()
 {
 	stop();
 }
 
 // Start the internal time out counter. Used by listBatch()
-void DirLister::startTimer()
+void KURLCompletion::DirLister::startTimer()
 {
 	m_clk = ::clock();
 }
@@ -244,26 +244,26 @@ void DirLister::startTimer()
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 
 // Returns true m_timeout ms after startTimer() has been called
-bool DirLister::timeout()
+bool KURLCompletion::DirLister::timeout()
 {
 	return (m_clk > 0) &&
 	         (::clock() - m_clk > m_timeout * CLOCKS_PER_MS);
 }
 
 // Change the file filter while DirLister is running
-void DirLister::setFilter( QString filter )
+void KURLCompletion::DirLister::setFilter( QString filter )
 {
 	m_filter = filter;
 }
 
 // Returns true until alla directories have been listed
 // after a call to listDirectoris
-bool DirLister::isRunning()
+bool KURLCompletion::DirLister::isRunning()
 {
 	return m_dp != 0L || m_current < m_dir_list.count();
 }
 
-void DirLister::stop()
+void KURLCompletion::DirLister::stop()
 {
 	if ( m_dp ) {
 		::closedir( m_dp );
@@ -280,7 +280,7 @@ void DirLister::stop()
  *
  * Returns true if all directories are done within the first 50 ms
  */
-bool DirLister::listDirectories(
+bool KURLCompletion::DirLister::listDirectories(
 		const QStringList& dir_list,
 		const QString& filter,
 		bool only_exe,
@@ -310,7 +310,7 @@ bool DirLister::listDirectories(
  * Get entries from directories in m_dir_list
  * Return false if timed out, and true when all directories are done
  */
-bool DirLister::listBatch()
+bool KURLCompletion::DirLister::listBatch()
 {
 	startTimer();
 
@@ -413,7 +413,7 @@ public:
 
 	QValueList<KURL*> list_urls;
 
-	DirLister         *dir_lister;
+	KURLCompletion::DirLister *dir_lister;
 	
 	// urlCompletion() in Auto/Popup mode?
 	bool url_auto_completion;
@@ -560,7 +560,7 @@ QString KURLCompletion::finished()
  * Return true if either a KIO job or the DirLister
  * is running
  */
-bool KURLCompletion::isRunning()
+bool KURLCompletion::isRunning() const
 {
 	return (m_list_job != 0L ||
 	        (d->dir_lister != 0L && d->dir_lister->isRunning() ));
