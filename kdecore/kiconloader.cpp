@@ -795,8 +795,15 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         if (pix.mask())
         {
             QBitmap mask = *pix.mask();
-            bitBlt(&mask, x, y,
-                   favIcon.mask() ? const_cast<QBitmap *>(favIcon.mask()) : &favIcon,
+            QBitmap fmask;
+            if (favIcon.mask())
+		fmask = *favIcon.mask();
+	    else {
+		// expensive, but works
+		fmask = favIcon.createHeuristicMask();
+	    }
+		
+            bitBlt(&mask, x, y, &fmask,
                    0, 0, favIcon.width(), favIcon.height(),
                    favIcon.mask() ? Qt::OrROP : Qt::SetROP);
             pix.setMask(mask);
@@ -1120,7 +1127,7 @@ KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
     : iconName( iconName_P ), group( group_P ), size( size_P ), loader( loader_P )
 {
     setAutoDelete( true );
-};
+}
 
 QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode mode_P, QIconSet::State )
     {
