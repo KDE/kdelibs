@@ -67,7 +67,7 @@ static LightStyleV2Private *singleton = 0;
 
 
 LightStyleV2::LightStyleV2()
-    : QCommonStyle()
+    : KStyle(AllowMenuTransparency)
 {
     if (! singleton)
 	singleton = new LightStyleV2Private;
@@ -83,9 +83,9 @@ LightStyleV2::~LightStyleV2()
     }
 }
 
-void LightStyleV2::polishPopupMenu( QPopupMenu * )
+void LightStyleV2::polishPopupMenu( QPopupMenu * menu )
 {
-    // empty to satisy pure virtual requirements
+    KStyle::polishPopupMenu(menu);
 }
 
 static void drawLightBevel(QPainter *p, const QRect &r, const QColorGroup &cg,
@@ -774,8 +774,12 @@ void LightStyleV2::drawControl( ControlElement control,
 	    int maxpmw = data.maxIconWidth();
 
 	    if ( mi && mi->isSeparator() ) {
-		// draw separator
-		p->fillRect(r, cg.brush(QColorGroup::Button));
+		// draw separator (bg first, though)      
+		if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
+		    p->drawPixmap( r.topLeft(), *widget->erasePixmap(), r );
+		else
+		    p->fillRect(r, cg.brush(QColorGroup::Button));
+	    
 		p->setPen(cg.mid().dark(120));
 		p->drawLine(r.left() + 12,  r.top() + 1,
 			    r.right() - 12, r.top() + 1);
@@ -788,7 +792,9 @@ void LightStyleV2::drawControl( ControlElement control,
 	    if (flags & Style_Active)
 		qDrawShadePanel(p, r, cg, true, 1,
 				&cg.brush(QColorGroup::Midlight));
-	    else
+	    else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
+		p->drawPixmap( r.topLeft(), *widget->erasePixmap(), r );
+	    else 
 		p->fillRect(r, cg.brush(QColorGroup::Button));
 
 	    if ( !mi )

@@ -24,9 +24,7 @@
 #define LIGHTSTYLE_V2_H
 
 
-#ifndef QT_H
-#include <qcommonstyle.h>
-#endif // QT_H
+#include <kstyle.h>
 
 
 #ifdef QT_PLUGIN
@@ -36,7 +34,7 @@
 #endif // QT_PLUGIN
 
 
-class Q_EXPORT_STYLE_LIGHT_V2 LightStyleV2 : public QCommonStyle
+class Q_EXPORT_STYLE_LIGHT_V2 LightStyleV2 : public KStyle
 {
     Q_OBJECT
 
