@@ -33,6 +33,7 @@
 // $Id$
 
 #include <qbitmap.h>
+#include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qdrawutil.h>
 #include <qframe.h>
@@ -207,6 +208,27 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 		case SR_ComboBoxFocusRect:
 		{
 			return querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField );
+		}
+
+		case SR_CheckBoxFocusRect:
+		{
+			const QCheckBox* cb = static_cast<const QCheckBox*>(widget);
+
+			//Only checkbox, no label
+			if (cb->text().isEmpty() && (cb->pixmap() == 0) )
+			{
+				QRect bounding = cb->rect();
+				QSize checkDim = Keramik::PixmapLoader::the().size( keramik_checkbox_on);
+				int   cw = checkDim.width();;
+				int   ch = checkDim.height();
+
+				QRect checkbox(bounding.x() + 1, bounding.y() + 1 + (bounding.height() - ch)/2,
+								cw - 3, ch - 4);
+
+				return checkbox;
+			}
+
+			//Fallthrough intentional
 		}
 
 		default:
