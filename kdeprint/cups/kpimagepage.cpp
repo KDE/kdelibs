@@ -122,6 +122,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	l0->addMultiCellWidget(colorbox, 0, 0, 0, 1);
 	l0->addWidget(sizebox, 1, 0);
 	l0->addWidget(positionbox, 1, 1);
+	l0->setColStretch(0, 1);
 	QGridLayout	*l1 = new QGridLayout(colorbox->layout(), 5, 2, 10);
 	l1->addWidget(m_brightness, 0, 0);
 	l1->addWidget(m_hue, 1, 0);

@@ -363,7 +363,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
 		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->realLogin());
 		req.setMap(opts);
-		req.dump(1);
+		//req.dump(1);
 		if (!req.doRequest("/jobs/"))
 		{
 			KMManager::self()->setErrorMsg(i18n("Unable to set job attributes: ")+req.statusMessage());

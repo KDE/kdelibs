@@ -180,6 +180,8 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	lay2->addWidget(m_bannerbox, 1, 0);
 	lay2->addWidget(m_duplexbox, 0, 1);
 	lay2->addWidget(m_nupbox, 1, 1);
+	lay2->setColStretch(0, 1);
+	lay2->setColStretch(1, 1);
 	QGridLayout	*lay3 = new QGridLayout(m_orientbox->layout(), 4, 2, 5);
 	lay3->addWidget(m_portrait, 0, 0);
 	lay3->addWidget(m_landscape, 1, 0);
@@ -201,6 +203,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	lay6->addWidget(m_endbannerlabel, 1, 0);
 	lay6->addWidget(m_startbanner, 0, 1);
 	lay6->addWidget(m_endbanner, 1, 1);
+	lay6->setColStretch(1, 1);
 
 	// connections (+ misc)
 	connect(m_orientbox,SIGNAL(clicked(int)),SLOT(slotOrientationChanged(int)));

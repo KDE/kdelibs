@@ -454,9 +454,6 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 	if (!request_)
 		return;
 
-	// map -> cups_option_t -> ipp_t
-	cups_option_t	*options = 0;
-	int	n = 0;
 	QRegExp	re("^\"|\"$");
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
@@ -464,8 +461,23 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 			continue;
 		QString	value = it.data().stripWhiteSpace();
 		value.replace(re, "");
-		n = cupsAddOption(it.key().local8Bit(), value.local8Bit(), n, &options);
+
+		// currently supported:
+		//	- single boolean
+		//	- single integer
+		//	- single/multiple strings
+		if (value == "true" || value == "false")
+			addBoolean(IPP_TAG_JOB, it.key(), (value == "true"));
+		else
+		{
+			bool	ok(false);
+			int	p = value.toInt(&ok);
+			if (ok)
+				addInteger(IPP_TAG_JOB, it.key(), p);
+			else if (value.find(',') != -1)
+				addName(IPP_TAG_JOB, it.key(), QStringList::split(',', value, false));
+			else
+				addName(IPP_TAG_JOB, it.key(), value);
+		}
 	}
-	cupsEncodeOptions(request_, n, options);
-	cupsFreeOptions(n, options);
 }

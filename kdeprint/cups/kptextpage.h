@@ -45,6 +45,10 @@ protected slots:
 	void slotMarginChanged();
 	void slotPrettyChanged(int);
 	void slotColumnsChanged(int);
+	void slotCustomMarginsToggled(bool);
+
+protected:
+	void resetPageSize();
 
 private:
 	KIntNumInput	*m_cpi, *m_lpi, *m_columns;
@@ -54,6 +58,7 @@ private:
 	MarginWidget	*m_top, *m_bottom, *m_left, *m_right;
 	QComboBox		*m_units;
 	QLabel			*m_prettypix;
+	QString		m_currentps;
 };
 
 #endif

@@ -97,6 +97,7 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	connect(m_custom, SIGNAL(toggled(bool)), m_left, SLOT(setEnabled(bool)));
 	connect(m_custom, SIGNAL(toggled(bool)), m_right, SLOT(setEnabled(bool)));
 	connect(m_custom, SIGNAL(toggled(bool)), m_units, SLOT(setEnabled(bool)));
+	connect(m_custom, SIGNAL(toggled(bool)), SLOT(slotCustomMarginsToggled(bool)));
 	m_top->setEnabled(false);
 	m_bottom->setEnabled(false);
 	m_left->setEnabled(false);
@@ -148,55 +149,26 @@ void KPTextPage::setOptions(const QMap<QString,QString>& opts)
 	slotPrettyChanged(ID);
 
 	// get default margins
-	DrMain	*dr = driver();
-	QString	psname = opts["PageSize"];
-	if (dr)
-	{
-		if (psname.isEmpty())
-		{
-			DrListOption	*o = (DrListOption*)dr->findOption("PageSize");
-			if (o)
-				psname = o->get("default");
-		}
-		if (!psname.isEmpty())
-		{
-			DrPageSize	*ps = dr->findPageSize(psname);
-			if (ps)
-			{
-				QSize	sz = ps->pageSize();
-				m_preview->setNoPreview(false);
-				m_preview->setPageSize(sz.width(), sz.height());
-				sz = ps->margins();
-				m_top->setMargin(sz.height());
-				m_bottom->setMargin(sz.height());
-				m_left->setMargin(sz.width());
-				m_right->setMargin(sz.width());
-				slotMarginChanged();
-			}
-			else
-				m_preview->setNoPreview(true);
-		}
-	}
-	else
-		m_preview->setNoPreview(true);
+	QString	m_currentps = opts["PageSize"];
+	resetPageSize();
 
 	bool	marginset(false);
-	if (!(value=opts["page-top"]).isEmpty())
+	if (!(value=opts["page-top"]).isEmpty() && value.toInt() != m_top->margin())
 	{
 		marginset = true;
 		m_top->setMargin(value.toInt());
 	}
-	if (!(value=opts["page-bottom"]).isEmpty())
+	if (!(value=opts["page-bottom"]).isEmpty() && value.toInt() != m_bottom->margin())
 	{
 		marginset = true;
 		m_bottom->setMargin(value.toInt());
 	}
-	if (!(value=opts["page-left"]).isEmpty())
+	if (!(value=opts["page-left"]).isEmpty() && value.toInt() != m_left->margin())
 	{
 		marginset = true;
 		m_left->setMargin(value.toInt());
 	}
-	if (!(value=opts["page-right"]).isEmpty())
+	if (!(value=opts["page-right"]).isEmpty() && value.toInt() != m_right->margin())
 	{
 		marginset = true;
 		m_right->setMargin(value.toInt());
@@ -214,7 +186,7 @@ void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	if (incldef || m_columns->value() != 1)
 		opts["columns"] = QString::number(m_columns->value());
 
-	if (m_custom->isChecked())
+	if (m_custom->isChecked() || incldef)
 	{
 		opts["page-top"] = QString::number(m_top->margin());
 		opts["page-bottom"] = QString::number(m_bottom->margin());
@@ -231,6 +203,8 @@ void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 	if (m_prettyprint->id(m_prettyprint->selected()) == 1)
 		opts["prettyprint"] = "true";
+	else if (incldef)
+		opts["prettyprint"] = "false";
 	else
 		opts.remove("prettyprint");
 }
@@ -250,6 +224,45 @@ void KPTextPage::slotPrettyChanged(int ID)
 void KPTextPage::slotColumnsChanged(int c)
 {
 	// TO BE IMPLEMENTED
+}
+
+void KPTextPage::resetPageSize()
+{
+	if (driver())
+	{
+		if (m_currentps.isEmpty())
+		{
+			DrListOption	*o = (DrListOption*)driver()->findOption("PageSize");
+			if (o)
+				m_currentps = o->get("default");
+		}
+		if (!m_currentps.isEmpty())
+		{
+			DrPageSize	*ps = driver()->findPageSize(m_currentps);
+			if (ps)
+			{
+				QSize	sz = ps->pageSize();
+				m_preview->setNoPreview(false);
+				m_preview->setPageSize(sz.width(), sz.height());
+				sz = ps->margins();
+				m_top->setMargin(sz.height());
+				m_bottom->setMargin(sz.height());
+				m_left->setMargin(sz.width());
+				m_right->setMargin(sz.width());
+				slotMarginChanged();
+			}
+			else
+				m_preview->setNoPreview(true);
+		}
+	}
+	else
+		m_preview->setNoPreview(true);
+}
+
+void KPTextPage::slotCustomMarginsToggled(bool b)
+{
+	if (!b)
+		resetPageSize();
 }
 
 #include "kptextpage.moc"
