@@ -258,7 +258,6 @@ void HTMLTokenizer::processListing(DOMStringIt list)
         addPending();
     pending = NonePending;
 
-    processToken();
     prePos = 0;
 
     pre = old_pre;
@@ -296,6 +295,7 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
                 scriptHandler();
             else {
                 processListing(DOMStringIt(scriptCode, scriptCodeSize));
+                processToken();
                 if ( style )         { currToken.id = ID_STYLE + ID_CLOSE_TAG; }
                 else if ( textarea ) { currToken.id = ID_TEXTAREA + ID_CLOSE_TAG; }
                 else if ( listing )  { currToken.id = ID_LISTING + ID_CLOSE_TAG; }
@@ -354,6 +354,8 @@ void HTMLTokenizer::scriptHandler()
         doScriptExec = true;
     }
     processListing(DOMStringIt(scriptCode, scriptCodeSize));
+    QString exScript( buffer, dest-buffer );
+    processToken();
     currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
     processToken();
 
@@ -379,7 +381,6 @@ void HTMLTokenizer::scriptHandler()
 
         _src = QString::null;
         src = DOMStringIt( _src );
-        QString exScript( scriptCode, scriptCodeSize ); // deep copy
         scriptCodeSize = scriptCodeResync = 0;
         scriptExecution( exScript );
     }
