@@ -486,4 +486,6 @@ void KHTMLFontSizeAction::slotActivated( int id )
         m_part->setFontBaseInternal( idx * ( m_direction ? 1 : -1 ), false );
 }
 
+using namespace KParts;
 #include "khtml_ext.moc"
+

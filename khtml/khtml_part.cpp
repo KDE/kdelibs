@@ -3894,4 +3894,6 @@ DOM::Node KHTMLPart::activeNode() const
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
+using namespace KParts;
 #include "khtml_part.moc"
+

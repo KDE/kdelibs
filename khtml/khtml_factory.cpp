@@ -199,4 +199,6 @@ KHTMLSettings *KHTMLFactory::defaultHTMLSettings()
   return s_settings;
 }
 
+using namespace KParts;
 #include "khtml_factory.moc"
+
