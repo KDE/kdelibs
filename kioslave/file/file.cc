@@ -994,7 +994,13 @@ void FileProtocol::listDir( const KURL& url)
        to see for the user what the problem would be */
     char path_buffer[PATH_MAX];
     getcwd(path_buffer, PATH_MAX - 1);
-    chdir( _path.data() );
+    if ( chdir( _path.data() ) )  {
+        if (errno == EACCES)
+            error(ERR_ACCESS_DENIED, _path);
+        else
+            error(ERR_CANNOT_ENTER_DIRECTORY, _path);
+        finished();
+    }
 
     UDSEntry entry;
     QStrListIterator it(entryNames);
