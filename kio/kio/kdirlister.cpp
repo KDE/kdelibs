@@ -1470,6 +1470,8 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
 
       DirItem *dir = itemsInUse.take( deletedUrl.url() );
       Q_ASSERT( !dir );
+      if ( !dir ) // take didn't find it - move on
+          ++itu;
     }
     else
       ++itu;
