@@ -243,7 +243,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
      dname.remove(dname.length()-3,3);
 
   QString extension;
-  
+
   int i = dname.find('-');
   if (i != -1)
   {
@@ -386,7 +386,14 @@ KSpellConfig::fillInDialog ()
 	dictcombo->setCurrentItem(whichelement);
     }
   else
-    setDictFromList (FALSE);
+    // Current dictionary vanished, present the user with a default if possible.
+    if (langfnames.count()>=1)
+    {
+      setDictFromList (TRUE);
+      dictcombo->setCurrentItem(0);
+    }
+    else
+      setDictFromList (FALSE);
 
   sDictionary (dictFromList());
   sPathDictionary (!dictFromList());
