@@ -32,7 +32,7 @@ CupsdJobsPage::CupsdJobsPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
 	setPageLabel(i18n("Jobs"));
-	setHeader(i18n("Print jobs settings"));
+	setHeader(i18n("Print Jobs Settings"));
 	setPixmap("fileprint");
 
 	keepjobhistory_ = new QCheckBox(i18n("Preserve job history"), this);

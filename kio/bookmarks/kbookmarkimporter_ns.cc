@@ -105,10 +105,10 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
     {
        if ( forSaving )
            return KFileDialog::getSaveFileName( QDir::homeDirPath() + "/.mozilla",
-                                                i18n("*.html|HTML files (*.html)") );
+                                                i18n("*.html|HTML Files (*.html)") );
        else
            return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.mozilla",
-                                                i18n("*.html|HTML files (*.html)") );
+                                                i18n("*.html|HTML Files (*.html)") );
     } 
     else 
     {

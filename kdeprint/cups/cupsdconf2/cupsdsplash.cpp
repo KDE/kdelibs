@@ -28,7 +28,7 @@
 CupsdSplash::CupsdSplash(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
-	setHeader(i18n("Welcome to the CUPS server configuration tool"));
+	setHeader(i18n("Welcome to the CUPS Server Configuration Tool"));
 	setPageLabel(i18n("Welcome"));
 	setPixmap("go");
 

@@ -35,7 +35,7 @@ CupsdNetworkClientsPage::CupsdNetworkClientsPage(QWidget *parent, const char *na
 {
 	path_.append(i18n("Network"));
 	path_.append(i18n("Clients"));
-	header_ = i18n("Network clients configuration");
+	header_ = i18n("Network Clients Configuration");
 
 	for (int i=0;i<3;i++)
 		opt_[i] = new CupsdOption(this);

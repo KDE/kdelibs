@@ -90,7 +90,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 
     m_playButton = new QPushButton( m_actionsBox, "m_playButton" );
     m_playButton->setText( QString::null );
-    QToolTip::add( m_playButton, tr2i18n( "Test the Sound" ) );
+    QToolTip::add( m_playButton, tr2i18n( "Test the sound" ) );
     Layout25->addWidget( m_playButton );
 
     Layout26->addLayout( Layout25, 0, 0 );

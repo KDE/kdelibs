@@ -47,7 +47,7 @@ KMWLocal::KMWLocal(QWidget *parent, const char *name)
 	m_ports->header()->hide();
 	m_ports->addColumn("");
 	m_ports->setSorting(-1);
-	QListViewItem	*root = new QListViewItem(m_ports, i18n("Local system"));
+	QListViewItem	*root = new QListViewItem(m_ports, i18n("Local System"));
 	root->setPixmap(0, SmallIcon("kdeprint_computer"));
 	root->setOpen(true);
 	connect(m_ports, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotPortSelected(QListViewItem*)));

@@ -32,7 +32,7 @@ CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
 	setPageLabel(i18n("Directories"));
-	setHeader(i18n("Directories settings"));
+	setHeader(i18n("Directories Settings"));
 	setPixmap("folder");
 
 	datadir_ = new QDirLineEdit(false, this);

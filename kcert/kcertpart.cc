@@ -480,7 +480,7 @@ QCString pass;
 
   while (!_p12) {
      // try prompting for a password.
-    int rc = KPasswordDialog::getPassword(pass, i18n("Certificate password"));
+    int rc = KPasswordDialog::getPassword(pass, i18n("Certificate Password"));
     if (rc != KPasswordDialog::Accepted) break;
 
     _p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));

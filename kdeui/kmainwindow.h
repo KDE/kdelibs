@@ -665,7 +665,7 @@ protected:
        <pre>
 
            switch ( KMessageBox::warningYesNoCancel( this,
-				   i18n("Save changes to Document Foo?")) ) {
+				   i18n("Save changes to document foo?")) ) {
            case KMessageBox::Yes :
              // save document here. If saving fails, return FALSE;
              return TRUE;

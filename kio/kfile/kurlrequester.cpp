@@ -208,7 +208,7 @@ void KURLRequester::init()
     QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
     myButton->setIconSet( iconSet );
     myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
-    QToolTip::add(myButton, i18n("Open File Dialog"));
+    QToolTip::add(myButton, i18n("Open file dialog"));
 
     connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
 

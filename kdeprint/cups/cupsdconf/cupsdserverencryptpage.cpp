@@ -33,7 +33,7 @@ CupsdServerEncryptPage::CupsdServerEncryptPage(QWidget *parent, const char *name
 {
 	path_.append(i18n("Server"));
 	path_.append(i18n("Encryption"));
-	header_ = i18n("Server encryption support configuration");
+	header_ = i18n("Server Encryption Support Configuration");
 
 	for (int i=0;i<2;i++)
 		opt_[i] = new CupsdOption(this);

@@ -35,7 +35,7 @@ CupsdServerLogPage::CupsdServerLogPage(QWidget *parent, const char *name)
 {
 	path_.append(i18n("Server"));
 	path_.append(i18n("Log"));
-	header_ = i18n("Server logging configuration");
+	header_ = i18n("Server Logging Configuration");
 
 	for (int i=0;i<5;i++)
 		opt_[i] = new CupsdOption(this);
@@ -47,8 +47,8 @@ CupsdServerLogPage::CupsdServerLogPage(QWidget *parent, const char *name)
 	pagelog_ = new QDirLineEdit(opt_[2]);
 	pagelog_->setFileEdit(true);
 	loglevel_ = new QComboBox(opt_[3]);
-	loglevel_->insertItem(i18n("Complete debug (everything)"));
-	loglevel_->insertItem(i18n("Partial debug (almost everything)"));
+	loglevel_->insertItem(i18n("Complete Debug (everything)"));
+	loglevel_->insertItem(i18n("Partial Debug (almost everything)"));
 	loglevel_->insertItem(i18n("Info (normal)"));
 	loglevel_->insertItem(i18n("Warning (errors and warnings)"));
 	loglevel_->insertItem(i18n("Error (errors only)"));

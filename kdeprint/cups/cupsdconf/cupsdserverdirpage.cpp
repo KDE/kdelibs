@@ -35,7 +35,7 @@ CupsdServerDirPage::CupsdServerDirPage(QWidget *parent, const char *name)
 {
 	path_.append(i18n("Server"));
 	path_.append(i18n("Directories"));
-	header_ = i18n("Server directories configuration");
+	header_ = i18n("Server Directories Configuration");
 
 	for (int i=0;i<6;i++)
 		opt_[i] = new CupsdOption(this);

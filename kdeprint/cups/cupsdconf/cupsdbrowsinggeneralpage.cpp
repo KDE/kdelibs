@@ -35,7 +35,7 @@ CupsdBrowsingGeneralPage::CupsdBrowsingGeneralPage(QWidget *parent, const char *
 {
 	path_.append(i18n("Browsing"));
 	//path_.append(i18n("General"));
-	header_ = i18n("Browsing general configuration");
+	header_ = i18n("Browsing General Configuration");
 
 	for (int i=0;i<5;i++)
 		opt_[i] = new CupsdOption(this);

@@ -36,7 +36,7 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
 	setPageLabel(i18n("Network"));
-	setHeader(i18n("Network settings"));
+	setHeader(i18n("Network Settings"));
 	setPixmap("network");
 
 	keepalive_ = new QCheckBox(i18n("Keep alive"), this);

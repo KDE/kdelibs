@@ -33,7 +33,7 @@ CupsdBrowsingTimeoutPage::CupsdBrowsingTimeoutPage(QWidget *parent, const char *
 {
 	path_.append(i18n("Browsing"));
 	path_.append(i18n("Timeouts"));
-	header_ = i18n("Browsing timeouts configuration");
+	header_ = i18n("Browsing Timeouts Configuration");
 
 	for (int i=0;i<2;i++)
 		opt_[i] = new CupsdOption(this);

@@ -39,7 +39,7 @@ CupsdServerSecurityPage::CupsdServerSecurityPage(QWidget *parent, const char *na
 	: CupsdPage(parent, name)
 {
 	path_.append(i18n("Security"));
-	header_ = i18n("Security configuration");
+	header_ = i18n("Security Configuration");
 
 	for (int i=0;i<1;i++)
 		opt_[i] = new CupsdOption(this);
@@ -170,7 +170,7 @@ void CupsdServerSecurityPage::removeClicked()
 	for (loclist_.first();loclist_.current();loclist_.next())
 		if (loclist_.current()->resourcename_ == locations_->currentItem()->text(1)) break;
 	if (!loclist_.current()) return;
-	if (KMessageBox::warningYesNo(this, i18n("Really remove resource \"%1\" ?").arg(loclist_.current()->resourcename_)) == KMessageBox::Yes)
+	if (KMessageBox::warningYesNo(this, i18n("Really remove resource \"%1\"?").arg(loclist_.current()->resourcename_)) == KMessageBox::Yes)
 	{
 		loclist_.remove();
 		delete locations_->currentItem();

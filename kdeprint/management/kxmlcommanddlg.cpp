@@ -141,15 +141,15 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_addval->setPixmap(SmallIcon("editcopy"));
 	m_delval = new QPushButton(w2);
 	m_delval->setPixmap(SmallIcon("editdelete"));
-	QToolTip::add(m_addval, i18n("Add Value"));
-	QToolTip::add(m_delval, i18n("Delete Value"));
+	QToolTip::add(m_addval, i18n("Add value"));
+	QToolTip::add(m_delval, i18n("Delete value"));
 
-	QToolTip::add(m_apply, i18n("Apply Changes"));
-	QToolTip::add(m_addgrp, i18n("Add Group"));
-	QToolTip::add(m_addopt, i18n("Add Option"));
-	QToolTip::add(m_delopt, i18n("Delete Item"));
-	QToolTip::add(m_up, i18n("Move Up"));
-	QToolTip::add(m_down, i18n("Move Down"));
+	QToolTip::add(m_apply, i18n("Apply changes"));
+	QToolTip::add(m_addgrp, i18n("Add group"));
+	QToolTip::add(m_addopt, i18n("Add option"));
+	QToolTip::add(m_delopt, i18n("Delete item"));
+	QToolTip::add(m_up, i18n("Move up"));
+	QToolTip::add(m_down, i18n("Move down"));
 
 	KSeparator	*sep1 = new KSeparator(KSeparator::HLine, m_dummy);
 

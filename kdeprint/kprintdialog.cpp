@@ -113,7 +113,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_filter->setToggleButton(true);
 	d->m_filter->setOn(KMManager::self()->isFilterEnabled());
-	QToolTip::add(d->m_filter, i18n("Toggle Printer Filtering"));
+	QToolTip::add(d->m_filter, i18n("Toggle printer filtering"));
 	d->m_wizard = new QPushButton(m_pbox);
 	d->m_wizard->setPixmap(SmallIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
@@ -133,7 +133,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_dummy = new QVBox(this);
 	d->m_plugin = new PluginComboBox(this);
 	d->m_extbtn = new KPushButton(this);
-	QToolTip::add(d->m_extbtn, i18n("Show/Hide Advanced Options"));
+	QToolTip::add(d->m_extbtn, i18n("Show/hide advanced options"));
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
 	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
 

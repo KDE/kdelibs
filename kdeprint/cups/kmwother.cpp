@@ -74,7 +74,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 			return;
 
 		QListViewItem *item = 0, *lastparent = 0, *root;
-		root = new QListViewItem( m_uriview, i18n( "CUPS server" ) + QString( " %1:%2" ).arg( CupsInfos::self()->host() ).arg( CupsInfos::self()->port() ) );
+		root = new QListViewItem( m_uriview, i18n( "CUPS Server %1:%2" ).arg( CupsInfos::self()->host() ).arg( CupsInfos::self()->port() ) );
 		root->setPixmap( 0, SmallIcon( "gear" ) );
 		root->setOpen( true );
 		QDict<QListViewItem> parents, last;

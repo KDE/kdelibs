@@ -652,7 +652,7 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem* /*item*/, const QP
    {
       m_contextMenu=new QPopupMenu(this);
       m_contextMenu->insertItem(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
-//      m_contextMenu->insertItem(i18n("Toggle progress"), this, SLOT(slotToggleDefaultProgress()));
+//      m_contextMenu->insertItem(i18n("Toggle Progress"), this, SLOT(slotToggleDefaultProgress()));
       m_contextMenu->insertSeparator();
       m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
    }

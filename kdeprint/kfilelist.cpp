@@ -53,30 +53,30 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	m_add = new QToolButton(this);
 	m_add->setIconSet(SmallIconSet("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
-	QToolTip::add(m_add, i18n("Add File"));
+	QToolTip::add(m_add, i18n("Add file"));
 
 	m_remove = new QToolButton(this);
 	m_remove->setIconSet(SmallIconSet("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
-	QToolTip::add(m_remove, i18n("Remove File"));
+	QToolTip::add(m_remove, i18n("Remove file"));
 	m_remove->setEnabled(false);
 
 	m_open = new QToolButton(this);
 	m_open->setIconSet(SmallIconSet("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
-	QToolTip::add(m_open, i18n("Open File"));
+	QToolTip::add(m_open, i18n("Open file"));
 	m_open->setEnabled(false);
 
 	m_up = new QToolButton(this);
 	m_up->setIconSet(SmallIconSet("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
-	QToolTip::add(m_up, i18n("Move Up"));
+	QToolTip::add(m_up, i18n("Move up"));
 	m_up->setEnabled(false);
 
 	m_down = new QToolButton(this);
 	m_down->setIconSet(SmallIconSet("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
-	QToolTip::add(m_down, i18n("Move Down"));
+	QToolTip::add(m_down, i18n("Move down"));
 	m_down->setEnabled(false);
 
 	setAcceptDrops(true);

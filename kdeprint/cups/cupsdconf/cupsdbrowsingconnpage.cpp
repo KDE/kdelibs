@@ -36,7 +36,7 @@ CupsdBrowsingConnPage::CupsdBrowsingConnPage(QWidget *parent, const char *name)
 {
 	path_.append(i18n("Browsing"));
 	path_.append(i18n("Connection"));
-	header_ = i18n("Browsing connection configuration");
+	header_ = i18n("Browsing Connection Configuration");
 
 	for (int i=0;i<4;i++)
 		opt_[i] = new CupsdOption(this);

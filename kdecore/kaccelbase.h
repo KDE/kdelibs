@@ -76,9 +76,9 @@ class QWidget;
  *<pre>
  * KAccel *a = new KAccel( myWindow );
  * // Insert an action "Scroll Up" which is associated with the "Up" key:
- * a->insertItem( i18n("Scroll up"), "Scroll Up", "Up" );
+ * a->insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
  * // Insert an action "Scroll Down" which is not associated with any key:
- * a->insertItem( i18n("Scroll down"), "Scroll Down", 0);
+ * a->insertItem( i18n("Scroll Down"), "Scroll Down", 0);
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
  * // a->insertStdItem( KStdAccel::Print ); //not necessary, since it
  *	// is done automatially with the

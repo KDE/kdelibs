@@ -34,7 +34,7 @@ CupsdBrowsingMasksPage::CupsdBrowsingMasksPage(QWidget *parent, const char *name
 {
 	path_.append(i18n("Browsing"));
 	path_.append(i18n("Masks"));
-	header_ = i18n("Browsing masks configuration");
+	header_ = i18n("Browsing Masks Configuration");
 
 	for (int i=0;i<3;i++)
 		opt_[i] = new CupsdOption(this);

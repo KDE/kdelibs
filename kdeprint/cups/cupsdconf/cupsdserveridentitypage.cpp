@@ -33,7 +33,7 @@ CupsdServerIdentityPage::CupsdServerIdentityPage(QWidget *parent, const char *na
 {
 	path_.append(i18n("Server"));
 	//path_.append(i18n("Identity"));
-	header_ = i18n("Server general configuration");
+	header_ = i18n("Server General Configuration");
 
 	for (int i=0;i<5;i++)
 		opt_[i] = new CupsdOption(this);

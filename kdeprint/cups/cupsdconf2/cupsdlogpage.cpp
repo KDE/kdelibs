@@ -34,7 +34,7 @@ CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
 	setPageLabel(i18n("Log"));
-	setHeader(i18n("Log settings"));
+	setHeader(i18n("Log Settings"));
 	setPixmap("contents");
 
 	accesslog_ = new QDirLineEdit(true, this);

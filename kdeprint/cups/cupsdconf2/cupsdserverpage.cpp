@@ -41,7 +41,7 @@ CupsdServerPage::CupsdServerPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
 	setPageLabel(i18n("Server"));
-	setHeader(i18n("Server settings"));
+	setHeader(i18n("Server Settings"));
 	setPixmap("gear");
 
 	servername_ = new QLineEdit(this);

@@ -111,7 +111,7 @@ class KMainWindow;
  *          this, SLOT( moveWindowToDesktop( int ) ) );
  *
  * for ( uint i = 0; i < numberOfDesktops; ++i ) {
- *     KAction *desktopAction = new KAction( i18n( "Move Window To Desktop %i" ).arg( i ), ... );
+ *     KAction *desktopAction = new KAction( i18n( "Move Window to Desktop %i" ).arg( i ), ... );
  *     connect( desktopAction, SIGNAL( activated() ), desktopNumberMapper, SLOT( map() ) );
  *     desktopNumberMapper->setMapping( desktopAction, i );
  * }

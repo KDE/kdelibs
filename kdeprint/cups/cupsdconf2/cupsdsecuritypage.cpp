@@ -36,7 +36,7 @@ CupsdSecurityPage::CupsdSecurityPage(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)
 {
 	setPageLabel(i18n("Security"));
-	setHeader(i18n("Security settings"));
+	setHeader(i18n("Security Settings"));
 	setPixmap("password");
 	locs_.setAutoDelete(true);
 

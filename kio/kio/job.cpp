@@ -2505,7 +2505,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
-                                i18n("File Already Exists") : i18n("Already Exists as a Directory"),
+                                i18n("File Already Exists") : i18n("Already Exists as Directory"),
                                 (*it).uSource.prettyURL(0, KURL::StripFileProtocol),
                                 (*it).uDest.prettyURL(0, KURL::StripFileProtocol),
                                 mode, newPath,

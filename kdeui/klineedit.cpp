@@ -781,7 +781,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
         subMenu->insertItem( i18n("Automatic"), AutoCompletion );
         subMenu->insertItem( i18n("Dropdown List"), PopupCompletion );
         subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
-        subMenu->insertItem( i18n("Dropdown List and Automatic"), PopupAutoCompletion );
+        subMenu->insertItem( i18n("Dropdown List & Automatic"), PopupAutoCompletion );
 
         subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
 

@@ -33,7 +33,7 @@ CupsdBrowsingRelayPage::CupsdBrowsingRelayPage(QWidget *parent, const char *name
 {
 	path_.append(i18n("Browsing"));
 	path_.append(i18n("Relay"));
-	header_ = i18n("Browsing relay configuration");
+	header_ = i18n("Browsing Relay Configuration");
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 10);
 

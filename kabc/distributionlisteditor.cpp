@@ -140,7 +140,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   mEntryView = new QListView( this );
   mEntryView->addColumn( i18n("Name") );
   mEntryView->addColumn( i18n("Email") );
-  mEntryView->addColumn( i18n("Use preferred") );
+  mEntryView->addColumn( i18n("Use Preferred") );
   topLayout->addWidget( mEntryView );
   connect(mEntryView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionEntryViewChanged()));
 
@@ -193,7 +193,7 @@ void DistributionListEditor::newList()
 {
   bool ok = false;
   QString name = QInputDialog::getText( i18n("New Distribution List"),
-                                        i18n("Please enter name."),
+                                        i18n("Please enter name:"),
                                         QLineEdit::Normal, QString::null, &ok,
                                         this );
   if ( !ok || name.isEmpty() ) return;

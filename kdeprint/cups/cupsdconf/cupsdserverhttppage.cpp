@@ -35,7 +35,7 @@ CupsdServerHTTPPage::CupsdServerHTTPPage(QWidget *parent, const char *name)
 {
 	path_.append(i18n("Server"));
 	path_.append(i18n("HTTP"));
-	header_ = i18n("Server HTTP configuration");
+	header_ = i18n("Server HTTP Configuration");
 
 	for (int i=0;i<3;i++)
 		opt_[i] = new CupsdOption(this);

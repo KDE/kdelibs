@@ -109,7 +109,7 @@ void KFileSharePropsPlugin::init()
         }
         if ( !ok )
         {
-            vbox->addWidget( new QLabel( i18n( "Only directories in your Home can be shared."),
+            vbox->addWidget( new QLabel( i18n( "Only directories in your home directory can be shared."),
                                          m_widget ), 0 );
         }
         else

@@ -3104,7 +3104,7 @@ void KHTMLPart::slotSaveBackground()
 {
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_referrer;
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save background image as"), backgroundURL(), metaData );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save Background Image As"), backgroundURL(), metaData );
 }
 
 void KHTMLPart::slotSaveDocument()

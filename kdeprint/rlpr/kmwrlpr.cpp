@@ -196,7 +196,7 @@ void KMWRlpr::initialize()
 	}
 
 	if (m_view->childCount() == 0)
-		new QListViewItem(m_view,i18n("No predefined printers"));
+		new QListViewItem(m_view,i18n("No Predefined Printers"));
 }
 
 void KMWRlpr::slotPrinterSelected(QListViewItem *item)

@@ -27,7 +27,7 @@ KMConfigProxy::KMConfigProxy(QWidget *parent)
 : KMConfigPage(parent,"Proxy")
 {
 	setPageName(i18n("Proxy"));
-	setPageHeader(i18n("RLPR proxy server settings"));
+	setPageHeader(i18n("RLPR Proxy Server Settings"));
 	setPagePixmap("proxy");
 
 	m_widget = new KMProxyWidget(this);

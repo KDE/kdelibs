@@ -247,7 +247,7 @@ SourceFragment::~SourceFragment()
 //-------------------------------------------------------------------------
 
 KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, bool showDebug)
-  : KDialogBase(parent,0,true,i18n("JavaScript error"),
+  : KDialogBase(parent,0,true,i18n("JavaScript Error"),
 		showDebug ? KDialogBase::Ok|KDialogBase::User1 : KDialogBase::Ok,
 		KDialogBase::Ok,false,KGuiItem("&Debug","gear"))
 {
@@ -408,7 +408,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 				   m_actionCollection,"cont");
   m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(),this,SLOT(slotStop()),
 				   m_actionCollection,"stop");
-  m_breakAction      = new KAction(i18n("&Break at next Statement"),"bottom",KShortcut(),this,SLOT(slotBreakNext()),
+  m_breakAction      = new KAction(i18n("&Break at Next Statement"),"bottom",KShortcut(),this,SLOT(slotBreakNext()),
 				   m_actionCollection,"breaknext");
 
   m_nextAction->setToolTip(i18n("Next"));

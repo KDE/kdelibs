@@ -34,7 +34,7 @@ CupsdNetworkGeneralPage::CupsdNetworkGeneralPage(QWidget *parent, const char *na
 	: CupsdPage(parent, name)
 {
 	path_.append(i18n("Network"));
-	header_ = i18n("Network general configuration");
+	header_ = i18n("Network General Configuration");
 
 	for (int i=0;i<4;i++)
 		opt_[i] = new CupsdOption(this);

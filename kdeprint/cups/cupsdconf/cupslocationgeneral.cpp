@@ -59,7 +59,7 @@ CupsLocationGeneral::CupsLocationGeneral(CupsdConf *conf, QWidget *parent, const
         encryption_->insertItem(i18n("Always"));
         encryption_->insertItem(i18n("Never"));
         encryption_->insertItem(i18n("Required"));
-        encryption_->insertItem(i18n("If requested"));
+        encryption_->insertItem(i18n("If Requested"));
         encryption_->setCurrentItem(3);
 
 	QLabel	*l1 = new QLabel(i18n("Resource:"), this);

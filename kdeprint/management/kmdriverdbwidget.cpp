@@ -49,7 +49,7 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
 	// build widget
 	m_manu = new KListBox(this);
 	m_model = new KListBox(this);
-	m_postscript = new QCheckBox(i18n("&Postscript printer"),this);
+	m_postscript = new QCheckBox(i18n("&PostScript printer"),this);
 	m_raw = new QCheckBox(i18n("&Raw printer (no driver needed)"),this);
 	m_postscript->setCursor(KCursor::handCursor());
 	m_raw->setCursor(KCursor::handCursor());
@@ -209,7 +209,7 @@ void KMDriverDbWidget::slotPostscriptToggled(bool on)
 			m_manu->setCurrentItem(item);
 		else
 		{
-			KMessageBox::error(this,i18n("Unable to find the Postscript driver."));
+			KMessageBox::error(this,i18n("Unable to find the PostScript driver."));
 			m_postscript->setChecked(false);
 		}
 	}

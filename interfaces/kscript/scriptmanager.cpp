@@ -103,7 +103,7 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
                         }
                         else
                         {
-                          KMessageBox::sorry(0, i18n("Unable to get KScript Runner for type ") + newScript->scriptType, i18n("KScript error"));
+                          KMessageBox::sorry(0, i18n("Unable to get KScript Runner for type ") + newScript->scriptType, i18n("KScript Error"));
                           return;
                         }
 		}

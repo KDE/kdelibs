@@ -37,7 +37,7 @@ CupsdServerJobPage::CupsdServerJobPage(QWidget *parent, const char *name)
 {
 	path_.append(i18n("Server"));
 	path_.append(i18n("Jobs"));
-	header_ = i18n("Server jobs configuration");
+	header_ = i18n("Server Jobs Configuration");
 
 	for (int i=0;i<7;i++)
 		opt_[i] = new CupsdOption(this);

@@ -29,7 +29,7 @@
 KMConfigCups::KMConfigCups(QWidget *parent)
 : KMConfigPage(parent,"ConfigCups")
 {
-	setPageName(i18n("CUPS server"));
+	setPageName(i18n("CUPS Server"));
 	setPageHeader(i18n("CUPS Server Settings"));
 	setPagePixmap("gear");
 
