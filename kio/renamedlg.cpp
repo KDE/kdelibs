@@ -34,6 +34,7 @@
 #include <kurl.h>
 #include <kmimetype.h>
 #include <kwin.h>
+#include <kstringhandler.h>
 
 using namespace KIO;
 
@@ -107,7 +108,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   // User tries to overwrite a file with itself ?
   if ( _mode & M_OVERWRITE_ITSELF ) {
       QLabel *lb = new QLabel( i18n("This action would overwrite '%1' with itself.\n"
-                                    "Do you want to rename it instead?").arg(src), this );
+                                    "Do you want to rename it instead?").arg(KStringHandler::csqueeze(src,100)), this );
       m_pLayout->addWidget(lb);
   }  else if ( _mode & M_OVERWRITE ) {
       QGridLayout * gridLayout = new QGridLayout( 0L, 9, 2, KDialog::marginHint(),
@@ -119,7 +120,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       QString sentence1 = (mtimeDest < mtimeSrc)
                          ? i18n("An older item named '%1' already exists")
                          : i18n("A newer item named '%1' already exists");
-      QLabel * lb1 = new QLabel( sentence1.arg(dest), this );
+      QLabel * lb1 = new QLabel( sentence1.arg(KStringHandler::csqueeze(dest,100)), this );
       gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 
       lb1 = new QLabel( this );
