@@ -76,5 +76,7 @@ pixmaps.keramik keramikrc.h: genembed
 	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 
 	./genembed $$pics > pixmaps.keramik
 
+pixmaploader.lo: pixmaps.keramik
+
 .PHONY: make-embed
 
