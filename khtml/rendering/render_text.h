@@ -142,7 +142,7 @@ public:
     inline QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
-    virtual unsigned int width( int from, int len) const;
+    virtual unsigned int width( int from, int len, bool firstLine = false) const;
     virtual short width() const;
     virtual int height() const;
 

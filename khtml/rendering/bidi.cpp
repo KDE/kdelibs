@@ -919,7 +919,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    int lastSpace = pos;
 	    while(len) {
 		if( isBreakable( str, pos, strlen ) ) {
-		    tmpW += t->width(lastSpace, pos - lastSpace);
+		    tmpW += t->width(lastSpace, pos - lastSpace, firstLine);
 #ifdef DEBUG_LINEBREAKS
 		    kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, pos - lastSpace).string() << "'" << endl;
 #endif
@@ -941,7 +941,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		pos++;
 		len--;
 	    }
-	    tmpW += t->width(lastSpace, pos - lastSpace);
+	    tmpW += t->width(lastSpace, pos - lastSpace, firstLine);
         } else
             assert( false );
 

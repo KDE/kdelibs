@@ -724,17 +724,22 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     m_lines.insert(m_lines.count(), s);
 }
 
-unsigned int RenderText::width( int from, int len) const
+unsigned int RenderText::width( int from, int len, bool firstLine) const
 {
     if(!str->s || from > str->l ) return 0;
 
     if ( from + len > str->l ) len = str->l - from;
 
+    QFontMetrics metrics = *fm;
+    RenderStyle *pseudoStyle;
+    if ( firstLine && (pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE) ) )
+	metrics = QFontMetrics ( pseudoStyle->font() );
+
     int w;
     if( len == 1)
-        w = fm->width( *(str->s+from) );
+        w = metrics.width( *(str->s+from) );
     else
-        w = fm->width(QConstString(str->s+from, len).string());
+        w = metrics.width(QConstString(str->s+from, len).string());
 
     // ### add margins and support for RTL
 
