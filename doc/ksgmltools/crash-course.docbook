@@ -262,7 +262,7 @@ The tags covered in this section are listed below.
 <book lang="en" id="kapp">
 <bookinfo>
 <title>The Kapp Handbook</title>
-<bookinfo>
+</bookinfo>
 <chapter id="introduction">
 <title>Introduction</title>
 <para></para>
@@ -351,19 +351,8 @@ The tags covered in this section are listed below.
 <keyword>KDE application</keyword>
 </keywordset>
 
-<releaseinfo>1.1.0</releaseinfo>
+<releaseinfo>1.01.00</releaseinfo>
 <date>03/04/1999</date>
-
-<revhistory>
-<revision>
-<revnumber>1.0
-</revnumber>
-<date>3.4.1999</date>
-<authorinitials>G.N.U.</authorinitials>
-<revremark>Initial release.
-</revremark>
-</revision>
-</revhistory>
 
 <abstract>
 <para>
@@ -387,7 +376,7 @@ be addressed:</para>
 <listitem><para>You should always provide the <markup>&lt;ReleaseInfo&gt;</markup> and the <markup>&lt;Date&gt;</markup> tags.
 This is <emphasis>very important</emphasis> at KDE for translation update management. Please use alwayse the same format for the date (DD/MM/YYYY) and for
 the version (major.minor.lesser).</para></listitem>
-<listitem><para><markup>&lt;RevHistory&gt;</markup>, <markup>&lt;ReleaseInfo&gt;</markup> and <markup>&lt;Date&gt;</markup> contain the revision history of the
+<listitem><para><markup>&lt;ReleaseInfo&gt;</markup> and <markup>&lt;Date&gt;</markup> contain the last revision date and release version number of the
 documentation, not of the application. Of course, nothings prevents you from using the same revision numbers for both the application and the documentation.</para></listitem>
 </itemizedlist>
 </para>
