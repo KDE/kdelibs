@@ -108,16 +108,12 @@ public:
     InlineFlowBox* constructLine(const BidiIterator& start, const BidiIterator& end);
     InlineFlowBox* createLineBoxes(RenderObject* obj);
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed);
-    void computeVerticalPositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed );
+    void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
     // end bidi.cpp functions
 
-    virtual void paint(QPainter *, int x, int y, int w, int h,
-                       int tx, int ty, PaintAction paintAction);
-    virtual void paintObject(QPainter *, int x, int y, int w, int h,
-                             int tx, int ty, PaintAction paintAction);
-    void paintFloats(QPainter *p, int _x, int _y,
-                     int _w, int _h, int _tx, int _ty, bool paintSelection = false);
-
+    virtual void paint(PaintInfo& i, int tx, int ty);
+    void paintObject(PaintInfo& i, int tx, int ty);
+    void paintFloats(PaintInfo& i, int _tx, int _ty, bool paintSelection = false);
 
     void insertFloatingObject(RenderObject *o);
     void removeFloatingObject(RenderObject *o);
@@ -168,7 +164,7 @@ public:
     virtual bool requiresLayer() const { return isRoot() || (!isTableCell() &&
         (isPositioned() || isRelPositioned() || style()->hidesOverflow())); }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif

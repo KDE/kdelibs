@@ -77,7 +77,10 @@ public:
 	m_inline(_inline),
         node(_node),
         next(_next)
-        {}
+        { node->ref(); }
+
+    ~HTMLStackElem()
+        { node->deref(); }
 
     int       id;
     int       level;
@@ -443,7 +446,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     NodeImpl::Id attrId = map->idAt(l);
                     DOMStringImpl *attrValue = map->valueAt(l);
                     if ( !bmap->getValue(attrId) ) {
-                    bmap->setValue(attrId,attrValue);
+                        bmap->setValue(attrId,attrValue);
                         changed = true;
                     }
                 }
@@ -1175,6 +1178,12 @@ void KHTMLParser::popBlock( int _id )
         }
         else
         {
+            if (Elem->id == ID_FORM && form)
+                // A <form> is being closed prematurely (and this is
+                // malformed HTML).  Set an attribute on the form to clear out its
+                // bottom margin.
+                form->setMalformed(true);
+
             popOneBlock();
             Elem = blockStack;
         }
@@ -1186,9 +1195,8 @@ void KHTMLParser::popOneBlock()
     HTMLStackElem *Elem = blockStack;
 
     // we should never get here, but some bad html might cause it.
-#ifndef PARSER_DEBUG
     if(!Elem) return;
-#else
+#ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 

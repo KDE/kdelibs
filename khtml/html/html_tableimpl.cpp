@@ -546,6 +546,14 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
         }
         break;
     }
+    case ATTR_ALIGN:
+    {
+        DOMString v = attr->value();
+        if ( strcasecmp( attr->value(), "center" ) == 0 )
+            v = "\\2d khtml-center";
+        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
+        break;
+    }
     case ATTR_VALIGN:
     {
         if (!attr->value().isEmpty())

@@ -793,7 +793,7 @@ declaration_list:
     }
     |
     error ';' maybe_space {
-	$$ = false;
+        $$ = false;
     }
     | declaration_list declaration ';' maybe_space {
 	$$ = $1;
@@ -801,7 +801,7 @@ declaration_list:
 	    $$ = $2;
     }
     | declaration_list error ';' maybe_space {
-	$$ = $1;
+        $$ = $1;
     }
     ;
 
@@ -880,6 +880,8 @@ operator:
 term:
   unary_term { $$ = $1; }
    | unary_operator unary_term { $$ = $2; $$.fValue *= $1; }
+  /* DIMEN is an unary_term, but since we store the string we must not modify fValue */
+  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION; }
   | STRING maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
@@ -915,7 +917,6 @@ unary_term:
   | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
   | QEMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = Value::Q_EMS; }
   | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
-  | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION; }
     ;
 
 

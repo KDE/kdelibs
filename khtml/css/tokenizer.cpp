@@ -902,7 +902,7 @@ ECHO;
 	YY_BREAK
 #line 1310 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
-	yyterminate();
+    	yyterminate();
 
 	case YY_END_OF_BUFFER:
         yy_c_buf_p = yytext;

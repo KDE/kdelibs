@@ -29,6 +29,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
 #include "xml/dom2_eventsimpl.h"
+#include "khtml_part.h"
 
 #include <kdebug.h>
 
@@ -59,7 +60,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
   KJSProxy *proxy = 0L;
   if (part)
-    proxy = KJSProxy::proxy( part );
+    proxy = part->jScript();
 
   Object listenerObj = Object::dynamicCast( listener );
   if (proxy && listenerObj.implementsCall()) {
@@ -303,26 +304,26 @@ Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &
 
 Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
 {
-  DOMObject *ret;
-  if (e.isNull())
+  DOM::EventImpl *ei = e.handle();
+  if (!ei)
     return Null();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
-  if ((ret = interp->getDOMObject(e.handle())))
-    return Value(ret);
+  DOMObject *ret = interp->getDOMObject(ei);
+  if (!ret) {
+    if (ei->isTextEvent())
+      ret = new DOMTextEvent(exec, e);
+    else if (ei->isMouseEvent())
+      ret = new DOMMouseEvent(exec, e);
+    else if (ei->isUIEvent())
+      ret = new DOMUIEvent(exec, e);
+    else if (ei->isMutationEvent())
+      ret = new DOMMutationEvent(exec, e);
+    else
+      ret = new DOMEvent(exec, e);
 
-  DOM::DOMString module = e.eventModuleName();
-  if (module == "UIEvents")
-    ret = new DOMUIEvent(exec, static_cast<DOM::UIEvent>(e));
-  else if (module == "MouseEvents")
-    ret = new DOMMouseEvent(exec, static_cast<DOM::MouseEvent>(e));
-  else if (module == "TextEvents")
-    ret = new DOMTextEvent(exec, static_cast<DOM::TextEvent>(e));
-  else if (module == "MutationEvents")
-    ret = new DOMMutationEvent(exec, static_cast<DOM::MutationEvent>(e));
-  else
-    ret = new DOMEvent(exec, e);
+    interp->putDOMObject(ei, ret);
+  }
 
-  interp->putDOMObject(e.handle(),ret);
   return Value(ret);
 }
 
@@ -458,22 +459,22 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
 
 /*
 @begin DOMMouseEventTable 2
-  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
-  button	DOMMouseEvent::Button	DontDelete|ReadOnly
-  clientX	DOMMouseEvent::ClientX	DontDelete|ReadOnly
-  clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
-  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
-  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
-  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
-  offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
-  offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
-  relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
   screenX	DOMMouseEvent::ScreenX	DontDelete|ReadOnly
   screenY	DOMMouseEvent::ScreenY	DontDelete|ReadOnly
-  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
-  toElement	DOMMouseEvent::ToElement	DontDelete|ReadOnly
+  clientX	DOMMouseEvent::ClientX	DontDelete|ReadOnly
   x		DOMMouseEvent::X	DontDelete|ReadOnly
+  clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
   y		DOMMouseEvent::Y	DontDelete|ReadOnly
+  offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
+  offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
+  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
+  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
+  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
+  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
+  button	DOMMouseEvent::Button	DontDelete|ReadOnly
+  relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
+  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
+  toElement	DOMMouseEvent::ToElement	DontDelete|ReadOnly
 @end
 @begin DOMMouseEventProtoTable 1
   initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15

@@ -573,27 +573,32 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
         }
         if(!saved)
         {
-            // DownloadManager <-> konqueror integration
-            // find if the integration is enabled
-            // the empty key  means no integration
-            KConfig *cfg = new KConfig("konquerorrc", false, false);
-            cfg->setGroup("HTML Settings");
-            QString downloadManger=cfg->readPathEntry("DownloadManager");
+          // DownloadManager <-> konqueror integration
+          // find if the integration is enabled
+          // the empty key  means no integration
+          // only use download manager for non-local urls!
+          bool downloadViaKIO = true;
+          if ( !url.isLocalFile() )
+          {
+            KConfig cfg("konquerorrc", false, false);
+            cfg.setGroup("HTML Settings");
+            QString downloadManger = cfg.readPathEntry("DownloadManager");
             if (!downloadManger.isEmpty())
             {
                 // then find the download manager location
                 kdDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
-                QString cmd=KStandardDirs::findExe(downloadManger);
+                QString cmd = KStandardDirs::findExe(downloadManger);
                 if (cmd.isEmpty())
                 {
                     QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
                     QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
                     KMessageBox::detailedSorry(0,errMsg,errMsgEx);
-                    cfg->writePathEntry("DownloadManager",QString::null);
-                    cfg->sync ();
+                    cfg.writePathEntry("DownloadManager",QString::null);
+                    cfg.sync ();
                 }
                 else
                 {
+                    downloadViaKIO = false;
                     KURL cleanDest = destURL;
                     cleanDest.setPass( QString::null ); // don't put password into commandline
                     cmd += " " + KProcess::quote(url.url()) + " " +
@@ -602,15 +607,16 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                     KRun::runCommand(cmd);
                 }
             }
-            else
-            {
-                KIO::Job *job = KIO::copy( url, destURL );
-                job->setMetaData(metadata);
-                job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
-                job->addMetaData("cache", "cache"); // Use entry from cache if available.
-                job->setAutoErrorHandlingEnabled( true );
-            }
-            delete cfg;
+          }
+          
+          if ( downloadViaKIO )
+          {
+              KIO::Job *job = KIO::copy( url, destURL );
+              job->setMetaData(metadata);
+              job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
+              job->addMetaData("cache", "cache"); // Use entry from cache if available.
+              job->setAutoErrorHandlingEnabled( true );
+          }
         } //end if(!saved)
     }
 }
@@ -640,8 +646,32 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
+// BCI: remove in KDE 4
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
     : KAction( text, icon, 0, receiver, slot, parent, name )
+{
+    m_direction = direction;
+    m_part = part;
+
+    m_popup = new QPopupMenu;
+    m_popup->insertItem( i18n( "Default Font Size" ) );
+
+    int m = m_direction ? 1 : -1;
+
+    for ( int i = 1; i < 5; ++i )
+    {
+        int num = i * m;
+        QString numStr = QString::number( num );
+        if ( num > 0 ) numStr.prepend( '+' );
+
+        m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
+    }
+
+    connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
+}
+
+KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const KShortcut &cut, const QObject *receiver, const char *slot, QObject *parent, const char *name )
+    : KAction( text, icon, cut, receiver, slot, parent, name )
 {
     m_direction = direction;
     m_part = part;

@@ -29,7 +29,7 @@ noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
 libkjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
 	kjs_navigator.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
-	kjs_views.cpp kjs_debugwin.cpp kjs_mozilla.cpp
+	kjs_views.cpp kjs_debugwin.cpp kjs_mozilla.cpp xmlhttprequest.cpp
 #libkjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
 libkjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la # ../libkhtml.la
 libkjs_html_la_METASOURCES = AUTO
@@ -69,6 +69,10 @@ kjs_views.lo: kjs_views.lut.h
 kjs_window.lut.h : $(srcdir)/kjs_window.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $< > $@
 kjs_window.lo: kjs_window.lut.h
+xmlhttprequest.lut.h : $(srcdir)/xmlhttprequest.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+xmlhttprequest.lo: xmlhttprequest.lut.h
+
 
 CLEANFILES = $(LUT_FILES)
 

@@ -47,18 +47,13 @@ public:
 
     virtual void calcMinMaxWidth();
 
-    virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintAction);
-    virtual void paintObject(QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			     PaintAction paintAction) = 0;
-
     virtual short intrinsicWidth() const { return m_intrinsicWidth; }
     virtual int intrinsicHeight() const { return m_intrinsicHeight; }
 
     void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
     void setIntrinsicHeight(int h) { m_intrinsicHeight = h; }
 
-    virtual void position(InlineBox*, int, int, bool, int);
+    virtual void position(InlineBox*, int, int, bool);
 
     // Return before, after (offset set to max), or inside the replaced element,
     // at @p offset
@@ -94,10 +89,7 @@ public:
     virtual ~RenderWidget();
 
     virtual void setStyle(RenderStyle *style);
-
-    virtual void paintObject(QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			     PaintAction paintAction);
-
+    virtual void paint( PaintInfo& i, int tx, int ty );
     virtual bool isWidget() const { return true; };
 
     virtual void detach( );
@@ -110,10 +102,10 @@ public:
 
     void deref();
 
-    static void paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty);
+    static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 

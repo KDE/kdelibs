@@ -56,16 +56,16 @@ public:
 
     unsigned long length() const;
     CSSRuleImpl *parentRule() const;
-    DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
-    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
-    void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
+    virtual DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
+    virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
+    virtual void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
     // this treats integers as pixels!
     // needed for conversion of html attributes
-    void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true, bool multiLength = false);
+    virtual void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true, bool multiLength = false);
 
     // add a whole, unparsed property
-    void setProperty ( const DOMString &propertyString);
-    DOM::DOMString item ( unsigned long index ) const;
+    virtual void setProperty ( const DOMString &propertyString);
+    virtual DOM::DOMString item ( unsigned long index ) const;
 
     DOM::DOMString cssText() const;
     void setCssText(DOM::DOMString str);
@@ -73,9 +73,9 @@ public:
     virtual bool isStyleDeclaration() const { return true; }
     virtual bool parseString( const DOMString &string, bool = false );
 
-    CSSValueImpl *getPropertyCSSValue( int propertyID ) const;
-    DOMString getPropertyValue( int propertyID ) const;
-    bool getPropertyPriority( int propertyID ) const;
+    virtual CSSValueImpl *getPropertyCSSValue( int propertyID ) const;
+    virtual DOMString getPropertyValue( int propertyID ) const;
+    virtual bool getPropertyPriority( int propertyID ) const;
 
     QPtrList<CSSProperty> *values() const { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
@@ -115,10 +115,16 @@ public:
     CSSInheritedValueImpl() : CSSValueImpl() {}
     virtual ~CSSInheritedValueImpl() {}
 
-    virtual unsigned short cssValueType() const { return CSSValue::CSS_INHERIT; }
+    virtual unsigned short cssValueType() const;
     virtual DOM::DOMString cssText() const;
 };
 
+class CSSInitialValueImpl : public CSSValueImpl
+{
+public:
+    virtual unsigned short cssValueType() const;
+    virtual DOM::DOMString cssText() const;
+};
 
 class CSSValueListImpl : public CSSValueImpl
 {

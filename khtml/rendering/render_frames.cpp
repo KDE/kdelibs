@@ -485,7 +485,7 @@ bool RenderFrameSet::canResize( int _x, int _y )
     return false;
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderFrameSet::dump(QTextStream &stream, const QString &ind) const
 {
     RenderBox::dump(stream,ind);

@@ -223,11 +223,13 @@ DOMString CustomNodeFilter::customNodeFilterType()
 
 // --------------------------------------------------------------
 
-TreeWalker::TreeWalker() {
+TreeWalker::TreeWalker()
+{
     impl = 0;
 }
 
-TreeWalker::TreeWalker(const TreeWalker &other) {
+TreeWalker::TreeWalker(const TreeWalker &other)
+{
     impl = other.impl;
     if (impl) impl->ref();
 }
@@ -284,9 +286,9 @@ Node TreeWalker::currentNode()
     return 0;
 }
 
-void TreeWalker::setCurrentNode(const Node _currentNode)
+void TreeWalker::setCurrentNode(const Node& _currentNode)
 {
-    if (impl) impl->setCurrentNode(_currentNode);
+    if (impl) impl->setCurrentNode(_currentNode.handle());
 }
 
 Node TreeWalker::parentNode()

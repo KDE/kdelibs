@@ -280,23 +280,16 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         // when attached, has no effect
         break;
     case ATTR_ONLOAD:
-      {
-        HTMLElementImpl *body = static_cast<HTMLDocumentImpl*>( getDocument() )->body();
-        // Body shouldn't be 0, but better not crash if it is.
-        if (body)
-            body->setHTMLEventListener(EventImpl::LOAD_EVENT,
-                getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
+        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
+              ->setHTMLEventListener(EventImpl::LOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
         break;
-      }
     case ATTR_ONUNLOAD:
-      {
-        HTMLElementImpl *body = static_cast<HTMLDocumentImpl*>( getDocument() )->body();
-        // Body shouldn't be 0, but better not crash if it is.
-        if (body)
-            body->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-                getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
+        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
+              ->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
-      }
+
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -378,7 +371,7 @@ void HTMLFrameElementImpl::setLocation( const DOMString& str )
     if (w) {
 	KHTMLPart *part = w->part()->findFrame(  name.string() );
 	if ( part ) {
-	    part->openURL( getDocument()->completeURL( url.string() ) );
+	    part->openURL( KURL( getDocument()->completeURL( url.string() ) ) );
 	} else {
 	    w->part()->requestFrame( static_cast<RenderFrame*>( m_render ), url.string(), name.string() );
 	}

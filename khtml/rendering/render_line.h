@@ -40,7 +40,7 @@ public:
         m_parent = 0;
     }
 
-    virtual ~InlineBox() {};
+    virtual ~InlineBox() {}
 
     void detach(RenderArena* renderArena);
 
@@ -134,10 +134,8 @@ public:
     void setNextLineBox(InlineRunBox* n) { m_nextLine = n; }
     void setPreviousLineBox(InlineRunBox* p) { m_prevLine = p; }
 
-    virtual void paintBackgroundAndBorder(QPainter* /*p*/, int /*_x*/, int /*_y*/,
-                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {};
-    virtual void paintDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
-                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {};
+    virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {}
+    virtual void paintDecorations(RenderObject::PaintInfo&, int /*_tx*/, int /*_ty*/) {}
 
 protected:
     InlineRunBox* m_prevLine;  // The previous box that also uses our RenderObject
@@ -180,10 +178,8 @@ public:
             m_hasTextChildren = true;
     }
 
-    virtual void paintBackgroundAndBorder(QPainter *p, int _x, int _y,
-                       int _w, int _h, int _tx, int _ty, int xOffsetOnLine);
-    virtual void paintDecorations(QPainter *p, int _x, int _y,
-                       int _w, int _h, int _tx, int _ty);
+    virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int _tx, int _ty, int xOffsetOnLine);
+    virtual void paintDecorations(RenderObject::PaintInfo&, int _tx, int _ty);
 
     int marginBorderPaddingLeft() const;
     int marginBorderPaddingRight() const;

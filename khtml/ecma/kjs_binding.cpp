@@ -199,8 +199,8 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
       id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
       id == DOM::EventImpl::KHTML_ECMA_CLICK_EVENT || id == DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT ||
       // keyboard events
-      id == DOM::EventImpl::KHTML_KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
-      id == DOM::EventImpl::KHTML_KEYUP_EVENT ||
+      id == DOM::EventImpl::KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
+      id == DOM::EventImpl::KEYUP_EVENT ||
       // other accepted events
       id == DOM::EventImpl::SELECT_EVENT || id == DOM::EventImpl::CHANGE_EVENT ||
       id == DOM::EventImpl::SUBMIT_EVENT );

@@ -84,6 +84,7 @@ namespace khtml
   class CSSStyleSelector;
   class HTMLTokenizer;
   class Decoder;
+  class XMLTokenizer;
 }
 
 namespace KJS {
@@ -91,8 +92,10 @@ namespace KJS {
     class WindowFunc;
     class ExternalFunc;
     class JSEventListener;
+    class JSNodeFilter;
     class DOMDocument;
     class SourceFile;
+    class ScheduledAction;
 }
 
 namespace KParts
@@ -192,6 +195,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
   friend class KJS::Window;
+  friend class KJS::ScheduledAction;
+  friend class KJS::JSNodeFilter;
   friend class KJS::WindowFunc;
   friend class KJS::ExternalFunc;
   friend class KJS::JSEventListener;
@@ -203,7 +208,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLDocumentImpl;
   friend class KHTMLPartBrowserHostExtension;
   friend class khtml::HTMLTokenizer;
-  friend class XMLTokenizer;
+  friend class khtml::XMLTokenizer;
   friend class khtml::RenderWidget;
   friend class khtml::CSSStyleSelector;
   friend class KHTMLPartIface;
@@ -1082,8 +1087,15 @@ public slots:
   void setCaretMode(bool enable);
 
   /**
-   * do not use
-   * @internal
+   * Makes the document editable.
+   *
+   * Setting this property to @p true makes the document, and its
+   * subdocuments (such as frames, iframes, objects) editable as a whole.
+   * FIXME: insert more information about navigation, features etc. as seen fit
+   *
+   * @param enable @p true to set document editable, @p false to set it
+   *	read-only.
+   * @since 3.2 (pending, do not use)
    */
   void setEditable(bool enable);
 
@@ -1290,6 +1302,11 @@ private slots:
   /*
    * @internal
    */
+  void slotUserSheetStatDone( KIO::Job* );
+
+  /*
+   * @internal
+   */
   void slotJobSpeed( KIO::Job*, unsigned long );
 
   /**
@@ -1453,6 +1470,8 @@ private:
 
   void emitCaretPositionChanged(const DOM::Node &node, long offset);
 
+  void setDebugScript( bool enable );
+  
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
 };

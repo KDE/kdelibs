@@ -59,26 +59,6 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
     m_intrinsicHeight = 150;
 }
 
-void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
-                            int _tx, int _ty, PaintAction paintAction)
-{
-    if (paintAction != PaintActionForeground)
-        return;
-
-    // not visible or not even once layouted?
-    if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
-
-    _tx += m_x;
-    _ty += m_y;
-
-    if((_ty > _y + _h) || (_ty + m_height < _y)) return;
-
-    if(shouldPaintBackgroundOrBorder())
-        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-}
-
 void RenderReplaced::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown());
@@ -102,9 +82,9 @@ void RenderReplaced::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
+void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/)
 {
-    setPos( box->xPos() + marginLeft(), box->yPos() + marginTop() );
+    setPos( box->xPos(), box->yPos() );
 }
 
 // -----------------------------------------------------------------------------
@@ -338,16 +318,19 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setShouldPaintBackgroundOrBorder(false);
 }
 
-void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx, int _ty,
-                               PaintAction paintAction)
+void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    if (!m_widget || !m_view || paintAction != PaintActionForeground)
+    if (!m_widget || !m_view || paintInfo.phase != PaintActionForeground)
         return;
 
     // not visible or not even once layouted
-    if (style()->visibility() != VISIBLE || m_y <= -500000 || m_resizePending ) {
+    if (style()->visibility() != VISIBLE || m_y <= -500000 || m_resizePending )
         return;
-    }
+
+    _tx += m_x;
+    _ty += m_y; 
+
+    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top())) return;
 
     // add offset for relative positioning
     if(isRelPositioned())
@@ -392,7 +375,7 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
     m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
-    paintWidget(p, m_widget, x, y, w, h, _tx, _ty);
+    paintWidget(paintInfo, m_widget, _tx, _ty);
 }
 
 #include <private/qinternal_p.h>
@@ -426,8 +409,9 @@ static QPixmap copyWidget(int tx, int ty, QPainter *p, QWidget *widget)
 }
 
 
-void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int, int tx, int ty)
+void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 {
+    QPainter* p = pI.p;
     // We have some problems here, as we can't redirect some of the widgets.
     allowWidgetPaintEvents = true;
 
@@ -611,8 +595,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
         break;
     }
-    case EventImpl::KHTML_KEYDOWN_EVENT:
-    case EventImpl::KHTML_KEYUP_EVENT: {
+    case EventImpl::KEYDOWN_EVENT:
+    case EventImpl::KEYUP_EVENT: {
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
@@ -700,7 +684,7 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
     return SelectionPointInside;
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderWidget::dump(QTextStream &stream, const QString &ind) const
 {
     RenderReplaced::dump(stream,ind);

@@ -343,23 +343,19 @@ int RenderObject::offsetLeft() const
         return 0;
 
     int x = xPos();
-        if (isRelPositioned()) {
-            int y = 0;
-            static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
-        }
+    if (isRelPositioned()) {
+        int y = 0;
+        static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
+    }
 
-        RenderObject* offsetPar = offsetParent();
-        for( RenderObject* curr = parent();
-             curr && curr != offsetPar;
-             curr = curr->parent() )
-            x += curr->xPos();
+    RenderObject* offsetPar = offsetParent();
+    for( RenderObject* curr = parent();
+         curr && curr != offsetPar;
+         curr = curr->parent() )
+        x += curr->xPos();
 
     if ( offsetPar && offsetPar->isBody() )
         x += offsetPar->xPos();
-
-    // hacky
-    if ( isInline() && firstChild() && firstChild()->isText() )
-        x += static_cast<RenderText*>(firstChild() )->minXPos();
 
     return x;
 }
@@ -373,22 +369,18 @@ int RenderObject::offsetTop() const
         return 0;
 
     int y = yPos();
-        if (isRelPositioned()) {
-            int x = 0;
-            static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
-        }
-        RenderObject* offsetPar = offsetParent();
-        for( RenderObject* curr = parent();
-             curr && curr != offsetPar;
-             curr = curr->parent() )
-            y += curr->yPos();
+    if (isRelPositioned()) {
+        int x = 0;
+        static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
+    }
+    RenderObject* offsetPar = offsetParent();
+    for( RenderObject* curr = parent();
+         curr && curr != offsetPar;
+         curr = curr->parent() )
+        y += curr->yPos();
 
     if ( offsetPar && offsetPar->isBody() )
         y += offsetPar->yPos();
-
-    // hacky
-    if ( isInline() && firstChild() && firstChild()->isText() )
-        y += static_cast<RenderText*>(firstChild() )->yPos();
 
     return y;
 }
@@ -428,6 +420,27 @@ short RenderObject::scrollWidth() const
 int RenderObject::scrollHeight() const
 {
     return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : overflowHeight();
+}
+
+bool RenderObject::hasStaticX() const
+{
+    return (style()->left().isVariable() && style()->right().isVariable()) ||
+            style()->left().isStatic() ||
+            style()->right().isStatic();
+}
+
+bool RenderObject::hasStaticY() const
+{
+    return (style()->top().isVariable() && style()->bottom().isVariable()) || style()->top().isStatic();
+}
+
+void RenderObject::setPixmap(const QPixmap&, const QRect& r, CachedImage* image)
+{
+    //repaint bg when it finished loading
+    if(image && parent() && style() && style()->backgroundImage() == image
+       && image->valid_rect().size() == image->pixmap_size() ) {
+        isBody() ? canvas()->repaint() : repaint();
+    }
 }
 
 void RenderObject::setLayouted(bool b)
@@ -839,10 +852,8 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
 }
 
-void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
-                          PaintAction paintAction )
+void RenderObject::paint( PaintInfo&, int /*tx*/, int /*ty*/)
 {
-    paintObject(p, x, y, w, h, tx, ty, paintAction);
 }
 
 void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
@@ -850,7 +861,7 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, 
     if(parent()) parent()->repaintRectangle(x, y, w, h, immediate, f);
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 
 QString RenderObject::information() const
 {
@@ -876,7 +887,24 @@ QString RenderObject::information() const
     if (element() && element()->active()) ts << "act ";
     if (element() && element()->hasAnchor()) ts << "anchor ";
     if (element() && element()->focused()) ts << "focus ";
-    if (element()) ts << " <" <<  getTagName(element()->id()) << ">";
+    if (element()) {
+        ts << " <" <<  getTagName(element()->id());
+        if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
+            QString pseudo;
+            switch (style()->styleType()) {
+              case RenderStyle::FIRST_LETTER:
+                pseudo = ":first-letter"; break;
+              case RenderStyle::BEFORE:
+                pseudo = ":before"; break;
+              case RenderStyle::AFTER:
+                pseudo = ":after"; break;
+              default:
+                pseudo = ":pseudo-element";
+            }
+            ts << pseudo;
+        }
+        ts << ">";
+    }
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
        << " [" << minWidth() << "-" << maxWidth() << "]"
        << " { mT: " << marginTop() << " qT: " << isTopMarginQuirk()
@@ -935,7 +963,22 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (element()) {
         QString tagName(getTagName(element()->id()));
         if (!tagName.isEmpty()) {
-            ts << " {" << tagName << "}";
+            ts << " {" << tagName;
+            if (style() && style()->styleType() != RenderStyle::NOPSEUDO) {
+                QString pseudo;
+                switch (style()->styleType()) {
+                  case RenderStyle::FIRST_LETTER:
+                    pseudo = ":first-letter"; break;
+                  case RenderStyle::BEFORE:
+                    pseudo = ":before"; break;
+                  case RenderStyle::AFTER:
+                    pseudo = ":after"; break;
+                  default:
+                    pseudo = ":pseudo-element";
+                }
+                ts << pseudo;
+            }
+            ts << "}";
         }
     }
 
@@ -973,7 +1016,7 @@ void RenderObject::setStyle(RenderStyle *style)
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
 
-    //qDebug("new style, diff=%d", d);
+    //qDebug("m_style: %p new style, diff=%d", m_style,  d);
 
     if ( d == RenderStyle::Visible && m_parent && m_style &&
          m_style->outlineWidth() > style->outlineWidth() )
@@ -990,10 +1033,6 @@ void RenderObject::setStyle(RenderStyle *style)
     m_positioned = false;
     m_relPositioned = false;
     m_paintBackground = false;
-    // no support for changing the display type dynamically... object must be
-    // detached and re-attached as a different type
-
-    //m_inline = true;
 
     if ( style->position() == STATIC ) {
         if ( isRoot() )
@@ -1540,11 +1579,10 @@ void RenderObject::recalcMinMaxWidths()
 #endif
 
     RenderObject *child = firstChild();
+    int cmin=0;
+    int cmax=0;
+
     while( child ) {
-        // gcc sucks. if anybody knows a trick to get rid of the
-        // warning without adding an extra (unneeded) initialization,
-        // go ahead
-        int cmin, cmax;
         bool test = false;
         if ( ( m_minMaxKnown && child->m_recalcMinMax ) || !child->m_minMaxKnown ) {
             cmin = child->minWidth();
@@ -1562,7 +1600,7 @@ void RenderObject::recalcMinMaxWidths()
 
     // we need to recalculate, if the contains inline children, as the change could have
     // happened somewhere deep inside the child tree
-    if ( !isInline() && childrenInline() )
+    if ( ( !isInline() || isReplacedBlock() ) && childrenInline() )
         m_minMaxKnown = false;
 
     if ( !m_minMaxKnown )
@@ -1639,4 +1677,3 @@ void RenderObject::getTextDecorationColors(int decorations, QColor& underline, Q
 				: st->color();
     }
 }
-
