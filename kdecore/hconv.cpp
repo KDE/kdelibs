@@ -17,8 +17,9 @@
  */
 
 #include <math.h>
-#include "hconv.h"
 #include <stdlib.h>
+
+#include "hconv.h"
 
 #define RPD     (0.01745329251994329577) /* radians per degree (pi/180) */
 
@@ -116,9 +117,9 @@ visible(long n, double * rjd)
  * given calendar date specified by _year_, _month_, and _day_.
  * Positive year signifies A.D.; negative, B.C.
  */
-double
-julianday( int year, int month, int day, float time)
+double gregorianToJulian( int year, int month, int day)
 {
+	float time = 0.0F;
 	double jul;
 	long m,y,ja;
 
@@ -159,13 +160,8 @@ SDATE * julianToGregorian( double julday )
 	e = (b-d) / 30.6001;
 	f += b -d - ((long) (30.6001*e));
 	sd.day = f;
-	sd.time = f-sd.day;
 	sd.mon = (e>13) ? e-13 : e-1;
 	sd.year = (sd.mon>2) ? c-4716 : c-4715;
-	/*
-	sd.dw = ((long) (julianday(sd.year,sd.mon, sd.day, 0.0) + 1.5)) % 7;
-	*/
-	sd.dw = ((long) (julday -sd.time + 1.1)) % 7;
 	if ( sd.year<=0) sd.year--;
 	return(&sd);
 }
@@ -184,7 +180,7 @@ SDATE * gregorianToHijri (int y, int m, int d)
 	double jd, mjd, rjd;
 	long k, hm;
 
-	jd = julianday(y,m,d,0.00); 
+	jd = gregorianToJulian(y,m,d); 
 	/* obtain first approx. of how many new moons since the beginning
 	   of the year 1900 */
 	k = 0.6 + (y + ((int) (m-0.5)) /12.0 + d/365.0 - 1900) *12.3685;
@@ -197,8 +193,6 @@ SDATE * gregorianToHijri (int y, int m, int d)
 	if (hm !=0 && h.mon<=0) {h.mon +=12; h.year--; }
 	if (h.year<=0) h.year--;
 	h.day = jd -mjd +1.0;
-	h.time = 0.5;
-	h.dw = ((long) (jd+1.5)) % 7;
 	return(&h);
 }
 
@@ -217,7 +211,6 @@ SDATE * hijriToGregorian(int y, int m, int d)
 	k = m+ y*12 - NMONTHS;   /* # of months since 1/1/1405 */
 	jd = visible(k+1048L, &rjd) +d;
 	sd = julianToGregorian(jd);
-	sd->nmtime = rjd;
 	return (sd);
 }
 

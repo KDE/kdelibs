@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-   Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -318,11 +318,7 @@ QString KCalendarSystemHijri::weekDayName(const QDate& date,
 
 int KCalendarSystemHijri::dayOfWeek(const QDate& date) const
 {
-  SDATE *sd = toHijri(date);
-  if ( sd->dw == 0 )
-    return 7;
-  else
-    return (sd->dw);
+  return date.dayOfWeek(); // same as gregorian
 }
 
 int KCalendarSystemHijri::dayOfYear(const QDate & date) const
@@ -345,7 +341,7 @@ int KCalendarSystemHijri::hndays(int mon, int year) const
   int nd = 666;
   fd = *hijriToGregorian(year, mon, 1);
   ld = *hijriToGregorian(year, mon + 1, 1);
-  ld = *julianToGregorian(gregorianToJulian(ld.year, ld.mon, ld.day, 0.0) - 1.0);
+  ld = *julianToGregorian(gregorianToJulian(ld.year, ld.mon, ld.day) - 1.0);
   if (fd.mon == ld.mon)
     nd = ld.day - fd.day + 1;
   else
