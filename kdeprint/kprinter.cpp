@@ -49,6 +49,20 @@ void reportError(KPrinter*);
 // KPrinterWrapper class
 //**************************************************************************************
 
+class KPrinterWrapper : public QPrinter
+{
+friend class KPrinter;
+public:
+	KPrinterWrapper(KPrinter*, PrinterMode m = ScreenResolution);
+	~KPrinterWrapper();
+protected:
+	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
+	virtual int metric(int) const;
+	int qprinterMetric(int) const;
+private:
+	KPrinter	*m_printer;
+};
+
 KPrinterWrapper::KPrinterWrapper(KPrinter *prt, QPrinter::PrinterMode m)
 : QPrinter(m), m_printer(prt)
 {
@@ -85,6 +99,15 @@ public:
 	bool		m_previewonly;
 	WId		m_parentId;
 	QString		m_docfilename;
+	KPrinterWrapper		*m_wrapper;
+	QMap<QString,QString>	m_options;
+	QString			m_tmpbuffer;
+	QString			m_printername;
+	QString			m_searchname;
+	QSize			m_margins;
+	QSize			m_pagesize;
+	QString			m_errormsg;
+	bool			m_ready;
 };
 
 //**************************************************************************************
@@ -100,7 +123,7 @@ KPrinter::KPrinter(bool restore, QPrinter::PrinterMode m)
 KPrinter::~KPrinter()
 {
 	// delete Wrapper object
-	delete m_wrapper;
+	delete d->m_wrapper;
 
 	// save current options
 	if (d->m_restore)
@@ -112,9 +135,6 @@ KPrinter::~KPrinter()
 
 void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 {
-	// initialize QPrinter wrapper
-	m_wrapper = new KPrinterWrapper(this, m);
-
 	// Private data initialization
 	d = new KPrinterPrivate;
 	d->m_impl = KMFactory::self()->printerImplementation();
@@ -122,9 +142,12 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 	d->m_previewonly = false;
 	d->m_parentId = 0;
 
+	// initialize QPrinter wrapper
+	d->m_wrapper = new KPrinterWrapper(this, m);
+
 	// other initialization
-	m_tmpbuffer = d->m_impl->tempFile();
-	m_ready = false;
+	d->m_tmpbuffer = d->m_impl->tempFile();
+	d->m_ready = false;
 
 	// reload options from implementation (static object)
 	if (d->m_restore)
@@ -133,7 +156,7 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 
 void KPrinter::loadSettings()
 {
-	m_options = d->m_impl->loadOptions();
+	d->m_options = d->m_impl->loadOptions();
 
 	// load latest used printer from config file
 	KConfig	*conf = KGlobal::config();
@@ -145,7 +168,7 @@ void KPrinter::loadSettings()
 
 void KPrinter::saveSettings()
 {
-	d->m_impl->saveOptions(m_options);
+	d->m_impl->saveOptions(d->m_options);
 
 	// save latest used printer to config file
 	KConfig	*conf = KGlobal::config();
@@ -210,11 +233,11 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 	bool value(true);
 	if (c == QPaintDevice::PdcBegin)
 		preparePrinting();
-	value = m_wrapper->cmd(c,painter,p);
+	value = d->m_wrapper->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd)
 	{
 		// this call should take care of everything (preview, output-to-file, filtering, ...)
-		value = value && printFiles(QStringList(m_wrapper->outputFileName()),true);
+		value = value && printFiles(QStringList(d->m_wrapper->outputFileName()),true);
 		// reset "ready" state
 		finishPrinting();
 	}
@@ -223,18 +246,18 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 
 void KPrinter::translateQtOptions()
 {
-	m_wrapper->setCreator(creator());
-	m_wrapper->setDocName(docName());
-	m_wrapper->setFullPage(fullPage());
-	m_wrapper->setColorMode((QPrinter::ColorMode)colorMode());
-	m_wrapper->setOrientation((QPrinter::Orientation)orientation());
-	m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
-	m_wrapper->setOutputToFile(true);
-	m_wrapper->setOutputFileName(m_tmpbuffer);
-	m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
+	d->m_wrapper->setCreator(creator());
+	d->m_wrapper->setDocName(docName());
+	d->m_wrapper->setFullPage(fullPage());
+	d->m_wrapper->setColorMode((QPrinter::ColorMode)colorMode());
+	d->m_wrapper->setOrientation((QPrinter::Orientation)orientation());
+	d->m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
+	d->m_wrapper->setOutputToFile(true);
+	d->m_wrapper->setOutputFileName(d->m_tmpbuffer);
+	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 	// for special printers, copies are handled by Qt
 	if (option("kde-isspecial") == "1")
-		m_wrapper->setNumCopies(numCopies());
+		d->m_wrapper->setNumCopies(numCopies());
 }
 
 bool KPrinter::printFiles(const QStringList& l, bool flag)
@@ -308,7 +331,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 void KPrinter::preparePrinting()
 {
 	// check if already prepared (-> do nothing)
-	if (m_ready) return;
+	if (d->m_ready) return;
 
 	// re-initialize error
 	setErrorMessage(QString::null);
@@ -324,13 +347,13 @@ void KPrinter::preparePrinting()
 	// standard Qt settings
 	translateQtOptions();
 
-	m_ready = true;
-dumpOptions(m_options);
+	d->m_ready = true;
+dumpOptions(d->m_options);
 }
 
 void KPrinter::finishPrinting()
 {
-	m_ready = false;
+	d->m_ready = false;
 }
 
 QValueList<int> KPrinter::pageList() const
@@ -422,32 +445,32 @@ int KPrinter::numCopies() const
 
 QSize KPrinter::margins() const
 {
-	/*if (m_margins.isValid())
-		if (orientation() == KPrinter::Landscape) return QSize(m_margins.height(),m_margins.width());
-		else return m_margins;
-	else return m_wrapper->margins();*/
-	return m_wrapper->margins();
+	/*if (d->m_margins.isValid())
+		if (orientation() == KPrinter::Landscape) return QSize(d->m_margins.height(),d->m_margins.width());
+		else return d->m_margins;
+	else return d->m_wrapper->margins();*/
+	return d->m_wrapper->margins();
 }
 
 int KPrinter::metric(int m) const
 {
-	if (!m_pagesize.isValid())
-		return m_wrapper->qprinterMetric(m);
+	if (!d->m_pagesize.isValid())
+		return d->m_wrapper->qprinterMetric(m);
 
 	int	val(0);
 	bool	land = (orientation() == KPrinter::Landscape);
-	int	res(m_wrapper->resolution());
+	int	res(d->m_wrapper->resolution());
 	switch ( m )
 	{
 		case QPaintDeviceMetrics::PdmWidth:
-			val = (land ? m_pagesize.height() : m_pagesize.width());
+			val = (land ? d->m_pagesize.height() : d->m_pagesize.width());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= 2*margins().width();
 			break;
 		case QPaintDeviceMetrics::PdmHeight:
-			val = (land ? m_pagesize.width() : m_pagesize.height());
+			val = (land ? d->m_pagesize.width() : d->m_pagesize.height());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
@@ -462,7 +485,7 @@ int KPrinter::metric(int m) const
 			val = (val * 254 + 5*res) / (10*res);
 			break;
 		default:
-			val = m_wrapper->qprinterMetric(m);
+			val = d->m_wrapper->qprinterMetric(m);
 			break;
 	}
 	return val;
@@ -486,16 +509,16 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
 { // This functions remove all options except those with "kde-..."
   // which correspond to externally-sets options (use the value
   // from "opts" if specified
-	QMap<QString,QString>	tmpset = m_options;
-	m_options = opts;
+	QMap<QString,QString>	tmpset = d->m_options;
+	d->m_options = opts;
 	// remove some problematic options that may not be overwritten (ugly hack).
 	// Default values will be used instead, except if the dialog has set new ones.
 	tmpset.remove("kde-pagesize");
 	tmpset.remove("kde-orientation");
 	tmpset.remove("kde-colormode");
 	for (QMap<QString,QString>::ConstIterator it=tmpset.begin();it!=tmpset.end();++it)
-		if (it.key().left(4) == "kde-" && !(m_options.contains(it.key())))
-			m_options[it.key()] = it.data();
+		if (it.key().left(4) == "kde-" && !(d->m_options.contains(it.key())))
+			d->m_options[it.key()] = it.data();
 }
 
 void KPrinter::initOptions(const QMap<QString,QString>& opts)
@@ -517,7 +540,7 @@ void KPrinter::reload()
 	if (global != -1) setOrientation((KPrinter::Orientation)global);
 	global = KMFactory::self()->settings()->pageSize;
 	if (global != -1) setPageSize((KPrinter::PageSize)global);
-	//initOptions(m_options);
+	//initOptions(d->m_options);
 }
 
 bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
@@ -650,10 +673,10 @@ KPrinterImpl* KPrinter::implementation() const
 { return d->m_impl; }
 
 const QString& KPrinter::option(const QString& key) const
-{ return m_options[key]; }
+{ return d->m_options[key]; }
 
 void KPrinter::setOption(const QString& key, const QString& value)
-{ m_options[key] = value; }
+{ d->m_options[key] = value; }
 
 QString KPrinter::docName() const
 { return option("kde-docname"); }
@@ -728,10 +751,10 @@ void KPrinter::setCurrentPage(int p)
 { setOption("kde-currentpage",QString::number(p)); }
 
 QString KPrinter::printerName() const
-{ return m_printername; }
+{ return d->m_printername; }
 
 void KPrinter::setPrinterName(const QString& s)
-{ m_printername = s; }
+{ d->m_printername = s; }
 
 QString KPrinter::printProgram() const
 { return (option("kde-isspecial") == "1" ? option("kde-special-command") : QString::null); }
@@ -741,7 +764,7 @@ void KPrinter::setPrintProgram(const QString& prg)
 	if (prg.isNull())
 	{
 		setOption("kde-isspecial", "0");
-		m_options.remove("kde-special-command");
+		d->m_options.remove("kde-special-command");
 	}
 	else
 	{
@@ -760,16 +783,16 @@ void KPrinter::setPrinterSelectionOption(const QString&)
 {}
 
 const QMap<QString,QString>& KPrinter::options() const
-{ return m_options; }
+{ return d->m_options; }
 
 QString KPrinter::searchName() const
-{ return m_searchname; }
+{ return d->m_searchname; }
 
 void KPrinter::setSearchName(const QString& s)
-{ m_searchname = s; }
+{ d->m_searchname = s; }
 
 bool KPrinter::newPage()
-{ return m_wrapper->newPage(); }
+{ return d->m_wrapper->newPage(); }
 
 QString KPrinter::outputFileName() const
 { return option("kde-outputfilename"); }
@@ -791,25 +814,25 @@ void KPrinter::setOutputToFile(bool on)
 }
 
 bool KPrinter::abort()
-{ return m_wrapper->abort(); }
+{ return d->m_wrapper->abort(); }
 
 bool KPrinter::aborted() const
-{ return m_wrapper->aborted(); }
+{ return d->m_wrapper->aborted(); }
 
 void KPrinter::setMargins(QSize m)
-{ m_margins = m; }
+{ d->m_margins = m; }
 
 QSize KPrinter::realPageSize() const
-{ return m_pagesize; }
+{ return d->m_pagesize; }
 
 void KPrinter::setRealPageSize(QSize p)
-{ m_pagesize = p; }
+{ d->m_pagesize = p; }
 
 QString KPrinter::errorMessage() const
-{ return m_errormsg; }
+{ return d->m_errormsg; }
 
 void KPrinter::setErrorMessage(const QString& msg)
-{ m_errormsg = msg; }
+{ d->m_errormsg = msg; }
 
 /* we're using a builtin member to store this state because we don't
  * want to keep it from object to object. So there's no need to use

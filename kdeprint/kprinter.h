@@ -31,34 +31,6 @@
 
 #include <kdeprint/kpreloadobject.h>
 
-class KPrinter;
-
-//**************************************************************************************
-// KPrinterWrapper class
-//**************************************************************************************
-
-/**
- * A @ref QPrinter wrapper to access protected functions from @ref KPrinter. For internal use only.
- * Do not use.
- *
- * @short A @ref QPrinter wrapper to access protected functions from @ref KPrinter
- */
-class KPrinterWrapper : public QPrinter
-{
-friend class KPrinter;
-public:
-	KPrinterWrapper(KPrinter*, PrinterMode m = ScreenResolution);
-	~KPrinterWrapper();
-protected:
-	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
-	virtual int metric(int) const;
-	int qprinterMetric(int) const;
-private:
-	KPrinter	*m_printer;
-};
-
-//**************************************************************************************
-
 class KPrinterImpl;
 class KPrintDialogPage;
 class KPrinterPrivate;
@@ -723,16 +695,7 @@ protected:
 	void init(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution);
 
 protected:
-	KPrinterPrivate		*d;		// BIC: move other options to private class
-	KPrinterWrapper		*m_wrapper;
-	QMap<QString,QString>	m_options;
-	QString			m_tmpbuffer;
-	QString			m_printername;
-	QString			m_searchname;
-	QSize			m_margins;
-	QSize			m_pagesize;
-	QString			m_errormsg;
-	bool			m_ready;
+	KPrinterPrivate		*d;
 };
 
 //**************************************************************************************
