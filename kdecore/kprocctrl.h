@@ -101,7 +101,7 @@ public:
    * @return the file descriptor of the reading end of the notification pipe
    * @since 3.2
    */
-  int notifierFd();
+  int notifierFd() const;
 
   /**
    * @internal

@@ -142,7 +142,7 @@ void KProcessController::theSigCHLDHandler( int arg )
   errno = saved_errno;
 }
 
-int KProcessController::notifierFd()
+int KProcessController::notifierFd() const
 {
   return fd[0];
 }
