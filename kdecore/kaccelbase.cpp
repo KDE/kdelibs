@@ -177,8 +177,8 @@ bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot,
 
 /*
 KAccelBase
-	Execute Command=Meta+Enter;Alt+F2
-	KAccelAction = "Execute Command"
+	Run Command=Meta+Enter;Alt+F2
+	KAccelAction = "Run Command"
 		1) KAccelKeySeries = "Meta+Enter"
 			1a) Meta+Enter
 			1b) Meta+Keypad_Enter
@@ -219,7 +219,7 @@ connect new key sequences
 	}
 	Sort by: iVariation, iSequence, iSeries, iAction
 
-	1) KAccelAction = "Execute Command"
+	1) KAccelAction = "Run Command"
 		1) KAccelKeySeries = "Meta+Enter"
 			1a) Meta+Enter
 			1b) Meta+Keypad_Enter

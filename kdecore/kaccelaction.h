@@ -34,9 +34,9 @@ class KConfig;
 class KConfigBase;
 
 /**
- *	KAccelAction holds information an a given action, such as "Execute Command"
+ *	KAccelAction holds information an a given action, such as "Run Command"
  *
- *	1) KAccelAction = "Execute Command"
+ *	1) KAccelAction = "Run Command"
  *		Default3 = "Alt+F2"
  *		Default4 = "Meta+Enter;Alt+F2"
  *		1) KShortcut = "Meta+Enter"
