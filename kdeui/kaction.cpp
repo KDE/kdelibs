@@ -513,7 +513,7 @@ void KAction::updateShortcut( QPopupMenu* menu, int id )
     // This is a fall-hack in case the KAction is missing a proper parent collection.
     //  It should be removed eventually. --ellis
     menu->setAccel( d->m_cut.keyCodeQt(), id );
-    kdWarning(129) << "KAction::updateShortcut(): name = \"" << name() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
+    kdDebug(129) << "KAction::updateShortcut(): name = \"" << name() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
   }
 }
 
