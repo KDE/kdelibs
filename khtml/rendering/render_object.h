@@ -66,8 +66,8 @@ public:
     RenderObject *previousSibling() const { return m_previous; }
     RenderObject *nextSibling() const { return m_next; }
 
-    RenderObject *firstChild() const { return m_first; }
-    RenderObject *lastChild() const { return m_last; }
+    virtual RenderObject *firstChild() const { return 0; }
+    virtual RenderObject *lastChild() const { return 0; }
 
     // RenderObject tree manipulation
     //////////////////////////////////////////
@@ -76,8 +76,8 @@ public:
 
     // raw tree manipulation
     virtual RenderObject* removeChildNode(RenderObject* child);
-    void appendChildNode(RenderObject* child);
-    void insertChildNode(RenderObject* child, RenderObject* before);
+    virtual void appendChildNode(RenderObject* child);
+    virtual void insertChildNode(RenderObject* child, RenderObject* before);
     //////////////////////////////////////////
 
 private:
@@ -86,8 +86,6 @@ private:
     void setPreviousSibling(RenderObject *previous) { m_previous = previous; }
     void setNextSibling(RenderObject *next) { m_next = next; }
     void setParent(RenderObject *parent) { m_parent = parent; }
-    void setFirstChild(RenderObject *first) { m_first = first; }
-    void setLastChild(RenderObject *last) { m_last = last; }
     //////////////////////////////////////////
 
 public:
@@ -461,11 +459,7 @@ private:
     RenderStyle *m_style;
     RenderObject *m_parent;
     RenderObject *m_previous;
-    RenderObject *m_next;
-    RenderObject *m_first;
-    RenderObject *m_last;
-
-    friend class RenderRoot;
+    RenderObject *m_next;    
 
     CachedImage *m_bgImage;
 
@@ -485,6 +479,10 @@ private:
     bool m_replaced       : 1;
     bool m_containsWidget : 1;
     bool m_containsOverhangingFloats : 1;
+    
+    
+    friend class RenderContainer;
+    friend class RenderRoot;
 };
 
 

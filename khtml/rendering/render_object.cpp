@@ -105,8 +105,6 @@ RenderObject::RenderObject()
     m_parent = 0;
     m_previous = 0;
     m_next = 0;
-    m_first = 0;
-    m_last = 0;
 
     m_floating = false;
     m_positioned = false;
@@ -139,166 +137,33 @@ RenderObject::~RenderObject()
     if (parent())
         //have parent, take care of the tree integrity
         parent()->removeChild(this);
-
-    //if not, it is mass a deletion, just kill everyone
-    RenderObject *n;
-    RenderObject *next;
-    for( n = m_first; n != 0; n = next )
-    {
-        n->setParent(0); //zero the parent
-        next = n->nextSibling();
-        delete n;
-    }
 }
 
 
-void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
+void RenderObject::addChild(RenderObject* , RenderObject *)
 {
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
-                       (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
-#endif
-
-    if(parsing())
-        newChild->setParsing();
-
-    bool needsTable = false;
-
-    if(!newChild->isText()) {
-        switch(newChild->style()->display()) {
-        case INLINE:
-        case BLOCK:
-        case LIST_ITEM:
-        case RUN_IN:
-        case COMPACT:
-        case MARKER:
-        case TABLE:
-        case INLINE_TABLE:
-            break;
-        case TABLE_COLUMN_GROUP:
-        case TABLE_COLUMN:
-        case TABLE_CAPTION:
-        case TABLE_ROW_GROUP:
-        case TABLE_HEADER_GROUP:
-        case TABLE_FOOTER_GROUP:
-            //kdDebug( 6040 ) << "adding section" << endl;
-            if ( !isTable() )
-                needsTable = true;
-            break;
-        case TABLE_ROW:
-            //kdDebug( 6040 ) << "adding row" << endl;
-            if ( !isTableSection() )
-                needsTable = true;
-            break;
-        case TABLE_CELL:
-            //kdDebug( 6040 ) << "adding cell" << endl;
-            if ( !isTableRow() )
-                needsTable = true;
-            break;
-        case NONE:
-            kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
-	    break;
-        }
-    }
-
-    if ( needsTable ) {
-        RenderTable *table;
-        if( !beforeChild )
-            beforeChild = lastChild();
-        if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
-            table = static_cast<RenderTable *>(beforeChild);
-        else {
-//          kdDebug( 6040 ) << "creating anonymous table" << endl;
-            table = new RenderTable;
-            RenderStyle *newStyle = new RenderStyle(m_style);
-            newStyle->setDisplay(TABLE);
-            table->setStyle(newStyle);
-            table->setIsAnonymousBox(true);
-            addChild(table, beforeChild);
-        }
-        table->addChild(newChild);
-        return;
-    }
-
-    // just add it...
-    insertChildNode(newChild, beforeChild);
+    ASSERT(0);
 }
 
-RenderObject* RenderObject::removeChildNode(RenderObject* oldChild)
+RenderObject* RenderObject::removeChildNode(RenderObject* )
 {
-    ASSERT(oldChild->parent() == this);
-    if (oldChild->previousSibling())
-        oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
-    if (oldChild->nextSibling())
-        oldChild->nextSibling()->setPreviousSibling(oldChild->previousSibling());
-
-    if (m_first == oldChild)
-        m_first = oldChild->nextSibling();
-    if (m_last == oldChild)
-        m_last = oldChild->previousSibling();
-
-    oldChild->setPreviousSibling(0);
-    oldChild->setNextSibling(0);
-    oldChild->setParent(0);
-    return oldChild;
+    ASSERT(0);
+    return 0;
 }
 
-void RenderObject::removeChild(RenderObject *oldChild)
+void RenderObject::removeChild(RenderObject* )
 {
-    removeChildNode(oldChild);
-    setLayouted(false);
-    if(containsWidget()) {
-        bool anotherone = false;
-        for(RenderObject* o = firstChild(); o; o = o->nextSibling()) {
-            if(o->isWidget() || o->containsWidget()) {
-                anotherone = true;
-                break;
-            }
-        }
-        if(!anotherone) {
-            setContainsWidget(false);
-            // ### propagate to parent!!
-        }
-    }
+    ASSERT(0);
 }
 
-void RenderObject::appendChildNode(RenderObject* newChild)
+void RenderObject::appendChildNode(RenderObject*)
 {
-    ASSERT(newChild->parent() == 0);
-    newChild->setParent(this);
-    RenderObject* lChild = lastChild();
-
-    if(lChild)
-    {
-        newChild->setPreviousSibling(lChild);
-        lChild->setNextSibling(newChild);
-    }
-    else
-        setFirstChild(newChild);
-
-    setLastChild(newChild);
+    ASSERT(0);
 }
 
-void RenderObject::insertChildNode(RenderObject* child, RenderObject* beforeChild)
+void RenderObject::insertChildNode(RenderObject*, RenderObject*)
 {
-    if(!beforeChild) {
-        appendChildNode(child);
-	return;
-    }
-
-    ASSERT(!child->parent());
-    ASSERT(beforeChild->parent() == this);
-
-    if(beforeChild == firstChild())
-        setFirstChild(child);
-
-    RenderObject* prev = beforeChild->previousSibling();
-    child->setNextSibling(beforeChild);
-    beforeChild->setPreviousSibling(child);
-    if(prev) prev->setNextSibling(child);
-    child->setPreviousSibling(prev);
-
-    child->setParent(this);
+    ASSERT(0);
 }
 
 RenderObject *RenderObject::containingBlock() const
@@ -738,7 +603,7 @@ void RenderObject::setContainsPositioned(bool p)
         RenderObject *n;
         bool c=false;
 
-        for( n = m_first; n != 0; n = n->nextSibling() )
+        for( n = firstChild(); n != 0; n = n->nextSibling() )
         {
             if (n->isPositioned() || n->containsPositioned())
                 c=true;

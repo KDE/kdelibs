@@ -56,7 +56,7 @@ using namespace khtml;
 
 
 RenderBox::RenderBox()
-    : RenderObject()
+    : RenderContainer()
 {
     m_minWidth = -1;
     m_maxWidth = -1;
@@ -357,7 +357,7 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
 
 void RenderBox::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
-    RenderObject::addChild(newChild, beforeChild);
+    RenderContainer::addChild(newChild, beforeChild);
 
     if(newChild->isWidget())
     {

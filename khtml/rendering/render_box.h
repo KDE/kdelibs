@@ -24,13 +24,13 @@
 #ifndef RENDER_BOX_H
 #define RENDER_BOX_H
 
-#include "render_object.h"
+#include "render_container.h"
 #include "loader.h"
 
 namespace khtml {
     class CachedObject;
 
-class RenderBox : public RenderObject
+class RenderBox : public RenderContainer
 {
 
 

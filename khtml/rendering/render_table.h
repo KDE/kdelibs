@@ -252,7 +252,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderTableSection : public RenderObject
+class RenderTableSection : public RenderContainer
 {
 public:
     RenderTableSection();
@@ -282,7 +282,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderTableRow : public RenderObject
+class RenderTableRow : public RenderContainer
 {
 public:
     RenderTableRow();
@@ -404,7 +404,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderTableCol : public RenderObject
+class RenderTableCol : public RenderContainer
 {
 public:
     RenderTableCol();

@@ -172,7 +172,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
         {
-        RenderObject::addChild(child,beforeChild);
+        RenderContainer::addChild(child,beforeChild);
         RenderTableCol* colel = static_cast<RenderTableCol *>(child);
         if (_oldColElem && _oldColElem->style()->display() == TABLE_COLUMN_GROUP)
             _currentCol = _oldColElem->lastCol();
@@ -217,7 +217,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         o->addChild(child);
         return;
     }
-    RenderObject::addChild(child,beforeChild);
+    RenderContainer::addChild(child,beforeChild);
     child->setTable(this);
 }
 
@@ -1613,7 +1613,7 @@ int RenderTable::borderBottomExtra()
 // --------------------------------------------------------------------------
 
 RenderTableSection::RenderTableSection()
-    : RenderObject()
+    : RenderContainer()
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -1654,13 +1654,13 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 
     table->startRow();
     child->setTable(table);
-    RenderObject::addChild(child,beforeChild);
+    RenderContainer::addChild(child,beforeChild);
 }
 
 // -------------------------------------------------------------------------
 
 RenderTableRow::RenderTableRow()
-  : RenderObject()
+    : RenderContainer()
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -1721,7 +1721,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     cell->setRowImpl(this);
     table->addCell(cell);  // ### may not work for beforeChild != 0
 
-    RenderObject::addChild(cell,beforeChild);
+    RenderContainer::addChild(cell,beforeChild);
 }
 
 // -------------------------------------------------------------------------
@@ -1889,7 +1889,7 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
 // -------------------------------------------------------------------------
 
 RenderTableCol::RenderTableCol()
-  : RenderObject()
+    : RenderContainer()
 {
     // init RenderObject attributes
     setInline(true);   // our object is not Inline
@@ -1912,7 +1912,7 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
     if (child->style()->display() == TABLE_COLUMN)
     {
         // these have to come before the table definition!
-        RenderObject::addChild(child,beforeChild);
+        RenderContainer::addChild(child,beforeChild);
         RenderTableCol* colel = static_cast<RenderTableCol *>(child);
         colel->setStartCol(_currentCol);
 //      kdDebug( 6040 ) << "_currentCol=" << _currentCol << endl;
