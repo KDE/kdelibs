@@ -43,7 +43,7 @@ public:
 	static ObjectManager *the();
 	Object_skel *create(string name);
 
-	bool addGlobalReference(Object_skel *object, string name);
+	bool addGlobalReference(Object *object, string name);
 	string getGlobalReference(string name);
 
 	void registerFactory(Factory *factory);

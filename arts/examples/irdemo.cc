@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 	}
 
 	Dispatcher dispatcher;
-	Object *o = Object::_fromString(argv[1]);
+	Object_var o = Object::_fromString(argv[1]);
 	if(!o)
 	{
 		fprintf(stderr,"can't connect to the object\n");

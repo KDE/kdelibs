@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	}
 
 	Dispatcher dispatcher;
-	SimpleSoundServer *server;
+	SimpleSoundServer_var server;
 
 	server = SimpleSoundServer::_fromString("global:Arts_SimpleSoundServer");
 	if(!server)

@@ -97,7 +97,7 @@ Dispatcher::~Dispatcher()
 
 	if(_interfaceRepo)
 	{
-		delete _interfaceRepo;
+		_interfaceRepo->_release();
 		_interfaceRepo = 0;
 	}
 	if(unixServer)
@@ -122,6 +122,12 @@ Dispatcher::~Dispatcher()
 	{
 		delete _ioManager;
 		_ioManager = 0;
+	}
+
+	if(Object::_objectCount())
+	{
+		cerr << "warning: leaving MCOP Dispatcher and still "
+			 << Object::_objectCount << " objects alive." << endl;
 	}
 	assert(_instance);
 	_instance = 0;
@@ -434,7 +440,15 @@ void *Dispatcher::connectObjectLocal(ObjectReference& reference,
 													string interface)
 {
 	if(reference.serverID == serverID)
-		return objectPool[reference.objectID]->_cast(interface);
+	{
+		void *result = objectPool[reference.objectID]->_cast(interface);
+
+		if(result)
+		{
+			objectPool[reference.objectID]->_copy();
+			return result;
+		}
+	}
 
 	return 0;
 }

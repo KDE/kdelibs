@@ -660,6 +660,13 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"public:\n");
 		fprintf(header,"\tstatic %s *_fromString(string objectref);\n\n",
 														d->name.c_str());
+			/* reference counting: _copy */
+		fprintf(header,"\tinline %s *_copy() {\n"
+					   "\t\tassert(_refCnt > 0);\n"
+				       "\t\t_refCnt++;\n"
+					   "\t\treturn this;\n"
+					   "\t}\n\n",d->name.c_str());
+
 			/* attributes (not for streams) */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
 		{
@@ -692,6 +699,11 @@ void doInterfacesHeader(FILE *header)
 				md->name.c_str(), params.c_str());
 		}
 		fprintf(header,"};\n\n");
+
+		// create var
+
+		fprintf(header,"typedef ReferenceHelper<%s> %s_var;\n\n",
+									d->name.c_str(),d->name.c_str());
 
 		// create stub
 

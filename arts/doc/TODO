@@ -9,9 +9,7 @@ minor corrections missing to start to make it really useful for kde2.
 These are:
 
 - move required stuff
-   => perhaps make an extra directory for artsd
    => knotify should probably be in kdebase
-- make installation more accessible (e.g. idl libs) 
 - network transparency: ensure that clients do get object references and
   secret-cookie over the X11 server instead of files
 

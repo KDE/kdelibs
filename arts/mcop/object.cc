@@ -37,13 +37,21 @@ struct Object_skel::MethodTableEntry {
  * Object: common for every object
  */
 
-Object::Object()
+long Object::_staticObjectCount = 0;
+
+Object::Object() : _scheduleNode(0), _refCnt(1), _deleteOk(false)
 {
-	_scheduleNode = 0;
+	_staticObjectCount++;
 }
 
 Object::~Object()
 {
+	if(!_deleteOk)
+	{
+		cerr << "error: reference counting violation - you may not" << endl;
+		cerr << "       call delete manually - use _release() instead" << endl;
+	}
+	assert(_deleteOk);
 	if(_scheduleNode)
 	{
 		FlowSystem *fs = Dispatcher::the()->flowSystem();
@@ -51,6 +59,7 @@ Object::~Object()
 
 		fs->removeObject(_scheduleNode);
 	}
+	_staticObjectCount--;
 }
 
 ScheduleNode *Object::_node()
@@ -112,6 +121,34 @@ Object_skel::Object_skel()
 Object_skel::~Object_skel()
 {
 	Dispatcher::the()->removeObject(_objectID);
+}
+
+// reference counting
+
+void Object_skel::_release()
+{
+	assert(_refCnt > 0);
+	_refCnt--;
+	if(_refCnt == 0)
+	{
+		_deleteOk = true;
+		delete this;
+	}
+}
+
+void Object_skel::_copyRemote()
+{
+	assert(false);
+}
+
+void Object_skel::_releaseRemote()
+{
+	assert(false);
+}
+
+void Object_skel::_useRemote()
+{
+	assert(false);
 }
 
 string Object_skel::_toString()
@@ -196,6 +233,7 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 	return -1;
 }
 
+#if 0
 // _lookupMethod
 static void _dispatch_Object_00(void *object, Buffer *request, Buffer *result)
 {
@@ -237,11 +275,78 @@ void Object_skel::_buildMethodTable()
 	_addMethod(_dispatch_Object_01,this,MethodDef(m));
 	_addMethod(_dispatch_Object_02,this,MethodDef(m));
 	_addMethod(_dispatch_Object_03,this,MethodDef(m));
-	/*
+}
+#endif
+
+// _lookupMethod
+static void _dispatch_Object_00(void *object, Buffer *request, Buffer *result)
+{
+	MethodDef methodDef(*request);
+	result->writeLong(((Object_skel *)object)->_lookupMethod(methodDef));
+}
+
+// _interfaceName
+static void _dispatch_Object_01(void *object, Buffer *, Buffer *result)
+{
+	result->writeString(((Object_skel *)object)->_interfaceName());
+}
+
+// _queryInterface
+static void _dispatch_Object_02(void *object, Buffer *request, Buffer *result)
+{
+	string name;
+	request->readString(name);
+	InterfaceDef *_returnCode = ((Object_skel *)object)->_queryInterface(name);
+	_returnCode->writeType(*result);
+	delete _returnCode;
+}
+
+// _queryType
+static void _dispatch_Object_03(void *object, Buffer *request, Buffer *result)
+{
+	string name;
+	request->readString(name);
+	TypeDef *_returnCode = ((Object_skel *)object)->_queryType(name);
+	_returnCode->writeType(*result);
+	delete _returnCode;
+}
+
+// _toString
+static void _dispatch_Object_04(void *object, Buffer *, Buffer *result)
+{
+	result->writeString(((Object_skel *)object)->_toString());
+}
+
+// _copyRemote
+static void _dispatch_Object_05(void *object, Buffer *, Buffer *)
+{
+	((Object_skel *)object)->_copyRemote();
+}
+
+// _useRemote
+static void _dispatch_Object_06(void *object, Buffer *, Buffer *)
+{
+	((Object_skel *)object)->_useRemote();
+}
+
+// _releaseRemote
+static void _dispatch_Object_07(void *object, Buffer *, Buffer *)
+{
+	((Object_skel *)object)->_releaseRemote();
+}
+
+void Object_skel::_buildMethodTable()
+{
 	Buffer m;
-	m.fromString("MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e670000000000010000000a0000004d6574686f64446566000a0000006d6574686f6444656600","MethodTable");
-	_addMethod(_dispatch_Object_skel_00,this,MethodDef(m));
-	*/
+	m.fromString("MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e670000000000010000000a0000004d6574686f64446566000a0000006d6574686f64446566000f0000005f696e746572666163654e616d650007000000737472696e67000000000000000000100000005f7175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000b0000005f71756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d65000a0000005f746f537472696e670007000000737472696e670000000000000000000c0000005f636f707952656d6f74650005000000766f69640000000000000000000b0000005f75736552656d6f74650005000000766f69640000000000000000000f0000005f72656c6561736552656d6f74650005000000766f6964000000000000000000","MethodTable");
+	_addMethod(_dispatch_Object_00,this,MethodDef(m));
+	_addMethod(_dispatch_Object_01,this,MethodDef(m));
+	_addMethod(_dispatch_Object_02,this,MethodDef(m));
+	_addMethod(_dispatch_Object_03,this,MethodDef(m));
+	_addMethod(_dispatch_Object_04,this,MethodDef(m));
+	_addMethod(_dispatch_Object_05,this,MethodDef(m));
+	_addMethod(_dispatch_Object_06,this,MethodDef(m));
+	_addMethod(_dispatch_Object_07,this,MethodDef(m));
 }
 
 /*
@@ -266,12 +371,26 @@ Object_stub::~Object_stub()
 	 * invalidate method lookup cache entries of this object, as it might
 	 * happen, that another Object_stub is created just at the same position
 	 */
-	long c1 = (long)this,p;
-	for(p=0;p<_lookupMethodCacheSize;p++)
+	if(_lookupMethodCache)
 	{
-		long pos = 3*p;
-		if(_lookupMethodCache[pos] == c1)
-			_lookupMethodCache[pos] = 0;
+		long c1 = (long)this,p;
+		for(p=0;p<_lookupMethodCacheSize;p++)
+		{
+			long pos = 3*p;
+			if(_lookupMethodCache[pos] == c1)
+				_lookupMethodCache[pos] = 0;
+		}
+	}
+}
+
+void Object_stub::_release()
+{
+	assert(_refCnt > 0);
+	_refCnt--;
+	if(_refCnt == 0)
+	{
+		_deleteOk = true;
+		delete this;
 	}
 }
 
@@ -292,6 +411,7 @@ Object *Object::_fromString(string objectref)
 	}
 	return result;
 }
+
 string Object_stub::_interfaceName()
 {
 	long requestID;
@@ -379,4 +499,65 @@ long Object_stub::_lookupMethodFast(const char *method)
 	_lookupMethodCache[pos+1] = c2;
 	_lookupMethodCache[pos+2] = methodID;
 	return methodID;
+}
+
+// other (normal) methods without fixed location
+
+string Object_stub::_toString()
+{
+	long methodID = _lookupMethodFast("method:0a0000005f746f537472696e670007000000737472696e67000000000000000000");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 7  =>  _toString
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	string returnCode;
+	result->readString(returnCode);
+	delete result;
+	return returnCode;
+}
+
+void Object_stub::_copyRemote()
+{
+	long methodID = _lookupMethodFast("method:0c0000005f636f707952656d6f74650005000000766f6964000000000000000000");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 8  =>  _copyRemote
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
+}
+
+void Object_stub::_useRemote()
+{
+	long methodID = _lookupMethodFast("method:0b0000005f75736552656d6f74650005000000766f6964000000000000000000");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 9  =>  _useRemote
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
+}
+
+void Object_stub::_releaseRemote()
+{
+	long methodID = _lookupMethodFast("method:0f0000005f72656c6561736552656d6f74650005000000766f6964000000000000000000");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 10  =>  _releaseRemote
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
 }

@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
 	Dispatcher dispatcher;
 
-	Hello *h = Hello::_fromString(argv[1]);
+	Hello_var h = Hello::_fromString(argv[1]);
 	if(!h)
 	{
 		fprintf(stderr,"can't connect to the object\n");

@@ -67,6 +67,45 @@ void writeTypeSeq(Buffer& stream, const vector<T *>& sequence) {
 		sequence[l]->writeType(stream);
 };
 
+template<class T>
+class ReferenceHelper
+{
+private:
+	T *referencedObject;
+public:
+	ReferenceHelper() :referencedObject(0)
+	{
+	}
+	inline ReferenceHelper(T* assignedObject) :referencedObject(assignedObject)
+	{
+	}
+	inline ReferenceHelper<T>& operator=(T* assignedObject)
+	{
+		if(referencedObject)
+			referencedObject->_release();
+
+		referencedObject = assignedObject ;
+		return *this;
+	}
+	inline T* operator->() const
+	{
+		assert(referencedObject);
+		return referencedObject;
+	}
+	inline operator T*() const
+	{
+		return referencedObject;
+	}
+	~ReferenceHelper()
+	{
+		if(referencedObject)
+		{
+			referencedObject->_release();
+			referencedObject = 0;
+		}
+	}
+};
+
 #include "core.h"
 
 #endif

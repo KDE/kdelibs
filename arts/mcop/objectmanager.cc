@@ -91,7 +91,7 @@ ObjectManager *ObjectManager::the()
  * global references
  */
 
-bool ObjectManager::addGlobalReference(Object_skel *object, string name)
+bool ObjectManager::addGlobalReference(Object *object, string name)
 {
 	string filename = MCOPUtils::createFilePath(name);
 	FILE *infile = fopen(filename.c_str(),"r");

@@ -46,10 +46,10 @@ int main()
 	initSignals();
 
 	Dispatcher dispatcher;
-	SimpleSoundServer_impl server;
+	SimpleSoundServer_var server = new SimpleSoundServer_impl;
 
 	bool result = ObjectManager::the()
-				->addGlobalReference(&server,"Arts_SimpleSoundServer");
+				->addGlobalReference(server,"Arts_SimpleSoundServer");
 
 	if(!result)
 	{
@@ -60,7 +60,7 @@ int main()
 "       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl << endl;
 		return 1;
 	}
-	dispatcher.run();
 
+	dispatcher.run();
 	return 0;
 }

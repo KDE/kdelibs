@@ -48,6 +48,10 @@ protected:
 
 	virtual Object_skel *_skel();
 
+	long _refCnt;		// reference count
+	bool _deleteOk;		// ensure that "delete" is not called manually
+	static long _staticObjectCount;
+
 public:
 	/*
 	 * generic capabilities, which allow find out what you can do with an
@@ -57,6 +61,7 @@ public:
 	virtual string _interfaceName() = 0;
 	virtual class InterfaceDef* _queryInterface(const string& name) = 0;
 	virtual class TypeDef* _queryType(const string& name) = 0;
+	virtual string _toString() = 0;
 
 	/*
 	 * stuff for streaming (put in a seperate interface?)
@@ -65,9 +70,29 @@ public:
 	virtual void calculateBlock(unsigned long cycles);
 	ScheduleNode *_node();
 
+	/*
+	 * reference counting
+	 */
+	virtual void _release() = 0;
+	virtual void _copyRemote() = 0;
+	virtual void _useRemote() = 0;
+	virtual void _releaseRemote() = 0;
+
+	inline Object *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	inline static long _objectCount() { return _staticObjectCount; }
+
 	// static converter (from reference)
 	static Object *_fromString(string objectref);
 };
+
+template<class T> class ReferenceHelper;
+
+typedef ReferenceHelper<Object> Object_var;
 
 /*
  * Dispatching
@@ -95,7 +120,6 @@ protected:
 public:
 	Object_skel();
 	virtual ~Object_skel();
-	string _toString();
 
 	void _dispatch(Buffer *request, Buffer *result,long methodID);
 	long _lookupMethod(const MethodDef &);
@@ -108,11 +132,20 @@ public:
 	virtual void *_cast(string interface) = 0;
 
 	/*
+	 * reference counting
+	 */
+	virtual void _release();
+	virtual void _copyRemote();
+	virtual void _useRemote();
+	virtual void _releaseRemote();
+
+	/*
 	 * to inspect the (remote) object interface
 	 */
-	virtual string _interfaceName() = 0;
+	virtual string _interfaceName();
 	InterfaceDef* _queryInterface(const string& name);
 	TypeDef* _queryType(const string& name);
+	virtual string _toString();
 };
 
 class Object_stub : virtual public Object {
@@ -139,5 +172,14 @@ public:
 	string _interfaceName();
 	InterfaceDef* _queryInterface(const string& name);
 	TypeDef* _queryType(const string& name);
+	string _toString();
+
+	/*
+	 * reference counting
+	 */
+	virtual void _release();
+	virtual void _copyRemote();
+	virtual void _useRemote();
+	virtual void _releaseRemote();
 };
 #endif

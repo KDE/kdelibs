@@ -269,6 +269,7 @@ public:
 	virtual TypeDef* queryType(const string& name) = 0;
 };
 
+typedef ReferenceHelper<InterfaceRepo> InterfaceRepo_var;
 class InterfaceRepo_stub : virtual public InterfaceRepo, virtual public Object_stub {
 protected:
 	InterfaceRepo_stub();

@@ -33,12 +33,12 @@
 int main()
 {
 	Dispatcher dispatcher;
-	Hello_impl server;
+	Hello_var server = new Hello_impl();
 
-	string reference = server._toString();
+	string reference = server->_toString();
 	printf("%s\n",reference.c_str());
 
-	Hello *h = Hello::_fromString(reference);
+	Hello_var h = Hello::_fromString(reference);
 	if(h)
 		h->hello("local test");
 	else

@@ -54,9 +54,9 @@ SimpleSoundServer_impl::~SimpleSoundServer_impl()
 	add_right->_node()->stop();
 	play_obj->_node()->stop();
 
-	delete add_right;
-	delete add_left;
-	delete play_obj;
+	add_left->_release();
+	add_right->_release();
+	play_obj->_release();
 
 	Dispatcher::the()->ioManager()->removeTimer(this);
 }
@@ -97,7 +97,7 @@ void SimpleSoundServer_impl::notifyTime()
 			add_left->_node()->disconnect("invalue",playwav->_node(),"left");
 			add_right->_node()->disconnect("invalue",playwav->_node(),"right");
 			playwav->_node()->stop();
-			delete playwav;
+			playwav->_release();
 			activeWavs.erase(i);
 			i = activeWavs.begin();
 		}
