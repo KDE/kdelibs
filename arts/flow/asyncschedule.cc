@@ -72,6 +72,7 @@ void ASyncPort::setPull(int packets, int capacity)
 {
 	pullNotification.receiver = parent->object();
 	pullNotification.ID = notifyID;
+	pullNotification.internal = 0;
 	pull = true;
 
 	for(int i=0;i<packets;i++)
@@ -163,6 +164,7 @@ void ASyncPort::connect(Port *xsource)
 	Notification n;
 	n.receiver = parent->object();
 	n.ID = notifyID;
+	n.internal = 0;
 	source->subscribers.push_back(n);
 }
 
@@ -215,6 +217,7 @@ void ASyncPort::addSendNet(ASyncNetSend *netsend)
 	Notification n;
 	n.receiver = netsend;
 	n.ID = netsend->notifyID();
+	n.internal = 0;
 	subscribers.push_back(n);
 	netSenders.push_back(netsend);
 }
@@ -338,6 +341,7 @@ ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender sender)
 
 	gotPacketNotification.ID = port->receiveNetNotifyID();
 	gotPacketNotification.receiver = port->receiveNetObject();
+	gotPacketNotification.internal = 0;
 	_receiveHandlerID =
 		_addCustomMessageHandler(_dispatch_ASyncNetReceive_receive,this);
 }
