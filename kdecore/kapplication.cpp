@@ -2531,6 +2531,11 @@ void KApplication::initUrlActionRestrictions()
     else if (urlPath.startsWith("~"))
        urlPath.replace(0, 1, QDir::homeDirPath());
 
+    if (refPath.startsWith("$TMP"))
+       refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+    if (urlPath.startsWith("$TMP"))
+       urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+
     d->urlActionRestrictions.append(new KApplicationPrivate::URLActionRule
     	( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
   }

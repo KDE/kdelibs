@@ -473,8 +473,11 @@ open     - This controls which files can be opened by the user in applications. 
            in his own home directory one could use:
               rule_1=open,,,,file,,,false
               rule_2=open,,,,file,,$HOME,true
+              rule_3=open,,,,file,,$TMP,true
            Note that with the above, users would still be able to open files from 
-           the internet. 
+           the internet. Note that the user is also given access to $TMP in order to
+           ensure correct operation of KDE applications. $TMP is replaced with the 
+           temporary directory that KDE uses for this user.
 
 Some remarks:
 * empty entries match everything
