@@ -85,7 +85,8 @@ void KListViewLineEdit::terminate()
 {
 	item->setText(col, text());
 	hide();
-	col=item=0;
+	col=0;
+	item=0;
 	releaseMouse();
 	emit done();
 }
@@ -634,7 +635,7 @@ void KListView::rename(QListViewItem *item, int c)
 
 }
 
-void KListView::mousePressEvent(QMouseEvent *)
+bool KListView::getRenameableRow(int row)
 {
 	return (bool)d->renameable.contains(row);
 }
