@@ -298,6 +298,11 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
        return KMessageBox::Cancel; // We have to return something.
     }
 
+    if ( (options & KMessageBox::NoExec) != 0 )
+    {
+       return KMessageBox::Cancel; // We have to return something.
+    }
+
     // We use a QGuardedPtr because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
     // In that case the guarded ptr will reset to 0.

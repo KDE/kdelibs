@@ -74,13 +74,15 @@ public:
   * @li AllowLink The message may contain links.
   * @li Dangerous The action to be confirmed by the dialog is a potentially destructive one
   * @li PlainCaption Do not use KApplication::makeStdCaption()
+  * @li NoExec Do not call exec() in createKMessageBox()
   */
  enum OptionsType
  {
    Notify = 1,
    AllowLink = 2,
    Dangerous = 4,
-   PlainCaption = 8
+   PlainCaption = 8,
+   NoExec = 16
  };
 
  /**
@@ -1114,6 +1116,12 @@ public:
      * @param options  see OptionsType
      * @param details Detailed message string.
      * @since 3.3
+     * @return A KDialogBase button code, not a KMessageBox button code,
+     *         based on the buttonmask given to the constructor of the
+     *         @p dialog (ie. will return KDialogBase::Yes [256] instead of 
+     *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
+     *         if the message box is queued for display instead of 
+     *         exec()ed immediately or if the option NoExec is set.
      */
     static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
@@ -1137,6 +1145,12 @@ public:
      * @param notifyType The type of notification to send when this message
      *                is presentend.
      * @since 3.3
+     * @return A KDialogBase button code, not a KMessageBox button code,
+     *         based on the buttonmask given to the constructor of the
+     *         @p dialog (ie. will return KDialogBase::Yes [256] instead of 
+     *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
+     *         if the message box is queued for display instead of 
+     *         exec()ed immediately or if the option NoExec is set.
      */
     static int createKMessageBox(KDialogBase *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
