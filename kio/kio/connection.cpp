@@ -169,6 +169,9 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 	return false;
     }
 
+    if (data.size() > 0xffffff)
+        return false;
+
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
 
