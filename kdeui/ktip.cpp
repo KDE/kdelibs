@@ -70,14 +70,14 @@ void KTipDatabase::loadTips(const QString &tipFile)
 
     if (fileName.isEmpty())
     {
-        kdDebug() << "can't find '" << tipFile.latin1() << "' in standard dirs" << endl;
+        kdDebug() << "can't find '" << tipFile << "' in standard dirs" << endl;
         return;
     }
 
     QFile file(fileName);
     if (!file.open(IO_ReadOnly))
     {
-        kdDebug() << "can't open '" << fileName.latin1() << "' for reading" << endl;
+        kdDebug() << "can't open '" << fileName << "' for reading" << endl;
         return;
     }
 
@@ -89,6 +89,8 @@ void KTipDatabase::loadTips(const QString &tipFile)
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
         QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
+	if (tip.startsWith("\n"))
+	    tip = tip.mid(1);
         tips.append(tip);
     }
 
@@ -118,7 +120,7 @@ void KTipDatabase::prevTip()
 
 QString KTipDatabase::tip() const
 {
-  return QString::fromLatin1("<html>%1</html>").arg(i18n(tips[current].latin1()));
+  return QString::fromLatin1("<html>%1</html>").arg(i18n(tips[current].utf8()));
 }
 
 
