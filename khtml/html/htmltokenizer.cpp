@@ -346,18 +346,18 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 }
             }
             else if (view && doScriptExec && javascript && !parser->skipMode()) {
-                pendingSrc = QString( src.current(), src.length() );
+                pendingSrc.append( QString( src.current(), src.length() ) ); // deep copy - again
                 _src = QString::null;
                 src = DOMStringIt( _src );
                 m_executingScript++;
                 script = false;
-                view->part()->executeScript(QString(scriptCode, scriptCodeSize));
+                QString exScript( scriptCode, scriptCodeSize ); // deep copy
+                scriptCodeSize = 0;
+                view->part()->executeScript(exScript);
                 script = true;
                 m_executingScript--;
             }
             script = style = listing = textarea = false;
-            scriptCodeSize = 0;
-
             if ( !m_executingScript && !loadingExtScript )
                 addPendingSource();
 
