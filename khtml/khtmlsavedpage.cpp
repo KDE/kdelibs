@@ -29,11 +29,13 @@ SavedPage::SavedPage()
     xOffset = yOffset = 0;
     frameLayout = 0;
     frames = 0;
+    forms = 0;
 }
 
 SavedPage::~SavedPage()
 {
     if( frameLayout ) delete frameLayout;
     if( frames ) delete frames;
+    if( forms ) delete forms;
 }
 

@@ -1237,6 +1237,8 @@ void KHTMLWidget::print()
 
 void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 {
+    debug("KHTMLWidget::begin(....)");
+
     bIsFrameSet = FALSE;
     // bIsFrame = FALSE;
     bFramesComplete = FALSE;
@@ -1315,7 +1317,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 
     // Lets start again
     ht = new HTMLTokenizer( );
-    ht->begin();
+    ht->begin( );
 
     emit documentStarted();
 
@@ -1388,7 +1390,7 @@ void KHTMLWidget::parse()
     clue->setHAlign( HTMLClue::Left );
 
 
-    parser = new KHTMLParser( this, ht, painter, settings );
+    parser = new KHTMLParser( this, ht, painter, settings, 0 /* &formData */ );
 
     if (!charsetName.isEmpty())
     	parser->setCharset( charsetName.data() );
@@ -2720,6 +2722,11 @@ KHTMLWidget::saveYourself(SavedPage *p)
     p->url = getDocumentURL().url();
     p->xOffset = x_offset;
     p->yOffset = y_offset;
+    p->forms = new QStrList();
+    for ( HTMLForm *f = formList.first(); f != 0; f = formList.next() )
+    {
+	f->saveForm( p->forms );
+    }
 
     if(isFrameSet() && !parser && frameSet)
 	buildFrameTree(p, frameSet);

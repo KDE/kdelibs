@@ -238,12 +238,18 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 			  HTMLTokenizer *_ht, 
 			  QPainter *_painter,
-			  HTMLSettings *_settings) 			
+			  HTMLSettings *_settings,
+			  QStrList *_formData) 			
 {
     HTMLWidget    = _parent;
     ht            = _ht;
     painter       = _painter;
     settings      = _settings;
+    formData      = _formData;
+    if (formData)
+    {
+        (void) formData->first();
+    }
 
     leftBorder    = LEFT_BORDER;
     rightBorder   = RIGHT_BORDER;

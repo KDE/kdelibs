@@ -34,6 +34,7 @@
 #include <qstack.h>
 #include <qfont.h>
 #include <qtimer.h>
+#include <qstrlist.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qbuffer.h>
@@ -98,7 +99,8 @@ public:
     KHTMLParser( KHTMLWidget *_parent, 
     			 HTMLTokenizer *_ht, 
     			 QPainter *_painter,
-    			 HTMLSettings *_settings);
+    			 HTMLSettings *_settings,
+    			 QStrList *_formData);
     virtual ~KHTMLParser();
 
     /*
@@ -541,6 +543,10 @@ protected:
      */
     int bottomBorder;
 
+    /*
+     * Data to fill forms with.
+     */
+    QStrList *formData;
 
     KCharsetConverter *charsetConverter;
 

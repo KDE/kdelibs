@@ -7,11 +7,11 @@ This page is a regression test for forms.<BR>
 The word "Start" should be above the textarea.<BR>
 The word "End" should be underneath the textarea.<BR>
 The text inside the textarea should match with its description.
-<form action="cgi-bin/test.cgi" method=post> 
+<form action="http://localhost/test.cgi" method=get> 
 <H2>Textarea</H2>
 <P>Start
 <P>
-<textarea wrap=virtual name=textarea1 rows=5 cols=50>
+<textarea wrap=virtual name=inputt rows=5 cols=50>
 This is text inside a &lt;textarea&gt; tag.</textarea>
 <P>End
 <H2>Input, name</H2>
@@ -20,7 +20,7 @@ This is text inside a &lt;textarea&gt; tag.</textarea>
 <P>
 Start
 <P>
-<INPUT type=name name=query value="test" width=20 size=20 length=20>
+<INPUT type=name name=inputn value="test" width=20 size=20 length=20>
 <P>End
 <H2>Input, submit</H2>
 <P>
@@ -28,7 +28,23 @@ Start
 <P>
 Start
 <P>
-<input type=submit name=mode value="Submit">
+<input type=submit name=inputs value="Submit">
+<P>End
+<H2>Input, reset</H2>
+<P>
+&lt;INPUT type=reset&gt;
+<P>
+Start
+<P>
+<input type=reset name=inputr value="Reset">
+<P>End
+<H2>Input, hidden</H2>
+<P>
+&lt;INPUT type=hidden&gt;
+<P>
+Start
+<P>
+<input type=hidden name=inputh value="Hidden test">
 <P>End
 <H2>Input, radio</H2>
 <P>
@@ -36,6 +52,8 @@ Start
 <P>
 Start
 <P>
+Test<BR>
+<BR><BR>
 <INPUT type=radio name=aid value=1>Button 1<BR>
 <INPUT type=radio name=aid value=2>Button 2<BR>
 <INPUT type=radio name=aid value=3>Button 3

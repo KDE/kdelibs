@@ -24,7 +24,7 @@
 // KDE HTML Widget -- Forms
 // $Id$
 
-#include <strings.h>
+#include <stdlib.h>
 
 #include <qobject.h>
 #include <qobjectlist.h>
@@ -36,6 +36,7 @@
 #include <qlineedit.h>
 #include <qmultilinedit.h>
 #include <qfontmetrics.h>
+#include <qstrlist.h>
 
 #include "khtmlform.h"
 
@@ -82,6 +83,46 @@ QString HTMLElement::encodeString( const QString &e )
 	}
 
 	return encoded;
+}
+
+QString HTMLElement::decodeString( const char *e )
+{
+	unsigned int pos = 0;
+	unsigned int len = strlen(e);
+	char buffer[3];
+	QString decoded;
+
+	while ( pos < len )
+	{
+	     if (e[pos] == '%')
+	     {
+	         if (pos+2 < len)
+	         {
+	             buffer[0] = e[pos+1];
+	             buffer[1] = e[pos+2];
+	             buffer[2] = '\0';
+	             unsigned char val = strtol(buffer, NULL, 16);
+	             if (((char) val) != '\r')
+	             {
+	                 decoded += (char) val;     
+	             }
+	         }
+	         else
+	         {
+	             decoded += e[pos];
+	         }
+	     }
+	     else if (e[pos] == '+')
+	     {
+	       decoded += ' ';
+	     }
+	     else
+	     {
+	       decoded += e[pos];
+	     }
+	     pos++;
+	}
+	return decoded;
 }
 
 HTMLElement::~HTMLElement()
@@ -134,7 +175,7 @@ void HTMLWidgetElement::position( int _x, int _y, int , int _height )
 
 bool HTMLWidgetElement::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
 {
-    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
+    if ( _y + _height < y - ascent || _y > y + descent )
 	return false;
 
     if ( toPrinter )
@@ -158,7 +199,7 @@ void HTMLWidgetElement::print( QPainter *_painter, int _tx, int _ty )
 
   paintWidget( w );
 
-  _painter->drawPixmap( QPoint( _tx, _ty ), *p );
+  _painter->drawPixmap( QPoint( x + _tx, y - ascent + _ty ), *p );
 }
 
 void HTMLWidgetElement::paintWidget( QWidget *widget )
@@ -208,17 +249,6 @@ void HTMLWidgetElement::setWidget( QWidget *_w )
     // redirect all paint events for the widget into the pixmap
 
     p->fill( w->backgroundColor() );
-    
-    printf("setWidget: w->isActiveWindow = %d\n", w->isActiveWindow());
-    printf("setWidget: w->isDesktop      = %d\n", w->isDesktop());
-    printf("setWidget: w->isEnabled      = %d\n", w->isEnabled());
-    printf("setWidget: w->isFocusEnabled = %d\n", w->isFocusEnabled());
-    printf("setWidget: w->isModal        = %d\n", w->isModal());
-    printf("setWidget: w->isPopup        = %d\n", w->isPopup());
-    printf("setWidget: w->isTopLevel     = %d\n", w->isTopLevel());
-    printf("setWidget: w->isUpdatesEnabled %d\n", w->isUpdatesEnabled());
-    printf("setWidget: w->isVisible      = %d\n", w->isVisible());
-    printf("setWidget: w->isVisibleToTLW = %d\n", w->isVisibleToTLW());
 }
 //----------------------------------------------------------------------------
 
@@ -367,7 +397,7 @@ QString HTMLSelect::encoding()
     return _encoding;
 }
 
-void HTMLSelect::resetElement()
+void HTMLSelect::resetElement(const char *data)
 {
 	if ( _size > 1 )
 		((QListBox *)widget())->setCurrentItem( _defSelected );
@@ -433,9 +463,16 @@ QString HTMLTextArea::encoding()
 	return _encoding;
 }
 
-void HTMLTextArea::resetElement()
+void HTMLTextArea::resetElement(const char *data)
 {
-	((QMultiLineEdit *)widget())->setText( _defText );
+	if (!data)
+	{
+		((QMultiLineEdit *)widget())->setText( _defText );
+	}
+	else
+	{
+		((QMultiLineEdit *)widget())->setText( decodeString(data) );
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -539,7 +576,7 @@ QString HTMLCheckBox::encoding()
 	return _encoding;
 }
 
-void HTMLCheckBox::resetElement()
+void HTMLCheckBox::resetElement(const char *data)
 {
 	((QCheckBox *)widget())->setChecked( _defCheck );
 }
@@ -606,7 +643,7 @@ QString HTMLRadio::encoding()
 	return _encoding;
 }
 
-void HTMLRadio::resetElement()
+void HTMLRadio::resetElement(const char *data)
 {
 	((QRadioButton *)widget())->setChecked( _defCheck );
 }
@@ -757,9 +794,16 @@ QString HTMLTextInput::encoding()
 	return _encoding;
 }
 
-void HTMLTextInput::resetElement()
+void HTMLTextInput::resetElement(const char *data)
 {
-	((QLineEdit *)widget())->setText( _defText );
+	if (!data)
+	{
+		((QLineEdit *)widget())->setText( _defText );
+	}
+	else
+	{
+		((QLineEdit *)widget())->setText( decodeString(data) );
+	}
 }
 
 void HTMLTextInput::slotTextChanged( const char *t )
@@ -912,11 +956,31 @@ void HTMLForm::slotRadioSelected( const char *n, const char *v )
     emit radioSelected( n, v );
 }
 
+void HTMLForm::saveForm(QStrList *saveList)
+{
+    for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
+    {
+	saveList->append( e->encoding() );
+    }
+}
+
+void HTMLForm::restoreForm(QStrList *saveList)
+{
+    for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
+    {
+        if(!saveList->current())
+        {
+            break;
+        }
+	e->resetElement( saveList->current() );
+	(void) saveList->next();
+    }
+}
+
+
 HTMLForm::~HTMLForm()
 {
-    HTMLElement *e;
-
-    for ( e = elements.first(); e != 0; e = elements.next() )
+    for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
     {
 	e->setForm( 0 );
     }

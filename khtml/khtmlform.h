@@ -27,6 +27,7 @@
 #ifndef __HTMLFORM_H__
 #define __HTMLFORM_H__
 
+#include <qstrlist.h>
 #include <qwidget.h>
 #include <qmultilinedit.h>
 
@@ -79,11 +80,12 @@ public:
 
 	virtual void calcAbsolutePos( int , int ) {}
 
-	virtual void resetElement() { }
+	virtual void resetElement(const char *data = 0) { }
 
 protected:
 	// encode special characters
 	QString encodeString( const QString &e );
+	QString decodeString( const char *e );
 
 protected:
 	QString _encoding;
@@ -171,7 +173,7 @@ public:
 	void setValue( const char *v, int item );
 
 	virtual QString encoding();
-	virtual void resetElement();
+	virtual void resetElement(const char *data = 0);
 
     virtual const char * objectName() const { return "HTMLSelect"; };
 
@@ -199,7 +201,7 @@ public:
 	void setText( const char *t );
 
 	virtual QString encoding();
-	virtual void resetElement();
+	virtual void resetElement(const char *data = 0);
 
     virtual const char * objectName() const { return "HTMLTextArea"; };
 
@@ -238,7 +240,7 @@ public:
 	virtual ~HTMLCheckBox() { }
 
 	virtual QString encoding();
-	virtual void resetElement();
+	virtual void resetElement(const char *data = 0);
 
     virtual const char * objectName() const { return "HTMLCheckBox"; };
 
@@ -271,7 +273,7 @@ public:
 	virtual ~HTMLRadio() { }
 
 	virtual QString encoding();
-	virtual void resetElement();
+	virtual void resetElement(const char *data = 0);
 
     virtual const char * objectName() const { return "HTMLRadio"; };
 
@@ -341,7 +343,7 @@ public:
 	virtual ~HTMLTextInput() { }
 
 	virtual QString encoding();
-	virtual void resetElement();
+	virtual void resetElement(const char *data = 0);
 
     virtual const char * objectName() const { return "HTMLTextInput"; };
 
@@ -401,6 +403,9 @@ public:
 		{	return _action; }
 
 	void position( int _x, int _y, int _width, int _height );
+
+    void saveForm(QStrList *saveList);
+    void restoreForm(QStrList *saveList);
 
 public slots:
 	void slotReset();
