@@ -42,7 +42,7 @@
 #include <qtimer.h>
 
 KConfig::KConfig( const QString& fileName,
-		  bool bReadOnly, bool bUseKderc )
+                 bool bReadOnly, bool bUseKderc, const char *resType )
   : KConfigBase(), flushInterval(30)
 {
   // set the object's read-only status.
@@ -53,7 +53,7 @@ KConfig::KConfig( const QString& fileName,
   // a object factory of some sorts.
   KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
 						      fileName,
-						      QString::fromLatin1("config"),
+                                                     QString::fromLatin1(resType),
 						      bUseKderc);
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;

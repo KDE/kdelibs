@@ -55,9 +55,10 @@ public:
    *        @p bUseKDEGlobals).
    * @param bReadOnly Set the config object's read-only status.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
+   * @param resType the place to look in (config, data, etc) See @ref KStandardDirs
    */
   KConfig( const QString& fileName = QString::null,
-	   bool bReadOnly = false, bool bUseKDEGlobals = true);
+          bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
 
   /**
    * Destructor.
