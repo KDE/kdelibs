@@ -463,6 +463,11 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
+      // First check if we're retrieving an element (by index or by name)
+      bool ok;
+      uint u = p.toULong(&ok);
+      if (ok)
+        return getDOMNode(exec,form.elements().item(u));
       KJS::HTMLCollection coll(exec,form.elements());
       Value namedItems = coll.getNamedItems(exec, p);
       if (namedItems.type() != UndefinedType)
