@@ -19,6 +19,7 @@
 
     */
 
+#include <config.h>
 #include "dispatcher.h"
 #include "startupmanager.h"
 #include "unixconnection.h"

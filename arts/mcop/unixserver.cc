@@ -19,6 +19,7 @@
 
     */
 
+#include <config.h>
 #include "mcoputils.h"
 #include "unixserver.h"
 #include "socketconnection.h"
@@ -28,6 +29,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/ioctl.h>
+#include <sys/filio.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -120,7 +122,7 @@ void UnixServer::notifyIO(int fd, int types)
 	{
 		int clientfd;
 		struct sockaddr_un incoming;
-		size_t size_in = sizeof(struct sockaddr_un);
+		ksize_t size_in = sizeof(struct sockaddr_un);
 
 		clientfd = accept(theSocket, (struct sockaddr*) &incoming, &size_in );
 		if(clientfd > 0)

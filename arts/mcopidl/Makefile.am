@@ -1,5 +1,7 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
-LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
+
+INCLUDES = $(all_includes) -I$(srcdir)/..
+LDFLAGS   = $(all_libraries)
+LDADD = ../mcop/libmcop.la $(LIBSOCKET)
 
 ####### Files
 
@@ -7,10 +9,6 @@ bin_PROGRAMS = mcopidl
 
 mcopidl_SOURCES = mcopidl.cc yacc.cc scanner.cc
 noinst_HEADERS = yacc.cc.h
-
-DISTCLEANFILES = $(SRCMETA)
-
-####### Implicit rules
 
 ####### Build rules
 

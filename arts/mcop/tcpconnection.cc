@@ -76,7 +76,7 @@ static int tcp_connect(const char *url)
     lin.l_onoff=1;      /* block a closing socket for 1 second */
     lin.l_linger=100;   /* if data is waiting to be sent */
     if ( setsockopt( my_socket, SOL_SOCKET, SO_LINGER,
-                     &lin, sizeof(struct linger) ) < 0 )
+                     (char*)&lin, sizeof(struct linger) ) < 0 )
     {
         fprintf(stderr,"Unable to set socket linger value to %d\n",
                 lin.l_linger);
