@@ -89,6 +89,8 @@ QString KStdAccel::action(StdAccel id)
      case AddBookmark:      return "AddBookmark";
      case Help:             return "Help";
      case TextCompletion:   return "TextCompletion";
+     case PrevCompletion:   return "PrevCompletion";
+     case NextCompletion:   return "NextCompletion";
      case RotateUp:         return "RotateUp";
      case RotateDown:       return "RotateDown";
      case PopupMenuContext: return "PopupMenuContext";
@@ -127,6 +129,8 @@ uint KStdAccel::defaultKey(StdAccel id)
      case AddBookmark:      return Qt::CTRL + Qt::Key_B;
      case Help:             return Qt::Key_F1;
      case TextCompletion:   return Qt::CTRL + Qt::Key_E;
+     case PrevCompletion:   return Qt::CTRL + Qt::Key_Up;
+     case NextCompletion:   return Qt::CTRL + Qt::Key_Down;
      case RotateUp:         return Qt::Key_Up;
      case RotateDown:       return Qt::Key_Down;
      case PopupMenuContext: return Qt::Key_Menu;
@@ -166,6 +170,8 @@ QString KStdAccel::description(StdAccel id)
      case AddBookmark:      return i18n("Add Bookmark");
      case Help:             return i18n("Help");
      case TextCompletion:   return i18n("Text Completion");
+     case PrevCompletion:   return i18n("Previous Match");
+     case NextCompletion:   return i18n("Next Match");
      case RotateUp:         return i18n("Rotate Up");
      case RotateDown:       return i18n("Rotate Down");
      case PopupMenuContext: return i18n("Popup Menu Context");
@@ -302,6 +308,16 @@ uint KStdAccel::help()
 uint KStdAccel::completion()
 {
   return key(TextCompletion);
+}
+
+uint KStdAccel::prevCompletion()
+{
+  return key(PrevCompletion);
+}
+
+uint KStdAccel::nextCompletion()
+{
+  return key(NextCompletion);
 }
 
 uint KStdAccel::rotateUp()
