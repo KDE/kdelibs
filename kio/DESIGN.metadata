@@ -108,9 +108,12 @@ ssl_session_id	string		Set in TCPSlaveBase to indicate the SSL session ID in bas
 
 main_frame_request	bool	Actually for SSL, this is set in the caller to tell TCPSlaveBase if this is the request for the main frame of an html page. (dfault: true)
 
-HTTP-Version		string	The HTTP version in use for kio_http
+HTTP-Version		string	The HTTP version in use for kio_http (set by http)
 
-HTTP-Headers		string	The HTTP headers, concatenated, \n delimited
+PropagateHttpHeader	bool	Whether HTTP headers should be send back (read by http)
+
+HTTP-Headers		string	The HTTP headers, concatenated, \n delimited (set by http)
+                                Requires PropagateHttpHeader to be set.
 
 PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
                                 policies presented by the HTTP server
@@ -118,7 +121,9 @@ PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
 PrivacyCompactPolicy	stringlist  \n delimited P3P compact tag policies
                                 presented by the HTTP server
 
-textmode		bool	When true, switches FTP up/downloads to ascii transfer mode
+textmode		bool	When true, switches FTP up/downloads to ascii transfer mode (read by ftp)
+
+DefaultRemoteProtocol	string	Protocol to redirect file://<hostname>/ URLs to, default is "smb" (read by file)
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
 
