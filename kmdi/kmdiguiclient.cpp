@@ -131,9 +131,10 @@ KXMLGUIClient( mdiMainFrm )
 	    modes<<i18n("&Toplevel Mode")<<i18n("C&hildframe Mode")<<i18n("Ta&b Page Mode")<<i18n("I&DEAL Mode");
 	    m_mdiModeAction->setItems(modes);
 	    connect(m_mdiModeAction,SIGNAL(activated(int)),this,SLOT(changeViewMode(int)));
-	    connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
-		this,SLOT(mdiModeHasBeenChangedTo(KMdi::MdiMode)));
     } else m_mdiModeAction=0;
+
+     connect(m_mdiMainFrm,SIGNAL(mdiModeHasBeenChangedTo(KMdi::MdiMode)),
+	this,SLOT(mdiModeHasBeenChangedTo(KMdi::MdiMode)));
 
     m_gotoToolDockMenu=new KActionMenu(i18n("Tool &Docks"),actionCollection(),"kmdi_tooldock_menu");
     m_gotoToolDockMenu->insert(new KAction(i18n("Switch Top Dock"),ALT+CTRL+SHIFT+Key_T,this,SIGNAL(toggleTop()),
@@ -246,20 +247,22 @@ void KMDIGUIClient::clientAdded( KXMLGUIClient *client )
 void KMDIGUIClient::mdiModeHasBeenChangedTo(KMdi::MdiMode mode) {
 	kdDebug()<<"KMDIGUIClient::mdiModeHasBennChangeTo"<<endl;
 	m_mdiMode=mode;
-	switch (mode) {
-		case KMdi::ToplevelMode:
-			m_mdiModeAction->setCurrentItem(0);
-			break;
-		case KMdi::ChildframeMode:
-			m_mdiModeAction->setCurrentItem(1);
-			break;
-		case KMdi::TabPageMode:
-			m_mdiModeAction->setCurrentItem(2);
-			break;
-		case KMdi::IDEAlMode:
-			m_mdiModeAction->setCurrentItem(3);
-			break;
-		default: Q_ASSERT(0);
+        if (m_mdiModeAction) {
+		switch (mode) {
+			case KMdi::ToplevelMode:
+				m_mdiModeAction->setCurrentItem(0);
+				break;
+			case KMdi::ChildframeMode:
+				m_mdiModeAction->setCurrentItem(1);
+				break;
+			case KMdi::TabPageMode:
+				m_mdiModeAction->setCurrentItem(2);
+				break;
+			case KMdi::IDEAlMode:
+				m_mdiModeAction->setCurrentItem(3);
+				break;
+			default: Q_ASSERT(0);
+		}
 	}
 	setupActions();
 
