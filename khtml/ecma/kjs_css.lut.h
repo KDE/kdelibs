@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSStyleDeclarationProtoTableEntries[] = {
+const struct HashEntry DOMCSSStyleDeclarationProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "getAttribute", DOMCSSStyleDeclaration::GetPropertyValue, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
@@ -20,7 +20,7 @@ static const struct HashEntry DOMCSSStyleDeclarationProtoTableEntries[] = {
    { "setAttribute", DOMCSSStyleDeclaration::SetProperty, DontDelete|Function, 3, 0 }
 };
 
-static const struct HashTable DOMCSSStyleDeclarationProtoTable = { 2, 13, DOMCSSStyleDeclarationProtoTableEntries, 7 };
+const struct HashTable DOMCSSStyleDeclarationProtoTable = { 2, 13, DOMCSSStyleDeclarationProtoTableEntries, 7 };
 
 } // namespace
 
@@ -28,14 +28,14 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSStyleDeclarationTableEntries[] = {
+const struct HashEntry DOMCSSStyleDeclarationTableEntries[] = {
    { "cssText", DOMCSSStyleDeclaration::CssText, DontDelete, 0, &DOMCSSStyleDeclarationTableEntries[3] },
    { 0, 0, 0, 0, 0 },
    { "parentRule", DOMCSSStyleDeclaration::ParentRule, DontDelete|ReadOnly, 0, 0 },
    { "length", DOMCSSStyleDeclaration::Length, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSStyleDeclarationTable = { 2, 4, DOMCSSStyleDeclarationTableEntries, 3 };
+const struct HashTable DOMCSSStyleDeclarationTable = { 2, 4, DOMCSSStyleDeclarationTableEntries, 3 };
 
 } // namespace
 
@@ -43,7 +43,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMStyleSheetTableEntries[] = {
+const struct HashEntry DOMStyleSheetTableEntries[] = {
    { "ownerNode", DOMStyleSheet::OwnerNode, DontDelete|ReadOnly, 0, &DOMStyleSheetTableEntries[7] },
    { "href", DOMStyleSheet::Href, DontDelete|ReadOnly, 0, &DOMStyleSheetTableEntries[8] },
    { "type", DOMStyleSheet::Type, DontDelete|ReadOnly, 0, 0 },
@@ -55,7 +55,7 @@ static const struct HashEntry DOMStyleSheetTableEntries[] = {
    { "media", DOMStyleSheet::Media, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMStyleSheetTable = { 2, 9, DOMStyleSheetTableEntries, 7 };
+const struct HashTable DOMStyleSheetTable = { 2, 9, DOMStyleSheetTableEntries, 7 };
 
 } // namespace
 
@@ -63,12 +63,12 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMStyleSheetListTableEntries[] = {
+const struct HashEntry DOMStyleSheetListTableEntries[] = {
    { "length", DOMStyleSheetList::Length, DontDelete|ReadOnly, 0, 0 },
    { "item", DOMStyleSheetList::Item, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMStyleSheetListTable = { 2, 2, DOMStyleSheetListTableEntries, 2 };
+const struct HashTable DOMStyleSheetListTable = { 2, 2, DOMStyleSheetListTableEntries, 2 };
 
 } // namespace
 
@@ -76,12 +76,12 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMMediaListTableEntries[] = {
+const struct HashEntry DOMMediaListTableEntries[] = {
    { "length", DOMMediaList::Length, DontDelete|ReadOnly, 0, 0 },
    { "mediaText", DOMMediaList::MediaText, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMMediaListTable = { 2, 2, DOMMediaListTableEntries, 2 };
+const struct HashTable DOMMediaListTable = { 2, 2, DOMMediaListTableEntries, 2 };
 
 } // namespace
 
@@ -89,14 +89,14 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMMediaListProtoTableEntries[] = {
+const struct HashEntry DOMMediaListProtoTableEntries[] = {
    { "deleteMedium", DOMMediaList::DeleteMedium, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
    { "item", DOMMediaList::Item, DontDelete|Function, 1, &DOMMediaListProtoTableEntries[3] },
    { "appendMedium", DOMMediaList::AppendMedium, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMMediaListProtoTable = { 2, 4, DOMMediaListProtoTableEntries, 3 };
+const struct HashTable DOMMediaListProtoTable = { 2, 4, DOMMediaListProtoTableEntries, 3 };
 
 } // namespace
 
@@ -104,13 +104,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSStyleSheetTableEntries[] = {
+const struct HashEntry DOMCSSStyleSheetTableEntries[] = {
    { "cssRules", DOMCSSStyleSheet::CssRules, DontDelete|ReadOnly, 0, 0 },
    { "ownerRule", DOMCSSStyleSheet::OwnerRule, DontDelete|ReadOnly, 0, &DOMCSSStyleSheetTableEntries[2] },
    { "rules", DOMCSSStyleSheet::Rules, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSStyleSheetTable = { 2, 3, DOMCSSStyleSheetTableEntries, 2 };
+const struct HashTable DOMCSSStyleSheetTable = { 2, 3, DOMCSSStyleSheetTableEntries, 2 };
 
 } // namespace
 
@@ -118,14 +118,14 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSStyleSheetProtoTableEntries[] = {
+const struct HashEntry DOMCSSStyleSheetProtoTableEntries[] = {
    { "removeRule", DOMCSSStyleSheet::RemoveRule, DontDelete|Function, 1, 0 },
    { "insertRule", DOMCSSStyleSheet::InsertRule, DontDelete|Function, 2, &DOMCSSStyleSheetProtoTableEntries[2] },
    { "deleteRule", DOMCSSStyleSheet::DeleteRule, DontDelete|Function, 1, &DOMCSSStyleSheetProtoTableEntries[3] },
    { "addRule", DOMCSSStyleSheet::AddRule, DontDelete|Function, 3, 0 }
 };
 
-static const struct HashTable DOMCSSStyleSheetProtoTable = { 2, 4, DOMCSSStyleSheetProtoTableEntries, 2 };
+const struct HashTable DOMCSSStyleSheetProtoTable = { 2, 4, DOMCSSStyleSheetProtoTableEntries, 2 };
 
 } // namespace
 
@@ -133,13 +133,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSRuleListTableEntries[] = {
+const struct HashEntry DOMCSSRuleListTableEntries[] = {
    { "length", DOMCSSRuleList::Length, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "item", DOMCSSRuleList::Item, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMCSSRuleListTable = { 2, 3, DOMCSSRuleListTableEntries, 3 };
+const struct HashTable DOMCSSRuleListTable = { 2, 3, DOMCSSRuleListTableEntries, 3 };
 
 } // namespace
 
@@ -147,7 +147,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSRuleTableEntries[] = {
+const struct HashEntry DOMCSSRuleTableEntries[] = {
    { "parentStyleSheet", DOMCSSRule::ParentStyleSheet, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "type", DOMCSSRule::Type, DontDelete|ReadOnly, 0, &DOMCSSRuleTableEntries[4] },
@@ -156,7 +156,7 @@ static const struct HashEntry DOMCSSRuleTableEntries[] = {
    { "parentRule", DOMCSSRule::ParentRule, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSRuleTable = { 2, 6, DOMCSSRuleTableEntries, 4 };
+const struct HashTable DOMCSSRuleTable = { 2, 6, DOMCSSRuleTableEntries, 4 };
 
 } // namespace
 
@@ -164,12 +164,12 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
+const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
    { "selectorText", DOMCSSRule::Style_SelectorText, DontDelete, 0, 0 },
    { "style", DOMCSSRule::Style_Style, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSStyleRuleTable = { 2, 2, DOMCSSStyleRuleTableEntries, 2 };
+const struct HashTable DOMCSSStyleRuleTable = { 2, 2, DOMCSSStyleRuleTableEntries, 2 };
 
 } // namespace
 
@@ -177,7 +177,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSMediaRuleTableEntries[] = {
+const struct HashEntry DOMCSSMediaRuleTableEntries[] = {
    { "media", DOMCSSRule::Media_Media, DontDelete|ReadOnly, 0, &DOMCSSMediaRuleTableEntries[4] },
    { "insertRule", DOMCSSRule::Media_InsertRule, DontDelete|Function, 2, 0 },
    { 0, 0, 0, 0, 0 },
@@ -185,7 +185,7 @@ static const struct HashEntry DOMCSSMediaRuleTableEntries[] = {
    { "cssRules", DOMCSSRule::Media_CssRules, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSMediaRuleTable = { 2, 5, DOMCSSMediaRuleTableEntries, 4 };
+const struct HashTable DOMCSSMediaRuleTable = { 2, 5, DOMCSSMediaRuleTableEntries, 4 };
 
 } // namespace
 
@@ -193,11 +193,11 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSFontFaceRuleTableEntries[] = {
+const struct HashEntry DOMCSSFontFaceRuleTableEntries[] = {
    { "style", DOMCSSRule::FontFace_Style, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSFontFaceRuleTable = { 2, 1, DOMCSSFontFaceRuleTableEntries, 1 };
+const struct HashTable DOMCSSFontFaceRuleTable = { 2, 1, DOMCSSFontFaceRuleTableEntries, 1 };
 
 } // namespace
 
@@ -205,12 +205,12 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSPageRuleTableEntries[] = {
+const struct HashEntry DOMCSSPageRuleTableEntries[] = {
    { "selectorText", DOMCSSRule::Page_SelectorText, DontDelete, 0, 0 },
    { "style", DOMCSSRule::Page_Style, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSPageRuleTable = { 2, 2, DOMCSSPageRuleTableEntries, 2 };
+const struct HashTable DOMCSSPageRuleTable = { 2, 2, DOMCSSPageRuleTableEntries, 2 };
 
 } // namespace
 
@@ -218,14 +218,14 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSImportRuleTableEntries[] = {
+const struct HashEntry DOMCSSImportRuleTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "href", DOMCSSRule::Import_Href, DontDelete|ReadOnly, 0, &DOMCSSImportRuleTableEntries[3] },
    { "media", DOMCSSRule::Import_Media, DontDelete|ReadOnly, 0, 0 },
    { "styleSheet", DOMCSSRule::Import_StyleSheet, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSImportRuleTable = { 2, 4, DOMCSSImportRuleTableEntries, 3 };
+const struct HashTable DOMCSSImportRuleTable = { 2, 4, DOMCSSImportRuleTableEntries, 3 };
 
 } // namespace
 
@@ -233,11 +233,11 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
+const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
    { "encoding", DOMCSSRule::Charset_Encoding, DontDelete, 0, 0 }
 };
 
-static const struct HashTable DOMCSSCharsetRuleTable = { 2, 1, DOMCSSCharsetRuleTableEntries, 1 };
+const struct HashTable DOMCSSCharsetRuleTable = { 2, 1, DOMCSSCharsetRuleTableEntries, 1 };
 
 } // namespace
 
@@ -245,7 +245,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry CSSRuleConstructorTableEntries[] = {
+const struct HashEntry CSSRuleConstructorTableEntries[] = {
    { "IMPORT_RULE", CSSRuleConstructor::IMPORT_RULE, DontDelete|ReadOnly, 0, 0 },
    { "UNKNOWN_RULE", CSSRuleConstructor::UNKNOWN_RULE, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -257,7 +257,7 @@ static const struct HashEntry CSSRuleConstructorTableEntries[] = {
    { "PAGE_RULE", CSSRuleConstructor::PAGE_RULE, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable CSSRuleConstructorTable = { 2, 9, CSSRuleConstructorTableEntries, 7 };
+const struct HashTable CSSRuleConstructorTable = { 2, 9, CSSRuleConstructorTableEntries, 7 };
 
 } // namespace
 
@@ -265,13 +265,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSValueTableEntries[] = {
+const struct HashEntry DOMCSSValueTableEntries[] = {
    { "cssText", DOMCSSValue::CssText, DontDelete|ReadOnly, 0, &DOMCSSValueTableEntries[2] },
    { 0, 0, 0, 0, 0 },
    { "cssValueType", DOMCSSValue::CssValueType, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSValueTable = { 2, 3, DOMCSSValueTableEntries, 2 };
+const struct HashTable DOMCSSValueTable = { 2, 3, DOMCSSValueTableEntries, 2 };
 
 } // namespace
 
@@ -279,7 +279,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry CSSValueConstructorTableEntries[] = {
+const struct HashEntry CSSValueConstructorTableEntries[] = {
    { "CSS_VALUE_LIST", CSSValueConstructor::CSS_VALUE_LIST, DontDelete|ReadOnly, 0, 0 },
    { "CSS_PRIMITIVE_VALUE", CSSValueConstructor::CSS_PRIMITIVE_VALUE, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -287,7 +287,7 @@ static const struct HashEntry CSSValueConstructorTableEntries[] = {
    { "CSS_INHERIT", CSSValueConstructor::CSS_INHERIT, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable CSSValueConstructorTable = { 2, 5, CSSValueConstructorTableEntries, 5 };
+const struct HashTable CSSValueConstructorTable = { 2, 5, CSSValueConstructorTableEntries, 5 };
 
 } // namespace
 
@@ -295,11 +295,11 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSPrimitiveValueTableEntries[] = {
+const struct HashEntry DOMCSSPrimitiveValueTableEntries[] = {
    { "primitiveType", DOMCSSPrimitiveValue::PrimitiveType, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCSSPrimitiveValueTable = { 2, 1, DOMCSSPrimitiveValueTableEntries, 1 };
+const struct HashTable DOMCSSPrimitiveValueTable = { 2, 1, DOMCSSPrimitiveValueTableEntries, 1 };
 
 } // namespace
 
@@ -307,7 +307,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSPrimitiveValueProtoTableEntries[] = {
+const struct HashEntry DOMCSSPrimitiveValueProtoTableEntries[] = {
    { "getRectValue", DOMCSSPrimitiveValue::GetRectValue, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "setFloatValue", DOMCSSPrimitiveValue::SetFloatValue, DontDelete|Function, 2, &DOMCSSPrimitiveValueProtoTableEntries[3] },
@@ -318,7 +318,7 @@ static const struct HashEntry DOMCSSPrimitiveValueProtoTableEntries[] = {
    { "getRGBColorValue", DOMCSSPrimitiveValue::GetRGBColorValue, DontDelete|Function, 0, 0 }
 };
 
-static const struct HashTable DOMCSSPrimitiveValueProtoTable = { 2, 8, DOMCSSPrimitiveValueProtoTableEntries, 3 };
+const struct HashTable DOMCSSPrimitiveValueProtoTable = { 2, 8, DOMCSSPrimitiveValueProtoTableEntries, 3 };
 
 } // namespace
 
@@ -326,7 +326,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry CSSPrimitiveValueConstructorTableEntries[] = {
+const struct HashEntry CSSPrimitiveValueConstructorTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "CSS_EXS", DOM::CSSPrimitiveValue::CSS_EXS, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[32] },
    { "CSS_NUMBER", DOM::CSSPrimitiveValue::CSS_NUMBER, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[29] },
@@ -364,7 +364,7 @@ static const struct HashEntry CSSPrimitiveValueConstructorTableEntries[] = {
    { "CSS_RECT", DOM::CSSPrimitiveValue::CSS_RECT, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable CSSPrimitiveValueConstructorTable = { 2, 35, CSSPrimitiveValueConstructorTableEntries, 27 };
+const struct HashTable CSSPrimitiveValueConstructorTable = { 2, 35, CSSPrimitiveValueConstructorTableEntries, 27 };
 
 } // namespace
 
@@ -372,13 +372,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCSSValueListTableEntries[] = {
+const struct HashEntry DOMCSSValueListTableEntries[] = {
    { "length", DOMCSSValueList::Length, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "item", DOMCSSValueList::Item, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMCSSValueListTable = { 2, 3, DOMCSSValueListTableEntries, 3 };
+const struct HashTable DOMCSSValueListTable = { 2, 3, DOMCSSValueListTableEntries, 3 };
 
 } // namespace
 
@@ -386,14 +386,14 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMRGBColorTableEntries[] = {
+const struct HashEntry DOMRGBColorTableEntries[] = {
    { "red", DOMRGBColor::Red, DontDelete|ReadOnly, 0, 0 },
    { "green", DOMRGBColor::Green, DontDelete|ReadOnly, 0, &DOMRGBColorTableEntries[3] },
    { 0, 0, 0, 0, 0 },
    { "blue", DOMRGBColor::Blue, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMRGBColorTable = { 2, 4, DOMRGBColorTableEntries, 3 };
+const struct HashTable DOMRGBColorTable = { 2, 4, DOMRGBColorTableEntries, 3 };
 
 } // namespace
 
@@ -401,7 +401,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMRectTableEntries[] = {
+const struct HashEntry DOMRectTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "bottom", DOMRect::Bottom, DontDelete|ReadOnly, 0, 0 },
    { "right", DOMRect::Right, DontDelete|ReadOnly, 0, 0 },
@@ -409,7 +409,7 @@ static const struct HashEntry DOMRectTableEntries[] = {
    { "left", DOMRect::Left, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMRectTable = { 2, 5, DOMRectTableEntries, 4 };
+const struct HashTable DOMRectTable = { 2, 5, DOMRectTableEntries, 4 };
 
 } // namespace
 
@@ -417,12 +417,12 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCounterTableEntries[] = {
+const struct HashEntry DOMCounterTableEntries[] = {
    { "identifier", DOMCounter::identifier, DontDelete|ReadOnly, 0, 0 },
    { "listStyle", DOMCounter::listStyle, DontDelete|ReadOnly, 0, 0 },
    { "separator", DOMCounter::separator, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCounterTable = { 2, 3, DOMCounterTableEntries, 3 };
+const struct HashTable DOMCounterTable = { 2, 3, DOMCounterTableEntries, 3 };
 
 } // namespace

@@ -4,10 +4,10 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry MozillaSidebarExtensionTableEntries[] = {
+const struct HashEntry MozillaSidebarExtensionTableEntries[] = {
    { "addPanel", MozillaSidebarExtension::addPanel, DontDelete|Function, 0, 0 }
 };
 
-static const struct HashTable MozillaSidebarExtensionTable = { 2, 1, MozillaSidebarExtensionTableEntries, 1 };
+const struct HashTable MozillaSidebarExtensionTable = { 2, 1, MozillaSidebarExtensionTableEntries, 1 };
 
 } // namespace

@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMNodeProtoTableEntries[] = {
+const struct HashEntry DOMNodeProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "hasAttributes", DOMNode::HasAttributes, DontDelete|Function, 0, 0 },
    { "normalize", DOMNode::Normalize, DontDelete|Function, 0, 0 },
@@ -23,7 +23,7 @@ static const struct HashEntry DOMNodeProtoTableEntries[] = {
    { "contains", DOMNode::Contains, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMNodeProtoTable = { 2, 16, DOMNodeProtoTableEntries, 13 };
+const struct HashTable DOMNodeProtoTable = { 2, 16, DOMNodeProtoTableEntries, 13 };
 
 } // namespace
 
@@ -31,7 +31,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMNodeTableEntries[] = {
+const struct HashEntry DOMNodeTableEntries[] = {
    { "offsetTop", DOMNode::OffsetTop, DontDelete|ReadOnly, 0, 0 },
    { "onload", DOMNode::OnLoad, DontDelete, 0, &DOMNodeTableEntries[65] },
    { 0, 0, 0, 0, 0 },
@@ -102,7 +102,7 @@ static const struct HashEntry DOMNodeTableEntries[] = {
    { "sourceIndex", DOMNode::SourceIndex, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMNodeTable = { 2, 68, DOMNodeTableEntries, 53 };
+const struct HashTable DOMNodeTable = { 2, 68, DOMNodeTableEntries, 53 };
 
 } // namespace
 
@@ -110,12 +110,12 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMNodeListProtoTableEntries[] = {
+const struct HashEntry DOMNodeListProtoTableEntries[] = {
    { "namedItem", DOMNodeList::NamedItem, DontDelete|Function, 1, 0 },
    { "item", DOMNodeList::Item, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMNodeListProtoTable = { 2, 2, DOMNodeListProtoTableEntries, 2 };
+const struct HashTable DOMNodeListProtoTable = { 2, 2, DOMNodeListProtoTableEntries, 2 };
 
 } // namespace
 
@@ -123,7 +123,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMAttrTableEntries[] = {
+const struct HashEntry DOMAttrTableEntries[] = {
    { "specified", DOMAttr::Specified, DontDelete|ReadOnly, 0, 0 },
    { "value", DOMAttr::ValueProperty, DontDelete, 0, 0 },
    { "name", DOMAttr::Name, DontDelete|ReadOnly, 0, 0 },
@@ -131,7 +131,7 @@ static const struct HashEntry DOMAttrTableEntries[] = {
    { "ownerElement", DOMAttr::OwnerElement, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMAttrTable = { 2, 5, DOMAttrTableEntries, 5 };
+const struct HashTable DOMAttrTable = { 2, 5, DOMAttrTableEntries, 5 };
 
 } // namespace
 
@@ -139,7 +139,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMDocumentProtoTableEntries[] = {
+const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "createCDATASection", DOMDocument::CreateCDATASection, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
    { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[29] },
@@ -174,7 +174,7 @@ static const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "loadXML", DOMDocument::LoadXML, DontDelete|Function, 2, 0 }
 };
 
-static const struct HashTable DOMDocumentProtoTable = { 2, 32, DOMDocumentProtoTableEntries, 23 };
+const struct HashTable DOMDocumentProtoTable = { 2, 32, DOMDocumentProtoTableEntries, 23 };
 
 } // namespace
 
@@ -182,7 +182,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMDocumentTableEntries[] = {
+const struct HashEntry DOMDocumentTableEntries[] = {
    { "doctype", DOMDocument::DocType, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[7] },
    { "documentElement", DOMDocument::DocumentElement, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[4] },
    { "implementation", DOMDocument::Implementation, DontDelete|ReadOnly, 0, &DOMDocumentTableEntries[6] },
@@ -194,7 +194,7 @@ static const struct HashEntry DOMDocumentTableEntries[] = {
    { "async", DOMDocument::Async, DontDelete, 0, 0 }
 };
 
-static const struct HashTable DOMDocumentTable = { 2, 9, DOMDocumentTableEntries, 4 };
+const struct HashTable DOMDocumentTable = { 2, 9, DOMDocumentTableEntries, 4 };
 
 } // namespace
 
@@ -202,7 +202,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMElementProtoTableEntries[] = {
+const struct HashEntry DOMElementProtoTableEntries[] = {
    { "getAttributeNodeNS", DOMElement::GetAttributeNodeNS, DontDelete|Function, 2, 0 },
    { "getAttributeNS", DOMElement::GetAttributeNS, DontDelete|Function, 2, 0 },
    { 0, 0, 0, 0, 0 },
@@ -224,7 +224,7 @@ static const struct HashEntry DOMElementProtoTableEntries[] = {
    { "setAttributeNodeNS", DOMElement::SetAttributeNodeNS, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMElementProtoTable = { 2, 19, DOMElementProtoTableEntries, 17 };
+const struct HashTable DOMElementProtoTable = { 2, 19, DOMElementProtoTableEntries, 17 };
 
 } // namespace
 
@@ -232,13 +232,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMElementTableEntries[] = {
+const struct HashEntry DOMElementTableEntries[] = {
    { "style", DOMElement::Style, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "tagName", DOMElement::TagName, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
+const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
 
 } // namespace
 
@@ -246,7 +246,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
+const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
    { "createCSSStyleSheet", DOMDOMImplementation::CreateCSSStyleSheet, DontDelete|Function, 2, 0 },
    { 0, 0, 0, 0, 0 },
    { "hasFeature", DOMDOMImplementation::HasFeature, DontDelete|Function, 2, &DOMDOMImplementationProtoTableEntries[5] },
@@ -255,7 +255,7 @@ static const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
    { "createDocumentType", DOMDOMImplementation::CreateDocumentType, DontDelete|Function, 3, 0 }
 };
 
-static const struct HashTable DOMDOMImplementationProtoTable = { 2, 6, DOMDOMImplementationProtoTableEntries, 5 };
+const struct HashTable DOMDOMImplementationProtoTable = { 2, 6, DOMDOMImplementationProtoTableEntries, 5 };
 
 } // namespace
 
@@ -263,7 +263,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMDocumentTypeTableEntries[] = {
+const struct HashEntry DOMDocumentTypeTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "notations", DOMDocumentType::Notations, DontDelete|ReadOnly, 0, 0 },
    { "publicId", DOMDocumentType::PublicId, DontDelete|ReadOnly, 0, 0 },
@@ -273,7 +273,7 @@ static const struct HashEntry DOMDocumentTypeTableEntries[] = {
    { "internalSubset", DOMDocumentType::InternalSubset, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMDocumentTypeTable = { 2, 7, DOMDocumentTypeTableEntries, 6 };
+const struct HashTable DOMDocumentTypeTable = { 2, 7, DOMDocumentTypeTableEntries, 6 };
 
 } // namespace
 
@@ -281,7 +281,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMNamedNodeMapProtoTableEntries[] = {
+const struct HashEntry DOMNamedNodeMapProtoTableEntries[] = {
    { "getNamedItem", DOMNamedNodeMap::GetNamedItem, DontDelete|Function, 1, &DOMNamedNodeMapProtoTableEntries[8] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -295,7 +295,7 @@ static const struct HashEntry DOMNamedNodeMapProtoTableEntries[] = {
    { "removeNamedItemNS", DOMNamedNodeMap::RemoveNamedItemNS, DontDelete|Function, 2, 0 }
 };
 
-static const struct HashTable DOMNamedNodeMapProtoTable = { 2, 11, DOMNamedNodeMapProtoTableEntries, 7 };
+const struct HashTable DOMNamedNodeMapProtoTable = { 2, 11, DOMNamedNodeMapProtoTableEntries, 7 };
 
 } // namespace
 
@@ -303,14 +303,14 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMProcessingInstructionTableEntries[] = {
+const struct HashEntry DOMProcessingInstructionTableEntries[] = {
    { "sheet", DOMProcessingInstruction::Sheet, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "target", DOMProcessingInstruction::Target, DontDelete|ReadOnly, 0, &DOMProcessingInstructionTableEntries[3] },
    { "data", DOMProcessingInstruction::Data, DontDelete, 0, 0 }
 };
 
-static const struct HashTable DOMProcessingInstructionTable = { 2, 4, DOMProcessingInstructionTableEntries, 3 };
+const struct HashTable DOMProcessingInstructionTable = { 2, 4, DOMProcessingInstructionTableEntries, 3 };
 
 } // namespace
 
@@ -318,13 +318,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMNotationTableEntries[] = {
+const struct HashEntry DOMNotationTableEntries[] = {
    { "publicId", DOMNotation::PublicId, DontDelete|ReadOnly, 0, &DOMNotationTableEntries[2] },
    { 0, 0, 0, 0, 0 },
    { "systemId", DOMNotation::SystemId, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMNotationTable = { 2, 3, DOMNotationTableEntries, 2 };
+const struct HashTable DOMNotationTable = { 2, 3, DOMNotationTableEntries, 2 };
 
 } // namespace
 
@@ -332,13 +332,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMEntityTableEntries[] = {
+const struct HashEntry DOMEntityTableEntries[] = {
    { "publicId", DOMEntity::PublicId, DontDelete|ReadOnly, 0, &DOMEntityTableEntries[2] },
    { "notationName", DOMEntity::NotationName, DontDelete|ReadOnly, 0, 0 },
    { "systemId", DOMEntity::SystemId, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMEntityTable = { 2, 3, DOMEntityTableEntries, 2 };
+const struct HashTable DOMEntityTable = { 2, 3, DOMEntityTableEntries, 2 };
 
 } // namespace
 
@@ -346,7 +346,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry NodeConstructorTableEntries[] = {
+const struct HashEntry NodeConstructorTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "CDATA_SECTION_NODE", DOM::Node::CDATA_SECTION_NODE, DontDelete|ReadOnly, 0, 0 },
@@ -363,7 +363,7 @@ static const struct HashEntry NodeConstructorTableEntries[] = {
    { "NOTATION_NODE", DOM::Node::NOTATION_NODE, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable NodeConstructorTable = { 2, 14, NodeConstructorTableEntries, 11 };
+const struct HashTable NodeConstructorTable = { 2, 14, NodeConstructorTableEntries, 11 };
 
 } // namespace
 
@@ -371,7 +371,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMExceptionConstructorTableEntries[] = {
+const struct HashEntry DOMExceptionConstructorTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "WRONG_DOCUMENT_ERR", DOM::DOMException::WRONG_DOCUMENT_ERR, DontDelete|ReadOnly, 0, 0 },
@@ -393,7 +393,7 @@ static const struct HashEntry DOMExceptionConstructorTableEntries[] = {
    { "INVALID_ACCESS_ERR", DOM::DOMException::INVALID_ACCESS_ERR, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMExceptionConstructorTable = { 2, 19, DOMExceptionConstructorTableEntries, 15 };
+const struct HashTable DOMExceptionConstructorTable = { 2, 19, DOMExceptionConstructorTableEntries, 15 };
 
 } // namespace
 
@@ -401,13 +401,13 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCharacterDataTableEntries[] = {
+const struct HashEntry DOMCharacterDataTableEntries[] = {
    { "data", DOMCharacterData::Data, DontDelete, 0, &DOMCharacterDataTableEntries[2] },
    { 0, 0, 0, 0, 0 },
    { "length", DOMCharacterData::Length, DontDelete|ReadOnly, 0, 0 }
 };
 
-static const struct HashTable DOMCharacterDataTable = { 2, 3, DOMCharacterDataTableEntries, 2 };
+const struct HashTable DOMCharacterDataTable = { 2, 3, DOMCharacterDataTableEntries, 2 };
 
 } // namespace
 
@@ -415,7 +415,7 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMCharacterDataProtoTableEntries[] = {
+const struct HashEntry DOMCharacterDataProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "appendData", DOMCharacterData::AppendData, DontDelete|Function, 1, 0 },
@@ -426,7 +426,7 @@ static const struct HashEntry DOMCharacterDataProtoTableEntries[] = {
    { "replaceData", DOMCharacterData::ReplaceData, DontDelete|Function, 2, 0 }
 };
 
-static const struct HashTable DOMCharacterDataProtoTable = { 2, 8, DOMCharacterDataProtoTableEntries, 7 };
+const struct HashTable DOMCharacterDataProtoTable = { 2, 8, DOMCharacterDataProtoTableEntries, 7 };
 
 } // namespace
 
@@ -434,10 +434,10 @@ using namespace KJS;
 
 namespace KJS {
 
-static const struct HashEntry DOMTextProtoTableEntries[] = {
+const struct HashEntry DOMTextProtoTableEntries[] = {
    { "splitText", DOMText::SplitText, DontDelete|Function, 1, 0 }
 };
 
-static const struct HashTable DOMTextProtoTable = { 2, 1, DOMTextProtoTableEntries, 1 };
+const struct HashTable DOMTextProtoTable = { 2, 1, DOMTextProtoTableEntries, 1 };
 
 } // namespace
