@@ -61,6 +61,8 @@ private slots:
      */
     void appExit( const QCString &appId );
 
+private:
+
     /**
      * The DCOP name which actually is registered. 
      * For example "kcmshell_mouse".
