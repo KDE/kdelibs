@@ -218,22 +218,6 @@ public:
     */
     bool keepPassword;
 
-    /**
-     * Flag that allows multiple password caching for different
-     * usernames on a single server.
-     *
-     * Setting this flag allows a user to log into a single server
-     * using different usernames without having to re-supply the
-     * password each time.  For example, if a user has a "johndoe"
-     * and a "janedoe" accounts for a give ftp server, ftp.foobar.com,
-     * then the authentication supplied for both accounts would be
-     * retained when this flag is set where as by default the last
-     * authentication would simply overwrite the previous one.
-     *
-     * This setting is @p optional and by default is set to false.
-     */
-    bool multipleUserCaching;
-
 protected:
     bool modified;
 };

@@ -654,7 +654,6 @@ protected:
      */
     bool cacheAuthentication( const AuthInfo& info );
 
-
     /**
      * Same as above except in the number of arguments it takes.
      *
@@ -708,6 +707,29 @@ protected:
      * @param key  the cached password group-key to be deleted.
      */
     void delCachedAuthentication( const QString& key );
+
+    /**
+     * Setup support for multiple auth-info caching
+     * to a single server.
+     *
+     * Calling this function with the argument set to @p true
+     * will allow a user to work on resources under different
+     * accounts on a single server without being prompted for
+     * authorization whenever the goes back and forth between
+     * these accounts.  For example, if a user has a "foo" and
+     * "bar" account on a given ftp server, then the login
+     * information supplied for both accounts is retained (cached).
+     * Otherwise, the default behavior is for the last login to
+     * simply overwrite the previous one.
+     *
+     * @param enable if true allow multiple auth-info caching.
+     */
+    void setMultipleAuthCaching( bool enable );
+
+    /**
+     * @return true if multiple auth-info caching is enabled.
+     */
+    bool multipleAuthCaching() const;
 
     /**
      * Used by the slave to check if it can connect

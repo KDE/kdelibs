@@ -166,7 +166,8 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_bUseCache = true;
 
   reparseConfiguration();
-
+  setMultipleAuthCaching( true );
+  
 #ifdef DO_SSL
   m_bUseSSL=true;
 #endif
@@ -951,8 +952,7 @@ bool HTTPProtocol::http_open()
   {
     AuthInfo info;
     info.url = m_request.url;
-    info.verifyPath = true;
-    info.multipleUserCaching = true;
+    info.verifyPath = true;    
     if ( !m_request.user.isEmpty() )
       info.username = m_request.user;
     if ( checkCachedAuthentication( info ) )
@@ -1006,8 +1006,7 @@ bool HTTPProtocol::http_open()
       info.url = m_proxyURL;
       info.username = m_proxyURL.user();
       info.password = m_proxyURL.pass();
-      info.verifyPath = true;
-      info.multipleUserCaching = true;
+      info.verifyPath = true;      
 
       // If the proxy URL already contains username
       // and password simply attempt to retrieve it
@@ -3350,8 +3349,7 @@ bool HTTPProtocol::getAuthorization()
       info.realmValue = m_strRealm;
     }
 
-    info.verifyPath = false;
-    info.multipleUserCaching = true;
+    info.verifyPath = false;    
     result = checkCachedAuthentication( info );
     if ( Authentication == AUTH_Digest )
     {
@@ -3417,8 +3415,7 @@ bool HTTPProtocol::getAuthorization()
 
 void HTTPProtocol::saveAuthorization()
 {
-  AuthInfo info;
-  info.multipleUserCaching = true;
+  AuthInfo info;  
   if ( m_prevResponseCode == 407 )
   {
     info.url = m_proxyURL;

@@ -28,7 +28,6 @@ AuthInfo::AuthInfo()
     readOnly = false;
     verifyPath = false;
     keepPassword = false;
-    multipleUserCaching = false;
 }
 
 AuthInfo::AuthInfo( const AuthInfo& info )
@@ -59,8 +58,7 @@ QDataStream& KIO::operator<< (QDataStream& s, const AuthInfo& a)
     s << a.url << a.username << a.password << a.prompt << a.caption
       << a.comment << a.commentLabel << a.realmValue << a.digestInfo
       << Q_UINT8(a.verifyPath ? 1:0) << Q_UINT8(a.readOnly ? 1:0)
-      << Q_UINT8(a.keepPassword ? 1:0) << Q_UINT8(a.modified ? 1:0)
-      << Q_UINT8(a.multipleUserCaching ? 1:0);
+      << Q_UINT8(a.keepPassword ? 1:0) << Q_UINT8(a.modified ? 1:0);
     return s;
 }
 
@@ -70,14 +68,13 @@ QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
     Q_UINT8 ro = 0;
     Q_UINT8 keep = 0;
     Q_UINT8 mod  = 0;
-    Q_UINT8 mucache = 0;
+   
     s >> a.url >> a.username >> a.password >> a.prompt >> a.caption
       >> a.comment >> a.commentLabel >> a.realmValue >> a.digestInfo
-      >> verify >> ro >> keep >> mod >> mucache;
+      >> verify >> ro >> keep >> mod;
     a.verifyPath = (verify != 0);
     a.readOnly = (ro != 0);
     a.keepPassword = (keep != 0);
     a.modified = (mod != 0);
-    a.multipleUserCaching = (mucache != 0);
     return s;
 }

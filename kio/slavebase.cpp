@@ -62,7 +62,7 @@ class SlaveBaseConfig : public KConfigBase
 public:
    SlaveBaseConfig(SlaveBase *_slave)
 	: slave(_slave) { }
-   
+
    bool hasGroup(const QString &) const { qWarning("hasGroup(const QString &)");
 return false; }
    bool hasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
@@ -72,13 +72,13 @@ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
-   bool hasKey(const QString &pKey) const 
-   { 
-      return slave->hasMetaData(pKey);      
-   }      
+   bool hasKey(const QString &pKey) const
+   {
+      return slave->hasMetaData(pKey);
+   }
    bool hasKey(const char *pKey) const { return hasKey(QString::fromLatin1(pKey)); }
 
-   QMap<QString,QString> entryMap(const QString &) const 
+   QMap<QString,QString> entryMap(const QString &) const
       { return QMap<QString,QString>(); }
 
    void reparseConfiguration() { }
@@ -107,6 +107,7 @@ public:
     QString slaveid;
     bool resume:1;
     bool needSendCanResume:1;
+    bool multipleAuthCaching:1;
     MetaData configData;
     SlaveBaseConfig *config;
 };
@@ -889,7 +890,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     bool found = false;
     bool foundGroup = false;
     QCString grp_key = auth_key.copy();
-    if ( info.multipleUserCaching && !info.username.isEmpty() )
+    if ( d->multipleAuthCaching && !info.username.isEmpty() )
     {
         if ( client.findGroup(grp_key + ':' + info.username.utf8()) )
         {
@@ -1129,7 +1130,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     }
 
     bool isCached = storeAuthInfo(auth_key, grp_key, info);
-    if ( info.multipleUserCaching )
+    if ( d->multipleAuthCaching )
     {
       auth_key += ':';
       auth_key += info.username.utf8();
@@ -1138,6 +1139,16 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
       isCached &= storeAuthInfo(auth_key, grp_key, info);
     }
     return isCached;
+}
+
+void SlaveBase::setMultipleAuthCaching( bool enable )
+{
+    d->multipleAuthCaching = enable;
+}
+
+bool SlaveBase::multipleAuthCaching() const
+{
+    return d->multipleAuthCaching;
 }
 
 int SlaveBase::connectTimeout()

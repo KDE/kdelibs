@@ -95,6 +95,7 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
   ksControl = NULL;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
+  setMultipleAuthCaching( true );  
   kdDebug(7102) << "Ftp::Ftp()" << endl;
 }
 
@@ -381,7 +382,6 @@ bool Ftp::ftpLogin()
   if ( !m_user.isEmpty() )
   {
     AuthInfo info;
-    info.multipleUserCaching = true;
     QCString tempbuf;
     int failedAuth = 0;
 
