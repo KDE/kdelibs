@@ -889,6 +889,7 @@ void KXmlCommandDlg::slotOk()
 			l << m_selectedmime->text(i);
 		m_cmd->setInputMimeTypes(l);
 	}
+	KDialogBase::slotOk();
 }
 
 bool KXmlCommandDlg::editCommand(KXmlCommand *xmlCmd, QWidget *parent)

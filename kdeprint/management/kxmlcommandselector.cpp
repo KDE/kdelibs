@@ -191,9 +191,13 @@ void KXmlCommandSelector::slotEditCommand()
 	{
 		if (KXmlCommandDlg::editCommand(xmlCmd, this))
 		{
+			// force to load the driver if not already done
+			xmlCmd->driver();
 			KXmlCommandManager::self()->saveCommand(xmlCmd);
 		}
+		m_cmd->changeItem(xmlCmd->description(), m_cmd->currentItem());
 		delete xmlCmd;
+		slotCommandSelected(m_cmd->currentItem());
 	}
 	else
 		KMessageBox::error(this, i18n("Internal Error. The XML driver for the command %1 could not be found.").arg(xmlId));
