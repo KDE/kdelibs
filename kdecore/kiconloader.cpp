@@ -572,16 +572,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	if (inCache && (path_store == 0L))
 	    return pix;
 
-        int desiredSizeOrGroup = ( size != 0 ) ? -size : KIcon::User;
 	QString path = (absolutePath) ? name :
-			iconPath(name, desiredSizeOrGroup, canReturnNull);
+			iconPath(name, KIcon::User, canReturnNull);
 	if (path.isEmpty())
 	{
 	    if (canReturnNull)
 		return pix;
-	    // Use small if we don't know the desired size.
-            desiredSizeOrGroup = ( size != 0 ) ? -size : KIcon::Small;
-	    path = iconPath(str_unknown, desiredSizeOrGroup, true);
+	    // We don't know the desired size: use small
+	    path = iconPath(str_unknown, KIcon::Small, true);
 	    if (path.isEmpty())
 	    {
 		kdDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
