@@ -1,6 +1,6 @@
 <!DOCTYPE kprintfilter>
 <kprintfilter name="poster" >
- <filtercommand data="poster -i%psu %filterargs %filterinput %filteroutput" />
+ <filtercommand data="poster %filterargs %filterinput %filteroutput" />
  <filterargs name="__root__" description="Poster printing" >
   <filtergroup name="general" description="General" >
    <filterarg format="-m%value" type="list" name="media" default="A4" description="Media Size" >
