@@ -1335,8 +1335,10 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		case CC_ComboBox:
 		{
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
+			QRect br = r;
+			if ( br.width() >= 28 && br.height() > 20 ) br.addCoords( -3, -3, 0, 0 );
 			if ( controls & SC_ComboBoxFrame )
-				drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+				drawPrimitive( PE_ButtonCommand, p, br, cg, flags );
 
 			if ( controls & SC_ComboBoxArrow )
 			{
@@ -1619,7 +1621,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 
 		case CT_ComboBox:
 			return QSize( contentSize.width() + loader.size( "arrow" ).width() + loader.size( "ripple" ).width() + 36,
-			              contentSize.height() + 16 );
+			              contentSize.height() + 12 );
 
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
@@ -1722,8 +1724,8 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					if ( widget->width() < 36 || widget->height() < 24 )
 						return QRect( 4, 3, widget->width() - arrow - 20, widget->height() - 6 );
 //					if ( static_cast< const QComboBox* >( widget )->editable() )
-						return QRect( 10, 8, widget->width() - arrow - 30, widget->height() - 16 );
-					return QRect( 8, 6, widget->width() - arrow - 28, widget->height() - 14 );
+//						return QRect( 10, 8, widget->width() - arrow - 30, widget->height() - 16 );
+					return QRect( 8, 4, widget->width() - arrow - 28, widget->height() - 11 );
 				}
 
 				default: break;
