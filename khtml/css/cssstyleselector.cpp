@@ -73,7 +73,7 @@ static RenderStyle::PseudoId dynamicPseudo;
 
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
-
+    strictParsing = doc->parseMode() == DocumentImpl::Strict;
     if (doc->isHTMLDocument()) {
         HTMLDocumentImpl *htmlDoc = static_cast<HTMLDocumentImpl*>(doc);
 
@@ -182,9 +182,13 @@ void CSSStyleSelector::clear()
     userSheet = 0;
 }
 
+static bool strictParsing;
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
+    // this is a bit hacky, but who cares....
+    ::strictParsing = strictParsing;
+    
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
 
    // the higher the offset or important number, the later the rules get applied.
@@ -351,7 +355,10 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         switch(sel->match)
         {
         case CSSSelector::Exact:
-            if(strcasecmp(sel->value, value)) return false;
+	    if( strictParsing )
+		if(strcmp(sel->value, value)) return false;
+	    else
+		if(strcasecmp(sel->value, value)) return false;
             break;
         case CSSSelector::Set:
             break;
@@ -360,7 +367,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
             //kdDebug( 6080 ) << "checking for list match" << endl;
             QString str = value.string();
             QString selStr = sel->value.string();
-            int pos = str.find(selStr, 0, false);
+            int pos = str.find(selStr, 0, strictParsing);
             if(pos == -1) return false;
             if(pos && str[pos-1] != ' ') return false;
             pos += selStr.length();
@@ -372,7 +379,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
             // ### still doesn't work. FIXME
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
             QString str = value.string();
-            if(str.find(sel->value.string(), 0, false) != 0) return false;
+            if(str.find(sel->value.string(), 0, strictParsing) != 0) return false;
             // ### could be "bla , sdfdsf" too. Parse out spaces
             int pos = sel->value.length() + 1;
             while(pos < (int)str.length() && sel->value[pos] == ' ') pos++;
@@ -1921,7 +1928,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 int p = face.find(' ');
                 // Arial Blk --> Arial
                 // MS Sans Serif --> Sans Serif
-                if(p > 0 && str.length() - p > p)
+                if(p > 0 && (int)str.length() - p > p)
                     str = str.mid( p+1 );
                 else
                     str.truncate( p );

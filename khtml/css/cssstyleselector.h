@@ -97,6 +97,7 @@ namespace khtml
 	
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e);
 	
+	bool strictParsing;
     protected:
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;

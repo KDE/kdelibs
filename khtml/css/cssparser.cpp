@@ -638,7 +638,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         //const QChar *imp = parseSpace(exclam+1, endP);
         QString s(exclam+1, endP - exclam - 1);
         s = s.stripWhiteSpace();
-        s.lower();
+        s = s.lower();
         if(s != "important")
             return;
         important = true;
