@@ -510,6 +510,8 @@ void RenderText::setText(DOMStringImpl *text)
     str = text;
     if(str) str->ref();
 
+    setLayouted(false);
+    containingBlock()->setLayouted(false);
     containingBlock()->layout();
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);

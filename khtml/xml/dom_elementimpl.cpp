@@ -368,11 +368,11 @@ void ElementImpl::applyChanges(bool top)
 {
 
     // ### find a better way to handle non-css attributes
+    if(!m_render) return;
     bool faf = m_style->flowAroundFloats();
     delete m_style;
     m_style = document->styleSelector()->styleForElement(this);
-    if(!m_render) return;
-    
+
     m_style->setFlowAroundFloats(faf);
     m_render->setStyle(m_style);
     

@@ -24,6 +24,7 @@
 #include "dom_textimpl.h"
 
 #include "dom_stringimpl.h"
+#include "dom_exception.h"
 
 #include "dom/dom_node.h"
 #include "misc/htmlhashes.h"
@@ -78,23 +79,53 @@ DOMString CharacterDataImpl::substringData( const unsigned long /*offset*/, cons
 void CharacterDataImpl::appendData( const DOMString &arg )
 {
     str->append(arg.impl);
+    if (m_render)
+      (static_cast<RenderText*>(m_render))->setText(str);
     applyChanges();
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg )
 {
     str->insert(arg.impl, offset);
+    if (m_render)
+      (static_cast<RenderText*>(m_render))->setText(str);
     applyChanges();
 }
 
-void CharacterDataImpl::deleteData( const unsigned long /*offset*/, const unsigned long /*count */)
+void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count )
 {
-    // ###
+    str->remove(offset,count);
+    if (m_render)
+      (static_cast<RenderText*>(m_render))->setText(str);
+    applyChanges();
 }
 
-void CharacterDataImpl::replaceData( const unsigned long /*offset*/, const unsigned long /*count*/, const DOMString &/*arg*/ )
+void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
 {
-    // ###
+    if (offset > str->l)
+	return;
+
+    unsigned long realCount;
+    if (offset + count > str->l)
+	realCount = str->l-offset;
+    else
+	realCount = count;
+    if (realCount <= 0)
+	return;
+
+    DOMString realArg;
+    if (realCount >= arg.length())
+	realArg = arg; // the DOM spec doesn't say what to do if count != arg.length()
+    else if (realCount < arg.length()) {
+	realArg = arg.copy();
+	realArg.truncate(realCount);
+    }
+
+    str->remove(offset,realCount);
+    str->insert(realArg.impl, offset);
+    if (m_render)
+      (static_cast<RenderText*>(m_render))->setText(str);
+    applyChanges();
 }
 
 // ---------------------------------------------------------------------------
@@ -117,10 +148,12 @@ TextImpl::~TextImpl()
     // style object
 }
 
-TextImpl *TextImpl::splitText( const unsigned long /*offset*/ )
+TextImpl *TextImpl::splitText( const unsigned long offset )
 {
-    // ####
-    return 0;
+    if (offset > str->l)
+	throw DOMException(DOMException::INDEX_SIZE_ERR);
+
+    return new TextImpl(document, str->split(offset));
 }
 
 const DOMString TextImpl::nodeName() const
