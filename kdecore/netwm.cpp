@@ -1936,62 +1936,41 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
 
-	if ((mask & Max) && ((p->state & Max) != (state & Max))) {
-	    if ((state & Max) == Max) {
-		// client wants to be fully maximized
-		e.xclient.data.l[0] = 1;
-		e.xclient.data.l[1] = net_wm_state_max_vert;
-		e.xclient.data.l[2] = net_wm_state_max_horiz;
-
-		XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-	    } else if ((state & Max) == MaxVert) {
-		// client wants to be maximized vertically
-
-		if (p->state & MaxHoriz) {
-		    // if we are maximized horizontally, we need to clear it
+	if ((mask & Max) && (( (p->state&mask) & Max) != (state & Max))) {
+	    
+	    unsigned long wishstate = (p->state & ~mask) | (state & mask);
+	    if ( ( (wishstate & MaxHoriz) != (p->state & MaxHoriz) )
+		 && ( (wishstate & MaxVert) != (p->state & MaxVert) ) ) {
+		if ( (wishstate & Max) == Max ) {
+		    e.xclient.data.l[0] = 1;
+		    e.xclient.data.l[1] = net_wm_state_max_horiz;
+		    e.xclient.data.l[2] = net_wm_state_max_vert;
+		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+		} else if ( (wishstate & Max) == 0 ) {
 		    e.xclient.data.l[0] = 0;
 		    e.xclient.data.l[1] = net_wm_state_max_horiz;
-		    e.xclient.data.l[2] = 0l;
-
+		    e.xclient.data.l[2] = net_wm_state_max_vert;
 		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-                }
-
-		e.xclient.data.l[0] = 1;
-		e.xclient.data.l[1] = net_wm_state_max_vert;
-		e.xclient.data.l[2] = 0l;
-
-		XSendEvent(p->display, p->root, False,
-                           netwm_sendevent_mask, &e);
-	    } else if ((state & Max) == MaxHoriz) {
-		// client wants to be maximized horizontally
-
-		if (p->state & MaxVert) {
-		    // if we are maximized vertically, we need to clear it
-		    e.xclient.data.l[0] = 0;
+		} else {
+		    e.xclient.data.l[0] = ( wishstate & MaxHoriz ) ? 1 : 0;
+		    e.xclient.data.l[1] = net_wm_state_max_horiz;
+		    e.xclient.data.l[2] = 0;
+		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+		    e.xclient.data.l[0] = ( wishstate & MaxVert ) ? 1 : 0;
 		    e.xclient.data.l[1] = net_wm_state_max_vert;
-		    e.xclient.data.l[2] = 0l;
-
+		    e.xclient.data.l[2] = 0;
 		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 		}
-
-		e.xclient.data.l[0] = 1;
-		e.xclient.data.l[1] = net_wm_state_max_horiz;
-		e.xclient.data.l[2] = 0l;
-
-		XSendEvent(p->display, p->root, False,
-                           netwm_sendevent_mask, &e);
-	    } else {
-		// client doesn't want to be maximized at all
-		e.xclient.data.l[0] = 0;
+	    } else	if ( (wishstate & MaxVert) != (p->state & MaxVert) ) {
+		e.xclient.data.l[0] = ( wishstate & MaxVert ) ? 1 : 0;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
-		e.xclient.data.l[2] = net_wm_state_max_horiz;
-
-#ifdef NETWMDEBUG
-                fprintf(stderr, "NETWinInfo::setState: clearing maximized\n");
-#endif // NETWMDEBUG
-
-		XSendEvent(p->display, p->root, False,
-                           netwm_sendevent_mask, &e);
+		e.xclient.data.l[2] = 0;
+		XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+	    } else if ( (wishstate & MaxHoriz) != (p->state & MaxHoriz) ) {
+		e.xclient.data.l[0] = ( wishstate & MaxHoriz ) ? 1 : 0;
+		e.xclient.data.l[1] = net_wm_state_max_horiz;
+		e.xclient.data.l[2] = 0;
+		XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	    }
 	}
 
@@ -2504,7 +2483,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			    states[count],
 			    XGetAtomName(p->display, (Atom) states[count]));
 #endif
-		    
+		
 		    if ((Atom) states[count] == net_wm_state_modal)
 			p->state |= Modal;
 		    else if ((Atom) states[count] == net_wm_state_sticky)
@@ -2609,7 +2588,7 @@ void NETWinInfo::update(unsigned long dirty) {
 		XFree(data_ret);
 	}
     }
-    
+
     if (dirty & WMWindowType) {
 	p->type = Unknown;
 	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 2048l,
