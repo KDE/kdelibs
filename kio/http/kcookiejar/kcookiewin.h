@@ -54,7 +54,6 @@ private :
     QLabel* m_protocol;
     QLabel* m_secure;
 
-    KURLLabel*   m_navNext;
     KHttpCookie* m_cookie;
     KHttpCookie* m_cookie_orig;
 

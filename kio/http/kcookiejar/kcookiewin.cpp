@@ -135,7 +135,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     m_button->setDefault( true );
     m_button = bbox->addButton( i18n("&Reject"), this, SLOT(reject()), false );
     bbox->addStretch();
-    m_button = bbox->addButton(m_showDetails ? i18n("&Detail <<"):i18n("&Detail >>"),
+    m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
                                 this, SLOT(slotCookieDetails()), false );
     QWhatsThis::add( m_button, i18n("Click this button to show/hide detailed "
                                   "cookie information") );
@@ -155,7 +155,7 @@ void KCookieWin::slotCookieDetails()
         m_detailView->setMaximumSize( 0, 0 );
         m_detailView->adjustSize();
         m_detailView->hide();
-        m_button->setText( i18n( "&Detail >>" ) );
+        m_button->setText( i18n( "&Details >>" ) );
         m_showDetails = false;
     }
     else
@@ -163,7 +163,7 @@ void KCookieWin::slotCookieDetails()
         m_detailView->setMaximumSize( 1000, 1000 );
         m_detailView->adjustSize();
         m_detailView->show();
-        m_button->setText( i18n( "&Detail <<" ) );
+        m_button->setText( i18n( "&Details <<" ) );
         m_showDetails = true;
     }
 }
@@ -228,15 +228,12 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
 
     if ( cookieCount > 1 )
     {
-        m_navNext = new KURLLabel( this );
-        m_navNext->setGlow( false );
-        m_navNext->setFloat( true );
-        m_navNext->setUnderline( false );
-        m_navNext->setUseTips( true );
-        m_navNext->setTipText( i18n("Click here to see the details for the next cookie") );
-        m_navNext->setText( i18n("Next >") );
-        vlayout->addWidget( m_navNext, 0, Qt::AlignCenter );
-        connect( m_navNext, SIGNAL(leftClickedURL()), SLOT(slotNextCookie()) );
+        QPushButton* btnNext = new QPushButton( i18n("&Next >"), this );
+        btnNext->setFlat( true );
+        btnNext->setFixedSize( btnNext->sizeHint() );
+        QToolTip::add( btnNext, i18n("Click here to see the details for the next cookie") );
+        vlayout->addWidget( btnNext, 0, Qt::AlignCenter );
+        connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );
     }
 
     m_cookie = cookie;
