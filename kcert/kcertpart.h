@@ -43,7 +43,8 @@ class KCertPart : public KParts::ReadWritePart {
 Q_OBJECT
 public:
   KCertPart(QWidget *parentWidget, const char *widgetName,
-            QObject *parent = 0L, const char *name = 0L);
+            QObject *parent = 0L, const char *name = 0L,
+	    const QStringList &args = QStringList() );
   virtual ~KCertPart();
 
   virtual void setReadWrite(bool rw);

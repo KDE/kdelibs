@@ -51,7 +51,8 @@ class KCertPartPrivate {
 
 
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
-                     QObject *parent, const char *name) 
+                     QObject *parent, const char *name,
+		     const QStringList & /*args*/ ) 
           : KParts::ReadWritePart(parent, name) {
  KInstance *instance = new KInstance("KCertPart");
  QGridLayout *grid;
