@@ -50,18 +50,13 @@ bool PhoneNumber::operator==( const PhoneNumber &p ) const
 {
   if ( mNumber != p.mNumber ) return false;
   if ( mType != p.mType ) return false;
-  if ( mId != p.mId ) return false;
   
   return true;
 }
 
 bool PhoneNumber::operator!=( const PhoneNumber &p ) const
 {
-  if ( mNumber == p.mNumber ) return false;
-  if ( mType == p.mType ) return false;
-  if ( mId == p.mId ) return false;
-  
-  return true;
+  return !( p == *this );
 }
 
 void PhoneNumber::setId( const QString &id )
