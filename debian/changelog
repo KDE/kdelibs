@@ -1,10 +1,9 @@
-kdelibs (4:2.2-cvs20010512-1) experimental; urgency=low
+kdelibs (4:2.2-cvs20010521-1) experimental; urgency=low
 
-  * New upstream CVS pull
+  * New upstream CVS pull (alpha2)
   * Remove old .shlibs files
-  * SSL support is smart now, removing ssl hacks to see if we need them anymore
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 12 May 2001 06:15:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 21 May 2001 23:59:00 -0700
 
 kdelibs (4:2.2-cvs20010503-1) experimental; urgency=low
  
