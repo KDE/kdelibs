@@ -2123,32 +2123,36 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
         int t = TDNONE;
-        if(!value->isValueList()) return;
-        CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
-        int len = list->length();
-        for(int i = 0; i < len; i++)
-        {
-            CSSValueImpl *item = list->item(i);
-            if(!item->isPrimitiveValue()) continue;
-            primitiveValue = static_cast<CSSPrimitiveValueImpl *>(item);
-            switch(primitiveValue->getIdent())
-            {
-            case CSS_VAL_NONE:
-                t = TDNONE; break;
-            case CSS_VAL_UNDERLINE:
-                t |= UNDERLINE; break;
-            case CSS_VAL_OVERLINE:
-                t |= OVERLINE; break;
-            case CSS_VAL_LINE_THROUGH:
-                t |= LINE_THROUGH; break;
-            case CSS_VAL_BLINK:
-                t |= BLINK; break;
-            default:
-                return;
-            }
-            style->setTextDecoration(t);
-            style->setTextDecorationColor(style->color());
+        if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE) {
+	    // do nothing
+	} else {
+	    if(!value->isValueList()) return;
+	    CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
+	    int len = list->length();
+	    for(int i = 0; i < len; i++)
+	    {
+		CSSValueImpl *item = list->item(i);
+		if(!item->isPrimitiveValue()) continue;
+		primitiveValue = static_cast<CSSPrimitiveValueImpl *>(item);
+		switch(primitiveValue->getIdent())
+		{
+		    case CSS_VAL_NONE:
+			t = TDNONE; break;
+		    case CSS_VAL_UNDERLINE:
+			t |= UNDERLINE; break;
+		    case CSS_VAL_OVERLINE:
+			t |= OVERLINE; break;
+		    case CSS_VAL_LINE_THROUGH:
+			t |= LINE_THROUGH; break;
+		    case CSS_VAL_BLINK:
+			t |= BLINK; break;
+		    default:
+			return;
+		}
+	    }
         }
+	style->setTextDecoration(t);
+	style->setTextDecorationColor(style->color());
         break;
     }
 
