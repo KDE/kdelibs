@@ -51,7 +51,7 @@ const int XKeyRelease = KeyRelease;
 //-------------------------------------------------------------------
 static int calcModX( int keyModExplicit );
 static int calcModExplicit( int keyModX );
-static void calcKeySym( KKeySequence& key );
+static void calcKeySym( KKeySequenceOld& key );
 static int calcKeyQt( int keySymX, int keyModX );
 
 static int getSymQtEquiv( int keySymX );
@@ -68,7 +68,7 @@ static void readKeyMapping();
 #define PAUSE_CODE	110
 #define BREAK_CODE	114
 
-const int _XMAX = 4;
+const int _XMAX = KKeySymX::_XMAX;
 
 struct TransKey {
 	uint keySymQt;
@@ -149,25 +149,6 @@ static const TransKey g_rgQtToSymX[] =
 	//{ Qt::Key_Direction_R, XK_Direction_R
 };
 
-struct KKeySymX
-{
-	uint keySymX;
-	QString sName;
-	int nCodes;
-	uchar rgCodes[_XMAX];
-	uint rgMods[_XMAX];
-
-	KKeySymX()
-	{
-		keySymX = 0;
-		nCodes = 0;
-		for( int i = 0; i < _XMAX; i++ ) {
-			rgCodes[i] = 0;
-			rgMods[i] = 0;
-		}
-	}
-};
-
 class KSymToInfoMap : public QMap<uint, KKeySymX>
 {
  public:
@@ -223,7 +204,7 @@ static bool g_bInitialized = false;
 //
 #define ToI18N( s ) \
 ((bi18n) ? i18n("QAccel", s) : QString(s))
-QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
+QString KKeySequenceOld::toString( KKeySequenceOld::I18N bi18n ) const
 {
 	QString sMods, sSym;
 	uint keyMod = m_keyModExplicit;
@@ -232,7 +213,7 @@ QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 	if( m_origin == OriginUnset )
 		//return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
 		return QString::null;
-	// TODO: make a clearer way denoting set & unset values in KKeySequence
+	// TODO: make a clearer way denoting set & unset values in KKeySequenceOld
 	if( m_keyMod == -1 && m_keyCombQt != -1 ) {
 		KKeyX11::keyQtToKeyX( m_keyCombQt, 0, &keySymX, &keyMod );
 		keyMod = calcModExplicit( keyMod );
@@ -263,10 +244,10 @@ QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 }
 
 bool g_bCrash = false;
-KKeySequences KKeySequence::stringToKeys( QString sKey )
+KKeySequenceOlds KKeySequenceOld::stringToKeys( QString sKey )
 {
-	KKeySequences rgKeys;
-	KKeySequence key;
+	KKeySequenceOlds rgKeys;
+	KKeySequenceOld key;
 
 	if( g_bCrash ) {
 		char* crash = 0;
@@ -383,6 +364,33 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 	return rgKeys;
 }
 
+/*KKeySequenceOlds KKeySequenceOld::symToKeys( uint sym )
+{
+	KKeySequenceOlds rgKeys;
+	KKeySequenceOld key;
+
+	if( !g_mapSymToInfo.contains( sym ) )
+		return rgKeys;
+
+	key.m_keySymExplicit = (*it).keySymX;
+	key.m_keyCombQtExplicit = ::calcKeyQt( key.m_keySymExplicit, key.m_keyModExplicit );
+	for( int iCode = 0; iCode < (*it).nCodes; iCode++ ) {
+		key.m_keyCode = (*it).rgCodes[iCode];
+		key.m_keyMod = calcModX( key.m_keyModExplicit | (*it).rgMods[iCode] );
+		// If the explicit modifiers are not available,
+		if( key.m_keyMod == -1 )
+			key.m_keyCode = 0;
+		calcKeySym( key );
+		if( key.m_keySym != key.m_keySymExplicit || key.m_keyMod != key.m_keyModExplicit )
+			key.m_keyCombQt = ::calcKeyQt( key.m_keySym, key.m_keyModExplicit | (*it).rgMods[iCode] );
+		else
+			key.m_keyCombQt = key.m_keyCombQtExplicit;
+		rgKeys.push_back( key );
+	}
+
+	return rgKeys;
+}*/
+
 static int calcModX( int keyModExplicit )
 {
 	int keyModX = 0;
@@ -390,7 +398,7 @@ static int calcModX( int keyModExplicit )
 	if( keyModExplicit & ShiftMask )   keyModX |= ShiftMask;
 	if( keyModExplicit & LockMask )    keyModX |= LockMask;
 	if( keyModExplicit & ControlMask ) keyModX |= ControlMask;
-	
+
 	if( keyModExplicit & Mod1Mask ) {
 		if( !KKeyX11::keyModXAlt() )
 			return -1;
@@ -436,7 +444,7 @@ static int calcModExplicit( int keyModX )
 	return keyModExplicit;
 }
 
-static void calcKeySym( KKeySequence& key )
+static void calcKeySym( KKeySequenceOld& key )
 {
 	// Alt+Print = Sys_Req
 	if( key.m_keySymExplicit == XK_Print && key.m_keyMod & KKeyX11::keyModXAlt() && key.m_keyCode == PRINT_CODE ) {
@@ -502,7 +510,7 @@ static int calcKeyQt( int keySymX, int keyModExplicit )
 	return keyCombQt;
 }
 
-void KKeySequence::calcKeyQt()
+void KKeySequenceOld::calcKeyQt()
 {
 	if( m_origin == OriginNative ) {
 		m_keyCombQtExplicit = ::calcKeyQt( m_keySymExplicit, m_keyModExplicit );
@@ -511,7 +519,7 @@ void KKeySequence::calcKeyQt()
 }
 
 // Returns true if X has the Meta key assigned to a modifier bit
-bool KKeySequence::keyboardHasMetaKey()
+bool KKeySequenceOld::keyboardHasMetaKey()
 {
 	if( !g_bInitialized )
 		Initialize();
@@ -713,10 +721,10 @@ void KKeyX11::init()
 	Initialize();
 }
 
-KKeySequence KKeyX11::keyEventXToKey( const XEvent* pEvent )
+KKeySequenceOld KKeyX11::keyEventXToKey( const XEvent* pEvent )
 {
-	KKeySequence key;
-	key.m_origin = KKeySequence::OriginNative;
+	KKeySequenceOld key;
+	key.m_origin = KKeySequenceOld::OriginNative;
 	key.m_keyCode = pEvent->xkey.keycode;
 	// TODO: Do we need to check that state has ModeSwitch mask in right place?
 	key.m_keyMod = pEvent->xkey.state;
@@ -968,7 +976,7 @@ void KKeyX11::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeyS
 
 QString KKeyX11::keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n )
 {
-	KKeySequence key;
+	KKeySequenceOld key;
 	key.m_origin = OriginNative;
 	key.m_keyCode = keyCodeX;
 	key.m_keyMod = keyModX;
@@ -980,11 +988,20 @@ QString KKeyX11::keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n )
 }
 QString KKeyX11::keySymXToString( uint keySymX, uint keyModX, bool bi18n )
 {
-	KKeySequence key;
+	KKeySequenceOld key;
 	key.m_origin = OriginNative;
 	key.m_keySymExplicit = keySymX;
 	key.m_keyModExplicit = keyModX;
 	return key.toString( bi18n ? I18N_Yes : I18N_No );
+}
+
+KKeySymX* KKeyX11::symInfoPtr( int sym )
+{
+	uint keySymX = (uint) sym;
+	if( g_mapSymToInfo.contains( keySymX ) )
+		return &g_mapSymToInfo[keySymX];
+	else
+		return 0;
 }
 
 uint KKeyX11::keyModXShift()		{ return ShiftMask; }

@@ -1,6 +1,5 @@
 /* This file is part of the KDE libraries
 
-
     Copyright (C) 2001 Ellis Whitehead <kde@ellisw.net>
 
     This library is free software; you can redistribute it and/or
@@ -25,15 +24,36 @@
 #ifndef _KKEY_X11_H
 #define _KKEY_X11_H
 
-#include "kkeysequence.h"
+#include "kkeysequenceold.h"
 
 typedef union  _XEvent XEvent;
 
-class KKeyX11 : public KKeySequence
+struct KKeySymX
+{
+	enum { _XMAX = 4 };
+
+	uint keySymX;
+	QString sName;
+	int nCodes;
+	uchar rgCodes[_XMAX];
+	uint rgMods[_XMAX];
+
+	KKeySymX()
+	{
+		keySymX = 0;
+		nCodes = 0;
+		for( int i = 0; i < _XMAX; i++ ) {
+			rgCodes[i] = 0;
+			rgMods[i] = 0;
+		}
+	}
+};
+
+class KKeyX11 : public KKeySequenceOld
 {
 public:
 	KKeyX11()                                  { m_keyCombQt = 0; }
-	KKeyX11( const KKeyX11& k )  : KKeySequence( (KKeySequence&)k ) {}
+	KKeyX11( const KKeyX11& k )  : KKeySequenceOld( (KKeySequenceOld&)k ) {}
 	KKeyX11( uint keyCombQt )                  { m_keyCombQt = keyCombQt; }
 	KKeyX11( const QKeyEvent * );
 	KKeyX11( const QString& );
@@ -63,7 +83,7 @@ public:
 		MOD_KEYS
 	};
 
-	static KKeySequence keyEventXToKey( const XEvent* pEvent );
+	static KKeySequenceOld keyEventXToKey( const XEvent* pEvent );
 	static void keyEventXToKeyX( const XEvent* pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 	static uint keyEventXToKeyQt( const XEvent* pEvent );
 	static int keySymXIndex( uint keySym );
@@ -74,6 +94,8 @@ public:
 
 	static QString keyCodeXToString( uchar keyCodeX, uint keyModX, bool bi18n );
 	static QString keySymXToString( uint keySymX, uint keyModX, bool bi18n );
+
+	static KKeySymX* symInfoPtr( int sym );
 
 	// Return the keyModX containing just the bit set for the given modifier.
 	static uint keyModXShift();		// ShiftMask

@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kkeysequence.h"
+#include "kkeysequenceold.h"
 
 #include <qaccel.h>
 #include <qnamespace.h>
@@ -30,26 +30,26 @@
 
 //-------------------------------------------------------------------
 
-KKeySequence::KKeySequence()
+KKeySequenceOld::KKeySequenceOld()
 	{ clear(); }
-KKeySequence::KKeySequence( const KKeySequence& k )
+KKeySequenceOld::KKeySequenceOld( const KKeySequenceOld& k )
 	{ *this = k; }
-KKeySequence::KKeySequence( const QKeySequence& k )
+KKeySequenceOld::KKeySequenceOld( const QKeySequence& k )
 	{ *this = (uint) (int) k; }
 
-KKeySequence::KKeySequence( const QString& k )
+KKeySequenceOld::KKeySequenceOld( const QString& k )
 {
-	KKeySequences rg( k );
+	KKeySequenceOlds rg( k );
 	if( rg.size() >= 1 )
 		*this = rg[0];
 	else
 		clear();
 }
 
-KKeySequence::KKeySequence( uint keyCombQt )
+KKeySequenceOld::KKeySequenceOld( uint keyCombQt )
 	{ *this = keyCombQt; }
 
-KKeySequence::KKeySequence( const QKeyEvent *pke )
+KKeySequenceOld::KKeySequenceOld( const QKeyEvent *pke )
 {
 	uint keyCombQt = 0;
 
@@ -72,7 +72,7 @@ KKeySequence::KKeySequence( const QKeyEvent *pke )
 	*this = keyCombQt;
 }
 
-void KKeySequence::clear()
+void KKeySequenceOld::clear()
 {
 	m_origin = OriginUnset;
 	m_keyCombQt = -1;
@@ -81,8 +81,8 @@ void KKeySequence::clear()
 	m_keyCombQtExplicit = m_keySymExplicit = m_keyModExplicit = 0;
 }
 
-//KKeySequence& KKeySequence::operator =( KKeySequence k )      { m_keyCombQt = k.m_keyCombQt; return *this; }
-KKeySequence& KKeySequence::operator =( uint keyCombQt )
+//KKeySequenceOld& KKeySequenceOld::operator =( KKeySequenceOld k )      { m_keyCombQt = k.m_keyCombQt; return *this; }
+KKeySequenceOld& KKeySequenceOld::operator =( uint keyCombQt )
 {
 	m_origin = OriginQt;
 	m_keyCombQtExplicit = keyCombQt;
@@ -110,7 +110,7 @@ KKeySequence& KKeySequence::operator =( uint keyCombQt )
 // A Qt key may have multiple Key Sym equivalents.
 // A key sym may be associated with multiple key codes
 
-int KKeySequence::compare( const KKeySequence& a, const KKeySequence& b )
+int KKeySequenceOld::compare( const KKeySequenceOld& a, const KKeySequenceOld& b )
 {
 	if( a.m_origin == OriginUnset && b.m_origin == OriginUnset )
 		return 0;
@@ -120,12 +120,12 @@ int KKeySequence::compare( const KKeySequence& a, const KKeySequence& b )
 		return 1;
 
 	if( a.m_origin != b.m_origin ) {
-		//KKeySequence k1( a ), k2( b );
+		//KKeySequenceOld k1( a ), k2( b );
 		//k1.calcKeyQt();
 		//k2.calcKeyQt();
 		//return k1.m_keyCombQt - k2.m_keyCombQt;
-		KKeySequence* pA = (KKeySequence*) &a;
-		KKeySequence* pB = (KKeySequence*) &b;
+		KKeySequenceOld* pA = (KKeySequenceOld*) &a;
+		KKeySequenceOld* pB = (KKeySequenceOld*) &b;
 		if( a.m_keyCombQt == -1 )
 			pA->calcKeyQt();
 		if( b.m_keyCombQt == -1 )
@@ -145,7 +145,7 @@ int KKeySequence::compare( const KKeySequence& a, const KKeySequence& b )
 		return a.m_keySym - b.m_keySym;
 }
 
-KKeySequence::operator QKeySequence()
+KKeySequenceOld::operator QKeySequence()
 {
 	if( m_origin == OriginUnset )
 		return QKeySequence();
@@ -154,7 +154,7 @@ KKeySequence::operator QKeySequence()
 	return QKeySequence( (int) m_keyCombQt );
 }
 
-int KKeySequence::keyQt()
+int KKeySequenceOld::keyQt()
 {
 	if( m_keyCombQt == -1 )
 		calcKeyQt();
@@ -162,12 +162,12 @@ int KKeySequence::keyQt()
 }
 
 /*
-uint KKeySequence::key() const                        { return m_keyCombQt; }
-uint KKeySequence::sym() const                        { return m_keyCombQt & 0xffff; }
-uint KKeySequence::mod() const                        { return m_keyCombQt & ~0xffff; }
-uint KKeySequence::state() const                      { return mod() >> 18; }
+uint KKeySequenceOld::key() const                        { return m_keyCombQt; }
+uint KKeySequenceOld::sym() const                        { return m_keyCombQt & 0xffff; }
+uint KKeySequenceOld::mod() const                        { return m_keyCombQt & ~0xffff; }
+uint KKeySequenceOld::state() const                      { return mod() >> 18; }
 */
-bool KKeySequence::isNull() const
+bool KKeySequenceOld::isNull() const
 {
 	return m_origin == OriginUnset
 		|| (m_origin == OriginQt && m_keyCombQt == 0)
@@ -183,7 +183,7 @@ bool KKeySequence::isNull() const
 // X11-related key functions below.
 static int g_bUseFourModifierKeys = -1;
 
-bool KKeySequence::useFourModifierKeys()
+bool KKeySequenceOld::useFourModifierKeys()
 {
 	if( g_bUseFourModifierKeys == -1 ) {
 		// Read in whether to use 4 modifier keys
@@ -194,7 +194,7 @@ bool KKeySequence::useFourModifierKeys()
 	return g_bUseFourModifierKeys == 1;
 }
 
-void KKeySequence::useFourModifierKeys( bool b )
+void KKeySequenceOld::useFourModifierKeys( bool b )
 {
 	if( g_bUseFourModifierKeys != (int)b ) {
 		g_bUseFourModifierKeys = b && keyboardHasMetaKey();
@@ -209,7 +209,7 @@ void KKeySequence::useFourModifierKeys( bool b )
 	kdDebug(125) << "bUseFourModifierKeys = " << g_bUseFourModifierKeys << endl;
 }
 
-bool KKeySequence::qtSupportsMetaKey()
+bool KKeySequenceOld::qtSupportsMetaKey()
 {
 	static int qtSupport = -1;
 	if( qtSupport == -1 ) {
@@ -221,24 +221,24 @@ bool KKeySequence::qtSupportsMetaKey()
 
 //-------------------------------------------------------------------
 
-uint KKeySequence::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
+uint KKeySequenceOld::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
 
 //-------------------------------------------------------------------
 
-KKeySequences::KKeySequences( const QString& sKey )
+KKeySequenceOlds::KKeySequenceOlds( const QString& sKey )
 {
-	*this = KKeySequence::stringToKeys( sKey );
+	*this = KKeySequenceOld::stringToKeys( sKey );
 }
 
-KKeySequence KKeySequences::first() const
+KKeySequenceOld KKeySequenceOlds::first() const
 {
 	if( size() > 0 )
 		return operator[]( 0 );
 	else
-		return KKeySequence();
+		return KKeySequenceOld();
 }
 
-bool KKeySequences::operator ==( KKeySequences& keys )
+bool KKeySequenceOlds::operator ==( KKeySequenceOlds& keys )
 {
 	if( size() != keys.size() )
 		return false;
