@@ -64,8 +64,25 @@ const int XKeyRelease = KeyRelease;
 
 static KAccelActions *g_pactionsGlobal, *g_pactionsApplication;
 
-class KKeyChooserPrivate {
-public:
+class KKeyChooserItem : public KListViewItem
+{
+ public:
+	KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action );
+	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action );
+
+	virtual QString text( int iCol ) const;
+	KAccelAction& action() const { return *m_pAction; }
+
+ protected:
+	KAccelAction* m_pAction;
+
+ private:
+	class KKeyChooserItemPrivate* d;
+};
+
+class KKeyChooserPrivate
+{
+ public:
 	KListView *pList;
 	QLabel *lInfo;
 	KKeyButton *bChange;
@@ -83,7 +100,7 @@ public:
 	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
 	//  otherwise aDefaultKeycode.
 	bool bPreferFourModifierKeys;
-	};
+};
 
 // HACK: for getting around some of Qt's lack of Win support
 enum { QT_META_MOD = Qt::ALT << 1 };	// Supply Meta bit where Qt left it out.
@@ -461,7 +478,7 @@ void KKeyChooser::buildListView()
 		KAccelAction& action = *d->actionsNew.actionPtr( i );
 		kdDebug(125) << "Key: " << action.name() << endl;
 		if( action.name().startsWith( "Program:" ) ) {
-			pItem = new KListViewItem( d->pList, pProgramItem, action.desc() );
+			pItem = new KListViewItem( d->pList, pProgramItem, action.label() );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -469,7 +486,7 @@ void KKeyChooser::buildListView()
 				delete pProgramItem;
 			pProgramItem = pParentItem = pItem;
 		} else if( action.name().startsWith( "Group:" ) ) {
-			pItem = new KListViewItem( pProgramItem, pParentItem, action.desc() );
+			pItem = new KListViewItem( pProgramItem, pParentItem, action.label() );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -833,7 +850,7 @@ QString KKeyChooserItem::text( int iCol ) const
 	KAccelAction& action = *m_pAction;
 
 	if( iCol == 0 )
-		return action.desc();
+		return action.label();
 	else if( iCol <= (int) action.sequenceCount()
 		  && iCol <= (int) action.shortcut().count() )
 		return action.seq(iCol-1).toString();

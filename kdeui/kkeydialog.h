@@ -38,22 +38,6 @@ class KActionPtrList;
 class KGlobalAccel;
 class KShortcut;
 
-class KKeyChooserItem : public KListViewItem
-{
- public:
-	KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action );
-	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action );
-
-	virtual QString text( int iCol ) const;
-	KAccelAction& action() const { return *m_pAction; }
-
- protected:
-	KAccelAction* m_pAction;
-
- private:
-	class KKeyChooserItemPrivate* d;
-};
-
 /**
  * Configure dictionaries of key/action associations for KAccel and
  * KGlobalAccel.
