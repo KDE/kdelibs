@@ -632,6 +632,7 @@ dcop_connect()
   char        fileName[512];
   char        hostName[256];
   char        displayName[256];
+  int       i;
 
   homeDir = getenv("HOME");
 
@@ -644,7 +645,6 @@ dcop_connect()
     return False;
 
   strcpy(displayName, display);
-  int i;
   if((i = strrchr(displayName, '.')) > strrchr(displayName, ':') && i)
       displayName[i] = '\0';
 
