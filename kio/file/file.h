@@ -68,14 +68,6 @@ protected:
     time_t m_mtime;
   };
 
-  struct Del
-  {
-    QString m_strAbsSource;
-    QString m_strRelDest;
-    mode_t m_mode;
-    off_t m_size;
-  };
-
   void doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move = false );
 
   /**
