@@ -108,9 +108,9 @@
 </guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
-<!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
-<!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
-<!ENTITY RMB     "<mousebutton>RMK</mousebutton>">
+<!ENTITY LMB     "<mousebutton>linker</mousebutton> muisknop">
+<!ENTITY MMB     "<mousebutton>middelste</mousebutton> muisknop">
+<!ENTITY RMB     "<mousebutton>rechter</mousebutton> muisknop">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
 <!ENTITY Backspace   "<keycap>Backspace</keycap>">
 <!ENTITY Esc     "<keycap>Escape</keycap>">
