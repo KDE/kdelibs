@@ -14,7 +14,8 @@ kde_toolbar_DATA = add_point.png airbrush.png back.png blend.png bottom.png \
 	reload.png rightjust.png search.png send.png smart_select.png \
 	spellcheck.png stamp.png start.png stop.png text.png tick.png \
 	top.png transform.png undo.png up.png viewmag+.png \
-	viewmag-.png viewmag.png viewzoom.png unknown.png
+	viewmag-.png viewmag.png viewzoom.png unknown.png \
+	1rightarrow.png 1leftarrow.png 2rightarrow.png 2leftarrow.png
 
 EXTRA_DIST = $(kde_toolbar_DATA)
 
