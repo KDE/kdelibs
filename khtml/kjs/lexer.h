@@ -23,13 +23,12 @@
 
 #include "global.h"
 #include "kjsstring.h"
-#include "qstring.h"
 
 namespace KJS {
 
   class KJSLexer {
   public:
-    KJSLexer(const QString &c);
+    KJSLexer(const UString &c);
     ~KJSLexer();
 
     int lex();
@@ -81,28 +80,29 @@ namespace KJS {
     bool isWhiteSpace() const;
     bool isLineTerminator() const;
     bool isIdentLetter() const;
-    bool isDecimalDigit(UnicodeChar c) const;
-    bool isHexDigit(UnicodeChar c) const;
-    bool isOctalDigit(UnicodeChar c) const;
+    bool isDecimalDigit(unsigned short c) const;
+    bool isHexDigit(unsigned short c) const;
+    bool isOctalDigit(unsigned short c) const;
 
-    int matchPunctuator(UnicodeChar c1, UnicodeChar c2,
-			UnicodeChar c3, UnicodeChar c4);
-    UnicodeChar singleEscape(UnicodeChar c) const;
-    UnicodeChar convertOctal(UnicodeChar c1, UnicodeChar c2,
-			     UnicodeChar c3) const;
-    long convertHex(UnicodeChar c1) const;
-    UnicodeChar convertHex(UnicodeChar c1, UnicodeChar c2) const;
-    UnicodeChar convertUnicode(UnicodeChar c1, UnicodeChar c2,
-			       UnicodeChar c3, UnicodeChar c4) const;
+    int matchPunctuator(unsigned short c1, unsigned short c2,
+			unsigned short c3, unsigned short c4);
+    unsigned char singleEscape(unsigned short c) const;
+    unsigned short convertOctal(unsigned short c1, unsigned short c2,
+                                unsigned short c3) const;
+    unsigned char convertHex(unsigned short c1) const;
+    unsigned char convertHex(unsigned short c1, unsigned short c2) const;
+    UnicodeChar convertUnicode(unsigned short c1, unsigned short c2,
+                               unsigned short c3, unsigned short c4) const;
 
-    void record8(UnicodeChar c);
+    void record8(unsigned short c);
+    void record16(unsigned char c);
     void record16(UnicodeChar c);
 
-    QString code;
+    UString code;
     int yycolumn;
 
     // current and following unicode characters
-    UnicodeChar current, next1, next2, next3;
+    unsigned short current, next1, next2, next3;
 
     struct keyword {
       const char *name;

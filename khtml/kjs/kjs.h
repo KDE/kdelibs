@@ -21,11 +21,10 @@
 #ifndef _KJS_H_
 #define _KJS_H_
 
-#include <qstring.h>
-
 class KHTMLWidget;
 
 namespace KJS {
+  class UnicodeChar;
   class KJSLexer;
   class KJSContext;
   class KJSGlobal;
@@ -53,7 +52,14 @@ public:
    * between each call.
    * @param code is a string containing the code to be executed.
    */
-  void evaluate(const QString &code);
+  void evaluate(const char *code);
+  /**
+   * Same as above. Only differing in the arguments accepted.
+   * KJS::UnicodeChar is a data type compatible to XChar2b and QChar.
+   * @param code is an Unicode string containing the code to be executed.
+   * @param length of the string.
+   */
+  void evaluate(const KJS::UnicodeChar *code, unsigned int length);
 private:
   KHTMLWidget *htmlw;
 

@@ -24,8 +24,6 @@
 #include <string.h>
 #include <assert.h>
 
-#include <qstring.h>
-
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
@@ -43,7 +41,7 @@ int yylex()
   return KJSWorld::lexer->lex();
 }
 
-KJSLexer::KJSLexer(const QString &c)
+KJSLexer::KJSLexer(const UString &c)
   : yylineno(0),
     size8(128), size16(128),
     pos8(0), pos16(0), pos(0),
@@ -83,7 +81,7 @@ int KJSLexer::lex()
 {
   int token = 0;
   state = Start;
-  UnicodeChar stringType = 0; // either single or double quotes
+  unsigned short stringType = 0; // either single or double quotes
   pos8 = pos16 = 0;
   done = false;
 
@@ -356,25 +354,25 @@ bool KJSLexer::isIdentLetter() const
 	  current == '$' || current == '_');
 }
 
-bool KJSLexer::isDecimalDigit(UnicodeChar c) const
+bool KJSLexer::isDecimalDigit(unsigned short c) const
 {
   return (c >= '0' && c <= '9');
 }
 
-bool KJSLexer::isHexDigit(UnicodeChar c) const
+bool KJSLexer::isHexDigit(unsigned short c) const
 {
   return (c >= '0' && c <= '9' ||
 	  c >= 'a' && c <= 'f' ||
 	  c >= 'A' && c <= 'F');
 }
 
-bool KJSLexer::isOctalDigit(UnicodeChar c) const
+bool KJSLexer::isOctalDigit(unsigned short c) const
 {
   return (c >= '0' && c <= '7');
 }
 
-int KJSLexer::matchPunctuator(UnicodeChar c1, UnicodeChar c2,
-			      UnicodeChar c3, UnicodeChar c4)
+int KJSLexer::matchPunctuator(unsigned short c1, unsigned short c2,
+			      unsigned short c3, unsigned short c4)
 {
   if (c1 == '>' && c2 == '>' && c3 == '>' && c4 == '=') {
     shift(4);
@@ -476,7 +474,7 @@ int KJSLexer::matchPunctuator(UnicodeChar c1, UnicodeChar c2,
   }
 }
 
-UnicodeChar KJSLexer::singleEscape(UnicodeChar c) const
+unsigned char KJSLexer::singleEscape(unsigned short c) const
 {
   switch(c) {
   case 'b':
@@ -508,13 +506,13 @@ UnicodeChar KJSLexer::singleEscape(UnicodeChar c) const
   }
 }
 
-UnicodeChar KJSLexer::convertOctal(UnicodeChar c1, UnicodeChar c2,
-				   UnicodeChar c3) const
+unsigned short KJSLexer::convertOctal(unsigned short c1, unsigned short c2,
+                                      unsigned short c3) const
 {
   return ((c1 - '0') * 64 + (c2 - '0') * 8 + c3 - '0');
 }
 
-long KJSLexer::convertHex(UnicodeChar c) const
+unsigned char KJSLexer::convertHex(unsigned short c) const
 {
   if (c >= '0' && c <= '9')
     return (c - '0');
@@ -524,19 +522,19 @@ long KJSLexer::convertHex(UnicodeChar c) const
     return (c - 'A' + 10);
 }
 
-UnicodeChar KJSLexer::convertHex(UnicodeChar c1, UnicodeChar c2) const
+unsigned char KJSLexer::convertHex(unsigned short c1, unsigned short c2) const
 {
-  return (convertHex(c1) * 16 + convertHex(c2));
+  return (convertHex(c1) << 4 + convertHex(c2));
 }
 
-UnicodeChar KJSLexer::convertUnicode(UnicodeChar c1, UnicodeChar c2,
-				     UnicodeChar c3, UnicodeChar c4) const
+UnicodeChar KJSLexer::convertUnicode(unsigned short c1, unsigned short c2,
+                                     unsigned short c3, unsigned short c4) const
 {
-  return (convertHex(c1) * 4096 + convertHex(c2) * 256 +
-	  convertHex(c3) * 16 + convertHex(c4));
+  return UnicodeChar(convertHex(c1) << 4 + convertHex(c2),
+                     convertHex(c3) << 4 + convertHex(c4));
 }
 
-void KJSLexer::record8(UnicodeChar c)
+void KJSLexer::record8(unsigned short c)
 {
   assert(c <= 0xff);
 
@@ -552,6 +550,11 @@ void KJSLexer::record8(UnicodeChar c)
   buffer8[pos8++] = (char) c;
 }
 
+void KJSLexer::record16(unsigned char c)
+{
+  record16(UnicodeChar(0, c));
+}
+
 void KJSLexer::record16(UnicodeChar c)
 {
   // enlarge buffer if full
@@ -563,7 +566,7 @@ void KJSLexer::record16(UnicodeChar c)
     size16 *= 2;
   }
 
-  buffer16[pos16++] = (char) c;
+  buffer16[pos16++] = c;
 }
 
 int KJSLexer::lookupKeyword(const char *text)

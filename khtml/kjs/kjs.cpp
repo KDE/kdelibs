@@ -48,11 +48,14 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
   assert(prog == 0);
 }
 
-void KJSWorld::evaluate(const QString &code)
+void KJSWorld::evaluate(const char *code)
 {
-  fprintf(stderr, "KJSWorld::evaluate(%s)\n", code.ascii());
+  evaluate(UString(code).unicode(), strlen(code));
+}
 
-  lexer = new KJSLexer(code);
+void KJSWorld::evaluate(const KJS::UnicodeChar *code, unsigned int length)
+{
+  lexer = new KJSLexer(UString(code, length));
 
   int parseError = yyparse();
 

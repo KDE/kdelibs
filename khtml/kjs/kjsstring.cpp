@@ -117,9 +117,9 @@ UString::UString() : s(0L), l(0)
 UString::UString(char c)
 {
   s = new UnicodeChar[1];
-  s[0] = c;
+  s[0].lo = c;
+  s[0].hi = 0;
   l = 1;
-  //  cout << "UString(" << s << ")" << endl;
 }
 
 UString::UString(const char *c)
@@ -127,9 +127,7 @@ UString::UString(const char *c)
   l = strlen(c);
   s = new UnicodeChar[l];
   for (unsigned int i = 0; i < l; i++)
-    s[i] = c[i];
-
-  //  cout << "UString(" << c << ")" << endl;
+    s[i].lo = c[i];
 }
 
 UString::UString(const UnicodeChar *c, int length)
@@ -137,9 +135,6 @@ UString::UString(const UnicodeChar *c, int length)
   l = length;
   s = new UnicodeChar[l];
   memcpy(s, c, l * sizeof(UnicodeChar));
-
-  //  cout << "UString(length: " << length << ")" << endl;
-
 }
 
 UString::UString(const UString &b)
@@ -147,7 +142,6 @@ UString::UString(const UString &b)
   l = b.length();
   s = new UnicodeChar[l];
   memcpy(s, b.unicode(), l * sizeof(UnicodeChar));
-  //  cout << "UString("/* << s <<*/ ") (copy constructor)" << endl;
 }
 
 UString::UString(const UString *b)
@@ -188,7 +182,7 @@ UString &UString::operator=(const char *c)
   l = strlen(c);
   s = new UnicodeChar[l];
   for (unsigned int i = 0; i < l; i++)
-    s[i] = c[i];
+    s[i].lo = c[i];
 
   return *this;
 }
@@ -222,7 +216,7 @@ const char* UString::ascii() const
 
   char *memoryLeak = new char[l+1];
   for(unsigned int i = 0; i < l; i++)
-    memoryLeak[i] = (char) s[i];
+    memoryLeak[i] = s[i].lo;
   memoryLeak[l] = '\0';
 
   return memoryLeak;
@@ -230,8 +224,8 @@ const char* UString::ascii() const
 
 UnicodeChar UString::operator[](unsigned int pos) const
 {
-  if (pos < 0 || pos >= l)
-    return 0;
+  if (pos >= l)
+    return UnicodeChar();
 
   return s[pos];
 }

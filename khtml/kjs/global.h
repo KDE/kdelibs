@@ -89,7 +89,14 @@ namespace KJS {
 
   enum FunctionAttribute { ImplicitNone, ImplicitThis, ImplicitParents };
 
-  typedef unsigned short UnicodeChar;
+  // XChar2b and QChar compatible character representation
+  struct UnicodeChar {
+    UnicodeChar() : hi(0), lo(0) { }
+    UnicodeChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
+    unsigned short unicode() const { return hi << 8 | lo; }
+    unsigned char hi;
+    unsigned char lo;
+  };
 
   extern const double NaN;
   extern const double Inf;
