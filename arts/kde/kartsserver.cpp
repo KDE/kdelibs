@@ -35,69 +35,70 @@ KArtsServer::KArtsServer(QObject *parent, const char *name)
 	: QObject(parent, name)
 	, d(new Data)
 {
+	d->server = Arts::SoundServerV2::null();
 }
 
 KArtsServer::~KArtsServer(void)
 {
+	d->server = Arts::SoundServerV2::null();
 	delete d;
 }
 
 Arts::SoundServerV2 KArtsServer::server(void)
 {
-	if(!d->server.isNull() && !d->server.error()) return d->server;
+	if(d->server.isNull())
+		d->server = Arts::Reference("global:Arts_SoundServerV2");
 
-	d->server = Arts::Reference("global:Arts_SoundServerV2");
+	if(!d->server.isNull() && !d->server.error())
+		return d->server;
 
-	if( d->server.isNull() || d->server.error() )
+	// aRts seems not to be running, let's try to run it
+	// First, let's read the configuration as in kcmarts
+	KConfig *config = new KConfig("kcmartsrc");
+	KProcess proc;
+
+	config->setGroup("Arts");
+
+	bool rt = config->readBoolEntry("StartRealTime", false);
+	bool x11Comm = config->readBoolEntry("X11GlobalComm", false);
+
+	// put the value of x11Comm into .mcoprc
+	KConfig *X11CommConfig = new KConfig(QDir::homeDirPath()+"/.mcoprc");
+
+	if(x11Comm)
+		X11CommConfig->writeEntry("GlobalComm", "Arts::X11GlobalComm");
+	else
+		X11CommConfig->writeEntry("GlobalComm", "Arts::TmpGlobalComm");
+
+	X11CommConfig->sync();
+	delete X11CommConfig;
+
+	proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("kdeinit_wrapper")));
+
+	if(rt)
+		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artswrapper")));
+	else
+		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artsd")));
+
+	proc << config->readEntry("Arguments", "-F 5 -S 8192");
+
+	if(proc.start(KProcess::Block) && proc.normalExit())
 	{
-		// aRts seems not to be running, let's try to run it
-		// First, let's read the configuration as in kcmarts
-		KConfig *config = new KConfig("kcmartsrc");
-		KProcess proc;
-
-		config->setGroup("Arts");
-
-		bool rt = config->readBoolEntry("StartRealTime", false);
-		bool x11Comm = config->readBoolEntry("X11GlobalComm", false);
-
-		// put the value of x11Comm into .mcoprc
-		KConfig *X11CommConfig = new KConfig(QDir::homeDirPath()+"/.mcoprc");
-
-		if(x11Comm)
-			X11CommConfig->writeEntry("GlobalComm", "Arts::X11GlobalComm");
-		else
-			X11CommConfig->writeEntry("GlobalComm", "Arts::TmpGlobalComm");
-
-		X11CommConfig->sync();
-		delete X11CommConfig;
-
-		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("kdeinit_wrapper")));
-
-		if(rt)
-			proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artswrapper")));
-		else
-			proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artsd")));
-
-		proc << config->readEntry("Arguments", "-F 5 -S 8192");
-
-		if(proc.start(KProcess::Block) && proc.normalExit())
+		// We could have a race-condition here.
+		// The correct way to do it is to make artsd fork-and-exit
+		// after starting to listen to connections (and running artsd
+		// directly instead of using kdeinit), but this is better
+		// than nothing.
+		int time = 0;
+		do
 		{
-			// We could have a race-condition here.
-			// The correct way to do it is to make artsd fork-and-exit
-			// after starting to listen to connections (and running artsd
-			// directly instead of using kdeinit), but this is better
-			// than nothing.
-			int time = 0;
-			do
-			{
-				sleep(1);
-				d->server = Arts::Reference("global:Arts_SoundServerV2");
-			} while(++time < 5 && (d->server.isNull()));
+			sleep(1);
+			d->server = Arts::Reference("global:Arts_SoundServerV2");
+		} while(++time < 5 && (d->server.isNull()));
 
-			emit restartedServer();
-		}
-		// TODO else what?
+		emit restartedServer();
 	}
+	// TODO else what?
 
 	return d->server;
 }
