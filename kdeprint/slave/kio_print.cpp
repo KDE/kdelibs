@@ -53,7 +53,10 @@ void addAtom(KIO::UDSEntry& entry, unsigned int ID, long l, const QString& s = Q
 
 int kdemain(int argc, char **argv)
 {
+	KLocale::setMainInstance("kdelibs");
 	KInstance	instance("kio_print");
+        ( void ) KGlobal::locale();
+
 
 	PRINT_DEBUG << "starting ioslave" << endl;
 	if (argc != 4)
