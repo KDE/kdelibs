@@ -191,6 +191,7 @@ void KRootPixmap::repaint(bool force)
 	(m_pWidget->height() < m_Rect.height())
        )
     {
+        m_Rect = QRect(p1, p2);
  	updateBackground( m_pPixmap );
 	return;
     }
