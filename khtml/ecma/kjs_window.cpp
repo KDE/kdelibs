@@ -841,6 +841,15 @@ void Window::scheduleClose()
   QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
 }
 
+void Window::closeNow()
+{
+  if (!m_part.isNull())
+  {
+    //kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
+    delete m_part;
+  }
+}
+
 bool Window::isSafeScript(ExecState *exec) const
 {
   if (m_part.isNull()) { // part deleted ? can't grant access
@@ -1255,7 +1264,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::Blur:
     // TODO
     return Undefined();
-  case Window::Close:
+  case Window::Close: {
     /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
        The close method closes only windows opened by JavaScript using the open method.
        If you attempt to close any other window, a confirm is generated, which
@@ -1266,6 +1275,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
        special case for one-off windows that need to open other windows and
        then dispose of themselves.
     */
+    bool doClose = false;
     if (!part->openedByJS())
     {
       // To conform to the SPEC, we only ask if the window
@@ -1273,13 +1283,23 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       History history(exec,part);
       if ( history.get( exec, "length" ).toInt32(exec) <= 1 ||
            KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") ) == KMessageBox::Yes )
-        (const_cast<Window*>(window))->scheduleClose();
+        doClose = true;
     }
     else
+      doClose = true;
+
+    if (doClose)
     {
-      (const_cast<Window*>(window))->scheduleClose();
+      // If this is the current window (the one the interpreter runs in),
+      // then schedule a delayed close (so that the script terminates first).
+      // But otherwise, close immediately. This fixes w=window.open("","name");w.close();window.open("name");
+      if ( Window::retrieveActive(exec) == window )
+        (const_cast<Window*>(window))->scheduleClose();
+      else
+        (const_cast<Window*>(window))->closeNow();
     }
     return Undefined();
+  }
   case Window::CaptureEvents:
     // Do nothing. This is a NS-specific call that isn't needed in Konqueror.
     break;
@@ -1426,11 +1446,7 @@ void WindowQObject::timerEvent(QTimerEvent *e)
 
 void WindowQObject::timeoutClose()
 {
-  if (!parent->part().isNull())
-  {
-    //kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
-    delete parent->m_part;
-  }
+  parent->closeNow();
 }
 
 Value FrameArray::get(ExecState *exec, const UString &p) const
