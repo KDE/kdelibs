@@ -1,3 +1,7 @@
+2005-03-21  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/htmltokenizer.cpp: Only skip first LF if immediately after PRE tag
+
 2005-03-18  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * xml/dom_docimpl.h: Add dictionary of CounterNodes

@@ -172,7 +172,7 @@ void HTMLTokenizer::reset()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
     scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-    
+
     if (m_autoCloseTimer) {
         killTimer(m_autoCloseTimer);
         m_autoCloseTimer = 0;
@@ -1135,8 +1135,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             switch( tagID ) {
             case ID_PRE:
-                discard = LFDiscard;
                 prePos = 0;
+                discard = AllDiscard;
                 break;
             case ID_SCRIPT:
                 if (beginTag) {
@@ -1364,12 +1364,10 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
 
             if ( pending ) {
                 // pre context always gets its spaces/linefeeds
-                if ( pre )
-                    addPending();
                 // only add in existing inline context or if
                 // we just started one, i.e. we're about to insert real text
-                else if ( !parser->selectMode() &&
-                          ( !parser->noSpaces() || dest > buffer )) {
+                if ( pre || script || (!parser->selectMode() &&
+                          ( !parser->noSpaces() || dest > buffer ))) {
                     addPending();
 		    discard = AllDiscard;
                 }
@@ -1495,8 +1493,8 @@ void HTMLTokenizer::setAutoClose( bool b ) {
     killTimer( m_autoCloseTimer );
     m_autoCloseTimer = 0;
     if ( b )
-        m_autoCloseTimer = startTimer(100);       
-}    
+        m_autoCloseTimer = startTimer(100);
+}
 
 void HTMLTokenizer::end()
 {
