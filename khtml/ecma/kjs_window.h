@@ -97,12 +97,15 @@ namespace KJS {
 
   class Location : public HostImp {
   public:
-    Location(KHTMLPart *p);
+    ~Location();
+    static Location* retrieve(KHTMLPart *);
+
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO &v);
     virtual KJSO toPrimitive(Type preferred) const;
     virtual String toString() const;
   private:
+    Location(KHTMLPart *p);
     QGuardedPtr<KHTMLPart> part;
   };
 
