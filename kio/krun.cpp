@@ -327,8 +327,8 @@ pid_t KRun::run( const QString& _cmd )
 
     QString prefix =
       (QString(getenv("SHELL")).right(3) == "csh") ?
-      "setenv LD_PRELOAD %1 ; setenv X_INITIAL_DESKTOP %2 ;" :
-      "LD_PRELOAD=%1 X_INITIAL_DESKTOP=%2 ";
+      "setenv LD_PRELOAD %1 ; setenv KDE_INITIAL_DESKTOP %2 ;" :
+      "LD_PRELOAD=%1 KDE_INITIAL_DESKTOP=%2 ";
 
     proc << prefix.arg(lib).arg(desktop);
     kdDebug(7010) << prefix.arg(lib).arg(desktop) << endl;
@@ -788,7 +788,7 @@ void KRun::clientStarted(
   kapp->dcopClient()->send(
     "kicker",
     "TaskbarApplet",
-    "clientStarted(QString,QString,int)",
+    "clientStarted(QString,QString,pid_t)",
     params
   );
 }
