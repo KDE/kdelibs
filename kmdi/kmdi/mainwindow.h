@@ -68,6 +68,8 @@ class KMdiDockContainer;
 namespace KMDI
 {
 
+class TabWidget;
+
 class MainWindow : public KParts::DockMainWindow
 {
   Q_OBJECT
@@ -78,14 +80,71 @@ class MainWindow : public KParts::DockMainWindow
     /**
      * Constructor.
      */
-    MainWindow ( QWidget* parentWidget, const char* name = "", WFlags flags = WType_TopLevel | WDestructiveClose);
+    MainWindow ( QWidget* parentWidget, const char* name = "");
 
     /**
      * Destructor.
      */
     virtual ~MainWindow ();
 
+  public:
+    /**
+     * get the central tabwidget
+     * @return tabwidget in central of window
+     */
+    TabWidget *tabWidget ();
+
+    /**
+     * Using this method you have to use the setWidget method of the access object, and it is very recommendet, that you use
+     * the widgetContainer() method for the parent of your newly created widget
+     * @return created toolview
+     */
+    KMDI::ToolViewAccessor *createToolWindow();
+
+    /**
+     * Usually called from addWindow() when adding a tool view window. It reparents the given widget
+     * as toplevel and stay-on-top on the application's main widget.
+     * @param pWnd widget for the toolview
+     * @param pos docking position
+     * @return created toolview
+     */
+    KMDI::ToolViewAccessor *addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+
+    /**
+     * delete the toolview belonging to the given accessor
+     * @param accessor toolview to delete
+     */
+    void deleteToolWindow( KMDI::ToolViewAccessor *accessor);
+
+    /**
+     * delete the toolview belonging to the given pWnd
+     * @param pWnd toolview to be deleted
+     */
+    void deleteToolWindow( QWidget* pWnd);
+
+    /**
+     * Sets the appearance of the toolview tabs.
+     * @param flags See KMDI::ToolviewStyle.
+     */
+    void setToolviewStyle(int flags);
+
+  public slots:
+    void prevToolViewInDock();
+    void nextToolViewInDock();
+
+  signals:
+    void collapseOverlapContainers();
+
+  protected:
+    void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
+    void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
+
   private:
+    /**
+     * setup main dock + tab widget
+     */
+    void setupMainDock ();
+
     /**
      * setup the sidebars for the toolviews
      * and other internals to get them working
@@ -98,84 +157,34 @@ class MainWindow : public KParts::DockMainWindow
      */
     void setupGUIClient ();
 
-public slots:
-   /**
-   * Usually called from addWindow() when adding a tool view window. It reparents the given widget
-   * as toplevel and stay-on-top on the application's main widget.
-   */
-   virtual KMDI::ToolViewAccessor *addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
-   virtual void deleteToolWindow( QWidget* pWnd);
-   virtual void deleteToolWindow( KMDI::ToolViewAccessor *accessor);
-   /**
-    * Using this method you have to use the setWidget method of the access object, and it is very recommendet, that you use
-    * the widgetContainer() method for the parent of your newly created widget
-    */
-   KMDI::ToolViewAccessor *createToolWindow();
-   /**
-    * Sets the appearance of the IDEAl mode. See KMultiTabBar styles for the first 3 bits.
-    * @deprecated use setToolviewStyle(int flags) instead
-    */
-   void setIDEAlModeStyle(int flags);
-   //KDE4: Get rid of the above.
-   /**
-    * Sets the appearance of the toolview tabs.
-    * @param flags See KMDI::ToolviewStyle.
-    * @since 3.3
-    */
-   void setToolviewStyle(int flags);
+  private slots:
+    void setActiveToolDock(KMdiDockContainer*);
+    void removeFromActiveDockList(KMdiDockContainer*);
 
-protected:
-   void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
-   void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
-
-protected slots: // Protected slots
-   signals:
-   /**
-   * Signals the last attached KMdiChildView has been closed
-   */
-   void lastChildFrmClosed();
-   /**
-   * Signals the last KMdiChildView (that is under MDI control) has been closed
-   */
-   void lastChildViewClosed();
-   /**
-   * Signals that the Toplevel mode has been left
-   */
-   void leftTopLevelMode();
-   /**
-   * Signals that a child view has been detached (undocked to desktop)
-   */
-   void childViewIsDetachedNow(QWidget*);
-
-   void collapseOverlapContainers();
-
-public slots:
-   void prevToolViewInDock();
-   void nextToolViewInDock();
-
-private slots:
-   void setActiveToolDock(KMdiDockContainer*);
-   void removeFromActiveDockList(KMdiDockContainer*);
-
-#define protected public
-signals:
-#undef protected
+  #define protected public
+  signals:
+  #undef protected
     void toggleTop();
     void toggleLeft();
     void toggleRight();
     void toggleBottom();
 
-  private:
-    KMDIPrivate::MainWindowPrivate *d;
-    KMDIPrivate::GUIClient *m_guiClient;
-
   protected:
+    KMDIPrivate::GUIClient *m_guiClient;
     QMap <QWidget*, KMDI::ToolViewAccessor*> *m_toolViews;
 
     KDockWidget*         m_leftContainer;
     KDockWidget*         m_rightContainer;
     KDockWidget*         m_topContainer;
     KDockWidget*         m_bottomContainer;
+
+    KMDI::TabWidget *m_tabWidget;
+
+  private:
+    /**
+     * private d-pointer for BC
+     */
+    KMDIPrivate::MainWindowPrivate *d;
 };
 
 }

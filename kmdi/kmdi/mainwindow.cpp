@@ -97,27 +97,13 @@ namespace KMDI
 {
 
 //============ constructor ============//
-MainWindow::MainWindow(QWidget* parentWidget, const char* name, WFlags flags)
-: KParts::DockMainWindow( parentWidget, name, flags)
-   ,d(new KMDIPrivate::MainWindowPrivate())
-   ,m_toolViews (new QMap<QWidget*,KMDI::ToolViewAccessor*>)
-   ,m_leftContainer(0)
-   ,m_rightContainer(0)
-   ,m_topContainer(0)
-   ,m_bottomContainer(0)
+MainWindow::MainWindow(QWidget* parentWidget, const char* name)
+ : KParts::DockMainWindow( parentWidget, name)
+ , m_toolViews (new QMap<QWidget*,KMDI::ToolViewAccessor*>)
+ , d(new KMDIPrivate::MainWindowPrivate())
 {
-  kdDebug()<<"=== MainWindow() ==="<<endl;
-
-  // cover KMdi's childarea by a dockwidget
-  KDockWidget *dw = createDockWidget( "mdiAreaCover", QPixmap(), 0L, "mdi_area_cover");
-  dw->setDockWindowTransient(this,true);
-  dw->setEnableDocking(KDockWidget::DockNone);
-  dw->setDockSite(KDockWidget::DockCorner);
-
-//  m_pDockbaseAreaOfDocumentViews->setWidget(m_pMdi);
-  // set this dock to main view
-  setView(dw);
-  setMainDockWidget(dw);
+  // setup main dock stuff
+  setupMainDock ();
 
   // setup the sidebar framework
   setupToolViews ();
@@ -134,6 +120,24 @@ MainWindow::~MainWindow()
 
   delete d;
   d=0;
+}
+
+void MainWindow::setupMainDock ()
+{
+  // cover KMdi's childarea by a dockwidget
+  KDockWidget *dw = createDockWidget( "mdiAreaCover", QPixmap(), 0L, "mdi_area_cover");
+  dw->setDockWindowTransient(this,true);
+  dw->setEnableDocking(KDockWidget::DockNone);
+  dw->setDockSite(KDockWidget::DockCorner);
+
+  // setup tab widget
+  m_tabWidget = new KMDI::TabWidget (dw);
+  m_tabWidget->setTabWidgetVisibility( KMDI::NeverShowTabs);
+  dw->setWidget(m_tabWidget);
+
+  // set this dock to main view
+  setView(dw);
+  setMainDockWidget(dw);
 }
 
 void MainWindow::setupToolViews ()
@@ -245,24 +249,16 @@ void MainWindow::setupGUIClient ()
   connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
 }
 
-KMDI::ToolViewAccessor *MainWindow::createToolWindow()
+TabWidget *MainWindow::tabWidget ()
+{
+  return m_tabWidget;
+}
+
+ToolViewAccessor *MainWindow::createToolWindow()
 {
   return new KMDI::ToolViewAccessor(this);
 }
 
-
-void MainWindow::deleteToolWindow( QWidget* pWnd) {
-  if (m_toolViews->contains(pWnd)) {
-    deleteToolWindow((*m_toolViews)[pWnd]);
-  }
-}
-
-void MainWindow::deleteToolWindow( KMDI::ToolViewAccessor *accessor) {
-  if (!accessor) return;
-  delete accessor;
-}
-
-//============ addWindow ============//
 KMDI::ToolViewAccessor *MainWindow::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, QWidget* pTargetWnd, int percent, const QString& tabToolTip, const QString& tabCaption)
 {
   QWidget *tvta=pWnd;
@@ -299,33 +295,36 @@ KMDI::ToolViewAccessor *MainWindow::addToolWindow( QWidget* pWnd, KDockWidget::D
   return mtva;
 }
 
-void MainWindow::setIDEAlModeStyle(int flags)
+void MainWindow::deleteToolWindow( KMDI::ToolViewAccessor *accessor)
 {
-  d->m_styleIDEAlMode = flags; // see KMultiTabBar for the first 3 bits
-  if (m_leftContainer) {
-    KMdiDockContainer *tmpL=(KMdiDockContainer*) (m_leftContainer->getWidget()->qt_cast("KMdiDockContainer"));
-    if (tmpL) tmpL->setStyle(flags);
-  }
+  delete accessor;
+}
 
-  if (m_rightContainer) {
-    KMdiDockContainer *tmpR=(KMdiDockContainer*) (m_rightContainer->getWidget()->qt_cast("KMdiDockContainer"));
-    if (tmpR) tmpR->setStyle(flags);
-  }
+void MainWindow::deleteToolWindow( QWidget* pWnd)
+{
+  if (!pWnd)
+    return;
 
-  if (m_topContainer) {
-    KMdiDockContainer *tmpT=(KMdiDockContainer*) (m_topContainer->getWidget()->qt_cast("KMdiDockContainer"));
-    if (tmpT) tmpT->setStyle(flags);
-  }
-
-  if (m_bottomContainer) {
-    KMdiDockContainer *tmpB=(KMdiDockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMdiDockContainer"));
-    if (tmpB) tmpB->setStyle(flags);
+  if (m_toolViews->contains(pWnd)) {
+    deleteToolWindow((*m_toolViews)[pWnd]);
   }
 }
 
 void MainWindow::setToolviewStyle(int flag)
 {
-  setIDEAlModeStyle(flag);
+  d->m_styleIDEAlMode = flag; // see KMultiTabBar for the first 3 bits
+
+  KMdiDockContainer *tmpL=(KMdiDockContainer*) (m_leftContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  if (tmpL) tmpL->setStyle(flag);
+
+  KMdiDockContainer *tmpR=(KMdiDockContainer*) (m_rightContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  if (tmpR) tmpR->setStyle(flag);
+
+  KMdiDockContainer *tmpT=(KMdiDockContainer*) (m_topContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  if (tmpT) tmpT->setStyle(flag);
+
+  KMdiDockContainer *tmpB=(KMdiDockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMdiDockContainer"));
+  if (tmpB) tmpB->setStyle(flag);
 
   d->m_toolviewStyle = flag;
   bool toolviewExists = false;
