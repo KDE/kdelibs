@@ -1130,7 +1130,7 @@ QString KStartupInfoData::to_text() const
         ret += QString::fromLatin1( " DESKTOP=%1" )
             .arg( d->desktop == NET::OnAllDesktops ? NET::OnAllDesktops : d->desktop - 1 ); // spec counts from 0
     if( !d->wmclass.isEmpty())
-        ret += QString::fromLatin1( " WMCLASS=%1" ).arg( d->wmclass );
+        ret += QString::fromLatin1( " WMCLASS=\"%1\"" ).arg( d->wmclass );
     if( !d->hostname.isEmpty())
         ret += QString::fromLatin1( " HOSTNAME=%1" ).arg( d->hostname );
     for( QValueList< pid_t >::ConstIterator it = d->pids.begin();
