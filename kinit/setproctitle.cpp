@@ -41,7 +41,6 @@
 # define _PATH_KMEM	"/dev/kmem"
 #endif
 
-#define newstr(s)	strcpy((char*)malloc(strlen(s) + 1), s)
 #define SPACELEFT(buf, ptr)	(sizeof buf - ((ptr) - buf))
 
 
@@ -151,8 +150,16 @@ kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 	for (i = 0; envp[i] != NULL; i++)
 		envpsize += strlen(envp[i]) + 1;
 	environ = (char **) malloc(sizeof (char *) * (i + 1));
+    if (environ == NULL)
+        return;
+
 	for (i = 0; envp[i] != NULL; i++)
-		environ[i] = newstr(envp[i]);
+    {
+		environ[i] = malloc(strlen(envp[i]) + 1);
+        if (environ[i] == NULL)
+            break;
+        strcpy(environ[i], envp[i]);
+    }
 	environ[i] = NULL;
 
 	/*

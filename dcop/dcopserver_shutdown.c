@@ -37,6 +37,8 @@
 #include <pwd.h>
 #include <signal.h>
 
+#define BUFFER_SIZE 4096
+
 static char *getDisplay()
 {
    const char *display;
@@ -60,6 +62,8 @@ static char *getDisplay()
       display = "NODISPLAY";
    }
    result = malloc(strlen(display)+1);
+   if (result == NULL)
+      return NULL;
    strcpy(result, display);
    screen = strrchr(result, '.');
    colon = strrchr(result, ':');
@@ -95,6 +99,12 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   n -= strlen("_");
 
   display = getDisplay();
+  if (display == NULL)
+  {
+     dcop_file[0] = '\0';
+     return; /* barf */
+  }
+
   strcpy(dcop_file_old, dcop_file);
   strncat(dcop_file_old,display, n);
   while((i = strchr(display, ':')))
@@ -107,7 +117,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
 
 static void cleanupDCOPsocket(char *buffer)
 {
-   char cmd[4096];
+   char cmd[BUFFER_SIZE];
    const char *socket_file;
    int l; 
 
@@ -123,7 +133,7 @@ static void cleanupDCOPsocket(char *buffer)
    if (socket_file)
       unlink(socket_file);
 
-   sprintf(cmd, "iceauth remove netid='%s'", buffer);
+   snprintf(cmd, BUFFER_SIZE, "iceauth remove netid='%s'", buffer);
    system(cmd);
 }
 

@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <signal.h>
+#include <limits.h>
 
 #if  defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
 # include <crt_externs.h>
@@ -69,6 +70,9 @@ static char *getDisplay()
       display = ":0";
    }
    result = malloc(strlen(display)+1);
+   if (result == NULL)
+      return NULL;
+
    strcpy(result, display);
    screen = strrchr(result, '.');
    colon = strrchr(result, ':');
@@ -131,12 +135,12 @@ static int openSocket()
   int s;
   struct sockaddr_un server;
 #define MAX_SOCK_FILE 255
-  char sock_file[MAX_SOCK_FILE];
+  char sock_file[MAX_SOCK_FILE + 1];
   const char *home_dir = getenv("HOME");
   const char *kde_home = getenv("KDEHOME");
   char *display;
 
-  sock_file[0] = 0;
+  sock_file[0] = sock_file[MAX_SOCK_FILE] = 0;
 
   if (!kde_home || !kde_home[0])
   {
@@ -156,15 +160,15 @@ static int openSocket()
         return -1;
      }
      kde_home++;
-     strcat(sock_file, home_dir);
+     strncpy(sock_file, home_dir, MAX_SOCK_FILE);
   }
-  strcat(sock_file, kde_home);
+  strncat(sock_file, kde_home, MAX_SOCK_FILE - strlen(sock_file));
 
   /** Strip trailing '/' **/
   if ( sock_file[strlen(sock_file)-1] == '/')
      sock_file[strlen(sock_file)-1] = 0;
   
-  strcat(sock_file, "/socket-");
+  strncat(sock_file, "/socket-", MAX_SOCK_FILE - strlen(sock_file));
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
      perror("Warning: Could not determine hostname: ");
@@ -173,6 +177,12 @@ static int openSocket()
 
   /* append $DISPLAY */
   display = getDisplay();
+  if (display == NULL)
+  {
+     fprintf(stderr, "Error: Could not determine display.\n");
+     return -1;
+  }
+
   if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Warning: Socket name will be too long.\n");
@@ -429,6 +439,11 @@ int main(int argc, char **argv)
    write_socket(sock, (char *) &header, sizeof(header));
 
    buffer = (char *) malloc(size);
+   if (buffer == NULL)
+   {
+        fprintf(stderr, "Error: malloc() failed.");
+        exit(255);
+   }
    p = buffer;
       
    memcpy(p, &arg_count, sizeof(arg_count));
@@ -500,6 +515,11 @@ int main(int argc, char **argv)
    {
       long pid;
       buffer = (char *) malloc(header.arg_length);
+      if (buffer == NULL)
+      {
+          fprintf(stderr, "Error: malloc() failed\n");
+          exit(255);
+      }
       read_socket(sock, buffer, header.arg_length);
       pid = *((long *) buffer);
       if( !kwrapper ) /* kwrapper shouldn't print any output */
