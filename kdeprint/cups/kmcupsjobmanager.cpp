@@ -257,7 +257,7 @@ QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *co
 	QValueList<KAction*>	list;
 	KAction	*act(0);
 
-	list <<  (act = new PluginAction(0, i18n("Job IPP Report..."), "editpaste", 0, coll, "plugin_ipp"));
+	list <<  (act = new PluginAction(0, i18n("Job IPP Report..."), "kdeprint_report", 0, coll, "plugin_ipp"));
 	act->setGroup("plugin");
 	list << (act = new PluginAction(1, i18n("Increase Priority"), "up", 0, coll, "plugin_prioup"));
 	act->setGroup("plugin");
