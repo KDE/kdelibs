@@ -754,6 +754,38 @@ public:
     void setSelectedStylesheetSet(const DOMString& aString);
 
     /**
+     * Adds a new style sheet to the list of style sheets.
+     *
+     * The new style sheet will be applied after all author and implicit
+     * style sheets, but before the user style sheet.
+     *
+     * Create new style sheets with e. g.
+     * \c DOMImplementation::createCSSStyleSheet
+     *
+     * This is not part of the official DOM.
+     *
+     * @param sheet style sheet
+     * @exception DOMException
+     * @since 3.4
+     */
+    void addStyleSheet(const StyleSheet &sheet);
+    
+    /**
+     * Removes a style sheet to the list of style sheets.
+     *
+     * Only sheets added by \c addStyleSheet may be removed.
+     * 
+     * This is not part of the official DOM.
+     *
+     * @param sheet style sheet to remove
+     * @exception DOMException
+     * NOT_FOUND_ERR \c sheet is not contained in the list of style sheets or
+     * it has not been added by \c addStyleSheet
+     * @since 3.4
+     */
+    void removeStyleSheet(const StyleSheet &sheet);
+    
+    /**
      * @return The KHTML view widget of this document.
      */
     KHTMLView *view() const;

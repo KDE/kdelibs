@@ -334,6 +334,9 @@ public:
     void setSelectedStylesheetSet(const DOMString&);
     void setPreferredStylesheetSet(const DOMString& s) { m_preferredStylesheetSet = s; }
 
+    void addStyleSheet(StyleSheetImpl *, int *exceptioncode = 0);
+    void removeStyleSheet(StyleSheetImpl *, int *exceptioncode = 0);
+
     QStringList availableStyleSheets() const { return m_availableSheets; }
 
     NodeImpl* hoverNode() const { return m_hoverNode; }
@@ -514,6 +517,7 @@ protected:
 
     unsigned short m_listenerTypes;
     StyleSheetListImpl* m_styleSheets;
+    StyleSheetListImpl *m_addedStyleSheets; // programmatically added style sheets
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
     QPtrList<RegisteredEventListener> m_windowEventListeners;
     QPtrList<NodeImpl> m_maintainsState;

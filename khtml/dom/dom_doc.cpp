@@ -533,6 +533,28 @@ void Document::updateRendering()
     static_cast<DocumentImpl*>( impl )->updateRendering(  );
 }
 
+void Document::addStyleSheet(const StyleSheet &sheet)
+{
+    if (!impl || sheet.isNull())
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode;
+    static_cast<DocumentImpl*>( impl )->addStyleSheet( sheet.handle(), &exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+}
+
+void Document::removeStyleSheet(const StyleSheet &sheet)
+{
+    if (!impl || sheet.isNull())
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    int exceptioncode;
+    static_cast<DocumentImpl*>( impl )->removeStyleSheet( sheet.handle(), &exceptioncode );
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragment::DocumentFragment() : Node()

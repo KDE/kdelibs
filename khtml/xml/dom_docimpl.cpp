@@ -272,6 +272,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_listenerTypes = 0;
     m_styleSheets = new StyleSheetListImpl;
     m_styleSheets->ref();
+    m_addedStyleSheets = 0;
     m_inDocument = true;
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
@@ -311,6 +312,8 @@ DocumentImpl::~DocumentImpl()
     delete m_namespaceMap;
     m_defaultView->deref();
     m_styleSheets->deref();
+    if (m_addedStyleSheets)
+        m_addedStyleSheets->deref();
     if (m_focusNode)
         m_focusNode->deref();
     if ( m_hoverNode )
@@ -1806,6 +1809,50 @@ void DocumentImpl::setSelectedStylesheetSet(const DOMString& s)
     }
 }
 
+void DocumentImpl::addStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
+{
+    int excode = 0;
+
+    if (!m_addedStyleSheets) {
+        m_addedStyleSheets = new StyleSheetListImpl;
+        m_addedStyleSheets->ref();
+    }
+
+    m_addedStyleSheets->add(sheet);
+    if (sheet->isCSSStyleSheet()) updateStyleSelector();
+    
+    if (exceptioncode) *exceptioncode = excode;
+}
+
+void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
+{
+    int excode = 0;
+    bool removed = false;
+    bool is_css = sheet->isCSSStyleSheet();
+    
+    if (m_addedStyleSheets) {
+        bool in_main_list = !sheet->hasOneRef();
+        removed = m_addedStyleSheets->styleSheets.removeRef(sheet);
+        sheet->deref();
+
+        if (m_addedStyleSheets->styleSheets.count() == 0) {
+            bool reset = m_addedStyleSheets->hasOneRef();
+            m_addedStyleSheets->deref();
+            if (reset) m_addedStyleSheets = 0;
+        }
+
+        // remove from main list, too
+        if (in_main_list) m_styleSheets->remove(sheet);
+    }
+    
+    if (removed) {
+        if (is_css) updateStyleSelector();
+    } else
+        excode = DOMException::NOT_FOUND_ERR;
+
+    if (exceptioncode) *exceptioncode = excode;
+}
+
 void DocumentImpl::updateStyleSelector()
 {
 //    kdDebug() << "PENDING " << m_pendingStylesheets << endl;
@@ -1950,6 +1997,15 @@ void DocumentImpl::recalcStyleSelector()
         autoselect = true;
     }
 
+    // Include programmatically added style sheets
+    if (m_addedStyleSheets) {
+        QPtrListIterator<StyleSheetImpl> it = m_addedStyleSheets->styleSheets;
+        for (; *it; ++it) {
+            if ((*it)->isCSSStyleSheet() && !(*it)->disabled())
+                m_styleSheets->add(*it);
+        }
+    }
+    
     // De-reference all the stylesheets in the old list
     QPtrListIterator<StyleSheetImpl> it(oldStyleSheets);
     for (; it.current(); ++it)

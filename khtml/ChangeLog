@@ -1,3 +1,14 @@
+2005-02-02  Leo Savernik  <l.savernik@aon.at>
+
+	* dom/dom_doc.{cpp,h}: Added Document::addStyleSheet/removeStyleSheet
+	interface methods for programmatically adding/removing style sheets.
+	
+	* xml/dom_docimpl.{cpp,h}: Added DocumentImpl::addStyleSheet/
+	removeStyleSheet methods.
+	Added list storing programmatically added style sheets.
+	(updateStyleSelector) Merge programmatical list with effective list
+	of style sheets.
+
 2005-02-01  Germain Garand  <germain@ebooksfrance.org>
 
         clearly separate full blown anonymous blocks (isAnonymousBlock) from
