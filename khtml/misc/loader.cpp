@@ -903,6 +903,8 @@ void DocLoader::setExpireDate(time_t _expireDate, bool relative)
 
 void DocLoader::insertCachedObject( CachedObject* o ) const
 {
+    if ( m_docObjects.find(o) )
+        return;
     m_docObjects.insert( o, o );
     if ( m_docObjects.count() > 3 * m_docObjects.size() )
         m_docObjects.resize(khtml::nextSeed( m_docObjects.size() ) );
