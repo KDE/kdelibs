@@ -110,6 +110,8 @@ QFont KGlobal::fixedFont()
     if( *_fixedFont == QFont::defaultFont() )
     {
       *_fixedFont = QFont("fixed", 12, QFont::Normal);
+      _fixedFont->setStyleHint(QFont::Courier);
+      _fixedFont->setFixedPitch(true);
       charsets()->setQFont(*_fixedFont, charsets()->charsetForLocale());
     }
     return *_fixedFont;
