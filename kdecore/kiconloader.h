@@ -4,6 +4,7 @@
    This file is part of the KDE libraries
    Copyright (C) 1997 Christoph Neerfeld (chris@kde.org)
              (C) 1999 Stephan Kulow (coolo@kde.org)
+             (C) 2000 Kurt Granroth (granroth@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,8 +22,6 @@
    Boston, MA 02111-1307, USA.
 
 */
-
-
 #ifndef KICONLOADER_H
 #define KICONLOADER_H
 
@@ -138,15 +137,33 @@ public:
      
      @return The physical path to the named icon.
   */
-  QString iconPath( const QString& name,
-		    bool always_valid=false);
-
+  QString iconPath( const QString& name, bool always_valid=false);
 
   /**
-   * Sets the @see KStandardDirs type of icons  loadIcon() will load. 
-   * The default is "toolbar".
-   **/
-  void setIconType(const char *type) { iconType = type; }
+   * This will return a list of all icon directories that match the
+   * given parameters.  With the default params, this will return all
+   * KDE recognized icon directories that currently exist.  By
+   * changing the params, you can narrow this down to specifics.
+   *
+   * For instance:
+   * <pre>
+   * iconDirs("all", "hicolor", "large");
+   * </pre>
+   * Will return all directories that have large hicolor icons.
+   *
+   * @param type  The icon type (apps, devices, filesystems, mimetypes,
+   *                             toolbars, or all)
+   * @param depth The color depth (hicolor, locolor, or all)
+   * @param size  The icon size (large, medium, small, or all)
+   * @param trim  If true, then only existing directories will be
+   *              returned
+   *
+   * @return A list of all icon directories that match the params
+   */
+  QStringList iconDirs(const QString& type = QString::fromLatin1("all"),
+                       const QString& depth = QString::fromLatin1("all"),
+                       const QString& size = QString::fromLatin1("all"),
+                       bool trim = true) const;
 
 protected:
 
@@ -163,9 +180,6 @@ protected:
 
   // the application name - by default the one of KGlobal::instance()
   QString appname;
-
-  // the icon type to load in loadIcon - by default "toolbar"
-  QCString iconType;
   
 private:
   // adds toolbar paths to the KStandardDirs object of the instance
@@ -239,7 +253,3 @@ QPixmap ListIcon(const QString& pixmap ,
 		 const KInstance* library = KGlobal::instance());
 
 #endif // KICONLOADER_H
-
-
-
-

@@ -40,8 +40,6 @@
 
 void KIconLoader::initPath()
 {
-    iconType = "toolbar";
-
     if (appname.isNull() && library) {
 	appname = library->instanceName();
     }
@@ -68,14 +66,8 @@ KIconLoader::KIconLoader( const QString &app_name ) :
 
     KConfig *config = KGlobal::config();
     QString group = config->group();
-    config->setGroup("KDE");
-    QString entry = config->readEntry("KDEIconStyle", "Normal");
-    if (entry == "Large")
-      defaultSize = Large;
-    else if (entry == "Small")
-      defaultSize = Small;
-    else
-      defaultSize = Medium;
+    config->setGroup(QString::fromLatin1("Toolbar style"));
+    defaultSize = (Size)config->readNumEntry("IconSize", Medium);
     config->setGroup(group);
 }
 
@@ -208,22 +200,83 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
 
     QString full_path;
     if (!name.isEmpty()) {
-	QString path = name;
-	
-	if (path.right(4) == ".xpm") {
-	    path.truncate(path.length() - 4);
-	}
-	full_path = locate(iconType, path + ".png", library);
-	if (full_path.isNull())
-	    full_path = locate(iconType, path + ".xpm", library );
-	
-	if (full_path.isNull())
-	    full_path = locate(iconType, path, library);
+        QString path = name;
+
+        if ((path.right(4) == ".xpm") || (path.right(4) == ".png")){
+            path.truncate(path.length() - 4);
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            const char* icon_type = i ? "toolbar" : "pixmap";
+            full_path = locate(icon_type, path + ".png", library);
+            if (full_path.isNull())
+                full_path = locate(icon_type, path + ".xpm", library );
+            else
+                break;
+
+            if (full_path.isNull())
+                full_path = locate(icon_type, path, library);
+            else
+                break;
+        }
     }
+
     if (full_path.isNull() && always_valid)
-	full_path = locate(iconType, "unknown.png", library);
+      full_path = locate("toolbar", "unknown.png", library);
 
     return full_path;
+}
+
+static QStringList add_dir(const QStringList& dirs, const QString& filter,
+                           const char** add, bool trim)
+{
+    QStringList list;
+    for (unsigned int i = 0; i < dirs.count(); ++i)
+    {
+        QString elem = dirs[i];
+
+        if (filter == "all") 
+        {
+            for (int j = 0; add[j] != 0; ++j)
+            {
+                QString new_dir(elem + add[j]);
+                if (trim && !QFile::exists(new_dir))
+                    continue;
+                list.append(new_dir);
+            }
+        }
+        else
+        {
+            QString new_dir(elem + filter);
+            if (trim && !QFile::exists(new_dir))
+                continue;
+            list.append(new_dir);
+        }
+    }
+
+    return list;
+}
+
+QStringList KIconLoader::iconDirs(const QString& type, const QString& depth,
+                                  const QString& size, bool trim) const
+{
+    static const char* size_dirs[]  = {"large/", "medium/", "small/", 0};
+    static const char* color_dirs[] = {"hicolor/", "locolor/", 0};
+    static const char* type_dirs[]  = {"apps/", "devices/", "filesystems/",
+                                       "mimetypes/", "toolbars/", 0};
+
+    QStringList list( KGlobal::dirs()->resourceDirs("icon") );
+
+    // handle special case of toolbars
+    if ( type == "toolbars" || type == "all" )
+        list += KGlobal::dirs()->resourceDirs( "toolbar" );
+
+    list = add_dir( list, size, size_dirs, trim );
+    list = add_dir( list, depth, color_dirs, trim );
+    list = add_dir( list, type, type_dirs, trim );
+
+    return list;
 }
 
 QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
