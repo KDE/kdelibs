@@ -70,7 +70,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    }
    else
    {
-      KApplication::kdeinitExecWait( "kbuildsycoca", args );
+      KApplication::kdeinitExecWait( "kbuildsycoca", args, 0, 0, "0" /*no startup notification*/ );
    }
 }
 

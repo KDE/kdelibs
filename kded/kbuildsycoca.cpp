@@ -716,6 +716,8 @@ extern "C" int kdemain(int argc, char **argv)
    bGlobalDatabase = args->isSet("global");
    bMenuTest = args->isSet("menutest");
 
+   qWarning("KDE_KIOSK_NO_RESTRICTIONS: %s", getenv("KDE_KIOSK_NO_RESTRICTIONS"));
+
    if (bGlobalDatabase)
    {
      setenv("KDEHOME", "-", 1);
