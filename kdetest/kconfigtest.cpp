@@ -1,6 +1,13 @@
-// $Id$
+/* $Id$
 
-/* $Log$
+ * $Log$
+ *
+ * Revision 1.7  1997/09/24 19:00:25  kalle
+ * Iterators
+ *
+ * Revision 1.6  1997/09/13 05:51:42  kalle
+ * new features in KDebug
+ * - asserts
  * - varargs
  * - output to syslog
  * - areas implemented
@@ -274,11 +281,32 @@ void KConfigTestView::writeButtonClicked()
 
 //
 // Create and display our KConfigTestView.
-    KApplication  a( argc, argv );
-    KConfigTestView   *w = new KConfigTestView;
-    a.setMainWidget( w );
-    w->show();
-    return a.exec();
+//
+
+int main( int argc, char **argv )
+{
+  KApplication  a( argc, argv );
+
+  KConfig* pConfig = kapp->getConfig();
+  KGroupIterator* pIt = pConfig->groupIterator();
+  while( pIt->current() )
+	{
+	  fprintf( stderr, "\n\n\nThis is the group%s\n", pIt->currentKey() );
+	  KEntryIterator* pItE = pConfig->entryIterator( pIt->currentKey() );
+	  if( pItE )
+		{
+		  while( pItE->current() )
+			{
+			  fprintf( stderr, "%s = %s\n", pItE->currentKey(), pItE->current()->aValue.data() );
+			  ++(*pItE);
+			};
+		  delete pItE;
+		}
+	  ++(*pIt);
+	};
+  delete pIt;
+	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile );
+  else
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
   free( pRecoverFile );
 

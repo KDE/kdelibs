@@ -1,6 +1,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.5  1997/09/10 11:55:38  kdecvs
+// Kalle:
+// - new features in KConfig as announced on Monday
+// - new KIconLoader from Christoph
+//
 // Revision 1.4  1997/09/04 19:44:03  kdecvs
 // Coolo: corrected a comment. the language code is not two letters only
 //
@@ -77,6 +82,8 @@ struct KEntryDictEntry
 
 typedef QDict<KEntryDictEntry> KEntryDict;
 typedef QDict<KEntryDict> KGroupDict;
+typedef QDictIterator<KEntryDict> KGroupIterator;
+typedef QDictIterator<KEntryDictEntry> KEntryIterator;
 
 /**
 * Configuration data manager, used internally by KConfig.
@@ -102,6 +109,8 @@ private:
 public:
   KConfigData();
   KConfigData( QTextStream* );
+  
+  KGroupIterator* groupIterator( void );
 };
 
 inline KConfigData::KConfigData() :
@@ -121,5 +130,11 @@ inline KConfigData::KConfigData( QTextStream* pStream ) :
   aGroup = "<default>";
   bDirty = false;
 }
+
+inline KGroupIterator* KConfigData::groupIterator(void)
+{
+  return new KGroupIterator(aGroupDict);
+}
+
 
 #endif

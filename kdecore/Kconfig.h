@@ -1,6 +1,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.12  1997/09/10 11:55:37  kdecvs
+// Kalle:
+// - new features in KConfig as announced on Monday
+// - new KIconLoader from Christoph
+//
 // Revision 1.11  1997/08/31 15:56:12  kdecvs
 // Kalle:
 // - Internationalized Config Entries
@@ -428,8 +433,22 @@ public:
    */
   bool hasKey( const QString& rKey ) const;
 
+  /** Returns an iterator on the list of groups
+	  @return The group iterator. The caller is reponsable for
+	  deleting the iterator after using it.
+  */
+  KGroupIterator* groupIterator(void) { return pData->groupIterator(); }
+
+  /** Returns an iterator on the entries in the current group
+	  @param pGroup the group to provide an iterator for
+	  @return The iterator for the group or NULL if the group does not
+	  exist. The caller is responsible for deleting the iterator after
+	  using it. 
+	  */  
+  KEntryIterator* entryIterator( const char* pGroup );
+
   /// Reparse the configuration.
-  /** Reparses all configuration files. This is usefull for programms
+  /** Reparses all configuration files. This is useful for programms
 	  which use standalone graphical configuration tools.
    */
   void reparseConfiguration();

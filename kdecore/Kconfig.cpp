@@ -1,6 +1,10 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.31  1997/09/15 07:30:59  kalle
+ * Avoided a security hole (like the "sendmail-worm") on platforms that
+ * support vsnprintf. One more reason not to ship debug code to clients.
+ *
  * Revision 1.30  1997/09/13 08:33:02  kalle
  * I'd really like to know why CVS thrashes comments now.
  *
@@ -413,15 +417,15 @@ QString KConfig::readEntry( const QString& rKey,
       KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey.data() ];
 
       if( !pEntryData )
-	// next try with the non-localized one
-	pEntryData = (*pCurrentGroupDict)[ rKey.data() ];
-
+		// next try with the non-localized one
+		pEntryData = (*pCurrentGroupDict)[ rKey.data() ];
+	  
       if( pEntryData )
-	aValue = pEntryData->aValue;
+		aValue = pEntryData->aValue;
       else if( pDefault )
-	{
-	  aValue = pDefault;
-	}
+		{
+		  aValue = pDefault;
+		}
     }
   else if( pDefault )
 	aValue = pDefault;
@@ -962,3 +966,16 @@ void KConfig::reparseConfiguration()
 
   parseConfigFiles();
 }
+
+
+KEntryIterator* KConfig::entryIterator( const char* pGroup )
+{
+  // find the group
+  KEntryDict* pCurrentGroupDict = pData->aGroupDict[ pGroup ];
+
+  if( !pCurrentGroupDict )
+	return NULL; // that group does not exist
+
+  return new KEntryIterator( *pCurrentGroupDict );
+}
+
