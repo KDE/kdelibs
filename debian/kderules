@@ -62,6 +62,42 @@ if (@ARGV && $ARGV[0] eq 'update') {
   exit;
 }
 
+if (@ARGV && $ARGV[0] eq 'echodirs') {
+  #	kde_htmldir=/usr/doc/kde/HTML \
+  #	kde_appsdir=/usr/share/applnk \
+  #	kde_icondir=/usr/share/icons \
+  #	kde_sounddir=/usr/share/sounds \
+  #	kde_datadir=/usr/share/apps \
+  #	kde_locale=/usr/share/locale \
+  #	kde_cgidir=/usr/lib/cgi-bin \
+  #	kde_confdir=/etc/kde \
+  #	kde_mimedir=/usr/share/mimelnk \
+  #	kde_toolbardir=/usr/share/toolbar \
+  #	kde_wallpaperdir=/usr/share/wallpaper \
+  #	kde_bindir=/usr/X11R6/bin \
+  #	kde_partsdir=/usr/lib/parts 
+  print STDOUT "export kde_htmldir=/opt/kde2pre/share/doc/HTML\n";
+  print STDOUT "export kde_appsdir=/opt/kde2pre/share/applnk\n";
+  print STDOUT "export kde_icondir=/opt/kde2pre/share/icons\n";
+  print STDOUT "export kde_sounddir=/opt/kde2pre/share/sounds\n";
+  print STDOUT "export kde_datadir=/opt/kde2pre/share/apps\n";
+  print STDOUT "export kde_locale=/opt/kde2pre/share/locale\n";
+  print STDOUT "export kde_cgidir=/opt/kde2pre/cgi-bin\n";
+  print STDOUT "export kde_confdir=/opt/kde2pre/share/config\n";
+  print STDOUT "export kde_mimedir=/opt/kde2pre/share/mimelnk\n";
+  print STDOUT "export kde_toolbardir=/opt/kde2pre/share/toolbar\n";
+  print STDOUT "export kde_wallpaperdir=/opt/kde2pre/share/wallpapers\n";
+  print STDOUT "export kde_bindir=/opt/kde2pre/bin\n";
+  print STDOUT "export kde_partsdir=/opt/kde2pre/parts\n";
+  print STDOUT "export includedir=/opt/kde2pre/include\n";
+  print STDOUT "export libdir=/opt/kde2pre/lib\n";
+  print STDOUT "export QTINC=/usr/lib/qt2beta/include\n";
+  print STDOUT "export QTLIB=/usr/lib/qt2beta/lib\n";
+  print STDOUT "export MOC=/usr/lib/qt2beta/bin/moc\n";
+
+  exit
+}
+
 if (@ARGV && $ARGV[0]) {  
   $package = $ARGV[0];
 } else {
@@ -212,8 +248,7 @@ foreach $file (@lnkfiles) {
 	print MENU "	section=$sect{$prog}\\\n" ;
 	print MENU "	title=\"$kdelnk{Name}\"\\\n" ;
 	print MENU "	command=$prog\\\n" ;
-	print MENU "	icon=\"$icon\"\\\n" ;
-	print MENU "	kdelnk=$kdelnk\n\n" ;
+	print MENU "	icon=\"$icon\"\n\n" ;
 
 }
 
