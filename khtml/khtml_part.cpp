@@ -57,6 +57,7 @@ using namespace DOM;
 #include <unistd.h>
 
 #include <kstandarddirs.h>
+#include <kstringhandler.h>
 #include <kio/job.h>
 #include <kio/global.h>
 #include <kdebug.h>
@@ -2027,7 +2028,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
   }
 
   if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 ) {
-    setStatusBarText( url.mid( url.find( "javascript:", 0, false ) ), BarHoverText );
+    QString jscode = url.mid( url.find( "javascript:", 0, false ) );
+    jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
+    setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );
     return;
   }
 
