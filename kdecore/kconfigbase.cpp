@@ -708,7 +708,7 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
     {
       if ( aValue.left(1) == "#" ) 
         {
-	  aRetColor.setNamedColor(aValue.ascii());
+	  aRetColor.setNamedColor(aValue);
 	} 
       else
 	{

@@ -229,7 +229,7 @@ QColor KRootProp::readColorEntry( const QString& rKey,
 	  // Support #ffffff style colour naming.
 	  // Help ease transistion from legacy KDE setups
 	  if( aValue.find("#") == 0 ) {
-	  	aRetColor.setNamedColor( aValue.ascii() );
+	  	aRetColor.setNamedColor( aValue );
 		return aRetColor;
 	  }
 		
