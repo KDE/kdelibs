@@ -379,30 +379,40 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
       lastwasanewline = false;
     }
 
-    getCursorPosition(&line,&col);
-    killstring = textLine(line);
-    killstring = killstring.mid(col,killstring.length());
+    if(!atEnd()){
+ 
+      getCursorPosition(&line,&col);
+      killstring = textLine(line);
+      killstring = killstring.mid(col,killstring.length());
 
 
-    if(!killbufferstring.isEmpty() && !killtrue && !lastwasanewline){
-      killbufferstring += '\n';
-    }
+      if(!killbufferstring.isEmpty() && !killtrue && !lastwasanewline){
+        killbufferstring += '\n';
+      }
 
-    if( (killstring.length() == 0) && !killtrue){
-      killbufferstring += '\n';
-      lastwasanewline = true;
-    }
+      if( (killstring.length() == 0) && !killtrue){
+        killbufferstring += '\n';
+        lastwasanewline = true;
+      }
 
-    if(killstring.length() > 0){
+      if(killstring.length() > 0){
 
-      killbufferstring += killstring;
-      lastwasanewline = false;
-      killtrue = true;
+        killbufferstring += killstring;
+        lastwasanewline = false;
+        killtrue = true;
+
+      }else{
+
+        lastwasanewline = false;
+        killtrue = !killtrue;
+
+      }
 
     }else{
 
-      lastwasanewline = false;
-      killtrue = !killtrue;
+	if(killbufferstring.isEmpty() && !killtrue && !lastwasanewline){
+	  killtrue = true;
+	}
 
     }
 
@@ -420,10 +430,11 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     getCursorPosition(&line,&col);
 
+    QString tmpstring = killbufferstring;
     if(!killtrue)
-      killbufferstring += '\n';
+      tmpstring += '\n';
 
-    insertAt(killbufferstring,line,col);
+    insertAt(tmpstring,line,col);
 
     killing = false;
     setModified(true);
