@@ -1429,3 +1429,6 @@ const QColor& KDockTabBar::textColor( int id )
   return Qt::black;
 }
 
+// DON'T REMOVE THIS INCLUDE!
+#include "kdocktabctl.moc"
+

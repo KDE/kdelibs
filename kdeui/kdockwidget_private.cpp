@@ -457,3 +457,6 @@ KDockWidgetPrivate::~KDockWidgetPrivate()
 {
 }
 
+// DO NOT REMOVE THIS INCLUDE!!
+#include "kdockwidget_private.moc"
+

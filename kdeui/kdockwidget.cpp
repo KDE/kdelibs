@@ -1507,3 +1507,7 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
   }
   return found;
 }
+
+// DO NOT REMOVE THIS INCLUDE!
+#include "kdockwidget.moc"
+
