@@ -155,6 +155,9 @@ class KHTMLWalletQueue : public QObject
       }
       emit walletOpened(wallet);
       if (wallet) {
+        if (!wallet->hasFolder(KWallet::Wallet::FormDataFolder())) {
+          wallet->createFolder(KWallet::Wallet::FormDataFolder());
+        }
         for (CallerList::Iterator i = callers.begin(); i != callers.end(); ++i) {
           if ((*i).first && (*i).second) {
             (*i).first->walletOpened(wallet);

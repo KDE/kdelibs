@@ -544,32 +544,32 @@ void HTMLFormElementImpl::submit(  )
                     haveTextarea = true;
         }
 
-        const QString key = calculateAutoFillKey(*this);
-        const bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
-                                                             KWallet::Wallet::FormDataFolder(), key);
+        if (havePassword && !haveTextarea && KWallet::Wallet::isEnabled()) {
+            const QString key = calculateAutoFillKey(*this);
+            const bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::FormDataFolder(), key);
 
-        if (havePassword && !haveTextarea ) {
-            KWallet::Wallet* const w = view->part()->wallet();
-            if (w)  {
-                if (!w->hasFolder(KWallet::Wallet::FormDataFolder()))
-                    w->createFolder(KWallet::Wallet::FormDataFolder());
-                w->setFolder(KWallet::Wallet::FormDataFolder());
                 bool login_changed = false;
                 if ( !doesnotexist ) {
                     // check if the login information changed from what
                     // we had so far.
-                    QMap<QString, QString> map;
-                    if (!w->readMap(key, map)) {
-                        QMapConstIterator<QString, QString> it = map.begin();
-                        const QMapConstIterator<QString, QString> itEnd = map.end();
-			for ( ; it != itEnd; ++it )
-                            if ( map[it.key()] != walletMap[it.key()] ) {
-                                login_changed = true;
-                                break;
+                    KWallet::Wallet* const w = view->part()->wallet();
+                    if (w)  {
+                        if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
+                            w->setFolder(KWallet::Wallet::FormDataFolder());
+                            QMap<QString, QString> map;
+                            if (!w->readMap(key, map)) {
+                                QMapConstIterator<QString, QString> it = map.begin();
+                                const QMapConstIterator<QString, QString> itEnd = map.end();
+                                for ( ; it != itEnd; ++it )
+                                    if ( map[it.key()] != walletMap[it.key()] ) {
+                                        login_changed = true;
+                                        break;
+                                    }
                             }
+                            else
+                                login_changed = true;
+                        }
                     }
-                    else
-                        login_changed = true;
                 }
 
                 if ( doesnotexist || login_changed ) {
@@ -594,12 +594,11 @@ void HTMLFormElementImpl::submit(  )
                         // otherwise we might have a potential security problem
                         // by saving passwords under wrong lookup key.
 
-                        w->setFolder(KWallet::Wallet::FormDataFolder());
-                        w->writeMap(key, walletMap);
-                    } else if ( savePassword == KDialogBase::No )
+                        getDocument()->view()->part()->saveToWallet(key, walletMap);
+                    } else if ( savePassword == KDialogBase::No ) {
                         view->addNonPasswordStorableSite(formUrl.host());
+                    }
                 }
-            }
         }
 
         const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));

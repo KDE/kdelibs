@@ -144,6 +144,7 @@ class KWalletD : public KDEDModule {
 		void emitWalletListDirty();
 		void timedOut(int);
 		void notifyFailures();
+		void processTransactions();
 
 	private:
 		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
@@ -162,7 +163,6 @@ class KWalletD : public KDEDModule {
 		bool implicitAllow(const QString& wallet, const QCString& app);
 		QCString friendlyDCOPPeerName();
 
-		void processTransactions();
 		void doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId);
 		int doTransactionOpen(const QCString& appid, const QString& wallet, uint wId);
 

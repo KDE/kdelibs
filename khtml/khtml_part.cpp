@@ -1762,7 +1762,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_cacheId = 0;
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-  d->m_bWalletOpened = false;
 
   if(url.isValid()) {
       QString urlString = url.url();
@@ -6645,13 +6644,15 @@ void KHTMLPart::openWallet(DOM::HTMLFormElementImpl *form)
   }
 
   if (d->m_wallet) {
-    if (d->m_wallet->isOpen()) {
-      form->walletOpened(d->m_wallet);
-      return;
+    if (d->m_bWalletOpened) {
+      if (d->m_wallet->isOpen()) {
+        form->walletOpened(d->m_wallet);
+        return;
+      }
+      d->m_wallet->deleteLater();
+      d->m_wallet = 0L;
+      d->m_bWalletOpened = false;
     }
-    delete d->m_wallet;
-    d->m_wallet = 0L;
-    d->m_bWalletOpened = false;
   }
 
   if (!d->m_wq) {
@@ -6679,14 +6680,19 @@ void KHTMLPart::saveToWallet(const QString& key, const QMap<QString,QString>& da
   }
 
   if (d->m_wallet) {
-    if (d->m_wallet->isOpen()) {
-      d->m_wallet->setFolder(KWallet::Wallet::FormDataFolder());
-      d->m_wallet->writeMap(key, data);
-      return;
+    if (d->m_bWalletOpened) {
+      if (d->m_wallet->isOpen()) {
+        if (!d->m_wallet->hasFolder(KWallet::Wallet::FormDataFolder())) {
+          d->m_wallet->createFolder(KWallet::Wallet::FormDataFolder());
+        }
+        d->m_wallet->setFolder(KWallet::Wallet::FormDataFolder());
+        d->m_wallet->writeMap(key, data);
+        return;
+      }
+      d->m_wallet->deleteLater();
+      d->m_wallet = 0L;
+      d->m_bWalletOpened = false;
     }
-    delete d->m_wallet;
-    d->m_wallet = 0L;
-    d->m_bWalletOpened = false;
   }
 
   if (!d->m_wq) {
@@ -6709,16 +6715,12 @@ void KHTMLPart::dequeueWallet(DOM::HTMLFormElementImpl *form) {
 
 void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
   assert(!d->m_wallet);
+  assert(d->m_wq);
 
   d->m_wq->deleteLater(); // safe?
   d->m_wq = 0L;
 
   if (!wallet) {
-    if (d->m_statusBarWalletLabel) {
-      d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarWalletLabel);
-      delete d->m_statusBarWalletLabel;
-      d->m_statusBarWalletLabel = 0L;
-    }
     d->m_bWalletOpened = false;
     return;
   }
@@ -6726,15 +6728,20 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
   d->m_wallet = wallet;
   d->m_bWalletOpened = true;
   connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
-  d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
-  d->m_statusBarWalletLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
-  d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  d->m_statusBarWalletLabel->setUseCursor(false);
-  d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
+  
+  if (!d->m_statusBarWalletLabel) {
+    d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+    d->m_statusBarWalletLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
+    d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    d->m_statusBarWalletLabel->setUseCursor(false);
+    d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
+    d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
+    connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
+    connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
+  } else {
+    QToolTip::remove(d->m_statusBarWalletLabel);
+  }
   QToolTip::add(d->m_statusBarWalletLabel, i18n("The wallet '%1' is open and being used for form data and passwords.").arg(KWallet::Wallet::NetworkWallet()));
-  d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open", instance()));
-  connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedURL()), SLOT(launchWalletManager()));
-  connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedURL()), SLOT(walletMenu()));
 }
 
 

@@ -606,12 +606,12 @@ void Wallet::walletOpenResult(int id) {
 		return;
 	}
 
-	if (id >= 0) {
+	if (id > 0) {
 		_handle = id;
 		emit walletOpened(true);
-	} else {
+	} else if (id < 0) {
 		emit walletOpened(false);
-	}
+	} // id == 0 => wait
 }
 
 
