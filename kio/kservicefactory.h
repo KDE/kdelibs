@@ -82,7 +82,7 @@ public:
   static KServiceFactory * self();
 
 protected:
-  KService * createService(int offset);
+  virtual KService * createEntry(int offset);
   int m_offerListOffset;
   KSycocaDict *m_nameDict;
   int m_nameDictOffset;

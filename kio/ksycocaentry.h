@@ -23,6 +23,7 @@
 
 #include <qdatastream.h>
 #include <qlist.h>
+#include <qvaluelist.h>
 #include <ksharedptr.h>
 
 /**
@@ -36,8 +37,11 @@ class KSycocaEntry : public KShared
 public:
    virtual bool isType(KSycocaType t) const { return (t == KST_KSycocaEntry); }
    virtual KSycocaType sycocaType() const { return KST_KSycocaEntry; }
-   
+
 public:
+  typedef KSharedPtr<KSycocaEntry> Ptr;
+  typedef QValueList<Ptr> List;
+public: // KDoc seems to barf on those typedefs and generates no docs after them
    /**
     * Default constructor
     */

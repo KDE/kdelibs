@@ -58,6 +58,11 @@ protected: // Internal stuff
     { return 0; }                                                    
 
   /**
+   * @internal 
+   */
+  virtual KSycocaEntry *createEntry(int offset);
+
+  /**
    * @internal Read an image
    **/
   static void readImage( QImageIO *iio);

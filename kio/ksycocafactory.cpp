@@ -151,3 +151,32 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry)
    m_entryDict->insert( name, newEntry );
    m_sycocaDict->add( name, newEntry );
 }
+
+KSycocaEntry::List KSycocaFactory::allEntries()
+{
+   KSycocaEntry::List list;
+   if (!m_str) return list;
+
+   // Assume we're NOT building a database
+
+   m_str->device()->at(m_endEntryOffset);
+   Q_INT32 entryCount;
+   (*m_str) >> entryCount;
+
+   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   for(int i = 0; i < entryCount; i++)
+   {
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KSycocaEntry *newEntry = createEntry(offsetList[i]);
+      if (newEntry)
+      {
+         list.append( KSycocaEntry::Ptr( newEntry ) );
+      }
+   }
+   delete [] offsetList;
+   return list;
+}

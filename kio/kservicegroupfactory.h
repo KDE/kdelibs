@@ -60,6 +60,7 @@ public:
   static KServiceGroupFactory * self();
 protected:
   KServiceGroup* createGroup(int offset, bool deep);
+  KServiceGroup* createEntry(int offset);
 
 private:
   static KServiceGroupFactory *_self;

@@ -20,6 +20,7 @@
 #define __ksycocafactory_h__ "$Id$"
 
 #include "ksycocatype.h"
+#include "ksycocaentry.h"
 
 #include <qdict.h>
 #include <qlist.h>
@@ -27,7 +28,6 @@
 class KSycoca;
 class QStringList;
 class KSycocaDict;
-class KSycocaEntry;
 
 typedef QDict<KSycocaEntry> KSycocaEntryDict;
 
@@ -70,6 +70,16 @@ public:
     * Add an entry
     */
    virtual void addEntry(KSycocaEntry *newEntry);
+
+   /**
+    * Read an entry from the database
+    */
+   virtual KSycocaEntry *createEntry(int offset)=0;
+
+   /**
+    * Get a list of all entries from the database.
+    */
+   KSycocaEntry::List allEntries();
 
    /**
     * Saves all entries it maintains as well as index files

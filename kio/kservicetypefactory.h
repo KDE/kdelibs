@@ -93,7 +93,7 @@ public:
   static KServiceTypeFactory * self();
 
 protected:
-  KServiceType *createServiceType(int offset);
+  virtual KServiceType *createEntry(int offset);
 
   /** 
    * Looks whether the given filename matches the given pattern

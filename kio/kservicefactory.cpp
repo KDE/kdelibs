@@ -87,7 +87,7 @@ KService * KServiceFactory::findServiceByName(const QString &_name)
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
 
-   KService * newService = createService(offset);
+   KService * newService = createEntry(offset);
 
    // Check whether the dictionary was right.
    if (newService && (newService->name() != _name))
@@ -110,7 +110,7 @@ KService * KServiceFactory::findServiceByDesktopName(const QString &_name)
    int offset = m_nameDict->find_string( _name );
    if (!offset) return 0; // Not found
 
-   KService * newService = createService(offset);
+   KService * newService = createEntry(offset);
 
    // Check whether the dictionary was right.
    if (newService && (newService->desktopEntryName() != _name))
@@ -133,7 +133,7 @@ KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
    int offset = m_relNameDict->find_string( _name );
    if (!offset) return 0; // Not found
 
-   KService * newService = createService(offset);
+   KService * newService = createEntry(offset);
 
    // Check whether the dictionary was right.
    if (newService && (newService->desktopEntryPath() != _name))
@@ -145,7 +145,7 @@ KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
    return newService;
 }
 
-KService* KServiceFactory::createService(int offset)
+KService* KServiceFactory::createEntry(int offset)
 {
    KService * newEntry = 0L;
    KSycocaType type; 
@@ -171,30 +171,17 @@ KService* KServiceFactory::createService(int offset)
 
 KService::List KServiceFactory::allServices()
 {
-   kdDebug(7011) << "KServiceFactory::allServices()" << endl;
-   KService::List list;
-   if (!m_str) return list;
-
-   // Assume we're NOT building a database
-
-   m_str->device()->at(m_endEntryOffset);
-   Q_INT32 entryCount;
-   (*m_str) >> entryCount;
-
-   Q_INT32 *offsetList = new Q_INT32[entryCount];
-   for(int i = 0; i < entryCount; i++)
+   KService::List result;
+   KSycocaEntry::List list = allEntries();
+   for( KSycocaEntry::List::ConstIterator it = list.begin();
+        it != list.end();
+        ++it)
    {
-      (*m_str) >> offsetList[i];
-   }
-
-   for(int i = 0; i < entryCount; i++)
-   {
-      KService *newService = createService(offsetList[i]);
+      KService *newService = dynamic_cast<KService *>(static_cast<KSycocaEntry *>(*it));
       if (newService)
-         list.append( KService::Ptr( newService ) );
+         result.append( KService::Ptr( newService ) );
    }
-   delete [] offsetList;
-   return list;
+   return result;
 }
 
 KService::List KServiceFactory::offers( int serviceTypeOffset )
@@ -220,7 +207,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
             // Save stream position !
             int savedPos = str->device()->at();
             // Create Service
-            KService * serv = createService( aServiceOffset );
+            KService * serv = createEntry( aServiceOffset );
             list.append( KService::Ptr( serv ) );
             // Restore position
             str->device()->at( savedPos );

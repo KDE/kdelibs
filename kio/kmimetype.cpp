@@ -47,6 +47,9 @@
 #include <kurl.h>
 #include <kdebug.h>
 
+template KSharedPtr<KMimeType>;
+template QValueList<KMimeType::Ptr>;
+
 KMimeType::Ptr KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
 

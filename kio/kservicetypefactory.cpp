@@ -63,7 +63,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
    assert (!KSycoca::self()->isBuilding());
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
-   KServiceType * newServiceType = createServiceType(offset);
+   KServiceType * newServiceType = createEntry(offset);
 
    // Check whether the dictionary was right.
    if (newServiceType && (newServiceType->name() != _name))
@@ -143,7 +143,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
          {
             assert( newServiceType == 0L );
             (*str) >> mimetypeOffset;
-            newServiceType = createServiceType(mimetypeOffset);
+            newServiceType = createEntry(mimetypeOffset);
             assert (newServiceType && newServiceType->isType( KST_KMimeType ));
             // don't return newServiceType - there may be an "other" pattern that
             // matches best this file, like *.tar.bz
@@ -167,7 +167,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
       {
          if (newServiceType) // we got one, but it's not good enough (like *.bz for a tar.bz file)
              delete newServiceType;
-         newServiceType = createServiceType(mimetypeOffset);
+         newServiceType = createEntry(mimetypeOffset);
          assert (newServiceType && newServiceType->isType( KST_KMimeType ));
          return (KMimeType *) newServiceType;
       }
@@ -176,62 +176,32 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 
 KMimeType::List KServiceTypeFactory::allMimeTypes()
 {
-   KMimeType::List list;
-   if (!m_str) return list;
-
-   // Assume we're NOT building a database
-
-   m_str->device()->at(m_endEntryOffset);
-   Q_INT32 entryCount;
-   (*m_str) >> entryCount;
-
-   Q_INT32 *offsetList = new Q_INT32[entryCount];
-   for(int i = 0; i < entryCount; i++)
+   KMimeType::List result;
+   KSycocaEntry::List list = allEntries();
+   for( KSycocaEntry::List::ConstIterator it = list.begin();
+        it != list.end();
+        ++it)
    {
-      (*m_str) >> offsetList[i];
+      KMimeType *newMimeType = dynamic_cast<KMimeType *>(static_cast<KSycocaEntry *>(*it));
+      if (newMimeType)
+         result.append( KMimeType::Ptr( newMimeType ) );
    }
-
-   for(int i = 0; i < entryCount; i++)
-   {
-      KServiceType *newServiceType = createServiceType(offsetList[i]);
-
-      // We don't want service types, but we have to build them
-      // anyway, to skip their info
-      if (newServiceType && newServiceType->isType( KST_KMimeType ))
-      {
-         KMimeType * mimeType = (KMimeType *) newServiceType;
-         list.append( KMimeType::Ptr( mimeType ) );
-      }
-   }
-   delete [] offsetList;
-   return list;
+   return result;
 }
 
 KServiceType::List KServiceTypeFactory::allServiceTypes()
 {
-   KServiceType::List list;
-   if (!m_str) return list;
-
-   // Assume we're NOT building a database
-
-   m_str->device()->at(m_endEntryOffset);
-   Q_INT32 entryCount;
-   (*m_str) >> entryCount;
-
-   Q_INT32 *offsetList = new Q_INT32[entryCount];
-   for(int i = 0; i < entryCount; i++)
+   KServiceType::List result;
+   KSycocaEntry::List list = allEntries();
+   for( KSycocaEntry::List::ConstIterator it = list.begin();
+        it != list.end();
+        ++it)
    {
-      (*m_str) >> offsetList[i];
-   }
-
-   for(int i = 0; i < entryCount; i++)
-   {
-      KServiceType *newServiceType = createServiceType(offsetList[i]);
+      KServiceType *newServiceType = dynamic_cast<KServiceType *>(static_cast<KSycocaEntry *>(*it));
       if (newServiceType)
-         list.append( KServiceType::Ptr( newServiceType ) );
+         result.append( KServiceType::Ptr( newServiceType ) );
    }
-   delete [] offsetList;
-   return list;
+   return result;
 }
 
 bool KServiceTypeFactory::checkMimeTypes()
@@ -243,7 +213,7 @@ bool KServiceTypeFactory::checkMimeTypes()
    return (m_beginEntryOffset != m_endEntryOffset);
 }
 
-KServiceType * KServiceTypeFactory::createServiceType(int offset)
+KServiceType * KServiceTypeFactory::createEntry(int offset)
 {
    KServiceType *newEntry = 0;
    KSycocaType type;

@@ -94,4 +94,9 @@ KServiceGroup* KServiceGroupFactory::createGroup(int offset, bool deep)
    return newEntry;
 }
 
+KServiceGroup* KServiceGroupFactory::createEntry(int offset)
+{
+   return createGroup(offset, false);
+}
+
 KServiceGroupFactory *KServiceGroupFactory::_self = 0;
