@@ -924,6 +924,7 @@ bool KApplication::requestShutDown(
     ShutdownConfirm confirm, ShutdownType sdtype, ShutdownMode sdmode )
 {
 #ifdef Q_WS_X11
+    QApplication::syncX();
     /*  use ksmserver's dcop interface if necessary  */
     if ( confirm == ShutdownConfirmYes ||
          sdtype != ShutdownTypeDefault ||
