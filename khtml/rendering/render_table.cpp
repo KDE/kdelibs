@@ -208,7 +208,8 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         else {
 //          kdDebug( 6040 ) << "creating anonymous table section" << endl;
             o = new RenderTableSection();
-            RenderStyle *newStyle = new RenderStyle(style());
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE_ROW_GROUP);
             o->setStyle(newStyle);
             o->setIsAnonymousBox(true);
@@ -1642,7 +1643,8 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         else {
             kdDebug( 6040 ) << "creating anonymous table row" << endl;
             row = new RenderTableRow();
-            RenderStyle *newStyle = new RenderStyle(style());
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE_ROW);
             row->setStyle(newStyle);
             row->setIsAnonymousBox(true);
@@ -1706,7 +1708,8 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         else {
 //          kdDebug( 6040 ) << "creating anonymous table cell" << endl;
             cell = new RenderTableCell();
-            RenderStyle *newStyle = new RenderStyle(style());
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
             newStyle->setDisplay(TABLE_CELL);
             cell->setStyle(newStyle);
             cell->setIsAnonymousBox(true);

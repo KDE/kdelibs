@@ -83,7 +83,8 @@ RenderListItem::RenderListItem()
 void RenderListItem::setStyle(RenderStyle *_style)
 {
     RenderFlow::setStyle(_style);
-    RenderStyle *newStyle = new RenderStyle(style());
+    RenderStyle *newStyle = new RenderStyle();
+    newStyle->inheritFrom(style());
        if(newStyle->direction() == LTR)
            newStyle->setFloating(FLEFT);
        else

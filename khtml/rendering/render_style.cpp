@@ -230,22 +230,10 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
 }
 
-RenderStyle::RenderStyle(const RenderStyle* inheritParent)
+void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
 {
-    _styleType=NOPSEUDO;
-    pseudoStyle = 0;
-
-    if (!_default)
-	_default = new RenderStyle(true);
-//    counter++;
-    box = _default->box;
-    visual = _default->visual;
-    surround = _default->surround;
-    background = _default->background;
 
     inherited = inheritParent->inherited;
-
-    setBitDefaults();
 
     _border_collapse = inheritParent->_border_collapse;
     _empty_cells = inheritParent->_empty_cells;
@@ -263,10 +251,6 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
 
     _htmlHacks = inheritParent->_htmlHacks;
 
-    _display = INLINE;
-
-//    kdDebug( 6040 ) << "style=" << counter << " data="
-//        << SharedData::counter << endl;
 }
 
 RenderStyle::~RenderStyle()

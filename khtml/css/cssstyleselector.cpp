@@ -206,15 +206,12 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     propsToApply->sort();
 
-    RenderStyle* style;
+    RenderStyle* style = new RenderStyle();
     if(e->parentNode())
     {
         assert(e->parentNode()->style() != 0);
-        style = new RenderStyle(e->parentNode()->style());
+        style->inheritFrom(e->parentNode()->style());
     }
-    else
-        style = new RenderStyle();
-
 
     if ( propsToApply->count() != 0 ) {
 

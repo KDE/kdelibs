@@ -112,7 +112,8 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         else {
 //          kdDebug( 6040 ) << "creating anonymous table" << endl;
             table = new RenderTable;
-            RenderStyle *newStyle = new RenderStyle(m_style);
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(m_style);
             newStyle->setDisplay(TABLE);
             table->setStyle(newStyle);
             table->setIsAnonymousBox(true);

@@ -94,7 +94,8 @@ void RenderFlow::setStyle(RenderStyle *_style)
         {
             if(child->isAnonymousBox())
             {
-                RenderStyle* newStyle = new RenderStyle(style());
+                RenderStyle* newStyle = new RenderStyle();
+                newStyle->inheritFrom(style());
                 newStyle->setDisplay(BLOCK);
                 child->setStyle(newStyle);
                 child->setIsAnonymousBox(true);
@@ -1253,7 +1254,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                 newTextChild->setText(oldText->substring(1,oldText->l-1));
 
                 RenderText* letter = new RenderText(oldText->substring(0,1));
-                letter->setStyle(new RenderStyle(pseudoStyle));
+                RenderStyle* newStyle = new RenderStyle();
+                newStyle->inheritFrom(pseudoStyle);
+                letter->setStyle(newStyle);
                 firstLetter->addChild(letter);
             }
             firstLetter->close();
@@ -1301,7 +1304,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             RenderFlow *beforeBox = 0;
 
             if(beforeChild != boxSource->firstChild()) {
-                RenderStyle *newStyle = new RenderStyle(boxSource->style());
+                RenderStyle *newStyle = new RenderStyle();
+                newStyle->inheritFrom(boxSource->style());
                 newStyle->setDisplay(BLOCK);
 
                 beforeBox = new RenderFlow();
@@ -1324,7 +1328,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             }
             if (beforeChild) {
                 RenderFlow *afterBox = new RenderFlow();
-                RenderStyle *newStyle = new RenderStyle(boxSource->style());
+                RenderStyle *newStyle = new RenderStyle();
+                newStyle->inheritFrom(boxSource->style());
                 newStyle->setDisplay(BLOCK);
                 afterBox->setStyle(newStyle);
                 afterBox->setIsAnonymousBox(true);
@@ -1375,7 +1380,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             if(!haveAnonymousBox())
             {
                 //kdDebug( 6040 ) << "creating anonymous box" << endl;
-                RenderStyle *newStyle = new RenderStyle(style());
+                RenderStyle *newStyle = new RenderStyle();
+                newStyle->inheritFrom(style());
+                
                 newStyle->setDisplay(BLOCK);
                 RenderFlow *newBox = new RenderFlow();
                 newBox->setStyle(newStyle);
@@ -1448,7 +1455,8 @@ void RenderFlow::makeChildrenNonInline()
             (!next && (boxFirst->isInline() || boxFirst->isFloating()))) {
 
             // make anon box of those before child
-            RenderStyle *newStyle = new RenderStyle(style());
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
             RenderFlow *box = new RenderFlow();

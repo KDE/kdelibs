@@ -550,14 +550,19 @@ protected:
 // static default style
     static RenderStyle* _default;
 
+private:
+    RenderStyle(const RenderStyle*) {}
+    
 public:
 
     RenderStyle();
     // used to create the default style.
     RenderStyle(bool);
     RenderStyle(const RenderStyle&);
-    RenderStyle(const RenderStyle* inheritParent);
+    
     ~RenderStyle();
+    
+    void inheritFrom(const RenderStyle* inheritParent);
 
     PseudoId styleType() { return _styleType; }
 
