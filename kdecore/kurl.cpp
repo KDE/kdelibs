@@ -17,6 +17,11 @@
     Boston, MA 02111-1307, USA.
 */
 
+/*
+ * The currently active RFC for URL/URIs is RFC3986
+ * Previous (and now deprecated) RFCs are RFC1738 and RFC2396
+ */
+
 #include "kurl.h"
 
 #ifndef KDE_QT_ONLY
