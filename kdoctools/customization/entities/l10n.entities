@@ -180,11 +180,27 @@
 ]]>
 
 <!-- Kept for compatibility with the docbook style sheets; the code
-     no exists, but so do nn and nb, which new Norwegian, and book-Norwegian -->
+     no exists, but so does nb (book-Norwegian) -->
 <!ENTITY % Norwegian "IGNORE">
 <![%Norwegian;[
-<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian Documentation V1.0//NO"
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian (Bokmal) Documentation V1.0//NO"
            "../no/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Norwegian-Bokmal "IGNORE">
+<![%Norwegian-Bokmal;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian (Bokmal) Documentation V1.0//NB"
+           "../no/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Norwegian-Nynorsk "IGNORE">
+<![%Norwegian-Nynorsk;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian (Nynorsk) Documentation V1.0//NN"
+           "../nn/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
