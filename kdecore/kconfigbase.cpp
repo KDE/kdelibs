@@ -1059,18 +1059,30 @@ void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
    writePathEntry(pKey.utf8().data(), path, bPersistent, bGlobal, bNLS);
 }
 
+
+static QString translatePath( QString path )
+{
+   if (path.isEmpty())
+       return path;
+
+   QString value;
+   bool startsWithFile = path.left(5).lower() == QString::fromLatin1("file:");
+   path = startsWithFile ? path.mid(5) : path;
+   value = KGlobal::dirs()->relativeLocation("home", path);
+   // replace by $HOME, but ignore other IO-protocols (e.g. "http:/")
+   if (value[0] != '/' && value.find(':')==-1) 
+      value = QString::fromLatin1("$HOME/") + value;
+   if (startsWithFile)
+      value = QString::fromLatin1("file:") + value;
+
+   return value;
+}
+
 void KConfigBase::writePathEntry( const char *pKey, const QString & path,
                                   bool bPersistent, bool bGlobal,
                                   bool bNLS)
 {
-   QString value;
-   if (!path.isEmpty())
-   {
-      value = KGlobal::dirs()->relativeLocation("home", path);
-      if (value[0] != '/')
-         value = "$HOME/"+value;
-   }
-   writeEntry(pKey, value, bPersistent, bGlobal, bNLS);
+   writeEntry(pKey, translatePath(path), bPersistent, bGlobal, bNLS);
 }
 
 
