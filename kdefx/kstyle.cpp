@@ -2,7 +2,7 @@
  * $Id$
  * 
  * KStyle
- * Copyright (C) 2001 Karol Szwed <gallium@kde.org>
+ * Copyright (C) 2001, 2002 Karol Szwed <gallium@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -152,6 +152,12 @@ void KStyle::polishPopupMenu( QPopupMenu* p )
 // -----------------------------------------------------------------------------
 // KStyle extensions
 // -----------------------------------------------------------------------------
+
+void KStyle::setScrollBarType(KStyleScrollBarType sbtype)
+{
+	scrollbarType = sbtype;
+}
+
 
 void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg )
 {
@@ -680,6 +686,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 		// 3 BUTTON SCROLLBAR
 		// ------------------------------------------------------------------------
 		case CC_ScrollBar: {
+			// Many thanks to Brad Hughes for contributing this code.
 			bool useThreeButtonScrollBar = (scrollbarType & ThreeButtonScrollBar);
 
 			const QScrollBar *sb = (const QScrollBar*)widget;
@@ -831,13 +838,13 @@ QRect KStyle::querySubControlMetrics( ComplexControl control,
 									  SubControl sc,
 									  const QStyleOption &opt ) const
 {
-	// Many thanks to Brad for contributing this code.
     QRect ret;
 
 	if (control == CC_ScrollBar)
 	{
 		bool threeButtonScrollBar = scrollbarType & ThreeButtonScrollBar;
 		bool platinumScrollBar    = scrollbarType & PlatinumStyleScrollBar;
+		bool nextScrollBar        = scrollbarType & NextStyleScrollBar;
 
 		const QScrollBar *sb = (const QScrollBar*)widget;
 		bool horizontal = sb->orientation() == Qt::Horizontal;
@@ -878,31 +885,52 @@ QRect KStyle::querySubControlMetrics( ComplexControl control,
 
 			case SC_ScrollBarAddLine: {
 				// bottom/right button
-				if (horizontal)
-					ret.setRect(sb->width() - sbextent, 0, sbextent, sbextent);
-				else
-					ret.setRect(0, sb->height() - sbextent, sbextent, sbextent);
+				if (nextScrollBar) {
+					if (horizontal)
+						ret.setRect(sbextent, 0, sbextent, sbextent);
+					else
+						ret.setRect(0, sbextent, sbextent, sbextent);
+				} else {
+					if (horizontal)
+						ret.setRect(sb->width() - sbextent, 0, sbextent, sbextent);
+					else
+						ret.setRect(0, sb->height() - sbextent, sbextent, sbextent);
+				}
 				break;
 			}
 
 			case SC_ScrollBarSubPage: {
 				// between top/left button and slider
-				if (platinumScrollBar)
+				if (platinumScrollBar) {
 					if (horizontal)
-						ret.setRect(1, 0, sliderstart, sbextent);
+						ret.setRect(0, 0, sliderstart, sbextent);
 					else
-						ret.setRect(0, 1, sbextent, sliderstart);
-				else
+						ret.setRect(0, 0, sbextent, sliderstart);
+				} else if (nextScrollBar) {
+					if (horizontal)
+						ret.setRect(sbextent*2, 0, sliderstart-2*sbextent, sbextent);
+					else
+						ret.setRect(0, sbextent*2, sbextent, sliderstart-2*sbextent);
+				} else {
 					if (horizontal)
 						ret.setRect(sbextent, 0, sliderstart - sbextent, sbextent);
 					else
 						ret.setRect(0, sbextent, sbextent, sliderstart - sbextent);
+				}
 				break;
 			}
 
 			case SC_ScrollBarAddPage: {
 				// between bottom/right button and slider
-				int fudge = platinumScrollBar ? 0 : sbextent;
+				int fudge;
+
+				if (platinumScrollBar) 
+					fudge = 0;
+				else if (nextScrollBar)
+					fudge = 2*sbextent;
+				else
+					fudge = sbextent;
+
 				if (horizontal)
 					ret.setRect(sliderstart + sliderlen, 0,
 							maxlen - sliderstart - sliderlen + fudge, sbextent);
@@ -914,7 +942,15 @@ QRect KStyle::querySubControlMetrics( ComplexControl control,
 
 			case SC_ScrollBarGroove: {
 				int multi = threeButtonScrollBar ? 3 : 2;
-				int fudge = platinumScrollBar ? 1 : sbextent;
+				int fudge;
+
+				if (platinumScrollBar)
+					fudge = 0;
+				else if (nextScrollBar)
+					fudge = 2*sbextent;
+				else
+					fudge = sbextent;
+
 				if (horizontal)
 					ret.setRect(fudge, 0, sb->width() - sbextent * multi, sb->height());
 				else
@@ -992,11 +1028,11 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		QToolBar* toolbar = dynamic_cast<QToolBar*>(object);
 
 		// Make the QMenuBar/QToolBar paintEvent() cover a larger area to 
-		// ensure that the gradient contents are properly painted.
+		// ensure that the filled frame contents are properly painted.
 		// We essentially modify the paintEvent's rect to include the
 		// panel border, which also paints the widget's interior.
 		// This is nasty, but I see no other way to properly repaint 
-		// gradients in all QMenuBars and QToolBars.
+		// filled frames in all QMenuBars and QToolBars.
 		// -- Karol.
 		if ( menubar || toolbar ) 
 		{

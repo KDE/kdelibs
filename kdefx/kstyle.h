@@ -94,11 +94,15 @@ class KStyle: public QCommonStyle
 		 * two previous buttons, and one next button. The next button is always
 		 * at the bottom/right, whilst the two previous buttons are on either 
 		 * end of the scrollbar.
+		 *
+		 * @li NextStyleScrollBar - Similar to the PlatinumStyle scroll bar, but
+		 * with the buttons grouped on the opposite end of the scrollbar.
 		 */
 		enum KStyleScrollBarType {
 			WindowsStyleScrollBar  = 	0x00000000,
 			PlatinumStyleScrollBar = 	0x00000001,
-			ThreeButtonScrollBar   = 	0x00000002
+			ThreeButtonScrollBar   = 	0x00000002,
+			NextStyleScrollBar     = 	0x00000004
 		};
 
 		/** 
@@ -125,6 +129,17 @@ class KStyle: public QCommonStyle
 		 * Destructs the KStyle object.
 		 */
 		~KStyle();
+
+		/**
+		 * Modifies the scrollbar type used by the style.
+		 * 
+		 * This function is only provided for convenience. It allows
+		 * you to make a late decision about what scrollbar type to use for the
+		 * style after performing some processing in your style's constructor.
+		 * In most situations however, setting the scrollbar type via the KStyle
+		 * constructor should suffice.
+		 */
+		void setScrollBarType(KStyleScrollBarType sbtype);
 
 		// ---------------------------------------------------------------------------
 
