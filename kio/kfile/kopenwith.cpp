@@ -281,8 +281,10 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 class KOpenWithDlgPrivate
 {
 public:
-    KOpenWithDlgPrivate() {};
+    KOpenWithDlgPrivate() : saveNewApps(false) { };
     QPushButton* ok;
+    bool saveNewApps;
+    KService::Ptr curService;
 };
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
@@ -362,6 +364,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;
+  d->curService = 0L;
 
   QBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
           KDialog::spacingHint() );
@@ -511,9 +514,9 @@ void KOpenWithDlg::slotClear()
 void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
     kdDebug(250)<<"KOpenWithDlg::slotSelected"<<endl;
-    KService::Ptr pService = m_pService;
+    KService::Ptr pService = d->curService;
     edit->setURL( _exec ); // calls slotTextChanged :(
-    m_pService = pService;
+    d->curService = pService;
 }
 
 
@@ -523,12 +526,12 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 {
     kdDebug(250)<<"KOpenWithDlg::slotHighlighted"<<endl;
     qName = _name;
-    m_pService = KService::serviceByName( qName );
+    d->curService = KService::serviceByName( qName );
     if (!m_terminaldirty)
     {
         // ### indicate that default value was restored
-        terminal->setChecked(m_pService->terminal());
-        QString terminalOptions = m_pService->terminalOptions();
+        terminal->setChecked(d->curService->terminal());
+        QString terminalOptions = d->curService->terminalOptions();
         nocloseonexit->setChecked( (terminalOptions.contains( "--noclose" ) > 0) );
         m_terminaldirty = false; // slotTerminalToggled changed it
     }
@@ -538,9 +541,9 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDlg::slotTextChanged()
 {
-    //kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
+    kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
     // Forget about the service
-    m_pService = 0L;
+    d->curService = 0L;
     d->ok->setEnabled( !edit->url().isEmpty());
 }
 
@@ -561,6 +564,11 @@ void KOpenWithDlg::slotDbClick()
    slotOK();
 }
 
+void KOpenWithDlg::setSaveNewApplications(bool b)
+{
+  d->saveNewApps = b;
+}
+
 void KOpenWithDlg::slotOK()
 {
   QString fullExec(edit->url());
@@ -568,6 +576,7 @@ void KOpenWithDlg::slotOK()
   QString serviceName;
   QString initialServiceName;
   QString preferredTerminal;
+  m_pService = d->curService;
   if (!m_pService) {
     // No service selected - check the command line
 
@@ -635,13 +644,16 @@ void KOpenWithDlg::slotOK()
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
 
-  if ( !remember || !remember->isChecked() ) {
-    if (m_pService)
-    {
-      accept();
-      return;
-    }
+  bool bRemember = remember && remember->isChecked();
+
+  if ( !bRemember && m_pService)
+  {
+    accept();
+    return;
+  }
     
+  if (!bRemember && !d->saveNewApps)
+  {
     // Create temp service
     m_pService = new KService(initialServiceName, fullExec, QString::null);
     if (terminal->isChecked())
@@ -650,11 +662,11 @@ void KOpenWithDlg::slotOK()
       // only add --noclose when we are sure it is konsole we're using
       if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
          m_pService->setTerminalOptions("--noclose");
-  }
+    }
     accept();
     return;
-  }
-
+  }  
+  
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
@@ -683,17 +695,16 @@ void KOpenWithDlg::slotOK()
       maxPreference = offerList.first().preference();
   }
 
-  KConfig *desktop = 0;
+  KDesktopFile *desktop = 0;
   if (!oldPath.isEmpty() && (oldPath != newPath))
   {
-     KConfig orig(oldPath, true, false, "apps");
+     KDesktopFile orig(oldPath, true);
      desktop = orig.copyTo(newPath);
   }
   else
   {
-     desktop = new KConfig(newPath, false, false, "apps");
+     desktop = new KDesktopFile(newPath);
   }
-  desktop->setDesktopGroup();
   desktop->writeEntry("Type", QString::fromLatin1("Application"));
   desktop->writeEntry("Name", initialServiceName);
   desktop->writePathEntry("Exec", fullExec);
@@ -710,22 +721,22 @@ void KOpenWithDlg::slotOK()
   }
   desktop->writeEntry("InitialPreference", maxPreference + 1);
 
-  if (remember)
-    if (remember->isChecked()) {
-      QStringList mimeList = desktop->readListEntry("MimeType", ';');
-      if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
-        mimeList.append(qServiceType);
-      desktop->writeEntry("MimeType", mimeList, ';');
 
-      if ( !qServiceType.isEmpty() )
-      {
-        // Also make sure the "auto embed" setting for this mimetype is off
-        KDesktopFile mimeDesktop( locateLocal( "mime", qServiceType + ".desktop" ) );
-        mimeDesktop.writeEntry( "X-KDE-AutoEmbed", false );
-        mimeDesktop.sync();
-      }
+  if (bRemember)
+  {
+    QStringList mimeList = desktop->readListEntry("MimeType", ';');
+    if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
+      mimeList.append(qServiceType);
+    desktop->writeEntry("MimeType", mimeList, ';');
+
+    if ( !qServiceType.isEmpty() )
+    {
+      // Also make sure the "auto embed" setting for this mimetype is off
+      KDesktopFile mimeDesktop( locateLocal( "mime", qServiceType + ".desktop" ) );
+      mimeDesktop.writeEntry( "X-KDE-AutoEmbed", false );
+      mimeDesktop.sync();
     }
-
+  }
 
   // write it all out to the file
   desktop->sync();

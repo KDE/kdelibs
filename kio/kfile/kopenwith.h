@@ -113,6 +113,17 @@ public:
      * Can be null, if the user typed some text and didn't select a service.
      */
     KService::Ptr service() const { return m_pService; }
+    /**
+     * Set whether a new .desktop file should be created if the user selects an
+     * application for which no corresponding .desktop file can be found.
+     *
+     * Regardless of this setting a new .desktop file may still be created if
+     * the user has chosen to remember the file association.
+     *
+     * The default is false: no .desktop files are created.
+     * @since 3.2
+     */
+    void setSaveNewApplications(bool b);
 
 public slots:
     /**

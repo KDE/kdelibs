@@ -152,6 +152,7 @@ KCustomMenuEditor::slotNewItem()
    QListViewItem *item = m_listView->currentItem();
 
    KOpenWithDlg dlg(this);
+   dlg.setSaveNewApplications(true);
 
    if (dlg.exec())
    {
