@@ -169,6 +169,7 @@ int main(int argc, char **argv) {
     filter( "gg:www.kde.org", "http://www.google.com/search?q=www.kde.org&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "av:+rock +sample", "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=%2Brock%20%2Bsample", KURIFilterData::NET_PROTOCOL );
     filter( "gg:é" /*eaccent in utf8*/, "http://www.google.com/search?q=%C3%A9&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    filter( "gg:прйвет" /* greetings in russian utf-8*/, "http://www.google.com/search?q=%D0%BF%D1%80%D0%B9%D0%B2%D0%B5%D1%82&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL ); 
 
     filter( "about:", "about:konqueror", KURIFilterData::NET_PROTOCOL ); // cf kshorturifilter
 
