@@ -119,7 +119,7 @@ bool KHTMLImage::openURL( const KURL &url )
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
     if ( impl && m_ext->urlArgs().reload )
-        impl->setReloading();
+        impl->docLoader()->setReloading(true);
 
     m_khtml->write( html.arg( m_url.url() ) );
     m_khtml->end();
