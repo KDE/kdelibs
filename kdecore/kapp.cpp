@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.89  1998/02/19 05:58:22  rwilliam
+// Modified getHelpMenu()
+//    Now displays Content instead of Help...
+//
 // Revision 1.88  1998/02/07 20:44:05  kulow
 // good news: KDE is relocatable again. kdelibs's configure is now inserting KDEDIR in the directories name and the kde_dir functions check for this.
 // This way we can have the advantages of both sides. It's relocatable with $KDEDIR
@@ -438,8 +442,11 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
   pMenu->insertSeparator();
 
   id = pMenu->insertItem( QString(klocale->translate( "&About" )) + " " + aAppName + "...");
-  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
-  aAppAboutString = aboutAppText;
+  if( aboutAppText )
+	{
+	  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
+	  aAppAboutString = aboutAppText;
+	}
 
   id = pMenu->insertItem( klocale->translate( "About &KDE..." ) );
   pMenu->connectItem( id, this, SLOT( aboutKDE() ) );
