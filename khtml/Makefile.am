@@ -32,7 +32,7 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = misc dom css xml html rendering java kjs
+SUBDIRS = misc dom css xml html rendering java kjs . ecma
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtml.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp

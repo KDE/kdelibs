@@ -27,8 +27,7 @@ libkhtmldom_la_SOURCES = \
 	css_value.cpp       dom_text.cpp        html_object.cpp \
 	dom_doc.cpp         dom_xml.cpp         html_head.cpp \
 	dom_element.cpp     html_base.cpp       html_image.cpp      html_form.cpp \
-	dom2_range.cpp
-#	html_table.cpp
+	dom2_range.cpp      html_table.cpp
 #	css_extensions.cpp
 
 libkhtmldom_la_METASOURCES = AUTO
