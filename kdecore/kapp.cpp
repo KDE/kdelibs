@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.109  1998/09/01 20:21:14  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
 // Revision 1.108  1998/08/23 15:58:31  kulow
 // fixed some more advanced warnings
 //
@@ -554,7 +558,7 @@ void KApplication::appHelpActivated()
 
 void KApplication::aboutKDE()
 {
-  QMessageBox::about( NULL, klocale->translate( "About KDE" ),
+  QMessageBox::about( 0L, klocale->translate( "About KDE" ),
 					  klocale->translate( 
 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
 "a world-wide network of software engineers committed to\n"
@@ -567,7 +571,7 @@ void KApplication::aboutKDE()
 
 void KApplication::aboutApp()
 {
-  QMessageBox::about( NULL, getCaption(), aAppAboutString );
+  QMessageBox::about( 0L, getCaption(), aAppAboutString );
 }
  
 
