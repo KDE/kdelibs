@@ -1011,7 +1011,7 @@ void KDialogBase::setDetails(bool showDetails)
   if (d->bDetails)
   {
      emit aboutToShowDetails();
-     setButtonText(Details, QString("<< ") + d->detailsButton);
+     setButtonText(Details, d->detailsButton+ " <<");
      if (d->detailsWidget)
      {
         if (layout())
