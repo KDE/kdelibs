@@ -53,12 +53,14 @@ public:
       subMenu= 0;
     }
     int origCursorPos;
-    bool grabReturnKeyEvents;
-    bool handleURLDrops;
     bool hasReference;
-    KCompletionBox *completionBox;
-    QPopupMenu* popupMenu;
+    bool handleURLDrops;    
+    bool grabReturnKeyEvents;
+   
+    QString prevText;
     QPopupMenu* subMenu;
+    QPopupMenu* popupMenu;
+    KCompletionBox *completionBox;   
 };
 
 
@@ -156,7 +158,7 @@ void KLineEdit::makeCompletion( const QString& txt )
     KGlobalSettings::Completion mode = completionMode();
     if ( mode ==  KGlobalSettings::CompletionPopup )
     {
-        if ( match.isNull() || txt.isEmpty() )
+        if ( match.isNull() )
           hideCompletionBox();
         else
           setCompletedItems( comp->allMatches() );
@@ -205,18 +207,23 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
 
         else if ( mode == KGlobalSettings::CompletionPopup )
-        {
-            QString prev = text();
-            QLineEdit::keyPressEvent ( e );
-            QString curr = text();
-
-            if ( prev != curr )
+	 {
+	    QLineEdit::keyPressEvent ( e );            
+	    QString keycode = e->text();
+	    QString txt = text();
+	    int key = e->key();
+            
+	    if (((!keycode.isNull() && keycode.unicode()->isPrint())||
+		 (key == Qt::Key_Delete || key == Qt::Key_BackSpace)) &&
+		txt != d->prevText)
             {
+	        //kdDebug() << "Completing: " << txt << endl;
                 if ( emitSignals() )
-                    emit completion( curr );
+                    emit completion(txt);
                 if ( handleSignals() )
-                    makeCompletion( curr );
+                    makeCompletion(txt);
                 e->accept();
+	        d->prevText = txt;
             }
             return;
         }
@@ -558,6 +565,7 @@ void KLineEdit::hideCompletionBox()
         d->origCursorPos = -1;
         d->completionBox->hide();
         d->completionBox->clear();
+        d->prevText = QString::null;
     }
 }
 
