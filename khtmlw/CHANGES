@@ -1,6 +1,12 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.16 - 26 Apr 1998 (Lars Hoss)
+---------------
+
+Fixed QMovie bug in htmlobj.cpp. Now Visual Schnauzer
+works fine.
+
 Version 0.12.16 - 29 Mar 1998 (Martin)
 ---------------
 

@@ -638,20 +638,23 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	    pixmap = HTMLImage::findImage( kurl.path() );
 	    if ( pixmap == 0 )
 	    {
-#ifdef USE_QMOVIE
-		if ( strstr( kurl.path(), ".gif" ) != 0 )
-		{
-		    movie = new QMovie( kurl.path(), 8192 );
-		    movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
-		}
-		else
-		{
-#endif
+// We cannot use QMovie here, because we will load thumbnails which
+// are not in GIF format!
+
+//#ifdef USE_QMOVIE
+//		if ( strstr( kurl.path(), ".gif" ) != 0 )
+//		{
+//		    movie = new QMovie( kurl.path(), 8192 );
+//		    movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
+//		}
+//		else
+//		{
+//#endif
 		    pixmap = new QPixmap();
 		    pixmap->load( kurl.path() );	    
-#ifdef USE_QMOVIE
-		}
-#endif
+//#ifdef USE_QMOVIE
+//		}
+//#endif
 		cached = false;
 	    }
 	}
