@@ -86,7 +86,7 @@ QString KCalendarSystem::yearString(const QDate & pDate, bool bShort) const
 
 static int stringToInteger(const QString & sNum, int & iLength)
 {
-  int iPos = 0;
+  unsigned int iPos = 0;
 
   int result = 0;
   for (; sNum.length() > iPos && sNum.at(iPos).isDigit(); iPos++)
