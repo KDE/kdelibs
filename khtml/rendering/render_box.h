@@ -25,7 +25,7 @@
 #define RENDER_BOX_H
 
 #include "render_container.h"
-#include "loader.h"
+#include "misc/loader.h"
 
 namespace khtml {
     class CachedObject;
@@ -90,7 +90,7 @@ public:
 
     virtual void calcWidth();
     virtual void calcHeight();
-    
+
     void calcVerticalMargins();
     virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
 
@@ -108,10 +108,10 @@ protected:
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();
 
-    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);  
+    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
 
-    void calcClip(QPainter* p, int tx, int ty, const QRegion& old);    
-    
+    void calcClip(QPainter* p, int tx, int ty, const QRegion& old);
+
     // the actual height of the contents + borders + padding
     int m_height;
 

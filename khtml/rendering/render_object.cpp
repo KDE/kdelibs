@@ -25,24 +25,13 @@
 
 #include "render_object.h"
 
-#include "dom_nodeimpl.h"
-#include "render_box.h"
-#include "render_flow.h"
-#include "render_style.h"
 #include "render_table.h"
 #include "render_list.h"
-#include "render_style.h"
 #include "render_root.h"
 #include "render_hr.h"
-#include "misc/loader.h"
 
 #include <kdebug.h>
-#include <qnamespace.h>
 #include <qpainter.h>
-#include <qcolor.h>
-#include <qpen.h>
-#include <qsize.h>
-#include <qtextstream.h>
 
 #include <assert.h>
 using namespace DOM;
@@ -812,11 +801,11 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
 	} else if ( parent() && parent()->childrenInline() ) {
 	    vpos = parent()->verticalPositionHint( firstLine );
 	    // don't allow elements nested inside text-top to have a different valignment.
-	    if ( va == BASELINE || vpos == PositionBottom )
+	    if ( va == BASELINE )
 		return vpos;
 
-            if ( vpos == PositionTop )
-                vpos = 0;
+        //     if ( vpos == PositionTop )
+//                 vpos = 0;
 
 	    QFont f = parent()->font( firstLine );
             int fontheight = parent()->lineHeight( firstLine );
@@ -833,8 +822,8 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
 //                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", fontheight, fontsize, parent()->baselinePosition( firstLine ) );
 //                 qDebug( "this:" );
 //                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", lineHeight( firstLine ), style()->font().pixelSize(), baselinePosition( firstLine ) );
-                vpos += baselinePosition( firstLine ) - parent()->baselinePosition( firstLine ) +
-                        halfleading;
+                vpos += ( baselinePosition( firstLine ) - parent()->baselinePosition( firstLine ) +
+                        halfleading );
 	    } else if ( va == MIDDLE ) {
 		QRect b = QFontMetrics(f).boundingRect('x');
 		vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
