@@ -189,6 +189,14 @@ KJSO *KJS::HTMLDocument::get(const CString &p) const
     // look in base class (Document)
     Ptr tmp = new DOMDocument(doc);
     result = tmp->get(p);
+
+    if (result->isA(Undefined)) {
+      DOM::HTMLElement element;
+      DOM::HTMLCollection coll = doc.images(); /* TODO: all() */
+      DOM::Node node = coll.namedItem(DOM::DOMString(p.ascii()));
+      element = node;
+      result = new HTMLElement(element);
+    }
   }
 
   return result;
