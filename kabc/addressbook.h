@@ -127,9 +127,9 @@ class KABC_EXPORT AddressBook : public QObject
       the addressbook for all other processes. You need the returned ticket
       object for calling the save() function.
 
-      @param resource A pointer to the resource which shall be locked. If 0, 
+      @param resource A pointer to the resource which shall be locked. If 0,
                       the default resource is locked.
-      @return 0 if the resource is already locked or a valid save ticket 
+      @return 0 if the resource is already locked or a valid save ticket
               otherwise.
       @see save()
      */
@@ -150,7 +150,7 @@ class KABC_EXPORT AddressBook : public QObject
 
     /**
       Loads all addressees asynchronously. This function returns immediately
-      and emits the addressBookChanged() signal as soon as the loading has 
+      and emits the addressBookChanged() signal as soon as the loading has
       finished.
 
       @return Whether the synchronous part of loading was successfully.
@@ -182,7 +182,7 @@ class KABC_EXPORT AddressBook : public QObject
     ConstIterator begin() const;
 
     /**
-      This is an overloaded member function, provided for convenience. It 
+      This is an overloaded member function, provided for convenience. It
       behaves essentially like the above function.
      */
     Iterator begin();
@@ -194,7 +194,7 @@ class KABC_EXPORT AddressBook : public QObject
     ConstIterator end() const;
 
     /**
-      This is an overloaded member function, provided for convenience. It 
+      This is an overloaded member function, provided for convenience. It
       behaves essentially like the above function.
      */
     Iterator end();
@@ -222,7 +222,7 @@ class KABC_EXPORT AddressBook : public QObject
     void removeAddressee( const Addressee &addr );
 
     /**
-      This is an overloaded member function, provided for convenience. It 
+      This is an overloaded member function, provided for convenience. It
       behaves essentially like the above function.
 
       @param it An iterator pointing to the addressee which shall be removed.
@@ -235,7 +235,7 @@ class KABC_EXPORT AddressBook : public QObject
 
       @param addr The addresee you are looking for.
      */
-    Iterator find( const Addressee &addr );
+    Iterator find( const Addressee &addr ); // KDE4: const
 
     /**
       Searches an addressee with the specified unique identifier.
@@ -244,12 +244,12 @@ class KABC_EXPORT AddressBook : public QObject
       @return The addressee with the specified unique identifier or an
               empty addressee.
      */
-    Addressee findByUid( const QString &uid );
+    Addressee findByUid( const QString &uid ); // KDE4: const
 
     /**
       Returns a list of all addressees in the address book.
      */
-    Addressee::List allAddressees();
+    Addressee::List allAddressees(); // KDE4: const
 
     /**
       Searches all addressees which match the specified name.
@@ -257,7 +257,7 @@ class KABC_EXPORT AddressBook : public QObject
       @param name The name you are looking for.
       @return A list of all matching addressees.
      */
-    Addressee::List findByName( const QString &name );
+    Addressee::List findByName( const QString &name ); // KDE4: const
 
     /**
       Searches all addressees which match the specified email address.
@@ -265,7 +265,7 @@ class KABC_EXPORT AddressBook : public QObject
       @param email The email address you are looking for.
       @return A list of all matching addressees.
      */
-    Addressee::List findByEmail( const QString &email );
+    Addressee::List findByEmail( const QString &email ); // KDE4: const
 
     /**
       Searches all addressees which belongs to the specified category.
@@ -273,19 +273,19 @@ class KABC_EXPORT AddressBook : public QObject
       @param category The category you are looking for.
       @return A list of all matching addressees.
      */
-    Addressee::List findByCategory( const QString &category );
+    Addressee::List findByCategory( const QString &category ); // KDE4: const
 
     /**
       Returns a string identifying this addressbook. The identifier is
       created by concatenation of the resource identifiers.
      */
-    virtual QString identifier();
+    virtual QString identifier(); // KDE4: const
 
     /**
       Returns a list of all Fields known to the address book which are associated
       with the given field category.
      */
-    Field::List fields( int category = Field::All );
+    Field::List fields( int category = Field::All ); // KDE4: const
 
     /**
       Add custom field to address book.
@@ -319,7 +319,7 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       Returns a list of all resources.
      */
-    QPtrList<Resource> resources();
+    QPtrList<Resource> resources(); // KDE4: const
 
     /**
       Sets the @p ErrorHandler, that is used by error() to

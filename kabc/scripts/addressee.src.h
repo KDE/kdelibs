@@ -306,6 +306,9 @@ class KABC_EXPORT Addressee
       Insert custom entry. The entry is identified by the name of the inserting
       application and a unique name. If an entry with the given app and name
       already exists its value is replaced with the new given value.
+
+      An empty value isn't allowed (nothing happens if this is called with
+      any of the three arguments being empty)
      */
     void insertCustom( const QString &app, const QString &name,
                        const QString &value );
