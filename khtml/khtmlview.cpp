@@ -737,6 +737,18 @@ void KHTMLView::tripleClickTimeout()
     d->clickCount = 0;
 }
 
+static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* me, int x, int y)
+{
+    int absx = 0;
+    int absy = 0;
+    r->absolutePosition(absx, absy);
+    QPoint p(x-absx, y-absy);
+    QMouseEvent fw(me->type(), p, me->button(), me->state());
+    QWidget* w = r->widget();
+    if(w)
+        static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
+}
+
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
 
@@ -762,6 +774,12 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
+
+    DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
+    if (fn && fn != mev.innerNode.handle() &&
+        fn->renderer() && fn->renderer()->isWidget()) {
+        forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
+    }
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
@@ -859,6 +877,12 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
+
+    DOM::NodeImpl* fn = m_part->xmlDocImpl()->focusNode();
+    if (fn && fn != mev.innerNode.handle() &&
+        fn->renderer() && fn->renderer()->isWidget()) {
+        forwardPeripheralEvent(static_cast<khtml::RenderWidget*>(fn->renderer()), _mouse, xm, ym);
+    }
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     if (r && r->isWidget())

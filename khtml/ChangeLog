@@ -1,3 +1,16 @@
+2003-10-07 Germain Garand <germain@ebooksfrance.org>
+
+	* khtmlview.cpp (viewportMouseReleaseEvent/viewportMouseMoveEvent): forward
+	meaningful peripheral mouse events to focused widget to restore correct 
+	mouse handling in proxied widgets. #65216 (selection part)
+
+	* rendering/render_replaced.cpp (handleEvent):
+	map MOUSEOUT/MOUSEOVER DOM events to Enter/Leave events. Honours stacking
+	while mouse buttons are pressed.
+
+	* html/html_formimpl.cpp (defaultEventHandler): forward MOUSEOUT/MOUSEOVER
+	to handleEvent
+
 2003-10-06  Daniel Molkentin  <molkentin@kde.org>
 
 	* ecma/kjs_window.cpp: added window.open targets _self and replace
@@ -27,6 +40,11 @@
 
 	* dom/css_value.cpp/h (class CSSStyleDeclaration): make accessors const. Add
 	binary compatibility wrappers. 
+
+2003-10-04 Germain Garand <germain@ebooksfrance.org>
+
+	* rendering/render_replaced.cpp (baselinePosition): use setPos to adjust
+	layer position if needed. Fix relatively positioned widgets not being painted. 
 
 2003-10-04  Dirk Mueller  <mueller@kde.org>
 

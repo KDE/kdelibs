@@ -766,9 +766,11 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         case EventImpl::MOUSEDOWN_EVENT:
         case EventImpl::MOUSEUP_EVENT:
         case EventImpl::MOUSEMOVE_EVENT:
-	case EventImpl::KHTML_KEYDOWN_EVENT:
-	case EventImpl::KHTML_KEYUP_EVENT:
-	case EventImpl::KHTML_KEYPRESS_EVENT:
+        case EventImpl::MOUSEOUT_EVENT:
+        case EventImpl::MOUSEOVER_EVENT:
+        case EventImpl::KHTML_KEYDOWN_EVENT:
+        case EventImpl::KHTML_KEYUP_EVENT:
+        case EventImpl::KHTML_KEYPRESS_EVENT:
             if (static_cast<RenderWidget*>(renderer())->handleEvent(*evt))
 		evt->setDefaultHandled();
         default:

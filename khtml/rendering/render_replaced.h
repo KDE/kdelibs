@@ -128,6 +128,12 @@ protected:
 
     QWidget *m_widget;
     KHTMLView* m_view;
+
+public:
+    class EventPropagator : public QWidget {
+    public:
+        void sendEvent(QEvent *e);
+    };
 };
 
 extern bool allowWidgetPaintEvents;

@@ -385,7 +385,6 @@ void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx,
     m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
-
     paintWidget(p, m_widget, x, y, w, h, _tx, _ty);
 }
 
@@ -398,7 +397,7 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
     allowWidgetPaintEvents = true;
 
     QPixmap pm;
-    if (!widget->inherits("QScrollView")) {
+    if (!::qt_cast<QScrollView *>(widget)) {
         bool dsbld = QSharedDoubleBuffer::isDisabled();
         QSharedDoubleBuffer::setDisabled(true);
         pm = QPixmap(widget->width(), widget->height());
@@ -412,8 +411,8 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
         }
         QPainter::redirect(widget, &pm);
         QPaintEvent e( widget->rect(), false );
-        QApplication::sendEvent( widget, &e );
-        QPainter::redirect(widget, 0);
+        QApplication::sendEvent( widget, &e ); 
+        QPainter::redirect(widget, 0); 
         QSharedDoubleBuffer::setDisabled(dsbld);
         p->drawPixmap(tx, ty, pm);
     } else {
@@ -479,33 +478,30 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     return filtered;
 }
 
-class EventPropagator : public QWidget {
-public:
-    void sendEvent(QEvent *e) {
-        switch(e->type()) {
-        case QEvent::MouseButtonPress:
-            mousePressEvent(static_cast<QMouseEvent *>(e));
-            break;
-        case QEvent::MouseButtonRelease:
-            mouseReleaseEvent(static_cast<QMouseEvent *>(e));
-            break;
-        case QEvent::MouseButtonDblClick:
-            mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
-            break;
-        case QEvent::MouseMove:
-            mouseMoveEvent(static_cast<QMouseEvent *>(e));
-            break;
-        case QEvent::KeyPress:
-            keyPressEvent(static_cast<QKeyEvent *>(e));
-            break;
-        case QEvent::KeyRelease:
-            keyReleaseEvent(static_cast<QKeyEvent *>(e));
-            break;
-        default:
-            break;
-        }
+void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
+    switch(e->type()) {
+    case QEvent::MouseButtonPress:
+        mousePressEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseButtonRelease:
+        mouseReleaseEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseButtonDblClick:
+        mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseMove:
+        mouseMoveEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::KeyPress:
+        keyPressEvent(static_cast<QKeyEvent *>(e));
+        break;
+    case QEvent::KeyRelease:
+        keyReleaseEvent(static_cast<QKeyEvent *>(e));
+        break;
+    default:
+        break;
     }
-};
+}
 
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
@@ -580,6 +576,17 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+	break;
+    }
+    case EventImpl::MOUSEOUT_EVENT: {
+	QEvent moe( QEvent::Leave );
+	QApplication::sendEvent(m_widget, &moe);
+	break;
+    }
+    case EventImpl::MOUSEOVER_EVENT: {
+	QEvent moe( QEvent::Enter );
+	QApplication::sendEvent(m_widget, &moe);
+	break;
     }
     default:
         break;
