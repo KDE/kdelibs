@@ -60,6 +60,13 @@ This is to help finding out header files from classnames and the other
 way round. Compatibility headers have been created. You can use them as 
 long as you don't compile with KDE_NO_COMPAT.
 
+<H4>DCOP</H4>
+The file with the DCOP connection information has been renamed. The new
+name is $HOME/.DCOPserver_<hostname>_<display>. The screen part has been 
+stripped from <display> and the ':' character that seperates host and
+display-number has been replaced with a '_'. If you access DCOP via
+DCOPClient you do not need to change anything.
+
 <H4>KLibFactory</H4>
 KLibFactory's create method is no more virtual and the createObject method
 is now pure virtual. The former was marked as deprecated since KDE 2.0.
