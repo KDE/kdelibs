@@ -94,6 +94,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
         case KIO::UDS_URL:
           UDS_URL_seen = true;
           m_url = KURL((*it).m_str);
+          if (m_url.isLocalFile()) m_bIsLocalURL = true;
           break;
 
         case KIO::UDS_MIME_TYPE:
