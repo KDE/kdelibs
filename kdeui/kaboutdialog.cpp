@@ -411,12 +411,14 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *parent,
 void KAboutContainerBase::show( void )
 {
   QWidget::show();
-
+  // 2000-18-01 Espen Sand: The entire function will be removed
+  /*
   if( mPageTab != 0 )
   {
     mPageTab->setMinimumSize( mPageTab->sizeHint() );
   }
   mTopLayout->activate(); // This must be done after everything else.
+  */
 }
 
 
@@ -486,8 +488,6 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
     vbox->addWidget( lineEdit );
   }
 
-  page->setMinimumSize( page->sizeHint() );
-  vbox->activate();
   return( page );
 }
 
