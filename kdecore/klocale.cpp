@@ -967,12 +967,7 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 
 QString i18n(const char* text)
 {
-#ifdef ENABLE_NLS
-  register KLocale *instance = KGlobal::locale();
-  if (instance)
-     return instance->translate(text);
-#endif
-  return QString::fromUtf8(text);
+  return i18n(text, text);
 }
 
 QString i18n(const char* index, const char *text)
