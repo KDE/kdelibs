@@ -2,6 +2,12 @@
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
 
+// For future expansion
+struct KJavaAppletContextPrivate
+{
+
+};
+
 KJavaAppletContext::KJavaAppletContext( KJavaAppletServer *server )
   : QObject()
 {
@@ -17,6 +23,11 @@ KJavaAppletContext::KJavaAppletContext( KJavaAppletServer *server )
    this->server->createContext( contextIdSource );
 
    contextIdSource++;
+}
+
+KJavaAppletContext::~KJavaAppletContext()
+{
+    server->destroyContext( id );
 }
 
 KJavaAppletContext *KJavaAppletContext::getDefaultContext()
@@ -53,13 +64,20 @@ void KJavaAppletContext::create( KJavaApplet *applet )
     appletId++;
 }
 
-void KJavaAppletContext::setParameter( KJavaApplet *applet, QString name, QString value )
+void KJavaAppletContext::destroy( KJavaApplet *applet )
+{
+  int appletId = applet->appletId();
+  server->destroyApplet( id, appletId );
+}
+
+void KJavaAppletContext::setParameter( KJavaApplet *applet,
+				       const QString &name, const QString &value )
 {
     server->setParameter( id, applet->appletId(),
 			  name, value );
 }
 
-void KJavaAppletContext::show( KJavaApplet *applet, QString title )
+void KJavaAppletContext::show( KJavaApplet *applet, const QString &title )
 {
     server->showApplet( id, applet->appletId(), title );
 }

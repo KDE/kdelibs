@@ -14,6 +14,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  1999/11/12 01:22:34  rich
+ * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
+ *
  * Revision 1.2  1999/10/09 18:10:10  rich
  * Const QString fixes
  *
@@ -43,9 +46,20 @@ public:
     static KJavaAppletServer *getDefaultServer();
     
     /**
+     * Quits the default server and allows a new server to be created.
+     */
+    static void killDefaultServer();
+
+    /**
      * Create an applet context with the specified id.
      */
     void createContext( int contextId );
+
+    /**
+     * Destroy the applet context with the specified id. All the applets in the
+     * context will be destroyed as well.
+     */
+    void destroyContext( int contextId );
 
     /**
      * Create an applet in the specified context with the specified id. The applet
@@ -54,6 +68,11 @@ public:
     void createApplet( int contextId, int appletId,
 		       const QString name, const QString clazzName,
 		       const QString base );
+
+    /**
+     * Destroy an applet in the specified context with the specified id.
+     */
+    void destroyApplet( int contextId, int appletId );
 
     /**
      * Set a parameter for a specified applet. The parameter and value are both
@@ -85,6 +104,7 @@ public:
 
 protected:
     KJavaProcess *process;
+    struct KJavaAppletServerPrivate *d;
 };
 
 #endif // KJAVAAPPLETSERVER_H

@@ -4,6 +4,14 @@
 #include <qtimer.h>
 #include <kwinmodule.h>
 
+// For future expansion
+struct KJavaAppletWidgetPrivate
+{
+
+};
+
+static unsigned int count = 0;
+
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
                                       QWidget *parent, const char *name )
    : QWidget( parent, name )
@@ -46,6 +54,11 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
    shown = false;
 }
 
+KJavaAppletWidget::~KJavaAppletWidget()
+{
+  delete applet;
+}
+
 void KJavaAppletWidget::create()
 {
     applet->create();
@@ -68,61 +81,58 @@ void KJavaAppletWidget::show()
     QWidget::show();
 }
 
-void KJavaAppletWidget::setAppletClass( const QString clazzName )
+void KJavaAppletWidget::setAppletClass( const QString &clazzName )
 {
    applet->setAppletClass( clazzName );
 }
 
-const QString KJavaAppletWidget::appletClass()
+QString &KJavaAppletWidget::appletClass()
 {
    return applet->appletClass();
 }
 
-void KJavaAppletWidget::setAppletName( const QString name )
+void KJavaAppletWidget::setAppletName( const QString &name )
 {
     applet->setAppletName( name );
 }
 
-const QString KJavaAppletWidget::appletName()
+QString &KJavaAppletWidget::appletName()
 {
     return applet->appletName();
 }
 
-void KJavaAppletWidget::setJARFile( const QString jar )
+void KJavaAppletWidget::setJARFile( const QString &jar )
 {
    applet->setJARFile( jar );
 }
 
-const QString KJavaAppletWidget::jarFile()
+QString &KJavaAppletWidget::jarFile()
 {
    return applet->jarFile();
 }
 
-void KJavaAppletWidget::setParameter( const QString name, const QString value )
+void KJavaAppletWidget::setParameter( const QString &name, const QString &value )
 {
    applet->setParameter( name, value );
 }
 
-const QString KJavaAppletWidget::parameter( const QString name )
+QString &KJavaAppletWidget::parameter( const QString &name )
 {
-    //   return applet->parameter( name );
-    // TODO
-    return QString::null;
+    return applet->parameter( name );
 }
 
-void KJavaAppletWidget::setBaseURL( const QString base )
+void KJavaAppletWidget::setBaseURL( const QString &base )
 {
    applet->setBaseURL( base );
 }
 
-const QString KJavaAppletWidget::baseURL()
+QString &KJavaAppletWidget::baseURL()
 {
    return applet->baseURL();
 }
 
 void KJavaAppletWidget::uniqueTitle()
 {
-   static unsigned int count = 0;
    swallowTitle.sprintf( "KJAS Applet - Ticket number %u", count );
    count++;
 }

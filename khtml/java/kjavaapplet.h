@@ -4,9 +4,10 @@
 #define KJAVAAPPLET_H
 
 #include <qobject.h>
-#include <qdict.h>
+#include <qmap.h>
 #include <kurl.h>
-#include <kjavaappletcontext.h>
+
+class KJavaAppletContext;
 
 /**
  * @short A Java applet
@@ -15,6 +16,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  1999/10/09 18:09:52  rich
+ * Const QString fixes
+ *
  * Revision 1.2  1999/10/09 11:20:55  rich
  * Const clean and no longer needs KWMModuleApp
  *
@@ -32,7 +36,8 @@ class KJavaApplet : public QObject
 Q_OBJECT
 
 public:
-   KJavaApplet( KJavaAppletContext *context = 0 );
+  KJavaApplet( KJavaAppletContext *context = 0 );
+  virtual ~KJavaApplet();
 
    //
    // Stuff to do with the applet
@@ -41,34 +46,35 @@ public:
    /**
     * Specify the name of the class file to run. For example 'Lake.class'.
     */
-   void setAppletClass( const QString clazzName );
-   const QString appletClass();
+   void setAppletClass( const QString &clazzName );
+   QString &appletClass();
 
    /**
     * Specify the location of the jar file containing the class.
     * (unimplemented)
     */
-   void setJARFile( const QString jar );
-   const QString jarFile();
+   void setJARFile( const QString &jar );
+   QString &jarFile();
 
    /**
     * Specify a parameter to be passed to the applet.
     */
-   void setParameter( const QString name, const QString value );
+   void setParameter( const QString &name, const QString &value );
+   QString &parameter( const QString &name );
 
    /**
     * Set the URL of the document embedding the applet.
     */
-   void setBaseURL( const QString base );
-   const QString baseURL();
+   void setBaseURL( const QString &base );
+   QString &baseURL();
 
-    void setAppletName( const QString name );
-    const QString appletName();
+   void setAppletName( const QString &name );
+   QString &appletName();
 
     void create();
     bool isCreated();
 
-   void show( const QString title );
+   void show( const QString &title );
 
    /**
     * Run the applet.
@@ -85,12 +91,8 @@ public:
 
 private:
    // Applet info
-    bool reallyExists;
-   QString clazzName;
-   QString appName;
-   QString jar;
-   QString base;
-   QDict<char> params;
+   struct KJavaAppletPrivate *d;
+   QMap<QString, QString> params;
    KJavaAppletContext *context;
    int id;
 };

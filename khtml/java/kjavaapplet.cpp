@@ -1,74 +1,112 @@
+#include <kjavaappletcontext.h>
 #include "kjavaapplet.moc"
 
-template class QDict<char>;
+typedef QMap<QString, QString> ParamMap;
+
+struct KJavaAppletPrivate
+{
+   bool reallyExists;
+   QString clazzName;
+   QString appName;
+   QString jar;
+   QString base;
+};
 
 KJavaApplet::KJavaApplet( KJavaAppletContext *context )
+    : params()
 {
-    if ( context != 0 )
-	this->context = context;
-    else
-	this->context = KJavaAppletContext::getDefaultContext();
+  d = new KJavaAppletPrivate;
+  CHECK_PTR( d );
 
-    reallyExists = false;
+  if ( context != 0 )
+    this->context = context;
+  else
+    this->context = KJavaAppletContext::getDefaultContext();
+  
+  d->reallyExists = false;
+}
+
+KJavaApplet::~KJavaApplet()
+{
+  if ( d->reallyExists )
+    context->destroy( this );
+
+  delete d;
 }
 
 bool KJavaApplet::isCreated()
 {
-    return reallyExists;
+    return d->reallyExists;
 }
 
-void KJavaApplet::setAppletClass( const QString clazzName )
+void KJavaApplet::setAppletClass( const QString &clazzName )
 {
-    this->clazzName = clazzName;
+    d->clazzName = clazzName;
 }
 
-const QString KJavaApplet::appletClass()
+QString &KJavaApplet::appletClass()
 {
-    return clazzName;
+    return d->clazzName;
 }
 
-void KJavaApplet::setJARFile( const QString jar )
+void KJavaApplet::setJARFile( const QString &jar )
 {
-    this->jar = jar;
+    d->jar = jar;
 }
 
-const QString KJavaApplet::jarFile()
+QString &KJavaApplet::jarFile()
 {
-    return jar;
+    return d->jar;
 }
 
-void KJavaApplet::setParameter( const QString name, const QString value )
+QString &KJavaApplet::parameter( const QString &name )
 {
-    context->setParameter( this, name, value );
+    return params[ name ];
 }
 
-void KJavaApplet::setBaseURL( const QString base )
+void KJavaApplet::setParameter( const QString &name, const QString &value )
 {
-    this->base = base;
+    if ( d->reallyExists )
+	context->setParameter( this, name, value );
+    else
+	params.insert( name, value );
 }
 
-const QString KJavaApplet::baseURL()
+void KJavaApplet::setBaseURL( const QString &base )
 {
-    return base;
+    d->base = base;
 }
 
-void KJavaApplet::setAppletName( const QString name )
+QString &KJavaApplet::baseURL()
 {
-    appName = name;
+    return d->base;
 }
 
-const QString KJavaApplet::appletName()
+void KJavaApplet::setAppletName( const QString &name )
 {
-    return appName;
+    d->appName = name;
+}
+
+QString &KJavaApplet::appletName()
+{
+    return d->appName;
 }
 
 void KJavaApplet::create( )
 {
   context->create( this );
-  reallyExists = true;
+  d->reallyExists = true;
+
+  ParamMap::Iterator it;
+
+  if ( params.count() != 0 ) {
+      for ( it = params.begin(); it != params.end(); ++it ) {
+	  context->setParameter( this, it.key(), it.data() );
+      }
+  }
 }
 
-void KJavaApplet::show( const QString title )
+void KJavaApplet::show( const QString &title )
 {
     context->show( this, title );
 }

@@ -4,7 +4,9 @@
 #define KJAVAPROCESS_H
 
 #include <kprocess.h>
-#include <qdict.h>
+#include <qmap.h>
+
+class KJavaProcessPrivate;
 
 /**
  * @short A class for invoking a Java VM
@@ -17,6 +19,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  1999/11/12 01:22:34  rich
+ * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
+ *
  * Revision 1.2  1999/10/09 18:10:53  rich
  * Const QString fixes
  *
@@ -37,65 +42,84 @@ public:
     /**
      * Create a process object, the process is NOT invoked at this point.
      */
-   KJavaProcess();
-   virtual ~KJavaProcess();
-
+    KJavaProcess();
+    virtual ~KJavaProcess();
+    
     /**
      * Invoke the JVM.
      */
-   void startJava();
-
+    void startJava();
+    
     /**
      * Stop the JVM (if it's running).
      */
-   void stopJava();
+    void stopJava();
+    
+    bool isOK();
+    bool isRunning();
+    
+    /**
+     * Used to specify the location of the JVM.
+     */
+    void setJVMPath( const QString path );
 
-   bool isOK();
-   bool isRunning();
+    /**
+     * Used to decide the parameter names for JVM stack size etc.
+     */
+    void setJVMVersion( int major, int minor = 0, int patch = 0 );
 
-   /**
-    * Used to specify the location of the JVM.
-    */
-   void setJVMPath( const QString path );
+    /**
+     * The HTTP proxy.
+     */
+    void setHTTPProxy( const QString host, int port );
 
-   /**
-    * Used to decide the parameter names for JVM stack size etc.
-    */
-   void setJVMVersion( int major, int minor = 0, int patch = 0 );
+    /**
+     * The FTP proxy.
+     */
+    void setFTPProxy( const QString host, int port );
 
-   void setHTTPProxy( const QString host, int port );
-   void setFTPProxy( const QString host, int port );
-   void setSystemProperty( const QString name, const QString value );
-   void setMainClass( const QString clazzName );
-   void setExtraArgs( const QString args );
-   void setClassArgs( const QString classArgs );
+    /**
+     * Set system properties by adding -D<I>name</I>=<I>value</I> to
+     * the java command line.
+     */
+    void setSystemProperty( const QString name, const QString value );
 
-   void send( const QString command );
+    /**
+     * The class to be called when startJava() is called.
+     */
+    void setMainClass( const QString clazzName );
+
+    /**
+     * Extra flags passed to the JVM.
+     */
+    void setExtraArgs( const QString args );
+
+    /**
+     * Arguments passed to the main class.
+     */
+    void setClassArgs( const QString classArgs );
+
+    /**
+     * Send a string to the standard input (System.in) of the JVM.
+     */
+    void send( const QString command );
 
 protected slots:
     void wroteData();
+    void processExited();
+    void receivedData( KProcess *, char *, int );
+    void javaHasDied();
 
 protected:
-   virtual void invokeJVM();
-   virtual void killJVM();
-
-   KProcess *javaProcess;
-   int versionMajor;
-   int versionMinor;
-   int versionPatch;
-   QString httpProxyHost;
-   int httpProxyPort;
-   QString ftpProxyHost;
-   int ftpProxyPort;
-   bool ok;
-   QString jvmPath;
-   QString mainClass;
-   QString extraArgs;
-   QString classArgs;
-
-   QStrList inputBuffer;
+    virtual void invokeJVM();
+    virtual void killJVM();
+    KProcess *javaProcess;
+signals:
+    void received( const QString & );
 private:
-   QDict<char> systemProps;
+    KJavaProcessPrivate *d;
+    QStrList inputBuffer;
+    QMap <QString, QString> systemProps;
 };
 
 #endif // KJAVAPROCESS_H

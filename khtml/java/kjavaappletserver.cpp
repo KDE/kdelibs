@@ -1,6 +1,14 @@
 #include <kjavaappletserver.moc>
 #include <kjavaprocess.h>
 
+// For future expansion
+struct KJavaAppletServerPrivate
+{
+
+};
+
+static KJavaAppletServer *server = 0;
+
 KJavaAppletServer::KJavaAppletServer()
 {
   process = new KJavaProcess();
@@ -12,8 +20,6 @@ KJavaAppletServer::KJavaAppletServer()
 
 KJavaAppletServer *KJavaAppletServer::getDefaultServer()
 {
-  static KJavaAppletServer *server = 0;
-
   if ( server == 0 ) {
     server = new KJavaAppletServer();
     CHECK_PTR( server );
@@ -22,10 +28,23 @@ KJavaAppletServer *KJavaAppletServer::getDefaultServer()
   return server;
 }
 
+void KJavaAppletServer::killDefaultServer()
+{
+    server->quit();
+    server = 0;
+}
+
 void KJavaAppletServer::createContext( int contextId )
 {
     QString s;
     s.sprintf( "createContext!%d\n", contextId );
+    process->send( s );
+}
+
+void KJavaAppletServer::destroyContext( int contextId )
+{
+    QString s;
+    s.sprintf( "destroyContext!%d\n", contextId );
     process->send( s );
 }
 
@@ -41,6 +60,15 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
     process->send( s );
 
 }
+
+void KJavaAppletServer::destroyApplet( int contextId, int appletId )
+{
+    QString s;
+    s.sprintf( "destroyApplet!%d!%d\n",
+	       contextId, appletId );
+    process->send( s );
+}
+
 
 void KJavaAppletServer::setParameter( int contextId, int appletId,
 				      const QString name, const QString value )

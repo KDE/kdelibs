@@ -52,6 +52,9 @@ class KWinModule;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  1999/10/09 13:20:45  rich
+ * Changed Wid to WId
+ *
  * Revision 1.2  1999/10/09 11:20:55  rich
  * Const clean and no longer needs KWMModuleApp
  *
@@ -77,54 +80,56 @@ public:
 
    KJavaAppletWidget( QWidget *parent=0, const char *name=0 );
 
+  ~KJavaAppletWidget();
+
    //
    // Stuff to do with the applet
    //
 
-   void setAppletName( const QString appletName );
-   const QString appletName();
+   void setAppletName( const QString &appletName );
+   QString &appletName();
 
    /**
     * Specify the name of the class file to run. For example 'Lake.class'.
     */
-   void setAppletClass( const QString clazzName );
+   void setAppletClass( const QString &clazzName );
 
    /**
     * Get the name of the class file to run. For example 'Lake.class'.
     */
-   const QString appletClass();
+   QString &appletClass();
 
    /**
     * Specify the location of the jar file containing the class.
     * (unimplemented)
     */
-   void setJARFile( const QString jar );
+   void setJARFile( const QString &jar );
 
    /**
     * Get the location of the jar file containing the class.
     * (unimplemented)
     */
-   const QString jarFile();
+   QString &jarFile();
 
    /**
     * Specify a parameter to be passed to the applet.
     */
-   void setParameter( const QString name, const QString value );
+   void setParameter( const QString &name, const QString &value );
 
    /**
     * Get the value of a parameter to be passed to the applet.
     */
-   const QString parameter( const QString name );
+   QString &parameter( const QString &name );
 
    /**
     * Set the URL of the document embedding the applet.
     */
-   void setBaseURL( const QString base );
+   void setBaseURL( const QString &base );
 
    /**
     * Get the URL of the document embedding the applet.
     */
-   const QString baseURL();
+   QString &baseURL();
 
    /**
     * Create the applet.
@@ -173,6 +178,8 @@ private:
     // Swallowing info
     WId window;
     QString swallowTitle;
+
+  struct KJavaAppletWidgetPrivate *d;
 };
 
 #endif // KJAVAAPPLETWIDGET_H

@@ -16,6 +16,9 @@ import java.util.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  1999/11/12 02:58:04  rich
+ * Updated KJAS server
+ *
  * Revision 1.2  1999/11/12 01:22:36  rich
  * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
  *
@@ -81,6 +84,15 @@ public class KJASAppletClassLoader
              c = defineClass( data, 0, data.length );
              classCache.put( name, c );
           }
+	  else {
+	      try {
+		  // TODO: Remove the shit hack
+		  Thread.sleep( 1000 );
+	      }
+	      catch ( InterruptedException ie ) {
+		  // Do nothing
+	      }
+	  }
 
           if ( resolve )
              resolveClass( c );
