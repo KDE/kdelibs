@@ -2,6 +2,8 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999 Harri Porten (porten@kde.org)
  *
+ *  $Id$
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -122,13 +124,13 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
   if (args)
     func->processParameters(args);
 
-  Ptr compl = func->execute();
+  Ptr comp = func->execute();
 
   delete KJSWorld::context;
   KJSWorld::context = save;
 
-  if (compl->isValueCompletion())
-    return compl->complValue();
+  if (comp->isValueCompletion())
+    return comp->complValue();
   else
     return new KJSUndefined();
 }
