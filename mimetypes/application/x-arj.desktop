@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-arj
+Icon=tgz
+Patterns=*.arj;*.ARJ;
+Comment=ARJ archive
+DefaultApp=ark
