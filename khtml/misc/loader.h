@@ -110,6 +110,7 @@ namespace khtml
 	    m_expireDate = _expireDate;
             m_deleted = false;
             m_expireDateChanged = false;
+            m_free = false;
 	}
 	virtual ~CachedObject() {
             if(m_deleted) abort();
@@ -174,6 +175,7 @@ namespace khtml
         bool m_deleted : 1;
         bool m_loading : 1;
         bool m_expireDateChanged : 1;
+        bool m_free : 1;
     };
 
 
@@ -515,7 +517,10 @@ namespace khtml
     };
 
     inline void CachedObject::setFree() {
-        Cache::freeList->append(this);
+        if ( !m_free ) {
+            Cache::freeList->append(this);
+            m_free = true;
+        }
     }
 
 } // namespace
