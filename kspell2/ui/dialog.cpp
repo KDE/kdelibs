@@ -98,6 +98,8 @@ void Dialog::initConnections()
              SLOT(slotDone()) );
     connect( d->ui->m_suggestions , SIGNAL( doubleClicked (QListViewItem *, const QPoint &, int ) ),
              SLOT( slotReplaceWord() ) );
+    connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotFinished() ) );
+    connect( this, SIGNAL( cancelClicked() ),this, SLOT( slotCancel() ) );
 }
 
 void Dialog::initGui()
@@ -113,6 +115,19 @@ void Dialog::initGui()
             break;
         }
     }
+}
+
+void Dialog::slotFinished()
+{
+    kdDebug()<<"void Dialog::slotFinished() \n";
+    emit finished();
+}
+
+void Dialog::slotCancel()
+{
+    kdDebug()<<"void Dialog::slotCancel() \n";
+    emit cancel();
+    KDialogBase::reject();
 }
 
 QString Dialog::originalBuffer() const
