@@ -239,10 +239,12 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     toolbar->insertButton(QString::fromLatin1("flag"),
                           (int)HOTLIST_BUTTON, true,
                           i18n("Bookmarks"));
-
+    /*
     toolbar->insertButton(QString::fromLatin1("configure"),
                           (int)CONFIGURE_BUTTON, true,
                           i18n("Configure this dialog"));
+    */
+    coll->action( "mkdir" )->plug( toolbar );
 
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
@@ -574,10 +576,8 @@ void KFileDialog::initGUI()
     if ( d->showStatusLine ) {
         d->myStatusLine = new QLabel( d->mainWidget, "StatusBar" );
         updateStatusLine(ops->numDirs(), ops->numFiles());
-        d->myStatusLine->adjustSize();
         d->myStatusLine->setFrameStyle( QFrame::Panel | QFrame::Sunken );
         d->myStatusLine->setAlignment( AlignHCenter | AlignVCenter );
-        d->myStatusLine->setMinimumSize( d->myStatusLine->sizeHint() );
         d->boxLayout->addWidget( d->myStatusLine, 0 );
         d->myStatusLine->show();
     }
@@ -760,9 +760,6 @@ void KFileDialog::toolbarCallback(int i) // SLOT
             d->showStatusLine =
                 c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
             delete c;
-            kdDebug(kfile_area) << "showStatusLine " << d->showStatusLine
-                                << endl;
-
             initGUI(); // add them back to the layout managment
         }
     }
@@ -1295,6 +1292,15 @@ void KFileDialog::saveRecentFiles( KConfig *kc )
     kc->setGroup( oldGroup );
 }
 
+QPushButton * KFileDialog::okButton() const
+{
+    return d->okButton;
+}
+
+QPushButton * KFileDialog::cancelButton() const
+{
+    return d->cancelButton;
+}
 
 ///////////////////
 

@@ -745,8 +745,6 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
         // we have to redraw this in as fast as possible
         QApplication::flushX();
     }
-
-    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
 void KDirOperator::selectDir(const KFileViewItem *item)
@@ -782,7 +780,6 @@ void KDirOperator::filterChanged()
     myCompletion.clear();
     myDirCompletion.clear();
     dir->listDirectory();
-    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
 void KDirOperator::setCurrentItem( const QString& filename )
@@ -853,6 +850,8 @@ void KDirOperator::setupActions()
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), this, "mkdir");
+    mkdirAction->setIcon( QString::fromLatin1("filenew") );
+    // FIXME, find a better icon than filenew
     reloadAction->setText( i18n("Reload") );
 
 
@@ -1126,13 +1125,14 @@ void KDirOperator::insertIntoView(const KFileItemList& items)
         ++it;
     }
     fileView->addItemList( list );
+    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
 // local files will be inserted in one big chunk
 void KDirOperator::slotIOFinished()
 {
     // this sucks currently, as this slot is also called by KDirLister after
-    // after an update, where we don't want to clear the list -- FIXME
+    // an update, where we don't want to clear the list -- FIXME
     if ( dir->url().isLocalFile() ) {
         fileView->clear();
         insertIntoView( dir->items() );

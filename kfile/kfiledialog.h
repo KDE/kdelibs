@@ -91,7 +91,7 @@ public:
       * See @ref setFilter() for details on how to use this argument.
       *
       * @param acceptURLs If set to @p false, @ref KFileDialog will
-      * just accept files on the local filesystem.  
+      * just accept files on the local filesystem.
       */
     KFileDialog(const QString& urlName, const QString& filter,
 		QWidget *parent, const char *name,
@@ -369,6 +369,17 @@ public:
      */
     KToolBar *toolBar() const { return toolbar; }
 
+    /**
+     * @returns a pointer to the OK-Button in the filedialog. You may use it
+     * e.g. to set a custom text to it.
+     */
+    QPushButton *okButton() const;
+
+    /**
+     * @returns a pointer to the Cancel-Button in the filedialog. You may use
+     * it e.g. to set a custom text to it.
+     */
+    QPushButton *cancelButton() const;
 
 signals:
     /**
@@ -386,7 +397,7 @@ signals:
      *
      * Note: @ref fileHighlighted() or @ref fileSelected() are @em not
      * emitted in multiselection mode. You may use selectedItems() to
-     * ask for the current highlighted items.  
+     * ask for the current highlighted items.
      */
     void selectionChanged();
 
