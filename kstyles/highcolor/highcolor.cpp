@@ -624,7 +624,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			if (!(flags & Style_Off)) {
 				if (on) {
 					p->setPen(nochange ? cg.dark() : cg.text());
-					p->drawPixmap(3, 3, xBmp);
+					p->drawPixmap(x+3, y+3, xBmp);
 				}
 				else {
 					p->setPen(cg.shadow());
