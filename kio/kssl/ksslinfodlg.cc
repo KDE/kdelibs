@@ -99,15 +99,19 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     QHBoxLayout *buttonLayout = new QHBoxLayout(topLayout, KDialog::spacingHint());
     buttonLayout->addStretch( 1 );
 
-    QPushButton *button = new QPushButton(i18n("Close"), this);
-    connect(button, SIGNAL(clicked()), SLOT(close()));
-    buttonLayout->addWidget( button );
+    QPushButton *button;
 
     if (KSSL::doesSSLWork()) {
       button = new QPushButton(i18n("Cryptography Configuration..."), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
       buttonLayout->addWidget( button );
     }
+
+    button = new QPushButton(i18n("Close"), this);
+    connect(button, SIGNAL(clicked()), SLOT(close()));
+    buttonLayout->addWidget( button );
+
+    button->setFocus();
 
     setCaption(i18n("KDE SSL Information"));
     d->inQuestion = false;
