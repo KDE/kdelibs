@@ -24,12 +24,12 @@
  /**
   * Class for watching directory changes. It uses stat (2) and
   * compares stored and actual changed time of directories. If
-  * there is a difference notifies for change. Directories can be
+  * there is a difference it notifies about the change. Directories can be
   * added, removed from the list and scanning of particular directories
-  * can be stoped and restarted. The whole class can be stoped and
+  * can be stopped and restarted. The whole class can be stopped and
   * restarted. Directories can be added/removed from list in
   * any state.
-  * When watched directory is changed, KDirWatch will emit signal 'dirty'.
+  * When a watched directory is changed, KDirWatch will emit signal 'dirty'.
   *
   * If a watched directory gets deleted, KDirwatch will remove it from
   * the list, and  emit a signal 'deleted'.
