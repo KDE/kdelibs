@@ -209,6 +209,14 @@ void Window::mark(Imp *)
     if (!op->refcount)
       op->mark();
   }
+
+  if (window_dict)
+  {
+     QPtrDictIterator<Window> it( *window_dict );
+     for ( ; it.current() ; ++it )
+       if (!it.current()->refcount)
+         it.current()->mark();
+  }
 }
 
 bool Window::hasProperty(const UString &p, bool recursive) const
@@ -638,6 +646,7 @@ Completion WindowFunc::tryExecute(const List &args)
         emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
         if (newPart && newPart->inherits("KHTMLPart")) {
 	    Window *win = Window::retrieve(static_cast<KHTMLPart*>(newPart));
+	    //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
 	    win->opener = part;
 	    win->openedByJS = true;
 	    uargs.serviceType = QString::null;
