@@ -37,6 +37,7 @@
 #include <qobject.h>
 #include <qsocketnotifier.h>
 
+class KProcessPrivate;
 
 /**
  *  Child process invocation, monitoring and control.
@@ -590,7 +591,11 @@ private:
   // Disallow assignment and copy-construction
   KProcess( const KProcess& );
   KProcess& operator= ( const KProcess& );
+
+  KProcessPrivate *d;
 };
+
+class KShellProcessPrivate *d;
 
 /**
 * This class is similar to @ref KProcess. The only difference is that
@@ -668,6 +673,8 @@ private:
   // Disallow assignment and copy-construction
   KShellProcess( const KShellProcess& );
   KShellProcess& operator= ( const KShellProcess& );
+
+  KShellProcessPrivate *d;
 };
 
 

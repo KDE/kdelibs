@@ -28,9 +28,12 @@ class QFile;
 class QTextStream;
 class QDataStream;
 class KSaveFile;
+class KTempFilePrivate;
 
 /**
  * The KTempFile class creates and opens a unique file for temporary use.
+ *
+ * @author Waldo Bastian <bastian@kde.org>
  */
 class KTempFile
 {
@@ -139,6 +142,8 @@ private:
    QDataStream *mDataStream;
    bool bOpen;
    bool bAutoDelete;
+
+   KTempFilePrivate *d;
 };
 
 #endif

@@ -26,6 +26,8 @@ typedef unsigned long Atom;
 #include <qmap.h>
 #include <qstringlist.h>
 
+class KRootPropPrivate;
+
 /**
 * Access KDE desktop resources stored on the root window.
 *
@@ -47,6 +49,7 @@ private:
   QMap<QString,QString> propDict;
   QString property_;
   bool dirty;
+  KRootPropPrivate *d;
 
 protected:
 

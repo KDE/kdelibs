@@ -1,16 +1,31 @@
-/*
- * (C) Copyright 1999, Daniel M. Duley <mosfet@kde.org>
- */
+/* This file is part of the KDE libraries
+   Copyright (c) 1999 Daniel Duley <mosfet@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 #ifndef __KSTYLE_H
 #define __KSTYLE_H
 
-#include <qplatinumstyle.h>
+#include <qwindowsstyle.h>
 #include <qfont.h>
 #include <qpalette.h>
 #include <qpixmap.h>
 
 class QMenuItem;
 class QPixmap;
+class KStylePrivate;
 
 /**
  * Extends the @ref QStyle class with virtual methods to draw KDE widgets.
@@ -19,12 +34,12 @@ class QPixmap;
  *  the GUI elements.
  * @author Daniel M. Duley <mosfet@kde.org>
  */
-class KStyle : public QPlatinumStyle
+class KStyle : public QWindowsStyle
 {
     Q_OBJECT
 public:
     enum KToolButtonType{Icon=0, IconTextRight, Text, IconTextBottom};
-    KStyle() : QPlatinumStyle(){;}
+    KStyle() : QWindowsStyle(){;}
     /**
      * Draw a toolbar (without buttons, etc.)
      *
@@ -86,6 +101,9 @@ public:
      */
     virtual void drawOPToolBar(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, QBrush *fill=NULL);
+
+private:
+    KStylePrivate *d;
 };
 
 #endif

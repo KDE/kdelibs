@@ -17,16 +17,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  */
-
-/*
- * The KDE Socket Classes.
- *
- * Torben Weis
- * weis@stud.uni-frankfurt.de
- *
- * Part of the KDE Project.
- */
-
 #ifndef KSOCK_H
 #define KSOCK_H
 
@@ -55,6 +45,9 @@ typedef sockaddr_in6 ksockaddr_in;
 typedef sockaddr_in ksockaddr_in;
 #define KSOCK_DEFAULT_DOMAIN PF_INET
 #endif
+
+class KSocketPrivate;
+class KServerSocketPrivate;
 
 /** 
  * A TCP/IP client socket.
@@ -200,6 +193,8 @@ private:
     
     KSocket(const KSocket&);
     KSocket& operator=(const KSocket&);
+
+    KSocketPrivate *d;
 };
 
 
@@ -286,6 +281,8 @@ protected:
 private:
     KServerSocket(const KServerSocket&);
     KServerSocket& operator=(const KServerSocket&);
+
+    KServerSocketPrivate *d;
 };
 
 

@@ -1,9 +1,28 @@
+/* This file is part of the KDE libraries
+   Copyright (c) 1999 Torben Weis <weis@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 #ifndef __kreg_private_h__
 #define __kreg_private_h__
 
 extern "C" { // bug with some libc5 distributions
 #include <regex.h>
 }
+
+class KRegExpDataPtr;
 
 /**
  * Used internally by @ref KRegExp.
@@ -30,6 +49,9 @@ protected:
   regmatch_t (m_matches[ 10 ]);
   char* (m_strMatches[10]);
   bool m_bInit;
+
+private:
+  KRegExpDataPtr *d;
 };
 
 #endif

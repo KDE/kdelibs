@@ -24,6 +24,8 @@
 
 #include "kconfig.h"
 
+class KSimpleConfigPrivate;
+
 /** 
  * KDE Configuration entries
  *
@@ -98,6 +100,7 @@ private:
   KSimpleConfig( const KSimpleConfig& );
   KSimpleConfig& operator= ( const KSimpleConfig& rConfig );
 
+  KSimpleConfigPrivate *d;
 };
   
 #endif

@@ -30,6 +30,8 @@ const int KColorMode_Mask	= 0x00000300;
 const int WebOnly 	= 0x00000200;
 const int LowOnly	= 0x00000300;
 
+class KPixmapPrivate;
+
 /**
  * Off-screen paint device with extended features.
 
@@ -171,6 +173,9 @@ public:
 	 * transparent background.
 	 **/
 	bool checkColorTable(const QImage &image);	
+
+private:
+    KPixmapPrivate *d;
 };
 
 #endif

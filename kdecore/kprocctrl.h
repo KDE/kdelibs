@@ -32,6 +32,8 @@
 #include <qsocketnotifier.h>
 #include "kprocess.h"
 
+class KProcessControllerPrivate;
+
 /**
  * @short Used internally by @ref KProcess
  * @internal
@@ -81,6 +83,8 @@ private:
   // Disallow assignment and copy-construction
   KProcessController( const KProcessController& );
   KProcessController& operator= ( const KProcessController& );
+
+  KProcessControllerPrivate *d;
 };
 
 

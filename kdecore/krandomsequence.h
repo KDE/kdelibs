@@ -1,26 +1,39 @@
-/*
-  This file is part of the KDE libraries
-  Copyright (c) 1999 Sean Harmer <sh@astro.keele.ac.uk>
+/* This file is part of the KDE libraries
+   Copyright (c) 1999 Sean Harmer <sh@astro.keele.ac.uk>
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License as published by the Free Software Foundation; either
-  version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
-
 #ifndef K_RANDOM_SEQUENCE_H
 #define K_RANDOM_SEQUENCE_H
 
+class KRandomSequencePrivate;
+
+/**
+ * A class to create a pseudo-random sequence
+ *
+ * Given a seed number, this class will produce a sequence of
+ * pseudo-random numbers.  This would typically be used in
+ * applications like games.
+ *
+ * In general, you should instantiate a KRandomSequence object and
+ * pass along your seed number in the constructor.  From then on,
+ * simply call @ref getDouble or @ref getLong to obtain the next
+ * number in the sequence.
+ *
+ * @author Sean Harmer <sh@astro.keele.ac.uk>
+ */
 class KRandomSequence
 {
 public: 
@@ -39,8 +52,12 @@ public:
    * you need to use kapp->random() instead.
    * 
    */
-  KRandomSequence( long lngSeed = 1 );
-  ~KRandomSequence();
+  KRandomSequence( long lngSeed = 0 );
+
+  /**
+   * Standard destructor
+   */
+  virtual ~KRandomSequence();
 
   /**
    * Restart the sequence based on lngSeed
@@ -71,6 +88,8 @@ private:
 
   static const int    m_nShuffleTableSize;
   long *m_ShuffleArray;
+
+  KRandomSequencePrivate *d;
 };
 
 #endif

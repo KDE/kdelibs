@@ -27,6 +27,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+class KPalettePrivate;
+
 /**
  * Class for handling Palettes.
  *
@@ -41,7 +43,8 @@
  * @author Waldo Bastian (bastian@kde.org)
  * @version $Id$
  **/
-class KPalette {
+class KPalette
+{
 public:
    /**
     * Query which KDE palettes are installed.
@@ -194,8 +197,10 @@ private:
    QString mName;
    QString mDesc;
    Editable mEditable;
+
+   KPalettePrivate *d;
 };
 
 
-#endif		// __KCOLORDLG_H__
+#endif		// __KPALETTE_H__
 

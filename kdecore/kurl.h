@@ -26,6 +26,8 @@
 class QUrl;
 class QStringList;
 
+class KURLPrivate;
+
 /**
  * Represent and parse a URL.
  *
@@ -42,6 +44,8 @@ class QStringList;
  * and in the encoded query "cmd=Hello%20you".
  * Since path is internally always encoded you may @bf not use
  * "%00" in the path, although this is OK for the query.
+ *
+ *  @author  Torben Weis <weis@kde.org>
  */
 class KURL
 {
@@ -446,6 +450,7 @@ private:
   friend QDataStream & operator<< (QDataStream & s, const KURL & a);
   friend QDataStream & operator>> (QDataStream & s, KURL & a);
 
+  KURLPrivate *d;
 };
 
 /**

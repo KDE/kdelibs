@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (C) 1999 Mattias Ettrich (ettrich@kde.org)
+   Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,16 +26,23 @@
 #include <X11/Xlib.h>
 
 /**
- * This class implements the "old style" KDE IPC mechanism. This will be
- * obsoleted in the near future by DCOP -- The Desktop Communications
- * Protocol. (current date is Oct 18, 1999)
+ * This class implements the "old style" KDE IPC mechanism.  This
+ * works by sending messages to the root (actually any) window as a
+ * property.  Receiving applications simply read that property off of
+ * the window.
+ *
+ * This method has many drawbacks and has been mostly replaced by
+ * DCOP -- The Desktop Communications Protocol.  Your application, in
+ * nearly all cases, should use DCOP over KIPC.
+ * 
+ * KIPC remains mostly to notify applications of such style changes
+ * and font changes, color changes, etc.
  *
  * All methods are static here so no need to instantiate.
  *
  * @author Geert Jansen <g.t.jansen@stud.tue.nl>
  * @version $Id$
  */ 
-
 class KIPC
 {
 public:
@@ -70,6 +78,7 @@ public:
      */
     static void sendMessageAll(const char *msg, int data=0);
 
+private:
     /**
      * Used internally
      */

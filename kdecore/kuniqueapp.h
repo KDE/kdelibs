@@ -23,6 +23,8 @@
 #include <kapp.h>
 #include <dcopobject.h>
 
+class KUniqueApplicationPrivate;
+
 /**
  * Maintain only a single
  * instance of a running application at a time.
@@ -152,6 +154,8 @@ public:
 
 private:
   static DCOPClient *s_DCOPClient;
+
+  KUniqueApplicationPrivate *d;
 };
 
 #endif

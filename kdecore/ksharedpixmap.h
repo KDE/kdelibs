@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE libraries.
  * Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
@@ -19,6 +19,8 @@
 #include <qpixmap.h>
 
 #include <kpixmap.h>
+
+class KSharedPixmapPrivate *d;
 
 /**
  * Shared pixmap client.
@@ -104,6 +106,8 @@ private:
     Atom m_Selection;
 
     QRect m_Rect;
+
+    KSharedPixmapPrivate *d;
 };
 
 #endif

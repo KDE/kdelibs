@@ -16,10 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/*
- * kwin.h. Part of the KDE project.
- */
-
 #ifndef KWIN_H
 #define KWIN_H
 
@@ -32,8 +28,11 @@
 #undef IconicState
 
 /**
- * Get or modify window
- * properties and to interact with the windowmanager.
+ * Get or modify window properties and to interact with the
+ * windowmanager.
+ *
+ * This class is now supposed to be instantiated.  It exists mostly as
+ * a namespace for the static member functions.
  *
  * It implements the new NET-protocol, a common window manager
  * specification designed by various authors of X11 window managers.
@@ -43,8 +42,8 @@
  * @short Class for interaction with the windowmanager.
  * @author Matthias Ettrich (ettrich@kde.org)
 */
-class KWin  {
-
+class KWin
+{
 public:
 
     /**

@@ -25,6 +25,8 @@
 #include <errno.h>
 #include <ktempfile.h>
 
+class KSaveFilePrivate;
+
 /**
  * The KSaveFile class has been made to write out changes to an existing
  * file atomically.
@@ -109,6 +111,8 @@ public:
 private:
    QString mFileName;
    KTempFile mTempFile;
+
+   KSaveFilePrivate *d;
 };
 
 #endif

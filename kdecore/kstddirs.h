@@ -29,6 +29,7 @@
 #include <kglobal.h>
 
 class KConfig;
+class KStandardDirsPrivate;
 
 /**
 * @short Site-independent access to standard KDE directories.
@@ -413,6 +414,8 @@ public:
 
 	// checks for existance and accessability
 	static bool exists(const QString &fullPath);
+
+    KStandardDirsPrivate *d;
 };
 
 /**
