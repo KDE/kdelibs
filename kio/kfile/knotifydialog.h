@@ -41,6 +41,7 @@ namespace KNotify
  * Rather than requiring the user to wade through the entire list of
  * applications' events in KControl, your application can make the list
  * of its own notifications available here.
+ * @since 3.1
  */
 class KNotifyDialog : public KDialogBase
 {

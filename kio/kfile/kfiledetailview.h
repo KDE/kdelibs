@@ -44,6 +44,9 @@ public:
         setText( 0, text );
     }
 
+    /**
+     * @since 3.1
+     */
     KFileListViewItem( QListView *parent, KFileItem *fi )
         : KListViewItem( parent ), inf( fi ) {
         init();
@@ -80,6 +83,9 @@ public:
                       QSize( r.width(), r.height() ) );
     }
 
+    /**
+     * @since 3.1
+     */
     void init();
 
 private:

@@ -249,6 +249,9 @@ public:
    */
   void abortApplying();
 
+  /**
+   * @since 3.1
+   */
   void showFileSharingPage();
 
 public slots:

@@ -157,6 +157,7 @@ public:
      * [...]
      * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
      * </pre>
+     * @since 3.1
      */
     KEditListBox::CustomEditor customEditor();
 
@@ -164,12 +165,14 @@ public slots:
     /**
      * Sets the url in the lineedit to @p url. Depending on the state of
      * @ref showLocalProtocol(), file:/ on local files will be shown or not.
+     * @since 3.1
      */
     void setURL( const QString& url );
 
     /**
      * @reimp
      * Sets the caption of the file dialog.
+     * @since 3.1
      */
     virtual void setCaption( const QString& caption );
 
@@ -183,6 +186,7 @@ signals:
     /**
      * Emitted when the text in the lineedit changes.
      * The parameter contains the contents of the lineedit.
+     * @since 3.1
      */
     void textChanged( const QString& );
 

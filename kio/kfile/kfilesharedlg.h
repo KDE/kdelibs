@@ -28,6 +28,7 @@ class QPushButton;
 /**
  * This plugin provides a page to KPropsDlg, showing the "file sharing" options
  * @author David Faure <david@mandrakesoft.com>
+ * @since 3.1
  */
 class KFileSharePropsPlugin : public KPropsDlgPlugin
 {

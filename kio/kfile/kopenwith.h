@@ -85,6 +85,7 @@ public:
      * Note that this dialog doesn't apply to URLs.
      *
      * @param parent parent widget
+     * @since 3.1
      */
     KOpenWithDlg( QWidget *parent = 0L );
 

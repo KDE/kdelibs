@@ -102,6 +102,7 @@ class KDirOperator : public QWidget
  public:
     /**
      * The various action types. These values can be or'd together
+     * @since 3.1
      */
     enum ActionTypes { SortActions = 1,
                        ViewActions = 2,
@@ -442,9 +443,10 @@ class KDirOperator : public QWidget
     /**
      * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
      *
+     * @param parent the parent widget used for the confirmation dialog
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
-     * @param parent the parent widget used for the confirmation dialog
+     * @since 3.1
      */
     KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
                           bool ask = true, bool showProgress = true );
@@ -537,6 +539,7 @@ protected:
     /**
      * Sets up the context-menu with all the necessary actions. Called from the
      * constructor, you usually don't need to call this.
+     * @since 3.1
      */
     void setupMenu();
 

@@ -121,6 +121,7 @@ public:
     bool strictIconSize() const;
     /**
      * sets a custom icon directory
+     * @since 3.1
      */
     void setCustomLocation( const QString& location );
 

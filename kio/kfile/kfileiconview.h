@@ -43,6 +43,9 @@ public:
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
 	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
+    /**
+     * @since 3.1
+     */
     KFileIconViewItem( QIconView *parent, KFileItem *fi )
 	: KIconViewItem( parent ), inf( fi ) {}
 
@@ -145,6 +148,7 @@ public slots:
     
     /**
      * Reimplemented for performance reasons.
+     * @since 3.1
      */
     virtual void arrangeItemsInGrid( bool updated = true );
 

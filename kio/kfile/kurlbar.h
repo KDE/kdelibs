@@ -86,6 +86,7 @@ public:
 
     /**
      * returns the preferred size of this item
+     * @since 3.1
      */
     QSize sizeHint() const;
 

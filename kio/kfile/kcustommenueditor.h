@@ -29,6 +29,7 @@ class KConfigBase;
   *
   * @author Waldo Bastian (bastian@kde.org)
   * @version $Id$
+  * @since 3.1
   */
 class KCustomMenuEditor : public KDialogBase
 {

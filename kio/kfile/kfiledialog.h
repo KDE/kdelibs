@@ -152,6 +152,7 @@ public:
       *               display a check box with the caption "Open as read-only".
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileDialog.
+      * @since 3.1
       */
     KFileDialog(const QString& startDir, const QString& filter,
 		QWidget *parent, const char *name,
@@ -746,7 +747,7 @@ protected:
 
     /**
       * Perform basic initialization tasks. Called by constructors.
-      *
+      * @since 3.1
       */
     void init(const QString& startDir, const QString& filter, QWidget* widget);
 
@@ -810,6 +811,9 @@ protected slots:
 
     void dirCompletion( const QString& );
     void fileCompletion( const QString& );
+    /**
+     * @since 3.1
+     */
     void toggleSpeedbar( bool );
 
     /**
