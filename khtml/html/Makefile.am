@@ -41,7 +41,10 @@ noinst_HEADERS = \
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop \
-	 -I.. -I. -I../misc -I../css -I../xml -I../html $(all_includes)
+        -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc \
+	-I$(top_srcdir)/khtml/css \
+        -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml \
+        -I$(top_srcdir)/khtml/html $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
