@@ -53,4 +53,5 @@ Other:
         * there's a bug on correctly retrieving <textarea> text.
           see test/forms.html and compare it with the way all other
           browsers handle that code
-
+        * paste should be enabled (and implemented) if there's pasteable clipboard 
+          content and a form element has the focus
