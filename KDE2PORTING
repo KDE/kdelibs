@@ -21,8 +21,11 @@ changes should be necessary at all. It is recommended to switch to the new
 include file, though.
 
 * KLocale
-i18n is no longer a macro to KApplication::getApplication()->getLocale()->translate, but a function on it's own. klocale is obsolute and replace every call
+- i18n is no longer a macro to KApplication::getApplication()->getLocale()->translate, but a function on it's own. klocale is obsolute and replace every call
 to klocale->translate with i18n.
-The return value is also no longer a const char*, but a unicode string.
+The return value of i18n is also no longer a const char*, but a unicode qstring.
 
+* KApplication
+doesn't hold any longer a KLocale instance. With this getLocale() and isLocaleInstantiated are now replaced by KGlobal::locale(). This function won't create
+an instance on the fly
 

@@ -68,12 +68,6 @@ extern "C" {
 const int KDatePicker::PreferredButtonSize=22;
 const int KDatePicker::MinimumFrameAroundButtons=2;
 const int KDatePicker::NoOfMonth=12;
-// ----- taken from kapp.h:
-#ifndef i18n
-#define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
-#endif
-// ^^^^^^^^^^^^^^^^^^^
-
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   : QFrame(parent,name),

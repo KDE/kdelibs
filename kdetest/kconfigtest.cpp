@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.19  1999/03/01 23:33:59  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.18  1999/02/26 12:56:59  dfaure
  * '/' after PATH_TMP for SCO
  *
@@ -356,12 +359,11 @@ int main( int argc, char **argv )
   fprintf( stderr, "Autosave name for %s is %s\n", "/home/kalle/text/mytext.txt", kapp->tempSaveName( "/home/kalle/text/mytext.txt" ).ascii() );
 
   bool bRecoverFile = false;
-  const char* pRecoverFile = kapp->checkRecoverFile( "/home/kalle/text/mytext.txt", bRecoverFile );
+  QString pRecoverFile = kapp->checkRecoverFile( "/home/kalle/text/mytext.txt", bRecoverFile );
   if( bRecoverFile )
 	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile );
   else
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
-  free( pRecoverFile );
 
   KSimpleConfig sc( _PATH_TMP"/sc.cfg" );
 	/*

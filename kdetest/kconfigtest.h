@@ -25,6 +25,7 @@
 #include <qfileinfo.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
+#include <qtextstream.h>
 
 // Standard Qt widgets
 
