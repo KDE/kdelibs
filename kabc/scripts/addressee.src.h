@@ -164,7 +164,7 @@ class KABC_EXPORT Addressee
     QStringList emails() const;
 
     /**
-       Set the emails to @param.
+       Set the emails to @p list.
        The first email address gets the preferred one!
        @param list The list of email addresses.
      */
