@@ -16,7 +16,9 @@ msgstr ""
 msgid "Save edits?"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:300 sql/qsqlmanager_p.cpp:892
+#: dialogs/qfontdialog.cpp:300 dialogs/qinputdialog.cpp:157
+#: dialogs/qprogressdialog.cpp:250 dialogs/qtabdialog.cpp:847
+#: sql/qsqlmanager_p.cpp:892
 msgid "Cancel"
 msgstr ""
 
@@ -60,7 +62,9 @@ msgid ""
 "information.</p>"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:289 dialogs/qmessagebox.cpp:1385
+#: dialogs/qfontdialog.cpp:289 dialogs/qinputdialog.cpp:155
+#: dialogs/qmessagebox.cpp:1385 dialogs/qtabdialog.cpp:194
+#: dialogs/qtabdialog.cpp:1063
 msgid "OK"
 msgstr ""
 
@@ -82,6 +86,18 @@ msgstr ""
 
 #: dialogs/qwizard.cpp:187
 msgid "&Help"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:289 dialogs/qtabdialog.cpp:703
+msgid "Apply"
+msgstr ""
+
+#: dialogs/qtabdialog.cpp:748
+msgid "Help"
+msgstr ""
+
+#: dialogs/qtabdialog.cpp:795
+msgid "Defaults"
 msgstr ""
 
 #: dialogs/qdialog.cpp:428
@@ -125,10 +141,6 @@ msgstr ""
 msgid "Scr&ipt"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:289
-msgid "Apply"
-msgstr ""
-
 #: dialogs/qfontdialog.cpp:300 widgets/qtitlebar.cpp:113
 #: workspace/qworkspace.cpp:1076
 msgid "Close"
@@ -162,14 +174,14 @@ msgstr ""
 msgid "Paste special..."
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2140
-#: widgets/qtextedit.cpp:4163
+#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2153
+#: widgets/qtextedit.cpp:4148
 msgid "Clear"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2143
-#: widgets/qlineedit.cpp:2145 widgets/qtextedit.cpp:4167
-#: widgets/qtextedit.cpp:4169
+#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2156
+#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:4152
+#: widgets/qtextedit.cpp:4154
 msgid "Select All"
 msgstr ""
 
@@ -281,23 +293,23 @@ msgstr ""
 msgid "Maximize"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2132 widgets/qtextedit.cpp:4151
+#: widgets/qlineedit.cpp:2145 widgets/qtextedit.cpp:4136
 msgid "&Undo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2133 widgets/qtextedit.cpp:4152
+#: widgets/qlineedit.cpp:2146 widgets/qtextedit.cpp:4137
 msgid "&Redo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2136 widgets/qtextedit.cpp:4157
+#: widgets/qlineedit.cpp:2149 widgets/qtextedit.cpp:4142
 msgid "Cu&t"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2137 widgets/qtextedit.cpp:4158
+#: widgets/qlineedit.cpp:2150 widgets/qtextedit.cpp:4143
 msgid "&Copy"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2138 widgets/qtextedit.cpp:4160
+#: widgets/qlineedit.cpp:2151 widgets/qtextedit.cpp:4145
 msgid "&Paste"
 msgstr ""
 
