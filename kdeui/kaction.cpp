@@ -2509,6 +2509,7 @@ public:
     m_dctHighlightContainers.setAutoDelete( true );
     m_highlight = false;
     m_currentHighlightAction = 0;
+    m_statusCleared = true;
   }
   ~KActionCollectionPrivate()
   {
@@ -2519,6 +2520,7 @@ public:
   bool m_highlight;
   KKeyEntryMap m_keyMap;
   KAction *m_currentHighlightAction;
+  bool m_statusCleared;
 };
 
 KActionCollection::KActionCollection( QObject *parent, const char *name,
@@ -2798,10 +2800,13 @@ void KActionCollection::slotMenuItemHighlighted( int id )
 
   if ( !d->m_currentHighlightAction )
   {
-      emit clearStatusText();
+      if ( !d->m_statusCleared )
+          emit clearStatusText();
+      d->m_statusCleared = true;
       return;
   }
 
+  d->m_statusCleared = false;
   emit actionHighlighted( d->m_currentHighlightAction );
   emit actionHighlighted( d->m_currentHighlightAction, true );
   emit actionStatusText( d->m_currentHighlightAction->toolTip() );
@@ -2812,7 +2817,10 @@ void KActionCollection::slotMenuAboutToHide()
     if ( d->m_currentHighlightAction )
         emit actionHighlighted( d->m_currentHighlightAction, false );
     d->m_currentHighlightAction = 0;
-    emit clearStatusText();
+
+    if ( !d->m_statusCleared )
+        emit clearStatusText();
+    d->m_statusCleared = true;
 }
 
 void KActionCollection::slotToolBarButtonHighlighted( int id, bool highlight )
