@@ -21,21 +21,15 @@
 
 #include "utils.h"
 #include <sys/time.h>
+#include <config.h>
 
-int get_byteorder()
+int get_byteorder(void)
 {
-	union {
-		long l;
-		char c[4];
-	} test;
-	test.l = 1;
-	if(test.c[3] == 1 && (test.c[2] == test.c[1] == test.c[0] == 0) )
-		return(ORDER_BIGENDIAN);
-
-	if(test.c[3] == 0 && (test.c[2] == test.c[1] == test.c[0] == 1) )
-		return(ORDER_LITTLEENDIAN);
-
-	return(ORDER_UNKNOWN);
+#ifdef WORDS_BIGENDIAN
+	return ORDER_BIGENDIAN;
+#else
+	return ORDER_LITTLEENDIAN;
+#endif
 }
 
 float benchmark(int what)
