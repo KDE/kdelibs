@@ -1386,21 +1386,6 @@ void RenderTable::updateSize()
     RenderBox::updateSize();
 }
 
-void RenderTable::repaintRectangle(int x, int y, int w, int h)
-{
-    x += m_x;
-    y += m_y;
-
-    // in case the update timer is running, we might want to either block the
-    // repaint or extend it to the whole table
-    if(!parsing() || updateTimer.isNull()) m_parent->repaintRectangle(x, y, w, h);
-    if(updateTimer.elapsed() < 200) return;
-
-    // we had an update timer, which might have blocked some of the updates,
-    // so we rather repaint the whole table
-    m_parent->repaintRectangle(0, 0, m_width, m_height);
-}
-
 
 // --------------------------------------------------------------------------
 

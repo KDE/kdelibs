@@ -115,7 +115,6 @@ public:
     virtual void close();
 
     virtual void updateSize();
-    virtual void repaintRectangle(int x, int y, int w, int h);
 
     int getBaseline(int row) {return rowBaselines[row];}
 
