@@ -78,7 +78,7 @@ Wallet::~Wallet() {
 
 
 QStringList Wallet::walletList() {
-DCOPReply r = DCOPRef("kded", "kwalletd").call("walletList");
+DCOPReply r = DCOPRef("kded", "kwalletd").call("wallets");
 QStringList rc;
 	if (r.isValid()) {
 		r.get(rc);
