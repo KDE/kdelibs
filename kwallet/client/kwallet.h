@@ -114,15 +114,22 @@ class Wallet : public QObject, public DCOPObject {
 		 */
 		static bool disconnectApplication(const QString& wallet, const QCString& app);
 
+		enum OpenType { Synchronous=0, Asynchronous, OpenTypeUnused=0xff };
+
 		/**
 		 *  Open the wallet @p name.  The user will be prompted to
 		 *  allow your application to open the wallet, and may be
 		 *  prompted for a password.
 		 *  @param name The name of the wallet to open.
+		 *  @param async If true, the call will return immediately with
+		 *               a non-null pointer to an invalid wallet.  You
+		 *               must immediately connect the walletOpened()
+		 *               signal to a slot so that you will know when it
+		 *               is opened, or when it fails.
 		 *  @return Returns a pointer to the wallet if successful,
 		 *          or a null pointer on error or if rejected.
 		 */
-		static Wallet* openWallet(const QString& name);
+		static Wallet* openWallet(const QString& name, OpenType ot = Synchronous);
 
 		/**
 		 *  List the applications that are using the wallet @p wallet.
@@ -352,6 +359,12 @@ class Wallet : public QObject, public DCOPObject {
 		 */
 		void folderRemoved(const QString& folder);
 
+		/**
+		 *  Emitted when a wallet is opened in asynchronous mode.
+		 *  @param success True if the wallet was opened successfully.
+		 */
+		void walletOpened(bool success);
+
 	private:
 	k_dcop:
 		/**
@@ -377,6 +390,12 @@ class Wallet : public QObject, public DCOPObject {
 		 *  DCOP slot for signals emitted by the wallet service.
 		 */
 		ASYNC slotApplicationDisconnected(const QString& wallet, const QCString& application);
+
+		/**
+		 *  @internal
+		 *  Callback for kwalletd
+		 */
+		ASYNC walletOpenResult(int rc);
 
 	private slots:
 		/**

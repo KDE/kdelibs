@@ -64,13 +64,15 @@ Wallet::Wallet(int handle, const QString& name)
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "applicationDisconnected(QString, QCString)", "slotApplicationDisconnected(QString, QCString)", false);
 
 	// Verify that the wallet is still open
-	DCOPReply r = _dcopRef->call("isOpen", _handle);
-	if (r.isValid()) {
-		bool rc = false;
-		r.get(rc);
-		if (!rc) {
-			_handle = -1;
-			_name = QString::null;
+	if (_handle != -1) {
+		DCOPReply r = _dcopRef->call("isOpen", _handle);
+		if (r.isValid()) {
+			bool rc = false;
+			r.get(rc);
+			if (!rc) {
+				_handle = -1;
+				_name = QString::null;
+			}
 		}
 	}
 }
@@ -144,8 +146,14 @@ return rc;
 }
 
 
-Wallet *Wallet::openWallet(const QString& name) {
-DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
+Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
+	if (ot == Asynchronous) {
+		Wallet *w = new Wallet(-1, name);
+		DCOPRef("kded", "kwalletd").send("openAsynchronous", name, w->objId());
+		return w;
+	}
+
+	DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 	if (r.isValid()) {
 		int drc = -1;
 		r.get(drc);
@@ -153,6 +161,7 @@ DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 			return new Wallet(drc, name);
 		}
 	}
+
 return 0;
 }
 
@@ -551,6 +560,21 @@ void Wallet::slotApplicationDisconnected(const QString& wallet, const QCString& 
 		&& _name == wallet
 		&& application == _dcopRef->dcopClient()->appId()) {
 		slotWalletClosed(_handle);
+	}
+}
+
+
+void Wallet::walletOpenResult(int id) {
+	if (_handle != -1) {
+		// This is BAD.
+		return;
+	}
+
+	if (id >= 0) { 
+		_handle = id;
+		emit walletOpened(true);
+	} else {
+		emit walletOpened(false);
 	}
 }
 
