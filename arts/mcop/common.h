@@ -144,8 +144,10 @@ template<class T>
 void readObject(Buffer& stream, T*& result) {
 	ObjectReference reference(stream);
 
-	if(reference.serverID == "null") return 0;		// null reference?
-	result = T::_fromReference(reference,false);
+	if(reference.serverID == "null")
+		result = 0;		// null reference?
+	else
+		result = T::_fromReference(reference,false);
 };
 
 #endif
