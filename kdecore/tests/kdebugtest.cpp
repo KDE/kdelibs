@@ -28,7 +28,7 @@ public:
     kdDebug() << s << endl;
     kdError(1202) << "Error !!!" << endl;
     kdError() << "Error with no area" << endl;
-    
+
     kdDebug() << "Printing a null QWidget pointer: " << (QWidget*)0 << endl;
 
     kdDebug() << "char " << '^' << " " << char(26) << endl;
@@ -46,6 +46,8 @@ public:
     sl << "hi" << "this" << "list" << "is" << "short";
     kdDebug() << sl << endl;
 
+    Q_LLONG big = 65536LL*65536*500;
+    kdDebug() << big << endl;
   }
   void resizeEvent(QResizeEvent*)
   {
