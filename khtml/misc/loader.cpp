@@ -508,24 +508,24 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     }
 
 #ifdef Q_WS_X11
-    if ( r.hasAlphaChannel() && 
+    if ( r.hasAlphaChannel() &&
          ((w != r.width()) || (h != r.height())) )
     {
         bg = new QPixmap(w, h);
         //Tile horizontally on the first stripe
         for (int x = 0; x < w; x += r.width())
             copyBlt(bg, x, 0, &r, 0, 0, r.width(), r.height());
-        
+
         //Copy first stripe down
         for (int y = r.height(); y < h; y += r.height())
             copyBlt(bg, 0, y, bg, 0, 0, w, r.height());
-        
+
         return *bg;
     }
-#endif    
-    
-    if ( 
-#ifdef Q_WS_X11    
+#endif
+
+    if (
+#ifdef Q_WS_X11
         !r.hasAlphaChannel() &&
 #endif
         ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask())) )
@@ -587,7 +587,7 @@ const QPixmap &CachedImage::pixmap( ) const
     if(m)
     {
         if(m->framePixmap().size() != m->getValidRect().size())
-        {   
+        {
             // pixmap is not yet completely loaded, so we
             // return a clipped version. asserting here
             // that the valid rect is always from 0/0 to fullwidth/ someheight
@@ -976,6 +976,8 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
 {
     DOCLOADER_SECCHECK(true);
+    if ( ! KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(fullURL.host()) )
+	return 0L;
 
     CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
     if ( s )
