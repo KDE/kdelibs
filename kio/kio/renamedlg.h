@@ -103,7 +103,6 @@ private:
  class RenameDlgPrivate;
  RenameDlgPrivate *d;
  void pluginHandling( );
- QString mime( const QString &string );
 };
 
   /**

@@ -71,8 +71,8 @@ class RenameDlg::RenameDlgPrivate
   QPushButton *b8; //why isn't it an array
   QLineEdit* m_pLineEdit;
   QVBoxLayout* m_pLayout; // ### doesn't need to be here
-  QString src;
-  QString dest;
+  KURL src;
+  KURL dest;
   QString mimeSrc;
   QString mimeDest;
   bool modal;
@@ -155,7 +155,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     // User tries to overwrite a file with itself ?
     if ( _mode & M_OVERWRITE_ITSELF ) {
         QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
-                                       "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src,100 ) ), this );
+                                       "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src.prettyURL(),100 ) ), this );
         d->b1->setText(i18n("C&ontinue"));
         d->m_pLayout->addWidget( lb );
     }
@@ -231,7 +231,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             else
                 sentence1 = i18n("A newer item named '%1' already exists.");
 
-            QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest), this );
+            QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest.prettyURL()), this );
             gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 
             lb1 = new QLabel( this );
@@ -266,7 +266,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
                 gridLayout->addRowSpacing( 4, 20 );
 
-                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src), this );
+                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src.prettyURL()), this );
                 gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
@@ -310,7 +310,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         else
             sentence1 = i18n("A newer item named '%1' already exists.");
 
-        QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->dest), this );
+        QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->dest.url()), this );
         d->m_pLayout->addWidget(lb);
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
@@ -318,7 +318,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
     d->m_pLineEdit = new QLineEdit( this );
     layout2->addWidget( d->m_pLineEdit );
-    QString fileName = KURL(d->dest).fileName();
+    QString fileName = d->dest.fileName();
     d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
     if (d->b1)
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
@@ -387,7 +387,7 @@ RenameDlg::~RenameDlg()
 
 void RenameDlg::enableRenameButton(const QString &newDest)
 {
-  if (newDest != d->dest)
+  if (newDest != d->dest.url())
   {
     d->b1->setEnabled(true);
     d->b1->setDefault(true);
@@ -508,6 +508,16 @@ void RenameDlg::b7Pressed()
 {
   done( 7 );
 }
+
+static QString mime( const KURL& src )
+{
+  KMimeType::Ptr type = KMimeType::findByURL( src );
+  //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype
+    //    QString ty = KIO::NetAccess::mimetype(d->src );
+    // return ty;
+    return type->name();
+}
+
 /** This will figure out the mimetypes and query for a plugin
  *  Loads it then and asks the plugin if it wants to do the job
  *  We'll take the first available mimetype
@@ -521,14 +531,6 @@ void RenameDlg::pluginHandling()
 
   kdDebug(7024) << "Source Mimetype: "<< d->mimeSrc << endl;
   kdDebug(7024) << "Dest Mimetype: "<< d->mimeDest << endl;
-}
-QString RenameDlg::mime( const QString &src )
-{
-  KMimeType::Ptr type = KMimeType::findByURL(src );
-  //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype
-    //    QString ty = KIO::NetAccess::mimetype(d->src );
-    // return ty;
-    return type->name();
 }
 
 
