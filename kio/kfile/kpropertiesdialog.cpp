@@ -952,7 +952,7 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
         while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
 }
 
-void KFilePropsPlugin::slotFoundMountPoint( const QString&, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail )
+void KFilePropsPlugin::slotFoundMountPoint( const QString&, unsigned long kBSize, unsigned long /*kBUsed*/, unsigned long kBAvail )
 {
     d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
                                .arg(KIO::convertSizeFromKB(kBAvail))
@@ -962,7 +962,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&, unsigned long kBSize
 
 // attention: copy&paste below, due to compiler bug
 // it doesn't like those unsigned long parameters -- unsigned long& are ok :-/
-void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize, const unsigned long& kBUsed, const unsigned long& kBAvail, const QString& )
+void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize, const unsigned long& /*kBUsed*/, const unsigned long& kBAvail, const QString& )
 {
     d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
                                .arg(KIO::convertSizeFromKB(kBAvail))

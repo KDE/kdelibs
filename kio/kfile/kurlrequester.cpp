@@ -265,6 +265,9 @@ void KURLRequester::setMode(unsigned int mode)
 {
     Q_ASSERT( (mode & KFile::Files) == 0 );
     d->fileDialogMode = mode;
+    if ( (mode & KFile::Directory) && !(mode & KFile::File) )
+        myCompletion->setMode( KURLCompletion::DirCompletion );
+    
     if (myFileDialog)
        myFileDialog->setMode( d->fileDialogMode );
 }
