@@ -2359,8 +2359,8 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			
 		case PM_TabBarTabShiftVertical:
 		{
-			const QTabBar* tb;
-			if (tb = ::qt_cast<const QTabBar*>(widget))
+			const QTabBar* tb = ::qt_cast<const QTabBar*>(widget);
+			if (tb)
 			{
 				if (tb->shape() == QTabBar::RoundedBelow || 
 					tb->shape() == QTabBar::TriangularBelow)
