@@ -211,10 +211,13 @@ Name=Testing
 Name[ca]=Proves
 Name[hu]=Próba
 Name[ja]=¥Æ¥¹¥ÈÃæ
+Name[sv]=Testar
 Comment=Unstable development style
 Comment[ca]=Estil desenvolupament inestable
 Comment[hu]=Rendszer téma stílus
 Comment[ja]=ÉÔ°ÂÄê¤Ê³«È¯Ãæ¤Î¥Æ¡¼¥Ş¥¹¥¿¥¤¥ë
+Comment[no_NY]=Ustabil utviklingsstil
+Comment[sv]=Ostabil utvecklingsstil
 ScrollBarExtent=14
 
 [General]

@@ -7,5 +7,10 @@ Comment[eo]=Originala CDE-stilo sen temoj
 Comment[fi]=Sisäänrakennettu teemoittamaton CDE tyyli
 Comment[hu]=Beépített CDE kinézet
 Comment[ja]=CDE¥¹¥¿¥¤¥ë
+Comment[mi]=Beépített CDE kinézet
+Comment[no]=Innebygget CDE-stil uten tema
+Comment[no_NY]=Innebygd CDE-stil
+Comment[sr]=Ugraðeni, bez teme, CDE stil
+Comment[sv]=Inbyggd otemad CDE-stil
 [KDE]
 widgetStyle=CDE

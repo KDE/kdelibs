@@ -247,6 +247,15 @@ Name[hu]=Rendszer
 Name[is]=Kerfi
 Name[it]=Sistema
 Name[ja]=•∑•π•∆•‡
+Name[mi]=Rendszer
+Name[nl]=Systeem
+Name[pt]=Sistema
+Name[pt_BR]=Sistema
+Name[ro]=Sistem
+Name[ru]=Û…”‘≈Õ¡
+Name[sk]=SystÈm
+Name[sl]=Sistem
+Name[sr]=Sistem
 Comment=System themed style
 Comment[ca]=Estil del sistema amb temes
 Comment[de]=System-Design
@@ -254,6 +263,10 @@ Comment[eo]=Sistema stilo kun temoj
 Comment[fi]=J‰rjestelm‰n teemoitetty tyyli
 Comment[hu]=Rendszer tÈma stÌlus
 Comment[ja]=•∑•π•∆•‡•∆°º•ﬁ•π•ø•§•Î
+Comment[mi]=Rendszer tÈma stÌlus
+Comment[no_NY]=Systemstil
+Comment[sr]=System tema
+Comment[sv]=Systemets temade stil
 
 [General]
 foreground=0,0,0

@@ -150,10 +150,14 @@ Name=Marble
 Name[ca]=Marbre
 Name[hu]=Márvány
 Name[ja]=¥Þ¡¼¥Ö¥ë
+Name[no_NY]=Marmor
+Name[sv]=Marmor
 Comment=Light marble themed style
 Comment[ca]=Estil marbre lleuger amb temes
 Comment[hu]=Halvány márvány téma stílus
 Comment[ja]=¥é¥¤¥È¥Þ¡¼¥Ö¥ë¥Æ¡¼¥Þ¥¹¥¿¥¤¥ë
+Comment[no_NY]=Lett marmorstil
+Comment[sv]=Temad stil med ljus marmor
 
 [General]
 foreground=0,0,0

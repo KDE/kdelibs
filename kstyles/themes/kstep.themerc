@@ -8,5 +8,9 @@ Comment[eo]=Next-Step-stilo sen temoj
 Comment[fi]=Teemoittamaton Next:n kaltainen tyyli
 Comment[hu]=Next-szerû kinézet
 Comment[ja]=Next¥¹¥¿¥¤¥ë
+Comment[mi]=Next-szerû kinézet
+Comment[no_NY]=Next-aktig stil
+Comment[sr]=Bez teme, nalik na NeXT
+Comment[sv]=Otemad Next-linkande stil
 [KDE]
 widgetStyle=kstepstyle.la
