@@ -446,7 +446,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
     // one lister less holding this dir
     item->count--;
 
-    if ( lister->d->autoUpdate && --item->autoUpdates == 0 && (*it).isLocalFile() )
+    if ( lister->d->autoUpdate && (*it).isLocalFile() && --item->autoUpdates == 0 )
     {
       kdDebug(7004) << "removing from kdirwatch " << kdirwatch << " " << (*it).path() << endl;
       kdirwatch->removeDir( (*it).path() );
@@ -488,7 +488,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
   // one lister less holding this dir
   item->count--;
 
-  if ( lister->d->autoUpdate && --item->autoUpdates == 0 && url.isLocalFile() )
+  if ( lister->d->autoUpdate && url.isLocalFile() && --item->autoUpdates == 0 )
   {
     kdDebug(7004) << "removing from kdirwatch " << kdirwatch << " " << url.path() << endl;
     kdirwatch->removeDir( url.path() );
