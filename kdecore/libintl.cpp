@@ -1809,5 +1809,6 @@ k_textdomain (const char *domainname)
   return (char *) k_nl_current_default_domain;
 }
 
-
+#ifdef alloca
 #undef alloca
+#endif
