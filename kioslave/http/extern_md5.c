@@ -1,11 +1,21 @@
-#ifdef DO_MD5
-
 #include <sys/types.h>
+
+#ifdef DO_MD5
 #include <md5.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 
 #include "extern_md5.h"
+
+
+/* Encode a zero-terminated string in base64.  Returns the malloc-ed
+   encoded line.
+   Note that the string may not contain NUL characters.  */
+char *base64_encode_line(const char *s)
+{
+  return base64_encode_string(s, strlen(s));
+}
 
 /*
  * Copyright (c) 1991 Bell Communications Research, Inc. (Bellcore)
@@ -20,11 +30,10 @@
  * MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR SUITABILITY
  * OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
  * WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. 
- */  
-
-char *encode64_digest(char *_buf)
+ */
+char* base64_encode_string( const char *_buf, unsigned int len )
 {
-  unsigned char buf[18];
+  unsigned char buf[len];
   char *ext, *p;
   int i;
   char basis_64[] =
@@ -41,12 +50,14 @@ char *encode64_digest(char *_buf)
     *p++ = basis_64[buf[i + 2] & 0x3F];
   }
   *p-- = '\0';
-  *p-- = '=';
+  *p-- = '\0'; // Basic authorization only expects one trailing "=" !!
   *p-- = '=';
   return ext;
 }
 
+
 // From the HTTP draft
+#ifdef DO_MD5
 
 void CvtHex(
     IN HASH Bin,

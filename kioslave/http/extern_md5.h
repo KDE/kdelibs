@@ -1,6 +1,15 @@
 #ifndef EXTERN_MD5_H
 #define EXTERN_MD5_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+  extern char *base64_encode_line(const char *s);
+  extern char *base64_encode_string(const char *s, unsigned int len);
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef DO_MD5
 
 #define HASHLEN 16
