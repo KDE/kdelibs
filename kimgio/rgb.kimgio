@@ -2,7 +2,6 @@
 Type=RGB
 Header=^\x01\xda\x01[\x01\x02]
 Name=SGI Image (RGB)
-Name[ar]=صورة من نوع SGI (RGB)
 Name[be]=Выява SGI (RGB)
 Name[bg]=Изображение SGI (RGB)
 Name[bn]=এস-জি-আই চিত্র (RGB)
@@ -25,6 +24,7 @@ Name[is]=SGI mynd (RGB)
 Name[it]=Immagine SGI (RGB)
 Name[ja]=SGI イメージ (RGB)
 Name[ko]=CGI 그림 (RGB)
+Name[ms]=Imej SGI(RGB)
 Name[nb]=SGI-bilde (RGB)
 Name[nl]=SGI-afbeelding (RGB)
 Name[nn]=SGI-bilete (RGB)
