@@ -25,11 +25,13 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include "thread.h"
 
 static int arts_debug_level = Arts::Debug::lInfo;
 static bool arts_debug_abort = false;
 static const char *arts_debug_prefix = "";
 static char *messageAppName = 0;
+static Arts::Mutex *arts_debug_mutex = 0;
 
 namespace Arts {
 
@@ -39,8 +41,8 @@ namespace Arts {
  * always sent to standard error because they tend to be very verbose.
  * Note that the external application is run in the background to
  * avoid blocking the sound server.
-*/
-void display_message(Debug::Level level, const char *msg) {
+ */
+void output_message(Debug::Level level, const char *msg) {
 	char buff[1024];
 
 	/* default to text output if no message app is defined or if it is a debug message. */
@@ -64,6 +66,42 @@ void display_message(Debug::Level level, const char *msg) {
 		  break; // avoid compile warning
 	}
 	system(buff);
+}
+
+/*
+ * Display a message using output_message. If the message is the same
+ * as the previous one, just increment a count but don't display
+ * it. This prevents flooding the user with duplicate warnings. If the
+ * message is not the same as the previous one, then we report the
+ * previously repeated message (if any) and reset the last message and
+ * count.
+ */
+void display_message(Debug::Level level, const char *msg) {
+	static char lastMsg[1024];
+	static Debug::Level lastLevel;
+	static int msgCount = 0;
+
+	if(arts_debug_mutex)
+		arts_debug_mutex->lock();
+
+	if (!strncmp(msg, lastMsg, 1024))
+	{
+		msgCount++;
+	} else {
+		if (msgCount > 0)
+		{
+			char buff[1024];
+			sprintf(buff, "%s\n(The previous message was repeated %d times.)", lastMsg, msgCount);
+			output_message(lastLevel, buff);
+		}
+		strncpy(lastMsg, msg, 1024);
+		lastLevel = level;
+		msgCount = 0;
+		output_message(level, msg);
+	}
+
+	if(arts_debug_mutex)
+		arts_debug_mutex->unlock();
 }
 
 static class DebugInitFromEnv {
@@ -156,4 +194,19 @@ void Arts::Debug::messageApp(const char *appName)
 {
 	messageAppName = (char*) realloc(messageAppName, strlen(appName)+1);
 	strcpy(messageAppName, appName);
+}
+
+void Arts::Debug::initMutex()
+{
+	arts_return_if_fail(arts_debug_mutex == 0);
+
+	arts_debug_mutex = new Arts::Mutex();
+}
+
+void Arts::Debug::freeMutex()
+{
+	arts_return_if_fail(arts_debug_mutex != 0);
+
+	delete arts_debug_mutex;
+	arts_debug_mutex = 0;
 }

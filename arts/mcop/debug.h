@@ -97,6 +97,10 @@ namespace Arts {
 	public:
 		enum Level { lFatal = 3, lWarning = 2, lInfo = 1, lDebug = 0 };
 
+		/**
+		 * Initializes at which is the minimum level to react to. If you
+		 * call this, call this before creating the Arts::Dispatcher object.
+		 */
 		static void init(const char *prefix, Level level);
 
 		static void fatal(const char *fmt,...);		// print on stderr & abort
@@ -104,11 +108,14 @@ namespace Arts {
 		static void info(const char *fmt,...);		// print on stdout
 		static void debug(const char *fmt,...);		// print on stdout
 
-/*
- * This method sets the name of an external application to display messages
- * graphically.
- */
+		/**
+ 		 * This method sets the name of an external application to
+		 * display messages graphically.
+ 		 */
 		static void messageApp(const char *appName);
+
+		static void initMutex();	// called from the dispatcher constructor
+		static void freeMutex();	// called from the dispatcher destructor
 	};
 };
 

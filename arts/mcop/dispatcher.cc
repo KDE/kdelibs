@@ -153,6 +153,9 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 
 	lock();
 
+	/* makes arts_debug/arts_message/arts_return_if_fail/... threadsafe */
+	Debug::initMutex();
+
 	generateServerID();
 
 	if(ioManager)
@@ -387,6 +390,9 @@ Dispatcher::~Dispatcher()
 			 << GenericDataPacket::_dataPacketCount()
 			 << " data packets alive." << endl;
 	}
+
+	Debug::freeMutex();
+
 	unlock();
 
 	/* private data pointer */
