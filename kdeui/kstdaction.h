@@ -18,7 +18,7 @@
 #ifndef KSTDACTION_H
 #define KSTDACTION_H
 
-class KSelectAction;
+class KListAction;
 class KToggleAction;
 class KAction;
 class QAction;
@@ -41,7 +41,7 @@ public:
     enum StdAction {
         // File Menu
         New=1, Open, OpenRecent, Save, SaveAs, Revert, Close,
-        Print, PrintPreview, Quit,
+        Print, PrintPreview, Mail, Quit,
 
         // Edit Menu
         Undo, Redo, Cut, Copy, Paste, SelectAll, Find, FindNext, FindPrev,
@@ -52,7 +52,8 @@ public:
         Zoom, Redisplay,
 
         // Go Menu
-        Up, Back, Forward, Home, Prior, Next, Goto, FirstPage, LastPage,
+        Up, Back, Forward, Home, Prior, Next, Goto, GotoPage, GotoLine,
+        FirstPage, LastPage,
 
         // Bookmarks Menu
         AddBookmark, EditBookmarks,
@@ -60,11 +61,12 @@ public:
         // Tools Menu
         Spelling,
 
-        // Options Menu
-        ShowMenubar, ShowToolbar, ShowStatusbar, KeyBindings, Preferences,
+        // Settings Menu
+        ShowMenubar, ShowToolbar, ShowStatusbar, SaveOptions, KeyBindings,
+        Preferences,
 
         // Help Menu
-        HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE
+        Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE
     };
 
     /**
@@ -102,8 +104,8 @@ public:
     /**
      * Open a recently used document.
      */
-    static KSelectAction *openRecent(const QObject *recvr = 0, const char *slot = 0,
-                                     QObject *parent = 0, const char *name = 0L );
+    static KListAction *openRecent(const QObject *recvr = 0, const char *slot = 0,
+                                   QObject *parent = 0, const char *name = 0L );
 
     /**
      * Save the current document.
@@ -141,6 +143,12 @@ public:
      */
     static KAction *printPreview(const QObject *recvr = 0, const char *slot = 0,
                                  QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Mail this document
+     */
+    static KAction *mail(const QObject *recvr = 0, const char *slot = 0,
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Quit the program.
@@ -294,9 +302,22 @@ public:
                          QObject *parent = 0, const char *name = 0L );
 
     /**
+     * Go to somewhere.. in general
+     */
+    static KAction *goTo(const QObject *recvr = 0, const char *slot = 0,
+                         QObject *parent = 0, const char *name = 0L );
+
+
+    /**
      * Go to a specific page (dialog).
      */
     static KAction *gotoPage(const QObject *recvr = 0, const char *slot = 0,
+                             QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Go to a specific line (dialog).
+     */
+    static KAction *gotoLine(const QObject *recvr = 0, const char *slot = 0,
                              QObject *parent = 0, const char *name = 0L );
 
     /**
@@ -349,6 +370,12 @@ public:
 					QObject *parent = 0, const char *name = 0L );
 
     /**
+     * Display the save options dialog
+     */
+    static KAction *saveOptions(const QObject *recvr = 0, const char *slot = 0,
+                                QObject *parent = 0, const char *name = 0L );
+
+    /**
      * Display the configure key bindings dialog.
      */
     static KAction *keyBindings(const QObject *recvr = 0, const char *slot = 0,
@@ -359,6 +386,12 @@ public:
      */
     static KAction *preferences(const QObject *recvr = 0, const char *slot = 0,
                                 QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Display the help.
+     */
+    static KAction *help(const QObject *recvr = 0, const char *slot = 0,
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Display the help contents.

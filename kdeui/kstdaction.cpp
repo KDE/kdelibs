@@ -68,6 +68,9 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
     case PrintPreview:
         act = printPreview(recvr, slot, parent, name);
         break;
+    case Mail:
+        act = mail(recvr, slot, parent, name);
+        break;
     case Quit:
         act = quit(recvr, slot, parent, name);
         break;
@@ -147,7 +150,13 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
         act = next(recvr, slot, parent, name);
         break;
     case Goto:
+        act = goTo(recvr, slot, parent, name);
+        break;
+    case GotoPage:
         act = gotoPage(recvr, slot, parent, name);
+        break;
+    case GotoLine:
+        act = gotoLine(recvr, slot, parent, name);
         break;
     case FirstPage:
         act = firstPage(recvr, slot, parent, name);
@@ -176,6 +185,9 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
     case ShowStatusbar:
         act = showStatusbar(recvr, slot, parent, name);
         break;
+    case SaveOptions:
+        act = saveOptions(recvr, slot, parent, name);
+        break;
     case KeyBindings:
         act = keyBindings(recvr, slot, parent, name);
         break;
@@ -183,6 +195,9 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
         act = preferences(recvr, slot, parent, name);
         break;
 
+    case Help:
+        act = help(recvr, slot, parent, name);
+        break;
     case HelpContents:
         act = helpContents(recvr, slot, parent, name);
         break;
@@ -237,6 +252,9 @@ const char* KStdAction::stdName(StdAction act_enum)
         break;
     case PrintPreview:
         ret = "file_print_preview";
+        break;
+    case Mail:
+        ret = "file_mail";
         break;
     case Quit:
         ret = "file_quit";
@@ -319,6 +337,12 @@ const char* KStdAction::stdName(StdAction act_enum)
     case Goto:
         ret = "go_goto";
         break;
+    case GotoPage:
+        ret = "go_goto_page";
+        break;
+    case GotoLine:
+        ret = "go_goto_line";
+        break;
     case FirstPage:
         ret = "go_first";
         break;
@@ -346,6 +370,9 @@ const char* KStdAction::stdName(StdAction act_enum)
     case ShowStatusbar:
         ret = "options_show_statusbar";
         break;
+    case SaveOptions:
+        ret = "options_save_options";
+        break;
     case KeyBindings:
         ret = "options_configure_keybinding";
         break;
@@ -353,6 +380,9 @@ const char* KStdAction::stdName(StdAction act_enum)
         ret = "options_configure";
         break;
 
+    case Help:
+        ret = "help";
+        break;
     case HelpContents:
         ret = "help_contents";
         break;
@@ -392,11 +422,11 @@ KAction *KStdAction::open(const QObject *recvr, const char *slot,
                        name ? name : stdName(Open));
 }
 
-KSelectAction *KStdAction::openRecent(const QObject *recvr, const char *slot,
-				      QObject *parent, const char *name )
+KListAction *KStdAction::openRecent(const QObject *recvr, const char *slot,
+                                    QObject *parent, const char *name )
 {
-    return new KSelectAction(i18n("Open &Recent"), 0, recvr, slot, parent,
-                             name ? name : stdName(OpenRecent));
+    return new KListAction(i18n("Open &Recent"), 0, recvr, slot, parent,
+                           name ? name : stdName(OpenRecent));
 }
 
 KAction *KStdAction::save(const QObject *recvr, const char *slot,
@@ -426,7 +456,7 @@ KAction *KStdAction::print(const QObject *recvr, const char *slot,
 {
     return new KAction(i18n("&Print..."), QIconSet(BarIcon("fileprint")),
                        KStdAccel::key(KStdAccel::Print), recvr, slot, parent,
-                       name ? name : stdName(Close));
+                       name ? name : stdName(Print));
 }
 
 KAction *KStdAction::printPreview(const QObject *recvr, const char *slot,
@@ -434,7 +464,7 @@ KAction *KStdAction::printPreview(const QObject *recvr, const char *slot,
 {
     return new KAction(i18n("Print Previe&w..."),
                        QIconSet(BarIcon("print_preview")), 0, recvr, slot,
-                       parent, name ? name : stdName(Print));
+                       parent, name ? name : stdName(PrintPreview));
 }
 
 KAction *KStdAction::close(const QObject *recvr, const char *slot,
@@ -442,7 +472,14 @@ KAction *KStdAction::close(const QObject *recvr, const char *slot,
 {
     return new KAction(i18n("&Close"), QIconSet(BarIcon("close")),
                        KStdAccel::key(KStdAccel::Close), recvr, slot, parent,
-                       name ? name : stdName(PrintPreview));
+                       name ? name : stdName(Close));
+}
+
+KAction *KStdAction::mail(const QObject *recvr, const char *slot,
+						  QObject *parent, const char *name )
+{
+    return new KAction(i18n("&Mail..."), QIconSet(BarIcon("send")), 0,
+                       recvr, slot, parent, name ? name : stdName(Mail));
 }
 
 KAction *KStdAction::quit(const QObject *recvr, const char *slot,
@@ -639,11 +676,25 @@ KAction *KStdAction::next(const QObject *recvr, const char *slot,
                        name ? name : stdName(Next));
 }
 
+KAction *KStdAction::goTo(const QObject *recvr, const char *slot,
+                          QObject *parent, const char *name )
+{
+    return new KAction(i18n("&Go to..."), 0, recvr, slot, parent,
+                       name ? name : stdName(Goto));
+}
+
 KAction *KStdAction::gotoPage(const QObject *recvr, const char *slot,
                               QObject *parent, const char *name )
 {
     return new KAction(i18n("&Go to Page..."), 0, recvr, slot, parent,
-                       name ? name : stdName(Goto));
+                       name ? name : stdName(GotoPage));
+}
+
+KAction *KStdAction::gotoLine(const QObject *recvr, const char *slot,
+                              QObject *parent, const char *name )
+{
+    return new KAction(i18n("&Go to Line..."), 0, recvr, slot, parent,
+                       name ? name : stdName(GotoLine));
 }
 
 KAction *KStdAction::firstPage(const QObject *recvr, const char *slot,
@@ -700,8 +751,15 @@ KToggleAction *KStdAction::showToolbar(const QObject *recvr, const char *slot,
 KToggleAction *KStdAction::showStatusbar(const QObject *recvr, const char *slot,
 					 QObject *parent, const char *name )
 {
-    return new KToggleAction(i18n("Show &Statusbar"), 0, recvr, slot, parent,
+    return new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
                              name ? name : stdName(ShowStatusbar));
+}
+
+KAction *KStdAction::saveOptions(const QObject *recvr, const char *slot,
+                                 QObject *parent, const char *name )
+{
+    return new KAction(i18n("&Save Options"), 0, recvr, slot,
+                       parent, name ? name : stdName(SaveOptions));
 }
 
 KAction *KStdAction::keyBindings(const QObject *recvr, const char *slot,
@@ -717,6 +775,14 @@ KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
     return new KAction(i18n("&Preferences..."), QIconSet(BarIcon("options")),
                        0, recvr, slot, parent,
                        name ? name : stdName(Preferences));
+}
+
+KAction *KStdAction::help(const QObject *recvr, const char *slot,
+                          QObject *parent, const char *name )
+{
+    return new KAction(i18n("&Help"), QIconSet(BarIcon("help")),
+                       KStdAccel::key(KStdAccel::Help), recvr, slot, parent,
+                       name ? name : stdName(Help));
 }
 
 KAction *KStdAction::helpContents(const QObject *recvr, const char *slot,
