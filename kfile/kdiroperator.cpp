@@ -134,10 +134,10 @@ void KDirOperator::readNextMimeType()
     }
 
     KFileViewItem *item = pendingMimeTypes.first();
-    const QPixmap& p = item->pixmap();
+    int oldSerial = item->pixmap().serialNumber();
     (void) item->determineMimeType();
 
-    if ( item->pixmap().serialNumber() != p.serialNumber() )
+    if ( item->pixmap().serialNumber() != oldSerial )
         fileView->updateView(item);
     pendingMimeTypes.removeFirst();
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
@@ -856,7 +856,6 @@ void KDirOperator::setupActions()
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), this, "mkdir");
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
-    // FIXME, find a better icon than filenew
     reloadAction->setText( i18n("Reload") );
 
 
