@@ -309,10 +309,11 @@ void XMLTokenizer::finish()
     reader.setDeclHandler( &handler );
     reader.setDTDHandler( &handler );
     bool ok = reader.parse( source );
+
     // ### handle exceptions inserting nodes
     if (!ok) {
-        kdDebug(6036) << "Error during XML parsing: " << handler.errorProtocol() << endl;
-
+        // An error occurred during parsing of the code. Display an error page to the user (the DOM
+        // tree is created manually and includes an excerpt from the code where the error is located)
         int exceptioncode;
         while (m_doc->document()->hasChildNodes())
             static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
@@ -351,25 +352,24 @@ void XMLTokenizer::finish()
         body->renderer()->close();
         m_doc->document()->applyChanges();
         m_doc->document()->updateRendering();
-        
-        end();
 
+        end();
     }
     else {
+        // Parsing was successfull. Now locate all html <script> tags in the document and execute them
+        // one by one
         addScripts(m_doc->document());
         m_scriptsIt = new QListIterator<HTMLScriptElementImpl>(m_scripts);
         executeScripts();
-    
-        m_doc->document()->createSelector();
-        m_doc->document()->renderer()->close();
-        
-        end();
     }
 
 }
 
 void XMLTokenizer::addScripts(NodeImpl *n)
 {
+    // Recursively go through the entire document tree, looking for html <script> tags. For each of these
+    // that is found, add it to the m_scripts list from which they will be executed
+
     if (n->nodeName() == "SCRIPT") { // ### also check that namespace is html (and SCRIPT should be lowercase)
         m_scripts.append(static_cast<HTMLScriptElementImpl*>(n));
     }
@@ -381,21 +381,29 @@ void XMLTokenizer::addScripts(NodeImpl *n)
 
 void XMLTokenizer::executeScripts()
 {
+    // Iterate through all of the html <script> tags in the document. For those that have a src attribute,
+    // start loading the script and return (executeScripts() will be called again once the script is loaded
+    // and continue where it left off). For scripts that don't have a src attribute, execute the code
+    // inside the tag
     while (m_scriptsIt->current()) {
         DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
         QString charset = m_scriptsIt->current()->getAttribute( "charset" ).string();
-        if (scriptSrc != "") {
+
+         if (scriptSrc != "") {
+            // we have a src attribute
             m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);
             m_cachedScript->ref(this); // will call executeScripts() again if already cached
             return;
         }
         else {
+            // no src attribute - execute from contents of tag
             QString scriptCode = "";
             NodeImpl *child;
             for (child = m_scriptsIt->current()->firstChild(); child; child = child->nextSibling()) {
-                if (child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE)
+                if (child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) {
                     scriptCode += static_cast<TextImpl*>(child)->data().string();
+                }
             }
             // the script cannot do document.write until we support incremental parsing
             // ### handle the case where the script deletes the node or redirects to
@@ -407,10 +415,21 @@ void XMLTokenizer::executeScripts()
             ++(*m_scriptsIt);
         }
     }
+
+    // All scripts have finished executing, so calculate the style for the document and close
+    // the last element
+    m_doc->document()->createSelector();
+    m_doc->document()->renderer()->close();
+
+    // We are now finished parsing
+    end();
 }
 
 void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
 {
+    // This is called when a script has finished loading that was requested from executeScripts(). We execute
+    // the script, and then call executeScripts() again to continue iterating through the list of scripts in
+    // the document
     if (finishedObj == m_cachedScript) {
         DOMString scriptSource = m_cachedScript->script();
         m_cachedScript->deref(this);
