@@ -122,6 +122,16 @@ UString integer_part_noexp(double d)
   return str;
 }
 
+UString char_sequence(char c, int count)
+{
+  char *buf = (char*)malloc(count+1);
+  memset(buf,c,count);
+  buf[count] = '\0';
+  UString s(buf);
+  free(buf);
+  return s;
+}
+
 // ECMA 15.7.4.2 - 15.7.4.7
 Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
@@ -203,15 +213,8 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   case ToExponential: {
     double x = v.toNumber(exec);
 
-    if (isNaN(x)) {
-      return String("NaN");
-    }
-    else if (isInf(x)) {
-      if (x < 0)
-	return String("-Infinity");
-      else
-	return String("Infinity");
-    }
+    if (isNaN(x) || isInf(x))
+      return String(UString::from(x));
 
     Value fractionDigits = args[0];
     int f = fractionDigits.toInteger(exec);
@@ -299,10 +302,68 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
     return String(UString(buf));
   }
-  case ToPrecision:
-    // ###
-    result = Undefined();
-    break;
+  case ToPrecision: {
+    int e = 0;
+    UString m;
+
+    int p = args[0].toInteger(exec);
+    double x = v.toNumber(exec);
+    if (args[0].isA(UndefinedType) || isNaN(x) || isInf(x))
+      return String(v.toString(exec));
+
+    UString s = "";
+    if (x < 0) {
+      s = "-";
+      x = -x;
+    }
+
+    if (p < 1 || p > 21) {
+      Object err = Error::create(exec,RangeError);
+      exec->setException(err);
+      return err;
+    }
+
+    if (x != 0) {
+      e = int(log10(x));
+      double n = floor(x/pow(10,e-p+1));
+      if (n < pow(10,p-1)) {
+	e = e - 1;
+	n = floor(x/pow(10,e-p+1));
+      }
+
+      if (fabs((n+1)*pow(10,e-p+1)-x) < fabs(n*pow(10,e-p+1)-x))
+	n++;
+      assert(pow(10,p-1) <= n);
+      assert(n < pow(10,p));
+
+      m = integer_part_noexp(n);
+      if (e < -6 || e >= p) {
+	if (m.size() > 1)
+	  m = m.substr(0,1)+"."+m.substr(1);
+	if (e >= 0)
+	  return String(s+m+"e+"+UString::from(e));
+	else
+	  return String(s+m+"e-"+UString::from(-e));
+      }
+    }
+    else {
+      m = char_sequence('0',p);
+      e = 0;
+    }
+
+    if (e == p-1) {
+      return String(s+m);
+    }
+    else if (e >= 0) {
+      if (e+1 < m.size())
+	return String(s+m.substr(0,e+1)+"."+m.substr(e+1));
+      else
+	return String(s+m.substr(0,e+1));
+    }
+    else {
+      return String(s+"0."+char_sequence('0',-(e+1))+m);
+    }
+  }
   }
 
   return result;
