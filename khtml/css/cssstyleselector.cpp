@@ -1676,20 +1676,28 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    if(!primitiveValue) return;
 	    if(primitiveValue->getIdent())
 	    {
-		switch(primitiveValue->getIdent())
-		{
+		switch(primitiveValue->getIdent()) {
 		    // ### we just support normal and bold fonts at the moment...
 		    // setWeight can actually accept values between 0 and 99...
-		    case CSS_VAL_BOLD:
-		    case CSS_VAL_BOLDER:
-			fontDef.weight = QFont::Bold;
-			break;
-		    case CSS_VAL_NORMAL:
-		    case CSS_VAL_LIGHTER:
-			fontDef.weight = QFont::Normal;
-			break;
-		    default:
-			return;
+		case CSS_VAL_BOLD:
+		case CSS_VAL_BOLDER:
+		case CSS_VAL_600:
+		case CSS_VAL_700:
+		case CSS_VAL_800:
+		case CSS_VAL_900:
+		    fontDef.weight = QFont::Bold;
+		    break;
+		case CSS_VAL_NORMAL:
+		case CSS_VAL_LIGHTER:
+		case CSS_VAL_100:
+		case CSS_VAL_200:
+		case CSS_VAL_300:
+		case CSS_VAL_400:
+		case CSS_VAL_500:
+		    fontDef.weight = QFont::Normal;
+		    break;
+		default:
+		    return;
 		}
 	    }
 	    else
