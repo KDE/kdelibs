@@ -29,6 +29,7 @@
 #include "xml/dom2_rangeimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/xml_tokenizer.h"
+#include "html/htmltokenizer.h"
 
 #include "css/csshelper.h"
 #include "css/cssstyleselector.h"
@@ -1184,7 +1185,7 @@ void DocumentImpl::close(  )
     // on an explicit document.close(), the tokenizer might still be waiting on scripts,
     // and in that case we don't want to destroy it because that will prevent the
     // scripts from getting processed.
-    if (m_tokenizer && !m_tokenizer->isWaitingForScripts()) {
+    if (m_tokenizer && !m_tokenizer->isWaitingForScripts() && !m_tokenizer->isExecutingScript()) {
         delete m_tokenizer;
         m_tokenizer = 0;
     }
@@ -1202,7 +1203,10 @@ void DocumentImpl::write( const QString &text )
 {
     if (!m_tokenizer) {
         open();
-        write(QString::fromLatin1("<html><title></title><body>"));
+        if (m_view)
+            m_view->part()->resetFromScript();
+        m_tokenizer->setAutoClose();
+        write(QString::fromLatin1("<html>"));
     }
     m_tokenizer->write(text, false);
 }

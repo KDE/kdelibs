@@ -1,3 +1,21 @@
+2005-02-16  Germain Garand  <germain@ebooksfrance.org>
+
+         - sanitize part/tokenizer state (for cross-document scripts).
+         - don't delete a tokenizer still executing a script on explicit close (patch from Allan Sandfeld
+           and Sarah <sarah@b0rked.dhs.org>)
+         fixes #68523 + crashes on early pop-up closing.
+
+        * html/htmltokenizer.{h,cpp} (setAutoClose/timerEvent/...): add timer driven auto-close mode for
+          e.g cross-frame scripts. 
+
+        * khtml_part.{h,cpp} (resetFromScript): reset the part to a sane state before reopening
+          a closed document.
+
+        * xml/dom_docimpl.cpp (write): ditto.
+         (close): Check for isExecutingScript before deciding to delete the tokenizer.
+
+        * xml/xml_tokenizer.h (setAutoClose/isExecutingScript): ditto.
+
 2005-02-15  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_table.{cpp,h} (RenderCell::nodeAtPoint):

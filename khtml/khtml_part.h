@@ -1487,6 +1487,7 @@ private:
   void setStatusBarText( const QString& text, StatusBarPriority p);
   
   bool restoreURL( const KURL &url );
+  void resetFromScript();
   void emitSelectionChanged();
   // Returns whether callingHtmlPart may access this part
   bool checkFrameAccess(KHTMLPart *callingHtmlPart);

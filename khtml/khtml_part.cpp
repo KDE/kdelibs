@@ -2006,6 +2006,18 @@ void KHTMLPart::stopAnimations()
     }
 }
 
+void KHTMLPart::resetFromScript()
+{
+    closeURL();
+    d->m_bComplete = false;
+    d->m_bLoadEventEmitted = false;
+    disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
+    connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));    
+    d->m_doc->setParsing(true);
+
+    emit started( 0L );
+}
+
 void KHTMLPart::slotFinishedParsing()
 {
   d->m_doc->setParsing(false);

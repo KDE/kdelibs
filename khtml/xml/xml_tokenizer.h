@@ -122,7 +122,9 @@ public:
     virtual void finish() = 0;
     virtual void setOnHold(bool /*_onHold*/) {}
     virtual bool isWaitingForScripts() const = 0;
+    virtual bool isExecutingScript() const = 0;
     virtual void abort() {}
+    virtual void setAutoClose(bool b=true) = 0;
 
 signals:
     void finishedParsing();
@@ -158,11 +160,13 @@ public:
     virtual void write( const TokenizerString &str, bool );
     virtual void end();
     virtual void finish();
+    virtual void setAutoClose(bool b=true) { qWarning("XMLTokenizer::setAutoClose: stub."); (void)b; }
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
 
     virtual bool isWaitingForScripts() const;
+    virtual bool isExecutingScript() const { return false; }
 
 protected:
     DOM::DocumentPtr *m_doc;

@@ -130,9 +130,13 @@ public:
     void write( const khtml::TokenizerString &str, bool appendData );
     void end();
     void finish();
+    void timerEvent( QTimerEvent *e );
     virtual void setOnHold(bool _onHold);
     void abort() { m_abort = true; }
-
+    virtual void setAutoClose(bool b=true);    
+    virtual bool isWaitingForScripts() const;
+    virtual bool isExecutingScript() const;
+      
 protected:
     void reset();
     void addPending();
@@ -170,8 +174,6 @@ protected:
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
 
-    virtual bool isWaitingForScripts() const;
-    virtual bool isExecutingScript() const;
 protected:
     // Internal buffers
     ///////////////////
@@ -335,6 +337,9 @@ protected:
     // line number at which the current <script> started
     int scriptStartLineno;
     int tagStartLineno;
+    // autoClose mode is used when the tokenizer was created by a script document.writing
+    // on an already loaded document
+    int m_autoCloseTimer;
 
 #define CBUFLEN 20
     char cBuffer[CBUFLEN+2];

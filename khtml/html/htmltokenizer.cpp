@@ -133,6 +133,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
+    m_autoCloseTimer = 0;
     onHold = false;
 
     reset();
@@ -147,6 +148,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
+    m_autoCloseTimer = 0;
     onHold = false;
 
     reset();
@@ -170,6 +172,11 @@ void HTMLTokenizer::reset()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
     scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
+    
+    if (m_autoCloseTimer) {
+        killTimer(m_autoCloseTimer);
+        m_autoCloseTimer = 0;
+    }
 
     currToken.reset();
 }
@@ -1473,9 +1480,23 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
     }
 
-    if (noMoreData && cachedScript.isEmpty() && !m_executingScript )
+    if (noMoreData && cachedScript.isEmpty() && !m_executingScript)
         end(); // this actually causes us to be deleted
 }
+
+void HTMLTokenizer::timerEvent( QTimerEvent *e )
+{
+    if ( e->timerId() == m_autoCloseTimer && cachedScript.isEmpty() ) {
+         finish();
+    }
+}
+
+void HTMLTokenizer::setAutoClose( bool b ) {
+    killTimer( m_autoCloseTimer );
+    m_autoCloseTimer = 0;
+    if ( b )
+        m_autoCloseTimer = startTimer(100);       
+}    
 
 void HTMLTokenizer::end()
 {
@@ -1502,6 +1523,10 @@ void HTMLTokenizer::end()
 
 void HTMLTokenizer::finish()
 {
+    if ( m_autoCloseTimer ) {
+        killTimer( m_autoCloseTimer );
+        m_autoCloseTimer = 0;
+    }
     // do this as long as we don't find matching comment ends
     while((title || script || comment || server) && scriptCode && scriptCodeSize)
     {
