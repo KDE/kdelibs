@@ -4,6 +4,7 @@
 #include <qstring.h>
 
 #include <string.h>
+#include <assert.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -178,15 +179,16 @@ int main( int argc, char** argv )
 		    }
 		}
 		
+                QString DCOPParent; // is the rightmost parent
 		s = e.firstChild().toElement();
 		for( ; !s.isNull(); s = s.nextSibling().toElement() )
 	        {
 		    if ( s.tagName() == "SUPER" )
-	            {
-			str << "\tif ( " << s.attribute("name") << "::process( fun, data, replyType, replyData ) )" << endl;
-			str << "\t\treturn TRUE;" << endl;
-		    }
-		}
+                        DCOPParent = s.attribute("name");
+                }
+                assert(!DCOPParent.isEmpty());
+                str << "\tif ( " << DCOPParent << "::process( fun, data, replyType, replyData ) )" << endl;
+                str << "\t\treturn TRUE;" << endl;
 
 		str << "\treturn FALSE;" << endl;
 		str << "}" << endl << endl;
@@ -228,95 +230,81 @@ int main( int argc, char** argv )
 	    }
 	    else if ( e.tagName() == "CLASS" )
 	    {
-		// Include all needed stubs
+		// Include stub for the last parent class
+                QString DCOPParent;
 		QDomElement s = e.firstChild().toElement();
 		for( ; !s.isNull(); s = s.nextSibling().toElement() )
 	        {
-		    if ( s.tagName() == "SUPER" && s.attribute("name") != "DCOPObject" )
-			str << "#include <" << s.attribute("name") << "_stub.h>" << endl;
+		    if ( s.tagName() == "SUPER" )
+                        DCOPParent = s.attribute("name");
 		}
-		
+		if ( !DCOPParent.isEmpty() && DCOPParent != "DCOPObject" )
+                    str << "#include <" << s.attribute("name") << "_stub.h>" << endl;
 		str << endl;
 		
+                // Stub class definition
 		str << "class " << e.attribute("name") << "_stub";
+
+                // Parent : inherited interface stub or dcopstub
+		if ( !DCOPParent.isEmpty() && DCOPParent != "DCOPObject" )
+                {
+                    str << " : ";
+                    str << "virtual public " << s.attribute("name") << "_stub";
+                }
+                else
+                    str << " : virtual public DCOPStub";
+
+                // Constructor
+                str << endl;
+                str << "{" << endl;
+                str << "public:" << endl;
+                str << "\t" << e.attribute("name") << "_stub( const QCString& app, const QCString& id );" << endl;
 		
-		bool start = TRUE;
-		bool header = FALSE;
-		bool derived = FALSE;
 		s = e.firstChild().toElement();
 		for( ; !s.isNull(); s = s.nextSibling().toElement() )
 	        {
-		    if ( s.tagName() == "SUPER" )
-	            {
-			ASSERT( !header );
+                    if ( s.tagName() == "FUNC" )
+                    {
+                        QDomElement r = s.firstChild().toElement();
+                        ASSERT( r.tagName() == "RET" );
+                        str << "\tvirtual ";
+                        if ( r.hasAttribute( "qleft" ) )
+                            str << r.attribute("qleft") << " ";
+                        str << r.attribute("type");
+                        if ( r.hasAttribute( "qright" ) )
+                            str << r.attribute("qright") << " ";
+                        else
+                            str << " ";
 			
-			if ( s.attribute("name") != "DCOPObject" )
-		        {
-			    derived = TRUE;
-			    if ( start )
-				str << " : ";
-			    else
-				str << ", ";
-			    start = FALSE;
-			    str << "virtual public " << s.attribute("name") << "_stub";
-			}
-		    }
-		    else
-		    {
-			if ( !header )
-		        {
-			    if ( !derived )
-				str << " : virtual public DCOPStub";
-			    header = TRUE;
-			    str << endl;
-			    str << "{" << endl;
-			    str << "public:" << endl;
-			    str << "\t" << e.attribute("name") << "_stub( const QCString& app, const QCString& id );" << endl;
-			}
+                        str << s.attribute("name") << "(";
 			
-			if ( s.tagName() == "FUNC" )
-		        {
-			    QDomElement r = s.firstChild().toElement();
-			    ASSERT( r.tagName() == "RET" );
-			    str << "\tvirtual ";
-			    if ( r.hasAttribute( "qleft" ) )
-				str << r.attribute("qleft") << " ";
-			    str << r.attribute("type");
-			    if ( r.hasAttribute( "qright" ) )
-				str << r.attribute("qright") << " ";
-			    else
-				str << " ";
+                        bool first = TRUE;
+                        r = r.nextSibling().toElement();
+                        for( ; !r.isNull(); r = r.nextSibling().toElement() )
+                        {
+                            if ( !first )
+                                str << ", ";
+                            ASSERT( r.tagName() == "ARG" );
+                            if ( r.hasAttribute( "qleft" ) )
+                                str << r.attribute("qleft") << " ";
+                            str << r.attribute("type");
+                            if ( r.hasAttribute( "qright" ) )
+                                str << r.attribute("qright") << " ";
+                            else
+                                str << " ";
+                            
+                            str << r.attribute("name");
+                            
+                            first = FALSE;
+                        }
 			
-			    str << s.attribute("name") << "(";
+                        str << ")";
 			
-			    bool first = TRUE;
-			    r = r.nextSibling().toElement();
-			    for( ; !r.isNull(); r = r.nextSibling().toElement() )
-			    {
-				if ( !first )
-				    str << ", ";
-				ASSERT( r.tagName() == "ARG" );
-				if ( r.hasAttribute( "qleft" ) )
-				    str << r.attribute("qleft") << " ";
-				str << r.attribute("type");
-				if ( r.hasAttribute( "qright" ) )
-				    str << r.attribute("qright") << " ";
-				else
-				    str << " ";
-			
-				str << r.attribute("name");
-				
-				first = FALSE;
-			    }
-			
-			    str << ")";
-			
-			    if ( s.hasAttribute("qual") )
-				str << " " << s.attribute("qual");
-			    str << ";" << endl;
-			}
-		    }
-		}
+                        if ( s.hasAttribute("qual") )
+                            str << " " << s.attribute("qual");
+                        str << ";" << endl;
+                    }
+                }
 		
 		str << "};" << endl;
 		str << endl;
@@ -357,22 +345,19 @@ int main( int argc, char** argv )
 		str << e.attribute("name") << "_stub::" << e.attribute("name") << "_stub"
 		    << "( const QCString& _app, const QCString& _id )" << endl;
 		str << "\t: ";
+                QString DCOPParent;
 		QDomElement k = e.firstChild().toElement();
-		bool first_super = TRUE;
 		for( ; !k.isNull(); k = k.nextSibling().toElement() )
 	        {
-		    if ( k.tagName() == "SUPER" && k.attribute("name") != "DCOPObject" )
-		    {
-			if ( first_super )
-			    str << k.attribute("name") << "( _app, _id )";
-			else
-			    str << ", " << k.attribute("name") << "( _app, _id )";
-			first_super = FALSE;
-		    }
-		}
-		if ( first_super )
+		    if ( k.tagName() == "SUPER")
+                        DCOPParent = k.attribute("name");
+                }
+                assert (!DCOPParent.isEmpty());
+                if ( DCOPParent == "DCOPObject" )
 		    str << "DCOPStub( _app, _id )" << endl;
-		str << endl;
+                else
+                    str << DCOPParent << "( _app, _id )" << endl;
+
 		str << "{" << endl;
 		str << "}" << endl << endl;
 		
