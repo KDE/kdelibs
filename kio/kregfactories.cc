@@ -29,6 +29,7 @@ KServiceTypeEntry::KServiceTypeEntry( KRegistry* _reg, const QString& _file, KSe
 
 KServiceTypeEntry::~KServiceTypeEntry()
 {
+  m_pServiceType->deref();
   m_pFactory->removeEntryNotify( this );
 }
 
@@ -156,6 +157,7 @@ KServiceEntry::KServiceEntry( KRegistry* _reg, const QString& _file, KService *_
 
 KServiceEntry::~KServiceEntry()
 {
+  m_pService->deref();
   m_pFactory->removeEntryNotify( this );
 }
 
