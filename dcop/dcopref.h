@@ -394,13 +394,22 @@ public:
     void setDCOPClient( DCOPClient *client );
 
     /**
+     * Flag for allowing entering the event loop if the call blocks too long.
+     * @p NoEventLoop disables entering the event loop.
+     * @p UseEventLoop allows entering the event loop while waiting for long
+     * blocking DCOP call, thus making the GUI repaint if needed, and possibly
+     * allowing also other code in the application to be executed.
+     * @see DCOPClient::call()
+     */
+    enum EventLoopFlag { NoEventLoop, UseEventLoop };
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the 
      *            latter case the exact signature will be guessed from 
      *            the arguments
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -409,7 +418,7 @@ public:
      * @see DCOPArg
      * @since 3.2
      */
-    DCOPReply call( const QCString& fun, bool useEventLoop/*=false*/,
+    DCOPReply call( const QCString& fun, EventLoopFlag useEventLoop/*=NoEventLoop*/,
 		    int timeout/*=-1*/ ) {
 	QByteArray data;
 	return callInternal( fun, "()", data, useEventLoop, timeout );
@@ -434,7 +443,7 @@ public:
      *            the arguments
      * @param t1 the first argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -445,7 +454,7 @@ public:
      */
     template <class T1>
     DCOPReply call( const QCString& fun, const T1& t1,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s)",
 		     dcopTypeName(t1) );
@@ -482,7 +491,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t2 the second argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -495,7 +504,7 @@ public:
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
 		    const T2& t2,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s)",
 		     dcopTypeName(t1),
@@ -538,7 +547,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t3 the third argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -552,7 +561,7 @@ public:
 		    const T1& t1,
 		    const T2& t2,
 		    const T3& t3,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -599,7 +608,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -614,7 +623,7 @@ public:
 		    const T2& t2,
 		    const T3& t3,
 		    const T4& t4,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -666,7 +675,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -682,7 +691,7 @@ public:
 		    const T3& t3,
 		    const T4& t4,
 		    const T5& t5,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -739,7 +748,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -756,7 +765,7 @@ public:
 		    const T4& t4,
 		    const T5& t5,
 		    const T6& t6,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -818,7 +827,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -836,7 +845,7 @@ public:
 		    const T5& t5,
 		    const T6& t6,
 		    const T7& t7,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -903,7 +912,7 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t8 the eigth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if true the event loop will be started when
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
@@ -922,7 +931,7 @@ public:
 		    const T6& t6,
 		    const T7& t7,
 		    const T8& t8,
-		    bool useEventLoop/*=false*/, int timeout/*=-1*/ ) {
+		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
 	QCString args;
 	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
 		     dcopTypeName(t1),
@@ -1319,7 +1328,7 @@ public:
 
 private:
     DCOPReply callInternal( const QCString& fun, const QCString& args, const QByteArray& data,
-			    bool useEventLoop, int timeout );
+			    EventLoopFlag useEventLoop, int timeout );
     DCOPReply callInternal( const QCString& fun, const QCString& args, const QByteArray& data );
     bool sendInternal( const QCString& fun, const QCString& args, const QByteArray& data );
 
