@@ -270,7 +270,7 @@ signals:
    * @see #acceptDrop()
    */
   void dropped (QDropEvent * e, QListViewItem *after);
-  
+
   /**
    * This signal gets emitted whenever something acceptable is
    * dropped onto the listview.
@@ -334,7 +334,7 @@ signals:
    **/
   void moved (QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
 
-  
+
   /**
    * This signal is emitted after all the items have been moved. It reports info for
    * each and every item moved, in order.  The first element in @param items associates
@@ -655,7 +655,7 @@ protected:
    *
    * The API is unaffected.
    */
-  virtual void paintEvent(QPaintEvent*);
+  virtual void paintEvent(QPaintEvent*) {}
 
 private slots:
   /**
@@ -693,7 +693,7 @@ private slots:
    * @internal
    */
   void slotOnItem( QListViewItem *item );
-  
+
   /**
    * Accessory slot for AutoSelect/ChangeCursorOverItem
    * @internal
