@@ -123,7 +123,7 @@ void KPlotWidget::updateTickmarks() {
 	} //end for iaxis
 }
 
-void KPlotWidget::resizeEvent( QResizeEvent *e ) {
+void KPlotWidget::resizeEvent( QResizeEvent* /* e */ ) {
 	int newWidth = width() - 2*XPADDING;
 	int newHeight = height() - 2*YPADDING;
 	PixRect = QRect( 0, 0, newWidth, newHeight );
@@ -131,7 +131,7 @@ void KPlotWidget::resizeEvent( QResizeEvent *e ) {
 	buffer->resize( width(), height() );
 }
 
-void KPlotWidget::paintEvent( QPaintEvent *e ) {
+void KPlotWidget::paintEvent( QPaintEvent* /* e */ ) {
 	QPainter p;
 
 	p.begin( buffer );

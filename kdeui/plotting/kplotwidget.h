@@ -141,11 +141,11 @@ public:
 protected:
 	/**@short the paint event handler, executed when update() or repaint() is called.
 		*/
-	virtual void paintEvent( QPaintEvent *e );
+	virtual void paintEvent( QPaintEvent* /* e */ );
 
 	/**@short the resize event handler, called when the widget is resized.
 		*/
-	virtual void resizeEvent( QResizeEvent *e );
+	virtual void resizeEvent( QResizeEvent* /* e */ );
 
 	/**@short draws all of the objects onto the widget.  Internal use only; one should simply call update()
 		*to draw the widget with axes and all objects.
