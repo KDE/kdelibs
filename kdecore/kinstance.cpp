@@ -58,7 +58,7 @@ KInstance::KInstance( const QCString& name)
       KGlobal::_activeInstance = this;
     }
 
-    d = 0L; //new KInstancePrivate (this);
+    d = new KInstancePrivate ();
 
     kdDebug() << "Instance " << _name.data() << " has no about data" << endl;
 }
@@ -77,7 +77,7 @@ KInstance::KInstance( const KAboutData * aboutData )
       KGlobal::_activeInstance = this;
     }
 
-    d = 0L; //new KInstancePrivate (this);
+    d = new KInstancePrivate ();
 }
 
 KInstance::~KInstance()
