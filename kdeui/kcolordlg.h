@@ -385,6 +385,8 @@ class KColorDialog : public KDialogBase
     KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 		  bool modal = FALSE );
 
+    ~KColorDialog();
+
     /** 
      * Retrieve the currently selected color. 
      **/
@@ -422,6 +424,7 @@ class KColorDialog : public KDialogBase
   private slots:
     void slotRGBChanged( void );
     void slotHSVChanged( void );
+    void slotHtmlChanged( void );
     void slotHSChanged( int, int );
     void slotVChanged( int );
     void slotColorSelected( const QColor &col );
@@ -455,25 +458,6 @@ class KColorDialog : public KDialogBase
     virtual void keyPressEvent( QKeyEvent * );
 
   private:
-    KPaletteTable *table;
-    bool bRecursion;
-    bool bEditRgb;
-    bool bEditHsv;
-    bool bColorPicking;
-    QLabel *colorName;
-    QLineEdit *htmlName;
-    QLineEdit *hedit;
-    QLineEdit *sedit;
-    QLineEdit *vedit;
-    QLineEdit *redit;
-    QLineEdit *gedit;
-    QLineEdit *bedit;
-    KColorPatch *patch;
-    KHSSelector *hsSelector;
-    KPalette *palette;
-    KValueSelector *valuePal;
-    KColor selColor;
-
     class KColorDialogPrivate;
     KColorDialogPrivate *d;
 };

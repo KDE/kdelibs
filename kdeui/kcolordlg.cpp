@@ -780,14 +780,37 @@ KPaletteTable::addToRecentColors( const QColor &color)
      setPalette(i18n_recentColors);
 }
 
+class KColorDialog::KColorDialogPrivate {
+public:
+    KPaletteTable *table;
+    bool bRecursion;
+    bool bEditRgb;
+    bool bEditHsv;
+    bool bEditHtml;
+    bool bColorPicking;
+    QLabel *colorName;
+    QLineEdit *htmlName;
+    QLineEdit *hedit;
+    QLineEdit *sedit;
+    QLineEdit *vedit;
+    QLineEdit *redit;
+    QLineEdit *gedit;
+    QLineEdit *bedit;
+    KColorPatch *patch;
+    KHSSelector *hsSelector;
+    KPalette *palette;
+    KValueSelector *valuePal;
+    KColor selColor;
+};
 
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
 		Ok, true )
 {
-  bRecursion = true;
-  bColorPicking = false;
+  d = new KColorDialogPrivate;
+  d->bRecursion = true;
+  d->bColorPicking = false;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
 
@@ -825,16 +848,16 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // the palette and value selector go into the H-box
   //
-  hsSelector = new KHSSelector( page );
-  hsSelector->setMinimumSize(140, 70);
-  l_ltop->addWidget(hsSelector, 8);
-  connect( hsSelector, SIGNAL( valueChanged( int, int ) ),
+  d->hsSelector = new KHSSelector( page );
+  d->hsSelector->setMinimumSize(140, 70);
+  l_ltop->addWidget(d->hsSelector, 8);
+  connect( d->hsSelector, SIGNAL( valueChanged( int, int ) ),
 	   SLOT( slotHSChanged( int, int ) ) );
 	
-  valuePal = new KValueSelector( page );
-  valuePal->setMinimumSize(26, 70);
-  l_ltop->addWidget(valuePal, 1);
-  connect( valuePal, SIGNAL( valueChanged( int ) ),
+  d->valuePal = new KValueSelector( page );
+  d->valuePal->setMinimumSize(26, 70);
+  l_ltop->addWidget(d->valuePal, 1);
+  connect( d->valuePal, SIGNAL( valueChanged( int ) ),
 	   SLOT( slotVChanged( int ) ) );
 
 
@@ -844,26 +867,26 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("H:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 2);
-  hedit = new QLineEdit( page );
-  hedit->setValidator( new QIntValidator( hedit ) );
-  l_lbot->addWidget(hedit, 0, 3);
-  connect( hedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
+  d->hedit = new QLineEdit( page );
+  d->hedit->setValidator( new QIntValidator( d->hedit ) );
+  l_lbot->addWidget(d->hedit, 0, 3);
+  connect( d->hedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
 	
   label = new QLabel( QString::fromLatin1("S:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
-  sedit = new QLineEdit( page );
-  sedit->setValidator( new QIntValidator( sedit ) );
-  l_lbot->addWidget(sedit, 1, 3);
-  connect( sedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
+  d->sedit = new QLineEdit( page );
+  d->sedit->setValidator( new QIntValidator( d->sedit ) );
+  l_lbot->addWidget(d->sedit, 1, 3);
+  connect( d->sedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
 	
   label = new QLabel( QString::fromLatin1("V:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
-  vedit = new QLineEdit( page );
-  vedit->setValidator( new QIntValidator( vedit ) );
-  l_lbot->addWidget(vedit, 2, 3);
-  connect( vedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
+  d->vedit = new QLineEdit( page );
+  d->vedit->setValidator( new QIntValidator( d->vedit ) );
+  l_lbot->addWidget(d->vedit, 2, 3);
+  connect( d->vedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
 	
   //
   // add the RGB fields
@@ -871,38 +894,38 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("R:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 4);
-  redit = new QLineEdit( page );
-  redit->setValidator( new QIntValidator( redit ) );
-  l_lbot->addWidget(redit, 0, 5);
-  connect( redit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
+  d->redit = new QLineEdit( page );
+  d->redit->setValidator( new QIntValidator( d->redit ) );
+  l_lbot->addWidget(d->redit, 0, 5);
+  connect( d->redit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
 	
   label = new QLabel( QString::fromLatin1("G:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
-  gedit = new QLineEdit( page );
-  gedit->setValidator( new QIntValidator( gedit ) );
-  l_lbot->addWidget(gedit, 1, 5);
-  connect( gedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
+  d->gedit = new QLineEdit( page );
+  d->gedit->setValidator( new QIntValidator( d->gedit ) );
+  l_lbot->addWidget(d->gedit, 1, 5);
+  connect( d->gedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
 	
   label = new QLabel( QString::fromLatin1("B:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
-  bedit = new QLineEdit( page );
-  bedit->setValidator( new QIntValidator( bedit ) );
-  l_lbot->addWidget(bedit, 2, 5);
-  connect( bedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
+  d->bedit = new QLineEdit( page );
+  d->bedit->setValidator( new QIntValidator( d->bedit ) );
+  l_lbot->addWidget(d->bedit, 2, 5);
+  connect( d->bedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
 
   //
   // the entry fields should be wide enought to hold 88888
   //
-  int w = hedit->fontMetrics().width(QString::fromLatin1("888888"));
-  hedit->setFixedWidth(w);
-  sedit->setFixedWidth(w);
-  vedit->setFixedWidth(w);
+  int w = d->hedit->fontMetrics().width(QString::fromLatin1("888888"));
+  d->hedit->setFixedWidth(w);
+  d->sedit->setFixedWidth(w);
+  d->vedit->setFixedWidth(w);
 
-  redit->setFixedWidth(w);
-  gedit->setFixedWidth(w);
-  bedit->setFixedWidth(w);
+  d->redit->setFixedWidth(w);
+  d->gedit->setFixedWidth(w);
+  d->bedit->setFixedWidth(w);
 	
   //
   // add a layout for left-side (colors)
@@ -913,10 +936,10 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   // Add the palette table
   //
-  table = new KPaletteTable( page );
-  l_right->addWidget(table, 10);
+  d->table = new KPaletteTable( page );
+  l_right->addWidget(d->table, 10);
 
-  connect( table, SIGNAL( colorSelected( const QColor &, const QString & ) ),
+  connect( d->table, SIGNAL( colorSelected( const QColor &, const QString & ) ),
 	   SLOT( slotColorSelected( const QColor &, const QString & ) ) );
 
   //
@@ -960,37 +983,44 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label->setText("Name:");
   l_grid->addWidget(label, 0, 1, AlignLeft);
 
-  colorName = new QLabel( page );
-  w = colorName->fontMetrics().width(QString::fromLatin1("Very Very long name")); // 7xF!
-  colorName->setFixedWidth(w);
-  l_grid->addWidget(colorName, 0, 2, AlignLeft);
+  d->colorName = new QLabel( page );
+  w = d->colorName->fontMetrics().width(QString::fromLatin1("Very Very long name")); // 7xF!
+  d->colorName->setFixedWidth(w);
+  l_grid->addWidget(d->colorName, 0, 2, AlignLeft);
 
   label = new QLabel( page );
   label->setText("HTML:");
   l_grid->addWidget(label, 1, 1, AlignLeft);
 
-  htmlName = new QLineEdit( page );
-  htmlName->setMaxLength( 7 );
-  htmlName->setText("#FFFFFF");
-  w = htmlName->fontMetrics().width(QString::fromLatin1("#FFFFFFFF")); // 8xF!
-  htmlName->setFixedWidth(w);
-  l_grid->addWidget(htmlName, 1, 2, AlignLeft);
+  d->htmlName = new QLineEdit( page );
+  d->htmlName->setMaxLength( 7 );
+  d->htmlName->setText("#FFFFFF");
+  w = d->htmlName->fontMetrics().width(QString::fromLatin1("#FFFFFFFF")); // 8xF!
+  d->htmlName->setFixedWidth(w);
+  l_grid->addWidget(d->htmlName, 1, 2, AlignLeft);
+  connect( d->htmlName, SIGNAL( textChanged(const QString &) ), SLOT( slotHtmlChanged() ) );
 
-  patch = new KColorPatch( page );
-  patch->setFixedSize(48, 48);
-  l_grid->addMultiCellWidget(patch, 0, 1, 0, 0, AlignHCenter | AlignVCenter);
-  connect( patch, SIGNAL( colorChanged( const QColor&)),
+  d->patch = new KColorPatch( page );
+  d->patch->setFixedSize(48, 48);
+  l_grid->addMultiCellWidget(d->patch, 0, 1, 0, 0, AlignHCenter | AlignVCenter);
+  connect( d->patch, SIGNAL( colorChanged( const QColor&)),
 	   SLOT( setColor( const QColor&)));
 
   tl_layout->activate();
   page->setMinimumSize( page->sizeHint() );
 
   readSettings();
-  bRecursion = false;
-  bEditHsv = false;
-  bEditRgb = false;
+  d->bRecursion = false;
+  d->bEditHsv = false;
+  d->bEditRgb = false;
+  d->bEditHtml = false;
 
   disableResize();
+}
+
+KColorDialog::~KColorDialog()
+{
+  delete d;
 }
 
 void
@@ -1002,7 +1032,7 @@ KColorDialog::readSettings()
 
   config->setGroup("Colors");
   QString palette = config->readEntry("CurrentPalette");
-  table->setPalette(palette);
+  d->table->setPalette(palette);
 
   config->setGroup( oldgroup );
 }
@@ -1015,7 +1045,7 @@ KColorDialog::slotWriteSettings()
   QString oldgroup = config->group();
 
   config->setGroup("Colors");
-  config->writeEntry("CurrentPalette", table->palette() );
+  config->writeEntry("CurrentPalette", d->table->palette() );
 
   config->setGroup( oldgroup );
 }
@@ -1023,8 +1053,8 @@ KColorDialog::slotWriteSettings()
 QColor
 KColorDialog::color()
 {
-  table->addToRecentColors( selColor );
-  return selColor;
+  d->table->addToRecentColors( d->selColor );
+  return d->selColor;
 }
 
 void KColorDialog::setColor( const QColor &col )
@@ -1053,10 +1083,10 @@ int KColorDialog::getColor( QColor &theColor, QWidget *parent )
 
 void KColorDialog::slotRGBChanged( void )
 {
-  if (bRecursion) return;
-  int red = redit->text().toInt();
-  int grn = gedit->text().toInt();
-  int blu = bedit->text().toInt();
+  if (d->bRecursion) return;
+  int red = d->redit->text().toInt();
+  int grn = d->gedit->text().toInt();
+  int blu = d->bedit->text().toInt();
 
   if ( red > 255 || red < 0 ) return;
   if ( grn > 255 || grn < 0 ) return;
@@ -1064,17 +1094,39 @@ void KColorDialog::slotRGBChanged( void )
 
   KColor col;
   col.setRgb( red, grn, blu );
-  bEditRgb = true;
+  d->bEditRgb = true;
   _setColor( col );
-  bEditRgb = false;
+  d->bEditRgb = false;
+}
+
+void KColorDialog::slotHtmlChanged( void )
+{
+  if (d->bRecursion) return;
+
+  int red = -1;
+  int grn = -1;
+  int blu = -1;
+
+  if (sscanf(d->htmlName->text().latin1(), "#%02x%02x%02x", &red, &grn, &blu)!=3)
+      return;
+
+  if ( red > 255 || red < 0 ) return;
+  if ( grn > 255 || grn < 0 ) return;
+  if ( blu > 255 || blu < 0 ) return;
+
+  KColor col;
+  col.setRgb( red, grn, blu );
+  d->bEditHtml = true;
+  _setColor( col );
+  d->bEditHtml = false;
 }
 
 void KColorDialog::slotHSVChanged( void )
 {
-  if (bRecursion) return;
-  int hue = hedit->text().toInt();
-  int sat = sedit->text().toInt();
-  int val = vedit->text().toInt();
+  if (d->bRecursion) return;
+  int hue = d->hedit->text().toInt();
+  int sat = d->sedit->text().toInt();
+  int val = d->vedit->text().toInt();
 
   if ( hue > 359 || hue < 0 ) return;
   if ( sat > 255 || sat < 0 ) return;
@@ -1082,15 +1134,15 @@ void KColorDialog::slotHSVChanged( void )
 
   KColor col;
   col.setHsv( hue, sat, val );
-  bEditHsv = true;
+  d->bEditHsv = true;
   _setColor( col );
-  bEditHsv = false;
+  d->bEditHsv = false;
 }
 
 void KColorDialog::slotHSChanged( int h, int s )
 {
   int _h, _s, v;
-  selColor.hsv(&_h, &_s, &v);
+  d->selColor.hsv(&_h, &_s, &v);
   if (v < 1)
      v = 1;
   KColor col;
@@ -1101,7 +1153,7 @@ void KColorDialog::slotHSChanged( int h, int s )
 void KColorDialog::slotVChanged( int v )
 {
   int h, s, _v;
-  selColor.hsv(&h, &s, &_v);
+  d->selColor.hsv(&h, &s, &_v);
   KColor col;
   col.setHsv( h, s, v );
   _setColor( col );
@@ -1114,7 +1166,7 @@ void KColorDialog::slotColorSelected( const QColor &color )
 
 void KColorDialog::slotAddToCustomColors( )
 {
-  table->addToCustomColors( selColor );
+  d->table->addToCustomColors( d->selColor );
 }
 
 void KColorDialog::slotColorSelected( const QColor &color, const QString &name )
@@ -1124,39 +1176,39 @@ void KColorDialog::slotColorSelected( const QColor &color, const QString &name )
 
 void KColorDialog::_setColor(const KColor &color, const QString &name)
 {
-  if (color == selColor) return;
+  if (color == d->selColor) return;
 
-  bRecursion = true;
-  selColor = color;
+  d->bRecursion = true;
+  d->selColor = color;
 
   if (name.isEmpty())
-     colorName->setText( i18n("-unnamed-"));
+     d->colorName->setText( i18n("-unnamed-"));
   else
-     colorName->setText( name );
+     d->colorName->setText( name );
 
-  patch->setColor( selColor );
+  d->patch->setColor( d->selColor );
 
   setRgbEdit();
   setHsvEdit();
   setHtmlEdit();
 
   int h, s, v;
-  selColor.hsv( &h, &s, &v );
-  hsSelector->setValues( h, s );
-  valuePal->setHue( h );
-  valuePal->setSaturation( s );
-  valuePal->updateContents();
-  valuePal->repaint( FALSE );
-  valuePal->setValue( v );
-  bRecursion = false;
+  d->selColor.hsv( &h, &s, &v );
+  d->hsSelector->setValues( h, s );
+  d->valuePal->setHue( h );
+  d->valuePal->setSaturation( s );
+  d->valuePal->updateContents();
+  d->valuePal->repaint( FALSE );
+  d->valuePal->setValue( v );
+  d->bRecursion = false;
 	
-  emit colorSelected( selColor );
+  emit colorSelected( d->selColor );
 }
 
 void
 KColorDialog::slotColorPicker()
 {
-  bColorPicking = true;
+  d->bColorPicking = true;
   grabMouse( crossCursor );
   grabKeyboard();
 }
@@ -1164,9 +1216,9 @@ KColorDialog::slotColorPicker()
 void
 KColorDialog::mouseReleaseEvent( QMouseEvent *e )
 {
-  if (bColorPicking)
+  if (d->bColorPicking)
   {
-     bColorPicking = false;
+     d->bColorPicking = false;
      releaseMouse();
      releaseKeyboard();
      _setColor( grabColor( e->globalPos() ) );
@@ -1187,11 +1239,11 @@ KColorDialog::grabColor(const QPoint &p)
 void
 KColorDialog::keyPressEvent( QKeyEvent *e )
 {
-  if (bColorPicking)
+  if (d->bColorPicking)
   {
      if (e->key() == Key_Escape)
      {
-        bColorPicking = false;
+        d->bColorPicking = false;
         releaseMouse();
         releaseKeyboard();
      }
@@ -1203,43 +1255,44 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
 
 void KColorDialog::setRgbEdit( void )
 {
-  if (bEditRgb) return;
+  if (d->bEditRgb) return;
   int r, g, b;
-  selColor.rgb( &r, &g, &b );
+  d->selColor.rgb( &r, &g, &b );
   QString num;
 
   num.setNum( r );
-  redit->setText( num );
+  d->redit->setText( num );
   num.setNum( g );
-  gedit->setText( num );
+  d->gedit->setText( num );
   num.setNum( b );
-  bedit->setText( num );
+  d->bedit->setText( num );
 }
 
 void KColorDialog::setHtmlEdit( void )
 {
+  if (d->bEditHtml) return;
   int r, g, b;
-  selColor.rgb( &r, &g, &b );
+  d->selColor.rgb( &r, &g, &b );
   QString num;
 
   num.sprintf("#%02X%02X%02X", r,g,b);
-  htmlName->setText( num );
+  d->htmlName->setText( num );
 }
 
 
 void KColorDialog::setHsvEdit( void )
 {
-  if (bEditHsv) return;
+  if (d->bEditHsv) return;
   int h, s, v;
-  selColor.hsv( &h, &s, &v );
+  d->selColor.hsv( &h, &s, &v );
   QString num;
 
   num.setNum( h );
-  hedit->setText( num );
+  d->hedit->setText( num );
   num.setNum( s );
-  sedit->setText( num );
+  d->sedit->setText( num );
   num.setNum( v );
-  vedit->setText( num );
+  d->vedit->setText( num );
 }
 
 #include "kcolordlg.moc"
