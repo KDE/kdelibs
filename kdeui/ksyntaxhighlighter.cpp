@@ -67,10 +67,14 @@ class KDictSpellingHighlighter::KDictSpellingHighlighterPrivate
 {
 public:
     KDictSpellingHighlighterPrivate() :
+        mDict( 0 ),
 	spell( 0 ),
+        mSpellConfig( 0 ),
+        rehighlightRequest( 0 ),
 	wordCount( 0 ),
 	errorCount( 0 ),
-	autoReady( false ) {}
+	autoReady( false ),
+        globalConfig( true ) {}
 
     ~KDictSpellingHighlighterPrivate() {
 	delete rehighlightRequest;
@@ -84,14 +88,17 @@ public:
 	return statDict;
     }
 
+    QDict<int>* mDict;
     QDict<int> autoDict;
     QDict<int> autoIgnoreDict;
     static QObject *sDictionaryMonitor;
     KSpell *spell;
+    KSpellConfig *mSpellConfig;
     QTimer *rehighlightRequest;
     QString spellKey;
     int wordCount, errorCount;
     bool active, automatic, autoReady;
+    bool globalConfig;
 private:
     static QDict<int>* statDict;
 
@@ -257,12 +264,15 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
 						    const QColor& depth0,
 						    const QColor& depth1,
 						    const QColor& depth2,
-						    const QColor& depth3 )
+						    const QColor& depth3,
+                                                    KSpellConfig *spellConfig )
     : KSpellingHighlighter( textEdit, spellColor,
 			    colorQuoting, depth0, depth1, depth2, depth3 )
 {
     d = new KDictSpellingHighlighterPrivate();
 
+    d->mSpellConfig = spellConfig;
+    d->globalConfig = ( spellConfig == 0 );
     d->automatic = autoEnable;
     d->active = spellCheckingActive;
 
@@ -273,10 +283,17 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
     connect( d->rehighlightRequest, SIGNAL( timeout() ),
 	     this, SLOT( slotRehighlight() ));
 
-    d->spellKey = spellKey();
+    if ( d->globalConfig ) {
+        d->spellKey = spellKey();
 
-    if ( !d->sDictionaryMonitor )
-	d->sDictionaryMonitor = new QObject();
+        if ( !d->sDictionaryMonitor )
+            d->sDictionaryMonitor = new QObject();
+    }
+    else {
+        d->mDict = new QDict<int>(50021);
+        connect( d->mSpellConfig, SIGNAL( configChanged() ),
+                 this, SLOT( slotLocalSpellConfigChanged() ) );
+    }
 
     slotDictionaryChanged();
     startTimer( 2 * 1000 );
@@ -286,13 +303,18 @@ KDictSpellingHighlighter::~KDictSpellingHighlighter()
 {
     delete d->spell;
     d->spell = 0;
+    delete d->mDict;
+    d->mDict = 0;
     delete d;
 }
 
 void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
-    connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
-	     this, SLOT( slotDictionaryChanged() ));
+    kdDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
+    if ( d->globalConfig ) {
+        connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
+                 this, SLOT( slotDictionaryChanged() ));
+    }
     if ( spell != d->spell )
     {
         delete d->spell;
@@ -309,6 +331,7 @@ void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 
 bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 {
+    kdDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
     // Normally isMisspelled would look up a dictionary and return
     // true or false, but kspell is asynchronous and slow so things
     // get tricky...
@@ -318,7 +341,8 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	d->autoIgnoreDict.replace( word, Ignore );
 
     // "dict" is used as a cache to store the results of KSpell
-    if ( !d->sDict()->isEmpty() && (*d->sDict())[word] == NotOkay ) {
+    QDict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
+    if ( !dict->isEmpty() && (*dict)[word] == NotOkay ) {
 	if ( d->autoReady && ( d->autoDict[word] != NotOkay )) {
 	    if ( !d->autoIgnoreDict[word] ) {
 		++d->errorCount;
@@ -329,7 +353,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	}
 	return d->active;
     }
-    if ( !d->sDict()->isEmpty() && (*d->sDict())[word] == Okay ) {
+    if ( !dict->isEmpty() && (*dict)[word] == Okay ) {
 	if ( d->autoReady && !d->autoDict[word] ) {
 	    d->autoDict.replace( word, Okay );
 	    if ( !d->autoIgnoreDict[word] )
@@ -339,7 +363,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
     }
 
     // there is no 'spelt correctly' signal so default to Okay
-    d->sDict()->replace( word, Okay );
+    dict->replace( word, Okay );
 
     // yes I tried checkWord, the docs lie and it didn't give useful signals :-(
     if ( d->spell )
@@ -362,7 +386,10 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
 {
     Q_UNUSED( suggestions );
     // kdDebug() << suggestions.join( " " ).latin1() << endl;
-    d->sDict()->replace( originalWord, NotOkay );
+    if ( d->globalConfig )
+        d->sDict()->replace( originalWord, NotOkay );
+    else
+        d->mDict->replace( originalWord, NotOkay );
 
     //Emit this baby so that apps that want to have suggestions in a popup over
     //the misspelled word can catch them.
@@ -382,6 +409,7 @@ void KDictSpellingHighlighter::dictionaryChanged()
 
 void KDictSpellingHighlighter::restartBackgroundSpellCheck()
 {
+    kdDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
     slotDictionaryChanged();
 }
 
@@ -405,6 +433,7 @@ bool KDictSpellingHighlighter::isActive() const
 
 void KDictSpellingHighlighter::slotRehighlight()
 {
+    kdDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
     rehighlight();
     QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
 }
@@ -418,7 +447,15 @@ void KDictSpellingHighlighter::slotDictionaryChanged()
     d->autoDict.clear();
 
     d->spell = new KSpell( 0, i18n( "Incremental Spellcheck" ), this,
-		SLOT( slotSpellReady( KSpell * ) ));
+		SLOT( slotSpellReady( KSpell * ) ), d->mSpellConfig );
+}
+
+void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
+{
+    kdDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
+    // the spell config has been changed, so we have to restart from scratch
+    d->mDict->clear();
+    slotDictionaryChanged();
 }
 
 QString KDictSpellingHighlighter::spellKey()
@@ -477,11 +514,13 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 {
 	// ### this is a joke, isn't it? Reparsing KGlobal::config() upon every focus-in-event???
     if (o == textEdit() && (e->type() == QEvent::FocusIn)) {
-	QString skey = spellKey();
-	if ( d->spell && d->spellKey != skey ) {
-	    d->spellKey = skey;
-	    KDictSpellingHighlighter::dictionaryChanged();
-	}
+        if ( d->globalConfig ) {
+            QString skey = spellKey();
+            if ( d->spell && d->spellKey != skey ) {
+                d->spellKey = skey;
+                KDictSpellingHighlighter::dictionaryChanged();
+            }
+        }
     }
 
     if (o == textEdit() && (e->type() == QEvent::KeyPress)) {
@@ -512,6 +551,7 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 
     else if ( o == textEdit()->viewport() &&
 	 ( e->type() == QEvent::MouseButtonPress )) {
+	d->autoReady = true;
 	if ( intraWordEditing() ) {
 	    setIntraWordEditing( false );
 	    d->rehighlightRequest->start( 0, true );

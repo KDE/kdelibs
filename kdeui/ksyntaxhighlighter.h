@@ -32,6 +32,7 @@
 class QAccel;
 class QTimer;
 class KSpell;
+class KSpellConfig;
 
 class KSyntaxHighlighter : public QSyntaxHighlighter
 {
@@ -95,7 +96,8 @@ public:
 			      const QColor& QuoteColor0 = black,
 			      const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
 			      const QColor& QuoteColor2 = QColor( 0x00, 0x70, 0x00 ),
-			      const QColor& QuoteColor3 = QColor( 0x00, 0x60, 0x00 ) );
+			      const QColor& QuoteColor3 = QColor( 0x00, 0x60, 0x00 ),
+                              KSpellConfig *spellConfig = 0 );
     ~KDictSpellingHighlighter();
 
     virtual bool isMisspelled( const QString &word );
@@ -138,6 +140,7 @@ protected slots:
     void slotDictionaryChanged();
     void slotSpellReady( KSpell *spell );
     void slotAutoDetection();
+    void slotLocalSpellConfigChanged();
 
 private:
     class KDictSpellingHighlighterPrivate;
