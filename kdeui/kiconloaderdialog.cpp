@@ -4,7 +4,7 @@
 //  kiconloaderdialog
 //
 //  Copyright (C) 1997 Christoph Neerfeld
-//  email:  Christoph.Neerfeld@bonn.netsurf.de
+//  email:  Christoph.Neerfeld@home.ivm.de or chris@kde.org
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Library General Public License as published by
@@ -82,6 +82,16 @@ void KIconLoaderCanvas::loadDir( QString dirname, QString filter )
       max_height = 16;
       setTopLeftCell(0,0);
       timer->start( 0, true );
+    }
+  else
+    {
+      setNumCols( 0 );
+      setNumRows( 0 );
+      max_width = 20;
+      max_height = 20;
+      setCellWidth(max_width+4);
+      setCellHeight(max_height+4);
+      repaint();
     }
 }
 
