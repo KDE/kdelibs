@@ -5,13 +5,14 @@
 #include "StringListSelectAndReorderSet.h"
 #include <qbitmap.h>
 #include <qstrlist.h>
-#ifndef INCLUDED_BITMAPS
-#define INCLUDED_BITMAPS
 // the bitmaps
+#ifndef BITMAPS_INCLUDED
 #include "arrow_left.xbm"
 #include "arrow_right.xbm"
 #include "arrow_up.xbm"
 #include "arrow_down.xbm"
+#include "trash_open.xbm"
+#define BITMAPS_INCLUDED
 #endif
 extern "C" {
 #include <assert.h>
