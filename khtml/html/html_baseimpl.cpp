@@ -54,7 +54,7 @@ HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
 {
-    if(m_styleSheet) m_styleSheet->deref();    
+    if(m_styleSheet) m_styleSheet->deref();
 }
 
 const DOMString HTMLBodyElementImpl::nodeName() const
@@ -105,9 +105,9 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_LINK:
     {
 	kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
-	if(!m_styleSheet) { 
+	if(!m_styleSheet) {
 	    m_styleSheet = new CSSStyleSheetImpl(this);
-	    m_styleSheet->ref();    
+	    m_styleSheet->ref();
 	}
 	QString aStr = "a:link { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
@@ -170,6 +170,7 @@ HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
     parentWidget = 0;
 
     frameBorder = true;
+    frameBorderSet = false;
     marginWidth = -1;
     marginHeight = -1;
     scrolling = QScrollView::Auto;
@@ -205,6 +206,7 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_FRAMEBORDER:
 	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
 	    frameBorder = false;
+        frameBorderSet = true;
 	break;
     case ATTR_MARGINWIDTH:
 	marginWidth = attr->val()->toInt();
@@ -231,10 +233,21 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLFrameElementImpl::attach(KHTMLView *w)
 {
-    kdDebug( 6031 ) << "Frame::attach" <<endl;
+    // inherit default settings from parent frameset
+    HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
+    while(node)
+    {
+        if(node->id() == ID_FRAMESET)
+        {
+            HTMLFrameSetElementImpl* frameset = static_cast<HTMLFrameSetElementImpl*>(node);
+            if(!frameBorderSet)  frameBorder = frameset->frameBorder();
+            if(!noresize)  noresize = frameset->noResize();
+            break;
+        }
+        node = static_cast<HTMLElementImpl*>(node->parentNode());
+    }
 
     m_style = document->styleSelector()->styleForElement( this );
-
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )
@@ -277,6 +290,7 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     m_rows = m_cols = 0;
 
     frameborder = true;
+    frameBorderSet = false;
     m_border = 4;
     noresize = false;
 
@@ -287,8 +301,8 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
-  if ( m_rows ) delete m_rows;
-  if ( m_cols ) delete m_cols;
+    delete m_rows;
+    delete m_cols;
 }
 
 const DOMString HTMLFrameSetElementImpl::nodeName() const
@@ -318,6 +332,7 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
 	    frameborder = false;
 	    m_border = 0;
 	}
+        frameBorderSet = true;
 	break;
     case ATTR_NORESIZE:
 	noresize = true;
@@ -334,11 +349,22 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLFrameSetElementImpl::attach(KHTMLView *w)
 {
+    // inherit default settings from parent frameset
+    HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
+    while(node)
+    {
+        if(node->id() == ID_FRAMESET)
+        {
+            HTMLFrameSetElementImpl* frameset = static_cast<HTMLFrameSetElementImpl*>(node);
+            if(!frameBorderSet)  frameborder = frameset->frameBorder();
+            if(!noresize)  noresize = frameset->noResize();
+            break;
+        }
+        node = static_cast<HTMLElementImpl*>(node->parentNode());
+    }
+
     m_style = document->styleSelector()->styleForElement( this );
     view = w;
-
-    // view->layout()
-
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )

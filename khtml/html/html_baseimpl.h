@@ -93,10 +93,11 @@ protected:
     KHTMLView *view;
     KHTMLView *parentWidget;
 
-    bool frameBorder;
     int marginWidth;
     int marginHeight;
-    bool noresize;
+    bool frameBorder : 1;
+    bool frameBorderSet : 1;
+    bool noresize : 1;
     QScrollView::ScrollBarMode scrolling;
 };
 
@@ -131,18 +132,18 @@ public:
     int border() const { return m_border; }
 
 protected:
-    int m_totalRows;
-    int m_totalCols;
-
     QList<khtml::Length> *m_rows;
     QList<khtml::Length> *m_cols;
 
-    // mozilla and others use this in the frameset, although it's not standard html4
-    bool frameborder;
-    int m_border;
-    bool noresize;
+    int m_totalRows;
+    int m_totalCols;
 
-    bool m_resizing;  // is the user resizing currently
+    // mozilla and others use this in the frameset, although it's not standard html4
+    int m_border;
+    bool frameborder : 1;
+    bool frameBorderSet : 1;
+    bool noresize : 1;
+    bool m_resizing : 1;  // is the user resizing currently
 
     KHTMLView *view;
 };
