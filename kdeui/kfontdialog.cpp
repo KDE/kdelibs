@@ -34,7 +34,7 @@
 #include <qfile.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
-#include <qscrollbar.h> 
+#include <qscrollbar.h>
 #include <qfont.h>
 #include <qlayout.h>
 #include <qcombobox.h>
@@ -48,7 +48,7 @@
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kbuttonbox.h>
-#include <klined.h>
+#include <qlineedit.h>
 #include <kstddirs.h>
 #include <kapp.h>
 #include <kconfig.h>
@@ -59,7 +59,7 @@
 
 #define MINSIZE(x) x->setMinimumSize(x->sizeHint());
 
-static int minimumListWidth( const QListBox *list ) 
+static int minimumListWidth( const QListBox *list )
 {
   int w=0;
   for( uint i=0; i<list->count(); i++ )
@@ -75,9 +75,9 @@ static int minimumListWidth( const QListBox *list )
 
 static int minimumListHeight( const QListBox *list, int numVisibleEntry )
 {
-  int w = list->count() > 0 ? list->item(0)->height(list) : 
+  int w = list->count() > 0 ? list->item(0)->height(list) :
     list->fontMetrics().lineSpacing();
-  
+
   if( w < 0 ) { w = 10; }
   if( numVisibleEntry <= 0 ) { numVisibleEntry = 4; }
   return( w * numVisibleEntry + 2 * list->frameWidth() );
@@ -91,7 +91,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
   QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
-    
+
   QWidget *page;
   QGridLayout *gridLayout;
   int row = 0;
@@ -109,7 +109,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     topLayout->addWidget(page);
     gridLayout = new QGridLayout( page, 4, 3, 0, KDialog::spacingHint() );
   }
-  
+
   //
   // first, create the labels across the top
   //
@@ -129,10 +129,10 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   gridLayout->addWidget( familyListBox, row, 0 );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
-  if(fontList.count() != 0) 
+  if(fontList.count() != 0)
   {
     familyListBox->insertStringList(fontList);
-  } 
+  }
   else
   {
     fillFamilyListBox(onlyFixed);
@@ -159,7 +159,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeListBox = new QListBox( page, "sizeListBox");
   gridLayout->addWidget(sizeListBox, row, 2);
 
-  const char *c[] = 
+  const char *c[] =
   {
     "4",  "5",  "6",  "7",
     "8",  "9",  "10", "11",
@@ -193,7 +193,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	  SLOT(charset_chosen_slot(const QString&)));
 
   row ++;
-  sampleEdit = new KLineEdit( page, "sampleEdit");
+  sampleEdit = new QLineEdit( page, "sampleEdit");
   QFont tmpFont( KGlobal::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
   sampleEdit->setText("The Quick Brown Fox Jumps Over The Lazy Dog");
@@ -221,8 +221,8 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QLabel *label = new QLabel( i18n("Actual Font"), page );
     vbox->addWidget( label );
   }
- 
-  xlfdEdit = new KLineEdit( page, "xlfdEdit" );
+
+  xlfdEdit = new QLineEdit( page, "xlfdEdit" );
   vbox->addWidget( xlfdEdit );
 
   // lets initialize the display if possible
@@ -261,7 +261,7 @@ void KFontChooser::charset_chosen_slot(const QString& chset)
 void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
 {
   selFont = aFont;
-  if( onlyFixed != usingFixed) 
+  if( onlyFixed != usingFixed)
   {
     usingFixed = onlyFixed;
     fillFamilyListBox(usingFixed);
@@ -327,9 +327,9 @@ void KFontChooser::style_chosen_slot(const QString& style)
 void KFontChooser::displaySample(const QFont& font)
 {
   sampleEdit->setFont(font);
-  sampleEdit->setCursorPosition(0); 
+  sampleEdit->setCursorPosition(0);
   xlfdEdit->setText(font.rawName());
-  xlfdEdit->setCursorPosition(0); 
+  xlfdEdit->setCursorPosition(0);
 }
 
 void KFontChooser::setupDisplay()
@@ -381,11 +381,11 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
   //
   QStringList lstSys, lstKDE;
 
-  if ( fixed ) 
+  if ( fixed )
   {
     getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-m-*-*-*" );
     getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-c-*-*-*" );
-  } 
+  }
   else
   {
     //getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-p-*-*-*" );
@@ -394,7 +394,7 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
 
   lstSys.sort();
 
-  if ( !kapp->kdeFonts( lstKDE ) ) 
+  if ( !kapp->kdeFonts( lstKDE ) )
   {
     list = lstSys;
     return;
@@ -414,7 +414,7 @@ void KFontChooser::getFontList( QStringList &list, const char *pattern )
   int num;
   char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
 
-  for( int i = 0; i < num; i++ ) 
+  for( int i = 0; i < num; i++ )
   {
     addFont( list, xFonts[i] );
   }
@@ -455,7 +455,7 @@ void KFontChooser::fillFamilyListBox(bool onlyFixedFonts)
 {
   QStringList fontList;
   getFontList(fontList, onlyFixedFonts);
-  familyListBox->clear(); 
+  familyListBox->clear();
   familyListBox->insertStringList(fontList);
 }
 
@@ -483,7 +483,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char* name,
 }
 
 
-int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent, 
+int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent,
 			  bool makeFrame )
 {
   KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
@@ -500,7 +500,7 @@ int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent,
 
 
 int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
-				 bool onlyFixed, QWidget *parent, 
+				 bool onlyFixed, QWidget *parent,
 				 bool makeFrame )
 {
   KFontDialog dlg( parent, "Font and Text Selector", onlyFixed, true,
@@ -508,7 +508,7 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();
-  if( result == Accepted ) 
+  if( result == Accepted )
   {
     theFont   = dlg.chooser->font();
     theString = dlg.chooser->sampleText();
@@ -521,6 +521,14 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.46  1999/10/23 16:16:26  kulow
+* here comes KInstance - "KApplication light"
+* It's a new KLibGlobal and KGlobal only keeps a pointer to a global
+* instance. KApplication is derived from KInstance - making it possible
+* to move things out of KApplication into KInstance to make Components
+* easier.
+* Needs some testings and I bet some tweaks here and there :)
+*
 * Revision 1.45  1999/10/09 00:08:29  kalle
 * The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
 *
@@ -562,7 +570,7 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 *
 * Revision 1.37  1999/05/29 09:44:26  mario
 * Mario: some small fixes, and optimized bloated code
-* 
+*
 *
 ****************************************************************************
 */
