@@ -844,7 +844,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 
     QFontMetrics fm(*font);
 
-    if(raised){
+    if(raised || sunken){
         int x2 = x+w;
         int y2 = y+h;
  
@@ -865,10 +865,6 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     }
     else
     {
-        if(sunken)
-            qDrawShadePanel(p, x, y, w, h, g, true, 1,
-                            &g.brush(QColorGroup::Midlight));
-        else
             p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
     }
     p->setPen(g.text());
