@@ -899,6 +899,11 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 		keySymXMods( keySymX, &keyCombQt, &keyModX );
 	}
 
+	// Hack: for some reason, X defines both keycodes 92 & 111 as being
+	//  Print.  It seems that 111 is usually the correct code.
+	if( keyCodeX == 92 && keySymX == XK_Print && XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
+		keyCodeX = 111;
+
 	if( pKeySymX )	*pKeySymX = keySymX;
 	if( pKeyCodeX )	*pKeyCodeX = keyCodeX;
 	if( pKeyModX )	*pKeyModX = keyModX;
@@ -1083,6 +1088,11 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 			}
 		}
 	}
+
+	// Hack: for some reason, X defines both keycodes 92 & 111 as being
+	//  Print.  It seems that 111 is usually the correct code.
+	if( keyCodeX == 92 && keySymX == XK_Print && XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
+		keyCodeX = 111;
 
 	if( pKeySymX )	*pKeySymX = keySymX;
 	if( pKeyCodeX ) *pKeyCodeX = keyCodeX;
