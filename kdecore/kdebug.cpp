@@ -409,12 +409,28 @@ kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
 kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
 
 kdbgstream kdError(int area) { return kdbgstream(area, KDEBUG_ERROR); }
+kdbgstream kdError(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_ERROR); else return kdbgstream(0,0,false); }
+kdbgstream kdWarning(int area) { return kdbgstream(area, KDEBUG_WARN); }
+kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_WARN); else return kdbgstream(0,0,false); }
+kdbgstream kdFatal(int area) { return kdbgstream(area, KDEBUG_FATAL); }
+kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_FATAL); else return kdbgstream(0,0,false); }
 
 void kdbgstream::flush() {
     if (output.isEmpty() || !print)
 	return;
     kDebugBackend( level, area, output.local8Bit().data() );
     output = QString::null;
+}
+
+kdbgstream &kdbgstream::form(const char *format, ...)
+{
+    char buf[4096];
+    va_list arguments;
+    va_start( arguments, format );
+    vsprintf( buf, format, arguments );
+    va_end(arguments);
+    *this << buf;
+    return *this;
 }
 
 kdbgstream::~kdbgstream() {

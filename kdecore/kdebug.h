@@ -140,10 +140,15 @@ class kdbgstream {
 	    flush();
 	return *this;
     }
+    kdbgstream &operator<<(const QCString& string) {
+      *this << string.data();
+      return *this;
+    }
     kdbgstream& operator<<(KDBGFUNC f) {
 	if (!print) return *this;
 	return (*f)(*this);
     }
+    kdbgstream &form(const char *format, ...);
 
  private:
     QString output;
@@ -161,9 +166,11 @@ class kndbgstream {
     ~kndbgstream() {}
     kndbgstream &operator<<(int )  { return *this; }
     void flush() {}
-    kndbgstream &operator<<(const QString& ) {return *this;}
-    kndbgstream &operator<<(const char *) {return *this;}
+    kndbgstream &operator<<(const QString& ) { return *this; }
+    kndbgstream &operator<<(const QCString& ) { return *this; }
+    kndbgstream &operator<<(const char *) { return *this; }
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
+    kndbgstream &form(const char *, ...) { return *this; }
 };
 
 inline kndbgstream &endl( kndbgstream & s) { return s; }
@@ -177,7 +184,12 @@ kdbgstream kdDebug(bool cond, int area = 0);
 inline kndbgstream kdDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kdDebug(bool , int  = 0) { return kndbgstream(); }
 #endif
+kdbgstream kdWarning(int area = 0);
+kdbgstream kdWarning(bool cond, int area = 0);
 kdbgstream kdError(int area = 0);
+kdbgstream kdError(bool cond, int area = 0);
+kdbgstream kdFatal(int area = 0);
+kdbgstream kdFatal(bool cond, int area = 0);
 
 // -----
 

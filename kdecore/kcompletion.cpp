@@ -114,7 +114,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
     if ( string.isEmpty() ) // reset for rotation
 	myForkList.clear();
-    
+
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
     if ( myCompletionMode == KGlobal::CompletionShell &&
@@ -432,7 +432,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 					  const QString& beginning,
 					  QStringList *matches,
-					  bool getAllItems ) const
+					  bool /*getAllItems*/ ) const
 {
     if ( !node || !matches )
         return;
