@@ -1,5 +1,10 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="10">
 <Menu name="popupmenu">
+ <Action name="copy" group="editactions"/>
+ <Action name="selectAll" group="editactions"/>
+ <Separator weakSeparator="1" group="editactions"/>
+ <Action name="savelinkas" group="linkactions"/>
+ <Action name="copylinklocation" group="linkactions"/>
  <Menu name="frame"><text>Frame</text>
   <Action name="frameinwindow"/>
   <Action name="frameintab"/>
@@ -17,11 +22,6 @@
   <Action name="viewimage" />
  </Menu>
  <Separator weakSeparator="1" />
- <Action name="savelinkas" />
- <Separator weakSeparator="1" />
- <Action name="selectAll" />
- <Separator weakSeparator="1" />
- <Action name="copylinklocation" />
  <Action name="stopanimations" />
  <Separator weakSeparator="1" />
  <Action name="security" />

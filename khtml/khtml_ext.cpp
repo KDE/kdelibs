@@ -314,7 +314,11 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   setInstance( khtml->instance() );
 
+  KAction *copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
+  copyAction->setText(i18n("&Copy Text"));
+  copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
   actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+
   actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
 
   // frameset? -> add "Reload Frame" etc.
