@@ -725,11 +725,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #endif						
 		    } else
 		    {
-#ifdef TOKEN_DEBUG		    
+#ifdef TOKEN_DEBUG		
 		       kdDebug( 6036 ) << "Known attribute: \"" << attrName << "\"" << endl;
-#endif		       
+#endif		
 		    }
-		   
+		
 		    tag = SearchEqual;
 		    discard = SpaceDiscard; // discard spaces before '='
 		}
@@ -751,7 +751,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		      if(a.id==0) a.setName( attrName );
 		      a.setValue(0, 0);
 		      currToken->attrs.add(a);
-	      
+	
 		      dest = buffer;
 		      tag = SearchAttribute;
 		      discard = SpaceDiscard;
@@ -773,7 +773,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    if(a.id==0) a.setName( attrName );
 		    a.setValue(0, 0);
 		    currToken->attrs.add(a);
-	    
+	
 		    dest = buffer;
 		    tag = SearchAttribute;
 		    discard = SpaceDiscard;
@@ -814,12 +814,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    // end of attribute
 		    Attribute a;
-		    a.id = *buffer;		    
+		    a.id = *buffer;		
 		    if(a.id==0) a.setName( attrName );
-		    while(*(dest-1) == ' ' && dest>buffer+1) dest--; // remove trailing spaces  
+		    while(*(dest-1) == ' ' && dest>buffer+1) dest--; // remove trailing spaces
 		    a.setValue(buffer+1, dest-buffer-1);
 		    currToken->attrs.add(a);
-	    
+	
 		    dest = buffer;
 		    tag = SearchAttribute;
 		    discard = SpaceDiscard;
@@ -853,7 +853,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    if(a.id==0) a.setName( attrName );
 		    a.setValue(buffer+1, dest-buffer-1);
 		    currToken->attrs.add(a);
-		    
+		
 		    dest = buffer;
 		    tag = SearchAttribute;
 		    discard = SpaceDiscard;
@@ -891,7 +891,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    a.id = *buffer;
 		    if(a.id==0) a.setName( attrName );
 		    a.setValue(buffer+1, dest-buffer-1);
-		    currToken->attrs.add(a);		    
+		    currToken->attrs.add(a);		
 		    dest = buffer;
 		}
 		uint tagID = currToken->id;
@@ -899,7 +899,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
 		bool beginTag = (tagID < ID_CLOSE_TAG);
-		if(beginTag)
+		if(beginTag & !pre)
 		{
 		    // Ignore Space/LF's after a start tag
 		    discard = AllDiscard;
@@ -922,8 +922,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    // we have to take care to close the pre block in
 		    // case we encounter an unallowed element....
-		    if(!DOM::checkChild(ID_PRE, tagID))
-		       pre = false;
+		    if(DOM::checkChild(ID_PRE, tagID)) {
+			//kdDebug(0) << " not allowed in <pre>" << tagID << endl;
+			pre = false;
+		    }
 		}
 
 		if ( tagID == ID_PRE )
