@@ -1572,17 +1572,21 @@ void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
     }
     return;
   }
-  // is v an option element ?
-  node = KJS::toNode(v);
-  if (node.isNull() || node.elementId() != ID_OPTION)
-    return;
-  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
   // an index ?
   bool ok;
   unsigned int u = p.toULong(&ok);
   if (!ok)
     return;
-
+  if (v.isA(NullType) || v.isA(UndefinedType)) {
+    // null and undefined delete. others, too ?
+    sel.remove(u);
+    return;
+  }
+  // is v an option element ?
+  node = KJS::toNode(v);
+  if (node.isNull() || node.elementId() != ID_OPTION)
+    return;
+  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
   long diff = long(u) - sel.length();
   DOM::HTMLElement before;
   // out of array bounds ? first insert empty dummies
@@ -1631,11 +1635,20 @@ Object OptionConstructor::construct(const List &args)
 {
   DOM::Element el = doc.createElement("OPTION");
   DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
-  DOM::Text t = doc.createTextNode(args[0].toString().value().string());
-  try { opt.appendChild(t); }
-  catch(DOM::DOMException& e) {
+  int sz = args.size();
+  if (sz > 0) {
+    DOM::Text t = doc.createTextNode(args[0].toString().value().string());
+    try { opt.appendChild(t); }
+    catch(DOM::DOMException& e) {
       // oh well
+    }
   }
+  if (sz > 1)
+    opt.setValue(args[1].toString().value().string());
+  if (sz > 2)
+    opt.setDefaultSelected( args[2].toBoolean().value() );
+  if (sz > 3)
+    opt.setSelected( args[3].toBoolean().value() );
 
   return Object(getDOMNode(opt).imp());
 }
