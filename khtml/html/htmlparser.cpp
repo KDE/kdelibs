@@ -403,7 +403,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 return false;
             }
             break;
-            // SCRIPT and OBJECT are allowed in the body.
+        case ID_SCRIPT:
+            // if we failed to insert it, go into skip mode
+            discard_until = id + ID_CLOSE_TAG;
+            break;
         case ID_BODY:
             if(inBody && doc()->body()) {
                 // we have another <BODY> element.... apply attributes to existing one
