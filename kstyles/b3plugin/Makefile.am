@@ -23,6 +23,6 @@ INCLUDES= $(all_includes)
 noinst_HEADERS = b3style.h 
 lib_LTLIBRARIES = b3style.la
 b3style_la_LDFLAGS =  $(all_libraries) -module  -avoid-version -no-undefined 
-b3style_la_LIBADD = $(top_builddir)/kstyles/b2plugin/b2style.la
+b3style_la_LIBADD = 
 
 b3style_la_SOURCES = b3style.cpp plugin.cpp
