@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     list += "file://home/testfile";
     list += "http://www.kde.org/index.html";
     
-    OpenWithDlg* dlg = new OpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
+    KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         debug("Dialog ended successfully\ntext: %s", dlg->text().ascii());
     }
