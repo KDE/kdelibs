@@ -29,7 +29,8 @@ namespace KABC {
   @short Phonenumber information.
   
   This class provides phone number information. A phone number is classified by
-  a type. The following types are available:
+  a type. The following types are available, it's possible to use multiple types
+  for a number by combining them through a logical or:
   <pre>
   Home  Home number
   Work  Office number
@@ -67,7 +68,8 @@ class PhoneNumber
       Create a phonenumber object.
       
       @param number Number
-      @param type Type as defined in enum.
+      @param type Type as defined in enum. Multiple types can be specified by
+                  combining them by a logical or.
     */
     PhoneNumber( const QString &number, int type = Home );
     ~PhoneNumber();
@@ -94,11 +96,12 @@ class PhoneNumber
     QString number() const;
     
     /**
-      Set type.
+      Set type. Multiple types can be specified by combining them by a logical
+      or.
     */
     void setType( int );
     /**
-      Return type.
+      Return type. Can be a multiple types combined by a logical or.
     */
     int type() const;
 
