@@ -33,9 +33,6 @@ KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QStr
 	levent->text=text;
 	levent->present=present;
 	levent->sound=sound;
-	QFileInfo fi(file);
-	if (fi.isRelative())
-		file=locate("sound", file);
 	levent->file=file;
 	levent->client=client;
 }

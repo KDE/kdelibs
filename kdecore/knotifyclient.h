@@ -38,10 +38,13 @@
  * [eventname]
  * friendly=FriendlyNameOfEvent
  * description=DescriptionOfEvent
- * default_sound=/path/to/sound/file
+ * default_sound=filetoplay.wav
  * default_presentation=1
  *  ...
  * </pre>
+ * default_presentation contains these ANDed events:
+ *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8
+ *
  * This class works, but is still in testing.
  *
  * @author Charles Samuels <charles@altair.dhs.org>
