@@ -342,6 +342,8 @@ public:
 
   XmlDataList m_xmlFiles;
 
+  QLabel     *m_comboLabel;
+  KSeparator *m_comboSeparator;
   QLabel * m_helpArea;
   KPushButton* m_changeIcon;
   KProcIO* m_kdialogProcess;
@@ -655,10 +657,11 @@ bool KEditToolbarWidget::save()
 void KEditToolbarWidget::setupLayout()
 {
   // the toolbar name combo
-  QLabel *toolbar_label = new QLabel(i18n("&Toolbar:"), this);
+  d->m_comboLabel = new QLabel(i18n("&Toolbar:"), this);
   m_toolbarCombo = new QComboBox(this);
   m_toolbarCombo->setEnabled(false);
-  toolbar_label->setBuddy(m_toolbarCombo);
+  d->m_comboLabel->setBuddy(m_toolbarCombo);
+  d->m_comboSeparator = new KSeparator(this);
   connect(m_toolbarCombo, SIGNAL(activated(const QString&)),
           this,           SLOT(slotToolbarSelected(const QString&)));
 
@@ -763,7 +766,7 @@ void KEditToolbarWidget::setupLayout()
 
   QGridLayout *button_layout = new QGridLayout(5, 3, 0);
 
-  name_layout->addWidget(toolbar_label);
+  name_layout->addWidget(d->m_comboLabel);
   name_layout->addWidget(m_toolbarCombo);
 //  name_layout->addWidget(new_toolbar);
 //  name_layout->addWidget(del_toolbar);
@@ -791,7 +794,7 @@ void KEditToolbarWidget::setupLayout()
   list_layout->addLayout(active_layout);
 
   top_layout->addLayout(name_layout);
-  top_layout->addWidget(new KSeparator(this));
+  top_layout->addWidget(d->m_comboSeparator);
   top_layout->addLayout(list_layout,10);
   top_layout->addWidget(d->m_helpArea);
   top_layout->addWidget(new KSeparator(this));
@@ -825,6 +828,10 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
       count++;
     }
   }
+  bool showCombo = (count > 1);
+  d->m_comboLabel->setShown(showCombo);
+  d->m_comboSeparator->setShown(showCombo);
+  m_toolbarCombo->setShown(showCombo);
   if (defaultToolbarId == -1)
       defaultToolbarId = 0;
   // we want to the specified item selected and its actions loaded
