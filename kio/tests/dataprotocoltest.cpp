@@ -107,7 +107,7 @@ private:
    * @param casesensitive true if case sensitive compare (currently not used)
    */
   void testStrings(const QString &prefix, const QString &templat,
-  		const QString &s, bool casesensitive = true) {
+                   const QString &s, bool /*casesensitive*/ = true) {
     if (templat == s)
       passed++;
     else {
@@ -117,7 +117,7 @@ private:
     }/*end if*/
     total++;
   }
-  
+
 public:
   /** begins a testrun over all testcases */
   void initTestrun() {
