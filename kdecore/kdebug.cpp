@@ -87,7 +87,7 @@ static QString getDescrFromNum(unsigned short _num)
   QString data, filename(locate("config","kdebug.areas"));
   QFile file(filename);
   if (!file.open(IO_ReadOnly)) {
-    warning("Couldn't open %s", filename.ascii());
+    warning("Couldn't open %s", filename.local8Bit());
     file.close();
     return "";
   }

@@ -255,7 +255,7 @@ void KApplication::init(bool GUIenabled)
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
-                                   + name() + "/");
+                                   + QString::fromLatin1(name()) + '/');
   pSessionConfig = 0L;
   pDCOPClient = 0L; // don't instantiate until asked to do so.
   bSessionManagement = true;
@@ -283,7 +283,7 @@ DCOPClient *KApplication::dcopClient()
   QCString fName(::getenv("HOME"));
   fName += "/.DCOPserver";
   if (::access(fName.data(), R_OK) == -1) {
-    QString srv = KStandardDirs::findExe("dcopserver");
+    QString srv = KStandardDirs::findExe(QString::fromLatin1("dcopserver"));
     QApplication::flushX();
     if (fork() == 0) {
       execl(srv.latin1(), srv.latin1(), 0);
@@ -386,7 +386,7 @@ void KApplication::saveState( QSessionManager& sm )
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
-    restartCommand << "-restore" << QString::number( session_restore_level );
+    restartCommand << QString::fromLatin1("-restore") << QString::number( session_restore_level );
     sm.setRestartCommand( restartCommand );
 
     // finally: do session management
@@ -402,7 +402,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( pSessionConfig ) {
 	pSessionConfig->sync();
 	QStringList discard;
-	discard  << ( QString("rm ")+file.name()); // only one argument  due to broken xsm
+	discard  << ( "rm "+file.name()); // only one argument  due to broken xsm
 	sm.setDiscardCommand( discard );
     }
 
@@ -794,10 +794,10 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 
         if(!locate("lib", styleStr).isNull()) {
             styleStr = locate("lib", styleStr);
-            styleHandle = lt_dlopen(styleStr.ascii());
+            styleHandle = lt_dlopen(QFile::encodeName(styleStr));
         }
         else {
-            warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
+            warning("KApp: Unable to find style plugin %s.", styleStr.local8Bit().data());
             pKStyle = 0;
             styleHandle=0;
             setStyle(new QPlatinumStyle);
@@ -806,7 +806,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 
         if(!styleHandle){
             warning("KApp: Unable to open style plugin %s (%s).",
-                    styleStr.ascii(), lt_dlerror());
+                    styleStr.local8Bit().data(), lt_dlerror());
 
             pKStyle = 0;
             setStyle(new QPlatinumStyle);
@@ -817,7 +817,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 
             if(!alloc_func){
                 warning("KApp: Unable to init style plugin %s (%s).",
-                        styleStr.ascii(), lt_dlerror());
+                        styleStr.local8Bit().data(), lt_dlerror());
                 pKStyle = 0;
                 lt_dlclose(styleHandle);
                 styleHandle = 0;
@@ -1101,7 +1101,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	     file = locate("html", "default/" + filename);
 
 	 if (file.isNull()) {
-	     warning("no help file %s found\n", filename.ascii());
+	     warning("no help file %s found\n", filename.local8Bit().data());
 	     _exit( 1 );
 	 }
 
@@ -1120,7 +1120,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
          file.prepend("khcclient ");
-         execl(shell, shell, "-c", file.ascii(), 0L);
+         execl(shell, shell, "-c", QFile::encodeName(file).data(), 0L);
 	  _exit( 1 );
     }
 }
@@ -1143,7 +1143,7 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
     {
       shell = getenv("SHELL");
     }
-    execl( shell, shell, "-c", exec.ascii(), 0L );
+    execl( shell, shell, "-c", QFile::encodeName(exec).data(), 0L );
     _exit( 1 );
   }
 }
@@ -1181,7 +1181,7 @@ void KApplication::invokeBrowser( const QString &url )
       QString lockFile = QString("%1/.netscape/lock").arg(getenv("HOME"));
 
       struct stat statInfo;
-      if( lstat(lockFile.ascii(), &statInfo) != -1 )
+      if( lstat(QFile::encodeName(lockFile), &statInfo) != -1 )
       {
 	exec = QString("%1 -remote 'openURL(%2,new-window)'").arg(browser).
 	  arg(url);
@@ -1210,7 +1210,7 @@ void KApplication::invokeBrowser( const QString &url )
     {
       shell = getenv("SHELL");
     }
-    execl( shell, shell, "-c", exec.ascii(), 0L );
+    execl( shell, shell, "-c", QFile::encodeName(exec).data(), 0L );
     _exit( 1 );
   }
 
@@ -1314,7 +1314,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 
 bool checkAccess(const QString& pathname, int mode)
 {
-  int accessOK = access( pathname.ascii(), mode );
+  int accessOK = access( QFile::encodeName(pathname), mode );
   if ( accessOK == 0 )
     return true;  // OK, I can really access the file
 
@@ -1325,7 +1325,7 @@ bool checkAccess(const QString& pathname, int mode)
     return false;   // Check for write access is not part of mode => bail out
 
 
-  if (!access( pathname.ascii(), F_OK)) // if it already exists
+  if (!access( QFile::encodeName(pathname), F_OK)) // if it already exists
       return false;
 
   //strip the filename (everything until '/' from the end
@@ -1336,7 +1336,7 @@ bool checkAccess(const QString& pathname, int mode)
 
   dirName.truncate(pos); // strip everything starting from the last '/'
 
-  accessOK = access( dirName.ascii(), W_OK );
+  accessOK = access( QFile::encodeName(dirName), W_OK );
   // -?- Can I write to the accessed diretory
   if ( accessOK == 0 )
     return true;  // Yes

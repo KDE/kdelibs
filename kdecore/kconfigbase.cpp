@@ -821,7 +821,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
   for( ; it.current(); ++it )
     {
       uint i;
-      QString value = it.current();
+      QString value = QString::fromLatin1(it.current());
       for( i = 0; i < value.length(); i++ )
 	{
 	  if( value[i] == sep || value[i] == '\\' )

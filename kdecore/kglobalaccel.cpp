@@ -597,14 +597,14 @@ uint keyToXSym( uint keyCode )
 	// Fill the keycode with infos
 	bool  keyFound = false;
 	for ( int i=0; i<nb_toks; i++ ) {
-		if ( (QString(toks[i]).upper() != "SHIFT") &&
-			 (QString(toks[i]).upper() != "CTRL") &&
-			 (QString(toks[i]).upper() != "ALT") ) {
+		if (stricmp(toks[i], "SHIFT") != 0 &&
+		    stricmp(toks[i], "CTRL")  != 0 &&
+		    stricmp(toks[i], "ALT")   != 0) {
 		   if ( keyFound ) return 0;
 		   keyFound = true;
-		   QString l = toks[i];
+		   QCString l = toks[i];
 		   l = l.lower();
-		   keysym = XStringToKeysym(l.ascii());
+		   keysym = XStringToKeysym(l.data());
 		   if (keysym == NoSymbol){
 		     keysym = XStringToKeysym( toks[i] );
 		   }

@@ -123,7 +123,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 
       if (checkAccess(mTmpName, W_OK))
       {
-         mFd = open(mTmpName.ascii(), O_RDWR|O_CREAT|O_EXCL, mode);
+         mFd = open(QFile::encodeName(mTmpName), O_RDWR|O_CREAT|O_EXCL, mode);
          if ((mFd <= 0) && (tries >= maxTries))
          {
             mError = errno;
@@ -227,7 +227,7 @@ void
 KTempFile::unlink()
 {
    if (!mTmpName.isEmpty())
-      ::unlink( mTmpName.ascii());
+      QFile::remove( mTmpName );
 }
 
 bool

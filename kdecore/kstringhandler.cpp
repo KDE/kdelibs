@@ -99,8 +99,6 @@ QString KStringHandler::word( const QString &text , const char *range )
 //
 QString KStringHandler::insword( const QString &text , const QString &word , uint pos )
 {
-    QString tmp = "";
-
     if ( text.isEmpty() )
         return word;
 
@@ -121,8 +119,6 @@ QString KStringHandler::insword( const QString &text , const QString &word , uin
 
 QString KStringHandler::setword( const QString &text , const QString &word , uint pos )
 {
-    QString tmp = "";
-
     if ( text.isEmpty() )
         return word;
 

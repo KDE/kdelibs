@@ -34,9 +34,11 @@
 #include <test.h>
 #endif
 
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #include <qdatetime.h>
+#include <qdir.h>
+
 #include "kapp.h"
 #include "ksavefile.h"
 
@@ -49,7 +51,7 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
       return;
    }
 
-   if (mTempFile.create(filename, ".new", mode))
+   if (mTempFile.create(filename, QString::fromLatin1(".new"), mode))
    {
       mFileName = filename; // Set filename upon success
    }
@@ -79,8 +81,9 @@ KSaveFile::close()
 {
    if (mTempFile.close())
    {
-      int result = rename( mTempFile.name().ascii(), mFileName.ascii());
-      if ( result == 0 )
+      QDir dir;
+      bool result = dir.rename( mTempFile.name(), mFileName);
+      if ( result )
       {
          return true; // Success!
       }
