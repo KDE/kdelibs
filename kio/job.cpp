@@ -1532,16 +1532,42 @@ void CopyJob::startNextJob()
     KURL::List::Iterator it = m_srcList.begin();
     if (it != m_srcList.end())
     {
-        // First, stat the src
-        Job * job = KIO::stat( *it, false );
-        //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
-        state = STATE_STATING;
-        addSubjob(job);
-        m_currentSrcURL=(*it);
-        m_currentDestURL=m_dest;
-        //if ( m_observer ) // Did we get an ID from the observer ?
-            //m_observer->slotCopying( this, *it, m_dest ); // show asap
-        // keep src url in the list, just in case we need it later
+        if ( m_mode == Link )
+        {
+            // Skip the "stating the source" stage, we don't need it for linking
+            m_currentDest = m_dest;
+            struct CopyInfo info;
+            info.permissions = (mode_t) -1;
+            info.mtime = (time_t) -1;
+            info.ctime = (time_t) -1;
+            info.size = (off_t)0;
+            info.uSource = *it;
+            info.uDest = m_currentDest;
+            // Append filename or dirname to destination URL, if allowed
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                info.uDest.addPath( (*it).fileName() );
+            files.append( info ); // Files and any symlinks
+
+            // emit all signals for total numbers
+            emit totalSize( this, 0 );
+            emit totalFiles( this, 1 );
+            emit totalDirs( this, 0 );
+
+            // Skip the "listing" stage and go directly copying the file
+            state = STATE_COPYING_FILES;
+            copyNextFile();
+        }
+        else
+        {
+            // First, stat the src
+            Job * job = KIO::stat( *it, false );
+            //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
+            state = STATE_STATING;
+            addSubjob(job);
+            m_currentSrcURL=(*it);
+            m_currentDestURL=m_dest;
+            // keep src url in the list, just in case we need it later
+        }
     } else
     {
         // Finished - tell the world
