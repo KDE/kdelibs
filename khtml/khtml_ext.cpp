@@ -91,18 +91,19 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( khtml->parentPart() )
   {
     d->m_paReloadFrame = new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
-				      actionCollection(), "reloadframe" );
+                                      actionCollection(), "reloadframe" );
     d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
     d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
-					  actionCollection(), "viewFrameSource" );
+                                          actionCollection(), "viewFrameSource" );
+    actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
   }
 
   if ( !url.isEmpty() )
   {
     d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
- 				     actionCollection(), "savelinkas" );
+                                     actionCollection(), "savelinkas" );
     d->m_paCopyLinkLocation = new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
-					   actionCollection(), "copylinklocation" );
+                                           actionCollection(), "copylinklocation" );
   }
 
   DOM::Element e;
@@ -112,9 +113,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   {
     d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
     d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
-				      actionCollection(), "saveimageas" );
+                                      actionCollection(), "saveimageas" );
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
-					    actionCollection(), "copyimagelocation" );
+                                            actionCollection(), "copyimagelocation" );
   }
 
   setXML( doc );
@@ -223,11 +224,11 @@ KHTMLFontSizeAction::KHTMLFontSizeAction( KHTMLPart *part, bool direction, const
 
     for ( int i = 1; i < 5; ++i )
     {
-	int num = i * m;
-	QString numStr = QString::number( num );
-	if ( num > 0 ) numStr.prepend( '+' );
-	
-	m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
+        int num = i * m;
+        QString numStr = QString::number( num );
+        if ( num > 0 ) numStr.prepend( '+' );
+
+        m_popup->insertItem( i18n( "Font Size %1" ).arg( numStr ) );
     }
 
     connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
@@ -242,11 +243,11 @@ int KHTMLFontSizeAction::plug( QWidget *w, int index )
 {
     int containerId = KAction::plug( w, index );
     if ( containerId == -1 || !w->inherits( "KToolBar" ) )
-	return containerId;
+        return containerId;
 
     KToolBarButton *button = static_cast<KToolBar *>( w )->getButton( menuId( containerId ) );
     if ( !button )
-	return containerId;
+        return containerId;
 
     button->setDelayedPopup( m_popup );
     return containerId;
@@ -257,9 +258,9 @@ void KHTMLFontSizeAction::slotActivated( int id )
     int idx = m_popup->indexOf( id );
 
     if ( idx == 0 )
-	m_part->setFontBaseInternal( 0, true );
+        m_part->setFontBaseInternal( 0, true );
     else
-	m_part->setFontBaseInternal( idx * ( m_direction ? 1 : -1 ), false );
+        m_part->setFontBaseInternal( idx * ( m_direction ? 1 : -1 ), false );
 }
 
 #include "khtml_ext.moc"
