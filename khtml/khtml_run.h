@@ -25,6 +25,7 @@
 
 #include <krun.h>
 #include <kurl.h>
+#include <kparts/browserextension.h>
 
 class KHTMLPart;
 
@@ -37,7 +38,7 @@ class KHTMLRun : public KRun
 {
   Q_OBJECT
 public:
-  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url );
+  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, KParts::URLArgs *args );
 
   virtual void foundMimeType( const QString &mimetype );
 
@@ -50,6 +51,7 @@ protected slots:
 
 private:
   KHTMLPart *m_part;
+  KParts::URLArgs *m_args;
   khtml::ChildFrame *m_child;
 };
 

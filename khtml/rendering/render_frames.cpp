@@ -664,6 +664,7 @@ void RenderPartObject::setWidget( QWidget *w )
   }
 
   RenderPart::setWidget( w );
+  slotViewCleared(); // WABA ??
 }
 
 void RenderPartObject::setSize( int w, int h )

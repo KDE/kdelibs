@@ -241,9 +241,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
     if(name.isEmpty())
     {
-      QString tmp;
-      tmp.sprintf("0x%p", this);
-      name = DOMString(tmp) + url;
+      name = DOMString(w->part()->requestFrameName());
       kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
     }
 
@@ -577,9 +575,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   // we need a unique name for every frame in the frameset. Hope that's unique enough.
   if(name.isEmpty())
   {
-    QString tmp;
-    tmp.sprintf("0x%p", this);
-    name = DOMString(tmp) + url;
+    name = DOMString(w->part()->requestFrameName());
     kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
   }
 

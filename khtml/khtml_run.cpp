@@ -24,11 +24,12 @@
 #include "khtml_part.h"
 #include <kio/job.h>
 
-KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url )
+KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, KParts::URLArgs *args )
 : KRun( url, 0, false, false /* No GUI */ )
 {
   m_part = part;
   m_child = child;
+  m_args = args;
 }
 
 void KHTMLRun::foundMimeType( const QString &mimetype )
@@ -49,13 +50,14 @@ void KHTMLRun::scanFile()
   // No check for well-known extensions, since we don't trust HTTP
 
   KIO::TransferJob *job = KIO::get(m_strURL, false, false);
+  job->addMetaData(m_args->metaData());
+
   //job->setWindow((KMainWindow *)m_pMainWindow);
   connect( job, SIGNAL( result( KIO::Job *)),
            this, SLOT( slotKHTMLScanFinished(KIO::Job *)));
   connect( job, SIGNAL( mimetype( KIO::Job *, const QString &)),
            this, SLOT( slotKHTMLMimetype(KIO::Job *, const QString &)));
   m_job = job;
-
 }
 
 void KHTMLRun::slotKHTMLScanFinished(KIO::Job *job)

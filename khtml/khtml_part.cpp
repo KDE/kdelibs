@@ -156,6 +156,7 @@ public:
     m_bJScriptOverride = false;
     m_bJavaForce = false;
     m_bJavaOverride = false;
+    m_frameNameId = 1;
   }
   ~KHTMLPartPrivate()
   {
@@ -189,6 +190,7 @@ public:
   bool m_bJScriptOverride;
   bool m_bJavaForce;
   bool m_bJavaOverride;
+  int m_frameNameId;
   KJavaAppletContext *m_javaContext;
 
   bool keepCharset;
@@ -468,8 +470,6 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::restoreURL( const KURL &url )
 {
-  QString referrerUrl = m_url.url();
-
   kdDebug( 6050 ) << "KHTMLPart::restoreURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
@@ -497,8 +497,6 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
 bool KHTMLPart::openURL( const KURL &url )
 {
-  QString referrerUrl = m_url.url();
-
   KURL::List *vlinks = KHTMLFactory::vLinks();
   if ( !vlinks->contains( url ) )
       vlinks->append( url );
@@ -508,7 +506,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_redirectionTimer.stop();
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
-  if ( d->m_frames.count() == 0 && url.hasHTMLRef() && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
+  if ( d->m_frames.count() == 0 && (url.hasHTMLRef() != m_url.hasHTMLRef()) && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
@@ -539,8 +537,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
   else
       d->m_job = KIO::get( url, args.reload, false );
-
-  d->m_job->addMetaData("referrer", referrerUrl);
+  d->m_job->addMetaData(args.metaData());
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotFinished( KIO::Job * ) ) );
@@ -898,7 +895,7 @@ void KHTMLPart::clear()
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   d->m_bClearing = false;
-  d->m_bParsing = false;
+  d->m_frameNameId = 1;
 
   d->m_bMousePressed = false;
 
@@ -1941,7 +1938,6 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   if (url.isEmpty())
     return false;
   FrameIt it = d->m_frames.find( frameName );
-
   if ( it == d->m_frames.end() )
   {
     khtml::ChildFrame child;
@@ -1954,6 +1950,11 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it).m_params = params;
 
   return requestObject( &(*it), completeURL( url ) );
+}
+
+QString KHTMLPart::requestFrameName()
+{
+   return QString::fromLatin1("<!--frame %1-->").arg(d->m_frameNameId++);
 }
 
 bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
@@ -1984,7 +1985,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     return true;
   }
 
-   KParts::URLArgs args( _args );
+  KParts::URLArgs args( _args );
 
   if ( child->m_run )
     delete (KHTMLRun *)child->m_run;
@@ -1994,11 +1995,13 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
   child->m_args = args;
   child->m_serviceName = QString::null;
+  if (!m_url.isEmpty())
+    child->m_args.metaData()["referrer"] = m_url.url();
 
   // Use a KHTMLRun if the service type is unknown, but only if this is not a POST
   // We can't put POSTs on hold, nor rely on HTTP HEAD, so we have to assume html for POSTs (DF).
   if ( args.serviceType.isEmpty() && args.postData.size() == 0 ) {
-    child->m_run = new KHTMLRun( this, child, url );
+    child->m_run = new KHTMLRun( this, child, url, &(child->m_args) );
     return false;
   } else {
     if (args.serviceType.isEmpty())
@@ -2540,10 +2543,12 @@ void KHTMLPart::restoreState( QDataStream &stream )
 #if 0
     if ( !urlcmp( u.url(), m_url.url(), true, true ) )
 #endif
-    {
-      closeURL();
-      clear();
-    }
+
+    closeURL();
+    // We must force a clear because we want to be sure to delete all
+    // frames.
+    d->m_bCleared = false;
+    clear();
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fNameEnd = frameNames.end();

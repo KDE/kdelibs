@@ -766,6 +766,15 @@ private:
                      const QStringList &args = QStringList() );
 
   /**
+   * @internal returns a name for a frame without a name.
+   * This function returns a sequence of names.
+   * All names in a sequence are different but the sequence is
+   * always the same.
+   * The sequence is reset in clear().
+   */
+  QString requestFrameName();
+
+  /**
    * @internal
    */
   bool requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
