@@ -49,6 +49,9 @@ void player::removeSong(void)
 {
 if ((songLoaded)&&(tracks!=NULL))
     {
+#ifdef PLAYERDEBUG
+    printf("Removing song from memory\n");
+#endif
     int i=0;
     while (i<info->ntracks)
         {
@@ -91,6 +94,7 @@ void player::parseSpecialEvents(void)
 #ifdef PLAYERDEBUG
 printf("player::Parsing...\n");
 #endif
+removeSpecialEvents();
 spev=new SpecialEvent;
 SpecialEvent *pspev=spev;
 pspev->type=0;
@@ -130,9 +134,9 @@ while (parsing)
     if ((minTime==maxTime))
 	{
 	parsing=0;
-	#ifdef PLAYERDEBUG
+#ifdef PLAYERDEBUG
 	printf("END of parsing\n");
-	#endif
+#endif
 	}
 	else
 	{	
@@ -189,8 +193,10 @@ for (int i=0;i<info->ntracks;i++)
 };
 
 void player::play(int calloutput,void output(void))
-{
+{		
+#ifdef PLAYERDEBUG
 printf("Playing...\n");
+#endif
 midi->openDev();
 if (midi->OK()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
 midi->initDev();
@@ -297,7 +303,9 @@ while (playing)
     if ((minTime==maxTime)/* || (minTicks> 60000L)*/)
 	{
 	playing=0;
+#ifdef PLAYERDEBUG
 	printf("END of playing\n");
+#endif
 	}
 	else
 	{	
@@ -361,14 +369,18 @@ while (playing)
     };
 ctl->ev=NULL;
 delete ev;
+#ifdef PLAYERDEBUG
 printf("Syncronizing ...\n");
+#endif
 if (halt) 
     midi->sync(1);
    else 
     midi->sync();
 midi->closeDev();
 ctl->playing=0;
+#ifdef PLAYERDEBUG
 printf("Bye...\n");
+#endif
 ctl->OK=1;
 ctl->finished=1;
 };
