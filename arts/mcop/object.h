@@ -28,15 +28,21 @@
 
 #include "buffer.h"
 #include "connection.h"
-#include "flowsystem.h"
 #include "notification.h"
 
 #include <cassert>
 #include <map>
 #include <list>
 
+/* custom dispatching functions */
+
+typedef void (*DispatchFunction)(void *object, Buffer *request, Buffer *result);
+typedef void (*OnewayDispatchFunction)(void *object, Buffer *request);
+
 class ScheduleNode;
 class Object_skel;
+class Object_stub;
+class FlowSystem;
 
 class Object : public NotificationClient {
 private:
@@ -53,6 +59,11 @@ protected:
 	std::map<std::string, void*> _streamMap;
 
 	virtual Object_skel *_skel();
+	virtual Object_stub *_stub();
+
+	enum ObjectLocation { objectIsLocal, objectIsRemote };
+
+	virtual ObjectLocation _location();
 
 	long _nextNotifyID;
 	long _refCnt;				// reference count
@@ -60,8 +71,19 @@ protected:
 
 	void _destroy();			// use this instead of delete (takes care of
 								// properly removing flow system node)
-
 public:
+	/**
+	 * custom messaging: these can be used to send a custom data to other
+	 * objects. Warning: these are *not* usable for local objects. You may
+	 * only use these functions if you know that you are talking to a remote
+	 * object. Use _allocCustomMessage to allocate a message. Put the data
+	 * you want to send in the Buffer. After that, call _sendCustomMessage.
+	 * Don't free the buffer - this will happen automatically.
+	 */
+
+	virtual Buffer *_allocCustomMessage(long handlerID);
+	virtual void _sendCustomMessage(Buffer *data);
+
 	/*
 	 * generic capabilities, which allow find out what you can do with an
 	 * object even if you don't know it's interface
@@ -78,6 +100,7 @@ public:
 	void *_lookupStream(std::string s);
 	virtual void calculateBlock(unsigned long cycles);
 	ScheduleNode *_node();
+	virtual FlowSystem * _flowSystem() = 0;
 
 	/*
 	 * reference counting
@@ -98,6 +121,7 @@ public:
 
 	// static converter (from reference)
 	static Object *_fromString(std::string objectref);
+	static Object *_fromReference(class ObjectReference ref, bool needcopy);
 };
 
 template<class T> class ReferenceHelper;
@@ -111,7 +135,6 @@ typedef ReferenceHelper<Object> Object_var;
 class Buffer;
 class MethodDef;
 
-typedef void (*DispatchFunction)(void *object, Buffer *request, Buffer *result);
 
 class Object_skel : virtual public Object {
 private:
@@ -129,9 +152,18 @@ private:
 
 protected:
 	void _addMethod(DispatchFunction disp, void *object, const MethodDef& md);
+	void _addMethod(OnewayDispatchFunction disp, void *object,
+														const MethodDef& md);
 	void _initStream(std::string name, void *ptr, long flags);
 
+	/**
+	 * custom messaging: this is used to install a custom data handler that
+	 * can be used to receive non-standard messages
+	 */
+	long _addCustomMessageHandler(OnewayDispatchFunction handler, void *object);
+
 	Object_skel *_skel();
+	ObjectLocation _location();
 
 public:
 	Object_skel();
@@ -141,7 +173,9 @@ public:
 	void _disconnectRemote(class Connection *connection);
 	void _referenceClean();
 
+	// synchronous & asynchronous dispatching
 	void _dispatch(Buffer *request, Buffer *result,long methodID);
+	void _dispatch(Buffer *request, long methodID);
 	long _lookupMethod(const MethodDef &);
 
 	/*
@@ -158,6 +192,11 @@ public:
 	virtual void _copyRemote();
 	virtual void _useRemote();
 	virtual void _releaseRemote();
+
+	/*
+	 * streaming
+	 */
+	FlowSystem * _flowSystem();
 
 	/*
 	 * to inspect the (remote) object interface
@@ -179,12 +218,22 @@ protected:
 	Object_stub(Connection *connection, long objectID);
 	virtual ~Object_stub();
 
+	virtual Object_stub *_stub();
+	ObjectLocation _location();
+
 	enum { _lookupMethodCacheSize = 337 };
 	static long *_lookupMethodCache;
 
 	long _lookupMethodFast(const char *method);
 	long _lookupMethod(const MethodDef &);
+
 public:
+	/*
+	 * custom messaging
+	 */
+
+	Buffer *_allocCustomMessage(long handlerID);
+	void _sendCustomMessage(Buffer *data);
 
 	/*
 	 * to inspect the (remote) object interface
@@ -193,6 +242,11 @@ public:
 	InterfaceDef* _queryInterface(const std::string& name);
 	TypeDef* _queryType(const std::string& name);
 	std::string _toString();
+
+	/*
+	 * streaming
+	 */
+	FlowSystem * _flowSystem();
 
 	/*
 	 * reference counting

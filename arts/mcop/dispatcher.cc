@@ -169,13 +169,13 @@ InterfaceRepo *Dispatcher::interfaceRepo()
 	return _interfaceRepo;
 }
 
-FlowSystem *Dispatcher::flowSystem()
+FlowSystem_impl *Dispatcher::flowSystem()
 {
 	assert(_flowSystem);
 	return _flowSystem;
 }
 
-void Dispatcher::setFlowSystem(FlowSystem *fs)
+void Dispatcher::setFlowSystem(FlowSystem_impl *fs)
 {
 	assert(!_flowSystem);
 	_flowSystem = fs;
@@ -214,6 +214,22 @@ Buffer *Dispatcher::createRequest(long& requestID, long objectID, long methodID)
 
 	// write invocation record
 	buffer->writeLong(requestID);
+	buffer->writeLong(objectID);
+	buffer->writeLong(methodID);
+
+	return buffer;
+}
+
+Buffer *Dispatcher::createOnewayRequest(long objectID, long methodID)
+{
+	Buffer *buffer = new Buffer;
+
+	// write mcop header record
+	buffer->writeLong(MCOP_MAGIC);
+	buffer->writeLong(0);			// message length - to be patched later
+	buffer->writeLong(mcopOnewayInvocation);
+
+	// write oneway invocation record
 	buffer->writeLong(objectID);
 	buffer->writeLong(methodID);
 
@@ -280,6 +296,21 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #endif
 				long requestID = buffer->readLong();
 				requestResultPool[requestID] = buffer;
+
+				return;		/* everything ok - leave here */
+			}
+
+			if(messageType == mcopOnewayInvocation) {
+#ifdef DEBUG_MESSAGES
+		printf("[got OnewayInvocation]\n");
+#endif
+				long objectID = buffer->readLong();
+				long methodID = buffer->readLong();
+
+				objectPool[objectID]->_dispatch(buffer,methodID);
+
+				assert(!buffer->readError() && !buffer->remaining());
+				delete buffer;
 
 				return;		/* everything ok - leave here */
 			}

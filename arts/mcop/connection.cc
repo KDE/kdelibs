@@ -93,23 +93,32 @@ void Connection::receive(unsigned char *data, long len)
 				}
 				else
 				{
-					Dispatcher::the()->handle(this,rcbuf,messageType);
+					Buffer *received = rcbuf;
 					initReceive();
+					Dispatcher::the()->handle(this,received,messageType);
 				}
 			}
 			else
 			{
-				Dispatcher::the()->handleCorrupt(this);
 				initReceive();
+				Dispatcher::the()->handleCorrupt(this);
 			}
 		}
 		else
 		{
-			// rcbuf is consumed by the dispatcher
-			Dispatcher::the()->handle(this,rcbuf,messageType);
+			Buffer *received = rcbuf;
 
-			// prepare for the next message
+			/*
+			 * it's important to prepare to receive new messages *before*
+			 * calling Dispatcher::the()->handle(...), as handle may
+			 * get into an I/O situation (e.g. when doing an invocation
+			 * itself), and we may receive more messages while handle is
+			 * running
+			 */
 			initReceive();
+
+			// rcbuf is consumed by the dispatcher
+			Dispatcher::the()->handle(this,received,messageType);
 		}
 	}
 }

@@ -6,7 +6,8 @@
 #include "common.h"
 
 enum HeaderMagic {MCOP_MAGIC = 1347371853};
-enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5};
+enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5, mcopOnewayInvocation = 6};
+enum MethodType {methodOneway = 1, methodTwoway = 2};
 enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32};
 class Header : public Type {
 public:
@@ -36,6 +37,23 @@ public:
 	virtual ~Invocation();
 
 	long requestID;
+	long objectID;
+	long methodID;
+
+// marshalling functions
+	void readType(Buffer& stream);
+	void writeType(Buffer& stream) const;
+};
+
+class OnewayInvocation : public Type {
+public:
+	OnewayInvocation();
+	OnewayInvocation(long objectID, long methodID);
+	OnewayInvocation(Buffer& stream);
+	OnewayInvocation(const OnewayInvocation& copyType);
+	OnewayInvocation& operator=(const OnewayInvocation& assignType);
+	virtual ~OnewayInvocation();
+
 	long objectID;
 	long methodID;
 
@@ -118,7 +136,7 @@ public:
 class MethodDef : public Type {
 public:
 	MethodDef();
-	MethodDef(const std::string& name, const std::string& type, long flags, const std::vector<ParamDef *>& signature);
+	MethodDef(const std::string& name, const std::string& type, MethodType flags, const std::vector<ParamDef *>& signature);
 	MethodDef(Buffer& stream);
 	MethodDef(const MethodDef& copyType);
 	MethodDef& operator=(const MethodDef& assignType);
@@ -126,7 +144,7 @@ public:
 
 	std::string name;
 	std::string type;
-	long flags;
+	MethodType flags;
 	std::vector<ParamDef *> signature;
 
 // marshalling functions
@@ -294,6 +312,127 @@ public:
 class InterfaceRepo_skel : virtual public InterfaceRepo, virtual public Object_skel {
 public:
 	InterfaceRepo_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	void _buildMethodTable();
+	void *_cast(std::string interface);
+	void dispatch(Buffer *request, Buffer *result,long methodID);
+};
+
+class FlowSystemSender : virtual public Object {
+public:
+	static FlowSystemSender *_fromString(std::string objectref);
+	static FlowSystemSender *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline FlowSystemSender *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual void processed() = 0;
+};
+
+typedef ReferenceHelper<FlowSystemSender> FlowSystemSender_var;
+
+class FlowSystemSender_stub : virtual public FlowSystemSender, virtual public Object_stub {
+protected:
+	FlowSystemSender_stub();
+
+public:
+	FlowSystemSender_stub(Connection *connection, long objectID);
+
+	void processed();
+};
+
+class FlowSystemSender_skel : virtual public FlowSystemSender, virtual public Object_skel {
+public:
+	FlowSystemSender_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	void _buildMethodTable();
+	void *_cast(std::string interface);
+	void dispatch(Buffer *request, Buffer *result,long methodID);
+};
+
+class FlowSystemReceiver : virtual public Object {
+public:
+	static FlowSystemReceiver *_fromString(std::string objectref);
+	static FlowSystemReceiver *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline FlowSystemReceiver *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual long receiveHandlerID() = 0;
+};
+
+typedef ReferenceHelper<FlowSystemReceiver> FlowSystemReceiver_var;
+
+class FlowSystemReceiver_stub : virtual public FlowSystemReceiver, virtual public Object_stub {
+protected:
+	FlowSystemReceiver_stub();
+
+public:
+	FlowSystemReceiver_stub(Connection *connection, long objectID);
+
+	long receiveHandlerID();
+};
+
+class FlowSystemReceiver_skel : virtual public FlowSystemReceiver, virtual public Object_skel {
+public:
+	FlowSystemReceiver_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	void _buildMethodTable();
+	void *_cast(std::string interface);
+	void dispatch(Buffer *request, Buffer *result,long methodID);
+};
+
+class FlowSystem : virtual public Object {
+public:
+	static FlowSystem *_fromString(std::string objectref);
+	static FlowSystem *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline FlowSystem *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual void startObject(Object * node) = 0;
+	virtual void stopObject(Object * node) = 0;
+	virtual void connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort) = 0;
+	virtual void disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort) = 0;
+	virtual AttributeType queryFlags(Object * node, const std::string& port) = 0;
+	virtual FlowSystemReceiver * createReceiver(Object * destObject, const std::string& destPort, FlowSystemSender * sender) = 0;
+};
+
+typedef ReferenceHelper<FlowSystem> FlowSystem_var;
+
+class FlowSystem_stub : virtual public FlowSystem, virtual public Object_stub {
+protected:
+	FlowSystem_stub();
+
+public:
+	FlowSystem_stub(Connection *connection, long objectID);
+
+	void startObject(Object * node);
+	void stopObject(Object * node);
+	void connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort);
+	void disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort);
+	AttributeType queryFlags(Object * node, const std::string& port);
+	FlowSystemReceiver * createReceiver(Object * destObject, const std::string& destPort, FlowSystemSender * sender);
+};
+
+class FlowSystem_skel : virtual public FlowSystem, virtual public Object_skel {
+public:
+	FlowSystem_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();

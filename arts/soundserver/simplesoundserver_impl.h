@@ -41,6 +41,7 @@ public:
 	SimpleSoundServer_impl();
 	~SimpleSoundServer_impl();
 
+	long attach(ByteSoundProducer *bsp);
 	long play(const std::string& s);
 	PlayObject *createPlayObject(const std::string& filename);
 

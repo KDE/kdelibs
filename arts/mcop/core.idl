@@ -26,7 +26,8 @@ enum MessageType {
  mcopReturn      = 2,
  mcopServerHello = 3,
  mcopClientHello = 4,
- mcopAuthAccept  = 5
+ mcopAuthAccept  = 5,
+ mcopOnewayInvocation  = 6
 };
 
 struct Header {
@@ -37,6 +38,11 @@ struct Header {
 
 struct Invocation {
     long requestID;
+    long objectID;
+    long methodID;
+};
+
+struct OnewayInvocation {
     long objectID;
     long methodID;
 };
@@ -66,10 +72,23 @@ struct ParamDef {
 	string name;
 };
 
+/* Twoway methods are such where the calling process does a call and is
+   suspended until some result (maybe even a void result) gets back.
+
+   Oneway methods are one shot and forget methods: you send the invocation,
+   and continue. Maybe it will be received, maybe executed later. You will
+   never hear the result.
+*/
+
+enum MethodType {
+	methodOneway = 1,
+	methodTwoway = 2
+};
+
 struct MethodDef {
-	string  name;
-	string  type;
-	long    flags;
+	string     name;
+	string     type;
+	MethodType flags;
 
 	sequence<ParamDef> signature;
 };
@@ -185,9 +204,81 @@ interface InterfaceRepo {
 	TypeDef queryType(string name);
 };
 
+/**
+ * Flow System interface
+ */
+
+interface FlowSystemSender {
+	oneway void processed();
+};
+
+interface FlowSystemReceiver {
+	readonly attribute long receiveHandlerID;
+	//oneway void receive(string packet);
+};
+
+interface FlowSystem {
+	/**
+	 * This starts a scheduling node
+	 *
+	 * Don't use this manually. Use object->_node()->connect(...) instead.
+	 */
+	void startObject(object node);
+
+	/**
+	 * This stops a scheduling node
+	 *
+	 * Don't use this manually. Use object->_node()->connect(...) instead.
+	 */
+	void stopObject(object node);
+
+	/**
+	 * This connects two objects, maybe even remote
+	 *
+	 * it is important that
+	 *  - sourceObject/sourcePort points to the node the signal flow is
+	 *    coming from
+	 *  - destObject/destPort points to the node/port the signal flow is
+	 *    going to
+	 *
+	 * Don't use this manually. Use object->_node()->connect(...) instead.
+	 */
+	void connectObject(object sourceObject, string sourcePort,
+						object destObject, string destPort);
+
+	/**
+	 * This disconnects two objects, maybe even remote
+	 *
+	 * it is important that
+	 *  - sourceObject/sourcePort points to the node the signal flow is
+	 *    coming from
+	 *  - destObject/destPort points to the node/port the signal flow is
+	 *    going to
+	 *
+	 * Don't use this manually. Use object->_node()->connect(...) instead.
+	 */
+	void disconnectObject(object sourceObject, string sourcePort,
+		 					object destObject, string destPort);
+
+	/**
+	 * queries the stream flags - returns 0 when such a stream isn't
+	 * present
+	 */
+	AttributeType queryFlags(object node, string port);
+
+	/**
+	 * network transparent connections
+	 */
+	FlowSystemReceiver createReceiver(object destObject, string destPort,
+												FlowSystemSender sender);
+};
+
 /* this is only (!) used for generation of the Object_stub stuff
 
 interface Object {
+	// access to the flow system this object is running in
+	readonly attribute FlowSystem _flowSystem;
+
 	// returns the ID for methodinvocations to this specific method
 	long _lookupMethod(MethodDef methodDef);
 

@@ -290,3 +290,13 @@ interface Synth_PLAY_WAV : SynthModule {
 
 	out audio stream left, right;
 };
+
+interface ByteStreamToAudio : SynthModule {
+	attribute long samplingRate;
+	attribute long channels;
+	attribute long bits;
+
+	async in byte stream indata;
+
+	out audio stream left,right;
+};

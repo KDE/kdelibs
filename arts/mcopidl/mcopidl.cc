@@ -164,7 +164,7 @@ bool isInterface( string type )
 	for(i=interfaces.begin();i != interfaces.end(); i++)
 		if((*i)->name == type) return true;
 
-	return false;
+	return (type == "object");
 }
 
 #define MODEL_MEMBER    1
@@ -445,6 +445,10 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeLong("+name+");\n";
 	} else if(isInterface(type)) {
+		// the "object class" is called Object
+		if(type == "object")
+			type = "Object";
+
 		if(model==MODEL_MEMBER)		result = type+"_var";
 		//if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
 		if(model==MODEL_ARG)		result = type+" *";
@@ -465,7 +469,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_READ)
 		{
 			result = indent + type +"* _temp_"+name+";\n";
-			result += indent + "readObject(request,_temp_"+name+");\n";
+			result += indent + "readObject(*request,_temp_"+name+");\n";
 			result += indent + type+"_var "+name+" = _temp_"+name+";\n";
 		}
 		if(model==MODEL_WRITE)
@@ -795,21 +799,20 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md,
 	fprintf(source,"%s %s_stub::%s(%s)\n",rc.c_str(),iface.c_str(),
 				method.c_str(), params.c_str());
 	fprintf(source,"{\n");
-	/*
-	fprintf(source,"\tlong methodID;\n");
-	fprintf(source,"\t{\n");
-	fprintf(source,"\t\tBuffer _b;\n");
-	fprintf(source,"\t\t_b.fromString(\"%s\",\"method\");\n",
-											b.toString("method").c_str());
-	fprintf(source,"\t\tmethodID = _lookupMethod(MethodDef(_b));\n");
-	fprintf(source,"\t}\n");
-	*/
 	fprintf(source,"\tlong methodID = _lookupMethodFast(\"%s\");\n",
 											b.toString("method").c_str());
-	fprintf(source,"\tlong requestID;\n");
-	fprintf(source,"\tBuffer *request, *result;\n");
-	fprintf(source,"\trequest = Dispatcher::the()->"
+	if(md->flags & methodTwoway)
+	{
+		fprintf(source,"\tlong requestID;\n");
+		fprintf(source,"\tBuffer *request, *result;\n");
+		fprintf(source,"\trequest = Dispatcher::the()->"
 				"createRequest(requestID,_objectID,methodID);\n");
+	}
+	else
+	{
+		fprintf(source,"\tBuffer *request = Dispatcher::the()->"
+				"createOnewayRequest(_objectID,methodID);\n");
+	}
 	fprintf(source,"\t// methodID = %ld  =>  %s\n",mcount,md->name.c_str());
 
 	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
@@ -822,12 +825,14 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md,
 	fprintf(source,"\trequest->patchLength();\n");
 	fprintf(source,"\t_connection->qSendBuffer(request);\n\n");
 
-	fprintf(source,
-		"\tresult = Dispatcher::the()->waitForResult(requestID);\n");
+	if(md->flags & methodTwoway)
+	{
+		fprintf(source,
+			"\tresult = Dispatcher::the()->waitForResult(requestID);\n");
 
-	fprintf(source,"%s",
-		createTypeCode(md->type,"",MODEL_RES_READ,"\t").c_str());
-
+		fprintf(source,"%s",
+			createTypeCode(md->type,"",MODEL_RES_READ,"\t").c_str());
+	}
 	fprintf(source,"}\n\n");
 }
 
@@ -852,6 +857,58 @@ bool haveAsyncStreams(InterfaceDef *d)
 	return false;
 }
 
+void createDispatchFunction(FILE *source, long mcount,
+								InterfaceDef *d, MethodDef *md,string name)
+{
+	/** calculate signature (prevents unused argument warnings) **/
+	string signature = "void *object, ";
+
+	if(md->signature.size() == 0)
+		signature += "Buffer *";
+	else
+		signature += "Buffer *request";
+
+	if(md->flags & methodTwoway)
+	{
+		if(md->type == "void")
+			signature += ", Buffer *";
+		else
+			signature += ", Buffer *result";
+	}
+	else
+	{
+		if(md->type != "void")
+		{
+			cerr << "method " << md->name << " in interface " << d->name <<
+			   " is declared oneway, but not void" << endl;
+			exit(1);
+		}
+	}
+
+	fprintf(source,"// %s\n",md->name.c_str());
+	fprintf(source,"static void _dispatch_%s_%02ld(%s)\n",
+			d->name.c_str(),mcount,signature.c_str());
+	fprintf(source,"{\n");
+
+	string call = "(("+d->name+"_skel *)object)->"+name + "(";
+	int first = 1;
+	vector<ParamDef *>::iterator pi;
+	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+	{
+		ParamDef *pd = *pi;
+		string p;
+
+		if(!first) call += ",";
+		first = 0;
+		call += pd->name;
+		p = createTypeCode(pd->type,pd->name,MODEL_REQ_READ, "\t");
+		fprintf(source,"%s",p.c_str());
+	}
+	call += ")";
+	string invoke = createTypeCode(md->type,call,MODEL_INVOKE,"\t");
+	fprintf(source,"%s",invoke.c_str());
+	fprintf(source,"}\n\n");
+}
 
 void doInterfacesHeader(FILE *header)
 {
@@ -1074,7 +1131,6 @@ void doInterfacesSource(FILE *source)
 {
 	list<InterfaceDef *>::iterator ii;
 	vector<MethodDef *>::iterator mi;
-	vector<ParamDef *>::iterator pi;
 	vector<AttributeDef *>::iterator ai;
 
 	long mcount;
@@ -1157,7 +1213,7 @@ void doInterfacesSource(FILE *source)
 				{
 					md.name = "_get_"+ad->name;
 					md.type = ad->type;
-					md.flags = 0;
+					md.flags = methodTwoway;
 					/* no parameters (don't set md.signature) */
 
 					createStubCode(source,d->name.c_str(),ad->name.c_str(),
@@ -1167,7 +1223,7 @@ void doInterfacesSource(FILE *source)
 				{
 					md.name = "_set_"+ad->name;
 					md.type = "void";
-					md.flags = 0;
+					md.flags = methodTwoway;
 					md.signature.push_back(new ParamDef(ad->type,"newValue"));
 
 					createStubCode(source,d->name.c_str(),ad->name.c_str(),
@@ -1211,6 +1267,11 @@ void doInterfacesSource(FILE *source)
 				ii++;
 			}
 		}
+		else
+		{
+			fprintf(source,"\tif(interface == \"Object\") "
+							"return (Object *)this;\n");
+		}
 
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
@@ -1218,48 +1279,46 @@ void doInterfacesSource(FILE *source)
 		/** dispatch operations **/
 		Buffer methodTable;
 
+			/** dispatch operations for object methods **/
 		mcount = 0;
 		for(mi = d->methods.begin(); mi != d->methods.end(); mi++, mcount++)
 		{
 			MethodDef *md = *mi;
 			md->writeType(methodTable);
 
-			/** calculate signature (prevents unused argument warnings) **/
-			string signature = "void *object, ";
+			createDispatchFunction(source,mcount,d,md,md->name);
+		}
 
-			if(md->signature.size() == 0)
-				signature += "Buffer *, ";
-			else
-				signature += "Buffer *request, ";
+			/** dispatch operations for attributes **/
 
-			if(md->type == "void")
-				signature += "Buffer *";
-			else
-				signature += "Buffer *result";
+		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		{
+			AttributeDef *ad = *ai;
 
-
-			fprintf(source,"// %s\n",md->name.c_str());
-			fprintf(source,"static void _dispatch_%s_%02ld(%s)\n",
-					d->name.c_str(),mcount,signature.c_str());
-			fprintf(source,"{\n");
-
-			string call = "(("+d->name+"_skel *)object)->"+md->name + "(";
-			int first = 1;
-			for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+			if(ad->flags & attributeAttribute)
 			{
-				ParamDef *pd = *pi;
-				string p;
+				MethodDef md;
+				if(ad->flags & streamOut)  /* readable from outside */
+				{
+					md.name = "_get_"+ad->name;
+					md.type = ad->type;
+					md.flags = methodTwoway;
+					/* no parameters (don't set md.signature) */
 
-				if(!first) call += ",";
-				first = 0;
-				call += pd->name;
-				p = createTypeCode(pd->type,pd->name,MODEL_REQ_READ, "\t");
-				fprintf(source,"%s",p.c_str());
+					md.writeType(methodTable);
+					createDispatchFunction(source,mcount++,d,&md,ad->name);
+				}
+				if(ad->flags & streamIn)  /* writeable from outside */
+				{
+					md.name = "_set_"+ad->name;
+					md.type = "void";
+					md.flags = methodTwoway;
+					md.signature.push_back(new ParamDef(ad->type,"newValue"));
+
+					md.writeType(methodTable);
+					createDispatchFunction(source,mcount++,d,&md,ad->name);
+				}
 			}
-			call += ")";
-			string invoke = createTypeCode(md->type,call,MODEL_INVOKE,"\t");
-			fprintf(source,"%s",invoke.c_str());
-			fprintf(source,"}\n\n");
 		}
 
 		/** methodTable **/

@@ -1,6 +1,16 @@
 #include "artsflow.idl"
 #include "kmedia2.idl"
 
+interface ByteSoundProducer : SynthModule
+{
+	readonly attribute long samplingRate;
+	readonly attribute long channels;
+	readonly attribute long bits;
+	readonly attribute boolean finished;
+
+	async out byte stream outdata;
+};
+
 /*
  * This is a very simple sound server interface
  */
@@ -28,6 +38,8 @@ interface SimpleSoundServer
 	 * stops a playing sound by ID
 	 */
 	//void stop(long ID);
+
+	long attach(ByteSoundProducer producer);
 };
 
 /*

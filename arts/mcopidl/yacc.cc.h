@@ -58,6 +58,7 @@ typedef union
 #define	T_ATTRIBUTE	285
 #define	T_READONLY	286
 #define	T_ASYNC	287
+#define	T_ONEWAY	288
 
 
 extern YYSTYPE yylval;

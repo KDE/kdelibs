@@ -311,6 +311,13 @@ Object_skel *StdScheduleNode::object()
 	return _object;
 }
 
+void *StdScheduleNode::cast(const string &target)
+{
+	if(target == "StdScheduleNode") return (StdScheduleNode *)this;
+	return 0;
+}
+
+
 void StdScheduleNode::accessModule()
 {
 	if(module) return;
@@ -323,7 +330,7 @@ void StdScheduleNode::accessModule()
 	}
 }
 
-StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem *flowSystem)
+StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem_impl *flowSystem) : ScheduleNode(object)
 {
 	_object = object;
 	this->flowSystem = flowSystem;
@@ -449,6 +456,14 @@ Port *StdScheduleNode::findPort(string name)
 
 void StdScheduleNode::connect(string port, ScheduleNode *dest, string destport)
 {
+	RemoteScheduleNode *rsn = dest->remoteScheduleNode();
+	if(rsn)
+	{
+		// RemoteScheduleNodes know better how to connect remotely
+		rsn->connect(destport,this,port);
+		return;
+	}
+
 	Port *p1 = findPort(port);
 	Port *p2 = ((StdScheduleNode *)dest)->findPort(destport);
 
@@ -468,6 +483,14 @@ void StdScheduleNode::connect(string port, ScheduleNode *dest, string destport)
 void StdScheduleNode::disconnect(string port,
 								ScheduleNode *dest, string destport)
 {
+	RemoteScheduleNode *rsn = dest->remoteScheduleNode();
+	if(rsn)
+	{
+		// RemoteScheduleNodes know better how to disconnect remotely
+		rsn->disconnect(destport,this,port);
+		return;
+	}
+
 	Port *p1 = findPort(port);
 	Port *p2 = ((StdScheduleNode *)dest)->findPort(destport);
 
@@ -482,6 +505,22 @@ void StdScheduleNode::disconnect(string port,
 			p2->disconnect(p1);
 		}
 	}
+}
+
+AttributeType StdScheduleNode::queryFlags(const std::string& port)
+{
+	cout << "findPort(" << port << ")" << endl;
+	cout << "have " << ports.size() << " ports" << endl;
+	Port *p1 = findPort(port);
+	cout << "done" << endl;
+
+	if(p1)
+	{
+		cout << "result" << (long)p1->flags() << endl;
+		return p1->flags();
+	}
+	cout << "failed" << endl;
+	return (AttributeType)0;
 }
 
 void StdScheduleNode::setFloatValue(string port, float value)           
@@ -655,19 +694,89 @@ void StdFlowSystem::removeObject(ScheduleNode *node)
 	delete node;
 }
 
+/* remote accessibility */
+
+void StdFlowSystem::startObject(Object* node)
+{
+	assert(false);
+}
+
+void StdFlowSystem::stopObject(Object* node)
+{
+	assert(false);
+}
+
+void StdFlowSystem::connectObject(Object* sourceObject,const string& sourcePort,
+					Object* destObject, const std::string& destPort)
+{
+	cout << "connect port " << sourcePort << " to " << destPort << endl;
+	StdScheduleNode *sn =
+		(StdScheduleNode *)sourceObject->_node()->cast("StdScheduleNode");
+	assert(sn);
+
+	Port *port = sn->findPort(sourcePort);
+	assert(port);
+
+	ASyncPort *ap = port->asyncPort();
+
+	if(ap)
+	{
+		ASyncNetSend *netsend = new ASyncNetSend();
+		ap->sendNet(netsend);
+
+		FlowSystem_var remoteFs = destObject->_flowSystem();
+		FlowSystemReceiver_var receiver;
+		receiver = remoteFs->createReceiver(destObject, destPort, netsend);
+
+		netsend->setReceiver(receiver);
+		cout << "connected an asyncnetsend" << endl;		
+	}
+}
+
+void StdFlowSystem::disconnectObject(Object* sourceObject,
+		const string& sourcePort, Object* destObject, const string& destPort)
+{
+	assert(false);
+}
+
+AttributeType StdFlowSystem::queryFlags(Object* node, const std::string& port)
+{
+	StdScheduleNode *sn =
+		(StdScheduleNode *)node->_node()->cast("StdScheduleNode");
+	return sn->queryFlags(port);
+}
+
+FlowSystemReceiver *StdFlowSystem::createReceiver(Object *object,
+							const string &port, FlowSystemSender *sender)
+{
+	StdScheduleNode *sn =
+		(StdScheduleNode *)object->_node()->cast("StdScheduleNode");
+
+	Port *p = sn->findPort(port);
+	assert(p);
+
+	ASyncPort *ap = p->asyncPort();
+
+	if(ap)
+	{
+		cout << "creating packet receiver" << endl;
+		return new ASyncNetReceive(ap, sender);
+	}
+	return 0;
+}
+
 // hacked initialization of Dispatcher::the()->flowSystem ;)
 
-StdFlowSystem stdflow;
-
 static class SetFlowSystem : StartupClass {
-	FlowSystem *_fs;
+	FlowSystem_impl *fs;
 public:
-	SetFlowSystem(FlowSystem *fs) {
-		_fs = fs;
-	}
-
 	void startup()
 	{
-		Dispatcher::the()->setFlowSystem(_fs);
+		fs = new StdFlowSystem;
+		Dispatcher::the()->setFlowSystem(fs);
 	}
-} sfs(&stdflow);
+	void shutdown()
+	{
+		fs->_release();
+	}
+} sfs;

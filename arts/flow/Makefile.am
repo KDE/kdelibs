@@ -17,7 +17,8 @@ libartsflow_la_SOURCES =  synth_play_impl.cc artsserver_impl.cc \
   executionman_impl.cc execrequest.cc synthschedule.cc debug.cc audiosubsys.cc \
   pipebuffer.cc convert.cc synth_wave_sin_impl.cc synth_frequency_impl.cc \
   synth_multi_add_impl.cc synth_add_impl.cc synth_mul_impl.cc \
-  synth_play_wav_impl.cc stdsynthmodule.cc cache.cc utils.c asyncschedule.cc
+  synth_play_wav_impl.cc stdsynthmodule.cc cache.cc utils.c asyncschedule.cc \
+  bytestreamtoaudio_impl.cc
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h artsserver_impl.h audiosubsys.h cache.h \

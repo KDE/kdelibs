@@ -190,7 +190,7 @@ class StdScheduleNode :public ScheduleNode
 
 	Object_skel *_object;
 	SynthModule *module;
-	FlowSystem *flowSystem;
+	FlowSystem_impl *flowSystem;
 	std::list<Port *> ports;
 	AudioPort **inConn;
 	AudioPort **outConn;
@@ -201,6 +201,7 @@ class StdScheduleNode :public ScheduleNode
 	void rebuildConn();
 	void accessModule();
 
+	public: /* TODO? */
 	Port *findPort(std::string name);
 
 	/** scheduling variables - directly accessed by other schedNodes **/
@@ -209,7 +210,7 @@ class StdScheduleNode :public ScheduleNode
 
 public:
 
-	StdScheduleNode(Object_skel *object, FlowSystem *flowSystem);
+	StdScheduleNode(Object_skel *object, FlowSystem_impl *flowSystem);
 	virtual ~StdScheduleNode();
 	void initStream(std::string name, void *ptr, long flags);
 	void addDynamicPort(Port *port);
@@ -223,18 +224,32 @@ public:
 	void connect(std::string port, ScheduleNode *dest, std::string destport);
 	void disconnect(std::string port, ScheduleNode *dest, std::string destport);
 
+	AttributeType queryFlags(const std::string& port);
 	void setFloatValue(std::string port, float value);
 	long request(long amount);
 	unsigned long calc(unsigned long cycles);
 
 	Object_skel *object();
+	void *cast(const string &target);
 };
 
-class StdFlowSystem :public FlowSystem
+class StdFlowSystem :public FlowSystem_impl
 {
 public:
 	ScheduleNode *addObject(Object_skel *object);
 	void removeObject(ScheduleNode *node);
+
+	/* remote accessibility */
+	void startObject(Object* node);
+	void stopObject(Object* node);
+	void connectObject(Object* sourceObject, const std::string& sourcePort,
+						Object* destObject, const std::string& destPort);
+	void disconnectObject(Object* sourceObject, const std::string& sourcePort,
+						Object* destObject, const std::string& destPort);
+	AttributeType queryFlags(Object* node, const std::string& port);
+
+	FlowSystemReceiver *createReceiver(Object *object, const string &port,
+										FlowSystemSender *sender);
 };
 
 #endif

@@ -25,6 +25,7 @@
 
 #include "simplesoundserver_impl.h"
 #include "artsflow.h"
+#include "flowsystem.h"
 #include <stdio.h>
 #include <iostream>
 
@@ -83,6 +84,31 @@ long SimpleSoundServer_impl::play(const string& filename)
 	return 1;
 }
 
+long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
+{
+	printf("Attach ByteSoundProducer!\n");
+
+	Object *bspCopy = bsp->_copy();
+
+	Object_skel *convertObj = ObjectManager::the()->create("ByteStreamToAudio");
+	assert(convertObj);
+
+	ByteStreamToAudio *convert =
+		(ByteStreamToAudio *)convertObj->_cast("ByteStreamToAudio");
+	assert(convert);
+
+//	convert->samplingRate(bsp->samplingRate());
+//	convert->channels(bsp->channels());
+//	convert->bits(bsp->bits());
+
+	convert->_node()->connect("indata",bsp->_node(),"outdata");
+	add_left->_node()->connect("invalue",convert->_node(),"left");
+	add_right->_node()->connect("invalue",convert->_node(),"right");
+
+	convert->_node()->start();
+	return 1;
+}
+
 void SimpleSoundServer_impl::notifyTime()
 {
 	list<Synth_PLAY_WAV *>::iterator i;
@@ -104,6 +130,7 @@ void SimpleSoundServer_impl::notifyTime()
 
 PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
 {
+/*
 	ReferenceHelper<Object_skel>
 		obj = ObjectManager::the()->create("WavPlayObject");
 	if(obj)
@@ -120,5 +147,59 @@ PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
 			}
 		}
 	}
+*/
+	string extension="";
+	if(filename.size()>4)
+	{
+		extension = filename.substr(filename.size()-4);
+		for(int i=1;i<4;i++) extension[i] = toupper(extension[i]);
+	}
+
+	ReferenceHelper<Object_skel> obj;
+	cout << "extension = " << extension << endl;
+	if(extension == ".WAV")
+	{
+		cout << "Creating WavPlayObject" << endl;
+		obj = ObjectManager::the()->create("WavPlayObject");
+	}
+	else if(extension == ".MP3")
+	{
+		cout << "Creating MP3PlayObject" << endl;
+		obj = ObjectManager::the()->create("MP3PlayObject");
+	}
+	else if(extension == ".MPG")
+	{
+		cout << "Creating MP3PlayObject" << endl;
+		obj = ObjectManager::the()->create("MP3PlayObject");
+	}
+
+	if(obj)
+	{
+		PlayObject *result = (PlayObject *)obj->_cast("PlayObject");
+		if(result)
+		{
+			if(result->loadMedia(filename))
+			{
+				// TODO: check for existence of left & right streams
+				add_left->_node()->connect("invalue",result->_node(),"left");
+				add_right->_node()->connect("invalue",result->_node(),"right");
+				result->_node()->start();
+				return result->_copy();
+			}
+			else
+			{
+				cout << "loadmedia failed." << endl;
+			}
+		}
+		else
+		{
+			cout << "cast failed." << endl;
+		}
+	}
+	else
+	{
+		cout << "object not abailable" << endl;
+	}
+
 	return 0;
 }

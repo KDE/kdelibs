@@ -3,6 +3,7 @@
 
 #include "buffer.h"
 
+
 /*
  * The GenericDataChannel interface is to be implemented by the flowsystem
  */
@@ -43,7 +44,7 @@ public:
  * use to deal with data packets.
  */
 class GenericDataPacket {
-protected:
+public:
 	/**
 	 * the channel this datapacket belongs to
 	 */
@@ -64,7 +65,6 @@ protected:
 	virtual void read(Buffer& stream) = 0;
 	virtual void write(Buffer& stream) = 0;
 
-public:
 	/** 
 	 * having size here (and not in the derived concrete DataPackets) is so
 	 * that we can see whether the sender can't supply more data (and starts
@@ -85,6 +85,11 @@ public:
 	{
 		useCount--;
 		if(useCount == 0) channel->processedPacket(this);
+	}
+
+	virtual ~GenericDataPacket()
+	{
+		//
 	}
 
 protected:
@@ -113,6 +118,7 @@ protected:
 		size = capacity;
 		contents = new T[capacity];
 	}
+	~DataPacket<T>();
 };
 
 /**

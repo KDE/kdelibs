@@ -101,6 +101,52 @@ void Invocation::writeType(Buffer& stream) const
 	stream.writeLong(methodID);
 }
 
+OnewayInvocation::OnewayInvocation()
+{
+}
+
+OnewayInvocation::OnewayInvocation(long objectID, long methodID)
+{
+	this->objectID = objectID;
+	this->methodID = methodID;
+}
+
+OnewayInvocation::OnewayInvocation(Buffer& stream)
+{
+	readType(stream);
+}
+
+OnewayInvocation::OnewayInvocation(const OnewayInvocation& copyType) :Type()
+{
+	Buffer buffer;
+	copyType.writeType(buffer);
+	readType(buffer);
+}
+
+OnewayInvocation& OnewayInvocation::operator=(const OnewayInvocation& assignType)
+{
+	Buffer buffer;
+	assignType.writeType(buffer);
+	readType(buffer);
+	return *this;
+}
+
+OnewayInvocation::~OnewayInvocation()
+{
+}
+
+void OnewayInvocation::readType(Buffer& stream)
+{
+	objectID = stream.readLong();
+	methodID = stream.readLong();
+}
+
+void OnewayInvocation::writeType(Buffer& stream) const
+{
+	stream.writeLong(objectID);
+	stream.writeLong(methodID);
+}
+
 ServerHello::ServerHello()
 {
 }
@@ -298,7 +344,7 @@ MethodDef::MethodDef()
 {
 }
 
-MethodDef::MethodDef(const std::string& name, const std::string& type, long flags, const std::vector<ParamDef *>& signature)
+MethodDef::MethodDef(const std::string& name, const std::string& type, MethodType flags, const std::vector<ParamDef *>& signature)
 {
 	this->name = name;
 	this->type = type;
@@ -335,7 +381,7 @@ void MethodDef::readType(Buffer& stream)
 {
 	stream.readString(name);
 	stream.readString(type);
-	flags = stream.readLong();
+	flags = (MethodType)stream.readLong();
 	readTypeSeq(stream,signature);
 }
 
@@ -734,7 +780,7 @@ InterfaceRepo_stub::InterfaceRepo_stub(Connection *connection, long objectID)
 
 long InterfaceRepo_stub::insertModule(const ModuleDef& newModule)
 {
-	long methodID = _lookupMethodFast("method:0d000000696e736572744d6f64756c6500050000006c6f6e670000000000010000000a0000004d6f64756c65446566000a0000006e65774d6f64756c6500");
+	long methodID = _lookupMethodFast("method:0d000000696e736572744d6f64756c6500050000006c6f6e670002000000010000000a0000004d6f64756c65446566000a0000006e65774d6f64756c6500");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
@@ -751,7 +797,7 @@ long InterfaceRepo_stub::insertModule(const ModuleDef& newModule)
 
 void InterfaceRepo_stub::removeModule(long moduleID)
 {
-	long methodID = _lookupMethodFast("method:0d00000072656d6f76654d6f64756c650005000000766f6964000000000001000000050000006c6f6e6700090000006d6f64756c65494400");
+	long methodID = _lookupMethodFast("method:0d00000072656d6f76654d6f64756c650005000000766f6964000200000001000000050000006c6f6e6700090000006d6f64756c65494400");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
@@ -766,7 +812,7 @@ void InterfaceRepo_stub::removeModule(long moduleID)
 
 InterfaceDef* InterfaceRepo_stub::queryInterface(const std::string& name)
 {
-	long methodID = _lookupMethodFast("method:0f0000007175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d6500");
+	long methodID = _lookupMethodFast("method:0f0000007175657279496e74657266616365000d000000496e7465726661636544656600020000000100000007000000737472696e6700050000006e616d6500");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
@@ -783,7 +829,7 @@ InterfaceDef* InterfaceRepo_stub::queryInterface(const std::string& name)
 
 TypeDef* InterfaceRepo_stub::queryType(const std::string& name)
 {
-	long methodID = _lookupMethodFast("method:0a00000071756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d6500");
+	long methodID = _lookupMethodFast("method:0a00000071756572795479706500080000005479706544656600020000000100000007000000737472696e6700050000006e616d6500");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
@@ -811,6 +857,7 @@ std::string InterfaceRepo_skel::_interfaceNameSkel()
 void *InterfaceRepo_skel::_cast(std::string interface)
 {
 	if(interface == "InterfaceRepo") return (InterfaceRepo *)this;
+	if(interface == "Object") return (Object *)this;
 	return 0;
 }
 
@@ -851,7 +898,7 @@ static void _dispatch_InterfaceRepo_03(void *object, Buffer *request, Buffer *re
 void InterfaceRepo_skel::_buildMethodTable()
 {
 	Buffer m;
-	m.fromString("MethodTable:0d000000696e736572744d6f64756c6500050000006c6f6e670000000000010000000a0000004d6f64756c65446566000a0000006e65774d6f64756c65000d00000072656d6f76654d6f64756c650005000000766f6964000000000001000000050000006c6f6e6700090000006d6f64756c654944000f0000007175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000a00000071756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d6500","MethodTable");
+	m.fromString("MethodTable:0d000000696e736572744d6f64756c6500050000006c6f6e670002000000010000000a0000004d6f64756c65446566000a0000006e65774d6f64756c65000d00000072656d6f76654d6f64756c650005000000766f6964000200000001000000050000006c6f6e6700090000006d6f64756c654944000f0000007175657279496e74657266616365000d000000496e7465726661636544656600020000000100000007000000737472696e6700050000006e616d65000a00000071756572795479706500080000005479706544656600020000000100000007000000737472696e6700050000006e616d6500","MethodTable");
 	_addMethod(_dispatch_InterfaceRepo_00,this,MethodDef(m));
 	_addMethod(_dispatch_InterfaceRepo_01,this,MethodDef(m));
 	_addMethod(_dispatch_InterfaceRepo_02,this,MethodDef(m));
@@ -862,4 +909,423 @@ InterfaceRepo_skel::InterfaceRepo_skel()
 {
 }
 
-IDLFileReg IDLFileReg_core("core","IDLFile:010000000000000000030000000c0000004865616465724d6167696300010000000b0000004d434f505f4d41474943004d434f500c0000004d6573736167655479706500050000000f0000006d636f70496e766f636174696f6e00010000000b0000006d636f7052657475726e0002000000100000006d636f7053657276657248656c6c6f0003000000100000006d636f70436c69656e7448656c6c6f00040000000f0000006d636f704175746841636365707400050000000e0000004174747269627574655479706500060000000900000073747265616d496e00010000000a00000073747265616d4f757400020000000c00000073747265616d4d756c746900040000001000000061747472696275746553747265616d00080000001300000061747472696275746541747472696275746500100000000c00000073747265616d4173796e6300200000000e0000000700000048656164657200030000000c0000004865616465724d6167696300060000006d6167696300050000006c6f6e67000e0000006d6573736167654c656e677468000c0000004d65737361676554797065000c0000006d65737361676554797065000b000000496e766f636174696f6e0003000000050000006c6f6e67000a00000072657175657374494400050000006c6f6e6700090000006f626a656374494400050000006c6f6e6700090000006d6574686f644944000c00000053657276657248656c6c6f000300000007000000737472696e670009000000736572766572494400080000002a737472696e67000e0000006175746850726f746f636f6c730007000000737472696e6700090000006175746853656564000c000000436c69656e7448656c6c6f000300000007000000737472696e67000900000073657276657249440007000000737472696e67000d0000006175746850726f746f636f6c0007000000737472696e670009000000617574684461746100100000004f626a6563745265666572656e6365000300000007000000737472696e670009000000736572766572494400050000006c6f6e6700090000006f626a656374494400080000002a737472696e67000500000075726c730009000000506172616d446566000200000007000000737472696e670005000000747970650007000000737472696e6700050000006e616d65000a0000004d6574686f64446566000400000007000000737472696e6700050000006e616d650007000000737472696e6700050000007479706500050000006c6f6e670006000000666c616773000a0000002a506172616d446566000a0000007369676e6174757265000d000000417474726962757465446566000300000007000000737472696e6700050000006e616d650007000000737472696e67000500000074797065000e000000417474726962757465547970650006000000666c616773000d000000496e74657266616365446566000400000007000000737472696e6700050000006e616d6500080000002a737472696e670014000000696e68657269746564496e7465726661636573000b0000002a4d6574686f6444656600080000006d6574686f6473000e0000002a417474726962757465446566000b00000061747472696275746573000e00000054797065436f6d706f6e656e74000200000007000000737472696e670005000000747970650007000000737472696e6700050000006e616d65000800000054797065446566000200000007000000737472696e6700050000006e616d65000f0000002a54797065436f6d706f6e656e740009000000636f6e74656e7473000e000000456e756d436f6d706f6e656e74000200000007000000737472696e6700050000006e616d6500050000006c6f6e67000600000076616c75650008000000456e756d446566000200000007000000737472696e6700050000006e616d65000f0000002a456e756d436f6d706f6e656e740009000000636f6e74656e7473000a0000004d6f64756c65446566000500000007000000737472696e67000b0000006d6f64756c654e616d65000b0000002a4d6f64756c6544656600080000006d6f64756c657300090000002a456e756d4465660006000000656e756d7300090000002a5479706544656600060000007479706573000e0000002a496e74657266616365446566000b000000696e746572666163657300010000000e000000496e746572666163655265706f0000000000040000000d000000696e736572744d6f64756c6500050000006c6f6e670000000000010000000a0000004d6f64756c65446566000a0000006e65774d6f64756c65000d00000072656d6f76654d6f64756c650005000000766f6964000000000001000000050000006c6f6e6700090000006d6f64756c654944000f0000007175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000a00000071756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d650000000000");
+FlowSystemSender *FlowSystemSender::_fromString(std::string objectref)
+{
+	ObjectReference r;
+
+	if(Dispatcher::the()->stringToObjectReference(r,objectref))
+		return FlowSystemSender::_fromReference(r,true);
+	return 0;
+}
+
+FlowSystemSender *FlowSystemSender::_fromReference(ObjectReference r, bool needcopy)
+{
+	FlowSystemSender *result;
+	result = (FlowSystemSender *)Dispatcher::the()->connectObjectLocal(r,"FlowSystemSender");
+	if(!result)
+	{
+		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
+		{
+			result = new FlowSystemSender_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
+		}
+	}
+	return result;
+}
+
+FlowSystemSender_stub::FlowSystemSender_stub()
+{
+	// constructor for subclasses (don't use directly)
+}
+
+FlowSystemSender_stub::FlowSystemSender_stub(Connection *connection, long objectID)
+	: Object_stub(connection, objectID)
+{
+	// constructor to create a stub for an object
+}
+
+void FlowSystemSender_stub::processed()
+{
+	long methodID = _lookupMethodFast("method:0a00000070726f6365737365640005000000766f6964000100000000000000");
+	Buffer *request = Dispatcher::the()->createOnewayRequest(_objectID,methodID);
+	// methodID = 3  =>  processed
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+}
+
+std::string FlowSystemSender_skel::_interfaceName()
+{
+	return "FlowSystemSender";
+}
+
+std::string FlowSystemSender_skel::_interfaceNameSkel()
+{
+	return "FlowSystemSender";
+}
+
+void *FlowSystemSender_skel::_cast(std::string interface)
+{
+	if(interface == "FlowSystemSender") return (FlowSystemSender *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
+// processed
+static void _dispatch_FlowSystemSender_00(void *object, Buffer *)
+{
+	((FlowSystemSender_skel *)object)->processed();
+}
+
+void FlowSystemSender_skel::_buildMethodTable()
+{
+	Buffer m;
+	m.fromString("MethodTable:0a00000070726f6365737365640005000000766f6964000100000000000000","MethodTable");
+	_addMethod(_dispatch_FlowSystemSender_00,this,MethodDef(m));
+}
+
+FlowSystemSender_skel::FlowSystemSender_skel()
+{
+}
+
+FlowSystemReceiver *FlowSystemReceiver::_fromString(std::string objectref)
+{
+	ObjectReference r;
+
+	if(Dispatcher::the()->stringToObjectReference(r,objectref))
+		return FlowSystemReceiver::_fromReference(r,true);
+	return 0;
+}
+
+FlowSystemReceiver *FlowSystemReceiver::_fromReference(ObjectReference r, bool needcopy)
+{
+	FlowSystemReceiver *result;
+	result = (FlowSystemReceiver *)Dispatcher::the()->connectObjectLocal(r,"FlowSystemReceiver");
+	if(!result)
+	{
+		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
+		{
+			result = new FlowSystemReceiver_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
+		}
+	}
+	return result;
+}
+
+FlowSystemReceiver_stub::FlowSystemReceiver_stub()
+{
+	// constructor for subclasses (don't use directly)
+}
+
+FlowSystemReceiver_stub::FlowSystemReceiver_stub(Connection *connection, long objectID)
+	: Object_stub(connection, objectID)
+{
+	// constructor to create a stub for an object
+}
+
+long FlowSystemReceiver_stub::receiveHandlerID()
+{
+	long methodID = _lookupMethodFast("method:160000005f6765745f7265636569766548616e646c6572494400050000006c6f6e67000200000000000000");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 3  =>  _get_receiveHandlerID
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	long returnCode = result->readLong();
+	delete result;
+	return returnCode;
+}
+
+std::string FlowSystemReceiver_skel::_interfaceName()
+{
+	return "FlowSystemReceiver";
+}
+
+std::string FlowSystemReceiver_skel::_interfaceNameSkel()
+{
+	return "FlowSystemReceiver";
+}
+
+void *FlowSystemReceiver_skel::_cast(std::string interface)
+{
+	if(interface == "FlowSystemReceiver") return (FlowSystemReceiver *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
+// _get_receiveHandlerID
+static void _dispatch_FlowSystemReceiver_00(void *object, Buffer *, Buffer *result)
+{
+	result->writeLong(((FlowSystemReceiver_skel *)object)->receiveHandlerID());
+}
+
+void FlowSystemReceiver_skel::_buildMethodTable()
+{
+	Buffer m;
+	m.fromString("MethodTable:160000005f6765745f7265636569766548616e646c6572494400050000006c6f6e67000200000000000000","MethodTable");
+	_addMethod(_dispatch_FlowSystemReceiver_00,this,MethodDef(m));
+}
+
+FlowSystemReceiver_skel::FlowSystemReceiver_skel()
+{
+}
+
+FlowSystem *FlowSystem::_fromString(std::string objectref)
+{
+	ObjectReference r;
+
+	if(Dispatcher::the()->stringToObjectReference(r,objectref))
+		return FlowSystem::_fromReference(r,true);
+	return 0;
+}
+
+FlowSystem *FlowSystem::_fromReference(ObjectReference r, bool needcopy)
+{
+	FlowSystem *result;
+	result = (FlowSystem *)Dispatcher::the()->connectObjectLocal(r,"FlowSystem");
+	if(!result)
+	{
+		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
+		{
+			result = new FlowSystem_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
+		}
+	}
+	return result;
+}
+
+FlowSystem_stub::FlowSystem_stub()
+{
+	// constructor for subclasses (don't use directly)
+}
+
+FlowSystem_stub::FlowSystem_stub(Connection *connection, long objectID)
+	: Object_stub(connection, objectID)
+{
+	// constructor to create a stub for an object
+}
+
+void FlowSystem_stub::startObject(Object * node)
+{
+	long methodID = _lookupMethodFast("method:0c00000073746172744f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f646500");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 3  =>  startObject
+	writeObject(*request,node);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
+}
+
+void FlowSystem_stub::stopObject(Object * node)
+{
+	long methodID = _lookupMethodFast("method:0b00000073746f704f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f646500");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 4  =>  stopObject
+	writeObject(*request,node);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
+}
+
+void FlowSystem_stub::connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort)
+{
+	long methodID = _lookupMethodFast("method:0e000000636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f727400");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 5  =>  connectObject
+	writeObject(*request,sourceObject);
+	request->writeString(sourcePort);
+	writeObject(*request,destObject);
+	request->writeString(destPort);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
+}
+
+void FlowSystem_stub::disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort)
+{
+	long methodID = _lookupMethodFast("method:11000000646973636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f727400");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 6  =>  disconnectObject
+	writeObject(*request,sourceObject);
+	request->writeString(sourcePort);
+	writeObject(*request,destObject);
+	request->writeString(destPort);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	delete result;
+}
+
+AttributeType FlowSystem_stub::queryFlags(Object * node, const std::string& port)
+{
+	long methodID = _lookupMethodFast("method:0b0000007175657279466c616773000e00000041747472696275746554797065000200000002000000070000006f626a65637400050000006e6f64650007000000737472696e670005000000706f727400");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 7  =>  queryFlags
+	writeObject(*request,node);
+	request->writeString(port);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	AttributeType returnCode = (AttributeType)result->readLong();
+	delete result;
+	return returnCode;
+}
+
+FlowSystemReceiver * FlowSystem_stub::createReceiver(Object * destObject, const std::string& destPort, FlowSystemSender * sender)
+{
+	long methodID = _lookupMethodFast("method:0f00000063726561746552656365697665720013000000466c6f7753797374656d5265636569766572000200000003000000070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000466c6f7753797374656d53656e646572000700000073656e64657200");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 8  =>  createReceiver
+	writeObject(*request,destObject);
+	request->writeString(destPort);
+	writeObject(*request,sender);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	FlowSystemReceiver* returnCode;
+	readObject(*result,returnCode);
+	delete result;
+	return returnCode;
+}
+
+std::string FlowSystem_skel::_interfaceName()
+{
+	return "FlowSystem";
+}
+
+std::string FlowSystem_skel::_interfaceNameSkel()
+{
+	return "FlowSystem";
+}
+
+void *FlowSystem_skel::_cast(std::string interface)
+{
+	if(interface == "FlowSystem") return (FlowSystem *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
+// startObject
+static void _dispatch_FlowSystem_00(void *object, Buffer *request, Buffer *)
+{
+	Object* _temp_node;
+	readObject(*request,_temp_node);
+	Object_var node = _temp_node;
+	((FlowSystem_skel *)object)->startObject(node);
+}
+
+// stopObject
+static void _dispatch_FlowSystem_01(void *object, Buffer *request, Buffer *)
+{
+	Object* _temp_node;
+	readObject(*request,_temp_node);
+	Object_var node = _temp_node;
+	((FlowSystem_skel *)object)->stopObject(node);
+}
+
+// connectObject
+static void _dispatch_FlowSystem_02(void *object, Buffer *request, Buffer *)
+{
+	Object* _temp_sourceObject;
+	readObject(*request,_temp_sourceObject);
+	Object_var sourceObject = _temp_sourceObject;
+	std::string sourcePort;
+	request->readString(sourcePort);
+	Object* _temp_destObject;
+	readObject(*request,_temp_destObject);
+	Object_var destObject = _temp_destObject;
+	std::string destPort;
+	request->readString(destPort);
+	((FlowSystem_skel *)object)->connectObject(sourceObject,sourcePort,destObject,destPort);
+}
+
+// disconnectObject
+static void _dispatch_FlowSystem_03(void *object, Buffer *request, Buffer *)
+{
+	Object* _temp_sourceObject;
+	readObject(*request,_temp_sourceObject);
+	Object_var sourceObject = _temp_sourceObject;
+	std::string sourcePort;
+	request->readString(sourcePort);
+	Object* _temp_destObject;
+	readObject(*request,_temp_destObject);
+	Object_var destObject = _temp_destObject;
+	std::string destPort;
+	request->readString(destPort);
+	((FlowSystem_skel *)object)->disconnectObject(sourceObject,sourcePort,destObject,destPort);
+}
+
+// queryFlags
+static void _dispatch_FlowSystem_04(void *object, Buffer *request, Buffer *result)
+{
+	Object* _temp_node;
+	readObject(*request,_temp_node);
+	Object_var node = _temp_node;
+	std::string port;
+	request->readString(port);
+	result->writeLong(((FlowSystem_skel *)object)->queryFlags(node,port));
+}
+
+// createReceiver
+static void _dispatch_FlowSystem_05(void *object, Buffer *request, Buffer *result)
+{
+	Object* _temp_destObject;
+	readObject(*request,_temp_destObject);
+	Object_var destObject = _temp_destObject;
+	std::string destPort;
+	request->readString(destPort);
+	FlowSystemSender* _temp_sender;
+	readObject(*request,_temp_sender);
+	FlowSystemSender_var sender = _temp_sender;
+	FlowSystemReceiver *returnCode = ((FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
+	writeObject(*result,returnCode);
+	if(returnCode) returnCode->_release();
+}
+
+void FlowSystem_skel::_buildMethodTable()
+{
+	Buffer m;
+	m.fromString("MethodTable:0c00000073746172744f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f6465000b00000073746f704f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f6465000e000000636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000646973636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f7274000b0000007175657279466c616773000e00000041747472696275746554797065000200000002000000070000006f626a65637400050000006e6f64650007000000737472696e670005000000706f7274000f00000063726561746552656365697665720013000000466c6f7753797374656d5265636569766572000200000003000000070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000466c6f7753797374656d53656e646572000700000073656e64657200","MethodTable");
+	_addMethod(_dispatch_FlowSystem_00,this,MethodDef(m));
+	_addMethod(_dispatch_FlowSystem_01,this,MethodDef(m));
+	_addMethod(_dispatch_FlowSystem_02,this,MethodDef(m));
+	_addMethod(_dispatch_FlowSystem_03,this,MethodDef(m));
+	_addMethod(_dispatch_FlowSystem_04,this,MethodDef(m));
+	_addMethod(_dispatch_FlowSystem_05,this,MethodDef(m));
+}
+
+FlowSystem_skel::FlowSystem_skel()
+{
+}
+
+IDLFileReg IDLFileReg_core("core","IDLFile:010000000000000000040000000c0000004865616465724d6167696300010000000b0000004d434f505f4d41474943004d434f500c0000004d6573736167655479706500060000000f0000006d636f70496e766f636174696f6e00010000000b0000006d636f7052657475726e0002000000100000006d636f7053657276657248656c6c6f0003000000100000006d636f70436c69656e7448656c6c6f00040000000f0000006d636f70417574684163636570740005000000150000006d636f704f6e65776179496e766f636174696f6e00060000000b0000004d6574686f645479706500020000000d0000006d6574686f644f6e6577617900010000000d0000006d6574686f6454776f77617900020000000e0000004174747269627574655479706500060000000900000073747265616d496e00010000000a00000073747265616d4f757400020000000c00000073747265616d4d756c746900040000001000000061747472696275746553747265616d00080000001300000061747472696275746541747472696275746500100000000c00000073747265616d4173796e6300200000000f0000000700000048656164657200030000000c0000004865616465724d6167696300060000006d6167696300050000006c6f6e67000e0000006d6573736167654c656e677468000c0000004d65737361676554797065000c0000006d65737361676554797065000b000000496e766f636174696f6e0003000000050000006c6f6e67000a00000072657175657374494400050000006c6f6e6700090000006f626a656374494400050000006c6f6e6700090000006d6574686f64494400110000004f6e65776179496e766f636174696f6e0002000000050000006c6f6e6700090000006f626a656374494400050000006c6f6e6700090000006d6574686f644944000c00000053657276657248656c6c6f000300000007000000737472696e670009000000736572766572494400080000002a737472696e67000e0000006175746850726f746f636f6c730007000000737472696e6700090000006175746853656564000c000000436c69656e7448656c6c6f000300000007000000737472696e67000900000073657276657249440007000000737472696e67000d0000006175746850726f746f636f6c0007000000737472696e670009000000617574684461746100100000004f626a6563745265666572656e6365000300000007000000737472696e670009000000736572766572494400050000006c6f6e6700090000006f626a656374494400080000002a737472696e67000500000075726c730009000000506172616d446566000200000007000000737472696e670005000000747970650007000000737472696e6700050000006e616d65000a0000004d6574686f64446566000400000007000000737472696e6700050000006e616d650007000000737472696e67000500000074797065000b0000004d6574686f64547970650006000000666c616773000a0000002a506172616d446566000a0000007369676e6174757265000d000000417474726962757465446566000300000007000000737472696e6700050000006e616d650007000000737472696e67000500000074797065000e000000417474726962757465547970650006000000666c616773000d000000496e74657266616365446566000400000007000000737472696e6700050000006e616d6500080000002a737472696e670014000000696e68657269746564496e7465726661636573000b0000002a4d6574686f6444656600080000006d6574686f6473000e0000002a417474726962757465446566000b00000061747472696275746573000e00000054797065436f6d706f6e656e74000200000007000000737472696e670005000000747970650007000000737472696e6700050000006e616d65000800000054797065446566000200000007000000737472696e6700050000006e616d65000f0000002a54797065436f6d706f6e656e740009000000636f6e74656e7473000e000000456e756d436f6d706f6e656e74000200000007000000737472696e6700050000006e616d6500050000006c6f6e67000600000076616c75650008000000456e756d446566000200000007000000737472696e6700050000006e616d65000f0000002a456e756d436f6d706f6e656e740009000000636f6e74656e7473000a0000004d6f64756c65446566000500000007000000737472696e67000b0000006d6f64756c654e616d65000b0000002a4d6f64756c6544656600080000006d6f64756c657300090000002a456e756d4465660006000000656e756d7300090000002a5479706544656600060000007479706573000e0000002a496e74657266616365446566000b000000696e746572666163657300040000000e000000496e746572666163655265706f0000000000040000000d000000696e736572744d6f64756c6500050000006c6f6e670002000000010000000a0000004d6f64756c65446566000a0000006e65774d6f64756c65000d00000072656d6f76654d6f64756c650005000000766f6964000200000001000000050000006c6f6e6700090000006d6f64756c654944000f0000007175657279496e74657266616365000d000000496e7465726661636544656600020000000100000007000000737472696e6700050000006e616d65000a00000071756572795479706500080000005479706544656600020000000100000007000000737472696e6700050000006e616d65000000000011000000466c6f7753797374656d53656e6465720000000000010000000a00000070726f6365737365640005000000766f69640001000000000000000000000013000000466c6f7753797374656d526563656976657200000000000000000001000000110000007265636569766548616e646c6572494400050000006c6f6e6700120000000b000000466c6f7753797374656d0000000000060000000c00000073746172744f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f6465000b00000073746f704f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f6465000e000000636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000646973636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f7274000b0000007175657279466c616773000e00000041747472696275746554797065000200000002000000070000006f626a65637400050000006e6f64650007000000737472696e670005000000706f7274000f00000063726561746552656365697665720013000000466c6f7753797374656d5265636569766572000200000003000000070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000466c6f7753797374656d53656e646572000700000073656e6465720000000000");

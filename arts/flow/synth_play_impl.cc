@@ -31,6 +31,7 @@
 #include "audiosubsys.h"
 #include "dispatcher.h"
 #include "iomanager.h"
+#include "flowsystem.h"
 #include <stdio.h>
 #include <iostream>
 

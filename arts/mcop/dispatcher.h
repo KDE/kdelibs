@@ -32,7 +32,7 @@
 #include "tcpserver.h"
 #include "unixserver.h"
 #include "connection.h"
-#include "flowsystem.h"
+#include "notification.h"
 
 #include <deque>
 #include <stack>
@@ -41,7 +41,7 @@
 
 class ObjectReference;
 class InterfaceRepo;
-class FlowSystem;
+class FlowSystem_impl;
 class ObjectManager;
 class Object_skel;
 class ReferenceClean;
@@ -67,7 +67,7 @@ protected:
 	UnixServer *unixServer;
 	IOManager *_ioManager;
 	InterfaceRepo *_interfaceRepo;
-	FlowSystem *_flowSystem;
+	FlowSystem_impl *_flowSystem;
 	ObjectManager *objectManager;
 	ReferenceClean *referenceClean;
 	NotificationManager *notificationManager;
@@ -82,13 +82,14 @@ public:
 	static Dispatcher *the();
 	inline IOManager *ioManager() { return _ioManager; };
 	InterfaceRepo *interfaceRepo();
-	FlowSystem *flowSystem();
-	void setFlowSystem(FlowSystem *fs);
+	FlowSystem_impl *flowSystem();
+	void setFlowSystem(FlowSystem_impl *fs);
 
 	void refillRequestIDs();
 
 	Buffer *waitForResult(long requestID);		// blocking wait for result
 	Buffer *createRequest(long& requestID, long objectID, long methodID);
+	Buffer *createOnewayRequest(long objectID, long methodID);
 
 	// processes messages
 	void handle(Connection *conn, Buffer *buffer, long messageType);

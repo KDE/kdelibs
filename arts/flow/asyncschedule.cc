@@ -1,4 +1,31 @@
+    /*
+
+    Copyright (C) 2000 Stefan Westerfeld
+                       stefan@space.twc.de
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+    Permission is also granted to link this program with the Qt
+    library, treating Qt like a library that normally accompanies the
+    operating system kernel, whether or not that is in fact the case.
+
+    */
+
 #include "asyncschedule.h"
+
+#undef DEBUG_ASYNC_TRANSFER
 
 ASyncPort::ASyncPort(std::string name, void *ptr, long flags,
 		StdScheduleNode* parent) : Port(name, ptr, flags, parent), pull(false)
@@ -33,7 +60,9 @@ void ASyncPort::endPull()
 
 void ASyncPort::processedPacket(GenericDataPacket *packet)
 {
+#ifdef DEBUG_ASYNC_TRANSFER
 	cout << "port::processedPacket" << endl;
+#endif
 	assert(packet->useCount == 0);
 	if(pull)
 	{
@@ -48,7 +77,9 @@ void ASyncPort::processedPacket(GenericDataPacket *packet)
 
 void ASyncPort::sendPacket(GenericDataPacket *packet)
 {
+#ifdef DEBUG_ASYNC_TRANSFER
 	cout << "port::sendPacket" << endl;
+#endif
 
 	if(packet->size > 0)
 	{
@@ -58,7 +89,9 @@ void ASyncPort::sendPacket(GenericDataPacket *packet)
 			Notification n = *i;
 			n.data = packet;
 			packet->useCount++;
+#ifdef DEBUG_ASYNC_TRANSFER
 			cout << "sending notification " << n.ID << endl;
+#endif
 			NotificationManager::the()->send(n);
 		}
 	}
@@ -110,4 +143,114 @@ void ASyncPort::disconnect(Port *xsource)
 ASyncPort *ASyncPort::asyncPort()
 {
 	return this;
+}
+
+GenericAsyncStream *ASyncPort::receiveNetCreateStream()
+{
+	return stream->createNewStream();
+}
+
+NotificationClient *ASyncPort::receiveNetObject()
+{
+	return parent->object();
+}
+
+long ASyncPort::receiveNetNotifyID()
+{
+	return notifyID;
+}
+
+// Network transparency
+void ASyncPort::sendNet(ASyncNetSend *netsend)
+{
+	Notification n;
+	n.receiver = netsend;
+	n.ID = netsend->notifyID();
+	subscribers.push_back(n);
+}
+
+long ASyncNetSend::notifyID()
+{
+	return 1;
+}
+
+void ASyncNetSend::notify(const Notification& notification)
+{
+	// got a packet?
+	assert(notification.ID == notifyID());
+	GenericDataPacket *dp = (GenericDataPacket *)notification.data;
+	pqueue.push(dp);
+
+	// put it into a custom data message and send it to the receiver
+	Buffer *buffer = receiver->_allocCustomMessage(receiveHandlerID);
+	dp->write(*buffer);
+	receiver->_sendCustomMessage(buffer);
+}
+
+void ASyncNetSend::processed()
+{
+	assert(!pqueue.empty());
+	pqueue.front()->processed();
+	pqueue.pop();
+}
+
+void ASyncNetSend::setReceiver(FlowSystemReceiver *newReceiver)
+{
+	receiver = newReceiver->_copy();
+	receiveHandlerID = newReceiver->receiveHandlerID();
+}
+
+/* dispatching function for custom message */
+
+static void _dispatch_ASyncNetReceive_receive(void *object, Buffer *buffer)
+{
+	((ASyncNetReceive *)object)->receive(buffer);
+}
+
+ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender *sender)
+{
+	stream = port->receiveNetCreateStream();
+	stream->channel = this;
+	this->sender = sender->_copy();
+	/* stream->_notifyID = _mkNotifyID(); */
+
+	gotPacketNotification.ID = port->receiveNetNotifyID();
+	gotPacketNotification.receiver = port->receiveNetObject();
+	_receiveHandlerID =
+		_addCustomMessageHandler(_dispatch_ASyncNetReceive_receive,this);
+}
+
+long ASyncNetReceive::receiveHandlerID()
+{
+	return _receiveHandlerID;
+}
+
+void ASyncNetReceive::receive(Buffer *buffer)
+{
+	GenericDataPacket *dp = stream->createPacket(512);
+	dp->read(*buffer);
+	dp->useCount = 1;
+	gotPacketNotification.data = dp;
+	NotificationManager::the()->send(gotPacketNotification);
+}
+
+void ASyncNetReceive::processedPacket(GenericDataPacket *packet)
+{
+	stream->freePacket(packet);
+	sender->processed();
+}
+
+void ASyncNetReceive::sendPacket(GenericDataPacket *packet)
+{
+	assert(false);
+}
+
+void ASyncNetReceive::setPull(int packets, int capacity)
+{
+	assert(false);
+}
+
+void ASyncNetReceive::endPull()
+{
+	assert(false);
 }

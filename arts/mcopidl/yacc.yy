@@ -100,12 +100,13 @@ void yyerror( const char *s )
 
 %type<_int> maybereadonly
 %type<_int> direction
+%type<_int> maybeoneway
 
 %token T_INTEGER_LITERAL T_UNKNOWN
 %type<_int> T_INTEGER_LITERAL
 
 %token T_BOOLEAN T_STRING T_LONG T_BYTE T_OBJECT T_SEQUENCE T_AUDIO
-%token T_IN T_OUT T_STREAM T_MULTI T_ATTRIBUTE T_READONLY T_ASYNC
+%token T_IN T_OUT T_STREAM T_MULTI T_ATTRIBUTE T_READONLY T_ASYNC T_ONEWAY
 
 %%
 
@@ -240,6 +241,11 @@ maybereadonly:
 	| T_READONLY { $$ = 2; /* out (readonly) */ }
 	;
 
+maybeoneway:
+      epsilon { $$ = methodTwoway; }
+	| T_ONEWAY { $$ = methodOneway; }
+	;
+
 streamdef: direction type T_STREAM identifierlist T_SEMICOLON
 	  {
 	    // 8 == stream
@@ -266,12 +272,12 @@ direction:
 
 // CacheElement getFromCache(string name, bool hit)
 methoddef:
-	  type T_IDENTIFIER
+	  maybeoneway type T_IDENTIFIER
 	  	T_LEFT_PARANTHESIS paramdefs T_RIGHT_PARANTHESIS T_SEMICOLON
 	  {
-	  	$$ = new MethodDef($2,$1,0,*$4);
+	  	$$ = new MethodDef($3,$2,(MethodType)$1,*$5);
+		free($3);
 		free($2);
-		free($1);
 	  }
 	;
 

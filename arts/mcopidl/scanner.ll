@@ -179,6 +179,7 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 byte		return T_BYTE;
 long		return T_LONG;
 string		return T_STRING;
+object		return T_OBJECT;
 struct		return T_STRUCT;
 interface	return T_INTERFACE;
 module		return T_MODULE;
@@ -192,6 +193,7 @@ audio		return T_AUDIO;
 stream		return T_STREAM;
 multi		return T_MULTI;
 async		return T_ASYNC;
+oneway		return T_ONEWAY;
 
 {Kidl_Identifier}	{
 			  yylval._str = strdup(yytext);		// TAKE CARE: free that thing

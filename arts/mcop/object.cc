@@ -25,6 +25,7 @@
 
 #include "object.h"
 #include "dispatcher.h"
+#include "flowsystem.h"
 #include <stdio.h>
 #include <iostream.h>
 
@@ -32,6 +33,7 @@ using namespace std;
 
 struct Object_skel::MethodTableEntry {
 	DispatchFunction dispatcher;
+	OnewayDispatchFunction onewayDispatcher;
 	void *object;
 	MethodDef methodDef;
 };
@@ -54,10 +56,17 @@ void Object::_destroy()
 
 	if(_scheduleNode)
 	{
-		FlowSystem *fs = Dispatcher::the()->flowSystem();
+		FlowSystem_impl *fs = Dispatcher::the()->flowSystem();
 		assert(fs);
 
-		fs->removeObject(_scheduleNode);
+		if(_scheduleNode->remoteScheduleNode())
+		{
+			delete _scheduleNode;
+		}
+		else
+		{
+			fs->removeObject(_scheduleNode);
+		}
 	}
 	delete this;
 }
@@ -77,10 +86,17 @@ ScheduleNode *Object::_node()
 {
 	if(!_scheduleNode)
 	{
-		FlowSystem *fs = Dispatcher::the()->flowSystem();
+		FlowSystem_impl *fs = Dispatcher::the()->flowSystem();
 		assert(fs);
 
-		_scheduleNode = fs->addObject(_skel());
+		switch(_location())
+		{
+			case objectIsLocal: _scheduleNode = fs->addObject(_skel());
+							break;
+			case objectIsRemote: _scheduleNode=new RemoteScheduleNode(_stub());
+							break;
+		}
+
 		assert(_scheduleNode);
 	}
 	return _scheduleNode;
@@ -92,9 +108,35 @@ Object_skel *Object::_skel()
 	return 0;
 }
 
+Object::ObjectLocation Object::_location()
+{
+	assert(false);
+}
+
+Object_stub *Object::_stub()
+{
+	assert(false);
+	return 0;
+}
+
+Object_stub *Object_stub::_stub()
+{
+	return this;
+}
+
+Object::ObjectLocation Object_stub::_location()
+{
+	return objectIsRemote;
+}
+
 Object_skel *Object_skel::_skel()
 {
 	return this;
+}
+
+Object::ObjectLocation Object_skel::_location()
+{
+	return objectIsLocal;
 }
 
 void Object_skel::_initStream(string name, void *ptr, long flags)
@@ -118,6 +160,17 @@ string Object::_interfaceName()
 	return "";
 }
 
+Buffer *Object::_allocCustomMessage(long /*handlerID*/)
+{
+	assert(0);
+	return 0;
+}
+
+void Object::_sendCustomMessage(Buffer *buffer)
+{
+	assert(0);
+	delete buffer;
+}
 
 /*
  * Stuff for object skeletons
@@ -132,6 +185,17 @@ Object_skel::Object_skel() :_remoteSendCount(0), _remoteSendUpdated(false)
 Object_skel::~Object_skel()
 {
 	Dispatcher::the()->removeObject(_objectID);
+}
+
+// flow system
+
+FlowSystem *Object_skel::_flowSystem()
+{
+	FlowSystem *fs = Dispatcher::the()->flowSystem();
+	if(fs)
+		return fs->_copy();
+	else
+		return 0;
 }
 
 // reference counting
@@ -273,6 +337,34 @@ void Object_skel::_addMethod(DispatchFunction disp, void *obj,
 	_methodTable.push_back(me);
 }
 
+void Object_skel::_addMethod(OnewayDispatchFunction disp, void *obj,
+                                               const MethodDef& md)
+{
+	MethodTableEntry me;
+	me.onewayDispatcher = disp;
+	me.object = obj;
+	me.methodDef = md;
+	_methodTable.push_back(me);
+}
+
+long Object_skel::_addCustomMessageHandler(OnewayDispatchFunction handler,
+																	void *obj)
+{
+	if(!_methodTableInit)
+	{
+		// take care that the object base methods are at the beginning
+		Object_skel::_buildMethodTable();
+		_buildMethodTable();
+		_methodTableInit = true;
+	}
+	MethodTableEntry me;
+	me.onewayDispatcher = handler;
+	me.object = obj;
+	me.methodDef.name = "_userdefined_customdatahandler";
+	_methodTable.push_back(me);
+	return _methodTable.size()-1;
+}
+
 void Object_skel::_dispatch(Buffer *request, Buffer *result,long methodID)
 {
 	if(!_methodTableInit)
@@ -284,6 +376,19 @@ void Object_skel::_dispatch(Buffer *request, Buffer *result,long methodID)
 	}
 	_methodTable[methodID].dispatcher(_methodTable[methodID].object,
 														request,result);
+}
+
+void Object_skel::_dispatch(Buffer *request,long methodID)
+{
+	if(!_methodTableInit)
+	{
+		// take care that the object base methods are at the beginning
+		Object_skel::_buildMethodTable();
+		_buildMethodTable();
+		_methodTableInit = true;
+	}
+	_methodTable[methodID].onewayDispatcher(_methodTable[methodID].object,
+																	request);
 }
 
 long Object_skel::_lookupMethod(const MethodDef& md)
@@ -316,51 +421,6 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 	}
 	return -1;
 }
-
-#if 0
-// _lookupMethod
-static void _dispatch_Object_00(void *object, Buffer *request, Buffer *result)
-{
-	MethodDef methodDef(*request);
-	result->writeLong(((Object_skel *)object)->_lookupMethod(methodDef));
-}
-
-// _interfaceName
-static void _dispatch_Object_01(void *object, Buffer *, Buffer *result)
-{
-	result->writeString(((Object_skel *)object)->_interfaceName());
-}
-
-// _queryInterface
-static void _dispatch_Object_02(void *object, Buffer *request, Buffer *result)
-{
-	string name;
-	request->readString(name);
-	InterfaceDef *_returnCode = ((Object_skel *)object)->_queryInterface(name);
-	_returnCode->writeType(*result);
-	delete _returnCode;
-}
-
-// _queryType
-static void _dispatch_Object_03(void *object, Buffer *request, Buffer *result)
-{
-	string name;
-	request->readString(name);
-	TypeDef *_returnCode = ((Object_skel *)object)->_queryType(name);
-	_returnCode->writeType(*result);
-	delete _returnCode;
-}
-
-void Object_skel::_buildMethodTable()
-{
-	Buffer m;
-	m.fromString("MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e670000000000010000000a0000004d6574686f64446566000a0000006d6574686f64446566000f0000005f696e746572666163654e616d650007000000737472696e67000000000000000000100000005f7175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000b0000005f71756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d6500","MethodTable");
-	_addMethod(_dispatch_Object_00,this,MethodDef(m));
-	_addMethod(_dispatch_Object_01,this,MethodDef(m));
-	_addMethod(_dispatch_Object_02,this,MethodDef(m));
-	_addMethod(_dispatch_Object_03,this,MethodDef(m));
-}
-#endif
 
 // _lookupMethod
 static void _dispatch_Object_00(void *object, Buffer *request, Buffer *result)
@@ -419,10 +479,18 @@ static void _dispatch_Object_07(void *object, Buffer *, Buffer *)
 	((Object_skel *)object)->_releaseRemote();
 }
 
+// _get__flowSystem
+static void _dispatch_Object_08(void *object, Buffer *, Buffer *result)
+{
+	FlowSystem *returnCode = ((Object_skel *)object)->_flowSystem();
+	writeObject(*result,returnCode);
+	if(returnCode) returnCode->_release();
+}
+
 void Object_skel::_buildMethodTable()
 {
 	Buffer m;
-	m.fromString("MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e670000000000010000000a0000004d6574686f64446566000a0000006d6574686f64446566000f0000005f696e746572666163654e616d650007000000737472696e67000000000000000000100000005f7175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000b0000005f71756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d65000a0000005f746f537472696e670007000000737472696e670000000000000000000c0000005f636f707952656d6f74650005000000766f69640000000000000000000b0000005f75736552656d6f74650005000000766f69640000000000000000000f0000005f72656c6561736552656d6f74650005000000766f6964000000000000000000","MethodTable");
+	m.fromString("MethodTable:0e0000005f6c6f6f6b75704d6574686f6400050000006c6f6e670000000000010000000a0000004d6574686f64446566000a0000006d6574686f64446566000f0000005f696e746572666163654e616d650007000000737472696e67000000000000000000100000005f7175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d65000b0000005f71756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d65000a0000005f746f537472696e670007000000737472696e670000000000000000000c0000005f636f707952656d6f74650005000000766f69640000000000000000000b0000005f75736552656d6f74650005000000766f69640000000000000000000f0000005f72656c6561736552656d6f74650005000000766f6964000000000000000000110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000000000000000000","MethodTable");
 	_addMethod(_dispatch_Object_00,this,MethodDef(m));
 	_addMethod(_dispatch_Object_01,this,MethodDef(m));
 	_addMethod(_dispatch_Object_02,this,MethodDef(m));
@@ -431,6 +499,7 @@ void Object_skel::_buildMethodTable()
 	_addMethod(_dispatch_Object_05,this,MethodDef(m));
 	_addMethod(_dispatch_Object_06,this,MethodDef(m));
 	_addMethod(_dispatch_Object_07,this,MethodDef(m));
+	_addMethod(_dispatch_Object_08,this,MethodDef(m));
 }
 
 /*
@@ -494,6 +563,23 @@ Object *Object::_fromString(string objectref)
 				result = new Object_stub(conn,r.objectID);
 				result->_useRemote();
 			}
+		}
+	}
+	return result;
+}
+
+Object *Object::_fromReference(ObjectReference r, bool needcopy)
+{
+	Object *result;
+	result = (Object *)Dispatcher::the()->connectObjectLocal(r,"Object");
+	if(!result)
+	{
+		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
+		{
+			result = new Object_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
 		}
 	}
 	return result;
@@ -647,4 +733,36 @@ void Object_stub::_releaseRemote()
 
 	result = Dispatcher::the()->waitForResult(requestID);
 	delete result;
+}
+
+FlowSystem *Object_stub::_flowSystem()
+{
+	long methodID = _lookupMethodFast("method:110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000000000000000000");
+	long requestID;
+	Buffer *request, *result;
+	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	// methodID = 11  =>  _get__flowSystem
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID);
+	FlowSystem* returnCode;
+	readObject(*result,returnCode);
+	delete result;
+	return returnCode;
+}
+
+/*
+ * custom messaging
+ */
+
+Buffer *Object_stub::_allocCustomMessage(long handlerID)
+{
+	return Dispatcher::the()->createOnewayRequest(_objectID,handlerID);
+}
+
+void Object_stub::_sendCustomMessage(Buffer *buffer)
+{
+	buffer->patchLength();
+	_connection->qSendBuffer(buffer);
 }

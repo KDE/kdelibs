@@ -12,6 +12,8 @@ public:
 	virtual GenericDataPacket *createPacket(int capacity) = 0;
 	virtual void freePacket(GenericDataPacket *packet) = 0;
 
+	virtual GenericAsyncStream *createNewStream() = 0;
+
 	GenericDataChannel *channel;
 	int _notifyID;
 
@@ -47,12 +49,14 @@ class FloatAsyncStream : public AsyncStream<float>
 {
 public:
 	DataPacket<float> *allocPacket(int capacity);
+	GenericAsyncStream *createNewStream();
 };
 
 class ByteAsyncStream : public AsyncStream<mcopbyte>
 {
 public:
 	DataPacket<mcopbyte> *allocPacket(int capacity);
+	GenericAsyncStream *createNewStream();
 };
 
 #endif /* ASYNCSTREAM_H */

@@ -27,13 +27,29 @@
 #define FLOWSYSTEM_H
 
 #include "object.h"
+#include "core.h"
 
 class Object_skel;
+class Object_stub;
+class RemoteScheduleNode;
 
 class ScheduleNode
 {
+private:
+	Object *_nodeObject;
 public:
-	virtual ~ScheduleNode() {};
+	ScheduleNode(Object *object);
+	virtual ~ScheduleNode();
+
+	Object *nodeObject();
+
+	// check if this is a remote schedule node
+
+	virtual RemoteScheduleNode *remoteScheduleNode();
+
+	// other casts
+	
+	virtual void *cast(const string& target);
 
 	// internal interface against Object_skel
 	
@@ -56,7 +72,35 @@ public:
 	virtual void setFloatValue(std::string port, float value) = 0;
 };
 
-class FlowSystem
+class RemoteScheduleNode : public ScheduleNode
+{
+public:
+	RemoteScheduleNode(Object_stub *stub);
+
+	RemoteScheduleNode *remoteScheduleNode();
+
+	// internal interface against Object_skel
+	
+	void initStream(std::string name, void *ptr, long flags);
+
+	// interface against node implementation
+	
+	void requireFlow();
+
+	// interface to modify the node from outside
+	
+	void start();
+	void stop();
+	void connect(std::string port, ScheduleNode *remoteNode,
+			                        std::string remotePort);
+	void disconnect(std::string port, ScheduleNode *remoteNode,
+			                            std::string remotePort);
+
+	// constant values
+	void setFloatValue(std::string port, float value);
+};
+
+class FlowSystem_impl :virtual public FlowSystem_skel
 {
 public:
 	virtual ScheduleNode *addObject(Object_skel *object) = 0;

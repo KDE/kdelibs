@@ -1,4 +1,6 @@
 #ifndef CACHEDWAV_H
+#define CACHEDWAV_H
+
 #include "config.h"
 #ifdef HAVE_LIBAUDIOFILE
 #include "cache.h"
@@ -37,5 +39,5 @@ public:
 	int memoryUsage();
 };
 
-#endif
-#endif
+#endif /* HAVE_LIBAUDIOFILE */
+#endif /* CACHEDWAV_H */

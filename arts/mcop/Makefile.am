@@ -11,7 +11,7 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 unixconnection.cc tcpserver.cc unixserver.cc objectmanager.cc \
 	 factory.cc idlfilereg.cc ifacerepo_impl.cc mcoputils.cc \
 	 startupmanager.cc md5.c md5auth.cc referenceclean.cc datapacket.cc \
-	 asyncstream.cc notification.cc
+	 asyncstream.cc notification.cc flowsystem.cc
 
 libmcop_la_LIBADD = $(LIBSOCKET)
 libmcop_la_LDFLAGS = -no-undefined 
@@ -23,6 +23,5 @@ artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
   startupmanager.h tcpconnection.h tcpserver.h type.h unixconnection.h \
   unixserver.h  referenceclean.h datapacket.h asyncstream.h notification.h
 
-core: $(top_srcdir)/arts/mcop/core.idl $(MCOPIDL)
-	$(MCOPIDL) $(top_srcdir)/arts/mcop/core.idl
-
+core: $(srcdir)/core.idl $(MCOPIDL)
+	$(MCOPIDL) -I$(srcdir) $(srcdir)/core.idl
