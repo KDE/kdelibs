@@ -37,12 +37,12 @@ KLpdUnixPrinterImpl::~KLpdUnixPrinterImpl()
 
 void KLpdUnixPrinterImpl::initLpPrint(QString& cmd, KPrinter *printer)
 {
-	cmd += QString::fromLatin1(" -d%1 -n%2").arg(printer->printerName()).arg(printer->numCopies());
+	cmd += QString::fromLatin1(" -d '%1' -n%2").arg(printer->printerName()).arg(printer->numCopies());
 }
 
 void KLpdUnixPrinterImpl::initLprPrint(QString& cmd, KPrinter *printer)
 {
-	cmd += QString::fromLatin1(" -P%1 -\\#%2").arg(printer->printerName()).arg(printer->numCopies());
+	cmd += QString::fromLatin1(" -P '%1' -\\#%2").arg(printer->printerName()).arg(printer->numCopies());
 }
 
 // look for executable, starting with "lpr"
