@@ -716,6 +716,8 @@ void KKeyChooser::noKey()
 	//		 	sli, SLOT( setWidth( int ) ) );
 				
 	sli->setWidth( wList->width() );
+	
+	if ( bChange->editing == TRUE ) bChange->setEdit(FALSE);
 
 	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
@@ -739,6 +741,8 @@ void KKeyChooser::defaultKey()
 	//		 	sli, SLOT( setWidth( int ) ) );
 				
 	sli->setWidth( wList->width() );
+
+	if ( bChange->editing == TRUE ) bChange->setEdit(FALSE);
 
 	wList->changeItem( sli, wList->currentItem()  );
 	toChange(wList->currentItem());
