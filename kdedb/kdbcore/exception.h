@@ -68,7 +68,7 @@ public:
     /**
      * the type of the originating object
      */
-    QString orignType() const { return m_originType; };
+    QString originType() const { return m_originType; };
     
 private:
     QString m_description;
