@@ -4,7 +4,7 @@
 ;; This file should not be distributed outside ksgmltools
 
 ;; KDE new
-(define %search-index% #t)
+(define %search-index% #f)
 ;; KDE new
 (define %search-index-filename% ".keywords") ; .keyword/.keyword-index/keyword.index/HTML.keywords/...
 
