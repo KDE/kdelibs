@@ -50,7 +50,8 @@ DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
     }
     else
     {
-        s = 0; l = 0;
+        s = QT_ALLOC_QCHAR_VEC( 1 ); // crash protection
+        l = 0;
     }
 }
 
@@ -67,7 +68,8 @@ DOMStringImpl::DOMStringImpl(const char *str)
     }
     else
     {
-        s = 0; l = 0;
+        s = QT_ALLOC_QCHAR_VEC( 1 );  // crash protection
+        l = 0;
     }
 }
 
@@ -121,8 +123,9 @@ void DOMStringImpl::truncate(int len)
 {
     if(len > (int)l) return;
 
-    QChar *c = QT_ALLOC_QCHAR_VEC(len);
-    memcpy(c, s, len*sizeof(QChar));
+    int nl = len < 1 ? 1 : len;
+    QChar *c = QT_ALLOC_QCHAR_VEC(nl);
+    memcpy(c, s, nl*sizeof(QChar));
     if(s) QT_DELETE_QCHAR_VEC(s);
     s = c;
     l = len;
@@ -224,7 +227,7 @@ QList<Length> *DOMStringImpl::toLengthList() const
     int pos2;
 
     // web authors are so stupid. This is a workaround
-    // to fix lists like "1,2  3,4"
+    // to fix lists like "1,2  3 ,4"
     QChar space(' ');
     for(int i=0; i < l; i++) if(str[i].latin1() == ',') str[i] = space;
     str = str.simplifyWhiteSpace();
