@@ -222,8 +222,8 @@ public:
      * @internal
      * not part of the DOM
      */
-    NamedNodeMapImpl *handle() const;
-    bool isNull() const;
+    NamedNodeMapImpl *handle() const throw();
+    bool isNull() const throw();
 
 protected:
     NamedNodeMap( NamedNodeMapImpl *i);

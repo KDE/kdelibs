@@ -44,8 +44,7 @@ public:
 
   void ref() { _ref++; }
   void deref() { if(_ref) _ref--; if(!_ref && deleteMe()) delete this; }
-  // ###  KDE 3.0: add const
-  bool hasOneRef() { return _ref == 1; }
+  bool hasOneRef() const { return _ref == 1; }
   unsigned int refCount() const { return _ref; }
 
 protected:

@@ -116,12 +116,12 @@ unsigned long NamedNodeMap::length() const
     return impl->length();
 }
 
-NamedNodeMapImpl *NamedNodeMap::handle() const
+NamedNodeMapImpl *NamedNodeMap::handle() const throw()
 {
     return impl;
 }
 
-bool NamedNodeMap::isNull() const
+bool NamedNodeMap::isNull() const throw()
 {
     return (impl == 0);
 }
