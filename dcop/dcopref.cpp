@@ -39,6 +39,12 @@ DCOPRef::DCOPRef( const DCOPRef& ref )
     m_type = ref.type();
 }
 
+DCOPRef::DCOPRef( DCOPObject *o )
+    : m_app( DCOPClient::mainClient() ? DCOPClient::mainClient()->appId() : QCString() ), 
+      m_obj( o->objId() ), m_type( o->interfaces().last() )
+{
+}
+
 DCOPRef::DCOPRef( const QCString& _app, const QCString& obj )
     : m_app( _app ), m_obj( obj )
 {

@@ -60,6 +60,14 @@ public:
      * Create a reference to a certain object in a
      * certain application.
      *
+     * @param object The dcop object to create the ref to.
+     */
+    DCOPRef( DCOPObject *object );
+    
+    /**
+     * Create a reference to a certain object in a
+     * certain application.
+     *
      * @param app The name of an application as registered
      *            by the dcopserver.
      */
