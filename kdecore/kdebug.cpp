@@ -85,7 +85,7 @@ static QString getDescrFromNum(unsigned short _num)
   if ( !KDebugCache->isEmpty() ) // areas already loaded
     return QString::null;
 
-  QString data, filename(locate("config","kdebug.areas"));
+  QString filename(locate("config","kdebug.areas"));
   QFile file(filename);
   if (!file.open(IO_ReadOnly)) {
     qWarning("Couldn't open %s", filename.local8Bit().data());
@@ -99,26 +99,40 @@ static QString getDescrFromNum(unsigned short _num)
   QTextStream *ts = new QTextStream(&file);
   ts->setEncoding( QTextStream::Latin1 );
   while (!ts->eof()) {
-    data = ts->readLine().simplifyWhiteSpace();
+    const QString data(ts->readLine()); 
+    int i = 0;
+    int len = data.length();
 
-    int pos = data.find("#");
-    if ( pos != -1 )
-      data.truncate( pos );
-
-    if (data.isEmpty())
+    QChar ch = data[0];
+    if (ch == '#' || ch.isNull()) {
       continue;
+    }
+    while (ch.isSpace()) {
+      if (!(i < len))
+	continue; 
+      ++i;
+      ch = data[i];
+    }
+    if (ch.isNumber()) {
+	int numStart = i ;
+	while (ch.isNumber())  {  
+	  if (!(i < len))
+	    continue;
+	  ++i;
+	  ch = data[i];
+	}
+	number = data.mid(numStart,i).toULong(&longOK);  
+    }
+    while (ch.isSpace()) {
+      if (!(i < len))
+	continue; 
+      ++i;
+      ch = data[i]; 
+    }
+    const QString description(data.mid(i, len));
+    //qDebug("number: [%i] description: [%s]", number, description.latin1());
 
-    int space = data.find(" ");
-    if (space == -1)
-      continue;
-
-    number = data.left(space).toULong(&longOK);
-    if (!longOK)
-      continue; // The first part wasn't a number
-
-    data.remove(0, space+1);
-
-    KDebugCache->insert(number, new KDebugEntry(number,data));
+    KDebugCache->insert(number, new KDebugEntry(number,description));
   }
 
   delete ts;
