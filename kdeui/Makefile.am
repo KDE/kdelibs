@@ -57,7 +57,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kactionshortcutlist.h kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
-		kpixmapio.h kwordwrap.h \
+		kpixmapio.h kwordwrap.h kautoconfigdialog.h \
 		kedittoolbar.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
 		kpanelapplet.h kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
@@ -68,8 +68,8 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		ktextedit.h kpassivepopup.h kdockwidget_p.h \
 		kdatetimewidget.h ktimewidget.h kpreferencesdialog.h \
 		kpreferencesmodule.h kpluginselector.h \
-		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h
-
+		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h 
+		
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
 # the files on the first line need to occur first when compiling
@@ -96,7 +96,7 @@ libkdeui_la_SOURCES = \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 		ktextbrowser.cpp khelpmenu.cpp \
-		kcmenumngr.cpp kpanelmenu.cpp \
+		kcmenumngr.cpp kpanelmenu.cpp kautoconfigdialog.cpp \
 		kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 		kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp \
