@@ -113,7 +113,7 @@ public:
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
     RenderBlock* createAnonymousBlock();
 
-private:
+protected:
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
 

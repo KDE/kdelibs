@@ -295,45 +295,14 @@ void RenderTable::layout()
     int newHeight = m_height;
     m_height = oldHeight;
 
-    // html tables with percent height are relative to view
     Length h = style()->height();
     int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
     if (isPositioned())
         th = newHeight; // FIXME: Leave this alone for now but investigate later.
     else if (h.isFixed())
         th += h.value();
-    else if (h.isPercent()) {
-        RenderObject* c = containingBlock();
-        for ( ;
-            !c->isCanvas() && !c->isBody() && !c->isTableCell() &&
-		  !c->isPositioned() && c->isFloating();
-             c = c->containingBlock()) {
-            Length ch = c->style()->height();
-            if (ch.isFixed()) {
-                th += h.width(ch.value());
-                break;
-            }
-        }
-
-        if (c->isTableCell()) {
-            RenderTableCell* cell = static_cast<RenderTableCell*>(c);
-            int cellHeight = cell->cellPercentageHeight();
-            if (cellHeight)
-                th += h.width(cellHeight);
-        }
-        else  {
-            Length ch = c->style()->height();
-	    if (ch.isFixed())
-		th += h.width(ch.value());
-	    else {
-		// we need to substract out the margins of this block. -dwh
-		th += h.width(viewRect().height() - c->marginBottom() - c->marginTop());
-		// not really, but this way the view height change
-		// gets propagated correctly
-		setOverhangingContents();
-	    }
-        }
-    }
+    else if (h.isPercent())
+        th += calcPercentageHeight(h);
 
     // layout rows
     if ( th > calculatedHeight ) {
