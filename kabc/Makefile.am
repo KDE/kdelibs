@@ -15,7 +15,6 @@ addressee.h addressee.cpp field.cpp: \
 				$(srcdir)/scripts/field.src.cpp
 	( cd scripts && $(MAKE) )
 CLEANFILES = addressee.h addressee.cpp field.cpp
-COMPILE_FIRST = addressee.h
 
 lib_LTLIBRARIES = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
