@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     
     if (argc != 2) {
 	warning("usage: %s {dirs, filter, preselect, normal, preview}", argv[0]);
-	exit(0);
+	return 1;
     }
     
     enum { Dirs, Filter, Preselect, Normal, Preview } mode;

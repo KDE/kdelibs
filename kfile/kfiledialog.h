@@ -371,6 +371,9 @@ private:
     QGridLayout *lafBox;
     QHBoxLayout *btngroup;
 
+    // cleanup the static variables
+    static void cleanup();
+
 protected:
 
     QPushButton *bOk;

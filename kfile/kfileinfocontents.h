@@ -229,6 +229,15 @@ public:
       **/
     virtual bool acceptsDirs() = 0;
 
+    /** the pixmap for normal files */ 
+    static QPixmap *file_pixmap;
+    /** the pixmap for locked files */
+    static QPixmap *locked_file;
+    /** the pixmap for normal folders */
+    static QPixmap *folder_pixmap;
+    /** the pixmap for locked folders */
+    static QPixmap *locked_folder;
+
 protected:
     
     /**
@@ -274,15 +283,6 @@ protected:
       * by the view
       **/
     virtual void highlightItem(unsigned int index) = 0;
-
-    /** the pixmap for normal files */ 
-    static QPixmap *file_pixmap;
-    /** the pixmap for locked files */
-    static QPixmap *locked_file;
-    /** the pixmap for normal folders */
-    static QPixmap *folder_pixmap;
-    /** the pixmap for locked folders */
-    static QPixmap *locked_folder;
     
     /** 
       * sets the value for the selected file and emits the correct

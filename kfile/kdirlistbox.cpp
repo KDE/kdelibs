@@ -51,39 +51,17 @@ protected:
     virtual const QPixmap *pixmap() const { return pm; }
 
 private:
-    static QPixmap *folder_pixmap;
-    static QPixmap *locked_folder;
-    static QPixmap *file_pixmap;
-    static QPixmap *locked_file;
     QPixmap *pm;
     bool italic;
 };
 
-QPixmap *KDirListBoxItem::folder_pixmap = 0;
-QPixmap *KDirListBoxItem::locked_folder = 0;
-QPixmap *KDirListBoxItem::file_pixmap = 0;
-QPixmap *KDirListBoxItem::locked_file = 0;
-
 KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
     : QListBoxItem() 
 {
-    if (!folder_pixmap) // don't use IconLoader to always get the same icon
-      folder_pixmap = new QPixmap(locate("mini", "folder.png"));
-				    
-    if (!locked_folder)
-      locked_folder = new QPixmap(locate("mini", "lockedfolder.png"));
-    
-    if (!file_pixmap)
-      file_pixmap = new QPixmap(locate("mini", "unknown.png"));
-				
-    if (!locked_file)
-      locked_file = new QPixmap(locate("mini", "locked.png"));
-     
-    
     if (i->isDir())
-      pm = (i->isReadable()) ? folder_pixmap : locked_folder;
+      pm = (i->isReadable()) ? KFileInfoContents::folder_pixmap : KFileInfoContents::locked_folder;
     else
-      pm = (i->isReadable()) ? file_pixmap : locked_file;
+      pm = (i->isReadable()) ? KFileInfoContents::file_pixmap : KFileInfoContents::locked_file;
 
     italic = FALSE;
     setText(i->fileName());

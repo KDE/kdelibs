@@ -75,11 +75,18 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
 
     if (!lastDirectory)
     {
-        if (dirName.isEmpty()) // no dir specified -> current dir
-	  lastDirectory = new QString(QDir::currentDirPath());
+	qAddPostRoutine( cleanup );
+	if (dirName.isEmpty()) // no dir specified -> current dir
+	   lastDirectory = new QString(QDir::currentDirPath());
         else
-          lastDirectory = new QString(dirName);
+	   lastDirectory = new QString(dirName);
+
+	KFileInfoContents::folder_pixmap = new QPixmap(locate("mini", "folder.png"));
+	KFileInfoContents::locked_folder = new QPixmap(locate("mini", "lockedfolder.png"));
+	KFileInfoContents::file_pixmap = new QPixmap(locate("mini", "unknown.png"));
+	KFileInfoContents::locked_file = new QPixmap(locate("mini", "locked.png"));
     }
+
     // we remember the selected name for init()
     filename_ = *lastDirectory;
 
@@ -112,6 +119,19 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
     useRecent = config->readBoolEntry("UseRecent", true);
     maxEntries = config->readNumEntry("MaxEntries", 10);
     config->setGroup(oldGroup);
+}
+
+void KFileBaseDialog::cleanup() {
+  delete lastDirectory;
+  lastDirectory = 0;
+  delete KFileInfoContents::folder_pixmap;
+  KFileInfoContents::folder_pixmap = 0;
+  delete KFileInfoContents::locked_folder;
+  KFileInfoContents::locked_folder = 0;
+  delete KFileInfoContents::file_pixmap;
+  KFileInfoContents::file_pixmap = 0;
+  delete KFileInfoContents::locked_file;
+  KFileInfoContents::locked_file = 0;
 }
 
 void KFileBaseDialog::init()

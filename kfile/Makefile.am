@@ -46,8 +46,9 @@ toolbardir = $(kde_toolbardir)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)
 libkfile_la_LDFLAGS = -no-undefined -version-info 3:0 $(LDFLAGS)
-libkfile_la_LIBADD =  ../kdeui/libkdeui.la ../kio/libkio.la
+libkfile_la_LIBADD =  ../kio/libkio.la ../kdeui/libkdeui.la
 
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
 kfstest_LDADD = libkfile.la
+

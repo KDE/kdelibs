@@ -53,7 +53,6 @@ public:
       */
     KFileInfo(const QFileInfo &);
 
-
     /**
       * Copy a KFileInfo.
       */
@@ -73,7 +72,6 @@ public:
       * Copy a KFileInfo.
       */
     KFileInfo &operator=(const KFileInfo &);
-
 
     /**
       * Returns true if this file is a directory.

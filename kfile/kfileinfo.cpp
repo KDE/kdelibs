@@ -85,7 +85,7 @@ KFileInfo::KFileInfo(const KUDSEntry &e)
 	    myBaseURL = url.path( 1 ); // we want a trailing "/"
 	    break;
 	default:
-	    debugC("got %ld", ( *it ).m_uds);
+	    debug("got %ld", ( *it ).m_uds);
 	};
     }
 
