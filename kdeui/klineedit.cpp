@@ -47,32 +47,35 @@ class KLineEdit::KLineEditPrivate
 public:
     KLineEditPrivate()
     {
-        grabReturnKeyEvents = false;
+        completionBox = 0L;    
         handleURLDrops = true;
-        completionBox = 0L;
+        smartTextUpdate = false;
+        grabReturnKeyEvents = false;        
     }
     ~KLineEditPrivate()
     {
         delete completionBox;
     }
-
-    bool grabReturnKeyEvents;
-    bool handleURLDrops;
-    KCompletionBox *completionBox;
-    QString squeezedText;
+    
+    int squeezedEnd;    
     int squeezedStart;
-    int squeezedEnd;
+    bool handleURLDrops;
+    bool smartTextUpdate;    
+    bool grabReturnKeyEvents;    
+    
+    QString squeezedText;    
+    KCompletionBox *completionBox;
 };
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent, const char *name )
-    : QLineEdit( string, parent, name )
+          :QLineEdit( string, parent, name )
 {
     init();
 }
 
 KLineEdit::KLineEdit( QWidget *parent, const char *name )
-    : QLineEdit( parent, name )
+          :QLineEdit( parent, name )
 {
     init();
 }
@@ -86,6 +89,7 @@ void KLineEdit::init()
 {
     d = new KLineEditPrivate;
     possibleTripleClick = false;
+    
     // Enable the context menu by default.
     setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );
@@ -592,18 +596,25 @@ void KLineEdit::completionMenuActivated( int id )
     switch ( id )
     {
         case Default:
-           setCompletionMode( KGlobalSettings::completionMode() ); break;
+           setCompletionMode( KGlobalSettings::completionMode() );
+           break;
         case NoCompletion:
-           setCompletionMode( KGlobalSettings::CompletionNone ); break;
+           setCompletionMode( KGlobalSettings::CompletionNone );
+           break;
         case AutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionAuto ); break;
+            setCompletionMode( KGlobalSettings::CompletionAuto );
+            break;
         case SemiAutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionMan ); break;
+            setCompletionMode( KGlobalSettings::CompletionMan );
+            break;
         case ShellCompletion:
-            setCompletionMode( KGlobalSettings::CompletionShell ); break;
+            setCompletionMode( KGlobalSettings::CompletionShell );
+            break;
         case PopupCompletion:
-            setCompletionMode( KGlobalSettings::CompletionPopup ); break;
-        default: return;
+            setCompletionMode( KGlobalSettings::CompletionPopup );
+            break;
+        default:
+            return;
     }
 
     if ( oldMode != completionMode() )
@@ -700,7 +711,7 @@ bool KLineEdit::trapReturnKey() const
 
 void KLineEdit::setURL( const KURL& url )
 {
-    QLineEdit::setText( url.prettyURL() );
+    setText( url.prettyURL() );
 }
 
 void KLineEdit::makeCompletionBox()
@@ -829,6 +840,21 @@ void KLineEdit::clear()
     setText( QString::null );
 }
 
-void KLineEdit::virtual_hook( int id, void* data )
-{ KCompletionBase::virtual_hook( id, data ); }
+void KLineEdit::setText (const QString & newText)
+{
+    if ( !d->smartTextUpdate || text().length() == 0 || newText != text() )
+    {
+        QLineEdit::setText (newText);
+        return;
+    }
+}
 
+void KLineEdit::setEnableSmartTextUpdate (bool enable)
+{
+    d->smartTextUpdate = enable;
+}
+
+void KLineEdit::virtual_hook( int id, void* data )
+{
+    KCompletionBase::virtual_hook( id, data );
+}
