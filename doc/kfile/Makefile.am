@@ -1,9 +1,9 @@
 
-doc_DATA =  back.gif bottom.gif exec.gif flag.gif forward.gif home.gif \
-	idea.gif index.html reload.gif toolbar-h.gif toolbar.gif \
-	up.gif viewmag.gif
+doc_DATA =  back.png bottom.png exec.png flag.png forward.png home.png \
+	idea.png index.html reload.png toolbar-h.png toolbar.png \
+	up.png viewmag.png
 docdir = $(kde_htmldir)/en/kfiledialog
 
-EXTRA_DIST =  back.gif bottom.gif exec.gif flag.gif forward.gif home.gif \
-	idea.gif index.html reload.gif toolbar-h.gif toolbar.gif \
-	up.gif viewmag.gif
+EXTRA_DIST =  back.png bottom.png exec.png flag.png forward.png home.png \
+	idea.png index.html reload.png toolbar-h.png toolbar.png \
+	up.png viewmag.png
