@@ -38,7 +38,6 @@
 #include <knotifyclient.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kregexpdialog.h>
 
 #include "keditcl.h"
 
@@ -644,10 +643,9 @@ public:
 };
 
 
-KEdFind::KEdFind( QWidget *parent, const char *name, bool modal, bool offerRegExpSearch )
+KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Find"),
-                modal ? User1|Cancel : User1|Close, User1, false, i18n("&Find") ),
-   editorDialog( 0 ), offerRegExpSearch( offerRegExpSearch )
+		modal ? User1|Cancel : User1|Close, User1, false, i18n("&Find") )
 {
   setWFlags( WType_TopLevel );
 
@@ -669,7 +667,7 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal, bool offerRegEx
 
   topLayout->addWidget(d->combo);
 
-  QVButtonGroup *group = new QVButtonGroup( i18n("Options"), page );
+  group = new QVButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
   QHBox* row1 = new QHBox( group );
@@ -679,17 +677,6 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal, bool offerRegEx
   text = i18n("Find &Backwards");
   direction = new QCheckBox( text, row1, "direction" );
 
-  if ( offerRegExpSearch ) {
-    QHBox* row2 = new QHBox( group );
-    text = i18n("As &Regular Expression");
-    asRegExp = new QCheckBox( text, row2, "asRegexp" );
-    text = i18n("Edit");
-    editRegExp = new QPushButton( text, row2, "editRegExp" );
-
-    connect( asRegExp, SIGNAL( toggled(bool) ), editRegExp, SLOT( setEnabled(bool) ) );
-    connect( editRegExp, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
-    editRegExp->setEnabled( false );
-  }
   
   enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
 
@@ -723,27 +710,6 @@ void KEdFind::slotUser1( void )
   }
 }
 
-void KEdFind::slotEditRegExp()
-{
-  if ( editorDialog == 0 )
-    editorDialog = new KRegExpDialog( this );
-  
-  editorDialog->slotSetRegExp( getText() );
-  bool ok = editorDialog->exec();
-  if (ok) 
-    setText( editorDialog->regexp() );
-  
-}
-
-bool KEdFind::isRegExp() const
-{
-    return asRegExp->isChecked();
-}
-
-void KEdFind::setIsRegExp( bool b )
-{
-    asRegExp->setChecked( b );
-}
 
 QString KEdFind::getText() const
 {
