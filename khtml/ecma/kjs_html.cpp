@@ -1017,7 +1017,7 @@ public:
         return UString(jtype == JFunction ? "[Function]" : "[Object]");
     }
 private:
-    JavaMember(const JavaMember &) {}
+    JavaMember(const JavaMember &);
     DOM::HTMLElement element;
     UString name;
     JType jtype;
