@@ -1,5 +1,10 @@
-/* This file is part of the KDE libraries
+/*  
+
+    $Id:$
+
+    This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Ettrich (ettrich@kde.org)
+    
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -15,36 +20,54 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
+
+    $Log:$
+
+
 */
 
 #include "kwmmapp.moc"
 
 int KWMModuleXErrorHandler(Display *, XErrorEvent *){
+
   return 0; // ignore Xerrors
+
 };
 
 KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[])
-  :KApplication(argc, argv){
+                     :KApplication(argc, argv){
+
     XSetErrorHandler(KWMModuleXErrorHandler);
     module = new QWidget;
+
 }
 
-KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[], const QString& rAppName)
-  :KApplication(argc, argv, rAppName){
+KWMModuleApplication::KWMModuleApplication( 
+					   int &argc, char *argv[], 
+					   const QString& rAppName
+					   )
+                      :KApplication(argc, argv, rAppName){
+
     XSetErrorHandler(KWMModuleXErrorHandler);
     module = new QWidget;
+
 }
 
 
 void KWMModuleApplication::connectToKWM(bool dock_module){
+
   if (!dock_module)
     KWM::setKWMModule(module->winId());
   else
     KWM::setKWMDockModule(module->winId());
+
 }
 
 bool KWMModuleApplication::x11EventFilter( XEvent * ev){
+
+
   static bool atoms = FALSE;
+  
   static Atom module_init;
   static Atom module_desktop_change;
   static Atom module_win_add;
@@ -73,13 +96,17 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 
   if (ev->xany.window == module->winId()
       && ev->type == ClientMessage){
+
     if (!atoms){
+
       module_init = XInternAtom(qt_xdisplay(), 
 				"KWM_MODULE_INIT", False);
       module_desktop_change = XInternAtom(qt_xdisplay(), 
 					  "KWM_MODULE_DESKTOP_CHANGE", False);
-      module_desktop_name_change = XInternAtom(qt_xdisplay(), "KWM_MODULE_DESKTOP_NAME_CHANGE", False);
-      module_desktop_number_change = XInternAtom(qt_xdisplay(), "KWM_MODULE_DESKTOP_NUMBER_CHANGE", False);
+      module_desktop_name_change = XInternAtom(qt_xdisplay(), 
+				   "KWM_MODULE_DESKTOP_NAME_CHANGE", False);
+      module_desktop_number_change = XInternAtom(qt_xdisplay(), 
+                                     "KWM_MODULE_DESKTOP_NUMBER_CHANGE", False);
       
       module_win_add = XInternAtom(qt_xdisplay(), 
 				   "KWM_MODULE_WIN_ADD", False);
@@ -96,6 +123,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 					   "KWM_MODULE_WIN_ICON_CHANGE", False);
       kwm_command = XInternAtom(qt_xdisplay(), 
 				"KWM_COMMAND", False);
+
       module_dockwin_add = XInternAtom(qt_xdisplay(), 
 					"KWM_MODULE_DOCKWIN_ADD", False);
       module_dockwin_remove = XInternAtom(qt_xdisplay(), 
@@ -106,57 +134,80 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 				   "KDE_REGISTER_SOUND_EVENT", False);
       unregister_sound = XInternAtom(qt_xdisplay(), 
 				     "KDE_UNREGISTER_SOUND_EVENT", False);
+
+      atoms = true; // was missing --Bernd
     }
+
     a = ev->xclient.message_type;
     w = (Window) (ev->xclient.data.l[0]);
 
     if (a == module_init){
+
       windows.clear();
       windows_sorted.clear();
       dock_windows.clear();
       emit init();
+
     }
+
     if (a == module_desktop_change){
+
       int d = (int) w;
       emit desktopChange(d);
     }
+
     if (a == module_desktop_name_change){
+
       int d = (int) w;
       emit desktopNameChange(d, KWM::getDesktopName(d));
     }
+
     if (a == module_desktop_number_change){
       int d = (int) w;
       emit desktopNumberChange(d);
     }
     if (a == module_win_add){
+
       wp = new Window;
       *wp = w;
       windows.append(wp);
       windows_sorted.append(wp);
       emit windowAdd(w);
     }
+
     if (a == module_win_remove){
+
       for (wp=windows.first(); wp; wp=windows.next()){
+
 	if (*wp == w){
+
 	  windows.remove();
 	  break;
 	}
       }
+
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
+
 	if (*wp == w){
+
 	  windows_sorted.remove();
 	  delete wp;
 	  break;
 	}
       }
+
       emit windowRemove(w);
     }
+
     if (a == module_win_change){
       emit windowChange(w);
     }
+
     if (a == module_win_raise){
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
+
 	if (*wp == w) {
+
 	  windows_sorted.remove();
 	  windows_sorted.append(wp);
 	  break;
@@ -164,22 +215,29 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       }
       emit windowRaise(w);
     }
+
     if (a == module_win_lower){
+
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
+
 	if (*wp == w) {
 	  windows_sorted.remove();
 	  windows_sorted.insert(0, wp);
 	  break;
 	}
       }
+
       emit windowLower(w);
     }
+
     if (a == module_win_activate){
       emit windowActivate(w);
     }
+
     if (a == module_win_icon_change){
       emit windowIconChanged(w);
     }
+
     if (a == kwm_command){
       char c[21];
       int i;
@@ -189,12 +247,14 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       QString com = c;
       emit commandReceived(com);
     }
+
     if (a == module_dockwin_add){
       wp = new Window;
       *wp = w;
       dock_windows.append(wp);
       emit dockWindowAdd(w);
     }
+
     if (a == module_dockwin_remove){
       for (wp=dock_windows.first(); wp; wp=dock_windows.next()){
 	if (*wp == w){
@@ -204,6 +264,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       }
       emit dockWindowRemove(w);
     }
+
     if (a == sound){
       char c[21];
       int i;
@@ -213,6 +274,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       QString com = c;
       emit playSound(com);
     }
+
     if (a == register_sound){
       char c[21];
       int i;
@@ -222,6 +284,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       QString com = c;
       emit registerSound(com);
     }
+
     if (a == unregister_sound){
       char c[21];
       int i;
@@ -233,12 +296,18 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
 
     return TRUE;
+
   }
+
   return FALSE;
 }
 
+
 bool KWMModuleApplication::hasWindow(Window w){
+
   Window *wp;
   for (wp=windows.first(); wp && *wp != w; wp=windows.next());
+
   return wp != 0L;
+
 }
