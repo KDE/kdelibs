@@ -87,9 +87,9 @@ public:
 
     // internal
     NodeImpl *findElement( int id );
-    NodeImpl *findElement( int id , NodeImpl *start, bool forward = true);
+    HTMLElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
 
-    NodeImpl *findLink(NodeImpl *start, bool forward, int tabIndexHint=-1);
+    HTMLElementImpl *findLink(HTMLElementImpl *start, bool forward, int tabIndexHint=-1);
 
     int findHighestTabIndex();
 

@@ -60,13 +60,25 @@ public:
     void removeCSSProperty(int id);
     void removeCSSProperty(const DOMString &id);
 
+    void getAnchorPosition(int &xPos, int &yPos);
+    void getAnchorBounds(int &xPos, int &yPos);
+
     virtual short tabIndex() const;
     virtual void setTabIndex( short );
+
+    /**
+     * returns true if this node may receive the keyboard focus,
+     * false otherwise.
+     */
+    virtual bool isSelectable();
+
+    virtual void blur(){};
+    virtual void focus(){};
 
 protected:
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
 
- private:
+private:
     bool has_tabindex;
     short tabindex;
 };

@@ -95,6 +95,7 @@ public:
     virtual bool isTableRow() const { return false; }
     virtual bool isTableSection() const { return false; }
     virtual bool isTable() const { return false; }
+    virtual bool isWidget() const { return false; }
 
     bool isAnonymousBox() const { return m_isAnonymous; }
     void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
@@ -114,7 +115,8 @@ public:
         // absolute relative or fixed positioning
 
     RenderObject *root() const;
-    /* returns the object containing this one. can be different from parent for
+    /**
+     * returns the object containing this one. can be different from parent for
      * positioned elements
      */
     RenderObject *container() const;

@@ -52,8 +52,6 @@ public:
 			     int _tx, int _ty, DOMString &url,
                              NodeImpl *&innerNode, long &offset);
 
-    void getAnchorPosition(int &xPos, int &yPos);
-
     //virtual void attach(KHTMLView *);
 };
 

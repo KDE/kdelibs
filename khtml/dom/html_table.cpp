@@ -120,7 +120,7 @@ long HTMLTableCellElement::cellIndex() const
     return ((HTMLTableCellElementImpl *)impl)->cellIndex();
 }
 
-void HTMLTableCellElement::setCellIndex( long _cellIndex )
+void HTMLTableCellElement::setCellIndex( long /*_cellIndex*/ )
 {
     throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
@@ -668,7 +668,7 @@ long HTMLTableRowElement::rowIndex() const
     return ((HTMLTableRowElementImpl *)impl)->rowIndex();
 }
 
-void HTMLTableRowElement::setRowIndex( long _rowIndex )
+void HTMLTableRowElement::setRowIndex( long /*_rowIndex*/ )
 {
     throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
@@ -679,7 +679,7 @@ long HTMLTableRowElement::sectionRowIndex() const
     return ((HTMLTableRowElementImpl *)impl)->sectionRowIndex();
 }
 
-void HTMLTableRowElement::setSectionRowIndex( long _sectionRowIndex )
+void HTMLTableRowElement::setSectionRowIndex( long /*_sectionRowIndex*/ )
 {
     throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
@@ -690,7 +690,7 @@ HTMLCollection HTMLTableRowElement::cells() const
     return HTMLCollection(impl, HTMLCollectionImpl::TABLE_ROWS);
 }
 
-void HTMLTableRowElement::setCells( const HTMLCollection &_cells )
+void HTMLTableRowElement::setCells( const HTMLCollection & /*_cells*/ )
 {
     throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }

@@ -481,6 +481,8 @@ void HTMLGenericFormElementImpl::onFocus()
     DOMString script = getAttribute(ATTR_ONFOCUS);
     if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());
+    kdDebug(6000)<<"HTMLGenericFormImpl: focusing "<<getTagName(id()).string()<<"\n";
+    view->setLinkCursor(this);
 }
 
 void HTMLGenericFormElementImpl::onSelect()
@@ -501,14 +503,14 @@ void HTMLGenericFormElementImpl::onChange()
 void HTMLGenericFormElementImpl::blur()
 {
     if(m_render)
-        static_cast<RenderFormElement*>(m_render)->blur();
+        ((RenderFormElement*)m_render)->blur();
 //    onBlur(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLGenericFormElementImpl::focus()
 {
     if(m_render)
-        static_cast<RenderFormElement*>(m_render)->focus();
+        ((RenderFormElement*)m_render)->focus();
 //    onFocus(); // ### enable this - but kjs needs to support re-entry
 }
 

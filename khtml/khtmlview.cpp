@@ -85,8 +85,8 @@ public:
     QPixmap  *paintBuffer;
     NodeImpl *underMouse;
 
-    NodeImpl *currentNode;
-    NodeImpl *originalNode;
+    HTMLElementImpl *currentNode;
+    HTMLElementImpl *originalNode;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -445,7 +445,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         break;
 
     case Key_Next:
-    case Key_Space:
         scrollBy( 0, clipper()->height() - offs );
         break;
 
@@ -465,18 +464,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     case Key_H:
         scrollBy( -10, 0 );
         break;
-    case Key_N:
-        gotoNextLink();
-        break;
-    case Key_P:
-        gotoPrevLink();
-        break;
     case Key_Enter:
     case Key_Return:
-        //if (!d->linkPressed)
+    case Key_Space:
           toggleActLink(false);
-          //else
-          //toggleActLink(true);
         break;
     case Key_Home:
         setContentsPos( 0, 0 );
@@ -495,6 +486,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
     {
     case Key_Enter:
     case Key_Return:
+    case Key_Space:
         toggleActLink(true);
         return;
       break;
@@ -505,7 +497,17 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    return QScrollView::focusNextPrevChild( next );
+    //    return (gotoLink(next) || QScrollView::focusNextPrevChild( next ));
+  
+    if (!gotoLink(next))
+      {
+	  bool retval = QScrollView::focusNextPrevChild( next );
+	  viewport()->clearFocus();
+	  return retval;
+      }
+    else
+      return true;
+
 }
 
 void KHTMLView::doAutoScroll()
@@ -524,7 +526,6 @@ void KHTMLView::doAutoScroll()
     }
 }
 
-
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
     return d->underMouse;
@@ -532,57 +533,33 @@ DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 
 bool KHTMLView::gotoLink()
 {
-    // let's ignore non anchors for the moment
-    if(!d->currentNode || d->currentNode->id() != ID_A) return false;
-
-    HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(d->currentNode);
-    //kdDebug(6000)<<"current item:"<<n->areaHref().string().latin1()<<endl;
-
-    if (d->linkPressed)
-        n->setKeyboardFocus(DOM::ActivationActive);
-    else
-        n->setKeyboardFocus(DOM::ActivationPassive);
-
-//calculate x- and ypos
-    int x = 0, y = 0;
-    n->getAnchorPosition(x,y);
-    //  n->renderer()->absolutePosition();
-    ensureVisible(x-30, y+30);
-    if (!n->isInline())
-    {
-        x+=n->renderer()->width();
-        y+=n->renderer()->height();
-        ensureVisible(x, y);
-    }
-    return true;
+  return gotoLink(d->currentNode);
 }
 
-bool KHTMLView::gotoLink(DOM::NodeImpl *_n)
+bool KHTMLView::gotoLink(HTMLElementImpl *n)
 {
-    if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
-
-    // let's ignore non anchors for the moment
-    if(!_n || _n->id() != ID_A) return false;
-    HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(_n);
-    //kdDebug(6000)<<"current item:"<<n->areaHref().string().latin1()<<endl;
-
+    kdDebug(6000)<<"                :Link found:"<<n<<"\n";
+    if(d->currentNode) d->currentNode->blur();
+    if(!n)
+	{
+	    kdDebug(6000)<<"end of link list reached.\n";
+	    d->currentNode = 0;
+	    return false;
+	}
+    if (!n->isSelectable())
+	{
+	    d->currentNode = 0;
+	    return false;
+	}
+    n->focus();
     if (d->linkPressed)
         n->setKeyboardFocus(DOM::ActivationActive);
-    else
-        n->setKeyboardFocus(DOM::ActivationPassive);
-
     //calculate x- and ypos
     int x = 0, y = 0;
     n->getAnchorPosition(x,y);
 
-    QSize size = n->renderer()->containingBlockSize();
-    if (size.height()==0)
-	size.setHeight(30);
-    if (size.width()==0)
-	size.setWidth(100);
-
-    int xe = x + size.width();
-    int ye = y + size.height();
+    int xe = 0, ye = 0;
+    n->getAnchorBounds(xe,ye);
 
     int deltax;
     int deltay;
@@ -591,43 +568,52 @@ bool KHTMLView::gotoLink(DOM::NodeImpl *_n)
 
     borderX = borderY = 30;
     
-    if (y - contentsY() - borderY < 0)
-    {
-	deltay = y - contentsY() - borderY;
-    }
-    else if (ye - contentsY() + borderY > height())
-    {
-	deltay = ye - contentsY() - height() + borderY;
-    }
+    // is ypos of target above upper border?
+    if (y < contentsY() + borderY)
+	{
+	    deltay = y - contentsY() - borderY;
+	}
+    // is ypos of target below lower border:
+    else if (ye + borderY > contentsY() + height())
+	{
+	    deltay = ye + borderY - ( contentsY() + height() );
+	}
     else
 	deltay = 0;
 
+    // is xpos of target left of the view's border?
     if (x - borderX - contentsX() < 0)
-    {
-	deltax = x - contentsX() - borderX;
-    }
-    else if (xe - contentsX() + borderX > width())
-    {
-	deltax = xe - contentsX() - width() + borderX;
-    }
+	{
+	    deltax = x - contentsX() - borderX;
+	}
+    // is xpos of target right of the view's right border?
+    else if (xe + borderX > contentsX() + width())
+	{
+	    deltax = xe + borderX - ( contentsX() + width() );
+	}
     else
 	deltax = 0;
+
+    if (!d->currentNode)
+    {
+	scrollBy(deltax, deltay);
+	d->currentNode = n;
+	return true;
+    }
 
     int maxx = width()-borderX;
     int maxy = height()-borderY;
 
-    kdDebug(6000) << "x: " << x << " y: "<< y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
-    
-    int scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : (deltax>-maxx ? deltax : -maxx);
-    int scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : (deltay>-maxy ? deltay : -maxy);
+    kdDebug(6000) << "contentsX: " << contentsX() <<" contentsY: "<< contentsY() << " x: " << x << " y: "<< y << " width: " << xe-x << " height: " << ye-y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
 
-    if (deltax==0)
-	scrollX=0;
-    if (deltay==0)
-	scrollY=0;
+    int scrollX,scrollY;
+
+    scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
+    scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
+
+    scrollBy(scrollX, scrollY);
 
     kdDebug(6000) << "scrollX:"<<scrollX<<" scrollY:"<<scrollY<<"\n";
-    scrollBy(scrollX, scrollY);
 
     // generate abs(scroll.)
     if (scrollX<0)
@@ -635,9 +621,12 @@ bool KHTMLView::gotoLink(DOM::NodeImpl *_n)
     if (scrollY<0)
 	scrollY=-scrollY;
 
+    // only set cursor to new node if scrolling could make
+    // the link completely visible
     if ( (scrollX!=maxx) && (scrollY!=maxy) )
+    {
 	d->currentNode = n;
-
+    }
     return true;
 }
 
@@ -645,24 +634,44 @@ bool KHTMLView::gotoLink(bool forward)
 {
     if (!m_part->docImpl())
 	return false;
+
     int currentTabIndex =
-	(d->currentNode?((HTMLAreaElementImpl*)d->currentNode)->tabIndex():0);
-    bool inTabIndex = ((d->currentNode) && (currentTabIndex!=-1));
+	(d->currentNode?d->currentNode->tabIndex():-1);
+
+    HTMLElementImpl *n=0;
 
     // search next link in current scope
     // (scope means either the links without tabindex or with tabindex)
-    DOM::NodeImpl *n = m_part->docImpl()->findLink(inTabIndex?0:d->currentNode, forward, inTabIndex?(currentTabIndex+(forward?1:-1)):-1);
+
+    n = m_part->docImpl()->findLink(d->currentNode, forward, currentTabIndex);
+
+    if (currentTabIndex!=-1 && (!n || n->tabIndex()!=currentTabIndex))
+    {
+	// found element with different tabindex or nothing:
+	// redo search from the beginning matching the current tabindex
+	HTMLElementImpl *m = m_part->docImpl()->findLink(0, forward, currentTabIndex);
+	if (m && m!=d->currentNode && m->tabIndex()==currentTabIndex)
+	    n = m;
+    }
+    
     if (!n)
     {
-	int maxTabIndex = m_part->docImpl()->findHighestTabIndex();
-	// search for link in complementary scope
-	n = m_part->docImpl()->findLink(0, forward, (inTabIndex?-1:(forward?maxTabIndex:(maxTabIndex>0?0:maxTabIndex))));
-	// if complementary scope is empty, redo search in original scope from
-	// the beginning.
-	if  (!n && maxTabIndex>=0)
-	    n = m_part->docImpl()->findLink(0, forward, forward?0:maxTabIndex);
+	//there is none, so we look for a different item in the whole document.
+	kdDebug(6000)<<"reached document border while searching for link. restarting search...";
+	int maxTabIndex;
+	if (forward && maxTabIndex!=-1)
+	    maxTabIndex = 0;
+	else
+	    maxTabIndex = m_part->docImpl()->findHighestTabIndex();
 
-    };
+	if (maxTabIndex!=-1)
+	    n = m_part->docImpl()->findLink(0, forward, maxTabIndex);
+	else
+	    n = 0;
+    }
+
+    if (!n)
+	kdDebug(6000)<<"...without finding anything. will return false now.\n";
     return gotoLink(n);
 }
 
@@ -758,26 +767,30 @@ void KHTMLView::toggleActLink(bool actState)
     if ( d->currentNode )
     {
         //retrieve url
-        HTMLAnchorElementImpl *n = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
+        HTMLElementImpl *e = static_cast<HTMLElementImpl *>(d->currentNode);
         if (!actState) // inactive->active
         {
             int x,y;
             d->currentNode->setKeyboardFocus(DOM::ActivationActive);
             d->originalNode=d->currentNode;
             d->linkPressed=true;
-            n->getAnchorPosition(x,y);
+            e->getAnchorPosition(x,y);
             ensureVisible(x,y);
         }
         else //active->inactive
         {
-            n->setKeyboardFocus(DOM::ActivationOff);
+            e->setKeyboardFocus(DOM::ActivationOff);
             d->linkPressed=false;
             if (d->currentNode==d->originalNode)
             {
-                d->currentNode=0;
-                m_part->urlSelected( n->areaHref().string(),
-                                     LeftButton, 0,
-                                     n->targetRef().string() );
+	      if (e->id()==ID_A)
+		{
+		  HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
+		  d->currentNode=0;
+		  m_part->urlSelected( a->areaHref().string(),
+				       LeftButton, 0,
+				       a->targetRef().string() );
+		}
             }
             d->originalNode=0;
         }
@@ -816,3 +829,38 @@ void KHTMLView::restoreScrollBar ( )
     }
 }
 
+void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
+{
+  if (lstViews)
+  {
+      lstViews->first();
+      while(lstViews->next())
+      {
+	  KHTMLView * actView = lstViews->current();
+	  if (!actView || !this)
+	      kdFatal(6000)<<"no object / subject\n";
+	  
+	  if (actView != this)
+	  {
+	      if (actView->d->currentNode && actView->d->currentNode!=n)
+		  actView->d->currentNode->blur();
+	      actView->d->currentNode = 0;
+	  }
+	  
+      }
+  }
+
+  if (d->currentNode != n)
+  {
+      if (d->currentNode)
+	  d->currentNode->blur();
+      if (n)
+      {
+	  kdDebug(6000)<<"setLinkCursor to:"<<getTagName(n->id()).string()<<"\n";
+	  n->setKeyboardFocus(DOM::ActivationPassive);
+	  n->focus();
+      }
+      d->currentNode = n;
+  }
+  d->linkPressed=false;
+}

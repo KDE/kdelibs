@@ -77,8 +77,8 @@ public:
 
     HTMLGenericFormElementImpl *element() { return m_element; }
 
-    void blur();
-    void focus();
+    virtual void blur();
+    virtual void focus();
 
 public slots:
     virtual void slotBlurred();

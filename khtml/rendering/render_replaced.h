@@ -73,16 +73,23 @@ public:
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 
+    virtual void absolutePosition(int &xPos, int &yPos, bool f = false);
+
+    virtual bool isWidget() const { return true; };
+
+    virtual void focus();
+    virtual void blur();
+
 public slots:
     void slotWidgetDestructed();
+ 
 
 protected:
     void setQWidget(QWidget *widget, bool show = true);
-
-protected:
     QScrollView *m_view;
-    QWidget *m_widget;
     bool deleted;
+public:
+    QWidget *m_widget;
 };
 
 

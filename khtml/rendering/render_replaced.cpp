@@ -80,6 +80,7 @@ void RenderWidget::setQWidget(QWidget *widget, bool show)
                         this, SLOT( slotWidgetDestructed()));
             delete m_widget;
         }
+	widget->setFocusPolicy(QWidget::ClickFocus);
         m_widget = widget;
         connect( m_widget, SIGNAL( destroyed()),
                  this, SLOT( slotWidgetDestructed()));
@@ -156,6 +157,27 @@ int RenderWidget::intrinsicHeight() const
         return m_widget->height();
     else
         return 0;
+}
+
+void RenderWidget::focus()
+{
+    if (m_widget)
+	m_widget->setFocus();
+}
+
+void RenderWidget::blur()
+{
+    if (m_widget)
+	m_widget->clearFocus();
+}
+
+void RenderWidget::absolutePosition(int &xPos, int &yPos, bool f)
+{
+    if (m_widget)
+    {
+	xPos = m_widget->x();
+	yPos = m_widget->y();
+    }
 }
 
 

@@ -63,7 +63,7 @@ public:
 
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
-     * of a view, would the @ref _y -ordinate be inside the vertical range
+     * of a view, would the @ref _y -coordinate be inside the vertical range
      * of this object's representation?
      */
     bool checkVerticalPoint(int _y, int _ty, int _h)

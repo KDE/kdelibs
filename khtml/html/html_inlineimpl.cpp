@@ -59,10 +59,12 @@ ushort HTMLAnchorElementImpl::id() const
 
 void HTMLAnchorElementImpl::blur(  )
 {
+  setKeyboardFocus(DOM::ActivationOff);
 }
 
 void HTMLAnchorElementImpl::focus(  )
 {
+  setKeyboardFocus(DOM::ActivationPassive);
 }
 
 bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
@@ -93,35 +95,6 @@ void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_HREF:
     default:
 	HTMLAreaElementImpl::parseAttribute(attr);
-    }
-}
-
-// I don't like this way of implementing the method, but I didn't find any
-// other way. Lars
-void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
-{
-    m_render->containingBlock()->absolutePosition( xPos, yPos );
-    RenderObject *o = m_render;
-    // find the next text/image after the anchor, to get a position
-    while(o) {
-	if(o->firstChild())
-	    o = o->firstChild();
-	else if(o->nextSibling())
-	    o = o->nextSibling();
-	else {
-	    RenderObject *next = 0;
-	    while(!next) {
-		o = o->parent();
-		if(!o) return;
-		next = o->nextSibling();
-	    }
-	    o = next;
-	}
-	if(o->isText() || o->isReplaced()) {
-	    xPos += o->xPos();
-	    yPos += o->yPos();
-	    return;
-	}
     }
 }
 

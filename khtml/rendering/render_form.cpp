@@ -45,6 +45,8 @@
 #include "rendering/render_style.h"
 #include <assert.h>
 
+#include "khtmlview.h"
+
 using namespace khtml;
 
 RenderFormElement::RenderFormElement(QScrollView *view,

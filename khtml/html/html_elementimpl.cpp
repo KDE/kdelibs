@@ -35,6 +35,7 @@
 #include "khtml_part.h"
 
 #include "rendering/render_object.h"
+#include "rendering/render_replaced.h"
 #include "css/css_valueimpl.h"
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
@@ -328,6 +329,112 @@ void HTMLElementImpl::setTabIndex( short _tabindex )
 {
   has_tabindex=true;
   tabindex=_tabindex;
+}
+
+bool HTMLElementImpl::isSelectable()
+{
+  switch(id())
+    {
+    case ID_A:
+    case ID_INPUT:
+    case ID_TEXTAREA:
+    case ID_BUTTON:
+    case ID_SELECT:
+      if (!renderer())
+      {
+	kdDebug(6000)<<"isSelectable: no renderer for "<<getTagName(id()).string()<<"\n";
+	  return false;
+      }
+      if (!renderer()->isReplaced())
+	  return true;
+      if (!((RenderWidget *)renderer())->isWidget())
+	  return true;
+      return ((RenderWidget *)renderer())->m_widget->isEnabled();
+    default:
+      return false;
+    };
+}
+
+// I don't like this way of implementing the method, but I didn't find any
+// other way. Lars
+void HTMLElementImpl::getAnchorPosition(int &xPos, int &yPos)
+{
+    if (!m_render)
+    {
+	kdDebug(6000) << "HTMLElementImpl::getAnchorPosition: no rendering object.\n";
+	return;
+    }
+    if (m_render->containingBlock())
+	m_render->containingBlock()->absolutePosition( xPos, yPos );
+    else
+	m_render->absolutePosition(xPos, yPos);
+
+    RenderObject *o = m_render;
+    // find the next text/image after the anchor, to get a position
+    while(o) {
+	if(o->firstChild())
+	    o = o->firstChild();
+	else if(o->nextSibling())
+	    o = o->nextSibling();
+	else {
+	    RenderObject *next = 0;
+	    while(!next) {
+		o = o->parent();
+		if(!o) return;
+		next = o->nextSibling();
+	    }
+	    o = next;
+	}
+	if(o->isText() || o->isReplaced()) {
+	    xPos += o->xPos();
+	    yPos += o->yPos();
+	    return;
+	}
+    }
+}
+
+void HTMLElementImpl::getAnchorBounds(int &xPos, int &yPos)
+{
+    if (!m_render)
+    {
+	kdDebug(6000) << "HTMLElementImpl::getAnchorBounds: no rendering object.\n";
+	return;
+    }
+
+    RenderObject *myRenderer;
+    if (m_render->containingBlock())
+    {
+	myRenderer=m_render->containingBlock();
+    }
+    else
+    {
+	myRenderer=m_render;
+    }
+
+    myRenderer->absolutePosition( xPos, yPos );
+
+    RenderObject *o = m_render;
+    // find the next text/image after the anchor, to get a position
+    while(o) {
+	if(o->firstChild())
+	    o = o->firstChild();
+	else if(o->nextSibling())
+	    o = o->nextSibling();
+	else {
+	    RenderObject *next = 0;
+	    while(!next) {
+		o = o->parent();
+		if(!o) return;
+		next = o->nextSibling();
+	    }
+	    o = next;
+	}
+	if(o->isText() || o->isReplaced()) {
+	    xPos += o->xPos()+o->width();
+	    yPos += o->yPos()+o->height();
+	    return;
+	}
+    }
 }
 
 // -------------------------------------------------------------------------

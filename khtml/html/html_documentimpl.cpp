@@ -248,10 +248,8 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
 #ifdef __GNUC__
 #warning bloatware
 #endif
-// ### Please remove that duplicate code.
-// this seems somewhat redundant to getElementByID().
-// however, it is not flexible enough to suit specific needs.
-// please check if this function can be removed.
+// Please see if there`s a possibility to merge that code
+// with the next function and getElementByID().
 NodeImpl *HTMLDocumentImpl::findElement( int id )
 {
     QStack<NodeImpl> nodeStack;
@@ -286,7 +284,7 @@ NodeImpl *HTMLDocumentImpl::findElement( int id )
     return 0;
 }
 
-NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
+HTMLElementImpl *HTMLDocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
 {
     if (!start)
 	start = forward?_first:_last;
@@ -299,7 +297,7 @@ NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
 		start = start->firstChild();
 	    else if (start->nextSibling())
 		start = start->nextSibling();
-	    else // finde den ersten nachbarn eines elternteils
+	    else // find the next sibling of the first parent that has a nextSibling
 	    {
 		NodeImpl *pa = start;
 		while (pa)
@@ -314,8 +312,8 @@ NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
 		    }
 		}
 	    }
-	    if (start->id()==id)
-		return start;
+	    if (start->isElementNode() && ((HTMLElementImpl *)start)->isSelectable())
+		return (HTMLElementImpl *)start;
 	}
     else
 	while (1)
@@ -324,11 +322,12 @@ NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
 		start = start->lastChild();
 	    else if (start->previousSibling())
 		start = start->previousSibling();
-	    else // finde den ersten nachbarn eines parent
+	    else
 	    {
 		NodeImpl *pa = start;
 		while (pa)
 		{
+		  // find the previous sibling of the first parent that has a prevSibling
 		    pa = pa->parentNode();
 		    if (!pa)
 			return 0;
@@ -339,11 +338,10 @@ NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
 		    }
 		}
 	    }
-	    if (start->id()==id)
-		return start;
+	    if (start->isElementNode() && ((HTMLElementImpl *)start)->isSelectable())
+		return (HTMLElementImpl *)start;
 	}
-    kdFatal(6000) << "some error in findLink\n";
-    exit(1);
+    kdFatal(6000) << "some error in findElement\n";
 }
 
 
@@ -548,34 +546,30 @@ int HTMLDocumentImpl::findHighestTabIndex()
     return retval;
 }
 
-NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint)
+HTMLElementImpl *HTMLDocumentImpl::findLink(HTMLElementImpl *n, bool forward, int tabIndexHint)
 {
     // tabIndexHint is the tabIndex that should be found.
     // if it is not in the document, and direction is forward,
     // tabIndexHint is incremented until maxTabIndex is reached.
     // if direction is backward, tabIndexHint is reduced until -1
     // is encountered.
-    // if tabIndex is -1, items containing tabIndex should be skipped.
+    // if tabIndex is -1, items containing tabIndex are skipped.
 
   kdDebug(6000)<<"HTMLDocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
 
     int maxTabIndex;
 
-    if (forward)
-	maxTabIndex = findHighestTabIndex();
-    else
-	maxTabIndex = -1;
+    if (forward) maxTabIndex = findHighestTabIndex();
+    else maxTabIndex = -1;
 
     do
     {
 	do
 	{
-	    n = findElement(ID_A, n, forward);
-
+	    n = findSelectableElement(n, forward);
 	    // this is alright even for non-tabindex-searches,
 	    // because DOM::NodeImpl::tabIndex() defaults to -1.
-
-	} while (n && (((HTMLElementImpl *)n)->tabIndex()!=tabIndexHint));
+	} while (n && (n->tabIndex()!=tabIndexHint));
 	if (n)
 	    break;
 	if (tabIndexHint!=-1)
@@ -592,13 +586,13 @@ NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint
 		tabIndexHint--;
 		n=0;
 	    }
+	    kdDebug(6000)<<"trying next tabIndexHint:"<<tabIndexHint<<"\n";
 	}
 	// this is not the same as else ... ,
-	// since tabIndexHint may be changed in the block above.
+	// since tabIndexHint may have been changed in the block above.
 	if (tabIndexHint==-1)
 	    break;
-    }
-    while(1); // break.
+    } while(1); // break.
 
     return n;
 }
