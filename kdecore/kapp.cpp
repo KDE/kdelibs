@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// instead of id is stored.
+//
+//
 // Revision 1.76  1997/11/27 20:21:20  kulow
 // safer deletion of theKProcessController by Johannes Sixt.
 // Read the comments for details
@@ -1046,7 +1049,8 @@ QString KApplication::findFile( const char *file )
 
 const char* KApplication::getCaption() const
 {
-  KConfig* config = getConfig();
+        KConfig* config = getConfig();
+        config->reparseConfiguration();
   else
 	return aAppName;
 }
