@@ -115,24 +115,10 @@ bool KHTMLImage::openURL( const KURL &url )
     m_khtml->write( html.arg( m_url.url() ) );
     m_khtml->end();
 
-    KIO::Job *job = khtml::Cache::loader()->jobForRequest( m_url.url() );
-
     emit setWindowCaption( url.prettyURL() );
 
-    if ( job )
-    {
-        emit started( job );
-
-        connect( job, SIGNAL( result( KIO::Job * ) ),
-                 this, SLOT( slotImageJobFinished( KIO::Job * ) ) );
-    }
-    else
-    {
-        emit started( 0 );
-        emit completed();
-        QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
-    }
-
+    connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
+            this, SLOT( updateWindowCaption() ) );
     return true;
 }
 
