@@ -1,22 +1,9 @@
 
-- Proper TLS support
-
-- Report if CN == this host using the method in KSSLPeerInfo
-
-- KSSL needs to be integrated into the slave base in some
-  way or another so that kio_pop3 and friends can use it.
-
 - KHTML needs a dialog to warn on an insecure post (unencrypted)
   if the user has selected to do so in kcmcrypto
 
 - KHTML needs a dialog and logic to warn on pages that have some
   frames in SSL and others in non-SSL
-
-- HTTP IOSlave needs to send a message through the UI server to 
-  warn on a failed certificate check and prompt for proceed/abort
-
-- The policies for certificates need to be implemented (accept from
-  this site even though it is self signed, etc)
 
 - There needs to be a way to warn the user if an SSL page does a redirect
   to a non-SSL page
@@ -29,10 +16,6 @@
 - kcmcrypto certificate managing code is not implemented yet
 
 - Personal, other certificates are not implemented
-
-- The certificate cache is not implemented.  This is needed to keep track of
-  certificates we have seen this session so we don't prompt the user 300 times
-  each time a page loads.
 
 - The certificate factory is not done.  This is needed to generate personal
   certificates (self signed) for users.
