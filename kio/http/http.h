@@ -3,14 +3,6 @@
 #ifndef __http_h__
 #define __http_h__
 
-#ifdef HAVE_LIBZ
-#define DO_GZIP
-#endif
-
-#ifdef HAVE_SSL_H
-#define DO_SSL
-#endif
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -28,7 +20,7 @@
 #include <unistd.h>
 #include <netdb.h>
 
-#include <qstack.h>
+#include <qstringlist.h>
 #include <qstring.h>
 
 #include <kio/global.h>
@@ -156,7 +148,7 @@ protected:
     * is nececesary because transfer encodings and
     * content encodings must be handled separately.
     */
-  void addEncoding(QString, QStack<char> *);
+  void addEncoding(QString, QStringList &);
 
   void configAuth(const char *, bool);
 #ifdef DO_SSL
@@ -257,7 +249,7 @@ protected: // Members
   QString m_strCacheDir; // Location of the cache.
 
   // Language/Encoding
-  QStack<char> m_qTransferEncodings, m_qContentEncodings;
+  QStringList m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
   QString m_sContentMD5;
   QString m_strMimeType;

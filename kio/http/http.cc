@@ -89,8 +89,6 @@ using namespace KIO;
 // Timeout for receiving an answer from a remote side in seconds.
 #define RESPONSE_TIMEOUT 60
 
-template class QStack<char>;
-
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
   const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
@@ -800,7 +798,7 @@ bool HTTPProtocol::http_open()
   // Let's also clear out some things, so bogus values aren't used.
   m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
-  m_qContentEncodings.clear(); // Unused should be removed BCI
+  m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_bChunked = false;
   m_iSize = 0;
@@ -1229,14 +1227,7 @@ bool HTTPProtocol::readHeader()
       // a document to be compressed without loosing the identity of its underlying
       // media type.  Simply put if it is specified, this is the actual mime-type
       // we should use when we pull the resource !!!
-      // addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
-      m_strMimeType = trimLead(buffer + 17);
-      // Since we can have multiple encodings applied, pick the correct one, which
-      // would be the last one...
-      int loc = m_strMimeType.stripWhiteSpace().findRev( ' ' );
-      if( loc != -1 )
-      	m_strMimeType = m_strMimeType.mid( loc + 1 );
-
+      addEncoding(trimLead(buffer + 17), m_qContentEncodings);
     }
 
     // continue only if we know that we're HTTP/1.1
@@ -1264,7 +1255,7 @@ bool HTTPProtocol::readHeader()
 	// If multiple encodings have been applied to an entity, the
 	// transfer-codings MUST be listed in the order in which they
 	// were applied.
-	addEncoding(trimLead(buffer + 18), &m_qTransferEncodings);
+	addEncoding(trimLead(buffer + 18), m_qTransferEncodings);
       }
 
       // md5 signature
@@ -1334,6 +1325,24 @@ bool HTTPProtocol::readHeader()
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
 #endif
   }
+  // WABA: Correct for tgz files with a gzip-encoding.
+  // They really shouldn't put gzip in the Content-Encoding field!
+  // Web-servers really shouldn't do this: They let Content-Size refer 
+  // to the size of the tgz file, not to the size of the tar file, 
+  // while the Content-Type refers to "tar" instead of "tgz". 
+  if ((m_qContentEncodings.last() == "gzip") && 
+      (m_strMimeType == "application/x-tar"))
+  {
+     m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+     m_strMimeType = QString::fromLatin1("application/x-tgz");
+  }
+  
+  if (!m_qContentEncodings.isEmpty())
+  {
+     // If we still have content encoding we can't rely on the Content-Length.
+     m_iSize = 0;
+  }
+
   // FINALLY, let the world know what kind of data we are getting
   // and that we do indeed have a header
   // Do this only if there is no redirection. Buggy server implementations
@@ -1362,24 +1371,24 @@ bool HTTPProtocol::readHeader()
 }
 
 
-void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
+void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
 {
   // Identity is the same as no encoding
   if (encoding.lower() == "identity") {
     return;
   } else if (encoding.lower() == "chunked") {
     m_bChunked = true;
-//    encs->push("chunked");
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
     //if ( m_cmd != CMD_COPY )
       m_iSize = 0;
-  } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip") || (encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
-    encs->push(strdup(encoding.lower()));
-    //if ( m_cmd != CMD_COPY )
-      m_iSize = 0;
+  } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip")) {
+    encs.append(QString::fromLatin1("gzip"));
+  } else if ((encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
+    encs.append(QString::fromLatin1("deflate"));
+    kdDebug(7103) << "Deflate not implemented.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
+    abort();
   } else {
     kdDebug(7103) << "Unknown encoding encountered.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
-    fflush(stderr);
     abort();
   }
 }
@@ -2024,7 +2033,7 @@ bool HTTPProtocol::readBody( )
 
   // Check if we need to decode the data.
   // If we are in copy mode the use only transfer decoding.
-  bool decode = !m_qTransferEncodings.isEmpty(); // || !m_qContentEncodings.isEmpty();
+  bool decode = !m_qTransferEncodings.isEmpty() || !m_qContentEncodings.isEmpty();
 
 #ifdef DO_MD5
   bool useMD5 = !m_sContentMD5.isEmpty();
@@ -2139,13 +2148,11 @@ bool HTTPProtocol::readBody( )
   // if we have something in big_buffer, then we know that we have
   // encoded data.  of course, we need to do something about this
   if (!big_buffer.isNull()) {
-    char *enc;
     // decode all of the transfer encodings
     while (!m_qTransferEncodings.isEmpty()) {
-      enc = m_qTransferEncodings.pop();
-      if (!enc)
-	break;
-      if ( strstr(enc, "gzip") ) {
+      QString enc = m_qTransferEncodings.last();
+      m_qTransferEncodings.remove(m_qTransferEncodings.fromLast());
+      if ( enc == "gzip" ) {
 	decodeGzip();
       }
     }
@@ -2160,18 +2167,22 @@ bool HTTPProtocol::readBody( )
     MD5_Update(&context, (const unsigned char*)big_buffer.data(),
 	       big_buffer.size());
 #endif
-		
-    // now decode all of the content encodings -- Why ?? We are not
-    // a proxy server, be a client side implementation!!  The applications
-    // are capable of determinig how to extract the encoded implementation.
-/*    while (!m_qContentEncodings.isEmpty()) {
-      enc = m_qContentEncodings.pop();
-      if (!enc)
-	break;
-      if ( strstr(enc, "gzip") ) {
+
+    // now decode all of the content encodings 
+    // -- Why ?? We are not
+    // -- a proxy server, be a client side implementation!!  The applications
+    // -- are capable of determinig how to extract the encoded implementation.
+    // WB: That's a misunderstanding. We are free to remove the encoding.
+    // WB: Some braindead www-servers however, give .tgz files an encoding
+    // WB: of "gzip" (or even "x-gzip") and a content-type of "applications/tar"
+    // WB: They shouldn't do that. We can work around that though...
+    while (!m_qContentEncodings.isEmpty()) {
+      QString enc = m_qContentEncodings.last();
+      m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+      if ( enc == "gzip" ) {
 	decodeGzip();
       }
-    } */
+    }
     sz = sendData();
   }
 
