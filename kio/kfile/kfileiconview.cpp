@@ -359,7 +359,7 @@ void KFileIconView::slotActivate( QIconViewItem *item )
 
 void KFileIconView::selected( QIconViewItem *item )
 {
-    if ( !item || (KApplication::keyboardModifiers() & (KApplication::ShiftModifier | KApplication::ControlModifier)) != 0 )
+    if ( !item || (KApplication::keyboardMouseState() & (ShiftButton | ControlButton)) != 0 )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {

@@ -166,19 +166,19 @@ void KIconView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  uint keybstate = KApplication::keyboardModifiers();
+  ButtonState keybstate = KApplication::keyboardMouseState();
   QIconViewItem* previousItem = currentItem();
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
     //Shift pressed?
-    if( (keybstate & KApplication::ShiftModifier) ) {
+    if( (keybstate & ShiftButton) ) {
       //Temporary implementation of the selection until QIconView supports it
       bool block = signalsBlocked();
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & KApplication::ControlModifier) )
+      if( !(keybstate & ControlButton) )
 	clearSelection();
 
       bool select = !m_pCurrentItem->isSelected();
@@ -223,9 +223,9 @@ void KIconView::slotAutoSelect()
       if( selectionMode() == QIconView::Single )
 	emit selectionChanged( m_pCurrentItem );
 
-      //setSelected( m_pCurrentItem, true, (keybstate & KApplication::ControlModifier), (keybstate & KApplication::ShiftModifier) );
+      //setSelected( m_pCurrentItem, true, (keybstate & ControlButton), (keybstate & ShiftButton) );
     }
-    else if( (keybstate & KApplication::ControlModifier) )
+    else if( (keybstate & ControlButton) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
     else
       setSelected( m_pCurrentItem, true );
@@ -242,12 +242,12 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
     return;
   }
 
-  uint keybstate = KApplication::keyboardModifiers();
+  ButtonState keybstate = KApplication::keyboardMouseState();
 
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-  if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
+  if( !( m_bUseSingle && ((keybstate & ShiftButton) || (keybstate & ControlButton)) ) ) {
     setSelected( item, false );
     viewport()->unsetCursor();
     emit executed( item );

@@ -116,19 +116,19 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  uint keybstate = KApplication::keyboardModifiers();
+  ButtonState keybstate = KApplication::keyboardMouseState();
 
   QListBoxItem* previousItem = item( currentItem() ); 
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
     //Shift pressed?
-    if( (keybstate & KApplication::ShiftModifier) ) {
+    if( (keybstate & ShiftButton) ) {
       bool block = signalsBlocked();
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & KApplication::ControlModifier) )  
+      if( !(keybstate & ControlButton) )  
 	clearSelection(); 
 
       bool select = !m_pCurrentItem->isSelected();
@@ -158,7 +158,7 @@ void KListBox::slotAutoSelect()
       if( selectionMode() == QListBox::Single )
 	emit selectionChanged( m_pCurrentItem );
     }
-    else if( (keybstate & KApplication::ControlModifier) )
+    else if( (keybstate & ControlButton) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
     else {
       bool block = signalsBlocked();
@@ -178,12 +178,12 @@ void KListBox::slotAutoSelect()
 
 void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 {
-  uint keybstate = KApplication::keyboardModifiers();
+  ButtonState keybstate = KApplication::keyboardMouseState();
     
   m_pAutoSelect->stop();
   
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-  if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
+  if( !( m_bUseSingle && ((keybstate & ShiftButton) || (keybstate & ControlButton)) ) ) {
     emit executed( item );
     emit executed( item, pos );
   }
