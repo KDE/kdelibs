@@ -720,7 +720,7 @@ protected:
    */
   virtual void khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * );
   /**
-   * Eventhandler for the khtml::MouseDoubleClickEvent.
+   * Eventhandler for the khtml::MouseDoubleMoveEvent.
    */
   virtual void khtmlMouseMoveEvent( khtml::MouseMoveEvent *event );
   /**
