@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
+                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -218,7 +219,7 @@ public:
      * is returned.
      * @returns true if an item with the string @p text is in the combobox.
      */
-    bool isInserted( const QString& text ) const;
+    bool contains( const QString& text ) const;
 
     /**
      * By default, KComboBox recognizes Key_Return and Key_Enter and emits
@@ -232,7 +233,7 @@ public:
      *
      * @see #grabReturnKeyEvents
      */
-    void setGrabReturnKeyEvents( bool grab );
+    void setTrapReturnKey( bool grab );
 
     /**
      * @returns true if keyevents of Key_Return or Key_Enter will be stopped
@@ -240,7 +241,7 @@ public:
      *
      * @see #setGrabReturnKeyEvents
      */
-    bool grabReturnKeyEvents() const;
+    bool trapReturnKey() const;
 
 signals:
     /**
@@ -308,16 +309,6 @@ public slots:
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
-   /**
-    * Resets the history list iterator.
-    *
-    * Use this function to reset the history iterator.
-    * It is useful in reseting the iterator whenever
-    * this widget is hidden, but not destroyed.
-    *
-    */
-   void resetHistoryIterator() { m_strHistoryIterator = QString::null; }
-
 protected slots:
 
     /**
@@ -375,13 +366,160 @@ private :
     // Pointer to the line editor.
     QGuardedPtr<QLineEdit> m_pEdit;
 
-    // Holds the current text on rotation.  Allows us
-    // to emulate *nix shell like rotation where you
-    // would not loose what you typed even if you rotate
-    // before finishing it :)
-    QString m_strHistoryIterator;
-	
+    // indicating if we should stop return-key events from propagating
+    bool m_trapReturnKey;
+
     class KComboBoxPrivate;
     KComboBoxPrivate *d;
 };
+
+
+/**
+ * A combobox which implements a history like a unix shell. You can navigate
+ * through all the items by using the Up or Down arrows (configurable of
+ * course). Additionally, weighted completion is available. So you should
+ * load and save the completion list to preserve the weighting between
+ * sessions.
+ *
+ * @see KCompletion
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ * @short A combobox for offering a history and completion
+ */
+class KHistoryCombo : public KComboBox
+{
+    Q_OBJECT
+    Q_PROPERTY( QStringList historyItems
+		READ historyItems WRITE setHistoryItems )
+
+public:
+    /**
+     * Constructs a "read-write" combobox. A read-only history combobox
+     * doesn't make much sense, so it is only available as read-write.
+     *
+     * The insertion-policy is set to NoInsertion, you have to add the items
+     * yourself via the slot @ref addToHistory. If you want every item added,
+     * use
+     * <pre>
+     * connect( combo, SIGNAL( activated( const QString& )),
+     *          combo, SLOT( addToHistory( const QString& )));
+     * </pre>
+     *
+     * Use @ref QComboBox::setMaxCount() to limit the history.
+     *
+     * @param parent the parent object of this widget.
+     * @param name the name of this widget.
+     */
+    KHistoryCombo( QWidget *parent=0, const char *name=0 );
+
+    /**
+     * Calls @ref clearHistory and sets the list of history items. Might get
+     * truncated if it is longer than @ref maxCount()
+     *
+     * Set @p setCompletionList to true, if you don't have a list of
+     * completions. This tells KHistoryCombo to  use all the items for the
+     * completion object as well.
+     * You won't have the benefit of weighted completion though, so normally
+     * you should do something like
+     * <pre>
+     * KConfig *config = kapp->config();
+     * QStringList list;
+     *
+     * // load the history and completion list after creating the history combo
+     * list = config->readEntry( "Completion list" );
+     * combo->completionObject()->setItems( list );
+     * list = config->readEntry( "History list" );
+     * combo->setHistoryItems( list );
+     *
+     * [...]
+     *
+     * // save the history and completion list when the history combo is
+     * // destroyed
+     * list = combo->completionObject()->items()
+     * config->writeEntry( "Completion list", list );
+     * list = combo->historyItems();
+     * config->writeEntry( "History list", list );
+     * </pre>
+     *
+     * Be sure to use different names for saving with KConfig if you have more
+     * than one KHistoryCombo.
+     *
+     * Note: When @p setCompletionList is true, the items are inserted into the
+     * KCompletion object with mode KCompletion::Insertion and the mode is set
+     * to KCompletion::Weighted afterwards.
+     *
+     * @see #historyItems
+     * @see KComboBox::completionObject
+     * @see KCompletion::setItems
+     * @see KCompletion::items
+     */
+    void setHistoryItems(QStringList items,
+			 bool setCompletionList = false );
+
+    /**
+     * Returns the list of history items. Empty, when this is not a read-write
+     * combobox.
+     *
+     * @see #setHistoryItems
+     */
+    QStringList historyItems() const;
+
+    /**
+     * Removes all items named @p item.
+     * @returns true if at least one item was removed.
+     *
+     * @see #addToHistory
+     */
+    bool removeFromHistory( const QString& item );
+
+public slots:
+    /**
+     * Adds an item to the end of the history list and to the completion list.
+     * If @ref maxCount() is reached, the first item of the list will be
+     * removed.
+     *
+     * Note: By using this method and not the Q and KComboBox insertItem()
+     * methods, you make sure that the combobox stays in sync with the
+     * completion. It would be annoying if completion would give an item
+     * not in the combobox, and vice versa.
+     *
+     * If an items is added twice without any other item in between, it will
+     * only show up once in the combobox.
+     *
+     * @see #removeFromHistory
+     */
+    void addToHistory( const QString& item );
+
+    /**
+     * Clears the history and the completion list.
+     */
+    void clearHistory();
+
+protected:
+    virtual void keyPressEvent( QKeyEvent * );
+
+private slots:
+    /**
+     * resets the iterate index to -1
+     */
+    void slotReset();
+
+private:
+    /**
+     * the current position (index) in the combobox, used for Up and Down
+     */
+    int myIterateIndex;
+
+    /**
+     * The text typed before Up or Down was pressed.
+     */
+    QString myText;
+
+    /**
+     * Indicates that the user at least once rotated Up through the entire list
+     * Needed to allow going back after rotation.
+     */
+    bool myRotated;
+};
+
+
 #endif

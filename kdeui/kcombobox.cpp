@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
+                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,18 +28,10 @@
 #include "kcombobox.moc"
 
 
-class KComboBox::KComboBoxPrivate
-{
-public:
-    bool grabReturnKeyEvents;
-};
-
-
 KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
-    d = new KComboBoxPrivate;
-    d->grabReturnKeyEvents = false;
+    m_trapReturnKey = false;
 
     init();
 }
@@ -46,33 +39,25 @@ KComboBox::KComboBox( QWidget *parent, const char *name )
 KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
           :QComboBox( rw, parent, name )
 {
-    d = new KComboBoxPrivate;
-    d->grabReturnKeyEvents = false;
+    m_trapReturnKey = false;
 
     if ( rw )
     {
         m_pEdit = QComboBox::lineEdit();
-        m_pEdit->installEventFilter( this );
+	// Qt-bug, QComboBox installs exactly the same event-filter and there
+	// is no check for this, so we would end up with two event-filters and
+	// eventFilter() being called twice for every event.
+	//  m_pEdit->installEventFilter( this );
     }
     init();
 }
 
 KComboBox::~KComboBox()
 {
-    if( m_pEdit )
-    {
-        m_pEdit->removeEventFilter( this );
-    }
-
-    delete d;
 }
 
 void KComboBox::init()
 {
-    // Do not put text in the list, but do not loose
-    // it either when rotating up.
-    m_strHistoryIterator = QString::null;
-
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
 
@@ -90,7 +75,7 @@ void KComboBox::init()
     connect( listBox(), SIGNAL( clicked( QListBoxItem* ) ), SLOT( itemSelected( QListBoxItem* ) ) );
 }
 
-bool KComboBox::isInserted( const QString& _text ) const
+bool KComboBox::contains( const QString& _text ) const
 {
     if ( _text.isEmpty() )
 	return false;
@@ -203,64 +188,6 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
                 m_pEdit->setCursorPosition( pos );
 	    }
         }
-        else if( type == KCompletionBase::RotateUp ||
-                 type == KCompletionBase::RotateDown )
-        {
-	   // NOTE: We only keep the text typed whenever the
-	   // insertion policy is set to insert at the top or
-	   // bottom of the queue.
-	   int index = -1;
-	   QComboBox::Policy policy = insertionPolicy();
-	   if( m_strHistoryIterator.isNull() &&
-	      (policy == QComboBox::AtTop ||
-	       policy == QComboBox::AtBottom ) )
-	   {
-	      index = (policy == QComboBox::AtTop) ? -1 : count();
-	      m_strHistoryIterator = currentText();
-	   }
-	
-	   if( type == KCompletionBase::RotateUp )
-	   {
-	      switch( policy )
-	      {
-	       case QComboBox::AtTop:
-		 index = currentItem() + 1;
-		 break;
-	       case QComboBox::AtBottom:
-	       default:
-		 index = currentItem() - 1;
-		 break;
-	      }
-	   }
-	   else
-	   {
-	      switch( policy )
-	      {
-	       case QComboBox::AtTop:
-		 index = currentItem() - 1;
-		 break;
-	       case QComboBox::AtBottom:
-	       default:
-		 index = currentItem() + 1;
-		 break;
-	      }
-	   }
-
-	   if( index > -1 && index < count() )
-	   {
-	      setCurrentItem( index );
-	   }
-	   else
-	   {
-	      if( !m_strHistoryIterator.isNull() &&
-		 ( policy == QComboBox::AtTop ||
-		  policy == QComboBox::AtBottom ) )
-                {
-		   setEditText( m_strHistoryIterator );
-		   m_strHistoryIterator = QString::null;
-		}
-	   }
-        }
     }
 }
 
@@ -292,14 +219,6 @@ void KComboBox::connectSignals( bool handle ) const
 
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
-	// Disable Qt's hard coded rotate-up key binding!  It is
-	// configurable in KDE.
-	if( e->state() == Qt::AltButton && e->key() == Qt::Key_Up )
-	{
-	   e->accept();
-	   return;
-	}
-
     if( m_pEdit && m_pEdit->hasFocus() )
     {
     	KGlobalSettings::Completion mode = completionMode();
@@ -334,36 +253,19 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 	      }
 
             }
-            // Handles rotateUp.
-            key = ( keys[RotateUp] == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : keys[RotateUp];
-            if( KStdAccel::isEqual( e, key ) && fireSignals )
-            {
-                emit textRotation( KCompletionBase::RotateUp );
-                e->accept();
-                return;
-            }
-            // Handles rotateDown.
-            key = ( keys[RotateDown] == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : keys[RotateDown];
-            if( KStdAccel::isEqual( e, key ) && fireSignals )
-            {
-                emit textRotation( KCompletionBase::RotateDown );
-                e->accept();
-                return;
-            }
-            // Handles rotateUp.
+
+            // Handles previousMatch.
             key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
             if( KStdAccel::isEqual( e, key ) && fireSignals )
             {
                 emit textRotation( KCompletionBase::PrevCompletionMatch );
-                e->accept();
                 return;
             }
-            // Handles rotateDown.
+            // Handles nextMatch.
             key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
             if( KStdAccel::isEqual( e, key ) && fireSignals )
             {
                 emit textRotation( KCompletionBase::NextCompletionMatch );
-                e->accept();
                 return;
             }
         }
@@ -374,7 +276,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
         {
             emit completion ( keycode );
-            e->accept();
             return;
         }
     }
@@ -432,31 +333,178 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             return true;
         }
     }
-    
-    else if ( o == m_pEdit && ev->type() == QEvent::KeyPress ) {
+
+    else if ( (o == this || o == m_pEdit) && ev->type() == QEvent::KeyPress ) {
 	QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-	if ( d->grabReturnKeyEvents && 
-	     (e->key() == Key_Return || e->key() == Key_Enter) ) {
+	if ( e->key() == Key_Return || e->key() == Key_Enter) {
 
 	    // On Return pressed event, emit both returnPressed(const QString&)
 	    // and returnPressed() signals
+	    qDebug("******** RETURN PRESSED ****** : %s : ", currentText().latin1());
             emit returnPressed();
             emit returnPressed( currentText() );
 
-	    return true;
+	    return m_trapReturnKey;
 	}
     }
-    
+
     return QComboBox::eventFilter( o, ev );
 }
 
 
-void KComboBox::setGrabReturnKeyEvents( bool grab )
+void KComboBox::setTrapReturnKey( bool grab )
 {
-    d->grabReturnKeyEvents = grab;
+    m_trapReturnKey = grab;
 }
 
-bool KComboBox::grabReturnKeyEvents() const
+bool KComboBox::trapReturnKey() const
 {
-    return d->grabReturnKeyEvents;
+    return m_trapReturnKey;
+}
+
+
+// *********************************************************************
+// *********************************************************************
+
+// we are always read-write
+KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
+    : KComboBox( true, parent, name )
+{
+    completionObject()->setOrder( KCompletion::Weighted );
+    setInsertionPolicy( NoInsertion );
+    myIterateIndex = -1;
+    myRotated = false;
+
+    connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
+    connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
+}
+
+void KHistoryCombo::setHistoryItems( QStringList items,
+				     bool setCompletionList )
+{
+    clearHistory();
+
+    while ( (int) items.count() > maxCount() && !items.isEmpty() )
+	items.remove( items.begin() );
+
+    insertStringList( items );
+
+    if ( setCompletionList ) {
+	// we don't have any weighting information here ;(
+	KCompletion *comp = completionObject();
+	comp->setOrder( KCompletion::Insertion );
+	comp->setItems( items );
+	comp->setOrder( KCompletion::Weighted );
+    }
+
+    clearEdit();
+
+}
+
+QStringList KHistoryCombo::historyItems() const
+{
+    QStringList list;
+    for ( int i = 0; i < count(); i++ )
+	list.append( text( i ) );
+
+    return list;
+}
+
+void KHistoryCombo::clearHistory()
+{
+    KComboBox::clear();
+    completionObject()->clear();
+}
+
+void KHistoryCombo::addToHistory( const QString& item )
+{
+    if ( item.isEmpty() || item == text(0) )
+	return;
+
+    int last;
+    QString rmItem;
+    while ( count() >= maxCount() ) {
+	// remove the last item, as long as we are longer than maxCount()
+	// remove the removed item from the completionObject if it isn't
+	// anymore available at all in the combobox.
+	last = count() - 1;
+	rmItem = text( last );
+	removeItem( last );
+	if ( !contains( rmItem ) )
+	    completionObject()->removeItem( item );
+    }
+
+    // now add the items
+    insertItem( item, 0 );
+    completionObject()->addItem( item );
+    clearEdit();
+}
+
+bool KHistoryCombo::removeFromHistory( const QString& item )
+{
+    if ( item.isEmpty() )
+	return false;
+
+    bool removed = false;
+    for ( int i = 0; i < count(); i++ ) {
+	while ( item == text( i ) ) {
+	    removed = true;
+	    removeItem( i );
+	}
+    }
+
+    if ( removed )
+	completionObject()->removeItem( item );
+
+    return removed;
+}
+
+void KHistoryCombo::keyPressEvent( QKeyEvent *e )
+{
+    // save the current text in the lineedit
+    if ( myIterateIndex == -1 )
+	myText = currentText();
+
+    // going up in the history, rotating when reaching QListBox::count()
+    if ( KStdAccel::isEqual( e, KStdAccel::rotateUp() ) ) {
+	myIterateIndex++;
+	if ( myIterateIndex >= count() ) {
+	    myRotated = true;
+	    myIterateIndex = -1;
+	    setEditText( myText );
+	}
+	else
+	    setEditText( text( myIterateIndex ));
+    }
+
+
+    // going down in the history, no rotation possible. Last item will be
+    // the text that was in the lineedit before Up was called.
+    else if ( KStdAccel::isEqual( e, KStdAccel::rotateDown() ) ) {
+	myIterateIndex--;
+	if ( myIterateIndex < 0 ) {
+	    if ( myRotated && myIterateIndex == -2 ) {
+		myRotated = false;
+		myIterateIndex = count() - 1;
+		setEditText( text(myIterateIndex) );
+	    }
+	    else {
+		myIterateIndex = -1;
+		setEditText( myText );
+	    }
+	}
+	else
+	    setEditText( text( myIterateIndex ));
+    }
+
+    else
+	KComboBox::keyPressEvent( e );
+}
+
+void KHistoryCombo::slotReset()
+{
+    myIterateIndex = -1;
+    myRotated = false;
+    //    clearEdit(); // FIXME, use a timer for that? slotReset is called
+    // before addToHistory() so we can't clear the edit here :-/
 }
