@@ -265,7 +265,7 @@ KHTMLPageCache::sendData()
      byteArray.resetRawData(buf, n);
      d->delivery.append( delivery );
   }
-  QTimer::singleShot(20, this, SLOT(sendData()));
+  QTimer::singleShot(0, this, SLOT(sendData()));
 }
 
 void
