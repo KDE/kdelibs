@@ -49,7 +49,7 @@ public:
   bool autoOpen;
   bool dropVisualizer;
 
-  int toolTipRow;
+  int toolTipColumn;
 };
 
 
@@ -120,7 +120,7 @@ KListView::KListView( QWidget *parent, const char *name )
 		d->itemsRenameable=false;
 		d->dragEnabled=false;
 		d->autoOpen=true;
-		d->toolTipRow=0;
+		d->toolTipColumn=0;
 		connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
 	}
 
@@ -638,7 +638,22 @@ QList<QListViewItem> KListView::selectedItems() const
 
 void KListView::moveItem(QListViewItem */*item*/, QListViewItem */*parent*/, QListViewItem */*after*/)
 {
-// unimplemented
+/*
+    if ( parentItem && olderSibling &&
+	 olderSibling->parentItem == parentItem && olderSibling != this ) {
+	if ( parentItem->childItem == this ) {
+	    parentItem->childItem = siblingItem;
+	} else {
+	    QListViewItem * i = parentItem->childItem;
+	    while( i && i->siblingItem != this )
+		i = i->siblingItem;
+	    if ( i )
+		i->siblingItem = siblingItem;
+	}
+	siblingItem = olderSibling->siblingItem;
+	olderSibling->siblingItem = this;
+    }
+*/
 }
 
 void KListView::dragEnterEvent(QDragEnterEvent *event)
@@ -667,20 +682,20 @@ void KListView::rename(QListViewItem *item, int c)
 
 }
 
-bool KListView::getRenameableRow(int row) const
+bool KListView::getRenameableColumn(int col) const
 {
-	return (bool)d->renameable.contains(row);
+	return (bool)d->renameable.contains(col);
 }
 
-void KListView::setRenameableRow(int row, bool yesno)
+void KListView::setRenameableColumn(int col, bool yesno)
 {
-	if (row>=header()->count()) return;
+	if (col>=header()->count()) return;
 
-	d->renameable.remove(row);
-	if (yesno && d->renameable.find(row)==d->renameable.end())
-		d->renameable+=row;
-	else if (!yesno && d->renameable.find(row)!=d->renameable.end())
-		d->renameable.remove(row);
+	d->renameable.remove(col);
+	if (yesno && d->renameable.find(col)==d->renameable.end())
+		d->renameable+=col;
+	else if (!yesno && d->renameable.find(col)!=d->renameable.end())
+		d->renameable.remove(col);
 }
 
 void KListView::doneEditing(QListViewItem *item, int row)
@@ -694,19 +709,13 @@ bool KListView::acceptDrag(QDropEvent*) const
 	return true;
 }
 
-void KListView::showToolTip(QListViewItem *item)
+void KListView::doToolTip(QListViewItem *item)
 {
-	showToolTip(item, toolTipRow());
+	doToolTip(item, toolTipColumn());
 }
 /*
 Charles vs. Peter:
 
-> > Yes, tooltips & context menus are rather easy to implement. BUT I don't
-> > think every app should have to do that, AND I think you're wrong regarding
-> > usage, at least context menus are used a lot.
-> with context menus, I think it's far too easy to consider implementing.
->
-> >
 > > As for tooltips, IMHO The Windows Way (tm) isn't too bad: tooltips are
 > > automatically displayed when an item doesn't fit on screen (i.e. when the
 > > listview has got a horizontal scrollbar)...
@@ -717,24 +726,29 @@ How about making that column configurable? Imagine having an icon in
 column one, no use to show a tooltip for that...
 */
 
-void KListView::showToolTip(QListViewItem */*item*/, int /*row*/)
+void KListView::doToolTip(QListViewItem */*item*/, int /*column*/)
 {
 
 }
 
-int KListView::toolTipRow() const
+int KListView::toolTipColumn() const
 {
-	return d->toolTipRow;
+	return d->toolTipColumn;
 }
 
-void KListView::setToolTipRow(int row)
+void KListView::setToolTipColumn(int column)
 {
-	d->toolTipRow=row;
+	d->toolTipColumn=column;
 }
 
-bool KListView::showToolTip(QListViewItem *item, const QPoint &pos, int row) const
+bool KListView::showToolTip(QListViewItem *item, const QPoint &, int column) const
 {
-	return ((item->text(row).length()>0) && (row==toolTipRow()));
+	return ((toolTip(item, column).length()>0) && (column==toolTipColumn()));
+}
+
+QString KListView::toolTip(QListViewItem *item, int column) const
+{
+	return item->text(column);
 }
 
 #include "klistviewlineedit.moc"

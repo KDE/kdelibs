@@ -74,9 +74,9 @@ public:
   bool itemsRenameable() const;
   bool dragEnabled() const;
   bool autoOpen() const;
-  bool getRenameableRow(int row) const;
+  bool getRenameableColumn(int column) const;
   bool dropVisualizer() const;
-  int toolTipRow() const;
+  int toolTipColumn() const;
 
 signals:
 
@@ -129,22 +129,25 @@ public slots:
   virtual void rename(QListViewItem *item, int c);
 
   /**
-   * is row renameable? Set it.  by default, all rows
+   * is column renameable? Set it.  by default, all columns
    * are not renameable.  If you want more intelligent
    * selection, you'll have to derive from KListView,
    * and override @ref rename where you only call
    * KListView::rename if you want it renamed.
    **/
-  void setRenameableRow(int row, bool yesno=true);
+  void setRenameableColumn(int column, bool yesno=true);
   virtual void setItemsMovable(bool b);
   virtual void setItemsRenameable(bool b);
   virtual void setDragEnabled(bool b);
   virtual void setAutoOpen(bool b);
   virtual void setDropVisualizer(bool b);
-  virtual void setToolTipRow(int row);
+  virtual void setToolTipColumn(int column);
 
-  void showToolTip(QListViewItem *item);
-  virtual void showToolTip(QListViewItem *item, int row);
+  /**
+   * show a tooltip for the item. just calls doToolTip(item, toolTipColumn());
+   **/
+  void doToolTip(QListViewItem *item);
+  virtual void doToolTip(QListViewItem *item, int column);
 
 protected slots:
   void slotOnItem( QListViewItem *item );
@@ -165,8 +168,9 @@ protected:
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
+  virtual QString toolTip(QListViewItem*, int column) const;
 
-  virtual bool showToolTip(QListViewItem *item, const QPoint &pos, int row) const;
+  virtual bool showToolTip(QListViewItem *item, const QPoint &pos, int column) const;
 
   /**
    * Override this method.  event is as you'd expect
