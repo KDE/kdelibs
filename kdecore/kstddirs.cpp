@@ -123,6 +123,7 @@ QString KStandardDirs::findResourceDir( const QString& type,
     for (QStringList::ConstIterator it = candidates->begin(); 
 	 it != candidates->end(); it++) {
 	testdir.setPath(*it);
+	debug("looking for filename " + *it + filename);
 	if (testdir.exists(filename, false))
 	    return *it;
     }

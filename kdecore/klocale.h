@@ -127,14 +127,6 @@ public:
     const QString charset() const { return chset; }
     
     /**
-      * Returns the base directory, where you can find the language
-      * specific things like messages.
-      * Please note, that this function is unused currently and may
-      * not work.
-      */
-    QString directory();
-
-    /**
      * adds anther catalogue to search for translation lookup.
      * This function is useful for extern libraries and/or code,
      * that provides it's own messages.
@@ -189,7 +181,7 @@ public:
 private:
     QStrList *catalogues;
     QIntDict<QString> aliases;
-    const char* lang;
+    QString lang;
     QString chset;
     QString lc_numeric;
     bool numeric_enabled;

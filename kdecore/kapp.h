@@ -304,15 +304,6 @@ public:
   static QString kde_datadir();
 
   /**
-   * Returns the directory where locale-specific information (like
-   * translated on-screen messages are stored
-   *
-   * The default for this directory is $KDEDIR/share/locale
-   * @return the name of the directory
-   */
-  static QString kde_localedir();
-
-  /**
    * Returns the directory where cgi scripts are stored
    *
    * The default for this directory is $KDEDIR/cgi-bin
@@ -709,6 +700,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.76  1999/05/23 00:50:57  kulow
+// searching for memory leaks - dmalloc is a great tool for that. The problem
+// is that it doesn't know the concept of static variables, but for the
+// rest it works perfect
+//
 // Revision 1.75  1999/05/19 20:39:53  kulow
 // clean up in dependency tree between KConfig, KLocale and Kapp
 // in using KGlobal. KGlobal::_locale is now the instance we're

@@ -31,6 +31,7 @@
 
 #include <qdir.h>
 #include "kglobal.h"
+#include "kstddirs.h"
 
 /**
   * Stephan: I don't want to put this in an extra header file, since
@@ -99,9 +100,9 @@ void KLocale::splitLocale(const QString& aStr,
 	str = str.left(f);
     }
 
-    country="";
-    chset="";
-    lang="";
+    country=QString::null;
+    chset=QString::null;
+    lang=QString::null;
     
     f = str.find('.');
     if (f >= 0) {
@@ -118,15 +119,19 @@ void KLocale::splitLocale(const QString& aStr,
     lang = str;
     
     if (chset.isEmpty() && kapp != 0){
-	QString directory = KApplication::kde_localedir();
-	QString dir=directory+"/"+lang+"_"+country;
-	QDir d(dir);
-	if (!d.exists("charset")){
-	    dir=directory+"/"+lang;
-	    d=QDir(dir);
-	}  
-	if (d.exists("charset")){
-	    QFile f(dir+"/charset");   
+	QString dir, location;
+
+	if (!country.isEmpty()) {
+	    dir = lang + "_" + country;
+	    location = locate("locale", dir + "/charset");
+	}
+	
+	if (location.isNull()){
+	    dir = lang;
+	    location = locate("locale", lang + "/charset");
+	}
+	if (!location.isNull()){
+	    QFile f(location);   
 	    if (f.exists() && f.open(IO_ReadOnly)){
 		char *buf=new char[256];
 		int l=f.readLine(buf,256);
@@ -205,7 +210,6 @@ KLocale::KLocale( QString catalogue ) : lang(0)
     } else 
 	languages = languages + ":C";
 
-    QString directory(KApplication::kde_localedir());
     QString ln,ct,chrset;
    
     QString _lang;
@@ -228,25 +232,29 @@ KLocale::KLocale( QString catalogue ) : lang(0)
 
         splitLocale(_lang,ln,ct,chrset);	
 
-	QString lng[3];
-	lng[0]=ln+"_"+ct+"."+chrset;
-	lng[1]=ln+"_"+ct;
-	lng[2]=ln;
+	QString lng[4];
+	int counter = 0;
+	if (!ct.isEmpty()) {
+	    if (!chrset.isEmpty())
+		lng[counter++]=ln+"_"+ct+"."+chrset;
+	    lng[counter++]=ln+"_"+ct;
+	}
+	lng[counter++]=ln;
+
 	int i;
-	for(i=0; i<3; i++) {
-	  QDir d(directory + "/" + lng[i] + "/LC_MESSAGES");
-	  if (d.exists(catalogue + ".mo") &&
-	      d.exists(QString(SYSTEM_MESSAGES) + ".mo")) 
-	      {
-		  _lang = lng[i];
-		  break;
-	      }
-        }
+	for(i=0; !lng[i+1].isNull(); i++) 
+	    if (!locate("locale", lng[i] + "/LC_MESSAGES/" + catalogue + ".mo").isNull() &&
+		!locate("locale", lng[i] + "/LC_MESSAGES/" + SYSTEM_MESSAGES + ".mo").isNull()) 
+		{
+		    
+		    _lang = lng[i];
+		    break;
+		}
 	
 	if (i != 3)
 	    break;
     }
-    lang = qstrdup(_lang.ascii()); // taking deep copy
+    lang = _lang; // taking deep copy
     
     chset=chrset;
 #ifdef HAVE_SETLOCALE
@@ -286,7 +294,10 @@ KLocale::KLocale( QString catalogue ) : lang(0)
 
 void KLocale::insertCatalogue( const QString& catalogue )
 {
-    k_bindtextdomain ( catalogue.ascii() , KApplication::kde_localedir().ascii() );
+    k_bindtextdomain ( catalogue.ascii() , 
+		       KGlobal::dirs()->findResourceDir("locale", 
+			     lang + "/LC_MESSAGES/" + catalogue + ".mo"));
+
     catalogues->append(catalogue.ascii());
 }
 
@@ -309,11 +320,6 @@ const QString KLocale::translate(const char* msgid)
     }
 
     return QString::fromLocal8Bit( text );
-}
-
-QString KLocale::directory() 
-{
-    return KApplication::kde_localedir() +  "/" + lang;
 }
 
 void KLocale::aliasLocale( const char* text, long int index)
@@ -386,11 +392,6 @@ KLocale::~KLocale()
 const QString KLocale::translate(const char* msgid)
 {
     return msgid;
-}
-
-QString KLocale::directory() 
-{
-    return KApplication::kde_localedir();
 }
 
 void KLocale::aliasLocale(const char *text, long int index)

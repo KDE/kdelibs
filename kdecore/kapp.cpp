@@ -1300,17 +1300,6 @@ QString KApplication::kde_datadir()
   return dir;
 }
 
-QString KApplication::kde_localedir()
-{
-  static QString dir;
-  if (dir.isNull()) {
-	dir = KDE_LOCALE;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
-}
-
 QString KApplication::kde_cgidir()
 {
   static QString dir;
