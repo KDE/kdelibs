@@ -200,18 +200,17 @@ int open (const char *pathname, int flags, ...)
   sndfd = orig_open("/dev/null",flags,mode);
   if(sndfd >= 0)
   {
-	if(!arts_init_done)
-	{
-      int rc = arts_init();
-      if(rc < 0)
-      {
-        artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
-        orig_close(sndfd);
-	    sndfd = -1;
-        return -1;
-	  }
-    }
-	arts_init_done = 1;
+      if(!arts_init_done) {
+	  int rc = arts_init();
+	  if(rc < 0) {
+	      artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
+	      orig_close(sndfd);
+	      sndfd = -1;
+	      return orig_open (pathname, flags, mode);
+	  } else
+	      arts_init_done = 1;
+      }
+	
   }
 
   /* success */
@@ -239,7 +238,7 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
   CHECK_INIT();
 
-  if (fd != sndfd)
+  if (fd != sndfd )
     return orig_ioctl (fd, request, argp);
   else if (sndfd != -1)
     {
