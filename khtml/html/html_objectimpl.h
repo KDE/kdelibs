@@ -147,5 +147,5 @@ public:
     QString m_value;
 };
 
-};
+} // namespace
 #endif
