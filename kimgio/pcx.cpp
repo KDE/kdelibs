@@ -173,16 +173,18 @@ static void readImage4( QDataStream &s )
     pixbuf.fill( 0 );
     readLine( s, buf );
 
-    for ( int p=0; p<4; p++ )
+    for ( int i=0; i<4; i++ )
     {
-      Q_UINT32 offset = p*header.BytesPerLine;
+      Q_UINT32 offset = i*header.BytesPerLine;
       for ( int x=0; x<w; ++x )
         if ( buf[ offset + ( x/8 ) ] & ( 128 >> ( x%8 ) ) )
-          pixbuf[ x ] += ( 1 << p );
+          pixbuf[ x ] += ( 1 << i );
     }
 
+    uchar *p = img.scanLine( y );
+
     for ( int x=0; x<w; ++x )
-      *( img.scanLine( y )+x ) = pixbuf[ x ];
+      *p++ = pixbuf[ x ];
   }
 
   // Read the palette
@@ -383,6 +385,41 @@ static void writeImage1( QDataStream &s )
   }
 }
 
+void writeImage4( QDataStream &s )
+{
+  header.Bpp = 1;
+  header.NPlanes = 4;
+  header.BytesPerLine = w/8;
+
+  for ( int i=0; i<16; ++i )
+    header.ColorMap.setColor( i, img.color( i ) );
+
+  s << header;
+
+  QByteArray buf[ 4 ];
+
+  for ( int i=0; i<4; ++i )
+      buf[ i ].resize( header.BytesPerLine );
+
+  for ( int y=0; y<h; ++y )
+  {
+    Q_UINT8 *p = img.scanLine( y );
+
+    for ( int i=0; i<4; ++i )
+      buf[ i ].fill( 0 );
+
+    for ( int x=0; x<w; ++x )
+    {
+      for ( int i=0; i<4; ++i )
+        if ( *( p+x ) & ( 1 << i ) )
+          buf[ i ][ x/8 ] |= 1 << ( 7-x%8 );
+    }
+
+    for ( int i=0; i<4; ++i )
+      writeLine( s, buf[ i ] );
+  }
+}
+
 void writeImage8( QDataStream &s )
 {
   header.Bpp = 8;
@@ -395,10 +432,10 @@ void writeImage8( QDataStream &s )
 
   for ( int y=0; y<h; ++y )
   {
-    Q_UINT8 *p = img.scanLine(  y );
+    Q_UINT8 *p = img.scanLine( y );
 
     for ( int i=0; i<header.BytesPerLine; ++i )
-      buf[ i ] = p[  i ];
+      buf[ i ] = p[ i ];
 
     writeLine( s, buf );
   }
@@ -455,6 +492,8 @@ void kimgio_pcx_write( QImageIO *io )
   kdDebug() << "Width: " << w << endl;
   kdDebug() << "Height: " << h << endl;
   kdDebug() << "Depth: " << img.depth() << endl;
+  kdDebug() << "BytesPerLine: " << img.bytesPerLine() << endl;
+  kdDebug() << "Num Colors: " << img.numColors() << endl;
 
   header.Manufacturer = 10;
   header.Version = 5;
@@ -471,6 +510,10 @@ void kimgio_pcx_write( QImageIO *io )
   if ( img.depth() == 1 )
   {
     writeImage1( s );
+  }
+  else if ( img.depth() == 8 && img.numColors() <= 16 )
+  {
+    writeImage4( s );
   }
   else if ( img.depth() == 8 )
   {
