@@ -146,7 +146,7 @@ class KMainWindow;
  *
  * Note: if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
- * please use the methods in the @ref KStdAction class rather then
+ * please use the methods in the @ref KStdAction class rather than
  * defining your own.
  *
  * @sect Usage Within the XML Framework:
