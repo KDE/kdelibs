@@ -124,7 +124,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     if ( reset || config->hasKey( "MediumFontSize" ) ) {
-        m_fontSize = config->readNumEntry( "MediumFontSize", 12 );
+        m_fontSize = config->readNumEntry( "MediumFontSize", 10 );
         resetFontSizes();
     }
 
@@ -520,7 +520,7 @@ void KHTMLSettings::internalSetCharset( QFont::CharSet c )
 
 void KHTMLSettings::setScript( QFont::CharSet c )
 {
-    kdDebug(6050) << "KHTMLSettings::setScript to " << c << endl;
+    //kdDebug(6050) << "KHTMLSettings::setScript to " << c << endl;
     m_script = c;
 }
 
