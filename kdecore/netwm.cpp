@@ -319,7 +319,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_fullscreen,
 	    &net_wm_state_above,
 	    &net_wm_state_below,
-	    
+
 	    &net_wm_state_stays_on_top,
 
 	    &kde_net_system_tray_windows,
@@ -362,7 +362,7 @@ static void readIcon(NETWinInfoPrivate *p) {
         delete [] p->icons[i].data;
     p->icons.reset();
     p->icon_count = 0;
-    
+
     // allocate buffers
     unsigned char *buffer = 0;
     unsigned long offset = 0;
@@ -474,7 +474,9 @@ Z &NETRArray<Z>::operator[](int index) {
 	sz = index + 1;
     } else if (index >= sz) {
 	// allocate space for the new data
-	Z *newdata = new Z[index + 1];
+	// open table has amortized O(1) access time
+	// when N elements appended -- exa
+	Z *newdata = new Z[max(2 * sz, index+1)];
 
 	// move the old data into the new array
 	int i;
@@ -1613,7 +1615,7 @@ void NETRootInfo::update(unsigned long dirty) {
             }
         }
     }
-    
+
     if (dirty & ClientList) {
         bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, net_client_list,
@@ -1678,7 +1680,7 @@ void NETRootInfo::update(unsigned long dirty) {
             delete[] p->clients;
             p->clients = NULL;
         }
-            
+
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
 		p->clients_count);
@@ -2397,7 +2399,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
             XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
         }
-	
+
         if ((mask & KeepAbove) &&
 	    ((p->state & KeepAbove) != (state & KeepAbove))) {
             e.xclient.data.l[0] = (state & KeepAbove) ? 1 : 0;
@@ -2406,7 +2408,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
             XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
         }
-	
+
         if ((mask & KeepBelow) &&
 	    ((p->state & KeepBelow) != (state & KeepBelow))) {
             e.xclient.data.l[0] = (state & KeepBelow) ? 1 : 0;
