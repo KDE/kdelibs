@@ -96,7 +96,6 @@ void Connection::close()
 void Connection::send(int cmd, const QByteArray& data)
 {
     if (!inited() || queueonly || tasks.count() > 0) {
-	kdDebug(7017) << "pending queue " << cmd << endl;
 	Task *task = new Task();
 	task->cmd = cmd;
 	task->data = data;
@@ -111,7 +110,6 @@ void Connection::send(int cmd, const QByteArray& data)
 
 void Connection::queueOnly(bool queue) {
     unqueuedTasks = tasks.count();
-    kdDebug(7017) << "setting queueOnly to " << queue << endl;
     queueonly = queue;
     dequeue();
 }
@@ -120,8 +118,6 @@ void Connection::dequeue()
 {
     if (tasks.count() == 0  || !inited() || (queueonly && unqueuedTasks == 0))
 	return;
-
-    kdDebug(7017) << "dequeue" << endl;
 
     tasks.first();
     Task *task = tasks.take();
@@ -176,11 +172,8 @@ void Connection::connect(QObject *_receiver, const char *_member)
 bool Connection::sendnow( int _cmd, const QByteArray &data )
 {
     if (f_out == 0) {
-	kdDebug(7017) << "write: not yet inited." << endl;
 	return false;
     }
-
-    kdDebug(7017) << "sendnow " << _cmd << endl;
 
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
@@ -206,10 +199,8 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 
 int Connection::read( int* _cmd, QByteArray &data )
 {
-    kdDebug(7017) << "read\n";
-
     if (!fd_in) {
-	kdDebug(7017) << "read: not yet inited" << endl;
+	kdError(7017) << "read: not yet inited" << endl;
 	return -1;
     }
 
@@ -240,7 +231,6 @@ int Connection::read( int* _cmd, QByteArray &data )
     p = buffer + 7;
     while( *p == ' ' ) p++;
     long int cmd = strtol( p, 0L, 16 );
-    kdDebug(7017) << "read cmd " << cmd << endl;
 
     data.resize( len );
 
@@ -256,9 +246,6 @@ int Connection::read( int* _cmd, QByteArray &data )
 		kdError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }
-	    if (n != bytesToGo) {
-		kdDebug(7017) << "Not enough data read (" << n << " instead of " << bytesToGo << ") cmd=" << cmd << "d" << endl;
-	    }
 	
 	    bytesRead += n;
 	    bytesToGo -= n;
@@ -267,8 +254,6 @@ int Connection::read( int* _cmd, QByteArray &data )
     }
 
     *_cmd = cmd;
-    kdDebug(7017) << "finished reading cmd " << cmd << endl;
-
     return len;
 }
 
