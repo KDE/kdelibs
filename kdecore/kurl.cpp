@@ -19,6 +19,7 @@
 
 #include "kurl.h"
 #include <kprotocolmanager.h>
+#include <kdebug.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -360,7 +361,7 @@ void KURL::parse( const QString& _url )
   return;
 
  NodeErr:
-  debug("Error in parsing \"%s\"",_url.ascii());
+  kdebug(KDEBUG_ERROR, 126, "Error in parsing \"%s\"",_url.ascii());
   delete []orig;
   m_bIsMalformed = true;
 }

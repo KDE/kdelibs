@@ -2,6 +2,7 @@
 #when you get a set of KDebug areas, and various descriptions for them
 #please email kde-devel@kde.org with the appropriate descriptions.
 125	kaccel (kdecore)
+126	kurl (kdecore)
 250	kfile (kdelibs)
 750	kspell (kdelibs)
 
