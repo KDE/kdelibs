@@ -493,52 +493,144 @@ KJSO Window::get(const UString &p) const
     else
       return Undefined();
   }
-  else if (p == "onAbort" || p == "onabort")
-    return getListener(DOM::EventImpl::ABORT_EVENT);
-  else if (p == "onBlur" || p == "onblur")
-    return getListener(DOM::EventImpl::BLUR_EVENT);
-  else if (p == "onChange" || p == "onchange")
-    return getListener(DOM::EventImpl::CHANGE_EVENT);
-  else if (p == "onClick" || p == "onclick")
-    return getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
-  else if (p == "onDblClick" || p == "ondblclick")
-    return getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
-  else if (p == "onDragDrop" || p == "ondragdrop")
-    return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
-  else if (p == "onError" || p == "onerror")
-    return getListener(DOM::EventImpl::KHTML_ERROR_EVENT);
-  else if (p == "onFocus" || p == "onfocus")
-    return getListener(DOM::EventImpl::FOCUS_EVENT);
-  else if (p == "onKeyDown" || p == "onkeydown")
-    return getListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT);
-  else if (p == "onKeyPress" || p == "onkeypress")
-    return getListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT);
-  else if (p == "onKeyUp" || p == "onkeyup")
-    return getListener(DOM::EventImpl::KHTML_KEYUP_EVENT);
-  else if (p == "onLoad" || p == "onload")
-    return getListener(DOM::EventImpl::LOAD_EVENT);
-  else if (p == "onMouseDown" || p == "onmousedown")
-    return getListener(DOM::EventImpl::MOUSEDOWN_EVENT);
-  else if (p == "onMouseMove" || p == "onmousemove")
-    return getListener(DOM::EventImpl::MOUSEMOVE_EVENT);
-  else if (p == "onMouseOut" || p == "onmouseout")
-    return getListener(DOM::EventImpl::MOUSEOUT_EVENT);
-  else if (p == "onMouseOver" || p == "onmouseover")
-    return getListener(DOM::EventImpl::MOUSEOVER_EVENT);
-  else if (p == "onMouseUp" || p == "onmouseup")
-    return getListener(DOM::EventImpl::MOUSEUP_EVENT);
-  else if (p == "onMove" || p == "onmove")
-    return getListener(DOM::EventImpl::KHTML_MOVE_EVENT);
-  else if (p == "onReset" || p == "onreset")
-    return getListener(DOM::EventImpl::RESET_EVENT);
-  else if (p == "onResize" || p == "onresize")
-    return getListener(DOM::EventImpl::RESIZE_EVENT);
-  else if (p == "onSelect" || p == "onselect")
-    return getListener(DOM::EventImpl::SELECT_EVENT);
-  else if (p == "onSubmit" || p == "onsubmit")
-    return getListener(DOM::EventImpl::SUBMIT_EVENT);
-  else if (p == "onUnload" || p == "onunload")
-    return getListener(DOM::EventImpl::UNLOAD_EVENT);
+  else if (p == "onAbort" || p == "onabort") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::ABORT_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onBlur" || p == "onblur") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::BLUR_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onChange" || p == "onchange") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::CHANGE_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onClick" || p == "onclick") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onDblClick" || p == "ondblclick") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onDragDrop" || p == "ondragdrop") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onError" || p == "onerror") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_ERROR_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onFocus" || p == "onfocus") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::FOCUS_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onKeyDown" || p == "onkeydown") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onKeyPress" || p == "onkeypress") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onKeyUp" || p == "onkeyup") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_KEYUP_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onLoad" || p == "onload") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::LOAD_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onMouseDown" || p == "onmousedown") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::MOUSEDOWN_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onMouseMove" || p == "onmousemove") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::MOUSEMOVE_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onMouseOut" || p == "onmouseout") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::MOUSEOUT_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onMouseOver" || p == "onmouseover") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::MOUSEOVER_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onMouseUp" || p == "onmouseup") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::MOUSEUP_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onMove" || p == "onmove") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::KHTML_MOVE_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onReset" || p == "onreset") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::RESET_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onResize" || p == "onresize") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::RESIZE_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onSelect" || p == "onselect") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::SELECT_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onSubmit" || p == "onsubmit") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::SUBMIT_EVENT);
+    else
+      return Undefined();
+  }
+  else if (p == "onUnload" || p == "onunload") {
+    if (isSafeScript())
+      return getListener(DOM::EventImpl::UNLOAD_EVENT);
+    else
+      return Undefined();
+  }
 
   KHTMLPart *kp = m_part->findFrame( p.qstring() );
   if (kp)
@@ -572,52 +664,98 @@ void Window::put(const UString &p, const KJSO &v)
     m_part->scheduleRedirection(0, Window::retrieveActive()->m_part->
                               completeURL(str).url().prepend( "target://_self/#" ));
   }
-  else if (p == "onAbort" || p == "onabort")
-    setListener(DOM::EventImpl::ABORT_EVENT,v);
-  else if (p == "onBlur" || p == "onblur")
-    setListener(DOM::EventImpl::BLUR_EVENT,v);
-  else if (p == "onChange" || p == "onchange")
-    setListener(DOM::EventImpl::CHANGE_EVENT,v);
-  else if (p == "onClick" || p == "onclick")
-    setListener(DOM::EventImpl::KHTML_CLICK_EVENT,v);
-  else if (p == "onDblClick" || p == "ondblclick")
-    setListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,v);
-  else if (p == "onDragDrop" || p == "ondragdrop")
-    setListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT,v);
-  else if (p == "onError" || p == "onerror")
-    setListener(DOM::EventImpl::KHTML_ERROR_EVENT,v);
-  else if (p == "onFocus" || p == "onfocus")
-    setListener(DOM::EventImpl::FOCUS_EVENT,v);
-  else if (p == "onKeyDown" || p == "onkeydown")
-    setListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,v);
-  else if (p == "onKeyPress" || p == "onkeypress")
-    setListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,v);
-  else if (p == "onKeyUp" || p == "onkeyup")
-    setListener(DOM::EventImpl::KHTML_KEYUP_EVENT,v);
-  else if (p == "onLoad" || p == "onload")
-    setListener(DOM::EventImpl::LOAD_EVENT,v);
-  else if (p == "onMouseDown" || p == "onmousedown")
-    setListener(DOM::EventImpl::MOUSEDOWN_EVENT,v);
-  else if (p == "onMouseMove" || p == "onmousemove")
-    setListener(DOM::EventImpl::MOUSEMOVE_EVENT,v);
-  else if (p == "onMouseOut" || p == "onmouseout")
-    setListener(DOM::EventImpl::MOUSEOUT_EVENT,v);
-  else if (p == "onMouseOver" || p == "onmouseover")
-    setListener(DOM::EventImpl::MOUSEOVER_EVENT,v);
-  else if (p == "onMouseUp" || p == "onmouseup")
-    setListener(DOM::EventImpl::MOUSEUP_EVENT,v);
-  else if (p == "onMove" || p == "onmove")
-    setListener(DOM::EventImpl::KHTML_MOVE_EVENT,v);
-  else if (p == "onReset" || p == "onreset")
-    setListener(DOM::EventImpl::RESET_EVENT,v);
-  else if (p == "onResize" || p == "onresize")
-    setListener(DOM::EventImpl::RESIZE_EVENT,v);
-  else if (p == "onSelect" || p == "onselect")
-    setListener(DOM::EventImpl::SELECT_EVENT,v);
-  else if (p == "onSubmit" || p == "onsubmit")
-    setListener(DOM::EventImpl::SUBMIT_EVENT,v);
-  else if (p == "onUnload" || p == "onunload")
-    setListener(DOM::EventImpl::UNLOAD_EVENT,v);
+  else if (p == "onAbort" || p == "onabort") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::ABORT_EVENT,v);
+  }
+  else if (p == "onBlur" || p == "onblur") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::BLUR_EVENT,v);
+  }
+  else if (p == "onChange" || p == "onchange") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::CHANGE_EVENT,v);
+  }
+  else if (p == "onClick" || p == "onclick") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_CLICK_EVENT,v);
+  }
+  else if (p == "onDblClick" || p == "ondblclick") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,v);
+  }
+  else if (p == "onDragDrop" || p == "ondragdrop") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT,v);
+  }
+  else if (p == "onError" || p == "onerror") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_ERROR_EVENT,v);
+  }
+  else if (p == "onFocus" || p == "onfocus") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::FOCUS_EVENT,v);
+  }
+  else if (p == "onKeyDown" || p == "onkeydown") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,v);
+  }
+  else if (p == "onKeyPress" || p == "onkeypress") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,v);
+  }
+  else if (p == "onKeyUp" || p == "onkeyup") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_KEYUP_EVENT,v);
+  }
+  else if (p == "onLoad" || p == "onload") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::LOAD_EVENT,v);
+  }
+  else if (p == "onMouseDown" || p == "onmousedown") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::MOUSEDOWN_EVENT,v);
+  }
+  else if (p == "onMouseMove" || p == "onmousemove") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::MOUSEMOVE_EVENT,v);
+  }
+  else if (p == "onMouseOut" || p == "onmouseout") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::MOUSEOUT_EVENT,v);
+  }
+  else if (p == "onMouseOver" || p == "onmouseover") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::MOUSEOVER_EVENT,v);
+  }
+  else if (p == "onMouseUp" || p == "onmouseup") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::MOUSEUP_EVENT,v);
+  }
+  else if (p == "onMove" || p == "onmove") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::KHTML_MOVE_EVENT,v);
+  }
+  else if (p == "onReset" || p == "onreset") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::RESET_EVENT,v);
+  }
+  else if (p == "onResize" || p == "onresize") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::RESIZE_EVENT,v);
+  }
+  else if (p == "onSelect" || p == "onselect") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::SELECT_EVENT,v);
+  }
+  else if (p == "onSubmit" || p == "onsubmit") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::SUBMIT_EVENT,v);
+  }
+  else if (p == "onUnload" || p == "onunload") {
+    if (isSafeScript())
+      setListener(DOM::EventImpl::UNLOAD_EVENT,v);
+  }
   else if (p == "name") {
     if (isSafeScript())
       m_part->setName( v.toString().value().qstring().local8Bit().data() );
