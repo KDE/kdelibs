@@ -1314,7 +1314,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
 #endif
-      kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
+      if ( args.size() > 2 )
+          kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
       int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
       return Number(r);
     }
