@@ -413,10 +413,10 @@
 (define rootchunk nochunks)             ;; send output always to a file, not to stdout
 
 ; === Navigation ===
-(define %header-navigation% #f)
+(define %header-navigation% #t)
 (define %footer-navigation% #t)
-(define %gentext-nav-use-tables% #f)
-(define %gentext-nav-tblwidth% "50%") ; only effective if %gentext-nav-use-tables% is #t
+(define %gentext-nav-use-tables% #t)
+(define %gentext-nav-tblwidth% "100%") ; only effective if %gentext-nav-use-tables% is #t
 
 &kde-html-navig.dsl;
 &kde-html-ttlpg.dsl;
