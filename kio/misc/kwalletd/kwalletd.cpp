@@ -364,7 +364,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		KWallet::Backend *b = new KWallet::Backend(wallet, isPath);
 		KPasswordDialog *kpd = 0L;
 		bool emptyPass = false;
-		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
+		if ((isPath && QFile::exists(wallet)) || (!isPath && KWallet::Backend::exists(wallet))) {
 			int pwless = b->open(QByteArray());
 			if (0 != pwless || !b->isOpen()) {
 				if (pwless == 0) {
