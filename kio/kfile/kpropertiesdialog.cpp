@@ -863,6 +863,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
+    if (!kapp->authorizeKAction("editfiletype"))
+       button->hide();
 
     grid->addWidget(box, curRow++, 2);
   }
