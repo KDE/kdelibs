@@ -35,6 +35,7 @@ LprSettings::LprSettings(QObject *parent, const char *name)
 
 LprSettings::~LprSettings()
 {
+	m_self = 0;
 }
 
 LprSettings* LprSettings::self()
@@ -64,7 +65,7 @@ void LprSettings::init()
 		else
 			m_mode = LPR;
 	}
-	
+
 	// Printcap file
 	m_printcapfile = QString::null;
 	m_local = true;
