@@ -25,7 +25,7 @@ INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/interfaces $(all_includes)
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 5:0:1
 # we should get this to work when libtool 1.3 is released
-libkdeui_la_LIBADD = ../kdecore/libkdecore.la ../kdefx/libkdefx.la
+libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
