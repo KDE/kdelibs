@@ -627,7 +627,7 @@ bool KHTMLPart::openURL( const KURL &url )
   // operation and d) the caller did not request to reload the page we try to
   // be smart and instead of reloading the whole document we just jump to the
   // request html anchor
-  if ( d->m_frames.count() == 0 &&
+  if ( d->m_frames.count() == 0 && d->m_doc && d->m_bComplete &&
        urlcmp( url.url(), m_url.url(), true, true ) && !args.doPost() && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
@@ -645,7 +645,12 @@ bool KHTMLPart::openURL( const KURL &url )
     emitLoadEvent();
 
     kdDebug( 6050 ) << "completed..." << endl;
-    emit completed();
+    if ( !d->m_redirectURL.isEmpty() )
+    {
+       emit completed(true);
+    }
+    else emit completed();
+
     return true;
   }
 
@@ -1807,6 +1812,8 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 
 bool KHTMLPart::gotoAnchor( const QString &name )
 {
+  if (!d->m_doc)
+      return false;
   HTMLCollectionImpl *anchors =
       new HTMLCollectionImpl( d->m_doc, HTMLCollectionImpl::DOC_ANCHORS);
   anchors->ref();
