@@ -6,6 +6,7 @@
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qsizepolicy.h>
+#include <qtooltip.h>
 #include <qvbox.h>
 
 #include <kapplication.h>
@@ -82,6 +83,7 @@ void KShortcutDialog::initGUI()
 	QPushButton* pb0 = new QPushButton( pGroup );
 	pb0->setFlat( true );
 	pb0->setPixmap( SmallIcon( "locationbar_erase" ) );
+	QToolTip::add( pb0, i18n("Clear shortcut") );
 	connect( pb0, SIGNAL(clicked()), this, SLOT(slotClearSeq0()) );
 	m_peditSeq[0] = new KShortcutBox( m_cut.seq(0), pGroup );
 	m_peditSeq[0]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
@@ -94,6 +96,7 @@ void KShortcutDialog::initGUI()
 	QPushButton* pb1 = new QPushButton( pGroup );
 	pb1->setFlat( true );
 	pb1->setPixmap( SmallIcon( "locationbar_erase" ) );
+	QToolTip::add( pb1, i18n("Clear shortcut") );
 	connect( pb1, SIGNAL(clicked()), this, SLOT(slotClearSeq1()) );
 	m_peditSeq[1] = new KShortcutBox( m_cut.seq(1), pGroup );
 	m_peditSeq[1]->setFrameStyle( QFrame::WinPanel | QFrame::Raised );
@@ -143,6 +146,7 @@ void KShortcutDialog::clearSeq( uint i )
 {
 	kdDebug(125) << "KShortcutDialog::deleteSeq( " << i << " )" << endl;
 	m_peditSeq[i]->setSeq( KKeySequence::null() );
+	m_cut.setSeq( i, KKeySequence::null() );
 	selectSeq( i );
 }
 
@@ -158,7 +162,7 @@ void KShortcutDialog::focusOutEvent( QFocusEvent* )
 {
 	kdDebug(125) << "KShortcutDialog::focusOutEvent()" << endl;
 	releaseKeyboard();
-	//grabMouse();
+	//releaseMouse();
 }
 
 void KShortcutDialog::paintEvent( QPaintEvent* pEvent )
@@ -171,6 +175,7 @@ void KShortcutDialog::paintEvent( QPaintEvent* pEvent )
 		m_bKeyboardGrabbed = true;
 		setFocus();
 		grabKeyboard();
+		//grabMouse();
 	}
 	KDialog::paintEvent( pEvent );
 }
@@ -216,9 +221,11 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 			break;
 		default:
 			if( pEvent->type == XKeyPress && keyNative.sym() ) {
-				// If RETURN was pressed and we are recording a 
+				// If RETURN was pressed and we are recording a
 				//  multi-key shortcut, then we are done.
 				if( keyNative.sym() == XK_Return && m_iKey > 0 ) {
+					// HACK: releaseKeyboard should be called from accept()
+					releaseKeyboard();
 					accept();
 					return;
 				}
@@ -242,8 +249,10 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 				//  key, and if so, call setShortcut(uint) with the new value.
 				//emit capturedShortcut( KShortcut(KKey(keyNative)) );
 				kdDebug(125) << "m_cut = " << m_cut.toString() << endl;
-				if( m_pcbAutoClose->isEnabled() && m_pcbAutoClose->isChecked() )
+				if( m_pcbAutoClose->isEnabled() && m_pcbAutoClose->isChecked() ) {
+					releaseKeyboard();
 					accept();
+				}
 			}
 			return;
 	}
@@ -257,6 +266,7 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 			keyModX = pEvent->xkey.state & ~keyModX;
 
 		QString keyModStr;
+		// FIXME: use KKey::modFlagLabel(KKey::xxx)
 		if( keyModX & KKeyNative::modX(KKey::WIN) )	keyModStr += i18n("Win") + "+";
 		if( keyModX & KKeyNative::modX(KKey::ALT) )	keyModStr += i18n("Alt") + "+";
 		if( keyModX & KKeyNative::modX(KKey::CTRL) )	keyModStr += i18n("Ctrl") + "+";
