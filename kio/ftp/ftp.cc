@@ -869,8 +869,9 @@ bool Ftp::ftpOpenDataConnection()
   ////////////// First try passive (EPSV & PASV) modes
   if ( config()->readBoolEntry( "DisablePassiveMode", false ) == false )
   {
-    if (ftpOpenEPSVDataConnection())
-      return true;
+    if ( config()->readBoolEntry( "DisableEPSV", false ) == false )
+      if (ftpOpenEPSVDataConnection())
+        return true;
     if (ftpOpenPASVDataConnection())
       return true;
 
@@ -1386,12 +1387,12 @@ void Ftp::stat( const KURL &url)
   kdDebug() << "Ftp::stat details=" << details << endl;
   if ( details == 0 )
   {
-     if ( !ftpSize( path, 'I' ) ) // is it a file ?
+     if ( !isDir && !ftpSize( path, 'I' ) ) // ok, not a dir -> is it a file ?
      {  // no -> it doesn't exist at all
         statAnswerNotFound( path, filename );
         return;
      }
-     shortStatAnswer( filename, isDir );
+     shortStatAnswer( filename, isDir ); // succesfully found a dir or a file -> done
      return;
   }
 
