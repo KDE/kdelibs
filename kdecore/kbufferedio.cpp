@@ -155,7 +155,7 @@ bool KBufferedIO::canReadLine() const
 int KBufferedIO::unreadBlock(const char *data, uint len)
 {
   return feedReadBuffer(len, data, true);
-};
+}
 
 //
 // protected member functions

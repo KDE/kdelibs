@@ -633,6 +633,6 @@ namespace KJS {
   inline void Object::setInternalValue(const Value &v)
     { imp()->setInternalValue(v); }
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_OBJECT_H_

@@ -42,7 +42,7 @@
 namespace KJS {
   extern const double NaN;
   extern const double Inf;
-};
+}
 
 using namespace KJS;
 

@@ -370,6 +370,6 @@ namespace KJS {
    * - cleanup old stuff (e.g. hasProperty)
    * - compile, test, commit ;)
    */
-}; // namespace
+} // namespace
 
 #endif

@@ -49,6 +49,6 @@ namespace KJS {
     int id;
   };
 
-}; // namespace
+} // namespace
 
 #endif

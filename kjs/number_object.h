@@ -94,6 +94,6 @@ namespace KJS {
     Object construct(const List &);
   };
 
-}; // namespace
+} // namespace
 
 #endif

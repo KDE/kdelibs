@@ -78,7 +78,7 @@ static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *,
                                  struct timeval *) = NULL;
 static int     (*F_listen)      (int, int) = NULL;
 static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t) = NULL;
-};
+}
 
 
 class KSocksTable {

@@ -529,7 +529,7 @@ namespace KJS {
   void printInfo(ExecState *exec, const char *s, const Value &o, int lineno = -1);
 #endif
 
-}; // namespace
+} // namespace
 
 
 #endif //  _INTERNAL_H_

@@ -414,6 +414,6 @@ namespace KStdAccel
   bool isEqual(const QKeyEvent* pEvent, int keyQt);
 #endif // !KDE_NO_COMPAT
 
-};
+}
 
 #endif

@@ -1406,7 +1406,7 @@ void KListView::deactivateAutomaticSelection()
 bool KListView::automaticSelection() const
 {
    return d->selectedBySimpleMove;
-};
+}
 
 void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 {
@@ -1805,7 +1805,7 @@ QListViewItem* KListView::itemAtIndex(int index)
       j++;
    };
    return 0;
-};
+}
 
 
 void KListView::emitContextMenu (KListView*, QListViewItem* i)

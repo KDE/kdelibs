@@ -28,9 +28,7 @@
 #include "internal.h"
 //#include "debugger.h"
 #ifndef NDEBUG
-#ifndef __osf__
 #include <list>
-#endif
 #endif
 
 namespace KJS {
@@ -1047,6 +1045,6 @@ namespace KJS {
     ProgramNode(const ProgramNode &other);
   };
 
-}; // namespace
+} // namespace
 
 #endif

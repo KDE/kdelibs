@@ -74,6 +74,6 @@ namespace KDE
      * @since 3.1
      */
     const char *versionString();
-};
+}
 
 #endif // _KDE_VERSION_H_

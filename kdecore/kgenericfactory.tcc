@@ -42,7 +42,7 @@
 namespace KParts
 {
     class Part;
-};
+}
 
 namespace KDEPrivate
 {
@@ -262,7 +262,7 @@ namespace KDEPrivate
             return object;
         }
     };
-};
+}
 
 #endif
 

@@ -45,6 +45,6 @@ namespace KIDNA {
      * its UNICODE representation
      */
     QString toUnicode(const QString &idna);
-};
+}
 
 #endif /* _KIDNA_H */

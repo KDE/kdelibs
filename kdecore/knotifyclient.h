@@ -259,6 +259,6 @@ namespace KNotifyClient
 	 * @returns the current KInstance.
 	 */
 	KInstance * instance();
-};
+}
 
 #endif

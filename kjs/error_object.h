@@ -83,6 +83,6 @@ namespace KJS {
     ObjectImp *proto;
   };
 
-}; // namespace
+} // namespace
 
 #endif

@@ -66,28 +66,28 @@ namespace KJS {
 
   const double NaN = *(const double*) NaN_Bytes;
   const double Inf = *(const double*) Inf_Bytes;
-};
+}
 
 // ------------------------------ UndefinedImp ---------------------------------
 
 UndefinedImp *UndefinedImp::staticUndefined = 0;
 
-Value UndefinedImp::toPrimitive(ExecState */*exec*/, Type) const
+Value UndefinedImp::toPrimitive(ExecState* /*exec*/, Type) const
 {
   return Value((ValueImp*)this);
 }
 
-bool UndefinedImp::toBoolean(ExecState */*exec*/) const
+bool UndefinedImp::toBoolean(ExecState* /*exec*/) const
 {
   return false;
 }
 
-double UndefinedImp::toNumber(ExecState */*exec*/) const
+double UndefinedImp::toNumber(ExecState* /*exec*/) const
 {
   return NaN;
 }
 
-UString UndefinedImp::toString(ExecState */*exec*/) const
+UString UndefinedImp::toString(ExecState* /*exec*/) const
 {
   return "undefined";
 }
@@ -103,22 +103,22 @@ Object UndefinedImp::toObject(ExecState *exec) const
 
 NullImp *NullImp::staticNull = 0;
 
-Value NullImp::toPrimitive(ExecState */*exec*/, Type) const
+Value NullImp::toPrimitive(ExecState* /*exec*/, Type) const
 {
   return Value((ValueImp*)this);
 }
 
-bool NullImp::toBoolean(ExecState */*exec*/) const
+bool NullImp::toBoolean(ExecState* /*exec*/) const
 {
   return false;
 }
 
-double NullImp::toNumber(ExecState */*exec*/) const
+double NullImp::toNumber(ExecState* /*exec*/) const
 {
   return 0.0;
 }
 
-UString NullImp::toString(ExecState */*exec*/) const
+UString NullImp::toString(ExecState* /*exec*/) const
 {
   return "null";
 }
@@ -135,22 +135,22 @@ Object NullImp::toObject(ExecState *exec) const
 BooleanImp* BooleanImp::staticTrue = 0;
 BooleanImp* BooleanImp::staticFalse = 0;
 
-Value BooleanImp::toPrimitive(ExecState */*exec*/, Type) const
+Value BooleanImp::toPrimitive(ExecState* /*exec*/, Type) const
 {
   return Value((ValueImp*)this);
 }
 
-bool BooleanImp::toBoolean(ExecState */*exec*/) const
+bool BooleanImp::toBoolean(ExecState* /*exec*/) const
 {
   return val;
 }
 
-double BooleanImp::toNumber(ExecState */*exec*/) const
+double BooleanImp::toNumber(ExecState* /*exec*/) const
 {
   return val ? 1.0 : 0.0;
 }
 
-UString BooleanImp::toString(ExecState */*exec*/) const
+UString BooleanImp::toString(ExecState* /*exec*/) const
 {
   return val ? "true" : "false";
 }
@@ -164,22 +164,22 @@ Object BooleanImp::toObject(ExecState *exec) const
 
 // ------------------------------ StringImp ------------------------------------
 
-Value StringImp::toPrimitive(ExecState */*exec*/, Type) const
+Value StringImp::toPrimitive(ExecState* /*exec*/, Type) const
 {
   return Value((ValueImp*)this);
 }
 
-bool StringImp::toBoolean(ExecState */*exec*/) const
+bool StringImp::toBoolean(ExecState* /*exec*/) const
 {
   return (val.size() > 0);
 }
 
-double StringImp::toNumber(ExecState */*exec*/) const
+double StringImp::toNumber(ExecState* /*exec*/) const
 {
   return val.toDouble();
 }
 
-UString StringImp::toString(ExecState */*exec*/) const
+UString StringImp::toString(ExecState* /*exec*/) const
 {
   return val;
 }
@@ -306,28 +306,28 @@ Value ReferenceImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) con
   return Value();
 }
 
-bool ReferenceImp::toBoolean(ExecState */*exec*/) const
+bool ReferenceImp::toBoolean(ExecState* /*exec*/) const
 {
   // invalid for Reference
   assert(false);
   return false;
 }
 
-double ReferenceImp::toNumber(ExecState */*exec*/) const
+double ReferenceImp::toNumber(ExecState* /*exec*/) const
 {
   // invalid for Reference
   assert(false);
   return 0;
 }
 
-UString ReferenceImp::toString(ExecState */*exec*/) const
+UString ReferenceImp::toString(ExecState* /*exec*/) const
 {
   // invalid for Reference
   assert(false);
   return UString::null;
 }
 
-Object ReferenceImp::toObject(ExecState */*exec*/) const
+Object ReferenceImp::toObject(ExecState* /*exec*/) const
 {
   // invalid for Reference
   assert(false);
@@ -430,35 +430,35 @@ void CompletionImp::mark()
     val->mark();
 }
 
-Value CompletionImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
+Value CompletionImp::toPrimitive(ExecState* /*exec*/, Type /*preferredType*/) const
 {
   // invalid for Completion
   assert(false);
   return Value();
 }
 
-bool CompletionImp::toBoolean(ExecState */*exec*/) const
+bool CompletionImp::toBoolean(ExecState* /*exec*/) const
 {
   // invalid for Completion
   assert(false);
   return false;
 }
 
-double CompletionImp::toNumber(ExecState */*exec*/) const
+double CompletionImp::toNumber(ExecState* /*exec*/) const
 {
   // invalid for Completion
   assert(false);
   return 0;
 }
 
-UString CompletionImp::toString(ExecState */*exec*/) const
+UString CompletionImp::toString(ExecState* /*exec*/) const
 {
   // invalid for Completion
   assert(false);
   return UString::null;
 }
 
-Object CompletionImp::toObject(ExecState */*exec*/) const
+Object CompletionImp::toObject(ExecState* /*exec*/) const
 {
   // invalid for Completion
   assert(false);
@@ -471,35 +471,35 @@ Object CompletionImp::toObject(ExecState */*exec*/) const
 int ListImp::count = 0;
 #endif
 
-Value ListImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
+Value ListImp::toPrimitive(ExecState* /*exec*/, Type /*preferredType*/) const
 {
   // invalid for List
   assert(false);
   return Value();
 }
 
-bool ListImp::toBoolean(ExecState */*exec*/) const
+bool ListImp::toBoolean(ExecState* /*exec*/) const
 {
   // invalid for List
   assert(false);
   return false;
 }
 
-double ListImp::toNumber(ExecState */*exec*/) const
+double ListImp::toNumber(ExecState* /*exec*/) const
 {
   // invalid for List
   assert(false);
   return 0;
 }
 
-UString ListImp::toString(ExecState */*exec*/) const
+UString ListImp::toString(ExecState* /*exec*/) const
 {
   // invalid for List
   assert(false);
   return UString::null;
 }
 
-Object ListImp::toObject(ExecState */*exec*/) const
+Object ListImp::toObject(ExecState* /*exec*/) const
 {
   // invalid for List
   assert(false);

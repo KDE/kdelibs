@@ -25,7 +25,7 @@
 class KActionCollection;
 class QComboBox;
 class QPushButton;
-class KListView;;
+class KListView;
 class QListViewItem;
 
 class KEditToolbarWidget;

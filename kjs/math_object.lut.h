@@ -44,4 +44,4 @@ static const struct HashEntry mathTableEntries[] = {
 
 static const struct HashTable mathTable = { 2, 33, mathTableEntries, 21 };
 
-}; // namespace
+} // namespace

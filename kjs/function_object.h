@@ -78,6 +78,6 @@ namespace KJS {
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
   };
 
-}; // namespace
+} // namespace
 
 #endif // _FUNCTION_OBJECT_H_

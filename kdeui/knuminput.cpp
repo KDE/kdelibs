@@ -53,7 +53,7 @@
 static inline int calcDiffByTen( int x, int y ) {
     // calculate ( x - y ) / 10 without overflowing ints:
     return ( x / 10 ) - ( y / 10 )  +  ( x % 10 - y % 10 ) / 10;
-};
+}
 
 // ----------------------------------------------------------------------------
 
@@ -496,7 +496,7 @@ void KIntNumInput::setSpecialValueText(const QString& text)
 {
     m_spin->setSpecialValueText(text);
     layout(true);
-};
+}
 
 QString KIntNumInput::specialValueText() const
 {
@@ -838,7 +838,7 @@ void KDoubleNumInput::setSpecialValueText(const QString& text)
 
     layout(true);
     updateLegacyMembers();
-};
+}
 
 void KDoubleNumInput::setLabel(const QString & label, int a)
 {

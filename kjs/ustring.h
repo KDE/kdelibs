@@ -31,7 +31,7 @@
  */
 namespace DOM {
   class DOMString;
-};
+}
 class KJScript;
 class QString;
 class QConstString;
@@ -453,6 +453,6 @@ _hash; }
 
   int compare(const UString &, const UString &);
 
-}; // namespace
+} // namespace
 
 #endif

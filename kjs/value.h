@@ -420,6 +420,6 @@ namespace KJS {
     explicit Number(NumberImp *v);
   };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_VALUE_H_
