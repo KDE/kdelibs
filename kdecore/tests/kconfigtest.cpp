@@ -205,6 +205,10 @@ int main( int argc, char **argv )
 #define BOOLVALUE(w) (w ? "true" : "false")
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
+#define STRINGENTRY1 "hello"
+#define STRINGENTRY2 " hello"
+#define STRINGENTRY3 "hello "
+#define STRINGENTRY4 " hello "
 
   KConfig sc( "kconfigtest" );
 
@@ -214,6 +218,11 @@ int main( int argc, char **argv )
   sc.writeEntry( "Test2", "");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 ); 
   sc.writeEntry( "boolEntry2", BOOLENTRY2 );
+  sc.writeEntry( "stringEntry1", STRINGENTRY1 );
+  sc.writeEntry( "stringEntry2", STRINGENTRY2 );
+  sc.writeEntry( "stringEntry3", STRINGENTRY3 );
+  sc.writeEntry( "stringEntry4", STRINGENTRY4 );
+
   sc.setGroup("Bye");  
   sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
   sc.writeEntry( "pointEntry", QPoint( 4351, 1234 ) );
@@ -241,6 +250,44 @@ int main( int argc, char **argv )
     fprintf(stderr, "not OK\n");
     exit(-1);
   }
+
+  QString s;
+  s = sc2.readEntry( "stringEntry1" );
+  fprintf(stderr, "comparing stringEntry1 %s with %s -> ", STRINGENTRY1, s.latin1());
+  if (s == STRINGENTRY1)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
+  s = sc2.readEntry( "stringEntry2" );
+  fprintf(stderr, "comparing stringEntry2 %s with %s -> ", STRINGENTRY2, s.latin1());
+  if (s == STRINGENTRY2)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
+  s = sc2.readEntry( "stringEntry3" );
+  fprintf(stderr, "comparing stringEntry3 %s with %s -> ", STRINGENTRY3, s.latin1());
+  if (s == STRINGENTRY3)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
+  s = sc2.readEntry( "stringEntry4" );
+  fprintf(stderr, "comparing stringEntry4 %s with %s -> ", STRINGENTRY4, s.latin1());
+  if (s == STRINGENTRY4)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
   sc2.setGroup("Bye");  
   QRect rect = sc2.readRectEntry( "rectEntry" );
   QPoint point = sc2.readPointEntry( "pointEntry" );
