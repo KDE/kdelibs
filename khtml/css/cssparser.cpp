@@ -2059,7 +2059,10 @@ QString StyleBaseImpl::preprocess(const QString &str)
                 firstChar = false;
             } else if ( *ch == '/' )
                 firstChar = true;
-            else
+            else if ( *ch == '}' ) {
+		processed += *ch;
+		processed += QChar(' ');
+	    } else 
                 processed += *ch;
         }
         else
