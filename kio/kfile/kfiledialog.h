@@ -352,6 +352,9 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
+     * You can set the the text to be displayed for the glob, and
+     * provide multiple globs.  See @ref setFilter() for details on
+     * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -380,6 +383,9 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
+     * You can set the the text to be displayed for the glob, and
+     * provide multiple globs.  See @ref setFilter() for details on
+     * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -407,6 +413,9 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
+     * You can set the the text to be displayed for the glob, and
+     * provide multiple globs.  See @ref setFilter() for details on
+     * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -435,6 +444,9 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
+     * You can set the the text to be displayed for the glob, and
+     * provide multiple globs.  See @ref setFilter() for details on
+     * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -464,6 +476,9 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
+     * You can set the the text to be displayed for the glob, and
+     * provide multiple globs.  See @ref setFilter() for details on
+     * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -493,6 +508,9 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
+     * You can set the the text to be displayed for the glob, and
+     * provide multiple globs.  See @ref setFilter() for details on
+     * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
