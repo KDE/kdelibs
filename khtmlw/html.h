@@ -24,7 +24,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1205		// 00.12.05
+#define KHTMLW_VERSION  1206		// 00.12.06
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -465,6 +465,11 @@ public:
      * Cancels a previous @ref requestFile.
      */
     void cancelRequestFile( HTMLObject *_obj );
+
+    /*
+     * Cancels all @ref requestFile.
+     */
+    void cancelAllRequests();
 
     // This function is called to download the background image from the web
     void requestBackgroundImage( const char *_url );

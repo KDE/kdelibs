@@ -1,7 +1,13 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 03 December 1997 - Martin Jones.
+Last Change: 04 December 1997 - Martin Jones.
+
+
+Version 0.12.06
+---------------
+
+Added cancelAllRequests()
 
 
 Version 0.12.05

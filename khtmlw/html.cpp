@@ -223,6 +223,16 @@ void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
     }
 }
 
+void KHTMLWidget::cancelAllRequests()
+{
+    HTMLObject *o;
+
+    for ( o = waitingFileList.first(); o != 0; o = waitingFileList.next() )
+	emit cancelFileRequest( o->requestedFile() );
+
+    waitingFileList.clear();
+}
+
 void KHTMLWidget::requestBackgroundImage( const char *_url )
 {
     bgPixmapURL = _url;

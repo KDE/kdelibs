@@ -471,7 +471,9 @@ public:
      */
     void setCookie( const char *_c )
 	{ printf("Setting cookie '%s'\n",_c); cookie = _c; }
-                  
+
+    void cancelAllRequests();
+
 signals:
     /**
      * This signal is emitted if we deal with frames ( or one of the child

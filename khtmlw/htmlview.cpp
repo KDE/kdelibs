@@ -322,6 +322,12 @@ void KHTMLView::calcScrollBars()
     }
 }
 
+void KHTMLView::cancelAllRequests()
+{
+    if ( view )
+	view->cancelAllRequests();
+}
+
 void KHTMLView::slotDocumentStarted( KHTMLView *_view )
 {
     emit documentStarted( _view );
