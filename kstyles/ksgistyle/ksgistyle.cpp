@@ -1174,19 +1174,19 @@ KSgiStyle::drawPanel(QPainter *p, int x, int y, int w, int h,
 
 void KSgiStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g, KToolBarPos,
-                          QBrush *fill)
+                          QBrush*)
 {
-   qDrawShadePanel(p, x, y, w, h, g, false, 1, fill);
-//                    &g.brush(QColorGroup::Background));
+   qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                    &g.brush(QColorGroup::Background));
 }
 
 void KSgiStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                          const QColorGroup &g, bool, QBrush *fill)
+                          const QColorGroup &g, bool, QBrush*)
 {
 //  qDrawShadePanel(p, x, y, w, h, g, false, 1,
 //                        &g.brush(QColorGroup::Background));
-  drawFullShadeButton (p, x, y, w, h, g, false, fill);
-//                   &g.brush(QColorGroup::Background));
+  drawFullShadeButton (p, x, y, w, h, g, false,
+                   &g.brush(QColorGroup::Background));
 }
 
 
