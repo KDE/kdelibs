@@ -409,29 +409,29 @@ public:
      *            only the function's name (e.g. "setName"). In the 
      *            latter case the exact signature will be guessed from 
      *            the arguments
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.2
-     */
-    DCOPReply call( const QCString& fun, EventLoopFlag useEventLoop/*=NoEventLoop*/,
-		    int timeout/*=-1*/ ) {
-	QByteArray data;
-	return callInternal( fun, "()", data, useEventLoop, timeout );
-    }
-
-    /**
-     * @deprecated
      * @since 3.1
-     */ 
-    // KDE4 merge with above
+     */
     DCOPReply call( const QCString& fun ) {
 	QByteArray data;
 	return callInternal( fun, "()", data );
+    }
+
+    /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    DCOPReply callExt( const QCString& fun, EventLoopFlag useEventLoop=NoEventLoop,
+		    int timeout=-1 ) {
+	QByteArray data;
+	return callInternal( fun, "()", data, useEventLoop, timeout );
     }
 
     /**
@@ -443,32 +443,12 @@ public:
      *            the arguments
      * @param t1 the first argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.2
-     */
-    template <class T1>
-    DCOPReply call( const QCString& fun, const T1& t1,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s)",
-		     dcopTypeName(t1) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-
-    /**
-     * @deprecated
      * @since 3.1
-     */ 
-    // KDE4 merge with above
+     */
     template <class T1>
     DCOPReply call( const QCString& fun, const T1& t1 ) {
 	QCString args;
@@ -478,6 +458,26 @@ public:
 	QDataStream ds( data, IO_WriteOnly );
 	ds << t1;
 	return callInternal( fun, args, data );
+    }
+
+    /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1>
+    DCOPReply callExt( const QCString& fun, const T1& t1,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s)",
+		     dcopTypeName(t1) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1;
+	return callInternal( fun, args, data, useEventLoop, timeout );
     }
 
     /**
@@ -491,35 +491,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t2 the second argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
-     * @since 3.2
-     */
-    template <class T1, class T2>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-
-    /**
-     * @deprecated
      * @since 3.1
-     */ 
-    // KDE4 merge with above
+     */
     template <class T1, class T2>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -535,6 +512,29 @@ public:
     }
 
     /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1, class T2>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
@@ -547,36 +547,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t3 the third argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
      * @since 3.1
      */
-    template <class T1, class T2, class T3>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    const T3& t3,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2),
-		     dcopTypeName(t3) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2 << t3;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-    /**
-     * @deprecated
-     * @since 3.1
-     */ 
-    // KDE4 merge with above
     template <class T1, class T2, class T3>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -594,6 +570,31 @@ public:
     }
 
     /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1, class T2, class T3>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    const T3& t3,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2),
+		     dcopTypeName(t3) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2 << t3;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
@@ -608,38 +609,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
      * @since 3.1
      */
-    template <class T1,class T2,class T3,class T4>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    const T3& t3,
-		    const T4& t4,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s,%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2),
-		     dcopTypeName(t3),
-		     dcopTypeName(t4) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2 << t3 << t4;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-    /**
-     * @deprecated
-     * @since 3.1
-     */ 
-    // KDE4 merge with above
     template <class T1,class T2,class T3,class T4>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -659,6 +634,33 @@ public:
     }
 
     /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1,class T2,class T3,class T4>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    const T3& t3,
+		    const T4& t4,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s,%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2),
+		     dcopTypeName(t3),
+		     dcopTypeName(t4) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2 << t3 << t4;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+    
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
@@ -675,40 +677,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
      * @since 3.1
      */
-    template <class T1,class T2,class T3,class T4,class T5>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    const T3& t3,
-		    const T4& t4,
-		    const T5& t5,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s,%s,%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2),
-		     dcopTypeName(t3),
-		     dcopTypeName(t4),
-		     dcopTypeName(t5) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2 << t3 << t4 << t5;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-    /**
-     * @deprecated
-     * @since 3.1
-     */ 
-    // KDE4 merge with above
     template <class T1,class T2,class T3,class T4,class T5>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -730,6 +704,35 @@ public:
     }
 
     /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1,class T2,class T3,class T4,class T5>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    const T3& t3,
+		    const T4& t4,
+		    const T5& t5,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s,%s,%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2),
+		     dcopTypeName(t3),
+		     dcopTypeName(t4),
+		     dcopTypeName(t5) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2 << t3 << t4 << t5;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+    
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
@@ -748,42 +751,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
      * @since 3.1
      */
-    template <class T1,class T2,class T3,class T4,class T5,class T6>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    const T3& t3,
-		    const T4& t4,
-		    const T5& t5,
-		    const T6& t6,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2),
-		     dcopTypeName(t3),
-		     dcopTypeName(t4),
-		     dcopTypeName(t5),
-		     dcopTypeName(t6) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2 << t3 << t4 << t5 << t6;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-    /**
-     * @deprecated
-     * @since 3.1
-     */ 
-    // KDE4 merge with above
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -807,6 +780,36 @@ public:
     }
 
     /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1,class T2,class T3,class T4,class T5,class T6>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    const T3& t3,
+		    const T4& t4,
+		    const T5& t5,
+		    const T6& t6,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s,%s,%s,%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2),
+		     dcopTypeName(t3),
+		     dcopTypeName(t4),
+		     dcopTypeName(t5),
+		     dcopTypeName(t6) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2 << t3 << t4 << t5 << t6;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
@@ -827,44 +830,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
      * @since 3.1
      */
-    template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    const T3& t3,
-		    const T4& t4,
-		    const T5& t5,
-		    const T6& t6,
-		    const T7& t7,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2),
-		     dcopTypeName(t3),
-		     dcopTypeName(t4),
-		     dcopTypeName(t5),
-		     dcopTypeName(t6),
-		     dcopTypeName(t7) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-    /**
-     * @deprecated
-     * @since 3.1
-     */ 
-    // KDE4 merge with above
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -890,6 +861,39 @@ public:
     }
 
     /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    const T3& t3,
+		    const T4& t4,
+		    const T5& t5,
+		    const T6& t6,
+		    const T7& t7,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2),
+		     dcopTypeName(t3),
+		     dcopTypeName(t4),
+		     dcopTypeName(t5),
+		     dcopTypeName(t6),
+		     dcopTypeName(t7) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+    
+    /**
      * Calls the function @p fun on the object referenced by this reference. 
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
@@ -912,46 +916,12 @@ public:
      *           supported base type or a @ref DCOPArg object.
      * @param t8 the eigth argument of the function. This can be a 
      *           supported base type or a @ref DCOPArg object.
-     * @param useEventLoop if UseEventLoop, the event loop will be started when
-     *            the call blocks too long
-     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid()) 
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
      * @since 3.1
      */
-    template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-    DCOPReply call( const QCString& fun,
-		    const T1& t1,
-		    const T2& t2,
-		    const T3& t3,
-		    const T4& t4,
-		    const T5& t5,
-		    const T6& t6,
-		    const T7& t7,
-		    const T8& t8,
-		    EventLoopFlag useEventLoop/*=NoEventLoop*/, int timeout/*=-1*/ ) {
-	QCString args;
-	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
-		     dcopTypeName(t1),
-		     dcopTypeName(t2),
-		     dcopTypeName(t3),
-		     dcopTypeName(t4),
-		     dcopTypeName(t5),
-		     dcopTypeName(t6),
-		     dcopTypeName(t7),
-		     dcopTypeName(t8) );
-	QByteArray data;
-	QDataStream ds( data, IO_WriteOnly );
-	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
-	return callInternal( fun, args, data, useEventLoop, timeout );
-    }
-    /**
-     * @deprecated
-     * @since 3.1
-     */ 
-    // KDE4 merge with above
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -978,6 +948,41 @@ public:
 	return callInternal( fun, args, data );
     }
 
+    /**
+     * Like call(), with additional arguments allowing entering the event loop
+     * and specifying timeout.
+     * @param useEventLoop if UseEventLoop, the event loop will be started when
+     *            the call blocks too long
+     * @param timeout timeout for the call in miliseconds, or -1 for no timeout
+     * @since 3.2
+     */ 
+    template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
+    DCOPReply callExt( const QCString& fun,
+		    const T1& t1,
+		    const T2& t2,
+		    const T3& t3,
+		    const T4& t4,
+		    const T5& t5,
+		    const T6& t6,
+		    const T7& t7,
+		    const T8& t8,
+		    EventLoopFlag useEventLoop=NoEventLoop, int timeout=-1) {
+	QCString args;
+	args.sprintf( "(%s,%s,%s,%s,%s,%s,%s,%s)",
+		     dcopTypeName(t1),
+		     dcopTypeName(t2),
+		     dcopTypeName(t3),
+		     dcopTypeName(t4),
+		     dcopTypeName(t5),
+		     dcopTypeName(t6),
+		     dcopTypeName(t7),
+		     dcopTypeName(t8) );
+	QByteArray data;
+	QDataStream ds( data, IO_WriteOnly );
+	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
+	return callInternal( fun, args, data, useEventLoop, timeout );
+    }
+    
     /**
      * Calls the function @p fun on the object referenced by this reference. 
      * Unlike @ref call() this method does not expect a return value.
