@@ -48,7 +48,7 @@ void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
 	QIconViewItem::paintItem(p,cg);
 }
 
-void KMIconViewItem::calcRect(const QString&)
+void KMIconViewItem::calcRect(const QString& r)
 {
 	QRect	ir(rect()), pr, tr;
 
@@ -62,7 +62,7 @@ void KMIconViewItem::calcRect(const QString&)
 	if (m_state & 0x2) f.setItalic(true);
 	QFontMetrics	fm(f);
 	if (m_mode == QIconView::Bottom)
-		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, AlignHCenter|AlignTop|WordBreak|BreakAnywhere, text());
+		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, AlignHCenter|AlignTop|WordBreak|BreakAnywhere, text()+"X");
 	else
 		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, AlignLeft|AlignTop, text()+"X");
 
