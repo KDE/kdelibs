@@ -62,45 +62,33 @@ bool KProcIO::writeStdin (const char *buffer, bool appendnewline)
 
   qlist.append (qs);
 
-#ifdef __KPIODEBUG
   dsdebug ("KPIO::write [%s],[%s]\n",buffer,qlist.current());
-#endif
 
   if (writeready)
     {
-#ifdef __KPIODEBUG
       dsdebug ("really writing\n");
-#endif
       writeready=FALSE;
       return KProcess::writeStdin (qlist.current(),
 				   strlen (qlist.current()));
     }
-#ifdef __KPIODEBUG
   dsdebug ("NOT really writing\n");
-#endif
   return TRUE;
 }
 
 void KProcIO::sent (KProcess *)
 {
-#ifdef __KPIODEBUG
   dsdebug ("KP::sent  [%s]\n",qlist.first());
-#endif
 
   qlist.removeFirst();
 
   if (qlist.count()==0)
     {
-#ifdef __KPIODEBUG
       dsdebug ("Empty\n");
-#endif
       writeready=TRUE;
     }
   else
     {
-#ifdef __KPIODEBUG
       dsdebug ("Sending [%s]\n",qlist.first());
-#endif
 	      KProcess::writeStdin (qlist.first(),
 				    strlen (qlist.first()));
     }
@@ -113,10 +101,7 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
 
   buffer [buflen]='\0';
 
-#ifdef __KPIODEBUG
   dsdebug ("KPIO: recv'd [%s]\n",buffer);
-#endif
-
 
   for (i=0;i<buflen;i++)
     recvbuffer+=buffer [i];
@@ -163,9 +148,7 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-#ifdef __KPIODEBUG
   dsdebug ("KPIO::readln\n");
-#endif
 
   //in case there's no '\n' at the end of the buffer
   if (len<0 && (unsigned)rbi<recvbuffer.length())
