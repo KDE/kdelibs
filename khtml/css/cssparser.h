@@ -211,6 +211,8 @@ public:
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
 	bool multiLength : 1;
+    private:
+	bool isHexadecimal( QChar &c );
     };
 
     // a style class which has a list of children (StyleSheets for example)
@@ -232,5 +234,4 @@ public:
     };
 
 }; // namespace
-
 #endif
