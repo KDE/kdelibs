@@ -46,8 +46,11 @@ public:
   virtual void save(KConfig *cfg);
   virtual void load(KConfig *cfg);
   virtual void setToolTip (KDockWidget *, QString &);
-  
+protected:
+  friend class KDockManager;
+  void prepareSave(QStringList &names);
 private:
+  QPtrList<KDockWidget> m_children;
   class KDockContainerPrivate;
   KDockContainerPrivate *d;
 };

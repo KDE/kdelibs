@@ -5,6 +5,7 @@
      (C) 1997-2000 Sven Radej (radej@kde.org)
      (C) 1997-2000 Matthias Ettrich (ettrich@kde.org)
      (C) 1999 Chris Schlaeger (cs@kde.org)
+     (C) 2002 Joseph Wenninger (jowenn@kde.org)
 
      This library is free software; you can redistribute it and/or
      modify it under the terms of the GNU Library General Public
@@ -153,7 +154,7 @@ static bool beeing_first = true;
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
-    initKMainWindow(false,name);
+    initKMainWindow(true,name);
 }
 
 KMainWindow::KMainWindow( QWidget* parent, const char *name,WFlags f, bool createToolbarAction)

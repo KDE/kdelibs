@@ -2405,12 +2405,19 @@ void KDockArea::setMainDockWidget( KDockWidget* mdw )
 KDockContainer::KDockContainer(){;}
 KDockContainer::~KDockContainer(){;}
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
-void KDockContainer::insertWidget (KDockWidget *, QPixmap, const QString &, int &){;}
-void KDockContainer::removeWidget (KDockWidget *){;}
+void KDockContainer::insertWidget (KDockWidget *dw, QPixmap, const QString &, int &){m_children.append(dw);}
+void KDockContainer::removeWidget (KDockWidget *dw){m_children.remove(dw);}
 void KDockContainer::undockWidget (KDockWidget *){;}
 void KDockContainer::setToolTip(KDockWidget *, QString &){;}
 void KDockContainer::load (KConfig*){;}
 void KDockContainer::save (KConfig*){;}
+void KDockContainer::prepareSave(QStringList &names)
+{
+	for (uint i=0;i<m_children.count();i++)
+	{
+		names.remove(m_children.at(i)->name());
+	}
+}
 
 void KDockWidgetAbstractHeader::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
