@@ -154,7 +154,7 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
     QString type = m_type.string().lower();
     QString rel = m_rel.string().lower();
 
-    if(m_type == "text/css" && !rel.contains("alternate"))
+    if((m_type == "text/css" || rel == "stylesheet") && !rel.contains("alternate"))
     {
         QString str = m_media.string().lower();
         // no need to load style sheets which aren't for the screen output
