@@ -203,6 +203,13 @@ protected:
     };
 
 protected:
+    // How much content overflows out of our block vertically or horizontally (all we support
+    // for now is spillage out of the bottom and the right, which are the common cases).
+    // XXX Generalize to work with top and left as well.
+    int m_overflowHeight;
+    int m_overflowWidth;
+
+private:
     QPtrList<FloatingObject>* m_floatingObjects;
     QPtrList<RenderObject>* m_positionedObjects;
 
@@ -218,11 +225,6 @@ protected:
     short m_maxBottomPosMargin;
     short m_maxBottomNegMargin;
 
-    // How much content overflows out of our block vertically or horizontally (all we support
-    // for now is spillage out of the bottom and the right, which are the common cases).
-    // XXX Generalize to work with top and left as well.
-    int m_overflowHeight;
-    int m_overflowWidth;
 };
 
 } // namespace
