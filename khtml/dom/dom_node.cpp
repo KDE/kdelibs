@@ -105,7 +105,12 @@ Node NamedNodeMap::removeNamedItemNS( const DOMString &namespaceURI, const DOMSt
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItem(impl->mapId(namespaceURI, localName, true), exceptioncode);
+    NodeImpl::Id id = impl->mapId(namespaceURI, localName, true);
+    NodeImpl* oldItem = impl->getNamedItem(id);
+    if (!oldItem) throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    Node r(oldItem->cloneNode(true));
+    impl->removeNamedItem(id, exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;

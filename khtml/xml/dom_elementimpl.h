@@ -255,7 +255,7 @@ public:
 
     // DOM methods & attributes for NamedNodeMap
     virtual AttrImpl *getNamedItem ( NodeImpl::Id id ) const;
-    virtual Node removeNamedItem ( NodeImpl::Id id, int &exceptioncode );
+    virtual void removeNamedItem ( NodeImpl::Id id, int &exceptioncode );
     virtual Node setNamedItem ( NodeImpl* arg, int &exceptioncode );
 
     virtual AttrImpl *item ( unsigned long index ) const;

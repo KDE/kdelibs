@@ -632,9 +632,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     return r;
 }
 
-// The DOM2 spec doesn't say that removeAttribute[NS] throws NOT_FOUND_ERR
-// if the attribute is not found - David
-Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
+void NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
 {
     // ### should this really be raised when the attribute to remove isn't there at all?
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
@@ -643,13 +641,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
         return Node();
     }
 
-    AttributeImpl* a = getAttributeItem(id);
-    if (!a) return Node();
-
-    if (!a->attrImpl())  a->allocateImpl(element);
-    Node r(a->attrImpl());
     removeAttribute(id);
-    return r;
 }
 
 AttrImpl *NamedAttrMapImpl::item ( unsigned long index ) const
