@@ -378,6 +378,7 @@ bool KEditToolbarWidget::save()
     return true;
 
   QPtrList<KXMLGUIClient> clients(factory()->clients());
+  //kdDebug() << "factory: " << clients.count() << " clients" << endl;
 
   // remove the elements starting from the last going to the first
   KXMLGUIClient *client = clients.last();
@@ -389,15 +390,25 @@ bool KEditToolbarWidget::save()
   }
 
   client = clients.first();
+  KXMLGUIClient *firstClient = client;
+
   // now, rebuild the gui from the first to the last
   //kdDebug() << "rebuildling the gui" << endl;
   for (; client; client = clients.next() )
   {
-    // passing an empty stream forces the clients to reread the XML
-    client->setXMLGUIBuildDocument( QDomDocument() );
+    QString file( client->xmlFile() ); // before setting ui_standards!
+    if ( !file.isEmpty() )
+    {
+        // passing an empty stream forces the clients to reread the XML
+        client->setXMLGUIBuildDocument( QDomDocument() );
 
-    // and this forces it to use the *new* XML file
-    client->reloadXML();
+        // for the shell, merge in ui_standards.rc
+        if ( client == firstClient ) // same assumption as in the ctor: first==shell
+            client->setXMLFile(locate("config", "ui/ui_standards.rc"));
+
+        // and this forces it to use the *new* XML file
+        client->setXMLFile( file, client == firstClient /* merge if shell */ );
+    }
 
     //kdDebug() << "factory->addClient " << client << endl;
     // finally, do all the real work
