@@ -35,25 +35,23 @@ KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting,
     QWidget::setFocusPolicy(QWidget::StrongFocus);
     QFontMetrics fm = fontMetrics();
     QString text = i18n("Name");
-    addColumn(text); //, QMAX(fm.width(text + "_"), 150));
+    addColumn(text); 
     text = i18n("Size");
-    addColumn(text); // , QMAX(fm.width(text + "_"), 50));
+    addColumn(text); 
     text = i18n("Permissions");
-    addColumn(text); // , QMAX(fm.width(text + "_"), 80));
+    addColumn(text); 
     text = i18n("Date");
-    //    int _width = QMAX(fm.width(text + "_"), 50);
-    addColumn(text); // , QMAX(_width, fm.width(KFileInfo::dateTime(0) + "_")));
+    addColumn(text); 
     text = i18n("Owner");
-    addColumn(text); // , QMAX(fm.width(text + "_"), 70));
+    addColumn(text); 
     text = i18n("Group");
-    addColumn(text); // , QMAX(fm.width(text + "_"), 70));
+    addColumn(text);
 
     QListView::setSorting(-1);
     
     connect(this,SIGNAL(selectionChanged(QListViewItem*)), 
 	    SLOT(selected(QListViewItem*)));
     connect(this, SIGNAL(highlighted(int,int)), SLOT(highlighted(int)));
-
     connect(header(), SIGNAL(sectionClicked(int)), SLOT(reorderFiles(int)));
 }
 
@@ -73,12 +71,10 @@ void KFileDetailList::setAutoUpdate(bool )
 
 void KFileDetailList::highlightItem(unsigned int i)
 {
-#if 0
-    KTabListBox::setCurrentItem(i);
-    unsigned j = (KTabListBox::lastRowVisible()-KTabListBox::topItem())/2;
-    j = (j>i) ? 0 : (i-j);
-    KTabListBox::setTopItem( j );
-#endif
+  QListViewItem *item = firstChild();
+  while (i && item) { item = item->nextSibling(); i--; }
+  QListView::setCurrentItem(item);
+  ensureItemVisible(currentItem());
 }
 
 void KFileDetailList::clearView()
@@ -142,7 +138,13 @@ bool KFileDetailList::insertItem(const KFileInfo *i, int index)
 void KFileDetailList::selected(QListViewItem *s)
 {
   QListViewItem *item = firstChild();
-  select(0);
+  int i;
+  for (i = 0; i < childCount() && item; i++) {
+    if (item == s)
+      break;
+    item = item->nextSibling();
+  }
+  select(i);
 }
 
 void KFileDetailList::highlighted(int row)
