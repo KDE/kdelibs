@@ -18,33 +18,97 @@
 
 static int tokenize( QStringList& token, const QString& str, 
 		const QString& delim );
-static QString selectStr( const QString& env, const QString& builtin );
 
-KStandardDirs::KStandardDirs( const QString& appName ) :
-	UserDir (	QDir::homeDirPath() ),
-	KDEDir	(	selectStr( "KDEDIR", KDEDIR ) ),
-	_appPath(	0	),
-	_appName(	new QString( appName ) ),
-	_app	(	new QDict<QString> ),
-	_sysapp	(	new QDict<QString> ),
-	_sys	(	new QDict<QString> ),
-	_user	(	new QDict<QString> )
-
+KStandardDirs::KStandardDirs( const QString& )
 {
-	if( _app ) _app->setAutoDelete( true );
-	if( _sysapp ) _sysapp->setAutoDelete( true );
-	if( _sys ) _sys->setAutoDelete( true );
-	if( _user) _user->setAutoDelete( true );
+    dircache.setAutoDelete(true);
 }
 
 KStandardDirs::~KStandardDirs()
 {
-	delete _app;
-	delete _sysapp;
-	delete _sys;
-	delete _user;
+}
 
-	delete _appName;
+void KStandardDirs::addPrefix( QString dir, bool)
+{
+    if (!prefixes.contains(dir)) {
+	prefixes.append(dir);
+	dircache.clear();
+    }
+}
+
+bool KStandardDirs::addResourceType( const QString& type,
+		      const QString& relativename )
+{
+    QStringList *rels = relatives.find(type);
+    if (!rels) {
+	rels = new QStringList();
+	relatives.insert(type, rels);
+    }
+    if (!rels->contains(relativename)) {
+	rels->append(relativename);
+	dircache.remove(type); // clean the cache
+	return true;
+    }
+    return false;
+}
+
+bool KStandardDirs::addResourceDir( const QString& type, 
+		     const QString& absdir, bool)
+{
+    QStringList *abs = absolutes.find(type);
+    if (!abs) {
+	abs = new QStringList();
+	absolutes.insert(type, abs);
+    }
+    if (!abs->contains(absdir)) {
+	abs->append(absdir);
+	dircache.remove(type); // clean the cache
+	return true;
+    }
+    return false;
+}
+
+QString KStandardDirs::findResource( const QString& type, 
+		      const QString& filename )
+{
+    QString dir = findResourceDir(type, filename);
+    if (dir.isNull())
+	return dir;
+    else return dir + filename;
+}
+
+QString KStandardDirs::findResourceDir( const QString& type,
+					const QString& filename)
+{
+    QStringList *candidates = dircache.find(type);
+    if (!candidates) { // filling cache
+	candidates = new QStringList();
+	QStringList *dirs = absolutes.find(type);
+	if (dirs) 
+	    for (QStringList::ConstIterator it = dirs->begin(); 
+		 it != dirs->end(); it++) {
+		debug("adding abs %s for type %s", it->ascii(), type.ascii());
+		candidates->append(*it);
+	    }
+	dirs = relatives.find(type);
+	if (dirs) 
+	    for (QStringList::ConstIterator pit = prefixes.begin(); 
+		 pit != prefixes.end(); pit++)  
+		for (QStringList::ConstIterator it = dirs->begin(); 
+		     it != dirs->end(); it++) {
+		    debug("adding mix %s for type %s", (*pit + *it).ascii(), type.ascii());
+		    candidates->append(*pit + *it);
+		}
+	dircache.insert(type, candidates);
+    }
+    QDir testdir;
+    for (QStringList::ConstIterator it = candidates->begin(); 
+	 it != candidates->end(); it++) {
+	testdir.setPath(*it);
+	if (testdir.exists(filename, false))
+	    return *it;
+    }
+    return QString::null;
 }
 
 QString KStandardDirs::findExe( const QString& appname, 
@@ -112,190 +176,8 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 	return list.count();
 }
 
-const QString KStandardDirs::closest( DirScope method, 
-		const QString& suffix ) const
-{
-	CHECK_PTR( suffix );
-	CHECK_PTR( _app );
-	CHECK_PTR( _sys );
-	CHECK_PTR( _user );
-
-	QString sys, sysapp, user, app;
-	QString *found = _user->find( suffix );
-       	
-
-	// check dict for previous full-string insertion
-	if( found == 0 ) {
-		// not already inserted, so insert them now.
-		QString realsuffix(suffix);
-		int klen = strlen( KDEDIR );
-		if( !strncmp( suffix.ascii(), "KDEDIR", klen ) ) {
-			// remove prefix KDEDIR from path
-			realsuffix += klen;
-		}
-
-		// system dir
-		QString *name = new QString( KDEDir );
-		*name += realsuffix;
-		sys = *name;
-
-		const_cast<KStandardDirs*>(this)->_sys->insert( 
-				suffix, name );
-
-		// system app dir
-		name = new QString( KDEDir );
-
-		*name += "/share/apps/";
-		*name += realsuffix;
-
-		sysapp = *name;
-
-		const_cast<KStandardDirs*>(this)->_sysapp->insert( 
-				suffix, name );
-
-		// user dir
-		name = new QString( UserDir );
-
-		*name += "/.kde";
-		*name += realsuffix;
-
-
-		user = *name;
-
-		const_cast<KStandardDirs*>(this)->_user->insert( 
-				suffix, name );
-
-
-		// app dir
-		name = new QString( UserDir );
-
-		*name += "/.kde/share/apps/";
-		*name += *_appName;
-		*name += realsuffix;
-
-		app = *name;
-
-		const_cast<KStandardDirs*>(this)->_app->insert( 
-				suffix, name );
-
-	}
-	else {
-		// string's already in there
-		user = *found; 
-		sys = *_sys->find( suffix );
-		sysapp = *_sysapp->find( suffix );
-		app = *_app->find( suffix );
-	}
-			
-	// return specific dirs
-
-	switch( method ) {
-		case User:	return user;
-		case System:	return sys;
-		case SysApp:	return sysapp;
-		case App:	return app;
-		default:	break;
-	}
-
-	// find closest
-
-	QFileInfo info( app );	// app
-
-	if( info.isDir() ) {
-		return app;
-	}
-
-	info.setFile( user );	// user
-
-	if( info.isDir() ) {
-		return user;
-	}
-
-	info.setFile( sysapp );	// sysapp
-
-	if( info.isDir() ) {
-		return sysapp;
-	}
-
-	return sys;		// sys
-}
-
-const QString KStandardDirs::app( KStandardDirs::DirScope s ) const
-{
-	if( _appPath == 0 ) {
-		QString app( "/share/apps/" );
-		app += *_appName;
-
-		const_cast<KStandardDirs*>(this)->_appPath
-			= closest( s, app );
-	}
-
-	return _appPath;
-}
-
-const QString KStandardDirs::bin( DirScope s ) const
-{
-	return closest( s, KDE_BINDIR );
-}
-
-const QString KStandardDirs::cgi( DirScope s ) const
-{
-
-	return closest( s, KDE_CGIDIR );
-}
-
-const QString KStandardDirs::config( DirScope s ) const
-{
-	return closest( s, KDE_CONFIGDIR );
-}
-
-const QString KStandardDirs::apps( DirScope s ) const
-{
-	return closest( s, KDE_DATADIR );
-}
-
-const QString KStandardDirs::html( DirScope s ) const
-{
-	return closest( s, KDE_HTMLDIR );
-}
-
-const QString KStandardDirs::icon( DirScope s ) const
-{
-	return closest( s, KDE_ICONDIR );
-}
-
-const QString KStandardDirs::locale( DirScope s ) const
-{
-	return closest( s, KDE_LOCALE );
-}
-
-const QString KStandardDirs::mime( DirScope s ) const
-{
-	return closest( s, KDE_MIMEDIR );
-}
-
-const QString KStandardDirs::parts( DirScope s ) const
-{
-	return closest( s, KDE_PARTSDIR );
-}
-
-const QString KStandardDirs::toolbar( DirScope s ) const
-{
-	return closest( s, KDE_TOOLBARDIR );
-}
-
-const QString KStandardDirs::wallpaper( DirScope s ) const
-{
-	return closest( s, KDE_WALLPAPERDIR );
-}
-
-const QString KStandardDirs::sound( DirScope s ) const
-{
-	return closest( s, KDE_SOUNDDIR );
-}
-
 static int tokenize( QStringList& tokens, const QString& str, 
-		const QString& delim )
+		     const QString& delim )
 {
 	int index = 0;
 	int len = str.length();
@@ -317,13 +199,3 @@ static int tokenize( QStringList& tokens, const QString& str,
 	return tokens.count();
 }
 
-static QString selectStr( const QString& env, const QString& builtin )
-{
-	const char *res = getenv( env.ascii() );
-
-	if( res == 0 ) {
-		return builtin;
-	}
-
-	return res;
-}

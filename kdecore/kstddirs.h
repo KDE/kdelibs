@@ -5,10 +5,9 @@
 #ifndef SSK_KSTDDIRS_H
 #define SSK_KSTDDIRS_H
 
-#include<qstring.h>
-#include<qdict.h>
-
-class QStringList;
+#include <qstring.h>
+#include <qdict.h>
+#include <qstringlist.h>
 
 /**
 * Site-independent access to standard KDE directories.
@@ -29,6 +28,20 @@ class QStringList;
 * access to a KStandardDirs object via the 
 * @ref KApplication::dirs method.
 *
+* standard resources that kdelibs allocates are:
+* @li exe - executables in $prefix/bin. @see findExe for a function 
+*     that takes $PATH into account
+* @li cgi - CGIs to run from kdehelp
+* @li config - configuration files
+* @li apps - applications menu (.desktop files)
+* @li html - HTML documentation 
+* @li icon - icons
+* @li locale - translation files for KLocale
+* @li mime - mime types
+* @li toolbar - toolbar pictures
+* @li wallpaper - wallpapers
+* @li sound - application sounds
+* 
 * @author Sirtaj Singh Kang <taj@kde.org>
 * @version $Id$
 */
@@ -36,16 +49,16 @@ class KStandardDirs
 {
 public:
 	/**
-	* KStandardDirs Constructor.
-	* @param appName The name of the application, which will be
-	*		used for searching the "apps" directory.
-	*/
+	 * KStandardDirs Constructor.
+	 * @param appName The name of the application, which will be
+	 *		used for searching the "apps" directory.
+	 */
 	KStandardDirs( const QString& appName );
 
 	/**
-	* KStandardDirs Destructor.
-	*/
-	~KStandardDirs();
+	 * KStandardDirs Destructor.
+	 */
+	virtual ~KStandardDirs();
 
 	/** 
 	 * The scope of a directory. App is the application-specific
@@ -59,96 +72,85 @@ public:
 	 */
 	enum DirScope { Closest, App, User, SysApp, System };
 
-	/** 
-	 * The full path to the application-specific directory.
+	/*
+	 * This adds another search dir to front of the fsstnd list.
+	 * @li when compiling kdelibs, the prefix is added to this.
+	 * @li when compiling a separate app, kapp adds the new prefix
+	 * @li additional dirs may be loaded from $HOME/.kderc (?)
+	 *
+	 * @param tosave specifies whether the dir will be saved to kderc.
+	 * Any hardcoded dirs should not be saved, so kapp would make this
+	 * false.
 	 */
-	const QString app		(DirScope s = Closest) const;
+	void addPrefix( QString dir, bool tosave = false );
 
-	/** 
-	 * The full path to the kde binary directory.
+
+	/*
+	 * with this we add types
+	 * all basic types ("html", "config", etc) are added by kdelibs.
+	 *
+	 * @param type specifies a short descriptive string to access
+	 * files of this type.
+	 * @param relativename specifies a directory relative to the root
+	 * of the KFSSTND
 	 */
-	const QString bin		(DirScope s = Closest) const;
+	bool addResourceType( const QString& type,
+			      const QString& relativename );
 
-	/** 
-	 * The full path to the directory in which KDE-specific
-	 * CGI programs are stored.
+
+	/**
+	 * Adds hard path to the front of the search path for
+	 * particular types for example in case of icons where
+	 * the user specifies extra paths.
+	 * 
+	 * @param type specifies a short descriptive string to access files 
+	 * of this type.
+	 * @param absdir points to directory where to look for this specific
+	 * type. Non-existant directories may be saved but pruned.
+	 * @param tosave is same as with addPrefix.
+	 * 
 	 */
-	const QString cgi		(DirScope s = Closest) const;
+	bool addResourceDir( const QString& type, 
+			     const QString& absdir, 
+			     bool tosave = false );
 
-	/** 
-	 * The full path to the directory in which configuration
-	 * files are stored.
+	/**
+	 * Tries to find resource in the following order:
+	 * @li all hard paths (most recent first)
+	 * @li all PREFIX/<relativename> paths (most recent first)
 	 */
-	const QString config	(DirScope s = Closest) const;
+	QString findResource( const QString& type, 
+			      const QString& filename );
 
-	/** 
-	 * The full path to the data directory.
+	/**
+	 * Tries to find the directory the file is in.
+	 * It works the same as findResource, but it doesn't
+	 * return the filename, but the name of the directory.
+	 * This way the application can access a couple of files
+	 * that have been installed into the same directory.
 	 */
-	const QString apps	(DirScope s = Closest) const;
+	QString findResourceDir( const QString& type,
+				 const QString& filename);
 
+	
 	/** 
-	 * The full path to the directory in which HTML documentation
-	 * is saved. This does not take into account the current
-	 * locale setting.
+	 * Finds the executable in the system path. A valid executable must
+	 * be a file and have its executable bit set.
+	 *
+	 * @see #findAllExe
+	 * @param appname the name of the executable file for which to search.
+	 * @param pathstr The path which will be searched. If this is 
+	 * 		0 (default), the $PATH environment variable will 
+	 *		be searched.
+	 * @param ignoreExecBit	If true, an existing file will be returned
+	 *			even if its executable bit is not set.
+	 *
+	 * @return The path of the executable. If it was not found, this string 
+	 *	will be null.
 	 */
-	const QString html	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which icon images are stored.
-	 */
-	const QString icon	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which locale information
-	 * and translation catalogues are stored.
-	 */
-	const QString locale	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which MIME information
-	 * is stored.
-	 */
-	const QString mime	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which mini icons are stored.
-	 */
-	const QString parts	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which toolbar icons are
-	 * stored.
-	 */
-	const QString toolbar	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which wallpapers are stored.
-	 */
-	const QString wallpaper	(DirScope s = Closest) const;
-
-	/** 
-	 * The full path to the directory in which sound files are stored.
-	 */
-	const QString sound	(DirScope s = Closest) const;
-
-	/** 
-	* Finds the executable in the system path. A valid executable must
-	* be a file and have its executable bit set.
-	*
-	* @see #findAllExe
-	* @param appname the name of the executable file for which to search.
-	* @param pathstr The path which will be searched. If this is 
-	* 		0 (default), the $PATH environment variable will 
-	*		be searched.
-	* @param ignoreExecBit	If true, an existing file will be returned
-	*			even if its executable bit is not set.
-	*
-	* @return The path of the executable. If it was not found, this string 
-	*	will be null.
-	*/
 	static QString findExe( const QString& appname, 
-		const QString& pathstr=QString::null,
-		     bool ignoreExecBit=false );
+				const QString& pathstr=QString::null,
+				bool ignoreExecBit=false );
 
 	/** 
 	 * Finds all occurences of an executable in the system path.
@@ -169,30 +171,18 @@ public:
 	 * @return The number of executables found, 0 if none were found.
 	 */
 	static int findAllExe( QStringList& list, const QString& appname,
-			const QString& pathstr=QString::null, 
-			bool ignoreExecBit=false );
+			       const QString& pathstr=QString::null, 
+			       bool ignoreExecBit=false );
 
 private:
 
-	/** 
-	 * Finds a directory, subject to the suffix and scope.
-	 */
-	const QString closest( DirScope scope, const QString& suffix ) const;
-
-	const QString UserDir;
-	const QString KDEDir;
-
-	/** Application name. */
-	QString _appPath;
-	QString *_appName;
+	QStringList prefixes;
 
 	// Directory dictionaries
-
-	QDict<QString> *_app;
-	QDict<QString> *_sysapp;
-	QDict<QString> *_sys;
-
-	QDict<QString> *_user;
+	QDict<QStringList> absolutes;
+	QDict<QStringList> relatives;
+	
+	QDict<QStringList> dircache;
 
 	// Disallow assignment and copy-construction
 	KStandardDirs( const KStandardDirs& );
