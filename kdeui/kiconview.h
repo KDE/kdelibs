@@ -62,7 +62,6 @@ protected slots:
  void slotAutoSelect();
  void slotExecute( QIconViewItem *item );
 
- void selch() { debug("SELECTION CHANGED"); }
 protected:
   virtual void focusOutEvent( QFocusEvent *fe );
  

@@ -22,9 +22,6 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     m_pAutoSelect = new QTimer( this );
     connect( m_pAutoSelect, SIGNAL( timeout() ),
     	     this, SLOT( slotAutoSelect() ) );
-
-    connect( this, SIGNAL( selectionChanged() ),
-	     this, SLOT( selch() ) );
 }
 
 void KIconView::slotSettingsChanged()
