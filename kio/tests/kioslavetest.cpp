@@ -294,6 +294,11 @@ void KioslaveTest::slotResult( KIO::Job * job )
   }
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
+
+  if (progressMode == ProgressStatus) {
+    statusProgress->clean();
+  }
+
 }
 
 void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
