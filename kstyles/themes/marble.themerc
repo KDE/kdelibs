@@ -1,0 +1,248 @@
+#KDE Config File
+[PushButton]
+Pixmap=graymarble.png
+XShift=1
+YShift=1
+BlendIntensity=0.1
+Gradient=Diagonal
+GradientLow=150,150,150
+Border=0
+
+[PushButtonDown]
+Pixmap=aquaice.png
+Border=0
+
+[HScrollGroove]
+Pixmap=graymarble_dark.png
+PixmapScale=Tile
+Highlight=1
+Border=0
+
+[VScrollGroove]
+CopyWidget=HScrollGroove
+
+[Splitter]
+Pixmap=graymarble_dark.png
+Width=6
+Border=0
+
+[SliderGroove]
+SmallGroove=true
+
+[MenuItem]
+Pixmap=graymarble.png
+Border=0
+Highlight=0
+
+[MenuItemDown]
+Pixmap=aquaice.png
+Border=0
+
+[ComboBox]
+Pixmap=graymarble.png
+BlendIntensity=0.1
+Gradient=Diagonal
+GradientLow=150,150,150
+Border=0
+
+[ComboBoxDown]
+Pixmap=aquaice.png
+Border=0
+
+[VSBarSlider]
+Pixmap=graymarble.png
+Border=0
+
+[HSBarSlider]
+CopyWidget=VSBarSlider
+
+[Bevel]
+Pixmap=graymarble.png
+Border=0
+
+[ToolButton]
+Pixmap=graymarble.png
+Gradient=Diagonal
+GradientLow=150,150,150
+BlendIntensity=0.1
+Border=0
+
+[ToolButtonDown]
+Pixmap=aquaice.png
+Border=0
+
+[ScrollButton]
+Pixmap=graymarble.png
+Border=0
+
+[VBarHandle]
+Pixmap=graymarble.png
+BlendIntensity=0.1
+Gradient=Horizontal
+GradientLow=150,150,150
+Border=0
+
+[HBarHandle]
+Pixmap=graymarble.png
+BlendIntensity=0.1
+Gradient=Vertical
+GradientLow=150,150,150
+Border=0
+
+[ToolBar]
+Pixmap=graymarble.png
+Border=0
+
+[MenuBar]
+CopyWidget=ToolBar
+Border=0
+
+[ProgressBar]
+Pixmap=aquaice.png
+Border=0
+
+[ProgressBackground]
+Pixmap=graymarble_dark.png
+
+
+[Tab]
+Pixmap=graymarble_dark.png
+Border=0
+
+[TabDown]
+Pixmap=grayice.png
+Border=0
+BottomLine=false
+
+[MenuBarItem]
+Pixmap=aquaice.png
+Border=0
+
+[Slider]
+Pixmap=darkslider.png
+
+[ComboDeco]
+Pixmap=marble_combo.png
+
+[CheckBox]
+Pixmap=marble_unchecked.png
+
+[CheckBoxDown]
+Pixmap=marble_checked.png
+
+[Radio]
+Pixmap=marble_off.png
+
+[RadioDown]
+Pixmap=marble_on.png
+
+[CheckMark]
+Pixmap=red_checkmark.png
+
+[Background]
+Pixmap=grayice.png
+
+[Misc]
+SButtonPosition=Opposite
+ShadeStyle=Motif
+ArrowType=3D
+Name=Marble
+Name[af]=Marmer
+Name[az]=Mərmər
+Name[br]=Marbrenn
+Name[bs]=Mramor
+Name[ca]=Marbre
+Name[da]=Marmor
+Name[de]=Marmor
+Name[el]=Μάρμαρο
+Name[eo]=Marmoro
+Name[es]=Mármol
+Name[et]=Marmor
+Name[eu]=Marmola
+Name[fi]=Marmori
+Name[fr]=Marbre
+Name[gl]=Mármore
+Name[hr]=Mramor
+Name[hu]=Márvány
+Name[is]=Marmari
+Name[it]=Marmo
+Name[ja]=マーブル
+Name[ko]=대리석
+Name[lt]=Marmuras
+Name[lv]=Marmors
+Name[mi]=Hïtimi
+Name[mk]=Мермер
+Name[mt]=Irħam
+Name[nl]=Marmer
+Name[no_NY]=Marmor
+Name[oc]=Marbre
+Name[pl]=Marmur
+Name[pt_BR]=Mármore
+Name[pt]=Mármore
+Name[ro]=Marmură
+Name[ru]=Мрамор
+Name[sk]=Mramor
+Name[sl]=Marmor
+Name[sr]=Mermer
+Name[sv]=Marmor
+Name[ta]=ºÄ¨Å¸ø
+Name[tr]=Mermer
+Name[uk]=Мармур
+Name[zh_CN.GB2312]=大理石
+Comment=Light marble themed style
+Comment[af]=Ligte marmer tema
+Comment[az]=Açıq mərmər örtülü tərz
+Comment[br]=Giz gwisket gant marbrenn skañv
+Comment[bs]=Stil svjetlog mramora
+Comment[ca]=Estil marbre lleuger amb temes
+Comment[da]=Stil i lys marmor med tema
+Comment[de]=Helles Marmordesign
+Comment[el]=Θεματικό στυλ Ανοιχτόχρωμο Μάρμαρο
+Comment[eo]=Hela marmoro
+Comment[es]=Estilo con tema mármol claro
+Comment[et]=Hele marmor teemaga stiil
+Comment[eu]=Marmol argia temadun estiloa
+Comment[fi]=Vaalealla marmorilla teemoitetty tyyli
+Comment[fr]=Style avec thème marbre clair
+Comment[gl]=Estilo mármore con tema
+Comment[hr]=Stil svjetlog mramora
+Comment[hu]=Halvány márványos stílus témával
+Comment[is]=Ljósleitur marmarastíll (með þema)
+Comment[it]=Stile marmo chiaro (con tema)
+Comment[ja]=ライトマーブルテーマスタイル
+Comment[ko]=밝은 대리석 테마 형태
+Comment[lt]=Teminis šviesaus marmuro stilius
+Comment[lv]=Stils ar gai�ā marmora tēmu
+Comment[mk]=Стил со светол мермер
+Comment[mt]=Tema bi stil ta' irħam ċar
+Comment[nl]=thema met lichtgemarmerde stijl
+Comment[no]=Lett marble-stil med tema
+Comment[no_NY]=Lett marmorstil med tema
+Comment[oc]=Estil marbre leger amb temes
+Comment[pl]=Styl jasny marmur z motywami
+Comment[pt_BR]=Estilo com tema em mármore
+Comment[pt]=Estilo mármore claro
+Comment[ro]=Stil cu temă marmură luminoasă
+Comment[ru]=cветлый мраморный стиль с темами
+Comment[sk]=Štýl témy Svetlý mramor
+Comment[sl]=Tematski slog svetlega marmorja
+Comment[sr]=Svetli mermer stil sa temom
+Comment[sv]=Temad stil med ljus marmor
+Comment[ta]=¦ÁøÄ¢Â ºÄ¨Å¸ø ¯Õ¸Õ À¡½¢
+Comment[tr]=Açık mermer temalı stil
+Comment[uk]=Стиль світлого мармуру
+Comment[zh_CN.GB2312]=浅色的大理石主题风格
+Comment[zh_TW.Big5]=明亮的大理石主題風格
+
+[General]
+foreground=0,0,0
+selectForeground=255,255,255
+selectBackground=0,0,128
+background=192,192,192
+windowForeground=0,0,0
+windowBackground=255,255,255     
+
+[KDE]
+contrast=5
+widgetStyle=basicstyle.la
+

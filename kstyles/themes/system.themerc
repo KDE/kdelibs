@@ -1,0 +1,298 @@
+#KDE Config File
+[PushButton]
+Background=219,219,219
+Gradient=Diagonal
+GradientLow=233,233,233
+GradientHigh=171,171,171
+XShift=1
+YShift=1
+
+[PushButtonDown]
+Background=224,212,201
+
+[HScrollGroove]
+Pixmap=darkgraytexture.png
+PixmapScale=Tile
+Highlight=1
+Border=0
+
+[VScrollGroove]
+CopyWidget=HScrollGroove
+
+[Splitter]
+Gradient=Horizontal
+GradientHigh=150,150,150 
+GradientLow=170,170,170
+Width=6
+
+[SliderGroove]
+Background=219,219,219
+Gradient=Vertical
+GradientHigh=233,233,233
+GradientLow=171,171,171
+
+[MenuItem]
+#GradientHigh=170,196,234
+#GradientLow=123,139,162
+#Gradient=Vertical
+Background=214,192,181
+Foreground=0,0,0
+Border=0
+Highlight=0
+
+[MenuItemDown]
+Border=0
+Background=219,219,219
+Gradient=Vertical
+GradientHigh=233,233,233
+GradientLow=171,171,171
+
+[ComboBox]
+Background=219,219,219
+Gradient=Diagonal
+GradientHigh=233,233,233
+GradientLow=171,171,171
+
+[ComboBoxDown]
+Background=219,219,219
+Gradient=Diagonal
+GradientHigh=233,233,253
+GradientLow=171,171,191
+
+[VSBarSlider]
+Background=219,219,219
+Gradient=Horizontal
+GradientHigh=233,233,233
+GradientLow=171,171,171
+Border=0
+
+[HSBarSlider]
+Background=219,219,219
+Gradient=Vertical
+GradientHigh=233,233,233
+GradientLow=171,171,171
+Border=0
+
+[Bevel]
+Background=219,219,219
+Gradient=Diagonal
+GradientHigh=233,233,233
+GradientLow=171,171,171
+
+[ToolButton]
+Border=0
+Background=206,172,148
+
+[ToolButtonDown]
+Border=0
+Background=226,192,168
+
+[ScrollButton]
+Border=0
+Background=219,219,219
+Gradient=Diagonal
+GradientHigh=233,233,233
+GradientLow=171,171,171
+
+[VBarHandle]
+Pixmap=elec_hdl.png
+Border=0
+Highlight=1
+
+[HBarHandle]
+Pixmap=elec_horizhdl.png
+Border=0
+Highlight=1
+
+[ToolBar]
+Border=0
+Background=219,219,219
+Gradient=Vertical
+GradientHigh=233,233,233
+GradientLow=190,190,190
+
+[MenuBar]
+CopyWidget=ToolBar
+
+[ProgressBar]
+Border=0
+Highlight=0
+Background=50,50,50
+Gradient=Horizontal
+GradientLow=0,0,0
+GradientHigh=200,200,200
+
+[ProgressBackground]
+Background=200,200,200
+
+[Tab]
+Border=0
+Pixmap=darkgraytexture.png
+BottomLine=true
+
+[TabDown]
+Pixmap=graytexture.png
+Border=0
+BottomLine=false
+
+[MenuBarItem]
+Background=206,172,148
+GradientHigh=186,152,128
+GradientLow=226,192,168
+Gradient=Vertical
+Border=0
+Highlight=1
+
+[Slider]
+Pixmap=elec_slider.png
+
+[ComboDeco]
+Pixmap=elec_combo.png
+
+
+[ComboDecoDown]
+Pixmap=elec_combodown.png
+
+[CheckBox]
+Pixmap=switch_off.png
+
+[CheckBoxDown]
+Pixmap=switch_on.png
+
+[Radio]
+Pixmap=elec_off.png
+
+[RadioDown]
+Pixmap=elec_on.png
+
+[HScrollDeco]
+Pixmap=sbdeco_elec.png
+
+[VScrollDeco]
+CopyWidget=HScrollDeco
+
+[HScrollDecoDown]
+Pixmap=sbdeco_elecdown.png
+
+[VScrollDecoDown]
+CopyWidget=HScrollDecoDown
+
+[CheckMark]
+Pixmap=red_checkmark.png
+
+[Background]
+Pixmap=graytexture.png
+
+[ArrowUp]
+Pixmap=sysarrow_up.png
+
+[ArrowDown]
+Pixmap=sysarrow_down.png
+
+[ArrowLeft]
+Pixmap=sysarrow_left.png
+
+[ArrowRight]
+Pixmap=sysarrow_right.png
+
+[SunkenArrowUp]
+Pixmap=sysarrow_sup.png
+
+[SunkenArrowDown]
+Pixmap=sysarrow_sdown.png
+
+[SunkenArrowLeft]
+Pixmap=sysarrow_sleft.png
+
+[SunkenArrowRight]
+Pixmap=sysarrow_sright.png
+
+[DisableArrowUp]
+Pixmap=sysarrow_iup.png
+
+[DisableArrowDown]
+Pixmap=sysarrow_idown.png
+
+[DisableArrowLeft]
+Pixmap=sysarrow_ileft.png
+
+[DisableArrowRight]
+Pixmap=sysarrow_iright.png
+
+[Misc]
+SButtonPosition=BottomRight
+ShadeStyle=Motif
+Name=System++
+Name[az]=Sistem++
+Name[br]=Reizhiad++
+Name[ca]=Sistema++
+Name[eo]=Sistemo++
+Name[et]=Süsteem++
+Name[fi]=Järjestelmä++
+Name[fr]=Système++
+Name[is]=Kerfi++
+Name[ko]=시스템++
+Name[lt]=Sistema++
+Name[lv]=Sistēma++
+Name[mk]=Систем++
+Name[nl]=Systeem++
+Name[oc]=Sistemo++
+Name[ro]=Sistem++
+Name[sk]=Systém++
+Name[sl]=Sistem++
+Name[tr]=Sistem++
+Name[zh_TW.Big5]=系統++
+Comment=System themed style
+Comment[af]=Stelsel tema
+Comment[az]=Sistem örtülü tərz
+Comment[br]=Giz reizhiad gwisket
+Comment[ca]=Estil del sistema amb temes
+Comment[da]=System stil med tema
+Comment[de]=Systemdesign
+Comment[eo]=Sistema stilo etosa
+Comment[es]=Estilo del sistema con tema
+Comment[et]=Süsteem teemaga stiil
+Comment[eu]=System temarekin estiloa
+Comment[fi]=Järjestelmän teemoitettu tyyli
+Comment[fr]=Style Système avec thème
+Comment[gl]=Estilo de Sistema con tema
+Comment[hu]=Rendszerstílus témával
+Comment[is]=Kerfisstíll (með þema)
+Comment[it]=Stile di sistema (con tema)
+Comment[ja]=システムテーマスタイル
+Comment[ko]=시스템 운영체제와 같은 꼴을 가진 테마
+Comment[lt]=Sistemos teminis stilius
+Comment[lv]=Stils par Sistēmas tēmu
+Comment[mk]=Системски стил (со тема)
+Comment[mt]=Stil b'tema tas-Sistema
+Comment[nl]=systeem-thema-stijl
+Comment[no]=System-stil med tema
+Comment[no_NY]=Systemstil
+Comment[oc]=Estil del sistemo amb temes
+Comment[pl]=Styl System z motywami
+Comment[pt_BR]=Estilo System
+Comment[pt]=Estilo System
+Comment[ro]=Stil sistem cu temă
+Comment[ru]=системный стиль с темами
+Comment[sk]=Systémové témy štýlov
+Comment[sl]=Sistemski tematski slog
+Comment[sr]=System tema
+Comment[sv]=Systemets temade stil
+Comment[ta]=¸½¢É¢ ¯Õ¸ÕÅ¢ø À¡½¢
+Comment[tr]=Sistem temalı stil
+Comment[uk]=Системний стиль
+Comment[zh_CN.GB2312]=系统主题风格
+Comment[zh_TW.Big5]=主題式的系統風格
+
+[General]
+foreground=0,0,0
+selectForeground=255,255,255
+selectBackground=90,36,0
+background=211,211,211
+windowForeground=0,0,0
+windowBackground=255,255,255
+
+[KDE]
+contrast=2
+widgetStyle=basicstyle.la
+
