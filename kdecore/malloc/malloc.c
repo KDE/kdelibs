@@ -4243,11 +4243,11 @@ Void_t* cALLOc(n_elements, elem_size) size_t n_elements; size_t elem_size;
   unsigned long nclears;
   INTERNAL_SIZE_T* d;
 
+  Void_t* mem = mALLOc(n_elements * elem_size);
+
   /* hack */
   kde_malloc_is_used = 1;
   
-  Void_t* mem = mALLOc(n_elements * elem_size);
-
   if (mem != 0) {
     p = mem2chunk(mem);
 
