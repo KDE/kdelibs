@@ -7,7 +7,7 @@
 **
 ** WARNING! All changes made in this file will be lost!
 ****************************************************************************/
-#include "../../../kdeprint/cups/kcupshpgl2pagebase.h"
+#include <kdeprint/cups/kcupshpgl2pagebase.h>
 
 #include <qcheckbox.h>
 #include <qgroupbox.h>

@@ -7,7 +7,7 @@
 **
 ** WARNING! All changes made in this file will be lost!
 ****************************************************************************/
-#include "../../../kdeprint/cups/kcupsoptiondlgbase.h"
+#include <kdeprint/cups/kcupsoptiondlgbase.h>
 
 #include <qcheckbox.h>
 #include <qgroupbox.h>

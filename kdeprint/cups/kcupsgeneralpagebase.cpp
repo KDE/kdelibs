@@ -7,7 +7,7 @@
 **
 ** WARNING! All changes made in this file will be lost!
 ****************************************************************************/
-#include "../../../kdeprint/cups/kcupsgeneralpagebase.h"
+#include <kdeprint/cups/kcupsgeneralpagebase.h>
 
 #include <qbuttongroup.h>
 #include <qcombobox.h>
