@@ -104,18 +104,18 @@ void KFileShare::readConfig() // static
         }
     } while (length > -1);
 
-    kdDebug() << "normalExit()=" << proc.normalExit() << " exitStatus()=" << proc.exitStatus() << endl;
+    //kdDebug(7000) << "KFileShare: normalExit()=" << proc.normalExit() << " exitStatus()=" << proc.exitStatus() << endl;
     if ( proc.normalExit() )
         switch (proc.exitStatus())
         {
         case 0:
             s_authorization = Authorized;
-            kdDebug() << "KFileShare::readConfig: s_authorization = Authorized" << endl;
+            kdDebug(7000) << "KFileShare::readConfig: s_authorization = Authorized" << endl;
 	    // move while loop here
             return;
         case 1:
             s_authorization = UserNotAllowed;
-            kdDebug() << "KFileShare::readConfig: s_authorization = UserNotAllowed" << endl;
+            kdDebug(7000) << "KFileShare::readConfig: s_authorization = UserNotAllowed" << endl;
             return;
         default:
             break;
@@ -155,7 +155,7 @@ QString KFileShare::findExe( const char* exeName )
 
 bool KFileShare::setShared( const QString& path, bool shared )
 {
-    kdDebug() << "KFileShare::setShared " << path << "," << shared << endl;
+    kdDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
     QString exe = KFileShare::findExe( "fileshareset" );
     if (!exe.isEmpty())
     {
@@ -168,7 +168,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
         proc << path;
         proc.start( KProcess::Block ); // should be ok, the perl script terminates fast
         bool ok = proc.normalExit() && (proc.exitStatus() == 0);
-        kdDebug() << "KFileSharePropsPlugin::setShared ok=" << ok << endl;
+        kdDebug(7000) << "KFileSharePropsPlugin::setShared ok=" << ok << endl;
         if ( proc.normalExit() )
           switch( proc.exitStatus() )
           case 1:
