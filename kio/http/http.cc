@@ -1496,8 +1496,21 @@ bool HTTPProtocol::readHeader()
      else
      {
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
-        m_strMimeType = QString::fromLatin1("application/gzip");
+        m_strMimeType = QString::fromLatin1("application/x-gzip");
      }
+  }
+ 
+  // Convert some common mimetypes to standard KDE mimetypes
+  if (m_strMimeType == "application/x-targz")
+     m_strMimeType = QString::fromLatin1("application/x-tgz");
+
+  // Prefer application/x-tgz over application/x-gzip
+  if (m_strMimeType == "application/x-gzip")
+  {
+    kdDebug(7103) << "request.url.path().right(7) is " << m_request.url.path().right(7) <<  endl;
+     if ((m_request.url.path().right(7) == ".tar.gz") ||
+         (m_request.url.path().right(4) == ".tar"))
+        m_strMimeType = QString::fromLatin1("application/x-tgz");
   }
 
   if (!m_qContentEncodings.isEmpty())
