@@ -1627,6 +1627,7 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 #ifdef DEBUG_MIMEMAGIC
 		kdDebug(7018) << "match: line=" << m->lineno << " desc=" << m->desc << endl;
 #endif
+		memset(&p, 0, sizeof(union VALUETYPE));
 
 		/* check if main entry matches */
 		if (!mget(&p, s, m, nbytes) ||
