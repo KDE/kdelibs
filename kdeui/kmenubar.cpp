@@ -36,8 +36,6 @@
 #include <kwin.h>
 #include <kwinmodule.h>
 #include <kglobal.h>
-#include <kdebug.h>
-#include <kpopupmenu.h>
 
 #ifndef Q_WS_QWS
 #include <X11/Xlib.h>
@@ -161,60 +159,5 @@ void KMenuBar::showEvent( QShowEvent* )
 #endif
     }
 }
-int KMenuBar::insertItem( const QPixmap &pixmap, 
-			  QPopupMenu *popup,
-			  int id, int index )
-{
-  addHandle(popup);
-  kdDebug(295 ) << "InsertItem:1 Pixmap, Popup, id, index" << endl;
-  return QMenuBar::insertItem(pixmap, popup, id, index );
-}
-
-int KMenuBar::insertItem( const QIconSet& icon,
-			  const QPixmap &pixmap,
-			  QPopupMenu *popup,
-			  int id, int index )
-{
-  addHandle(popup);
-  kdDebug(295 ) << "InsertItem:2 IconSet, Pixmap, Popup, id, index" << endl;
-  return QMenuBar::insertItem(icon, pixmap, popup, id, index );
-}
-int KMenuBar::insertItem ( const QString & text, 
-			   QPopupMenu * popup,
-			   int id, int index )
-{
-  addHandle(popup );
-  kdDebug(295 ) << "InsertItem:3 text, Popup, id, index" << endl;
-  return QMenuBar::insertItem(text, popup, id, index );
-}
-int KMenuBar::insertItem ( const QIconSet & icon, 
-		     const QString & text, 
-		     QPopupMenu * popup, 
-		     int id, int index )
-{
-  addHandle(popup );
-  kdDebug(295 ) << "InsertItem:4 icon, text, id, index" << endl;
-  return QMenuBar::insertItem(icon, text, popup, id, index );
-}
-
-void KMenuBar::addHandle(QPopupMenu *popup)
-{
-  if( popup->inherits("KPopupMenu")  ){
-    kdDebug(295) << "KPopupMenu cast" << endl;
-    KPopupMenu *kpop = static_cast<KPopupMenu*> (popup);
-    kpop->insertTearOffHandle();
-  }else{
-    popup->insertTearOffHandle();
-  }
-}
 
 #include "kmenubar.moc"
-
-
-
-
-
-
-
-
-
