@@ -273,7 +273,6 @@ UL, MENU, DIR {
         list-style-type: disc;
         margin: 1__qem 0 1em 0;
         padding-left: 40px;
-        -khtml-flow-mode: -khtml-around-floats
 }
 
 OL {
@@ -281,11 +280,11 @@ OL {
         list-style-type: decimal;
         margin: 1__qem 0 1em 0;
         padding-left: 40px;
-        -khtml-flow-mode: -khtml-around-floats
 }
 
 LI {
         display: list-item;
+        -khtml-flow-mode: -khtml-around-floats
 }
 
 
