@@ -111,8 +111,11 @@ KTMainWindow::~KTMainWindow()
     else
 	kapp->setTopWidget( 0 );
   }
-
-  delete layoutMgr;
+  if (layoutMgr)
+  {
+    delete layoutMgr;
+    layoutMgr =0;
+  }
 
   //debug ("KTM destructor: end");
 }
@@ -215,8 +218,11 @@ QRect KTMainWindow::mainViewGeometry() const
 
 void KTMainWindow::updateRects()
 {
-	if (layoutMgr)
-		delete layoutMgr;
+  if (layoutMgr)
+  {
+    delete layoutMgr;
+    layoutMgr = 0;
+  }
 
 	layoutMgr = new KVTBLayout(this);
 	CHECK_PTR(layoutMgr);
