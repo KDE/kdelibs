@@ -18,12 +18,10 @@
 */
 
 #include <config.h>
-
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
+#include <time.h>
+
+#include <iostream>
 
 #include <qbuffer.h>
 #include <qfile.h>
@@ -39,56 +37,34 @@
 #define TEST_BLOCK_COUNT 10000          // Number of test blocks.
 #define MAX_READ_BUF_SIZE 8192
 
-enum Codec {
-    Unspecified=0,
-    Base64Encode,
-    Base64Decode,
-    UUEncode,
-    UUDecode,
-    QPEncode,
-    QPDecode
+enum Codec
+{
+  Unspecified=0,
+  Base64Encode,
+  Base64Decode,
+  UUEncode,
+  UUDecode,
+  QPEncode,
+  QPDecode
 };
 
 void MD5_timeTrial ();
 void MD5_testSuite ();
-void MD5_string ( const char *, const char *expected = 0, bool rawOutput = false);
-void MD5_file ( const char * , bool rawOutput = false );
-void MD5_verify( const char*, const char*, bool );
-void testCodec( const char*, Codec, bool );
+void testCodec (const char*, Codec, bool);
+void MD5_verify (const char*, const char*, bool);
+void MD5_file (const char * , bool rawOutput = false);
+void MD5_string (const char *, const char *expected = 0, bool rawOutput = false);
 
-
-// Returns the file descriptor if successful, -1 otherwise.
-int openFile( const char* filename, const char* err_msg )
+long readContent (const QFile& f, long count, QByteArray& buf)
 {
-    struct stat st;
-    if ( stat( filename, &st ) )
-    {
-        kdDebug() << err_msg << endl
-                  << "Could not find a file named: " << filename << endl;
-        return -1;
-    }
+    long result;
+    int old_size;
 
-    if ( !S_ISREG( st.st_mode ) )
-    {
-        kdDebug() << "{" << filename << "} is not a file!" << endl;
-        return -1;
-    }
-
-    FILE* f = fopen( filename, "rb" );
-    if( !f )
-    {
-        kdDebug() << err_msg << endl
-                  << "Could not open a file named: " << filename << endl;
-        return -1;
-    }
-    return fileno(f);
-}
-
-int readContent( int fd, QByteArray& buf, int count, const char* err_msg, bool closefd = true )
-{
-    int old_size = buf.size();
+    old_size = buf.size();
     buf.resize(old_size+count);
-    int result = read( fd, buf.data()+old_size, count );
+
+    result = read (f.handle (), buf.data()+old_size, count);
+
     if ( result > 0 && result < count )
     {
       buf.resize( old_size + result );
@@ -96,36 +72,53 @@ int readContent( int fd, QByteArray& buf, int count, const char* err_msg, bool c
     else if ( result == 0 )
     {
       buf.resize( old_size );
-      if ( closefd && close(fd) == -1 )
-          kdDebug() << "WARNING: unable to close the file properly!" << endl;
     }
     else if ( result == -1 )
     {
-      kdDebug() << err_msg << endl
-                << "Could not read the file!" << endl;
-      if ( close(fd) == -1 )
-        kdDebug() << "WARNING: unable to close the file properly!" << endl;
+      kdError() << "Could not read the file!" << endl;
     }
+
     return result;
 }
 
-void testCodec( const char* msg, Codec type, bool isFile )
+void testCodec (const char* msg, Codec type, bool isFile)
 {
     QByteArray output;
+
     if ( isFile )
     {
-        // Open requested file...
-        const char* err_msg = "Encoding with \"base64\" failed!";
-        int fd = openFile( msg, err_msg );
-        if ( fd == -1 ) return;
+        int count;
+        QByteArray data;
+
+        QFile f (QFile::encodeName(msg));
+
+        if (!f.exists())
+        {
+          kdError() << "Could not find: " << f.name () << endl;
+          return;
+        }
+
+        if (!f.open(IO_ReadOnly))
+        {
+          f.close ();
+          kdError() << "Could not open: " << f.name() << endl;
+          return;
+        }
 
         // Read contents of file...
-        int count=0;
-        QByteArray data;
-        while((count=readContent(fd, data, MAX_READ_BUF_SIZE, err_msg)) > 0);
+        count = 0;
+
+        while ((count= readContent(f, MAX_READ_BUF_SIZE, data)) > 0);
 
         // Error! Exit!
-        if ( count == -1 ) return;
+        if ( count == -1 )
+        {
+          kdError () << "Error reading from: " << f.name() << endl;
+          f.close ();
+          return;
+        }
+
+        f.close ();
 
         // Perform the requested encoding or decoding...
         switch (type)
@@ -142,60 +135,52 @@ void testCodec( const char* msg, Codec type, bool isFile )
             case UUDecode:
                 KCodecs::uudecode(data, output);
                 break;
-#if 0
             case QPEncode:
-                KCodecs::quotedPrintableEncode(data, output);
+                KCodecs::quotedPrintableEncode(data, output, true);
                 break;
             case QPDecode:
-                KCodecs::quotedPrintableDecode(data, ouput);
+                KCodecs::quotedPrintableDecode(data, output);
                 break;
-#endif
             default:
                 break;
         }
-        char* result = output.data();
-        int size = output.size();
-        // NULL terminate string before printing!
-        if ( size && result[size-1] != '\0' )
-            result[size] = '\0';
-        kdDebug() << "Result: \n" << result << endl;
+
+        QCString result (output.data(), output.size()+1);
+        cout << "Result: " << endl << result << endl;
     }
     else
     {
-        int size = strlen(msg);
-        output.resize(size);
-        memcpy( output.data(), msg, size );
-        QCString out;
+        QCString result;
+
+        memcpy (output.data(), msg, strlen(msg));
+
         switch (type)
         {
           case Base64Encode:
-            out = KCodecs::base64Encode(output);
+            result = KCodecs::base64Encode(output);
             break;
           case Base64Decode:
-            out = KCodecs::base64Decode(output);
+            result = KCodecs::base64Decode(output);
             break;
           case UUEncode:
-            out = KCodecs::uuencode(output);
+            result = KCodecs::uuencode(output);
             break;
           case UUDecode:
-            out = KCodecs::uudecode(output);
+            result = KCodecs::uudecode(output);
             break;
-#if 0
           case QPEncode:
-            out = KCodecs::quotedPrintableEncode(output);
+            result = KCodecs::quotedPrintableEncode(output);
             break;
           case QPDecode:
-            out = KCodecs::quotedPrintableDecode(output);
+            result = KCodecs::quotedPrintableDecode(output);
             break;
-#endif
           default:
             break;
         }
-        kdDebug() << out << endl;
+        cout << result << endl;
     }
 }
 
-// Measures the time to digest TEST_BLOCK_COUNT TEST_BLOCK_LEN-byte blocks.
 void MD5_timeTrial ()
 {
     KMD5 context;
@@ -206,8 +191,8 @@ void MD5_timeTrial ()
     Q_UINT8 block[TEST_BLOCK_LEN];
     Q_UINT32 i;
 
-    kdDebug() << endl << "Timing test. Digesting " << TEST_BLOCK_COUNT
-              << " blocks of " << TEST_BLOCK_LEN << "-byte..." << endl;
+    cout << "Timing test. Digesting " << TEST_BLOCK_COUNT << " blocks of "
+         << TEST_BLOCK_LEN << "-byte..." << endl;
 
     // Initialize block
     for (i = 0; i < TEST_BLOCK_LEN; i++)
@@ -229,17 +214,16 @@ void MD5_timeTrial ()
       speed = (TEST_BLOCK_LEN * (TEST_BLOCK_COUNT/duration));
     else
       speed = TEST_BLOCK_COUNT;
-    kdDebug() << "Result: " << endl
-              << "  Digest = " << context.hexDigest() << endl
-              << "  Time   = "<< duration << " seconds" << endl
-              << "  Speed  = " << speed << " bytes/second" << endl << endl;
-}
 
-// Digests a reference suite of strings and prints the results.
+    cout << "Result: " << endl;
+    cout << "  Time   = " << duration << " seconds" << endl;
+    cout << "  Speed  = " << speed << " bytes/second" << endl;
+    cout << "  Digest = " << context.hexDigest() << endl;
+}
 
 void MD5_testSuite ()
 {
-  kdDebug() << "MD5 preset test suite as defined in RFC 1321:" << endl;
+  cout << "MD5 preset test suite as defined in RFC 1321:" << endl;
   MD5_string ( "", "d41d8cd98f00b204e9800998ecf8427e" );
   MD5_string ( "a", "0cc175b9c0f1b6a831c399e269772661" );
   MD5_string ( "abc", "900150983cd24fb0d6963f7d28e17f72" );
@@ -260,25 +244,27 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
   {
     context.update (QCString(input));
     result = context.verify( digest );
-    kdDebug() << "Input string: " << input << endl;
+    cout << "Input string: " << input << endl;
   }
   else
   {
     QFile f (input);
 
     if (!f.open (IO_ReadOnly))
+    {
+      f.close ();
       kdFatal() << "Cannot open file for reading!"  << endl;
+    }
 
     result = context.verify (digest);
     f.close ();
 
-    kdDebug() << "Input filename: " << input << endl;
+    cout << "Input filename: " << input << endl;
   }
 
-  kdDebug() << "Calculated Digest = " <<  context.hexDigest() << endl
-            << "Supplied Digest   = " << digest << endl
-            << "Verified As: " << (result ? "A MATCH":"NOT A MATCH")
-            << endl;
+  cout << "Calculated Digest = " <<  context.hexDigest() << endl;
+  cout << "Supplied Digest   = " << digest << endl;
+  cout << "Matches: " << (result ? "TRUE":"FALSE") << endl;
 }
 
 void MD5_file (const char *filename, bool rawOutput )
@@ -287,6 +273,7 @@ void MD5_file (const char *filename, bool rawOutput )
 
   if (!f.open(IO_ReadOnly))
   {
+    f.close();
     kdError() << "(" << filename << ") cannot be opened!" << endl;
     return;
   }
@@ -295,9 +282,9 @@ void MD5_file (const char *filename, bool rawOutput )
   context.update( f );
 
   if ( rawOutput )
-    kdDebug() << "MD5 (" << filename << ") = " << context.rawDigest() << endl;
+    cout << "MD5 (" << filename << ") = " << context.rawDigest() << endl;
   else
-    kdDebug() << "MD5 (" << filename << ") = " << context.hexDigest() << endl;
+    cout << "MD5 (" << filename << ") = " << context.hexDigest() << endl;
 
   f.close ();
 }
@@ -307,16 +294,18 @@ void MD5_string (const char *input, const char* expected, bool rawOutput )
   KMD5 context;
   context.update (QCString(input));
 
-  kdDebug() << "Checking MD5 for: " << input << endl;
+  cout << "Checking MD5 for: " << input << endl;
 
   if ( rawOutput )
-    kdDebug() << "Result: " << context.rawDigest() << endl;
+    cout << "Result: " << context.rawDigest() << endl;
   else
-    kdDebug() << "Result: " << context.hexDigest() << endl;
+    cout << "Result: " << context.hexDigest() << endl;
 
   if ( expected )
-    kdDebug() << "Expected: " << expected << endl
-              << "Status: " << context.verify (expected) << endl;
+  {
+    cout << "Expected: " << expected << endl;
+    cout << "Status: " << context.verify (expected) << endl;
+  }
 }
 
 int main (int argc, char *argv[])
@@ -329,10 +318,8 @@ int main (int argc, char *argv[])
         { "d", "decode the given string or file using base64", 0 },
         { "e", "encode the given string or file using base64", 0 },
         { "f", "the filename to be used as input", "default" },
-#if 0
         { "p", "encode the given string or file using quoted-printable", 0},
         { "q", "decode the given string or file using quoted-printable", 0},
-#endif
         { "r", "calculate the raw md5 for the given string or file", 0 },
         { "s", "the string to be used as input", 0 },
         { "t", "perform a timed message-digest test", 0 },
@@ -373,6 +360,10 @@ int main (int argc, char *argv[])
           type = UUEncode;
        else if ( args->isSet("x") )
           type = UUDecode;
+       else if ( args->isSet("p") )
+          type = QPEncode;
+       else if ( args->isSet("q") )
+          type = QPDecode;
        if ( isVerify )
        {
           const char* opt = args->getOption( "c" ).data();
