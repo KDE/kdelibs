@@ -253,7 +253,7 @@ something like:
 
 Exec=sp %u
 
-However, imaging the sound player also supports editing of sound files
+However, imagine the sound player also supports editing of sound files
 in a graphical manner.  We might wish to define an additional action
 which could accomodate this.  Adding the action would be performed
 like this:
