@@ -665,21 +665,26 @@ void RenderTable::calcColMinMax()
     colMaxWidth.fill(0);		
 
     int availableWidth = containingBlockWidth();
+    
+    int margin=0;
+        
     Length ml = style()->marginLeft();
     Length mr = style()->marginRight();
     if (ml.type==Fixed && mr.type==Fixed)
     {
         if (style()->direction()==LTR)
-            availableWidth -= marginLeft(); 
+            margin = marginLeft(); 
         else
-            availableWidth -= marginRight();  
+            margin = marginRight();  
     }
     else if (ml.type == Fixed)
-        availableWidth -= marginLeft();            
+        margin = marginLeft();            
     else if (mr.type == Fixed)
-        availableWidth -= marginRight();
+        margin = marginRight();
 
+    if (margin<0) margin=0;
     
+    availableWidth -= margin;
     // PHASE 2, calculate simple minimums and maximums
 
     for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
