@@ -1596,8 +1596,12 @@ namespace KIO {
         void slotResultDeletingDirs( KIO::Job * job );
         void deleteNextDir();
         void skip( const KURL & sourceURL );
+        void slotResultRenaming( KIO::Job * job );
     private:
         void startRenameJob(const KURL &slave_url);
+        bool shouldOverwrite( const QString& path ) const;
+        bool shouldSkip( const QString& path ) const;
+        void skipSrc();
 
     protected slots:
         void slotStart();
