@@ -1,4 +1,4 @@
-## KDE/src/test/Makefile.am
+## KDE/kdelibs/kdetest/Makefile.am
 ##
 ## (C) 1996 Matthias Kalle Dalheimer
 ## (C) 1997 Stephan Kulow
@@ -6,14 +6,17 @@
 MOC = @MOC@
 INCLUDES = -I$(topdir)/kdeui -I$(topdir)/kdecore -I@qt_includes@ -I@x_includes@
 
+LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs \
+	-lkdeui -lkdecore @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 -lXext
+
 CLEANFILES = *.moc
 
-noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest kpannertest \
+noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
 		ktoolbartest klinetest kstatusbartest kspinboxtest	\
-		kprocesstest
+		kprocesstest kpannertest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
@@ -60,9 +63,43 @@ kstatusbartest_SOURCES = kstatusbartest.cpp
 kspinboxtest_SOURCES = kspinboxtest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 
-SUFFIXES = .moc
-LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 -lXext
+klinetest.moc: klinetest.h
+	$(MOC) klinetest.h -o klinetest.moc
 
-%.moc: %.h
-	$(MOC) $< -o $@
+kspinboxtest.moc: kspinboxtest.h
+	$(MOC) kspinboxtest.h -o kspinboxtest.moc
+
+ktabctltest.moc: ktabctltest.h
+	$(MOC) ktabctltest.h -o ktabctltest.moc
+
+kmsgboxtest.moc: kmsgboxtest.h
+	$(MOC) kmsgboxtest.h -o kmsgboxtest.moc
+
+kdatepicktestdlg.moc: kdatepicktestdlg.h
+	$(MOC) kdatepicktestdlg.h -o kdatepicktestdlg.moc
+
+ktreelisttest.moc: ktreelisttest.h
+	$(MOC) ktreelisttest.h -o ktreelisttest.moc
+
+ktoolbartest.moc: ktoolbartest.h
+	$(MOC) ktoolbartest.h -o ktoolbartest.moc
+
+kpannertest.moc: kpannertest.h
+	$(MOC) kpannertest.h -o kpannertest.moc
+
+kkeyconfigtest.moc: kkeyconfigtest.h
+	$(MOC) kkeyconfigtest.h -o kkeyconfigtest.moc
+
+kiconloadertestmain.moc: kiconloadertestmain.h
+	$(MOC) kiconloadertestmain.h -o kiconloadertestmain.moc
+
+kstatusbartest.moc: kstatusbartest.h
+	$(MOC) kstatusbartest.h -o kstatusbartest.moc
+
+kconfigtest.moc: kconfigtest.h
+	$(MOC) kconfigtest.h -o kconfigtest.moc
+
+kprocesstest.moc: kprocesstest.h
+	$(MOC) kprocesstest.h -o kprocesstest.moc
+
 
