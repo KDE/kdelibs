@@ -1,3 +1,8 @@
+2003-12-08  Zack Rusin  <zack@kde.org>
+
+	* khtmlview.*, html/html_formimpl.cpp (submit):  Fixing 67179 -
+	Possibility to avoid saving form data for certain sites.
+
 2003-12-05  David Faure  <faure@kde.org>
 
 	Clean up "default handling" of events. Fixes recent regressions like
