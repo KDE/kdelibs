@@ -184,8 +184,9 @@ void HTMLTable::setCells( unsigned int r, unsigned int c, HTMLTableCell *cell )
 
     // The first row sets the number of columns.  Do not allow subsequent
     // rows to change the number of columns.
-    if ( row != 0 && endCol > totalCols )
-	endCol = totalCols;
+//WABA: Why not? Let's give crappy HTML a chance
+//    if ( row != 0 && endCol > totalCols )
+//	endCol = totalCols;
 
     if ( endCol > totalCols )
 	addColumns( endCol - totalCols );
