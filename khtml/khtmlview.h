@@ -172,7 +172,7 @@ public slots:
      */
     void triggerResize();
 
-private:
+protected:
     void init();
 
     bool gotoLink();
@@ -181,14 +181,14 @@ private:
 
     void useSlowRepaints();
     
-    // ------------------------------------- member variables ------------------------------------
+    DOM::NodeImpl *nodeUnderMouse() const;
 
+    // ------------------------------------- member variables ------------------------------------
+ private:
     /**
      * List of all open browsers.
      */
     static QList<KHTMLView> *lstViews;
-
-    DOM::NodeImpl *nodeUnderMouse() const;
 
     int _width;
     int _height;
