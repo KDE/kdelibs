@@ -112,7 +112,7 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 		if ( m_scriptCache[m_currentScript] )
 		{
 			m_scriptCache[m_currentScript]->ScriptClientInterface = this;
-			if (newScript->scriptMethod != "")
+			if (!newScript->scriptMethod.isEmpty())
 				m_scriptCache[m_currentScript]->setScript( newScript->scriptFile, newScript->scriptMethod );
 			else
 				m_scriptCache[m_currentScript]->setScript( newScript->scriptFile );
