@@ -36,7 +36,7 @@ KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )
     : QObject( parent, name)
 {
     KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Shortcuts") ) ;
-    menuKey = KShortcut( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyPrimaryQt();
+    menuKey = KShortcut( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
     saver.config()->setGroup( QString::fromLatin1("ContextMenus") ) ;
     showOnPress = saver.config()->readBoolEntry(QString::fromLatin1("ShowOnPress"), TRUE );
 }
