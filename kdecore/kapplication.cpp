@@ -1377,7 +1377,7 @@ QPixmap KApplication::icon() const
 
 QString KApplication::iconName() const
 {
-  return aIconName.isNull() ? instanceName() : aIconName;
+  return aIconName.isNull() ? (QString)instanceName() : aIconName;
 }
 
 QPixmap KApplication::miniIcon() const
@@ -1391,7 +1391,7 @@ QPixmap KApplication::miniIcon() const
 
 QString KApplication::miniIconName() const
 {
-  return aMiniIconName.isNull() ? instanceName() : aMiniIconName;
+  return aMiniIconName.isNull() ? (QString)instanceName() : aMiniIconName;
 }
 
 extern void kDebugCleanup();
