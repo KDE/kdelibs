@@ -1124,7 +1124,7 @@ void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
 
 void KHTMLPart::setPageSecurity( PageSecurity sec )
 {
-  if ( sec != NotCrypted && !d->m_statusBarIconLabel ) {
+  if ( sec != NotCrypted && !d->m_statusBarIconLabel && !parentPart() ) {
     d->m_statusBarIconLabel = new QLabel( d->m_statusBarExtension->statusBar() );
     d->m_statusBarIconLabel->setFixedHeight( instance()->iconLoader()->currentSize(KIcon::Small) );
     d->m_statusBarIconLabel->setSizePolicy(QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
@@ -1148,7 +1148,7 @@ void KHTMLPart::setPageSecurity( PageSecurity sec )
     break;
   }
   d->m_paSecurity->setIcon( iconName );
-  if ( sec != NotCrypted )
+  if ( d->m_statusBarIconLabel )
     d->m_statusBarIconLabel->setPixmap( SmallIcon( iconName, instance() ) );
 }
 
