@@ -81,8 +81,11 @@ void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
     _tx += x;
     _ty += y;
 
+    int underlineOffset = m_height/7 + m_baseline;
+    if(underlineOffset == m_baseline) underlineOffset++;
+
     if(deco & UNDERLINE)
-	p->drawLine(_tx, _ty + m_height, _tx + m_width, _ty + m_height );
+	p->drawLine(_tx, _ty + underlineOffset, _tx + m_width, _ty + underlineOffset );
     if(deco & OVERLINE)
 	p->drawLine(_tx, _ty, _tx + m_width, _ty );
     if(deco & LINE_THROUGH)
