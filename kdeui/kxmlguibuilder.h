@@ -91,6 +91,9 @@ class KXMLGUIBuilder
 
   virtual void removeCustomElement( QWidget *parent, int id );
 
+  // ### make virtual next Wednesday ;-)
+  void finalizeGUI( KXMLGUIClient *client );
+    
 private:
   KXMLGUIBuilderPrivate *d;
 };

@@ -361,6 +361,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
   client->setFactory( this );
 
+  m_builder->finalizeGUI( m_client );
+  
   m_client = 0L;
   d->m_clientName = QString::null;
   d->m_clientBuilder = 0L;

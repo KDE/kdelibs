@@ -224,7 +224,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QMainWindow::ToolBarDock dock;
     int index = 0, offset = -1;
     bool nl = FALSE;
-    
+
     if ( !attrPosition.isEmpty() && containerStateBuffer.size() == 0 ) {
 	if ( attrPosition == "top" )
 	    dock = QMainWindow::Top;
@@ -246,11 +246,11 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 	offset = attrOffset.toInt();
     if ( !attrNewLine.isEmpty() && containerStateBuffer.size() == 0 )
 	nl = attrNewLine == "true" ? TRUE : FALSE;
-    
-    if ( d->m_widget->inherits( "QMainWindow") ) 
+
+    if ( d->m_widget->inherits( "QMainWindow") )
 	( (QMainWindow*)d->m_widget )->moveToolBar( bar, dock, index, nl, offset );
     bar->setBarPos( (KToolBar::BarPosition)dock );
-    
+
     if ( !attrIconText.isEmpty() && containerStateBuffer.size() == 0 )
     {
       if ( attrIconText == "icontextright" )
@@ -411,4 +411,8 @@ KInstance *KXMLGUIBuilder::builderInstance() const
 void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 {
   d->m_instance = instance;
+}
+
+void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient *client )
+{
 }
