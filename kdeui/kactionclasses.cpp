@@ -62,6 +62,7 @@
 #include <kurl.h>
 #include <klocale.h>
 
+#ifndef KDE_USE_FINAL
 static QFontDatabase *fontDataBase = 0;
 
 static void cleanupFontDatabase()
@@ -97,6 +98,7 @@ static QValueList<int> get_standard_font_sizes()
     }
     return fontDataBase->standardSizes();
 }
+#endif
 
 class KToggleAction::KToggleActionPrivate
 {
