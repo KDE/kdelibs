@@ -61,6 +61,7 @@ public:
     QSize sizeHint() const;
     Orientation orientation() const { return orient; }
     QSizePolicy sizePolicy() const;
+    bool showLine() const { return line; }
 public slots:
    void setOrientation( Orientation );
 protected:
@@ -105,7 +106,7 @@ class KToolBar : public QToolBar
     Q_PROPERTY( int iconSize READ iconSize WRITE setIconSize )
     Q_PROPERTY( QString text READ text WRITE setText )
     friend class KTMainWindow;
-    
+
 public:
     enum IconText{IconOnly = 0, IconTextRight, TextOnly, IconTextBottom};
     /**
@@ -856,7 +857,7 @@ public:
     void show();
 
     void updateRects( bool = FALSE ) {}
-    
+
 signals:
     /**
      * Emitted when button @p id is clicked.
@@ -951,17 +952,17 @@ protected:
     void childEvent( QChildEvent *e );
     void showEvent( QShowEvent *e );
     void resizeEvent( QResizeEvent *e );
-    
+
 private slots:
     void rebuildLayout();
     void slotReadConfig ();
     void slotIconChanged(int);
-    
+
 private:
     void init();
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
-    
+
     QMap<QWidget*, int > widget2id;
     QMap<int, QWidget* > id2widget;
     KToolBarPrivate *d;
@@ -969,7 +970,7 @@ private:
     QList<QWidget> widgets, inserted;
     QTimer *layoutTimer;
     QGuardedPtr<QWidget> stretchableWidget, rightAligned;
-    
+
 };
 
 #endif

@@ -1316,13 +1316,21 @@ void KToolBar::rebuildLayout()
     for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
 	if ( w == rightAligned )
 	    continue;
+	if ( w->inherits( "KToolBarSeparator" ) &&
+ 	     !( (KToolBarSeparator*)w )->showLine() ) {
+	    bl->addSpacing( 6 );
+	    w->hide();
+	    continue;
+	}
+	if ( w->inherits( "QPopupMenu" ) )
+	    continue;
 	bl->addWidget( w );
     }
     if ( rightAligned ) {
 	bl->addStretch();
 	bl->addWidget( rightAligned );
     }
-	
+    
     if ( fullSize() ) {
 	if ( !stretchableWidget && widgets.last() &&
 	     !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
