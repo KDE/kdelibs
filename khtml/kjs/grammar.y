@@ -1,5 +1,24 @@
 %{
 
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "global.h"
 #include "kjs.h"
 #include "nodes.h"
@@ -52,7 +71,7 @@ using namespace KJS;
 %token WITH RESERVED
 
 /* for debugging purposes */
-%token DEBUG ALERT
+%token DEBUG
 
 /* punctuators */
 %token EQEQ NE                     /* == and != */
@@ -285,7 +304,6 @@ Statement:
   | ReturnStatement
   | WithStatement
   | DEBUG '(' Expr ')'             { $$ = new DebugNode($3); }
-  | ALERT '(' Expr ')'             { /* TODO: remove rule */ }
 ;
 
 Block:
