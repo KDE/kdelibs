@@ -291,16 +291,22 @@ public:
 
     /**
      * @internal
-     * adds themes installed in the application's directory.
+     * Adds themes installed in the application's directory.
      **/
     void addAppThemes(const QString& appname);
 
     /**
-     * adds all themes that are part of this node and the themes
+     * Adds all themes that are part of this node and the themes
      * below (the fallbacks of the theme) in the tree.
      * @internal
      */
     void addBaseThemes(KIconThemeNode *node, const QString &appname);
+
+    /**
+     * Checks if name ends in one of the supported icon formats (i.e. .png)
+     * and returns the name without the extension if it does.
+     */
+    QString removeIconExtension(const QString &name) const;
 
     // @internal the data object
     KIconLoaderPrivate *d;

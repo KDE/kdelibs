@@ -312,6 +312,38 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
     }
 }
 
+QString KIconLoader::removeIconExtension(const QString &name) const
+{
+    int extensionLength=0;
+
+    QString ext = name.right(4);
+
+    static const QString &png_ext = KGlobal::staticQString(".png");
+    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+#ifdef HAVE_LIBART
+    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
+    static const QString &svg_ext = KGlobal::staticQString(".svg");
+
+    if (name.right(5) == svgz_ext)
+       extensionLength=5;
+    else
+    if (ext == svg_ext || ext == png_ext || ext == xpm_ext)
+#else
+    if (ext == png_ext || ext == xpm_ext)
+#endif
+       extensionLength=4;
+    if ( extensionLength > 0 )
+    {
+#ifndef NDEBUG
+	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
+                     << " loads icon " << name << " with extension.\n";
+#endif
+
+	return name.left(name.length() - extensionLength);
+    }
+    return name;
+}
+
 
 KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
@@ -365,34 +397,20 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if (_name.at(0) == '/')
 	return _name;
 
-    QString name = _name;
-    QString ext = name.right(4);
-
-    static const QString &png_ext = KGlobal::staticQString(".png");
-    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-#ifdef HAVE_LIBART
-    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-    static const QString &svg_ext = KGlobal::staticQString(".svg");
-    if (ext == svgz_ext || ext == svg_ext || ext == png_ext || ext == xpm_ext)
-#else
-    if (ext == png_ext || ext == xpm_ext)
-#endif
-    {
-#ifndef NDEBUG
-	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
-                     << " loads icon " << name << " with extension.\n";
-#endif
-	name = name.left(name.length() - 4);
-    }
+    QString name = removeIconExtension( _name );
 
     QString path;
     if (group_or_size == KIcon::User)
     {
+	static const QString &png_ext = KGlobal::staticQString(".png");
+	static const QString &xpm_ext = KGlobal::staticQString(".xpm");
 #ifdef HAVE_LIBART
+	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
+	static const QString &svg_ext = KGlobal::staticQString(".svg");
 	path = d->mpDirs->findResource("appicon", name + svgz_ext);
 	if (path.isEmpty())
 	   path = d->mpDirs->findResource("appicon", name + svg_ext);
-    	if (path.isEmpty())
+	if (path.isEmpty())
 #endif
 	    path = d->mpDirs->findResource("appicon", name + png_ext);
 	if (path.isEmpty())
@@ -508,34 +526,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	group = KIcon::Desktop;
     }
 
-#ifdef HAVE_LIBART
-    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-    static const QString &svg_ext = KGlobal::staticQString(".svg");
-#endif
-    static const QString &png_ext = KGlobal::staticQString(".png");
-    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     if (!absolutePath)
     {
 
         if (!canReturnNull && name.isEmpty())
             name = str_unknown;
         else
-        {
-	QString ext = name.right(4);
-#ifdef HAVE_LIBART
-	    if (ext == svgz_ext || ext == svg_ext || ext == png_ext || ext == xpm_ext)
-#else
-	    if (ext == png_ext || ext == xpm_ext)
-#endif
-	{
-#ifndef NDEBUG
-	    kdDebug(264) << "Application "
-		<< KGlobal::instance()->instanceName()
-		<< " loads icon " << name << " with extension.\n";
-#endif
-	    name = name.left(name.length() - 4);
-	}
-    }
+	    name = removeIconExtension(name);
     }
 
     // If size == 0, use default size for the specified group.
@@ -613,7 +610,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString ext = icon.path.right(3).upper();
-	if(ext != "SVG" || ext != "VGZ")
+	if(ext != "SVG" && ext != "VGZ")
 	{
 	    img = new QImage(icon.path, ext.latin1());
 	    if (img->isNull())
