@@ -233,14 +233,30 @@ KServiceType::Ptr KServiceType::serviceType( const QString& _name )
   return KServiceType::Ptr( p );
 }
 
+static void addUnique(KService::List &lst, QDict<KService> &dict, const KService::List &newLst, bool lowPrio)
+{
+  QValueListConstIterator<KService::Ptr> it = newLst.begin();
+  for( ; it != newLst.end(); ++it )
+  {
+     KService *service = static_cast<KService*>(*it);
+     if (dict.find(service->desktopEntryPath()))
+        continue;
+     dict.insert(service->desktopEntryPath(), service);
+     lst.append(service);
+     if (lowPrio)
+        service->setInitialPreference( 0 );
+  }
+}
+
 KService::List KServiceType::offers( const QString& _servicetype )
 {
+  QDict<KService> dict(53);
   KService::List lst;
 
   // Services associated directly with this servicetype (the normal case)
   KServiceType::Ptr serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
   if ( serv )
-    lst += KServiceFactory::self()->offers( serv->offset() );
+    addUnique(lst, dict, KServiceFactory::self()->offers( serv->offset() ), false);
   else
     kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
 
@@ -258,7 +274,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
         if (!mime)
            break;
         
-        lst += KServiceFactory::self()->offers( mime->offset() );
+        addUnique(lst, dict, KServiceFactory::self()->offers( mime->offset() ), false);
      }
   }
   serv = mime = 0;
@@ -278,22 +294,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
     KServiceType * servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
     if ( servAll )
     {
-        KService::List newOffers = KServiceFactory::self()->offers( servAll->offset() );
-        // Look if we already have those services from the initial query, to avoid duplicates
-        QValueListIterator<KService::Ptr> it = newOffers.begin();
-        for( ; it != newOffers.end(); ++it )
-        {
-            bool found = false;
-            QValueListIterator<KService::Ptr> it2 = lst.begin();
-            for( ; it2 != lst.end() && !found; ++it2 )
-                found = (*it)->desktopEntryPath() == (*it2)->desktopEntryPath();
-            if ( !found )
-            {
-                (*it)->setInitialPreference( 0 ); // all/* associations are less prioritary
-                lst += *it;
-            }
-        }
-        //kdDebug(7009) << "all/all found, got " << newOffers.count() << " more offers" << endl;
+        addUnique(lst, dict, KServiceFactory::self()->offers( servAll->offset() ), true);
     }
     else
       kdWarning(7009) << "KServiceType::offers : servicetype all/all not found" << endl;
@@ -305,22 +306,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
       KServiceType * servAllFiles = KServiceTypeFactory::self()->findServiceTypeByName( "all/allfiles" );
       if ( servAllFiles )
       {
-        KService::List newOffers = KServiceFactory::self()->offers( servAllFiles->offset() );
-        // Look if we already have those services from the initial query, to avoid duplicates
-        QValueListIterator<KService::Ptr> it = newOffers.begin();
-        for( ; it != newOffers.end(); ++it )
-        {
-            bool found = false;
-            QValueListIterator<KService::Ptr> it2 = lst.begin();
-            for( ; it2 != lst.end() && !found; ++it2 )
-                found = (*it)->desktopEntryPath() == (*it2)->desktopEntryPath();
-            if ( !found )
-            {
-                (*it)->setInitialPreference( 0 ); // all/* associations are less prioritary
-                lst += *it;
-            }
-        }
-        //kdDebug(7009) << "all/allfiles found, got " << newOffers.count() << " more offers" << endl;
+        addUnique(lst, dict, KServiceFactory::self()->offers( servAllFiles->offset() ), true);
       }
       else
         kdWarning(7009) << "KServiceType::offers : servicetype all/allfiles not found" << endl;
