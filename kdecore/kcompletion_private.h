@@ -60,24 +60,50 @@ typedef QValueList<KCompTreeNode *> KCompTreeChildren;
 class KCompTreeNode : public QChar
 {
 public:
-  KCompTreeNode();
-  KCompTreeNode( const QChar& );
-  ~KCompTreeNode();
+    KCompTreeNode() : QChar() {}
+    KCompTreeNode( const QChar& ch ) : QChar( ch ) {}
+    ~KCompTreeNode();
 
-  KCompTreeNode * 	find( const QChar& ) const;
-  KCompTreeNode *	insert( const QChar&, bool sorted );
-  void 			remove( const QString& );
+    // Returns a child of this node matching ch, if available.
+    // Otherwise, returns 0L
+    inline KCompTreeNode * find( const QChar& ch, bool ignoreCase ) const {
+	KCompTreeChildren::ConstIterator it;
+	for ( it = myChildren.begin(); it != myChildren.end(); ++it )
+	    if ( isEqual( *(*it), ch, ignoreCase ) )
+		return *it;
 
-  int 			childrenCount() const { return myChildren.count(); }
+	return 0L;
+    }
+    KCompTreeNode *	insert( const QChar&, bool sorted );
+    void 		remove( const QString& );
 
-  const KCompTreeChildren * children() const { return &myChildren; }
-  const KCompTreeNode * childAt(int index) const { return myChildren[index]; }
-  const KCompTreeNode * firstChild() const { return myChildren.first(); }
-  const KCompTreeNode * lastChild()  const { return myChildren.last();  }
+    inline int		childrenCount() const { return myChildren.count(); }
+
+    inline const KCompTreeChildren * children() const { 
+	return &myChildren;
+    }
+    inline const KCompTreeNode * childAt(int index) const { 
+	return myChildren[index];
+    }
+    inline const KCompTreeNode * firstChild() const { 
+	return myChildren.first(); 
+    }
+    inline const KCompTreeNode * lastChild()  const { 
+	return myChildren.last(); 
+    }
 
 
 private:
-  KCompTreeChildren	myChildren;
+    KCompTreeChildren	myChildren;
+    inline bool isEqual( const KCompTreeNode& node1,
+			 const KCompTreeNode& node2,
+			 bool ignoreCase ) const
+    {
+	if ( ignoreCase )
+	    return ( node1.lower() == node2.lower() );
+	else
+	    return ( node1 == node2 );
+    }
 
 };
 

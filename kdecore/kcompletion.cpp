@@ -30,10 +30,11 @@ KCompletion::KCompletion()
     myCompletionMode = KGlobal::completionMode();
     myTreeRoot = new KCompTreeNode;
     myForkList.setAutoDelete( true );
-    mySorting   = true; // don't sort the items by default (FIXME, -> false)
-    myBackwards = false;
-    myBeep      = true;
-    myItemIndex = 0;
+    mySorting    = true; // don't sort the items by default (FIXME, -> false)
+    myBackwards  = false;
+    myBeep       = true;
+    myIgnoreCase = false;
+    myItemIndex  = 0;
 }
 
 KCompletion::~KCompletion()
@@ -111,6 +112,9 @@ QString KCompletion::makeCompletion( const QString& string )
 
     kDebugInfo(250, "KCompletion: completing: %s", debugString( string ));
 
+    if ( string.isEmpty() ) // reset for rotation
+	myForkList.clear();
+    
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
     if ( myCompletionMode == KGlobal::CompletionShell &&
@@ -302,7 +306,7 @@ QString KCompletion::findCompletion( const QString& string )
     // start at the tree-root and try to find the search-string
     for( uint i = 0; i < string.length(); i++ ) {
         ch = string.at( i );
-	node = node->find( ch );
+	node = node->find( ch, myIgnoreCase );
 
 	if ( node )
 	    completion += ch;
@@ -391,7 +395,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
     // start at the tree-root and try to find the search-string
     for( uint i = 0; i < string.length(); i++ ) {
         ch = string.at( i );
-	node = node->find( ch );
+	node = node->find( ch, myIgnoreCase );
 
 	if ( node )
 	    completion += ch;
@@ -480,16 +484,6 @@ void KCompletion::doBeep()
 // QChar( 0x0 ) is used as the delimiter of a string; the last child of each
 // inserted string is 0x0.
 
-KCompTreeNode::KCompTreeNode()
-  : QChar()
-{
-}
-
-KCompTreeNode::KCompTreeNode( const QChar& ch )
-  : QChar( ch )
-{
-}
-
 
 KCompTreeNode::~KCompTreeNode()
 {
@@ -504,7 +498,7 @@ KCompTreeNode::~KCompTreeNode()
 // it will not be created. Returns the new/existing node.
 KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
 {
-    KCompTreeNode *child = find( ch );
+    KCompTreeNode *child = find( ch, false );
     if ( !child ) {
         child = new KCompTreeNode( ch );
 
@@ -534,13 +528,13 @@ void KCompTreeNode::remove( const QString& string )
     KCompTreeNode *child = 0L;
 
     if ( string.isEmpty() ) {
-        child = find( 0x0 );
+        child = find( 0x0, false );
 	myChildren.remove( child );
 	return;
     }
 
     QChar ch = string.at(0);
-    child = find( ch );
+    child = find( ch, false );
     if ( child ) {
         child->remove( string.right( string.length() -1 ) );
 	if ( child->myChildren.count() == 0 ) {
@@ -548,19 +542,6 @@ void KCompTreeNode::remove( const QString& string )
 	    myChildren.remove( child );
 	}
     }
-}
-
-
-// Returns a child of this node matching ch, if available.
-// Otherwise, returns 0L
-KCompTreeNode * KCompTreeNode::find( const QChar& ch ) const
-{
-    KCompTreeChildren::ConstIterator it;
-    for ( it = myChildren.begin(); it != myChildren.end(); ++it )
-        if ( *(*it) == ch )
-	    return *it;
-
-    return 0L;
 }
 
 

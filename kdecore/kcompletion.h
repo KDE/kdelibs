@@ -216,6 +216,21 @@ public:
   void setSorted( bool enable ) { mySorting = enable; }
 
   /**
+   * Setting this to true makes KCompletion behave case insensitively.
+   * E.g. makeCompletion( "CA" ); might return "carp@cs.tu-berlin.de".
+   * Default is false (case sensitive).
+   * @see #ignoreCase
+   */
+    //  void setIgnoreCase( bool ignoreCase ) { myIgnoreCase = ignoreCase; }
+
+  /**
+   * @returns whether KCompletion acts case insensitively or not.
+   * Default is false (case sensitive).
+   * @see #setIgnoreCase
+   */
+    //  bool ignoreCase() const { return myIgnoreCase; }
+
+  /**
    * @returns true if the completion-items are alphabetically sorted and false
    * if the order of insertion is used.
    * @see #setSorted
@@ -352,6 +367,7 @@ private:
 						const QString& beginning,
 						QStringList *matches,
 						bool getAllItems = false ) const;
+
   void 			doBeep();
 
   QStringList           myMatches;
@@ -364,6 +380,7 @@ private:
   bool                  mySorting;
   bool                  myBeep;
   bool 			myBackwards;
+  bool 			myIgnoreCase;
   int 			myItemIndex; // FIXME
 };
 
