@@ -38,6 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <fcntl.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
@@ -56,6 +57,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 template class QDict<DCOPConnection>;
 template class QPtrDict<DCOPConnection>;
 template class QList<DCOPListener>;
+
+#define _DCOPIceSendBegin(x)	\
+   int fd = IceConnectionNumber( x );		\
+   long fd_fl = fcntl(fd, F_GETFL, 0);		\
+   fcntl(fd, F_SETFL, fd_fl | O_NDELAY);	
+#define _DCOPIceSendEnd()	\
+   fcntl(fd, F_SETFL, fd_fl);		
 
 static bool only_local = false;
 
@@ -459,7 +467,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = key;
 		pMsg->length += datalen;
+		_DCOPIceSendBegin( target->iceConn );
 		IceSendData(target->iceConn, datalen, (char *) ba.data());
+                _DCOPIceSendEnd();
 	    } else if ( toApp == "DCOPServer" ) {
 		QCString obj, fun;
 		QByteArray data;
@@ -481,7 +491,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 					 sizeof(DCOPMsg), DCOPMsg, pMsg);
 			    pMsg->key = key;
 			    pMsg->length += datalen;
+			    _DCOPIceSendBegin( client->iceConn );
 			    IceSendData(client->iceConn, datalen, const_cast<char *>(ba.data()) );
+                            _DCOPIceSendEnd();
 			}
 		}
 	    }
@@ -509,8 +521,10 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = key;
 		pMsg->length += datalen;
+		_DCOPIceSendBegin( target->iceConn );
 		IceSendData(target->iceConn, datalen, const_cast<char *>(ba.data()) );
  		IceFlush( target->iceConn );
+                _DCOPIceSendEnd();
 	    } else {
 		QCString replyType;
 		QByteArray replyData;
@@ -537,8 +551,10 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		    else
 			pMsg->key = serverKey++;
 		    pMsg->length += replylen;
+                    _DCOPIceSendBegin( iceConn );
 		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
 		    IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()) );
+                    _DCOPIceSendEnd();
 		} else {
 		    QByteArray reply;
 		    QDataStream replyStream( reply, IO_WriteOnly );
@@ -550,7 +566,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		    else
 			pMsg->key = serverKey++;
 		    pMsg->length += reply.size();
+                    _DCOPIceSendBegin( iceConn );
 		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
+                    _DCOPIceSendEnd();
 		}
 	    }
 	}
@@ -588,7 +606,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = key;
 		pMsg->length += datalen;
+                _DCOPIceSendBegin( connreply->iceConn );
 		IceSendData(connreply->iceConn, datalen, const_cast<char *>(ba.data()) );
+                _DCOPIceSendEnd();
 	    }
 	}
 	break;
@@ -797,8 +817,14 @@ DCOPConnection* DCOPServer::findApp( const QCString& appId )
 /*!
   Called from our IceIoErrorHandler
  */
-void DCOPServer::ioError( IceConn /* iceConn */ )
+void DCOPServer::ioError( IceConn iceConn  )
 {
+    DCOPConnection* conn = clients.find( iceConn );
+    if ( !conn ) {
+	return;
+    }
+    IceSetShutdownNegotiation (iceConn, False);
+    (void) IceCloseConnection( iceConn );
 }
 
 
@@ -862,7 +888,9 @@ void DCOPServer::removeConnection( void* data )
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
 	    pMsg->key = 1;
 	    pMsg->length += reply.size();
+            _DCOPIceSendBegin( iceConn );
 	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+            _DCOPIceSendEnd();
             if (!target)
                qWarning("DCOP Error: unknown target in waitingForReply");
             else if (!target->waitingOnReply.removeRef(conn->iceConn))
@@ -882,7 +910,9 @@ void DCOPServer::removeConnection( void* data )
 			  sizeof(DCOPMsg), DCOPMsg, pMsg );
 	    pMsg->key = 1;
 	    pMsg->length += reply.size();
+            _DCOPIceSendBegin( iceConn );
 	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+            _DCOPIceSendEnd();
             if (!target)
                qWarning("DCOP Error: unknown target in waitingForDelayedReply");
             else if (!target->waitingOnReply.removeRef(conn->iceConn))
@@ -938,7 +968,9 @@ void DCOPServer::removeConnection( void* data )
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = 1;
 		pMsg->length += datalen;
+                _DCOPIceSendBegin(c->iceConn);
 		IceSendData(c->iceConn, datalen, const_cast<char *>(ba.data()));
+                _DCOPIceSendEnd();
 	    }
 	}
     }
@@ -1082,8 +1114,10 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 			IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 				      sizeof(DCOPMsg), DCOPMsg, pMsg );
 			pMsg->length += datalen;
+                        _DCOPIceSendBegin(c->iceConn);
 			IceWriteData( c->iceConn, datalen, const_cast<char *>(ba.data()));
 			IceFlush( c->iceConn );
+                        _DCOPIceSendEnd();
 		    }
 		}
 	    }
@@ -1171,7 +1205,9 @@ DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp,
    IceGetHeader( conn->iceConn, majorOpcode, DCOPSend,
                  sizeof(DCOPMsg), DCOPMsg, pMsg );
    pMsg->length += datalen;
+   _DCOPIceSendBegin( conn->iceConn );
    IceSendData(conn->iceConn, datalen, const_cast<char *>(ba.data()));
+   _DCOPIceSendEnd();
 }
 
 void IoErrorHandler ( IceConn iceConn)
