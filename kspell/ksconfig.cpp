@@ -261,6 +261,9 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     lname="ru"; hname=i18n("Russian");
   }
   else if (fname=="slovensko") {
+    lname="si"; hname=i18n("Slovenian"); sChangeEncoding(KS_E_LATIN2);
+  }
+  else if (fname=="slovak"){
     lname="sk"; hname=i18n("Slovak"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (fname=="czech") {
