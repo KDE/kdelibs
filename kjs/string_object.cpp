@@ -66,7 +66,7 @@ Completion StringObjectFunc::execute(const List &args)
 {
   UString s;
   if (args.size()) {
-    UChar *buf = new UChar(args.size());
+    UChar *buf = new UChar[args.size()];
     UChar *p = buf;
     ListIterator it = args.begin();
     while (it != args.end()) {
@@ -77,7 +77,7 @@ Completion StringObjectFunc::execute(const List &args)
     s = UString(buf, args.size(), false);
   } else
     s = "";
-  
+
   return Completion(Normal, String(s));
 }
 
