@@ -324,6 +324,17 @@ public:
 				packet->send();
 				outqueue.pop();
 			}
+			outdata.endPull();
+
+			/* remove all packets from the outqueue */
+			while(!outqueue.empty())
+			{
+				DataPacket<mcopbyte> *packet = outqueue.front();
+				packet->size = 0;
+				packet->send();
+				outqueue.pop();
+			}
+
 			server.detach(bsWrapper);
 		}
 		// similar effect like "delete this;"		
