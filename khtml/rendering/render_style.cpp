@@ -88,6 +88,7 @@ StyleVisualData::StyleVisualData()
 {
     colspan = 1;
     palette = QApplication::palette();
+    counter_increment = counter_reset = 0;
 }
 
 StyleVisualData::~StyleVisualData() {
