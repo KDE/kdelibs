@@ -33,10 +33,10 @@
 
 bool KIO::isClipboardEmpty()
 {
-  QStringList urls;
+  QStrList urls;
   QMimeSource *data = QApplication::clipboard()->data();
 
-  if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, urls ) ){
+  if ( QUriDrag::canDecode( data ) && QUriDrag::decode( data, urls ) ){
     if ( urls.count() == 0 )
       return true;
     return false;
