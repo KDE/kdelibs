@@ -42,7 +42,7 @@ public:
     virtual bool isHTMLElement() const { return true; }
 
     virtual bool isInline() const;
-     
+
     virtual Id id() const = 0;
 
     virtual void parseAttribute(AttributeImpl *token);
@@ -50,6 +50,7 @@ public:
     void addCSSLength(int id, const DOMString &value, bool numOnly = false, bool multiLength = false);
     void addCSSProperty(int id, const DOMString &value);
     void addCSSProperty(int id, int value);
+    void addHtmlColor( int id, const DOMString &c );
     void removeCSSProperty(int id);
 
     virtual void recalcStyle( StyleChange );

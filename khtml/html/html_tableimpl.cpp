@@ -68,8 +68,8 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
     if ( getDocument()->parseMode() < DocumentImpl::Transitional ) {
         addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
-        addCSSProperty( CSS_PROP_COLOR, "\\2d konq-text" );
-        addCSSProperty( CSS_PROP_FONT_FAMILY, "\\2d konq-body" );
+        addCSSProperty( CSS_PROP_COLOR, CSS_VAL__KONQ_TEXT );
+        addCSSProperty( CSS_PROP_FONT_FAMILY, CSS_VAL__KONQ_BODY );
     }
 }
 
@@ -386,13 +386,13 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     }
     case ATTR_BGCOLOR:
         if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value());
+            addHtmlColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
         break;
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
-            addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
+            addHtmlColor(CSS_PROP_BORDER_COLOR, attr->value());
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
@@ -521,7 +521,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_BGCOLOR:
         if (attr->val())
-            addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value() );
+            addHtmlColor(CSS_PROP_BACKGROUND_COLOR, attr->value() );
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
         break;
@@ -539,7 +539,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_BORDERCOLOR:
     {
         if(!attr->value().isEmpty()) {
-            addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
+            addHtmlColor(CSS_PROP_BORDER_COLOR, attr->value());
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
@@ -823,7 +823,7 @@ void HTMLTableCellElementImpl::attach()
             addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
 
             if (!m_solid)
-                addCSSProperty(CSS_PROP_BORDER_COLOR, "inherit");
+                addCSSProperty(CSS_PROP_BORDER_COLOR, CSS_VAL_INHERIT);
         }
     }
 

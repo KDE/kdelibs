@@ -57,7 +57,7 @@ public:
     unsigned long length() const;
     CSSRuleImpl *parentRule() const;
     DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
-    void setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
+    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
     void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
     // this treats integers as pixels!
     // needed for conversion of html attributes

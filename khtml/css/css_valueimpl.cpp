@@ -276,7 +276,7 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
     return false;
 }
 
-void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
+bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     if(!m_lstValues) {
 	m_lstValues = new QPtrList<CSSProperty>;
@@ -291,6 +291,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 			<< "] value: [" << value.string() << "]"<< endl;
     else
         setChanged();
+    return success;
 }
 
 void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, bool nonCSSHint)

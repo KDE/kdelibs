@@ -1448,25 +1448,19 @@ static QRgb parseColor(const QString &name, bool strictParsing)
 
 
     bool ok;
-    int val = name.toInt(&ok, 16);
-    if ( ok ) {
-    // #fffffff as found on msdn.microsoft.com
-	if ( len > 6 && !strictParsing ) {
-	    val = val & 0xffffff;
-	    len = 6;
-	}
 
-	if (len == 6)
-            return (0xff << 24) | val;
-	else if ( len == 5 && !strictParsing )
-	    // recognize #12345 or 12345 (duplicate the last character)
-	    return (0xff << 24) | (val * 16 + ( val&0xf ));
-	else if ( len == 3 )
-	    // #abc converts to #aabbcc according to the specs
-	    return (0xff << 24) |
-		(val&0xf00)<<12 | (val&0xf00)<<8 |
-		(val&0xf0)<<8 | (val&0xf0)<<4 |
-		(val&0xf)<<4 | (val&0xf);
+    if ( len == 3 || len == 6 ) {
+	int val = name.toInt(&ok, 16);
+	if ( ok ) {
+	    if (len == 6)
+		return (0xff << 24) | val;
+	    else if ( len == 3 )
+		// #abc converts to #aabbcc according to the specs
+		return (0xff << 24) |
+		    (val&0xf00)<<12 | (val&0xf00)<<8 |
+		    (val&0xf0)<<8 | (val&0xf0)<<4 |
+		    (val&0xf)<<4 | (val&0xf);
+	}
     }
 
     if ( !strictParsing ) {
@@ -1475,17 +1469,6 @@ static QRgb parseColor(const QString &name, bool strictParsing)
 	tc.setNamedColor(name.lower());
 	if (tc.isValid()) return tc.rgb();
 
-	if(!strictParsing) {
-	    bool hasalpha = false;
-	    for(unsigned int i = 0; i < name.length(); i++)
-		if(name[i].isLetterOrNumber()) {
-		    hasalpha = true;
-		    break;
-		}
-
-	    if(!hasalpha)
-		return qRgb(0, 0, 0);
-	}
     }
 
     return khtml::invalidColor;
@@ -1496,13 +1479,8 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
 {
     QRgb c = khtml::invalidColor;
     Value *value = valueList->current();
-    if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
-	 ( nonCSSHint && ( value->unit == CSSPrimitiveValue::CSS_DIMENSION && nonCSSHint ||
-			   value->unit == CSSPrimitiveValue::CSS_IDENT ) ) ) {
+    if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ) {
 	QString color = qString( value->string );
-	c = ::parseColor( color, !nonCSSHint);
-    } else if ( validUnit( value, FInteger|FNonNeg, true ) ) {
-	QString color = QString::number( (int)value->fValue );
 	c = ::parseColor( color, !nonCSSHint);
     } else if ( value->unit == Value::Function &&
 		value->function->args->numValues == 5 /* rgb + two commas */ &&

@@ -102,11 +102,11 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
         break;
     case ATTR_BGCOLOR:
-        addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value());
+        addHtmlColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
         m_bgSet = !attr->value().isNull();
         break;
     case ATTR_TEXT:
-        addCSSProperty(CSS_PROP_COLOR, attr->value());
+        addHtmlColor(CSS_PROP_COLOR, attr->value());
         m_fgSet = !attr->value().isNull();
         break;
     case ATTR_BGPROPERTIES:
@@ -179,7 +179,7 @@ void HTMLBodyElementImpl::insertedIntoDocument()
     }
 
     if ( m_bgSet && !m_fgSet )
-        addCSSProperty(CSS_PROP_COLOR, "#000000");
+        addCSSProperty(CSS_PROP_COLOR, CSS_VAL_BLACK);
 
     if (m_styleSheet)
         getDocument()->updateStyleSelector();
@@ -524,7 +524,7 @@ void HTMLHtmlElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
     assert(parentNode()->renderer());
-    
+
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     // ignore display: none
     m_render = new RenderHtml(this);

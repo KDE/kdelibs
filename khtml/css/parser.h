@@ -1,5 +1,3 @@
-#ifndef PARSER_H
-#define PARSER_H
 typedef union {
     CSSRuleImpl *rule;
     CSSSelector *selector;
@@ -56,4 +54,4 @@ typedef union {
 #define	URI	291
 #define	FUNCTION	292
 #define	UNICODERANGE	293
-#endif
+

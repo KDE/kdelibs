@@ -1102,14 +1102,14 @@ void HTMLInputElementImpl::attach()
         /* nobreak */
     case ISINDEX:
     case FILE:
-        addCSSProperty(CSS_PROP_COLOR, "windowtext");
+        addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
         break;
     case SUBMIT:
     case RESET:
     case BUTTON:
     case CHECKBOX:
     case RADIO:
-        addCSSProperty(CSS_PROP_COLOR, "buttontext" );
+        addCSSProperty(CSS_PROP_COLOR, CSS_VAL_BUTTONTEXT );
     case HIDDEN:
     case IMAGE:
         if (!getAttribute(ATTR_WIDTH).isNull())
@@ -1698,7 +1698,7 @@ void HTMLSelectElementImpl::attach()
     assert(parentNode());
     assert(!renderer());
 
-    addCSSProperty(CSS_PROP_COLOR, "windowtext");
+    addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
@@ -2119,7 +2119,7 @@ void HTMLTextAreaElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    addCSSProperty(CSS_PROP_COLOR, "windowtext");
+    addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
