@@ -16,7 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------
 // KDE color selection dialog.
 
 // layout managment added Oct 1997 by Mario Weilguni 
@@ -479,39 +479,7 @@ class KColorDialog : public KDialogBase
 };
 
 
-/**
- * Combobox for colours.
- */
-class KColorCombo : public QComboBox
-{
-	Q_OBJECT
-public:
-	KColorCombo( QWidget *parent, const char *name = 0L );
 
-	void setColor( const QColor &col );
-
-public slots:
-	void slotActivated( int index );
-	void slotHighlighted( int index );
-
-signals:
-	void activated( const QColor &col );
-	void highlighted( const QColor &col );
-
-protected:
-        /**
-         * @reimplemented
-         */
-	virtual void resizeEvent( QResizeEvent *re );
-
-private:
-	void addColors();
-	QColor customColor;
-	QColor color;
-
-    class KColorComboPrivate;
-    KColorComboPrivate *d;
-};
 
 #endif		// __KCOLORDLG_H__
 
