@@ -272,13 +272,6 @@ protected:
   QString findCookies( const QString &url);
 
   /**
-   * Initializes the cookiejar if it is not running already
-   * and returns true if successful, i.e. the cookiejar started
-   * okay or is currently running.
-   */
-  bool initCookieJar() const;
-
-  /**
    * Do a cache lookup for the current url. (m_state.url)
    *
    * @param readWrite If true, file is opened read/write.

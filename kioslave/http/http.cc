@@ -3222,6 +3222,7 @@ bool HTTPProtocol::readHeader()
   // Do we want to cache this request?
   if (m_bUseCache)
   {
+     ::unlink( QFile::encodeName(m_state.cef));
      if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
      {
         // Check...
@@ -3230,10 +3231,6 @@ bool HTTPProtocol::readHeader()
            m_bCachedWrite = false; // Error creating cache entry.
         m_expireDate = expireDate;
         m_maxCacheSize = config()->readNumEntry("MaxCacheSize", DEFAULT_MAX_CACHE_AGE) / 2;
-     }
-     else
-     {
-        ::unlink( QFile::encodeName(m_state.cef));
      }
   }
 
@@ -3960,22 +3957,6 @@ QString HTTPProtocol::findCookies( const QString &url)
   return result;
 }
 
-bool HTTPProtocol::initCookieJar() const
-{
-  if ( m_bUseCookiejar && !m_dcopClient->isApplicationRegistered( "kcookiejar" ) )
-  {
-     QString error;
-     if ( KApplication::startServiceByDesktopName( "kcookiejar", QStringList(),
-                                                  &error ) )
-     {
-        kdDebug(1202) << "Error starting KCookiejar: " << error << endl;
-        return false;
-     }
-  }
-  return true;
-}
-
-
 /******************************* CACHING CODE ****************************/
 
 
@@ -4501,8 +4482,10 @@ bool HTTPProtocol::getAuthorization()
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::getAuthorization: "
                  << "Current Response: " << m_responseCode << ", "
                  << "Previous Response: " << m_prevResponseCode << endl;
-
+                 
   bool repeatFailure = (m_prevResponseCode == m_responseCode);
+
+  QString errorMsg;
 
   if (repeatFailure)
   {
@@ -4544,18 +4527,24 @@ bool HTTPProtocol::getAuthorization()
         }
       }
     }
-    if ( prompt && !retryPrompt() )
+    if ( prompt )
     {
-      if (m_bErrorPage)
-         errorPage();
-      else
-         error(ERR_USER_CANCELED, QString::null);
-      return false;
+      switch ( m_responseCode )
+      {
+        case 401:
+          errorMsg = i18n("Authentication Failed!");
+          break;
+        case 407:
+          errorMsg = i18n("Proxy Authentication Failed!");
+          break;
+        default:
+          break;
+      }
     }
   }
   else
   {
-    // At this point we know more detials, so use it to find
+    // At this point we know more details, so use it to find
     // out if we have a cached version and avoid a re-prompt!
     // We also do not use verify path unlike the pre-emptive
     // requests because we already know the realm value...
@@ -4621,7 +4610,7 @@ bool HTTPProtocol::getAuthorization()
       {
         kdDebug( 7113 ) << "(" << m_pid << ") Prompting the user for authorization..." << endl;
         promptInfo( info );
-        result = openPassDlg( info );
+        result = openPassDlg( info, errorMsg );
       }
     }
   }

@@ -460,6 +460,7 @@ bool Ftp::ftpLogin()
           info.commentLabel = i18n( "Site:" );
           info.comment = i18n("<b>%1</b>").arg( m_host );
           info.keepPassword = true; // Prompt the user for persistence as well.
+          info.readOnly = !info.username.isEmpty();
 
           bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
           if ( disablePassDlg || !openPassDlg( info ) )
