@@ -211,7 +211,7 @@ int KJSO::toInt32() const
   double d = round();
   double d32 = fmod(d, D32);
 
-  if (d32 >= D16)
+  if (d32 >= D32 / 2.0)
     d32 -= D32;
 
   return static_cast<int>(d32);
