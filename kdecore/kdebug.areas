@@ -57,6 +57,7 @@
 # kdenetwork
 5001	caitoo
 5002	kppp
+5003	knode
 
 # libkhtml
 6000	khtml
