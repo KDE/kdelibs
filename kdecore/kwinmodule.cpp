@@ -237,8 +237,8 @@ QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
 	
 	if(exclude.contains(*it) > 0) continue;
 	
-	NETWinInfo info( qt_xdisplay(), (*it), qt_xrootwin(), NET::WMStrut | NET::WMState | NET::WMDesktop);
-	if(!(info.desktop() == desktop || (info.state() & NET::Sticky > 0))) continue;
+	NETWinInfo info( qt_xdisplay(), (*it), qt_xrootwin(), NET::WMStrut | NET::WMDesktop);
+	//if(!(info.desktop() == desktop || info.desktop() == NETWinInfo::OnAllDesktops)) continue;
 	
 	QRect r = all;
 	NETStrut strut = info.strut();
