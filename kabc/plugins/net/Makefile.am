@@ -13,7 +13,6 @@ kde_module_LTLIBRARIES = kabc_net.la
 kabc_net_la_SOURCES = resourcenetplugin.cpp
 kabc_net_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
 kabc_net_la_LIBADD	= libkabc_net.la
-kabc_net_la_COMPILE_FIRST = libkabc_net.la
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
