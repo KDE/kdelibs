@@ -61,6 +61,33 @@ static QString findCookies( QString url)
    return result;
 }
 
+static QString findDOMCookies( QString url)
+{
+   QCString replyType;
+   QByteArray params, reply;
+   QDataStream stream(params, IO_WriteOnly);
+   stream << url;
+   if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar", 
+	"findDOMCookies(QString)", params, replyType, reply))
+   {
+	printf("There was some error using DCOP!\n");
+        return QString::null;
+   }
+
+   QDataStream stream2(reply, IO_ReadOnly);
+   if(replyType != "QString")
+   {
+      printf("DCOP function findDOMCookies(...) return %s, expected %s\n",
+		replyType.data(), "QString");
+      return QString::null;
+   }
+
+   QString result;
+   stream2 >> result;
+
+   return result;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -282,6 +309,13 @@ int main(int argc, char *argv[])
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("EXPECTED: %s\n", "<NULL>" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
+
+   // Should PASS.
+   arg1 = "http://www.foobar.co.uk/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findDOMCookies(arg1);
+   printf("EXPECTED: %s\n", "set_by_8=x.y.foobar.co.uk" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
 }

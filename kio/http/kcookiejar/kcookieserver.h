@@ -47,7 +47,7 @@ public:
                        QCString& replyType, QByteArray &replyData);
 
   bool cookiesPending(const QString &url);
-  void addCookies(const QString &url, const QCString &cookieHeader, long windowId);
+  void addCookies(const QString &url, const QCString &cookieHeader, long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookie *cookie, bool queue);
 
 public slots:

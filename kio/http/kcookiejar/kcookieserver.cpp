@@ -46,10 +46,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
                      CF_VALUE, CF_EXPIRE, CF_PROVER, CF_SECURE };
 
+
 class CookieRequest {
 public:
    DCOPClientTransaction *transaction;
    QString url;
+   bool DOM;
 };
 
 template class  QList<CookieRequest>;
@@ -137,10 +139,11 @@ bool KCookieServer::process(const QCString &fun, const QByteArray &data,
            CookieRequest *request = new CookieRequest;
            request->transaction = dcopClient()->beginTransaction();
            request->url = arg1;
+           request->DOM = false;
            mRequestList->append( request );
            return true; // Talk to you later :-)
         }
-        QString res = mCookieJar->findCookies(arg1);
+        QString res = mCookieJar->findCookies(arg1, false);
         QDataStream stream2(replyData, IO_WriteOnly);
         stream2 << res;
         replyType = "QString";
@@ -199,6 +202,26 @@ bool KCookieServer::process(const QCString &fun, const QByteArray &data,
         replyType = "QStringList";
         return true;
     }
+    else if (fun == "findDOMCookies(QString)")
+    {
+        QDataStream stream(data, IO_ReadOnly);
+        QString arg1;
+        stream >> arg1;
+        if (cookiesPending(arg1))
+        {
+           CookieRequest *request = new CookieRequest;
+           request->transaction = dcopClient()->beginTransaction();
+           request->url = arg1;
+           request->DOM = true;
+           mRequestList->append( request );
+           return true; // Talk to you later :-)
+        }
+        QString res = mCookieJar->findCookies(arg1, true);
+        QDataStream stream2(replyData, IO_WriteOnly);
+        stream2 << res;
+        replyType = "QString";
+        return true;
+    }
     else if (fun == "addCookies(QString,QCString,long)")
     {
         QDataStream stream(data, IO_ReadOnly);
@@ -207,7 +230,7 @@ bool KCookieServer::process(const QCString &fun, const QByteArray &data,
         long arg3;
         stream >> arg1 >> arg2 >> arg3;
         kdDebug(7104) << "got addCookies(" << arg1 << ", " << arg2.data() << ", " << arg3 << ")" << endl;
-        addCookies(arg1, arg2, arg3);
+        addCookies(arg1, arg2, arg3, false);
         replyType = "void";
         return true;
     }
@@ -257,6 +280,17 @@ bool KCookieServer::process(const QCString &fun, const QByteArray &data,
         replyType = "void";
         return true;
     }
+    else if (fun == "addDOMCookies(QString,QCString,long)")
+    {
+        QDataStream stream(data, IO_ReadOnly);
+        QString arg1;
+        QCString arg2;
+        long arg3;
+        stream >> arg1 >> arg2 >> arg3;
+        addCookies(arg1, arg2, arg3, true);
+        replyType = "void";
+        return true;
+    }
     else if (fun == "reloadPolicy" )
     {
         kdDebug(7104) << "got \"reload the cookie config policy file\"..." << endl;
@@ -295,9 +329,13 @@ bool KCookieServer::cookiesPending( const QString &url )
 }
 
 void KCookieServer::addCookies( const QString &url, const QCString &cookieHeader,
-                               long windowId )
+                               long windowId, bool useDOMFormat )
 {
-    KHttpCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader, windowId);
+    KHttpCookiePtr cookie = 0;
+    if (useDOMFormat)
+       cookie = mCookieJar->makeDOMCookies(url, cookieHeader, windowId);
+    else
+       cookie = mCookieJar->makeCookies(url, cookieHeader, windowId);
 
     if (mAdvicePending)
     {
@@ -390,7 +428,8 @@ void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
         {
            QCString replyType;
            QByteArray replyData;
-           QString res = mCookieJar->findCookies( request->url );
+           QString res = mCookieJar->findCookies( request->url, request->DOM );
+
            QDataStream stream2(replyData, IO_WriteOnly);
            stream2 << res;
            replyType = "QString";

@@ -130,11 +130,15 @@ bool    KHttpCookie::isExpired(time_t currentDate)
 //
 // Returns a string for a HTTP-header
 //
-QString KHttpCookie::cookieStr(void)
+QString KHttpCookie::cookieStr(bool useDOMFormat)
 {
     QString result;
 
-    if (mProtocolVersion != 0)
+    if (useDOMFormat || (mProtocolVersion == 0))
+    {
+        result = mName + "=" + mValue;
+    }
+    else
     {
         result.sprintf("$Version=\"%d\"; ", mProtocolVersion);
         result += mName + "=\"" + mValue + "\"";
@@ -142,10 +146,6 @@ QString KHttpCookie::cookieStr(void)
             result += "; $Path=\""+ mPath + "\"";
         if (!mDomain.isEmpty())
             result += "; $Domain=\""+ mDomain + "\"";
-    }
-    else
-    {
-        result = mName + "=" + mValue;
     }
     return result;
 }
@@ -225,7 +225,7 @@ KCookieJar::~KCookieJar()
 // Returned is a string containing all appropriate cookies in a format
 // which can be added to a HTTP-header without any additional processing.
 //
-QString KCookieJar::findCookies(const QString &_url)
+QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 {
     QString cookieStr;
     QStringList domains;
@@ -264,20 +264,26 @@ QString KCookieJar::findCookies(const QString &_url)
           {
 	     protVersion = cookie->protocolVersion();
 	  }
-	  if (protVersion == 0)
+          if (useDOMFormat)
+          {
+             if (cookieCount > 0)
+                cookieStr += ";";
+             cookieStr += cookie->cookieStr(true);
+          }
+          else if (protVersion == 0)
 	  {
              if (cookieCount == 0)
                 cookieStr += "Cookie: ";
              else
                 cookieStr += "; ";
-             cookieStr += cookie->cookieStr();
+             cookieStr += cookie->cookieStr(false);
 	  }
 	  else
 	  {
              if (cookieCount > 0)
                 cookieStr += "\r\n";
              cookieStr += "Cookie: ";
-             cookieStr += cookie->cookieStr();
+             cookieStr += cookie->cookieStr(false);
           }
           cookieCount++;
        }
@@ -622,6 +628,80 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
     }
 
     return cookieChain;
+}
+
+/**
+* Parses cookie_domstr and returns a linked list of KHttpCookie objects.
+* cookie_domstr should be a semicolon-delimited list of "name=value"
+* pairs. Any whitespace before "name" or around '=' is discarded.
+* If no cookies are found, 0 is returned.
+*/
+KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
+                                          const QCString &cookie_domstring,
+                                          long windowId)
+{
+    // A lot copied from above
+    KHttpCookiePtr cookieChain = 0;
+    KHttpCookiePtr lastCookie = 0;
+
+    const char *cookieStr = cookie_domstring.data();
+    QString Name;
+    QString Value;
+    QString fqdn;
+    QString path;
+
+    if (!parseURL(_url, fqdn, path))
+    {
+        // Error parsing _url
+        return 0;
+    }
+
+    //  This time it's easy
+    while(*cookieStr)
+    {
+        cookieStr = parseNameValue(cookieStr, Name, Value);
+
+        if (Name.isEmpty()) {
+            if (*cookieStr != '\0')
+                cookieStr++;         // Skip ';' or '\n'
+
+            continue;
+        }
+
+        // Host = FQDN
+        // Default domain = ""
+        // Default path = ""
+        KHttpCookie *cookie = new KHttpCookie(fqdn, QString::null, QString::null,
+                                Name, Value );
+        cookie->mWindowId = windowId;
+
+        // Insert cookie in chain
+        if (lastCookie)
+            lastCookie->nextCookie = cookie;
+        else
+            cookieChain = cookie;
+
+        lastCookie = cookie;
+
+        // We have to default the path.
+        // Is this right for script cookies?
+        QString dir = path;
+        if( dir != "/" )
+        {
+            int last_slash = dir.findRev('/');
+            if( last_slash > 0 )
+                dir.truncate( last_slash );
+            else
+                dir = '/';  // Use root directory...
+        }
+        lastCookie->mPath = dir;
+        kdDebug(7104) << "Setting path for script cookie to: " << dir << endl;
+
+        if (*cookieStr != '\0')
+            cookieStr++;         // Skip ';' or '\n'
+     }
+ 
+     return cookieChain;
 }
 
 //

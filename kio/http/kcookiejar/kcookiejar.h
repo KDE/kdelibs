@@ -63,7 +63,7 @@ protected:
 
     KHttpCookiePtr nextCookie;
 
-    QString cookieStr(void);
+    QString cookieStr(bool useDOMFormat);
 public:
     KHttpCookie(const QString &_host=QString::null,
                 const QString &_domain=QString::null,
@@ -152,8 +152,11 @@ public:
      * Looks for cookies in the cookie jar which are appropriate for _url.
      * Returned is a string containing all appropriate cookies in a format
      * which can be added to a HTTP-header without any additional processing.
+     *
+     * If @p useDOMFormat is true, the string is formatted in a format
+     * in compliance with the DOM standard.
      */
-    QString findCookies(const QString &_url);
+    QString findCookies(const QString &_url, bool useDOMFormat);
 
     /**
      * This function parses cookie_headers and returns a linked list of
@@ -164,6 +167,16 @@ public:
      * which start with "Set-Cookie". The lines should be separated by '\n's.
      */
     KHttpCookiePtr makeCookies(const QString &_url, const QCString &cookie_headers, long windowId);
+
+    /**
+     * This function parses cookie_headers and returns a linked list of
+     * valid KHttpCookie objects for all cookies found in cookie_headers.
+     * If no cookies could be found 0 is returned.
+     *
+     * cookie_domstr should be a concatenation of "name=value" pairs, seperated
+     * by a semicolon ';'.
+     */
+    KHttpCookiePtr makeDOMCookies(const QString &_url, const QCString &cookie_domstr, long windowId);
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.
