@@ -82,7 +82,12 @@ QValueList<QString> vl = tokenizeBy(name, QRegExp("/"), false);
                                    j != vl.end();
                                    ++j) {
     QValueList<QString> apair = tokenizeBy(*j, QRegExp("="), false);
-    m_pairs.replace(apair[0], apair[1]);
+    if (m_pairs.contains(apair[0])) {
+      QString oldValue = m_pairs[apair[0]];
+      oldValue += "\n";
+      oldValue += apair[1];
+      m_pairs.replace(apair[0], oldValue);
+    } else m_pairs.insert(apair[0], apair[1]);
   }
   
 }
