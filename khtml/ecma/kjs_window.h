@@ -93,6 +93,7 @@ namespace KJS {
     void closeNow();
     void delayedGoHistory(int steps);
     void goHistory(int steps);
+    void goURL(Window* active, const QString& url);
     Value openWindow(ExecState *exec, const List &args);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();

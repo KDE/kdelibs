@@ -400,12 +400,11 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   case Cookie:
     doc.setCookie(value.toString(exec).string());
     break;
-  case Location: {
+  case Location:
+  {
     KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
-    if ( view && view->part() ) {
-      QString str = value.toString(exec).qstring();
-      view->part()->scheduleRedirection(-1, str);
-    }
+    if ( view )
+      Window::retrieveWindow(view->part())->goURL(Window::retrieveActive(exec), value.toString(exec).qstring());
     break;
   }
   case BgColor:
