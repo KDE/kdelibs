@@ -60,8 +60,11 @@ bool KStandardDirs::addResourceType( const QString& type,
 	rels = new QStringList();
 	relatives.insert(type, rels);
     }
-    if (!rels->contains(relativename)) {
-	rels->append(relativename);
+    QString copy = relativename;
+    if (copy.at(copy.length() - 1) != '/')
+      copy += '/';
+    if (!rels->contains(copy)) {
+	rels->append(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }
@@ -117,7 +120,7 @@ QString KStandardDirs::findResourceDir( const QString& type,
 					const QString& filename) const
 {
     if (filename.isEmpty()) {
-        warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!\n", type.ascii());
+        warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type.ascii());
 	return QString::null;
     }
 
