@@ -2028,6 +2028,84 @@ void KDockManager::drawDragRectangle()
   d->oldDragRect = d->dragRect;
 }
 
+
+#ifdef _JOWENN_EXPERIMENTAL_
+
+KDockArea::KDockArea( QWidget* parent, const char *name)
+:QWidget( parent, name)
+{
+  QString new_name = QString(name) + QString("_DockManager");
+  dockManager = new KDockManager( this, new_name.latin1() );
+  mainDockWidget = 0L;
+}
+
+KDockArea::~KDockArea()
+{
+}
+
+KDockWidget* KDockArea::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
+{
+  return new KDockWidget( dockManager, name.latin1(), pixmap, parent, strCaption, strTabPageLabel );
+}
+
+void KDockArea::makeDockVisible( KDockWidget* dock )
+{
+  if ( dock != 0L)
+    dock->makeDockVisible();
+}
+
+void KDockArea::makeDockInvisible( KDockWidget* dock )
+{
+  if ( dock != 0L)
+    dock->undock();
+}
+
+void KDockArea::makeWidgetDockVisible( QWidget* widget )
+{
+  makeDockVisible( dockManager->findWidgetParentDock(widget) );
+}
+
+void KDockArea::writeDockConfig(QDomElement &base)
+{
+  dockManager->writeConfig(base);
+}
+
+void KDockArea::readDockConfig(QDomElement &base)
+{
+  dockManager->readConfig(base);
+}
+
+void KDockArea::slotDockWidgetUndocked()
+{
+  QObject* pSender = (QObject*) sender();
+  if (!pSender->inherits("KDockWidget")) return;
+  KDockWidget* pDW = (KDockWidget*) pSender;
+  emit dockWidgetHasUndocked( pDW);
+}
+
+
+#ifndef NO_KDE2
+void KDockArea::writeDockConfig( KConfig* c, QString group )
+{
+  dockManager->writeConfig( c, group );
+}
+
+void KDockArea::readDockConfig( KConfig* c, QString group )
+{
+  dockManager->readConfig( c, group );
+}
+
+void KDockArea::setMainDockWidget( KDockWidget* mdw )
+{
+  if ( mainDockWidget == mdw ) return;
+  mainDockWidget = mdw;
+  mdw->applyToWidget(this);
+}
+#endif
+
+
+#endif
+
 #ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name
 #include "kdockwidget.moc"
 #endif

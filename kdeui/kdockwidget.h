@@ -36,10 +36,13 @@
    - KDockMainWindow               - IMPORTANT CLASS: a special KMainWindow that can have dockwidgets
 */
 
+#define _JOWENN_EXPERIMENTAL_
+
+
 #ifndef KDOCKWIDGET_H
 #define KDOCKWIDGET_H
 
-#define _KDOCKWIDGET_2_2_  
+#define _KDOCKWIDGET_2_2_
 
 #include <qpoint.h>
 #include <qlist.h>
@@ -64,6 +67,7 @@ class KDockMoveManager;
 class KDockWidget;
 class KDockButton_Private;
 class KDockWidgetPrivate;
+class KDockArea;
 
 class QObjectList;
 class QPopupMenu;
@@ -350,6 +354,7 @@ class EXPORT_DOCKCLASS KDockWidget: public QWidget
 friend class KDockManager;
 friend class KDockSplitter;
 friend class KDockMainWindow;
+friend class KDockArea;
 
 public:
   /**
@@ -391,11 +396,11 @@ public:
     DockCorner = DockTop | DockLeft | DockRight | DockBottom,
     DockFullSite = DockCorner | DockCenter,
     DockFullDocking = DockFullSite | DockDesktop
-  }; 
+  };
 
   /**
    * This is a key method of this class! Use it to dock dockwidgets to
-   * another dockwidget at the right position within its 
+   * another dockwidget at the right position within its
    * @ref KDockMainWindow or a toplevel dockwidget.
    *
    *
@@ -410,7 +415,7 @@ public:
    * @param  pos The dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
    * @param  check Only for internal use;
    * @param  tabIndex The position index of the tab widget (when in tab page mode), -1 (default) means append
-   * @return result The group dockwidget that replaces the target dockwidget and will be grandparent of target and @p this. 
+   * @return result The group dockwidget that replaces the target dockwidget and will be grandparent of target and @p this.
    */
   KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false, int tabIndex = -1);
 
@@ -465,13 +470,13 @@ public:
   void setHeader( KDockWidgetAbstractHeader* ah);
 
   /**
-   * Normally it simply shows the dockwidget. 
+   * Normally it simply shows the dockwidget.
    *
    * But additionally, if it is docked to a tab widget (@p DockCenter), it is set as the active (visible) tab page.
    */
   void makeDockVisible();
-  
-  /** 
+
+  /**
    * @return If it may be possible to hide this.
    *
    * There are reasons that it's impossible:
@@ -481,8 +486,8 @@ public:
    * @li It isn't able to dock to another widget.
    */
   bool mayBeHide();
-  
-  /** 
+
+  /**
    * @return If it may be possible to show this.
    * There are reasons that it's impossible:
    * @li It is a (tab) group.
@@ -513,7 +518,7 @@ public:
    */
   const QString& toolTipString() { return toolTipStr; };
 
-  /** 
+  /**
    * @return result @p true, if a dockback is possible, otherwise @p false.
    */
   bool isDockBackPossible();
@@ -521,20 +526,20 @@ public:
   /** Set a string that is used for the label of the tab page when in tab page mode
    * @param label The new tab page label.
    */
-  void setTabPageLabel( const QString& label) { tabPageTitle = label; }; 
+  void setTabPageLabel( const QString& label) { tabPageTitle = label; };
 
-  /** 
+  /**
    * @return A string that is used for the label of the tab page when in tab page mode.
    */
-  const QString& tabPageLabel() { return tabPageTitle; }; 
+  const QString& tabPageLabel() { return tabPageTitle; };
 
   /**
    * Catches and processes some @ref QWidget events that are interesting for dockwidgets.
    */
   virtual bool event( QEvent * );
-  
+
   /**
-   * Add dockwidget management actions to @ref QWidget::show. 
+   * Add dockwidget management actions to @ref QWidget::show.
    */
   virtual void show();
   /**
@@ -565,7 +570,7 @@ public slots:
   void dockBack();
 
   /**
-   * Toggles the visibility state of the dockwidget if it is able to be shown or to be hidden. 
+   * Toggles the visibility state of the dockwidget if it is able to be shown or to be hidden.
    *
    */
   void changeHideShowState();
@@ -1091,8 +1096,8 @@ public:
    */
   KDockWidget* getMainDockWidget(){ return mainDockWidget; }
 
-  /** 
-   * This is one of the most important methods! 
+  /**
+   * This is one of the most important methods!
    * The KDockMainWindow creates a new dockwidget object here that usually should encapsulate the user's widget.
    * The new dockwidget is automatically taken under control by the dockmanager of the dockmainwindow.
    *
@@ -1117,15 +1122,15 @@ public:
 #ifndef NO_KDE2
   /**
    * It writes the current dock state in the given section of KConfig.
-   * 
+   *
    * @param c     KDE class for saving configurations
    * @param group name of section to write to
    */
   void writeDockConfig( KConfig* c = 0L, QString group = QString::null );
-  
+
   /**
    * It reads the current dock state from the given section of KConfig.
-   * 
+   *
    * @param c     KDE class for saving configurations
    * @param group name of section to read from
    */
@@ -1149,7 +1154,7 @@ public:
 
   /**
    * This method shows the given dockwidget.
-   * The clue is that it also considers the dockwidget could be a tab page 
+   * The clue is that it also considers the dockwidget could be a tab page
    * and must set to be the activate one.
    *
    * @param dock the dockwidget that is to be shown
@@ -1165,12 +1170,12 @@ public:
 
   /**
    * This is an overloaded member function, provided for convenience.
-   * It differs from the above function only in what argument(s) it accepts. 
+   * It differs from the above function only in what argument(s) it accepts.
    */
   void makeWidgetDockVisible( QWidget* widget );
 
   /**
-   * This method calls the base class method. 
+   * This method calls the base class method.
    * If the given widget inherits KDockWidget, applyToWidget(this) is called.
    *
    * @param _ any widget that should become the main view
@@ -1201,6 +1206,83 @@ private:
   class KDockMainWindowPrivate;
   KDockMainWindowPrivate *d;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ifdef _JOWENN_EXPERIMENTAL_
+/* Joseph Wenninger jowenn@kde.org Experimental (Just all KMainWindow references changed to QWidget, otherwise nearly exactly the 
+same as KDockMainWindow*/
+
+class EXPORT_DOCKCLASS KDockArea : public QWidget
+{
+  Q_OBJECT
+
+friend class KDockManager;
+
+public:
+
+
+  KDockArea( QWidget* parent = 0L, const char *name = 0L);
+
+  virtual ~KDockArea();
+
+  KDockManager* manager(){ return dockManager; }
+
+
+  void setMainDockWidget( KDockWidget* );
+  KDockWidget* getMainDockWidget(){ return mainDockWidget; }
+
+  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
+
+  void writeDockConfig(QDomElement &base);
+  void readDockConfig(QDomElement &base);
+
+#ifndef NO_KDE2
+  void writeDockConfig( KConfig* c = 0L, QString group = QString::null );
+  void readDockConfig ( KConfig* c = 0L, QString group = QString::null );
+#endif
+
+
+
+  void activateDock(){ dockManager->activate(); }
+  QPopupMenu* dockHideShowMenu(){ return dockManager->dockHideShowMenu(); }
+  void makeDockVisible( KDockWidget* dock );
+  void makeDockInvisible( KDockWidget* dock );
+  void makeWidgetDockVisible( QWidget* widget );
+  //void setView( QWidget* );
+
+signals:
+  /**
+  * Signals a certain dockwidget is undocked now.
+  */
+  void dockWidgetHasUndocked(KDockWidget*);
+
+protected:
+
+  KDockWidget* mainDockWidget;
+  KDockManager* dockManager;
+
+protected slots:
+  void slotDockWidgetUndocked();
+
+private:
+  class KDockMainWindowPrivate;
+  KDockMainWindowPrivate *d;
+};
+
+#endif
 
 #endif
 
