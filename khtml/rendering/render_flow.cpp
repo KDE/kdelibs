@@ -604,7 +604,7 @@ void RenderFlow::positionNewFloats()
         // Khtml float layouting is modeled after css2, and implementing this has
         // been somewhat messy
         //
-        if(style()->htmlHacks() && childrenInline() && !style()->flowAroundFloats())
+        if( childrenInline() && !style()->flowAroundFloats())
         {
             RenderObject* obj = this;
 
