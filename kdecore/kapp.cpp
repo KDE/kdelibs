@@ -823,43 +823,6 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
     }
 }
 
-QString KApplication::kdedir()
-{
-  static QString kdedir;
-
-  if (kdedir.isEmpty()) {
-	kdedir = getenv("KDEDIR");
-	if (kdedir.isEmpty()) {
-
-#ifdef KDEDIR
-	  kdedir = KDEDIR;
-#else
-	  kdedir = "/usr/local/kde";
-#endif
-	}
-	if (kdedir.at(kdedir.length() -1 ) != '/')
-	  kdedir += '/';
-  }
-
-  return kdedir;
-}
-
-
-QString KApplication::kde_appsdir()
-{
-    warning("kde_appsdir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-    if (dir.isNull())
-      dir = kdedir() + KStandardDirs::kde_default("apps");
-    return dir;
-}
-
-QString KApplication::localkdedir()
-{
-  warning("localkdedir is obsolete. Try to use KStandardDirs instead");
-  return ( QDir::homeDirPath() + "/.kde" );
-}
-
 bool KApplication::getKDEFonts(QStringList &fontlist) const
 {
   QString fontfilename = KGlobal::dirs()->getSaveLocation("config") + "kdefonts";

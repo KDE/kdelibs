@@ -203,23 +203,6 @@ public:
   KStyle* kstyle() const {return pKStyle;}
   
   /**
-   * Returns the directory where KDE applications store their .desktop file
-   *
-   * The default for this directory is $KDEDIR/share/applnk
-   * @return the name of the directory
-   */
-  static QString kde_appsdir();
-
-  /**
-   * Get the local KDE base dir
-   *
-   * This is usually $HOME/.kde
-   *
-   * @return the name of the directory
-   */
-  static QString localkdedir();
-
-  /**
    * Get the KDE font list.
    *
    * This method allows you to get the KDE font list which was
@@ -289,17 +272,6 @@ protected:
 
   /// Current application object.
   static KApplication *KApp;
-
-  /**
-   * Get the KDE base dir.
-   *
-   * This is the value of the KDEDIR
-   * environment variable if it is set in the process' environment,
-   * the compile time default of, if this was not present, either,
-   * /usr/local/kde.
-   * @return the KDE base dir
-   */
-  static QString kdedir();
 
 public slots:
   void aboutKDE();
@@ -451,6 +423,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.97  1999/07/23 17:07:15  steffen
+// be QTDispatchers friend
+//
 // Revision 1.96  1999/07/22 10:01:25  kulow
 // if drag.h is obsolete, kde_datadir is for long :)
 //
