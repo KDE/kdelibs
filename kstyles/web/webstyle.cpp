@@ -1389,13 +1389,13 @@ WebStyle::drawTab
   {
     case QTabBar::RoundedAbove:
     case QTabBar::TriangularAbove:
-      p->drawLine(r.left(), r.top(), r.left(), r.bottom() - 1);
+      p->drawLine(r.left(), r.top(), r.left(), r.bottom());
       p->drawLine(r.left(), r.top(), r.right(), r.top());
-      p->drawLine(r.right(), r.top(), r.right(), r.bottom() - 1);
+      p->drawLine(r.right(), r.top(), r.right(), r.bottom());
       if (!selected)
       {
         p->setPen(g.dark());
-        p->drawLine(r.left(), r.bottom() - 1, r.right(), r.bottom() - 1);
+        p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
       }
       break;
     case QTabBar::RoundedBelow:
