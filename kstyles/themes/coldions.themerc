@@ -1,7 +1,7 @@
 [Misc]
 Name=Cold Ions
 Name[ca]=Ions freds
-Name[cs]=Studené ionty
+Name[cs]=StudenÃ© ionty
 Name[da]=Kolde ioner
 Name[de]=Kalte Ionen
 Name[eo]=Malvarmaj ionoj
@@ -13,11 +13,11 @@ Name[ro]=Ioni reci
 Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
 Comment[ca]=Estil sense tema "Ions freds".
-Comment[cs]=Styl studené ionty (netémovaný)
+Comment[cs]=Styl studenÃ© ionty (netÃ©movanÃ½)
 Comment[da]=Kolde ioner stil uden tema
 Comment[de]=Kalte Ionen (kein komplettes Design)
 Comment[eo]=Stilo "Malvarmaj ionoj" neetosa
-Comment[et]=Külmad ioonid stiil
+Comment[et]=Külmad teemata stiil
 Comment[fi]=KylmÃ¤t ionit teemoittamaton tyyli
 Comment[hu]=Fagyos ionok - téma nélküli stílus
 Comment[no]=Kalde ioner-stil uten tema
