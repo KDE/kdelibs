@@ -89,12 +89,13 @@ void KMenuBar::setTopLevelMenu(bool top_level)
 	return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
+      bool wasVisible = isVisibleTo( 0 );
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
       setBackgroundMode( NoBackground );
-      if ( !parentWidget() || parentWidget()->isVisibleTo( 0 ) )
+      if ( wasVisible )
 	  show();
   } else {
       if ( parentWidget() ) {
@@ -196,6 +197,7 @@ void KMenuBar::showEvent( QShowEvent* )
     if ( d->topLevel ) {
 	int w = QApplication::desktop()->width();
 	setGeometry(0, -frameWidth()-2, w, heightForWidth( w ) );
+	qDebug("setstrut: %d (height is %d)", height() - frameWidth() - 2, height() );
 	KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
 	if ( parentWidget() ) {
 	    QObjectList   *accelerators = queryList( "QAccel" );
