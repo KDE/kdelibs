@@ -907,6 +907,11 @@ KToggleAction::KToggleAction( QObject* parent, const char* name )
   d = new KToggleActionPrivate;
 }
 
+KToggleAction::~KToggleAction()
+{
+    delete d;
+}
+
 int KToggleAction::plug( QWidget* widget, int index )
 {
   if ( !widget->inherits("QPopupMenu") && !widget->inherits("KToolBar") )

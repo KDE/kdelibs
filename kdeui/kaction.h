@@ -608,6 +608,11 @@ public:
     KToggleAction( QObject* parent = 0, const char* name = 0 );
 
     /**
+     * Destructor
+     */
+    virtual ~KToggleAction();
+
+    /**
      *  "Plug" or insert this action into a given widget.
      *
      *  This will typically be a menu or a toolbar.  From this point
