@@ -1101,44 +1101,46 @@ void FileProtocol::slotListDir( const char *_url )
     return;
   }
 
-  QValueList<KUDSEntry> entries;
+  QStringList entryNames;
+
+  while ( ( ep = readdir( dp ) ) != 0L )
+    entryNames.append( ep->d_name );
+
+  closedir( dp );
+  totalFiles( entryNames.count() );
 
   KUDSEntry entry;
   KUDSAtom atom;
-  while ( ( ep = readdir( dp ) ) != 0L ) {
-
-    //kdebug( KDEBUG_INFO, 7101, "Listing %s", ep->d_name );
-
+  QStringList::Iterator it (entryNames.begin());
+  for (; it != entryNames.end(); ++it) {
     entry.clear();
-
     atom.m_uds = UDS_NAME;
-    atom.m_str = ep->d_name;
-    entry.append( atom );
-
-    QString tmp = usrc.path( 1 );
-    tmp += ep->d_name;
+    atom.m_str = *it;
+    entry.append(atom);
 
     QString slink = "";
     mode_t type;
     mode_t access;
+    QCString fullPath = usrc.path(1).ascii();
+    fullPath += (*it).ascii();
 
     struct stat buff;
     struct stat lbuff;
-    if ( stat( tmp.ascii(), &buff ) == -1 )  {
+    if ( stat( fullPath.data(), &buff ) == -1 )  {
       // A link poiting to nowhere ?
-      if ( lstat( tmp.ascii(), &lbuff ) == -1 ) {
+      if ( lstat( fullPath.data(), &lbuff ) == -1 ) {
 	// Should never happen
-	error( ERR_DOES_NOT_EXIST, tmp );
+	error( ERR_DOES_NOT_EXIST, fullPath.data() );
 	m_cmd = CMD_NONE;
 	return;
       }
-
+      
       // It is a link pointing to nowhere
       type = S_IFMT - 1;
       access = S_IRWXU | S_IRWXG | S_IRWXO;
       buff.st_size = lbuff.st_size; // buff.st_size is invalid
     } else {
-      lstat( tmp.ascii(), &lbuff );
+      lstat( fullPath.data(), &lbuff );
       type = buff.st_mode & S_IFMT; // extract file type
       access = buff.st_mode & 0x1FF; // extract permissions
       // Is it a link
@@ -1146,14 +1148,13 @@ void FileProtocol::slotListDir( const char *_url )
 	// type |= S_IFLNK; No !! This screws S_ISDIR and friends. (David)
         // caller should check UDS_LINK_DEST instead
 	char buffer2[ 1000 ];
-	int n = readlink( tmp.ascii(), buffer2, 1000 );
+	int n = readlink( fullPath.data(), buffer2, 1000 );
 	if ( n != -1 ) {
 	  buffer2[ n ] = 0;
 	  slink = buffer2;
 	}
       }
     }
-
 
     atom.m_uds = UDS_FILE_TYPE;
     atom.m_long = type;
@@ -1174,6 +1175,7 @@ void FileProtocol::slotListDir( const char *_url )
     atom.m_uds = UDS_USER;
     uid_t uid = buff.st_uid;
     QString *temp = usercache.find( uid );
+
     if ( !temp ) {
       struct passwd *user = getpwuid( uid );
       if ( user ) {
@@ -1214,18 +1216,15 @@ void FileProtocol::slotListDir( const char *_url )
     atom.m_uds = UDS_CREATION_TIME;
     atom.m_long = buff.st_ctime;
     entry.append( atom );
-//    listEntry( entry );
-    entries.append( entry );
+
+    listEntry( entry );
   }
 
-  closedir( dp );
 
-  totalFiles( entries.count() );
-
-  QValueList<KUDSEntry>::Iterator it = entries.begin();
+  /*  QValueList<KUDSEntry>::Iterator it = entries.begin();
   QValueList<KUDSEntry>::Iterator end = entries.end();
   for (; it != end; ++it )
-    listEntry( *it );
+  listEntry( *it );*/
 
   kdebug( KDEBUG_INFO, 7101, "============= COMPLETED LIST ============" );
 
