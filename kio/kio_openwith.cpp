@@ -350,8 +350,8 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
   completion = new KURLCompletion();
   // Enables the brand spanking new completion & rotation feature.
   // See how easy it is now.  Not like it was before.  Less work Ypeeee!!!
-  edit->setHandleCompletion();
-  edit->setHandleRotation();
+  edit->setHandleCompletion(true);
+  edit->setHandleRotation(true);
   // connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
   // connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
   // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
