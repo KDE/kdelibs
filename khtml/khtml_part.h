@@ -1100,6 +1100,7 @@ private:
   bool initFindNode( bool selection, bool reverse );
   void findText();
   void findTextNext();
+  void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

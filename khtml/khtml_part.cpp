@@ -4260,43 +4260,88 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
                                                            event->absX()-innerNode.handle()->renderer()->xPos(),
                                                            event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
 
-      if ( node )
+      if ( node && node->renderer() )
       {
-        int start = offset;
-        int end = start;
-        DOM::Node n = node;
-        if(n.nodeType() == DOM::Node::TEXT_NODE) {
-          QString str = n.nodeValue().string();
-          int len = str.length();
-          if ( event->clickCount() != 3 )
-          {
-            // Extend selection to a complete word
-            //kdDebug(6050) << " str=" << str << " offset=" << offset << endl;
-            while ( start > 0 && !str[start-1].isSpace() && !str[start-1].isPunct() )
-              start--;
-            while ( end < len && !str[end].isSpace() && !str[end].isPunct() )
-              end++;
-          }
-          else // Triple click --> select paragraph
-          {
-            // ##### This breaks as soon as a paragraph has formatted text, or links, etc.
-            // TODO: use the render tree to find the whole paragraph.
-            start = 0;
-            end = len;
-          }
-          d->m_startOffset = start;
-          d->m_selectionEnd = d->m_selectionStart = n;
-          d->m_endOffset = end;
-          d->m_startBeforeEnd = true; // obviously
-          //kdDebug(6050) << " selecting from " << start << " to " << end << endl;
-          emitSelectionChanged();
-          d->m_doc
-            ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
-                           d->m_selectionEnd.handle(),d->m_endOffset);
-        }
+        // Extend selection to a complete word (double-click) or paragraph (triple-click)
+        bool selectParagraph = (event->clickCount() == 3);
+
+        // Extend to the left
+        extendSelection( node, offset, d->m_selectionStart, d->m_startOffset, false, selectParagraph );
+        // Extend to the right
+        extendSelection( node, offset, d->m_selectionEnd, d->m_endOffset, true, selectParagraph );
+
+        d->m_endOffset++; // the last char must be in
+        //kdDebug() << d->m_selectionStart.handle() << " " << d->m_startOffset << "  -  " <<
+        //  d->m_selectionEnd.handle() << " " << d->m_endOffset << endl;
+
+        d->m_startBeforeEnd = true;
+        emitSelectionChanged();
+        d->m_doc
+          ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+                         d->m_selectionEnd.handle(),d->m_endOffset);
       }
     }
   }
+}
+
+void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool selectParagraph )
+{
+  khtml::RenderObject* obj = node->renderer();
+  QString str;
+  int len;
+  Q_ASSERT( obj->isText() );
+  if ( obj->isText() ) {
+    str = static_cast<khtml::RenderText *>(obj)->data().string();
+    len = str.length();
+  }
+  QChar ch;
+  do {
+    // Last char was ok, point to it
+    if ( node ) {
+      selectionNode = node;
+      selectionOffset = offset;
+    }
+
+    // Get another char
+    while ( obj && ( (right && offset == len-1) || (!right && offset == 0) ) )
+    {
+      obj = right ? obj->objectBelow() : obj->objectAbove();
+      if ( obj ) {
+        if ( obj->isText() )
+          str = static_cast<khtml::RenderText *>(obj)->data().string();
+        else if ( obj->isBR() )
+          str = '\n';
+        else if ( !obj->isInline() ) {
+          obj = 0L; // parag limit -> done
+          break;
+        }
+        len = str.length();
+        //kdDebug() << "str=" << str << " length=" << len << endl;
+        // set offset - note that the first thing will be a ++ or -- on it.
+        if ( right )
+          offset = -1;
+        else
+          offset = len;
+      }
+    }
+    if ( !obj ) // end of parag or document
+      break;
+    node = obj->element();
+    if ( right )
+    {
+      Q_ASSERT( offset < len-1 );
+      offset++;
+    }
+    else
+    {
+      Q_ASSERT( offset > 0 );
+      offset--;
+    }
+
+    // Test that char
+    ch = str[ offset ];
+    //kdDebug() << " offset=" << offset << " ch=" << QString(ch) << endl;
+  } while ( selectParagraph || (!ch.isSpace() && !ch.isPunct()) );
 }
 
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
