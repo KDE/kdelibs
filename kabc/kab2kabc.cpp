@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qfile.h>
+
 #include <kaboutdata.h>
 #include <kapp.h>
 #include <kdebug.h>
@@ -26,6 +28,7 @@
 #include <kabapi.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <kstandarddirs.h>
 
 #include "addressbook.h"
 #include "stdaddressbook.h"
@@ -179,6 +182,11 @@ int main(int argc,char **argv)
     KConfig *config = app.config();
     config->setGroup( "Startup" );
     config->writeEntry( "EnableAutostart", false );
+  }
+
+  if (!QFile::exists(locateLocal("data", "kab/addressbook.kab") )) {
+    kdDebug() << "No KDE 2 addressbook found. Exiting." << endl;
+    return 0;
   }
 
   kdDebug(5700) << "Converting old-style kab addressbook to "
