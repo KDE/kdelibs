@@ -1,3 +1,8 @@
+2004-08-27  Leo Savernik  <l.savernik@aon.at>
+
+	* html/html_tableimpl.cpp (HTMLTableCellElementImpl::attach):
+	Fixed explicit setting of border to 0 width.
+
 2004-08-24  Leo Savernik  <l.savernik@aon.at>
 
 	* ecma/kjs_html.{cpp,h} (HTMLDocument):

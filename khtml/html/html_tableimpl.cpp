@@ -821,7 +821,7 @@ void HTMLTableCellElementImpl::attach()
     if(p) {
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
         if (table->m_noBorder) {
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0");
+            removeCSSProperty(CSS_PROP_BORDER_WIDTH);
         }
         else {
             addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
