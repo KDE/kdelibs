@@ -29,12 +29,12 @@
 
 #include <kapplication.h>
 #include <kio/global.h>
-//#include <kio/netaccess.h> linking problem zecke
 #include <ktrader.h>
 #include <klibloader.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kdebug.h>
 #include <kurl.h>
 #include <kmimetype.h>
 #include <kwin.h>
