@@ -701,14 +701,13 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     QString autocompletionWhatsThisText = i18n("<p>While typing in the text area you may be presented "
                                                "with possible matches. "
                                                "This feature can be controlled by clicking with the right mouse button "
-                                               "and selecting a prefered mode from the <b>Text Completion</b> menu.");
+                                               "and selecting a prefered mode from the <b>Text Completion</b> menu.") + "</qt>";
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
     QToolTip::add( d->pathCombo, i18n("Often used directories") );
     QWhatsThis::add( d->pathCombo, i18n("<qt>Commonly used locations are listed here. "
                                         "This includes standard locations such as your home directory as well as "
-                                        "locations that have been visited recently. %1</qt>")
-                                        .arg(autocompletionWhatsThisText) );
+                                        "locations that have been visited recently.") + autocompletionWhatsThisText);
     
     KURL u;
     u.setPath( QDir::rootDirPath() );
@@ -888,20 +887,20 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     QString whatsThisText;
     if (d->operationMode == KFileDialog::Saving)
     {
-        whatsThisText = i18n("<qt>This is the name to save the file as. %1</qt>")
-                            .arg(autocompletionWhatsThisText);
+        whatsThisText = i18n("<qt>This is the name to save the file as.") + 
+                        autocompletionWhatsThisText;
     }
     else if (ops->mode() & KFile::Files)
     {
         whatsThisText = i18n("<qt>This is the list of files to open. More than "
                              "one file can be specified by listing several "
-                             "files seperated by spaces. %1</qt>")
-                             .arg(autocompletionWhatsThisText);    
+                             "files seperated by spaces.") +
+                        autocompletionWhatsThisText;    
     }
     else
     {
-        whatsThisText = i18n("<qt>This is the name of the file to open. %1</qt>")
-                             .arg(autocompletionWhatsThisText);   
+        whatsThisText = i18n("<qt>This is the name of the file to open.") +
+                        autocompletionWhatsThisText;
     }
     
     // the Location label/edit

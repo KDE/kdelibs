@@ -29,11 +29,11 @@
 #include <qwhatsthis.h>
 
 #include <kaboutdata.h>
-#include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kicondialog.h>
 #include <kiconloader.h>
+#include <kinstance.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmimetype.h>
@@ -766,9 +766,9 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QWhatsThis::add( m_edit, whatsThisText );
     
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
-                         "/home/%1<br>http://kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
+                         "%1<br>http://kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
                          "By clicking on the button next to the text edit box you can browse for an "
-                         "appropriate URL.</qt>").arg(getlogin());
+                         "appropriate URL.</qt>").arg(QDir::homeDirPath());
     label = new QLabel( i18n("&URL:"), grid );
     m_urlEdit = new KURLRequester( url.prettyURL(), grid );
     m_urlEdit->setMode( KFile::Directory );
@@ -790,15 +790,19 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QWhatsThis::add( m_iconButton, whatsThisText );
 
     if ( allowGlobal ) {
-        m_appLocal = new QCheckBox(i18n("&Only show when using this application (%1)")
-                                        .arg(kapp->aboutData()->programName()), box);
+        QString appName;
+        if ( KGlobal::instance()->aboutData() )
+            appName = KGlobal::instance()->aboutData()->programName();
+        if ( appName.isEmpty() )
+            appName = QString::fromLatin1( KGlobal::instance()->instanceName() );
+        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)").arg( appName ), box );
         m_appLocal->setChecked( appLocal );
         QWhatsThis::add( m_appLocal,
                          i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<p>"
                               "If this setting is not selected the entry will be available in all "
                               "applications.</qt>")
-                              .arg(kapp->aboutData()->programName()));
+                              .arg(appName));
     }
     else
         m_appLocal = 0L;
