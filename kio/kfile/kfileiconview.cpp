@@ -374,8 +374,8 @@ void KFileIconView::highlighted( QIconViewItem *item )
 
 void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 {
-    disconnect( this, SIGNAL( selectionChanged() ));
-    disconnect( this, SIGNAL( selectionChanged( QIconViewItem * )));
+    disconnect( SIGNAL( selectionChanged() ), this );
+    disconnect( SIGNAL( selectionChanged( QIconViewItem * )), this );
 
     KFileView::setSelectionMode( sm );
     switch ( KFileView::selectionMode() ) {
