@@ -175,8 +175,8 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     connect(m_selectedText, SIGNAL(toggled(bool)), this, SLOT(slotSelectedTextToggled(bool)));
     connect(m_regExp, SIGNAL(toggled(bool)), m_regExpItem, SLOT(setEnabled(bool)));
     connect(m_backRef, SIGNAL(toggled(bool)), m_backRefItem, SLOT(setEnabled(bool)));
-    connect(m_regExpItem, SIGNAL(pressed()), this, SLOT(showPatterns()));
-    connect(m_backRefItem, SIGNAL(pressed()), this, SLOT(showPlaceholders()));
+    connect(m_regExpItem, SIGNAL(clicked()), this, SLOT(showPatterns()));
+    connect(m_backRefItem, SIGNAL(clicked()), this, SLOT(showPlaceholders()));
 
     connect(m_find, SIGNAL(textChanged ( const QString & )),this, SLOT(textSearchChanged( const QString & )));
 
@@ -362,7 +362,7 @@ void KFindDialog::showPatterns()
         }
 
         // Insert the selection into the edit control.
-        i = m_patterns->exec(QCursor::pos());
+        i = m_patterns->exec(m_regExpItem->mapToGlobal(m_regExpItem->rect().bottomLeft()));
         if (i != -1)
         {
             QLineEdit *editor = m_find->lineEdit();
@@ -399,7 +399,7 @@ void KFindDialog::showPlaceholders()
     }
 
     // Insert the selection into the edit control.
-    i = m_placeholders->exec(QCursor::pos());
+    i = m_placeholders->exec(m_backRefItem->mapToGlobal(m_backRefItem->rect().bottomLeft()));
     if (i != -1)
     {
         QLineEdit *editor = m_replace->lineEdit();
