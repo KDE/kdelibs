@@ -738,7 +738,7 @@ int TextEventImpl::keyCode() const
         case DOM_VK_DOWN:
             return m_virtKeyVal;
         default:
-            return charCode();
+            return QChar( charCode() ).upper().unicode();
     }
 }
 

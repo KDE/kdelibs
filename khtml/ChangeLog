@@ -1,3 +1,9 @@
+2005-02-13  Harri Porten  <porten@kde.org>
+
+        * xml/dom2_eventsimpl.*: updated virtual key codes to a more recent
+        version. Added mapping for Up and Down cursor keys. Made keyCode()
+        always return the uppercase value of characters.
+
 2005-02-12  David Faure  <faure@kde.org>
 
         * khtml_part.cpp (slotRedirect): No reload should happen when redirecting
