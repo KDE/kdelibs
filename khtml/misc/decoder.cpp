@@ -153,6 +153,7 @@ QString Decoder::decode(const char *data, int len)
                         ptr++;
                         len++;
                     }
+		    tmp[len] = 0;
                     int id = khtml::getTagID(tmp, len);
                     if(end) id += ID_CLOSE_TAG;
 
@@ -210,6 +211,7 @@ QString Decoder::decode(const char *data, int len)
                     case ID_HTML:
                     case ID_HEAD:
                     case 0:
+	    case (0+ID_CLOSE_TAG):
                         break;
                     default:
                         body = true;
