@@ -24,7 +24,7 @@ make_driver_db_cups_LDADD = -lz
 
 cupsdoprint_SOURCES = cupsdoprint.c
 cupsdoprint_LDADD = $(LIB_CUPS)
-cupsdoprint_LDFLAGS = $(all_librairies)
+cupsdoprint_LDFLAGS = $(all_libraries)
 
 entry_DATA = cups.print
 entrydir = $(kde_datadir)/kdeprint/plugins
