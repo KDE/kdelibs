@@ -316,8 +316,8 @@ public:
     virtual NodeImpl *cloneNode ( bool deep );
 
     NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_localName,
-                        DOMStringImpl *_prefix, bool readonly, int *pExceptioncode = 0);
-    NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly,
+                        DOMStringImpl *_prefix, bool readonly, bool lookupHTML, int *pExceptioncode = 0);
+    NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, bool lookupHTML,
                                       int *pExceptioncode = 0);
     DOMString getName( NodeImpl::IdType _type, NodeImpl::Id _id ) const;
 

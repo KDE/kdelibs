@@ -331,7 +331,8 @@ ElementImpl *DocumentImpl::documentElement() const
 ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
     Id id = getId( NodeImpl::ElementId, name.implementation(),
-                  false /* allocate */, pExceptioncode);
+                   false /* allocate */, false /*HTMLDocumentImpl::createElement looked for HTML elements already*/,
+                   pExceptioncode);
     if ( pExceptioncode && *pExceptioncode )
         return 0;
 
@@ -343,7 +344,7 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pException
 AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExceptioncode )
 {
     Id id = getId( NodeImpl::AttributeId, tagName.implementation(),
-                  false /* allocate */, pExceptioncode);
+                  false /* allocate */, isHTMLDocument(), pExceptioncode);
     if ( pExceptioncode && *pExceptioncode )
         return 0;
     return new AttrImpl( 0, document, id, DOMString("").implementation());
@@ -486,7 +487,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     }
     if (!e) {
         Id id = getId(NodeImpl::ElementId, _namespaceURI.implementation(), prefix.implementation(),
-                      localName.implementation(), false);
+                      localName.implementation(), false, false /*HTML already looked up*/);
         e = new XMLElementImpl( document, id, prefix.implementation() );
     }
 
@@ -494,7 +495,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
 }
 
 AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
-                                              const DOMString &_qualifiedName, int* pExceptioncode)
+                                           const DOMString &_qualifiedName, int* pExceptioncode)
 {
     int colonPos = -2;
     // check NAMESPACE_ERR/INVALID_CHARACTER_ERR
@@ -504,7 +505,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
     DOMString prefix, localName;
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
     Id id = getId(NodeImpl::AttributeId, _namespaceURI.implementation(), prefix.implementation(),
-                  localName.implementation(), false);
+                  localName.implementation(), false, true /*lookupHTML*/);
     return new AttrImpl(0, document, id, DOMString("").implementation(),
                          prefix.implementation(), localName.implementation());
 }
@@ -1171,7 +1172,7 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
 
 void DocumentImpl::determineParseMode( const QString &/*str*/ )
 {
-    // For XML documents, use string parse mode
+    // For XML documents, use strict parse mode
     pMode = Strict;
     hMode = XHtml;
     kdDebug(6020) << " using strict parseMode" << endl;
@@ -1593,7 +1594,7 @@ typedef DOM::DOMString (*NameLookupFunction)(unsigned short id);
 typedef int (*IdLookupFunction)(const char *tagStr, int len);
 
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
-                                  DOMStringImpl *_name, bool readonly, int *pExceptioncode)
+                                  DOMStringImpl *_name, bool readonly, bool lookupHTML, int *pExceptioncode)
 {
     //kdDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
     //          << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
@@ -1623,9 +1624,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     NodeImpl::Id id = 0;
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
-    // Do those hacks only for attributes. Keep everything clean for elements,
-    // it's all handled in createElement*
-    if (_type == NodeImpl::AttributeId) {
+    if (lookupHTML && isHTMLDocument() && _type != NodeImpl::NamespaceId) {
         // Each document maintains a mapping of tag name -> id for every tag name encountered
         // in the document.
         cs = (htmlMode() == XHtml);
@@ -1643,7 +1642,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     }
     // now lets find out the namespace
     if (_type != NodeImpl::NamespaceId && _nsURI)
-        id = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, 0 ) << 16;
+        id = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
 
     // Look in the names array for the name
     // compatibility mode has to lookup upper case
@@ -1699,9 +1698,9 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     return id + cid;
  }
 
-NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, int *pExceptioncode)
+NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, bool lookupHTML, int *pExceptioncode)
 {
-     return getId(_type, 0, 0, _nodeName, readonly, pExceptioncode);
+     return getId(_type, 0, 0, _nodeName, readonly, lookupHTML, pExceptioncode);
 }
 
 DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) const

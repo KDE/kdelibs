@@ -325,7 +325,7 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
     DOMString prefix, localName;
     splitPrefixLocalName(qualifiedName.implementation(), prefix, localName, colonPos);
     NodeImpl::Id id = getDocument()->getId(AttributeId, namespaceURI.implementation(),
-                            prefix.implementation(), localName.implementation(), false);
+                            prefix.implementation(), localName.implementation(), false, false /*lookupHTML*/);
     attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
                            localName.implementation());
 }
@@ -933,7 +933,8 @@ NodeImpl::Id NamedAttrMapImpl::mapId(DOMStringImpl* namespaceURI,
     if (!m_element)
 	return 0;
 
-    return m_element->getDocument()->getId(NodeImpl::AttributeId, namespaceURI, 0, localName, readonly);
+    return m_element->getDocument()->getId(NodeImpl::AttributeId, namespaceURI, 0, localName, readonly,
+                                           true /*lookupHTML*/);
 }
 
 void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)

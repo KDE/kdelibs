@@ -321,7 +321,7 @@ NodeList Document::getElementsByTagName( const DOMString &tagName )
     if ( tagName == "*" )
         id = 0;
     else
-        id = impl->getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false);
+        id = impl->getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
     return new TagNodeListImpl( impl, id );
 }
 

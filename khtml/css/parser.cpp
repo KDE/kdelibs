@@ -562,26 +562,26 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "S", "SGML_CD", "INCLUDES", "DASHMATCH", 
-  "BEGINSWITH", "ENDSWITH", "CONTAINS", "STRING", "IDENT", "HASH", "':'", 
-  "'.'", "'['", "'|'", "'*'", "IMPORT_SYM", "PAGE_SYM", "MEDIA_SYM", 
-  "FONT_FACE_SYM", "CHARSET_SYM", "NAMESPACE_SYM", "KHTML_RULE_SYM", 
-  "KHTML_DECLS_SYM", "KHTML_VALUE_SYM", "IMPORTANT_SYM", "QEMS", "EMS", 
-  "EXS", "PXS", "CMS", "MMS", "INS", "PTS", "PCS", "DEGS", "RADS", 
-  "GRADS", "MSECS", "SECS", "HERZ", "KHERZ", "DIMEN", "PERCENTAGE", 
-  "NUMBER", "URI", "FUNCTION", "UNICODERANGE", "'{'", "'}'", "';'", "','", 
-  "'+'", "'>'", "'-'", "']'", "'='", "')'", "'/'", "'@'", "$accept", 
-  "stylesheet", "khtml_rule", "khtml_decls", "khtml_value", "maybe_space", 
-  "maybe_sgml", "maybe_charset", "import_list", "import", 
-  "maybe_namespace", "namespace", "ns_prefix", "maybe_ns_prefix", 
-  "rule_list", "rule", "string_or_uri", "maybe_media_list", "media_list", 
-  "media", "ruleset_list", "medium", "page", "font_face", "combinator", 
-  "unary_operator", "ruleset", "selector_list", "selector", 
-  "simple_selector", "ns_element", "ns_selector", "element_name", 
-  "specifier_list", "specifier", "class", "ns_attrib_id", "attrib_id", 
-  "attrib", "match", "ident_or_string", "pseudo", "declaration_list", 
-  "decl_list", "declaration", "property", "prio", "expr", "operator", 
-  "term", "unary_term", "function", "hexcolor", "invalid_at", 
+  "$end", "error", "$undefined", "S", "SGML_CD", "INCLUDES", "DASHMATCH",
+  "BEGINSWITH", "ENDSWITH", "CONTAINS", "STRING", "IDENT", "HASH", "':'",
+  "'.'", "'['", "'|'", "'*'", "IMPORT_SYM", "PAGE_SYM", "MEDIA_SYM",
+  "FONT_FACE_SYM", "CHARSET_SYM", "NAMESPACE_SYM", "KHTML_RULE_SYM",
+  "KHTML_DECLS_SYM", "KHTML_VALUE_SYM", "IMPORTANT_SYM", "QEMS", "EMS",
+  "EXS", "PXS", "CMS", "MMS", "INS", "PTS", "PCS", "DEGS", "RADS",
+  "GRADS", "MSECS", "SECS", "HERZ", "KHERZ", "DIMEN", "PERCENTAGE",
+  "NUMBER", "URI", "FUNCTION", "UNICODERANGE", "'{'", "'}'", "';'", "','",
+  "'+'", "'>'", "'-'", "']'", "'='", "')'", "'/'", "'@'", "$accept",
+  "stylesheet", "khtml_rule", "khtml_decls", "khtml_value", "maybe_space",
+  "maybe_sgml", "maybe_charset", "import_list", "import",
+  "maybe_namespace", "namespace", "ns_prefix", "maybe_ns_prefix",
+  "rule_list", "rule", "string_or_uri", "maybe_media_list", "media_list",
+  "media", "ruleset_list", "medium", "page", "font_face", "combinator",
+  "unary_operator", "ruleset", "selector_list", "selector",
+  "simple_selector", "ns_element", "ns_selector", "element_name",
+  "specifier_list", "specifier", "class", "ns_attrib_id", "attrib_id",
+  "attrib", "match", "ident_or_string", "pseudo", "declaration_list",
+  "decl_list", "declaration", "property", "prio", "expr", "operator",
+  "term", "unary_term", "function", "hexcolor", "invalid_at",
   "invalid_rule", "invalid_block", "invalid_block_list", 0
 };
 #endif
@@ -1845,7 +1845,7 @@ yyreduce:
 #ifdef APPLE_CHANGES
             yyval.element = doc->tagId(0, dtag.implementation(), false);
 #else
-	    yyval.element = doc->getId(NodeImpl::ElementId, dtag.implementation(), false);
+	    yyval.element = doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true);
 #endif
 	} else {
 	    yyval.element = khtml::getTagID(tag.lower().ascii(), tag.length());
@@ -1938,7 +1938,7 @@ yyreduce:
 #ifdef APPLE_CHANGES
             yyval.attribute = doc->attrId(0, dattr.implementation(), false);
 #else
-	    yyval.attribute = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false);
+	    yyval.attribute = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
 #endif
 	} else {
 	    yyval.attribute = khtml::getAttrID(attr.lower().ascii(), attr.length());

@@ -1,3 +1,9 @@
+2003-10-26  David Faure  <faure@kde.org>
+
+	* xml/dom_docimpl.cpp (getId): added bool lookupHTML, set to true in most
+	places, to fix e.g. css selector broken by my previous change, and set
+	to false from createElementNS to still skip the lookup for HTML tags.
+
 2003-10-25  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_form.h (class RenderFileButton): use KURLRequester

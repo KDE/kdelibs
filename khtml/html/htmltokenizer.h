@@ -82,7 +82,7 @@ namespace khtml {
 		value = v.implementation();
             }
             else if ( !attrName.isEmpty() && attrName != "/" ) {
-		tid = doc->getId(NodeImpl::AttributeId, DOMString(attrName).implementation(), false);
+		tid = doc->getId(NodeImpl::AttributeId, DOMString(attrName).implementation(), false, true);
 		value = v.implementation();
             }
 
