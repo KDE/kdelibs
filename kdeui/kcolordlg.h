@@ -175,6 +175,8 @@ Simplest use:
 <pre>
 	QColor myColor;
 	int result = KColorDialog::getColor( myColor );
+        if ( result == KColorDialog::Accepted )
+           ...
 </pre>
 
  */
