@@ -2000,6 +2000,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   for ( ; it2 != mimeTypes.end(); ++it2 )
     addMimeType ( (*it2)->name() );
 
+  updateButton();
+
   connect( availableExtensionsList, SIGNAL( selected( int ) ),
            this, SIGNAL( changed() ) );
   connect( addExtensionButton, SIGNAL( clicked() ),
@@ -2023,6 +2025,12 @@ KApplicationPropsPlugin::~KApplicationPropsPlugin()
 // {
 //   return i18n ("&Application");
 // }
+
+void KApplicationPropsPlugin::updateButton()
+{
+    addExtensionButton->setEnabled(availableExtensionsList->count()>0);
+    delExtensionButton->setEnabled(extensionsList->count()>0);
+}
 
 void KApplicationPropsPlugin::addMimeType( const QString & name )
 {
@@ -2097,6 +2105,7 @@ void KApplicationPropsPlugin::slotAddExtension()
   extensionsList->insertItem( availableExtensionsList->text( pos ) );
   extensionsList->sort();
   availableExtensionsList->removeItem( pos );
+  updateButton();
 }
 
 void KApplicationPropsPlugin::slotDelExtension()
@@ -2109,6 +2118,7 @@ void KApplicationPropsPlugin::slotDelExtension()
   availableExtensionsList->insertItem( extensionsList->text( pos ) );
   availableExtensionsList->sort();
   extensionsList->removeItem( pos );
+  updateButton();
 }
 
 /* ----------------------------------------------------

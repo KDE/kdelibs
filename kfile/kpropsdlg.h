@@ -580,6 +580,7 @@ public slots:
 private:
 
   void addMimeType( const QString & name );
+  void updateButton();
 
   QLineEdit *commentEdit;
   QLineEdit *nameEdit;
