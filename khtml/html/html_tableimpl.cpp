@@ -732,6 +732,7 @@ HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)
 {
     _currentCol = 0;
+    _startCol = 0;
     _id = i;
     _span = 1;
 }
