@@ -744,7 +744,7 @@ void KRun::clientStarted(
 {
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
-  stream << execName << iconName << resName << pid;
+  stream << execName << iconName << resName << (int)pid;
   kapp->dcopClient()->send(
     "kicker",
     "TaskbarApplet",
