@@ -23,7 +23,7 @@
 #ifndef _CSS_cssstyleselector_h_
 #define _CSS_cssstyleselector_h_
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
@@ -208,7 +208,7 @@ namespace khtml
      * This is the list we will collect all properties we need to apply in.
      * It will get sorted once before applying.
      */
-    class CSSOrderedPropertyList : public QList<CSSOrderedProperty>
+    class CSSOrderedPropertyList : public QPtrList<CSSOrderedProperty>
     {
     public:
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
@@ -227,7 +227,7 @@ namespace khtml
 	int index;
     };
 
-    class CSSStyleSelectorList : public QList<CSSOrderedRule>
+    class CSSStyleSelectorList : public QPtrList<CSSOrderedRule>
     {
     public:
 	CSSStyleSelectorList();
@@ -236,7 +236,7 @@ namespace khtml
 	void append( DOM::CSSStyleSheetImpl *sheet,
                  const DOM::DOMString &medium = "screen" );
 	
-	void collect( QList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+	void collect( QPtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );
     };
 

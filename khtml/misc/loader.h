@@ -35,7 +35,7 @@
 #endif
 
 #include <stdlib.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qobject.h>
 #include <qptrdict.h>
 #include <qdict.h>
@@ -160,7 +160,7 @@ namespace khtml
         void setAccept(const QString &_accept) { m_accept = _accept; }
 
     protected:
-        QList<CachedObjectClient> m_clients;
+        QPtrList<CachedObjectClient> m_clients;
 
 	DOM::DOMString m_url;
         QString m_accept;
@@ -329,7 +329,7 @@ namespace khtml
         friend class DOM::DocumentImpl;
 
         QStringList m_reloadedURLs;
-        mutable QList<CachedObject> m_docObjects;
+        mutable QPtrList<CachedObject> m_docObjects;
 	int m_expireDate;
 	bool m_reloading;
         bool m_bautoloadImages;
@@ -383,7 +383,7 @@ namespace khtml
     private:
 	void servePendingRequests();
 
-	QList<Request> m_requestsPending;
+	QPtrList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
         KJPEGFormatType m_jpegloader;
@@ -476,7 +476,7 @@ namespace khtml
 
 	static QDict<CachedObject> *cache;
 	static LRUList *lru;
-        static QList<DocLoader>* docloader;
+        static QPtrList<DocLoader>* docloader;
 
 	static int maxSize;
 	static int flushCount;

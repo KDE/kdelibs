@@ -25,7 +25,7 @@
 #ifndef HTML_DOCUMENTIMPL_H
 #define HTML_DOCUMENTIMPL_H
 
-#include "dom_docimpl.h"
+#include "xml/dom_docimpl.h"
 #include "misc/loader_client.h"
 
 #include <qmap.h>

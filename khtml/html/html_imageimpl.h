@@ -94,7 +94,7 @@ public:
 protected:
     QRegion getRegion(int width_, int height) const;
     QRegion region;
-    QList<khtml::Length>* coords;
+    QPtrList<khtml::Length>* coords;
     int lastw, lasth;
     Shape shape  : 3;
     bool nohref  : 1;

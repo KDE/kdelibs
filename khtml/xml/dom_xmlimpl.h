@@ -25,7 +25,7 @@
 #define _DOM_XmlImpl_h_
 
 #include "dom_nodeimpl.h"
-#include "css_stylesheetimpl.h"
+#include "css/css_stylesheetimpl.h"
 #include "misc/loader.h"
 #include "misc/loader_client.h"
 

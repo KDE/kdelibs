@@ -133,7 +133,7 @@ public:
     void add(StyleSheetImpl* s);
     void remove(StyleSheetImpl* s);
 
-    QList<StyleSheetImpl> styleSheets;
+    QPtrList<StyleSheetImpl> styleSheets;
 };
 
 // ----------------------------------------------------------------------------

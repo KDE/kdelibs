@@ -46,7 +46,7 @@ class CSSStyleDeclarationImpl : public StyleBaseImpl
 {
 public:
     CSSStyleDeclarationImpl(CSSRuleImpl *parentRule);
-    CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, QList<CSSProperty> *lstValues);
+    CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, QPtrList<CSSProperty> *lstValues);
 
     virtual ~CSSStyleDeclarationImpl();
 
@@ -82,11 +82,11 @@ public:
     CSSValueImpl *getPropertyCSSValue( int propertyID );
     bool getPropertyPriority( int propertyID );
 
-    QList<CSSProperty> *values() { return m_lstValues; }
+    QPtrList<CSSProperty> *values() { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
 
 protected:
-    QList<CSSProperty> *m_lstValues;
+    QPtrList<CSSProperty> *m_lstValues;
     NodeImpl *m_node;
 };
 
@@ -134,7 +134,7 @@ public:
     virtual DOM::DOMString cssText() const;
 
 protected:
-    QList<CSSValueImpl> m_values;
+    QPtrList<CSSValueImpl> m_values;
 };
 
 

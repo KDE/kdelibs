@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <dom_misc.h>
 #include <misc/khtmllayout.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QChar;
 

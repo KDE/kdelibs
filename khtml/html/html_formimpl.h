@@ -29,7 +29,7 @@
 #include "html_element.h"
 
 #include <qvaluelist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qcstring.h>
 #include <qarray.h>
 
@@ -101,7 +101,7 @@ public:
     friend class HTMLFormElement;
     friend class HTMLFormCollectionImpl;
 
-    QList<HTMLGenericFormElementImpl> formElements;
+    QPtrList<HTMLGenericFormElementImpl> formElements;
     DOMString m_url;
     DOMString m_target;
     DOMString m_enctype;
@@ -403,12 +403,12 @@ public:
     // reverse of optionToListIndex - get optionIndex from listboxIndex
     int listToOptionIndex(int listIndex) const;
     void recalcListItems();
-    QArray<HTMLGenericFormElementImpl*> listItems() const { return m_listItems; }
+    QMemArray<HTMLGenericFormElementImpl*> listItems() const { return m_listItems; }
     virtual void reset();
     void notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected);
 
 protected:
-    QArray<HTMLGenericFormElementImpl*> m_listItems;
+    QMemArray<HTMLGenericFormElementImpl*> m_listItems;
     short m_minwidth;
     short m_size : 15;
     bool m_multiple : 1;

@@ -27,7 +27,7 @@
 #include "html/htmltokenizer.h"
 
 #include <qxml.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qvaluelist.h>
 
 namespace DOM {
@@ -118,8 +118,8 @@ protected:
     void addScripts(DOM::NodeImpl *n);
 
     QString m_xmlCode;
-    QList<HTMLScriptElementImpl> m_scripts;
-    QListIterator<HTMLScriptElementImpl> *m_scriptsIt;
+    QPtrList<HTMLScriptElementImpl> m_scripts;
+    QPtrListIterator<HTMLScriptElementImpl> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
 
 
