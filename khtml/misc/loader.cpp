@@ -792,13 +792,16 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #ifdef CACHE_DEBUG
             kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
 #endif
-                if(p->isNull())
-                {
-                    m_hadError = true;
-                    do_notify(pixmap(), QRect(0, 0, 16, 16)); // load "broken image" icon
-                }
-                else
-                    do_notify(*p, p->rect());
+            if(p->isNull())
+            {
+                m_hadError = true;
+                do_notify(pixmap(), QRect(0, 0, 16, 16)); // load "broken image" icon
+            }
+            else
+                do_notify(*p, p->rect());
+
+            for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
+                it()->notifyFinished( this );
         }
     }
 }

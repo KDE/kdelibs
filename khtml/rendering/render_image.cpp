@@ -213,7 +213,8 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
-    CachedImage* i = oimage ? oimage : image;
+    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
+                     ? oimage : image;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
     if ( !i || berrorPic)
@@ -378,9 +379,10 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
             false,false);
     }
 
-    if ( image == finishedObj && oimage ) {
+    if ( ( image == finishedObj || oimage == finishedObj ) && oimage ) {
         oimage->deref( this );
         oimage = 0;
+        repaint();
     }
 }
 
@@ -413,9 +415,11 @@ void RenderImage::updateImage(CachedImage* new_image)
     oimage = image;
     image = new_image;
     assert( image != oimage );
+
     if ( image != tempimage && image != oimage )
         image->ref(this);
-    if ( tempimage && image != tempimage && oimage != tempimage )
+
+    if (tempimage && image != tempimage && oimage != tempimage )
         tempimage->deref(this);
 
     berrorPic = image->isErrorImage();
@@ -431,7 +435,8 @@ void RenderImage::updateFromElement()
     DOMString u = element()->id() == ID_OBJECT ?
                   element()->getAttribute(ATTR_DATA) : element()->getAttribute(ATTR_SRC);
 
-    if (!u.isEmpty()) {
+    if (!u.isEmpty() &&
+        ( !image || image->url() != u ) ) {
         CachedImage *new_image = element()->getDocument()->docLoader()->
                                  requestImage(khtml::parseURL(u));
 

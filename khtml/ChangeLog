@@ -1,5 +1,12 @@
 2004-01-26  Dirk Mueller  <mueller@kde.org>
 
+	* misc/loader.cpp (data): correctly emit notifyFinished(), otherwise our
+	state machine goes out of sync.
+
+	* rendering/render_image.cpp: avoid shoot-out effect when neither oimage nor
+	image are fully loaded. do a repaint when the new image finished loading, so
+	that it actually updates. avoid reloading images on news.google.com on hover.
+
 	* khtmlview.cpp (scheduleRepaint): make scheduling not starvating repaints.
 	Fix repainting logic to optimize for reduced X server load and minimum CPU
 	usage in traversing the render tree (#72575).
