@@ -22,10 +22,11 @@
 //$Id$
 
 #ifndef __kaction_h__
-#define __kaction_h__ 
+#define __kaction_h__
 
 #include <qobject.h>
-#include <qdict.h>
+#include <qmap.h>
+#include <kaccel.h>
 
 class QMenuBar;
 class QPopupMenu;
@@ -34,15 +35,12 @@ class QPoint;
 class QIconSet;
 class QString;
 
-class KAccel;
 class KConfig;
 class KURL;
 class KInstance;
 class KToolBar;
 class KActionCollection;
 class KPopupMenu;
-
-struct KKeyEntry;
 
 /**
  * The KAction class (and derived and super classes) provides a way to
@@ -1325,6 +1323,8 @@ private:
 
 class KActionCollection : public QObject
 {
+  friend class KAction;
+
   Q_OBJECT
 public:
   KActionCollection( QObject *parent = 0, const char *name = 0, KInstance *instance = 0 );
@@ -1335,12 +1335,10 @@ public:
   virtual void remove( KAction* );
   virtual KAction* take( KAction* );
 
-  virtual void setKeyDict( QDict<KKeyEntry> entry );
-  virtual QDict<KKeyEntry>* keyDict();
-
-  virtual KAction* action( int index );
+  virtual KAction* action( int index ) const;
   virtual uint count() const;
-  virtual KAction* action( const char* name, const char* classname = 0, QObject* component = 0 ) const;
+  virtual KAction* action( const char* name, const char* classname = 0,
+                           QObject* component = 0 ) const;
 
   virtual QStringList groups() const;
   virtual QValueList<KAction*> actions( const QString& group ) const;
@@ -1349,6 +1347,9 @@ public:
   KActionCollection operator+ (const KActionCollection& ) const;
   KActionCollection& operator= (const KActionCollection& );
   KActionCollection& operator+= (const KActionCollection& );
+
+  virtual void setKeyMap( const KKeyEntryMap& map );
+  virtual KKeyEntryMap& keyMap();
 
   void setInstance( KInstance *instance );
   KInstance *instance() const;
@@ -1373,8 +1374,8 @@ private slots:
    void slotDestroyed();
 
 private:
-  class KActionCollectionPrivate;
-  KActionCollectionPrivate *d;
+   class KActionCollectionPrivate;
+   KActionCollectionPrivate *d;
 };
 
 #endif

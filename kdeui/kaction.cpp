@@ -39,6 +39,7 @@
 #include <kglobalsettings.h>
 #include <kcombobox.h>
 #include <kdebug.h>
+#include "kaccel_private.h"
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -274,17 +275,14 @@ void KAction::setAccel( int a )
   KActionCollection *coll = parentCollection();
   if (coll)
   {
-    QDict<KKeyEntry> *keys = coll->keyDict();
-    KKeyEntry *entry = keys->find( name() );
-    if (entry)
-    {
-      entry->aCurrentKeyCode = a;
-      keys->replace( name(), entry );
+    KKeyEntryMap& keys = coll->keyMap();
+    if (keys.contains(name())) {
+        keys[name()].aCurrentKeyCode = a;
     }
   }
 
   if (d->m_kaccel)
-    d->m_kaccel->updateItem(name(), a);
+      d->m_kaccel->updateItem(name(), a);
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setAccel( i, a );
@@ -555,13 +553,8 @@ void KAction::setText( const QString& text )
   KActionCollection *coll = parentCollection();
   if (coll)
   {
-    QDict<KKeyEntry> *keys = coll->keyDict();
-    KKeyEntry *entry = keys->find( name() );
-    if (entry)
-    {
-      entry->descr= plainText();
-      keys->replace( name(), entry );
-    }
+    KKeyEntryMap& keys = coll->keyMap();
+    keys[name()].descr = plainText();
   }
 }
 
@@ -2380,7 +2373,7 @@ public:
   QList<KAction> m_actions;
   QPtrDict< QList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
-  QDict<KKeyEntry> m_keyDict;
+  KKeyEntryMap m_keyMap;
 };
 
 KActionCollection::KActionCollection( QObject *parent, const char *name,
@@ -2396,7 +2389,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 {
   d = new KActionCollectionPrivate;
   d->m_actions = copy.d->m_actions;
-  d->m_keyDict = copy.d->m_keyDict;
+  d->m_keyMap = copy.d->m_keyMap;
   setInstance( copy.instance() );
 }
 
@@ -2428,21 +2421,21 @@ void KActionCollection::insert( KAction* action )
   d->m_actions.append( action );
   emit inserted( action );
 
-  KKeyEntry *entry = new KKeyEntry;
+  KKeyEntry entry;
 
-  entry->aDefaultKeyCode = action->accel();
-  entry->aCurrentKeyCode = action->accel();
-  entry->aConfigKeyCode  = action->accel();
-  entry->bConfigurable   = true;
-  entry->descr           = action->plainText();
+  entry.aDefaultKeyCode = action->accel();
+  entry.aCurrentKeyCode = action->accel();
+  entry.aConfigKeyCode  = action->accel();
+  entry.bConfigurable   = true;
+  entry.descr           = action->plainText();
 
-  entry->aAccelId = 0;
-  entry->receiver = 0;
-  entry->member   = 0;
-  entry->menuId   = 0;
-  entry->menu     = 0;
+  entry.aAccelId = 0;
+  entry.receiver = 0;
+  entry.member   = 0;
+  entry.menuId   = 0;
+  entry.menu     = 0;
 
-  d->m_keyDict.insert( action->name(), entry );
+  d->m_keyMap.insert( action->name(), entry );
 }
 
 void KActionCollection::remove( KAction* action )
@@ -2459,7 +2452,7 @@ KAction* KActionCollection::take( KAction* action )
     if ( action == a )
     {
       d->m_actions.remove( a );
-	  d->m_keyDict.remove( a->name() );
+	  d->m_keyMap.remove( a->name() );
       emit removed( action );
       return a;
     }
@@ -2482,29 +2475,27 @@ KAction* KActionCollection::action( const char* name, const char* classname,
   return 0;
 }
 
-KAction* KActionCollection::action( int index )
+KAction* KActionCollection::action( int index ) const
 {
   return d->m_actions.at( index );
 }
 
-void KActionCollection::setKeyDict( QDict<KKeyEntry> entry )
+void KActionCollection::setKeyMap( const KKeyEntryMap &map )
 {
-  d->m_keyDict = entry;
+  d->m_keyMap = map;
 
-  QDictIterator<KKeyEntry> it( entry );
-  for( ; it.current(); ++it )
-  {
-    if (it.current()->aCurrentKeyCode != it.current()->aConfigKeyCode)
+  for (KKeyEntryMap::ConstIterator it = map.begin(); it != map.end(); ++it) {
+    if ((*it).aCurrentKeyCode != (*it).aConfigKeyCode)
     {
-      KAction *act = action( it.currentKey().latin1() );
-      act->setAccel( it.current()->aConfigKeyCode );
+      KAction *act = action( it.key().latin1() );
+      act->setAccel( (*it).aConfigKeyCode );
     }
   }
 }
 
-QDict<KKeyEntry>* KActionCollection::keyDict()
+KKeyEntryMap & KActionCollection::keyMap()
 {
-  return &d->m_keyDict;
+  return d->m_keyMap;
 }
 
 uint KActionCollection::count() const
@@ -2565,7 +2556,7 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
 KActionCollection &KActionCollection::operator=( const KActionCollection &c )
 {
   d->m_actions = c.d->m_actions;
-  d->m_keyDict = c.d->m_keyDict;
+  d->m_keyMap = c.d->m_keyMap;
   setInstance( c.instance() );
   return *this;
 }

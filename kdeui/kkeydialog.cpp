@@ -40,6 +40,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <kglobalaccel.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlgui.h>
@@ -48,6 +49,229 @@
 #include "kkeydialog.h"
 
 #include <kaction.h>
+#include "kaccel_private.h"
+
+/**
+ *  A list box item for KSplitList.It uses two columns to display
+ *  action/key combination pairs.
+ *
+ *  @short A list box item for KSplitList.
+ */
+class KSplitListItem : public QObject, public QListBoxItem
+{
+  Q_OBJECT
+	
+public:
+
+  KSplitListItem( const QString& s , int _id = 0 );
+  ~KSplitListItem () {};
+  int getId() { return id; }
+
+protected:
+
+  virtual void paint( QPainter* );
+  virtual int height( const QListBox* ) const;
+  virtual int width( const QListBox* ) const;
+
+public slots:
+
+  void setWidth( int newWidth );
+
+protected:
+
+  int halfWidth;
+  QString keyName;
+  QString actionName;
+  int id;
+
+private:
+  class KSplitListItemPrivate;
+  KSplitListItemPrivate *d;
+};
+
+/**
+ *  A list box that can report its width to the items it
+ *  contains. Thus it can be used for multi column lists etc.
+ *
+ *  @short A list box capable of multi-columns
+ */
+class KSplitList: public KListBox
+{
+  Q_OBJECT
+
+public:
+
+  KSplitList( QWidget *parent = 0, const char *name = 0 );
+  ~KSplitList() { }
+  int getId(int index) { return ( (KSplitListItem*) ( item( index ) ) )->getId(); }
+  void setVisibleItems( int numItem );
+signals:
+
+  void newWidth( int newWidth );
+
+protected:
+
+  void resizeEvent( QResizeEvent * );
+  void paletteChange ( const QPalette & oldPalette );
+  void styleChange ( GUIStyle );
+
+private:
+  class KSplitListPrivate;
+  KSplitListPrivate *d;
+};
+
+/**
+ *  A push button that looks like a keyboard key.
+ *  @short A push button that looks like a keyboard key.
+ */
+class KKeyButton: public QPushButton
+{
+  Q_OBJECT
+  Q_PROPERTY( bool editing READ isEditing WRITE setEditing )
+
+public:
+
+  /**
+   * Constructs a key button widget.
+   */
+  KKeyButton( QWidget *parent=0, const char *name=0 );
+  /**
+   * Destructs the key button widget.
+   */
+  ~KKeyButton();
+  /**
+   * Reimplemented for internal purposes.
+   */
+  void setText( const QString& text );
+  /**
+   * Sets the widget into editing mode or not.
+   * In editing mode, the widget has a different
+   * look.
+   */
+  void setEditing(bool _editing);
+  /**
+   * @return whether the widget is in editing mode.
+   */
+  bool isEditing() const;
+
+protected:
+  /**
+   * Reimplemented for internal reasons.
+   */
+  void drawButton( QPainter* _painter );
+
+private:
+  bool editing;
+
+  class KKeyButtonPrivate;
+  KKeyButtonPrivate *d;
+};
+
+
+class KKeyChooserPrivate {
+public:
+    QDict<int> *globalDict;
+    QDict<int> *stdDict;
+    KKeyEntryMap::Iterator entryIt;
+    KSplitList *wList;
+    QLabel *lInfo;
+    QLabel *lNotConfig;
+    QLabel *actLabel;
+    QLabel *keyLabel;
+    KKeyButton *bChange;
+    QCheckBox *cShift;
+    QCheckBox *cCtrl;
+    QCheckBox *cAlt;
+    QGroupBox *fCArea;
+    QButtonGroup *kbGroup;
+    KKeyEntryMap *map;
+
+    bool bKeyIntercept;
+
+    int kbMode;
+};
+
+/**
+ * Configure dictionaries of key/action associations for KAccel and
+ * KGlobalAccel.
+ *
+ * The class takes care of all aspects of configuration, including
+ * handling key conflicts internally. Connect to the @ref allDefault()
+ * slot if you want to set all configurable keybindings to their
+ * default values.
+ *
+ * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
+ * @see KKeyDialog
+ * @version $Id$
+ * @author Nicolas Hadacek <hadacek@via.ecp.fr>
+
+ */
+class KKeyChooser : public QWidget
+{
+  Q_OBJECT
+
+public:
+
+  enum { NoKey = 1, DefaultKey, CustomKey };
+	
+  /**
+   * Constructor.
+   *
+   * @param aKeyDict A dictionary (@ref QMap) of key definitons.
+   **/
+  KKeyChooser( KKeyEntryMap *aKeyDict, QWidget* parent = 0,
+	       bool check_against_std_keys = false );
+  ~KKeyChooser();
+	
+  //  QDictIterator<KKeyEntry>* aIt;
+  //  QDictIterator<KKeyEntry>* aKeyIt;
+
+signals:
+  /**
+   * Emitted when a key definition has been changed.
+   **/
+  void keyChange();
+
+public slots:
+
+    /**
+     * Set all keys to their default values (bindings).
+     **/
+  void allDefault();
+  /**
+   * Synchronize the viewed split list with the currently used key codes.
+   **/
+  void listSync();
+
+protected slots:
+
+  void toChange( int _index );
+  void changeKey();
+  void updateAction( int _index );
+  void defaultKey();
+  void noKey();
+  void keyMode( int _mode );
+  void shiftClicked();
+  void ctrlClicked();
+  void altClicked();
+  void editKey();
+  void editEnd();
+  void readGlobalKeys();
+  void readStdKeys();
+
+protected:
+
+  void keyPressEvent( QKeyEvent* _event );
+  void fontChange( const QFont& _font );
+
+protected:
+
+  const QString item( int keyCode, const QString& entryKey );
+  bool isKeyPresent();
+  void setKey( int kCode );
+
+  KKeyChooserPrivate *d;
+};
 
 /*****************************************************************************/
 /* KSplitListItem                                                            */
@@ -233,7 +457,7 @@ void KKeyButton::drawButton( QPainter *painter )
     if( width() > 16 && height() > 12 )
       painter->drawRect( 8, 6, width() - 16, height() - 12 );
   }
-	
+
 }
 
 /************************************************************************/
@@ -247,31 +471,31 @@ void KKeyButton::drawButton( QPainter *painter )
 /* (by using KDialogBase there is almost no code left ;)                */
 /*                                                                      */
 /************************************************************************/
-KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
+KKeyDialog::KKeyDialog( KKeyEntryMap *aKeyMap, QWidget *parent,
 			bool check_against_std_keys)
   : KDialogBase( parent, 0, TRUE, i18n("Configure Key Bindings"),
 		 Help|Default|Ok|Cancel, Ok )
 {
-  KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
+  KKeyChooser *kc =  new KKeyChooser( aKeyMap, this, check_against_std_keys );
   setMainWidget(kc);
   connect( this, SIGNAL(defaultClicked()), kc, SLOT(allDefault()) );
   enableButton ( Help, false );
 }
 
-
+KKeyDialog::~KKeyDialog()
+{
+}
 
 int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
 			       QWidget *parent )
 {
-  QDict<KKeyEntry> dict = keys->keyDict();
-  KKeyDialog *kd = new KKeyDialog( &dict, parent );
-  CHECK_PTR( kd );
-  int retcode = kd->exec();
-  delete kd;
+  KKeyEntryMap map = keys->keyDict();
+  KKeyDialog kd( &map, parent );
+  int retcode = kd.exec();
 
   if( retcode == Accepted )
   {
-    keys->setKeyDict( dict );
+    keys->setKeyDict( map );
     if (save_settings)
       keys->writeSettings();
   }
@@ -281,12 +505,10 @@ int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
 int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings,
 			       QWidget *parent )
 {
-  QDict<KKeyEntry> dict = keys->keyDict();
+  KKeyEntryMap dict = keys->keyDict();
 
-  KKeyDialog *kd = new KKeyDialog( &dict, parent );
-  CHECK_PTR( kd );
-  int retcode = kd->exec();
-  delete kd;
+  KKeyDialog kd( &dict, parent );
+  int retcode = kd.exec();
 
   if( retcode == Accepted )
   {
@@ -300,19 +522,17 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings,
 int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
                                bool save_settings, QWidget *parent )
 {
-  QDict<KKeyEntry> *dict = coll->keyDict();
+  KKeyEntryMap map = coll->keyMap();
 
-  KKeyDialog *kd = new KKeyDialog( dict, parent );
-  CHECK_PTR( kd );
-  int retcode = kd->exec();
-  delete kd;
+  KKeyDialog kd( &map, parent );
+  int retcode = kd.exec();
 
   if( retcode != Accepted )
     return retcode;
 
   if (!save_settings)
   {
-    coll->setKeyDict( *dict );
+    coll->setKeyMap( map );
     return retcode;
   }
 
@@ -351,8 +571,8 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
     KAction *action = coll->action(i);
 
     // see if we changed
-    KKeyEntry *key = (*dict)[action->name()];
-    if (key->aCurrentKeyCode == key->aConfigKeyCode)
+    KKeyEntry key = map[action->name()];
+    if (key.aCurrentKeyCode == key.aConfigKeyCode)
       continue;
 
     // now see if this element already exists
@@ -373,7 +593,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
       act_elem.setAttribute( attrName, action->name() );
     }
     act_elem.setAttribute( attrAccel,
-                           KAccel::keyToString( key->aConfigKeyCode ) );
+                           KAccel::keyToString( key.aConfigKeyCode ) );
 
     elem.appendChild( act_elem );
   }
@@ -381,20 +601,21 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
   // finally, write out the result
   KXMLGUIFactory::saveConfigFile(doc, file);
 
-  coll->setKeyDict( *dict );
+  coll->setKeyMap( map );
 
   return retcode;
 }
 
-KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
+KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
 			  bool check_against_std_keys)
   : QWidget( parent )
 {
 
-  bKeyIntercept = FALSE;
-  kbMode = NoKey;
+  d = new KKeyChooserPrivate();
 
-  aKeyIt = new QDictIterator<KKeyEntry> ( *aKeyDict );
+  d->bKeyIntercept = FALSE;
+  d->kbMode = NoKey;
+  d->map = aKeyMap;
 
   //
   // TOP LAYOUT MANAGER
@@ -419,74 +640,72 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   // Copy all currentKeyCodes to configKeyCodes
   // and fill up the split list box with the action/key pairs.
   //
-  wList = new KSplitList( this );
-  wList->setVisibleItems( 5 );
-  wList->setAutoUpdate(FALSE);
-  wList->setFocus();
-  stackLayout->addMultiCellWidget( wList, 1, 1, 0, 1 );
+  d->wList = new KSplitList( this );
+  d->wList->setVisibleItems( 5 );
+  d->wList->setAutoUpdate(FALSE);
+  d->wList->setFocus();
+  stackLayout->addMultiCellWidget( d->wList, 1, 1, 0, 1 );
   QString wtstr = i18n("Here you can see a list of key bindings, i.e. associations between"
     " actions (e.g. 'Copy') shown in the left column and keys or combination of keys (e.g. CTRL-V)"
     " shown in the right column.");
 
-  QWhatsThis::add( wList, wtstr );
+  QWhatsThis::add( d->wList, wtstr );
 
   //
   // CREATE LIST LABELS
   //
-  actLabel = new QLabel( wList, i18n("&Action"), this );
-  stackLayout->addWidget(actLabel, 0, 0);
+  d->actLabel = new QLabel( d->wList, i18n("&Action"), this );
+  stackLayout->addWidget(d->actLabel, 0, 0);
 
-  keyLabel = new QLabel( i18n("Current key"), this );
-  stackLayout->addWidget(keyLabel, 0, 1);
+  d->keyLabel = new QLabel( i18n("Current key"), this );
+  stackLayout->addWidget(d->keyLabel, 0, 1);
 
-  QWhatsThis::add( actLabel, wtstr );
-  QWhatsThis::add( keyLabel, wtstr );
+  QWhatsThis::add( d->actLabel, wtstr );
+  QWhatsThis::add( d->keyLabel, wtstr );
 
   //
   // Add all "keys" to the list
   //
-  aIt = aKeyIt;
-  aIt->toFirst();
   int id = 0;
-  while ( aIt->current() )
+  for (KKeyEntryMap::Iterator it = aKeyMap->begin();
+       it != aKeyMap->end(); ++it)
   {
-    aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
+    (*it).aConfigKeyCode = (*it).aCurrentKeyCode;
 
     KSplitListItem *sli = new KSplitListItem(
-      item( aIt->current()->aConfigKeyCode, aIt->current()->descr ), id);
+      item( (*it).aConfigKeyCode, (*it).descr ), id);
 
-    connect( wList, SIGNAL( newWidth( int ) ),sli, SLOT( setWidth( int ) ) );
-    wList->inSort( sli );
+    connect( d->wList, SIGNAL( newWidth( int ) ),sli, SLOT( setWidth( int ) ) );
+    d->wList->inSort( sli );
 
-    ++ ( *aIt );
     ++id;
   }
 
   //
   // Make sure there is no horizontal scrollbar on startup
   //
-  wList->setMinimumWidth( wList->sizeHint().width() +
-			  wList->verticalScrollBar()->sizeHint().width() +
-			  wList->lineWidth() * 2 );
+  d->wList->setMinimumWidth( d->wList->sizeHint().width() +
+			  d->wList->verticalScrollBar()->sizeHint().width() +
+			  d->wList->lineWidth() * 2 );
 
 
-  if ( wList->count() == 0 ) wList->setEnabled( FALSE );
-  //connect( wList, SIGNAL( selected( int ) ), SLOT( toChange( int ) ) );
-  connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
+  if ( d->wList->count() == 0 ) d->wList->setEnabled( FALSE );
+  //connect( d->wList, SIGNAL( selected( int ) ), SLOT( toChange( int ) ) );
+  connect( d->wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
 
   //
   // CREATE CHOOSE KEY GROUP
   //
-  fCArea = new QGroupBox( this );
-  topLayout->addWidget( fCArea, 1 );
+  d->fCArea = new QGroupBox( this );
+  topLayout->addWidget( d->fCArea, 1 );
 
-  fCArea->setTitle( i18n("Choose a key for the selected action") );
-  fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
+  d->fCArea->setTitle( i18n("Choose a key for the selected action") );
+  d->fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
 
   //
   // CHOOSE KEY GROUP LAYOUT MANAGER
   //
-  QGridLayout *grid = new QGridLayout( fCArea, 6, 4, KDialog::spacingHint() );
+  QGridLayout *grid = new QGridLayout( d->fCArea, 6, 4, KDialog::spacingHint() );
   grid->setRowStretch(0,10);
   grid->setRowStretch(1,10);
   grid->setRowStretch(2,10);
@@ -503,23 +722,23 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   grid->addRowSpacing(5,1);
 
 
-  kbGroup = new QButtonGroup( fCArea );
-  kbGroup->hide();
-  kbGroup->setExclusive( true );
+  d->kbGroup = new QButtonGroup( d->fCArea );
+  d->kbGroup->hide();
+  d->kbGroup->setExclusive( true );
 
-  QRadioButton *rb = new QRadioButton( i18n("&No key"), fCArea );
-  kbGroup->insert( rb, NoKey );
+  QRadioButton *rb = new QRadioButton( i18n("&No key"), d->fCArea );
+  d->kbGroup->insert( rb, NoKey );
   grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
   QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
 
-  rb = new QRadioButton( i18n("&Default key"), fCArea );
-  kbGroup->insert( rb, DefaultKey );
+  rb = new QRadioButton( i18n("&Default key"), d->fCArea );
+  d->kbGroup->insert( rb, DefaultKey );
   grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
   QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
 
-  rb = new QRadioButton( i18n("&Custom key"), fCArea );
-  kbGroup->insert( rb, CustomKey );
-  connect( kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
+  rb = new QRadioButton( i18n("&Custom key"), d->fCArea );
+  d->kbGroup->insert( rb, CustomKey );
+  connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
   grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
   QWhatsThis::add( rb, i18n("If this option is selected you can create a customized key binding for the"
     " selected action using the buttons below.") );
@@ -527,139 +746,138 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
   grid->addLayout( pushLayout, 4, 2 );
 
-  cShift = new QCheckBox( fCArea );
-  cShift->setText( QString::fromLatin1("SHIFT") );
-  cShift->setEnabled( FALSE );
-  connect( cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
+  d->cShift = new QCheckBox( d->fCArea );
+  d->cShift->setText( QString::fromLatin1("SHIFT") );
+  d->cShift->setEnabled( FALSE );
+  connect( d->cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
 
-  cCtrl = new QCheckBox( fCArea );
-  cCtrl->setText( QString::fromLatin1("CTRL") );
-  cCtrl->setEnabled( FALSE );
-  connect( cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
+  d->cCtrl = new QCheckBox( d->fCArea );
+  d->cCtrl->setText( QString::fromLatin1("CTRL") );
+  d->cCtrl->setEnabled( FALSE );
+  connect( d->cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
 
-  cAlt = new QCheckBox( fCArea );
-  cAlt->setText( QString::fromLatin1("ALT") );
-  cAlt->setEnabled( FALSE );
-  connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
+  d->cAlt = new QCheckBox( d->fCArea );
+  d->cAlt->setText( QString::fromLatin1("ALT") );
+  d->cAlt->setEnabled( FALSE );
+  connect( d->cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
 
-  bChange = new KKeyButton(fCArea, "key");
-  bChange->setEnabled( FALSE );
-  connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
+  d->bChange = new KKeyButton(d->fCArea, "key");
+  d->bChange->setEnabled( FALSE );
+  connect( d->bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
 
   wtstr = i18n("If 'Custom key' is selected, you can set a combination of keys here. Click on"
     " the rightmost button once and then press a key to select it for this binding. You can"
     " check the SHIFT, CTRL and ALT boxes to combine the selected key with modifier keys.");
-  QWhatsThis::add( cShift, wtstr );
-  QWhatsThis::add( cCtrl, wtstr );
-  QWhatsThis::add( cAlt, wtstr );
-  QWhatsThis::add( bChange, wtstr );
+  QWhatsThis::add( d->cShift, wtstr );
+  QWhatsThis::add( d->cCtrl, wtstr );
+  QWhatsThis::add( d->cAlt, wtstr );
+  QWhatsThis::add( d->bChange, wtstr );
 
   //
   // Add widgets to the geometry manager
   //
-  pushLayout->addWidget( cShift );
-  pushLayout->addWidget( cCtrl );
-  pushLayout->addWidget( cAlt );
+  pushLayout->addWidget( d->cShift );
+  pushLayout->addWidget( d->cCtrl );
+  pushLayout->addWidget( d->cAlt );
   pushLayout->addSpacing( KDialog::spacingHint()*2 );
-  pushLayout->addWidget( bChange );
+  pushLayout->addWidget( d->bChange );
   pushLayout->addStretch( 10 );
 
 
-  lNotConfig = new QLabel(fCArea);
-  lNotConfig->resize(0,0);
+  d->lNotConfig = new QLabel(d->fCArea);
+  d->lNotConfig->resize(0,0);
   QFont f = KGlobalSettings::generalFont();
   f.setPointSize(f.pointSize()+2);
   f.setBold(true);
-  lNotConfig->setFont( f );
-  lNotConfig->setAlignment( AlignCenter );
-  lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-  if ( wList->count()==0 )
-    lNotConfig->setText( i18n("No keys defined") );
+  d->lNotConfig->setFont( f );
+  d->lNotConfig->setAlignment( AlignCenter );
+  d->lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  if ( d->wList->count()==0 )
+    d->lNotConfig->setText( i18n("No keys defined") );
   else
   {
-    lNotConfig->setText( i18n("Not configurable") );
-    lNotConfig->hide();
+    d->lNotConfig->setText( i18n("Not configurable") );
+    d->lNotConfig->hide();
   }
-  lNotConfig->hide();
+  d->lNotConfig->hide();
 
-  lInfo = new QLabel(fCArea);
+  d->lInfo = new QLabel(d->fCArea);
   resize(0,0);
-  lInfo->setAlignment( AlignCenter );
-  lInfo->setEnabled( FALSE );
-  lInfo->hide();
+  d->lInfo->setAlignment( AlignCenter );
+  d->lInfo->setEnabled( FALSE );
+  d->lInfo->hide();
 	
-  wList->setAutoUpdate(TRUE);
-  wList->update();
+  d->wList->setAutoUpdate(TRUE);
+  d->wList->update();
 	
-  globalDict = new QDict<int> ( 100, false );
-  globalDict->setAutoDelete( true );
+  d->globalDict = new QDict<int> ( 100, false );
+  d->globalDict->setAutoDelete( true );
   readGlobalKeys();
-  stdDict = new QDict<int> ( 100, false );
-  stdDict->setAutoDelete( true );
+  d->stdDict = new QDict<int> ( 100, false );
+  d->stdDict->setAutoDelete( true );
   if (check_against_std_keys)
     readStdKeys();
-  wList->setCurrentItem( 0 );
+  d->wList->setCurrentItem( 0 );
 }
 
 
 
 KKeyChooser::~KKeyChooser()
 {
+  delete d->globalDict;
+  delete d->stdDict;
+  delete d->wList;
+  delete d;
 }
 
 void KKeyChooser::updateAction( int index )
 {
-	aIt->toFirst();
-	
-	(*aIt) += wList->getId(index);
-	sEntryKey = aIt->currentKey();
-	pEntry = aIt->current();
-	
-	if ( pEntry->aConfigKeyCode == 0 )
-		kbMode = NoKey;
-	else if ( pEntry->aConfigKeyCode == pEntry->aDefaultKeyCode )
-		kbMode = DefaultKey;
-	else kbMode = CustomKey;
+  KKeyEntryMap::ConstIterator it = d->map->begin();
+  int n = d->wList->getId(index);
+  while (n) { n--; ++it; }
 
-	toChange( index );
+  if ( (*it).aConfigKeyCode == 0 )
+    d->kbMode = NoKey;
+  else if ( (*it).aConfigKeyCode == (*it).aDefaultKeyCode )
+    d->kbMode = DefaultKey;
+  else d->kbMode = CustomKey;
+
+  toChange( index );
 }
 
 void KKeyChooser::readGlobalKeys()
 {
   //debug("KKeyChooser::readGlobalKeys()");
 
-  globalDict->clear();
+  d->globalDict->clear();
 
 
-  // Insert all global keys into globalDict
+  // Insert all global keys into d->globalDict
   int *keyCode;
   KConfig pConfig;
   QMap<QString, QString> tmpMap = pConfig.entryMap(i18n("Global Keys"));
   QMap<QString, QString>::Iterator gIt(tmpMap.begin());
   for (; gIt != tmpMap.end(); ++gIt) {
     keyCode = new int;
-	  *keyCode = KAccel::stringToKey( *gIt );
-	  globalDict->insert( gIt.key(), keyCode);
+    *keyCode = KAccel::stringToKey( *gIt );
+    d->globalDict->insert( gIt.key(), keyCode);
   }
 
   // Only insert global keys which don't appear in the dictionary to be configured
-  aIt->toFirst();
-  while ( aIt->current() ) {
-    if ( globalDict->find( aIt->currentKey() ) ) {
-      globalDict->remove( aIt->currentKey());
-    }
-    ++ ( *aIt );
-  }
+  for (KKeyEntryMap::ConstIterator it = d->map->begin();
+       it != d->map->end(); ++it)
+    if ( d->globalDict->find( it.key() ))
+      d->globalDict->remove( it.key() );
 }
 
 void KKeyChooser::readStdKeys()
 {
   // debug("KKeyChooser::readStdKeys()");
 
-  stdDict->clear();
+  d->stdDict->clear();
 
 
-  // Insert all standard keys into globalDict
+  // Insert all standard keys into d->globalDict
   int *keyCode;
   KConfig pConfig;
   QMap<QString, QString> tmpMap = pConfig.entryMap(i18n("Keys"));
@@ -667,117 +885,111 @@ void KKeyChooser::readStdKeys()
   for (; sIt != tmpMap.end(); ++sIt) {
     keyCode = new int;
     *keyCode = KAccel::stringToKey( *sIt );
-    stdDict->insert( sIt.key(), keyCode);
+    d->stdDict->insert( sIt.key(), keyCode);
   }
 
   // Only insert std keys which don't appear in the dictionary to be configured
-  aIt->toFirst();
-  while ( aIt->current() ) {
-    if ( stdDict->find( aIt->currentKey() ) ) {
-      stdDict->remove( aIt->currentKey());
-    }
-    ++ ( *aIt );
-  }
+  for (KKeyEntryMap::ConstIterator it = d->map->begin();
+       it != d->map->end(); ++it)
+    if ( d->stdDict->find( it.key() ) )
+      d->stdDict->remove( it.key() );
 }
 
 void KKeyChooser::toChange( int index )
 {
-	bKeyIntercept = FALSE;
+	d->bKeyIntercept = FALSE;
 	
 	/* get the entry */
-	aIt->toFirst();
-	(*aIt) += wList->getId(index);
+        KKeyEntryMap::Iterator it = d->map->begin();
+        int n = d->wList->getId(index);
+        while (n) { n--; ++it; }
 
-	sEntryKey = aIt->currentKey();
-	pEntry = aIt->current();
-	
-	//eKey->setEnabled( FALSE );
-	
+	d->entryIt = it;
 	/* Is the key configurable or has the user turned it off ? */
-	if ( !pEntry->bConfigurable || kbMode == NoKey ) {
-		lInfo->setEnabled( FALSE );
-		cShift->setEnabled( FALSE ); cCtrl->setEnabled( FALSE ); cAlt->setEnabled( FALSE );
-		bChange->setEnabled( FALSE );  //bDefault->setEnabled( FALSE );
-		lNotConfig->setEnabled( TRUE );
+	if ( !(*it).bConfigurable || d->kbMode == NoKey ) {
+		d->lInfo->setEnabled( FALSE );
+		d->cShift->setEnabled( FALSE ); d->cCtrl->setEnabled( FALSE ); d->cAlt->setEnabled( FALSE );
+		d->bChange->setEnabled( FALSE );  //bDefault->setEnabled( FALSE );
+		d->lNotConfig->setEnabled( TRUE );
 		
-		int kCode = pEntry->aConfigKeyCode;
+		int kCode = (*it).aConfigKeyCode;
 		int kSCode = kCode & ~(SHIFT | CTRL | ALT);
 		
-		if ( kSCode == Key_Shift ) cShift->setChecked(FALSE);
-		else cShift->setChecked( kCode & SHIFT );
-		if ( kSCode == Key_Control ) cCtrl->setChecked(FALSE);
-		else cCtrl->setChecked( kCode & CTRL );
-		if ( kSCode == Key_Alt ) cAlt->setChecked(FALSE);
-		else cAlt->setChecked( kCode & ALT );
+		if ( kSCode == Key_Shift ) d->cShift->setChecked(FALSE);
+		else d->cShift->setChecked( kCode & SHIFT );
+		if ( kSCode == Key_Control ) d->cCtrl->setChecked(FALSE);
+		else d->cCtrl->setChecked( kCode & CTRL );
+		if ( kSCode == Key_Alt ) d->cAlt->setChecked(FALSE);
+		else d->cAlt->setChecked( kCode & ALT );
 		
 		QString str = KAccel::keyToString( kSCode );
-		bChange->setText(str);
+		d->bChange->setText(str);
 		
 	} else {
-		lNotConfig->setEnabled( FALSE );
-		lInfo->setText(QString::null); lInfo->setEnabled( TRUE );
+		d->lNotConfig->setEnabled( FALSE );
+		d->lInfo->setText(QString::null); d->lInfo->setEnabled( TRUE );
 		
-		int kCode = pEntry->aConfigKeyCode;
+		int kCode = (*it).aConfigKeyCode;
 		int kSCode = kCode & ~(SHIFT | CTRL | ALT);
 		
-		//cShift->setEnabled( TRUE ); cCtrl->setEnabled( TRUE ); cAlt->setEnabled( TRUE );
-		if ( kSCode == Key_Shift ) cShift->setChecked(FALSE);
-		else cShift->setChecked( kCode & SHIFT );
-		if ( kSCode == Key_Control ) cCtrl->setChecked(FALSE);
-		else cCtrl->setChecked( kCode & CTRL );
-		if ( kSCode == Key_Alt ) cAlt->setChecked(FALSE);
-		else cAlt->setChecked( kCode & ALT );
+		//d->cShift->setEnabled( TRUE ); d->cCtrl->setEnabled( TRUE ); d->cAlt->setEnabled( TRUE );
+		if ( kSCode == Key_Shift ) d->cShift->setChecked(FALSE);
+		else d->cShift->setChecked( kCode & SHIFT );
+		if ( kSCode == Key_Control ) d->cCtrl->setChecked(FALSE);
+		else d->cCtrl->setChecked( kCode & CTRL );
+		if ( kSCode == Key_Alt ) d->cAlt->setChecked(FALSE);
+		else d->cAlt->setChecked( kCode & ALT );
 		
 		QString str = KAccel::keyToString( kSCode );
-		bChange->setText(str); //eKey->setText(str);
-		//bChange->setEnabled( TRUE ); //bDefault->setEnabled( TRUE );
+		d->bChange->setText(str); //eKey->setText(str);
+		//d->bChange->setEnabled( TRUE ); //bDefault->setEnabled( TRUE );
 		
 		if ( isKeyPresent() ) {
-			lInfo->setText(i18n("Attention : key already used") );
+			d->lInfo->setText(i18n("Attention : key already used") );
 		}
 		
-		if ( kbMode == DefaultKey ) {
-			cAlt->setEnabled( false );
-			cShift->setEnabled( false );
-			cCtrl->setEnabled( false );
-			bChange->setEnabled( false );
+		if ( d->kbMode == DefaultKey ) {
+			d->cAlt->setEnabled( false );
+			d->cShift->setEnabled( false );
+			d->cCtrl->setEnabled( false );
+			d->bChange->setEnabled( false );
 		} else {
-			cAlt->setEnabled( true );
-			cShift->setEnabled( true );
-			cCtrl->setEnabled( true );
-			bChange->setEnabled( true );
+			d->cAlt->setEnabled( true );
+			d->cShift->setEnabled( true );
+			d->cCtrl->setEnabled( true );
+			d->bChange->setEnabled( true );
 		}
 	}
 		
-	((QRadioButton *)kbGroup->find(NoKey))->setChecked( kbMode == NoKey );
-	((QRadioButton *)kbGroup->find(DefaultKey))->setChecked( kbMode == DefaultKey );
-	((QRadioButton *)kbGroup->find(CustomKey))->setChecked( kbMode == CustomKey );
+	((QRadioButton *)d->kbGroup->find(NoKey))->setChecked( d->kbMode == NoKey );
+	((QRadioButton *)d->kbGroup->find(DefaultKey))->setChecked( d->kbMode == DefaultKey );
+	((QRadioButton *)d->kbGroup->find(CustomKey))->setChecked( d->kbMode == CustomKey );
 	
-	if ( !pEntry->bConfigurable ) {
-		cAlt->setEnabled( false );
-		cShift->setEnabled( false );
-		cCtrl->setEnabled( false );
-		bChange->setEnabled( false );
-		((QRadioButton *)kbGroup->find(NoKey))->setEnabled( false );
-		((QRadioButton *)kbGroup->find(DefaultKey))->setEnabled( false );
-		((QRadioButton *)kbGroup->find(CustomKey))->setEnabled( false );
+	if ( !(*it).bConfigurable ) {
+		d->cAlt->setEnabled( false );
+		d->cShift->setEnabled( false );
+		d->cCtrl->setEnabled( false );
+		d->bChange->setEnabled( false );
+		((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( false );
+		((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( false );
+		((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( false );
 	} else {
-		((QRadioButton *)kbGroup->find(NoKey))->setEnabled( true );
-		((QRadioButton *)kbGroup->find(DefaultKey))->setEnabled( pEntry->aDefaultKeyCode != 0);
-		((QRadioButton *)kbGroup->find(CustomKey))->setEnabled( true );
+		((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( true );
+		((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( (*it).aDefaultKeyCode != 0);
+		((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( true );
 	}	
 }
 
 void KKeyChooser::fontChange( const QFont & )
 {
-	actLabel->setFixedHeight( actLabel->sizeHint().height() );
-	keyLabel->setFixedHeight( keyLabel->sizeHint().height() );
+	d->actLabel->setFixedHeight( d->actLabel->sizeHint().height() );
+	d->keyLabel->setFixedHeight( d->keyLabel->sizeHint().height() );
 
-	cAlt->setFixedHeight( bChange->sizeHint().height() );
-	cShift->setFixedHeight( bChange->sizeHint().height() );
-	cCtrl->setFixedHeight( bChange->sizeHint().height() );
+	d->cAlt->setFixedHeight( d->bChange->sizeHint().height() );
+	d->cShift->setFixedHeight( d->bChange->sizeHint().height() );
+	d->cCtrl->setFixedHeight( d->bChange->sizeHint().height() );
 	
-	fCArea->setMinimumHeight( 4*bChange->sizeHint().height() );
+	d->fCArea->setMinimumHeight( 4*d->bChange->sizeHint().height() );
 	
 	int widget_width = 0;
 	
@@ -786,8 +998,8 @@ void KKeyChooser::fontChange( const QFont & )
 
 void KKeyChooser::keyMode( int m )
 {
-	kbMode = m;
-	switch( kbMode ) {
+	d->kbMode = m;
+	switch( d->kbMode ) {
 		case NoKey:
 			noKey();
 			break;
@@ -795,61 +1007,59 @@ void KKeyChooser::keyMode( int m )
 			defaultKey();
 			break;
 		case CustomKey: default:
-			toChange( wList->currentItem() );
+			toChange( d->wList->currentItem() );
 			break;
 	}
 }
 
 void KKeyChooser::noKey()
 {
-  if (!pEntry)
-    return;
-	pEntry->aConfigKeyCode = 0;
+       (*d->entryIt).aConfigKeyCode = 0;
 	
 	/* update the list and the change area */
 	
 	KSplitListItem *sli = new KSplitListItem(
-		 item(pEntry->aConfigKeyCode, pEntry->descr),
-		 wList->getId(wList->currentItem() )
+		 item((*d->entryIt).aConfigKeyCode, (*d->entryIt).descr),
+		 d->wList->getId(d->wList->currentItem() )
 	);
 		
-	//connect( wList, SIGNAL( newWidth( int ) ),
+	//connect( d->wList, SIGNAL( newWidth( int ) ),
 	//		 	sli, SLOT( setWidth( int ) ) );
 				
-	sli->setWidth( wList->width() );
+	sli->setWidth( d->wList->width() );
 	
-	if ( bChange->isEditing() )
-            bChange->setEditing(false);
+	if ( d->bChange->isEditing() )
+            d->bChange->setEditing(false);
 
-	wList->changeItem( sli, wList->currentItem()  );
-	toChange(wList->currentItem());
+	d->wList->changeItem( sli, d->wList->currentItem()  );
+	toChange(d->wList->currentItem());
 	emit keyChange();
 }
 
 void KKeyChooser::defaultKey()
 {
-  if (!pEntry)
+  if (!d->entryIt.node)
     return;
 	/* change the configKeyCode */
-	pEntry->aConfigKeyCode = pEntry->aDefaultKeyCode;
+	(*d->entryIt).aConfigKeyCode = (*d->entryIt).aDefaultKeyCode;
 	
 	/* update the list and the change area */
 	
 	KSplitListItem *sli = new KSplitListItem(
-		 item(pEntry->aConfigKeyCode, pEntry->descr),
-		 wList->getId(wList->currentItem())
+		 item((*d->entryIt).aConfigKeyCode, (*d->entryIt).descr),
+		 d->wList->getId(d->wList->currentItem())
 	);
 		
-	//connect( wList, SIGNAL( newWidth( int ) ),
+	//connect( d->wList, SIGNAL( newWidth( int ) ),
 	//		 	sli, SLOT( setWidth( int ) ) );
 				
-	sli->setWidth( wList->width() );
+	sli->setWidth( d->wList->width() );
 
-	if ( bChange->isEditing() )
-            bChange->setEditing(false);
+	if ( d->bChange->isEditing() )
+            d->bChange->setEditing(false);
 
-	wList->changeItem( sli, wList->currentItem()  );
-	toChange(wList->currentItem());
+	d->wList->changeItem( sli, d->wList->currentItem()  );
+	toChange(d->wList->currentItem());
 	emit keyChange();
 }
 
@@ -857,71 +1067,71 @@ void KKeyChooser::allDefault()
 {
 	// Change all configKeyCodes to default values
 	
-	//int idx = wList->currentItem();
+	//int idx = d->wList->currentItem();
 
-	disconnect( wList, SIGNAL( highlighted( int ) ),
+	disconnect( d->wList, SIGNAL( highlighted( int ) ),
 		this, SLOT( updateAction( int ) ) );
-	wList->setAutoUpdate(FALSE);
-	wList->clear();
+	d->wList->setAutoUpdate(FALSE);
+	d->wList->clear();
 	
-	aIt->toFirst();
-	int id = 0;
-	while ( aIt->current() ) {
-		if ( aIt->current()->bConfigurable )
-			aIt->current()->aConfigKeyCode = aIt->current()->aDefaultKeyCode;
-		
-		KSplitListItem *sli = new KSplitListItem(
-		 	item(aIt->current()->aConfigKeyCode, aIt->current()->descr),
-			id);
+        int id = 0;
+        for (KKeyEntryMap::Iterator it = d->map->begin();
+             it != d->map->end(); ++it) {
+            if ( (*it).bConfigurable )
+                (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
 
-		connect( wList, SIGNAL( newWidth( int ) ),
-				 sli, SLOT( setWidth( int ) ) );
-				
-		sli->setWidth( wList->width() );
-		
-		wList->inSort( sli );
-		
-		++(*aIt);
-		++id;
+            KSplitListItem *sli =
+                new KSplitListItem(
+                                   item((*it).aConfigKeyCode, (*it).descr),
+                                   id);
+
+            connect( d->wList, SIGNAL( newWidth( int ) ),
+                     sli, SLOT( setWidth( int ) ) );
+
+            sli->setWidth( d->wList->width() );
+
+            d->wList->inSort( sli );
+
+            ++id;
 	}
 	
-	connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
-	wList->setAutoUpdate( true );
-	wList->update();
-	wList->setCurrentItem( 0 );
+	connect( d->wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
+	d->wList->setAutoUpdate( true );
+	d->wList->update();
+	d->wList->setCurrentItem( 0 );
 	emit keyChange();
 }
 
 void KKeyChooser::listSync()
 {
-	disconnect( wList, SIGNAL( highlighted( int ) ),
+	disconnect( d->wList, SIGNAL( highlighted( int ) ),
 		this, SLOT( updateAction( int ) ) );
-	wList->setAutoUpdate(FALSE);
-	wList->clear();
+	d->wList->setAutoUpdate(FALSE);
+	d->wList->clear();
 	
-	aIt->toFirst();
 	int id = 0;
-	while ( aIt->current() ) {
+        for (KKeyEntryMap::Iterator it = d->map->begin();
+             it != d->map->end(); ++it) {
 		
-		KSplitListItem *sli = new KSplitListItem(
-		 	item(aIt->current()->aCurrentKeyCode, aIt->current()->descr),
-			id);
+            KSplitListItem *sli =
+                new KSplitListItem(
+                                   item((*it).aCurrentKeyCode, (*it).descr),
+                                   id);
 
-		connect( wList, SIGNAL( newWidth( int ) ),
-				 sli, SLOT( setWidth( int ) ) );
-				
-		sli->setWidth( wList->width() );
-		
-		wList->inSort( sli );
-		
-		++(*aIt);
-		++id;
+            connect( d->wList, SIGNAL( newWidth( int ) ),
+                     sli, SLOT( setWidth( int ) ) );
+
+            sli->setWidth( d->wList->width() );
+
+            d->wList->inSort( sli );
+
+            ++id;
 	}
 	
-	connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
-	wList->setAutoUpdate( true );
-	wList->update();
-	wList->setCurrentItem( 0 );
+	connect( d->wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
+	d->wList->setAutoUpdate( true );
+	d->wList->update();
+	d->wList->setCurrentItem( 0 );
 }
 
 const QString KKeyChooser::item( int keyCode, const QString& entryKey )
@@ -937,107 +1147,107 @@ const QString KKeyChooser::item( int keyCode, const QString& entryKey )
 
 void KKeyChooser::shiftClicked()
 {
-  if (!pEntry)
+  if (!d->entryIt.node)
     return;
-	int kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
+	int kSCode = (*d->entryIt).aConfigKeyCode & ~(SHIFT | CTRL | ALT);
 	if ( kSCode != Key_Shift ) {
-		if ( cShift->isOn() )
-			pEntry->aConfigKeyCode |= SHIFT;
+		if ( d->cShift->isOn() )
+			(*d->entryIt).aConfigKeyCode |= SHIFT;
 		else
-			pEntry->aConfigKeyCode &= ~SHIFT;
+			(*d->entryIt).aConfigKeyCode &= ~SHIFT;
 			
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(pEntry->aConfigKeyCode, pEntry->descr),
-			wList->getId(wList->currentItem() )
+		 	item((*d->entryIt).aConfigKeyCode, (*d->entryIt).descr),
+			d->wList->getId(d->wList->currentItem() )
 		);
 		
-		connect( wList, SIGNAL( newWidth( int ) ),
+		connect( d->wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
 				
 					
-		sli->setWidth( wList->width() );
+		sli->setWidth( d->wList->width() );
 		
-		wList->changeItem( sli, wList->currentItem() );
+		d->wList->changeItem( sli, d->wList->currentItem() );
 	}
-	toChange(wList->currentItem());
+	toChange(d->wList->currentItem());
 	emit keyChange();
 }
 
 void KKeyChooser::ctrlClicked()
 {
-  if (!pEntry)
+  if (!d->entryIt.node)
     return;
-	int kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
+	int kSCode = (*d->entryIt).aConfigKeyCode & ~(SHIFT | CTRL | ALT);
 	if ( kSCode != Key_Control ) {
-		if ( cCtrl->isOn() )
-			pEntry->aConfigKeyCode |= CTRL;
+		if ( d->cCtrl->isOn() )
+			(*d->entryIt).aConfigKeyCode |= CTRL;
 		else
-			pEntry->aConfigKeyCode &= ~CTRL;
+			(*d->entryIt).aConfigKeyCode &= ~CTRL;
 			
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(pEntry->aConfigKeyCode, pEntry->descr),
-			wList->getId(wList->currentItem() )
+		 	item((*d->entryIt).aConfigKeyCode, (*d->entryIt).descr),
+			d->wList->getId(d->wList->currentItem() )
 		);
 		
-		connect( wList, SIGNAL( newWidth( int ) ),
+		connect( d->wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
 				
 					
-		sli->setWidth( wList->width() );
+		sli->setWidth( d->wList->width() );
 		
-		wList->changeItem( sli, wList->currentItem() );
+		d->wList->changeItem( sli, d->wList->currentItem() );
 	}
-	toChange(wList->currentItem());
+	toChange(d->wList->currentItem());
 	emit keyChange();
 }
 
 void KKeyChooser::altClicked()
 {
-  if (!pEntry)
+  if (!d->entryIt.node)
     return;
-	int kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
+	int kSCode = (*d->entryIt).aConfigKeyCode & ~(SHIFT | CTRL | ALT);
 	if ( kSCode != Key_Alt ) {
-		if ( cAlt->isOn() )
-			pEntry->aConfigKeyCode |= ALT;
+		if ( d->cAlt->isOn() )
+			(*d->entryIt).aConfigKeyCode |= ALT;
 		else
-			pEntry->aConfigKeyCode &= ~ALT;
+			(*d->entryIt).aConfigKeyCode &= ~ALT;
 			
 		KSplitListItem *sli = new KSplitListItem(
-		 	item(pEntry->aConfigKeyCode, pEntry->descr),
-			wList->getId(wList->currentItem() )
+		 	item((*d->entryIt).aConfigKeyCode, (*d->entryIt).descr),
+			d->wList->getId(d->wList->currentItem() )
 		);
 		
-		connect( wList, SIGNAL( newWidth( int ) ),
+		connect( d->wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
 				
 					
-		sli->setWidth( wList->width() );
+		sli->setWidth( d->wList->width() );
 			
-		wList->changeItem( sli, wList->currentItem() );
+		d->wList->changeItem( sli, d->wList->currentItem() );
 	}
-	toChange(wList->currentItem());
+	toChange(d->wList->currentItem());
 	emit keyChange();
 }
 
 void KKeyChooser::changeKey()
 {
-	bChange->setEditing(true);
-	lInfo->setText( i18n("Press the wanted key") );
-	lInfo->setEnabled( TRUE );
+	d->bChange->setEditing(true);
+	d->lInfo->setText( i18n("Press the wanted key") );
+	d->lInfo->setEnabled( TRUE );
 	/* give the focus to the widget */
 	
-	//eKey->setGeometry(bChange->x()+6, bChange->y()+4, bChange->width()-12,
-		//bChange->height()-8);
+	//eKey->setGeometry(d->bChange->x()+6, d->bChange->y()+4, d->bChange->width()-12,
+		//d->bChange->height()-8);
 	//eKey->show();
 	//eKey->setEnabled(TRUE);
 	setFocus();
-	bKeyIntercept = TRUE;
+	d->bKeyIntercept = TRUE;
 }
 
 void KKeyChooser::keyPressEvent( QKeyEvent *e )
 {
   /* the keys are processed if the change button was pressed */
-  if( !bKeyIntercept )
+  if( !d->bKeyIntercept )
   {
     e->ignore();
     return;
@@ -1050,57 +1260,57 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
   */
   if ( KAccel::keyToString(kCode).isNull() )
   {
-    lInfo->setText( i18n("Undefined key") );
+    d->lInfo->setText( i18n("Undefined key") );
     return;
   }
 	
-  bKeyIntercept = FALSE;
+  d->bKeyIntercept = FALSE;
   //eKey->hide();
   //eKey->setEnabled(FALSE);
-  bChange->setEditing(true);
-  bChange->setFocus();
+  d->bChange->setEditing(true);
+  d->bChange->setFocus();
   setKey(kCode);
 }
 
 void KKeyChooser::setKey( int kCode)
 {
-  if (!pEntry)
+  if (!d->entryIt.node)
     return;
-	// int kOldCode = pEntry->aConfigKeyCode;
+	// int kOldCode = (*d->entryIt).aConfigKeyCode;
 	
 	/* add the current modifier to the key */
-	if ( kCode!=Key_Shift ) kCode |= (pEntry->aConfigKeyCode & SHIFT);
-	if ( kCode!=Key_Control ) kCode |= (pEntry->aConfigKeyCode & CTRL);
-	if ( kCode!=Key_Alt ) kCode |= (pEntry->aConfigKeyCode & ALT);
+	if ( kCode!=Key_Shift ) kCode |= ((*d->entryIt).aConfigKeyCode & SHIFT);
+	if ( kCode!=Key_Control ) kCode |= ((*d->entryIt).aConfigKeyCode & CTRL);
+	if ( kCode!=Key_Alt ) kCode |= ((*d->entryIt).aConfigKeyCode & ALT);
 	
 	/* set the list and the change button */
-	pEntry->aConfigKeyCode = kCode;
+	(*d->entryIt).aConfigKeyCode = kCode;
 	
 	if ( isKeyPresent() ) {
-		lInfo->setText( i18n("Attention : key already used") );
+		d->lInfo->setText( i18n("Attention : key already used") );
 		return;
 	}
 	
 	KSplitListItem *sli = new KSplitListItem(
-	 	item(pEntry->aConfigKeyCode, pEntry->descr),
-		wList->getId(wList->currentItem() )
+	 	item((*d->entryIt).aConfigKeyCode, (*d->entryIt).descr),
+		d->wList->getId(d->wList->currentItem() )
 	);
 		
-	connect( wList, SIGNAL( newWidth( int ) ),
+	connect( d->wList, SIGNAL( newWidth( int ) ),
 			 sli, SLOT( setWidth( int ) ) );
 				
 				
-	sli->setWidth( wList->width() );
+	sli->setWidth( d->wList->width() );
 	
-	wList->changeItem( sli, wList->currentItem() );
-	toChange(wList->currentItem());
+	d->wList->changeItem( sli, d->wList->currentItem() );
+	toChange(d->wList->currentItem());
 	emit keyChange();
 }
 
 void KKeyChooser::editKey()
 {
-	bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE );
-	lInfo->setText( i18n("Press 'Return' to quit editing") );
+	d->bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE );
+	d->lInfo->setText( i18n("Press 'Return' to quit editing") );
 }
 
 void KKeyChooser::editEnd()
@@ -1110,7 +1320,7 @@ void KKeyChooser::editEnd()
 	//int kCode = KAccel::stringToKey(eKey->text());
 	int kCode = 0;
 	if ( kCode==0 || (kCode & (SHIFT | CTRL | ALT)) ) {
-		lInfo->setText( i18n("Incorrect key") );
+		d->lInfo->setText( i18n("Incorrect key") );
 		return;
 	}
 	setKey(kCode);
@@ -1118,17 +1328,17 @@ void KKeyChooser::editEnd()
 
 bool KKeyChooser::isKeyPresent()
 {
-  if (!pEntry->aConfigKeyCode)
+  if (!(*d->entryIt).aConfigKeyCode)
     return false;
 	// Search the global key codes to find if this keyCode is already used
 	//  elsewhere
 	
-	QDictIterator<int> gIt( *globalDict );
+	QDictIterator<int> gIt( *d->globalDict );
 	
 	gIt.toFirst();
 	while ( gIt.current() ) {
-		kdDebug() << "current " << gIt.currentKey() << ":" << *gIt.current() << " code " << pEntry->aConfigKeyCode << endl;
-		if ( (*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
+		kdDebug() << "current " << gIt.currentKey() << ":" << *gIt.current() << " code " << (*d->entryIt).aConfigKeyCode << endl;
+		if ( (*gIt.current()) == (*d->entryIt).aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
 
@@ -1151,12 +1361,12 @@ bool KKeyChooser::isKeyPresent()
 	// Search the std key codes to find if this keyCode is already used
 	//  elsewhere
 	
-	QDictIterator<int> sIt( *stdDict );
+	QDictIterator<int> sIt( *d->stdDict );
 
 	sIt.toFirst();
 	while ( sIt.current() ) {
-		kdDebug() << "current " << sIt.currentKey() << ":" << *sIt.current() << " code " << pEntry->aConfigKeyCode << endl;
-		if ( (*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
+		kdDebug() << "current " << sIt.currentKey() << ":" << *sIt.current() << " code " << (*d->entryIt).aConfigKeyCode << endl;
+		if ( (*sIt.current()) == (*d->entryIt).aConfigKeyCode && *sIt.current() != 0 ) {
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();
 
@@ -1179,14 +1389,14 @@ bool KKeyChooser::isKeyPresent()
 
 	// Search the aConfigKeyCodes to find if this keyCode is already used
 	// elsewhere
-	aIt->toFirst();
-	while ( aIt->current() ) {
-		if ( aIt->current() != pEntry
-				&& aIt->current()->aConfigKeyCode == pEntry->aConfigKeyCode ) {
-			QString actionName( aIt->currentKey() );
+        for (KKeyEntryMap::ConstIterator it = d->map->begin();
+             it != d->map->end(); ++it) {
+		if ( it != d->entryIt
+                     && (*it).aConfigKeyCode == (*d->entryIt).aConfigKeyCode ) {
+			QString actionName( it.key() );
 			actionName.stripWhiteSpace();
 
-			QString keyName = KAccel::keyToString( aIt->current()->aConfigKeyCode );
+			QString keyName = KAccel::keyToString( (*d->entryIt).aConfigKeyCode );
 			
 			QString str =
 			    i18n("The %1 key combination has already "
@@ -1200,7 +1410,6 @@ bool KKeyChooser::isKeyPresent()
 			
 			return TRUE;
 		}
-		++(*aIt);
 	}
 	
 	//	emit keyChange();

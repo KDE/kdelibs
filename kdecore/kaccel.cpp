@@ -33,47 +33,49 @@
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kckey.h>
+#include "kaccel_private.h"
 
 KAccel::KAccel( QWidget * parent, const char *name )
-: QAccel(parent, name), aKeyDict(100, false){
-	aAvailableId = 1;
-	bEnabled = true;
-	aGroup = "Keys";
-	bGlobal = false;
+    : QAccel(parent, name)
+{
+    aAvailableId = 1;
+    bEnabled = true;
+    aGroup = "Keys";
+    bGlobal = false;
 }
 
 void KAccel::clear()
 {
-	QAccel::clear();
-	aKeyDict.clear();
+    QAccel::clear();
+    aKeyMap.clear();
 }
 
 void KAccel::connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
 			  bool activate )
 {
-	if (action.isNull()) return;
-    KKeyEntry *pEntry = aKeyDict[ action ];
+    if (action.isNull()) return;
+    if (!aKeyMap.contains(action)) {
+        kdWarning(125) << "cannot connect action " << action
+                       << " which is not in the object dictionary" << endl;
+        return;
+    }
+	
+    KKeyEntry entry = aKeyMap[action];
+    entry.receiver = receiver;
+    entry.member = member;
+    entry.aAccelId = aAvailableId;
+    aKeyMap[action] = entry; // reassign
+    aAvailableId++;
+	
+    // Qt does strange things if a QAccel contains a accelerator
+    // with key code 0, so leave it out here.
+    if (entry.aCurrentKeyCode) {
+        QAccel::insertItem( entry.aCurrentKeyCode, entry.aAccelId );
+        QAccel::connectItem( entry.aAccelId, receiver, member );
+    }
 
-	if ( !pEntry ) {
-		kdWarning(125) << "cannot connect action " << action
-					   << " which is not in the object dictionary" << endl;
-	    return;
-	}
-	
-	pEntry->receiver = receiver;
-	pEntry->member = member;
-	pEntry->aAccelId = aAvailableId;
-	aAvailableId++;
-	
-	// Qt does strange things if a QAccel contains a accelerator
-	// with key code 0, so leave it out here.
-	if (pEntry->aCurrentKeyCode) {
-		QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-		QAccel::connectItem( pEntry->aAccelId, receiver, member );
-	}
-	
-	if ( !activate ) setItemEnabled( action, false );
+    if ( !activate ) setItemEnabled( action, false );
 }
 
 void KAccel::connectItem( KStdAccel::StdAccel accel,
@@ -81,78 +83,53 @@ void KAccel::connectItem( KStdAccel::StdAccel accel,
 			  bool activate )
 {
 	QString action(KStdAccel::action(accel));
-	if (!action.isNull() && !aKeyDict[ action ]){
+	if (!action.isNull() && !aKeyMap.contains(action))
 		insertStdItem(accel);
-	}
+
 	connectItem(action, receiver, member, activate);
 }
 
 uint KAccel::count() const
 {
-	return aKeyDict.count();
+	return aKeyMap.count();
 }
 
 int KAccel::currentKey( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-		return 0;
-	else
-		return pEntry->aCurrentKeyCode;
+    return aKeyMap[action].aCurrentKeyCode;
 }
 
 void KAccel::setDescription(const QString &action,
-							const QString &description)
+                            const QString &description)
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-		kdWarning(125) << "cannot set description for absent action "
-					   << action << endl;
-	else pEntry->descr = description;
+    aKeyMap[action].descr = description;
 }
 
 QString KAccel::description( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-		return QString::null;
-	else
-		return pEntry->descr;
+    return aKeyMap[action].descr;
 }
 
 int KAccel::defaultKey( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-        return 0;
-    else
-        return pEntry->aDefaultKeyCode;
+    return aKeyMap[action].aDefaultKeyCode;
 }
 
 void KAccel::disconnectItem( const QString& action,
 			      const QObject* receiver, const char *member )
 {
-    KKeyEntry *pEntry = aKeyDict[ action ];
-    if ( !pEntry )
-		return;
-	
-	QAccel::disconnectItem( pEntry->aAccelId, receiver, member );
+    if (aKeyMap.contains(action))
+        QAccel::disconnectItem( aKeyMap[action].aAccelId, receiver, member );
 }
 
 QString KAccel::findKey( int key ) const
 {
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-	while ( aKeyIt.current() ) {
-	    if ( key == aKeyIt.current()->aCurrentKeyCode )
-		return aKeyIt.currentKey();
-	    ++aKeyIt;
-	}
-	return QString::null;
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it)
+        if ( key == (*it).aCurrentKeyCode )
+            return it.key();
+
+    return QString::null;
 }
 
 bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
@@ -165,26 +142,22 @@ bool KAccel::insertItem( const QString& descr, const QString& action, int keyCod
 bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( pEntry )
-		removeItem( action );
+    if (aKeyMap.contains(action))
+        removeItem( action );
 
-	pEntry = new KKeyEntry;
-	aKeyDict.insert( action, pEntry );
-	
-	pEntry->aDefaultKeyCode = keyCode;
-	pEntry->aCurrentKeyCode = keyCode;
-	pEntry->aConfigKeyCode = keyCode;
-	pEntry->bConfigurable = configurable;
-	pEntry->aAccelId = 0;
-	pEntry->receiver = 0;
-	pEntry->member = 0;
-	pEntry->descr = descr;
-	pEntry->menuId = id;
-	pEntry->menu = qmenu;
+    KKeyEntry entry;
 
-	return true;
+    entry.aDefaultKeyCode = keyCode;
+    entry.aCurrentKeyCode = keyCode;
+    entry.aConfigKeyCode = keyCode;
+    entry.bConfigurable = configurable;
+    entry.descr = descr;
+    entry.menuId = id;
+    entry.menu = qmenu;
+
+    aKeyMap[action] = entry;
+
+    return true;
 }
 
 bool KAccel::insertItem( const QString& descr, const QString& action,
@@ -259,17 +232,12 @@ bool KAccel::isEnabled() const
 
 bool KAccel::isItemEnabled( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-        return false;
-    else
-        return pEntry->bEnabled;
+    return aKeyMap[action].bEnabled;
 }
 
-QDict<KKeyEntry> KAccel::keyDict()
+KKeyEntryMap KAccel::keyDict() const
 {
-	return aKeyDict;
+	return aKeyMap;
 }
 
 void KAccel::readSettings(KConfig* config)
@@ -277,144 +245,103 @@ void KAccel::readSettings(KConfig* config)
 	QString s;
 
 	KConfig *pConfig = config ? config : KGlobal::config();
-	pConfig->setGroup( aGroup );
-	
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-#define pE aKeyIt.current()
-	while ( pE ) {
-		s = pConfig->readEntry(aKeyIt.currentKey());
+        KConfigGroupSaver(pConfig, aGroup);
+
+	for (KKeyEntryMap::Iterator it = aKeyMap.begin();
+             it != aKeyMap.end(); ++it) {
+            s = pConfig->readEntry(it.key());
 		
-		if ( s.isNull() )
-			pE->aConfigKeyCode = pE->aDefaultKeyCode;
-		else
-			pE->aConfigKeyCode = stringToKey( s );
+            if ( s.isNull() )
+                (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
+            else
+                (*it).aConfigKeyCode = stringToKey( s );
 	
-		pE->aCurrentKeyCode = pE->aConfigKeyCode;
-		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
-			QAccel::disconnectItem( pE->aAccelId, pE->receiver,
-						pE->member );
-		    QAccel::removeItem( pE->aAccelId );
-			QAccel::insertItem( pE->aCurrentKeyCode, pE->aAccelId );
-		    QAccel::connectItem( pE->aAccelId, pE->receiver,
-					     pE->member);
-		}
-		if ( pE->menu ) {
-		        changeMenuAccel(pE->menu, pE->menuId, aKeyIt.currentKey());
-		}
-		++aKeyIt;
+            (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
+            if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
+                QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
+                                        (*it).member );
+                QAccel::removeItem( (*it).aAccelId );
+                QAccel::insertItem( (*it).aCurrentKeyCode, (*it).aAccelId );
+                QAccel::connectItem( (*it).aAccelId, (*it).receiver,
+                                     (*it).member);
+            }
+            if ( (*it).menu )
+                changeMenuAccel((*it).menu, (*it).menuId, it.key());
 	}
-#undef pE
 
 	emit keycodeChanged();
 }
 
 void KAccel::removeItem( const QString& action )
 {
-    KKeyEntry *pEntry = aKeyDict[ action ];
+    if (!aKeyMap.contains(action))
+        return;
+    KKeyEntry entry = aKeyMap[ action ];
+
+    if ( entry.aAccelId ) {
+        QAccel::disconnectItem( entry.aAccelId, entry.receiver,
+                                entry.member);
+        QAccel::removeItem( entry.aAccelId );
+    }
 	
-    if ( !pEntry )
-		return;
-	
-	if ( pEntry->aAccelId ) {
-		QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
-					pEntry->member);
-		QAccel::removeItem( pEntry->aAccelId );
-	}
-	
-	aKeyDict.remove( action );
+    aKeyMap.remove( action );
 }
 
 void KAccel::setEnabled( bool activate )
 {
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-#define pE aKeyIt.current()
-	while ( pE ) {
-		setItemEnabled( aKeyIt.currentKey(), activate );
-		++aKeyIt;
-	}
-#undef pE
-	bEnabled = activate;
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it)
+        setItemEnabled( it.key(), activate );
+
+    bEnabled = activate;
 }
 
 void KAccel::setItemEnabled( const QString& action, bool activate )
 {	
-    KKeyEntry *pEntry = aKeyDict[ action ];
-	if ( !pEntry ) {
-		kdWarning(125) << "cannot enable action " << action
-					   << " which is not in the object dictionary" << endl;
-		return;
-	}
-
-	QAccel::setItemEnabled( pEntry->aAccelId, activate );
-	pEntry->bEnabled = activate;
+    QAccel::setItemEnabled( aKeyMap[action].aAccelId, activate );
+    aKeyMap[action].bEnabled = activate;
 }
 
-bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
+bool KAccel::setKeyDict( const KKeyEntryMap& nKeyDict )
 {
 
 	kdDebug(125) << "Disconnect and remove" << endl;
 	// Disconnect and remove all items in pAccel
-	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
-	aKeyIt->toFirst();
-#define pE aKeyIt->current()
-	while( pE ) {
-		QString s;
-		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
-			QAccel::disconnectItem( pE->aAccelId, pE->receiver,
-						pE->member );
-			QAccel::removeItem( pE->aAccelId );
-		}
-		++*aKeyIt;
+        for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+             it != aKeyMap.end(); ++it) {
+            QString s;
+            if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
+                QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
+                                        (*it).member );
+                QAccel::removeItem( (*it).aAccelId );
+            }
 	}
-#undef pE
-	
-	kdDebug(125) << "Clear the dictionary" << endl;
 	
 	// Clear the dictionary
-	aKeyDict.clear();
+	aKeyMap = nKeyDict;
 	
 	kdDebug(125) << "Insert new items" << endl;
 	
 	// Insert the new items into the dictionary and reconnect if neccessary
 	// Note also swap config and current key codes !!!!!!
-	delete aKeyIt; // tanghus
-	aKeyIt = new QDictIterator<KKeyEntry>( nKeyDict );
-	aKeyIt->toFirst();
-#define pE aKeyIt->current()
-	KKeyEntry *pEntry;
-	while( pE ) {
-		pEntry = new KKeyEntry;
-		aKeyDict.insert( aKeyIt->currentKey(), pEntry );
-		pEntry->aDefaultKeyCode = pE->aDefaultKeyCode;
-		// Note we write config key code to current key code !!
-		pEntry->aCurrentKeyCode = pE->aConfigKeyCode;
-		pEntry->aConfigKeyCode = pE->aConfigKeyCode;
-		pEntry->bConfigurable = pE->bConfigurable;
-		pEntry->bEnabled = pE->bEnabled;
-		pEntry->aAccelId = pE->aAccelId;
-		pEntry->receiver = pE->receiver;
-		pEntry->member = pE->member;
-		pEntry->descr = pE->descr; // tanghus
-		pEntry->menuId = pE->menuId;
-		pEntry->menu = pE->menu;
-		
-		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
-			QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-			QAccel::setItemEnabled( pEntry->aAccelId, pEntry->bEnabled );
-			QAccel::connectItem( pEntry->aAccelId, pEntry->receiver,
-					     pEntry->member);
-		}
-		if ( pEntry->menu ) {
-		  changeMenuAccel(pEntry->menu, pEntry->menuId,
-				  aKeyIt->currentKey());
-		}
-		++*aKeyIt;
+        for (KKeyEntryMap::Iterator it = aKeyMap.begin();
+             it != aKeyMap.end(); ++it)
+        {
+            // Note we write config key code to current key code !!
+            (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
+
+            if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
+                QAccel::insertItem( (*it).aCurrentKeyCode, (*it).aAccelId );
+                QAccel::setItemEnabled( (*it).aAccelId, (*it).bEnabled );
+                QAccel::connectItem( (*it).aAccelId, (*it).receiver,
+                                     (*it).member);
+            }
+            if ( (*it).menu ) {
+                changeMenuAccel((*it).menu, (*it).menuId,
+                                it.key());
+            }
 	}
-#undef pE
-		
-	delete aKeyIt; // tanghus
+
 	emit keycodeChanged();
 	return true;
 }
@@ -439,94 +366,83 @@ bool KAccel::configGlobal() const
 	return bGlobal;
 }
 
-void KAccel::writeSettings(KConfig* config)
+void KAccel::writeSettings(KConfig* config) const
 {
 	KConfig *pConfig = config?config:KGlobal::config();
-	pConfig->setGroup( aGroup );
+        KConfigGroupSaver cs(pConfig, aGroup);
 
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-	while ( aKeyIt.current() ) {
-		if ( aKeyIt.current()->bConfigurable ) {
-			if ( bGlobal )
-				pConfig->writeEntry( aKeyIt.currentKey(),
-					keyToString( aKeyIt.current()->aCurrentKeyCode),
-					true, true );
-			 else
-				pConfig->writeEntry( aKeyIt.currentKey(),
-					keyToString( aKeyIt.current()->aCurrentKeyCode ));
+        for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+             it != aKeyMap.end(); ++it) {
+            if ( (*it).bConfigurable ) {
+                if ( bGlobal )
+                    pConfig->writeEntry( it.key(),
+                                         keyToString( (*it).aCurrentKeyCode),
+                                         true, true );
+                else
+                    pConfig->writeEntry( it.key(),
+                                         keyToString( (*it).aCurrentKeyCode ));
 
-		}
-		++aKeyIt;
+            }
 	}
 	pConfig->sync();
 }
 
 bool KAccel::configurable( const QString &action ) const
 {
-  KKeyEntry *pEntry = aKeyDict[ action ];
-
-  if ( !pEntry )
-    return false;
-  else
-    return pEntry->bConfigurable;
+    return aKeyMap[action].bConfigurable;
 }
 
 void KAccel::clearItem(const QString &action)
 {
-    KKeyEntry *pEntry = aKeyDict[ action ];
-    if (pEntry) {
-      if ( pEntry->aAccelId  && pEntry->bConfigurable) {
-		  QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
-				pEntry->member);
-		  QAccel::removeItem( pEntry->aAccelId );
-		  pEntry->aAccelId = 0;
-		  pEntry->aCurrentKeyCode = 0;
-		  if ( pEntry->menu ) {
-			  changeMenuAccel(pEntry->menu, pEntry->menuId, action);
-		  }
-      }
+    if (!aKeyMap.contains(action))
+        return;
+
+    KKeyEntry entry = aKeyMap[ action ];
+    if ( entry.aAccelId  && entry.bConfigurable) {
+        QAccel::disconnectItem( entry.aAccelId, entry.receiver,
+				entry.member);
+        QAccel::removeItem( entry.aAccelId );
+        entry.aAccelId = 0;
+        entry.aCurrentKeyCode = 0;
+        aKeyMap[action] = entry; // reassign
+        if ( entry.menu ) {
+            changeMenuAccel(entry.menu, entry.menuId, action);
+        }
     }
 }
 
 bool KAccel::updateItem( const QString &action, int keyCode)
 {
-  KKeyEntry *pEntry = aKeyDict[ action ];
-  if ( pEntry->aCurrentKeyCode==keyCode ) return true;
-  if (pEntry) {
-    if ( pEntry->aAccelId ) {
-		QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
-			      pEntry->member);
-		QAccel::removeItem( pEntry->aAccelId );
+    if (!aKeyMap.contains(action))
+        return false;
+    KKeyEntry entry = aKeyMap[ action ];
+    if ( entry.aCurrentKeyCode==keyCode )
+        return true;
+    if ( entry.aAccelId ) {
+        QAccel::disconnectItem( entry.aAccelId, entry.receiver,
+                                entry.member);
+        QAccel::removeItem( entry.aAccelId );
     } else {
-      pEntry->aAccelId = aAvailableId;
-      aAvailableId++;
+        entry.aAccelId = aKeyMap[action].aAccelId = aAvailableId;
+        aAvailableId++;
     }
 
-    pEntry->aCurrentKeyCode = keyCode;
-    if (pEntry->aCurrentKeyCode) {
-		QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-		QAccel::connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
+    aKeyMap[action].aCurrentKeyCode = keyCode;
+    if (keyCode) {
+        QAccel::insertItem( keyCode, entry.aAccelId );
+        QAccel::connectItem( entry.aAccelId, entry.receiver, entry.member );
     }
-	emit keycodeChanged();
+    emit keycodeChanged();
     return true;
-  } else
-    return false;
+
 }
 
 void KAccel::removeDeletedMenu(QPopupMenu *menu)
 {
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-
-#define pE aKeyIt.current()
-	while ( pE ) {
-		if ( pE->menu == menu )
-		  pE->menu = 0;
-
-		++aKeyIt;
-	}
-#undef pE
+    for (KKeyEntryMap::Iterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it)
+        if ( (*it).menu == menu )
+            (*it).menu = 0;
 }
 
 

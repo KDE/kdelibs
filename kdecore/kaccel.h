@@ -22,7 +22,7 @@
 #ifndef _KACCEL_H
 #define _KACCEL_H
 
-#include <qdict.h>
+#include <qmap.h>
 #include <qstring.h>
 #include <qaccel.h>
 #include <kstdaccel.h>
@@ -33,26 +33,8 @@ class QObject;
 class QWidget;
 class KAccelPrivate;
 
-/**
- * Accelerator information, similar to an action.
- *
- * It is used internally by @ref KAccel.
- * @internal
- * @deprecated
- */
-struct KKeyEntry {
-    int aCurrentKeyCode;
-    int aDefaultKeyCode;
-    int aConfigKeyCode;
-    bool bConfigurable;
-    bool bEnabled;
-    int aAccelId;
-    const QObject *receiver;
-    const char *member;
-    QString descr;
-    int menuId;
-    QPopupMenu *menu;
-};
+class KKeyEntry;
+typedef QMap<QString, KKeyEntry> KKeyEntryMap;
 
 /**
  * Handle keyboard accelerators.
@@ -168,7 +150,7 @@ class KAccel : public QAccel
 					 const QObject* receiver, const char *member,
 					 bool activate = true );
 
-    
+
 	/**
 	 * Same as the preceding @ref connectItem(), but used for standard
 	 * accelerators.
@@ -197,7 +179,7 @@ class KAccel : public QAccel
 	 * action name @p action, or @ref QString::null if the action name cannot
 	 * be found. Useful for menus.
 	 */
-    QString description( const QString& action ) const;
+        QString description( const QString& action ) const;
 	void setDescription(const QString &action, const QString &description);
 
 	/**
@@ -238,7 +220,7 @@ class KAccel : public QAccel
 	 *  @ref writeSettings() is called.
 	 *  @return @p true if successful.
 	 */
-	bool insertItem( const QString& descr, const QString& action, 
+	bool insertItem( const QString& descr, const QString& action,
 					int defaultKeyCode, bool configurable = true );
 	
 	/**
@@ -263,8 +245,8 @@ class KAccel : public QAccel
 	 *  @return @p true if successful.
 	 *
 	 */
-	bool insertItem( const QString& descr, const QString& action, 
-					int defaultKeyCode, int id, QPopupMenu *qmenu, 
+	bool insertItem( const QString& descr, const QString& action,
+					int defaultKeyCode, int id, QPopupMenu *qmenu,
 					bool configurable = true );
 	
 	 /**
@@ -330,7 +312,7 @@ class KAccel : public QAccel
 
 
 	/**
-	 * Convenience function form of @ref insertItem() 
+	 * Convenience function form of @ref insertItem()
 	 * without the need to specify a localized
 	 * function name for the user.
 	 *
@@ -351,7 +333,7 @@ class KAccel : public QAccel
 	 * keybinding editor.
 	 */
 	bool insertItem( const QString& action, int defaultKeyCode,
-				 int id, QPopupMenu *qmenu, 
+				 int id, QPopupMenu *qmenu,
 				 bool configurable = true );
 
  	/**
@@ -383,15 +365,15 @@ class KAccel : public QAccel
 	 * Note that only a shallow copy is made so
 	 * that items will be lost when the @ref KKeyEntry objects are deleted.
 	 */	
-	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
+	bool setKeyDict( const KKeyEntryMap& nKeyDict );
 	
 	/**
-	 * Retrieve the dictionary of accelerator action names and 
+	 * Retrieve the dictionary of accelerator action names and
 	 * @ref KKeyEntry
 	 * objects. Note that only a shallow copy is returned so that
 	 * items will be lost when the @ref KKeyEntry objects are deleted.
 	 */
-	QDict<KKeyEntry> keyDict();
+	KKeyEntryMap keyDict() const;
 				
 	/**
 	 * Read all key associations from @p config, or (if @p config
@@ -408,7 +390,7 @@ class KAccel : public QAccel
          * or (if @p config is zero) to the application's
 	 * configuration file.
 	 */	
-	void writeSettings(KConfig* config = 0);
+	void writeSettings(KConfig* config = 0) const;
 	
 	/**
 	 * Set the group in the configuration file in which the
@@ -505,12 +487,12 @@ class KAccel : public QAccel
 	
  protected:
 	int aAvailableId;
-	QDict<KKeyEntry> aKeyDict;
+	KKeyEntryMap aKeyMap;
 	bool bEnabled;
 	bool bGlobal;
 	QString aGroup;
  private:
-    KAccelPrivate *d;
+        KAccelPrivate *d;
 };
 	
 #endif

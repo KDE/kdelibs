@@ -31,13 +31,14 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kglobal.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <string.h>
 
-template class QDict<KKeyEntry>;
+#include "kaccel_private.h"
 
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs
@@ -63,7 +64,7 @@ private:
 };
 
 KGlobalAccel::KGlobalAccel(bool _do_not_grab)
- : QObject(), aKeyDict(100)
+ : QObject()
 {
 	aAvailableId = 1;
 	bEnabled = true;
@@ -75,7 +76,7 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 }
 
 KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab)
-    : QObject(parent, name), aKeyDict(100) {
+    : QObject(parent, name) {
     	aAvailableId = 1;
 	bEnabled = true;
 	aGroup = "Global Keys";
@@ -94,74 +95,62 @@ KGlobalAccel::~KGlobalAccel()
 void KGlobalAccel::clear()
 {
 	setEnabled( false );
-	aKeyDict.clear();
+	aKeyMap.clear();
 }
 
 void KGlobalAccel::connectItem( const QString& action,
 				const QObject* receiver, const char *member,
 				bool activate )
 {
-    KKeyEntry *pEntry = aKeyDict[ action ];
-	if ( !pEntry ) {
-	    kdDebug() << QString::fromLatin1("KGlobalAccel : Cannot connect action %1 "
-					     "which is not in the object dictionary\n").arg(action);
-		return;
-	}
+    if (!aKeyMap.contains(action)) {
+        kdDebug() << QString::fromLatin1("KGlobalAccel : Cannot connect action %1 "
+                                         "which is not in the object dictionary\n").arg(action);
+        return;
+    }
 	
-	pEntry->receiver = receiver;
-	pEntry->member = member;
-	pEntry->aAccelId = aAvailableId;
-	aAvailableId++;
-	
-	setItemEnabled( action, activate );
+    KKeyEntry entry = aKeyMap[ action ];
+    entry.receiver = receiver;
+    entry.member = member;
+    entry.aAccelId = aAvailableId;
+    aKeyMap.replace(action, entry);
+    aAvailableId++;
+
+    setItemEnabled( action, activate );
 
 }
 
 uint KGlobalAccel::count() const
 {
-	return aKeyDict.count();
+  return aKeyMap.count();
 }
 
 int KGlobalAccel::currentKey( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-		return 0;
-	else
-		return pEntry->aCurrentKeyCode;
+  KKeyEntry entry = aKeyMap[ action ];
+  return entry.aCurrentKeyCode;
 }
 
 int KGlobalAccel::defaultKey( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-        return 0;
-    else
-        return pEntry->aDefaultKeyCode;
+	KKeyEntry entry = aKeyMap[ action ];
+        return entry.aDefaultKeyCode;
 }
 
 void KGlobalAccel::disconnectItem( const QString& action,
 				   const QObject* /*receiver*/, const char */*member*/ )
 {
-    KKeyEntry *pEntry = aKeyDict[ action ];
-    if ( !pEntry )
-	return;
+  // TODO
+  KKeyEntry entry = aKeyMap[ action ];
 
 }
 
 QString KGlobalAccel::findKey( int key ) const
 {
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-#define pE aKeyIt.current()
-	while ( pE ) {
-		if ( key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
-		++aKeyIt;
-	}
-#undef pE
-	return QString::null;	
+  for (KKeyEntryMap::ConstIterator aKeyIt = aKeyMap.begin();
+       aKeyIt != aKeyMap.end(); ++aKeyIt)
+    if ( key == (*aKeyIt).aCurrentKeyCode )
+      return aKeyIt.key();
+  return QString::null;	
 }
 
 bool grabFailed;
@@ -230,26 +219,23 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 }
 
 bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, int keyCode,
-					   bool configurable )
+                                bool configurable )
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
+  if (aKeyMap.contains(action))
+    removeItem( action );
 	
-	if ( pEntry )
-		removeItem( action );
+  KKeyEntry entry;
+  entry.aDefaultKeyCode = keyCode;
+  entry.aCurrentKeyCode = keyCode;
+  entry.bConfigurable = configurable;
+  entry.bEnabled = false;
+  entry.aAccelId = 0;
+  entry.receiver = 0;
+  entry.member = 0;
+  entry.descr = descr;
 
-	pEntry = new KKeyEntry;
-	aKeyDict.insert( action, pEntry );
-	
-	pEntry->aDefaultKeyCode = keyCode;
-	pEntry->aCurrentKeyCode = keyCode;
-	pEntry->bConfigurable = configurable;
-	pEntry->bEnabled = false;
-	pEntry->aAccelId = 0;
-	pEntry->receiver = 0;
-	pEntry->member = 0;
-	pEntry->descr = descr;
-
-	return true;
+  aKeyMap[action] = entry;
+  return true;
 }
 
 bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
@@ -266,75 +252,53 @@ bool KGlobalAccel::isEnabled() const
 
 bool KGlobalAccel::isItemEnabled( const QString& action ) const
 {
-	KKeyEntry *pEntry = aKeyDict[ action ];
-	
-	if ( !pEntry )
-        return false;
-    else
-        return pEntry->bEnabled;
+  return aKeyMap[action].bEnabled;
 }
 
-QDict<KKeyEntry> KGlobalAccel::keyDict()
+KKeyEntryMap KGlobalAccel::keyDict() const
 {
-	return aKeyDict;
+	return aKeyMap;
 }
 
 void KGlobalAccel::readSettings()
 {
 	QString s;
-	//KConfig *pConfig = kapp->getConfig();
-	KConfig globalConfig;// this way we are certain to get the global stuff!
-	KConfig *pConfig = &globalConfig;
+	KConfig *pConfig = KGlobal::config();
 
-	pConfig->setGroup( aGroup );
+        KConfigGroupSaver cs(pConfig, aGroup);
 
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-#define pE aKeyIt.current()
-	// first ungrab
-	while ( pE ) {
-		s = pConfig->readEntry( aKeyIt.currentKey() );
-		if ( pE->bEnabled ) {
-			uint keysym = keyToXSym( pE->aCurrentKeyCode );
-			uint mod = keyToXMod( pE->aCurrentKeyCode );
-			ungrabKey( keysym, mod );
-		}
-		
-		++aKeyIt;
+        for (KKeyEntryMap::ConstIterator aKeyIt = aKeyMap.begin();
+             aKeyIt != aKeyMap.end(); ++aKeyIt) {
+          s = pConfig->readEntry( aKeyIt.key() );
+          if ( (*aKeyIt).bEnabled ) {
+            uint keysym = keyToXSym( (*aKeyIt).aCurrentKeyCode );
+            uint mod = keyToXMod( (*aKeyIt).aCurrentKeyCode );
+            ungrabKey( keysym, mod );
+          }
+
 	}
-	// then grab
-	aKeyIt.toFirst();
-	while ( pE ) {
-		s = pConfig->readEntry( aKeyIt.currentKey() );
-		if ( s.isNull() )
-			pE->aConfigKeyCode = pE->aDefaultKeyCode;
-		else
-			pE->aConfigKeyCode = KAccel::stringToKey( s );
-		
-		pE->aCurrentKeyCode = pE->aConfigKeyCode;
-		
-		if ( pE->bEnabled ) {
-			uint keysym = keyToXSym( pE->aCurrentKeyCode );
-			uint mod = keyToXMod( pE->aCurrentKeyCode );
-			grabKey( keysym, mod );
-		}
-		
-		++aKeyIt;
+        for (KKeyEntryMap::Iterator aKeyIt = aKeyMap.begin();
+             aKeyIt != aKeyMap.end(); ++aKeyIt) {
+          s = pConfig->readEntry( aKeyIt.key() );
+          if ( s.isNull() )
+            (*aKeyIt).aConfigKeyCode =  (*aKeyIt).aDefaultKeyCode;
+          else
+            (*aKeyIt).aConfigKeyCode = KAccel::stringToKey( s );
+
+          (*aKeyIt).aCurrentKeyCode =  (*aKeyIt).aConfigKeyCode;
+
+          if (  (*aKeyIt).bEnabled ) {
+            uint keysym = keyToXSym( (*aKeyIt).aCurrentKeyCode );
+            uint mod = keyToXMod( (*aKeyIt).aCurrentKeyCode );
+            grabKey( keysym, mod );
+          }
+
 	}
-#undef pE
 }
 	
 void KGlobalAccel::removeItem( const QString& action )
 {
-    KKeyEntry *pEntry = aKeyDict[ action ];
-	
-    if ( !pEntry )
-		return;
-	
-	if ( pEntry->aAccelId ) {
-	}
-	
-	aKeyDict.remove( action );
+    aKeyMap.remove(action);
 }
 
 void KGlobalAccel::setConfigGroup( const QString& group )
@@ -349,99 +313,75 @@ QString KGlobalAccel::configGroup() const
 
 void KGlobalAccel::setEnabled( bool activate )
 {
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-#define pE aKeyIt.current()
-	while ( pE ) {
-		setItemEnabled( aKeyIt.currentKey(), activate );
-		++aKeyIt;
-	}
-#undef pE
-	bEnabled = activate;
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it)
+        setItemEnabled( it.key(), activate );
+    bEnabled = activate;
 }
 
 void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 {	
 
-    KKeyEntry *pEntry = aKeyDict[ action ];
-    if ( !pEntry ) {
+    if ( !aKeyMap.contains(action) ) {
 	kdDebug() << QString::fromLatin1("KGlobalAccel : cannot enable action %1 "
 					 "which is not in the object dictionary\n").arg(action);
-	    return;
-	}
+        return;
+    }
 
-	bool old = pEntry->bEnabled;
-	pEntry->bEnabled = activate;
-	if ( pEntry->bEnabled == old ) return;
+    KKeyEntry entry = aKeyMap[action];
+    bool old = entry.bEnabled;
+    aKeyMap[action].bEnabled = activate;
+    if ( entry.bEnabled == old ) return;
 
-	if ( pEntry->aCurrentKeyCode == 0 ) return;
+    if ( entry.aCurrentKeyCode == 0 ) return;
 	
-	uint keysym = keyToXSym( pEntry->aCurrentKeyCode );
-	uint mod = keyToXMod( pEntry->aCurrentKeyCode );
-	
-	if ( keysym == NoSymbol ) return;
+    uint keysym = keyToXSym( entry.aCurrentKeyCode );
+    uint mod = keyToXMod( entry.aCurrentKeyCode );
 
-	if ( pEntry->bEnabled ) {
-    		grabKey( keysym, mod );
-	} else {
-		ungrabKey( keysym, mod );
-	}
+    if ( keysym == NoSymbol ) return;
 
-	return;
+    if ( entry.bEnabled )
+        grabKey( keysym, mod );
+    else
+        ungrabKey( keysym, mod );
+
 }
 
-bool KGlobalAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
+bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 {
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it) {
 	// ungrab all connected and enabled keys
-	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
-	aKeyIt->toFirst();
-#define pE aKeyIt->current()
-	while( pE ) {
-		QString s;
-		if ( pE->bEnabled ) {
-			uint keysym = keyToXSym( pE->aCurrentKeyCode );
-			uint mod = keyToXMod( pE->aCurrentKeyCode );
-			ungrabKey( keysym, mod );
-		}
-		++*aKeyIt;
-	}
-#undef pE
+        QString s;
+        if ( (*it).bEnabled ) {
+            uint keysym = keyToXSym( (*it).aCurrentKeyCode );
+            uint mod = keyToXMod( (*it).aCurrentKeyCode );
+            ungrabKey( keysym, mod );
+        }
+    }
 	
-	// Clear the dictionary
-	aKeyDict.clear();
+    // Clear the dictionary
+    aKeyMap.clear();
 	
-	// Insert the new items into the dictionary and reconnect if neccessary
-	// Note also swap config and current key codes !!!!!!
-	aKeyIt = new QDictIterator<KKeyEntry>( nKeyDict );
-	aKeyIt->toFirst();
-#define pE aKeyIt->current()
-	KKeyEntry *pEntry;
-	while( pE ) {
-		pEntry = new KKeyEntry;
-		aKeyDict.insert( aKeyIt->currentKey(), pEntry );
+    // Insert the new items into the dictionary and reconnect if neccessary
+    // Note also swap config and current key codes !!!!!!
+    for (KKeyEntryMap::ConstIterator it = nKeyMap.begin();
+         it != nKeyMap.end(); ++it) {
 
-		pEntry->aDefaultKeyCode = pE->aDefaultKeyCode;
-		// Not we write config key code to current key code !!
-		pEntry->aCurrentKeyCode = pE->aConfigKeyCode;
-		pEntry->aConfigKeyCode = pE->aConfigKeyCode;
-		pEntry->bConfigurable = pE->bConfigurable;
-		pEntry->aAccelId = pE->aAccelId;
-		pEntry->receiver = pE->receiver;
-		pEntry->member = pE->member;
-		pEntry->descr = pE->descr; // tanghus
-		pEntry->bEnabled = pE->bEnabled;
+        KKeyEntry entry = *it;
+
+        // Not we write config key code to current key code !!
+        entry.aCurrentKeyCode = (*it).aConfigKeyCode;
+	
+        aKeyMap[it.key()] = entry;
+        if ( entry.bEnabled ) {
+            uint keysym = keyToXSym( entry.aCurrentKeyCode );
+            uint mod = keyToXMod( entry.aCurrentKeyCode );
+            grabKey( keysym, mod );
+        }
 		
-		if ( pEntry->bEnabled ) {
-			uint keysym = keyToXSym( pEntry->aCurrentKeyCode );
-			uint mod = keyToXMod( pEntry->aCurrentKeyCode );
-			grabKey( keysym, mod );
-		}
-		
-		++*aKeyIt;
-	}
-#undef pE
-	delete aKeyIt;
-	return true;
+    }
+    return true;
 }
 
 bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
@@ -492,62 +432,56 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 	return true;
 }
 
-void KGlobalAccel::writeSettings()
+void KGlobalAccel::writeSettings() const
 {
-	// KConfig *pConfig = kapp->getConfig();
-	KConfig globalConfig;// this way we are certain to get the global stuff!
-	KConfig *pConfig = &globalConfig;
+    KConfig *pConfig = KGlobal::config();
 
-	pConfig->setGroup( aGroup );
+    KConfigGroupSaver cs(pConfig, aGroup);
 
-	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
-	aKeyIt.toFirst();
-	while ( aKeyIt.current() ) {
-	  if ( aKeyIt.current()->bConfigurable ){
-		  pConfig->writeEntry( aKeyIt.currentKey(),
-				       KAccel::keyToString( aKeyIt.current()->aCurrentKeyCode),
-				       true, true);
-	  }
-		++aKeyIt;
-	}
-	pConfig->sync();
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+         it != aKeyMap.end(); ++it) {
+        if ( (*it).bConfigurable ){
+            pConfig->writeEntry( it.key(),
+                                 KAccel::keyToString( (*it).aCurrentKeyCode),
+                                 true, true);
+        }
+    }
+    pConfig->sync();
 }
 
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 
-	if ( aKeyDict.isEmpty() ) return false;
+	if ( aKeyMap.isEmpty() ) return false;
 	if ( event_->type != KeyPress ) return false;
 	
 	uint mod=event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask);
 	uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
 	
+        KKeyEntry entry;
 
-	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
-	aKeyIt->toFirst();
-#define pE aKeyIt->current()
-	while( pE ) {
-		int kc = pE->aCurrentKeyCode;
-		if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
-		break;
-		}
-		++*aKeyIt;
+        for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+             it != aKeyMap.end(); ++it) {
+            int kc = (*it).aCurrentKeyCode;
+            if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
+                entry = *it;
+            }
 	}
 	
-	if ( !pE ) {
-		return false;
-	}
+	if ( !entry.receiver )
+            return false;
 	
 
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
 	XSync(qt_xdisplay(), false);
 	if ( !QWidget::keyboardGrabber() ) {
-	    connect( this, SIGNAL( activated() ), pE->receiver, pE->member);
+	    connect( this, SIGNAL( activated() ),
+                     entry.receiver, entry.member);
 	    emit activated();
-	    disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member );
+	    disconnect( this, SIGNAL( activated() ), entry.receiver,
+                        entry.member );
 	}
 
-#undef pE
 	return true;
 }
 

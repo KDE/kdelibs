@@ -118,7 +118,7 @@ class KGlobalAccel : public QObject
 	 */
 	void connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
-						  bool activate = true );
+                          bool activate = true );
 						
 	/**
 	* Returns the number of accelerator items.
@@ -210,7 +210,7 @@ class KGlobalAccel : public QObject
 	* objects. Note that only a shallow copy is returned so that
 	* items will be lost when the KKeyEntry objects are deleted.
 	*/	
-	QDict<KKeyEntry> keyDict();
+	KKeyEntryMap keyDict() const;
 				
 	/**
 	 * Reads all key associations from the application's configuration
@@ -248,10 +248,10 @@ class KGlobalAccel : public QObject
 	
 	/**
 	* Sets the dictionary of accelerator action names and KKeyEntry
-	* objects to nKeyDict.. Note that only a shallow copy is made so that items will be
+	* objects to nKeyMap. Note that only a shallow copy is made so that items will be
 	* lost when the KKeyEntry objects are deleted.
 	*/	
-	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
+	bool setKeyDict( const KKeyEntryMap& nKeyMap );
 	
 	/**
 	 * Ungrabs the key specified by key symbol
@@ -266,9 +266,9 @@ class KGlobalAccel : public QObject
 	 * Writes the current configurable associations to the application's
 	 * configuration files
 	 */	
-	void writeSettings();
+	void writeSettings() const;
 
-    
+
     	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
 	 * If a match is found the activated activated is emitted and the function
@@ -284,7 +284,7 @@ signals:
 
 protected:
 	int aAvailableId;
-	QDict<KKeyEntry> aKeyDict;
+	KKeyEntryMap aKeyMap;
 	bool bEnabled;
 	QString aGroup;
 	bool do_not_grab;
