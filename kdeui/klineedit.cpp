@@ -112,6 +112,7 @@ KLineEdit::KLineEdit( QWidget *parent, const char *name )
 KLineEdit::~KLineEdit ()
 {
     delete d;
+    d = 0;
 }
 
 void KLineEdit::init()
@@ -275,6 +276,8 @@ void KLineEdit::setReadOnly(bool readOnly)
 
 void KLineEdit::setSqueezedText( const QString &text)
 {
+    //kdDebug() << "setSqueezedText: " << text << ", readOnly ? " << isReadOnly() << endl;
+    
     if (isReadOnly())
     {
         d->squeezedText = text;
@@ -913,7 +916,8 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 bool trap = d->completionBox && d->completionBox->isVisible();
 
                 bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                          (e->state() == NoButton));
+                                          (e->state() == NoButton || 
+                                           e->state() == Keypad));
 
                 // Qt will emit returnPressed() itself if we return false
                 if ( stopEvent )
