@@ -148,9 +148,11 @@ ShadeStyle=Motif
 ArrowType=3D
 Name=Marble
 Name[ca]=Marbre
+Name[hu]=Márvány
 Name[sv]=Marmor
 Comment=Light marble themed style
 Comment[ca]=Estil marbre lleuger amb temes
+Comment[hu]=Halvány márvány téma stílus
 Comment[sv]=Temad stil med ljus marmor
 
 [General]

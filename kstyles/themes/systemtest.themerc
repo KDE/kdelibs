@@ -209,9 +209,11 @@ SButtonPosition=BottomRight
 ShadeStyle=Motif
 Name=Testing
 Name[ca]=Proves
+Name[hu]=Próba
 Name[sv]=Testar
 Comment=Unstable development style
 Comment[ca]=Estil desenvolupament inestable
+Comment[hu]=Rendszer téma stílus
 Comment[sv]=Ostabil utvecklingsstil
 ScrollBarExtent=14
 
