@@ -72,7 +72,7 @@
 -->
 
 <!-- ============================================================= -->
-<!--		    Extensions to the DocBook DTD		   -->
+<!--                Extensions to the DocBook DTD                  -->
 <!-- ============================================================= -->
 
 <!ENTITY kappname "this application" -- a vaguely sensible default -->
@@ -83,9 +83,20 @@
 <!-- The following entities should only use &kappname; in their 
      text                                                          -->
 
-<!-- Licence links -->
-<!ENTITY license-links      SYSTEM
+<!-- Licence links; see ksgmltools/TODO -->
+<!ENTITY gpllicense-links      SYSTEM
   "../entities/license-links.docbook"               -- level: para -->
+<!-- Added by Lauri W -->
+<!ENTITY bsdlicense-links   SYSTEM
+   "../entities/bsdlicense-links.docbook"              -- level: ? -->
+<!ENTITY artisticlicense-links   SYSTEM
+   "../entities/artisticlicense-links.docbook"         -- level: ? -->
+<!ENTITY x11license-links   SYSTEM
+   "../entities/x11license-links.docbook"              -- level: ? -->
+<!ENTITY qpllicense-links   SYSTEM
+   "../entities/qpllicense-links.docbook"              -- level: ? -->
+<!-- ONLY FOR BACKWARDS COMPATIBILITY: USE gpllicense-links -->
+<!ENTITY license-links SYSTEM "../entities/license-links.docbook"    >
 
 <!-- Help menu -->
 <!ENTITY help-menu          SYSTEM
@@ -93,24 +104,5 @@
 
 <!-- FDL notice; -->
 <!ENTITY % FDLNotice        PUBLIC
-  "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"             >
-%FDLNotice;
-                             <!-- the level of &FDLNotice; is para -->
-
-<!-- Added by Lauri W -->
-
-<!ENTITY bsdlicense-links   SYSTEM
-   "../entities/bsdlicense-links.docbook"		          >
-<!ENTITY artisticlicense-links   SYSTEM
-   "../entities/artisticlicense-links.docbook"		          >
-<!ENTITY x11license-links   SYSTEM
-   "../entities/x11license-links.docbook"		          >
-<!ENTITY qpllicense-links   SYSTEM
-   "../entities/qpllicense-links.docbook"			  >
-<!ENTITY gpllicense-links   SYSTEM
-  "../entities/license-links.docbook"               -- level: para -->
-
-
-
-
-
+  "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"                 >
+%FDLNotice;                  <!-- the level of &FDLNotice; is para -->
