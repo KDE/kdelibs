@@ -389,10 +389,10 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
 {
   int i, j;
 
-
-  info->resize(text.length() + 1);
-
   if(info) { //initialize info
+
+    info->resize(text.length() + 1);
+
     for(i = 0; i <= (int)text.length(); i++) {
       charinfo inf;
       
@@ -572,9 +572,10 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     parenthesize(text, i, info);
   }
 
-  for(i = 0; i < (int)info->size(); i++) {
-    if(!(*info)[i].left) (*info)[i].posinstr++;
-  }
+  if ( info )
+    for(i = 0; i < (int)info->size(); i++) {
+      if(!(*info)[i].left) (*info)[i].posinstr++;
+    }
 
   //Now just make the boxes.
   makeBoxes(text, 0, (int)text.length(), info);

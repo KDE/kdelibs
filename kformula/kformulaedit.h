@@ -26,6 +26,7 @@
 #include <qpixmap.h>
 #include <qtimer.h>
 #include <qstack.h>
+#include <qsize.h>
 
 class box;
 class KFormula;
@@ -53,6 +54,16 @@ public:
 
   QSize sizeHint();
   QSizePolicy sizePolicy();
+
+  /**
+   * By default this is turned off for performance reasons.
+   * If turned on, the signal @ref #sizeHint is emitted everytime
+   * the formula gets a new size.
+   */
+  void enableSizeHintSignal( bool );
+
+signals:
+  void sizeHint( QSize );
 
 protected:
   QArray<_cursorInfo> cursorCache;
@@ -91,6 +102,8 @@ protected:
   int isInString(int pos, const QString &str);
 
   QRect getCursorPos(int pos);
+
+  bool sendSizeHint;
 
 public slots:
   void insertChar(QChar c);

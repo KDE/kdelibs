@@ -60,7 +60,7 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
 {
   restricted = r;
   form = new KFormula(r);
-  setMinimumSize(QSize(200,80));
+  // setMinimumSize(QSize(200,80));
   pm.resize(width(), height());
   setBackgroundMode(PaletteBase);
   setFocusPolicy(StrongFocus);
@@ -707,6 +707,7 @@ void KFormulaEdit::toggleCursor()
   cacheState = ALL_DIRTY; undo.push( &((new QString(oldText))-> \
 				     insert(oldc, QChar(CURSOR))) ); \
   while(redo.remove()); }
+#define UPDATE_SIZE if ( sendSizeHint ) emit sizeHint( form->size() );
 
 void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 {
@@ -1041,6 +1042,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       textSelected = 0;
       MODIFIED
       redraw();
+      UPDATE_SIZE
       return;
     }
     if(cursorPos == 0) return;
@@ -1055,6 +1057,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
                                                      //we shift it left.
 
     redraw();
+    UPDATE_SIZE
     return;    
   }
 
@@ -1068,6 +1071,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       textSelected = 0;
       MODIFIED
       redraw();
+      UPDATE_SIZE
       return;
     }
 
@@ -1076,6 +1080,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
     if(deleteAtCursor()) {
       MODIFIED
       redraw();
+      UPDATE_SIZE
     }
     return;    
   }
@@ -1109,6 +1114,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	textSelected = 0;
 	MODIFIED
 	redraw();
+	UPDATE_SIZE
 	return;
       }
 
@@ -1129,6 +1135,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	cursorPos += clipText.length();
 	MODIFIED
         redraw();
+	UPDATE_SIZE
 	return;
       }
     }
@@ -1153,6 +1160,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	if(cursorPos == (int)oldText.length() ||
 	   cursorPos > (int)formText.length()) cursorPos = formText.length();
 	redraw();
+	UPDATE_SIZE
       }
       return;
     }
@@ -1178,6 +1186,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	if(cursorPos == (int)oldText.length() ||
 	   cursorPos > (int)formText.length()) cursorPos = formText.length();
 	redraw();
+	UPDATE_SIZE
       }
       return;	
     }
@@ -1193,6 +1202,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
     MODIFIED
     redraw();
+    UPDATE_SIZE
     return;
   }
 
@@ -1258,6 +1268,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
     MODIFIED
     redraw();
+    UPDATE_SIZE
     return;
   }
 
