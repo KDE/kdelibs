@@ -121,7 +121,9 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     result = Undefined();
     break;
   case Close:
-    doc.close();
+    // ### see khtmltests/ecma/tokenizer-script-recursion.html
+    // for an explanation why this is commented out
+    //doc.close();
     result = Undefined();
     break;
   case Write:
