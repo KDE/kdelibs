@@ -698,12 +698,16 @@ void Lexer::record16(UChar c)
 bool Lexer::scanRegExp()
 {
   pos16 = 0;
-
+  bool lastWasEscape = false;
+  
   while (1) {
     if (isLineTerminator() || current == 0)
       return false;
-    else if (current != '/') /* TODO: recognize \/ */
-      record16(current);
+    else if (current != '/' || lastWasEscape == true) 
+    {
+        record16(current);
+        lastWasEscape = (current == '\\');
+    }
     else {
       pattern = UString(buffer16, pos16);
       pos16 = 0;
