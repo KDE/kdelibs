@@ -1,3 +1,10 @@
+kdelibs (4:2.2.2-1) unstable; urgency=low
+
+  * New upstream version
+  * Update shlibs et. al to reflect new ver
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 12 Nov 2001 00:01:00 -0700
+
 kdelibs (4:2.2.1-15) unstable; urgency=low
 
   * Sync with upstream
