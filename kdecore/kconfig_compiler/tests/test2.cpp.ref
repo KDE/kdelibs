@@ -23,9 +23,21 @@ Test2::Test2(  )
   mArchiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), "Archive File", mArchiveFile );
   addItem( "ArchiveFile", mArchiveFileItem );
   mArchiveFileItem->setLabel( i18n("Archive File") );
-  QStringList valuesDestination;
-  valuesDestination.append( "standardDestination" );
-  valuesDestination.append( "askDestination" );
+  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "standardDestination";
+    choice.label = "";
+    choice.whatsThis = "";
+    valuesDestination.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "askDestination";
+    choice.label = "";
+    choice.whatsThis = "";
+    valuesDestination.append( choice );
+  }
   KConfigSkeleton::ItemEnum *itemDestination = new KConfigSkeleton::ItemEnum( currentGroup(), "Destination", mDestination, valuesDestination, standardDestination );
   addItem( "Destination", itemDestination );
   mDestinationItem = itemDestination;

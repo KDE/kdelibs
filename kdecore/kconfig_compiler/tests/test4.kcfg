@@ -18,13 +18,13 @@
           <value>left</value>
         </values>
       </parameter>
-      <values>
-        <value>Encrypt</value>
-        <value>Decrypt</value>
-        <value>CrashNBurn</value>
-        <value>PumpNDump</value>
-      </values>
       <label>Mouse actions.</label>
+      <choices>
+        <choice name="Encrypt"/>
+        <choice name="Decrypt"/>
+        <choice name="CrashNBurn"/>
+        <choice name="PumpNDump"/>
+      </choices>
       <default param="right">Decrypt</default>
       <default param="mid">Encrypt</default>
       <default param="left">PumpNDump</default>

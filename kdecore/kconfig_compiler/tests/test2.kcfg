@@ -20,10 +20,12 @@
     </entry>
     <entry type="Enum" key="Destination" name="Destination">
       <label>New Events/Todos Should</label>
-      <values>
-        <value>standardDestination</value>
-        <value>askDestination</value>
-      </values>
+      <choices>
+        <choice name="standardDestination">
+        </choice>
+        <choice name="askDestination">
+        </choice>
+      </choices>
       <default>standardDestination</default>
     </entry>
   </group>

@@ -52,14 +52,22 @@ bool globalEnums;
 class CfgEntry
 {
   public:
+    struct Choice
+    {
+      QString name;
+      QString label;
+      QString whatsThis;
+    };
+  
     CfgEntry( const QString &group, const QString &type, const QString &key,
               const QString &name, const QString &label,
               const QString &whatsThis, const QString &code,
-              const QString &defaultValue, const QStringList &values, bool hidden )
+              const QString &defaultValue, const QValueList<Choice> &choices,
+              bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
         mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
         mDefaultValue( defaultValue ),
-        mValues( values ), mHidden( hidden )
+        mChoices( choices ), mHidden( hidden )
     {
     }
 
@@ -96,8 +104,8 @@ class CfgEntry
     void setParamType( const QString &d ) { mParamType = d; }
     QString paramType() const { return mParamType; }
 
-    void setValues( const QStringList &d ) { mValues = d; }
-    QStringList values() const { return mValues; }
+    void setChoices( const QValueList<Choice> &d ) { mChoices = d; }
+    QValueList<Choice> choices() const { return mChoices; }
 
     void setParamValues( const QStringList &d ) { mParamValues = d; }
     QStringList paramValues() const { return mParamValues; }
@@ -118,8 +126,9 @@ class CfgEntry
       kdDebug() << "  key: " << mKey << endl;
       kdDebug() << "  name: " << mName << endl;
       kdDebug() << "  label: " << mLabel << endl;
+// whatsthis
       kdDebug() << "  code: " << mCode << endl;
-      kdDebug() << "  values: " << mValues.join(":") << endl;
+//      kdDebug() << "  values: " << mValues.join(":") << endl;
       kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
       kdDebug() << "  default: " << mDefaultValue << endl;
       kdDebug() << "  hidden: " << mHidden << endl;
@@ -138,7 +147,7 @@ class CfgEntry
     QString mParam;
     QString mParamName;
     QString mParamType;
-    QStringList mValues;
+    QValueList<Choice> mChoices;
     QStringList mParamValues;
     QStringList mParamDefaultValues;
     int mParamMax;
@@ -201,7 +210,10 @@ static QString filenameOnly(QString path)
    return path;
 }
 
-static void preProcessDefault(QString &defaultValue, const QString &name, const QString &type, const QStringList &values, QString &code)
+static void preProcessDefault( QString &defaultValue, const QString &name,
+                               const QString &type,
+                               const QValueList<CfgEntry::Choice> &choices,
+                               QString &code )
 {
     if ( type == "String" && !defaultValue.isEmpty() ) {
       addQuotes( defaultValue );
@@ -235,8 +247,14 @@ static void preProcessDefault(QString &defaultValue, const QString &name, const 
       }
 
     } else if ( type == "Enum" ) {
-      if ( !globalEnums && values.contains(defaultValue) ) {
-        defaultValue.prepend( enumName(name) + "::");
+      if ( !globalEnums ) {
+        QValueList<CfgEntry::Choice>::ConstIterator it;
+        for( it = choices.begin(); it != choices.end(); ++it ) {
+          if ( (*it).name == defaultValue ) {
+            defaultValue.prepend( enumName(name) + "::");
+            break;
+          }
+        }
       }
 
     } else if ( type == "IntList" ) {
@@ -270,7 +288,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString param;
   QString paramName;
   QString paramType;
-  QStringList values;
+  QValueList<CfgEntry::Choice> choices;
   QStringList paramValues;
   QStringList paramDefaultValues;
   int paramMax = 0;
@@ -344,12 +362,23 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
           defaultCode = true;
       }
     }
-    else if ( tag == "values" ) {
+    else if ( tag == "choices" ) {
       QDomNode n2;
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
-        if ( e2.tagName() == "value" ) {
-          values.append( e2.text() );
+        if ( e2.tagName() == "choice" ) {
+          QDomNode n3;
+          CfgEntry::Choice choice;
+          choice.name = e2.attribute( "name" );
+          if ( choice.name.isEmpty() ) {
+            kdError() << "Tag <choice> requires attribute 'name'." << endl;
+          }
+          for( n3 = e2.firstChild(); !n3.isNull(); n3 = n3.nextSibling() ) {
+            QDomElement e3 = n3.toElement();
+            if ( e3.tagName() == "label" ) choice.label = e3.text();
+            if ( e3.tagName() == "whatsthis" ) choice.whatsThis = e3.text();
+          }
+          choices.append( choice );
         }
       }
     }
@@ -434,7 +463,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
         QString tmpDefaultValue = e.text();
 
         if (e.attribute( "code" ) != "true")
-           preProcessDefault(tmpDefaultValue, name, type, values, code);
+           preProcessDefault(tmpDefaultValue, name, type, choices, code);
 
         paramDefaultValues[i] = tmpDefaultValue;
       }
@@ -443,11 +472,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   if (!defaultCode)
   {
-    preProcessDefault(defaultValue, name, type, values, code);
+    preProcessDefault(defaultValue, name, type, choices, code);
   }
 
   CfgEntry *result = new CfgEntry( group, type, key, name, label, whatsThis,
-                                   code, defaultValue, values,
+                                   code, defaultValue, choices,
                                    hidden == "true" );
   if (!param.isEmpty())
   {
@@ -801,7 +830,7 @@ int main( int argc, char **argv )
     h << "#include <" << *it << ">" << endl;
   }
 
-  if ( includes.count() > 0 ) h << endl;
+  if ( headerIncludes.count() > 0 ) h << endl;
 
   h << "#include <kconfigskeleton.h>" << endl << endl;
 
@@ -816,8 +845,13 @@ int main( int argc, char **argv )
   // enums
   CfgEntry *e;
   for( e = entries.first(); e; e = entries.next() ) {
-    QStringList values = e->values();
-    if ( !values.isEmpty() ) {
+    QValueList<CfgEntry::Choice> choices = e->choices();
+    if ( !choices.isEmpty() ) {
+      QStringList values;
+      QValueList<CfgEntry::Choice>::ConstIterator itChoice;
+      for( itChoice = choices.begin(); itChoice != choices.end(); ++itChoice ) {
+        values.append( (*itChoice).name );
+      }
       if ( globalEnums ) {
         h << "    enum { " << values.join( ", " ) << " };" << endl;
       } else {
@@ -828,7 +862,7 @@ int main( int argc, char **argv )
         h << "    };" << endl;
       }
     }
-    values = e->paramValues();
+    QStringList values = e->paramValues();
     if ( !values.isEmpty() ) {
       h << "    class " << enumName(e->param()) << endl;
       h << "    {" << endl;
@@ -1073,11 +1107,20 @@ int main( int argc, char **argv )
       cpp << e->code() << endl;
     }
     if ( e->type() == "Enum" ) {
-      cpp << "  QStringList values" << e->name() << ";" << endl;
-      QStringList values = e->values();
-      QStringList::ConstIterator it;
-      for( it =  values.begin(); it != values.end(); ++it ) {
-        cpp << "  values" << e->name() << ".append( \"" << *it << "\" );" << endl;
+      cpp << "  QValueList<KConfigSkeleton::ItemEnum::Choice> values"
+          << e->name() << ";" << endl;
+      QValueList<CfgEntry::Choice> choices = e->choices();
+      QValueList<CfgEntry::Choice>::ConstIterator it;
+      for( it = choices.begin(); it != choices.end(); ++it ) {
+        cpp << "  {" << endl;
+        cpp << "    KConfigSkeleton::ItemEnum::Choice choice;" << endl;
+        cpp << "    choice.name = \"" << (*it).name << "\";" << endl;
+        if ( setUserTexts ) {
+          cpp << "    choice.label = \"" << (*it).label << "\";" << endl;
+          cpp << "    choice.whatsThis = \"" << (*it).whatsThis << "\";" << endl;
+        }
+        cpp << "    values" << e->name() << ".append( choice );" << endl;
+        cpp << "  }" << endl;
       }
       if (e->param().isEmpty())
       {

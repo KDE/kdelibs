@@ -397,16 +397,23 @@ public:
   class ItemEnum:public ItemInt
   {
   public:
-    ItemEnum(const QString & group, const QString & name, int &reference,
-            const QStringList &choices, int defaultValue = 0);
+    struct Choice
+    {
+      QString name;
+      QString label;
+      QString whatsThis;
+    };
 
-    QStringList choices() const;
+    ItemEnum(const QString & group, const QString & name, int &reference,
+             const QValueList<Choice> &choices, int defaultValue = 0);
+
+    QValueList<Choice> choices() const;
 
     void readConfig(KConfig * config);
     void writeConfig(KConfig * config);
 
   private:
-      QStringList mChoices;
+      QValueList<Choice> mChoices;
   };
 
 

@@ -13,10 +13,22 @@ Test1::Test1(  const QString &transport, const QString &folder )
 
   addItemBool( "OneOption", mOneOption, true );
   addItemInt( "AnotherOption", mAnotherOption, 5, "Another Option" );
-  QStringList valuesListOption;
-  valuesListOption.append( "One" );
-  valuesListOption.append( "Two" );
-  valuesListOption.append( "Three" );
+  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesListOption;
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "One";
+    valuesListOption.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "Two";
+    valuesListOption.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "Three";
+    valuesListOption.append( choice );
+  }
   KConfigSkeleton::ItemEnum *itemListOption = new KConfigSkeleton::ItemEnum( currentGroup(), "ListOption", mListOption, valuesListOption, EnumListOption::One );
   addItem( "ListOption", itemListOption );
 

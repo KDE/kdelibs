@@ -21,15 +21,10 @@
 <!ELEMENT kcfgfile (parameter*)>
   <!ATTLIST kcfgfile name CDATA #IMPLIED>
   
-<!ELEMENT parameter EMPTY>
-  <!ATTLIST parameter name CDATA #REQUIRED>
-  <!ATTLIST parameter type CDATA #IMPLIED>
-  <!ATTLIST parameter max CDATA #IMPLIED>
-
 <!ELEMENT group (entry*)>
   <!ATTLIST group name CDATA #REQUIRED>
 
-<!ELEMENT entry (label?,whatsthis?,code?,values?,default?,parameter?)>
+<!ELEMENT entry (parameter?,label?,whatsthis?,choices?,code?,default*)>
   <!ATTLIST entry 
                   name CDATA #IMPLIED
 		  type (String|StringList|Font|Rect|Size|Color|
@@ -38,10 +33,21 @@
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
 
+<!ELEMENT parameter (values?)>
+  <!ATTLIST parameter name CDATA #REQUIRED>
+  <!ATTLIST parameter type CDATA #IMPLIED>
+  <!ATTLIST parameter max CDATA #IMPLIED>
+
+<!ELEMENT values (value+)>
+
 <!ELEMENT label (#PCDATA)>
 <!ELEMENT whatsthis (#PCDATA)>
+
+<!ELEMENT choices (choice+)>
+<!ELEMENT choice (label?,whatsthis?)>
+  <!ATTLIST choice name CDATA #REQUIRED>
+
 <!ELEMENT code (#PCDATA)>
-<!ELEMENT values (value+)>
 <!ELEMENT value (#PCDATA)>
 <!ELEMENT default (#PCDATA)>
   <!ATTLIST default code (true|false) #IMPLIED>

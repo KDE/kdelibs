@@ -203,9 +203,10 @@ QVariant KConfigSkeleton::ItemInt64::property() const
 }
 
 KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &name,
-                              int &reference, const QStringList &choices, 
-                              int defaultValue )
-  : ItemInt( group, name, reference, defaultValue ), mChoices(choices)
+                                     int &reference,
+                                     const QValueList<Choice> &choices,
+                                     int defaultValue )
+  : ItemInt( group, name, reference, defaultValue ), mChoices( choices )
 {
 }
 
@@ -221,10 +222,10 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
     int i = 0;
     mReference = -1;
     QString tmp = config->readEntry( mName ).lower();
-    for(QStringList::ConstIterator it = mChoices.begin();
+    for(QValueList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
-      if ((*it).lower() == tmp)
+      if ((*it).name.lower() == tmp)
       {
         mReference = i;
         break;
@@ -246,13 +247,13 @@ void KConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
     if ((mDefault == mReference) && !config->hasDefault( mName))
       config->revertToDefault( mName );
     else if ((mReference >= 0) && (mReference < (int) mChoices.count()))
-      config->writeEntry( mName, mChoices[mReference] );
+      config->writeEntry( mName, mChoices[mReference].name );
     else
       config->writeEntry( mName, mReference );
   }
 }
 
-QStringList KConfigSkeleton::ItemEnum::choices() const
+QValueList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
 {
   return mChoices;
 }

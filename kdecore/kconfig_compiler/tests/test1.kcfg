@@ -18,11 +18,11 @@
     <entry name="ListOption" type="Enum">
       <label>This is some funky option</label>
       <whatsthis>And this is a longer description of this option. Just wondering, how will the translations of those be handled?</whatsthis>
-      <values>
-        <value>One</value>
-        <value>Two</value>
-        <value>Three</value>
-      </values>
+      <choices>
+        <choice name="One"/>
+        <choice name="Two"/>
+        <choice name="Three"/>
+      </choices>
       <default>One</default>
     </entry>
   </group>

@@ -28,11 +28,27 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   addItemColor( "Color1", mColor[1], defaultColor[1], "color #1" );
   addItemColor( "Color2", mColor[2], defaultColor[2], "color #2" );
   addItemColor( "Color3", mColor[3], defaultColor[3], "color #3" );
-  QStringList valuesMouseAction;
-  valuesMouseAction.append( "Encrypt" );
-  valuesMouseAction.append( "Decrypt" );
-  valuesMouseAction.append( "CrashNBurn" );
-  valuesMouseAction.append( "PumpNDump" );
+  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "Encrypt";
+    valuesMouseAction.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "Decrypt";
+    valuesMouseAction.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "CrashNBurn";
+    valuesMouseAction.append( choice );
+  }
+  {
+    KConfigSkeleton::ItemEnum::Choice choice;
+    choice.name = "PumpNDump";
+    valuesMouseAction.append( choice );
+  }
   KConfigSkeleton::ItemEnum *itemMouseAction;
   itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), "right_mouse_action", mMouseAction[0], valuesMouseAction, EnumMouseAction::Decrypt );
   addItem( "MouseActionright", itemMouseAction );
