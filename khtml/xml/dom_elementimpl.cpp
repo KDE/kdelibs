@@ -455,7 +455,7 @@ void ElementImpl::recalcStyle( StyleChange change )
 {
     // ### should go away and be done in renderobject
     RenderStyle* _style = m_render ? m_render->style() : 0;
-    bool hasParentRenderer = parent() ? parent()->renderer() : false;
+    bool hasParentRenderer = parent() ? parent()->attached() : false;
 
 #if 0
     const char* debug;
@@ -776,8 +776,9 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
     }
 
     if (attr->ownerElement() == m_element) {
-	// Already have this attribute. Since we're not "replacing" it, return null.
-	return 0;
+       // Already have this attribute.
+       // DOMTS core-1 test "hc_elementreplaceattributewithself" says we should return it.
+       return attr;
     }
     unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
     NodeImpl::Id id = (attr->id() & mask);

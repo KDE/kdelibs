@@ -1617,8 +1617,8 @@ void KHTMLView::print(bool quick)
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
         m_part->xmlDocImpl()->updateStyleSelector();
         root->setPrintImages( printer->option("app-khtml-printimages") == "true");
-        root->setLayouted( false );
         root->setMinMaxKnown( false );
+        root->setLayouted( false );
         root->layout();
 
         bool printHeader = (printer->option("app-khtml-printheader") == "true");
@@ -2367,8 +2367,18 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
 
   if (!node) firstAncestor = 0;
 
+  DocumentImpl *doc = m_part->xmlDocImpl();
+  // ensure that embedded widgets don't lose their focus
+  if (!firstAncestor && doc->focusNode() && doc->focusNode()->renderer()
+  	&& doc->focusNode()->renderer()->isWidget())
+    return;
+
   // Set focus node on the document
-  m_part->xmlDocImpl()->setFocusNode(firstAncestor);
+#if DEBUG_CARETMODE > 1
+  kdDebug(6200) << k_funcinfo << "firstAncestor " << firstAncestor << ": "
+  	<< (firstAncestor ? firstAncestor->nodeName().string() : QString::null) << endl;
+#endif
+  doc->setFocusNode(firstAncestor);
   emit m_part->nodeActivated(Node(firstAncestor));
 }
 

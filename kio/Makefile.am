@@ -49,7 +49,7 @@ servicetypedir = $(kde_servicetypesdir)
 kded_DATA = kpasswdserver.desktop
 kdeddir = $(kde_servicesdir)/kded
 
-dataprotocol_DATA = data.protocol mailto.protocol mms.protocol
+dataprotocol_DATA = data.protocol mms.protocol
 dataprotocoldir = $(kde_servicesdir)
 
 dummy.cpp:

@@ -499,8 +499,8 @@ void KMdiChildView::slot_childDestroyed()
    // if we lost a child we uninstall ourself as event filter for the lost
    // child and its children
    const QObject* pLostChild = QObject::sender();
-   if (pLostChild != 0L) {
-      QObjectList *list = ((QObject*)(pLostChild))->queryList();
+   if ((pLostChild != 0L) && (pLostChild->isWidgetType())) {
+      QObjectList *list = ((QObject*)(pLostChild))->queryList( "QWidget" );
       list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
       QObjectListIt it( *list );          // iterate over all lost child widgets
       QObject * obj;
@@ -568,7 +568,7 @@ bool KMdiChildView::eventFilter(QObject *obj, QEvent *e )
       // if we lost a child we uninstall ourself as event filter for the lost
       // child and its children
       QObject* pLostChild = ((QChildEvent*)e)->child();
-      if (pLostChild != 0L) {
+      if ((pLostChild != 0L) && (pLostChild->isWidgetType())) {
          QObjectList *list = pLostChild->queryList( "QWidget" );
          list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
          QObjectListIt it( *list );          // iterate over all lost child widgets

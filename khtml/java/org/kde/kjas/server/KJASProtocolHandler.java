@@ -348,7 +348,7 @@ public class KJASProtocolHandler
     */
     public void sendGetURLDataCmd( String jobid, String url )
     {
-        Main.info( "sendGetURLCmd(" + jobid + ") url = " + url );
+        Main.debug( "sendGetURLCmd(" + jobid + ") url = " + url );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
         byte [] url_bytes = url.getBytes();
         int length = jobid.length() + url_bytes.length + 4;
@@ -378,7 +378,7 @@ public class KJASProtocolHandler
     */
     public void sendDataCmd( String id, int cmd )
     {
-        Main.info( "sendDataCmd(" + id + ") command = " + cmd );
+        Main.debug( "sendDataCmd(" + id + ") command = " + cmd );
         byte [] cmd_bytes = String.valueOf( cmd ).getBytes();
         int length = id.length() + cmd_bytes.length + 4;
         byte [] bytes = new byte[ length + 8 ];
@@ -406,7 +406,7 @@ public class KJASProtocolHandler
     */
     public void sendPutURLDataCmd( String jobid, String url )
     {
-        Main.info( "sendPutURLCmd(" + jobid + ") url = " + url );
+        Main.debug( "sendPutURLCmd(" + jobid + ") url = " + url );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
         byte [] url_bytes = url.getBytes();
         int length = jobid.length() + url_bytes.length + 4;
@@ -435,7 +435,7 @@ public class KJASProtocolHandler
     */
     public void sendPutData( String jobid, byte [] b, int off, int len )
     {
-        Main.info( "sendPutData(" + jobid + ") len = " + len );
+        Main.debug( "sendPutData(" + jobid + ") len = " + len );
         //length  = length of args plus 1 for code, 2 for seps and 1 for end
         int length = jobid.length() + len + 4;
         byte [] bytes = new byte[ length + 8 ];

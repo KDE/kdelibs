@@ -1889,8 +1889,7 @@ void KHTMLPart::checkCompleted()
   {
       if (d->m_focusNodeNumber >= 0)
           d->m_doc->setFocusNode(d->m_doc->nodeWithAbsIndex(d->m_focusNodeNumber));
-      else
-          d->m_doc->setFocusNode(0);
+
       d->m_focusNodeRestored = true;
   }
 
@@ -2309,6 +2308,7 @@ bool KHTMLPart::isCaretMode() const
 
 void KHTMLPart::setEditable(bool enable)
 {
+#if 0 // editable documents are not implemented in KDE 3.2
 #ifndef KHTML_NO_CARET
   if (isEditable() == enable) return;
   d->setFlagRecursively(&KHTMLPartPrivate::m_designMode, enable);
@@ -2321,6 +2321,7 @@ void KHTMLPart::setEditable(bool enable)
       view()->caretOff();
   }/*end if*/
 #endif // KHTML_NO_CARET
+#endif
 }
 
 bool KHTMLPart::isEditable() const
@@ -3355,7 +3356,8 @@ void KHTMLPart::slotViewPageInfo()
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
-  dlg->_url->setText("<a href=\"" + url().url() + "\">" + url().prettyURL() + "</a>" + editStr);
+  QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
+  dlg->_url->setText("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     dlg->_lastModified->hide();
@@ -5272,7 +5274,10 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
         //d->m_view->viewport()->repaint(false);
       }
 #else
-      if (d->m_selectionStart.isNull()) return;
+      // shouldn't be null but it can happen with dynamic updating of nodes
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          !d->m_selectionStart.handle()->renderer() ||
+          !d->m_selectionEnd.handle()->renderer()) return;
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
@@ -5519,8 +5524,10 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
         n = next;
       }
 #else
-      // shouldn't be null but who knows
-      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull()) return;
+      // shouldn't be null but it can happen with dynamic updating of nodes
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull() ||
+          !d->m_selectionStart.handle()->renderer() ||
+          !d->m_selectionEnd.handle()->renderer()) return;
       d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
       			d->m_selectionStart.handle(), d->m_startOffset,
 			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;

@@ -202,31 +202,17 @@ protected:
 private:
   void init( const QString& configFile );
 
-  /**
-   * If true, follow symlinks.
-   */
-  bool followLinks;
-
-  /**
-   * The current result buffer during inspection.
-   */
-  QString resultBuf;
+  bool bunused;
+  QString sunused;
 
   int finishResult();
-  void process(const QString &);
-  void tryit(unsigned char *, int);
-  int fsmagic(const char *, struct stat *);
-  int match(unsigned char *, int);
   int parse_line(char *line, int *rule, int lineno);
   int parse(char *, int);
   int buff_apprentice(char*buff);
   int apprentice(const QString &configFile);
-  int ascmagic(unsigned char *, int);
-  int textmagic(unsigned char *, int);
-  int tagmagic(unsigned char *, int);
 
   struct config_rec *conf; // this is also our "d pointer"
-  int accuracy;
+  int iunused;
 };
 
 #endif

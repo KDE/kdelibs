@@ -25,8 +25,19 @@ namespace khtml {
 
 static InlineFlowBox *findFlowBox(DOM::NodeImpl *node, long offset,
 		RenderArena *arena, RenderFlow *&cb, InlineBox **ibox = 0);
+static RenderObject *nextLeafRenderObject(RenderObject *r);
 
-
+/** Returns the previous suitable render object that is a leaf.
+ *
+ * Suitable means suitable for caret navigation.
+ */
+static inline RenderObject *nextSuitableLeafRenderObject(RenderObject *r)
+{
+  do {
+    r = nextLeafRenderObject(r);
+  } while (r && r->isTableCol());
+  return r;
+}
 
 /** Make sure the given node is a leaf node. */
 static void ensureLeafNode(NodeImpl *&node)
@@ -51,6 +62,7 @@ static RenderObject* findRenderer(NodeImpl *&node)
     if (!node) break;
     r = node->renderer();
   }
+  if (r && r->isTableCol()) r = nextSuitableLeafRenderObject(r);
   return r;
 }
 
@@ -102,18 +114,6 @@ static RenderObject *prevSuitableLeafRenderObject(RenderObject *r)
 {
   do {
     r = prevLeafRenderObject(r);
-  } while (r && r->isTableCol());
-  return r;
-}
-
-/** Returns the previous suitable render object that is a leaf.
- *
- * Suitable means suitable for caret navigation.
- */
-static inline RenderObject *nextSuitableLeafRenderObject(RenderObject *r)
-{
-  do {
-    r = nextLeafRenderObject(r);
   } while (r && r->isTableCol());
   return r;
 }

@@ -1181,6 +1181,8 @@ void RenderBlock::layoutInlineChildren( bool relayoutChildren )
                     o->setLayouted(false);
                 if( !o->layouted() )
                     o->layout();
+                if ( o->isPositioned() )
+                    o->containingBlock()->insertPositionedObject(  o );
             }
             else if(o->isText())
                 static_cast<RenderText *>(o)->deleteTextBoxes();

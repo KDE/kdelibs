@@ -58,6 +58,7 @@ class NETRootInfo : public NET {
 public:
     /**
         Indexes for the properties array.
+        @since 3.2
     **/
     // update also NETRootInfoPrivate::properties[] size when extending this
     enum { PROTOCOLS, WINDOW_TYPES, STATES, PROTOCOLS2, ACTIONS,
@@ -680,7 +681,7 @@ protected:
     virtual void changeCurrentDesktop(int) { }
 
     /**
-       @deprecated
+       @deprecated Use NETRootInfo2::changeActiveWindow() instead.
        A Window Manager should subclass NETRootInfo and reimplement this function
        when it wants to know when a Client made a request to change the active
        (focused) window. The changeActiveWindow() method in NETRootInfo2
@@ -732,6 +733,12 @@ private:
     friend class NETRootInfo2;
 };
 
+/**
+ This class is an extension of the NETRootInfo class, and exists solely
+ for binary compatibility reasons (adds new virtual methods). Simply
+ use it instead of NETRootInfo and override also the added virtual methods.
+ @since 3.2
+*/
 class NETRootInfo2
     : public NETRootInfo
 {
@@ -739,9 +746,20 @@ public:
     NETRootInfo2(Display *display, Window supportWindow, const char *wmName,
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
+    /**
+      Sends a ping with the given timestamp to the window, using
+      the _NET_WM_PING protocol.
+    */
     void sendPing( Window window, Time timestamp );
 protected:
     friend class NETRootInfo;
+    /**
+       A Window Manager should subclass NETRootInfo2 and reimplement this function
+       when it wants to receive replies to the _NET_WM_PING protocol.
+       @param window the window from which the reply came
+       @param timestamp timestamp of the ping
+     */
+    // virtual void gotPing( Window window, Time timestamp ) {};
     virtual void gotPing( Window, Time ) {};
     /**
        A Window Manager should subclass NETRootInfo2 and reimplement this function
@@ -799,6 +817,7 @@ class NETWinInfo : public NET {
 public:
     /**
         Indexes for the properties array.
+        @since 3.2
     **/
     // update also NETWinInfoPrivate::properties[] size when extending this
     enum { PROTOCOLS, PROTOCOLS2,
@@ -824,6 +843,8 @@ public:
 
        @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
+       
+       @since 3.2
     **/
     NETWinInfo(Display *display, Window window, Window rootWindow,
                const unsigned long properties[], int properties_size,
@@ -921,6 +942,7 @@ public:
        or NET::Unknown if none of the window types is supported.
 
        @return the type of the window
+       @since 3.2
     **/
     WindowType windowType( unsigned long supported_types ) const;
 
@@ -1140,42 +1162,50 @@ public:
      * is shown with user timestamp older than the time of the last
      * user action, it won't be activated after being shown, with the special
      * value 0 meaning not to activate the window after being shown.
+     * @since 3.2
      */
     void setUserTime( Time time );
     
     /**
      * Returns the time of last user action on the window, or -1 if not set.
+     * @since 3.2
      */
     Time userTime() const;
 
     /*    
      * Sets the startup notification id @p id on the window.
+     * @since 3.2
      */
     void setStartupId( const char* startup_id );
     
     /**
      * Returns the startup notification id of the window.
+     * @since 3.2
      */
     const char* startupId() const;
 
     /**
      * Sets actions that the window manager allows for the window.
+     * @since 3.2
      */
     void setAllowedActions( unsigned long actions );
 
     /**
      * Returns actions that the window manager allows for the window.
+     * @since 3.2
      */
     unsigned long allowedActions() const;
 
     /*
      * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow
      * for this window.
+     * @since 3.2
      */
     Window transientFor() const;
 
     /**
      * Returns the leader window for the group the window is in, if any.
+     * @since 3.2
      */    
     Window groupLeader() const;
     
@@ -1201,6 +1231,7 @@ public:
        @param event the event
        @param properties properties that changed
        @param properties_size size of the passed properties array
+       @since 3.2
 
     **/
     void event( XEvent* event, unsigned long* properties, int properties_size );

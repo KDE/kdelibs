@@ -1600,6 +1600,8 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
   ,dropCancel(true)
 {
   d = new KDockManagerPrivate;
+
+  d->readyToDrag = false;
   d->mainDockWidget=0;
   
 #ifndef NO_KDE2

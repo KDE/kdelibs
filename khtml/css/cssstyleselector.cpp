@@ -2808,9 +2808,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if (!primitiveValue)
                 return;
 
-            if (primitiveValue->getIdent() == CSS_VAL_AUTO)
+            if (primitiveValue->getIdent() == CSS_VAL_AUTO) {
                 style->setHasAutoZIndex();
-            else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+		return;
+            } else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
                 return; // Error case.
 	    else
 		z_index = (int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER);

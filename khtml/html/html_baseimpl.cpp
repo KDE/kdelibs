@@ -280,16 +280,23 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         // when attached, has no effect
         break;
     case ATTR_ONLOAD:
-        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
-              ->setHTMLEventListener(EventImpl::LOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
+      {
+        HTMLElementImpl *body = static_cast<HTMLDocumentImpl*>( getDocument() )->body();
+        // Body shouldn't be 0, but better not crash if it is.
+        if (body)
+            body->setHTMLEventListener(EventImpl::LOAD_EVENT,
+                getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
         break;
+      }
     case ATTR_ONUNLOAD:
-        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
-              ->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
+      {
+        HTMLElementImpl *body = static_cast<HTMLDocumentImpl*>( getDocument() )->body();
+        // Body shouldn't be 0, but better not crash if it is.
+        if (body)
+            body->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+                getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
-
+      }
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
