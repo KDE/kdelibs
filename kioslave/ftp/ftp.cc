@@ -620,7 +620,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
   char rsp = readresp();
   if (!rsp || ( rsp == '4' && rspbuf[1] == '2' && rspbuf[2] == '1' ))
   {
-      kdDebug() << "got 421 -> timeout" << endl;
+      kdDebug(7102) << "got 421 -> timeout" << endl;
     // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
     if ( cmd=="list" && maxretries > 0 ) // Only retry for "list". retr/stor/... need to redo the whole thing
     {
@@ -1249,7 +1249,7 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
     // --> we do better than Netscape :-)
     if ( mime->name() == KMimeType::defaultMimeType() )
     {
-      kdDebug() << "Setting guessed mime type to inode/directory for " << filename << endl;
+      kdDebug(7102) << "Setting guessed mime type to inode/directory for " << filename << endl;
       atom.m_uds = UDS_GUESSED_MIME_TYPE;
       atom.m_str = "inode/directory";
       entry.append( atom );
@@ -1300,10 +1300,10 @@ void Ftp::statAnswerNotFound( const QString & path, const QString & filename )
     // When e.g. uploading a file, we still need stat() to return "not found"
     // when the file doesn't exist.
     QString statSide = metaData(QString::fromLatin1("statSide"));
-    kdDebug() << "Ftp::stat statSide=" << statSide << endl;
+    kdDebug(7102) << "Ftp::stat statSide=" << statSide << endl;
     if ( statSide == "source" )
     {
-	kdDebug() << "Not found, but assuming found, because some servers don't allow listing" << endl;
+	kdDebug(7102) << "Not found, but assuming found, because some servers don't allow listing" << endl;
         // MS Server is incapable of handling "list <blah>" in a case insensitive way
         // But "retr <blah>" works. So lie in stat(), to get going...
 	//
@@ -1387,7 +1387,7 @@ void Ftp::stat( const KURL &url)
   // if we're only interested in "file or directory", we should stop here
   QString sDetails = metaData(QString::fromLatin1("details"));
   int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-  kdDebug() << "Ftp::stat details=" << details << endl;
+  kdDebug(7102) << "Ftp::stat details=" << details << endl;
   if ( details == 0 )
   {
      if ( !isDir && !ftpSize( path, 'I' ) ) // ok, not a dir -> is it a file ?
@@ -1499,7 +1499,7 @@ void Ftp::stat( const KURL &url)
             else
             {
                 linkURL = url;
-                kdDebug() << "e->link=" << e->link << endl;
+                kdDebug(7102) << "e->link=" << e->link << endl;
                 if ( e->link[0] == '/' )
                     linkURL.setPath( e->link ); // Absolute link
                 else
@@ -1508,7 +1508,7 @@ void Ftp::stat( const KURL &url)
                     linkURL.setPath( listarg ); // this is what we were listing (the link)
                     linkURL.setPath( linkURL.directory() ); // go up one dir
                     linkURL.addPath( e->link ); // replace link by its destination
-                    kdDebug() << "linkURL now " << linkURL.prettyURL() << endl;
+                    kdDebug(7102) << "linkURL now " << linkURL.prettyURL() << endl;
                 }
                 // Re-add the filename we're looking for
                 linkURL.addPath( filename );
@@ -1676,7 +1676,7 @@ FtpEntry *Ftp::ftpReadDir()
 FtpEntry* Ftp::ftpParseDir( char* buffer )
 {
   QString tmp;
-  kdDebug() << "ftpParseDir " << buffer << endl;
+  kdDebug(7102) << "ftpParseDir " << buffer << endl;
 
   static FtpEntry de;
   const char *p_access, *p_junk, *p_owner, *p_group;
@@ -1692,7 +1692,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
             // So we just ignore the number in front of the ",". Ok, its a hack :-)
             if ( strchr( p_size, ',' ) != 0L )
             {
-              //kdDebug() << "Size contains a ',' -> reading size again (/dev hack)" << endl;
+              //kdDebug(7102) << "Size contains a ',' -> reading size again (/dev hack)" << endl;
               if ((p_size = strtok(NULL," ")) == 0)
                 return 0L;
             }
@@ -1705,12 +1705,12 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
               p_date_1 = p_size;
               p_size = p_group;
               p_group = 0;
-	      //kdDebug() << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
+	      //kdDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
             }
             else
 	    {
               p_date_1 = strtok(NULL," ");
-              //kdDebug() << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
+              //kdDebug(7102) << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
 	    }
 
             if ( p_date_1 != 0 )
@@ -1803,13 +1803,13 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // Get month from first field
                     // NOTE : no, we don't want to use KLocale here
                     // It seems all FTP servers use the English way
-		    //kdDebug() << "Looking for month " << p_date_1 << endl;
+		    //kdDebug(7102) << "Looking for month " << p_date_1 << endl;
                     static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
                     for ( int c = 0 ; c < 12 ; c ++ )
                       if ( !strcmp( p_date_1, s_months[c]) )
                       {
-			//kdDebug() << "Found month " << c << " for " << p_date_1 << endl;
+			//kdDebug(7102) << "Found month " << c << " for " << p_date_1 << endl;
                         tmptr->tm_mon = c;
                         break;
                       }
