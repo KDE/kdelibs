@@ -157,7 +157,7 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
 void KEditListBox::typedSomething(const QString& text)
 {
     if(currentItem() >= 0) {
-        if(currentText() != m_lineEdit->text()) 
+        if(currentText() != m_lineEdit->text())
         {
             // IMHO changeItem() shouldn't do anything with the value
             // of currentItem() ... like changing it or emitting signals ...
@@ -183,16 +183,9 @@ void KEditListBox::typedSomething(const QString& text)
       }
       else
       {
-         const QString& currentText=m_lineEdit->text();
-         for (int i=0; i<count(); i++)
-         {
-            if (m_listBox->text(i)==currentText)
-            {
-               servNewButton->setEnabled(false);
-               return;
-            }
-         }
-         servNewButton->setEnabled(true);
+         StringComparisonMode mode = (StringComparisonMode) (ExactMatch | CaseSensitive );
+         bool enable = (m_listBox->findItem( text, mode ) == 0L);
+         servNewButton->setEnabled( enable );
       }
    }
 }
@@ -245,20 +238,26 @@ void KEditListBox::moveItemDown()
 
 void KEditListBox::addItem()
 {
+   // when m_checkAtEntering is true, the add-button is disabled, but this
+   // slot can still be called through Key_Return/Key_Enter. So we guard 
+   // against this.
+   if ( !servNewButton || !servNewButton->isEnabled() )
+       return;
+    
    const QString& currentTextLE=m_lineEdit->text();
    bool alreadyInList(false);
    //if we didn't check for dupes at the inserting we have to do it now
    if (!d->m_checkAtEntering)
    {
-      for (int i=0; i<count(); i++)
+      // first check current item instead of dumb iterating the entire list
+      if ( m_listBox->currentText() == currentTextLE )
+          alreadyInList = true;
+      else
       {
-         if (m_listBox->text(i)==currentTextLE)
-         {
-            alreadyInList=true;
-            break;
-         };
-      };
-   };
+          StringComparisonMode mode = (StringComparisonMode) (ExactMatch | CaseSensitive );
+          alreadyInList =(m_listBox->findItem(currentTextLE, mode) != 0);
+      }
+   }
 
    if ( servNewButton )
        servNewButton->setEnabled(false);
