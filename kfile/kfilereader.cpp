@@ -168,13 +168,12 @@ void KFileReader::setNameFilter(const QString& nameFilter)
 {
     filters.clear();
     // Split on white space
-    char *s = qstrdup(nameFilter.latin1());
-    char *g = strtok(s, " ");
-    while (g) {
-	filters.append(new QRegExp(QString::fromLatin1(g), false, true ));
-	g = strtok(0, " ");
-    }
-    delete [] s;
+
+    QStringList list = QStringList::split(' ', nameFilter);
+
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+	filters.append(new QRegExp(*it, false, true ));
+
     myDirtyFlag = true;
 }
 
@@ -260,7 +259,7 @@ void KFileReader::startLoading()
 {
     if (myJob != 0) // sorry, get out of my way
 	myJob->kill();
-    // debug("KFileReader::startLoading( %s )", this->url().latin1());
+    // kdDebug() << "KFileReader::startLoading( " << this->url() << " )" << endl;
     myJob = KIO::listDir(*this, false /* no progress info */);
     CHECK_PTR(myJob);
 

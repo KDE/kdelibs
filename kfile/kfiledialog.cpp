@@ -170,7 +170,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	for(; (fi = it.current()); ++it){
             KDesktopFile dFile(fi->absFilePath());
             if(dFile.hasDeviceType()) {
-		debug("------------> got one: %s", fi->absFilePath().latin1());
+		kdDebug()"got one: " << fi->absFilePath() << endl;
 		tmp = dFile.readURL();
 		if ( !tmp.isEmpty() )
 		    combo->addDefaultURL( tmp,
@@ -193,7 +193,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     }
 
     if (!dirName.isEmpty())
-	*lastDirectory = KCmdLineArgs::makeURL( dirName.latin1() );
+	*lastDirectory = KCmdLineArgs::makeURL( QFile::encodeName(dirName) );
     else
 	if (lastDirectory->isEmpty())
 	    *lastDirectory = QDir::currentDirPath();
@@ -843,7 +843,7 @@ void KFileDialog::setSelection(const QString& url)
       u = KURL( url );
 
     if (u.isMalformed()) { // if it still is
-        qWarning("%s is not a correct argument for setSelection!", url.latin1());
+        kdWarning() << url << " is not a correct argument for setSelection!" << endl;
 	return;
     }
 

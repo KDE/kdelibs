@@ -30,16 +30,19 @@
 #include <kstddirs.h>
 #include <kapp.h>
 #include <kurl.h>
+#include <kdebug.h>
+
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qstringlist.h>
+
 #include <sys/types.h>
 #include <utime.h>
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
-    qWarning("KRecentDocument::add for %s", openStr.latin1());
+    kdWarning() << "KRecentDocument::add for " << openStr << endl;
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QString::fromLatin1("RecentDocuments"));
@@ -74,15 +77,16 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
 	   == QString::fromLatin1(kapp->argv()[0]) + 
 	   QString::fromLatin1(" ") + openStr) 
 	{
-            qWarning("Touching");
-            utime(ddesktop.latin1(), NULL);
+            kdWarning() << "Touching" << endl;
+            utime(QFile::encodeName(ddesktop), NULL);
             return;
         }
         // if not append a (num) to it
         for(i=2; i < maxEntries+1 && QFile::exists(dStr + QString::fromLatin1(".desktop")); ++i)
-            dStr.sprintf("%s[%d]", dStr.latin1(), i);
+#warning HPB: this looks buggy
+            dStr.sprintf("%s[%d]", dStr.utf8(), i);
     }
-    dStr = dStr + QString::fromLatin1(".desktop");
+    dStr += QString::fromLatin1(".desktop");
 
     QDir dir(path);
     // check for max entries, delete oldest files if exceeded

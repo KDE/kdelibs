@@ -1241,8 +1241,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
   // (permissions have to set after, in case of suid and sgid)
   if ((owner != strOwner) || (group != strGroup))
   {
-    struct passwd* pw = getpwnam(owner.latin1());
-    struct group* g = getgrnam(group.latin1());
+    struct passwd* pw = getpwnam(QFile::encodeName(owner));
+    struct group* g = getgrnam(QFile::encodeName(group));
     if ( pw == 0L ) {
       kdError(1202) << " ERROR: No user " << owner << endl;
       return;
