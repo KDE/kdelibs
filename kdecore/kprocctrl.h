@@ -61,17 +61,23 @@ public:
 
 public:
  	
- 	/**
-	 * Only a single instance of this class is allowed at a time,
-	 * and this static variable is used to track the one instance.
-	 */
-	static KProcessController *theKProcessController;
+  /**
+   * Only a single instance of this class is allowed at a time,
+   * and this static variable is used to track the one instance.
+   */
+  static KProcessController *theKProcessController;
 
-private:
-
+  /**
+   * Automatically called upon SIGCHLD.
+   *
+   * Normally you do not need to do anything with this function but
+   * if your application needs to disable SIGCHLD for some time for
+   * reasons beyond your control, you should call this function afterwards
+   * to make sure that no SIGCHLDs where missed.
+   */
   static void theSigCHLDHandler(int signal);
   // handler for sigchld
-
+private:
   int fd[2];
   QSocketNotifier *notifier;
 
