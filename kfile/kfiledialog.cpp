@@ -681,6 +681,9 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	KFileDialogConfigureDlg conf(this, "filedlgconf");
 	if (conf.exec() == QDialog::Accepted) {
 	
+	    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
+						 false);
+	    
 	    delete d->boxLayout; // this removes all child layouts too
 	    d->boxLayout = 0;
 	
