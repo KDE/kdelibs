@@ -1335,7 +1335,63 @@ QSizePolicy KToolBar::sizePolicy() const
 
 QSize KToolBar::sizeHint() const
 {
-    return QToolBar::sizeHint();
+    QSize minSize(0,0);
+    KToolBar *ncThis = const_cast<KToolBar *>(this);
+
+    ncThis->polish();
+
+    int margin = static_cast<QWidget*>(ncThis)->layout()->margin();
+    switch( barPos() )
+    {
+     case KToolBar::Top:
+     case KToolBar::Bottom:
+       for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
+       {
+          if ( w->inherits( "KToolBarSeparator" ) &&
+             !( static_cast<KToolBarSeparator*>(w)->showLine() ) )
+          {
+             minSize += w->sizeHint();
+          }
+          else
+          {
+             QSize sh = w->sizeHint();
+             if (!sh.isValid())
+                sh = w->minimumSize();
+             minSize = minSize.expandedTo(QSize(0, sh.height()));
+             minSize += QSize(sh.width()+1, 0);
+          }
+       }
+       minSize += QSize(QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
+       minSize += QSize(margin*2, margin*2);
+       break;
+
+     case KToolBar::Left:
+     case KToolBar::Right:
+       for ( QWidget *w = ncThis->widgets.first(); w; w = ncThis->widgets.next() )
+       {
+          if ( w->inherits( "KToolBarSeparator" ) &&
+             !( static_cast<KToolBarSeparator*>(w)->showLine() ) )
+          {
+             minSize += w->sizeHint();
+          }
+          else
+          {
+             QSize sh = w->sizeHint();
+             if (!sh.isValid())
+                sh = w->minimumSize();
+             minSize = minSize.expandedTo(QSize(sh.width(), 0));
+             minSize += QSize(0, sh.height()+1);
+          }
+       }
+       minSize += QSize(0, QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
+       minSize += QSize(margin*2, margin*2);
+       break;
+
+     default:
+       minSize = QToolBar::sizeHint();
+       break;
+    }
+    return minSize;
 }
 
 QSize KToolBar::minimumSize() const
@@ -1345,7 +1401,7 @@ QSize KToolBar::minimumSize() const
 
 QSize KToolBar::minimumSizeHint() const
 {
-    return QToolBar::minimumSizeHint();
+    return sizeHint();
 }
 
 bool KToolBar::highlight() const
