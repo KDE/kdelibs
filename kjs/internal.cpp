@@ -710,7 +710,14 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
     case GlobalCode:
       scope = List();
       scope.append(glob);
+#ifndef KJS_PURE_ECMA
+      if (thisV.isNull())
+          thisVal = Object(static_cast<ObjectImp*>(glob.imp()));
+      else
+          thisVal = thisV;
+#else
       thisVal = Object(static_cast<ObjectImp*>(glob.imp()));
+#endif
       break;
     case FunctionCode:
     case AnonymousCode:
