@@ -811,7 +811,7 @@ QString HTMLInputElementImpl::encoding()
 {
     QString _encoding;
 
-    if(!_name.length()) return _encoding;
+    if(!_name.length() || _disabled) return _encoding;
 
     switch(_type)
     {
@@ -1250,6 +1250,22 @@ void HTMLSelectElementImpl::reset()
     // ###
 }
 
+QString HTMLSelectElementImpl::encoding()
+{
+    QString _encoding;
+
+    if(!_name.length() || _disabled) return _encoding;
+
+    _encoding = encodeString( _name.string() );
+    _encoding += '=';
+    if(_size > 1 || _multiple)
+      _encoding += encodeString(static_cast<QListBox *>(w)->currentText());
+    else
+      _encoding += encodeString(static_cast<QComboBox *>(w)->currentText());
+
+    return _encoding;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -1543,3 +1559,15 @@ void HTMLTextAreaElementImpl::reset()
 	edit->setText("");
 }
 
+QString HTMLTextAreaElementImpl::encoding()
+{
+    QString _encoding;
+
+    if(!_name.length() || _disabled) return _encoding;
+
+    _encoding = encodeString( _name.string() );
+    _encoding += '=';
+    _encoding += encodeString(static_cast<QMultiLineEdit *>(w)->text());
+
+    return _encoding;
+}

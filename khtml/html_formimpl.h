@@ -350,6 +350,7 @@ public:
     virtual bool childrenRendered() { return false; }
 
     virtual void reset();
+    virtual QString encoding();
 
 protected:
     int _size;
@@ -451,6 +452,7 @@ public:
     virtual void calcMinMaxWidth();
 
     virtual void reset();
+    virtual QString encoding();
 
 protected:
     int _rows;
