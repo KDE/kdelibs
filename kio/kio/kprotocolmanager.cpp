@@ -21,6 +21,7 @@
 #include <string.h>
 #include <sys/utsname.h>
 
+#include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -80,6 +81,9 @@ void KProtocolManager::reparseConfiguration()
 {
   delete d;
   d = 0;
+  
+  // Force the slave config to re-read its config...
+  KIO::SlaveConfig::self()->reset ();
 }
 
 KConfig *KProtocolManager::config()
@@ -340,10 +344,8 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
         bool isRevMatch = false;
         if (!noProxy.isEmpty())
         {
-           QString qhost = url.host().lower();
-           const char *host = qhost.latin1();
-           QString qno_proxy = noProxy.lower();
-           const char *no_proxy = qno_proxy.latin1();
+           const char *host = url.host().lower().latin1();
+           const char *no_proxy = noProxy.lower().latin1();
            isRevMatch = revmatch(host, no_proxy);
            // If the hostname does not contain a dot, check if
            // <local> is part of noProxy.
@@ -380,56 +382,19 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
   return d->protocol;
 }
 
-
-/*==================================== OTHERS ===============================*/
-
-bool KProtocolManager::markPartial()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "MarkPartial", true );
-}
-
-int KProtocolManager::minimumKeepSize()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readNumEntry( "MinimumKeepSize",
-                            DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
-}
-
-bool KProtocolManager::autoResume()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "AutoResume", false );
-}
-
-bool KProtocolManager::persistentConnections()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( QString::null );
-  return cfg->readBoolEntry( "PersistentConnections", true );
-}
-
-QString KProtocolManager::proxyConfigScript()
-{
-  KConfig *cfg = config();
-  cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( "Proxy Config Script" );
-}
+/*================================= USER-AGENT SETTINGS =====================*/
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
 {
-  QString user_agent = KIO::SlaveConfig::self()->configData("http", hostname, "UserAgent");
+  QString useragent = KIO::SlaveConfig::self()->configData("http", hostname, "UserAgent");
 
-  if (user_agent.isEmpty())
-    user_agent = defaultUserAgent();
+  // Return the default user-agent if none is specified
+  // for the requested host.
+  if (useragent.isEmpty())
+    return defaultUserAgent();
 
-  return user_agent;
+  return useragent;
 }
-
-/*================================= USER-AGENT SETTINGS =====================*/
 
 QString KProtocolManager::defaultUserAgent( )
 {
@@ -487,3 +452,40 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
   return d->useragent;
 }
 
+/*==================================== OTHERS ===============================*/
+
+bool KProtocolManager::markPartial()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  return cfg->readBoolEntry( "MarkPartial", true );
+}
+
+int KProtocolManager::minimumKeepSize()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  return cfg->readNumEntry( "MinimumKeepSize",
+                            DEFAULT_MINIMUM_KEEP_SIZE ); // 5000 byte
+}
+
+bool KProtocolManager::autoResume()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  return cfg->readBoolEntry( "AutoResume", false );
+}
+
+bool KProtocolManager::persistentConnections()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  return cfg->readBoolEntry( "PersistentConnections", true );
+}
+
+QString KProtocolManager::proxyConfigScript()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( "Proxy Settings" );
+  return cfg->readEntry( "Proxy Config Script" );
+}

@@ -256,8 +256,9 @@ void KIO::SessionData::reset()
           (*it) = QString::fromLatin1("en");
     }
     d->language = languageList.join( ", " );
-
-    d->charsets = QTextCodec::codecForLocale()->mimeName(); // that's the right solution, said Lars
+    
+    // that's the right solution, said Lars
+    d->charsets = QTextCodec::codecForLocale()->mimeName();
     KProtocolManager::reparseConfiguration();
 }
 
