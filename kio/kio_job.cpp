@@ -243,10 +243,8 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
     return false;
   }
   
-  if ( m_iGUImode != NONE ) {
-    QString buffer = i18n("Mounting %1...").arg( _dev );
-    m_pDialog = createDialog( buffer.latin1() );
-  }
+  if ( m_iGUImode != NONE )
+    m_pDialog = createDialog( i18n("Mounting %1...").arg(_dev));
   
   return KIOJobBase::mount( _ro, _fstype, _dev, _point );  
 }
@@ -260,10 +258,8 @@ bool KIOJob::unmount( const char *_point ) {
     return false;
   }
   
-  if ( m_iGUImode != NONE ) {
-    QString buffer = i18n("Unmounting %1...").arg( _point );
-    m_pDialog = createDialog( buffer.latin1() );
-  }
+  if ( m_iGUImode != NONE )
+    m_pDialog = createDialog( i18n("Unmounting %1...").arg(_point));
   
   return KIOJobBase::unmount( _point );  
 }
@@ -987,7 +983,7 @@ void KIOJob::slotDispatch( int, int &result ) {
 }
 
 
-QDialog* KIOJob::createDialog( const char *_text ) {
+QDialog* KIOJob::createDialog( const QString &_text ) {
   QDialog* dlg = new QDialog;
   QVBoxLayout* layout = new QVBoxLayout( dlg, KDialog::marginHint(),
 					 KDialog::spacingHint() );

@@ -463,7 +463,7 @@ protected:
   KIOSlave* createSlave(  const char *_protocol, const char *_host, const char *_user,
 			  const char *_pass, int& _error, QString& _error_text );
 
-  QDialog* createDialog( const char *_text );
+  QDialog* createDialog( const QString &_text );
   
   void createGUI();
 
