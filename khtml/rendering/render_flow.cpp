@@ -1020,8 +1020,6 @@ void RenderFlow::calcMinMaxWidth()
                     margins += child->marginRight();
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
-// 		if ( cstyle->whiteSpace() != NORMAL )
-// 		    childMin = childMax;
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
 
@@ -1163,6 +1161,7 @@ void RenderFlow::calcMinMaxWidth()
 
     setMinMaxKnown();
 
+    //kdDebug( 6040 ) << "Text::calcMinMaxWidth(" << this << "): min = " << m_minWidth << " max = " << m_maxWidth << endl;
     // ### compare with min/max width set in style sheet...
 }
 

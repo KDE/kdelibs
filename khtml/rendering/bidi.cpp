@@ -996,7 +996,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 // 			  << endl;
 	    } else {
 #endif
-            if (style()->whiteSpace() == NOWRAP ) {
+            if (style()->whiteSpace() == NOWRAP || t->style()->whiteSpace() == NOWRAP ) {
                 tmpW += t->maxWidth();
                 pos = len;
                 len = 0;
@@ -1047,7 +1047,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
         } else
             KHTMLAssert( false );
 
-        if( w + tmpW > width+1 && style()->whiteSpace() != NOWRAP ) {
+        if( w + tmpW > width+1 && style()->whiteSpace() != NOWRAP && o->style()->whiteSpace() != NOWRAP ) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.

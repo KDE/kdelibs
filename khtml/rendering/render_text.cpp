@@ -649,7 +649,6 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 
 void RenderText::calcMinMaxWidth()
 {
-    //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): known=" << minMaxKnown() << endl;
     KHTMLAssert( !minMaxKnown() );
 
     // ### calc Min and Max width...
@@ -712,6 +711,7 @@ void RenderText::calcMinMaxWidth()
         m_minWidth = m_maxWidth;
 
     setMinMaxKnown();
+    //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): min = " << m_minWidth << " max = " << m_maxWidth << endl;
 }
 
 int RenderText::minXPos() const
