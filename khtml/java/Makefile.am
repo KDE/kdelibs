@@ -1,3 +1,5 @@
+KDE_CXXFLAGS = -UQT_NO_COMPAT
+
 lib_LTLIBRARIES = libkjava.la
 libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \
 	kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp \

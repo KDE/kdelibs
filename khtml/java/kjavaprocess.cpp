@@ -6,12 +6,7 @@
 #include <qtextstream.h>
 #include <qmap.h>
 #include <unistd.h>
-#if QT_VERSION < 300
 #include <qlist.h>
-#define QPtrList    QList
-#else
-#include <qptrlist.h>
-#endif
 
 class KJavaProcessPrivate
 {
@@ -22,7 +17,7 @@ private:
     QString mainClass;
     QString extraArgs;
     QString classArgs;
-    QPtrList<QByteArray> BufferList;
+    QList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
 };
 
