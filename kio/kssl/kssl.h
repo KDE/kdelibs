@@ -273,6 +273,13 @@ public:
 	 */
 	const KSSLSession* session() const;
 
+	/**
+	 *  Determine if we are currently reusing an SSL session ID.
+	 *
+	 *  @return true if we are reusing a session ID.
+	 */
+	bool reusingSession() const;
+
 private:
 	static bool m_bSSLWorks;
 	bool m_bInit;

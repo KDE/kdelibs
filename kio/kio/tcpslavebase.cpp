@@ -2,7 +2,7 @@
  * $Id$
  *
  * Copyright (C) 2000 Alex Zepeda <zipzippy@sonic.net
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>
  *
  * This file is part of the KDE project
@@ -41,13 +41,8 @@
 
 #include <ksocks.h>
 #include <kdebug.h>
-#include <kssl.h>
-#include <ksslcertificate.h>
-#include <ksslcertificatecache.h>
-#include <ksslcertificatehome.h>
+#include <ksslall.h>
 #include <ksslcertdlg.h>
-#include <ksslpkcs12.h>
-#include <ksslx509v3.h>
 #include <kmessagebox.h>
 
 #include <klocale.h>
@@ -439,7 +434,18 @@ int TCPSlaveBase::startTLS()
       d->kssl->setPeerHost(d->host);
     }
 
-    certificatePrompt();
+    if (hasMetaData("ssl_session_id")) {
+        KSSLSession *s = KSSLSession::fromString(metaData("ssl_session_id"));
+        if (s) {
+            if (!d->kssl->setSession(s))
+                certificatePrompt();
+            delete s;
+        } else {
+            certificatePrompt();
+        }
+    } else {
+        certificatePrompt();
+    }
 
     int rc = d->kssl->connect(m_iSock);
     if (rc < 0) {
@@ -447,14 +453,21 @@ int TCPSlaveBase::startTLS()
         return -2;
     }
 
+    if (hasMetaData("ssl_send_session_id")) {
+        setMetaData("ssl_session_id", d->kssl->session()->toString());
+    }
+
     d->usingTLS = true;
     setMetaData("ssl_in_use", "TRUE");
-    rc = verifyCertificate();
-    if (rc != 1) {
-        setMetaData("ssl_in_use", "FALSE");
-        d->usingTLS = false;
-        delete d->kssl;
-        return -3;
+
+    if (!d->kssl->reusingSession()) {
+        rc = verifyCertificate();
+        if (rc != 1) {
+            setMetaData("ssl_in_use", "FALSE");
+            d->usingTLS = false;
+            delete d->kssl;
+            return -3;
+        }
     }
 
     d->savedMetaData = mOutgoingMetaData;
@@ -1193,7 +1206,18 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
 
     d->kssl->reInitialize();
 
-    certificatePrompt();
+    if (hasMetaData("ssl_session_id")) {
+        KSSLSession *s = KSSLSession::fromString(metaData("ssl_session_id"));
+        if (s) {
+            if (!d->kssl->setSession(s))
+                certificatePrompt();
+            delete s;
+        } else {
+            certificatePrompt();
+        }
+    } else {
+        certificatePrompt();
+    }
 
     if ( !d->realHost.isEmpty() )
     {
@@ -1212,16 +1236,21 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         return false;
     }
 
+    if (hasMetaData("ssl_send_session_id")) {
+        setMetaData("ssl_session_id", d->kssl->session()->toString());
+    }
+
     setMetaData("ssl_in_use", "TRUE");
 
-    int rc = verifyCertificate();
-    if ( rc != 1 )
-    {
-        d->status = -1;
-        closeDescriptor();
-        if ( sendError )
-            error( ERR_COULD_NOT_CONNECT, msgHost);
-        return false;
+    if (!d->kssl->reusingSession()) {
+        int rc = verifyCertificate();
+        if ( rc != 1 ) {
+            d->status = -1;
+            closeDescriptor();
+            if ( sendError )
+                error( ERR_COULD_NOT_CONNECT, msgHost);
+            return false;
+        }
     }
 
     d->needSSLHandShake = false;

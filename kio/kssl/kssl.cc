@@ -289,17 +289,26 @@ int rc;
 	}
 
 /*
-	if (!setVerificationLogic())
+	if (!setVerificationLogic()) {
+		d->kossl->SSL_shutdown(d->m_ssl);
+		d->kossl->SSL_free(d->m_ssl);
+		d->m_ssl = 0;
 		return -1;
+	}
 */
 
 	if (!d->lastInitTLS)
 		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+
 	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
-	if (rc == 0)
+	if (rc == 0) {
+		d->kossl->SSL_shutdown(d->m_ssl);
+		d->kossl->SSL_free(d->m_ssl);
+		d->m_ssl = 0;
 		return rc;
+	}
 
 	rc = d->kossl->SSL_accept(d->m_ssl);
 	if (rc == 1) {
@@ -310,6 +319,9 @@ int rc;
 		kdDebug(7029) << "KSSL accept failed - rc = " << rc << endl;
 		kdDebug(7029) << "                      ERROR = "
 			      << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
+		d->kossl->SSL_shutdown(d->m_ssl);
+		d->kossl->SSL_free(d->m_ssl);
+		d->m_ssl = 0;
 		return -1;
 	}
 
@@ -358,17 +370,26 @@ int rc;
 	}
 
 /*
-	if (!setVerificationLogic())
+	if (!setVerificationLogic()) {
+		d->kossl->SSL_shutdown(d->m_ssl);
+		d->kossl->SSL_free(d->m_ssl);
+		d->m_ssl = 0;
 		return -1;
+	}
 */
 
 	if (!d->lastInitTLS)
 		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+
 	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
-	if (rc == 0)
+	if (rc == 0) {
+		d->kossl->SSL_shutdown(d->m_ssl);
+		d->kossl->SSL_free(d->m_ssl);
+		d->m_ssl = 0;
 		return rc;
+	}
 
 	rc = d->kossl->SSL_connect(d->m_ssl);
 	if (rc == 1) {
@@ -380,6 +401,9 @@ int rc;
 		kdDebug(7029) << "                      ERROR = "
 			      << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
 		d->kossl->ERR_print_errors_fp(stderr);
+		d->kossl->SSL_shutdown(d->m_ssl);
+		d->kossl->SSL_free(d->m_ssl);
+		d->m_ssl = 0;
 		return -1;
 	}
 
@@ -591,6 +615,14 @@ EVP_PKEY *k = pkcs->getPrivateKey();
 
 const KSSLSession* KSSL::session() const {
 	return d->session;
+}
+
+bool KSSL::reusingSession() const {
+#ifdef KSSL_HAVE_SSL
+	return (d->m_ssl && d->kossl->SSL_session_reused(d->m_ssl));
+#else
+	return false;
+#endif
 }
 
 
