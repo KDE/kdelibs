@@ -491,6 +491,9 @@ void KRun::slotFinished( int /* _id */ )
 
 void KRun::slotError( int, int _errid, const char *_errortext )
 {
+  if ( _errid == ERR_WARNING )
+    return; //let's ingore warnings for now
+
   kdebug( KDEBUG_ERROR, 7010,"######## ERROR %d %s", _errid, _errortext );
   // HACK
   // Display error message
