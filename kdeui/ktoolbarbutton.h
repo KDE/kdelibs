@@ -137,6 +137,9 @@ public:
    */
   virtual void setIcon(const QString &icon);
 
+  virtual void setIcon( const QPixmap &pixmap )
+  { return QToolButton::setIcon( pixmap ); }
+
   /**
    * Set the pixmaps for this toolbar button from a QIconSet.
    * If you call this you don't need to call any of the other methods
@@ -277,6 +280,10 @@ protected:
   QSize sizeHint() const;
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
+
+  bool isRaised() const;
+  bool isActive() const;
+  int iconTextMode() const;
 
 protected slots:
   void slotClicked();
