@@ -178,7 +178,7 @@ void ScriptInterpreter::mark()
 {
   Interpreter::mark();
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::mark marking " << m_domObjects.count() << " DOM objects" << endl;
+  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
 #endif
   QPtrDictIterator<DOMObject> it( m_domObjects );
   for( ; it.current(); ++it )
@@ -191,8 +191,9 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
   {
     int id = m_evt->handle()->id();
     bool eventOk = ( // mouse events
-      id == DOM::EventImpl::KHTML_ECMA_CLICK_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
-      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT ||
+      id == DOM::EventImpl::CLICK_EVENT ||
+      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
+      id == DOM::EventImpl::KHTML_ECMA_CLICK_EVENT || id == DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT ||
       // keyboard events
       id == DOM::EventImpl::KHTML_KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
       id == DOM::EventImpl::KHTML_KEYUP_EVENT ||
