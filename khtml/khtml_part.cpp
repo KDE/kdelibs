@@ -553,10 +553,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
 
   if (!d->m_restored)
-  {
-    kdDebug( 6050 ) << "closing old URL" << endl;
     closeURL();
-  }
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -624,8 +621,6 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
-
-  kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
   connect( d->m_job, SIGNAL( speed( KIO::Job*, unsigned long ) ),
            this, SLOT( slotJobSpeed( KIO::Job*, unsigned long ) ) );
