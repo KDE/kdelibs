@@ -26,7 +26,7 @@
 #include <kstringhandler.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
-: KEdFind( parent, name, false, true )
+: KEdFind( parent, name, false )
 {
 //  connect( this, SIGNAL( done() ),
 //           this, SLOT( slotDone() ) );
