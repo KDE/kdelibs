@@ -83,12 +83,15 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 			uri.setPath(val);
 		}
 	}
-	else if (!(val = entry->field("rm")).isEmpty())
+	else if (!(val = entry->field("rp")).isEmpty())
 	{
-		prt->setLocation(i18n("Remote queue (%1) on %2").arg(entry->field("rp")).arg(val));
+		QString rm = entry->has("rm") ? 
+				entry->field("rm") :
+				LprSettings::self()->defaultRemoteHost();
+		prt->setLocation(i18n("Remote queue (%1) on %2").arg(val).arg(rm));
 		uri.setProtocol("lpd");
-		uri.setHost(val);
-		uri.setPath("/" + entry->field("rp"));
+		uri.setHost(rm);
+		uri.setPath("/" + val);
 	}
 	else
 		prt->setLocation(i18n("Unknown (unrecognized entry)"));

@@ -35,6 +35,7 @@ public:
 	Mode mode() const		{ return m_mode; }
 	void setMode(Mode m)	{ m_mode = m; }
 	QString printcapFile();
+	QString defaultRemoteHost();
 	bool isLocalPrintcap()		{ return m_local; }
 	QString baseSpoolDir()		{ return m_spooldir; }
 
@@ -49,6 +50,7 @@ private:
 	QString	m_printcapfile;
 	bool	m_local;
 	QString	m_spooldir;
+	QString m_defaultremotehost;
 };
 
 #endif

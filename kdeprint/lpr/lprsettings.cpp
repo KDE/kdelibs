@@ -25,6 +25,9 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
+#define LPDCONF "/etc/lpd.conf"
+#define PRINTCAP "/etc/printcap"
+
 LprSettings* LprSettings::m_self = 0;
 
 LprSettings::LprSettings(QObject *parent, const char *name)
@@ -60,7 +63,7 @@ void LprSettings::init()
 	else
 	{
 		// try to guess
-		if (QFile::exists("/etc/lpd.conf"))
+		if (QFile::exists(LPDCONF))
 			m_mode = LPRng;
 		else
 			m_mode = LPR;
@@ -79,11 +82,11 @@ QString LprSettings::printcapFile()
 	if (m_printcapfile.isEmpty())
 	{
 		// default value
-		m_printcapfile = "/etc/printcap";
+		m_printcapfile = PRINTCAP;
 		if (m_mode == LPRng)
 		{
 			// look into /etc/lpd/conf file
-			QFile	cf("/etc/lpd.conf");
+			QFile cf(LPDCONF);
 			if (cf.open(IO_ReadOnly))
 			{
 				QTextStream	t(&cf);
@@ -107,6 +110,30 @@ QString LprSettings::printcapFile()
 		}
 	}
 	return m_printcapfile;
+}
+
+QString LprSettings::defaultRemoteHost()
+{
+	if (m_defaultremotehost.isEmpty())
+	{
+		m_defaultremotehost = "localhost";
+		QFile cf(LPDCONF);
+		if (cf.open(IO_ReadOnly))
+		{
+			QTextStream	t(&cf);
+			QString	line;
+			while (!t.atEnd())
+			{
+				line = t.readLine().stripWhiteSpace();
+				if (line.startsWith("default_remote_host"))
+				{
+					QString	hostname = line.mid(20).stripWhiteSpace();
+					m_defaultremotehost = hostname;
+				}
+			}
+		}		
+	}
+	return m_defaultremotehost;
 }
 
 void LprSettings::reload()
