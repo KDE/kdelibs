@@ -27,6 +27,7 @@
  * $Revision$
  */
 
+namespace std { };
 using namespace std;
 
 #include <list>
