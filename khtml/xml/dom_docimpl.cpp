@@ -732,6 +732,7 @@ void DocumentImpl::detach()
         m_render->detach();
 
     m_render = 0;
+    m_view = 0;
 }
 
 void DocumentImpl::slotFinishedParsing()

@@ -160,7 +160,6 @@ void HTMLDocumentImpl::detach()
         b->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
-    m_view = 0;
 
     DocumentImpl::detach();
 }
