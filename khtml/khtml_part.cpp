@@ -2985,7 +2985,13 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if (!d->m_referrer.isEmpty())
     args.metaData()["referrer"] = d->m_referrer;
 
-  if ( button == MidButton && (state & ShiftButton) )
+  if ( button == 0 && (state & ShiftButton) && (state & ControlButton) )
+  {
+    emit d->m_extension->createNewWindow( cURL, args );
+    return;
+  }
+
+  if ( state & ShiftButton)
   {
     KParts::WindowArgs winArgs;
     winArgs.lowerWindow = true;
@@ -2994,7 +3000,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
   }
 
-  if ( button == LeftButton && (state & ControlButton) )
+  if ( state & ControlButton )
   {
     args.setNewTab(true);
     emit d->m_extension->createNewWindow( cURL, args );
