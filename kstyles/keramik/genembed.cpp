@@ -365,7 +365,7 @@ int main(int argc, char** argv)
 		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<images[c].data<<"},";
 		cout<<"\n";
 	}
-	cout<<"\t{0, 0, 0, 0}\n";
+	cout<<"\t{0, 0, 0, 0, 0}\n";
 	cout<<"};\n\n";
 	
 	cout<<"class KeramikImageDb\n";
