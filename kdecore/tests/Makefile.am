@@ -26,7 +26,7 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest ksocktest kstringhandlertest kcmdlineargstest \
-	kmemtest kidlservertest kidlclienttest dcopkonqtest
+	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h 
 
@@ -50,4 +50,4 @@ dcopkonqtest_SOURCES = dcopkonqtest.cpp
 kmemtest_SOURCES = kmemtest.cpp
 kidlservertest_SOURCES = KIDLTest.cpp KIDLTest.skel
 kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest.stub
-
+kipctest_SOURCES = kipctest.cpp

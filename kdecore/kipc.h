@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (C) 1999 Mattias Ettrich (ettrich@kde.org)
-   Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
+   Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,57 +26,49 @@
 #include <X11/Xlib.h>
 
 /**
- * This class implements the "old style" KDE IPC mechanism.  This
- * works by sending messages to the root (actually any) window as a
- * property.  Receiving applications simply read that property off of
- * the window.
+ * This class implements a very simple IPC mechanism for KDE. You can send 
+ * a message of a predefined type to either a specific application, or to all 
+ * KDE application on the current display. The message can carry one integer of
+ * data.
  *
- * This method has many drawbacks and has been mostly replaced by
- * DCOP -- The Desktop Communications Protocol.  Your application, in
- * nearly all cases, should use DCOP over KIPC.
- * 
- * KIPC remains mostly to notify applications of such style changes
- * and font changes, color changes, etc.
+ * KIPC is mainly used in KDE for sending "Change Messages", i.e. a message to
+ * all KDE apps that a certain setting (the font, for example) has changed. 
+ * For anything more complex it is recommended to use DCOP -- the Desktop 
+ * Communications Protocol.
  *
- * All methods are static here so no need to instantiate.
+ * Messages with id code < 32 are called "System Messages". These are
+ * directly handled by KApplication. Examples are: PaletteChanged and
+ * StyleChanged. Messages with id code >= 32 are user messages. KApplication 
+ * emits the signal kipcMessage(id,arg) for each user message it receives.
  *
- * @author Geert Jansen <g.t.jansen@stud.tue.nl>
+ * KIPC is implemented using X11 ClientMessage events.
+ *
+ * @author Geert Jansen <jansen@kde.org>
  * @version $Id$
  */ 
 class KIPC
 {
 public:
-    /**
-     * Send a message to a window.
-     *
-     * @param Atom The X Atom identifying the message.
-     * @param Window The Window ID of the target window.
-     * @param data You can pass one in of data throught this.
-     */
-    static void sendMessage(Atom msg, Window w, int data=0);
+    enum Message { PaletteChanged=0, FontChanged, StyleChanged,
+	    BackgroundChanged, IconviewChanged, 
+	    UserMessage=32 };
 
     /**
-     * Send a message to a window.
+     * Send a message to a specific application.
      *
-     * @param msg A pointer to a null terminated array of chars containing 
-     * the message.
+     * @param msg The message to send.
+     * @param w The window id of a toplevel window of the target application.
+     * @param data An optional integer of data.
      */
-    static void sendMessage(const char *msg, Window w, int data=0);
+    static void sendMessage(Message msg, Window w, int data=0);
 
     /**
-     * Send a message to all KDE windows.
+     * Send a message to all KDE application on the current display.
      *
-     * @param Atom The X Atom identifying the message.
+     * @param msg The message to send.
+     * @param data An optional integer of data.
      */
-    static void sendMessageAll(Atom msg, int data=0);
-
-    /**
-     * Send a message to all KDE windows.
-     *
-     * @param msg A pointer to a null terminated array of chars containing 
-     * the message.
-     */
-    static void sendMessageAll(const char *msg, int data=0);
+    static void sendMessageAll(Message msg, int data=0);
 
 private:
     /**

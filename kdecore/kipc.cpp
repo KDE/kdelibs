@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (C) 1999 Mattias Ettrich (ettrich@kde.org)
-   Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
+   Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,7 +21,7 @@
 
 
 /*
- * kipc.cpp: Send a message to all KDE apps.
+ * kipc.cpp: Send a message to one/all KDE apps.
  *
  * $Id$
  */
@@ -57,29 +57,25 @@ long KIPC::getSimpleProperty(Window w, Atom a)
 }
 
 
-void KIPC::sendMessage(Atom msg, Window w, int data)
+void KIPC::sendMessage(Message msg, Window w, int data)
 {
+    static Atom a = 0;
+    if (a == 0)
+	a = XInternAtom(qt_xdisplay(), "KIPC_COMM_ATOM", False);
     XEvent ev;
     ev.xclient.type = ClientMessage;
     ev.xclient.display = qt_xdisplay();
     ev.xclient.window = w;
-    ev.xclient.message_type = msg;
+    ev.xclient.message_type = a;
     ev.xclient.format = 32;
-    ev.xclient.data.l[0] = data;
+    ev.xclient.data.l[0] = msg;
+    ev.xclient.data.l[1] = data;
     XSendEvent(qt_xdisplay(), w, False, 0L, &ev);
 }
 
 
-void KIPC::sendMessage(const char *msg, Window w, int data)
+void KIPC::sendMessageAll(Message msg, int data)
 {
-    Atom a = XInternAtom(qt_xdisplay(), msg, False);
-    sendMessage(a, w, data);
-}
-
-
-void KIPC::sendMessageAll(Atom msg, int data)
-{
-    XEvent ev;
     unsigned int i, nrootwins;
     Window dw1, dw2, *rootwins;
     int (*defaultHandler)(Display *, XErrorEvent *);
@@ -90,30 +86,14 @@ void KIPC::sendMessageAll(Atom msg, int data)
     defaultHandler = XSetErrorHandler(&KIPC::dropError);
     
     XQueryTree(dpy, root, &dw1, &dw2, &rootwins, &nrootwins);
-    
-    long result;
     Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);
-    for (i = 0; i < nrootwins; i++) {
-        result = KIPC::getSimpleProperty(rootwins[i], a);
-        if (result) {
-            ev.xclient.type = ClientMessage;
-            ev.xclient.display = dpy;
-            ev.xclient.window = rootwins[i];
-            ev.xclient.message_type = msg;
-            ev.xclient.format = 32;
-	    ev.xclient.data.l[0] = data;
-            XSendEvent(dpy, rootwins[i], False, 0L, &ev);
-        }
+    for (i = 0; i < nrootwins; i++) 
+    {
+        if (getSimpleProperty(rootwins[i], a) != 0L)
+	    sendMessage(msg, rootwins[i], data);
     }
 
     XFlush(dpy);
     XSetErrorHandler(defaultHandler);
     XFree((char *) rootwins);
-}
-
-
-void KIPC::sendMessageAll(const char *msg, int data)
-{
-    Atom a = XInternAtom(qt_xdisplay(), msg, False);
-    sendMessageAll(a, data);
 }

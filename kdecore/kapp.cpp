@@ -48,6 +48,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kglobalsettings.h>
+#include <kipc.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -233,6 +234,10 @@ void KApplication::init(bool GUIenabled)
   pKStyle = 0;
   smw = 0;
 
+  // Initial KIPC event mask.
+  kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
+	          (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged);
+
   if (GUIenabled)
   {
     // this is important since we fork() to launch the help (Matthias)
@@ -244,15 +249,12 @@ void KApplication::init(bool GUIenabled)
     connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
 
     display = desktop()->x11Display();
+    kipcCommAtom = XInternAtom(display, "KIPC_COMM_ATOM", false);
 
-    KDEChangePalette = XInternAtom( display, "KDEChangePalette", false );
-    KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", false );
-    KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", false);
-    KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", false);
-    KDEChangeSettings = XInternAtom( display, "KDEChangeSettings", false);
-
-    readSettings(false);
-    kdisplaySetStyleAndFont();
+    // GJ: Work around a bug in kconfig or kinstance.
+    KGlobal::config()->reparseConfiguration();
+    kdisplaySetStyle();
+    kdisplaySetFont();
     kdisplaySetPalette();
   }
 
@@ -722,61 +724,84 @@ public:
 
 bool KApplication::x11EventFilter( XEvent *_event )
 {
-  if ( x11Filter ) {
-      for ( QWidget* w = x11Filter->first(); w; w = x11Filter->next() ) {
-	  if ( ( (KAppX11HackWidget*)w)->publicx11Event( _event ) )
-	      return TRUE;
-      }
-  }
-
-  if ( _event->type == ClientMessage ) {
-    XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
-
-    // stuff for reconfiguring
-    if ( cme->message_type == KDEChangeStyle ) {
-        readSettings(true);
-        kdisplaySetStyle(); // arg doesn't matter
-        return true;
+    if (x11Filter) 
+    {
+	for (QWidget* w=x11Filter->first(); w; w=x11Filter->next()) 
+	{
+	    if (((KAppX11HackWidget*) w)->publicx11Event(_event))
+		return true;
+	}
     }
 
-    if ( cme->message_type == KDEChangePalette )
-      {
-	readSettings(true);
-	kdisplaySetPalette();
+    if ((_event->type == ClientMessage) && 
+	    (_event->xclient.message_type == kipcCommAtom)) 
+    {
+	XClientMessageEvent *cme = (XClientMessageEvent *) _event;
 
+	int id = cme->data.l[0];
+	int arg = cme->data.l[1];
+	if ((id < 32) && (kipcEventMask & (1 << id)))
+	{
+	    switch (id)
+	    {
+	    case KIPC::StyleChanged:
+		KGlobal::config()->reparseConfiguration();
+		kdisplaySetStyle();
+		break;
+
+	    case KIPC::PaletteChanged:
+		KGlobal::config()->reparseConfiguration();
+		kdisplaySetPalette();
+		break;
+
+	    case KIPC::FontChanged:
+		KGlobal::config()->reparseConfiguration();
+		kdisplaySetFont();
+		break;
+
+	    case KIPC::BackgroundChanged:
+		emit backgroundChanged(arg);
+		break;
+
+	    case KIPC::IconviewChanged:
+		// GJ: David, you could insert your stuff here.
+		break;
+	    }
+	}
+	else if (id >= 32)
+	{
+	    emit kipcMessage(id, arg);
+	}
 	return true;
-      }
+    }
 
-    if ( cme->message_type == KDEChangeGeneral )
-      {
-	readSettings(true);
-        kdisplaySetStyleAndFont();
-	kdisplaySetPalette();
+    return false;
+}
 
-	return true;
-      }
+void KApplication::addKipcEventMask(int id)
+{
+    if (id >= 32) 
+    {
+	kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
+	return;
+    }
+    kipcEventMask |= (1 << id);
+}
 
-    if ( cme->message_type == KDEChangeBackground )
-      {
-        int data = cme->data.l[0];
-	emit backgroundChanged(data);
-	return true;
-      }
-
-    if ( cme->message_type == KDEChangeSettings )
-      {
-        KGlobal::config()->reparseConfiguration();
-        emit settingsChanged();
-	return true;
-      }
-  }
-
-  return false;
+void KApplication::removeKipcEventMask(int id)
+{
+    if (id >= 32)
+    {
+	kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
+	return;
+    }
+    kipcEventMask &= ~(1 << id);
 }
 
 void KApplication::enableStyles()
 {
-    if(!useStyles){
+    if (!useStyles)
+    {
         useStyles = true;
         applyGUIStyle(Qt::WindowsStyle);
     }
@@ -963,176 +988,98 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   }
 }
 
-
-
-
-
-
-void KApplication::readSettings(bool reparse)
-{
-  // use the global config files
-  KConfig* config = KGlobal::config();
-  if (reparse)
-      config->reparseConfiguration();
-
-  config->setGroup( "WM");
-  // this default is Qt lightGray
-  inactiveTitleColor_ = config->readColorEntry( "inactiveBackground", &lightGray );
-
-  // this default is Qt darkGrey
-  inactiveTextColor_ = config->readColorEntry( "inactiveForeground", &darkGray );
-
-  // this default is Qt darkBlue
-  activeTitleColor_ = config->readColorEntry( "activeBackground", &darkBlue );
-
-  // this default is Qt white
-  activeTextColor_ = config->readColorEntry( "activeForeground", &white );
-
-  config->setGroup( "KDE");
-  contrast_ = config->readNumEntry( "contrast", 7 );
-
-  //  Read the font specification from config.
-  //  Initialize fonts to default first or it won't work !!
-
-  // cursor blink rate
-  //
-  int num = config->readNumEntry( "cursorBlinkRate", cursorFlashTime() );
-  // filter out bogus numbers
-  if ( num < 200 ) num = 200;
-  if ( num > 2000 ) num = 2000;
-  setCursorFlashTime(num);
-
-
-}
-
-
-
 void KApplication::kdisplaySetPalette()
 {
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
+    KConfigBase* config;
+    config  = KGlobal::config();
 
-  KConfigBase* config;
-  config  = KGlobal::config();
-  config->setGroup( "General" );
+    config->setGroup( "General" );
+    QColor buttonFallback = config->readColorEntry( "background", &lightGray );
+    QColor button = config->readColorEntry( "buttonBackground", &buttonFallback );
+    QColor buttonTextFallback = config->readColorEntry( "foreground", &black );
+    QColor buttonText = config->readColorEntry( "buttonForeground", &buttonTextFallback );
+    QColor background = config->readColorEntry( "background", &lightGray );
+    QColor highlight = config->readColorEntry( "selectBackground", &darkBlue);
+    QColor highlightedText = config->readColorEntry( "selectForeground", &white );
+    QColor base = config->readColorEntry( "windowBackground", &white );
+    QColor foreground = config->readColorEntry( "windowForeground", &black );
 
-  QColor buttonFallback =
-    config->readColorEntry( "background", &lightGray );
-  QColor button =
-    config->readColorEntry( "buttonBackground", &buttonFallback );
+    config->setGroup( "WM");
+    inactiveTitleColor_ = config->readColorEntry( "inactiveBackground", &lightGray );
+    inactiveTextColor_ = config->readColorEntry( "inactiveForeground", &darkGray );
+    activeTitleColor_ = config->readColorEntry( "activeBackground", &darkBlue );
+    activeTextColor_ = config->readColorEntry( "activeForeground", &white );
 
-  QColor buttonTextFallback =
-    config->readColorEntry( "foreground", &black );
-  QColor buttonText =
-    config->readColorEntry( "buttonForeground", &buttonTextFallback );
+    config->setGroup( "KDE");
+    contrast_ = config->readNumEntry( "contrast", 7 );
 
-  QColor background =
-    config->readColorEntry( "background", &lightGray );
+    int highlightVal, lowlightVal;
+    highlightVal = 100 + (2*contrast_+4)*16/10;
+    lowlightVal = 100 + (2*contrast_+4)*10;
 
-  QColor highlight =
-    config->readColorEntry( "selectBackground", &darkBlue);
+    QColorGroup disabledgrp(foreground, background, background.light(150),
+	    background.dark(), background.dark(120), background.dark(120), base);
 
-  QColor highlightedText =
-    config->readColorEntry( "selectForeground", &white );
+    QColorGroup colgrp(foreground, background, background.light(150),
+	    background.dark(), background.dark(120), foreground, base);
 
-  QColor base =
-    config->readColorEntry( "windowBackground", &white );
+    colgrp.setColor(QColorGroup::Highlight, highlight);
+    colgrp.setColor(QColorGroup::HighlightedText, highlightedText);
+    colgrp.setColor(QColorGroup::Button, button);
+    colgrp.setColor(QColorGroup::ButtonText, buttonText);
+    colgrp.setColor(QColorGroup::Midlight, background.light(110));
 
-  QColor foreground =
-    config->readColorEntry( "windowForeground", &black );
+    disabledgrp.setColor(QColorGroup::Button, button);
+    disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
+    disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
 
+    QPalette newPal(colgrp, disabledgrp, colgrp);
+    setPalette(newPal, true );
 
-  int contrast =
-    config->readNumEntry( "contrast", 7 );
+    // GJ: The cursor blink rate doesn't belong here. It should get it's own
+    // change message but it doesn't really matter because it isn't set.
+    int num = config->readNumEntry("cursorBlinkRate", cursorFlashTime());
+    if (num < 200) 
+	num = 200;
+    if (num > 2000) 
+	num = 2000;
+    setCursorFlashTime(num);
 
-  int highlightVal, lowlightVal;
-
-  highlightVal=100+(2*contrast+4)*16/10;
-  lowlightVal=100+(2*contrast+4)*10;
-
-
-  QColorGroup disabledgrp( foreground, background,
-			   background.light(150),
-			   background.dark(),
-			   background.dark(120),
-			   background.dark(120), base );
-
-  QColorGroup colgrp( foreground, background,
-		      background.light(150),
-		      background.dark(),
-		      background.dark(120),
-		      foreground, base );
-
-  colgrp.setColor( QColorGroup::Highlight, highlight);
-  colgrp.setColor( QColorGroup::HighlightedText, highlightedText);
-  colgrp.setColor( QColorGroup::Button, button);
-  colgrp.setColor( QColorGroup::ButtonText, buttonText);
-  colgrp.setColor(QColorGroup::Midlight, background.light(110));
-
-  disabledgrp.setColor( QColorGroup::Button, button);
-  disabledgrp.setColor( QColorGroup::ButtonText, buttonText);
-  disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
-
-  QPalette newPal(colgrp, disabledgrp, colgrp);
-  setPalette(newPal, true );
-
-  //applyGUIStyle( WindowsStyle ); // to fix the palette again
-  style().polish(newPal);
-  emit kdisplayPaletteChanged();
-  emit appearanceChanged();
+    style().polish(newPal);
+    emit kdisplayPaletteChanged();
+    emit appearanceChanged();
 }
+
 
 void KApplication::kdisplaySetFont()
 {
-    QApplication::setFont( KGlobal::generalFont(), true );
+    delete KGlobal::_generalFont;
+    KGlobal::_generalFont = 0L;
+    delete KGlobal::_fixedFont;
+    KGlobal::_fixedFont = 0L;
+    delete KGlobal::_menuFont;
+    KGlobal::_menuFont = 0L;
+    delete KGlobal::_toolBarFont;
+    KGlobal::_toolBarFont = 0L;
 
+    QApplication::setFont(KGlobal::generalFont(), true);
     emit kdisplayFontChanged();
     emit appearanceChanged();
-
-    resizeAll();
 }
 
 
 void KApplication::kdisplaySetStyle()
 {
-  applyGUIStyle( WindowsStyle );
-  emit kdisplayStyleChanged();
-  emit appearanceChanged();
-  resizeAll();
+    applyGUIStyle(WindowsStyle);
+    emit kdisplayStyleChanged();
+    emit appearanceChanged();
 }
-
-
-void KApplication::kdisplaySetStyleAndFont()
-{
-    QApplication::setFont( KGlobal::generalFont(), true );
-    kdisplaySetPalette();
-    kdisplaySetStyle();
-    emit kdisplayFontChanged();
-
-    resizeAll();
-}
-
-
-void KApplication::resizeAll()
-{
-    return;
-  // send a resize event to all windows so that they can resize children
-  QWidgetList *widgetList = QApplication::topLevelWidgets();
-  QWidgetListIt it( *widgetList );
-
-  while ( it.current() )
-	{
-	  it.current()->resize( it.current()->size() );
-	  ++it;
-	}
-  delete widgetList;
-}
-
-
 
 
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 {
-	QApplication::flushX();
+  QApplication::flushX();
   if ( fork() == 0 )
     {
 	  if( filename.isEmpty() )
@@ -1171,7 +1118,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 
 void KApplication::invokeMailer(const QString &address,const QString &subject )
 {
-	QApplication::flushX();
+  QApplication::flushX();
   if( fork() == 0 )
   {
     QString mailClient( "kmail");
@@ -1195,7 +1142,7 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
 void KApplication::invokeBrowser( const QString &url )
 {
 
-	QApplication::flushX();
+  QApplication::flushX();
   if( fork() == 0 )
   {
     setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore

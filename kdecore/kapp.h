@@ -403,6 +403,21 @@ public:
    */
   static int random();
 
+  /**
+   * Add a message type to the KIPC event mask. You can only add "system
+   * messages" to the event mask. These are the messages with id < 32.
+   * Messages with id >= 32 are user messages.
+   * @param id The message id. See @ref #KIPC::Message.
+   */
+  void addKipcEventMask(int id);
+
+  /**
+   * Remove a message type from the KIPC event mask. This message will not
+   * be handled anymore.
+   * @param id The message id.
+   */
+  void removeKipcEventMask(int id);
+
 protected:
   /**
    * Used to catch X11 events
@@ -411,12 +426,8 @@ protected:
 
 
   Display *display;
-
-  Atom KDEChangePalette;
-  Atom KDEChangeGeneral;
-  Atom KDEChangeStyle;
-  Atom KDEChangeBackground;
-  Atom KDEChangeSettings;
+  Atom kipcCommAtom;
+  int kipcEventMask;
 
   /// Current application object.
   static KApplication *KApp;
@@ -461,9 +472,6 @@ private:
   virtual void kdisplaySetPalette();
   virtual void kdisplaySetStyle();
   virtual void kdisplaySetFont();
-  virtual void kdisplaySetStyleAndFont();
-  virtual void readSettings(bool reparse = true);
-  void resizeAll();
   virtual void applyGUIStyle(GUIStyle);
 
   QColor inactiveTitleColor_;
@@ -533,6 +541,11 @@ public:
    * so that applications/classes using this only have to re-read the configuration
    */
   void settingsChanged();
+
+  /**
+   * Emitted when a KIPC user message has been received.
+   */
+  void kipcMessage(int id, int data);
 
   /**
       Session management asks you to save the state of your application.
@@ -639,6 +652,11 @@ public:
 #endif
 
 // $Log$
+// Revision 1.137  2000/03/17 00:16:45  faure
+// Added atom for KDEChangeSettings, thanks Geert for the very precious tips.
+// Added signal in kapp.h : settingsChanged(), used by K*Views
+// (TODO: same for other widgets that use the settings in there)
+//
 // Revision 1.136  2000/03/13 13:29:49  jansen
 // Fixes for running nonlocal applications. I changed two things:
 // 1. klauncher registers as "klaucher_$host_$uid" now. This name is available
