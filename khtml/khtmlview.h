@@ -48,6 +48,7 @@ namespace DOM {
 
 namespace KJS {
     class WindowFunc;
+    class ExternalFunc;
 }
 
 namespace khtml {
@@ -90,6 +91,7 @@ class KHTMLView : public QScrollView
     friend class khtml::CSSStyleSelector;
     friend class khtml::LineEditWidget;
     friend class KJS::WindowFunc;
+    friend class KJS::ExternalFunc;
     friend void khtml::applyRule(DOM::CSSProperty *prop);
 
 
