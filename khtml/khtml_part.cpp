@@ -109,11 +109,11 @@ namespace khtml
   {
       enum Type { Frame, IFrame, Object };
 
-      ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
+      ChildFrame() { m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
 
       ~ChildFrame() {  if (m_run) m_run->abort(); }
 
-    RenderPart *m_frame;
+    QGuardedPtr<khtml::RenderPart> m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     QGuardedPtr<KParts::BrowserExtension> m_extension;
     QString m_serviceName;
@@ -1237,7 +1237,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     KHTMLPart *p = parentPart();
     if (p && p->d->m_ssl_in_use != d->m_ssl_in_use) {
 	while (p->parentPart()) p = p->parentPart();
-	
+
 	p->d->m_paSecurity->setIcon( "halflock" );
         p->d->m_bSecurityInQuestion = true;
 	kdDebug(6050) << "parent setIcon half done." << endl;
@@ -2474,10 +2474,10 @@ void KHTMLPart::slotSecurity()
 //                   << endl;
 
   KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
-  
+
   if (d->m_bSecurityInQuestion)
 	  kid->setSecurityInQuestion(true);
-  
+
   if (d->m_ssl_in_use) {
     KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.local8Bit());
     if (x) {
@@ -2930,12 +2930,12 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   // Form security checks
   //
-  
+
   /* This is separate for a reason.  It has to be _before_ all script, etc,
    * AND I don't want to break anything that uses checkLinkSecurity() in
    * other places.
    */
-  
+
   if (u.protocol().left(5) != "https") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
@@ -2957,7 +2957,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 			KConfig *config = kapp->config();
 			QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
 			KConfigGroupSaver saver( config, grpNotifMsgs );
-			
+
 			if (!config->readBoolEntry("WarnOnUnencryptedForm", true)) {
 				config->deleteEntry("WarnOnUnencryptedForm");
 				config->sync();
@@ -2972,7 +2972,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   // End form security checks
   //
-  
+
   QString urlstring = u.url();
 
   if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
@@ -3214,7 +3214,7 @@ bool KHTMLPart::frameExists( const QString &frameName )
   // WABA: We only return true if the child actually has a frame
   // set. Otherwise we might find our preloaded-selve.
   // This happens when we restore the frameset.
-  return ((*it).m_frame != 0);
+  return (!(*it).m_frame.isNull());
 }
 
 KHTMLPart *KHTMLPart::parentPart()
