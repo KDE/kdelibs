@@ -878,6 +878,7 @@ void KCryptoConfig::load()
                                        authcfg->readEntry("certificate", ""), 
                                        this );
     j->setAction(aa);
+    j->setOriginalName(*i);
   }
 
   
@@ -1007,6 +1008,30 @@ void KCryptoConfig::save()
   if (defCertBox->currentItem() == 0)
      config->writeEntry("DefaultCert", "");
   else config->writeEntry("DefaultCert", defCertBox->currentText());
+
+  for (HostAuthItem *x = authDelList.first(); x != 0; x = authDelList.next()) {
+     authcfg->deleteGroup(x->configName());
+     authDelList.remove(x);
+  }
+
+  for (HostAuthItem *x = 
+        static_cast<HostAuthItem *>(hostAuthList->firstChild()); 
+                                                              x;
+             x = static_cast<HostAuthItem *>(x->nextSibling())) {
+     if (x->originalName() != QString::null)
+        authcfg->deleteGroup(x->originalName());
+  }
+
+  for (HostAuthItem *x = 
+        static_cast<HostAuthItem *>(hostAuthList->firstChild()); 
+                                                              x;
+             x = static_cast<HostAuthItem *>(x->nextSibling())) {
+     authcfg->setGroup(x->configName());
+     authcfg->writeEntry("certificate", x->getCertName());
+     authcfg->writeEntry("prompt", (x->getAction() == KSSLCertificateHome::AuthPrompt));
+     authcfg->writeEntry("send", (x->getAction() == KSSLCertificateHome::AuthSend));
+  }
+
 #endif
 
   config->sync();
@@ -1624,6 +1649,8 @@ void KCryptoConfig::slotNewHostAuth() {
   authRemove->setEnabled(true);
 
   hostCertBG->setButton(0);
+
+  authHost->setFocus();
 }
 
 

@@ -138,7 +138,8 @@ public:
                                m_module = module;
                                setText(0, _host);
                                setText(1, _name);
-                                              }
+                               _oname = QString::null;
+                              }
     ~HostAuthItem() {}
 
     void setAction(KSSLCertificateHome::KSSLAuthAction aa) {
@@ -160,12 +161,14 @@ public:
     QString getCertName() const { return _name; }
     void setCertName(QString name) { _name = name; setText(1, name); }
     void setHost(QString name) { _host = name; setText(0, name); }
+    void setOriginalName(QString oname) { _oname = oname; }
+    QString originalName() const { return _oname; }
 
 protected:
 
 private:
     QString _host;
-    QString _name;
+    QString _name, _oname;
     KSSLCertificateHome::KSSLAuthAction _aa;
     KCryptoConfig *m_module; // just to call configChanged()
 };
