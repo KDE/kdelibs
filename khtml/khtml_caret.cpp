@@ -362,8 +362,7 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
       b = b->parent();
     }/*wend*/
     // FIXME: replace with isRootInlineBox after full WebCore merge.
-    //Q_ASSERT(b->isRootInlineBox());
-    Q_ASSERT(b->isInlineFlowBox());
+    Q_ASSERT(b->isRootInlineBox());
     cb = static_cast<RenderFlow *>(b->object());
     Q_ASSERT(cb->isRenderBlock());
 #if DEBUG_CARETMODE > 0
@@ -373,6 +372,8 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
   } while(false);/*end if*/
 
   cb = r->containingBlock();
+  if ( !cb ) return 0L;
+
   if (!cb->isRenderBlock()) {
     cb = generateDummyBlock(arena, cb);
 #if DEBUG_CARETMODE > 0
