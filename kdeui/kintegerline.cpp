@@ -67,6 +67,20 @@ KEditLineType KIntegerLine::getType()
 }
 
 
+int KIntegerLine::value( void )
+{
+  QString s = text();
+  return getValue( s );
+}
+
+
+void KIntegerLine::setValue( int value )
+{
+  QString s;
+  putValue( s, value );
+}
+
+ 
 void KIntegerLine::keyPressEvent( QKeyEvent *e )
 {
   QString tmp(text());

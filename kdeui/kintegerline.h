@@ -75,6 +75,12 @@ public:
 
   /// Get the type of this Line
   KEditLineType getType();
+
+  /// Get the current value in the lined
+  int value( void );
+  
+  /// Set the current value in the lined
+  void setValue( int value );
   //@}
 
 protected:

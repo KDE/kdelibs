@@ -76,6 +76,8 @@ public:
   /** get the alignment of the text field.
 	  possible return values AlignLeft, AlignCenter, AlignRight */
   int getAlign();
+
+  QSize sizeHint();
 	
   signals:
   void valueIncreased();

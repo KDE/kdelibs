@@ -247,15 +247,20 @@ void KMenuBar::leaveEvent (QEvent *e){
       }
       return TRUE;
 		//debug ("KMenuBar: moving done");
-    if (ev->type() == Event_Paint){
+    if ((ev->type() == Event_Paint)||(ev->type() == Event_Enter)||(ev->type() == Event_Leave) ){
       }
       QPainter paint(handle); 
 
+	  QBrush b;
+	  if (ev->type() == Event_Enter)
+		b = QColor(100,100,200);
+	  else
+		b = QWidget::backgroundColor();
       qDrawShadePanel( &paint, 0, 0, 9, handle->height(),
-                       g , FALSE, 1);
+                       g , FALSE, 1, &b );
       paint.setPen( g.light() );
       stipple_height = 3;
-      while ( stipple_height < handle->height()-3 ) {
+     while ( stipple_height < handle->height()-3 ) {
 	paint.drawPoint( 1, stipple_height+1);
 	paint.drawPoint( 4, stipple_height);
 	stipple_height+=3;

@@ -112,6 +112,15 @@ const char *KSpinBox::getValue()
   return GET_VALUE();
 }
 
+
+QSize KSpinBox::sizeHint()
+{
+  QSize hint = _edit->sizeHint();
+  hint.setWidth( hint.width() + ( 2 * hint.height() ) );
+  return hint;
+}
+
+
 void KSpinBox::setValue(const char *value)
 {
   //	SET_VALUE(value);
