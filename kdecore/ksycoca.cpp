@@ -50,7 +50,7 @@ template class QPtrList<KSycocaFactory>;
 
 // The following limitations are in place:
 // Maximum length of a single string: 8192 bytes
-// Maximum lenght of a string list: 1024 strings
+// Maximum length of a string list: 1024 strings
 // Maximum number of entries: 8192
 //
 // The purpose of these limitations is to limit the impact

@@ -72,11 +72,11 @@ public:
   virtual QString yearString(const QDate & pDate, bool bShort) const;
 
   /**
-   * Converts a year literal of a part of a string into a integer starting at the begining of the string
+   * Converts a year literal of a part of a string into a integer starting at the beginning of the string
    *
    * @param sNum The string to parse
    * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
-   * @return An integer coresponding to the year
+   * @return An integer corresponding to the year
    */
   virtual int yearStringToInteger(const QString & sNum, int & iLength) const;
 
@@ -98,11 +98,11 @@ public:
   virtual QString monthString(const QDate & pDate, bool bShort) const;
 
   /**
-   * Converts a month literal of a part of a string into a integer starting at the begining of the string
+   * Converts a month literal of a part of a string into a integer starting at the beginning of the string
    *
    * @param sNum The string to parse
    * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
-   * @return An integer coresponding to the month
+   * @return An integer corresponding to the month
    */
   virtual int monthStringToInteger(const QString & sNum, int & iLength) const;
 
@@ -124,11 +124,11 @@ public:
   virtual QString dayString(const QDate & pDate, bool bShort) const;
 
   /**
-   * Converts a day literal of a part of a string into a integer starting at the begining of the string
+   * Converts a day literal of a part of a string into a integer starting at the beginning of the string
    *
    * @param sNum The string to parse
    * @param iLength The number of QChars used, and 0 if no valid symbols was found in the string
-   * @return An integer coresponding to the day
+   * @return An integer corresponding to the day
    */
   virtual int dayStringToInteger(const QString & sNum, int & iLength) const;
 

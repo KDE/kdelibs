@@ -314,7 +314,7 @@ public:
 	 *        if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
-	 * @param uniq If specified,  only return items which have
+	 * @param unique If specified,  only return items which have
 	 *        unique suffixes - suppressing duplicated filenames.
 	 *
 	 * @return A list of directories matching the resource specified,
@@ -323,7 +323,7 @@ public:
 	QStringList findAllResources( const char *type,
 				       const QString& filter = QString::null,
 				       bool recursive = false,
-				       bool uniq = false) const;
+				       bool unique = false) const;
 
 	/**
 	 * Tries to find all resources with the specified type.
@@ -339,7 +339,7 @@ public:
 	 *        if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
-	 * @param uniq If specified,  only return items which have
+	 * @param unique If specified,  only return items which have
 	 *        unique suffixes.
 	 * @param relPaths The list to store the relative paths into
 	 *        These can be used later to ::locate() the file
@@ -350,7 +350,7 @@ public:
 	QStringList findAllResources( const char *type,
 				       const QString& filter,
 				       bool recursive,
-				       bool uniq,
+				       bool unique,
 				       QStringList &relPaths) const;
 
 	/**

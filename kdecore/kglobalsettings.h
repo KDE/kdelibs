@@ -473,7 +473,7 @@ private:
      */
     static void initStatic();
     /**
-     * initialise kde2Blue
+     * initialize kde2Blue
      */
     static void initColors();
     /**

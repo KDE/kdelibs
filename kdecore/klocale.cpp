@@ -73,14 +73,14 @@ public:
 
 static KLocale *this_klocale = 0;
 
-KLocale::KLocale( const QString & catalogue, KConfig * config )
+KLocale::KLocale( const QString & catalog, KConfig * config )
 {
   d = new KLocalePrivate;
   d->config = config;
   d->languages = 0;
   d->calendar = 0;
 
-  initCatalogue(catalogue);
+  initCatalogue(catalog);
   initEncoding(0);
   initFileNameEncoding(0);
 
@@ -105,10 +105,10 @@ QString KLocale::_initLanguage(KConfigBase *config)
   return QString::null;
 }
 
-void KLocale::initCatalogue(const QString & catalogue)
+void KLocale::initCatalogue(const QString & catalog)
 {
   // Use the first non-null string.
-  QString mainCatalogue = catalogue;
+  QString mainCatalogue = catalog;
   if (maincatalogue)
     mainCatalogue = QString::fromLatin1(maincatalogue);
 
@@ -354,11 +354,11 @@ bool KLocale::setCountry(const QString & country)
 }
 
 QString KLocale::catalogueFileName(const QString & language,
-				   const KCatalogue & catalogue)
+				   const KCatalogue & catalog)
 {
   QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
     .arg( language )
-    .arg( catalogue.name() );
+    .arg( catalog.name() );
 
   return locate( "locale", path );
 }
@@ -579,31 +579,31 @@ QString KLocale::weekDayName (int i, bool shortName) const
   return QString::null;
 }
 
-void KLocale::insertCatalogue( const QString & catalogue )
+void KLocale::insertCatalogue( const QString & catalog )
 {
-  KCatalogue cat( catalogue );
+  KCatalogue cat( catalog );
 
   initCatalogue( cat );
 
   d->catalogues.append( cat );
 }
 
-void KLocale::removeCatalogue(const QString &catalogue)
+void KLocale::removeCatalogue(const QString &catalog)
 {
   for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
 	it != d->catalogues.end(); )
-    if ((*it).name() == catalogue) {
+    if ((*it).name() == catalog) {
       it = d->catalogues.remove(it);
       return;
     } else
       ++it;
 }
 
-void KLocale::setActiveCatalogue(const QString &catalogue)
+void KLocale::setActiveCatalogue(const QString &catalog)
 {
   for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
 	it != d->catalogues.end(); ++it)
-    if ((*it).name() == catalogue) {
+    if ((*it).name() == catalog) {
       KCatalogue save = *it;
       d->catalogues.remove(it);
       d->catalogues.prepend(save);
@@ -1160,9 +1160,9 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
   return buffer;
 }
 
-void KLocale::setMainCatalogue(const char *catalogue)
+void KLocale::setMainCatalogue(const char *catalog)
 {
-  maincatalogue = catalogue;
+  maincatalogue = catalog;
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const
@@ -1385,7 +1385,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
     else
     {
       int j;
-      // remove space at the begining
+      // remove space at the beginning
       if (str.length() > strpos && str.at(strpos).isSpace())
         strpos++;
 
@@ -1535,7 +1535,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
 	  continue;
 	}
 
-      // remove space at the begining
+      // remove space at the beginning
       if (str.length() > strpos && str.at(strpos).isSpace())
 	strpos++;
 
@@ -1839,9 +1839,9 @@ QString KLocale::decodeFileNameUTF8( const QCString & localFileName )
   return QString::fromUtf8(localFileName);
 }
 
-void KLocale::initCatalogue( KCatalogue & catalogue )
+void KLocale::initCatalogue( KCatalogue & catalog )
 {
-  catalogue.setFileName( catalogueFileName( language(), catalogue ) );
+  catalog.setFileName( catalogueFileName( language(), catalog ) );
 }
 
 void KLocale::setDateFormat(const QString & format)

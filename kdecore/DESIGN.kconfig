@@ -15,12 +15,12 @@ of a certain group.
 
 Entries that are localised with the _current_ locale are stored with bLocal 
 set to true. Entries that are localised with another locale are either not
-stored at all (default), or with the localisation as part of the key (when
+stored at all (default), or with the localization as part of the key (when
 reading a file in order to merge it). 
 [WABA: Does it make sense to keep both localized and non-localised around?
 Can't we just let the localised version override the non-localised version?]
 
-Currently the localisation bit is the least significant sort criteria, that 
+Currently the localization bit is the least significant sort criteria, that 
 means that the localised version always follows the non-localised version
 immediately.
 

@@ -23,7 +23,7 @@
 #
 # For the debug area 100 you want output of debug messages
 # to a file /var/log/dbg.log and error messages as message boxes.
-# Additionaly the program should abort on fatal errors.
+# Additionally the program should abort on fatal errors.
 #
 # [100]
 # InfoOutput=0

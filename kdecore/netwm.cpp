@@ -2156,7 +2156,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 		if (nitems_ret % 2 != 0) {
 		    fprintf(stderr,
 			    "NETRootInfo::update(): desktop viewport array "
-			    "size not a multipe of 2\n");
+			    "size not a multiple of 2\n");
 		}
 #endif
 	    }

@@ -171,7 +171,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
     if (widget->inherits("QPopupMenu"))
     {
-        // create a popup accel manager that can deal with dynamic menues
+        // create a popup accel manager that can deal with dynamic menus
         KPopupAccelManager::manage(static_cast<QPopupMenu*>(widget));
         return;
     }
@@ -270,7 +270,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 
     if (w->inherits("QPopupMenu"))
     {
-        // create a popup accel manager that can deal with dynamic menues
+        // create a popup accel manager that can deal with dynamic menus
         KPopupAccelManager::manage(static_cast<QPopupMenu*>(w));
         continue;
     }
@@ -322,7 +322,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
           if (w->inherits("QPushButton") || w->inherits("QCheckBox") || w->inherits("QRadioButton") || w->inherits("QLabel"))
               weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
-          // don't put weight on group boxes, as usally the contents are more important
+          // don't put weight on group boxes, as usually the contents are more important
           if (w->inherits("QGroupBox"))
               weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
 
@@ -743,7 +743,7 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
 
     s = mitem->text();
 
-    // in full menues, look at entries with global accelerators last
+    // in full menus, look at entries with global accelerators last
     int weight = 50;
     if (s.contains('\t'))
         weight = 0;

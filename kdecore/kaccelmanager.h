@@ -48,7 +48,7 @@ public:
    * there are never duplicate accelerators. It also tries to put
    * accelerators on as many widgets as possible.
    *
-   * The algorithm used tries to take the exisiting accelerators into
+   * The algorithm used tries to take the existing accelerators into
    * account, as well as the class of each widget. Hopefully, the result
    * is close to what you would assign manually.
    *

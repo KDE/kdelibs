@@ -329,14 +329,14 @@ namespace KStdAccel
 
   /**
    * Iterate through a list when completion returns
-   * mutiple items. Default: Ctrl+Up
+   * multiple items. Default: Ctrl+Up
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& prevCompletion();
 
   /**
    * Iterate through a list when completion returns
-   * mutiple items. Default: Ctrl+Down
+   * multiple items. Default: Ctrl+Down
    * @return the shortcut of the standard accelerator
    */
   const KShortcut& nextCompletion();

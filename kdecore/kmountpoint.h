@@ -27,7 +27,7 @@
 
 /**
  * The KMountPoint class provides information about mounted and unmounted disks.
- * It provides a system independant interface to fstab.
+ * It provides a system independent interface to fstab.
  *
  * @author Waldo Bastian <bastian@kde.org>
  * @since 3.2

@@ -116,7 +116,7 @@ class QPopupMenu;
  * This class manages a popup menu. It will notice if entries have been
  * added or changed, and will recalculate the accelerators accordingly.
  *
- * This is necessary for dynamic menues like for example in kicker.
+ * This is necessary for dynamic menus like for example in kicker.
  *
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
  * @version $Id$

@@ -471,12 +471,12 @@ public:
    * When the lookup is done, the lookupReady signal will be emitted.
    *
    * Note that, depending on the parameters for the lookup, this function might
-   * know the results without the need for blocking or queueing an
+   * know the results without the need for blocking or queuing an
    * asynchronous lookup. That means that the lookupReady signal might be
    * emitted by this function, so your code should be prepared for that.
    *
    * One such case is when noResolve flag is set.
-   * If this function is able to determine the results without queueing
+   * If this function is able to determine the results without queuing
    * and the lookup failed, this function will return -1.
    *
    * @return 0 on success or -1 on error. Note that
@@ -550,7 +550,7 @@ public:
    * You must call cancelAsyncConnect() before you delete the socket if you
    * call this.  Otherwise you will have crashes.
    *
-   * @return 0 on successful queueing of the connect or -1 on error.
+   * @return 0 on successful queuing of the connect or -1 on error.
    *         If this function returns 0, then the connectionSuccess() or the
    * connectionFailed() signals will be emitted.
    */

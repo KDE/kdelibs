@@ -1709,7 +1709,7 @@ public:
    * value or the value specified in the global KDE config file.
    *
    * To revert entries in the global KDE config file, the global KDE config
-   * file should be opened explicitly in a seperate config object.
+   * file should be opened explicitly in a separate config object.
    *
    * @param key The key of the entry to revert.
    * @since 3.2
