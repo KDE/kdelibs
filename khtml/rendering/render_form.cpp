@@ -1043,7 +1043,6 @@ void RenderSelect::recalcOptions()
     NodeImpl* current = f->firstChild();
     int i = 0;
     bool inOptGroup = false;
-    bool finished = false;
 
     listOptions.clear();
     if(m_multiple || m_size > 1)
@@ -1051,7 +1050,7 @@ void RenderSelect::recalcOptions()
     else
       static_cast<QComboBox*>(m_widget)->clear();
 
-    while(!finished) {
+    while(current) {
 	if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
             if(m_multiple || m_size > 1) {
 		// put the optgroup label in the list - ### make this work for combo boxes
@@ -1093,8 +1092,6 @@ void RenderSelect::recalcOptions()
 		current = parent->nextSibling();
 		inOptGroup = false;
 	    }
-	    if (!current)
-		finished = true;
         }
     }
 
