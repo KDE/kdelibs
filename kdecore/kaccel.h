@@ -433,7 +433,7 @@ class KAccel : public QAccel
 
 	/**
 	 * If @global is @true, KAccel writes to the global
-	 *  configurtion file, instead of the application configuration file.
+	 *  configuration file, instead of the application configuration file.
 	 **/
 	void setConfigGlobal( bool global );
 	/**
