@@ -328,8 +328,11 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
 
     bFileImmutable = false;
-    QStringList list = KGlobal::dirs()->
-      findAllResources(resType, mfileName);
+    QStringList list;
+    if ( mfileName[0] == '/' )
+       list << mfileName;
+    else
+       list = KGlobal::dirs()->findAllResources(resType, mfileName);
 
     QStringList::ConstIterator it;
 
