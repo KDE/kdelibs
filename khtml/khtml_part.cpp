@@ -83,6 +83,8 @@ using namespace DOM;
 #include <ksslcertchain.h>
 #include <ksslinfodlg.h>
 
+#include <kfileitem.h>
+
 
 #include <qclipboard.h>
 #include <qfile.h>
@@ -2357,6 +2359,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
 
   KURL u = completeURL(url);
 
+  KFileItem item(u, QString::null, KFileItem::Unknown);
+  emit d->m_extension->mouseOverInfo(&item);
+
+
   // special case for <a href="">
   if ( url.isEmpty() )
     u.setFileName( url );
@@ -4397,7 +4403,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
         emit onURL( QString::null );
         // revert to default statusbar text
         setStatusBarText(QString::null, BarHoverText);
-      }
+        emit d->m_extension->mouseOverInfo(0);
+     }
     }
   }
   else {
