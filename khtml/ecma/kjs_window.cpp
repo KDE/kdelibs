@@ -266,6 +266,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "screenY" ||
       p == "scrollbars" ||
       p == "self" ||
+      p == "status" ||      
       p == "top" ||
       p == "screen" ||
       p == "Image" ||
