@@ -2054,7 +2054,7 @@ void KFontSizeAction::setFontSize( int size )
         return;
     }
 
-    if ( size < 1 || size > 128 ) {
+    if ( size < 1 ) {
         kdWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
         return;
     }
