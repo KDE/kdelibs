@@ -41,7 +41,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   phonenumber.h picture.h plugin.h resource.h \
   resourceselectdialog.h secrecy.h sound.h stdaddressbook.h timezone.h \
   vcardconverter.h vcardformat.h vcardformatplugin.h ldifconverter.h \
-  addresslineedit.h ldapclient.h addresseelist.h vcardtool.h lock.h locknull.h
+  addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h
 
 METASOURCES = AUTO
 

@@ -28,55 +28,102 @@
 namespace KABC {
 
 /**
- * Class to convert a vcard string to a addressee and vice versa.
- * At the moment there exists read support for vCard2.1 and vCard3.0
- * and write support for vCard3.0
- */
+  @short Class to converting contact objects into vCard format and vice versa.
+  
+  This class implements reading and writing of contact using from/to the
+  vCard format. Currently vCard version 2.1 and 3.0 is supported.
+
+  Example:
+
+  \code
+
+  QFile file( "myfile.vcf" );
+  file.open( IO_ReadOnly );
+  
+  QTextStream s( &file );
+  s.setEncoding( QTextStream::UnicodeUTF8 );
+
+  QString data = s.read();
+
+  VCardConverter converter;
+  Addressee::List list = converter.parseVCards( data );
+
+  // print formatted name of first contact
+  qDebug( "name=%s", list[ 0 ].formattedName().latin1() );
+
+  \endcode
+*/
 class VCardConverter
 {
-public:
+  public:
 
   /**
-   * @li v2_1 - VCard format version 2.1
-   * @li v3_0 - VCard format version 3.0
+    @li v2_1 - VCard format version 2.1
+    @li v3_0 - VCard format version 3.0
    */
-  enum Version
-  {
-    v2_1,
-    v3_0
-  };
+   enum Version
+    {
+      v2_1,
+      v3_0
+    };
 
-  /**
-   * Constructor.
-   */
-  VCardConverter();
+    /**
+      Constructor.
+     */
+    VCardConverter();
 
-  /**
-   * Destructor.
-   */
-  ~VCardConverter();
+    /**
+      Destructor.
+     */
+    ~VCardConverter();
   
-  /**
-   * Converts a vcard string to an addressee.
-   *
-   * @param str     The vcard string.
-   * @param addr    The addressee.
-   * @param version The version of the vcard string.
-   */
-  bool vCardToAddressee( const QString &str, Addressee &addr, Version version = v3_0 );
+    /**
+      Creates a string in vCard format which contains the given
+      contact.
 
-  /**
-   * Converts an addressee to a vcard string.
-   *
-   * @param addr    The addressee.
-   * @param str     The vcard string.
-   * @param version The version of the vcard string.
-   */
-  bool addresseeToVCard( const Addressee &addr, QString &str, Version version = v3_0 );
+      @param addr The contact object
+      @param version The version of the generated vCard format
+     */
+    QString createVCard( const Addressee &addr, Version version = v3_0 );
 
-private:
-  struct VCardConverterData;
-  VCardConverterData *d;
+    /**
+      Creates a string in vCard format which contains the given
+      list of contact.
+
+      @param list The list of contact objects
+      @param version The version of the generated vCard format
+     */
+    QString createVCards( Addressee::List list, Version version = v3_0 );
+
+    /**
+      Parses a string in vCard format and returns the first contact.
+     */
+    Addressee parseVCard( const QString& vcard );
+
+    /**
+      Parses a string in vCard format and returns a list of contact objects.
+     */
+    Addressee::List parseVCards( const QString& vcard );
+
+    /**
+      @deprecated
+     */
+    bool vCardToAddressee( const QString&, Addressee &, Version version = v3_0 ) KDE_DEPRECATED;
+
+    /**
+      @deprecated
+     */
+    bool addresseeToVCard( const Addressee&, QString&, Version version = v3_0 ) KDE_DEPRECATED;
+
+  private:
+    /**
+      Split a string and replaces escaped separators on the fly with
+      unescaped ones.
+     */
+    QStringList splitString( const QChar &sep, const QString &value );
+
+    struct VCardConverterData;
+    VCardConverterData *d;
 };
 
 

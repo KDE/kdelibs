@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kaboutdata.h>
 
-#include "vcardtool.h"
+#include "vcardconverter.h"
 #include "vcard.h"
 
 static const KCmdLineOptions options[] =
@@ -72,8 +72,8 @@ int main( int argc, char **argv )
   text = s.read();
   file.close();
 
-  KABC::VCardTool tool;
-  KABC::Addressee::List list = tool.parseVCards( text );
+  KABC::VCardConverter converter;
+  KABC::Addressee::List list = converter.parseVCards( text );
 
   if ( args->isSet( "vcard21" ) ) {
     text = tool.createVCards( list, KABC::VCard::v2_1 ); // uses version 2.1

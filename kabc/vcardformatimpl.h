@@ -34,12 +34,9 @@ namespace KABC {
 class AddressBook;
 
 /**
-  @short Implementation of vCard backend for address book.
-  
-  This class implements reading and writing of address book information using
-  the vCard format. It requires the vCard lib from kdepim.
-*/
-class VCardFormatImpl
+  @deprecated use VCardFormatPlugin instead.
+ */
+class KDE_DEPRECATED VCardFormatImpl
 {
   public:
     bool load( Addressee &, QFile *file );

@@ -1,6 +1,6 @@
 #include "testutils.h"
 #include <kabc/addressee.h>
-#include <vcardtool.h>
+#include <vcardconverter.h>
 #include <kdebug.h>
 
 using namespace KABC;
@@ -11,7 +11,7 @@ main()
     Addressee::List l = vCardsAsAddresseeList();
     QString vcards = vCardsAsText();
 
-    VCardTool vct;
+    VCardConverter vct;
 
     Addressee::List parsed = vct.parseVCards( vcards );
 

@@ -30,12 +30,9 @@ class AddressBook;
 class VCardFormatImpl;
 
 /**
-  @short Interface of vCard backend for address book.
-
-  This class implements the file format interface of address book entries for
-  the vCard format.
-*/
-class VCardFormat : public Format {
+  @deprecated use VCardFormatPlugin instead.
+ */
+class KDE_DEPRECATED VCardFormat : public Format {
   public:
     VCardFormat();
     virtual ~VCardFormat();

@@ -20,6 +20,7 @@
 
 #include "vcard21parser.h"
 #include "vcardformatimpl.h"
+#include "vcardtool.h"
 
 #include "vcardconverter.h"
 
@@ -41,6 +42,37 @@ VCardConverter::~VCardConverter()
   delete d;
   d = 0;
 }
+
+QString VCardConverter::createVCard( const Addressee &addr, Version version )
+{
+  Addressee::List list;
+  list.append( addr );
+
+  return createVCards( list, version );
+}
+
+QString VCardConverter::createVCards( Addressee::List list, Version version )
+{
+  VCardTool tool;
+
+  return tool.createVCards( list, ( version == v3_0 ? VCard::v3_0 : VCard::v2_1 ) );
+}
+
+Addressee VCardConverter::parseVCard( const QString& vcard )
+{
+  Addressee::List list = parseVCards( vcard );
+
+  return list[ 0 ];
+}
+
+Addressee::List VCardConverter::parseVCards( const QString& vcard )
+{
+  VCardTool tool;
+
+  return tool.parseVCards( vcard );
+}
+
+// ---------------------------- deprecated stuff ---------------------------- //
 
 bool VCardConverter::vCardToAddressee( const QString &str, Addressee &addr, Version version )
 {

@@ -27,11 +27,9 @@ namespace KABC {
 class AddressBook;
 
 /**
-  @short Base class for address book formats.
-
-  This class provides an abstract interface for address book file formats.
+  @deprecated use FormatPlugin instead
 */
-class Format
+class KDE_DEPRECATED Format
 {
   public:
     /**

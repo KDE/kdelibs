@@ -31,7 +31,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
-#include "vcardtool.h"
+#include "vcardconverter.h"
 
 int main( int argc, char **argv )
 {
@@ -119,8 +119,8 @@ int main( int argc, char **argv )
     list.append( addr );
   }
 
-  KABC::VCardTool tool;
-  QString txt = tool.createVCards( list );
+  KABC::VCardConverter converter;
+  QString txt = converter.createVCards( list );
 
   QFile file( "out.vcf" );
   file.open( IO_WriteOnly );

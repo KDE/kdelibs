@@ -136,7 +136,10 @@ namespace KABC {
 
 class AddressBook;
 
-class VCard21Parser
+/**
+  @deprecated use VCardConverter instead.
+ */
+class KDE_DEPRECATED VCard21Parser
 {
 public:
 
