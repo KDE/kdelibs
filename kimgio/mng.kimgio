@@ -6,6 +6,7 @@ Name[br]=Skeudenn MNG
 Name[da]=MNG-billede
 Name[fr]=Image MNG
 Name[sv]=MNG-bild
+Name[tr]=MNG Resmi
 Read=true
 Write=true
 Suffices=mng,MNG
