@@ -372,7 +372,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
             writeOk = QDir().mkdir( url.path() );
     }
     else
-        writeOk = KIO::NetAccess::mkdir( url );
+        writeOk = KIO::NetAccess::mkdir( url, kapp->mainWidget() );
 
     if ( !writeOk )
         KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
@@ -970,6 +970,10 @@ void KDirOperator::setDirLister( KDirLister *lister )
     dir = lister;
 
     dir->setAutoUpdate( true );
+    
+    QWidget* mainWidget = kapp->mainWidget();
+    dir->setMainWindow (mainWidget);
+    kdDebug (kfile_area) << "Has main widget ? " << (mainWidget == 0) << endl;
 
     connect( dir, SIGNAL( percent( int )),
              SLOT( slotProgress( int ) ));
