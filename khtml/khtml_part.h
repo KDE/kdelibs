@@ -473,7 +473,7 @@ public:
    *
    * Note that the encoding might be different from the charset.
    */
-  QString encoding(); // ### KDE 3.0: make const
+  QString encoding() const;
 
   /**
    * Set a user defined style sheet to be used on top of the HTML 4

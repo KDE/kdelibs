@@ -1813,7 +1813,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     return true;
 }
 
-QString KHTMLPart::encoding()
+QString KHTMLPart::encoding() const
 {
     if(d->m_haveEncoding && !d->m_encoding.isEmpty())
         return d->m_encoding;
