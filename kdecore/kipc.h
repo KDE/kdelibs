@@ -40,6 +40,7 @@
  *
  * KIPC is implemented using X11 ClientMessage events.
  *
+ * @see KApplication::kipcMessage()
  * @author Geert Jansen <jansen@kde.org>
  * @version $Id$
  */

@@ -736,6 +736,8 @@ public:
    * Messages with id >= 32 are user messages.
    * @param id The message id. See @ref KIPC::Message.
    * @see KIPC
+   * @see removeKipcEventMask()
+   * @see kipcMessage()
    */
   void addKipcEventMask(int id);
 
@@ -744,6 +746,8 @@ public:
    * not be handled anymore.
    * @param id The message id.
    * @see KIPC
+   * @see addKipcEventMask()
+   * @see kipcMessage()
    */
   void removeKipcEventMask(int id);
 
@@ -1007,6 +1011,8 @@ signals:
    * @param data the data
    * @see KIPC
    * @see KIPC::Message
+   * @see addKipcEventMask
+   * @see removeKipcEventMask
    */
   void kipcMessage(int id, int data);
 
