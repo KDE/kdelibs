@@ -210,7 +210,8 @@ class Addressee
   private:
     Addressee copy();
     void detach();
-  
+
+    struct AddresseeData;
     KSharedPtr<AddresseeData> mData;
 };
 
