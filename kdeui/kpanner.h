@@ -1,6 +1,8 @@
 /*****************************************************************************
 *                                                                            *
 *  KPanner -- panner widget for KDE by Alexander Sanda                       *
+*             modifications by Paul Kendall for absolute pixel positions     *
+*                                                                            *
 *                                                                            *
 *****************************************************************************/
 
@@ -22,14 +24,23 @@ The class name is KPanner.
 
 KPanner *p = new KPanner(parent, name, flags, i_size);
 
-flags can be one of the following:
+flags can be a combination of the following (or zero):
 
-KPanner::O_VERTICAL
+KPanner::O_VERTICAL (default)
 KPanner::O_HORIZONTAL
+KPanner::U_PERCENT (default)
+KPanner::U_ABSOLUTE
 
-i_size is the initial location of the separator (measured in percent
-of full widget size, e.g. if you specify a value of 50, the client
-widgets will have exactly the same size).
+
+i_size is the location of the separator.
+
+The flag O_VERTICAL specifies that the separator is vertical and you
+therefore have a left and right pane.  The O_HORIZONTAL flag means that
+you have an upper and a lower pane.
+
+U_ABSOLUTE specifies that the location is in pixels and U_PERCENT means
+the location is measured in percent of full widget size, e.g. if you
+specify a value of 50, the client widgets will have exactly the same size.  
 
 To obtain the panners child widgets (which is necessary, because they
 will act as parents for the widgets to manage), KPanner provides two
@@ -45,7 +56,7 @@ class KPanner : public QWidget  {
 public:
   /// some flags
   /** some flags */
-  enum {O_VERTICAL = 1, O_HORIZONTAL = 2, PERCENT_LIMITS_ACTIVE = 4, ABS_LIMITS_ACTIVE = 8};
+  enum {O_VERTICAL = 0, O_HORIZONTAL = 1, U_PERCENT = 0, U_ABSOLUTE = 2};
     
   KPanner(QWidget *parent = 0, const char *name = 0, unsigned flags = 0, int i_size = 0);
 
@@ -83,22 +94,47 @@ public:
 	and the maximum width (height) of the panner. The upper limit (u_limit)
 	may be either positive (if you want to measure it from the left (upper)
 	edge), or negative (if you want to measure it from the right (lower)
-	edge).
+	edge).  If the panner was created in U_PERCENT mode, use values 0 to 100
+    also negatives for u_limit from right edge.
+    To clear the limits, set both l_limit and u_limit to zero.
 	*/
   void         setLimits(int, int);
 
+  /// Get the maximum pixel value that the panner can be moved to.
+  /**
+    Get the maximum pixel value that the separator bar can be moved to.
+	*/
   int          getMaxValue();
     
+  /// Returns the current position of the separator as a percentage.
+  /**
+    Get the current position of the separator bar as a percentage.
+    This can be used to save the position to the config file so the panner
+    can be reset back to a save state.  Or if the panner is turned off &
+    on again, the previous setting can be restored.
+	*/
+  int          getSeparator();
+    
+  /// Returns the current pixel position of the separator.
+  /**
+    Get the current pixel position of the separator bar.
+    This can be used to save the position to the config file so the panner
+    can be reset back to a save state.  Or if the panner is turned off &
+    on again, the previous setting can be restored.
+	*/
+  int          getAbsSeparator();
+    
 private:
+  enum {P_ORIENTATION = 1, P_UNITS = 2};
   virtual void resizeEvent(QResizeEvent *);
   bool         eventFilter(QObject *, QEvent *);
   void         setDividerGeometry(int);
   bool         checkRange(int &);
-  int          u_coord, delta, old_coord, percent;
+  int          u_coord, delta, old_coord;
   unsigned     u_flags;
   QWidget      *cw0, *cw1;
   QFrame       *divider;
-  int          l_limit, u_limit, pos, p0, p1;
+  int          l_limit, u_limit, pos;
     
   signals:
   void positionChanged();
@@ -108,6 +144,9 @@ private:
  * $Id$
  *
  * $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:43  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:09  cvsuser
  * Sources imported
  *

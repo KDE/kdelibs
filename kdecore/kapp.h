@@ -1,6 +1,16 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.4  1997/04/28 06:57:45  kalle
+// Various widgets moved from apps to libs
+// Added KSeparator
+// Several bugs fixed
+// Patches from Matthias Ettrich
+// Made ksock.cpp more alpha-friendly
+// Removed XPM-Loading from KPixmap
+// Reaping zombie KDEHelp childs
+// WidgetStyle of KApplication objects configurable via kdisplay
+//
 // Revision 1.3  1997/04/21 22:37:23  kalle
 // Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
 // kcolordlg und kapp abgedated (von Martin Jones)
@@ -62,6 +72,7 @@
 // - KApplication::saveYourself (signal)
 // - KApplication::tempFileName()
 // - KApplication::checkRecoverFile()
+//
 //
 // MD: Implemented reading of the colour scheme contrast variable. This allows
 // you to choose the highlights and lowlights used to draw widgets and has been
@@ -141,6 +152,13 @@ class KIconLoader;
 	*/
 
 /** 
+  /// Get the KDE font list
+  /** This method allows you to get the KDE font list which was composed by 
+      the user with kfontmanager. Usually you should work only with those
+      fonts in your kapplication. getKDEFonts returns true on success.
+	*/
+* Get the KDE font list.
+*
   //@Man: Drag 'n Drop stuff
   //@{
   /// An X11 atom used for IPC
@@ -153,8 +171,7 @@ class KIconLoader;
 	* @param pFilename The full path to the document you want to open.
   /// An X11 atom used for IPC
 	* pointer yourself, otherwise you have a memory leak.
-  /// An X11 atom used for reconfiguring the application
-  Atom __KDEChangeGeneral;                                        
+	*/
   /// Get the X11 display
   /**
   /// Used by KDNDDropZone to register
@@ -198,6 +215,7 @@ class KIconLoader;
 	*/
   KDNDDropZone *lastEnteredDropZone;
 
+  /**
 /**
 * The X11 display
 */
@@ -215,10 +233,13 @@ private slots:
 
 private:
   void* pAppData; // don't touch this without Kalles permission
-  void changePalette();
-  void changeGeneral();
-  void readSettings();
-  void KApplication::applyGUIStyle(GUIStyle newstyle);
+  KConfig* pConfig; // application config object
+  KConfig* pSessionConfig; //instance specific application config object
+  QString aSessionName; // logical name of the instance specific config file
+  QWidget* pTopWidget;
+  QString aAppName; // logical application name
+  QString aCaption; // the name for the window title
+  QString aWmCommand; // for userdefined session management
   KIconLoader* pIconLoader; // the application's own icon loader
   KLocale* pLocale;  
   static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compability 

@@ -11,14 +11,22 @@ KButton::KButton( QWidget *_parent, char *name )
     connect( this, SIGNAL( released() ), this, SLOT( slotReleased () ) );
 }
 
+<<<<<<< kbutton.cpp
+void KButton::enterEvent( QEvent* )
+=======
 void KButton::enterEvent( QEvent * )
+>>>>>>> 1.2
 {
     if ( isEnabled() )
 	raised = 1;
     repaint();
 }
 
+<<<<<<< kbutton.cpp
+void KButton::leaveEvent( QEvent* )
+=======
 void KButton::leaveEvent( QEvent * )
+>>>>>>> 1.2
 {
     raised = 0;
     repaint();
@@ -36,6 +44,17 @@ void KButton::drawButtonLabel( QPainter *_painter )
 
 void KButton::paint( QPainter *painter )
 {
+<<<<<<< kbutton.cpp
+    if ( raised == 1 )
+	{
+		if ( style() == WindowsStyle )
+			qDrawWinButton( painter, 0, 0, width(), height(), 
+							colorGroup(), FALSE );
+		else
+			qDrawShadePanel( painter, 0, 0, width(), height(), 
+							 colorGroup(), FALSE, 2, 0L );
+	}
+=======
 //    static QColorGroup g( black, white, white, darkGray, lightGray, black, black );
 
    if ( raised == 1 )
@@ -45,7 +64,18 @@ void KButton::paint( QPainter *painter )
         else
              qDrawShadePanel( painter, 0, 0, width(), height(), colorGroup(), FALSE, 2, 0L );
     }
+>>>>>>> 1.2
     else if ( raised == -1 )
+<<<<<<< kbutton.cpp
+	{
+		if ( style() == WindowsStyle )
+			qDrawWinButton( painter, 0, 0, width(), height(), 
+							colorGroup(), TRUE );
+		else
+    		qDrawShadePanel( painter, 0, 0, width(), height(), 
+							 colorGroup(), TRUE, 2, 0L );
+	}
+=======
       {
        if ( style() == WindowsStyle )
           qDrawWinButton( painter, 0, 0, width(), height(), colorGroup(), TRUE );
@@ -53,6 +83,7 @@ void KButton::paint( QPainter *painter )
           qDrawShadePanel( painter, 0, 0, width(), height(), colorGroup(), TRUE, 2, 0L );
         }
  
+>>>>>>> 1.2
 
     if ( pixmap() )
     {

@@ -22,13 +22,17 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
-    Revision 1.1.1.1  1997/04/13 14:42:42  cvsuser
-    Source imported
+    new usage of KLocale
+    default string for KConfig::readEntry to const char*
 
-    Revision 1.1.1.1  1997/04/09 00:28:09  cvsuser
-    Sources imported
+    Revision 1.6  1997/08/24 20:40:40  kulow
+    Coolo: translated the dialogs and others. I hope, noone minds.
 
-    Revision 1.1  1997/03/15 22:40:42  kalle
+    Revision 1.5  1997/07/24 21:06:04  kalle
+    Kalle:
+    KToolBar upgraded to newtoolbar 0.6
+    KTreeList has rubberbanding now
+    Patches for SGI
 
     Revision 1.4  1997/05/03 19:37:02  kulow
     Coolo: Again a little bug in acinclude
@@ -39,8 +43,15 @@
     KButton uses the widget default palette
 
 #include "kfontdialog.h"
-#include "kfontdialog.moc"
     *** empty log message ***
+
+    Revision 1.3  1997/04/27 01:50:49  wuebben
+    added ~/.kde/config/kdefonts support
+
+    Revision 1.2  1997/04/20 14:59:44  wuebben
+    fixed a minor bug which caused the last font in the font list to not
+    be displayed
+
 
     Revision 1.1  1997/01/04 17:36:44  wuebben
     Initial revision
@@ -54,8 +65,8 @@
 
 #include "kfontdialog.moc"
 #include "stdio.h"
-KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
-    : QDialog( parent, name, modal )
+#include "stdlib.h"
+#include "qfile.h"
 #include <qstrlist.h> 
 #include <qfile.h>
                                    "ISO-8859-2",
@@ -128,30 +139,30 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
 				 LABLE_LENGTH,LABLE_HEIGHT);
   actual_weight_label->setGeometry(3*XOFFSET,200 + 2*LABLE_HEIGHT ,
 				 LABLE_LENGTH +10,LABLE_HEIGHT);
-  family_combo->insertItem( "Terminal" );
-  family_combo->insertItem( "Fixed" );
-  family_combo->insertItem( "Courier" );
-  family_combo->insertItem( "Times" );
-  family_combo->insertItem( "Helvetica" );
-  family_combo->insertItem( "Utopia" );
-  family_combo->insertItem( "New Century Schoolbook" );
-  family_combo->insertItem( "Lucida" );
-  family_combo->insertItem( "Lucidabright" );
-  family_combo->insertItem( "Lucidatypewriter" );
-  family_combo->insertItem( "Charter" );
-  family_combo->insertItem( "Clean" );
-  family_combo->insertItem( "Gothic" );
-  family_combo->insertItem( "Symbol" );
-
+  actual_style_label_data->setGeometry(3*XOFFSET +50 ,160 + 3*LABLE_HEIGHT
   actual_weight_label_data = new QLabel(this,"aweightd");
   actual_weight_label_data->setGeometry(3*XOFFSET +60 ,200 + 2*LABLE_HEIGHT
-  family_combo->setInsertionPolicy(QComboBox::NoInsertion);
-
 
   style_label = new QLabel(this,"style");
   style_label->setText(klocale->translate("Style:"));
   style_label->setGeometry(6*XOFFSET + LABLE_LENGTH + 12*XOFFSET + 
-  //  QToolTip::add( family_combo, "Select Font Family" );
+			   2*FONTLABLE_LENGTH,
+			    ,8*YOFFSET - COMBO_ADJUST ,4* LABLE_LENGTH,COMBO_BOX_HEIGHT);
+  if (fontlist != NULL){
+			   LABLE_HEIGHT);
+
+  actual_style_label = new QLabel(this,"astyle");
+  actual_style_label->setText(klocale->translate("Style:"));
+  actual_style_label->setGeometry(3*XOFFSET,200 + 3*LABLE_HEIGHT ,
+				 LABLE_LENGTH +10,LABLE_HEIGHT);
+
+  actual_style_label_data = new QLabel(this,"astyled");
+  actual_style_label_data->setGeometry(3*XOFFSET +60 ,200 + 3*LABLE_HEIGHT
+				      ,110,LABLE_HEIGHT);
+
+
+  family_combo = new QComboBox(true, this, "Family" );
+  family_combo->setInsertionPolicy(QComboBox::NoInsertion);
 
 
   size_combo = new QComboBox( true, this, "Size" );
@@ -179,7 +190,12 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
 
   size_combo = new QComboBox( true, this, klocale->translate("Size") );
   size_combo->insertItem( "4" );
-  size_combo->setInsertionPolicy(QComboBox::NoInsertion);
+  size_combo->insertItem( "5" );
+  size_combo->insertItem( "6" );
+  size_combo->insertItem( "7" );
+  size_combo->insertItem( "8" );
+  size_combo->insertItem( "9" );
+  size_combo->insertItem( "10" );
   size_combo->insertItem( "11" );
   size_combo->insertItem( "12" );
   size_combo->insertItem( "13" );
@@ -197,7 +213,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
   size_combo->insertItem( "32" );
   size_combo->insertItem( "48" );
 			    ,19*YOFFSET - COMBO_ADJUST
-  //  QToolTip::add( weight_combo, "Select Font Weight" );
+
   // we may want to allow the user to choose another size, since I
   style_combo = new QComboBox( TRUE, this, "Style" );
   style_combo->insertItem( "roman" );
@@ -208,7 +224,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
 			  ,2*LABLE_LENGTH + 20,COMBO_BOX_HEIGHT);
   connect( size_combo, SIGNAL(activated(const char *)),
 			    ,19*YOFFSET- COMBO_ADJUST
-  // QToolTip::add( style_combo, "Select Font Style" );
+  //  QToolTip::add( size_combo, "Select Font Size in Points" );
 
 
   cancel_button = new QPushButton("Cancel",this);
@@ -221,7 +237,9 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
   connect( weight_combo, SIGNAL(activated(const char *)),
 	   SLOT(weight_chosen_slot(const char *)) );
   // QToolTip::add( weight_combo, "Select Font Weight" );
+  ok_button->setGeometry( 3*XOFFSET, OKBUTTONY, 80, BUTTONHEIGHT );
   style_combo = new QComboBox( TRUE, this, klocale->translate("Style") );
+  style_combo->insertItem( klocale->translate("roman") );
   style_combo->insertItem( klocale->translate("italic") );
   style_combo->setGeometry(10*XOFFSET + 6*LABLE_LENGTH
 			    ,19*YOFFSET- COMBO_ADJUST - 20
@@ -236,6 +254,11 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
 
   cancel_button->setGeometry( 3*XOFFSET +100, OKBUTTONY +40, 80, BUTTONHEIGHT );
   connect( cancel_button, SIGNAL( clicked() ), SLOT( reject() ) );
+
+  this->setMaximumSize(405,290);
+  this->setMinimumSize(405,290);
+  connect( ok_button, SIGNAL( clicked() ), SLOT( accept() ) );	
+  example_label->setBackgroundColor(white);
   example_label = new QLabel(this,"examples");
 
   example_label->setFont(selFont);
@@ -377,6 +400,138 @@ void KFontDialog::setCombos(){
  string.setNum(selFont.pointSize());
  combo = size_combo; 
  found = false;
+
+ for (i = 0;i < number_of_entries - 1; i++){
+ }
+
+ if (selFont.bold()){
+   //weight_combo->setCurrentItem(0);
+   weight_combo->setCurrentItem(1);
+ }else
+   weight_combo->setCurrentItem(0);
+
+  if (selFont.italic())
+   style_combo->setCurrentItem(1);
+ else
+   style_combo->setCurrentItem(0);
+
+  fontfilename = fontfilename + "/.kde/config/kdefonts";
+ for(i = 0;i<CHARSETS_COUNT;i++)
+   if (charset==charsetsIds[i]){
+     charset_combo->setCurrentItem(i);
+     break;
+   }
+
+}
+
+bool KFontDialog::loadKDEInstalledFonts(){
+
+  QString fontfilename;
+
+  //TODO replace by QDir::homePath();
+
+  fontfilename =  getenv("HOME");
+  fontfilename = fontfilename + "/.kde/share/config/kdefonts";
+
+  QFile fontfile(fontfilename);
+
+  if (!fontfile.exists())
+    return false;
+
+  if(!fontfile.open(IO_ReadOnly)){
+    return false;
+  }
+
+  if (!fontfile.isReadable())
+    return false;
+  
+  
+  QTextStream t(&fontfile);
+
+  while ( !t.eof() ) {
+    QString s = t.readLine();
+    s = s.stripWhiteSpace();
+    if(!s.isEmpty())
+  kde_display = XOpenDisplay( NULL );
+  }
+
+  fontfile.close();
+
+  
+  return true;
+
+}
+
+
+void KFontDialog::fill_family_combo(){
+
+  int numFonts;
+  Display *kde_display;
+  char** fontNames;
+  char** fontNames_copy;
+  QString qfontname;
+
+
+    
+  QStrList fontlist(TRUE);
+  
+  kde_display = XOpenDisplay( 0L );
+
+  // now try to load the KDE fonts
+
+  bool have_installed = loadKDEInstalledFonts();
+  
+  // if available we are done, the kde fonts are now in the family_combo
+
+  if (have_installed)
+    return;
+
+  fontNames = XListFonts(kde_display, "*", 32767, &numFonts);
+  fontNames_copy = fontNames;
+
+  for(int i = 0; i < numFonts; i++){
+    
+    if (**fontNames != '-'){ 
+      
+      // The font name doesn't start with a dash -- an alias
+      // so we ignore it. It is debatable whether this is the right
+      // behaviour so I leave the following snippet of code around.
+      // Just uncomment it if you want those aliases to be inserted as well.
+      
+      /*
+      qfontname = "";
+      qfontname = *fontNames;
+      if(fontlist.find(qfontname) == -1)
+          fontlist.inSort(qfontname);
+      */
+
+      fontNames ++;
+      continue;
+    };
+      
+    qfontname = "";
+    qfontname = *fontNames;
+    int dash = qfontname.find ('-', 1, TRUE); // find next dash
+
+    if (dash == -1) { // No such next dash -- this shouldn't happen.
+                      // but what do I care -- lets skip it.
+      fontNames ++;
+      continue;
+    }
+
+    // the font name is between the second and third dash so:
+    // let's find the third dash:
+
+    int dash_two = qfontname.find ('-', dash + 1 , TRUE); 
+
+    if (dash == -1) { // No such next dash -- this shouldn't happen.
+                      // But what do I care -- lets skip it.
+      fontNames ++;
+      continue;
+    }
+
+    // fish the name of the font info string
+
     qfontname = qfontname.mid(dash +1, dash_two - dash -1);
 
     if( !qfontname.contains("open look", TRUE)){

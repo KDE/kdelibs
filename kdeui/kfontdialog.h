@@ -4,7 +4,7 @@
     Requires the Qt widget libraries, available at no cost at 
     http://www.troll.no
        
-    Copyright (C) 1996 Bernd Johannes Wuebben   
+    Copyright (C) 1997 Bernd Johannes Wuebben   
                        wuebben@math.cornell.edu
 
     This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,25 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
-    Revision 1.1.1.1  1997/04/09 00:28:09  cvsuser
-    Sources imported
+    Kalle: Copyright headers
+    kdoctoolbar removed
 
-    Revision 1.1  1997/03/15 22:40:42  kalle
+    Revision 1.3  1997/10/05 18:25:55  ssk
+    Added short descriptions for documentation index.
+
+    Revision 1.2  1997/05/02 16:46:39  kalle
+    Kalle: You may now override how KApplication reacts to external changes
+    KButton uses the widget default palette
+    new kfontdialog version 0,5
+    new kpanner by Paul Kendall
+    new: KIconLoader
+
+    Revision 1.6  1997/04/29 03:11:18  wuebben
+    Added more comments
 
     Revision 1.5  1997/04/29 02:44:24  wuebben
+
+    added support for ~/.kde/config/kdefonts
     and X server fontlist lookup
 
     Revision 1.4  1997/04/27 01:50:49  wuebben
@@ -58,17 +71,39 @@
 #include <qbttngrp.h>
 #include <qchkbox.h>
 #include <qcombo.h>
-/// A font dialog for the KDE
-/**
-This is a little fontdialog that might come in handy at times.
-*/
+
 #include <qpushbt.h>
 #include <qradiobt.h>
 #include <qscrbar.h>
 #include <qtooltip.h>
+
+#include <qstring.h>
+      // Case 1) The pointer fontlist is NULL ( Recommended Usage !!)
+
+* @version $Id$
+* Dialog for interactive font selection.
+* @author Bernd Wuebben (wuebben@kde.org)
+* @version $Id$
+*/
+class KFontDialog : public QDialog {
+
+    Q_OBJECT
+
+      // Usage of the KFontDialog Class:
+      //
+      // Case 1) The pointer fontlist is null ( Recommended Usage !!)
+      // Case 2) The pointer fontlist is non NULL. In this cae KFontDialog 
+      // In this case KFontDialog will first search
+      // for ~/.kde/config/kdefonts. If kdefonts if available
+      // it will insert the fonts listed there into the family combo.
+      // 
+      // Note: ~/.kde/config/kdefonts is managed by kfontmanager. 
+      // ~/.kde/config/kdefonts is a newline separated list of font names.
+      // Such as: time\nhelvetica\nfixed\n etc.You should however not 
+      // manipulate that list -- that is the job of kfontmanager.
       // 
     KFontDialog( QWidget *parent = NULL, const char *name = NULL,
-			bool modal = FALSE );
+			bool modal = FALSE, const QStrList* fontlist = NULL );
       //
       // Case 2) The pointer fontlist is non null. In this cae KFontDialog 
       // will insert the strings of that QStrList into the family combo.
@@ -98,11 +133,17 @@ signals:
 	/*
 	 * connect to this to monitor the font as it as selected if you are
 	 * not running modal.
-    
+	 */
+
+
 private slots:
 
 
       void      size_chosen_slot(const char* );
+      void      weight_chosen_slot(const char*);
+      void      style_chosen_slot(const char*);
+      void      display_example(const QFont &font);
+      void      charset_chosen_slot(int index);
       void      setColors();
 private:
 

@@ -11,13 +11,16 @@ CLEANFILES = *.moc
 noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest kpannertest \
 					kcolordlgtest kdatepicktest kfontdialogtest	\
 					kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
-					kkeyconfigtest kseparatortest
+					kkeyconfigtest kseparatortest kdocktest	\
+					kiconloadertest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
-					kkeyconfigtest.h ktabctltest.h 
+					kkeyconfigtest.h ktabctltest.h kdocktest.h	\
+					kiconloadertestmain.h
 BUILT_SOURCES = kconfigtest.moc kpannertest.moc ktabctltest.moc \
 				kmsgboxtest.moc kdatepicktestdlg.moc ktreelisttest.moc	\
-				kkeyconfigtest.moc kseparatortest.moc
+				kkeyconfigtest.moc kseparatortest.moc kdocktest.moc	\
+				kiconloadertestmain.moc
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
@@ -33,6 +36,8 @@ ktabctltest_SOURCES = ktabctltest.cpp
 ktreelisttest_SOURCES = ktreelisttest.cpp
 kkeyconfigtest_SOURCES = kkeyconfigtest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
+kdocktest_SOURCES = kdocktest.cpp
+kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
 
 SUFFIXES = .moc
 LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore @X_LDFLAGS@ -lX11 -lXext @QT_LDFLAGS@ -lqt

@@ -1,6 +1,16 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.5  1997/04/28 06:57:44  kalle
+// Various widgets moved from apps to libs
+// Added KSeparator
+// Several bugs fixed
+// Patches from Matthias Ettrich
+// Made ksock.cpp more alpha-friendly
+// Removed XPM-Loading from KPixmap
+// Reaping zombie KDEHelp childs
+// WidgetStyle of KApplication objects configurable via kdisplay
+//
 // Revision 1.4  1997/04/23 16:45:14  kulow
 // fixed a bug in acinclude.m4 (Thanks to Paul)
 // solved some little problems with some gcc versions (no new code)
@@ -68,6 +78,9 @@
 #include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
 // Revision 1.66  1997/10/25 22:27:40  kalle
+// Fixed bug with default help menu (Thanks, Bernd! This one was just in time!)
+//
+// Matthias: bugfixes for session management.
 // Revision 1.63  1997/10/21 20:44:41  kulow
 // removed all NULLs and replaced it with 0L or "".
 //
@@ -112,8 +125,6 @@ void reaper(int)
   KApp = this;
 #include <qtstream.h>
   pConfigStream = NULL;
-
-  __KDEChangeGeneral = XInternAtom( qt_xdisplay(), "KDEChangeGeneral", False);
 
 #include "kprocctrl.h"
   if( char* pHome = getenv( "HOME" ) )
@@ -199,13 +210,11 @@ void KApplication::init()
   mkdir (configPath.data(), 0755); // make it public
 
   // try to read a global application file
+  QString aGlobalAppConfigName = kdedir() + "/share/config/" + aAppName + "rc";
   QFile aGlobalAppConfigFile( aGlobalAppConfigName );
-  if ( getenv( "ENABLE_COLOR_FONT_SETUP" ) )
-  {
-	readSettings();
-	changePalette();
-	changeGeneral();
-  }
+  // try to open read-only
+  bool bSuccess = aGlobalAppConfigFile.open( IO_ReadOnly );
+  if( !bSuccess )
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
@@ -230,7 +239,7 @@ void KApplication::init()
 		if (argv[i+1][0] == '/')
 
   delete pCharsets;
-	  if ( cme->message_type == __KDEChangeGeneral )
+						 aCommand);
   delete pSearchPaths;
 
   delete pConfig;
@@ -248,17 +257,17 @@ void KApplication::init()
 
 bool KApplication::x11EventFilter( XEvent *_event )
 {
-		  changePalette();
+  // You can get root drop events twice.
   // This is to avoid this.
   static int rootDropEventID = -1;
     
-	  else if ( cme->message_type == KDEChangeGeneral )
+  if ( _event->type == ClientMessage )
     {
 	  XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
-		  changeGeneral();
-			  changePalette();
+	  // session management
+	  if( cme->message_type == WM_PROTOCOLS )
 		{
-			  return True;
+		  if( (Atom)(cme->data.l[0]) == WM_SAVE_YOURSELF )
 			{
 			  if (!topWidget() || 
 			      cme->window != topWidget()->winId()){
@@ -307,51 +316,51 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			  if(str == "Windows 95")
 				applyGUIStyle(WindowsStyle);
 		  QString str;
-	  for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
+		  
 		  getConfig()->setGroup("GUI Style");
-		  QPoint p2 = dz->getWidget()->mapFromGlobal( p );
-		  if ( dz->getWidget()->rect().contains( p2 ) )
-			result = dz;
+		  str = getConfig()->readEntry("Style");
+		  if(!str.isNull()) 
+		    if(str == "Motif")
 		      applyGUIStyle(MotifStyle);
-		*/
+		    else
 		      if(str == "Windows 95")
 			applyGUIStyle(WindowsStyle);
 		  return TRUE;
 		}
-	  {
+ 
 	  if ( cme->message_type == KDEChangePalette )
-	      {
-		  if ( dz->getWidget() == w )
-		      result = dz;
-	      }
+		{
+			  
+		  kdisplaySetPalette();
+		  
 		  return True;
 		}
-		  w = w->parentWidget();
-	  }
+	  if ( cme->message_type == KDEChangeGeneral )
+		{
 		  readSettings();
 		  kdisplaySetStyleAndFont();
 		  kdisplaySetPalette();
-	      for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
+		  
 		  return True;
-		  QPoint p2 = dz->getWidget()->mapFromGlobal( p );
-		  if ( dz->getWidget()->rect().contains( p2 ) )
+		}
+	  
 	  if ( cme->message_type == DndLeaveProtocol )
 		{
 		  if ( lastEnteredDropZone != 0L )
 			lastEnteredDropZone->leave();
-	  {
+	    
 		  lastEnteredDropZone = 0L;
-	      {
-		  result->drop( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
-	      }
+
+		  return TRUE;
+		}
 	  else if ( cme->message_type != DndProtocol && cme->message_type != DndEnterProtocol &&
-	      {
+				cme->message_type != DndRootProtocol )
 	    return FALSE;
-		  if ( lastEnteredDropZone != 0L && lastEnteredDropZone != result )
-		      lastEnteredDropZone->leave();
 	  
-		  // Notify the drop zone over which the pointer is right now.
-		  result->enter( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
+	  Window root = DefaultRootWindow(display);
+	  
+	  unsigned char *Data;
+	  unsigned long Size;
 	  Atom    ActualType;
 	  int     ActualFormat;
 	  unsigned long RemainingBytes;
@@ -592,7 +601,7 @@ void KApplication::appendSearchPath( const char *path )
 			if ( atoi(str.data()) != 0 )
 				generalFont.setItalic(True);
   str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
-void KApplication::changePalette()
+  activeTextColor.setNamedColor( str );
 
 	config->setGroup( "GUI Style" );
 	str = config->readEntry( "Style" );
@@ -632,19 +641,39 @@ void KApplication::changePalette()
     							backgroundColor.dark(), 
     							backgroundColor.dark(120),
                         	darkGray, windowColor );
-void KApplication::changeGeneral()
+
+    	QColorGroup colgrp( textColor, backgroundColor, 
+    							backgroundColor.light(150),
+    
+    							backgroundColor.dark(), 
+    							backgroundColor.dark(120),
+	resizeAll();
+  if ( !str.isNull() )
+	{
+	  if( str == "Windows 95" )
+		applicationStyle=WindowsStyle;
+	}
+		applicationStyle=MotifStyle;
+	} else
+	resizeAll();
+    // setFont() works every time for me !
+void KApplication::kdisplaySetPalette()
+    emit kdisplayFontChanged();    
+	emit appearanceChanged();
     resizeAll();
   // 1) You can't change select colors
+  // 2) You need different palettes to apply the same color scheme to
   //		different widgets !!
 	
     emit kdisplayStyleChanged();
-    
-    QApplication::setFont( generalFont, TRUE );
-    
-    // setFont() works every time for me !
 	emit appearanceChanged();
+    resizeAll();
+  // printf("contrast = %d\n", contrast);
+	
+  if ( applicationStyle==MotifStyle ) {
+	QColorGroup disabledgrp( textColor, backgroundColor, 
+							 backgroundColor.light(highlightVal),
     QApplication::setStyle( applicationStyle );
-
     QApplication::setFont( generalFont, TRUE );
 							 darkGray, windowColor );
     emit kdisplayStyleChanged();
@@ -653,7 +682,8 @@ void KApplication::changeGeneral()
     // 	setStyle() works pretty well but may not change the style of combo
     //	boxes.
 						textColor, windowColor );
-}	
+	resizeAll();
+	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
 
 	emit kdisplayPaletteChanged();
 	emit appearanceChanged();
@@ -691,6 +721,48 @@ void KApplication::changeGeneral()
 	execl(shell, shell, "-c", path.data(), 0L);
 	exit( 1 );
   // 	setStyle() works pretty well but may not change the style of combo
+  //	boxes.
+  applyGUIStyle(applicationStyle);
+  QApplication::setFont( generalFont, TRUE );
+  applyGUIStyle(applicationStyle);   
+    
+  QString kdedir = getenv("KDEDIR");
+  emit kdisplayFontChanged();
+  if(fontlist == NULL)
+
+	kdedir = KDEDIR;
+void KApplication::resizeAll()
+    kdedir = "/usr/local/kde";
+  // send a resize event to all windows so that they can resize children
+  return dir;
+}
+
+  fontfilename = fontfilename + "/.kde/config/kdefonts";
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_CGIDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_minidir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_WALLPAPERDIR;
+  return dir;
+}
+ 
+const QString& KApplication::kde_bindir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_BINDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_partsdir()
+{
   if( !aAutosaveDir.exists() )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )

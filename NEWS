@@ -1,6 +1,22 @@
-v0.8:		KConfig reads and writes fonts and colors
+v0.8.xx:	virtual methods in KApplication for overriding external
+				configuration of fonts, palette and style
+			KButton uses default widget colorgroup
+			new KPanner by Paul Kendall
+			Several bugs fixed
+			Various widgets moved from apps to library
+			KSlider added
+			WidgetStyle of KApplication objects can be configured from
+				the outside  
+			new: KIconLoader by Christoph Neerfeld
+			KFontDialog updated to version 0.5
+	
+v0.8.06:	KConfig reads and writes fonts and colors
 			KApplication::invokeHTMLHelp()
 			KApplication::kdedir()
+			~/.kde/config.appnamerc is now the default location for
+				app-specific config files unless USE_OLD_CONFIG_LOCATION
+				is set
+			XPM loading stuff removed from KPixmap
 
 v0.7:		Default installation directory is $KDEDIR.
 			KPanner widget included

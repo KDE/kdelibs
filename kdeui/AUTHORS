@@ -33,6 +33,9 @@ KDatePicker, KDateTable class
 Nicolas Hadacek <hadacek@via.ecp.fr>
 Key configuration classes, bug fixes
 
+Christoph Neerfeld <Christoph.Neerfeld@mail.bonn.netsurf.de>
+KIconLoader class
+
 
 
 

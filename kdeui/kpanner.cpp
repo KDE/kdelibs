@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1997/04/30 22:28:37  kulow
+ * Coolo: updated KWidget classes (out of kghostview)
+ * patched kbutton (from Taj)
+ * BTW: Do you like the new look of the toolbar? (I'm not)
+ *
  * Revision 1.1.1.1  1997/04/13 14:42:43  cvsuser
  * Source imported
  *
@@ -27,40 +32,30 @@ KPanner::KPanner(QWidget *parent, const char *name, unsigned flags, int d)
     /*
      * create the child widgets and the divider widget
      */
-    
     cw0 = new QWidget(this, "_pchild0");
     cw1 = new QWidget(this, "_pchild1");
     divider = new QFrame(this, "_pdivider", 0, TRUE);
     divider->setFrameStyle(QFrame::Panel | QFrame::Raised);
     divider->setLineWidth(1);
 
-    if(d < 0 || d > 100)
-        d = 50;
-    
-    percent = d;
-
-    
+  
     /*
      * set the cursor shape
      */
-    
-    if(u_flags & O_HORIZONTAL) {
+    if((u_flags & P_ORIENTATION) == O_HORIZONTAL)
         divider->setCursor(QCursor(sizeVerCursor));
-        u_limit = parentWidget()->height();
-    }
-    if(u_flags & O_VERTICAL) {
+    else // O_VERTICAL
         divider->setCursor(QCursor(sizeHorCursor));
-        u_limit = parentWidget()->width();
-    }
 
+    u_limit = 0;
     l_limit = 0;
-    p0 = 0; p1 = 100;
-    
+
+    pos = d;
+    checkRange(pos);
     divider->installEventFilter(this);
 }
 
 KPanner::~KPanner() {
-
     delete cw0;
     delete cw1;
     delete divider;
@@ -72,65 +67,58 @@ KPanner::~KPanner() {
  * and the separator widget
  */
 
-void KPanner::resizeEvent(QResizeEvent *rev)
+void KPanner::resizeEvent(QResizeEvent*)
 {
+<<<<<<< kpanner.cpp
+    int abs_coord = pos;
+=======
     int max_value, old_max = 0;
+>>>>>>> 1.2
 
-    max_value = getMaxValue();
+    if((u_flags & P_UNITS) == U_PERCENT)
+        abs_coord = (int)(pos / 100.0 * getMaxValue());
     
-    if(u_flags & O_VERTICAL) {
-        if(rev) {
-            old_max = rev->oldSize().width();
-            pos = (percent * max_value) / 100;
-        }
-        cw0->setGeometry(0, 0, pos, height());
-        cw1->setGeometry(pos + 4, 0, width() - pos - 4, height());
+    if((u_flags & P_ORIENTATION) == O_HORIZONTAL) {
+        cw0->setGeometry(0, 0, width(), abs_coord);
+        cw1->setGeometry(0, abs_coord+4, width(), height()-abs_coord-4);
     }
-    if(u_flags & O_HORIZONTAL) {
-        if(rev) {
-            old_max = rev->oldSize().height();
-            pos = (percent * max_value) / 100;
-        }
-        cw0->setGeometry(0, 0, width(), pos);
-        cw1->setGeometry(0, pos + 4, width(), height() - pos - 4);
+    else { // O_VERTICAL
+        cw0->setGeometry(0, 0, abs_coord, height());
+        cw1->setGeometry(abs_coord+4, 0, width()-abs_coord-4, height());
     }
+        
     setDividerGeometry(pos);
-
-    if(rev && (old_max != max_value)) {
-        l_limit = (p0 * max_value) / 100;
-        u_limit = (p1 * max_value) / 100;
-    }
-
 }
 
 void KPanner::setDividerGeometry(int pos)
 {
-    if(u_flags & O_VERTICAL) {
-        divider->setGeometry(pos, 0, 4, height());
-    }
-    if(u_flags & O_HORIZONTAL) {
-        divider->setGeometry(0, pos, width(), 4);
-    }
+    int abs_coord = pos;
+    
+    if((u_flags & P_UNITS) == U_PERCENT)
+        abs_coord = (int)(pos / 100.0 * getMaxValue());
+    
+    if((u_flags & P_ORIENTATION) == O_HORIZONTAL)
+        divider->setGeometry(0, abs_coord, width(), 4);
+    else // O_VERTICAL
+        divider->setGeometry(abs_coord, 0, 4, height());
 }
 
 /*
- * dragging the mouse on the separator initiates the drag action. It does not check
- * for any mouse button (yet).
+ * dragging the mouse on the separator initiates the drag action. It does
+ * not check for any mouse button (yet).
  */
 
 bool KPanner::eventFilter(QObject *obj, QEvent *ev)
 {
-    int max_value = getMaxValue();
-    
     /*
      * initiate divider drag action. record current position
      */
     
     if(ev->type() == Event_MouseButtonPress) {
-        if(u_flags & O_VERTICAL)
-            old_coord = divider->x();
-        if(u_flags & O_HORIZONTAL)
+        if((u_flags & P_ORIENTATION) == O_HORIZONTAL)
             old_coord = divider->y();
+        else // O_VERTICAL
+            old_coord = divider->x();
     }
     
     if(ev->type() == Event_MouseMove) {
@@ -141,49 +129,39 @@ bool KPanner::eventFilter(QObject *obj, QEvent *ev)
             /*
              * get the new coordinate, depending on our orientation.
              */
-
-            if(u_flags & O_VERTICAL) {
-                delta = mev->pos().x();
-            }
-            if(u_flags & O_HORIZONTAL) {
+            if((u_flags & P_ORIENTATION) == O_HORIZONTAL)
                 delta = mev->pos().y();
-            }
-
+            else // O_VERTICAL
+                delta = mev->pos().x();
             old_coord += delta;
-            if(old_coord < 0)
-                old_coord = 0;
 
             /*
              * check for limits
              */
+            checkRange( old_coord );
             
-            if(old_coord > max_value)
-                old_coord = max_value - 4;
-            
-            if(old_coord < l_limit)
-                old_coord = l_limit;
-
-            if(old_coord > u_limit)
-                old_coord = u_limit;
-            
-            if(u_flags & O_VERTICAL)
-                divider->move(old_coord, 0);
-
-            if(u_flags & O_HORIZONTAL)
+            if((u_flags & P_ORIENTATION) == O_HORIZONTAL)
                 divider->move(0, old_coord);
+            else // O_VERTICAL
+                divider->move(old_coord, 0);
 
             return TRUE;
         }
     }
+
     if(ev->type() == Event_MouseButtonRelease) {
-        u_coord = old_coord;
-        pos = u_coord;
-        percent = (100 * u_coord) / max_value;
+        int max_value = getMaxValue();
+    
+        if((u_flags & P_UNITS) == U_PERCENT)
+            pos = (int)((old_coord * 100.0) / max_value);
+        else
+            pos = old_coord;
         setDividerGeometry(pos);
         resizeEvent(0);
         emit(positionChanged());
         return TRUE;
     }
+    
     return FALSE;
 }
 
@@ -199,68 +177,114 @@ QWidget *KPanner::child1()
 
 void KPanner::setSeparator(int size)
 {
-    if(size < 0 || size > 100)
-        size = 50;
+    if((u_flags & P_UNITS) == U_PERCENT)
+        pos = size;
+    else
+        pos = (int)(size / 100.0 * getMaxValue());
     
-    percent = size;
+    checkRange(pos);
     resizeEvent(0);
     emit(positionChanged());
 }
 
 void KPanner::setAbsSeparator(int size)
 {
-    int m = getMaxValue(), p;
-
-    if(size < l_limit || size > u_limit)
-        size = l_limit + ((u_limit - l_limit) / 2);
-
-    p = (100 * size) / m;
-    setSeparator(p);
+    if((u_flags & P_UNITS) == U_PERCENT)
+        pos = (int)(size * 100.0 / getMaxValue());
+    else
+        pos = size;
+    
+    checkRange(pos);
+    resizeEvent(0);
+    emit(positionChanged());
 }
 
 void KPanner::setLimits(int l, int u)
 {
-    int m = getMaxValue();
-    
     l_limit = (l < 0 ? 0 : l);
-
-    if(u < 0) {
-        u_limit = u >= -m ? m + u : m;
-    } else
-        u_limit = (u > m - 4 ? m - 4 : u);
-
+    if((u_flags & P_UNITS) == U_PERCENT) {
+        if(u < 0 && u >= -100)
+            u_limit = -100;
+        else if(u >= 100)
+            u_limit = 100;
+        else
+            u_limit = u;
+    }
+    else {
+        int m = getMaxValue();
+        
+        if(u < 0 && u >= -m)
+            u_limit = -m;
+        else if(u >= m)
+            u_limit = m;
+        else
+            u_limit = u;
+    }
+    
     if(l_limit >= u_limit) {
         l_limit = 0;
-        u_limit = m;
+        u_limit = 0;
     }
 
-    p0 = (100 * l_limit) / m;
-    p1 = (100 * u_limit) / m;
-    
     if(checkRange(pos)) {
-        percent = (100 * pos) / m;
         resizeEvent(0);
     }
 }
 
 int KPanner::getMaxValue()
 {
-    if(u_flags & O_VERTICAL) {
-        pos = divider->x();
-        return width();
-    }
     if(u_flags & O_HORIZONTAL) {
-        pos = divider->y();
-        return height();
+        return height() - 4;
+    }
+    else { // O_VERTICAL
+        return width() - 4;
     }
    return 0;
 }
 
 bool KPanner::checkRange(int & value)
 {
-    if(!(value >= l_limit && value <= u_limit)) {
-        value = l_limit;
-        return TRUE;
+    int max_value = getMaxValue();
+    
+    if((u_flags & P_UNITS) == U_PERCENT) {
+        float percent;
+
+        percent = value * 100.0 / max_value;
+        if( percent < l_limit )
+            percent = l_limit;
+        else if( u_limit > 0 && percent > u_limit )
+            value = u_limit;
+        else if( u_limit <= 0 && percent > 100+u_limit )
+            value = 100+u_limit;
+        else
+            return FALSE;
+        value = (int)(percent / 100.0 * max_value);
     }
-    return FALSE;
+    else {
+        if( value < l_limit )
+            value = l_limit;
+        else if( u_limit > 0 && value > u_limit )
+            value = u_limit;
+        else if( u_limit <= 0 && value > max_value+u_limit )
+            value = max_value+u_limit;
+        else
+            return FALSE;
+    }
+    return TRUE;
+}
+
+int KPanner::getSeparator() 
+{
+    if((u_flags & P_UNITS) == U_PERCENT)
+        return pos;
+    else
+        return (int)(pos / 100.0 * getMaxValue());
+}
+
+int KPanner::getAbsSeparator() 
+{
+    if((u_flags & P_UNITS) == U_PERCENT)
+        return (int)(pos * 100.0 / getMaxValue());
+    else
+        return pos;
 }
