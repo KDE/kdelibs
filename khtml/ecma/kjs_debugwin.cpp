@@ -26,14 +26,17 @@
 #include <qmultilineedit.h>
 #include <qapplication.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 using namespace KJS;
 
 KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   : QWidget(parent, name),
     Debugger(0L),
-    modal(false)
+    modal(false),
+    currentSrcId(-1)
 {
+  srcDict.setAutoDelete(true);
   setCaption(i18n("JavaScript Debugger"));
   QVBoxLayout *vl = new QVBoxLayout(this, 5);
   edit = new QMultiLineEdit(this);
@@ -82,11 +85,21 @@ void KJSDebugWin::cont()
   leaveSession();
 }
 
-bool KJSDebugWin::stopEvent(int line)
+bool KJSDebugWin::stopEvent()
 {
   if (!isVisible())
     show();
-  highLight(line);
+  if ( sourceId() != currentSrcId ) {
+      currentSrcId = sourceId();
+      QString *s = srcDict[ currentSrcId ];
+      if ( s ) {
+	edit->setText(*s);
+      } else {
+	kdWarning() << "KJSDebugWin: unknown source id." << endl;
+	edit->setText("????????");
+      }
+  }
+  highLight(line());
   enterSession();
   return true;
 }
@@ -94,6 +107,9 @@ bool KJSDebugWin::stopEvent(int line)
 void KJSDebugWin::setCode(const QString &code)
 {
   edit->setText(code);
+  if ( !code.isNull() ) {
+      srcDict.insert(freeSourceId(), new QString(code));
+  }
 }
 
 void KJSDebugWin::highLight(int line)

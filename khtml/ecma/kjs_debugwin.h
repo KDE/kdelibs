@@ -23,6 +23,7 @@
 #ifdef KJS_DEBUGGER
 
 #include <qwidget.h>
+#include <qintdict.h>
 #include <kjs/debugger.h>
 
 class QMultiLineEdit;
@@ -43,7 +44,7 @@ public slots:
   void cont();
 
 protected:
-  virtual bool stopEvent(int line);
+  virtual bool stopEvent();
 
 private:
   void enterSession();
@@ -52,6 +53,8 @@ private:
   bool modal;
   QMultiLineEdit *edit;
   QPushButton *stepButton, *nextButton, *continueButton;
+  QIntDict<QString> srcDict;
+  int currentSrcId;
 };
 
 #endif
