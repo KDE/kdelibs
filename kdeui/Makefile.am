@@ -38,7 +38,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
 		ktabctl.h kstatusbar.h kimageeffect.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
-		knuminput.h kseparator.h klined.h klineedit.h \
+		knuminput.h kseparator.h klineedit.h \
 		krestrictedline.h kcolorbtn.h kiconloaderdialog.h \
 		kapplet.h kdockwindow.h kbuttonbox.h \
 		kcontainer.h keditcl.h ktoolboxmgr.h kled.h \
