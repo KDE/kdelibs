@@ -1,3 +1,10 @@
+2004-08-23  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_layer.{cpp,h} (Marquee): Added a stop method for
+	the ECMAScript invokation.
+	Fixed starting and stopping and suspending by properly discriminating
+	against them.
+
 2004-08-19  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_body.cpp (setStyle): only disallow fixed positioning
