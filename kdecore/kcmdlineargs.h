@@ -233,7 +233,7 @@ public:
    * This method is exactly the same as calling
    * @ref init(0,0, const KAboutData *about, true)
    * This method will rarely be used
-   *
+   * @param about the about data.
    */
   static void init(const KAboutData *about);
 
@@ -242,10 +242,6 @@ public:
    *
    * You must make sure that all possible options have been added before
    * any class uses the command line arguments.
-   *
-   * @param options A list of options thath your code supplies.
-   * @param id A name with which these options can be identified.
-   * @param afterId The options are inserted after this set of options.
    *
    * The list of options should look like this:
    *
@@ -287,6 +283,11 @@ public:
    * @li "myapp --option3 (same as "myapp")
    * @li "myapp --option2 --nooption2" (same as "myapp")
    * @li "myapp /tmp/file"
+   *
+   * @param options A list of options thath your code supplies.
+   * @param name the name of the option, can be 0.
+   * @param id A name with which these options can be identified, can be 0.
+   * @param afterId The options are inserted after this set of options, can be 0.
    */
   static void addCmdLineOptions( const KCmdLineOptions *options,
 				 const char *name=0, const char *id = 0,
@@ -299,7 +300,7 @@ public:
    * handles. If unknown command-line arguments are encountered the program
    * is aborted and usage information is shown.
    *
-   * @param id The name of the options you are interested in.
+   * @param id The name of the options you are interested in, can be 0.
    */
   static KCmdLineArgs *parsedArgs(const char *id=0);
 
@@ -310,24 +311,28 @@ public:
    * Typically this is needed in KUniqueApplication::newInstance()
    * since the CWD of the process may be different from the CWD
    * where the user started a second instance.
+   * @return the current working directory
    **/
   static QString cwd();
 
   /**
-   * Get the appname according to argv[0]
+   * Get the appname according to argv[0].
+   * @return the name of the application
    **/
   static const char *appName();
 
   /**
    * Print the usage help to stdout and exit.
    *
-   * @param complete If true, print all available options.
+   * @param id if 0, print all options. If id is set, only print the
+   *        option specified by id. The id is the value set by 
+   *        #ref addCmdLineOptions().
    **/
   static void usage(const char *id = 0);
 
   /**
    * Print an error to stderr and the usage help to stdout and exit.
-   *
+   * @param the error to print
    **/
   static void usage(const QString &error);
 
@@ -345,34 +350,34 @@ public:
   /**
    *  Read out a string option.
    *
+   *  The option must have a corresponding KCmdLineOptions entry
+   *  of the form:
+   *  <pre>
+   *    { "option <argument>", I18N_NOOP("Description"), "default" }
+   *  </pre>
+   *
    *  @param option The name of the option without '-'.
    *
    *  @return The value of the option. If the option was not
    *          present on the command line the default is returned.
    *          If the option was present more than the value of the
    *          last occurence is used.
-   *
-   *  The option must have a corresponding KCmdLineOptions entry
-   *  of the form:
-   *  <pre>
-   *    { "option <argument>", I18N_NOOP("Description"), "default" }
-   *  </pre>
    */
   QCString getOption(const char *option) const;
 
   /**
    *  Read out all occurences of a string option.
    *
-   *  @param option The name of the option without '-'.
-   *
-   *  @return A list of all option values. If no option was present
-   *          on the command line, an empty list is returned.
-   *
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
    *  <pre>
    *    { "option <argument>", I18N_NOOP("Description"), "default" }
    *  </pre>
+   *
+   *  @param option The name of the option without '-'.
+   *
+   *  @return A list of all option values. If no option was present
+   *          on the command line, an empty list is returned.
    */
   QCStringList getOptionList(const char *option) const;
 
@@ -391,7 +396,6 @@ public:
    *          If the option is listed as '<option> <arg>'
    *          this function returns @p true if the option was present
    *          and @p false otherwise.
-   *
    */
   bool isSet(const char *option) const;
 
@@ -424,14 +428,15 @@ public:
    *  @param n The argument to read. 0 is the first argument.
    *           @ref count()-1 is the last argument.
    *
-   *  @return a @p URL representing the n'th argument.
+   *  @return a URL representing the n'th argument.
    */
   KURL url(int n) const;
 
   /**
-   * Used by @ref #url
+   * Used by @ref #url().
    * Made public for apps that don't use KCmdLineArgs
    * @param urlArgs the argument
+   * @return the url.
    */
   static KURL makeURL( const char * urlArg );
 
@@ -439,6 +444,7 @@ public:
    * Made public for apps that don't use KCmdLineArgs
    * To be done before @ref makeURL, to set the current working
    * directory in case @ref makeURL needs it.
+   * @param cwd the new working directory
    */
   static void setCwd( char * cwd ) { mCwd = cwd; }
 
