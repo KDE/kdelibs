@@ -236,8 +236,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 			else
 			{
 				QString	cmd = QString("kjobviewer -d %1").arg(KShellProcess::quote(printerName()));
-qDebug("jobview command: %s",cmd.latin1());
-				KRun::runCommand(cmd);
+				KRun::runCommand(cmd, "kjobviewer", "kjobviewer");
 			}
 		}
 	}
