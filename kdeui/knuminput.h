@@ -53,7 +53,7 @@ class KDEUI_EXPORT KNumInput : public QWidget
 public:
     /**
      * Default constructor
-     * @param parent If parent is 0, the new widget becomes a top-level window. If parent is another widget, this widget becomes a child window inside parent. The new widget is deleted when its parent is deleted. 
+     * @param parent If parent is 0, the new widget becomes a top-level window. If parent is another widget, this widget becomes a child window inside parent. The new widget is deleted when its parent is deleted.
      * @param name The name is sent to the QObject constructor.
      */
     KNumInput(QWidget* parent=0, const char* name=0);
@@ -439,7 +439,7 @@ class KDEUI_EXPORT KDoubleNumInput : public KNumInput
     Q_PROPERTY( int precision READ precision WRITE setPrecision )
     Q_PROPERTY( double referencePoint READ referencePoint WRITE setReferencePoint )
     Q_PROPERTY( double relativeValue READ relativeValue  WRITE setRelativeValue )
-  
+
 public:
     /**
      * Constructs an input control for double values
@@ -778,30 +778,35 @@ private:
 /* --------------------------------------------------------------------------- */
 
 /**
+   @short A spin box for fractional numbers.
+
    This class provides a spin box for fractional numbers.
+
+   \image html kdoublespinbox.png "KDE Fractional Number Spinbox"
+
+   See below for code examples on how to use this class.
 
    \b Parameters \n
 
-   There are a number of interdependent parameters whose relation to
-   each other you need to understand in order to make successful use
-   of the spin box.
+   To make successful use of KDoubleSpinBox, you need to understand the
+   relationship between precision and available range.
 
-   @li precision: The number of decimals after the decimal point.
-   @li maxValue/minValue: upper and lower bound of the valid range
-   @li lineStep: the size of the step that is taken when the user hits
+   @li precision: The number of digits after the decimal point.
+   @li maxValue/minValue: upper and lower bounds of the valid range
+   @li lineStep: the size of the step that is made when the user hits
                  the up or down buttons
 
    Since we work with fixed-point numbers internally, the maximum
    precision is a function of the valid range and vice versa. More
-   precisely, the following relations hold:
+   precisely, the following relationships hold:
    \code
    max( abs(minValue()), abs(maxValue() ) <= INT_MAX/10^precision
    maxPrecision = floor( log10( INT_MAX/max(abs(minValue()),abs(maxValue())) ) )
    \endcode
 
-   Since the value, bounds and step are rounded to the current
-   precision, you may experience that the order of setting above
-   parameters matters. E.g. the following are @em not equivalent (try
+   Since the value, bounds and lineStep are rounded to the current
+   precision, you may find that the order of setting these
+   parameters matters. As an example, the following are @em not equivalent (try
    it!):
 
    \code
@@ -812,14 +817,13 @@ private:
 
    // sets minValue to 0; maxValue to 10.00(!); value to 4.32(!) and only then
    // increases the precision - too late, since e.g. value has already been rounded...
-   KDpubleSpinBox * spin = new KDoubleSpinBox( this );
+   KDoubleSpinBox * spin = new KDoubleSpinBox( this );
    spin->setMinValue( 0 );
    spin->setMaxValue( 9.999 );
    spin->setValue( 4.321 );
    spin->setPrecision( 3 );
    \endcode
 
-   @short A spin box for fractional numbers.
    @author Marc Mutz <mutz@kde.org>
    @version $Id$
    @since 3.1
@@ -839,8 +843,9 @@ public:
       default values for range and value (whatever QRangeControl
       uses) and precision (2). */
   KDoubleSpinBox( QWidget * parent=0, const char * name=0 );
+
   /** Constructs a KDoubleSpinBox with parent @p parent, range
-      [@p lower,@p upper], lineStep @p step, precision @p
+      [ @p lower, @p upper ], lineStep @p step, precision @p
       precision and initial value @p value. */
   KDoubleSpinBox( double lower, double upper, double step, double value,
 		  int precision=2, QWidget * parent=0, const char * name=0 );
@@ -849,8 +854,9 @@ public:
 
   /** @return whether the spinbox uses localized numbers */
   bool acceptLocalizedNumbers() const;
+
   /** Sets whether to use and accept localized numbers as returned by
- KLocale::formatNumber() */
+      KLocale::formatNumber() */
   virtual void setAcceptLocalizedNumbers( bool accept );
 
   /** Sets a new range for the spin box values. Note that @p lower, @p
@@ -858,53 +864,61 @@ public:
       first. */
   void setRange( double lower, double upper, double step=0.01, int precision=2 );
 
-  /** @return the current number of decimal points displayed. */
+  /** @return the current number of digits displayed to the right of the
+      decimal point. */
   int precision() const;
-  /** Equivalent to setPrecsion( @p precision, @p false ); Needed
+
+  /** Equivalent to setPrecision( @p precision, @p false ); Needed
       since Qt's moc doesn't ignore trailing parameters with default
       args when searching for a property setter method. */
   void setPrecision( int precision );
-  /** Sets the number of decimal points to use. Note that there is a
-      tradeoff between the precision used and the available range of
-      values. See the class docs for more.
-      @param precision the new number of decimal points to use
 
-      @param force disables checking of bound violations that can
+  /** Sets the precision (number of digits to the right of the decimal point). Note
+      that there is a tradeoff between the precision used and the available range of
+      values. See the class documentation above for more information on this.
+
+      @param precision the new precision to use
+
+      @param force if true, disables checking of bounds violations that can
              arise if you increase the precision so much that the
              minimum and maximum values can't be represented
-             anymore. Disabling is useful if you don't want to keep
-             the current min and max values anyway. This is what
-             e.g. setRange() does.
+             anymore. Disabling is useful if you were going to disable range
+             control in any case.
   **/
   virtual void setPrecision( int precision, bool force );
 
   /** @return the current value */
   double value() const;
+
   /** @return the current lower bound */
   double minValue() const;
+
   /** Sets the lower bound of the range to @p value, subject to the
       contraints that @p value is first rounded to the current
-      precision and then clipped to the maximum representable
-      interval.
+      precision and then clipped to the maximum range interval that can
+      be handled at that precision.
       @see maxValue, minValue, setMaxValue, setRange
   */
   void setMinValue( double value );
+
   /** @return the current upper bound */
   double maxValue() const;
+
   /** Sets the upper bound of the range to @p value, subject to the
       contraints that @p value is first rounded to the current
-      precision and then clipped to the maximum representable
-      interval.
+      precision and then clipped to the maximum range interval
+      that can be handled at that precision.
       @see minValue, maxValue, setMinValue, setRange
   */
   void setMaxValue( double value );
 
   /** @return the current step size */
   double lineStep() const;
+
   /** Sets the step size for clicking the up/down buttons to @p step,
       subject to the constraints that @p step is first rounded to the
       current precision and then clipped to the meaningful interval
-      [1, @p maxValue - @p minValue]. */
+      [ 1, @p maxValue() - @p minValue() ]. */
   void setLineStep( double step );
 
   /** Overridden to ignore any setValidator() calls. */
@@ -915,9 +929,9 @@ signals:
   void valueChanged( double value );
 
 public slots:
-  /** Sets the current value to @p value, cubject to the constraints
-      that @p value is frist rounded to the current precision and then
-      clipped to the interval [@p minvalue(),@p maxValue()]. */
+  /** Sets the current value to @p value, subject to the constraints
+      that @p value is first rounded to the current precision and then
+      clipped to the interval [ @p minValue() , @p maxValue() ]. */
   virtual void setValue( double value );
 
 protected:
