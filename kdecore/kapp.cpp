@@ -148,6 +148,7 @@ void KApplication::init()
 
   pIconLoader = 0L;
   styleHandle = 0;
+  pKStyle = 0;
 
   // create the config directory ~/.kde/share/config
   QString configPath = KApplication::localkdedir();
@@ -262,9 +263,9 @@ void KApplication::init()
   // register a communication window for desktop changes (Matthias)
   {
     Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);
-    QWidget* w = new QWidget(0,0);
+    smw = new QWidget(0,0);
     long data = 1;
-    XChangeProperty(qt_xdisplay(), w->winId(), a, a, 32,
+    XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
 					PropModeReplace, (unsigned char *)&data, 1);
   }
   aWmCommand = argv()[0];
@@ -391,7 +392,7 @@ void KApplication::aboutApp()
 
 void KApplication::aboutQt()
 {
-  //  QMessageBox::aboutQt( NULL, getCaption() );
+  //  QMessageBox::aboutQt( 0, getCaption() );
 }
 
 
@@ -601,6 +602,10 @@ KApplication::~KApplication()
   delete pSearchPaths;
 
   delete pConfig;
+
+  delete pKStyle;
+
+  delete smw;
 
   KGlobal::freeAll();
 
@@ -847,20 +852,22 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         styleHandle = 0;
     }
 
+    delete pKStyle;
+
     if(styleStr == "Platinum"){
-        pKStyle=NULL;
+        pKStyle=0;
         setStyle(new QPlatinumStyle);
     }
     else if(styleStr == "Windows 95"){
-        pKStyle=NULL;
+        pKStyle=0;
         setStyle(new QWindowsStyle);
     }
     else if(styleStr == "CDE"){
-        pKStyle=NULL;
+        pKStyle=0;
         setStyle(new QCDEStyle);
     }
     else if(styleStr == "Motif"){
-        pKStyle=NULL;
+        pKStyle=0;
         setStyle(new QMotifStyle);
     }
     else{
@@ -876,7 +883,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             dir.setPath(kde_bindir() + "/../lib/");
             if(!dir.count()){
                 warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
-                pKStyle = NULL;
+                pKStyle = 0;
                 setStyle(new QPlatinumStyle);
                 return;
             }
@@ -888,7 +895,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             warning("KApp: Unable to open style plugin %s (%s).", 
 		    styleStr.ascii(), lt_dlerror());
 
-            pKStyle = NULL;
+            pKStyle = 0;
             setStyle(new QPlatinumStyle);
         }
         else{
@@ -897,7 +904,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             if(!alloc_func){
                 warning("KApp: Unable to init style plugin %s (%s).",
 			styleStr.ascii(), lt_dlerror());
-                pKStyle = NULL;
+                pKStyle = 0;
                 lt_dlclose(styleHandle);
                 styleHandle = 0;
                 setStyle(new QPlatinumStyle);
@@ -912,7 +919,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
                 }
                 else{
                     warning("KApp: Style plugin unable to allocate style.");
-                    pKStyle = NULL;
+                    pKStyle = 0;
                     setStyle(new QPlatinumStyle);
                     lt_dlclose(styleHandle);
                     styleHandle = 0;

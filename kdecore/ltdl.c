@@ -132,6 +132,7 @@ typedef	struct lt_dlhandle_t {
 } lt_dlhandle_t;
 
 #undef strdup
+#undef xstrdup
 #define strdup xstrdup
 
 static inline char *

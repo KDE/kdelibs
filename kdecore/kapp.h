@@ -581,6 +581,7 @@ private:
   QPixmap aMiniIconPixmap;
   KStyle *pKStyle; // A KDE style object if available (mosfet)
   void* styleHandle; // A KDE style dlopen handle, if used
+  QWidget *smw;
   
   void init( );
   void parseCommandLine( int&, char** ); // search for special KDE arguments
@@ -708,6 +709,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.75  1999/05/19 20:39:53  kulow
+// clean up in dependency tree between KConfig, KLocale and Kapp
+// in using KGlobal. KGlobal::_locale is now the instance we're
+// using. Should be done for KIconLoader and co as well
+//
 // Revision 1.74  1999/05/19 18:47:01  kulow
 // const QString is pointless
 //
