@@ -31,6 +31,7 @@ class KAnimWidgetPrivate
 public:
   bool                   loadingCompleted : 1;
   bool                   initDone         : 1;
+  bool                   transparent      : 1;
   int                    frames;
   int                    current_frame;
   QPixmap                pixmap;
@@ -146,7 +147,11 @@ void KAnimWidget::slotTimerUpdate()
   if (d->current_frame == d->frames)
      d->current_frame = 0;
 
-  repaint(false);
+  // TODO
+  // We have to clear the widget when repainting a transparent image
+  // By doing it like this we get a bit of flicker though. A better
+  // way might be to merge it with the background in drawContents.
+  repaint(d->transparent);
 }
 
 void KAnimWidget::drawContents( QPainter *p )
@@ -179,6 +184,7 @@ void KAnimWidget::updateIcons()
 
   d->current_frame = 0;
   d->frames = img.height() / img.width();
+  d->transparent = img.hasAlphaBuffer();
   if (d->pixmap.width() != d->size)
   {
      img = img.smoothScale(d->size, d->size*d->frames);     
