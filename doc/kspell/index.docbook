@@ -1,9 +1,9 @@
-<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
-  <!ENTITY kspell "&kspell;">
-  <!ENTITY % English "INCLUDE" -- change language only here -->
+<?xml version="1.0" ?><!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY kappname "&kspell;">
+  <!ENTITY % English "INCLUDE" > <!-- change language only here -->
   <!ENTITY % addindex "IGNORE">
-  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN">
-  %ents;
+  
+  
 ]>
 
 <book lang="&language;">
@@ -51,35 +51,35 @@ ASpell is available from the <ulink url="http://metalab.unc.edu/kevina/aspell/">
 <sect1 id="general-use">
 <title>General Use </title>
 
-<para><anchor id="spelldlg">
+<para><anchor id="spelldlg"/>
 The top line in the dialog displays a misspelled word which was found in your
 document. KSpell attempts to find an appropriate replacement word. One or
 several may be found. The best guess is shown to the right of <emphasis>Replacement:.</emphasis>
-To accept this replacement, click on <emphasis remap="bf">Replace.</emphasis> You may also choose a word
-from the list of <emphasis remap="bf">Suggestions</emphasis> then click <emphasis remap="bf">Replace</emphasis> to replace the
+To accept this replacement, click on <emphasis>Replace.</emphasis> You may also choose a word
+from the list of <emphasis>Suggestions</emphasis> then click <emphasis>Replace</emphasis> to replace the
 misspelled word with the chosen word.</para>
 
-<para>To keep your original spelling, click on <emphasis remap="bf">Ignore.</emphasis></para>
+<para>To keep your original spelling, click on <emphasis>Ignore.</emphasis></para>
 
 <para>To stop the spell checking -- keeping the changes you've already made -- click
-on <emphasis remap="bf">Stop.</emphasis></para>
+on <emphasis>Stop.</emphasis></para>
 
 <para>To stop the spell checking and cancel the changes you've already made, click on
-<emphasis remap="bf">Cancel.</emphasis></para>
+<emphasis>Cancel.</emphasis></para>
 </sect1>
 
 <sect1 id="other-functions">
 <title>Other Functions</title>
 
-<para>Clicking on <emphasis remap="bf">Replace All</emphasis> will initially perform the same function as
-clicking on <emphasis remap="bf">Replace,</emphasis> but will automatically replace the misspelled word
+<para>Clicking on <emphasis>Replace All</emphasis> will initially perform the same function as
+clicking on <emphasis>Replace,</emphasis> but will automatically replace the misspelled word
 with the chosen replacement word if it appears again (at a later point) in your
 document.</para>
 
-<para>The <emphasis remap="bf">Ignore All</emphasis> button ignores this and all future occurrences of the
+<para>The <emphasis>Ignore All</emphasis> button ignores this and all future occurrences of the
 misspelled word.</para>
 
-<para>Clicking on <emphasis remap="bf">Add</emphasis> will add the misspelled word to your personal dictionary
+<para>Clicking on <emphasis>Add</emphasis> will add the misspelled word to your personal dictionary
 (this is distinct from the original system dictionary, so the additions you make
 will not be seen by other users).</para>
 </sect1>
@@ -87,7 +87,7 @@ will not be seen by other users).</para>
 
 <chapter id="configuration-dialog-">
 <title>Configuration Dialog </title>
-<anchor id="configuration">
+<anchor id="configuration"/>
 
 <sect1 id="dictionaries">
 <title>Dictionaries</title>
@@ -159,7 +159,7 @@ particular, you will find information about programmng the KSpell C++ class.</pa
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
 
 </chapter>
-<![ %addindex; [ &documentation.index; ]]>
+&documentation.index; 
 </book>
 <!--
 Local Variables:
@@ -169,3 +169,4 @@ sgml-shorttag: t
 sgml-general-insert-case: lower
 End:
 -->
+
