@@ -33,9 +33,10 @@
 
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
+
+#ifndef KDE_USE_FINAL
 #include "grammar.h"
-
-
+#endif
 
 int yylex()
 {
