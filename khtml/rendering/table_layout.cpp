@@ -428,14 +428,17 @@ void AutoTableLayout::recalcColumn( int effCol )
 	child = child->nextSibling();
     }
 
+#if 0
+    // this quirk currently seems to break more than it fixes (anyone knows a place where this is needed??)
     // Nav/IE quirk, see the condition above
     if ( l.width.type == Fixed ) {
 	if ( table->style()->htmlHacks()
-	     && (l.maxWidth > l.width.value) && (fixedContributor != maxContributor)) {
+	     && (l.maxWidth > l.width.value + spacing) && (fixedContributor != maxContributor)) {
 	    l.width = Length();
 	    fixedContributor = 0;
 	}
     }
+#endif
 
     l.maxWidth = QMAX(l.maxWidth, l.minWidth);
 #ifdef DEBUG_LAYOUT
@@ -593,6 +596,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	bool allColsAreFixed = true;
 	bool haveVariable = false;
 	int fixedWidth = spacing;
+	int cSpan = span;
 	while ( lastCol < nEffCols && span > 0 ) {
 	    switch( layoutStruct[lastCol].width.type ) {
 	    case Percent:
@@ -602,7 +606,8 @@ int AutoTableLayout::calcEffectiveWidth()
 	    case Fixed:
 		fixedWidth += layoutStruct[lastCol].width.value + spacing;
 		allColsArePercent = false;
-		layoutStruct[lastCol].effWidth = Length();
+		// IE resets effWidth to Variable here, but this breaks the konqueror about page and seems to be some bad
+		// legacy behaviour anyway. mozilla doesn't do this so I decided we don't neither.
 		break;
 	    case Variable:
 		haveVariable = true;
@@ -618,7 +623,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	    lastCol++;
 	}
 #ifdef DEBUG_LAYOUT
-	qDebug("    colspan cell %p at effCol %d, span %d, type %d, value %d cmin=%d min=%d fixedwidth=%d", cell, col, span, w.type, w.value, cMinWidth, minWidth, fixedWidth );
+	qDebug("    colspan cell %p at effCol %d, span %d, type %d, value %d cmin=%d min=%d fixedwidth=%d", cell, col, cSpan, w.type, w.value, cMinWidth, minWidth, fixedWidth );
 #endif
 
 	// adjust table max width if needed
