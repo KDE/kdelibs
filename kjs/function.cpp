@@ -31,7 +31,6 @@
 #include "debugger.h"
 
 #include <stdio.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -433,12 +432,9 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
   }
   case ParseInt: {
     CString cstr = args[0].toString(exec).cstring();
-    int radix = args[1].toInt32(exec);
-
     char* endptr;
-    errno = 0;
-    long value = strtol(cstr.c_str(), &endptr, radix);
-    if (errno != 0 || endptr == cstr.c_str())
+    long value = strtol(cstr.c_str(), &endptr, args[1].toInt32(exec));
+    if (endptr == cstr.c_str())
       res = Number(NaN);
     else
       res = Number(value);
