@@ -165,8 +165,6 @@ Value DOMNode::tryGet(ExecState *exec, const Identifier &propertyName) const
 
 Value DOMNode::getValueProperty(ExecState *exec, int token) const
 {
-  khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-
   switch (token) {
   case NodeName:
     return getString(node.nodeName());
@@ -244,36 +242,31 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     return getListener(DOM::EventImpl::SUBMIT_EVENT);
   case OnUnload:
     return getListener(DOM::EventImpl::UNLOAD_EVENT);
-  case OffsetLeft:
-  case OffsetTop:
-  case OffsetWidth:
-  case OffsetHeight:
-  case OffsetParent:
-  case ClientWidth:
-  case ClientHeight:
-  case ScrollWidth:
-  case ScrollHeight:
-  case ScrollLeft:
-  case ScrollTop:
-  {
+  case SourceIndex: {
+    // Retrieves the ordinal position of the object, in source order, as the object
+    // appears in the document's all collection
+    // i.e. document.all[n.sourceIndex] == n
+    DOM::Document doc = node.ownerDocument();
+    if (doc.isHTMLDocument()) {
+      DOM::HTMLCollection all = static_cast<DOM::HTMLDocument>(doc).all();
+      unsigned long i = 0;
+      DOM::Node n = all.firstItem();
+      for ( ; !n.isNull() && n != node; n = all.nextItem() )
+        ++i;
+      Q_ASSERT( !n.isNull() ); // node not in document.all !?
+      return Number(i);
+    }
+  }
+  default:
     // no DOM standard, found in IE only
 
-    // make sure our rendering is up to date before
-    // we allow a query on these attributes.
+    // Make sure our layout is up to date before we allow a query on these attributes.
     DOM::DocumentImpl* docimpl = node.handle()->getDocument();
-    KHTMLView* v = 0;
-    if ( docimpl ) {
-      v = docimpl->view();
-      // Only do a layout if changes have occurred that make it necessary.
-      if ( v && docimpl->renderer() && !docimpl->renderer()->layouted() )
-      {
-        docimpl->updateRendering();
-        docimpl->view()->layout();
-      }
-
-      // refetch in case the renderer changed
-      rend = node.handle() ? node.handle()->renderer() : 0L;
+    if (docimpl) {
+      docimpl->updateLayout();
     }
+
+    khtml::RenderObject *rend = node.handle()->renderer();
 
     switch (token) {
     case OffsetLeft:
@@ -301,28 +294,11 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       return Number( rend && rend->layer() ? rend->layer()->scrollXOffset() : 0 );
     case ScrollTop:
       return Number( rend && rend->layer() ? rend->layer()->scrollYOffset() : 0 );
+    default:
+      kdDebug(6070) << "WARNING: Unhandled token in DOMNode::getValueProperty : " << token << endl;
+      break;
     }
   }
-  case SourceIndex: {
-    // Retrieves the ordinal position of the object, in source order, as the object
-    // appears in the document's all collection
-    // i.e. document.all[n.sourceIndex] == n
-    DOM::Document doc = node.ownerDocument();
-    if (doc.isHTMLDocument()) {
-      DOM::HTMLCollection all = static_cast<DOM::HTMLDocument>(doc).all();
-      unsigned long i = 0;
-      DOM::Node n = all.firstItem();
-      for ( ; !n.isNull() && n != node; n = all.nextItem() )
-	++i;
-      Q_ASSERT( !n.isNull() ); // node not in document.all !?
-      return Number(i);
-    }
-  }
-  default:
-    kdDebug(6070) << "WARNING: Unhandled token in DOMNode::getValueProperty : " << token << endl;
-    break;
-  }
-
   return Undefined();
 }
 
