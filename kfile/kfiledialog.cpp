@@ -470,11 +470,12 @@ void KFileDialog::initGUI()
 
 KFileDialog::~KFileDialog()
 {
+	hide();
     delete bookmarks;
     delete visitedDirs;
-    // we get strange segfaults since the new qlayout.cpp after Qt 2.1beta2
-    // so let ops be auto-deleted by deleting its parent (d->mainWidget)
-    // delete ops;
+	delete d->boxLayout; // we can't delete a widget being managed by a layout,
+	d->boxLayout = 0;    // so we delete the layout before
+    delete ops;
     delete d;
 }
 
