@@ -68,7 +68,7 @@ class kdbgstream {
     }
     kdbgstream &operator<<(unsigned char i) {
         if (!print) return *this;
-        QString tmp; tmp.setNum((unsigned int)(i)); output += tmp;
+        QString tmp; tmp.setNum(static_cast<unsigned int>(i)); output += tmp;
         return *this;
     }
 
