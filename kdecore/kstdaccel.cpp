@@ -27,9 +27,12 @@
 uint KStdAccel::key(StdAccel id)
 {
     KConfigGroupSaver saver(KGlobal::config(), "Keys");
-    QString s = saver.config()->readEntry(action(id));
-    int v = KAccel::stringToKey(s);
-    return v ? v : defaultKey(id);
+    QString a = action(id);
+    if (!saver.config()->hasKey(a))
+       return defaultKey(id);
+    
+    QString s = saver.config()->readEntry(a);
+    return KAccel::stringToKey(s);
 }
 
 bool KStdAccel::isEqual(QKeyEvent* ev, int skey)
