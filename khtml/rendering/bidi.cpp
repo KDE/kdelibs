@@ -160,8 +160,7 @@ inline BidiIterator::BidiIterator(RenderFlow *_par)
     par = _par;
     obj = first( par );
     pos = 0;
-    if ( obj )
-	isText = obj->isText();
+    isText = obj ? obj->isText() : false;
 }
 
 inline BidiIterator::BidiIterator(const BidiIterator &it)
@@ -169,8 +168,7 @@ inline BidiIterator::BidiIterator(const BidiIterator &it)
     par = it.par;
     obj = it.obj;
     pos = it.pos;
-    if ( obj )
-	isText = obj->isText();
+    isText = obj ? obj->isText() : false;
 }
 
 inline BidiIterator::BidiIterator(RenderFlow *_par, RenderObject *_obj, int _pos)
@@ -178,8 +176,7 @@ inline BidiIterator::BidiIterator(RenderFlow *_par, RenderObject *_obj, int _pos
     par = _par;
     obj = _obj;
     pos = _pos;
-    if ( obj )
-	isText = obj->isText();
+    isText = obj ? obj->isText() : false;
 }
 
 inline BidiIterator &BidiIterator::operator = (const BidiIterator &it)
@@ -187,8 +184,7 @@ inline BidiIterator &BidiIterator::operator = (const BidiIterator &it)
     obj = it.obj;
     pos = it.pos;
     par = it.par;
-    if ( obj )
-	isText = obj->isText();
+    isText = obj ? obj->isText() : false;
     return *this;
 }
 
@@ -199,14 +195,12 @@ inline void BidiIterator::operator ++ ()
         pos++;
         if(pos >= static_cast<RenderText *>(obj)->stringLength()) {
             obj = Bidinext( par, obj );
-	    if ( obj )
-		isText = obj->isText();
+	    isText = obj ? obj->isText() : false;
             pos = 0;
         }
     } else {
         obj = Bidinext( par, obj );
-	if ( obj )
-	    isText = obj->isText();
+	isText = obj ? obj->isText() : false;
         pos = 0;
     }
 }
