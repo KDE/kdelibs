@@ -82,6 +82,11 @@ public:
 	// processes messages
 	void handle(Connection *conn, Buffer *buffer, long messageType);
 
+	/*
+	 * special hook to handle corrupt messages
+	 */
+	void handleCorrupt(Connection *conn);
+
 	/**
 	 * object registration
 	 * 

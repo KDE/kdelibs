@@ -29,7 +29,7 @@
 
 Connection::Connection()
 {
-	_ready = false;
+	_connState = unknown;
 }
 
 Connection::~Connection()
@@ -75,6 +75,15 @@ void Connection::receive(unsigned char *data, long len)
 			remaining = rcbuf->readLong() - 12;
 			messageType = rcbuf->readLong();
 
+			if(_connState != Connection::established && remaining >= 4096)
+			{
+				/*
+				 * don't accept large amounts of data on unauthenticated
+				 * connections
+				 */
+				remaining = 0;
+			}
+
 			if(mcopMagic == MCOP_MAGIC)
 			{
 				// do we need to receive more data (message body?)
@@ -90,7 +99,7 @@ void Connection::receive(unsigned char *data, long len)
 			}
 			else
 			{
-				fprintf(stderr,"warning: got corrupt MCOP message!\n");
+				Dispatcher::the()->handleCorrupt(this);
 				initReceive();
 			}
 		}

@@ -137,3 +137,13 @@ bool SocketConnection::broken()
 {
 	return _broken;
 }
+
+void SocketConnection::drop()
+{
+	if(!_broken)
+	{
+		close(fd);
+		_broken = true;
+		Dispatcher::the()->ioManager()->remove(this,IOType::all);
+	}
+}

@@ -29,13 +29,22 @@
 #include "buffer.h"
 
 class Connection {
+public:
+	enum ConnectionState {
+		unknown = 0,
+		expectServerHello = 1,
+		expectClientHello = 2,
+		expectAuthAccept = 3,
+		established = 4
+	};
 protected:
 	Buffer *rcbuf;
 	bool receiveHeader;
 	long remaining;
 	long messageType;
-	bool _ready;
+	ConnectionState _connState;
 	string serverID;
+	string _cookie;
 
 	/**
 	 * If you don't want to handle message fragmentation yourself:
@@ -53,8 +62,13 @@ public:
 
 	inline void setServerID(string serverID) { this->serverID = serverID; }
 	inline bool isConnected(string s) { return (serverID == s); } 
-	inline void setReady() { _ready = true; };
-	inline bool ready() { return _ready; };
+	inline void setConnState(ConnectionState cs) { _connState = cs; };
+
+	inline string cookie() { return _cookie; }
+	void setCookie(string c) { _cookie = c; }
+
+	inline ConnectionState connState() { return _connState; };
+	virtual void drop() = 0;
 	virtual bool broken() = 0;
 	virtual void qSendBuffer(Buffer *buffer) = 0;
 };

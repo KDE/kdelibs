@@ -10,8 +10,15 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
      iomanager.cc object.cc socketconnection.cc tcpconnection.cc \
 	 unixconnection.cc tcpserver.cc unixserver.cc objectmanager.cc \
 	 factory.cc idlfilereg.cc ifacerepo_impl.cc mcoputils.cc \
-	 startupmanager.cc
+	 startupmanager.cc md5.c md5auth.cc
 libmcop_la_LIBADD = $(LIBSOCKET)
+
+artsincludedir = $(includedir)/arts
+artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
+  factory.h flowsystem.h idlfilereg.h ifacerepo_impl.h iomanager.h \
+  mcoputils.h  object.h objectmanager.h pool.h socketconnection.h \
+  startupmanager.h tcpconnection.h tcpserver.h type.h unixconnection.h \
+  unixserver.h 
 
 core: $(top_srcdir)/arts/mcop/core.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/mcop/core.idl

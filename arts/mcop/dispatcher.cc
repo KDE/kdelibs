@@ -30,10 +30,12 @@
 #include "tcpconnection.h"
 #include "ifacerepo_impl.h"
 #include "core.h"
+#include "md5auth.h"
+#include "mcoputils.h"
 #include <sys/time.h>
 #include <stdio.h>
 #include <sys/stat.h>
-							  
+
 Dispatcher *Dispatcher::_instance = 0;
 
 Dispatcher::Dispatcher(IOManager *ioManager)
@@ -42,6 +44,7 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 	_instance = this;
 
 	generateServerID();
+	md5_auth_init(MCOPUtils::createFilePath("secret-cookie").c_str());
 
 	if(ioManager)
 	{
@@ -74,7 +77,7 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 
 	_interfaceRepo = new InterfaceRepo_impl();
 	_flowSystem = 0;
-
+	
 	StartupManager::startup();
 }
 
@@ -172,106 +175,171 @@ Buffer *Dispatcher::createRequest(long& requestID, long objectID, long methodID)
 
 void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 {
-	/**
-	 * TODO: restrict incoming messages on unauthenticated connections
-	 */
 #ifdef DEBUG_IO
 	printf("got a message %ld, %ld bytes in body\n",
 			messageType,buffer->remaining());
+	if(conn->connState() == Connection::unknown)
+		cout << "connectionState = unknown" << endl;
+	if(conn->connState() == Connection::expectClientHello)
+		cout << "connectionState = expectClientHello" << endl;
+	if(conn->connState() == Connection::expectServerHello)
+		cout << "connectionState = expectServerHello" << endl;
+	if(conn->connState() == Connection::expectAuthAccept)
+		cout << "connectionState = expectAuthAccept" << endl;
+	if(conn->connState() == Connection::established)
+		cout << "connectionState = established" << endl;
 #endif
-	if(messageType == mcopInvocation) {
+	switch(conn->connState())
+	{
+		case Connection::established:
+			/*
+			 * we're connected to a trusted server, so we can accept
+			 * invocations
+			 */
+			if(messageType == mcopInvocation) {
 #ifdef DEBUG_MESSAGES
 		printf("[got Invocation]\n");
 #endif
-		long requestID = buffer->readLong();
-		long objectID = buffer->readLong();
-		long methodID = buffer->readLong();
+				long requestID = buffer->readLong();
+				long objectID = buffer->readLong();
+				long methodID = buffer->readLong();
 
-		Buffer *result = new Buffer;
-		// write mcop header record
-		result->writeLong(MCOP_MAGIC);
-		result->writeLong(0);			// message length - to be patched later
-		result->writeLong(mcopReturn);
+				Buffer *result = new Buffer;
+				// write mcop header record
+				result->writeLong(MCOP_MAGIC);
+				result->writeLong(0);	// message length - to be patched later
+				result->writeLong(mcopReturn);
 
-		// write result record (returnCode is written by dispatch)
-		result->writeLong(requestID);
+				// write result record (returnCode is written by dispatch)
+				result->writeLong(requestID);
 	
-		objectPool[objectID]->_dispatch(buffer,result,methodID);
+				objectPool[objectID]->_dispatch(buffer,result,methodID);
 
-		assert(!buffer->readError() && !buffer->remaining());
-		delete buffer;
+				assert(!buffer->readError() && !buffer->remaining());
+				delete buffer;
 
-		result->patchLength();
-		conn->qSendBuffer(result);
-	}
-	else if(messageType == mcopReturn)
-	{
+				result->patchLength();
+				conn->qSendBuffer(result);
+
+				return;		/* everything ok - leave here */
+			}
+
+			if(messageType == mcopReturn)
+			{
 #ifdef DEBUG_MESSAGES
-		printf("[got Return]\n");
+				printf("[got Return]\n");
 #endif
-		long requestID = buffer->readLong();
-		requestResultPool[requestID] = buffer;
-	}
-	else if(messageType == mcopServerHello)
-	{
+				long requestID = buffer->readLong();
+				requestResultPool[requestID] = buffer;
+
+				return;		/* everything ok - leave here */
+			}
+			break;
+
+		case Connection::expectServerHello:
+			if(messageType == mcopServerHello)
+			{
 #ifdef DEBUG_MESSAGES
-		printf("[got ServerHello]\n");
+				printf("[got ServerHello]\n");
 #endif
-		/*
-		 * if we get a server hello, answer with a client hello
-		 *
-		 * currently, we always send noauth (because no authentication
-		 * is implemented
-		 */
-		ServerHello h;
-		h.readType(*buffer);
-		assert(!buffer->readError() && !buffer->remaining());
-		delete buffer;
+				/*
+		 		 * if we get a server hello, answer with a client hello
+		 		 *
+		 		 * currently, we always send md5auth (because nothing else
+		 		 * is implemented)
+		 		 */
+				ServerHello h;
+				h.readType(*buffer);
+				bool valid = (!buffer->readError() && !buffer->remaining());
+				delete buffer;
 
-		conn->setServerID(h.serverID);
+				if(valid)
+				{
+					conn->setServerID(h.serverID);
 
-		Buffer *helloBuffer = new Buffer;
+					Buffer *helloBuffer = new Buffer;
 
-		Header header(MCOP_MAGIC,0,mcopClientHello);
-		header.writeType(*helloBuffer);
-		ClientHello clientHello(serverID,"noauth","");
-		clientHello.writeType(*helloBuffer);
+					Header header(MCOP_MAGIC,0,mcopClientHello);
+					header.writeType(*helloBuffer);
+					ClientHello clientHello(serverID,"md5auth","");
 
-		helloBuffer->patchLength();
+					const char *random_cookie = h.authSeed.c_str();
+					if(strlen(random_cookie) == 32)
+					{
+						char *response = md5_auth_mangle(random_cookie);
+						clientHello.authData = response;
+#ifdef DEBUG_AUTH
+						printf("  got random_cookie = %s\n",random_cookie);
+						printf("reply with authData = %s\n",response);
+#endif
+						free(response);
+					}
+					clientHello.writeType(*helloBuffer);
 
-		conn->qSendBuffer(helloBuffer);
-	}
-	else if(messageType == mcopClientHello)
-	{
+					helloBuffer->patchLength();
+
+					conn->qSendBuffer(helloBuffer);
+					conn->setConnState(Connection::expectAuthAccept);
+					return;		/* everything ok - leave here */
+				}
+			}
+			break;
+
+		case Connection::expectClientHello:
+			if(messageType == mcopClientHello)
+			{
 #ifdef DEBUG_MESSAGES
-		printf("[got ClientHello]\n");
+				printf("[got ClientHello]\n");
 #endif
-		/*
-		 * currently, we accept each and every clienthello (no authentication
-		 * supported
-		 */
-		ClientHello c;
-		c.readType(*buffer);
-		assert(!buffer->readError() && !buffer->remaining());
-		delete buffer;
+				ClientHello c;
+				c.readType(*buffer);
+				bool valid = (!buffer->readError() && !buffer->remaining());
+				delete buffer;
 
-		conn->setServerID(c.serverID);
+				if(valid && c.authData == conn->cookie()) /* do only md5auth */
+				{
+					conn->setServerID(c.serverID);
+	
+					Buffer *helloBuffer = new Buffer;
+	
+					Header header(MCOP_MAGIC,0,mcopAuthAccept);
+					header.writeType(*helloBuffer);
+	
+					helloBuffer->patchLength();
+					conn->qSendBuffer(helloBuffer);
+					conn->setConnState(Connection::established);
 
-		Buffer *helloBuffer = new Buffer;
+					return;		/* everything ok - leave here */
+				}
+			}
+			break;
 
-		Header header(MCOP_MAGIC,0,mcopAuthAccept);
-		header.writeType(*helloBuffer);
-
-		helloBuffer->patchLength();
-		conn->qSendBuffer(helloBuffer);
-		conn->setReady();
-	}
-	else if(messageType == mcopAuthAccept)
-	{
+		case Connection::expectAuthAccept:
+			if(messageType == mcopAuthAccept)
+			{
 #ifdef DEBUG_MESSAGES
-		printf("[got AuthAccept]\n");
+				printf("[got AuthAccept]\n");
 #endif
-		conn->setReady();
+				conn->setConnState(Connection::established);
+
+				return;		/* everything ok - leave here */
+			}
+			break;
+
+		case Connection::unknown:
+			assert(false);
+			break;
+	}
+
+	/*
+	 * We shouldn't reach this point if everything went all right
+	 */
+	cerr << "Fatal communication error with a client" << endl;
+	if(conn->connState() != Connection::established)
+	{
+		cerr << "  Authentication of this client was not successful" << endl;
+		cerr << "  Connection dropped" << endl;
+		conn->drop();
 	}
 }
 
@@ -394,12 +462,15 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 
 		if(conn)
 		{
-			while(!conn->ready() && !conn->broken())
+			conn->setConnState(Connection::expectServerHello);
+
+			while((conn->connState() != Connection::established)
+			       && !conn->broken())
 			{
 				_ioManager->processOneEvent(true);
 			}
 
-			if(conn->ready())
+			if(conn->connState() == Connection::established)
 			{
 				connections.push_back(conn);
 
@@ -428,13 +499,10 @@ void Dispatcher::terminate()
 void Dispatcher::initiateConnection(Connection *connection)
 {
 	vector<string> authProtocols;
-	authProtocols.push_back("noauth");
+	authProtocols.push_back("md5auth");
 
-	// to give authentication protocols a different seed each time
-	// fixme: could be more bits
-
-	char authSeed[1024];
-	sprintf(authSeed,"%x",rand());
+	char *authSeed = md5_auth_mkcookie();
+	char *authResult = md5_auth_mangle(authSeed);
 
 	Buffer *helloBuffer = new Buffer;
 
@@ -446,8 +514,27 @@ void Dispatcher::initiateConnection(Connection *connection)
 	helloBuffer->patchLength();
 
 	connection->qSendBuffer(helloBuffer);
+	connection->setConnState(Connection::expectClientHello);
+
+	connection->setCookie(authResult);
+	free(authSeed);
+	free(authResult);
 
 	connections.push_back(connection);
+}
+
+void Dispatcher::handleCorrupt(Connection *connection)
+{
+	if(connection->connState() != Connection::established)
+	{
+		cerr << "received corrupt message on unauthenticated connection" <<endl;
+		cerr << "closing connection." << endl;
+		connection->drop();
+	}
+	else
+	{
+		cerr << "WARNING: got corrupt MCOP message !??" << endl;
+	}
 }
 
 void Dispatcher::handleConnectionClose(Connection *connection)

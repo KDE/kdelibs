@@ -1,6 +1,6 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
+    Copyright (C) 2000 Stefan Westerfeld
                        stefan@space.twc.de
 
     This program is free software; you can redistribute it and/or modify
@@ -23,34 +23,18 @@
 
     */
 
-#ifndef SOCKETCONNECTION_H
-#define SOCKETCONNECTION_H
+#ifndef MD5_H
+#define MD5_H
 
-#include "buffer.h"
-#include "iomanager.h"
-#include "connection.h"
-#include <list>
-#include <string>
+#ifdef __cplusplus
+extern "C"
+{
+#endif /* __cplusplus */
 
-class SocketConnection :public Connection, public IONotify {
-protected:
-	string serverID;
-	int fd;
-	bool _broken;
+void MD5sum(unsigned char *message, long len, char *md5sum);
 
-	list<Buffer *> pending;
-	void writeBuffer(Buffer *buffer);
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-	SocketConnection();
-
-public:
-	SocketConnection(int fd);
-
-	void qSendBuffer(Buffer *buffer);
-	void notifyIO(int fd, int types);
-
-	void drop();
-	bool broken();
-};
-
-#endif /* SOCKETCONNECTION_H */
+#endif
