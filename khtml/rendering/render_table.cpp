@@ -331,7 +331,6 @@ void RenderTable::layout()
 
 }
 
-
 void RenderTable::setCellWidths()
 {
 #ifdef DEBUG_LAYOUT
@@ -651,8 +650,11 @@ void RenderTableSection::detach()
 void RenderTableSection::setStyle(RenderStyle* _style)
 {
     // we don't allow changing this one
-    if (style()) _style->setDisplay(style()->display());
-    _style->setDisplay(TABLE_ROW_GROUP);
+    if (style())
+        _style->setDisplay(style()->display());
+    else if (_style->display() != TABLE_FOOTER_GROUP && _style->display() != TABLE_HEADER_GROUP)
+        _style->setDisplay(TABLE_ROW_GROUP);
+
     RenderBox::setStyle(_style);
 }
 
@@ -702,9 +704,12 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 
     ensureRows( cRow+1 );
 
-    grid[cRow].height = child->style()->height();
-    if ( grid[cRow].height.type == Relative )
-	grid[cRow].height = Length();
+    if (!beforeChild) {
+        grid[cRow].height = child->style()->height();
+        if ( grid[cRow].height.type == Relative )
+            grid[cRow].height = Length();
+    }
+
 
     RenderContainer::addChild(child,beforeChild);
 }
@@ -825,6 +830,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 	cell->setCol( table()->effColToCol( col ) );
     }
 }
+
 
 
 void RenderTableSection::setCellWidths()
