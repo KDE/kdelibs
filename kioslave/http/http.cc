@@ -180,9 +180,9 @@ void HTTPProtocol::reparseConfiguration()
 void HTTPProtocol::resetConnectionSettings()
 {
   // Reset the POST buffer unless the previous request
-  // was a POST action that required authentication.
-  if (m_request.method == HTTP_POST && m_responseCode != 401 &&
-      m_responseCode != 407)
+  // was a POST action or a WebDav request that 
+  // required authentication.
+  if (m_responseCode != 401 && m_responseCode != 407)
     m_bufPOST.resize(0);
 
   m_bEOF = false;
