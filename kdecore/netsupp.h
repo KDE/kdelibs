@@ -24,6 +24,7 @@
 #define _NETSUPP_H_
 
 #include <sys/socket.h>
+#include <netdb.h>
 #include "ksockaddr.h"
 
 /*
@@ -234,6 +235,10 @@ struct addrinfo
 # define NI_NAMEREQD	8	/* Don't return numeric addresses.  */
 # define NI_DGRAM	16	/* Look up UDP service rather than TCP.  */
 
+# ifdef getaddrinfo
+#  undef getaddrinfo
+# endif
+
 namespace KDE
 {
   extern int getaddrinfo(const char *name, const char *service,
@@ -253,8 +258,6 @@ namespace KDE
 # define gai_strerror	KDE::gai_strerror
 # define getnameinfo	KDE::getnameinfo
 
-#else 
-#include <netdb.h>
 
 #endif
 
