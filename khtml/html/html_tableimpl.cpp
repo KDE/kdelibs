@@ -55,6 +55,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
 
     rules = None;
     frame = Void;
+    padding = 1;
 
     m_noBorder = true;
     m_solid = false;
