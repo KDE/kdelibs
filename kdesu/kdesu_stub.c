@@ -58,7 +58,7 @@
 struct param_struct 
 {
     const char *name;
-    const char *value;
+    char *value;
 };
 
 struct param_struct params[] = 
@@ -100,7 +100,7 @@ char *xmalloc(size_t);
 char *xrealloc(char *ptr, int size);
 int xsetenv(const char *name, const char *value);
 char *xstrdup(char *src);
-char **xstrsep(const char *str);
+char **xstrsep(char *str);
 
 /**
  * Safe malloc functions.
@@ -152,7 +152,7 @@ char *xstrdup(char *src)
 /**
  * Split comma separated list.
  */
-char **xstrsep(const char *str)
+char **xstrsep(char *str)
 {
     int i = 0, size = 10;
     char **list = (char **) xmalloc(size * sizeof(char *));
