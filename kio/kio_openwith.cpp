@@ -348,14 +348,10 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
   l->addWidget(edit);
   
   completion = new KURLCompletion();
-  // Enables the brand spanking new completion & rotation feature.
-  // See how easy it is now.  Not like it was before.  Less work Ypeeee!!!
-  edit->setHandleCompletion(true);
-  edit->setHandleRotation(true);
-  // connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
-  // connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
+  connect ( edit, SIGNAL (completion()), completion, SLOT (make_completion()));
+  connect ( edit, SIGNAL (rotation()), completion, SLOT (make_rotation()));
   // connect ( edit, SIGNAL (textChanged(const QString&)), completion, SLOT (edited(const QString&)));
-  // connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT (setText (const QString&)));
+  connect ( completion, SIGNAL (setText (const QString&)), edit, SLOT ( insert(const QString&)));
   connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   
   terminal = new QCheckBox( i18n("Run in terminal"), this );
