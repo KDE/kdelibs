@@ -431,7 +431,7 @@ RenderPart::~RenderPart()
 
 void RenderPart::setWidget( QWidget *widget )
 {
-  m_widget = widget;
+  setQWidget(widget);
   if ( m_widget )
     m_widget->show();
   layout();

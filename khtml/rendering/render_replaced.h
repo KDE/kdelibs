@@ -58,8 +58,9 @@ public:
 };
 
 
-class RenderWidget : public RenderReplaced
+class RenderWidget : public QObject, public RenderReplaced
 {
+Q_OBJECT
 public:
     RenderWidget(QScrollView *view);
     virtual ~RenderWidget();
@@ -72,9 +73,16 @@ public:
     void setEnabled(bool enabled) { if(m_widget) m_widget->setEnabled(enabled); }
     virtual short verticalPositionHint() const;
 
+public slots:
+    void slotWidgetDestructed();
+
 protected:
-    QWidget *m_widget;
+    void setQWidget(QWidget *widget);
+
+protected:
     QScrollView *m_view;
+    QWidget *m_widget;
+    bool deleted;
 };
 
 

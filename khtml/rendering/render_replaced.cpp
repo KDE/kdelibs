@@ -21,8 +21,8 @@
  * $Id$
  */
 #include "render_replaced.h"
-
 #include <qscrollview.h>
+#include <assert.h>
 
 using namespace khtml;
 
@@ -42,6 +42,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 RenderWidget::RenderWidget(QScrollView *view)
 	: RenderReplaced()
 {
+    deleted = false;
     m_widget = 0;
     m_view = view;
 }
@@ -49,17 +50,36 @@ RenderWidget::RenderWidget(QScrollView *view)
 
 RenderWidget::~RenderWidget()
 {
+    assert(!deleted);
+    disconnect( m_widget, SIGNAL( destroyed()), 
+             this, SLOT( slotWidgetDestructed()));
     delete m_widget;
+    deleted = true;
+}
+
+void RenderWidget::setQWidget(QWidget *widget)
+{
+    m_widget = widget;
+    connect( m_widget, SIGNAL( destroyed()), 
+             this, SLOT( slotWidgetDestructed()));
+}
+
+void RenderWidget::slotWidgetDestructed()
+{
+    assert(0);
+    m_widget = 0;
 }
 
 void RenderWidget::setStyle(RenderStyle *style)
 {
+    assert(!deleted);
     RenderReplaced::setStyle(style);
     if(m_widget) m_widget->setFont(m_style->font());
 }
 
 void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 {
+    assert(!deleted);
     if(!(m_widget && m_view)) return;
 
     // add offset for relative positioning
@@ -74,6 +94,7 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 
 short RenderWidget::verticalPositionHint() const
 {
+    assert(!deleted);
     switch(vAlign())
     {
     case BASELINE:
@@ -96,3 +117,5 @@ short RenderWidget::verticalPositionHint() const
     }
     return 0;
 }
+#include "render_replaced.moc"
+

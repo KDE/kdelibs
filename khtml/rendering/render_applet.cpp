@@ -54,7 +54,7 @@ RenderApplet::RenderApplet(QScrollView *view,
     }
 
     m_applet = applet;
-    m_widget = new KJavaAppletWidget(context, view->viewport());
+    setQWidget(new KJavaAppletWidget(context, view->viewport()));
     context_counter++;
 
     processArguments(args);
@@ -124,9 +124,10 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
 RenderEmptyApplet::RenderEmptyApplet(QScrollView *view, QSize sz)
   : RenderWidget( view )
 {
-  m_widget =
+  setQWidget(
     new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"),
-               view->viewport());
+               view->viewport())
+	);
 
   ((QLabel*)m_widget)->setAlignment( Qt::AlignCenter );
 

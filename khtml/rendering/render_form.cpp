@@ -208,8 +208,6 @@ RenderHiddenButton::RenderHiddenButton(QScrollView *view,
                                        HTMLFormElementImpl *form)
     : RenderButton(view, form)
 {
-    // make it segfault cleanly :-)
-    m_widget = 0;
 }
 
 QString RenderHiddenButton::encoding()
@@ -231,7 +229,7 @@ RenderCheckBox::RenderCheckBox(QScrollView *view, HTMLFormElementImpl *form)
     : RenderButton(view, form)
 {
     QCheckBox *b = new QCheckBox(view->viewport());
-    m_widget = b;
+    setQWidget(b);
 }
 
 QString RenderCheckBox::encoding()
@@ -277,7 +275,7 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
 {
     QRadioButton *b = new QRadioButton(view->viewport());
 
-    m_widget = b;
+    setQWidget(b);
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -329,7 +327,7 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view,
     : RenderButton(view, form)
 {
     QPushButton *p = new QPushButton(view->viewport());
-    m_widget = p;
+    setQWidget(p);
 
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
@@ -455,7 +453,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLFormElementImpl *form,
     if(passwd) edit->setEchoMode( QLineEdit::Password );
 
     m_size = size;
-    m_widget = edit;
+    setQWidget(edit);
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -549,7 +547,7 @@ RenderFileButton::RenderFileButton(QScrollView *view,
 {
     QLineEdit *edit = new QLineEdit(view);
 
-    m_widget = edit;
+    setQWidget(edit);
 }
 
 RenderFileButton::~RenderFileButton()
@@ -617,12 +615,12 @@ RenderSelect::RenderSelect(int size, bool multiple,
     if(m_multiple || m_size > 1) {
         KListBox* w = new KListBox(view);
         w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
-        m_widget = w;
+        setQWidget(w);
     }
     else {
         QComboBox *w = new QComboBox(view);
         m_size = 1;
-        m_widget = w;
+        setQWidget(w);
     }
 }
 
@@ -926,7 +924,7 @@ RenderTextArea::RenderTextArea(int wrap, QScrollView *view,
 {
     TextAreaWidget *edit = new TextAreaWidget(wrap, view);
 
-    m_widget = edit;
+    setQWidget(edit);
 }
 
 void RenderTextArea::layout( bool )

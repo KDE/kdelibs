@@ -174,7 +174,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class RenderRadioButton : public QObject, public RenderButton
+class RenderRadioButton : public RenderButton
 {
     Q_OBJECT
 public:
@@ -197,7 +197,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class RenderSubmitButton : public QObject, public RenderButton
+class RenderSubmitButton : public RenderButton
 {
     Q_OBJECT
 public:
@@ -275,7 +275,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class RenderLineEdit : public QObject, public RenderFormElement
+class RenderLineEdit : public RenderFormElement
 {
     Q_OBJECT
 public:
