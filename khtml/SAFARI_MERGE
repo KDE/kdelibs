@@ -63,7 +63,7 @@ Needs other stuff before it can be applied:
 # html
 ===========================================================================
 
-- dtd.cpp: changes regareding ID_TEXT, ID_FORM, A FONT and KONQBLOCK left out
+- dtd.cpp: changes regareding ID_TEXT, ID_FORM, A and FONT left out
 
 - html_formimpl.cpp/.h: many changes skipped. will need to integrate the
   "activate first submit" button part. 
