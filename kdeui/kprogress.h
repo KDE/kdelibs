@@ -77,6 +77,7 @@ public:
    *
    * @see setValue()
    */
+  // ### Remove this KDE 4.0
   int value() const;
 
   /**
@@ -97,11 +98,13 @@ public:
    * @deprecated but kept for source compatibility with KDE2's KProgress.
    * Use @ref setTotalSteps() instead
    */
+  // ### Remove this KDE 4.0
   void setRange(int min, int max);
 
   /**
    * @deprecated used @ref totalSteps() instead
    */
+  // ### Remove this KDE 4.0
   int maxValue();
 
 public slots:
@@ -135,6 +138,7 @@ public slots:
   /**
     * @deprecated. Use @ref setProgress(int) instead
     */
+  // ### Remove this KDE 4.0
   void setValue(int progress);
 
   /**
@@ -370,7 +374,7 @@ class KProgressDialog : public KDialogBase
         void slotCancel();
 
     private:
-        // ### Delete these member variables with KDE 4.0
+        // ### Move these member variables to d in KDE 4.0
         bool       mAutoClose;
         bool       mAutoReset;
         bool       mCancelled;

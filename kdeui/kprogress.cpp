@@ -80,16 +80,19 @@ void KProgress::setProgress(int progress)
     }
 }
 
+// ### KDE 4 remove
 void KProgress::setValue(int progress)
 {
     setProgress(progress); 
 }
 
+// ### KDE 4 remove
 void KProgress::setRange(int /*min*/, int max)
 {
     setTotalSteps(max);
 }
 
+// ### KDE 4 remove
 int KProgress::maxValue()
 {
     return totalSteps();
@@ -117,6 +120,7 @@ QString KProgress::format() const
     return mFormat;
 }
 
+// ### KDE 4 remove
 int KProgress::value() const
 {
     return progress();
@@ -149,28 +153,6 @@ bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
     return false;
 }
 
-class KProgressDialog::KProgressDialogPrivate
-{
-    public:
-        KProgressDialogPrivate() :
-            AutoClose(true),
-            AutoReset(false),
-            Cancelled(false),
-            AllowCancel(true),
-            Shown(false),
-            MinDuration(2000) { }
-
-        bool       AutoClose;
-        bool       AutoReset;
-        bool       Cancelled;
-        bool       AllowCancel;
-        bool       Shown;
-        int        MinDuration;
-        QString    CancelText;
-        QLabel*    Label;
-        KProgress* ProgressBar;
-        QTimer*    ShowTimer;
-};
 
 /*
  * KProgressDialog implementation
@@ -180,51 +162,55 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
                                  bool modal)
     : KDialogBase(KDialogBase::Plain, caption, KDialogBase::Cancel,
                   KDialogBase::Cancel, parent, name, modal),
-      d( new KProgressDialogPrivate )
+      mAutoClose(true),
+      mAutoReset(false),
+      mCancelled(false),
+      mAllowCancel(true),
+      mShown(false),
+      mMinDuration(2000)
 {
     KWin::setIcons(winId(), kapp->icon(), kapp->miniIcon());
-    d->ShowTimer = new QTimer(this);
+    mShowTimer = new QTimer(this);
     
     showButton(KDialogBase::Close, false);
-    d->CancelText = actionButton(KDialogBase::Cancel)->text();
+    mCancelText = actionButton(KDialogBase::Cancel)->text();
 
     QFrame* mainWidget = plainPage();
     QVBoxLayout* layout = new QVBoxLayout(mainWidget, 10);
 
-    d->Label = new QLabel(text, mainWidget);
-    layout->addWidget(d->Label);
+    mLabel = new QLabel(text, mainWidget);
+    layout->addWidget(mLabel);
 
-    d->ProgressBar = new KProgress(mainWidget);
-    layout->addWidget(d->ProgressBar);
+    mProgressBar = new KProgress(mainWidget);
+    layout->addWidget(mProgressBar);
 
-    connect(d->ProgressBar, SIGNAL(percentageChanged(int)),
+    connect(mProgressBar, SIGNAL(percentageChanged(int)),
             this, SLOT(slotAutoActions(int)));
-    connect(d->ShowTimer, SIGNAL(timeout()), this, SLOT(slotAutoShow()));
-    d->ShowTimer->start(d->MinDuration, true);
+    connect(mShowTimer, SIGNAL(timeout()), this, SLOT(slotAutoShow()));
+    mShowTimer->start(mMinDuration, true);
 }
 
 KProgressDialog::~KProgressDialog()
 {
-    delete d;
 }
 
 void KProgressDialog::slotAutoShow()
 {
-    if (d->Shown || d->Cancelled)
+    if (mShown || mCancelled)
     {
         return;
     }
 
     show();
     kapp->processEvents();
-    d->Shown = true;
+    mShown = true;
 }
 
 void KProgressDialog::slotCancel()
 {
-    d->Cancelled = true;
+    mCancelled = true;
 
-    if (d->AllowCancel)
+    if (mAllowCancel)
     {
         KDialogBase::slotCancel();
     }
@@ -232,73 +218,76 @@ void KProgressDialog::slotCancel()
 
 bool KProgressDialog::wasCancelled()
 {
-    return d->Cancelled;
+    return mCancelled;
 }
 
 bool KProgressDialog::wasCancelled() const
 {
-    return d->Cancelled;
+    return mCancelled;
 }
 
 void KProgressDialog::setMinimumDuration(int ms)
 {
-    d->MinDuration = ms;
-    if (!d->Shown)
+    mMinDuration = ms;
+    if (!mShown)
     {
-        d->ShowTimer->stop();
-        d->ShowTimer->start(d->MinDuration, true);
+        mShowTimer->stop();
+        mShowTimer->start(mMinDuration, true);
     }
 }
 
 int KProgressDialog::minimumDuration()
 {
-    return d->MinDuration;
+    return mMinDuration;
 }
 
 int KProgressDialog::minimumDuration() const
 {
-    return d->MinDuration;
+    return mMinDuration;
 }
 
 void KProgressDialog::setAllowCancel(bool allowCancel)
 {
-    d->AllowCancel = allowCancel;
+    mAllowCancel = allowCancel;
     showCancelButton(allowCancel);
 }
 
+// ### KDE 4 remove
 bool KProgressDialog::allowCancel()
 {
-    return d->AllowCancel;
+    return mAllowCancel;
 }
 
 bool KProgressDialog::allowCancel() const
 {
-    return d->AllowCancel;
+    return mAllowCancel;
 }
 
+// ### KDE 4 remove
 KProgress* KProgressDialog::progressBar()
 {
-    return d->ProgressBar;
+    return mProgressBar;
 }
 
 const KProgress* KProgressDialog::progressBar() const
 {
-    return d->ProgressBar;
+    return mProgressBar;
 }
 
 void KProgressDialog::setLabel(const QString& text)
 {
-    d->Label->setText(text);
+    mLabel->setText(text);
 }
 
+// ### KDE 4 remove
 QString KProgressDialog::labelText()
 {
-    return d->Label->text();
+    return mLabel->text();
 }
 
 QString KProgressDialog::labelText() const
 {
-    return d->Label->text();
+    return mLabel->text();
 }
 
 void KProgressDialog::showCancelButton(bool show)
@@ -306,58 +295,66 @@ void KProgressDialog::showCancelButton(bool show)
     showButtonCancel(show);
 }
 
+// ### KDE 4 remove
 bool KProgressDialog::autoClose()
 {
-    return d->AutoClose;
+    return mAutoClose;
+}
+
+bool KProgressDialog::autoClose() const
+{
+    return mAutoClose;
 }
 
 void KProgressDialog::setAutoClose(bool autoClose)
 {
-    d->AutoClose = autoClose;
+    mAutoClose = autoClose;
 }
 
+// ### KDE 4 remove
 bool KProgressDialog::autoReset()
 {
-    return d->AutoReset;
+    return mAutoReset;
 }
 
 bool KProgressDialog::autoReset() const
 {
-    return d->AutoReset;
+    return mAutoReset;
 }
 
 void KProgressDialog::setAutoReset(bool autoReset)
 {
-    d->AutoReset = autoReset;
+    mAutoReset = autoReset;
 }
 
 void KProgressDialog::setButtonText(const QString& text)
 {
-    d->CancelText = text;
-    setButtonCancelText(d->CancelText);
+    mCancelText = text;
+    setButtonCancelText(text);
 }
 
+// ### KDE 4 remove
 QString KProgressDialog::buttonText()
 {
-    return d->CancelText;
+    return mCancelText;
 }
 
 QString KProgressDialog::buttonText() const
 {
-    return d->CancelText;
+    return mCancelText;
 }
 
 void KProgressDialog::slotAutoActions(int percentage)
 {
     if (percentage < 100)
     {
-        setButtonCancelText(d->CancelText);
+        setButtonCancelText(mCancelText);
     }
     else
     {
-        if (d->AutoReset)
+        if (mAutoReset)
         {
-            d->ProgressBar->setProgress(0);
+            mProgressBar->setProgress(0);
         }
         else
         {
@@ -365,7 +362,7 @@ void KProgressDialog::slotAutoActions(int percentage)
             setButtonCancelText("&Close");
         }
 
-        if (d->AutoClose)
+        if (mAutoClose)
         {
             hide();
         }
