@@ -155,7 +155,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   setView( main_widget );
 
   statusProgress = new StatusbarProgress( statusBar() );
-  statusBar()->addWidget( statusProgress, statusProgress->width() , false );
+  statusBar()->addWidget( statusProgress, 0, true );
 
   kmain = this;
 
