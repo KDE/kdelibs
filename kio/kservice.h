@@ -292,6 +292,7 @@ private:
   bool m_bSuid;
   QString m_strDesktopEntryPath;
   QString m_strDesktopEntryName;
+  QString m_docPath;
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;

@@ -128,6 +128,7 @@ KService::init( KDesktopFile *config )
   m_libraryMinor = config->readNumEntry( "X-KDE-LibraryMinor", 0 );
   m_lstLibraryDeps = config->readListEntry( "X-KDE-LibraryDependencies" );
   m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
+  m_docPath = config->readEntry("DocPath");
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
   m_bSuid = (config->readEntry( "X-KDE-SubstituteUID" ) == "1");
@@ -201,7 +202,7 @@ void KService::load( QDataStream& s )
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
     >> m_strDesktopEntryPath >> m_strDesktopEntryName
-    >> suid >> m_strUsername >> initpref;
+    >> suid >> m_strUsername >> initpref >> m_docPath;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -228,7 +229,7 @@ void KService::save( QDataStream& s )
     << m_strLibrary << m_libraryMajor << m_libraryMinor
     << dst
     << m_strDesktopEntryPath << m_strDesktopEntryName
-    << suid << m_strUsername << initpref;
+    << suid << m_strUsername << initpref << m_docPath;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -281,6 +282,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( static_cast<int>(m_bSuid) );
   else if ( _name == "X-KDE-Username" )
     return QVariant( m_strUsername );
+  else if ( _name == "DocPath")
+    return QVariant( m_docPath );
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -315,6 +318,7 @@ QStringList KService::propertyNames() const
   res.append( "LibraryDependencies" );
   res.append( "X-KDE-SubstituteUID" );
   res.append( "X-KDE-Username" );
+  res.append( "DocPath" );
 
   return res;
 }
