@@ -187,6 +187,7 @@ protected:
     virtual void dragEnterEvent( QDragEnterEvent* );
     virtual void dropEvent( QDropEvent* );
     virtual void closeEvent ( QCloseEvent * );
+    virtual bool eventFilter(QObject *, QEvent *);
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );
@@ -264,8 +265,10 @@ private:
      * for display.
      *
      * To "deinitialize" the caret, call caretOff
+     * @param keepSelection @p true to keep any active selection. It may have
+     *         been extended if the caret position is changed.
      */
-    void initCaret();
+    void initCaret(bool keepSelection = false);
     /** returns whether the text under the caret will be overridden.
       */
     bool caretOverrides();
@@ -338,8 +341,8 @@ private:
      *
      * @param node node to be set to
      * @param offset zero-based offset within this node
-     * @param clearSelection @p true if any the selection should be cleared
-     *	as well. It is ignored if @p thoroughly is false.
+     * @param clearSelection @p true if any selection should be cleared
+     *	as well.
      * @return @p true if a previously existing selection has been cleared.
      */
     bool moveCaretTo(DOM::NodeImpl *node, long offset, bool clearSelection);

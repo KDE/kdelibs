@@ -316,6 +316,7 @@ public:
   KAction *m_paDebugDOMTree;
   KAction *m_paDebugRenderTree;
   KAction *m_paStopAnimations;
+  KToggleAction *m_paToggleCaretMode;
 
   KParts::PartManager *m_manager;
 

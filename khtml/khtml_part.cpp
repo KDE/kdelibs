@@ -333,6 +333,13 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( parentPart() )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
+  d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"),
+  				Key_F7, this, SLOT(slotToggleCaretMode()),
+                                actionCollection(), "caretMode");
+  d->m_paToggleCaretMode->setChecked(isCaretMode());
+  if (parentPart())
+      d->m_paToggleCaretMode->setShortcut(KShortcut()); // avoid clashes
+
   // set the default java(script) flags according to the current host.
   d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
@@ -2124,6 +2131,8 @@ void KHTMLPartPrivate::setFlagRecursively(
 void KHTMLPart::setCaretMode(bool enable)
 {
 #ifndef KHTML_NO_CARET
+  kdDebug(6200) << "setCaretMode(" << enable << ")" << endl;
+  if (isCaretMode() == enable) return;
   d->setFlagRecursively(&KHTMLPartPrivate::m_caretMode, enable);
   // FIXME: this won't work on frames as expected
   if (!isEditable()) {
@@ -2143,6 +2152,7 @@ bool KHTMLPart::isCaretMode() const
 void KHTMLPart::setEditable(bool enable)
 {
 #ifndef KHTML_NO_CARET
+  if (isEditable() == enable) return;
   d->setFlagRecursively(&KHTMLPartPrivate::m_designMode, enable);
   // FIXME: this won't work on frames as expected
   if (!isCaretMode()) {
@@ -2157,6 +2167,13 @@ void KHTMLPart::setEditable(bool enable)
 bool KHTMLPart::isEditable() const
 {
   return d->m_designMode;
+}
+
+void KHTMLPart::setCaretPosition(DOM::Node node, long offset)
+{
+  d->caretNode() = node;
+  d->caretOffset() = offset;
+  view()->initCaret(true);
 }
 
 void KHTMLPart::findTextBegin()
@@ -5791,6 +5808,10 @@ void KHTMLPart::slotWalletClosed()
     d->m_wallet->deleteLater();
     d->m_wallet = 0L;
   }
+}
+
+void KHTMLPart::slotToggleCaretMode() {
+  setCaretMode(d->m_paToggleCaretMode->isChecked());
 }
 
 using namespace KParts;

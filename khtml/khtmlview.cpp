@@ -110,6 +110,7 @@ struct CaretViewContext {
     int height;			// height of caret in pixels
     bool visible;		// true if currently visible.
     bool displayed;		// true if caret is to be displayed at all.
+    bool caretMoved;		// set to true once caret has been moved in page
 
     /** For natural traversal of lines, the original x position is saved, and
      * the actual x is set to the first character whose x position is
@@ -120,8 +121,8 @@ struct CaretViewContext {
      */
     int origX;
 
-    CaretViewContext() : freqTimerId(-1), x(0), y(0), width(1), height(16), visible(true),
-    	displayed(false), origX(0)
+    CaretViewContext() : freqTimerId(-1), x(0), y(0), width(1), height(16),
+    	visible(true), displayed(false), caretMoved(false), origX(0)
     {}
 };
 
@@ -143,6 +144,10 @@ public:
     KHTMLViewPrivate()
         : underMouse( 0 )
     {
+#ifndef KHTML_NO_CARET
+	m_caretViewContext = 0;
+	m_editorContext = 0;
+#endif // KHTML_NO_CARET
         reset();
         tp=0;
         paintBuffer=0;
@@ -151,10 +156,6 @@ public:
         prevScrollbarVisible = true;
 	tooltip = 0;
         possibleTripleClick = false;
-#ifndef KHTML_NO_CARET
-	m_caretViewContext = 0;
-	m_editorContext = 0;
-#endif // KHTML_NO_CARET
     }
     ~KHTMLViewPrivate()
     {
@@ -165,8 +166,10 @@ public:
         if (underMouse)
 	    underMouse->deref();
 	delete tooltip;
+#ifndef KHTML_NO_CARET
 	delete m_caretViewContext;
 	delete m_editorContext;
+#endif // KHTML_NO_CARET
     }
     void reset()
     {
@@ -205,7 +208,11 @@ public:
         repaintLayout = false;
         updateRect = QRect();
         m_dialogsAllowed = true;
-	// FIXME: decide what to do with caret view and editor contexts (LS)
+#ifndef KHTML_NO_CARET
+        if (m_caretViewContext) {
+          m_caretViewContext->caretMoved = false;
+        }/*end if*/
+#endif // KHTML_NO_CARET
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -500,6 +507,8 @@ void KHTMLView::init()
     _width = 0;
     _height = 0;
 
+    installEventFilter(this);
+
     setAcceptDrops(true);
     QSize s = viewportSize(4095, 4095);
     resizeContents(s.width(), s.height());
@@ -510,7 +519,7 @@ void KHTMLView::clear()
     // work around QScrollview's unbelievable bugginess
     setStaticBackground(true);
 #ifndef KHTML_NO_CARET
-    caretOff();
+    if (!m_part->isCaretMode() && !m_part->isEditable()) caretOff();
 #endif
 
     d->reset();
@@ -673,8 +682,14 @@ void KHTMLView::layout()
         root->layout();
 #ifndef KHTML_NO_CARET
         hideCaret();
-	recalcAndStoreCaretPos();
-	showCaret();
+        if ((m_part->isCaretMode() || m_part->isEditable())
+        	&& !d->complete && d->m_caretViewContext
+                && !d->m_caretViewContext->caretMoved) {
+            initCaret();
+        } else {
+	    recalcAndStoreCaretPos();
+	    showCaret();
+        }/*end if*/
 #endif
         if( d->repaintLayout )
           root->repaint();
@@ -1190,6 +1205,36 @@ void KHTMLView::doAutoScroll()
         ensureVisible( xm, ym, 0, 5 );
     }
 }
+
+bool KHTMLView::eventFilter(QObject *o, QEvent *e)
+{
+  if ( e->type() == QEvent::AccelOverride ) {
+    QKeyEvent* ke = (QKeyEvent*) e;
+//kdDebug(6200) << "QEvent::AccelAvailable" << endl;
+    if (m_part->isEditable() || m_part->isCaretMode()
+        || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
+	    && m_part->xmlDocImpl()->focusNode()->contentEditable())) {
+//kdDebug(6200) << "editable/navigable" << endl;
+      if ( ke->state() & ControlButton ) {
+        switch ( ke->key() ) {
+          case Key_Left:
+          case Key_Right:
+          case Key_Up:
+          case Key_Down:
+          case Key_Home:
+          case Key_End:
+            ke->accept();
+//kdDebug(6200) << "eaten" << endl;
+            return true;
+          default:
+            break;
+        }/*end switch*/
+      }/*end if*/
+    }/*end if*/
+  }/*end if*/
+  return QScrollView::eventFilter(o, e);
+}
+
 
 DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
@@ -2038,7 +2083,7 @@ namespace khtml {
 class LinearDocument;
 
 static InlineFlowBox *findFlowBox(DOM::NodeImpl *node, long offset,
-		RenderArena *arena, RenderFlow *&cb);
+		RenderArena *arena, RenderFlow *&cb, InlineBox **ibox = 0);
 
 /**
  * Iterates through the lines of a document.
@@ -2054,6 +2099,8 @@ protected:
   LinearDocument *lines;	// associated document
   RenderFlow *cb;		// containing block
   InlineFlowBox *flowBox;	// the line itself
+
+  static InlineBox *currentBox;	// current inline box
 
   // Note: cb == 0 indicates a position beyond the beginning or the
   // end of a document.
@@ -2150,6 +2197,17 @@ public:
     return !operator ==(it);
   }
 
+  /** Whenever a new line iterator is created, it gets the inline box
+   * it points to. For memory reasons, it's saved in a static instance,
+   * thus making this function not thread-safe.
+   *
+   * This value can only be trusted immediately after having instantiated
+   * a line iterator or one of its derivatives.
+   * @return the corresponing inline box within the line represented by the
+   *	last instantiation of a line iterator, or 0 if there was none.
+   */
+  static InlineBox *currentInlineBox() { return currentBox; }
+
 protected:
   /** seeks next block.
    */
@@ -2162,6 +2220,8 @@ protected:
   friend class EditableInlineBoxIterator;
   friend class LinearDocument;
 };
+
+static InlineBox *LineIterator::currentBox;
 
 /**
  * Represents the whole document in terms of lines.
@@ -2295,11 +2355,14 @@ public:
     box = fromEnd ? seekLeafInlineBoxFromEnd(flowBox) : seekLeafInlineBox(flowBox);
   }
 
-  /** creates a new iterator, initialized with the given line iterator
+  /** creates a new iterator, initialized with the given line iterator,
+   * initialized to the given inline box, if specified.
    */
-  InlineBoxIterator(LineIterator &lit, bool fromEnd = false) : arena(lit.lines->arena)
+  InlineBoxIterator(LineIterator &lit, bool fromEnd = false,
+  		InlineBox *initBox = 0) : arena(lit.lines->arena)
   {
-    box = fromEnd ? seekLeafInlineBoxFromEnd(*lit) : seekLeafInlineBox(*lit);
+    if (initBox) box = initBox;
+    else box = fromEnd ? seekLeafInlineBoxFromEnd(*lit) : seekLeafInlineBox(*lit);
   }
 
   /** empty constructor.
@@ -2395,10 +2458,12 @@ public:
     if (box && !isEditable(box)) fromEnd ? --*this : ++*this;
   }
 
-  /** initializes a new iterator from the given line iterator
+  /** initializes a new iterator from the given line iterator,
+   * beginning with the given inline box, if specified.
    */
-  EditableInlineBoxIterator(LineIterator &lit, bool fromEnd = false)
-  		: InlineBoxIterator(lit, fromEnd), m_part(lit.lines->m_part)
+  EditableInlineBoxIterator(LineIterator &lit, bool fromEnd = false,
+  		InlineBox *initBox = 0)
+  		: InlineBoxIterator(lit, fromEnd, initBox), m_part(lit.lines->m_part)
   {
     if (box && !isEditable(box)) fromEnd ? --*this : ++*this;
   }
@@ -2448,14 +2513,15 @@ protected:
     Q_ASSERT(b);
     RenderObject *r = b->object();
     if (b->isInlineFlowBox()) kdDebug(6200) << "b is inline flow box" << endl;
-    //kdDebug(6200) << "isEditable r" << r << ": " << (r ? r->renderName() : QString::null) << (r && r->isText() ? " contains \"" + QString(((RenderText *)r)->str->s, ((RenderText *)r)->str->l) + "\"" : QString::null) << endl;
+    kdDebug(6200) << "isEditable r" << r << ": " << (r ? r->renderName() : QString::null) << (r && r->isText() ? " contains \"" + QString(((RenderText *)r)->str->s, ((RenderText *)r)->str->l) + "\"" : QString::null) << endl;
     // Must check caret mode or design mode *after* r && r->element(), otherwise
-    // lines without a backing DOM node get regarded.
+    // lines without a backing DOM node get regarded, leading to a crash.
     // ### check should actually be in InlineBoxIterator
     bool result = r && r->element()
     	&& (m_part->isCaretMode() || m_part->isEditable()
            	|| r->style()->userInput() == UI_ENABLED);
     if (!result) adjacent = false;
+    kdDebug(6200) << result << endl;
     return result;
   }
 };
@@ -2776,7 +2842,8 @@ public:
    * @param ld linear representation of document.
    */
   EditableCharacterIterator(LinearDocument *ld)
-  		: ld(ld), _it(ld->current()), ebit(_it), _char(-1)
+  		: ld(ld), _it(ld->current()),
+                ebit(_it, false, _it.currentInlineBox()), _char(-1)
   {
     _node = ld->node;
     _offset = ld->offset;
@@ -2792,19 +2859,26 @@ public:
       copy = ebit;
       InlineBox *b = *ebit;
 
-      if (b->object() == _node->renderer() && _offset >= b->minOffset()
-      		&& _offset <= b->maxOffset())
+      if (b->object() == _node->renderer()) {
+        _offset = QMIN(QMAX(_offset, b->minOffset()), b->maxOffset());
         break;
+      }/*end if*/
     }/*next ebit*/
-    // If no node is found, we take the last editable node. I dunno if this
-    // is a good approximation, but this covers up a case that should never
-    // happen in theory.
+    // If no node is found, we take the last editable node. This is a very
+    // feeble approximation as it sometimes makes the caret get stuck, or
+    // iterate over the same element indefinitely,
+    // but this covers up a case that should never happen in theory.
     if (!*ebit) {
+      // this is a really bad hack but solves the caret-gets-stuck issue
+      static long cache_offset = -1;
       ebit = copy;
       InlineBox *b = *ebit;
       _node = b->object()->element();
-      _offset = b->maxOffset();
+      long max_ofs = b->maxOffset();
+      _offset = cache_offset == max_ofs ? b->minOffset() : max_ofs;
+      cache_offset = _offset;
       kdDebug(6200) << "There was no node! Fixup applied!" << endl;
+      if (cache_offset == max_ofs) kdDebug(6200) << "offset fixup applied as well" << endl;
     }/*end if*/
 
     initFirstChar();
@@ -2959,23 +3033,25 @@ static RenderFlow* generateDummyBlock(RenderArena *arena, RenderObject *cb)
  * @param arena sometimes the function must create a temporary inline flow box
  *	therefore it needs a render arena.
  * @param cb returns the containing block
+ * @param ibox returns the inline box that contains the node.
  * @return the found inlineFlowBox or 0 if either the node is 0 or
  *	there is no inline flow box containing this node. The containing block
  *	will still be set. If it is 0 too, @p node was invalid.
  */
 static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
-		RenderArena *arena, RenderFlow *&cb)
+		RenderArena *arena, RenderFlow *&cb, InlineBox **ibox)
 {
   RenderObject *r = findRenderer(node);
   if (!r) { cb = 0; return 0; }
   kdDebug(6200) << "=================== findFlowBox" << endl;
-  kdDebug(6200) << "node " << node << " r " << r->renderName() << "[" << r << "]" << " offset: " << offset << endl;
+  kdDebug(6200) << "node " << node << " r " << r->renderName() << "[" << r << "].node " << r->element()->nodeName().string() << "[" << r->element() << "]" << " offset: " << offset << endl;
 
   // If we have a totally empty render block, we simply construct a
   // transient inline flow box, and be done with it.
   // This case happens only when the render block is a leaf object itself.
   if (r->isFlow() && !static_cast<RenderFlow *>(r)->firstLineBox()) {
     cb = static_cast<RenderFlow *>(r);
+  kdDebug(6200) << "=================== end findFlowBox (dummy)" << endl;
     return generateDummyFlowBox(arena, cb);
   }/*end if*/
 
@@ -2989,8 +3065,8 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
     RenderText *t = static_cast<RenderText *>(r);
     int dummy;
     InlineBox *b = t->findInlineTextBox(offset, dummy);
-    // Actually b should never be 0, but some render texts don't have runs,
-    // so we insert the last run as an error correction.
+    // Actually b should never be 0, but some render texts don't have text
+    // boxes, so we insert the last run as an error correction.
     // If there is no last run, we resort to (B)
     if (!b) {
       if (t->m_lines.count() > 0)
@@ -2999,6 +3075,7 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
         break;
     }/*end if*/
     Q_ASSERT(b);
+    if (ibox) *ibox = b;
     while (b->parent()) {	// seek root line box
       b = b->parent();
     }/*wend*/
@@ -3007,6 +3084,7 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
     Q_ASSERT(b->isInlineFlowBox());
     cb = static_cast<RenderFlow *>(b->object());
     Q_ASSERT(cb->isFlow());
+  kdDebug(6200) << "=================== end findFlowBox (renderText)" << endl;
     return static_cast<InlineFlowBox *>(b);
   } while(false);/*end if*/
 
@@ -3022,6 +3100,8 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
   // <div><b></b><i></i></div>)
   if (!flowBox) {
     flowBox = generateDummyFlowBox(arena, cb);
+    if (ibox) *ibox = flowBox;
+  kdDebug(6200) << "=================== end findFlowBox (2)" << endl;
     return flowBox;
   }/*end if*/
 
@@ -3042,15 +3122,19 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
       if (br == r && offset >= box->minOffset() && offset <= box->maxOffset())
         break;	// If Dijkstra hadn't brainwashed me, I'd have used a goto here
     }/*next it*/
-    if (box) break;
+    if (box) {
+      if (ibox) *ibox = box;
+      break;
+    }
 
   }/*next flowBox*/
 
   // no inline flow box found, approximate to nearest following node.
   // Danger: this is O(n^2). It's only called to recover from
   // errors, that means, theoretically, never. (Practically, far too often :-( )
-  if (!flowBox) flowBox = findFlowBox(node->nextLeafNode(), 0, arena, cb);
+  if (!flowBox) flowBox = findFlowBox(node->nextLeafNode(), 0, arena, cb, ibox);
 
+  kdDebug(6200) << "=================== end findFlowBox" << endl;
   return flowBox;
 }
 
@@ -3226,7 +3310,7 @@ void LinearDocument::initEndIterator()
 LineIterator::LineIterator(LinearDocument *l, DOM::NodeImpl *node, long offset)
 		: lines(l)
 {
-  flowBox = findFlowBox(node, offset, lines->arena, cb);
+  flowBox = findFlowBox(node, offset, lines->arena, cb, &currentBox);
   if (!flowBox) {
     kdDebug(6200) << "LineIterator: findFlowBox failed" << endl;
     cb = 0;
@@ -3383,6 +3467,7 @@ EditableCharacterIterator &EditableCharacterIterator::operator ++()
   // A block element can only be the target if it is empty -- in this case
   // its extent is zero, too.
   long maxofs = r->isBR() || r->isFlow() ? b->minOffset() : b->maxOffset();
+  kdDebug(6200) << "b->maxOffset() " << b->maxOffset() << " b->minOffset() " << b->minOffset() << endl;
   if (_offset == maxofs) {
 kdDebug(6200) << "_offset == maxofs: " << _offset << " == " << maxofs << endl;
 //    _peekPrev = b;
@@ -3942,11 +4027,13 @@ ErgonomicEditableLineIterator &ErgonomicEditableLineIterator::operator --()
 
 }/*end namespace*/
 
-void KHTMLView::initCaret()
+void KHTMLView::initCaret(bool keepSelection)
 {
-//  kdDebug(6200) << "begin initCaret" << endl;
+  kdDebug(6200) << "begin initCaret" << endl;
+  // save caretMoved state as moveCaretTo changes it
   if (m_part->xmlDocImpl()) {
     d->caretViewContext();
+    bool cmoved = d->m_caretViewContext->caretMoved;
     if (m_part->d->caretNode().isNull()) {
       // set to document, position will be sanitized anyway
       m_part->d->caretNode() = m_part->document();
@@ -3958,11 +4045,13 @@ void KHTMLView::initCaret()
     }/*end if*/
 //    kdDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
 //    		<< " d->m_selectionEnd " << m_part->d->m_selectionEnd.handle() << endl;
-    moveCaretTo(m_part->d->caretNode().handle(), m_part->d->caretOffset(), true);
+    // ### does not repaint the selection on keepSelection!=false
+    moveCaretTo(m_part->d->caretNode().handle(), m_part->d->caretOffset(), !keepSelection);
 //    kdDebug(6200) << "d->m_selectionStart " << m_part->d->m_selectionStart.handle()
 //    		<< " d->m_selectionEnd " << m_part->d->m_selectionEnd.handle() << endl;
+    d->m_caretViewContext->caretMoved = cmoved;
   }/*end if*/
-//  kdDebug(6200) << "end initCaret" << endl;
+  kdDebug(6200) << "end initCaret" << endl;
 }
 
 bool KHTMLView::caretOverrides()
@@ -4000,8 +4089,9 @@ void KHTMLView::recalcAndStoreCaretPos()
 {
     if (!m_part || m_part->d->caretNode().isNull()) return;
     d->caretViewContext();
-//  kdDebug(6200) << "moveCaretBy: caretNode=" << m_part->d->caretNode().handle() << endl;
-    m_part->d->caretNode().handle()->getCaret(m_part->d->caretOffset(),
+    NodeImpl *caretNode = m_part->d->caretNode().handle();
+  kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, static_cast<RenderText *>(caretNode->renderer())->str->l).string() + "\"" : QString::null) << endl;
+    caretNode->getCaret(m_part->d->caretOffset(),
                 caretOverrides(),
     		d->m_caretViewContext->x, d->m_caretViewContext->y,
 		d->m_caretViewContext->width,
@@ -4174,6 +4264,8 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 	// node should never be null, but faulty conditions may cause it to be
 	&& !m_part->d->caretNode().isNull()) {
 
+    d->m_caretViewContext->caretMoved = true;
+
     if (_ke->state() & ShiftButton) {	// extend selection
 
       if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
@@ -4223,6 +4315,18 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
 {
   sanitizeCaretState(node, offset);
+  // need to find out the node's inline box. If there is none, this function
+  // will snap to the next node that has one. This is necessary to make the
+  // caret visible in any case.
+  RenderArena arena;
+  RenderFlow *cb;
+  InlineBox *box = 0;
+  findFlowBox(node, offset, &arena, cb, &box);
+  if (box && box->object() != node->renderer()) {
+    node = box->object()->element(); // ### what if element is 0?
+    offset = node->minOffset();
+    kdDebug(6200) << "set new node " << node->nodeName().string() << "@" << node << endl;
+  }
 
   NodeImpl *oldStartSel = m_part->d->m_selectionStart.handle();
   long oldStartOfs = m_part->d->m_startOffset;
@@ -4239,6 +4343,8 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   if (clearSel) {
     folded = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
   }/*end if*/
+
+  d->m_caretViewContext->caretMoved = true;
 
   bool visible_caret = placeCaret();
 

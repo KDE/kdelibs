@@ -159,8 +159,8 @@ bool InlineFlowBox::onEndChain(RenderObject* endObject)
         parent = curr->parent();
     }
 
-    return true;
 #endif
+    return true;
 }
 
 void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* endObject)
@@ -525,9 +525,9 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
 #endif
 }
 
+#if 0	// FIXME: needs merge
 static bool shouldDrawDecoration(RenderObject* obj)
 {
-#if 0	// FIXME: needs merge
     bool shouldDraw = false;
     for (RenderObject* curr = obj->firstChild();
          curr; curr = curr->nextSibling()) {
@@ -542,8 +542,8 @@ static bool shouldDrawDecoration(RenderObject* obj)
         }
     }
     return shouldDraw;
-#endif
 }
+#endif
 
 void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
                                      int _w, int _h, int _tx, int _ty)

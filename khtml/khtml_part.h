@@ -382,41 +382,28 @@ public:
    **/
   bool onlyLocalReferences() const;
 
-  /**
-   * Enables/disables caret mode.
-   *
-   * Enabling caret mode displays a caret which can be used to navigate
-   * the document using the keyboard only. Caret mode is switched off by
-   * default.
-   *
-   * @param enable @p true to enable, @p false to disable caret mode.
-   * @since 3.2 (pending, do not use)
-   */
-  void setCaretMode(bool enable);
-
   /** Returns whether caret mode is on/off.
    * @since 3.2
    */
   bool isCaretMode() const;
 
   /**
-   * Makes the document editable.
-   *
-   * Setting this property to @p true makes the document, and its
-   * subdocuments (such as frames, iframes, objects) editable as a whole.
-   * FIXME: insert more information about navigation, features etc. as seen fit
-   *
-   * @param enable @p true to set document editable, @p false to set it
-   *	read-only.
-   * @since 3.2 (pending, do not use)
-   */
-  void setEditable(bool enable);
-
-  /**
    * Returns @p true if the document is editable, @p false otherwise.
    * @since 3.2
    */
   bool isEditable() const;
+
+  /**
+   * Sets the caret to the given position.
+   *
+   * If the given location is invalid, it will snap to the nearest valid
+   * location. Immediately afterwards a @p caretPositionChanged signal
+   * containing the effective position is emitted
+   * @param node node to set to
+   * @param offset zero-based offset within the node
+   * @since 3.2
+   */
+  void setCaretPosition(DOM::Node node, long offset);
 
 #ifndef KDE_NO_COMPAT
   void enableJScript( bool e ) { setJScriptEnabled(e); }
@@ -942,6 +929,31 @@ public slots:
    */
   QVariant executeScript( const QString &script );
 
+  /**
+   * Enables/disables caret mode.
+   *
+   * Enabling caret mode displays a caret which can be used to navigate
+   * the document using the keyboard only. Caret mode is switched off by
+   * default.
+   *
+   * @param enable @p true to enable, @p false to disable caret mode.
+   * @since 3.2 (pending, do not use)
+   */
+  void setCaretMode(bool enable);
+
+  /**
+   * Makes the document editable.
+   *
+   * Setting this property to @p true makes the document, and its
+   * subdocuments (such as frames, iframes, objects) editable as a whole.
+   * FIXME: insert more information about navigation, features etc. as seen fit
+   *
+   * @param enable @p true to set document editable, @p false to set it
+   *	read-only.
+   * @since 3.2 (pending, do not use)
+   */
+  void setEditable(bool enable);
+
 private slots:
 
   /**
@@ -1138,6 +1150,11 @@ private slots:
    * @internal
    */
   void slotAutomaticDetectionLanguage( int _id );
+
+  /**
+   * @internal
+   */
+  void slotToggleCaretMode();
 
 
 
