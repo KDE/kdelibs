@@ -520,13 +520,14 @@ void Location::put(const UString &p, const KJSO &v)
   if (p == "hash") url.setRef(str);;
   if (p == "host") {
     // danimo: KURL doesn't have a way to
-    // set Hostname _and_ Port at once, right?
+    // set hostname _and_ port at once, right?
     QString host = str.left(str.find(":"));
     QString port = str.mid(str.find(":")+1);
     url.setHost(host);
     url.setPort(port.toUInt());
   };
   if (p == "hostname") url.setHost(str);
+  if (p == "pathname") url.setPath(str);
   if (p == "port") url.setPort(str.toUInt());
   if (p == "protocol")  url.setProtocol(str);
   if (p == "search"){ /* TODO */}
