@@ -38,6 +38,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.27  1998/05/28 21:49:39  kulow
+// I thought, a little sync between my different acinclude.m4.ins. I've done much
+// to much to know, which version is where ;)
 //
 // Revision 1.26  1998/05/19 14:10:23  radej
 // Bugfixes: Unhighlighting a handle and catching the fast click
@@ -288,7 +291,7 @@ void KMenuBar::closeEvent (QCloseEvent *e)
 
 void KMenuBar::leaveEvent (QEvent *e){
   QApplication::sendEvent(menu, e);
-  QPoint p;
+}
   if (mgr)
     if (ev->type() == Event_MouseButtonPress)
 
