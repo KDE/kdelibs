@@ -177,7 +177,7 @@ public slots:
     void setHoverCloseButtonDelayed( bool delayed );
 
     /*!
-      If \a delayed is true, closing the current tab activates the
+      If \a previous is true, closing the current tab activates the
       previous active tab instead of the one to the right.
       @since 3.3
     */
