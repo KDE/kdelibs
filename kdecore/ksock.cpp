@@ -382,7 +382,7 @@ unsigned short int KServerSocket::port()
 #ifdef PF_INET6
   else if (sin->sin_family == PF_INET6)
     {
-      kde_sockaddr_in6 *sin6 = (sockaddr_in6*)sin;
+      kde_sockaddr_in6 *sin6 = (kde_sockaddr_in6*)sin;
       return sin6->sin6_port;
     }
 #endif
