@@ -97,7 +97,7 @@ Package: libkmid-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs3-dev (<= 4:2.1-20010114-0), libarts-dev (<= 4:2.1-20010115-1)
-Depends: libarts (= ${Source-Version}), libc6-dev
+Depends: libkmid (= ${Source-Version}), libc6-dev
 Suggests: kdelibs3-dev
 Conflicts: kdelibs3-dev (<= 4:2.1-20001210-0)
 Description: aRts Sound system (midi development files)
