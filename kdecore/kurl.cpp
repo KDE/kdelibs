@@ -1365,6 +1365,13 @@ bool KURL::cd( const QString& _dir )
 
 KURL KURL::upURL( ) const
 {
+  if (!query().isEmpty())
+  {
+     KURL u(*this);
+     u.setQuery(QString::null);
+     return u;
+  };
+
   if (!hasSubURL())
   {
      KURL u(*this);
