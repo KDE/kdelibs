@@ -7,7 +7,8 @@
 PluginSpellCheck::PluginSpellCheck( QObject* parent, const char* name )
     : Plugin( parent, name )
 {
-    (void) new KAction( i18n( "The Action For SpellChecking" ), 0, actionCollection(), "spellcheck" );
+    (void) new KAction( i18n( "The Action For SpellChecking" ), 0, this, SLOT(slotSpellCheck()),
+                        actionCollection(), "spellcheck" );
 }
 
 PluginSpellCheck::~PluginSpellCheck()
