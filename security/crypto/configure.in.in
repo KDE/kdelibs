@@ -111,7 +111,7 @@ fi
 if test "$ssl_libraries" = "/usr/lib" || test "$ssl_libraries" = "/usr/local/lib" || test -z "$ssl_libraries"; then
  SSL_LDFLAGS=""
 else
- SSL_LDFLAGS="-L$ssl_libraries"
+ SSL_LDFLAGS="-L$ssl_libraries -R$ssl_libraries"
 fi
 
 AC_SUBST(SSL_INCLUDES)
