@@ -429,6 +429,12 @@ public:
 	WMVisibleIconName     = 1<<30,
 	WMGeometry	      = 1<<31
     };
+    
+    /**
+       Sentinel value to indicate that the client wishes to be visible on
+       all desktops.
+     **/ 
+    enum { OnAllDesktops = -1 };
 };
 
 
