@@ -32,7 +32,6 @@
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
-//#include <kaccelaction.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -546,11 +545,16 @@ void KKeyChooser::fontChange( const QFont & )
 void KKeyChooser::allDefault()
 {
 	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
-	allDefault( d->pList->firstChild() );
+	
+	QListViewItemIterator it( d->pList );
+	for( ; it.current(); ++it ) {
+		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
+		if( pItem )
+			pItem->setShortcut( pItem->shortcutDefault() );
+	}
 
-	emit keyChange();
-	update();
 	updateButtons();
+	emit keyChange();
 }
 
 /*void KKeyChooser::allDefault( bool useFourModifierKeys )
@@ -568,6 +572,7 @@ void KKeyChooser::allDefault()
 	updateButtons();
 }*/
 
+// TODO: Remove this
 void KKeyChooser::allDefault( QListViewItem* pItem )
 {
 	KKeyChooserItem* pShortcutItem = dynamic_cast<KKeyChooserItem*>(pItem);
@@ -578,7 +583,6 @@ void KKeyChooser::allDefault( QListViewItem* pItem )
 			commitChanges( pChild );
 	}
 }
-
 
 void KKeyChooser::slotListItemSelected( QListViewItem* )
 {
@@ -830,10 +834,16 @@ KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char*
 	setMainWidget( m_pKeyChooser );
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
 	enableButton( Help, false );
+
+	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
+	QSize sz = size();
+	resize( group.readSizeEntry( "Dialog Size", &sz ) );
 }
 
 KKeyDialog::~KKeyDialog()
 {
+	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
+	group.writeEntry( "Dialog Size", size(), true, true );
 }
 
 bool KKeyDialog::insert( KActionCollection* pColl )
