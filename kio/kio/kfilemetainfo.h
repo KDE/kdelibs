@@ -120,7 +120,8 @@ public:
         Centimeters     = 6,
         Bytes           = 7,
         FramesPerSecond = 8,
-        DotsPerInch     = 9
+        DotsPerInch     = 9,
+        BitsPerPixel    = 10
     };
 
 
