@@ -341,6 +341,9 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
 void HTMLFormElementImpl::submitFromKeyboard()
 {
     // Activate the first nondisabled submit button
+    // if there is none, do a submit anyway if not more
+    // than one <input type=text> or <input type=password>
+    unsigned int inputtext = 0;
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_BUTTON) {
             HTMLButtonElementImpl* current = static_cast<HTMLButtonElementImpl *>(it.current());
@@ -350,14 +353,22 @@ void HTMLFormElementImpl::submitFromKeyboard()
             }
         } else if (it.current()->id() == ID_INPUT) {
             HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl *>(it.current());
-            if (current->inputType() == HTMLInputElementImpl::SUBMIT && !current->disabled()) {
+            switch(current->inputType())  {
+            case HTMLInputElementImpl::SUBMIT:
+            case HTMLInputElementImpl::IMAGE:
                 current->activate();
                 return;
+            case HTMLInputElementImpl::TEXT:
+            case HTMLInputElementImpl::PASSWORD:
+                ++inputtext;
+            default:
+                break;
             }
         }
     }
 
-    prepareSubmit();
+    if (inputtext <= 1)
+        prepareSubmit();
 }
 
 bool HTMLFormElementImpl::prepareSubmit()
@@ -1180,17 +1191,17 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case IMAGE:
 
-            if(m_clicked && clickX() != -1)
+            if(m_clicked)
             {
                 m_clicked = false;
                 QString astr(nme.isEmpty() ? QString::fromLatin1("x") : nme + ".x");
 
                 encoding += fixUpfromUnicode(codec, astr);
-                astr.setNum(clickX());
+                astr.setNum(KMAX( clickX(), 0 ));
                 encoding += fixUpfromUnicode(codec, astr);
                 astr = nme.isEmpty() ? QString::fromLatin1("y") : nme + ".y";
                 encoding += fixUpfromUnicode(codec, astr);
-                astr.setNum(clickY());
+                astr.setNum(KMAX( clickY(), 0 ) );
                 encoding += fixUpfromUnicode(codec, astr);
 
                 return true;
@@ -1324,9 +1335,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // on the element, or presses enter while it is the active element. Javascript code wishing to activate the element
         // must dispatch a DOMActivate event - a click event will not do the job.
         if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
-            (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
+            (m_type == IMAGE || m_type == SUBMIT || m_type == RESET))
             activate();
-        }
     }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
