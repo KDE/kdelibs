@@ -57,6 +57,7 @@ KDateWidget::KDateWidget( QWidget *parent, const char *name )
   setDate(QDate());
 }
 
+// ### HPB change QDate to const QDate & in KDE 4.0
 KDateWidget::KDateWidget( QDate date, QWidget *parent,
 			    const char *name )
   : QWidget( parent, name )
@@ -87,6 +88,7 @@ KDateWidget::~KDateWidget()
 {
 }
 
+// ### HPB change QDate to const QDate & in KDE 4.0
 void KDateWidget::setDate( QDate date )
 {
   d->m_day->blockSignals(true);
