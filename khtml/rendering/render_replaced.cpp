@@ -583,6 +583,27 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        break;
+    }
+    case EventImpl::KHTML_KEYPRESS_EVENT: {
+
+        // See KHTMLView::dispatchKeyEvent: autorepeat is just keypress in the DOM
+        // but it's keyrelease+keypress in Qt. So here we do the inverse mapping as
+        // the one done in KHTMLView: generate two events for one DOM auto-repeat keypress.
+        // (We know it's auto-repeat if the Qt event is KeyRelease)
+
+        // Reverse drawing as the one in KHTMLView:
+        //  DOM:   Down     Press   |       Press                             |     Up
+        //  Qt:    Press  (nothing) | Release(autorepeat) + Press(autorepeat) |   Release
+
+        QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        if (ke && ke->type() == QEvent::KeyRelease) {
+            static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+            QKeyEvent pressEv( QEvent::KeyPress, ke->key(), ke->ascii(), ke->state(),
+                               ke->text(), true /*autorepeat*/, ke->count() );
+            static_cast<EventPropagator *>(m_widget)->sendEvent(&pressEv);
+        }
+
 	break;
     }
     case EventImpl::MOUSEOUT_EVENT: {
