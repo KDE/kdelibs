@@ -16,6 +16,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include "kurifilter.h"
+
 #include <config.h>
 #include <iostream>
 #include <stdlib.h>
@@ -27,8 +29,8 @@
 #include <kstandarddirs.h>
 #include <ksimpleconfig.h>
 
-#include "kurifilter.h"
 #include <qdir.h>
+#include <kio/netaccess.h>
 
 static const char * const s_uritypes[] = { "NET_PROTOCOL", "LOCAL_FILE", "LOCAL_DIR", "EXECUTABLE", "HELP", "SHELL", "BLOCKED", "ERROR", "UNKNOWN" };
 #define NO_FILTERING -2
@@ -135,7 +137,8 @@ int main(int argc, char **argv)
 {
     // Ensure that user configuration doesn't change the results of those tests
     // KDEHOME needs to be writable though, for a ksycoca database
-    setenv( "KDEHOME", QFile::encodeName( QDir::homeDirPath() + "/.kde-kurifiltertest" ), 1 );
+    setenv( "KDEHOME", QFile::encodeName( QDir::homeDirPath() + "/.kde-kurifiltertest" ), true );
+    setenv( "KDE_FORK_SLAVES", "yes", true ); // simpler, for the final cleanup
 
     KAboutData aboutData(appName, programName, version, description);
     KCmdLineArgs::init(argc, argv, &aboutData);
@@ -316,6 +319,9 @@ int main(int argc, char **argv)
     filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share/" ); // cleanDirPath removes the trailing slash
     filter( "../", kdehome, KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
     filter( "config", kdehome+"/share/config", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
+
+    // Clean up
+    KIO::NetAccess::del( kdehome, 0 );
 
     kdDebug() << "All tests done. Go home..." << endl;
     return 0;
