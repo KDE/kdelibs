@@ -181,7 +181,7 @@ public:
    *
    * @see loadIcon, loadApplicationMiniIcon
    */
-  QPixmap loadApplicationIcon( const QString& name, Size size = Medium);
+  QPixmap loadApplicationIcon( const QString& name, Size size = Medium, QString *path_store = 0);
 
   /**
 	Get the complete path for an icon name.

@@ -103,7 +103,7 @@ QPixmap KIconLoader::reloadIcon ( const QString& name )
 	return loadInternal( name, false );
 }
 
-QPixmap KIconLoader::loadApplicationIcon ( const QString& name, Size size)
+QPixmap KIconLoader::loadApplicationIcon ( const QString& name, Size size, QString* path_store)
 {
   if (name.at(0) == '/')
     return loadInternal(name);
@@ -135,22 +135,28 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, Size size)
   QString icon_path = locate("icon", path + "hicolor/" + icon + ".png", library );
 
   if (!icon_path.isEmpty())
-    return loadInternal(icon_path);
+    goto loading;
   
   icon_path = locate("icon", path + "locolor/" + icon + ".png", library );
   
   if (!icon_path.isEmpty()) 
-    return loadInternal(icon_path);
+    goto loading;
 
   icon_path = locate("icon", path + "hicolor/" + icon + ".xpm", library );
   if (!icon_path.isEmpty()) 
-    return loadInternal(icon_path);
+    goto loading;
 
   icon_path = locate("icon", path + "locolor/" + icon + ".xpm", library );
-  if (!icon_path.isEmpty()) 
-    return loadInternal(icon_path);
+  if (!icon_path.isEmpty())
+    goto loading;
   
   return QPixmap();
+
+ loading:
+  if (path_store)
+    *path_store = icon_path;
+  return loadInternal(icon_path);
+  
 }
 
 
