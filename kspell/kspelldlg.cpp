@@ -56,7 +56,7 @@ KSpellDlg::KSpellDlg(
   listbox = new KListBox(w, "listbox");
 
   QLabel * l_misspelled =
-    new QLabel(i18n("Misspelled Word:"), w, "l_misspelled");
+    new QLabel(i18n("Misspelled word:"), w, "l_misspelled");
 
   QLabel * l_replacement =
     new QLabel(i18n("Replacement:"), w, "l_replacement");
