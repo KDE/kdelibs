@@ -836,6 +836,7 @@ qWarning("Reusing existing ksycoca");
      stream << *g_changeList;
      dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
    }
+   return 0;
 }
 
 #include "kbuildsycoca.moc"
