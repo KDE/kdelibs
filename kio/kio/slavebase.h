@@ -374,7 +374,7 @@ public:
     virtual void mimetype( const KURL& url );
 
     /**
-     * Lists the contents of @p path.
+     * Lists the contents of @p url.
      * The slave should emit ERR_CANNOT_ENTER_DIRECTORY if it doesn't exist,
      * if we don't have enough permissions, or if it is a file
      * It should also emit @ref #totalFiles as soon as it knows how many
