@@ -103,7 +103,7 @@ KWhatsThisManager::KWhatsThisManager ()
 
 bool KWhatsThisManager::eventFilter (QObject *o, QEvent *e)
 {
-    if (e -> type () == QEvent::ChildInserted) {
+    if (o == this && e -> type () == QEvent::ChildInserted) {
         QChildEvent *ce = (QChildEvent *)e;
         // kdDebug () << "new qobject:" << ce -> child () << endl;
         if (ce -> child () -> isWidgetType ()) {
