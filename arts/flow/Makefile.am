@@ -1,7 +1,6 @@
 
 SUBDIRS = mcopclass
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
-LDFLAGS  = $(top_builddir)/arts/mcop/libmcop.la
 CLOSURE = $(libartsflow_la_OBJECTS) $(libartsflow_idl_la_OBJECTS)
 
 ####### Files
@@ -10,8 +9,9 @@ lib_LTLIBRARIES = libartsflow_idl.la libartsflow.la
 
 libartsflow_idl_la_SOURCES = artsflow.cc
 libartsflow_idl_la_LDFLAGS = -no-undefined
+libartsflow_idl_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la
 
-libartsflow_la_LIBADD = libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) $(LIBAUDIOIO) $(LIBOSSAUDIO) $(LIBAUDIONAS) -lm
+libartsflow_la_LIBADD = $(top_builddir)/arts/mcop/libmcop.la libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) $(LIBAUDIOIO) $(LIBOSSAUDIO) $(LIBAUDIONAS) -lm
 libartsflow_la_LDFLAGS = -no-undefined
 libartsflow_la_SOURCES =  synth_play_impl.cc \
   synthschedule.cc audiosubsys.cc \
