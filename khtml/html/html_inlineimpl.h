@@ -79,8 +79,6 @@ public:
     virtual tagStatus endTag() { return BREndTag; }
 
     virtual void attach(KHTMLView *w);
-
-    virtual DOMString toHTML(DOMString _string);
 };
 
 // -------------------------------------------------------------------------

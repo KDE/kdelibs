@@ -190,14 +190,6 @@ void HTMLImageElementImpl::attach(KHTMLView *)
     }
 }
 
-DOMString HTMLImageElementImpl::toHTML(DOMString _string)
-{
-    _string = _string + "<" + nodeName();
-    _string = attributeMap.toHTML(_string) + ">";
-    _string = innerHTML(_string);
-    return _string;
-}
-
 // -------------------------------------------------------------------------
 
 HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
@@ -469,13 +461,5 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
     }
 
     return region;
-}
-
-DOMString HTMLAreaElementImpl::toHTML(DOMString _string)
-{
-    _string = _string + "<" + nodeName();
-    _string = attributeMap.toHTML(_string) + ">";
-    _string = innerHTML(_string);
-    return _string;
 }
 

@@ -248,14 +248,6 @@ void HTMLBRElementImpl::attach(KHTMLView *)
     }
 }
 
-DOMString HTMLBRElementImpl::toHTML(DOMString _string)
-{
-    _string = _string + "<" + nodeName();
-    _string = attributeMap.toHTML(_string) + ">";
-    _string = innerHTML(_string);
-    return _string;
-}
-
 // -------------------------------------------------------------------------
 
 HTMLFontElementImpl::HTMLFontElementImpl(DocumentImpl *doc)
