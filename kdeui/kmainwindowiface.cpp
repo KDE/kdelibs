@@ -38,7 +38,7 @@ KMainWindowInterface::~KMainWindowInterface()
 	delete m_dcopActionProxy;
 }
 
-QCStringList KMainWindowInterface::listActions()
+QCStringList KMainWindowInterface::actions()
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -115,7 +115,7 @@ QCString KMainWindowInterface::actionToolTip( QCString action)
 		return "Error no such object!";
 }
 
-DCOPRef KMainWindowInterface::actionDCOPRef( const QCString &name )
+DCOPRef KMainWindowInterface::action( const QCString &name )
 {
 	return DCOPRef( kapp->dcopClient()->appId(), m_dcopActionProxy->actionObjectId( name ) );
 }
