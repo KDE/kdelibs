@@ -227,6 +227,8 @@
 				<DetectChar attribute="Char" context="#pop" char="'"/>
 			</context>
 			<context attribute="String" lineEndContext="#stay" name="String">
+                <LineContinue attribute="String" context="#stay"/>
+                <HlCStringChar attribute="Char" context="#stay"/>
 				<DetectChar attribute="String" context="#pop" char="&quot;"/>
 			</context>
 
