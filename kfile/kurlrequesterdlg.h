@@ -90,7 +90,6 @@ protected slots:
  
 protected:
 
-    KURLCompletion *    urlCompletion_; // ### remove in 3.0, this is unused.
     KURLRequester *     urlRequester_;
 
 private:
