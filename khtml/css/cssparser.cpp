@@ -230,11 +230,12 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
             curP = parseToChar(startP, endP, ';', false, true);
         if(!curP) return 0;
         QString media(startP, curP - startP);
+	media = media.stripWhiteSpace();
         // ### check if at the beginning of the stylesheet (no style rule
         //     before the import rule)
 #ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "at rule: url = " << url.string()
-                        << " media = " << media << endl;
+        kdDebug( 6080 ) << "at rule: url = '" << url.string()
+                        << "' media = '" << media << "'"<< endl;
 #endif
         // ignore block following @import rule
         if( *curP == '{' ) {
@@ -2655,6 +2656,7 @@ CSSSelector::CSSSelector(void)
     match = None;
     relation = Descendant;
     nonCSSHint = false;
+    pseudoId = 0;
 }
 
 CSSSelector::~CSSSelector(void)

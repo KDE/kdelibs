@@ -208,23 +208,25 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
 	int tag = selectors[i]->tag;
 	if ( id == tag || tag == -1 ) {
-            ++schecked;
+	    ++schecked;
 
-            checkSelector( i, e );
+	    checkSelector( i, e );
 
 	    if ( selectorCache[i].state == Applies ) {
-                ++smatch;
+		++smatch;
 
 		//qDebug("adding property" );
-                for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-                    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
-                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
+		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
+		    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
+			static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
-                for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-                    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j )
-                        static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
-            }
-        }
+		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
+		    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j ) {
+			static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
+			properties[selectorCache[i].props[p]+j]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
+		    }
+	    }
+	}
 	else
 	    selectorCache[i].state = Invalid;
 
@@ -258,7 +260,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	}
     }
 
-    if ( style->display() != INLINE && pseudoProps->count() != 0 ) {
+    if ( pseudoProps->count() != 0 ) {
 	CSSOrderedProperty *ordprop = pseudoProps->first();
 	while( ordprop ) {
 	    RenderStyle *pseudoStyle;
@@ -385,6 +387,10 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	{
 	    //kdDebug() << "CSSOrderedRule::checkSelector" << endl;
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
+	    // a selector is invalid if something follows :first-xxx
+	    if ( dynamicPseudo == RenderStyle::FIRST_LINE ||
+		 dynamicPseudo == RenderStyle::FIRST_LETTER )
+		return;
 	    if(!checkOneSelector(sel, elem)) return;
 	    //kdDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
 	    break;
@@ -520,9 +526,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		return true;
 	} else if ( last && value == "first-line" ) { // first-line and first-letter are only allowed at the end of a selector
 	    dynamicPseudo=RenderStyle::FIRST_LINE;
+	    sel->pseudoId = dynamicPseudo;
 	    return true;
 	} else if ( last && value == "first-letter" ) {
 	    dynamicPseudo=RenderStyle::FIRST_LETTER;
+	    sel->pseudoId = dynamicPseudo;
 	    return true;
 	} else if( value == "link") {
 	    if ( pseudoState == PseudoUnknown )
