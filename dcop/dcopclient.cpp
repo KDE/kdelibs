@@ -1187,11 +1187,16 @@ static QObject* findQtObject( QCString id )
     QRegExp expr( id );
     QValueList<O> l;
     fillQtObjectsEx( l, 0, "qt" );
+    // Prefer an exact match, but fall-back on the first that contains the substring
+    QObject* firstContains = 0L;
     for ( QValueList<O>::ConstIterator it = l.begin(); it != l.end(); ++it ) {
- 	if ( (*it).s.contains( expr ) )
+	if ( (*it).s == id ) // exact match
 	    return (*it).o;
+ 	if ( !firstContains && (*it).s.contains( expr ) ) {
+	    firstContains = (*it).o;
+	}
     }
-    return 0;
+    return firstContains;
 }
 
 static QCStringList  findQtObjects( QCString id )
