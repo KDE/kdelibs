@@ -257,7 +257,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
     if ( present & KNotifyClient::PassivePopup )
         notifyByPassivePopup( text, fromApp);
 
-    if ( present & KNotifyClient::Messagebox )
+    else if ( present & KNotifyClient::Messagebox )
         notifyByMessagebox( text, level );
 
     if ( present & KNotifyClient::Logfile ) // && QFile(file).isWritable()
