@@ -48,6 +48,115 @@ public:
   static bool autoResume();
   static bool persistentConnections();
 
+  /**
+   * Returns the preffered timeout value for remote connections
+   * in secs.
+   *
+   * The maximum value that can be set by the user is 6
+   * minutes while the minimum is 3 seconds.  If the value
+   * is set above or below the threshold limit, this
+   * function will return the default value given by
+   * @ref defaultConnectTimeout().
+   *
+   * @return timeout value for remote connection in secs.
+   */
+  static int connectTimeout();
+
+  /**
+   * Returns the preffered timeout value for proxy connections
+   * in secs.
+   *
+   * The maximum value that can be set by the user is 2
+   * minutes while the minimum is 3 seconds.  If the value
+   * is set above or below the threshold limit, this
+   * function will return the default value given by
+   * @ref defaultProxyConnectTimeout()
+   *
+   * @return timeout value for proxy connection in secs.
+   */
+  static int proxyConnectTimeout();
+
+  /**
+   * Returns the preffered response timeout value for
+   * remote connecting in secs.
+   *
+   * The maximum value that can be set by the user is 6
+   * minutes while the minimum is 3 seconds.  If the value
+   * is set above or below the threshold limit, this
+   * function will return the default value given by
+   * @ref defaultResponseTimeout()
+   *
+   * @return timeout value for remote connection in secs.
+   */
+  static int responseTimeout();
+
+  /**
+   * Returns (in seconds) the maximum timeout value that
+   * can be set for connecting to remote machines.
+   *
+   * This method returns the value defined by
+   * MAX_PROXY _CONNECT_TIMEOUT in the source file.
+   */
+  static int maximumConnectTimeout();
+
+  /**
+   * Returns (in seconds) the set default timeout
+   * value for connecting to remote machines.
+   *
+   * This method returns the value defined by
+   * DEFAULT_CONNECT_TIMEOUT in the source file.
+   */
+  static int defaultConnectTimeout();
+
+  /**
+   * Returns (in seconds) the maximum timeout value
+   * that can be set for connecting to proxy machines.
+   *
+   * This method returns the value defined by
+   * MAX_PROXY_CONNECT_TIMEOUT in the source file.
+   */
+  static int maximumProxyConnectTimeout();
+
+  /**
+   * Returns (in seconds) the set default timeout value
+   * for connecting to a proxy machine.
+   *
+   * This method returns the value defined by
+   * DEFAULT_PROXY_CONNECT_TIMEOUT in the source file.
+   */
+  static int defaultProxyConnectTimeout();
+  /**
+   * Returns (in seconds) the set default timeout value
+   * for connecting to a proxy machine.
+   *
+   * This method returns the value defined by
+   * MAX_RESPONSE_TIMEOUT in the source file.
+   */
+  static int maximumResponseTimeout();
+
+  /**
+   * Returns (in seconds) the set default timeout value
+   * for connecting to a proxy machine.
+   *
+   * This method returns the value defined by
+   * DEFAULT_RESPONSE_TIMEOUT in the source file.
+   */
+  static int defaultResponseTimeout();
+
+  /**
+   * Returns the minimum timeout value that can be
+   * assigned for connecting and responses to and
+   * from remote and proxy machines.
+   *
+   * This method returns the value defined by
+   * MIN_TIMEOUT_VALUE in the source file.
+   */
+  static int minimumTimeoutThreshold();
+
+  /**
+   * Returns whether or not the user specified the
+   * use of proxy server to make connections.
+   */
   static bool useProxy();
 
   /*
@@ -66,6 +175,10 @@ public:
    */
   static QString httpProxy();
 
+  /**
+   * Returns the strings for hosts that should contacted
+   * DIRECT bypassing any proxy settings.
+   */
   static QString noProxyFor();
 
   /*
@@ -84,8 +197,22 @@ public:
    */
   static QString slaveProtocol( const QString & protocol );
 
+  /**
+   * Returns true/false to indicate whether a cache
+   * should be used
+   */
   static bool useCache();
+
+  /**
+   * Returns the maximum age (in seconds) cached files
+   * should be kept before they are deleted.
+   */
   static int maxCacheAge();  // Maximum cache age in seconds.
+
+  /**
+   * Returns the maximum age (in seconds) cached files
+   * should be kept before they are deleted.
+   */
   static int maxCacheSize(); // Maximum cache size in Kb.
 
   /**
@@ -195,6 +322,10 @@ public:
    */
   static void setNoProxyFor( const QString& _noproxy );
 
+  /**
+   * Force a reload of the general config file of
+   * io-slaves ( kioslaverc).
+   */
   static void reparseConfiguration();
 
   /**
