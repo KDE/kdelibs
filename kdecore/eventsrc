@@ -897,6 +897,12 @@ default_sound=KDE_Logout.wav
 
 [printerror]
 Name=Print error
+Name[da]=Udskriftsfejl
+Name[de]=Fehler beim Druck
+Name[hu]=Nyomtatási hiba
 Comment=A print error has occured
+Comment[da]=Der opstod en fejl ved udskriften
+Comment[de]=Beim Drucken ist ein Fehler aufgetreten
+Comment[hu]=Hiba történt nyomtatás közben
 default_presentation=2
 level=8
