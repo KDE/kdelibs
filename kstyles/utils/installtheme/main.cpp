@@ -64,7 +64,7 @@ int main(int argc, char **argv)
         }
     }
 
-    KConfig cache("kthemestylerc");
+    KSimpleConfig cache( KGlobal::dirs()->saveLocation("config")+"kthemestylerc");
 
 #if 0
 //Doesn't seem to work with present Qt..
