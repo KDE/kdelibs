@@ -95,11 +95,9 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
         delete selectAllAction;
     }
 
-    //connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
-    //         this, SLOT( slotPopupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
-
-    connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
-             m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+    connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
+             const KParts::URLArgs &, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
+             const KParts::URLArgs &, mode_t) ) );
 
     connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
              m_ext, SIGNAL( enableAction( const char *, bool ) ) );
@@ -157,12 +155,6 @@ void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
 {
     if ( e->activated() )
         emit setWindowCaption( m_url.prettyURL() );
-}
-
-void KHTMLImage::slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u,
-                                const QString &, mode_t mode )
-{
-    emit m_ext->popupMenu( cl, pos, u, m_mimeType, mode );
 }
 
 void KHTMLImage::slotImageJobFinished( KIO::Job *job )
