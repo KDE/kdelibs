@@ -71,8 +71,9 @@ public:
      * @li Small  - 16x16 pixels
      * @li Medium - 32x32 pixels
      * @li Large  - 64x64 pixels
+     * @li Default - the global setting or Medium if it doesn't exist
      **/
-    typedef enum { Small, Medium, Large } Size;
+    typedef enum { Small, Medium, Large, Default } Size;
 
   /**
    * Constructor. Adds some application specific paths to lookup
@@ -122,7 +123,7 @@ public:
 		the "unknown" icon if the requested icon is not found.
 		The default is to return @p null.
    */
-    QPixmap loadIcon( const QString& name, Size size = Medium,
+    QPixmap loadIcon( const QString& name, Size size = Default,
                       QString *path_store = 0, bool can_return_null = true );
 
   /**
@@ -173,6 +174,7 @@ private:
   // @internal Disallow assignment and copy-construction
   KIconLoader& operator= ( const KIconLoader& );
 
+  Size defaultSize;
 };
 
 /**

@@ -65,12 +65,36 @@ KIconLoader::KIconLoader( const QString &app_name ) :
 {
     library = KGlobal::instance();
     initPath();
+
+    KConfig *config = KGlobal::config();
+    QString group = config->group();
+    config->setGroup("KDE");
+    QString entry = config->readEntry("KDEIconStyle", "Normal");
+    if (entry == "Large")
+      defaultSize = Large;
+    else if (entry == "Small")
+      defaultSize = Small;
+    else
+      defaultSize = Medium;
+    config->setGroup(group);
 }
 
 KIconLoader::KIconLoader( const KInstance* _library )
     : library(_library)
 {
     initPath();
+
+    KConfig *config = KGlobal::config();
+    QString group = config->group();
+    config->setGroup("KDE");
+    QString entry = config->readEntry("KDEIconStyle", "Normal");
+    if (entry == "Large")
+      defaultSize = Large;
+    else if (entry == "Small")
+      defaultSize = Small;
+    else
+      defaultSize = Medium;
+    config->setGroup(group);
 }
 
 QPixmap KIconLoader::reloadIcon ( const QString& name )
@@ -83,6 +107,9 @@ QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
 {
     if (name.at(0) == '/')
         return loadInternal(name);
+
+    if (size == Default)
+      size = defaultSize;
 
     QPixmap pix;
     QString icon_path;
@@ -225,8 +252,7 @@ QPixmap BarIcon(const QString& pixmap , const KInstance* library )
     if (pixmap.at(0) == '/')
         return library->iconLoader()->loadIcon(pixmap);
     else
-        return library->iconLoader()->loadIcon("toolbars/" + pixmap,
-                                               KIconLoader::Medium);
+        return library->iconLoader()->loadIcon("toolbars/" + pixmap);
 }
 
 QPixmap AppIcon(const QString& pixmap , const KInstance* library )
