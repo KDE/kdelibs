@@ -63,7 +63,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xmd.h> // schroder
+#include <X11/Xmd.h> 
 #endif
 extern "C" {
 #include <KDE-ICE/ICElib.h>

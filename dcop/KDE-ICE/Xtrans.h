@@ -52,8 +52,8 @@ from The Open Group.
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xfuncproto.h> // schroder
-#include <X11/Xos.h> // schroder
+#include <X11/Xfuncproto.h> 
+#include <X11/Xos.h> 
 #else
 #include <KDE-ICE/Xfuncproto.h>
 #include <fcntl.h>

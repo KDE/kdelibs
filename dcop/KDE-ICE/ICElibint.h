@@ -28,8 +28,8 @@ Author: Ralph Mor, X Consortium
 
 #include "config.h"
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xos.h> // schroder
-#include <X11/Xfuncs.h> // schroder
+#include <X11/Xos.h> 
+#include <X11/Xfuncs.h> 
 #include <X11/Xmd.h> //schroder
 #else
 #define _SIZEOF(x) sz_##x
