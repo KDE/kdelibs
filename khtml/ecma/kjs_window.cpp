@@ -348,14 +348,34 @@ void Window::mark()
     loc->mark();
 }
 
-bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/) const
+bool Window::hasProperty(ExecState *exec, const UString &p) const
 {
-  //fprintf( stderr, "Window::hasProperty: always saying true\n" );
+  if (p == "closed")
+    return true;
 
-  // emulate IE behaviour: it doesn't throw exceptions when undeclared
-  // variables are used. Returning true here will lead to get() returning
-  // 'undefined' in those cases.
-  return true;
+  // we don't want any operations on a closed window
+  if (m_part.isNull())
+    return false;
+
+  if (ObjectImp::hasProperty(exec, p))
+    return true;
+
+  if (Lookup::findEntry(&WindowTable, p))
+    return true;
+
+  QString q = p.qstring();
+  if (m_part->findFrame(p.qstring()))
+    return true;
+
+  // allow shortcuts like 'Image1' instead of document.images.Image1
+  if (m_part->document().isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = m_part->htmlDocument().all();
+    DOM::HTMLElement element = coll.namedItem(q);
+    if (!element.isNull())
+      return true;
+  }
+
+  return false;
 }
 
 UString Window::toString(ExecState *) const
