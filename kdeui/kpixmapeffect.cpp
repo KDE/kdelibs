@@ -303,3 +303,18 @@ KPixmap& KPixmapEffect::dither(KPixmap &pixmap, const QColor *palette, int size)
 
     return pixmap;
 }
+
+//======================================================================
+//
+// Other effects
+//
+//======================================================================
+
+KPixmap KPixmapEffect::selectedPixmap( const KPixmap &pix, const QColor &col )
+{
+    QImage img = pix.convertToImage();
+    KImageEffect::selectedImage(img, col);
+    KPixmap outPix;
+    outPix.convertFromImage(img);
+    return outPix;
+}
