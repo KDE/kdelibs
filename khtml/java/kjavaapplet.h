@@ -217,6 +217,8 @@ public:
      * Set the applet ID.
      */
     void setAppletId( int id );
+    
+    KJavaAppletContext* getContext() const { return context; }
 
 private:
     KJavaAppletPrivate*    d;
