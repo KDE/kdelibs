@@ -475,7 +475,6 @@ void KFileDialog::accept()
 
 void KFileDialog::fileHighlighted(const KFileViewItem *i)
 {
-  debug("fileHighlighted");
     if (i->isDir())
         return;
 
@@ -485,7 +484,6 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
     else
 	if ( !d->completionLock ) {
 	    locationEdit->setCurrentItem( 0 );
-	    debug("***** hi: %s", i->name().ascii());
 	    locationEdit->setEditText( i->name() );
 	}
     emit fileHighlighted(d->url.url());
@@ -493,7 +491,6 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
 
 void KFileDialog::fileSelected(const KFileViewItem *i)
 {
-  debug("fileSelected");
     if (i->isDir())
         return;
     d->url = i->url();
@@ -648,6 +645,10 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 // Protected
 void KFileDialog::urlEntered(const KURL& url)
 {
+    QString filename;
+    if (!locationEdit->lineEdit()->edited()) 
+       filename = locationEdit->currentText();
+
     d->selection = QString::null;
     if ( d->pathCombo->count() != 0 ) { // little hack
 	d->pathCombo->setURL( url );
@@ -656,7 +657,7 @@ void KFileDialog::urlEntered(const KURL& url)
 
     locationEdit->blockSignals( true );
     locationEdit->setCurrentItem( 0 );
-    locationEdit->setEditText( QString::null );
+    locationEdit->setEditText( filename );
 
     locationEdit->blockSignals( false );
 }
@@ -766,13 +767,12 @@ void KFileDialog::toolbarPressedCallback(int i)
 	else if (choice > 0) {
 	    // Select a bookmark (this will not work if there are submenus)
 	    int i= 1;
-	    fprintf(stderr, "choice was %d\n", choice);
+	    kdDebug(kfile_area) << "Bookmark: choice was " << choice << endl;
 	    KFileBookmark *root= bookmarks->getRoot();
 	    for (KFileBookmark *b= root->getChildren().first();
 		 b != 0; b= root->getChildren().next()) {
 		if (i == choice) {
-		    fprintf(stderr, "opening bookmark to %s\n",
-                                    debugString(b->getURL()));
+                    kdDebug(kfile_area) << "Bookmark: opening " << b->getURL() << endl;
 		    setURL(b->getURL(), true);
 		}
 		i++;
