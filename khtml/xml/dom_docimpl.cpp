@@ -450,6 +450,8 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
+    case ID_NOBR:
+    case ID_WBR:
         n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
