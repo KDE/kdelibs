@@ -424,12 +424,16 @@ void HTMLTokenizer::parseEntity( const char * &src)
 	    if (!isalnum(*src))
 	    {
 	        charEntity = false;
-	        searchBuffer[ searchCount+1] = '\0';
-	        res = charsets->convertTag(searchBuffer+1, bytesConverted).copy();
-	        if (bytesConverted <= 0)
-	        {
-	            bytesConverted = 0;
-	            res = 0;
+	        // check trailing char (only ";" is good HTML, but
+	        // accept ' ', '&' and EOL too...) (David)
+	        if (strchr("; &\r\n", searchBuffer[searchCount+1])) {
+	            searchBuffer[ searchCount+1] = '\0';
+	            res = charsets->convertTag(searchBuffer+1, bytesConverted).copy();
+	            if (bytesConverted <= 0)
+	            {
+	                bytesConverted = 0;
+	                res = 0;
+	            }
 		}
 	    }
 	}
