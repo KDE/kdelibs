@@ -1,3 +1,8 @@
+2003-10-27  David Faure  <faure@kde.org>
+
+	* xml/dom_nodeimpl.cpp (handleLocalEvents): fixed crash when a mouse event
+	is dispatched via the DOM API, with initMouseEvent, dispatchEvent.
+
 2003-10-26  David Faure  <faure@kde.org>
 
 	* xml/dom_docimpl.cpp (getId): added bool lookupHTML, set to true in most

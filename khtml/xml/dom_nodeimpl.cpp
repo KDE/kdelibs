@@ -705,12 +705,14 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
         if (current->id == evt->id() && current->useCapture == useCapture)
             current->listener->handleEvent(ev);
         // ECMA legacy hack
-        if (current->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT &&
-            ( ( static_cast<MouseEventImpl*>(evt)->qEvent()->type() == QEvent::MouseButtonRelease
-		&& current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
-              ( static_cast<MouseEventImpl*>(evt)->qEvent()->type() == QEvent::MouseButtonDblClick
-		&& current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) ) )
+        if (current->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT) {
+            QEvent* qevt = static_cast<MouseEventImpl*>(evt)->qEvent(); // null if event was created via DOM
+            if ( ( qevt && qevt->type() == QEvent::MouseButtonRelease
+                   && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+                 ( qevt && qevt->type() == QEvent::MouseButtonDblClick
+                   && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
             current->listener->handleEvent(ev);
+        }
     }
 }
 
