@@ -3288,6 +3288,13 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   kdDebug( 6000 ) << "urlSelected: complete URL:" << cURL.url() << " target = " << target << endl;
 
+  if ( button == LeftButton && (state & ControlButton) )
+  {
+    args.setNewTab(true);
+    emit d->m_extension->createNewWindow( cURL, args );
+    return;
+  }
+
   if ( button == LeftButton && ( state & ShiftButton ) )
   {
     KIO::MetaData metaData;
@@ -3339,7 +3346,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if (!d->m_referrer.isEmpty() && !args.metaData().contains("referrer"))
     args.metaData()["referrer"] = d->m_referrer;
 
-  if ( button == 0 && (state & ShiftButton) && (state & ControlButton) )
+  if ( button == NoButton && (state & ShiftButton) && (state & ControlButton) )
   {
     emit d->m_extension->createNewWindow( cURL, args );
     return;
@@ -3351,13 +3358,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     winArgs.lowerWindow = true;
     KParts::ReadOnlyPart *newPart = 0;
     emit d->m_extension->createNewWindow( cURL, args, winArgs, newPart );
-    return;
-  }
-
-  if ( state & ControlButton )
-  {
-    args.setNewTab(true);
-    emit d->m_extension->createNewWindow( cURL, args );
     return;
   }
 
