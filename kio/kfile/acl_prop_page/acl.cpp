@@ -48,6 +48,7 @@
 #include <qlabel.h>
 #include <qlistview.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 
 #include <klocale.h>
 #include <klibloader.h>
