@@ -549,7 +549,7 @@ public:
      * returns null if this element is not a form-like element
      * or if this elment is not in the scope of a form element.
      */
-    HTMLFormElement form() const;
+    Element form() const;
 
     static bool khtmlValidAttrName(const DOMString &name);
     static bool khtmlValidPrefix(const DOMString &name);

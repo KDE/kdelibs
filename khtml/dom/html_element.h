@@ -37,6 +37,7 @@ namespace DOM {
 
 class HTMLElementImpl;
 class DOMString;
+class Element;
 class HTMLCollection;
 
 /**
