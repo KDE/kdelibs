@@ -1189,17 +1189,17 @@ void KToolBar::setButton (int id, bool on)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-      ((KToolBarButton *) b)->on(on);
+      ((KToolBarButton *) b->getItem())->on(on);
 }
 
 bool KToolBar::isButtonOn (int id)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-       {
-         if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
-           return ((KToolBarButton *) b->getItem())->isOn();
-       }
+    {
+      if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
+        return ((KToolBarButton *) b->getItem())->isOn();
+    }
   return false;
 }
 
@@ -1228,8 +1228,8 @@ void KToolBar::insertComboItem (int id, const char *text, int index)
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
-      ((KCombo *) b)->insertItem(text, index);
-      ((KCombo *) b)->cursorAtEnd();
+      ((KCombo *) b->getItem())->insertItem(text, index);
+      ((KCombo *) b->getItem())->cursorAtEnd();
     }
 }
 
@@ -1237,7 +1237,7 @@ void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-	((KCombo *) b)->insertStrList(list, index);
+	((KCombo *) b->getItem())->insertStrList(list, index);
 }
 
 void KToolBar::setCurrentComboItem (int id, int index)
@@ -1245,8 +1245,8 @@ void KToolBar::setCurrentComboItem (int id, int index)
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
-      ((KCombo *) b)->setCurrentItem(index);
-      ((KCombo *) b)->cursorAtEnd();
+      ((KCombo *) b->getItem())->setCurrentItem(index);
+      ((KCombo *) b->getItem())->cursorAtEnd();
     }
 }
 
@@ -1254,7 +1254,7 @@ void KToolBar::removeComboItem (int id, int index)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-	((KCombo *) b)->removeItem(index);
+      ((KCombo *) b->getItem())->removeItem(index);
 }
 
 void KToolBar::changeComboItem  (int id, const char *text, int index)
@@ -1264,14 +1264,14 @@ void KToolBar::changeComboItem  (int id, const char *text, int index)
     {
       if (index == -1)
       {
-        index = ((KCombo *) b)->currentItem();
-        ((KCombo *) b)->changeItem(text, index);
+        index = ((KCombo *) b->getItem())->currentItem();
+        ((KCombo *) b->getItem())->changeItem(text, index);
       }
       else
       {
-        ((KCombo *) b)->changeItem(text, index);
+        ((KCombo *) b->getItem())->changeItem(text, index);
       }
-      ((KCombo *) b)->cursorAtEnd();
+      ((KCombo *) b->getItem())->cursorAtEnd();
     }
 }
 
@@ -1364,7 +1364,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         hide();
         recreate(0, 0, p, false);
 	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	KWM::setDecoration(winId(), 2);
+        KWM::setDecoration(winId(), 2);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (title){
