@@ -1003,7 +1003,7 @@ public:
 };
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
-:QObject( 0, name )
+:QObject( mainWindow, name )
   ,main(mainWindow)
   ,currentDragWidget(0L)
   ,currentMoveWidget(0L)
