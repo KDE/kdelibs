@@ -29,7 +29,7 @@
 KPDriverPage::KPDriverPage(KMPrinter *p, DrMain *d, QWidget *parent, const char *name)
 : KPrintDialogPage(p,d,parent,name)
 {
-	setTitle(i18n("Advanced"));
+	setTitle(i18n("Driver Settings"));
 
 	m_view = new DriverView(this);
 	m_view->setAllowFixed(false);
