@@ -98,9 +98,9 @@ public:
      * embedded applications that do not support the XEMBED protocol.
      * The default is XEMBED.
      *
-     * Future work:
-     * Create a protocol AUTO that selects the best option.
-     * This will be possible with the XEMBED v2 specification.
+     * Non KDE applications should be embedded with protocol XPLAIN. 
+     * This does not happen automatically yet. 
+     * You must call setProtocol() explicitly.
      */
 
     void setProtocol( Protocol proto );
@@ -174,15 +174,21 @@ public:
     */
     QSizePolicy sizePolicy() const;
 
-    bool eventFilter( QObject *, QEvent * );
-
+    /** 
+     * Sends a WM_DELETE_WINDOW message to the embedded window.  This is what
+     * typically happens when you click on the close button of a window
+     * manager decoration.  This should cause the embedded application to
+     * cleanly close the window.  Signal embeddedWindowDestroyed() can be used
+     * to monitor the status of the embedded window.
+     */
+    void sendDelete( void );
+    
     /**
-     * Sets the flag indicating what shoud be done with the embedded window
-     * when the embedding window is destroyed.  When the flag is true, the
-     * embedded window stays alive and receives a WM_DELETE_WINDOW message
-     * that causes most applications to exit cleanly.  This is the default.
-     * Otherwise, the destruction of the QXEmbed object simply destroys the
-     * embedded window. 
+     * Selects what shoud be done with the embedded window when the embedding
+     * window is destroyed.  When the argument is true, the embedded window is
+     * kept alive, is hidden, and receives a WM_DELETE_WINDOW message using
+     * sendDelete().  This is the default.  Otherwise, the destruction of the
+     * QXEmbed object simply destroys the embedded window.
      */
     void setAutoDelete( bool );
 
@@ -193,9 +199,10 @@ public:
      */
     bool autoDelete() const;
 
+
+    bool eventFilter( QObject *, QEvent * );
     bool customWhatsThis() const;
     void enterWhatsThisMode(); // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
-
     virtual void reparent( QWidget * parent, WFlags f, const QPoint & p, bool showIt = false );
 
 signals:
