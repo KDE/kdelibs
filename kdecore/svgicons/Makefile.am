@@ -1,4 +1,4 @@
-INCLUDES = -I$(srcdir)/.. $(AGG_CFLAGS) $(all_includes)
+INCLUDES = -I$(srcdir)/.. $(LIBART_CFLAGS) $(all_includes)
 
 noinst_LTLIBRARIES = libkdesvgicons.la
 

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2002, 2004 Nikolas Zimmermann <wildfox@kde.org>
+    Copyright (C) 2002 Nikolas Zimmermann <wildfox@kde.org>
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -18,19 +18,18 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <zlib.h>
-
 #include <qdom.h>
 #include <qfile.h>
 #include <qcolor.h>
 #include <qimage.h>
 #include <qwmatrix.h>
 
-#include <kdebug.h>
 #include <kmdcodec.h>
 
-#include "ksvgiconengine.h"
+#include <zlib.h>
+
 #include "ksvgiconpainter.h"
+#include "ksvgiconengine.h"
 
 class KSVGIconEngineHelper
 {
@@ -49,14 +48,14 @@ public:
 		return m_engine->painter()->toPixel(s, hmode);
 	}
 
-	void parseGradientStops(gradient_rendering_properties *props, QDomElement element)
+	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
 	{
+		QMemArray<ArtGradientStop> *stopArray = new QMemArray<ArtGradientStop>();
+
 		float oldOffset = -1, newOffset = -1;
 		for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())
 		{
 			QDomElement element = node.toElement();
-			if(element.isNull() || element.tagName() != "stop")
-				continue;
 
 			oldOffset = newOffset;
 			QString temp = element.attribute("offset");
@@ -72,6 +71,11 @@ public:
 			// Spec  skip double offset specifications
 			if(oldOffset == newOffset)
 				continue;
+
+			offsets++;
+			stopArray->resize(offsets + 1);
+
+			(*stopArray)[offsets].offset = newOffset;
 
 			QString parseOpacity;
 			QString parseColor;
@@ -112,14 +116,34 @@ public:
 				}
 			}
 
-			// Parse color using KSVGIconPainter (which supports all svg-needed color formats)
-			Q_UINT32 qStopOpacity = m_engine->painter()->parseOpacity(parseOpacity);
-
+			// Parse color using KSVGIconPainter (which uses Qt)
+			// Supports all svg-needed color formats
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
-			qStopColor = qRgba(qStopColor.red(), qStopColor.green(), qStopColor.blue(), qStopOpacity);
-			
-			props->gradientStops.addStop(newOffset, qStopColor);
+
+			// Convert in a libart suitable form
+			Q_UINT32 stopColor = m_engine->painter()->toArtColor(qStopColor);
+
+			int opacity = m_engine->painter()->parseOpacity(parseOpacity);
+
+			Q_UINT32 rgba = (stopColor << 8) | opacity;
+			Q_UINT32 r, g, b, a;
+
+			// Convert from separated to premultiplied alpha
+			a = rgba & 0xff;
+			r = (rgba >> 24) * a + 0x80;
+			r = (r + (r >> 8)) >> 8;
+			g = ((rgba >> 16) & 0xff) * a + 0x80;
+			g = (g + (g >> 8)) >> 8;
+			b = ((rgba >> 8) & 0xff) * a + 0x80;
+			b = (b + (b >> 8)) >> 8;
+
+			(*stopArray)[offsets].color[0] = ART_PIX_MAX_FROM_8(r);
+			(*stopArray)[offsets].color[1] = ART_PIX_MAX_FROM_8(g);
+			(*stopArray)[offsets].color[2] = ART_PIX_MAX_FROM_8(b);
+			(*stopArray)[offsets].color[3] = ART_PIX_MAX_FROM_8(a);
 		}
+
+		return stopArray->data();
 	}
 
 	QPointArray parsePoints(QString points)
@@ -173,9 +197,8 @@ public:
 		m_engine->painter()->setStrokeWidth(1);
 		m_engine->painter()->setJoinStyle("");
 		m_engine->painter()->setCapStyle("");
-		m_engine->painter()->setOpacity("1");
-		m_engine->painter()->setFillOpacity("1");
-		m_engine->painter()->setStrokeOpacity("1");
+	//	m_engine->painter()->setFillOpacity(255, true);
+	//	m_engine->painter()->setStrokeOpacity(255, true);
 
 		// Collect parent node's attributes
 		QPtrList<QDomNamedNodeMap> applyList;
@@ -226,21 +249,36 @@ public:
 	{
 		if(element.attribute("display") == "none")
 			return false;
-			
-		if(element.tagName() == "linearGradient" || element.tagName() == "radialGradient")
+		if(element.tagName() == "linearGradient")
 		{
-			gradient_rendering_properties *props = new gradient_rendering_properties();
-			props->linear = (element.tagName() == "linearGradient");
-			parseGradientStops(props, element);
-			
+			ArtGradientLinear *gradient = new ArtGradientLinear();
+
+			int offsets = -1;
+			gradient->stops = parseGradientStops(element, offsets);
+			gradient->n_stops = offsets + 1;
+
 			QString spread = element.attribute("spreadMethod");
 			if(spread == "repeat")
-				props->spreadMethod = SPREADMETHOD_REPEAT;
+				gradient->spread = ART_GRADIENT_REPEAT;
 			else if(spread == "reflect")
-				props->spreadMethod = SPREADMETHOD_REFLECT;
+				gradient->spread = ART_GRADIENT_REFLECT;
+			else
+				gradient->spread = ART_GRADIENT_PAD;
 
-			m_engine->painter()->addGradient(element.attribute("id"), props);
-			m_engine->painter()->addGradientElement(props, element);
+			m_engine->painter()->addLinearGradient(element.attribute("id"), gradient);
+			m_engine->painter()->addLinearGradientElement(gradient, element);
+			return true;
+		}
+		else if(element.tagName() == "radialGradient")
+		{
+			ArtGradientRadial *gradient = new ArtGradientRadial();
+
+			int offsets = -1;
+			gradient->stops = parseGradientStops(element, offsets);
+			gradient->n_stops = offsets + 1;
+
+			m_engine->painter()->addRadialGradient(element.attribute("id"), gradient);
+			m_engine->painter()->addRadialGradientElement(gradient, element);
 			return true;
 		}
 
@@ -265,6 +303,41 @@ public:
 				ry = toPixel(element.attribute("ry"), false);
 
 			m_engine->painter()->drawRectangle(x, y, w, h, rx, ry);
+		}
+		else if(element.tagName() == "switch")
+		{
+			QDomNode iterate = element.firstChild();
+
+			while(!iterate.isNull())
+			{
+				// Reset matrix
+				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+
+				// Parse common attributes, style / transform
+				parseCommonAttributes(iterate);
+
+				if(handleTags(iterate.toElement(), true))
+					return true;
+				iterate = iterate.nextSibling();
+			}
+			return true;
+		}
+		else if(element.tagName() == "g" || element.tagName() == "defs")
+		{
+			QDomNode iterate = element.firstChild();
+
+			while(!iterate.isNull())
+			{
+				// Reset matrix
+				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+
+				// Parse common attributes, style / transform
+				parseCommonAttributes(iterate);
+
+				handleTags(iterate.toElement(), (element.tagName() == "defs") ? false : true);
+				iterate = iterate.nextSibling();
+			}
+			return true;
 		}
 		else if(element.tagName() == "line")
 		{
@@ -311,45 +384,15 @@ public:
 		}
 		else if(element.tagName() == "path")
 		{
-			m_engine->painter()->drawPath(element.attribute("d"));
-			return true;
-		}
-		else if(element.tagName() == "switch")
-		{
-			QDomNode iterate = element.firstChild();
+			bool filled = true;
 
-			while(!iterate.isNull())
-			{
-				// Reset matrix
-				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+			if(element.hasAttribute("fill") && element.attribute("fill").contains("none"))
+				filled = false;
 
-				// Parse common attributes, style / transform
-				parseCommonAttributes(iterate);
+			if(element.attribute("style").contains("fill") && element.attribute("style").stripWhiteSpace().contains("fill:none"))
+				filled = false;
 
-				if(handleTags(iterate.toElement(), true))
-					return true;
-					
-				iterate = iterate.nextSibling();
-			}
-			
-			return true;
-		}
-		else if(element.tagName() == "g" || element.tagName() == "defs")
-		{
-			QDomNode iterate = element.firstChild();
-
-			while(!iterate.isNull())
-			{
-				// Reset matrix
-				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
-
-				// Parse common attributes, style / transform
-				parseCommonAttributes(iterate);
-
-				handleTags(iterate.toElement(), (element.tagName() == "defs") ? false : true);
-				iterate = iterate.nextSibling();
-			}
-			
+			m_engine->painter()->drawPath(element.attribute("d"), filled);
 			return true;
 		}
 		else if(element.tagName() == "image")
@@ -372,11 +415,6 @@ public:
 
 				// Display
 				QImage *image = new QImage(output);
-		        
-				if(image->depth() != 32)
-			        *image = image->convertDepth(32);
-
-				image->setAlphaBuffer(true);								
 
 				// Scale, if needed
 				if(image->width() != (int) w || image->height() != (int) h)
@@ -386,12 +424,9 @@ public:
 				}
 
 				m_engine->painter()->drawImage(x, y, *image);
-				delete image;
 			}
-			
 			return true;
 		}
-
 		return false;
 	}
 
@@ -434,7 +469,7 @@ public:
 		{
 			if(command == "fill-opacity")
 				m_engine->painter()->setFillOpacity(value);
-			else if(command == "stroke-opacity")
+			else if(command == "stroke-value")
 				m_engine->painter()->setStrokeOpacity(value);
 			else
 			{
@@ -472,8 +507,11 @@ KSVGIconEngine::KSVGIconEngine() : d(new Private())
 
 KSVGIconEngine::~KSVGIconEngine()
 {
-	delete d->painter;
+	if(d->painter)
+		delete d->painter;
+
 	delete d->helper;
+
 	delete d;
 }
 
@@ -509,14 +547,14 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 				done = true;
 			else if(ret == -1)
 				return false;
-			else
-			{
-				buffer.resize(buffer.size() + 1024);
+			else {
+				buffer.resize(buffer.size()+1024);
 				length += ret;
 			}
 		}
 
 		gzclose(svgz);
+
 		svgDocument.setContent(buffer);
 	}
 
@@ -598,6 +636,8 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		// Reset matrix
 		d->painter->setWorldMatrix(new QWMatrix(initialMatrix));
 	}
+
+	d->painter->finish();
 
 	return true;
 }

@@ -44,9 +44,10 @@
 #include <config.h>
 #include <assert.h>
 
-// These are required now.
+#ifdef HAVE_LIBART
 #include "svgicons/ksvgiconengine.h"
 #include "svgicons/ksvgiconpainter.h"
+#endif
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -371,14 +372,22 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 
     QString ext = name.right(4);
 
+    static const QString &png_ext = KGlobal::staticQString(".png");
+    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+    if (ext == png_ext || ext == xpm_ext)
+      extensionLength=4;
+#ifdef HAVE_LIBART
+    else
+    {
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
 	static const QString &svg_ext = KGlobal::staticQString(".svg");
-    static const QString &png_ext = KGlobal::staticQString(".png");
-	
+
 	if (name.right(5) == svgz_ext)
 	    extensionLength=5;
-    else if (ext == svg_ext || ext == png_ext)
-      extensionLength=4;
+	else if (ext == svg_ext)
+	    extensionLength=4;
+    }
+#endif
 
     if ( extensionLength > 0 )
     {
@@ -397,23 +406,27 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
 
-    const QString *ext[3];
+    const QString *ext[4];
     int count=0;
+    static const QString &png_ext = KGlobal::staticQString(".png");
+    ext[count++]=&png_ext;
+#ifdef HAVE_LIBART
     static const QString &svgz_ext = KGlobal::staticQString(".svgz");
     ext[count++]=&svgz_ext;
     static const QString &svg_ext = KGlobal::staticQString(".svg");
     ext[count++]=&svg_ext;
-    static const QString &png_ext = KGlobal::staticQString(".png");
-    ext[count++]=&png_ext;
+#endif
+    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+    ext[count++]=&xpm_ext;
 
     /* antlarr: Multiple inheritance is a broken concept on icon themes, so
        the next code doesn't support it on purpose because in fact, it was
        never supported at all. This makes the order in which we look for an
        icon as:
 
-       png, svgz, svg exact match
-       next theme in inheritance tree : png, svgz, svg exact match
-       next theme in inheritance tree : png, svgz, svg exact match
+       png, svgz, svg, xpm exact match
+       next theme in inheritance tree : png, svgz, svg, xpm exact match
+       next theme in inheritance tree : png, svgz, svg, xpm exact match
        and so on
 
        And if the icon couldn't be found then it tries best match in the same
@@ -477,17 +490,20 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     QString path;
     if (group_or_size == KIcon::User)
     {
-	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-	path = d->mpDirs->findResource("appicon", name + svgz_ext);
-	
-	static const QString &svg_ext = KGlobal::staticQString(".svg");
 	static const QString &png_ext = KGlobal::staticQString(".png");
+	static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+	path = d->mpDirs->findResource("appicon", name + png_ext);
 
+#ifdef HAVE_LIBART
+	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
+	static const QString &svg_ext = KGlobal::staticQString(".svg");
 	if (path.isEmpty())
-	    path = d->mpDirs->findResource("appicon", name + svg_ext);
+	    path = d->mpDirs->findResource("appicon", name + svgz_ext);
 	if (path.isEmpty())
-		path = d->mpDirs->findResource("appicon", name + png_ext);
-	
+	   path = d->mpDirs->findResource("appicon", name + svg_ext);
+#endif
+	if (path.isEmpty())
+	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
     }
 
@@ -530,7 +546,6 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size,
                               int state, QString *path_store, bool canReturnNull) const
 {
-	kdDebug() << "---> loadIcon called: " << _name << endl;
     QString name = _name;
     QPixmap pix;
     QString key;
@@ -694,32 +709,29 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
             return pix;
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
-	// Update 10/20/04: We only support svgz/svg and png icons.
 	QString ext = icon.path.right(3).upper();
 	if(ext != "SVG" && ext != "VGZ")
 	{
-		kdDebug() << "[-----] Loading NON-SVG icon \"" << icon.path << "\" with size " << size << " x " << size << endl;
-
-		img = new QImage(icon.path, ext.latin1());
-		if(img->isNull())
-		{
-			delete img;
-			return pix;
-		}
+	    img = new QImage(icon.path, ext.latin1());
+	    if (img->isNull()) {
+                delete img;
+		return pix;
+            }
 	}
+#ifdef HAVE_LIBART
 	else
 	{
 	    // Special stuff for SVG icons
 	    KSVGIconEngine *svgEngine = new KSVGIconEngine();
 
-		kdDebug() << "[-----] Loading SVG icon \"" << icon.path << "\" with size " << size << " x " << size << endl;
 	    if(svgEngine->load(size, size, icon.path))
-			img = svgEngine->painter()->image();
+		img = svgEngine->painter()->image();
 	    else
-			img = new QImage();
+		img = new QImage();
 
 	    delete svgEngine;
 	}
+#endif
 
         iconType = icon.type;
         iconThreshold = icon.threshold;
@@ -809,7 +821,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         bitBlt(&pix, x, y, &favIcon);
     }
 
-	kdDebug() << "CACHING " << key << endl;
     QPixmapCache::insert(key, pix);
     return pix;
 }
@@ -922,7 +933,6 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIcon::Group group, i
     QString file = name + "/0001";
     if (group == KIcon::User)
     {
-	// TODO: SVGICONENGINE: Check wheter we need .svg/.svgz support here
 	file = d->mpDirs->findResource("appicon", file + ".png");
     } else
     {
@@ -975,7 +985,7 @@ int KIconLoader::currentSize(KIcon::Group group) const
 QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
 {
   QDir dir(iconsDir);
-  QStringList lst = dir.entryList("*.svgz;*.svg;*.png", QDir::Files);
+  QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
   QStringList result;
   QStringList::ConstIterator it;
   for (it=lst.begin(); it!=lst.end(); ++it)

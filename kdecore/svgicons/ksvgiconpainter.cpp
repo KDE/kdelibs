@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2002, 2004 Nikolas Zimmermann <wildfox@kde.org>
+    Copyright (C) 2002 Nikolas Zimmermann <wildfox@kde.org>
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -18,19 +18,33 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <math.h>
-
+#include <qvaluevector.h>
+#include <qstringlist.h>
+#include <qwmatrix.h>
+#include <qregexp.h>
+#include <qimage.h>
+#include <qdict.h>
 #include <qmap.h>
 #include <qdom.h>
-#include <qdict.h>
-#include <qimage.h>
-#include <qregexp.h>
-#include <qwmatrix.h>
-#include <qstringlist.h>
-#include <qvaluevector.h>
 
-#include "ksvgagghelper.h"
+#include <math.h>
+
+#include <kdebug.h>
+
+#include <libart_lgpl/art_rgba.h>
+#include <libart_lgpl/art_bpath.h>
+#include <libart_lgpl/art_vpath.h>
+#include <libart_lgpl/art_vpath_dash.h>
+#include <libart_lgpl/art_affine.h>
+#include <libart_lgpl/art_render_svp.h>
+#include <libart_lgpl/art_svp.h>
+#include <libart_lgpl/art_svp_vpath.h>
+#include <libart_lgpl/art_svp_intersect.h>
+#include <libart_lgpl/art_svp_vpath_stroke.h>
+
 #include "ksvgiconpainter.h"
+
+#define ART_END2 10
 
 const double deg2rad = 0.017453292519943295769; // pi/180
 
@@ -40,6 +54,8 @@ public:
 	KSVGIconPainterHelper(int width, int height, KSVGIconPainter *painter)
 	{
 		m_painter = painter;
+
+		m_clipSVP = 0;
 
 		m_fillColor = Qt::black;
 
@@ -51,14 +67,10 @@ public:
 
 		m_worldMatrix = new QWMatrix();
 
-		// Create new 4-channel rgba buffer and
-		// initialize as fully transparent buffer
-		m_buffer = new unsigned char[width * height * 4];
-		memset(m_buffer, 0x00, width * height * 4);
-
-		m_image = new QImage(m_buffer, width, height, 32, 0, 0, QImage::LittleEndian);
+		// Create new image with alpha support
+		m_image = new QImage(width, height, 32);
 		m_image->setAlphaBuffer(true);
-		
+
 		m_strokeWidth = 1.0;
 		m_strokeMiterLimit = 4;
 		m_dashOffset = 0;
@@ -72,169 +84,350 @@ public:
 
 		m_width = width;
 		m_height = height;
+
+		m_rowstride = m_width * 4;
+
+		// Make internal libart rendering buffer transparent
+		m_buffer = art_new(art_u8, m_rowstride * m_height);
+		memset(m_buffer, 0, m_rowstride * m_height);
+
+		m_tempBuffer = 0;
 	}
 
 	~KSVGIconPainterHelper()
 	{
+		if(m_clipSVP)
+			art_svp_free(m_clipSVP);
+
+		art_free(m_buffer);
+
 		delete m_image;
-		delete []m_buffer;
 		delete m_worldMatrix;
 
-		for(QMap<QString, gradient_rendering_properties *>::Iterator it = m_gradientMap.begin(); it != m_gradientMap.end(); ++it)
+		for(QMap<QString, ArtGradientLinear *>::Iterator it = m_linearGradientMap.begin(); it != m_linearGradientMap.end(); ++it)
+		{
 			delete it.data();
-	}
-
-	stroke_rendering_properties generateStrokeRenderingProperties() const
-	{
-		stroke_rendering_properties props;
-		props.width = m_strokeWidth;
-		props.miterLimit = m_strokeMiterLimit;
-
-		agg::vcgen_stroke::line_cap_e capStyle = agg::vcgen_stroke::butt_cap;
-		agg::vcgen_stroke::line_join_e joinStyle = agg::vcgen_stroke::miter_join;
-
-		if(m_joinStyle == "round")
-			joinStyle = agg::vcgen_stroke::round_join;
-		else if(m_joinStyle == "bevel")
-			joinStyle = agg::vcgen_stroke::bevel_join;
-
-		if(m_capStyle == "round")
-			capStyle = agg::vcgen_stroke::round_cap;
-		else if(m_capStyle == "square")
-			capStyle = agg::vcgen_stroke::square_cap;
-
-		props.lineCap = capStyle;
-		props.lineJoin = joinStyle;
-
-		if(m_dashes.length() > 0)
-		{
-			QRegExp reg("[, ]");
-			QStringList dashList = QStringList::split(reg, m_dashes);
-
-			for(unsigned int i = 0; i < dashList.count(); i++)
-				props.dashArray.append((float) m_painter->toPixel(dashList[i], true));
-
-
-			props.dashOffset = m_dashOffset;
 		}
-		
-		return props;
-	}
-
-	// Fill/Stroke - No gradient.
-	void applySolid(KCanvasAggData *aggData, renderer_base &rb, bool fill) const
-	{
-		renderer_solid ren(rb);
-		agg::rasterizer_scanline_aa<> ras;
-
-		QColor color = m_fillColor;
-		if(!fill)
-			color = m_strokeColor;
-
-		agg::rgba8 aggColor(color.red(), color.green(), color.blue());
-		aggColor.opacity((fill ? m_fillOpacity / 255.0 : m_strokeOpacity / 255.0));
-		ren.color(aggColor);
-
-		// TODO: Clipping
+		for(QMap<QString, ArtGradientRadial *>::Iterator it = m_radialGradientMap.begin(); it != m_radialGradientMap.end(); ++it)
 		{
-			agg::scanline_p8 sl;				
-			invokeRasterizer(aggData, ras, sl, ren, fill);
+			delete it.data();
 		}
 	}
 
-	// Fill/Stroke - Gradients supporting "linked-gradients" using xlink:href.
-	void applyGradient(KCanvasAggData *aggData, renderer_base &rb, bool fill) const
+	ArtVpath *allocVPath(int number)
 	{
-		QString ref;
-
-		if(fill)
-		{
-			m_useFillGradient = false;
-			ref = m_fillGradientReference;
-		}
-		else
-		{
-			m_useStrokeGradient = false;
-			ref = m_strokeGradientReference;
-		}
-
-		applyGradient(aggData, rb, fill, ref);
+		return art_new(ArtVpath, number);
 	}
 
-	void applyGradient(KCanvasAggData *aggData, renderer_base &rb, bool fill, const QString &ref) const
+	ArtBpath *allocBPath(int number)
 	{
-		gradient_rendering_properties *props = 0;
-	
-		QMap<QString, gradient_rendering_properties *>::ConstIterator it = m_gradientMap.find(ref);
-		if(it != m_gradientMap.end())
-			props = it.data();
-	
-		if(props)
-		{
-			QDomElement element = m_gradientElementMap[props];
-			if(element.isNull())
-				return;
+		return art_new(ArtBpath, number);
+	}
 
-			if(!element.hasAttribute("xlink:href"))
+	void ensureSpace(QMemArray<ArtBpath> &vec, int index)
+	{
+		if(vec.size() == (unsigned int) index)
+			vec.resize(index + 1);
+	}
+
+	void createBuffer()
+	{
+		m_tempBuffer = art_new(art_u8, m_rowstride * m_height);
+		memset(m_tempBuffer, 0, m_rowstride * m_height);
+
+		// Swap buffers, so we work with the new one internally...
+		art_u8 *temp = m_buffer;
+		m_buffer = m_tempBuffer;
+		m_tempBuffer = temp;
+	}
+
+	void mixBuffer(int opacity)
+	{
+		art_u8 *srcPixel = m_buffer;
+		art_u8 *dstPixel = m_tempBuffer;
+
+		for(int y = 0; y < m_height; y++)
+		{
+			for(int x = 0; x < m_width; x++)
 			{
-				if(props->linear)
-					applyLinearGradient(aggData, rb, fill, ref);
-				else
-					applyRadialGradient(aggData, rb, fill, ref);
-				
-				return;
-			}
-			else
-			{
-				gradient_rendering_properties *props2 = 0;
-		
-				QMap<QString, gradient_rendering_properties *>::ConstIterator it2 = m_gradientMap.find(element.attribute("xlink:href").mid(1));
-				if(it2 != m_gradientMap.end())
-					props2 = it.data();
+				art_u8 r, g, b, a;
 
-				QDomElement newElement = m_gradientElementMap[props2];
-				if(newElement.isNull())
-					return;
+				a = srcPixel[4 * x + 3];
 
-				// Saved 'old' attributes
-				QDict<QString> refAttrs;
-				refAttrs.setAutoDelete(true);
-
-				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
-					refAttrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
-
-				// Copy attributes
-				if(!newElement.isNull())
+				if(a)
 				{
-					QDomNamedNodeMap attr = element.attributes();
+					r = srcPixel[4 * x];
+					g = srcPixel[4 * x + 1];
+					b = srcPixel[4 * x + 2];
 
-					for(unsigned int i = 0; i < attr.length(); i++)
-					{
-						QString name = attr.item(i).nodeName();
-						if(name != "xlink:href" && name != "id")
-							newElement.setAttribute(name, attr.item(i).nodeValue());
-					}
+					int temp = a * opacity + 0x80;
+					a = (temp + (temp >> 8)) >> 8;
+					art_rgba_run_alpha(dstPixel + 4 * x, r, g, b, a, 1);
 				}
-
-				applyGradient(aggData, rb, fill, element.attribute("xlink:href").mid(1));
-
-				// Restore attributes
-				QDictIterator<QString> itr(refAttrs);
-				for(; itr.current(); ++itr)
-					newElement.setAttribute(itr.currentKey(), *(itr.current()));
-
-				return;
 			}
+
+			srcPixel += m_rowstride;
+			dstPixel += m_rowstride;
 		}
+
+		// Re-swap again...
+		art_u8 *temp = m_buffer;
+		m_buffer = m_tempBuffer;
+		m_tempBuffer = temp;
+
+		art_free(m_tempBuffer);
+		m_tempBuffer = 0;
 	}
 
-	// Fill/Stroke - Linear Gradient.
-	void applyLinearGradient(KCanvasAggData *aggData, renderer_base &rb, bool fill, const QString &ref) const
+	Q_UINT32 toArtColor(const QColor &color)
 	{
-		gradient_rendering_properties *linear = m_gradientMap[ref];
-		if(linear && linear->linear)
+		// Convert in a libart suitable form
+		QString tempName = color.name();
+		const char *str = tempName.latin1();
+
+		int result = 0;
+
+		for(int i = 1; str[i]; i++)
 		{
-			QDomElement element = m_gradientElementMap[linear];
+			int hexval;
+			if(str[i] >= '0' && str[i] <= '9')
+				hexval = str[i] - '0';
+			else if (str[i] >= 'A' && str[i] <= 'F')
+				hexval = str[i] - 'A' + 10;
+			else if (str[i] >= 'a' && str[i] <= 'f')
+				hexval = str[i] - 'a' + 10;
+			else
+				break;
+
+			result = (result << 4) + hexval;
+		}
+
+		return result;
+	}
+
+	void drawSVP(ArtSVP *svp, Q_UINT32 rgb, int opacity)
+	{
+		if(!svp)
+			return;
+
+		ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+		art_render_svp(render, svp);
+
+		art_render_mask_solid(render, (opacity << 8) + opacity + (opacity >> 7));
+
+		ArtPixMaxDepth color[3];
+		color[0] = ART_PIX_MAX_FROM_8(rgb >> 16);
+		color[1] = ART_PIX_MAX_FROM_8((rgb >> 8) & 0xff);
+		color[2] = ART_PIX_MAX_FROM_8(rgb & 0xff);
+
+		art_render_image_solid(render, color);
+		art_render_invoke(render);
+	}
+
+	void drawBPath(ArtBpath *bpath)
+	{
+		double affine[6];
+		affine[0] = m_worldMatrix->m11();
+		affine[1] = m_worldMatrix->m12();
+		affine[2] = m_worldMatrix->m21();
+		affine[3] = m_worldMatrix->m22();
+		affine[4] = m_worldMatrix->dx();
+		affine[5] = m_worldMatrix->dy();
+
+		ArtBpath *temp = art_bpath_affine_transform(bpath, affine);
+		ArtVpath *vec = art_bez_path_to_vec(temp, 0.25);
+		art_free(temp);
+		drawPathInternal(vec, affine);
+	}
+
+	void drawVPath(ArtVpath *vec)
+	{
+		double affine[6];
+		affine[0] = m_worldMatrix->m11();
+		affine[1] = m_worldMatrix->m12();
+		affine[2] = m_worldMatrix->m21();
+		affine[3] = m_worldMatrix->m22();
+		affine[4] = m_worldMatrix->dx();
+		affine[5] = m_worldMatrix->dy();
+
+		ArtVpath *temp = art_vpath_affine_transform(vec, affine);
+		art_free(vec);
+		vec = temp;
+		drawPathInternal(vec, affine);
+	}
+
+	void drawPathInternal(ArtVpath *vec, double *affine)
+	{
+		ArtSVP *svp;
+		ArtSVP *fillSVP = 0, *strokeSVP = 0;
+
+		Q_UINT32 fillColor = 0, strokeColor = 0;
+
+		// Filling
+		{
+			int index = -1;
+			QValueVector<int> toCorrect;
+			while(vec[++index].code != ART_END)
+			{
+				if(vec[index].code == ART_END2)
+				{
+					vec[index].code = ART_LINETO;
+					toCorrect.push_back(index);
+				}
+			}
+
+			fillColor = toArtColor(m_fillColor);
+
+			ArtSvpWriter *swr;
+			ArtSVP *temp;
+			temp = art_svp_from_vpath(vec);
+
+			if(m_fillRule == "evenodd")
+				swr = art_svp_writer_rewind_new(ART_WIND_RULE_ODDEVEN);
+			else
+				swr = art_svp_writer_rewind_new(ART_WIND_RULE_NONZERO);
+
+			art_svp_intersector(temp, swr);
+			svp = art_svp_writer_rewind_reap(swr);
+
+			fillSVP = svp;
+
+			art_svp_free(temp);
+
+			QValueVector<int>::iterator it;
+			for(it = toCorrect.begin(); it != toCorrect.end(); ++it)
+				vec[(*it)].code = (ArtPathcode)ART_END2;
+		}
+
+		// There seems to be a problem when stroke width is zero, this is a quick
+		// fix (Rob).
+		if(m_strokeWidth <= 0)
+			m_useStroke = m_useStrokeGradient = false;
+
+		// Stroking
+		if(m_useStroke || m_useStrokeGradient)
+		{
+			strokeColor = toArtColor(m_strokeColor);
+
+			double ratio = art_affine_expansion(affine);
+			double strokeWidth = m_strokeWidth * ratio;
+
+			ArtPathStrokeJoinType joinStyle = ART_PATH_STROKE_JOIN_MITER;
+			ArtPathStrokeCapType capStyle = ART_PATH_STROKE_CAP_BUTT;
+
+			if(m_joinStyle == "miter")
+				joinStyle = ART_PATH_STROKE_JOIN_MITER;
+			else if(m_joinStyle == "round")
+				joinStyle = ART_PATH_STROKE_JOIN_ROUND;
+			else if(m_joinStyle == "bevel")
+				joinStyle = ART_PATH_STROKE_JOIN_BEVEL;
+
+			if(m_capStyle == "butt")
+				capStyle = ART_PATH_STROKE_CAP_BUTT;
+			else if(m_capStyle == "round")
+				capStyle = ART_PATH_STROKE_CAP_ROUND;
+			else if(m_capStyle == "square")
+				capStyle = ART_PATH_STROKE_CAP_SQUARE;
+
+			if(m_dashes.length() > 0)
+			{
+				QRegExp reg("[, ]");
+				QStringList dashList = QStringList::split(reg, m_dashes);
+
+				double *dashes = new double[dashList.count()];
+				for(unsigned int i = 0; i < dashList.count(); i++)
+					dashes[i] = m_painter->toPixel(dashList[i], true);
+
+				ArtVpathDash dash;
+				dash.offset = m_dashOffset;
+				dash.n_dash = dashList.count();
+
+				dash.dash = dashes;
+
+				ArtVpath *vec2 = art_vpath_dash(vec, &dash);
+				art_free(vec);
+
+				delete dashes;
+
+				vec = vec2;
+			}
+
+			svp = art_svp_vpath_stroke(vec, joinStyle, capStyle, strokeWidth, m_strokeMiterLimit, 0.25);
+
+			strokeSVP = svp;
+		}
+
+		// Apply opacity
+		int fillOpacity = static_cast<int>(m_fillOpacity);
+		int strokeOpacity = static_cast<int>(m_strokeOpacity);
+		int opacity = static_cast<int>(m_opacity);
+
+		// Needed hack, to support both transparent
+		// paths and transparent gradients
+		if(fillOpacity == strokeOpacity && fillOpacity == opacity && !m_useFillGradient && !m_useStrokeGradient)
+			opacity = 255;
+
+		if(fillOpacity != 255)
+		{
+			int temp = fillOpacity * opacity + 0x80;
+			fillOpacity = (temp + (temp >> 8)) >> 8;
+		}
+
+		if(strokeOpacity != 255)
+		{
+			int temp = strokeOpacity * opacity + 0x80;
+			strokeOpacity = (temp + (temp >> 8)) >> 8;
+		}
+
+		// Create temporary buffer if necessary
+		bool tempDone = false;
+		if(m_opacity != 0xff)
+		{
+			tempDone = true;
+			createBuffer();
+		}
+
+		// Apply Gradients on fill/stroke
+		if(m_useFillGradient)
+			applyGradient(fillSVP, true);
+		else if(m_useFill)
+			drawSVP(fillSVP, fillColor, fillOpacity);
+
+		if(m_useStrokeGradient)
+			applyGradient(strokeSVP, false);
+		else if(m_useStroke)
+			drawSVP(strokeSVP, strokeColor, strokeOpacity);
+
+		// Mix in temporary buffer, if possible
+		if(tempDone)
+			mixBuffer(opacity);
+
+		if(m_clipSVP)
+		{
+			art_svp_free(m_clipSVP);
+			m_clipSVP = 0;
+		}
+
+		if(fillSVP)
+			art_svp_free(fillSVP);
+
+		if(strokeSVP)
+			art_svp_free(strokeSVP);
+
+		// Reset opacity values
+		m_opacity = 255.0;
+		m_fillOpacity = 255.0;
+		m_strokeOpacity = 255.0;
+
+		art_free(vec);
+	}
+
+	void applyLinearGradient(ArtSVP *svp, const QString &ref)
+	{
+		ArtGradientLinear *linear = m_linearGradientMap[ref];
+		if(linear)
+		{
+			QDomElement element = m_linearGradientElementMap[linear];
 
 			double x1, y1, x2, y2;
 			if(element.hasAttribute("x1"))
@@ -250,60 +443,45 @@ public:
 			if(element.hasAttribute("x2"))
 				x2 = m_painter->toPixel(element.attribute("x2"), true);
 			else
-				x2 = 1; // I guess that means 100% :)
+				x2 = 100;
 
 			if(element.hasAttribute("y2"))
 				y2 = m_painter->toPixel(element.attribute("y2"), false);
 			else
 				y2 = 0;
 
-			// Adjust to gradient transform
+			// Adjust to gradientTransform
 			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
 			m.map(x1, y1, &x1, &y1);
 			m.map(x2, y2, &x2, &y2);
 
-			double dx = x2 - x1;
-			double dy = y2 - y1;
-			double len = sqrt(dx * dx + dy * dy);
-			double angle = atan2(dy, dx);
+			double x1n = x1 * m_worldMatrix->m11() + y1 * m_worldMatrix->m21() + m_worldMatrix->dx();
+			double y1n = x1 * m_worldMatrix->m12() + y1 * m_worldMatrix->m22() + m_worldMatrix->dy();
+			double x2n = x2 * m_worldMatrix->m11() + y2 * m_worldMatrix->m21() + m_worldMatrix->dx();
+			double y2n = x2 * m_worldMatrix->m12() + y2 * m_worldMatrix->m22() + m_worldMatrix->dy();
 
-			agg::trans_affine gradientMatrix;
-			gradientMatrix *= agg::trans_affine_rotation(angle);
-			gradientMatrix *= agg::trans_affine_translation(x1, y1);
-			gradientMatrix *= aggData->transform;
-			gradientMatrix.invert();
+			double dx = x2n - x1n;
+			double dy = y2n - y1n;
+			double scale = 1.0 / (dx * dx + dy * dy);
 
-			gradient_polymorphic_wrapper_base *gradientPtr = &gradientLinearPad;
-			if(linear->spreadMethod == SPREADMETHOD_REPEAT)
-				gradientPtr = &gradientLinearRepeat;
-			else if(linear->spreadMethod == SPREADMETHOD_REFLECT)
-				gradientPtr = &gradientLinearReflect;
+			linear->a = dx * scale;
+			linear->b = dy * scale;
+			linear->c = -(x1n * linear->a + y1n * linear->b);
 
-			gradient_span_alloc span_alloc;
-			interpolator_type inter(gradientMatrix);
-				
-			agg::rgba8 color_array[256];
-			gradient_span_gen span_gen(span_alloc, inter, *gradientPtr, color_array, 0, len);
-			linear->gradientStops.fill_color_array(color_array, (fill ? m_fillOpacity / 255.0 : m_strokeOpacity / 255.0));
+			ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+			art_render_svp(render, svp);
 
-			renderer_gradient_type ren_gradient(rb, span_gen);
-			agg::rasterizer_scanline_aa<> ras;
-
-			// TODO: Clipping
-			{
-				agg::scanline_u8 sl;				
-				invokeRasterizer(aggData, ras, sl, ren_gradient, fill);
-			}
+			art_render_gradient_linear(render, linear, ART_FILTER_HYPER);
+			art_render_invoke(render);
 		}
 	}
 
-	// Fill/Stroke - Radial Gradient.
-	void applyRadialGradient(KCanvasAggData *aggData, renderer_base &rb, bool fill, const QString &ref) const
+	void applyRadialGradient(ArtSVP *svp, const QString &ref)
 	{
-		gradient_rendering_properties *radial = m_gradientMap[ref];
-		if(radial && !radial->linear)
+		ArtGradientRadial *radial = m_radialGradientMap[ref];
+		if(radial)
 		{
-			QDomElement element = m_gradientElementMap[radial];
+			QDomElement element = m_radialGradientElementMap[radial];
 
 			double cx, cy, r, fx, fy;
 			if(element.hasAttribute("cx"))
@@ -331,111 +509,172 @@ public:
 			else
 				fy = cy;
 
-			// TODO: Only in userSpaceOnUse mode
-			fx -= cx;
-			fy -= cy;
+			radial->affine[0] = m_worldMatrix->m11();
+			radial->affine[1] = m_worldMatrix->m12();
+			radial->affine[2] = m_worldMatrix->m21();
+			radial->affine[3] = m_worldMatrix->m22();
+			radial->affine[4] = m_worldMatrix->dx();
+			radial->affine[5] = m_worldMatrix->dy();
 
-			// Adjust to gradient transform
+			radial->fx = (fx - cx) / r;
+			radial->fy = (fy - cy) / r;
+
+			double aff1[6], aff2[6], gradTransform[6];
+
+			// Respect gradientTransform
 			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
-			agg::trans_affine gradientTransformMatrix(m.m11(), m.m12(), m.m21(), m.m22(), m.dx(), m.dy());
 
-			agg::trans_affine gradientMatrix;
-			gradientMatrix *= gradientTransformMatrix;
-			gradientMatrix *= agg::trans_affine_translation(cx, cy);
-			gradientMatrix *= aggData->transform;
-			gradientMatrix.invert();
+			gradTransform[0] = m.m11();
+			gradTransform[1] = m.m12();
+			gradTransform[2] = m.m21();
+			gradTransform[3] = m.m22();
+			gradTransform[4] = m.dx();
+			gradTransform[5] = m.dy();
 
-			if(sqrt(fx * fx + fy * fy) > r)
+			art_affine_scale(aff1, r, r);
+			art_affine_translate(aff2, cx, cy);
+
+			art_affine_multiply(aff1, aff1, aff2);
+			art_affine_multiply(aff1, aff1, gradTransform);
+			art_affine_multiply(aff1, aff1, radial->affine);
+			art_affine_invert(radial->affine, aff1);
+
+			ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
+			art_render_svp(render, svp);
+
+			art_render_gradient_radial(render, radial, ART_FILTER_HYPER);
+			art_render_invoke(render);
+		}
+	}
+
+	void applyGradient(ArtSVP *svp, const QString &ref)
+	{
+		ArtGradientLinear *linear = m_linearGradientMap[ref];
+		if(linear)
+		{
+			QDomElement element = m_linearGradientElementMap[linear];
+
+			if(!element.hasAttribute("xlink:href"))
 			{
-				// Spec: If (fx, fy) lies outside the circle defined by (cx, cy) and r, set (fx, fy)
-				// to the point of intersection of the line through (fx, fy) and the circle.
-				double angle = atan2(fy, fx);
-				fx = int(cos(angle) * r) - 1;
-				fy = int(sin(angle) * r) - 1;
+				applyLinearGradient(svp, ref);
+				return;
 			}
-
-			gradient_polymorphic_wrapper_base *gradientPtr = &gradientRadialPad;
-			if(radial->spreadMethod == SPREADMETHOD_REPEAT)
-				gradientPtr = &gradientRadialRepeat;
-			else if(radial->spreadMethod == SPREADMETHOD_REFLECT)
-				gradientPtr = &gradientRadialReflect;
-
-			// The hairy part :)
-			gradient_radial *gradientRadialPtr = static_cast<gradient_radial *>(gradientPtr);
-			gradientRadialPtr->setFx((int) fx * 16);
-			gradientRadialPtr->setFy((int) fy * 16);
-
-			gradient_span_alloc span_alloc;
-			interpolator_type inter(gradientMatrix);
-				
-			agg::rgba8 color_array[256];
-			gradient_span_gen span_gen(span_alloc, inter, *gradientPtr, color_array, 0, r);
-			radial->gradientStops.fill_color_array(color_array, (fill ? m_fillOpacity / 255.0 : m_strokeOpacity / 255.0));
-
-			renderer_gradient_type ren_gradient(rb, span_gen);
-			agg::rasterizer_scanline_aa<> ras;
-
-			// TODO: Clipping
+			else
 			{
-				agg::scanline_u8 sl;
-				invokeRasterizer(aggData, ras, sl, ren_gradient, fill);
+				ArtGradientLinear *linear = m_linearGradientMap[element.attribute("xlink:href").mid(1)];
+				QDomElement newElement = m_linearGradientElementMap[linear];
+
+				// Saved 'old' attributes
+				QDict<QString> refattrs;
+				refattrs.setAutoDelete(true);
+
+				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
+					refattrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+
+				// Copy attributes
+				if(!newElement.isNull())
+				{
+					QDomNamedNodeMap attr = element.attributes();
+
+					for(unsigned int i = 0; i < attr.length(); i++)
+					{
+						QString name = attr.item(i).nodeName();
+						if(name != "xlink:href" && name != "id")
+							newElement.setAttribute(name, attr.item(i).nodeValue());
+					}
+				}
+
+				applyGradient(svp, element.attribute("xlink:href").mid(1));
+
+				// Restore attributes
+				QDictIterator<QString> itr(refattrs);
+				for(; itr.current(); ++itr)
+					newElement.setAttribute(itr.currentKey(), *(itr.current()));
+
+				return;
+			}
+		}
+
+		ArtGradientRadial *radial = m_radialGradientMap[ref];
+		if(radial)
+		{
+			QDomElement element = m_radialGradientElementMap[radial];
+
+			if(!element.hasAttribute("xlink:href"))
+			{
+				applyRadialGradient(svp, ref);
+				return;
+			}
+			else
+			{
+				ArtGradientRadial *radial = m_radialGradientMap[element.attribute("xlink:href").mid(1)];
+				QDomElement newElement = m_radialGradientElementMap[radial];
+
+				// Saved 'old' attributes
+				QDict<QString> refattrs;
+				refattrs.setAutoDelete(true);
+
+				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
+					refattrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+
+				// Copy attributes
+				if(!newElement.isNull())
+				{
+					QDomNamedNodeMap attr = element.attributes();
+
+					for(unsigned int i = 0; i < attr.length(); i++)
+					{
+						QString name = attr.item(i).nodeName();
+						if(name != "xlink:href" && name != "id")
+							newElement.setAttribute(name, attr.item(i).nodeValue());
+					}
+				}
+
+				applyGradient(svp, element.attribute("xlink:href").mid(1));
+
+				// Restore attributes
+				QDictIterator<QString> itr(refattrs);
+				for(; itr.current(); ++itr)
+					newElement.setAttribute(itr.currentKey(), *(itr.current()));
+
+				return;
 			}
 		}
 	}
 
-	// Used by applySolid & applyLinearGradient & applyRadialGradient
-	template<class ScanLine, class Renderer>
-	void invokeRasterizer(KCanvasAggData *aggData, agg::rasterizer_scanline_aa<> &ras, ScanLine &sl, Renderer &ren, bool fill) const
+	void applyGradient(ArtSVP *svp, bool fill)
 	{
+		QString ref;
+
 		if(fill)
-			ras.add_path(aggData->curvedPathTrans);
+		{
+			m_useFillGradient = false;
+			ref = m_fillGradientReference;
+		}
 		else
 		{
-			// Setup stroke painter, after we got valid stroke rendering properties...
-			stroke_rendering_properties props = generateStrokeRenderingProperties();
-			aggData->curvedPathStroked.setup(props);
-
-			ras.add_path(aggData->curvedPathStrokedTrans);
+			m_useStrokeGradient = false;
+			ref = m_strokeGradientReference;
 		}
 
-		agg::render_scanlines(ras, sl, ren);
+		applyGradient(svp, ref);
 	}
-	
-	void renderPath(KCanvasAggData *aggData) const
+
+	void blit()
 	{
-		Q_ASSERT(aggData != 0);
+		  unsigned char *line = m_buffer;
 
-		// Update internal agg matrix
-		aggData->transform = agg::trans_affine(m_worldMatrix->m11(), m_worldMatrix->m12(),
-											   m_worldMatrix->m21(), m_worldMatrix->m22(),
-											   m_worldMatrix->dx(), m_worldMatrix->dy());
+		  for(int y = 0; y < m_height; y++)
+		  {
+			  QRgb *sl = reinterpret_cast<QRgb *>(m_image->scanLine(y));
+			  for(int x = 0; x < m_width; x++)
+				  sl[x] = qRgba(line[x * 4], line[x * 4 + 1], line[x * 4 + 2], line[x * 4 + 3]);
 
-		// Viewport Clipping
-		agg::rect cb(m_clipRect.x(), m_clipRect.y(), m_clipRect.width(), m_clipRect.height());
-
-		aggData->curvedPathTransClipped.clip_box(cb.x1, cb.y1, cb.x2 + 1, cb.y2 + 1);
-		aggData->curvedPathStrokedTransClipped.clip_box(cb.x1, cb.y1, cb.x2 + 1, cb.y2 + 1);
-
-		// Rendering preperations
-		agg::rendering_buffer buf;
-		buf.attach(m_buffer, m_width, m_height, m_width * 4);
-		
-		pixfmt pixf(buf);
-		renderer_base rb(pixf);
-
-		if(m_useFillGradient)
-			applyGradient(aggData, rb, true);
-		else if(m_useFill)
-			applySolid(aggData, rb, true);
-	
-		if(m_useStrokeGradient)
-			applyGradient(aggData, rb, false);
-		else if(m_useStroke)
-			applySolid(aggData, rb, false);
+			  line += m_rowstride;
+		  }
 	}
 
-	// Helper function to calculate arcs. Used by drawPath()
-	void calculateArc(KCanvasAggData *aggData, bool relative, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
+	void calculateArc(bool relative, QMemArray<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
 	{
 		double sin_th, cos_th;
 		double a00, a01, a10, a11;
@@ -468,7 +707,7 @@ public:
 		double Px = _x1 * _x1;
 		double Py = _y1 * _y1;
 
-		// Spec: check if radii are large enough
+		// Spec : check if radii are large enough
 		double check = Px / Pr1 + Py / Pr2;
 		if(check > 1)
 		{
@@ -494,10 +733,12 @@ public:
 		else
 			y1 = a10 * (curx + x) + a11 * (cury + y);
 
-		// (x0, y0) is current point in transformed coordinate space.
-		// (x1, y1) is new point in transformed coordinate space.
+		/* (x0, y0) is current point in transformed coordinate space.
+		   (x1, y1) is new point in transformed coordinate space.
 
-		// The arc fits a unit-radius circle in this space.
+		   The arc fits a unit-radius circle in this space.
+		*/
+
 		d = (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
 
 		sfactor_sq = 1.0 / d - 0.25;
@@ -513,7 +754,7 @@ public:
 		xc = 0.5 * (x0 + x1) - sfactor * (y1 - y0);
 		yc = 0.5 * (y0 + y1) + sfactor * (x1 - x0);
 
-		// (xc, yc) is center of the circle.
+		/* (xc, yc) is center of the circle. */
 		th0 = atan2(y0 - yc, x0 - xc);
 		th1 = atan2(y1 - yc, x1 - xc);
 
@@ -523,11 +764,16 @@ public:
 		else if(th_arc > 0 && !sweepFlag)
 			th_arc -= 2 * M_PI;
 
-		n_segs = (int) ceil(fabs(th_arc / (M_PI * 0.5 + 0.001)));
+		n_segs = (int) (int) ceil(fabs(th_arc / (M_PI * 0.5 + 0.001)));
 
 		for(i = 0; i < n_segs; i++)
 		{
+			index++;
+
+			ensureSpace(vec, index);
+
 			{
+				double sin_th, cos_th;
 				double a00, a01, a10, a11;
 				double x1, y1, x2, y2, x3, y3;
 				double t;
@@ -536,7 +782,10 @@ public:
 				double _th0 = th0 + i * th_arc / n_segs;
 				double _th1 = th0 + (i + 1) * th_arc / n_segs;
 
-				// inverse transform compared with rsvg_path_arc
+				sin_th = sin(angle * (M_PI / 180.0));
+				cos_th = cos(angle * (M_PI / 180.0));
+
+				/* inverse transform compared with rsvg_path_arc */
 				a00 = cos_th * r1;
 				a01 = -sin_th * r2;
 				a10 = sin_th * r1;
@@ -551,9 +800,15 @@ public:
 				x2 = x3 + t * sin(_th1);
 				y2 = y3 - t * cos(_th1);
 
-				aggData->storage.curve4(a00 * x1 + a01 * y1, a10 * x1 + a11 * y1,
-										a00 * x2 + a01 * y2, a10 * x2 + a11 * y2,
-										a00 * x3 + a01 * y3, a10 * x3 + a11 * y3);
+				ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = a00 * x1 + a01 * y1;
+				vec[index].y1 = a10 * x1 + a11 * y1;
+				vec[index].x2 = a00 * x2 + a01 * y2;
+				vec[index].y2 = a10 * x2 + a11 * y2;
+				vec[index].x3 = a00 * x3 + a01 * y3;
+				vec[index].y3 = a10 * x3 + a11 * y3;
 			}
 		}
 
@@ -568,14 +823,300 @@ public:
 			cury += y;
 	}
 
+	// For any docs, see the libart library
+	static void art_vpath_render_bez(ArtVpath **p_vpath, int *pn, int *pn_max,
+									 double x0, double y0,
+									 double x1, double y1,
+									 double x2, double y2,
+									 double x3, double y3,
+									 double flatness)
+	{
+		double x3_0, y3_0, z3_0_dot, z1_dot, z2_dot;
+		double z1_perp, z2_perp, max_perp_sq;
+
+		double x_m, y_m, xa1, ya1, xa2, ya2, xb1, yb1, xb2, yb2;
+
+		x3_0 = x3 - x0;
+		y3_0 = y3 - y0;
+
+		z3_0_dot = x3_0 * x3_0 + y3_0 * y3_0;
+
+		if (z3_0_dot < 0.001)
+			goto nosubdivide;
+
+		max_perp_sq = flatness * flatness * z3_0_dot;
+
+		z1_perp = (y1 - y0) * x3_0 - (x1 - x0) * y3_0;
+		if (z1_perp * z1_perp > max_perp_sq)
+			goto subdivide;
+
+		z2_perp = (y3 - y2) * x3_0 - (x3 - x2) * y3_0;
+		if (z2_perp * z2_perp > max_perp_sq)
+			goto subdivide;
+
+		z1_dot = (x1 - x0) * x3_0 + (y1 - y0) * y3_0;
+		if (z1_dot < 0 && z1_dot * z1_dot > max_perp_sq)
+			goto subdivide;
+
+		z2_dot = (x3 - x2) * x3_0 + (y3 - y2) * y3_0;
+		if (z2_dot < 0 && z2_dot * z2_dot > max_perp_sq)
+			goto subdivide;
+
+		if (z1_dot + z1_dot > z3_0_dot)
+			goto subdivide;
+
+		if (z2_dot + z2_dot > z3_0_dot)
+			goto subdivide;
+
+	nosubdivide:
+		art_vpath_add_point (p_vpath, pn, pn_max, ART_LINETO, x3, y3);
+		return;
+
+	subdivide:
+		xa1 = (x0 + x1) * 0.5;
+		ya1 = (y0 + y1) * 0.5;
+		xa2 = (x0 + 2 * x1 + x2) * 0.25;
+		ya2 = (y0 + 2 * y1 + y2) * 0.25;
+		xb1 = (x1 + 2 * x2 + x3) * 0.25;
+		yb1 = (y1 + 2 * y2 + y3) * 0.25;
+		xb2 = (x2 + x3) * 0.5;
+		yb2 = (y2 + y3) * 0.5;
+		x_m = (xa2 + xb1) * 0.5;
+		y_m = (ya2 + yb1) * 0.5;
+		art_vpath_render_bez (p_vpath, pn, pn_max, x0, y0, xa1, ya1, xa2, ya2, x_m, y_m, flatness);
+		art_vpath_render_bez (p_vpath, pn, pn_max, x_m, y_m, xb1, yb1, xb2, yb2, x3, y3, flatness);
+	}
+
+	ArtVpath *art_bez_path_to_vec(const ArtBpath *bez, double flatness)
+	{
+		ArtVpath *vec;
+		int vec_n, vec_n_max;
+		int bez_index;
+		double x, y;
+
+		vec_n = 0;
+		vec_n_max = (1 << 4);
+		vec = art_new (ArtVpath, vec_n_max);
+
+		x = 0;
+		y = 0;
+
+		bez_index = 0;
+		do
+		{
+			if(vec_n >= vec_n_max)
+				art_expand (vec, ArtVpath, vec_n_max);
+
+			switch (bez[bez_index].code)
+			{
+				case ART_MOVETO_OPEN:
+				case ART_MOVETO:
+				case ART_LINETO:
+					x = bez[bez_index].x3;
+					y = bez[bez_index].y3;
+					vec[vec_n].code = bez[bez_index].code;
+					vec[vec_n].x = x;
+					vec[vec_n].y = y;
+					vec_n++;
+					break;
+				case ART_END:
+					vec[vec_n].code = ART_END;
+					vec[vec_n].x = 0;
+					vec[vec_n].y = 0;
+					vec_n++;
+					break;
+				case ART_END2:
+					vec[vec_n].code = (ArtPathcode)ART_END2;
+					vec[vec_n].x = bez[bez_index].x3;
+					vec[vec_n].y = bez[bez_index].y3;
+					vec_n++;
+					break;
+				case ART_CURVETO:
+					art_vpath_render_bez (&vec, &vec_n, &vec_n_max,
+							x, y,
+							bez[bez_index].x1, bez[bez_index].y1,
+							bez[bez_index].x2, bez[bez_index].y2,
+							bez[bez_index].x3, bez[bez_index].y3,
+							flatness);
+					x = bez[bez_index].x3;
+					y = bez[bez_index].y3;
+					break;
+			}
+		}
+
+		while (bez[bez_index++].code != ART_END);
+		return vec;
+	}
+
+	static void art_rgb_affine_run(int *p_x0, int *p_x1, int y,
+								   int src_width, int src_height,
+								   const double affine[6])
+	{
+		int x0, x1;
+		double z;
+		double x_intercept;
+		int xi;
+
+		x0 = *p_x0;
+		x1 = *p_x1;
+
+		if (affine[0] > 1e-6)
+		{
+			z = affine[2] * (y + 0.5) + affine[4];
+			x_intercept = -z / affine[0];
+			xi = (int) (int) ceil (x_intercept + 1e-6 - 0.5);
+			if (xi > x0)
+				x0 = xi;
+			x_intercept = (-z + src_width) / affine[0];
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
+			if (xi < x1)
+				x1 = xi;
+		}
+		else if (affine[0] < -1e-6)
+		{
+			z = affine[2] * (y + 0.5) + affine[4];
+			x_intercept = (-z + src_width) / affine[0];
+			xi = (int) ceil (x_intercept + 1e-6 - 0.5);
+			if (xi > x0)
+				x0 = xi;
+			x_intercept = -z / affine[0];
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
+			if (xi < x1)
+				x1 = xi;
+		}
+		else
+		{
+			z = affine[2] * (y + 0.5) + affine[4];
+			if (z < 0 || z >= src_width)
+			{
+				*p_x1 = *p_x0;
+				return;
+			}
+		}
+		if (affine[1] > 1e-6)
+		{
+			z = affine[3] * (y + 0.5) + affine[5];
+			x_intercept = -z / affine[1];
+			xi = (int) ceil (x_intercept + 1e-6 - 0.5);
+			if (xi > x0)
+				x0 = xi;
+			x_intercept = (-z + src_height) / affine[1];
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
+			if (xi < x1)
+				x1 = xi;
+		}
+		else if (affine[1] < -1e-6)
+		{
+			z = affine[3] * (y + 0.5) + affine[5];
+			x_intercept = (-z + src_height) / affine[1];
+			xi = (int) ceil (x_intercept + 1e-6 - 0.5);
+			if (xi > x0)
+				x0 = xi;
+			x_intercept = -z / affine[1];
+			xi = (int) ceil (x_intercept - 1e-6 - 0.5);
+			if (xi < x1)
+				x1 = xi;
+		}
+		else
+		{
+			z = affine[3] * (y + 0.5) + affine[5];
+			if (z < 0 || z >= src_height)
+			{
+				*p_x1 = *p_x0;
+				return;
+			}
+		}
+
+		*p_x0 = x0;
+		*p_x1 = x1;
+	}
+
+	// Slightly modified version to support RGBA buffers, copied from gnome-print
+	static void art_rgba_rgba_affine(art_u8 *dst,
+									 int x0, int y0, int x1, int y1, int dst_rowstride,
+									 const art_u8 *src,
+									 int src_width, int src_height, int src_rowstride,
+									 const double affine[6])
+	{
+		int x, y;
+		double inv[6];
+		art_u8 *dst_p, *dst_linestart;
+		const art_u8 *src_p;
+		ArtPoint pt, src_pt;
+		int src_x, src_y;
+		int alpha;
+		art_u8 bg_r, bg_g, bg_b, bg_a, cr, cg, cb;
+		art_u8 fg_r, fg_g, fg_b;
+		int tmp;
+		int run_x0, run_x1;
+
+		dst_linestart = dst;
+		art_affine_invert (inv, affine);
+		for (y = y0; y < y1; y++)
+		{
+			pt.y = y + 0.5;
+			run_x0 = x0;
+			run_x1 = x1;
+			art_rgb_affine_run (&run_x0, &run_x1, y, src_width, src_height,
+					inv);
+			dst_p = dst_linestart + (run_x0 - x0) * 4;
+			for (x = run_x0; x < run_x1; x++)
+			{
+				pt.x = x + 0.5;
+				art_affine_point (&src_pt, &pt, inv);
+				src_x = (int) floor (src_pt.x);
+				src_y = (int) floor (src_pt.y);
+				src_p = src + (src_y * src_rowstride) + src_x * 4;
+				if (src_x >= 0 && src_x < src_width &&
+						src_y >= 0 && src_y < src_height)
+				{
+
+					alpha = src_p[3];
+					if (alpha)
+					{
+						if (alpha == 255)
+						{
+							dst_p[0] = src_p[0];
+							dst_p[1] = src_p[1];
+							dst_p[2] = src_p[2];
+							dst_p[3] = 255;
+						}
+						else
+						{
+							bg_r = dst_p[0];
+							bg_g = dst_p[1];
+							bg_b = dst_p[2];
+							bg_a = dst_p[3];
+
+							cr = (bg_r * bg_a + 0x80) >> 8;
+							cg = (bg_g * bg_g + 0x80) >> 8;
+							cb = (bg_b * bg_b + 0x80) >> 8;
+
+							tmp = (src_p[0] - bg_r) * alpha;
+							fg_r = bg_r + ((tmp + (tmp >> 8) + 0x80) >> 8);
+							tmp = (src_p[1] - bg_g) * alpha;
+							fg_g = bg_g + ((tmp + (tmp >> 8) + 0x80) >> 8);
+							tmp = (src_p[2] - bg_b) * alpha;
+							fg_b = bg_b + ((tmp + (tmp >> 8) + 0x80) >> 8);
+
+							dst_p[0] = fg_r;
+							dst_p[1] = fg_g;
+							dst_p[2] = fg_b;
+							dst_p[3] = bg_a + (((255 - bg_a) * alpha + 0x80) >> 8);
+						}
+					}
+				} else { dst_p[0] = 255; dst_p[1] = 0; dst_p[2] = 0; dst_p[3] = 255;}
+				dst_p += 4;
+			}
+			dst_linestart += dst_rowstride;
+		}
+	}
+
 private:
 	friend class KSVGIconPainter;
-
-	QRect m_clipRect;
+	ArtSVP *m_clipSVP;
 
 	QImage *m_image;
-	unsigned char *m_buffer;
-
 	QWMatrix *m_worldMatrix;
 
 	QString m_fillRule;
@@ -590,8 +1131,13 @@ private:
 	QColor m_fillColor;
 	QColor m_strokeColor;
 
+	art_u8 *m_buffer;
+	art_u8 *m_tempBuffer;
+
 	int m_width;
 	int m_height;
+
+	int m_rowstride;
 
 	double m_opacity;
 	double m_fillOpacity;
@@ -600,14 +1146,17 @@ private:
 	bool m_useFill;
 	bool m_useStroke;
 
-	mutable bool m_useFillGradient;
-	mutable bool m_useStrokeGradient;
+	bool m_useFillGradient;
+	bool m_useStrokeGradient;
 
 	QString m_fillGradientReference;
 	QString m_strokeGradientReference;
 
-	QMap<QString, gradient_rendering_properties *> m_gradientMap;
-	QMap<gradient_rendering_properties *, QDomElement> m_gradientElementMap;
+	QMap<QString, ArtGradientLinear *> m_linearGradientMap;
+	QMap<ArtGradientLinear *, QDomElement> m_linearGradientElementMap;
+
+	QMap<QString, ArtGradientRadial *> m_radialGradientMap;
+	QMap<ArtGradientRadial *, QDomElement> m_radialGradientElementMap;
 
 	KSVGIconPainter *m_painter;
 
@@ -646,9 +1195,14 @@ void KSVGIconPainter::setDrawHeight(int dheight)
 	d->drawHeight = dheight;
 }
 
+void KSVGIconPainter::finish()
+{
+	d->helper->blit();
+}
+
 QImage *KSVGIconPainter::image()
 {
-	return new QImage(d->helper->m_image->copy());
+	return new QImage(*d->helper->m_image);
 }
 
 QWMatrix *KSVGIconPainter::worldMatrix()
@@ -757,7 +1311,7 @@ void KSVGIconPainter::setFillRule(const QString &fillRule)
 
 Q_UINT32 KSVGIconPainter::parseOpacity(const QString &data)
 {
-	Q_UINT32 opacity = 255;
+	int opacity = 255;
 
 	if(!data.isEmpty())
 	{
@@ -771,7 +1325,7 @@ Q_UINT32 KSVGIconPainter::parseOpacity(const QString &data)
 		else
 			temp = data.toDouble();
 
-		opacity = (Q_UINT32) floor(temp * 255 + 0.5);
+		opacity = (int) floor(temp * 255 + 0.5);
 	}
 
 	return opacity;
@@ -804,143 +1358,298 @@ void KSVGIconPainter::setUseStroke(bool stroke)
 
 void KSVGIconPainter::setClippingRect(int x, int y, int w, int h)
 {
-	d->helper->m_clipRect = QRect(x, y, w, h);
+	ArtVpath *vec = d->helper->allocVPath(6);
+
+	vec[0].code = ART_MOVETO;
+	vec[0].x = x;
+	vec[0].y = y;
+
+	vec[1].code = ART_LINETO;
+	vec[1].x = x;
+	vec[1].y = y + h;
+
+	vec[2].code = ART_LINETO;
+	vec[2].x = x + w;
+	vec[2].y = y + h;
+
+	vec[3].code = ART_LINETO;
+	vec[3].x = x + w;
+	vec[3].y = y;
+
+	vec[4].code = ART_LINETO;
+	vec[4].x = x;
+	vec[4].y = y;
+
+	vec[5].code = ART_END;
+
+	if(d->helper->m_clipSVP)
+		art_svp_free(d->helper->m_clipSVP);
+
+	d->helper->m_clipSVP = art_svp_from_vpath(vec);
+
+	art_free(vec);
 }
 
 void KSVGIconPainter::drawRectangle(double x, double y, double w, double h, double rx, double ry)
 {
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
-
 	if((int) rx != 0 && (int) ry != 0)
 	{
-		double nrx = rx, nry = ry;
-		// If rx is greater than half of the width of the rectangle
-		// then set rx to half of the w (required in SVG spec)
-		if(nrx > w / 2)
-			nrx = w / 2;
+		ArtVpath *res;
+		ArtBpath *vec = d->helper->allocBPath(10);
 
-		// If ry is greater than half of the h of the rectangle
-		// then set ry to half of the h (required in SVG spec)
-		if(nry > h / 2)
-			nry = h / 2;
+		int i = 0;
 
-		aggData->storage.move_to(x + nrx, y);
-		aggData->storage.curve4(x + nrx * (1 - 0.552), y, x, y + nry * (1 - 0.552), x, y + nry);
+		if(rx > w / 2)
+			rx = w / 2;
 
-		if(nry < h / 2)
-			aggData->storage.line_to(x, y + h - nry);
+		if(ry > h / 2)
+			ry = h / 2;
 
-		aggData->storage.curve4(x, y + h - nry * (1 - 0.552), x + nrx * (1 - 0.552), y + h, x + nrx, y + h);
+		vec[i].code = ART_MOVETO_OPEN;
+		vec[i].x3 = x + rx;
+		vec[i].y3 = y;
 
-		if(nrx < w / 2)
-			aggData->storage.line_to(x + w - nrx, y + h);
+		i++;
 
-		aggData->storage.curve4(x + w - nrx * (1 - 0.552), y + h, x + w, y + h - nry * (1 - 0.552), x + w, y + h - nry);
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x + rx * (1 - 0.552);
+		vec[i].y1 = y;
+		vec[i].x2 = x;
+		vec[i].y2 = y + ry * (1 - 0.552);
+		vec[i].x3 = x;
+		vec[i].y3 = y + ry;
 
-		if(nry < h / 2)
-			aggData->storage.line_to(x + w, y + nry);
+		i++;
 
-		aggData->storage.curve4(x + w, y + nry * (1 - 0.552), x + w - nrx * (1 - 0.552), y, x + w - nrx, y);
+		if(ry < h / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x;
+			vec[i].y3 = y + h - ry;
 
-		if(nrx < w / 2)
-			aggData->storage.line_to(x + nrx, y);
+			i++;
+		}
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x;
+		vec[i].y1 = y + h - ry * (1 - 0.552);
+		vec[i].x2 = x + rx * (1 - 0.552);
+		vec[i].y2 = y + h;
+		vec[i].x3 = x + rx;
+		vec[i].y3 = y + h;
+
+		i++;
+
+		if(rx < w / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x + w - rx;
+			vec[i].y3 = y + h;
+
+			i++;
+		}
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x + w - rx * (1 - 0.552);
+		vec[i].y1 = y + h;
+		vec[i].x2 = x + w;
+		vec[i].y2 = y + h - ry * (1 - 0.552);
+		vec[i].x3 = x + w;
+
+		vec[i].y3 = y + h - ry;
+
+		i++;
+
+		if(ry < h / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x + w;
+			vec[i].y3 = y + ry;
+
+			i++;
+		}
+
+		vec[i].code = ART_CURVETO;
+		vec[i].x1 = x + w;
+		vec[i].y1 = y + ry * (1 - 0.552);
+		vec[i].x2 = x + w - rx * (1 - 0.552);
+		vec[i].y2 = y;
+		vec[i].x3 = x + w - rx;
+		vec[i].y3 = y;
+
+		i++;
+
+		if(rx < w / 2)
+		{
+			vec[i].code = ART_LINETO;
+			vec[i].x3 = x + rx;
+			vec[i].y3 = y;
+
+			i++;
+		}
+
+		vec[i].code = ART_END;
+
+		res = d->helper->art_bez_path_to_vec(vec, 0.25);
+		art_free(vec);
+		d->helper->drawVPath(res);
 	}
 	else
 	{
-		aggData->storage.move_to(x, y);
-		aggData->storage.line_to(x + w, y);
-		aggData->storage.line_to(x + w, y + h);
-		aggData->storage.line_to(x, y + h);
-	}
+		ArtVpath *vec = d->helper->allocVPath(6);
 
-	aggData->storage.close_polygon();
-	d->helper->renderPath(aggData);
-	delete aggData;
+		vec[0].code = ART_MOVETO;
+		vec[0].x = x;
+		vec[0].y = y;
+
+		vec[1].code = ART_LINETO;
+		vec[1].x = x;
+		vec[1].y = y + h;
+
+		vec[2].code = ART_LINETO;
+		vec[2].x = x + w;
+		vec[2].y = y + h;
+
+		vec[3].code = ART_LINETO;
+		vec[3].x = x + w;
+		vec[3].y = y;
+
+		vec[4].code = ART_LINETO;
+		vec[4].x = x;
+		vec[4].y = y;
+
+		vec[5].code = ART_END;
+
+		d->helper->drawVPath(vec);
+	}
 }
 
 void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 {
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
+	ArtBpath *temp;
 
-	// Ellipse creation - nice & clean agg2 code
-	double x = cx, y = cy;
+	temp = d->helper->allocBPath(6);
 
-	unsigned step = 0, num = 100;
-	bool running = true;
-	while(running)
+	double x1, y1, x2, y2, x3, y3;
+	double len = 0.55228474983079356;
+	double cos4[] = {1.0, 0.0, -1.0, 0.0, 1.0};
+	double sin4[] = {0.0, 1.0, 0.0, -1.0, 0.0};
+	int i = 0;
+
+	temp[i].code = ART_MOVETO;
+	temp[i].x3 = cx + rx;
+	temp[i].y3 = cy;
+
+	i++;
+
+	while(i < 5)
 	{
-		if(step == num)
-		{
-			running = false;
-			break;
-		}
+		x1 = cos4[i-1] + len * cos4[i];
+		y1 = sin4[i-1] + len * sin4[i];
+		x2 = cos4[i] + len * cos4[i-1];
+		y2 = sin4[i] + len * sin4[i-1];
+		x3 = cos4[i];
+		y3 = sin4[i];
 
-		double angle = double(step) / double(num) * 2.0 * M_PI;
-		x = cx + cos(angle) * rx;
-		y = cy + sin(angle) * ry;
+		temp[i].code = ART_CURVETO;
+		temp[i].x1 = cx + x1 * rx;
+		temp[i].y1 = cy + y1 * ry;
+		temp[i].x2 = cx + x2 * rx;
+		temp[i].y2 = cy + y2 * ry;
+		temp[i].x3 = cx + x3 * rx;
+		temp[i].y3 = cy + y3 * ry;
 
-		step++;
-		if(step == 1)
-			aggData->storage.move_to(x, y);
-		else
-			aggData->storage.line_to(x, y);
+		i++;
 	}
 
-	aggData->storage.close_polygon();
-	d->helper->renderPath(aggData);
-	delete aggData;
+	temp[i].code = ART_END;
+
+	d->helper->drawBPath(temp);
+
+	art_free(temp);
 }
 
 void KSVGIconPainter::drawLine(double x1, double y1, double x2, double y2)
 {
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
-	
-	aggData->storage.move_to(x1, y1);
-	aggData->storage.line_to(x2, y2);
-	
-	d->helper->renderPath(aggData);
-	delete aggData;
+	ArtVpath *vec;
+
+	vec = d->helper->allocVPath(3);
+
+	vec[0].code = ART_MOVETO_OPEN;
+	vec[0].x = x1;
+	vec[0].y = y1;
+
+	vec[1].code = ART_LINETO;
+	vec[1].x = x2;
+	vec[1].y = y2;
+
+	vec[2].code = ART_END;
+
+	d->helper->drawVPath(vec);
 }
 
-void KSVGIconPainter::drawPolyline(const QPointArray &polyArray, int points)
+void KSVGIconPainter::drawPolyline(QPointArray polyArray, int points)
 {
 	if(polyArray.point(0).x() == -1 || polyArray.point(0).y() == -1)
 		return;
 
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
+	ArtVpath *polyline;
 
 	if(points == -1)
 		points = polyArray.count();
 
-	aggData->storage.move_to(polyArray.point(0).x(), polyArray.point(0).y());
+	polyline = d->helper->allocVPath(3 + points);
+	polyline[0].code = ART_MOVETO;
+	polyline[0].x = polyArray.point(0).x();
+	polyline[0].y = polyArray.point(0).y();
 
-	for(int index = 1; index < points; index++)
-		aggData->storage.line_to(polyArray.point(index).x(), polyArray.point(index).y());
-	
-	d->helper->renderPath(aggData);
-	delete aggData;
+	int index;
+	for(index = 1; index < points; index++)
+	{
+		QPoint point = polyArray.point(index);
+		polyline[index].code = ART_LINETO;
+		polyline[index].x = point.x();
+		polyline[index].y = point.y();
+	}
+
+	if(d->helper->m_useFill) // if the polyline must be filled, inform libart that it should not be closed.
+	{
+		polyline[index].code = (ArtPathcode)ART_END2;
+		polyline[index].x = polyArray.point(0).x();
+		polyline[index++].y = polyArray.point(0).y();
+	}
+
+	polyline[index].code = ART_END;
+
+	d->helper->drawVPath(polyline);
 }
 
-void KSVGIconPainter::drawPolygon(const QPointArray &polyArray)
+void KSVGIconPainter::drawPolygon(QPointArray polyArray)
 {
-	if(polyArray.point(0).x() == -1 || polyArray.point(0).y() == -1)
-		return;
+	ArtVpath *polygon;
 
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
-	aggData->storage.move_to(polyArray.point(0).x(), polyArray.point(0).y());
+	polygon = d->helper->allocVPath(3 + polyArray.count());
+	polygon[0].code = ART_MOVETO;
+	polygon[0].x = polyArray.point(0).x();
+	polygon[0].y = polyArray.point(0).y();
 
-	int points = polyArray.count();
-	for(int index = 1; index < points; index++)
-		aggData->storage.line_to(polyArray.point(index).x(), polyArray.point(index).y());
-	
-	aggData->storage.close_polygon();
-	d->helper->renderPath(aggData);
-	delete aggData;
+	unsigned int index;
+	for(index = 1; index < polyArray.count(); index++)
+	{
+		QPoint point = polyArray.point(index);
+		polygon[index].code = ART_LINETO;
+		polygon[index].x = point.x();
+		polygon[index].y = point.y();
+	}
+
+	polygon[index].code = ART_LINETO;
+	polygon[index].x = polyArray.point(0).x();
+	polygon[index].y = polyArray.point(0).y();
+
+	index++;
+	polygon[index].code = ART_END;
+
+	d->helper->drawVPath(polygon);
 }
 
 // Path parsing tool
@@ -1009,21 +1718,20 @@ static const char *getCoord(const char *ptr, double &number)
 	return ptr;
 }
 
-void KSVGIconPainter::drawPath(const QString &data)
+void KSVGIconPainter::drawPath(const QString &data, bool filled)
 {
-	if(data.isEmpty())
-		return;
+	if (!data.isEmpty())
+	{
+	QString value = data;
 
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
+	QMemArray<ArtBpath> vec;
+	int index = -1;
 
 	double curx = 0.0, cury = 0.0, contrlx = 0.0, contrly = 0.0, xc, yc;
 	unsigned int lastCommand = 0;
 
-	QString value = data;
 	QString _d = value.replace(",", " ");
 	_d = _d.simplifyWhiteSpace();
-	
 	const char *ptr = _d.latin1();
 	const char *end = _d.latin1() + _d.length() + 1;
 
@@ -1042,72 +1750,173 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
+				if(index != -1 && lastCommand != 'z')
+				{
+					// Find last subpath
+					int find = -1;
+					for(int i = index; i >= 0; i--)
+					{
+						if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+						{
+							find = i;
+							break;
+						}
+					}
+
+					index++;
+
+					if(vec.size() == (unsigned int) index)
+						vec.resize(index + 1);
+
+					vec[index].code = (ArtPathcode)ART_END2;
+					vec[index].x3 = vec[find].x3;
+					vec[index].y3 = vec[find].y3;
+				}
+
 				curx += tox;
 				cury += toy;
 
-				aggData->storage.move_to(curx, cury);
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
+				vec[index].x3 = curx;
+				vec[index].y3 = cury;
+
 				lastCommand = 'm';
 				break;
 			case 'M':
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
+				if(index != -1 && lastCommand != 'z')
+				{
+					// Find last subpath
+					int find = -1;
+					for(int i = index; i >= 0; i--)
+					{
+						if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+						{
+							find = i;
+							break;
+						}
+					}
+
+					index++;
+
+					if(vec.size() == (unsigned int) index)
+						vec.resize(index + 1);
+
+					vec[index].code = (ArtPathcode)ART_END2;
+					vec[index].x3 = vec[find].x3;
+					vec[index].y3 = vec[find].y3;
+				}
 
 				curx = tox;
 				cury = toy;
 
-				aggData->storage.move_to(curx, cury);
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
+				vec[index].x3 = curx;
+				vec[index].y3 = cury;
+
 				lastCommand = 'M';
 				break;
 			case 'l':
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_LINETO;
+				vec[index].x3 = curx + tox;
+				vec[index].y3 = cury + toy;
+
 				curx += tox;
 				cury += toy;
 
-				aggData->storage.line_to(curx, cury);
 				lastCommand = 'l';
 				break;
 			case 'L':
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_LINETO;
+				vec[index].x3 = tox;
+				vec[index].y3 = toy;
+
 				curx = tox;
 				cury = toy;
 
-				aggData->storage.line_to(curx, cury);
 				lastCommand = 'L';
 				break;
 			case 'h':
 				ptr = getCoord(ptr, tox);
 
+				index++;
+
 				curx += tox;
 
-				aggData->storage.line_to(curx, cury);
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_LINETO;
+				vec[index].x3 = curx;
+				vec[index].y3 = cury;
+
 				lastCommand = 'h';
 				break;
 			case 'H':
 				ptr = getCoord(ptr, tox);
 
+				index++;
+
 				curx = tox;
 
-				aggData->storage.line_to(curx, cury);
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_LINETO;
+				vec[index].x3 = curx;
+				vec[index].y3 = cury;
+
 				lastCommand = 'H';
 				break;
 			case 'v':
 				ptr = getCoord(ptr, toy);
 
+				index++;
+
 				cury += toy;
 
-				aggData->storage.line_to(curx, cury);
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_LINETO;
+				vec[index].x3 = curx;
+				vec[index].y3 = cury;
+
 				lastCommand = 'v';
 				break;
 			case 'V':
 				ptr = getCoord(ptr, toy);
 
+				index++;
+
 				cury = toy;
 
-				aggData->storage.line_to(curx, cury);
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_LINETO;
+				vec[index].x3 = curx;
+				vec[index].y3 = cury;
+
 				lastCommand = 'V';
 				break;
 			case 'c':
@@ -1118,15 +1927,23 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
-				aggData->storage.curve4(curx + x1, cury + y1,
-										curx + x2, cury + y2,
-										curx + tox, cury + toy);
-	
-				contrlx = curx + x2;
-				contrly = cury + y2;
-			
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = curx + x1;
+				vec[index].y1 = cury + y1;
+				vec[index].x2 = curx + x2;
+				vec[index].y2 = cury + y2;
+				vec[index].x3 = curx + tox;
+				vec[index].y3 = cury + toy;
+
 				curx += tox;
 				cury += toy;
+
+				contrlx = vec[index].x2;
+				contrly = vec[index].y2;
 
 				lastCommand = 'c';
 				break;
@@ -1138,13 +1955,22 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
-				aggData->storage.curve4(x1, y1, x2, y2, tox, toy);
+				index++;
 
-				contrlx = x2;
-				contrly = y2;
-				
-				curx = tox;
-				cury = toy;
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = x1;
+				vec[index].y1 = y1;
+				vec[index].x2 = x2;
+				vec[index].y2 = y2;
+				vec[index].x3 = tox;
+				vec[index].y3 = toy;
+
+				curx = vec[index].x3;
+				cury = vec[index].y3;
+				contrlx = vec[index].x2;
+				contrly = vec[index].y2;
 
 				lastCommand = 'C';
 				break;
@@ -1154,15 +1980,23 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
-				aggData->storage.curve4(2 * curx - contrlx, 2 * cury - contrly,
-										curx + x2, cury + y2,
-										curx + tox, cury + toy);
+				index++;
 
-				contrlx = curx + x2;
-				contrly = cury + y2;
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = 2 * curx - contrlx;
+				vec[index].y1 = 2 * cury - contrly;
+				vec[index].x2 = curx + x2;
+				vec[index].y2 = cury + y2;
+				vec[index].x3 = curx + tox;
+				vec[index].y3 = cury + toy;
 
 				curx += tox;
 				cury += toy;
+
+				contrlx = vec[index].x2;
+				contrly = vec[index].y2;
 
 				lastCommand = 's';
 				break;
@@ -1172,14 +2006,22 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
-				aggData->storage.curve4(2 * curx - contrlx, 2 * cury - contrly,
-										x2, y2,
-										tox, toy);
-				contrlx = x2;
-				contrly = y2;
+				index++;
 
-				curx = tox;
-				cury = toy;
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = 2 * curx - contrlx;
+				vec[index].y1 = 2 * cury - contrly;
+				vec[index].x2 = x2;
+				vec[index].y2 = y2;
+				vec[index].x3 = tox;
+				vec[index].y3 = toy;
+
+				curx = vec[index].x3;
+				cury = vec[index].y3;
+				contrlx = vec[index].x2;
+				contrly = vec[index].y2;
 
 				lastCommand = 'S';
 				break;
@@ -1189,13 +2031,20 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
-				aggData->storage.curve4((curx + 2 * (x1 + curx)) * (1.0 / 3.0), (cury + 2 * (y1 + cury)) * (1.0 / 3.0), 
-						 				((curx + tox) + 2 * (x1 + curx)) * (1.0 / 3.0), ((cury + toy) + 2 * (y1 + cury)) * (1.0 / 3.0),
-										curx + tox, cury + toy);
-				
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = (curx + 2 * (x1 + curx)) * (1.0 / 3.0);
+				vec[index].y1 = (cury + 2 * (y1 + cury)) * (1.0 / 3.0);
+				vec[index].x2 = ((curx + tox) + 2 * (x1 + curx)) * (1.0 / 3.0);
+				vec[index].y2 = ((cury + toy) + 2 * (y1 + cury)) * (1.0 / 3.0);
+				vec[index].x3 = curx + tox;
+				vec[index].y3 = cury + toy;
+
 				contrlx = curx + x1;
 				contrly = cury + y1;
-				
 				curx += tox;
 				cury += toy;
 
@@ -1207,15 +2056,23 @@ void KSVGIconPainter::drawPath(const QString &data)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
-				aggData->storage.curve4((curx + 2 * x1) * (1.0 / 3.0), (cury + 2 * y1) * (1.0 / 3.0),
-										(tox + 2 * x1) * (1.0 / 3.0), (toy + 2 * y1) * (1.0 / 3.0),
-										tox, toy);
+				index++;
 
-				contrlx = (tox + 2 * x1) * (1.0 / 3.0);
-				contrly = (toy + 2 * y1) * (1.0 / 3.0);
+				d->helper->ensureSpace(vec, index);
 
-				curx = tox;
-				cury = toy;
+				// TODO : if this fails make it more like QuadraticRel
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = (curx + 2 * x1) * (1.0 / 3.0);
+				vec[index].y1 = (cury + 2 * y1) * (1.0 / 3.0);
+				vec[index].x2 = (tox + 2 * x1) * (1.0 / 3.0);
+				vec[index].y2 = (toy + 2 * y1) * (1.0 / 3.0);
+				vec[index].x3 = tox;
+				vec[index].y3 = toy;
+
+				curx = vec[index].x3;
+				cury = vec[index].y3;
+				contrlx = vec[index].x2;
+				contrly = vec[index].y2;
 
 				lastCommand = 'Q';
 				break;
@@ -1226,15 +2083,23 @@ void KSVGIconPainter::drawPath(const QString &data)
 				xc = 2 * curx - contrlx;
 				yc = 2 * cury - contrly;
 
-				aggData->storage.curve4((curx + 2 * xc) * (1.0 / 3.0), (cury + 2 * yc) * (1.0 / 3.0),
-										((curx + tox) + 2 * xc) * (1.0 / 3.0), ((cury + toy) + 2 * yc) * (1.0 / 3.0),
-										curx + tox, cury + toy);
+				index++;
 
-				contrlx = xc;
-				contrly = yc;
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = (curx + 2 * xc) * (1.0 / 3.0);
+				vec[index].y1 = (cury + 2 * yc) * (1.0 / 3.0);
+				vec[index].x2 = ((curx + tox) + 2 * xc) * (1.0 / 3.0);
+				vec[index].y2 = ((cury + toy) + 2 * yc) * (1.0 / 3.0);
+
+				vec[index].x3 = curx + tox;
+				vec[index].y3 = cury + toy;
 
 				curx += tox;
 				cury += toy;
+				contrlx = xc;
+				contrly = yc;
 
 				lastCommand = 't';
 				break;
@@ -1245,21 +2110,56 @@ void KSVGIconPainter::drawPath(const QString &data)
 				xc = 2 * curx - contrlx;
 				yc = 2 * cury - contrly;
 
-				aggData->storage.curve4((curx + 2 * xc) * (1.0 / 3.0), (cury + 2 * yc) * (1.0 / 3.0),
-										(tox + 2 * xc) * (1.0 / 3.0), (toy + 2 * yc) * (1.0 / 3.0),
-										tox, toy);
-				contrlx = xc;
-				contrly = yc;
+				index++;
+
+				d->helper->ensureSpace(vec, index);
+
+				vec[index].code = ART_CURVETO;
+				vec[index].x1 = (curx + 2 * xc) * (1.0 / 3.0);
+				vec[index].y1 = (cury + 2 * yc) * (1.0 / 3.0);
+				vec[index].x2 = (tox + 2 * xc) * (1.0 / 3.0);
+				vec[index].y2 = (toy + 2 * yc) * (1.0 / 3.0);
+				vec[index].x3 = tox;
+				vec[index].y3 = toy;
 
 				curx = tox;
 				cury = toy;
+				contrlx = xc;
+				contrly = yc;
 
 				lastCommand = 'T';
 				break;
 			case 'z':
 			case 'Z':
-				// Should be enough with agg2 :)
-				aggData->storage.end_poly(agg::path_flags_close);
+				int find;
+				find = -1;
+				for(int i = index; i >= 0; i--)
+				{
+					if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+					{
+						find = i;
+						break;
+					}
+				}
+
+				if(find != -1)
+				{
+					if(vec[find].x3 != curx || vec[find].y3 != cury)
+					{
+						index++;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = vec[find].x3;
+						vec[index].y3 = vec[find].y3;
+					}
+				}
+
+				// reset for next (sub)path
+				curx = vec[find].x3;
+				cury = vec[find].y3;
+
 				lastCommand = 'z';
 				break;
 			case 'a':
@@ -1277,7 +2177,7 @@ void KSVGIconPainter::drawPath(const QString &data)
 				rx = fabs(rx);
 				ry = fabs(ry);
 
-				d->helper->calculateArc(aggData, true, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+				d->helper->calculateArc(true, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
 
 				lastCommand = 'a';
 				break;
@@ -1296,7 +2196,7 @@ void KSVGIconPainter::drawPath(const QString &data)
 				rx = fabs(rx);
 				ry = fabs(ry);
 
-				d->helper->calculateArc(aggData, false, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+				d->helper->calculateArc(false, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
 
 				lastCommand = 'A';
 				break;
@@ -1324,76 +2224,96 @@ void KSVGIconPainter::drawPath(const QString &data)
 		}
 	}
 
-	// A subpath consisting of a moveto and lineto to the same exact location or a subpath consisting of a moveto
-	// and a closepath will be stroked only if the 'stroke-linecap' property is set to "round", producing a circle
-	// centered at the given point.
-	if(aggData->storage.total_vertices() == 2 && agg::is_line_to(aggData->storage.command(1)))
+	// Find last subpath
+	int find = -1;
+	for(int i = index; i >= 0; i--)
 	{
-		double x1, y1, x2, y2;
-		aggData->storage.vertex(0, &x1, &y1);
-		aggData->storage.vertex(1, &x2, &y2);
-		
-		if(x1 == x2 && y1 == y2 && d->helper->m_capStyle == "round")
-			aggData->storage.modify_vertex(1, x2 + .5, y2);
+		if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+		{
+			find = i;
+			break;
+		}
 	}
 
-	bool dontRender = aggData->storage.total_vertices() == 1 && agg::is_move_to((*aggData->storage.begin()).cmd);
-	if(!dontRender)
-		d->helper->renderPath(aggData);
+	// Fix a problem where the .svg file used doubles as values... (sofico.svg)
+	if(curx != vec[find].x3 && cury != vec[find].y3)
+	{
+		if((int) curx == (int) vec[find].x3 && (int) cury == (int) vec[find].y3)
+		{
+			index++;
 
-	delete aggData;
+			if(vec.size() == (unsigned int) index)
+				vec.resize(index + 1);
+
+			vec[index].code = ART_LINETO;
+			vec[index].x3 = vec[find].x3;
+			vec[index].y3 = vec[find].y3;
+
+			curx = vec[find].x3;
+			cury = vec[find].y3;
+		}
+	}
+
+	// Handle filled paths that are not closed explicitly
+	if(filled)
+	{
+		if((int) curx != (int) vec[find].x3 || (int) cury != (int) vec[find].y3)
+		{
+			index++;
+
+			if(vec.size() == (unsigned int) index)
+				vec.resize(index + 1);
+
+			vec[index].code = (ArtPathcode)ART_END2;
+			vec[index].x3 = vec[find].x3;
+			vec[index].y3 = vec[find].y3;
+
+			curx = vec[find].x3;
+			cury = vec[find].y3;
+		}
+	}
+
+	// Close
+	index++;
+
+	if(vec.size() == (unsigned int) index)
+		vec.resize(index + 1);
+
+	vec[index].code = ART_END;
+
+	// There are pure-moveto paths which reference paint servers *bah*
+	// Do NOT render them
+	bool render = false;
+	for(int i = index; i >= 0; i--)
+	{
+		if(vec[i].code != ART_MOVETO_OPEN && vec[i].code != ART_MOVETO && !(vec[i].code >= ART_END))
+		{
+			render = true;
+			break;
+		}
+	}
+
+	if(render)
+		d->helper->drawBPath(vec.data());
+	}
 }
 
-void KSVGIconPainter::drawImage(double x, double y, const QImage &image)
+void KSVGIconPainter::drawImage(double x, double y, QImage &image)
 {
-	int width = image.width(), height = image.height();
-	
-	// We don't want applySolid/applyGradient to be called.
-	d->helper->m_useFill = d->helper->m_useFillGradient = false;
-	d->helper->m_useStroke = d->helper->m_useStrokeGradient = false;
-	
-	KCanvasAggData *aggData = new KCanvasAggData();
-	aggData->storage.start_new_path();
+	if(image.depth() != 32)
+		image = image.convertDepth(32);
 
-	aggData->storage.move_to(x, y);
-	aggData->storage.line_to(x + width, y);
-	aggData->storage.line_to(x + width, y + height);
-	aggData->storage.line_to(x, y + height);
+	double affine[6];
+	affine[0] = d->helper->m_worldMatrix->m11();
+	affine[1] = d->helper->m_worldMatrix->m12();
+	affine[2] = d->helper->m_worldMatrix->m21();
+	affine[3] = d->helper->m_worldMatrix->m22();
+	affine[4] = d->helper->m_worldMatrix->dx() + x;
+	affine[5] = d->helper->m_worldMatrix->dy() + y;
 
-	aggData->storage.close_polygon();
-
-	// Render the path avoiding any standard processing method...
-	d->helper->renderPath(aggData);
-	
-	// ... and use our own custom agg2 code :)
-	agg::rasterizer_scanline_aa<> ras;
-	
-	agg::rendering_buffer buf;
-	buf.attach(d->helper->m_buffer, d->helper->m_width, d->helper->m_height, d->helper->m_width * 4);
-
-	agg::rendering_buffer imageBuf;
-	imageBuf.attach(image.bits(), width, height, width * 4); // We need RGBA input.
-
-	agg::trans_affine imageMatrix;
-	imageMatrix *= aggData->transform;
-	imageMatrix.invert();
-
-	interpolator_type interpolator(imageMatrix);
-
-	image_span_alloc sa;
-	image_span_gen sg(sa, imageBuf, agg::rgba(1, 1, 1, 0), interpolator);
-
-	pixfmt pixf(buf);
-	renderer_base rb(pixf);
-	renderer_image_type ren_image(rb, sg);
-
-	// TODO: Clipping
-	{
-		agg::scanline_u8 sl;
-		d->helper->invokeRasterizer(aggData, ras, sl, ren_image, true);
-	}
-
-	delete aggData;
+	d->helper->art_rgba_rgba_affine(d->helper->m_buffer, 0, 0, d->helper->m_width, d->helper->m_height,
+									d->helper->m_rowstride, image.bits(), image.width(), image.height(),
+									image.width() * 4, affine);
 }
 
 QColor KSVGIconPainter::parseColor(const QString &param)
@@ -1787,14 +2707,49 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 	return ret;
 }
 
-void KSVGIconPainter::addGradient(const QString &id, gradient_rendering_properties *gradient)
+ArtGradientLinear *KSVGIconPainter::linearGradient(const QString &id)
 {
-	d->helper->m_gradientMap.insert(id, gradient);
+	return d->helper->m_linearGradientMap[id];
 }
 
-void KSVGIconPainter::addGradientElement(gradient_rendering_properties *gradient, QDomElement element)
+void KSVGIconPainter::addLinearGradient(const QString &id, ArtGradientLinear *gradient)
 {
-	d->helper->m_gradientElementMap.insert(gradient, element);
+	d->helper->m_linearGradientMap.insert(id, gradient);
+}
+
+QDomElement KSVGIconPainter::linearGradientElement(ArtGradientLinear *linear)
+{
+	return d->helper->m_linearGradientElementMap[linear];
+}
+
+void KSVGIconPainter::addLinearGradientElement(ArtGradientLinear *gradient, QDomElement element)
+{
+	d->helper->m_linearGradientElementMap.insert(gradient, element);
+}
+
+ArtGradientRadial *KSVGIconPainter::radialGradient(const QString &id)
+{
+	return d->helper->m_radialGradientMap[id];
+}
+
+void KSVGIconPainter::addRadialGradient(const QString &id, ArtGradientRadial *gradient)
+{
+	d->helper->m_radialGradientMap.insert(id, gradient);
+}
+
+QDomElement KSVGIconPainter::radialGradientElement(ArtGradientRadial *radial)
+{
+	return d->helper->m_radialGradientElementMap[radial];
+}
+
+void KSVGIconPainter::addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element)
+{
+	d->helper->m_radialGradientElementMap.insert(gradient, element);
+}
+
+Q_UINT32 KSVGIconPainter::toArtColor(const QColor &color)
+{
+	return d->helper->toArtColor(color);
 }
 
 QWMatrix KSVGIconPainter::parseTransform(const QString &transform)
@@ -1813,18 +2768,18 @@ QWMatrix KSVGIconPainter::parseTransform(const QString &transform)
 		subtransform[1] = subtransform[1].simplifyWhiteSpace();
 		QRegExp reg("([-]?\\d*\\.?\\d+(?:e[-]?\\d+)?)");
 
-		int pos = 0;
-		QStringList params;
+                int pos = 0;
+                QStringList params;
 
-		while(pos >= 0)
-		{
-			pos = reg.search(subtransform[1], pos);
-			if(pos != -1)
-			{
-				params += reg.cap(1);
-				pos += reg.matchedLength();
-			}
-		}
+                while(pos >= 0)
+                {
+                        pos = reg.search(subtransform[1], pos);
+                        if(pos != -1)
+                        {
+                                params += reg.cap(1);
+                                pos += reg.matchedLength();
+                        }
+                }
 
 		if(subtransform[0].startsWith(";") || subtransform[0].startsWith(","))
 			subtransform[0] = subtransform[0].right(subtransform[0].length() - 1);
@@ -1874,5 +2829,3 @@ QWMatrix KSVGIconPainter::parseTransform(const QString &transform)
 
 	return result;
 }
-
-// vim:ts=4:noet

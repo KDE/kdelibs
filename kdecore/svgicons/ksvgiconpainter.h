@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2002, 2004 Nikolas Zimmermann <wildfox@kde.org>
+    Copyright (C) 2002 Nikolas Zimmermann <wildfox@kde.org>
     This file is part of the KDE project
 
     This library is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 #ifndef KSVGIconPainter_H
 #define KSVGIconPainter_H
 
-#include "ksvgagghelper.h"
+#include <libart_lgpl/art_render.h>
+#include <libart_lgpl/art_render_gradient.h>
 
 class QImage;
 class QColor;
@@ -41,6 +42,8 @@ public:
 	QImage *image();
 
 	QWMatrix *worldMatrix();
+
+	void finish();
 
 	void setUseFill(bool fill);
 	void setUseStroke(bool stroke);
@@ -64,19 +67,29 @@ public:
 	void drawRectangle(double x, double y, double w, double h, double rx, double ry);
 	void drawEllipse(double cx, double cy, double rx, double ry);
 	void drawLine(double x1, double y1, double x2, double y2);
-	void drawPolyline(const QPointArray &polyArray, int points = -1);
-	void drawPolygon(const QPointArray &polyArray);
-	void drawPath(const QString &data);
-	void drawImage(double x, double y, const QImage &image);
+	void drawPolyline(QPointArray polyArray, int points = -1);
+	void drawPolygon(QPointArray polyArray);
+	void drawPath(const QString &data, bool fill);
+	void drawImage(double x, double y, QImage &image);
 
 	QColor parseColor(const QString &param);
+	Q_UINT32 toArtColor(const QColor &color);
 	Q_UINT32 parseOpacity(const QString &data);
 
 	double toPixel(const QString &s, bool hmode);
 	double dpi();
 
-	void addGradient(const QString &id, gradient_rendering_properties *gradient);
-	void addGradientElement(gradient_rendering_properties *gradient, QDomElement element);
+	ArtGradientLinear *linearGradient(const QString &id);
+	void addLinearGradient(const QString &id, ArtGradientLinear *gradient);
+
+	QDomElement linearGradientElement(ArtGradientLinear *linear);
+	void addLinearGradientElement(ArtGradientLinear *gradient, QDomElement element);
+
+	ArtGradientRadial *radialGradient(const QString &id);
+	void addRadialGradient(const QString &id, ArtGradientRadial *gradient);
+
+	QDomElement radialGradientElement(ArtGradientRadial *radial);
+	void addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element);
 
 	QWMatrix parseTransform(const QString &transform);
 
