@@ -2,10 +2,6 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
-- X509 parser now concatenates multiple tags (in particular /OU) 
-  to the same string using \n in between.  Gui needs updates for this
-  (ksslinfodlg)
-
 - make install should chmod 400 the .crt file I think....
 
 - The ASN1 date conversion code doesn't take international issues into
