@@ -87,7 +87,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 {
-   	KCompletion* comp = completionObject();
+   	KCompletion* comp = compObj();
 	if( comp &&
 		(type == KCompletionBase::PrevCompletionMatch ||
 		 type == KCompletionBase::NextCompletionMatch ) )
@@ -95,50 +95,47 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 		QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
 		// Skip rotation if previous/next match is null or the same text.
         if( input.isNull() || input == text() ) return;
-        int pos = cursorPosition();
+		setText( input );
         if( hasMarkedText() )
-			validateAndSet( input, pos, pos, input.length() );
-		else
-			setText( input );
-    }
-
-/*  else
-    {
-
-		QStringList list = comp->items();
-        int cnt = list.count();
-        if( cnt == 0 ) return;
-        int index = list.findIndex( text() );
-        if( index == -1 )
         {
-        	if( dir == KCompletionBase::UpKeyEvent )
-        		index = cnt -1;
-        }
-        else
-        	index += ( dir == KCompletionBase::UpKeyEvent ) ? -1 : 1;
-        	
-        if ( index > -1 && index < cnt )
-        	setText( list[index] );
-    } */
+			int pos = cursorPosition();
+			setSelection( pos, input.length() );
+			setCursorPosition( pos );				
+		}
+    }
 }
 
 void KLineEdit::makeCompletion( const QString& text )
 {
+	KCompletion *comp = compObj();
+	if( !comp ) return;  // No completion object...
+	
 	QString match;
    	int pos = cursorPosition();
-	KCompletion *comp = completionObject();
    	KGlobalSettings::Completion mode = completionMode();
     	
-/*  if( mode == KGlobalSettings::CompletionShell &&
+	if( mode == KGlobalSettings::CompletionShell &&	
 	   	comp->hasMultipleMatches() && text != comp->lastMatch() )
+	{
     	match = comp->nextMatch();
-    else */
-    match = comp->makeCompletion( text );
+ 	}
+    else
+    {
+	    match = comp->makeCompletion( text );
+	}
     	
     // If no match or the same match, simply return
     // without completing.
     if( match.length() == 0 || match == text )
+    {
+	    // Put the cursor at the end when in semi-automatic
+	    // mode and completion is invoked with the same text.
+    	if( mode == KGlobalSettings::CompletionMan )
+    	{
+    		end( false );
+    	}
         return;
+    }
 
     setText( match );
 	if( mode == KGlobalSettings::CompletionAuto ||
@@ -201,7 +198,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
         }
         // Handles completion.
-        KCompletion* comp = completionObject();
         KeyBindingMap keys = getKeyBindings();
         int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
         if( KStdAccel::isEqual( e, key ) && fireSignals )
@@ -210,8 +206,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // CompletionAuto and if the mode is CompletionShell,
             // the cursor is at the end of the string.
             int len = text().length();
-            if( (mode == KGlobalSettings::CompletionMan && (comp != 0 && comp->lastMatch() != displayText() ) ) ||
-                (mode == KGlobalSettings::CompletionShell && cursorPosition() == len && len != 0 ) )
+            if( (mode == KGlobalSettings::CompletionMan ||
+                (mode == KGlobalSettings::CompletionShell &&
+                cursorPosition() == len && len != 0 ) ) )
             {
                 emit completion( text() );
                 return;
