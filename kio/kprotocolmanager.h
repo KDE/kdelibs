@@ -20,7 +20,7 @@
 
 #include <qstringlist.h>
 #include <kapp.h>
-#include <kio/global.h>
+#include "global.h"
 
 // This value has been deprecated!! Use KProtocolManager::defaultUserAgent() instead.
 #define DEFAULT_USERAGENT_STRING \
