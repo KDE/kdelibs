@@ -5,6 +5,7 @@
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -585,6 +586,14 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     setNeedsLayout(false);
 }
 
+static inline bool isAnonymousWhitespace( RenderObject* o ) {
+    if (!o->isAnonymous())
+        return false;
+    RenderObject *fc = o->firstChild();
+    return fc && fc == o->lastChild() && fc->isText() && static_cast<RenderText *>(fc)->stringLength() == 1 &&
+           static_cast<RenderText *>(fc)->text()[0].unicode() == ' ';
+}
+
 void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 {
 #ifdef DEBUG_LAYOUT
@@ -737,9 +746,9 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             // Get the next non-positioned/non-floating RenderBlock.
             RenderObject* next = child->nextSibling();
             RenderObject* curr = next;
-            while (curr && curr->isFloatingOrPositioned())
+            while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)) )
                 curr = curr->nextSibling();
-            if (curr && curr->isRenderBlock() && !curr->isAnonymous() &&
+            if (curr && curr->isRenderBlock() &&
                 curr->style()->display() != COMPACT &&
                 curr->style()->display() != RUN_IN) {
                 curr->calcWidth(); // So that horizontal margins are correct.
@@ -757,18 +766,15 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 }
                 else {
                     blockForCompactChild = curr;
-                    compactChild = child;
-                    child->setInline(true);
+                    compactChild = child;          
+                    child->layoutIfNeeded();
+                    int off = prevPosMargin - prevNegMargin;
+                    m_height += off + curr->marginTop() < child->marginTop() ? 
+                                child->marginTop() - curr->marginTop() -off: 0;
+
                     child->setPos(0,0); // This position will be updated to reflect the compact's
                                         // desired position and the line box for the compact will
                                         // pick that position up.
-
-                    // Remove the child.
-                    RenderObject* next = child->nextSibling();
-                    removeChildNode(child);
-
-                    // Now insert the child under |curr|.
-                    curr->insertChildNode(child, curr->firstChild());
                     child = next;
                     continue;
                 }
@@ -781,7 +787,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         if (child->style()->display() == RUN_IN && (child->childrenInline() || child->isReplaced())) {
             // Get the next non-positioned/non-floating RenderBlock.
             RenderObject* curr = child->nextSibling();
-            while (curr && curr->isFloatingOrPositioned())
+            while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)))
                 curr = curr->nextSibling();
             if (curr && (curr->isRenderBlock() && !curr->isAnonymous() && curr->childrenInline() &&
                          curr->style()->display() != COMPACT &&
@@ -1058,8 +1064,29 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                     compactXPos = width() - borderRight() - paddingRight() - marginRight() -
                         compactChild->width() - compactChild->marginRight();
                 }
-                compactXPos -= child->xPos(); // Put compactXPos into the child's coordinate space.
-                compactChild->setPos(compactXPos, compactChild->yPos()); // Set the x position.
+                int compactYPos = child->yPos() + child->borderTop() + child->paddingTop()
+                                  - compactChild->paddingTop() - compactChild->borderTop();
+                int adj = 0;
+                KHTMLAssert(child->isRenderBlock());
+                InlineRunBox *b = static_cast<RenderBlock*>(child)->firstLineBox();
+                InlineRunBox *c = static_cast<RenderBlock*>(compactChild)->firstLineBox();
+                if (b && c) {
+                    // adjust our vertical position
+                    int vpos = compactChild->getVerticalPosition( true, child );
+                    if (vpos == PositionBottom)
+                        adj = b->height() > c->height() ? (b->height() + b->yPos() - c->height() - c->yPos()) : 0;
+                    else if (vpos == PositionTop)
+                        adj = b->yPos() - c->yPos();
+                    else
+                        adj = vpos;
+                    compactYPos += adj;
+                }
+                Length newLineHeight( kMax(compactChild->lineHeight(true)+adj, (int)child->lineHeight(true)),
+                                      khtml::Fixed);
+                child->style()->setLineHeight( newLineHeight );
+                child->setNeedsLayout( true );
+                child->layout();
+                compactChild->setPos(compactXPos, compactYPos); // Set the x position.
                 compactChild = 0;
             }
         }

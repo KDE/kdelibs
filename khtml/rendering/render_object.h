@@ -303,6 +303,7 @@ public:
     virtual short lineHeight( bool firstLine ) const;
     virtual short verticalPositionHint( bool firstLine ) const;
     virtual short baselinePosition( bool firstLine ) const;
+    short getVerticalPosition( bool firstLine, RenderObject* ref=0 ) const;
 
     /*
      * Print the object and its children, clipped by (x|y|w|h).
@@ -662,7 +663,7 @@ protected:
     virtual QRect viewRect() const;
     void remove();
     void invalidateVerticalPositions();
-    short getVerticalPosition( bool firstLine ) const;
+
 
     virtual void removeLeftoverAnonymousBoxes();
 

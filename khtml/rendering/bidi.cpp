@@ -543,13 +543,9 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
         else if (!r->obj->isInlineFlow()) {
             r->obj->calcWidth();
             r->box->setWidth(r->obj->width());
-            if (r->obj->style()->display() != COMPACT)
-                totWidth += r->obj->marginLeft() + r->obj->marginRight();
+            totWidth += r->obj->marginLeft() + r->obj->marginRight();
         }
-
-        // Compacts don't contribute to the width of the line, since they are placed in the margin.
-        if (r->obj->style()->display() != COMPACT)
-            totWidth += r->box->width();
+        totWidth += r->box->width();
     }
 
     // Armed with the total width of the line (without justification),
@@ -589,7 +585,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
         QPtrListIterator<BidiRun> it(*sruns);
         for (BidiRun *r; (r = it.current()); ++it) {
             int spaceAdd = 0;
-            if (numSpaces > 0 && r->obj->isText() && r->obj->style()->display() != COMPACT) {
+            if (numSpaces > 0 && r->obj->isText()) {
                 // get the number of spaces in the run
                 int spaces = 0;
                 for ( int i = r->start; i < r->stop; i++ )

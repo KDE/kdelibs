@@ -1614,7 +1614,7 @@ short RenderObject::verticalPositionHint( bool firstLine ) const
 
 }
 
-short RenderObject::getVerticalPosition( bool firstLine ) const
+short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) const
 {
     // vertical align for table cells has a different meaning
     int vpos = 0;
@@ -1627,14 +1627,15 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
         } else if ( va == LENGTH ) {
             vpos = -style()->verticalAlignLength().width( lineHeight( firstLine ) );
         } else {
-            bool checkParent = parent()->isInline() && !parent()->isReplacedBlock();
-            vpos = checkParent ? parent()->verticalPositionHint( firstLine ) : 0;
+            if (!ref) ref = parent();
+            bool checkParent = ref->isInline() && !ref->isReplacedBlock();
+            vpos = checkParent ? ref->verticalPositionHint( firstLine ) : 0;
             // don't allow elements nested inside text-top to have a different valignment.
             if ( va == BASELINE )
                 return vpos;
 
-            const QFont &f = parent()->font( firstLine );
-            int fontheight = parent()->lineHeight( firstLine );
+            const QFont &f = ref->font( firstLine );
+            int fontheight = ref->lineHeight( firstLine );
             int fontsize = f.pixelSize();
             int halfleading = ( fontheight - fontsize ) / 2;
 
@@ -1645,10 +1646,10 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
             else if ( va == TEXT_TOP ) {
 //                 qDebug( "got TEXT_TOP vertical pos hint" );
 //                 qDebug( "parent:" );
-//                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", fontheight, fontsize, parent()->baselinePosition( firstLine ) );
+//                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", fontheight, fontsize, ref->baselinePosition( firstLine ) );
 //                 qDebug( "this:" );
 //                 qDebug( "CSSLH: %d, CSS_FS: %d, basepos: %d", lineHeight( firstLine ), style()->font().pixelSize(), baselinePosition( firstLine ) );
-                vpos += ( baselinePosition( firstLine ) - parent()->baselinePosition( firstLine ) +
+                vpos += ( baselinePosition( firstLine ) - ref->baselinePosition( firstLine ) +
                         halfleading );
             } else if ( va == MIDDLE ) {
                 QRect b = QFontMetrics(f).boundingRect('x');

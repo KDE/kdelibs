@@ -1,3 +1,19 @@
+2004-10-15  Germain Garand  <germain@ebooksfrance.org>
+
+        display: compact fixes.
+
+        * rendering/bidi.cpp: remove checks for display: compact,
+        not needed anymore.
+
+        * rendering/render_block.cpp (layoutBlockChildren):
+        simpler implementation for compact display: do not insert the
+        compact child within the next block anymore. 
+        Solves lot of problems with host blocks having non-inline children.
+
+        * rendering/render_object.{cpp,h} (getVerticalPosition): add
+        ability to compute vertical position with respect to other
+        RenderObjects than parent.
+
 2004-10-14  David Faure  <faure@kde.org>
 
         * html/htmltokenizer.cpp (parseTag): Merged patch by John Sullivan (safari)
