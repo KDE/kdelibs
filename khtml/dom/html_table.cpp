@@ -434,7 +434,6 @@ HTMLTableCaptionElement HTMLTableElement::caption() const
 
 void HTMLTableElement::setCaption( const HTMLTableCaptionElement &_caption )
 {
-
     if(impl)
         ((HTMLTableElementImpl *)impl)
 	    ->setCaption( ((HTMLTableCaptionElementImpl *)_caption.impl) );
