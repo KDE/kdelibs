@@ -90,6 +90,7 @@ Scheduler::Scheduler()
 void
 Scheduler::debug_info()
 {
+#if 0
     kdDebug(7006) << "Scheduler Info" << endl;
     kdDebug(7006) << "==========" << endl;
     kdDebug(7006) << "Total Slaves: " << slaveList->count() << endl;
@@ -113,6 +114,7 @@ Scheduler::debug_info()
     {
         kdDebug(7006) << " Job: " << job << " " << job->url().url() << endl;
     }
+#endif
 }
 
 bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData )
@@ -149,11 +151,11 @@ void Scheduler::_doJob(SimpleJob *job) {
 }
 	
 void Scheduler::_cancelJob(SimpleJob *job) {
-    kdDebug(7006) << "Scheduler: canceling job " << job << endl;
+//    kdDebug(7006) << "Scheduler: canceling job " << job << endl;
     if ( job->slave() ) // was running
     {
 	Slave *slave = job->slave();
-        kdDebug(7006) << "Scheduler: killing slave " << slave->slave_pid() << endl;
+//        kdDebug(7006) << "Scheduler: killing slave " << slave->slave_pid() << endl;
         slave->kill();
         _jobFinished( job, slave );
 	slotSlaveDied( slave);
@@ -166,7 +168,7 @@ void Scheduler::startStep()
 {
     while (joblist.count())
     {
-       kdDebug(7006) << "Scheduling job" << endl;
+//       kdDebug(7006) << "Scheduling job" << endl;
        debug_info();
        SimpleJob *job = joblist.at(0);
        QString protocol = job->url().protocol();
@@ -188,13 +190,13 @@ void Scheduler::startStep()
           {
              if (job->url() == urlOnHold)
              {
-kdDebug(7006) << "HOLD: Reusing hold slave." << endl;
+//kdDebug(7006) << "HOLD: Reusing hold slave." << endl;
                 slave = slaveOnHold;
                 protInfo->idleSlaves++; // Will be decreased later on.
              }
              else
              {
-kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
+//kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
                 slaveOnHold->kill();
              }
              slaveOnHold = 0;
@@ -258,8 +260,8 @@ kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
 
        if (!slave)
        {
-          kdDebug(7006) << "No slaves available" << endl;
-          kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
+//          kdDebug(7006) << "No slaves available" << endl;
+//          kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
 	  return;
        }
 
@@ -267,7 +269,7 @@ kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
        protInfo->activeSlaves++;
        idleSlaves->removeRef(slave);
        joblist.removeRef(job);
-       kdDebug(7006) << "scheduler: job started " << job << endl;
+//       kdDebug(7006) << "scheduler: job started " << job << endl;
        if ((newSlave) ||
            (slave->host() != host) ||
            (slave->port() != port) ||
@@ -281,12 +283,13 @@ kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
 }
 
 void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QString &host, bool connected) {
-    kdDebug(7006) << "slave status" << endl;
+#if 0
     Slave *slave = (Slave*)sender();
     kdDebug(7006) << "Slave = " << slave << " (PID = " << pid
                   << ") protocol = " << protocol.data() << " host = "
                   << ( host.ascii() ? host.ascii() : "[None]" ) << " "
                   << ( connected ? "Connected" : "Not connected" ) << endl;
+#endif
 }
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
@@ -294,7 +297,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
     slave->disconnect(job);
     protInfo->activeSlaves--;
-    kdDebug(7006) << "Scheduler: job finished job = " << job << " pid = " << slave->slave_pid() << endl;
+//    kdDebug(7006) << "Scheduler: job finished job = " << job << " pid = " << slave->slave_pid() << endl;
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
@@ -303,14 +306,14 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
        _scheduleCleanup();
        if (joblist.count())
        {
-           kdDebug(7006) << "Scheduler has now " << joblist.count() << " jobs" << endl;
+//           kdDebug(7006) << "Scheduler has now " << joblist.count() << " jobs" << endl;
            mytimer.start(0, true);
        }
        slave->connection()->send( CMD_SLAVE_STATUS );
     }
     else
     {
-       kdDebug(7006) << "Scheduler: Slave is dead pid = " << slave->slave_pid() << endl;
+//       kdDebug(7006) << "Scheduler: Slave is dead pid = " << slave->slave_pid() << endl;
     }
 }
 
@@ -325,27 +328,26 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
     if (idleSlaves->removeRef(slave))
     {
        protInfo->idleSlaves--;
-       kdDebug(7006) << "Scheduler: Slave died while in idleSlaves list! PID=" << slave->slave_pid() << endl;
+//       kdDebug(7006) << "Scheduler: Slave died while in idleSlaves list! PID=" << slave->slave_pid() << endl;
     }
     else
-       kdDebug(7006) << "Scheduler: Slave died while NOT in idleSlaves list! PID=" << slave->slave_pid() << endl;
+    {
+//       kdDebug(7006) << "Scheduler: Slave died while NOT in idleSlaves list! PID=" << slave->slave_pid() << endl;
+    }
 
     if (!slaveList->removeRef(slave))
        kdDebug(7006) << "Scheduler: BUG!! Slave died, but is NOT in slaveList!!!\n" << endl;
-    kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
+//    kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
     delete slave;
 }
 
 void Scheduler::slotCleanIdleSlaves()
 {
-   kdDebug(7006) << "Clean Idle Slaves" << endl;
    for(Slave *slave = idleSlaves->first();slave;)
    {
-      kdDebug(7006) << "Slave: " << slave->protocol() << " " << slave->host()
-	            << " Idle for " << (int) slave->idleTime() << "secs pid = " << slave->slave_pid() <<  endl;
       if (slave->idleTime() >= MAX_SLAVE_IDLE)
       {
-         kdDebug(7006) << "Removing idle slave: " << slave->protocol() << " " << slave->host() << endl;
+//         kdDebug(7006) << "Removing idle slave: " << slave->protocol() << " " << slave->host() << endl;
          Slave *removeSlave = slave;
          ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
          protInfo->idleSlaves--;
