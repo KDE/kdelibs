@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,60 +22,37 @@
 #ifndef _KWALLETENTRY_H
 #define _KWALLETENTRY_H
 
-
-#include <qcstring.h>
 #include <qstring.h>
-#include <qstringlist.h>
-#include <qptrlist.h>
-#include <qpair.h>
-#include <qmap.h>
+#include <qdatastream.h>
 
 namespace KWallet {
 
-class Entry;
-
-typedef QPair<const QString,QString> NVPair;
-typedef QMap<QString,QString> Key;
-typedef QByteArray Value;
-typedef Entry *(*EntryFactory)(const QString &type,
-			       const Key &key, 
-			       const Value &value);
-
 class Entry {
 	public:
+		enum EntryType { Unknown=0, Password, Stream };
 		Entry();
-		Entry(const QString &type,
-		      const Key &key, 
-		      const Value &value);
-		virtual ~Entry();
+		~Entry();
 		
-		bool isDirty() const;
-		void clearDirty();
+		const QString& key() const;
+		QByteArray value() const;
+		QString password() const;
 
-		const Key& key() const;
-		const Value& value() const;
+		void setValue(const QByteArray& val);
+		void setValue(const QString& val);
+		void setKey(const QString& key);
 
-		void setValue(const Value& val);
-		void setKey(const Key& key);
-		void addKey(NVPair& key);
-		void addKey(const QString& name, const QString& value);
+		EntryType type() const;
+		void setType(EntryType type);
 
-		virtual QString type() const;
+		void copy(const Entry* x);
 
-		// should be moved to Wallet
-		static QPtrList<Entry> getEntries(const QString& type = QString::null,
-						  EntryFactory factory = 0,
-						  const QString& keyName = QString::null, 
-						  const QString& keyValue = QString::null);
 	private:
 		class EntryPrivate;
 		EntryPrivate *d;
-		QString _type;
-		bool _dirty;
-		Key _key;
-		Value _value;
+		QString _key;
+		QByteArray _value;
+		EntryType _type;
 };
-
 
 };
 

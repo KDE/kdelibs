@@ -22,11 +22,8 @@
 #ifndef _KWALLET_H
 #define _KWALLET_H
 
-
-#include <qcstring.h>
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qmap.h>
+#include <qobject.h>
 #include "kwalletentry.h"
 
 
@@ -35,31 +32,16 @@ class DCOPRef;
 
 namespace KWallet {
 
-class Wallet {
+class Wallet : public QObject {
+	Q_OBJECT
+	protected:
+		Wallet();
+		Wallet(const Wallet&);
+
 	public:
-		Wallet(const QString& name = "kdewallet");
-		~Wallet();
+		virtual ~Wallet();
 		
-		// Open and unlock the wallet
-		int open(const QByteArray& password);
-		
-		// Close and lock the wallet
-		int close(const QByteArray& password);
-
-		// Returns true if the current wallet is open
-		bool isOpen();
-
-		// Returns the current wallet name
-		const QString& walletName() const;
-
-		// Changes to a new wallet "name"
-		// returns false if it cannot change (ie another wallet is open)
-		bool changeWallet(const QString& name);
-
-		// Not sure if using a reference here makes sense....
-		const QPtrList<Entry>& getEntriesByType(const QString& type) const;
-
-		const QStringList getTypeList() const;
+		static Wallet* openWallet(const QString& name = "kdewallet");
 
 	private:
 		class WalletPrivate;
@@ -67,7 +49,7 @@ class Wallet {
 		QString _name;
 		bool _open;
 		DCOPClient *_dcopClient;
-		DCOPRef *_kwalletdRef;
+		DCOPRef *_dcopRef;
 };
 
 };

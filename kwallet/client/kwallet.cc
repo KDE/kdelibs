@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002 George Staikos <staikos@kde.org>
+ * Copyright (C) 2002-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,42 +28,41 @@
 
 using namespace KWallet;
 
-Wallet::Wallet(const QString& name) : _name(name), _dcopClient(new DCOPClient) {
+Wallet::Wallet()
+: QObject(0L), d(0), _dcopClient(new DCOPClient) {
 	_open = false;
 	_dcopClient->attach();
-	_kwalletdRef = new DCOPRef("kded", "kwalletd");
-	_kwalletdRef->setDCOPClient(_dcopClient);
+	_dcopRef = new DCOPRef("kded", "kwalletd");
+	_dcopRef->setDCOPClient(_dcopClient);
 }
 
 
 Wallet::~Wallet() {
 	if (_open) {
-		// FIXME: Discard changes
+		// FIXME
 	}
 
-	delete _kwalletdRef;
+	delete _dcopRef;
+	_dcopRef = 0L;
 	delete _dcopClient;
+	_dcopClient = 0L;
 }
 
 
-int Wallet::open(const QByteArray& password) {
-	if (_open) {
-		return -1;
-	}
-
-	DCOPReply r = _kwalletdRef->call("open", _name, password);
+Wallet *Wallet::openWallet(const QString& name) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 	if (r.isValid()) {
 		int drc ;
 		r.get(drc);
-		if (drc == 0) {
-			_open = true;
+		if (drc != -1) {
+			// FIXME
 		}
-		return drc;
 	}
-	return -99;
-  }
+return 0;
+}
 
-	
+
+#if 0
 int Wallet::close(const QByteArray& password) {
 	if (!_open) {
 		return -1;
@@ -99,28 +98,6 @@ bool Wallet::isOpen() {
 }
 
 
-bool Wallet::changeWallet(const QString& name) {
-	if (_open)
-		return false;
+#endif
 
-	_name = name;
-
-	return true;
-}
-
-
-const QPtrList<Entry>& Wallet::getEntriesByType(const QString& type) const {
-	if (!_dcopClient->isAttached())
-		return QPtrList<Entry>();
-	Q_UNUSED(type);
-return QPtrList<Entry>();
-}
-
-
-const QStringList Wallet::getTypeList() const {
-	if (!_dcopClient->isAttached())
-		return QStringList();
-return QStringList();
-}
-
-
+#include "kwallet.moc"

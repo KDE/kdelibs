@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,86 +25,65 @@ using namespace KWallet;
 
 
 Entry::Entry() {
-	_dirty = false;
 }
-
-
-Entry::Entry(const QString &type,
-	     const Key &key, 
-	     const Value &value)  :
-	_type(type), 
-	_dirty(false),
-	_key(key), 
-	_value(value) {
-}
-
 
 Entry::~Entry() {
 	_value.fill(0);
 }
 
-
-void Entry::clearDirty() {
-	_dirty = false;
-}
-
-
-bool Entry::isDirty() const {
-	return _dirty;
-}
-
-
-const Key& Entry::key() const {
+const QString& Entry::key() const {
 	return _key;
 }
 
 
-const Value& Entry::value() const {
+QByteArray Entry::value() const {
 	return _value;
 }
 
 
-void Entry::setValue(const Value& val) {
+QString Entry::password() const {
+QString x;
+	QDataStream qds(_value, IO_ReadOnly);
+	qds >> x;
+	return x;
+}
+
+
+void Entry::setValue(const QByteArray& val) {
 	// do a direct copy from one into the other without
 	// temporary variables
 	_value.fill(0);
 	_value.duplicate(val);
-	_dirty = true;
 }
 
 
-void Entry::setKey(const Key& key) {
+void Entry::setValue(const QString& val) {
+	_value.fill(0);
+	QDataStream qds(_value, IO_WriteOnly);
+	qds << val;
+}
+
+
+void Entry::setKey(const QString& key) {
 	_key = key;
-	_dirty = true;
 }
 
 
-void Entry::addKey(NVPair& key) {
-	_key.insert(key);
-	_dirty = true;
-}
-
-
-void Entry::addKey(const QString& name, const QString& value) {
-	_key[name] = value;
-	_dirty = true;
-}
-
-
-QString Entry::type() const {
+Entry::EntryType Entry::type() const {
 	return _type;
 }
 
 
-QPtrList<Entry> Entry::getEntries(const QString& type, 
-				  EntryFactory factory,
-				  const QString& keyName,
-				  const QString& keyValue) {
-	Q_UNUSED(type);
-	Q_UNUSED(factory);
-	Q_UNUSED(keyName);
-	Q_UNUSED(keyValue);
-	// TODO: get list of entries (using the backend)
-	return QPtrList<Entry>();
+void Entry::setType(Entry::EntryType type) {
+	_type = type;
 }
+
+
+void Entry::copy(const Entry* x) {
+	_type = x->_type;
+	_key = x->_key;
+	_value.fill(0);
+	_value.duplicate(x->_value);
+}
+
 

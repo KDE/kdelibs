@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001,2002 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,9 +23,8 @@
 #define _KWALLETBACKEND_H
 
 
-#include <qcstring.h>
 #include <qstring.h>
-#include <qptrlist.h>
+#include <qstringlist.h>
 #include <qmap.h>
 #include "kwalletentry.h"
 
@@ -37,36 +36,61 @@ class Backend {
 		Backend(const QString& name = "kdewallet");
 		~Backend();
 		
-		// Open and unlock the wallet
+		// Open and unlock the wallet.
 		int open(const QByteArray& password);
 		
-		// Close and lock the wallet
+		// Close and lock the wallet (saving changes).
 		int close(const QByteArray& password);
 
-		// Returns true if the current wallet is open
+		// Close the wallet, losing any changes.
+		int close();
+
+		// Returns true if the current wallet is open.
 		bool isOpen() const;
 
-		// Returns the current wallet name
+		// Returns the current wallet name.
 		const QString& walletName() const;
 
-		// Changes to a new wallet "name"
-		// returns false if it cannot change (ie another wallet is open)
-		bool changeWallet(const QString& name);
+		// The list of folders.
+		QStringList folderList() const;
 
-		// add
-		// remove
+		// Change the folder.
+		void setFolder(const QString& f) { _folder = f; }
 
-		//
-		const QPtrList<Entry>& getEntriesByType(const QString& type) const;
+		// Current folder.  If empty, it's the global folder.
+		const QString& folder() const { return _folder; }
 
-		const QStringList getTypeList() const;
+		// Does it have this folder?
+		bool hasFolder(const QString& f) const { return _entries.contains(f); }
+
+		// Look up an entry.  Returns null if it doesn't exist.
+		Entry *readEntry(const QString& key);
+
+		// Store an entry.
+		void writeEntry(Entry *e);
+
+		// Does this folder contain this entry?
+		bool hasEntry(const QString& key) const;
+
+		// Returns true if the entry was removed
+		bool removeEntry(const QString& key);
+
+		// Returns true if the folder was removed
+		bool removeFolder(const QString& f);
+
+		// The list of entries in this folder.
+		QStringList entryList() const;
 
 	private:
 		class BackendPrivate;
 		BackendPrivate *d;
 		QString _name;
 		bool _open;
-		QMap< QString,QPtrList< Entry > > _entries;
+		QString _folder;
+		// Map Folder->Entries
+		typedef QMap< QString, Entry* > EntryMap;
+		typedef QMap< QString, EntryMap > FolderMap;
+		FolderMap _entries;
 };
 
 };

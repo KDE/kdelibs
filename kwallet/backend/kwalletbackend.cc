@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001,2002 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,8 +32,8 @@
 
 using namespace KWallet;
 
-#define KWMAGIC "KWALLET\n\0"
-#define KWMAGIC_LEN 9
+#define KWMAGIC "KWALLET\n\r\0\n"
+#define KWMAGIC_LEN 11
 
 Backend::Backend(const QString& name) : _name(name) {
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
@@ -43,8 +43,20 @@ Backend::Backend(const QString& name) : _name(name) {
 
 Backend::~Backend() {
 	if (_open) {
-		// FIXME: Discard changes
+		close();
 	}
+}
+
+
+int Backend::close() {
+	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
+			delete j.data();
+		}
+	}
+	_entries.clear();
+
+return 0;
 }
 
 
@@ -264,7 +276,7 @@ int Backend::open(const QByteArray& password) {
 	sha.reset();
 	
 	// Load the data structures up
-	/* LOOK HERE DAWIT */
+	// FIXME
 
 	// chop off the leading blksz+4 bytes
 	QByteArray tmpenc;
@@ -301,8 +313,7 @@ int Backend::close(const QByteArray& password) {
 	QByteArray decrypted;
 
 	// populate decrypted
-	/* LOOK HERE DAWIT */
-
+	// FIXME
 
 	// calculate the hash of the file
 	SHA1 sha;
@@ -376,7 +387,7 @@ int Backend::close(const QByteArray& password) {
 	wholeFile.fill(0);
 
 	_open = false;
-	return 0;
+	return close();
 }
 
 
@@ -390,30 +401,81 @@ bool Backend::isOpen() const {
 }
 
 
-bool Backend::changeWallet(const QString& name) {
-	if (_open)
+QStringList Backend::folderList() const {
+	return _entries.keys();
+}
+
+
+QStringList Backend::entryList() const {
+	return _entries[_folder].keys();
+}
+
+
+Entry *Backend::readEntry(const QString& key) {
+Entry *rc = 0L;
+
+	if (_open && hasEntry(key)) {
+		rc = _entries[_folder][key];
+	}
+
+return rc;
+}
+
+
+void Backend::writeEntry(Entry *e) {
+	if (!_open)
+		return;
+
+	if (hasEntry(e->key())) {
+		_entries[_folder][e->key()]->copy(e);
+	} else {
+		_entries[_folder][e->key()] = e;
+	}
+}
+
+
+bool Backend::hasEntry(const QString& key) const {
+	return _entries[_folder].contains(key);
+}
+
+
+bool Backend::removeEntry(const QString& key) {
+	if (!_open)
 		return false;
 
-	_name = name;
-	return true;
-}
+FolderMap::Iterator fi = _entries.find(_folder);
+EntryMap::Iterator ei = fi.data().find(key);
 
-
-const QPtrList<Entry>& Backend::getEntriesByType(const QString& type) const {
-	return _entries[type];
-}
-
-
-const QStringList Backend::getTypeList() const {
-QStringList list;
-
-	for (QMap< QString, QPtrList< Entry > >::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
-		list << i.key();
+	if (ei != fi.data().end()) {
+		delete ei.data();
+		fi.data().remove(ei);
+		return true;
 	}
-	return list;
+
+return false;
 }
 
 
+bool Backend::removeFolder(const QString& f) {
+	if (!_open)
+		return false;
 
+FolderMap::Iterator fi = _entries.find(f);
+
+	if (fi != _entries.end()) {
+		if (_folder == f) {
+			_folder = QString::null;
+		}
+
+		for (EntryMap::Iterator ei = fi.data().begin(); ei != fi.data().end(); ++ei) {
+			delete ei.data();
+		}
+
+		_entries.remove(fi);
+		return true;
+	}
+
+return false;
+}
 
 
