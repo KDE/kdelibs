@@ -150,8 +150,22 @@ public:
 
   /**
    * @return a list containing the currently selected items.
+   *
+   * @deprecated
    */
-  QPtrList<QListViewItem> selectedItems() const; // ### BIC: KDE 4: use an implicitly shared class! (QValueList?)
+  QPtrList<QListViewItem> selectedItems() const;
+
+  /**
+   * @return a list containing the currently selected items.
+   *
+   * @param includeHiddenItems Set to true to return all items regardless of
+   * visibility. Set to false to only return items that are isVisible().
+   *
+   * @return a list of all selected listview items
+   *
+   * @since 3.4
+   */
+  QPtrList<QListViewItem> selectedItems(bool includeHiddenItems) const; // ### BIC: KDE 4: use an implicitly shared class! (QValutList?) and merge with above, default to true
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.

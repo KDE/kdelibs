@@ -1187,6 +1187,11 @@ void KListView::setDropVisualizer(bool b)
 
 QPtrList<QListViewItem> KListView::selectedItems() const
 {
+  return selectedItems(true);
+}
+
+QPtrList<QListViewItem> KListView::selectedItems(bool includeHiddenItems) const
+{
   QPtrList<QListViewItem> list;
 
   // Using selectionMode() instead of selectionModeExt() since for the cases that
@@ -1198,12 +1203,18 @@ QPtrList<QListViewItem> KListView::selectedItems() const
   case NoSelection:
       break;
   case Single:
-      if(selectedItem())
+      if(selectedItem() && (includeHiddenItems || selectedItem()->isVisible()))
           list.append(selectedItem());
       break;
   default:
   {
-      QListViewItemIterator it(const_cast<KListView *>(this), QListViewItemIterator::Selected);
+      int flags = QListViewItemIterator::Selected;
+      if (!includeHiddenItems)
+      {
+        flags |= QListViewItemIterator::Visible;
+      }
+
+      QListViewItemIterator it(const_cast<KListView *>(this), flags);
 
       for(; it.current(); ++it)
           list.append(it.current());
