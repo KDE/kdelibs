@@ -210,6 +210,13 @@ interface SoundServerV2 : SoundServer, PlayObjectFactoryV2
 	 * for storing samples on the sound server
 	 */
 	readonly attribute SampleStorage sampleStorage;
+
+	/**
+	 * this method checks for new object implementations (you can call this
+	 * if you have implemented and installed new components in C++ or with
+	 * artsbuilder, to make the soundserver use them without restart)
+	 */
+	void checkNewObjects();
 };
 
 /**
