@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.32  1997/09/24 18:58:53  kalle
+ * Iterators
+ *
  * Revision 1.31  1997/09/15 07:30:59  kalle
  * Avoided a security hole (like the "sendmail-worm") on platforms that
  * support vsnprintf. One more reason not to ship debug code to clients.
@@ -374,12 +377,12 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
       // insert the key/value line into the current dictionary
 	  KEntryDictEntry* pEntry = new KEntryDictEntry;
 	  pEntry->aValue = 
-		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 );
+		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 ).stripWhiteSpace(); 
 	  pEntry->bDirty = false;
 	  pEntry->bGlobal = bGlobal;
 	  pEntry->bNLS = false;
 
-      pCurrentGroupDict->insert( aCurrentLine.left( nEqualsPos ),
+      pCurrentGroupDict->insert( aCurrentLine.left( nEqualsPos ).stripWhiteSpace(),
 								 pEntry );
     }
 }
