@@ -681,7 +681,6 @@ void KURL::parse( const QString& _url, int encoding_hint )
     start = ++pos; // Skip '['
 
     // Node 8b: Read everything until ] or terminate
-    while( buf[pos] != ']' && pos < len ) pos++;
     badHostName = false;
     x = buf[pos];
     while( (x != ']') &&  (pos < len) )
