@@ -240,7 +240,7 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
 }
 
 void DOMEvent::tryPut(ExecState *exec, const UString &propertyName,
-                      const Value& value, int attr = None)
+                      const Value& value, int attr)
 {
   DOMObjectLookupPut<DOMEvent, DOMObject>(exec, propertyName, value, attr,
                                           &DOMEventTable, this);
