@@ -276,7 +276,7 @@ void Ftp::openConnection()
   infoMessage( i18n("Connected to host %1").arg(m_host) );
   kdDebug(7102) << "Connected ...." << endl;
 
-  m_bLoggedOn = ftpLogin( m_user, m_pass );
+  m_bLoggedOn = ftpLogin( m_user );
   if ( !m_bLoggedOn )
     return; // error emitted by ftpLogin
 
@@ -353,9 +353,9 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  *
  * @return true on success.
  */
-bool Ftp::ftpLogin( const QString & user, const QString & _pass )
+bool Ftp::ftpLogin( const QString & user )
 {
-  kdDebug(7102) << "ftpLogin " << user << " [password hidden]" << endl;
+  kdDebug(7102) << "ftpLogin " << user << endl;
   infoMessage( i18n("Sending login information") );
 
   assert( !m_bLoggedOn );
@@ -817,6 +817,17 @@ void Ftp::del( const KURL& url, bool isfile )
      openConnection();
 
   assert( m_bLoggedOn );
+
+  if ( !isfile )
+  {
+    // When deleting a directory, we must exit from it first
+    // The last command probably went into it (to stat it)
+    QCString tmp = "cwd ";
+    tmp += url.directory();
+
+    (void) ftpSendCmd( tmp, '2' );
+    // ignore errors
+  }
 
   QCString cmd = isfile ? "DELE " : "RMD ";
   cmd += path;
