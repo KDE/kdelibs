@@ -198,6 +198,8 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_Customize | WStyle_NoBorder, QPoint(0,0), false );
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
       KWin::setType( winId(), NET::TopMenu );
+      if( parentWidget())
+          XSetTransientForHint( qt_xdisplay(), winId(), parentWidget()->topLevelWidget()->winId());
 #endif
       QMenuBar::setFrameStyle( NoFrame );
       QMenuBar::setLineWidth( 0 );
@@ -259,6 +261,16 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
             if(ev->type() == QEvent::ShowFullScreen )
                 // will update the state properly
                 setTopLevelMenuInternal( d->topLevel );
+        }
+        if( parentWidget() && !parentWidget()->isTopLevel() && obj == parentWidget())
+        {
+            if( ev->type() == QEvent::Show )
+                {
+                XSetTransientForHint( qt_xdisplay(), winId(), parentWidget()->topLevelWidget()->winId());
+                show();
+                }
+            if( ev->type() == QEvent::Hide )
+                hide();
 	}
     }
     else
