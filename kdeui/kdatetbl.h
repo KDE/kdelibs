@@ -141,9 +141,10 @@ private:
 class KDateValidator : public QValidator
 {
 public:
-  KDateValidator(QWidget* parent=0, const char* name=0);
-  State validate(QString&, int&) const;
-  State date(const QString&, QDate&) const;
+    KDateValidator(QWidget* parent=0, const char* name=0);
+    virtual State validate(QString&, int&) const;
+    virtual void fixup ( QString & input ) const;
+    State date(const QString&, QDate&) const;
 };
 
 /**

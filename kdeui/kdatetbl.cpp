@@ -62,65 +62,17 @@ KDateValidator::validate(QString& text, int&) const
 QValidator::State
 KDateValidator::date(const QString& text, QDate& d) const
 {
-  int yearwidth, y, m, day;
-  unsigned int count;
-  QString temp;
-  bool ok;
-  // -----
-  /* Input is expected to be in the following form:
-     19990816.
-     If 990816 is entered, 1999 is expected. */
-  for(count=0; count<text.length(); ++count)
-    {
-      if(!text.at(count).isDigit())
-	{
-	  kdDebug() << "KDateValidator::validate: non-digit character entered." << endl;
-	  kapp->beep();
-	  return Invalid;
-	}
-    }
-  switch(text.length())
-    {
-    case 8:
-      yearwidth=4;
-      break;
-    case 6:
-      yearwidth=2;
-      break;
-    default:
-      return Valid;
-    }
-  temp=text.mid(0, yearwidth);
-  y=temp.toInt(&ok);
-  if(!ok)
-    {
-      return Valid;
-    }
-  if(yearwidth==2)
-    {
-      y+=1900;
-    }
-  temp=text.mid(yearwidth, 2);
-  m=temp.toInt(&ok);
-  if(!ok)
-    {
-      return Valid;
-    }
-  temp=text.mid(yearwidth+2, 2);
-  day=temp.toInt(&ok);
-  if(!ok)
-    {
-      return Valid;
-    }
-  // ----- now y, m and d hold the numeric values
-  //       lets see if this gives a valid date
-  if(d.setYMD(y, m, day))
-    {
+  QDate tmp = KGlobal::locale()->readDate(text);
+  if (!tmp.isNull()) {
+      d = tmp;
       return Acceptable;
-    } else {
-      kdDebug() << "KDateValidator::date: invalid date " << y << "/" << m << "/" << day << "." << endl;
+  } else
       return Valid;
-    }
+}
+
+void KDateValidator::fixup( QString& ) const
+{
+
 }
 
 KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)

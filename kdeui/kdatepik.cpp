@@ -185,6 +185,7 @@ KDatePicker::setDate(const QDate& date)
 	selectMonth->setText(*Month[date.month()-1]);
 	temp.setNum(date.year());
 	selectYear->setText(temp);
+	line->setText(KGlobal::locale()->formatDate(date, true));
 	return true;
     } else {
 	kdDebug() << "KDatePicker::setDate: refusing to set invalid date." << endl;
@@ -347,8 +348,9 @@ KDatePicker::lineEnterPressed()
   // -----
   if(val->date(line->text(), temp)==QValidator::Acceptable)
     {
-      kdDebug() << "KDatePicker::lineEnterPressed: valid date entered." << endl;
-      emit(dateEntered(temp));
+	kdDebug() << "KDatePicker::lineEnterPressed: valid date entered." << endl;
+	emit(dateEntered(temp));
+	setDate(temp);
     } else {
       kapp->beep();
       kdDebug() << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
