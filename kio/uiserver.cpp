@@ -662,7 +662,9 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
   // kill the corresponding job
   killJob( item->appId(), item->jobId() );
 
-  // don't delete item, because KIO::Job, when killed, should call back jobFinished()
+  // KIO::Job, when killed, should call back jobFinished(), but we can't
+  // really rely on that - the app may have crashed
+  delete item;
 }
 
 
