@@ -365,7 +365,7 @@ void RenderTable::recalcColInfos()
 void RenderTable::recalcColInfo( ColInfo *col )
 {
     //qDebug("------------- recalcColinfo: line=%d, span=%d", col->start, col->span-1);
-    
+
     KHTMLAssert( colInfos[col->span-1]->data()[col->start] == col );
     ColInfoLine *line = (colInfos[col->span-1]);
     ColInfo **data = line->data() + col->start;
@@ -375,7 +375,7 @@ void RenderTable::recalcColInfo( ColInfo *col )
     // add table-column if exists
     RenderObject *child = firstChild();
     while( child ) {
-	if ( child->style()->display() == TABLE_COLUMN || 
+	if ( child->style()->display() == TABLE_COLUMN ||
 	     child->style()->display() == TABLE_COLUMN_GROUP ) {
 	    RenderTableCol *tc = static_cast<RenderTableCol *>(child);
 	    if ( tc->span() == col->span && tc->col() == col->start ) {
@@ -383,7 +383,7 @@ void RenderTable::recalcColInfo( ColInfo *col )
 		break;
 	    }
 	} else {
-	    break; 
+	    break;
 	}
 	child = child->nextSibling();
     }
@@ -391,12 +391,12 @@ void RenderTable::recalcColInfo( ColInfo *col )
     // now the cells
     for ( unsigned int r = 0; r < totalRows; r++ ) {
 	RenderTableCell *cell = cells[r][col->start];
-	if ( cell && cell->colSpan() == col->span ) 
+	if ( cell && cell->colSpan() == col->span )
 	    addColInfo(cell, false);
     }
     delete col;
     setMinMaxKnown( false );
-    
+
     //qDebug("------------- end recalcColinfo");
 }
 
@@ -456,7 +456,7 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         addColumns(totalCols - _startCol + _colSpan);
 
     ColInfo* col = colInfos[_colSpan-1]->at(_startCol);
-    
+
     bool changed = false;
     bool recalc = false;
 
@@ -520,14 +520,14 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
 	    }
 	}
     }
-    if ( recalc ) 
+    if ( recalc )
 	recalcColInfo( col );
     if ( changed )
 	setMinMaxKnown(false);
 
     if ( recalc || changed )
 	colWidthKnown = false;
-    
+
 #ifdef TABLE_DEBUG
     kdDebug( 6040 ) << "(" << this << "):addColInfo():" << endl;
     kdDebug( 6040 ) << "    startCol=" << col->start << " span=" << col->span << endl;
@@ -976,7 +976,7 @@ void RenderTable::calcColMinMax()
 
     if(widthType == Fixed) {
 	m_width = style()->width().value;
-	if ( m_width < m_minWidth ) 
+	if ( m_width < m_minWidth )
 	    m_width = m_minWidth;
         m_minWidth = m_maxWidth = m_width;
     } else {
@@ -987,7 +987,7 @@ void RenderTable::calcColMinMax()
     m_minWidth += borderLeft() + borderRight();
     m_maxWidth += borderLeft() + borderRight();
 
-#ifdef TABLE_DEBUG    
+#ifdef TABLE_DEBUG
     kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " m_minWidth=" << m_minWidth <<
                 " m_maxWidth=" << m_maxWidth <<
@@ -1025,7 +1025,7 @@ void RenderTable::calcWidth()
 
     calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),availableWidth);
 
-    // PHASE 4, calculate maximums for percent and relative columns. We can't do this in 
+    // PHASE 4, calculate maximums for percent and relative columns. We can't do this in
     // the minMax calculations, as we do not have the correct table width there.
 
     for ( unsigned int s=0;  (int)s<maxColSpan ; ++s) {
@@ -1334,7 +1334,7 @@ void RenderTable::layout()
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
-    
+
     //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
 
     _lastParentWidth = containingBlockWidth();
@@ -1345,7 +1345,7 @@ void RenderTable::layout()
     calcWidth();
     if ( !colWidthKnown || oldWidth != m_width )
 	calcColWidth();
-    
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight() << endl;
 #endif
@@ -1569,28 +1569,32 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 #ifdef TABLE_PRINT
      kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
-
-     if(style()->visibility() == VISIBLE)
-         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-
-    if ( tCaption )
-        tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
-
     // the case below happens during parsing
     // when we have a new table that never got layouted. Don't print it.
     if ( totalRows == 1 && rowHeights[1] == 0 )
 	return;
+
+    if(style()->visibility() == VISIBLE)
+         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+
+    int topextra = 0;
+
+    if ( tCaption ) {
+        tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
+        if (tCaption->style()->captionSide() != CAPBOTTOM)
+            topextra = - borderTopExtra();
+    }
 
     // check which rows and cols are visible and only print these
     // ### fixme: could use a binary search here
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
     for ( ; startrow < totalRows; startrow++ ) {
-	if ( _ty + rowHeights[startrow+1] > _y )
+	if ( _ty + topextra + rowHeights[startrow+1] > _y )
 	    break;
     }
     for ( ; endrow > 0; endrow-- ) {
-	if ( _ty + rowHeights[endrow-1] < _y + _h )
+	if ( _ty + topextra + rowHeights[endrow-1] < _y + _h )
 	    break;
     }
     unsigned int startcol = 0;
@@ -1632,7 +1636,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 void RenderTable::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
-    
+
     if ( needsCellsRecalc )
 	recalcCells();
 #ifdef DEBUG_LAYOUT
@@ -1641,7 +1645,7 @@ void RenderTable::calcMinMaxWidth()
 
     /*
      * Calculate min and max width for every column,
-     * Max width for percent cols are still not accurate, but as they don't 
+     * Max width for percent cols are still not accurate, but as they don't
      * influence the total max width of the table we don't care.
      */
      calcColMinMax();
@@ -2197,9 +2201,9 @@ void RenderTableCol::updateFromElement()
       DOM::HTMLTableColElementImpl *tc = static_cast<DOM::HTMLTableColElementImpl *>(node);
       _span = tc->span();
   } else {
-      if ( style()->display() == TABLE_COLUMN_GROUP ) 
+      if ( style()->display() == TABLE_COLUMN_GROUP )
 	  _span = 0;
-      else 
+      else
 	  _span = 1;
   }
 }
