@@ -16,8 +16,6 @@ import java.security.*;
 public class KJASAppletClassLoader
    extends URLClassLoader
 {
-    protected URL baseURL;
-
     public static KJASAppletClassLoader createLoader( URL url )
     {
         URL[] urls = new URL[1];
@@ -103,7 +101,10 @@ public class KJASAppletClassLoader
         }
 
         if( !inthere )
+        {
+            Main.kjas_debug( "KJASAppletClassLoader::addCodeBase, just added: " + url );
             addURL( url );
+        }
     }
 
     public static void main( String[] args )
