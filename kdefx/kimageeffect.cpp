@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MaxRGB 255L
 #define DegreesToRadians(x) ((x)*M_PI/180.0)
 
-using std::cerr;
+using namespace std;
 
 inline unsigned int intensityValue(unsigned int color)
 {
