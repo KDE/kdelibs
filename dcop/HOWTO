@@ -61,7 +61,7 @@ Qt classes.  This is fast and easy.  Currently, there is no
 type checking or parameter checking available for RPC, but this may be
 provided at some time in the future in the form of a simple IDL-like
 compiler (NOTE: 5 days later the IDL compiler is already started; 
-look in kdelibs/kidl).  Until that is available, you will have to code
+look in dcopidl/).  Until that is available, you will have to code
 some things by hand that normally the compiler or CORBA take care of
 automatically, but it is not a lot of work.
 
