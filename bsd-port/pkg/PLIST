@@ -140,13 +140,17 @@ share/locale/ru/LC_MESSAGES/kde.mo
 share/locale/ru/charset
 share/locale/sk/LC_MESSAGES/kde.mo
 share/locale/sv/LC_MESSAGES/kde.mo
-share/locale/zh/LC_MESSAGES/kde.mo
+share/locale/zh_GB2312/LC_MESSAGES/kde.mo
+share/locale/zh_TW_Big5/LC_MESSAGES/kde.mo
 share/toolbar/configure.xpm
 @exec /sbin/ldconfig -m %B
 @dirrm share/toolbar
-@dirrm share/locale/zh/LC_MESSAGES
-@dirrm share/locale/zh
+@dirrm share/locale/zh_GB2312/LC_MESSAGES
+@dirrm share/locale/zh_GB2312
+@dirrm share/locale/zh_TW_Big5/LC_MESSAGES
+@dirrm share/locale/zh_TW_Big5
 @dirrm share/locale/sv/LC_MESSAGES
+@dirrm share/locale/sv
 @dirrm share/locale/sk/LC_MESSAGES
 @dirrm share/locale/sk
 @dirrm share/locale/ru/LC_MESSAGES
@@ -158,17 +162,23 @@ share/toolbar/configure.xpm
 @dirrm share/locale/pl/LC_MESSAGES
 @dirrm share/locale/pl
 @dirrm share/locale/no/LC_MESSAGES
+@dirrm share/locale/no
 @dirrm share/locale/nl/LC_MESSAGES
+@dirrm share/locale/nl
 @dirrm share/locale/it/LC_MESSAGES
+@dirrm share/locale/it
 @dirrm share/locale/hu/LC_MESSAGES
 @dirrm share/locale/hu
 @dirrm share/locale/hr/LC_MESSAGES
+@dirrm share/locale/hr
 @dirrm share/locale/fr/LC_MESSAGES
 @dirrm share/locale/fr
 @dirrm share/locale/fi/LC_MESSAGES
 @dirrm share/locale/fi
 @dirrm share/locale/es/LC_MESSAGES
+@dirrm share/locale/es
 @dirrm share/locale/el/LC_MESSAGES
+@dirrm share/locale/el
 @dirrm share/locale/de/LC_MESSAGES
 @dirrm share/locale/de
 @dirrm share/locale/da/LC_MESSAGES
@@ -179,6 +189,7 @@ share/toolbar/configure.xpm
 @dirrm share/locale/ca
 @dirrm share/locale
 @dirrm share/doc/HTML/en/kdelibs
+@dirrm share/doc/HTML/default
 @dirrm share/doc/HTML
 @dirrm share/config
 @dirrm share/apps/khtmlw/pics
