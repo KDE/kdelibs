@@ -48,28 +48,28 @@ extern "C" {
  *
  * This value is used to detect templates loops
  */
-//LIBXSLT_PUBLIC extern int xsltMaxDepth;
+/*LIBXSLT_PUBLIC extern int xsltMaxDepth;*/
 
 /**
  * xsltEngineVersion:
  *
  * The version string for libxslt
  */
-//LIBXSLT_PUBLIC extern const char *xsltEngineVersion;
+/*LIBXSLT_PUBLIC extern const char *xsltEngineVersion;*/
 
 /**
  * xsltLibxsltVersion:
  *
  * The version of libxslt compiled
  */
-//LIBXSLT_PUBLIC extern const int xsltLibxsltVersion;
+/*LIBXSLT_PUBLIC extern const int xsltLibxsltVersion;*/
 
 /**
  * xsltLibxmlVersion:
  *
  * The version of libxml libxslt was compiled against
  */
-//LIBXSLT_PUBLIC extern const int xsltLibxmlVersion;
+/*LIBXSLT_PUBLIC extern const int xsltLibxmlVersion;*/
 
 /*
  * Global cleanup function
