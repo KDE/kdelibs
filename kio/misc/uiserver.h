@@ -190,6 +190,8 @@ protected:
 };
 
 class QResizeEvent;
+class QHideEvent;
+class QShowEvent;
 class ProgressConfigDialog;
 class QPopupMenu;
 class UIServerSystemTray;
@@ -370,6 +372,8 @@ protected:
 
   virtual void resizeEvent(QResizeEvent* e);
   virtual void closeEvent( QCloseEvent * );
+  virtual void showEvent(QShowEvent*);
+  virtual void hideEvent(QHideEvent*);
 
   void setItemVisible( ProgressItem * item, bool visible );
 

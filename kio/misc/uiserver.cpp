@@ -1248,6 +1248,7 @@ void UIServer::writeSettings() {
   config.writeEntry("ShowStatusBar", m_showStatusBar);
   config.writeEntry("ShowToolBar", m_showToolBar);
   config.writeEntry("KeepListOpen", m_keepListOpen);
+  config.writeEntry("ShowList", m_bShowList);
 }
 
 
@@ -1271,6 +1272,21 @@ void UIServer::resizeEvent(QResizeEvent* e)
    KMainWindow::resizeEvent(e);
    writeSettings();
 }
+
+void UIServer::showEvent(QShowEvent* e)
+{
+  KMainWindow::showEvent(e);
+  m_bShowList=true;
+  writeSettings();
+}
+
+void UIServer::hideEvent(QHideEvent* e)
+{
+  KMainWindow::hideEvent(e);
+  m_bShowList=false;
+  writeSettings();
+}
+
 
 //------------------------------------------------------------
 
