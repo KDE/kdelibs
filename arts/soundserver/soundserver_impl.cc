@@ -55,7 +55,7 @@ long SoundServer_impl::secondsUntilSuspend() {
 	if (Dispatcher::the()->flowSystem()->suspended())
 		return 0;
 	if (Dispatcher::the()->flowSystem()->suspendable())
-		return (300-asCount)/5;
+		return (autoSuspendTime*5 - asCount)/5;
 	return -1;
 };
 

@@ -33,9 +33,6 @@ using namespace Arts;
 
 #include "config.h"
 
-SoundServerV2_impl::SoundServerV2_impl() : _autoSuspendSeconds(60) {
-}
-
 string SoundServerV2_impl:: audioMethod() {
 	return AudioSubSystem::the()->audioIO();
 }
@@ -69,73 +66,11 @@ long SoundServerV2_impl::fragmentSize() {
 }
 
 long SoundServerV2_impl::autoSuspendSeconds() {
-	return _autoSuspendSeconds;
+	return autoSuspendTime;
 }
 
 void SoundServerV2_impl::autoSuspendSeconds(long int newValue) {
-	_autoSuspendSeconds = newValue;
-}
-
-/*
- * This is just like the implementation in soundserver_impl.cc
- * except that the suspend time can vary.
- */
-long SoundServerV2_impl::secondsUntilSuspend() {
-	if (Dispatcher::the()->flowSystem()->suspended())
-		return 0;
-	if (Dispatcher::the()->flowSystem()->suspendable())
-		return (autoSuspendSeconds()*5 - asCount)/5;
-	return -1;
-}
-
-/*
- * This is just like the implementation in soundserver_impl.cc
- * except that the suspend time can vary.
- */
-void SoundServerV2_impl:: notifyTime()
-{
-	static long lock = 0;
-	assert(!lock);          // paranoid reentrancy check (remove me later)
-	lock++;
-	/*
-     * Three times the same game: look if a certain object is still
-     * active - if yes, keep, if no, remove
-     */
-
-    /* look for jobs which may have terminated by now */
-    list<SoundServerJob *>::iterator i;
-
-	i = jobs.begin();
-	while(i != jobs.end())
-	{
-		SoundServerJob *job = *i;
-
-		if(job->done())
-		{
-			delete job;
-			jobs.erase(i);
-			arts_debug("job finished");
-			i = jobs.begin();
-		}
-		else i++;
-	}
-
-/*
- * AutoSuspend
- */
-	if(Dispatcher::the()->flowSystem()->suspendable() &&
-	   !Dispatcher::the()->flowSystem()->suspended())
-	{
-		asCount++;
-		if(asCount > autoSuspendSeconds()*5)
-		{
-			Dispatcher::the()->flowSystem()->suspend();
-			arts_info("sound server suspended");
-		}
-	}
-	else
-		asCount = 0;
-	lock--;
+	autoSuspendTime = newValue;
 }
 
 #ifndef __SUNPRO_CC

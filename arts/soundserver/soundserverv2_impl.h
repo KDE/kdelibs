@@ -45,12 +45,6 @@ namespace Arts {
 		string audioDevice();
 		long fragments();
 		long fragmentSize();
-		long secondsUntilSuspend();
-		void notifyTime();
-		long _autoSuspendSeconds;
-		
-	public:
-		SoundServerV2_impl();
 	};
 };
 

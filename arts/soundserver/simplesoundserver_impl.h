@@ -83,6 +83,7 @@ protected:
 	std::list<SoundServerJob *> jobs;
 	StereoEffectStack _outstack;
 	long asCount;
+	long autoSuspendTime;
 
 public:
 	SimpleSoundServer_impl();
