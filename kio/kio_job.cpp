@@ -99,7 +99,7 @@ void KIOJob::initStatic() {
     s_allJobs = new jobDict;
   }
 
-  if ( !m_pListProgressDlg ) {  // !!! really need to check ?
+  if ( !m_pListProgressDlg ) {
     m_pListProgressDlg = new KIOListProgressDlg;
   }
 }
@@ -675,7 +675,6 @@ void KIOJob::slotCanResume( bool _resume ) {
 
 void KIOJob::slotTotalSize( unsigned long _bytes ) {
   m_iTotalSize = _bytes;
-  m_iPercent = 0; // !!! needed ?
   
   emit sigTotalSize( m_id, _bytes );
   kdebug( KDEBUG_INFO, 7007, "TotalSize %ld", _bytes );
