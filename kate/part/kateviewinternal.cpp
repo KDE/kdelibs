@@ -1865,6 +1865,9 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
     return false;
   }
   
+  if ( obj == this )
+      KCursor::autoHideEventFilter( obj, e );
+  
   switch( e->type() )
   {
     case QEvent::KeyPress:
