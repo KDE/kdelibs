@@ -264,6 +264,10 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
            Isdn = 2048, Pcs = 4096, Pager = 8192 };
 
 
+  // Check if parsing failed
+  if (mVCard == 0)
+     return addressee;
+           
   //set the addressees name and formated name
   QStringList tmpList = mVCard->getValues(VCARD_N);
   QString formattedName = "";
