@@ -662,13 +662,13 @@ void RenderPartObject::updateWidget()
           params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( objbase->getAttribute(ATTR_CODEBASE).string() ) );
           if (!objbase->getAttribute(ATTR_WIDTH).isEmpty())
               params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( objbase->getAttribute(ATTR_WIDTH).string() ) );
-          else if (!embed->getAttribute(ATTR_WIDTH).isEmpty()) {
+          else if (embed && !embed->getAttribute(ATTR_WIDTH).isEmpty()) {
               params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( embed->getAttribute(ATTR_WIDTH).string() ) );
               objbase->setAttribute(ATTR_WIDTH, embed->getAttribute(ATTR_WIDTH));
           }
           if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
               params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
-          else if (!embed->getAttribute(ATTR_HEIGHT).isEmpty()) {
+          else if (embed && !embed->getAttribute(ATTR_HEIGHT).isEmpty()) {
               params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( embed->getAttribute(ATTR_HEIGHT).string() ) );
               objbase->setAttribute(ATTR_HEIGHT, embed->getAttribute(ATTR_HEIGHT));
           }
