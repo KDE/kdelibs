@@ -92,12 +92,10 @@ kdelibs3: shlib-missing-in-control-file kded.so usr/lib/kded.so
 kdelibs3: shlib-missing-in-control-file ksgistyle.so usr/lib/ksgistyle.so
 kdelibs3: shlib-missing-in-control-file kio_file.so usr/lib/kde2/kio_file.so
 kdelibs3: shlib-missing-in-control-file kio_http.so usr/lib/kde2/kio_http.so
-kdelibs3: shlib-missing-in-control-file libkdb_postgres.so usr/lib/libkdb_postgres.so
 kdelibs3: shlib-missing-in-control-file libkdeprint_cups.so usr/lib/kde2/libkdeprint_cups.so
 kdelibs3: shlib-missing-in-control-file klauncher.so usr/lib/klauncher.so
 kdelibs3: shlib-missing-in-control-file basicstyle.so usr/lib/basicstyle.so
 kdelibs3: shlib-missing-in-control-file kimg_eps.so usr/lib/kde2/kimg_eps.so
-kdelibs3: shlib-missing-in-control-file libkdb_mysql.so usr/lib/libkdb_mysql.so
 kdelibs3: shlib-missing-in-control-file kimg_g3.so usr/lib/kde2/kimg_g3.so
 kdelibs3: shlib-missing-in-control-file klegacystyle.so usr/lib/klegacystyle.so
 kdelibs3: shlib-missing-in-control-file kio_http_cache_cleaner.so usr/lib/kio_http_cache_cleaner.so

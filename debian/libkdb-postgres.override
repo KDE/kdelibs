@@ -1,0 +1,1 @@
+libkdb-postgres: shlib-missing-in-control-file libkdb_postgres.so usr/lib/libkdb_postgres.so
