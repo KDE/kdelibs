@@ -120,7 +120,7 @@ QString KRootProp::readEntry( const QString& rKey,
 	
 		QString *aValue = propDict[ rKey.data() ];
 
-		if (!aValue && pDefault )
+		if (!aValue && !pDefault.isNull() )
 		    *aValue = pDefault;
 
 		return *aValue;
@@ -229,7 +229,7 @@ QColor KRootProp::readColorEntry( const QString& rKey,
 	  // Support #ffffff style colour naming.
 	  // Help ease transistion from legacy KDE setups
 	  if( aValue.find("#") == 0 ) {
-	  	aRetColor.setNamedColor( aValue );
+	  	aRetColor.setNamedColor( aValue.ascii() );
 		return aRetColor;
 	  }
 		

@@ -70,7 +70,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
     decode( tmp );
     setHTMLRef( tmp );
   }
-  else if ( strstr( _rel_url, ":/" ) != 0 )
+  else if ( _rel_url.find( ":/" ) >= 0 )
   {
     *this = _rel_url;
   }

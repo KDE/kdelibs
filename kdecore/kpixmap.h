@@ -169,7 +169,7 @@ public:
 	 * The QImageIO documentation lists the supported image
 	 * formats and explains how to add extra formats.
 	 */
-	bool load( const QString& fileName, const QString& format, 
+	bool load( const QString& fileName, const char *format, 
 		int conversion_flags );
 	
 	/*
@@ -178,7 +178,7 @@ public:
 	 * what argument(s) it accepts.
 	 */
 	bool load( const QString& fileName, 
-		const QString& format = QString::null,
+		const char *format = 0,
 		ColorMode mode = WebColor );
 	/*
 	 * Returns TRUE of the image is posessed of a color table that

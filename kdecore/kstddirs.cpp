@@ -129,7 +129,7 @@ const QString KStandardDirs::closest( DirScope method,
 		// not already inserted, so insert them now.
 		QString realsuffix(suffix);
 		int klen = strlen( KDEDIR );
-		if( !strncmp( suffix, "KDEDIR", klen ) ) {
+		if( !strncmp( suffix.ascii(), "KDEDIR", klen ) ) {
 			// remove prefix KDEDIR from path
 			realsuffix += klen;
 		}

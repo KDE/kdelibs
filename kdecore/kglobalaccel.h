@@ -97,7 +97,7 @@ class KGlobalAccel : public QObject
 	   will be automatically destroyed in the parent's destructor,
 	   thus releaseing the keys.
 	*/
-	KGlobalAccel(QWidget * parent, const QString& name = QString::null, bool _do_not_grab = false);
+	KGlobalAccel(QWidget * parent, const char *name = 0, bool _do_not_grab = false);
 
     
 	/**

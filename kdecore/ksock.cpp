@@ -19,6 +19,12 @@
 
 /*
  * $Log$
+ * Revision 1.30  1999/04/19 15:49:47  kulow
+ * cleaning up yet some more header files (fixheaders is your friend).
+ * Adding copy constructor to KPixmap to avoid casting while assingment.
+ *
+ * The rest of the fixes in kdelibs and kdebase I will commit silently
+ *
  * Revision 1.29  1999/04/18 19:55:43  kulow
  * CVS_SILENT some more fixes
  *
@@ -86,7 +92,7 @@
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
-KSocket::KSocket( const QString& _host, unsigned short int _port, int _timeout ) :
+KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
     timeOut = _timeout;
@@ -94,7 +100,7 @@ KSocket::KSocket( const QString& _host, unsigned short int _port, int _timeout )
     connect( _host, _port );
 }
 
-KSocket::KSocket( const QString& _host, unsigned short int _port ) :
+KSocket::KSocket( const char *_host, unsigned short int _port ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
     timeOut = 30;
@@ -102,7 +108,7 @@ KSocket::KSocket( const QString& _host, unsigned short int _port ) :
     connect( _host, _port );
 }
 
-KSocket::KSocket( const QString& _path ) :
+KSocket::KSocket( const char *_path ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
   domain = PF_UNIX;
@@ -171,7 +177,7 @@ bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
   struct hostent *hostinfo;
   server_name.sin_family = AF_INET;
   server_name.sin_port = htons( port );
-  hostinfo = gethostbyname( hostname );
+  hostinfo = gethostbyname( hostname.ascii() );
   
   if ( !hostinfo )
     {
@@ -186,7 +192,7 @@ bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
 /*
  * Connects the PF_UNIX domain socket to _path.
  */
-bool KSocket::connect( const QString& _path )
+bool KSocket::connect( const char *_path )
 {
   if ( domain != PF_UNIX )
     fatal( "Connecting a PF_INET socket to a PF_UNIX domain socket\n");
@@ -199,7 +205,7 @@ bool KSocket::connect( const QString& _path )
   int l = strlen( _path );
   if ( l > UNIX_PATH_MAX - 1 )
   {      
-    warning( "Too long PF_UNIX domain name '%s'\n",_path.ascii());
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
     return false;
   }  
   strcpy( unix_addr.sun_path, _path );
@@ -325,7 +331,7 @@ KSocket::~KSocket()
 }
 
 
-KServerSocket::KServerSocket( const QString& _path ) :
+KServerSocket::KServerSocket( const char *_path ) :
   sock( -1 )
 {
   domain = PF_UNIX;
@@ -355,7 +361,7 @@ KServerSocket::KServerSocket( int _port ) :
   connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
 }
 
-bool KServerSocket::init( const QString& _path )
+bool KServerSocket::init( const char *_path )
 {
   if ( domain != PF_UNIX )
     return false;
@@ -369,12 +375,12 @@ bool KServerSocket::init( const QString& _path )
     return false;
   }
 
-  unlink(_path);   
+  unlink(_path );   
   name.sun_family = AF_UNIX;
   int l = strlen( _path );
   if ( l > UNIX_PATH_MAX - 1 )
   {      
-    warning( "Too long PF_UNIX domain name '%s'\n",_path.ascii());
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
     return false;
   }  
   strcpy( name.sun_path, _path );

@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.22  1999/05/07 15:42:36  kulow
+   making some changes to the code and partly to the API to make it
+   -DQT_NO_ASCII_CAST compatible.
+   The job is quite boring, but triggers some abuses of QString. BTW:
+   I added some TODOs to the code where I was too lazy to continue.
+   Someone should start a grep for TODO in the code on a regular base ;)
+
    Revision 1.21  1999/04/18 19:55:42  kulow
    CVS_SILENT some more fixes
 
@@ -152,7 +159,7 @@ public:
 
 	@return	The loaded icon.
   */
-  QPixmap loadIcon( const QString &name, int w = 0, int h = 0, 
+  QPixmap loadIcon( const char *name, int w = 0, int h = 0, 
   		bool canReturnNull = true );
 
 
@@ -165,7 +172,7 @@ public:
 
 	@see loadIcon
   */
-  QPixmap reloadIcon( const QString &name, int w = 0, int h = 0);
+  QPixmap reloadIcon( const char *name, int w = 0, int h = 0);
   
   /** 
   	Load a mini icon from disk or cache.
@@ -173,7 +180,7 @@ public:
 
 	@see loadIcon
   */
-  QPixmap loadMiniIcon( const QString &name , int w = 0, int h = 0 );
+  QPixmap loadMiniIcon( const char *name , int w = 0, int h = 0 );
 
   /**
    * The loadApplication-Icon functions are similar to the 
@@ -187,14 +194,14 @@ public:
    *
    * @see loadIcon
    */
-  QPixmap loadApplicationIcon( const QString &name, int w = 0, int h = 0 );
+  QPixmap loadApplicationIcon( const char *name, int w = 0, int h = 0 );
 
   /**
   	Similar to loadMiniIcon, but searches for a mini icon.
 
 	@see loadMiniIcon, loadApplicationIcon
   */
-  QPixmap loadApplicationMiniIcon( const QString &name, int w = 0, int h = 0 );
+  QPixmap loadApplicationMiniIcon( const char *name, int w = 0, int h = 0 );
 
 
   /** 
@@ -222,7 +229,7 @@ public:
   */
 
   bool insertDirectory( int index, const char *dir_name ) {
-    return pixmap_dirs.insert( index, dir_name ); }
+      return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
 
   /** 
@@ -235,7 +242,7 @@ public:
 
 	@return the physical path to the named icon.
   */
-  QString getIconPath( const QString &name, 
+  QString getIconPath( const char *name, 
   		bool always_valid=false);
 
 
@@ -247,7 +254,7 @@ protected:
   QStrList           name_list;
   QStrList           pixmap_dirs;
   QList<QPixmap>     pixmap_list;
-  QPixmap loadInternal(const QString &name, int w = 0, int h = 0 );
+  QPixmap loadInternal(const char *name, int w = 0, int h = 0 );
 
 private:
   void initPath();

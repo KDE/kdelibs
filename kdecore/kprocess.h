@@ -552,7 +552,7 @@ public:
       the mechanism for finding a valid shell as described in the detailed
       description of this class.
   */
-  KShellProcess(const QString& shellname=QString::null);
+  KShellProcess(const char *shellname=0);
 
   /**
    * Descructor.
@@ -579,7 +579,7 @@ private:
    * Used by @ref searchShell in order to find out whether the shell found
    * is actually executable at all.
   */
-  bool isExecutable(const QString& fname);
+  bool isExecutable(const char *fname);
 
   char *shell;
 

@@ -121,7 +121,7 @@ bool KProcess::setExecutable(const QString& proc)
 
   arguments.removeFirst();
   if (0 != proc) {
-    hlp = qstrdup(proc);
+    hlp = qstrdup(proc.ascii());
     CHECK_PTR(hlp);
     arguments.insert(0,hlp);
   }
@@ -136,7 +136,7 @@ bool KProcess::setExecutable(const QString& proc)
 
 KProcess &KProcess::operator<<(const QString& arg)
 {
-  char *new_arg= qstrdup(arg);
+  char *new_arg= qstrdup(arg.ascii());
 
   CHECK_PTR(new_arg);
   arguments.append(new_arg);
@@ -525,7 +525,7 @@ void KProcess::commClose()
 // CC: Class KShellProcess
 ///////////////////////////
 
-KShellProcess::KShellProcess(const QString& shellname):
+KShellProcess::KShellProcess(const char *shellname):
   KProcess()
 {
   if (0 != shellname)
@@ -578,7 +578,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 //   cmd.stripWhiteSpace();
 //   if (cmd[cmd.length()-1] != '&')
 //       cmd += '&';
-  arglist[2] = qstrdup(cmd);
+  arglist[2] = qstrdup(cmd.ascii());
   arglist[3] = 0;
 
   if (!setupCommunication(comm))
@@ -663,7 +663,7 @@ char *KShellProcess::searchShell()
 
 
 
-bool KShellProcess::isExecutable(const QString& fname)
+bool KShellProcess::isExecutable(const char *fname)
 {
   struct stat fileinfo;
 

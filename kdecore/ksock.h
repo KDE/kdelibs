@@ -69,14 +69,14 @@ public:
      * @param _host	the remote host to which to connect.
      * @param _port	the port on the remote host.
      */
-    KSocket( const QString& _host, unsigned short int _port );
-    KSocket( const QString& _host, unsigned short int _port, int timeOut);
+    KSocket( const char *_host, unsigned short int _port );
+    KSocket( const char *_host, unsigned short int _port, int timeOut);
     
     /** 
      * Connects to a UNIX domain socket.
      * @param _path    the filename of the socket
      */
-    KSocket( const QString& _path );
+    KSocket( const char * _path );
 
     /** 
      * Destructor. Closes the socket if it is still open.
@@ -150,7 +150,7 @@ public slots:
     
 protected:
     bool connect( const QString& _host, unsigned short int _port );
-    bool connect( const QString& _path );
+    bool connect( const char *_path );
   
     bool init_sockaddr( const QString& hostname, unsigned short int port );
     
@@ -204,7 +204,7 @@ public:
     /**
      * Creates a UNIX domain server socket.
      */
-    KServerSocket( const QString& _path );
+    KServerSocket( const char *_path );
   
     /** 
      * Destructor. Closes the socket if it was not already closed.
@@ -241,7 +241,7 @@ signals:
 
 protected:
     bool init( short unsigned int );
-    bool init( const QString& _path );
+    bool init( const char *_path );
   
     /** 
      * Notifies us when there is something to read on the port.

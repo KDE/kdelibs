@@ -523,15 +523,15 @@ KCharsetsData::KCharsetsData(){
   config=new KSimpleConfig(fileName, TRUE);
   config->setGroup("general");
   QString i18dir = config->readEntry("i18ndir");
-  if (i18dir) scanDirectory(i18dir);
+  if (!i18dir.isNull()) scanDirectory(i18dir.ascii());
   kchdebug("Creating alias dictionary...\n");
   KEntryIterator *it=config->entryIterator("aliases");
   if ( it )
   {
       while( it->current() ){
-	const char*alias=it->currentKey();
+	const char*alias=it->currentKey().ascii();
 	kchdebug(" %s -> ",alias);
-	const char*name=it->current()->aValue;
+	const char*name=it->current()->aValue.ascii();
 	kchdebug(" %s:",name);
 	KCharsetEntry *ce=varCharsetEntry(name);
 	if (ce){
@@ -563,10 +563,9 @@ void KCharsetsData::scanDirectory(const char *path){
     int comma=alias.find(',');
     if (comma) alias.remove(comma,alias.length()-comma);
     else alias="";
-    if (!charsetEntry(alias) && !charsetEntry(name)){
+    if (!charsetEntry(alias.ascii()) && !charsetEntry(name.ascii())){
       KCharsetEntry *entry=new KCharsetEntry;
-      char *ptr=new char [fi->fileName().length()+1];
-      strcpy(ptr,name);
+      char *ptr = qstrdup(fi->fileName().ascii());
       entry->name=ptr;
       entry->qtCharset=QFont::AnyCharSet;
       entry->toUnicode=0;
@@ -610,7 +609,7 @@ void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
   while(!t.eof()){
     l=t.readLine();
     if (l=="END CHARMAP") break;
-    sscanf(l,"%*s %16s %8s %*s",codeBuf,unicodeBuf);
+    sscanf(l.ascii(),"%*s %16s %8s %*s",codeBuf,unicodeBuf);
     sscanf(unicodeBuf,"<U%x>",&unicode);
     code=0;
     if ( sscanf(codeBuf,"/x%X",&code) < 1 )
@@ -706,7 +705,7 @@ bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &f
   kchdebug("Testing if face %s is of charset %s...",face.ascii(),
                                                                charset->name);
   config->setGroup("faces");
-  const char *faceStr=config->readEntry(charset->name);
+  const char *faceStr=config->readEntry(charset->name).ascii();
   kchdebug("%s...",faceStr);
   QRegExp rexp(faceStr,FALSE,TRUE);
   if (face.contains(rexp)){
@@ -723,8 +722,8 @@ const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
   KEntryIterator * it=config->entryIterator("faces");
   if (!it) return 0;
   while( it->current() ){
-    const char * faceStr=it->current()->aValue;
-    const char * key=it->currentKey();
+    const char * faceStr=it->current()->aValue.ascii();
+    const char * key=it->currentKey().ascii();
     if (!faceStr || faceStr[0]==0){
       delete it;
       return charsetEntry(key);
@@ -761,7 +760,7 @@ QIntDict<unsigned> *KCharsetsData::getToUnicodeDict(const KCharsetEntry *charset
 const char *KCharsetsData::faceForCharset(const KCharsetEntry *charset){
 
   config->setGroup("faces");
-  return config->readEntry(charset->name);
+  return config->readEntry(charset->name).ascii();
 }
 
 const KCharsetEntry *KCharsetsData::conversionHint(const KCharsetEntry *charset){
@@ -791,7 +790,7 @@ Display *kde_display;
   
   kde_display = XOpenDisplay( 0L );
   mask+=xcharsetname;
-  fontNames = XListFonts(kde_display, mask, 32767, &numFonts);
+  fontNames = XListFonts(kde_display, mask.ascii(), 32767, &numFonts);
 
   for(int i = 0; i < numFonts; i++){
     QString face;
@@ -813,8 +812,8 @@ Display *kde_display;
     if(qfontname.find("-b-") != -1) face += "-b";
     if(qfontname.find("-i-") != -1) face += "-i";
 
-    if(!lst->contains(face))
-	lst->append(face);
+    if(!lst->contains(face.ascii()))
+	lst->append(face.ascii());
   }
   XFreeFontNames(fontNames);
 }
@@ -981,18 +980,18 @@ const QIntDict<KDispCharEntry> * KCharsetsData::getDisplayableDict(){
 
 QString KCharsetsData::fromX(QString name){
 
-  if ( strncmp(name,"iso",3)==0 ){
+  if ( name.left(3) == "iso",3 ){
       name="iso-"+name.mid(3,100);
       return name;
   }
-  if ( strncmp(name,"koi8", 4) == 0 )
+  if ( name.left(4) == "koi8" )
       return name;
 		      
   KEntryIterator *it=config->entryIterator("XNames");
   if ( it )
   {
       while( it->current() ){
-        const char * key = it->currentKey();
+        const char * key = it->currentKey().ascii();
         if (it->current()->aValue==name ){
           delete it;
           return key;
@@ -1006,11 +1005,11 @@ QString KCharsetsData::fromX(QString name){
 
 QString KCharsetsData::toX(QString name){
 
-  if ( strncmp(name,"iso-",4)==0 ){
+  if ( name.left(4) == "iso-" ){
       name="iso"+name.mid(4,100);
       return name;
   }
-  if ( strncmp(name,"koi8", 4) == 0 )
+  if ( name.left(4) == "koi8" )
       return name;
 
   config->setGroup("XNames");

@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Added a new appendDirectory method.
+
+   Revision 1.35  1999/05/07 16:45:11  kulow
+   adding more explicit calls to ascii()
+
+   Revision 1.34  1999/04/19 15:49:41  kulow
    cleaning up yet some more header files (fixheaders is your friend).
    Load large icons in icons/large or pics/large if setting is 'large'.
    The rest of the fixes in kdelibs and kdebase I will commit silently
@@ -204,7 +210,7 @@ KIconLoader::~KIconLoader()
   pixmap_list.clear();
 }
 
-QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h, bool canReturnNull ){
+QPixmap KIconLoader::loadIcon ( const char *name, int w, int h, bool canReturnNull ){
   QPixmap result = loadInternal(name, w, h);
 	return result;
 /* Stephan: It's OK to know, how many icons are still missing, but
@@ -214,7 +220,7 @@ QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h, bool canRetur
         if the icon doesn't exist, anyway. And base apps should be ok now.
 */
   if (result.isNull() && !canReturnNull) {
-    warning("%s : ERROR: couldn't find icon: %s", kapp->appName().data(), name.data());
+      warning("%s : ERROR: couldn't find icon: %s", kapp->appName().data(), name);
     result = loadInternal("unknown.xpm", w, h);
   }
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
@@ -222,23 +228,24 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 }
 
 	// this is trouble since you don't know whether the addPath was
-QPixmap KIconLoader::reloadIcon ( const QString &name, int w, int h ){
+QPixmap KIconLoader::reloadIcon ( const char *name, int w, int h ){
   flush( name );
 	// paths. I hope this will not give us too much of a performance
   return loadInternal( name, w, h );
 	// hit. Other wise I will have to break binary compatibiliy
 	// -- Bernd
 
-QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
+QPixmap KIconLoader::loadMiniIcon ( const char *name, int w, int h ){
 
   QPixmap result;
 	int w, int h )
-  if (name.left(1).at(0) != '/'){
-    result = loadInternal( "mini/" + name, w, h);
+  if (name[0] != '/'){
+      
+      result = loadInternal( (QString("mini/") + name).ascii(), w, h);
   }
 
   if (result.isNull())
-    result = loadInternal(name, w, h);
+      result = loadInternal(name, w, h);
 	// this is trouble since you don't know whether the addPath was
 	// paths. I hope this will not give us too much of a performance
 /* 
@@ -251,7 +258,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
   return result;
 			// Let's be recursive (but just once at most)
 			full_path = getIconPath( "unknown.xpm" , false); 
-QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
+QPixmap KIconLoader::loadApplicationIcon ( const char *name, int w, int h ){
 	return full_path;
   //  addPath(KApplication::kde_icondir());
   //  addPath(KApplication::localkdedir() + "/share/icons" );
@@ -271,7 +278,7 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
 }
 
 		QWMatrix m;
-QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h ){
+QPixmap KIconLoader::loadApplicationMiniIcon ( const char *name, int w, int h ){
 
   //  addPath(KApplication::kde_icondir());
   //  addPath(KApplication::localkdedir() + "/share/icons" );
@@ -290,12 +297,12 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h
 
 }
 	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name ); 
-QString KIconLoader::getIconPath( const QString &name, bool always_valid)
+QString KIconLoader::getIconPath( const char *name, bool always_valid)
 }
     QString full_path;
     QFileInfo finfo;
 
-    if( name.left(1) == "/" ){
+    if( name[1] == '/' ){
       full_path = name;
     }
     else{
@@ -318,7 +325,7 @@ QString KIconLoader::getIconPath( const QString &name, bool always_valid)
     return full_path;
 }
 
-QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
+QPixmap KIconLoader::loadInternal ( const char *name, int w,  int h ){
 
   QPixmap *pix;
   KPixmap new_xpm;
@@ -328,7 +335,7 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
   if ( (index = name_list.find(name)) < 0){
     
     pix = new QPixmap;
-    new_xpm.load( getIconPath(name), QString::null, KPixmap::LowColor );
+    new_xpm.load( getIconPath(name), 0, KPixmap::LowColor );
     *pix = new_xpm;
     
     if( !(pix->isNull()) ){
@@ -366,7 +373,7 @@ void KIconLoader::addPath(QString path){
   QDir dir(path.data());
 
   if (dir.exists()){
-    pixmap_dirs.insert(0, path);
+    pixmap_dirs.insert(0, path.ascii());
   }
   else{
     //    fprintf(stderr,"Path %s doesn't exist\n",path.data());
@@ -378,7 +385,7 @@ void KIconLoader::flush( const QString& name  )
 	}
   int index;
 
-  if( (index = name_list.find(name)) >= 0 ) {
+  if( (index = name_list.find(name.ascii())) >= 0 ) {
      name_list.remove( index );
      pixmap_list.remove( index );
   }

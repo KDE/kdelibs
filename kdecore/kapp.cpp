@@ -300,7 +300,7 @@ KConfig* KApplication::getSessionConfig() {
     bSuccess = aConfigFile.open( IO_ReadWrite );
   }
   if( bSuccess ){
-    chown(aConfigFile.name(), getuid(), getgid());
+    chown(aConfigFile.name().ascii(), getuid(), getgid());
     aConfigFile.close();
     pSessionConfig = new KConfig(QString::null, aSessionConfigName);
     aSessionName = aAppName.copy();
@@ -349,7 +349,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
   pMenu->insertSeparator();
 
   id = pMenu->insertItem( QString(i18n( "&About" )) + " " + aAppName + "...");
-  if( aboutAppText )
+  if( !aboutAppText.isNull() )
 	{
 	  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
 	  aAppAboutString = aboutAppText;
@@ -553,7 +553,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		    bSuccess = aConfigFile.open( IO_ReadWrite );
 		  if( bSuccess ){
                         // Set uid/gid (neccesary for SUID programs)
-                        chown(aConfigFile.name(), getuid(), getgid());
+                        chown(aConfigFile.name().ascii(), getuid(), getgid());
 
 			aConfigFile.close();
 			pSessionConfig = new KConfig(QString::null, aSessionConfigName);
@@ -585,10 +585,10 @@ void KApplication::parseCommandLine( int& argc, char** argv )
   }
 
   if (aIconPixmap.isNull()){
-    aIconPixmap = getIconLoader()->loadApplicationIcon( aAppName + ".xpm");
+    aIconPixmap = getIconLoader()->loadApplicationIcon( (aAppName + ".xpm").ascii());
   }
   if (aMiniIconPixmap.isNull()){
-    aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( aAppName + ".xpm");
+      aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( (aAppName + ".xpm").ascii());
   }
 
 }
@@ -849,7 +849,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
     QString styleStr = pConfig->readEntry("widgetStyle", "Platinum");
 
     if(styleHandle){
-        warning(i18n("KApp: Unloading previous style plugin."));
+        warning("KApp: Unloading previous style plugin.");
         lt_dlclose((lt_dlhandle*)styleHandle);
         styleHandle = 0;
     }
@@ -874,27 +874,27 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         if(!dlregistered){
             dlregistered = true;
             lt_dlinit();
-            lt_dladdsearchdir(localkdedir() + "/share/apps/kstyle/modules");
-            lt_dladdsearchdir(kde_bindir() + "/../lib");
+            lt_dladdsearchdir((localkdedir() + "/share/apps/kstyle/modules").ascii());
+            lt_dladdsearchdir((kde_bindir() + "/../lib").ascii());
         }
 
         QDir dir(localkdedir() + "/share/apps/kstyle/modules/", styleStr);
         if(!dir.count()){
             dir.setPath(kde_bindir() + "/../lib/");
             if(!dir.count()){
-                warning(i18n("KApp: Unable to find style plugin %s."),
-                        (const char *)styleStr);
+                warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
                 pKStyle = NULL;
                 setStyle(new QPlatinumStyle);
                 return;
             }
         }
         styleStr = dir.path() + "/" + styleStr;
-        styleHandle = lt_dlopen(styleStr);
+        styleHandle = lt_dlopen(styleStr.ascii());
 
         if(!styleHandle){
-            warning(i18n("KApp: Unable to open style plugin %s (%s)."),
-                    (const char *)styleStr, lt_dlerror());
+            warning("KApp: Unable to open style plugin %s (%s).", 
+		    styleStr.ascii(), lt_dlerror());
+
             pKStyle = NULL;
             setStyle(new QPlatinumStyle);
         }
@@ -902,8 +902,8 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             lt_ptr_t alloc_func = lt_dlsym(styleHandle,
                                            "allocate");
             if(!alloc_func){
-                warning(i18n("KApp: Unable to init style plugin %s (%s)."),
-                    (const char *)styleStr, lt_dlerror());
+                warning("KApp: Unable to init style plugin %s (%s).",
+			styleStr.ascii(), lt_dlerror());
                 pKStyle = NULL;
                 lt_dlclose(styleHandle);
                 styleHandle = 0;
@@ -914,11 +914,11 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
                 alloc_ptr = (KStyle* (*)(void))alloc_func;
                 pKStyle = alloc_ptr();
                 if(pKStyle){
-                    warning(i18n("KApp: Style plugin successfully allocated."));
+                    warning("KApp: Style plugin successfully allocated.");
                     setStyle(pKStyle);
                 }
                 else{
-                    warning(i18n("KApp: Style plugin unable to allocate style."));
+                    warning("KApp: Style plugin unable to allocate style.");
                     pKStyle = NULL;
                     setStyle(new QPlatinumStyle);
                     lt_dlclose(styleHandle);
@@ -941,7 +941,7 @@ QString KApplication::findFile( const QString& file )
 	  fullPath = it.current();
 	  fullPath += '/';
 	  fullPath += file;
-	  if ( !access( fullPath, 0 ) )
+	  if ( !access( fullPath.ascii(), 0 ) )
 		return fullPath;
 	  ++it;
     }
@@ -972,8 +972,7 @@ void KApplication::buildSearchPaths()
 
   if ( !kdePathRc.isNull() )
     {
-      char *start, *end, *workPath = new char [ kdePathRc.length() + 1 ];
-	  strcpy( workPath, kdePathRc );
+      char *start, *end, *workPath = qstrdup( kdePathRc.ascii());
 	  start = workPath;
 	  while ( start )
 		{
@@ -990,9 +989,8 @@ void KApplication::buildSearchPaths()
   QString kdePathEnv = getenv( "KDEPATH" );
   if ( !kdePathEnv.isEmpty() )
     {
-	  char *start, *end, *workPath = new char [ strlen( kdePathEnv ) + 1 ];
-	  strcpy( workPath, kdePathEnv );
-	  start = workPath;
+	char *start, *end, *workPath = qstrdup(kdePathEnv.ascii());
+	start = workPath;
 	  while ( start )
 		{
 	  	  end = strchr( start, ':' );
@@ -1014,12 +1012,12 @@ void KApplication::appendSearchPath( const QString& path )
   // return if this path has already been added
   while ( it.current() )
     {
-	  if ( !strcmp( it.current(), path ) )
+	  if ( it.current() == path )
 		return;
 	  ++it;
     }
 
-  pSearchPaths->append( path );
+  pSearchPaths->append( path.ascii() );
 }
 
 void KApplication::readSettings()
@@ -1436,7 +1434,7 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
   while ( !t.eof() ) {
     QString s = t.readLine();
     if(!s.isEmpty())
-      fontlist->append( s );
+      fontlist->append( s.ascii() );
   }
 
   fontfile.close();
@@ -1506,14 +1504,14 @@ const QString KApplication::checkRecoverFile( const QString& pFilename,
   else
 	{
 	  bRecover = false;
-	  return qstrdup( pFilename );
+	  return qstrdup( pFilename.ascii() );
 	}
 }
 
 
 bool checkAccess(const QString& pathname, int mode)
 {
-  int accessOK = access( pathname, mode );
+  int accessOK = access( pathname.ascii(), mode );
   if ( accessOK == 0 )
     return true;  // OK, I can really access the file
 
@@ -1532,7 +1530,7 @@ bool checkAccess(const QString& pathname, int mode)
 
   dirName.truncate(pos); // strip everything starting from the last '/'
 
-  accessOK = access( dirName, W_OK );
+  accessOK = access( dirName.ascii(), W_OK );
   // -?- Can I write to the accessed diretory
   if ( accessOK == 0 )
     return true;  // Yes
@@ -1549,7 +1547,9 @@ void KApplication::setTopWidget( QWidget *topWidget )
     KWM::setIcon(topWidget->winId(), getIcon());
     KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
     // set a short icon text
-    XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption() );
+    // TODO: perhaps using .ascii() isn't right here as this may be seen by 
+    // a user?
+    XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
     if (bSessionManagement)
       enableSessionManagement(bSessionManagementUserDefined);
 

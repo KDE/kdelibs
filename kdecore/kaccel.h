@@ -142,7 +142,7 @@ class KAccel
 	/**
 	 * Creates a KAccel object with a parent widget and a name.
 	 */
-	KAccel( QWidget * parent, const QString& name = QString::null );
+	KAccel( QWidget * parent, const char *name = 0 );
 			
 	/**
 	 * Destroys the accelerator object.

@@ -49,7 +49,7 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 	do_not_grab =_do_not_grab;
 }
 
-KGlobalAccel::KGlobalAccel(QWidget * parent, const QString& name, bool _do_not_grab)
+KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab)
     : QObject(parent, name), aKeyDict(100) {
     	aAvailableId = 1;
 	bEnabled = true;

@@ -67,7 +67,7 @@ KCharset::KCharset(const QString s){
       fatal("KCharset constructor called when no KCharsets object created");
       return;
    }   
-   entry=data->charsetEntry(s);
+   entry=data->charsetEntry(s.ascii());
 }
 
 KCharset::KCharset(QFont::CharSet qtCharset){
@@ -136,7 +136,7 @@ bool KCharset::isDisplayable(const char *face){
     f.setFamily(face);
     QFontInfo fi(f);
     kchdebug("fi.charset()=%i\n",fi.charSet());
-    if (fi.charSet()!=qcharset || strcmp(fi.family(),face)!=0 ){
+    if (fi.charSet()!=qcharset || fi.family() != face) {
       kchdebug("No: qtCharset is specified, but doesn't work\n");
       return FALSE;
     }  
@@ -191,10 +191,10 @@ QFont &KCharset::setQFont(QFont &fnt){
   QString faceStr=data->faceForCharset(entry);
 
   /* If Qt doesn't support this charset we must use the hack */
-  if (qtCharset()==QFont::AnyCharSet && faceStr){
-     kchdebug("setQFont: Face for font: \"%s\"\n",(const char *)faceStr);
+  if (qtCharset()==QFont::AnyCharSet && !faceStr.isNull()){
+     kchdebug("setQFont: Face for font: \"%s\"\n", faceStr.ascii());
      faceStr.replace(QRegExp("\\*"),fnt.family());
-     kchdebug("setQFont: New face for font: \"%s\"\n",(const char *)faceStr);
+     kchdebug("setQFont: New face for font: \"%s\"\n", faceStr.ascii());
      fnt.setCharSet(QFont::AnyCharSet);
      fnt.setFamily(faceStr);
      QFontInfo fi(fnt);
@@ -216,7 +216,7 @@ QFont &KCharset::setQFont(QFont &fnt){
 		{
 		    int start = entry->good_family->findRev("/", pos);
 		    QString face = entry->good_family->mid(start+1, pos-start-1);
-		    kchdebug("replacement: %s\n", (const char *)face);
+		    kchdebug("replacement: %s\n", face.ascii());
 		    fnt.setFamily(face);
 		    break;
 		}	  
@@ -225,7 +225,7 @@ QFont &KCharset::setQFont(QFont &fnt){
 	    if(search.isEmpty())
 	    {
 		QString face = entry->good_family->left(entry->good_family->find("/")-1);
-		kchdebug("replacement: %s\n", (const char *)face);
+		kchdebug("replacement: %s\n", face.ascii());
 		fnt.setFamily(face);
 	    }
 	}
@@ -259,7 +259,7 @@ QFont &KCharset::setQFont(QFont &fnt){
 	      {
 		  int start = entry->good_family->findRev("/", pos);
 		  QString face = entry->good_family->mid(start+1, pos-start-1);
-		  kchdebug("replacement: %s\n", (const char *)face);
+		  kchdebug("replacement: %s\n", face.ascii());
 		  fnt.setFamily(face);
 		  break;
 	      }	  
@@ -269,16 +269,15 @@ QFont &KCharset::setQFont(QFont &fnt){
 	  if(search.length() == 1)
 	  {
 	      QString face = entry->good_family->left(entry->good_family->find("/")-1);
-	      kchdebug("last replacement: %s\n", (const char *)face);
+	      kchdebug("last replacement: %s\n", face.ascii());
 	      fnt.setFamily(face);
 	  }
 #undef kchdebug
       }	  
-      else if (faceStr){ /* nothing else works - we must use the hack */
-         kchdebug("setQFont: Face for font: \"%s\"\n",(const char *)faceStr);
+      else if (!faceStr.isNull()){ /* nothing else works - we must use the hack */
+         kchdebug("setQFont: Face for font: \"%s\"\n",faceStr.ascii());
          faceStr.replace(QRegExp("\\*"),fnt.family());
-         kchdebug("setQFont: New face for font: \"%s\"\n",
-		  (const char *)faceStr);
+         kchdebug("setQFont: New face for font: \"%s\"\n", faceStr.ascii());
          fnt.setCharSet(QFont::AnyCharSet);
          fnt.setFamily(faceStr);
       }
@@ -401,10 +400,8 @@ const KCharsetConversionResult & KCharsetConverter::convertTag(const char *tag
 }
 
 char * KCharsetConversionResult::copy()const{
-
-  char *ptr=new char [cText.length()+1];
-  strcpy(ptr,cText);
-  return ptr;
+    
+    return qstrdup(cText.data());
 }
    
 /////////////////////////////////////////////////////////////////////

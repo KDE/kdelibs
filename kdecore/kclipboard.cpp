@@ -77,10 +77,10 @@ bool KClipboard::open( int _mode, const QString& _format )
     cerr << "Fuck ya too" << endl;
 
     QBuffer::open( _mode );
-    if ( strcmp( _format, "application/octet-stream" ) != 0L && 
-	 strcmp( _format, "text/plain" ) != 0L ) 
+    if ( _format != "application/octet-stream" && 
+	 _format != "text/plain" ) 
     {
-      m_mimeTypeLen = strlen( _format ) + 1;
+      m_mimeTypeLen = _format.length() + 1;
       writeBlock( _format, m_mimeTypeLen );
     }
     else
@@ -97,7 +97,7 @@ bool KClipboard::open( int _mode, const QString& _format )
     if ( !isOwner() )
       fetchData();
       
-    if ( m_strFormat != _format && strcmp( _format, "application/octet-stream" ) != 0L )
+    if ( m_strFormat != _format && _format != "application/octet-stream" )
       return false;
 
     if ( !QBuffer::open( _mode ) )
@@ -412,7 +412,7 @@ void KClipboard::setText( const QString& _text )
 {
   open( IO_WriteOnly | IO_Truncate, "text/plain" );  
 
-  writeBlock( _text, strlen( _text ) );
+  writeBlock( _text, _text.length() );
   
   close();
 }

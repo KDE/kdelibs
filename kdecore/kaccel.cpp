@@ -37,7 +37,7 @@
 #include <kconfig.h>
 #include <qaccel.h>
 
-KAccel::KAccel( QWidget * parent, const QString& name ):
+KAccel::KAccel( QWidget * parent, const char *name ):
   aKeyDict(100){
 	aAvailableId = 1;
 	bEnabled = true;
@@ -66,9 +66,8 @@ void KAccel::connectItem( const QString& action,
     KKeyEntry *pEntry = aKeyDict[ action ];
 
 	if ( !pEntry ) {
-	    QString str = i18n("KAccel : Cannot connect action %1 "
-			       "which is not in the object dictionary").arg(action);
-	    warning(str);
+	    warning("KAccel : Cannot connect action %s "
+		    "which is not in the object dictionary", action.ascii());
 	    return;
 	}
 	
