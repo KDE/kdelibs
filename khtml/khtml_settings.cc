@@ -175,7 +175,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "HoverLinks" ) )
   {
-    m_hoverLink = config->readBoolEntry( "HoverLinks", true );
+    m_hoverLink = config->readBoolEntry( "HoverLinks", false );
     m_underlineLink = false;
   }
 
