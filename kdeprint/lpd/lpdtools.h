@@ -16,6 +16,8 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  **/
+#ifndef LPDTOOLS_H
+#define LPDTOOLS_H
 
 #include <qstring.h>
 #include <qmap.h>
@@ -67,3 +69,5 @@ private:
 //*****************************************************************************************************
 
 QString getPrintcapLine(QTextStream& t);
+
+#endif // LPDTOOLS_H
