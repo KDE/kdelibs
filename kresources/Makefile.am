@@ -32,7 +32,7 @@ kde_module_LTLIBRARIES = kcm_kresources.la
 
 kcm_kresources_la_SOURCES = kcmkresources.cpp
 kcm_kresources_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-kcm_kresources_la_LIBADD = -lkresources
+kcm_kresources_la_LIBADD = libkresources.la
 
 
 check_PROGRAMS = testresources
