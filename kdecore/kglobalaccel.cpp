@@ -437,6 +437,7 @@ bool KGlobalAccel::grabKey( const QString &action, bool bGrab )
 		keyNative.keyMod = keyModX;
 		d->keyNativeMap[action] = keyNative;
 	} else {
+		key = aKeyMap[action].aCurrentKeyCode; // for kdDebug output only
 		keyCodeX = d->keyNativeMap[action].keyCode;
 		keyModX = d->keyNativeMap[action].keyMod;
 	}
@@ -445,7 +446,7 @@ bool KGlobalAccel::grabKey( const QString &action, bool bGrab )
 
 #ifndef __osf__
 // this crashes under Tru64 so .....
-	kdDebug(125) << QString( "grabKey( key: 0x%1, bGrab: %2 ): %3 keyCodeX: %4 keyModX: %5\n" )
+	kdDebug(125) << QString( "grabKey( \"" + action + "\" key: 0x%1, bGrab: %2 ): %3 keyCodeX: %4 keyModX: %5\n" )
 		.arg( key.key(), 0, 16 ).arg( bGrab ).arg( action )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 #endif
