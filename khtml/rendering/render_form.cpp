@@ -830,11 +830,10 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     m_useListBox = (m_multiple || m_size > 1);
 
     if(m_useListBox)
-        m_widget = createListBox();
+        setQWidget(createListBox(), false);
     else
-        m_widget = createComboBox();
+	setQWidget(createComboBox(), false);
 
-    setQWidget(m_widget, false);
     connect(m_widget, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
     m_ignoreSelectEvents = false;
 }
@@ -864,11 +863,10 @@ void RenderSelect::layout( )
             delete m_widget;
 
             if(m_useListBox)
-                m_widget = createListBox();
+                setQWidget(createListBox(), false);
             else
-                m_widget = createComboBox();
+                setQWidget(createComboBox(), false);
 
-            setQWidget(m_widget, false);
             connect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
         }
 
