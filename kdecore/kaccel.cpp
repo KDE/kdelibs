@@ -28,6 +28,7 @@
 
 #include <kapp.h>
 #include <klocale.h>
+#include <kglobal.h>
 #include <kdebug.h>
 
 #include "kckey.h"

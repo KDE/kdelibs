@@ -30,6 +30,7 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <kconfig.h>
+#include <kglobal.h>
 #include "kcolordlg.h"
 #include "kcolordlg.h"
 #include "kcolordrag.h"
