@@ -67,6 +67,13 @@ class KGlobalAccel : public QObject
 	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
+                         
+        /**
+         * Removes the accelerator action identified by the name.
+         * Remember to also call updateConnections().
+         */
+        void remove( const QString& sAction );
+        
 	/**
 	 * Use this to insert a label into the action list.  This will be
 	 * displayed when the user configures shortcuts.

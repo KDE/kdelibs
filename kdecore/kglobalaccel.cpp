@@ -58,6 +58,9 @@ KAccelAction* KGlobalAccel::insert( const QString& sName, const QString& sDesc )
 bool KGlobalAccel::updateConnections()
 	{ return d->updateConnections(); }
 
+void KGlobalAccel::remove( const QString& sAction )
+        { d->remove( sAction ); }
+        
 const KShortcut& KGlobalAccel::shortcut( const QString& sAction ) const
 {
 	const KAccelAction* pAction = d->actions().actionPtr( sAction );
