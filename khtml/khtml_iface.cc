@@ -10,7 +10,15 @@
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
     : DCOPObject( _part->dcopObjectId() ), part(_part)
 {
+}
 
+KHTMLPartIface::~KHTMLPartIface()
+{
+}
+
+KURL KHTMLPartIface::url() const
+{
+    return part->url();
 }
 
 void KHTMLPartIface::setJScriptEnabled( bool enable )
@@ -21,11 +29,6 @@ void KHTMLPartIface::setJScriptEnabled( bool enable )
 bool KHTMLPartIface::jScriptEnabled() const
 {
     return part->jScriptEnabled();
-}
-
-KHTMLPartIface::~KHTMLPartIface()
-{
-
 }
 
 bool KHTMLPartIface::closeURL()

@@ -22,6 +22,7 @@
 
 #include <dcopobject.h>
 #include <dcopref.h>
+#include <kurl.h>
 
 class KHTMLPart;
 
@@ -38,6 +39,10 @@ public:
     virtual ~KHTMLPartIface();
 
 k_dcop:
+    /**
+     * @return the current URL
+     */
+    KURL url() const;
 
     bool closeURL();
 
@@ -178,7 +183,7 @@ k_dcop:
      * @since 3.2
      */
     bool nextAnchor();
-    
+
     /**
      * Go to previous Anchor.
      * @since 3.2
@@ -217,6 +222,10 @@ k_dcop:
     void viewFrameSource();
     void saveBackground(const QString &url);
     void saveDocument(const QString &url);
+
+    /**
+     * Evaluate a given piece of Javascript code
+     */
     QString evalJS(const QString &script);
 
     /**
