@@ -373,7 +373,8 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     hideWidget = w;
 
     if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy) {
-        autoHideTimer->stop();
+	if ( autoHideTimer )
+            autoHideTimer->stop();
 
         if ( isCursorHidden && t != QEvent::Destroy )
             unhideCursor( w );
@@ -396,7 +397,8 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     else if ( t == QEvent::Enter ) {
         if ( isCursorHidden )
             unhideCursor( w );
-        autoHideTimer->start( hideCursorDelay, true );
+        if ( autoHideTimer )
+            autoHideTimer->start( hideCursorDelay, true );
     }
 
     else { // other than enter/leave/focus events
@@ -424,7 +426,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 		       t <= QEvent::KeyRelease) ||
 		      t == QEvent::Wheel || t == QEvent::AccelOverride ) {
 
-                if ( insideWidget( QCursor::pos(), w ))
+                if ( insideWidget( QCursor::pos(), w ) && autoHideTimer )
                     autoHideTimer->start( hideCursorDelay, true );
             }
         }
