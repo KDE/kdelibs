@@ -147,8 +147,9 @@ int main(int argc, char **argv)
     KApplication app;
     app.disableAutoDcopRegistration();
 
-    // #############
-    // Workaround the fact that there is no more default search engine (BUG?)
+    // Many tests check the "default search engine" feature.
+    // There is no default search engine by default (since it was annoying when making typos),
+    // so the user has to set it up, which we do here.
     {
       KSimpleConfig cfg( "kuriikwsfilterrc" );
       cfg.setGroup( "General" );
