@@ -253,9 +253,7 @@ public:
   KURL m_workingURL;
 
   QTimer m_redirectionTimer;
-#ifdef SPEED_DEBUG
   QTime m_parsetime;
-#endif
   int m_delayRedirect;
   QString m_redirectURL;
 
