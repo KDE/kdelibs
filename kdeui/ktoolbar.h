@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.35  1998/06/19 13:09:31  radej
+// sven: Docs.
+//
 // Revision 1.34  1998/05/04 16:38:36  radej
 // Bugfixes for moving + opaque moving
 //
@@ -177,7 +180,7 @@ class KToolBarButton : public QButton
  * Then simply do addToolbar (toolbar),
  * and you're on. See how it's done in kwindowtest.
  * @short KDE Toolbar widget
- * @author Stephan Kullow <coolo@kde.org> Maintained by Sven Radej <sven@lisa.exp.univie.ac.at>
+ * @author Stephan Kulow <coolo@kde.org> Maintained by Sven Radej <sven@lisa.exp.univie.ac.at>
  */
  class KToolBar : public QFrame
   {

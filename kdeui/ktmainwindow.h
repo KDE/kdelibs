@@ -57,7 +57,7 @@
  * @see KApplication
  * @see KTopLevelWidget
  * @short KDE top level main window
- * @author Stephan Kullow (coolo@kde.org) Maintained by Matthias Ettrich (ettrich@kde.org) */
+ * @author Stephan Kulow (coolo@kde.org) Maintained by Matthias Ettrich (ettrich@kde.org) */
 class KTMainWindow : public QWidget {
     Q_OBJECT
 

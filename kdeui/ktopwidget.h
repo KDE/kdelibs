@@ -14,6 +14,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.30  1998/06/19 16:39:15  radej
+ // sven: Docs.
+ //
  // Revision 1.29  1998/06/19 14:16:36  radej
  // sven: Docs.
  //
@@ -103,7 +106,7 @@
   * @see KTMainWindow
   * @see KApplication
   * @short KDE top level widget
-  * @author Stephan Kullow (coolo@kde.org) Maintained by Sven Radej (sven@lisa.exp.univie.ac.at)
+  * @author Stephan Kulow (coolo@kde.org) Maintained by Sven Radej (sven@lisa.exp.univie.ac.at)
   */
 class KTopLevelWidget : public QWidget {
     Q_OBJECT
