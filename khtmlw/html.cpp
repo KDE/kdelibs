@@ -1822,22 +1822,18 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    }
 	    else if ( strncasecmp( p, "href=", 5 ) == 0 )
 	    {
+		KURL u;
 		p += 5;
 		if ( *p == '#' )
 		{// reference
-		    KURL u( actualURL );
+		    u = KURL( actualURL );
 		    u.setReference( p + 1 );
-		    href = u.url();
 		}
-		else if ( strchr( p, ':' ) )
-		{// full URL
-		    href =  p;
+		else 
+		{
+		    u = KURL( baseURL, p );
 		}
-		else
-		{// relative URL
-		    KURL u2( baseURL, p );
-		    href = u2.url();
-		}
+                href = u.url();
 	    }
 	    else if ( strncasecmp( p, "target=", 7 ) == 0 )
 	    {
@@ -1923,8 +1919,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
     else if ( strncmp( str, "a ", 2 ) == 0 )
     {
 	closeAnchor();
-	char tmpurl[1024];
-	tmpurl[0] = '\0';
+	QString tmpurl;
 	target = 0;
 	bool visited = false;
 	const char *p;
@@ -1935,24 +1930,19 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	{
 	    if ( strncasecmp( p, "href=", 5 ) == 0 )
 	    {
-		p += 5;
+                KURL u;
 
+		p += 5;
 		if ( *p == '#' )
 		{// reference
-		    KURL u( actualURL );
+		    u = KURL( actualURL );
 		    u.setReference( p + 1 );
-		    strcpy( tmpurl, u.url() );
-		}
-		else if ( strchr( p, ':' ) )
-		{// full URL
-		    strcpy( tmpurl, p );
 		}
 		else
-		{// relative URL
-		    KURL u( baseURL );
-		    KURL u2( baseURL, p );
-		    strcpy( tmpurl, u2.url() );
-		}
+		{
+                    u = KURL( baseURL, p );
+		}		
+                tmpurl = u.url();
 
 		visited = URLVisited( tmpurl );
 	    }
@@ -1976,7 +1966,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    strcpy( target, baseTarget );
 	    parsedTargets.append( target );
 	}
-	if ( tmpurl[0] != '\0' )
+	if ( !tmpurl.isEmpty() )
 	{
 	    vspace_inserted = false;
 	    if ( visited )
@@ -1986,8 +1976,8 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    if ( settings->underlineLinks )
 		underline = true;
 	    selectFont();
-	    url = new char [ strlen( tmpurl ) + 1 ];
-	    strcpy( url, tmpurl );
+	    url = new char [ tmpurl.length() + 1 ];
+	    strcpy( url, tmpurl.data() );
 	    parsedURLs.append( url );
 	}
     }
@@ -2083,7 +2073,9 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		    scheduleUpdate( true );
 		}
 		else
+		{
 		    requestBackgroundImage( kurl.url() );
+		}
 		
 		if ( !bgPixmap.isNull() )
 		    bgPixmapSet = TRUE;
@@ -2600,12 +2592,8 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 			const char* token = stringTok->nextToken();
 			if ( strncasecmp( token, "action=", 7 ) == 0 )
 			{
-				action = token + 7;
-				if ( action.find(':') == -1 )
-				{// relative URL
-				    KURL u2( baseURL, action );
-				    action = u2.url();
-				}
+                                KURL u( baseURL, token + 7 );
+				action = u.url();
 			}
 			else if ( strncasecmp( token, "method=", 7 ) == 0 )
 			{
@@ -2829,20 +2817,18 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    }
 	    else if ( strncasecmp( token, "usemap=", 7 ) == 0 )
 	    {
+	        KURL u;
+	        
 		if ( *(token + 7 ) == '#' )
-		    usemap = token + 7;
+		{
+		    u = KURL( actualURL );
+		    u.setReference( token + 8 );
+		}
 		else
 		{
-		    if ( strchr( token + 7, ':' ) )
-		    {// full URL
-			usemap = token + 7;
-		    }
-		    else
-		    {// relative URL
-			KURL u( baseURL, token + 7 );
-			usemap = u.url();
-		    }
+		    u = KURL( baseURL, token + 7 );
 		}
+                usemap = u.url();
 	    }
 	    else if ( strncasecmp( token, "ismap", 5 ) == 0 )
 	    {
