@@ -32,6 +32,7 @@
 #include "misc/htmlattrs.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
+#include "css/csshelper.h"
 #include "misc/htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -658,19 +659,22 @@ void RenderPartObject::updateWidget()
               // TODO: add more plugins here
           }
 
-          if((url.isEmpty() || url.isNull())) {
+          if(url.isEmpty()) {
               // look for a SRC attribute in the params
               NodeImpl *child = o->firstChild();
               while ( child ) {
                   if ( child->id() == ID_PARAM ) {
                       HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-                      if ( p->name().lower()==QString::fromLatin1("src") ||
-                           p->name().lower()==QString::fromLatin1("movie") ||
-                           p->name().lower()==QString::fromLatin1("code") )
+                      if ( ( p->name().lower()==QString::fromLatin1("src") ||
+                             p->name().lower()==QString::fromLatin1("movie") ||
+                             p->name().lower()==QString::fromLatin1("code") ) && !p->value().isNull() )
                       {
-                          url = p->value();
-                          break;
+                          url = p->getDocument()->completeURL(khtml::parseURL(p->value()).string());
+                          if (!p->getDocument()->isURLAllowed(url))
+                              url = QString::null;
+                          else
+                              break;
                       }
                   }
                   child = child->nextSibling();
