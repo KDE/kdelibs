@@ -20,6 +20,7 @@
 	for now I just added the basic typelist and a length template,
 	to keep compile time at a minimum. If we really need more we can
 	still add it :)
+ Holger: Now we add a Template to create the TypeList
 */
 #ifndef __ktypelist_h__
 #define __ktypelist_h__
@@ -421,6 +422,52 @@ private:
 public:
     enum { value = (temp == -1 ? -1 : 1 + temp) };
 };
+
+
+
+/**
+ * KMakeTypeList the prefered way to create a typelist for you.
+ * 
+ * \code
+ * typedef KMakeTypeList<MyType1,MyWidget,MyQobject,MyKoffice>::Result Products;
+ * K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; )
+ *
+ * \endcode 
+ *
+ *
+ * @author Holger Freyther based on the Loki library. See copyright statement at the top
+ * @since 3.3
+ */
+template<
+    typename T1  = KDE::NullType, typename T2  = KDE::NullType, typename T3  = KDE::NullType,
+    typename T4  = KDE::NullType, typename T5  = KDE::NullType, typename T6  = KDE::NullType,
+    typename T7  = KDE::NullType, typename T8  = KDE::NullType, typename T9  = KDE::NullType,
+    typename T10 = KDE::NullType, typename T11 = KDE::NullType, typename T12 = KDE::NullType,
+    typename T13 = KDE::NullType, typename T14 = KDE::NullType, typename T15 = KDE::NullType,
+    typename T16 = KDE::NullType, typename T17 = KDE::NullType, typename T18 = KDE::NullType
+    >
+struct KMakeTypeList{
+private:
+typedef typename KMakeTypeList
+<
+  T2 , T3 , T4 ,
+  T5 , T6 , T7 ,
+  T8 , T9 , T10,
+  T11, T12, T13,
+  T14, T15, T16,
+  T17, T18
+>::Result TailResult;
+
+public:
+    typedef KTypeList<T1, TailResult> Result;
+};
+
+template<>
+struct KMakeTypeList<>
+{
+    typedef KDE::NullType Result;
+};
+
 
 #endif
 
