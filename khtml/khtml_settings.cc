@@ -28,8 +28,8 @@
 
 #define MAXFONTSIZES 15
 const int defaultSmallFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
-const int defaultMediumFontSizes[MAXFONTSIZES] = { 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
-const int defaultLargeFontSizes[MAXFONTSIZES] = { 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150, 180 };
+const int defaultMediumFontSizes[MAXFONTSIZES] = { 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120 };
+const int defaultLargeFontSizes[MAXFONTSIZES] = { 10, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
