@@ -74,7 +74,7 @@ indep-stamp:
 	#cp doc/api/HTML/* `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)                                                                                          
 	dh_installdocs -i
 	dh_installchangelogs -pkdelibs3-doc 
-	dh_compress -i
+	dh_compress -i -X.docbook
 	dh_fixperms -i
 	dh_installdeb -i
 	dh_gencontrol -i
@@ -144,7 +144,7 @@ binary-arch:  build
 	done
 	dh_perl -a
 	dh_link -a
-	dh_compress -a
+	dh_compress -a -X.docbook
 	dh_fixperms -a
 	chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
 	chmod 4755 debian/libarts/usr/bin/artswrapper
