@@ -85,6 +85,7 @@ void KKeyButton::setShortcut( const KShortcut& cut, bool bQtShortcut )
 	d->bQtShortcut = bQtShortcut;
 	m_cut = cut;
 	QString keyStr = m_cut.toString();
+	keyStr.replace('&', "&&");
 	setText( keyStr.isEmpty() ? i18n("None") : keyStr );
 }
 
