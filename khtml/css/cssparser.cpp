@@ -808,9 +808,11 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_OUTLINE_COLOR:
     {
 	QString value(curP, endP - curP);
+	value = value.stripWhiteSpace();
+	//kdDebug(6080) << "parsing color " << value << endl;
 	QColor c;
 	khtml::setNamedColor(c, value);
-	if(!c.isValid() && (value != "transparent" )) return false;
+	if(!c.isValid() && (value != "transparent" ) && !value.isEmpty() ) return false;
 	//kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	parsedValue = new CSSPrimitiveValueImpl(c);
 	break;
