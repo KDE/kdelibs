@@ -1,32 +1,134 @@
-TODO:
-
-* Update this README
-* Explain parameterized entries
-
-
-cfgc - The Configuration Compiler
+kconfig_compiler - The Configuration Compiler
 ---------------------------------
 
-cfgc generates C++ source code from an XML file containing information about
-configuration options. The generated class is bases on KPrefs and provides an
-API for the application to access its configuration data.
+kconfig_compiler generates C++ source code from an XML file containing 
+information about configuration options (.kcfg) and a file that provides 
+the code generation options (.kcfgc) The generated class is bases on 
+KConfigSkeleton and provides an API for the application to access its
+configuration data.
 
-[insert description of the class tag here]
-[insert description of the cfgfile tag here]
+The structure of the .kcfg file is described by its DTD kcfg.dtd.
 
-The entries in the XML file are grouped by the tag <group> which takes an
-attribute for the config file group name.
+The <kcfgfile> tag contains the name of the configuration file described.
+
+The <include> tags are optional and may contain C++ header files that
+are needed to compile the code needed to compute default values.
+
+The remaining entries in the XML file are grouped by the tag <group> 
+which describes the corresponding group in the configuration file.
 
 The individual entries must have at least a name or a key. The name if used to
 create accessor and modifier functions. It's also used as key in the config
-file. If <key> is given, but not <name>, the name is constructed by removing all
-spaces from <key>.
+file. If <key> is given, but not <name>, the name is constructed by removing
+all spaces from <key>.
 
-An entry can optionally have a default value which is used as default when the
-value isn't specified in any config file.
+An entry must also have a type. The type can be one of the basic Qt types
+or one of the following special types:
 
-[insert description of the values tag here]
+- Path  This is a QString that is specially treated as a file-path. 
+  In particular paths in the home directory are prefixed with $HOME in
+  when being stored in the configuration file.
+  
+- Enum  This indicates an enumaration. The possible enum values should
+  be provided via the <values> tag. Enum values are accessed as integeres
+  by the application but stored as string in the configuration file. This
+  makes it possible to add more values at a later date without breaking
+  compatibility.
+
+- IntList  This indicates a list of integers. This information is provided
+  to the application as QValueList<int>. Useful for storing QSplitter
+  geometries.
+
+An entry can optionally have a default value which is used as default when
+the value isn't specified in any config file. Default values are interpreted
+as literal constant values. If a default value needs to be computated
+or if it needs to be obtained from a function call, the <default> tag
+should contain the code="true" attribute. The contents of the <default>
+tag is then considered to be a C++ expression.
+
+Additional code for computating default values can be provided via
+the <code> tag. The contents of the <code> tag is inserted as-is. A
+typical use for this is to compute a common default value which can
+then be referenced by multiple entries that follow.
+
+Advanced options
+----------------
+
+There are several possibilities to parameterize entries.
+
+- Parameterized entries
+
+An entry can be parameterized using a fixed range parameter specified with
+the <parameter> tag. Such parameter can either be an Enum or an int. An Enum
+parameter should specify the possible enumeration values with the <values>
+tag. An int parameter should specify its maximum value. Its minimum value
+is always 0.
+
+A parameterized entry is expanded to a number of entries, one for each
+value in the parameter range. The name and key should contain a reference
+to the parameter in the form of $(parameter-name). When expanding the entries
+the $(parameter-name) part is replaced with the value of the parameter.
+In the case of an Enum parameter it is replaced with the name of the
+enumuration value. In the case of an int parameter it is replaced with
+the numeric value of the parameter.
+
+Parameterized entries all share the same default value unless different
+default values have been specified for specific parameter values.
+This can be done with the param= attribute of the <default>. When a
+param attribute is specified the default value only applies to that
+particular parameter value.
+
+Example 1:
+  <entry name="Color$(ColorIndex)" type="QColor" key="color_$(ColorIndex)">
+    <parameter name="ColorIndex" type="int" max="3"/>
+    <default param="0">#ff0000</default>
+    <default param="1">#00ff00</default>
+    <default param="2">#0000ff</default>
+    <default param="3">#ffff00</default>
+  </entry>
+
+The above describes 4 color configuration entries with the following defaults:
+
+color_0=#ff0000
+color_1=#00ff00
+color_2=#0000ff
+color_3=#ffff00
+
+The configuration options will be accessible to the application via
+a QColor color(int ColorIndex) and a 
+void setColor(int ColorIndex, const QColor &v) function.
+
+Example 2:
+  <entry name="Sound$(SoundEvent)" type="QString" key="sound_$(SoundEvent)">
+    <parameter name="SoundEvent" type="Enum"/>
+    <values>
+      <value>Explosion</value>
+      <value>Crash</value>
+      <value>Missile</value>
+      <value>Shield</value>
+    </values>
+    <default param="Explosion">boom.wav</default>
+    <default param="Crash">crash.wav</default>
+    <default param="Missile">missile.wav</default>
+  </entry>
+
+The above describes 3 string configuration entries with the following defaults:
+
+sound_Explosion=boom.wav
+sound_Crash=crash.wav
+sound_Missile=missile.wav
+
+The configuration options will be accessible to the application via
+a QString sound(int SoundEvent) and a 
+void setSound(int SoundEvent, const QString &v) function.
+
+- Parameterized groups
+
+...STILL TODO...
+
+
+
 
 
 If you have questions or comments please contact Cornelius Schumacher
-<schumacher@kde.org>.
+<schumacher@kde.org> or Waldo Bastian <bastian@kde.org>
