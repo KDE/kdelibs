@@ -656,7 +656,7 @@ KAction *KStdAction::back(const QObject *recvr, const char *slot,
 KAction *KStdAction::forward(const QObject *recvr, const char *slot,
 							 QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Forward"), "forward", 0,
+    return new KAction(i18n("send forward", "&Forward"), "forward", 0,
                        recvr, slot, parent, name ? name :
                        stdName(Forward));
 }
@@ -664,7 +664,7 @@ KAction *KStdAction::forward(const QObject *recvr, const char *slot,
 KAction *KStdAction::home(const QObject *recvr, const char *slot,
 						  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Home"), "gohome",
+    return new KAction(i18n("beginning (of line)", "&Home"), "gohome",
 					   KStdAccel::key(KStdAccel::Home), recvr, slot, parent,
 					   name ? name : stdName(Home));
 }
@@ -815,7 +815,7 @@ KAction *KStdAction::configureToolbars(const QObject *recvr, const char *slot,
 KAction *KStdAction::help(const QObject *recvr, const char *slot,
                           QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Help"), "help",
+    return new KAction(i18n("shot help", "&Help"), "help",
                        KStdAccel::key(KStdAccel::Help), recvr, slot, parent,
                        name ? name : stdName(Help));
 }
@@ -846,7 +846,7 @@ KAction *KStdAction::reportBug(const QObject *recvr, const char *slot,
 KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
 						      QObject *parent, const char *name )
 {
-    return new KAction(i18n("&About") + ' ' + QString::fromLatin1(kapp->name())
+    return new KAction(i18n("&About %1").arg(kapp->name());
         + QString::fromLatin1("..."), QIconSet(kapp->miniIcon()), 0, recvr,
         slot, parent, name ? name : stdName(AboutApp));
 }
