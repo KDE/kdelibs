@@ -150,8 +150,8 @@ void KLineEdit::makeCompletion( const QString& text )
     if( match.isNull() || match == text )
     {
  	if ( compPopup && match.isNull() ) {
- 	    d->completionBox->clear();
  	    d->completionBox->hide();
+ 	    d->completionBox->clear();
 	}
 	
     	// Put the cursor at the end when in semi-automatic
@@ -349,7 +349,6 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 		if ( k == Key_Tab || k == Key_Down )
 		    //	      e->state() & NoButton) )
 		{
-		    d->completionBox->setActiveWindow();
 		    d->completionBox->setFocus();
 		    e->accept();
 		    return true;

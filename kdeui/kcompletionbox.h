@@ -75,13 +75,18 @@ public slots:
      * the parent.
      *
      * Depending on the screensize and the position of the parent, this may
-     * be a different place, however the default is to pop it up and the 
+     * be a different place, however the default is to pop it up and the
      * lower left corner of the parent.
      *
      * Make sure to hide() the box when appropriate.
      */
     virtual void popup();
 
+    /**
+     * Reimplemented for internal reasons.
+     */
+    virtual void show();
+    
 signals:
     /**
      * Emitted when an item was selected, contains the text of the selected

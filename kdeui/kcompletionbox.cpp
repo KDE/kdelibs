@@ -22,9 +22,11 @@
 #include "kcompletionbox.h"
 #include <qapplication.h>
 
+#include <X11/Xlib.h>
+#undef KeyPress
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( 0L, name, WStyle_Customize | WStyle_NoBorder )
+    : KListBox( 0L, name, WType_Popup )
 {
     m_parent = parent;
 
@@ -73,26 +75,12 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
 
-    // hide on keypresses on any other widgets besides our children
-    if ( o != this ) {
-	if ( type == QEvent::MouseButtonPress && o->isWidgetType() ) {
-	    QWidget *w = static_cast<QWidget *>( o );
-	    if ( w->topLevelWidget() != this ) {
-		hide();
-		return true;
-	    }
-	}
-	return KListBox::eventFilter( o, e );
-    }
-
     switch( type ) {
     case QEvent::Show:
-	qApp->installEventFilter( this );
-	move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
-	resize( sizeHint() );
-	break;
+ 	move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
+ 	resize( sizeHint() );
+ 	break;
     case QEvent::Hide:
-	qApp->removeEventFilter( this );
 	revertFocus();
 	break;
     case QEvent::KeyPress: {
@@ -116,6 +104,13 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 }
 
 
+void KCompletionBox::show()
+{
+    KListBox::show();
+    XUngrabKeyboard( x11Display(), CurrentTime );
+}
+
+
 void KCompletionBox::popup()
 {
     if ( count() == 0 ) {
@@ -124,15 +119,13 @@ void KCompletionBox::popup()
     }
 
     ensureCurrentVisible();
-
-    raise();
     show();
-    releaseKeyboard();
 }
 
 void KCompletionBox::revertFocus()
 {
-    m_parent->setActiveWindow();
+    if ( !m_parent->isActiveWindow() )
+	m_parent->setActiveWindow();
     m_parent->setFocus();
     setSelected( 0, false );
 }

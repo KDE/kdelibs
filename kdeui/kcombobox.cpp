@@ -169,8 +169,8 @@ void KComboBox::makeCompletion( const QString& text )
         if( match.isNull() || match == text )
         {
  	    if ( d->completionBox && match.isNull() ) {
- 		d->completionBox->clear();
  		d->completionBox->hide();
+ 		d->completionBox->clear();
 	    }
 
 	    // Put the cursor at the end when in semi-automatic
@@ -425,7 +425,6 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 		if ( k == Key_Tab || k == Key_Down )
 		    //	      e->state() & NoButton) )
 		{
-		    d->completionBox->setActiveWindow();
 		    d->completionBox->setFocus();
 		    e->accept();
 		    return true;
