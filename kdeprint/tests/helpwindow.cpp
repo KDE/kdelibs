@@ -15,6 +15,7 @@
 #include <qpopupmenu.h>
 #include <kmenubar.h>
 #include <ktoolbar.h>
+#include <kstatusbar.h>
 #include <qtoolbutton.h>
 #include <qiconset.h>
 #include <qfile.h>
@@ -31,6 +32,7 @@
 #include <qdatastream.h>
 #include <kprinter.h>
 #include <qsimplerichtext.h>
+#include <qpainter.h>
 #include <qpaintdevicemetrics.h>
 
 #include <ctype.h>
@@ -136,8 +138,8 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 	     this, SLOT( pathSelected( const QString & ) ) );
     toolbar->setStretchableWidget( pathCombo );
     setRightJustification( TRUE );
-    setDockEnabled( Left, FALSE );
-    setDockEnabled( Right, FALSE );
+    setDockEnabled( DockLeft, FALSE );
+    setDockEnabled( DockRight, FALSE );
 
     pathCombo->insertItem( home_ );
 
@@ -247,7 +249,7 @@ void HelpWindow::print()
 #endif
     printer.setFullPage(TRUE);
     printer.setDocName("Help Viewer");
-    printer.setPreviewOnly(true);
+    printer.setDocFileName("my_document");
 #ifdef KDE_PRINT
     printer.addDialogPage(new RichPage());
 #endif
