@@ -153,9 +153,8 @@ void KHTMLView::clear()
     //setVScrollBarMode(Auto);
     //setHScrollBarMode(Auto);
 
-    d->underMouse = 0;
-    d->currentNode = 0;
-    d->linkPressed = false;
+    delete d;
+    d = new KHTMLViewPrivate();
 }
 
 void KHTMLView::resizeEvent ( QResizeEvent * event )
@@ -519,7 +518,7 @@ bool KHTMLView::gotoLink()
     // let's ignore non anchors for the moment
     if(!d->currentNode || d->currentNode->id() != ID_A) return false;
     HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(d->currentNode);
-    //printf("current item:%s\n", n->areaHref().string().latin1());
+    //kdDebug(6000)<<"current item:"<<n->areaHref().string().latin1()<<endl;
 
   if (d->linkPressed)
     n->setKeyboardFocus(DOM::ActivationActive);
