@@ -310,6 +310,9 @@ protected:
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
+  char m_lineBuf[1024];
+  char *m_linePtr;
+  int m_lineCount;
 
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,

@@ -180,6 +180,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   kdDebug(7113) << "HTTPProtocol: mProtocol=" << mProtocol << " m_protocol=" << m_protocol << endl;
   m_maxCacheAge = 0;
   m_sock = 0;
+  m_lineCount = 0;
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
@@ -366,6 +367,22 @@ char *HTTPProtocol::gets (char *s, int size)
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
   ssize_t ret;
+  if (m_lineCount > 0)
+  {
+     ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
+     m_lineCount -= ret;
+     memcpy(b, m_linePtr, ret);
+     m_linePtr += ret;
+     return ret;
+  }
+  if (nbytes == 1)
+  {
+     m_lineCount = read(m_lineBuf, 1024); // Read into buffer
+     m_linePtr = m_lineBuf;
+     if (m_lineCount <= 0)
+        return ret;
+     return read(b, 1); // Read from buffer
+  }
 #ifdef DO_SSL
   if (m_bUseSSL) {
     m_bEOF=false;
@@ -379,6 +396,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
      if (ret == 0) m_bEOF = true;
   }
   while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
+
   return ret;
 }
 
@@ -471,39 +489,6 @@ void HTTPProtocol::http_checkConnection()
   m_state.do_proxy = m_request.do_proxy;
 }
 
-#if 0
-// This is unused if KExtendedSocket is in use
-static bool waitForConnect( int sock, int maxTimeout )
-{
-  fd_set wr;
-  struct timeval timeout;
-
-  int n = maxTimeout; // Timeout in seconds
-  while(n--){
-      FD_ZERO(&wr);
-      FD_SET(sock, &wr);
-
-      timeout.tv_usec = 0;
-      timeout.tv_sec = 1; // 1 sec
-
-      select(sock + 1, (fd_set *)0, &wr, (fd_set *)0, &timeout);
-
-      if (FD_ISSET(sock, &wr))
-      {
-         int errcode;
-         ksize_t len = sizeof(errcode);
-         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&errcode, &len);
-         if ((ret == -1) || (errcode != 0))
-         {
-            return false;
-         }
-         return true;
-      }
-  }
-  return false; // Timeout
-}
-#endif
-
 static bool waitForHeader( int sock, int maxTimeout )
 {
   fd_set rd, wr;
@@ -532,17 +517,8 @@ bool
 HTTPProtocol::http_openConnection()
 {
     m_bKeepAlive = false;
-/*
-    m_sock = ::socket(PF_INET,SOCK_STREAM,0);
-    if (m_sock < 0) {
-      m_sock = 0;
-      error( ERR_COULD_NOT_CREATE_SOCKET, m_state.hostname );
-      return false;
-    }
+    m_lineCount = 0;
 
-    // Set socket non-blocking.
-    fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL)|O_NDELAY));
-*/
     KExtendedSocket ks;
     // do we still want a proxy after all that?
     if ( m_state.do_proxy )
@@ -551,31 +527,6 @@ HTTPProtocol::http_openConnection()
         int proxy_port = m_proxyURL.port();
         kdDebug(7113) << "http_openConnection " << proxy_host << " " << proxy_port << endl;
         // yep... open up a connection to the proxy instead of our host
-/*
-        if (!KSocket::initSockaddr(&m_proxySockaddr, proxy_host.latin1(), proxy_port))
-        {
-            error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
-            return false;
-        }
-        infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
-        if (KSocks::self()->connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr)))
-        {
-            if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK))
-            {
-                // Error
-                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-                kdDebug(7103) << "Could not connect to PROXY server!!" << endl;
-                return false;
-            }
-            // Wait for connection
-            if (!waitForConnect(m_sock, m_proxyConnTimeout))
-            {
-                error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
-                kdDebug(7103) << "Timed out waiting to connect to PROXY server!!" << endl;
-                return false;
-            }
-        }
-*/
         ks.setAddress(proxy_host, proxy_port);
         ks.setTimeout(m_proxyConnTimeout);
         infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
@@ -651,36 +602,6 @@ HTTPProtocol::http_openConnection()
     else
     {
       // apparently we don't want a proxy.  let's just connect directly
-/*
-      ksockaddr_in server_name;
-
-      if(!KSocket::initSockaddr(&server_name, m_state.hostname.latin1(), m_state.port)) {
-        error( ERR_UNKNOWN_HOST, m_state.hostname );
-        return false;
-      }
-
-      infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
-
-      if (KSocks::self()->connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
-        if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
-          // Error
-          if (m_state.port != m_DefaultPort)
-             error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
-          else
-             error(ERR_COULD_NOT_CONNECT, m_state.hostname );
-          return false;
-        }
-        // Wait for connection
-        if (!waitForConnect(m_sock, m_remoteConnTimeout))
-        {
-          if (m_state.port != m_DefaultPort)
-             error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
-          else
-             error(ERR_COULD_NOT_CONNECT, m_state.hostname );
-          return false;
-        }
-      }
-*/
         ks.setAddress(m_state.hostname, m_state.port);
         ks.setTimeout(m_remoteConnTimeout);
         if (ks.connect() < 0)
@@ -710,7 +631,7 @@ HTTPProtocol::http_openConnection()
     }
 
     // Set socket blocking.
-    fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
+    ks.setBlockingMode(true);
 
     // Placeholder
     if (!openStream())
@@ -2134,6 +2055,7 @@ void HTTPProtocol::http_closeConnection()
   if ( m_sock )
     ::close( m_sock );
   m_sock = 0;
+  m_lineCount = 0;
 #ifdef DO_SSL
   closeSSL();
 #endif
