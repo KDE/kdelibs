@@ -1,3 +1,10 @@
+2004-06-06  Zack Rusin  <zack@kde.org>
+
+        * xml/xml_tokenizer.cpp: Merging table hack for XML parsing from
+        Safari, merging in character changes, but with a fix which we
+        need, delaying attaching of text nodes till parsing finishes (
+        also merged from the Safari team)
+
 2004-06-02  Zack Rusin  <zack@kde.org>
 
         * xml/dom_xmlimpl.cpp: Correctly handle stylesheet loading in 

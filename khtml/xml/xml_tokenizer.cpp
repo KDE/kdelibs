@@ -25,6 +25,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom_xmlimpl.h"
+#include "html/html_tableimpl.h"
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
 #include "misc/htmltags.h"
@@ -154,6 +155,20 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
             return false;
     }
 
+    // FIXME: This hack ensures implicit table bodies get constructed in XHTML and XML files.
+    // We want to consolidate this with the HTML parser and HTML DOM code at some point.
+    // For now, it's too risky to rip that code up.
+    if (currentNode()->id() == ID_TABLE &&
+        newElement->id() == ID_TR &&
+        currentNode()->isHTMLElement() && newElement->isHTMLElement()) {
+        NodeImpl* implicitTBody =
+            new HTMLTableSectionElementImpl( m_doc, ID_TBODY, true /* implicit */ );
+        currentNode()->addChild(implicitTBody);
+        if (m_view && !implicitTBody->attached())
+            implicitTBody->attach();
+        pushNode( implicitTBody );
+    }
+
     //this is tricky. in general the node doesn't have to attach to the one it's in. as far
     //as standards go this is wrong, but there's literally thousands of documents where
     //we see <p><ul>...</ul></p>. the following code is there for those cases.
@@ -189,8 +204,10 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
     NodeImpl *node = popNode();
     if ( node ) {
         node->closeRenderer();
-    }
-// ###  else error
+        while ( currentNode()  && currentNode()->implicitNode() ) //for the implicit HTMLTableSectionElementImpl
+            popNode();
+    } else
+        return false;
 
     return true;
 }
@@ -224,39 +241,23 @@ bool XMLHandler::endCDATA()
 
 bool XMLHandler::characters( const QString& ch )
 {
-#if 1 // SAFARI_MERGE remove
-    if (ch.stripWhiteSpace().isEmpty())
+    //this is needed for xhtml parsing. otherwise we try to attach
+    //"\n\t" to html, head and other nodes which don't accept textchildren
+    if ( ch.stripWhiteSpace().isEmpty() )
         return true;
-#endif
 
     if (currentNode()->nodeType() == Node::TEXT_NODE ||
         currentNode()->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
-
-#if 1 // SAFARI_MERGE
-        NodeImpl::Id parentId = currentNode()->parentNode() ? currentNode()->parentNode()->id() : 0;
-        if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
-            // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
-            // way of doing this?
-#endif
-            int exceptioncode = 0;
-            static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
-            if (exceptioncode)
-                return false;
-#if 1 // SAFARI_MERGE
-        }
-        else {
-            // for all others, simplify the whitespace
-            int exceptioncode = 0;
-            static_cast<TextImpl*>(currentNode())->appendData(ch.simplifyWhiteSpace(),exceptioncode);
-            if (exceptioncode)
-                return false;
-        }
-#endif
+        int exceptioncode = 0;
+        static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
+        if (exceptioncode)
+            return false;
         return true;
     }
     else
         return false;
+
 }
 
 bool XMLHandler::comment(const QString & ch)
@@ -304,8 +305,6 @@ bool XMLHandler::enterText()
 {
     NodeImpl *newNode = m_doc->document()->createTextNode("");
     if (currentNode()->addChild(newNode)) {
-        if (m_view && !newNode->attached())
-            newNode->attach();
         pushNode( newNode );
         return true;
     }
@@ -317,6 +316,8 @@ bool XMLHandler::enterText()
 
 void XMLHandler::exitText()
 {
+    if ( m_view && !currentNode()->attached() )
+        currentNode()->attach();
     popNode();
 }
 
