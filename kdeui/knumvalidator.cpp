@@ -21,6 +21,7 @@
 *****************************************************************************/
 
 #include <qvalidator.h>
+#include <qwidget.h>
 
 #include "knumvalidator.h"
 #include <klocale.h>
