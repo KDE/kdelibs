@@ -87,6 +87,7 @@ extern "C" {
 #include <kcompletion.h>
 #include <klineedit.h>
 #include <kseparator.h>
+#include <ksqueezedtextlabel.h>
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kparts/componentfactory.h>
@@ -822,7 +823,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel( i18n("Location:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new QLabel( d->m_frame );
+    l = new KSqueezedTextLabel( d->m_frame );
     l->setText( directory );
     grid->addWidget(l, curRow++, 2);
   }
