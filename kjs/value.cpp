@@ -237,7 +237,7 @@ Value& Value::operator=(const Value &v)
 
 bool Value::isValid() const
 {
-  return !rep;
+  return rep;
 }
 
 bool Value::isNull() const
