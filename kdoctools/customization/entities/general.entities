@@ -1,7 +1,7 @@
 <!--
     KDE general entities for DocBook as used in the KDE documentation
     
-    Copyright (C) 1999-2001 Frederik Fouvry
+    Copyright (C) 2001 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 
     Refer to this file as
 
-      "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
+      "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
 
     This file contains what dbgenent.mod should contain and is read
     after all other files just like dbgenent.mod.
@@ -42,36 +42,50 @@
  -->
 <!ENTITY GPL-html	    PUBLIC
   "-//GNU//DOCUMENT GNU General Public License V2 (HTML)//EN"
-  NDATA SGML		   -- http://www.gnu.org/copyleft/gpl.html -->
+  "http://www.gnu.org/copyleft/gpl.html"
+  NDATA SGML		                                             >
 <!ENTITY GPL     	    PUBLIC
   "-//GNU//DOCUMENT GNU General Public License V2//EN"
-  NDATA linespecific	   -- http://www.gnu.org/copyleft/gpl.html -->
+  "http://www.gnu.org/copyleft/gpl.html"
+  NDATA linespecific	                                             >
 <!ENTITY GPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU General Public License Notice//EN"
-  -- meant for inclusion, so no [CN]DATA SGML (why?) --		     >
+  "../en/entities/gpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML (why?) -->
 <!ENTITY LGPL-html	    PUBLIC
-  "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN" 
-  NDATA SGML		-- http://www.gnu.org/copyleft/lesser.html -->
+  "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN"
+  "http://www.gnu.org/copyleft/lesser.html"
+  NDATA SGML		                                             >
 <!ENTITY LGPL		    PUBLIC
-  "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN" 
-  NDATA linespecific	-- http://www.gnu.org/copyleft/lesser.html -->
+  "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN"
+  "http://www.gnu.org/copyleft/lesser.html"
+  NDATA linespecific	                                             >
 <!ENTITY LGPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU Lesser General Public License Notice//EN"
-  -- meant for inclusion, so no [CN]DATA SGML --		     >
+  "../en/entities/lgpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML -->
 <!ENTITY FDL-html           PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
-  NDATA SGML               -- http://www.gnu.org/copyleft/fdl.html -->
+  "http://www.gnu.org/copyleft/fdl.html"
+  NDATA SGML                                                         >
 <!ENTITY FDL                PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
-  NDATA linespecific       -- http://www.gnu.org/copyleft/fdl.html -->
-<!-- FDLNotice is defined in kde-prologue.entities (why?) -->
+  "http://www.gnu.org/copyleft/fdl.html"
+  NDATA linespecific                                                 >
+<!-- FDLNotice is defined in lang.entities (why?) -->
 
 <!-- KDE index generation
      To use: set addindex to INCLUDE
      Scripts should generate the index in docindex.docbook in the same directory
  -->
-<!ENTITY kdedocindex SYSTEM "docindex.docbook">
+<!ENTITY % addindex "IGNORE"><!-- In some respects this INCLUDE would be better -->
+<![%addindex;[
+<!ENTITY documentation.index SYSTEM "docindex.docbook">
+]]>
+<!ENTITY documentation.index "">
 
+<!-- Entities to fill in slots in docbook version of FDL notice -->
+<!ENTITY % FDLIS "IGNORE">
+<!ENTITY % FDLFCT "IGNORE">
+<!ENTITY % FDLBCT "IGNORE">
 
 <!-- These are the language-independent entities.  They can be (more
      or less) freely extended.  Keep this list sorted and sensible.  
@@ -280,13 +294,3 @@
 <!ENTITY XSL	"<trademark>XSL</trademark>">
 
 <!-- Obsolete entities -->
-
-<!ENTITY % DBGED1.0 "INCLUDE">
-<![%DBGED1.0;[
-<!-- use Hewlett-Packard instead -->
-<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>'>
-<!-- use X-Windows instead -->
-<!ENTITY X	"<trademark>X Window System</trademark>">
-<!-- use pixie instead -->
-<!ENTITY Pixie	"<application>Pixie</application>">
-]]>
