@@ -29,7 +29,7 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 46
+#define WIDGETS 54
 
 /**
  * This class adds simple time management to KPixmap for use in flushing
@@ -246,17 +246,19 @@ public:
          // Off (unsunken widgets)
          PushButton=0, ComboBox, HScrollBarSlider, VScrollBarSlider, Bevel,
          ToolButton, ScrollButton, HScrollDeco, VScrollDeco,
-         ComboDeco, MenuItem, InactiveTab,
+         ComboDeco, MenuItem, InactiveTab, ArrowUp, ArrowDown, ArrowLeft,
+         ArrowRight,
          // On (sunken widgets)
          PushButtonDown, ComboBoxDown, HScrollBarSliderDown,
          VScrollBarSliderDown, BevelDown, ToolButtonDown, ScrollButtonDown,
          HScrollDecoDown, VScrollDecoDown, ComboDecoDown, MenuItemDown,
-         ActiveTab,
+         ActiveTab, SunkenArrowUp, SunkenArrowDown, SunkenArrowLeft,
+         SunkenArrowRight,
          // Everything else (indicators must have separate settings)
          HScrollGroove, VScrollGroove, Slider, SliderGroove, IndicatorOn,
          IndicatorOff, ExIndicatorOn, ExIndicatorOff, HBarHandle, VBarHandle,
-         ToolBar, Splitter, CheckMark, MenuBar, ArrowUp, ArrowDown,
-         ArrowLeft, ArrowRight, ProgressBar, ProgressBg, MenuBarItem,
+         ToolBar, Splitter, CheckMark, MenuBar, DisArrowUp, DisArrowDown,
+         DisArrowLeft, DisArrowRight, ProgressBar, ProgressBg, MenuBarItem,
          Background};
 
     /**

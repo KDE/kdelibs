@@ -516,7 +516,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         active = activeControl == QStyle::AddLine;
         drawBaseButton(p, add.x(), add.y(), add.width(), add.height(), g,
                        active, false, active ? ScrollButtonDown : ScrollButton);
-        drawArrow(p, (horizontal) ? RightArrow : DownArrow, false, add.x()+3,
+        drawArrow(p, (horizontal) ? RightArrow : DownArrow, active, add.x()+3,
                   add.y()+3, add.width()-6, add.height()-6,
                   *colorGroup(g, active ? ScrollButtonDown : ScrollButton));
     }
@@ -526,7 +526,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         p->drawRect(sub);
         drawBaseButton(p, sub.x(), sub.y(), sub.width(), sub.height(), g,
                        active, false, active ? ScrollButtonDown : ScrollButton);
-        drawArrow(p, (horizontal)  ? LeftArrow : UpArrow, false, sub.x()+3,
+        drawArrow(p, (horizontal)  ? LeftArrow : UpArrow, active, sub.x()+3,
                   sub.y()+3, sub.width()-6, sub.height()-6,
                   *colorGroup(g, active ? ScrollButtonDown : ScrollButton));
     }
@@ -810,43 +810,29 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
 {
     // Handles pixmapped arrows. A little inefficent because you can specify
     // some as pixmaps and some as default types.
+    WidgetType widget;
     switch(type){
     case UpArrow:
-        if(isPixmap(ArrowUp)){
-        p->drawPixmap(x+(w-uncached(ArrowUp)->width())/2,
-                      y+(h-uncached(ArrowUp)->height())/2,
-                      *uncached(ArrowUp));
-        return;
-        }
+        widget = enabled ? down ? SunkenArrowUp : ArrowUp : DisArrowUp;
         break;
     case DownArrow:
-        if(isPixmap(ArrowDown)){
-        p->drawPixmap(x+(w-uncached(ArrowDown)->width())/2,
-                      y+(h-uncached(ArrowDown)->height())/2,
-                      *uncached(ArrowDown));
-        return;
-        }
+        widget = enabled ? down ? SunkenArrowDown : ArrowDown : DisArrowDown;
         break;
     case LeftArrow:
-        if(isPixmap(ArrowLeft)){
-        p->drawPixmap(x+(w-uncached(ArrowLeft)->width())/2,
-                      y+(h-uncached(ArrowLeft)->height())/2,
-                      *uncached(ArrowLeft));
-        return;
-        }
+        widget = enabled ? down ? SunkenArrowLeft : ArrowLeft : DisArrowLeft;
         break;
     case RightArrow:
-        if(isPixmap(ArrowRight)){
-        p->drawPixmap(x+(w-uncached(ArrowRight)->width())/2,
-                      y+(h-uncached(ArrowRight)->height())/2,
-                      *uncached(ArrowRight));
-        return;
-        }
+        widget = enabled ? down ? SunkenArrowRight : ArrowRight : DisArrowRight;
         break;
     default:
         break;
     }
-
+    if(isPixmap(widget)){
+        p->drawPixmap(x+(w-uncached(widget)->width())/2,
+                      y+(h-uncached(widget)->height())/2,
+                      *uncached(widget));
+        return;
+    }
     // Standard arrow types
     if(arrowType() == MotifArrow)
         qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, g, enabled);
@@ -1218,12 +1204,12 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                            white, white,
                            dis ? discol : white,
                            discol, white);
-	    drawArrow(p, RightArrow, FALSE,
+	    drawArrow(p, RightArrow, true,
                       x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
                       dim, dim, g2, TRUE);
 	} else {
 	    drawArrow(p, RightArrow,
-                      FALSE,
+                      false,
                       x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
                       dim, dim, g, mi->isEnabled() );
         }

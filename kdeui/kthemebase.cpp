@@ -34,19 +34,21 @@
 static const char *widgetEntries[] = { // unsunken widgets (see header)
 "PushButton", "ComboBox", "HSBarSlider", "VSBarSlider", "Bevel", "ToolButton",
 "ScrollButton", "HScrollDeco", "VScrollDeco", "ComboDeco", "MenuItem", "Tab",
+"ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
 // sunken widgets
 "PushButtonDown", "ComboBoxDown", "HSBarSliderDown", "VSBarSliderDown",
 "BevelDown", "ToolButtonDown", "ScrollButtonDown", "HScrollDecoDown",
-"VScrollDecoDown", "ComboDecoDown", "MenuItemDown", "TabDown",
+"VScrollDecoDown", "ComboDecoDown", "MenuItemDown", "TabDown", "SunkenArrowUp",
+"SunkenArrowDown", "SunkenArrowLeft", "SunkenArrowRight",
 // everything else
 "HScrollGroove", "VScrollGroove", "Slider", "SliderGroove", "CheckBoxDown",
 "CheckBox", "RadioDown", "Radio", "HBarHandle", "VBarHandle",
-"ToolBar", "Splitter", "CheckMark", "MenuBar", "ArrowUp", "ArrowDown",
-"ArrowLeft", "ArrowRight", "ProgressBar", "ProgressBackground",
-"MenuBarItem", "Background"
+"ToolBar", "Splitter", "CheckMark", "MenuBar", "DisableArrowUp",
+"DisableArrowDown", "DisableArrowLeft", "DisableArrowRight", "ProgressBar",
+"ProgressBackground", "MenuBarItem", "Background"
 };
 
-#define INHERIT_ITEMS 12
+#define INHERIT_ITEMS 16
 
 
 // This is used to encode the keys. I used to use masks but I think this
@@ -67,6 +69,7 @@ union kthemeKey{
 void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
                                   QString *brdnames, bool *loadArray)
 {
+    warning("reading config for %s", widgetEntries[i]);
     if(loadArray[i] == true){
         return; // already been preloaded.
     }
@@ -95,6 +98,21 @@ void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
                         widgetEntries[i]);
             }
             return;
+        }
+    }
+
+    // special inheritance for disabled arrows (these are tri-state unlike
+    // the rest of what we handle).
+    int tmp;
+    for(tmp = DisArrowUp; tmp <= DisArrowRight; ++tmp){
+        if(tmp == i){
+            warning("Comparing %s to %s", widgetEntries[tmp],
+                    widgetEntries[ArrowUp+(tmp-DisArrowUp)]);
+            if(config->readEntry("Pixmap", "").isEmpty()){
+                copyWidgetConfig(ArrowUp+(tmp-DisArrowUp), i, pixnames,
+                                 brdnames);
+                return;
+            }
         }
     }
 
@@ -245,7 +263,8 @@ void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
 
     if(pbPixmaps[i] && !pbDuplicate[i])
         generateBorderPix(i);
-                          
+
+    
     // Various widget specific settings. This was more efficent when bunched
     // together in the misc group, but this makes an easier to read config.
     if(i == SliderGroove)
@@ -377,6 +396,8 @@ void KThemeBase::generateBorderPix(int i)
 void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
                                  QString *brdnames)
 {
+    warning("copying config for %s to %s", widgetEntries[sourceID],
+           widgetEntries[destID]);
     scaleHints[destID] = scaleHints[sourceID];
     gradients[destID] = gradients[sourceID];
     blends[destID] = blends[sourceID];
