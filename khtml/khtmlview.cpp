@@ -575,7 +575,7 @@ bool KHTMLView::gotoLink(ElementImpl *n)
 
     QRect bounds = n->getRect();
 
-    kdDebug() << "KHTMLView::gotoLink: Bounding rectangle:" << bounds.x() <<":"<< bounds.y() <<":"<< bounds.width() <<":"<< bounds.height() << "\n";
+    //    kdDebug() << "KHTMLView::gotoLink: Bounding rectangle:" << bounds.x() <<":"<< bounds.y() <<":"<< bounds.width() <<":"<< bounds.height() << "\n";
 
     int x = 0, y = 0;
     n->getUpperLeftCorner(x,y);
@@ -637,7 +637,6 @@ bool KHTMLView::gotoLink(ElementImpl *n)
     {
         scrollBy(deltax, deltay);
         d->currentNode = n;
-	kdDebug()<<"KHTMLView::gotoLink: new Node at ("<<x<<"/"<<y<<") selected!"<<endl;
 	d->newNode = 0;
 	HTMLAreaElementImpl *anchor = 0;
 
@@ -652,16 +651,12 @@ bool KHTMLView::gotoLink(ElementImpl *n)
     int maxx = curWidth-borderX;
     int maxy = curHeight-borderY;
 
-    //    kdDebug(6000) << "contentsX: " << contentsX() <<" contentsY: "<< contentsY() << " x: " << x << " y: "<< y << " width: " << xe-x << " height: " << ye-y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
-
     int scrollX,scrollY;
 
     scrollX = deltax > 0 ? (deltax > maxx ? maxx : deltax) : deltax == 0 ? 0 : (deltax>-maxx ? deltax : -maxx);
     scrollY = deltay > 0 ? (deltay > maxy ? maxy : deltay) : deltay == 0 ? 0 : (deltay>-maxy ? deltay : -maxy);
 
     scrollBy(scrollX, scrollY);
-
-    kdDebug(6000) << "scrollX:"<<scrollX<<" scrollY:"<<scrollY<<"\n";
 
     // generate abs(scroll.)
     if (scrollX<0)
@@ -674,7 +669,6 @@ bool KHTMLView::gotoLink(ElementImpl *n)
     if ( (scrollX!=maxx) && (scrollY!=maxy) )
     {
         d->currentNode = n;
-	kdDebug()<<"KHTMLView::gotoLink: new Node selected!"<<endl;
 	d->newNode = 0;
 
 	HTMLAreaElementImpl *anchor = 0;
@@ -958,7 +952,6 @@ void KHTMLView::setLinkCursor(DOM::ElementImpl *n)
       d->currentNode = n;
       if (n)
       {
-          kdDebug(6000)<<"setLinkCursor to:"<<getTagName(n->id()).string()<<"\n";
           n->setPressed(false);
           n->setFocus();
       }
