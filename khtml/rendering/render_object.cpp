@@ -437,10 +437,10 @@ void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
     const QColor& tc = style->borderTopColor();
     const QColor& bc = style->borderBottomColor();
 
-    EBorderStyle& ts = style->borderTopStyle();
-    EBorderStyle& bs = style->borderBottomStyle();
-    EBorderStyle& ls = style->borderLeftStyle();
-    EBorderStyle& rs = style->borderRightStyle();
+    EBorderStyle ts = style->borderTopStyle();
+    EBorderStyle bs = style->borderBottomStyle();
+    EBorderStyle ls = style->borderLeftStyle();
+    EBorderStyle rs = style->borderRightStyle();
 
     bool render_t = ts > BHIDDEN;
     bool render_l = ls > BHIDDEN && begin;
