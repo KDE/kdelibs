@@ -1,0 +1,5 @@
+[Misc]
+Name=KDE default
+Comment=Default KDE style
+[KDE]
+widgetStyle=Default
