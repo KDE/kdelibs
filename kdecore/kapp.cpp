@@ -83,7 +83,6 @@
 #include <kstddirs.h>
 
 KApplication* KApplication::KApp = 0L;
-QStrList* KApplication::pSearchPaths;
 //extern bool bAreaCalculated;
 
 static int kde_xio_errhandler( Display * )
@@ -155,10 +154,6 @@ void KApplication::init()
   DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );
   lastEnteredDropZone = 0L;
   dropZones.setAutoDelete( FALSE );
-
-  // initialize file search paths
-  pSearchPaths = new QStrList();
-  buildSearchPaths();
 
   WM_SAVE_YOURSELF = XInternAtom( display, "WM_SAVE_YOURSELF", False );
   WM_PROTOCOLS = XInternAtom( display, "WM_PROTOCOLS", False );
@@ -374,103 +369,95 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 
 void KApplication::parseCommandLine( int& argc, char** argv )
 {
-  enum parameter_code { unknown = 0, caption, icon, miniicon, restore };
-  const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
+    enum parameter_code { unknown = 0, caption, icon, miniicon, restore };
+    const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
 
-  aDummyString2 = " ";
-  int i = 1;
-  parameter_code parameter;
-  while( i < argc ) {
-    parameter = unknown;
+    aDummyString2 = " ";
+    int i = 1;
+    parameter_code parameter;
+    while( i < argc ) {
+	parameter = unknown;
 
-    for ( int p = 0 ; parameter_strings[p]; p++)
-      if ( !strcmp( argv[i], parameter_strings[p]) ) {
-        parameter = static_cast<parameter_code>(p + 1);
-        break;
-      }
+	for ( int p = 0 ; parameter_strings[p]; p++)
+	    if ( !strcmp( argv[i], parameter_strings[p]) ) {
+		parameter = static_cast<parameter_code>(p + 1);
+		break;
+	    }
 
-    if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
-      argc -= 1;
-      break; // jump out of the while loop
-    }
+	if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
+	    argc -= 1;
+	    break; // jump out of the while loop
+	}
 
-    switch (parameter) {
-    case caption:
-      aCaption = argv[i+1];
-      aDummyString2 += parameter_strings[caption-1];
-      aDummyString2 += " \"";
-      aDummyString2 += argv[i+1];
-      aDummyString2 += "\" ";
-      break;
-    case icon:
-      if (argv[i+1][0] == '/')
-        aIconPixmap = QPixmap(argv[i+1]);
-      else
-        aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1] );
-      if (aMiniIconPixmap.isNull())
-	aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
-      aDummyString2 += parameter_strings[icon-1];
-      aDummyString2 += " ";
-      aDummyString2 += argv[i+1];
-      aDummyString2 += " ";
-      break;
-    case miniicon:
-      aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
-      aDummyString2 += parameter_strings[miniicon-1];
-      aDummyString2 += " ";
-      aDummyString2 += argv[i+1];
-      aDummyString2 += " ";
-      break;
-    case restore:
-      {
-		aSessionName = argv[i+1];
-		QString aSessionConfigName;
-		if (argv[i+1][0] == '/')
-		  aSessionConfigName = argv[i+1];
-		else {
-		  aSessionConfigName = KApplication::localkdedir();
-		  aSessionConfigName += "/share/config/";
-		  aSessionConfigName += argv[i+1];
-		}
-		if (QFile::exists(aSessionConfigName)){
-		  QFile aConfigFile(aSessionConfigName);
-		  bool bSuccess;
-		  if ( ! checkAccess( aConfigFile.name(), W_OK ) )
+	switch (parameter) {
+	case caption:
+	    aCaption = argv[i+1];
+	    aDummyString2 += parameter_strings[caption-1];
+	    aDummyString2 += " \"";
+	    aDummyString2 += argv[i+1];
+	    aDummyString2 += "\" ";
+	    break;
+	case icon:
+	    if (argv[i+1][0] == '/')
+		aIconPixmap = QPixmap(argv[i+1]);
+	    else
+		aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1] );
+	    if (aMiniIconPixmap.isNull())
+		aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
+	    aDummyString2 += parameter_strings[icon-1];
+	    aDummyString2 += " ";
+	    aDummyString2 += argv[i+1];
+	    aDummyString2 += " ";
+	    break;
+	case miniicon:
+	    aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
+	    aDummyString2 += parameter_strings[miniicon-1];
+	    aDummyString2 += " ";
+	    aDummyString2 += argv[i+1];
+	    aDummyString2 += " ";
+	    break;
+	case restore: {
+	    aSessionName = argv[i+1];
+	    QString aSessionConfigName = locate("config", argv[i+1]);
+	    if (QFile::exists(aSessionConfigName)){
+		QFile aConfigFile(aSessionConfigName);
+		bool bSuccess;
+		if ( ! checkAccess( aConfigFile.name(), W_OK ) )
 		    bSuccess = false;
-		  else
+		else
 		    bSuccess = aConfigFile.open( IO_ReadWrite );
-		  if( bSuccess ){
-                        // Set uid/gid (neccesary for SUID programs)
-                        chown(aConfigFile.name().ascii(), getuid(), getgid());
-
-			aConfigFile.close();
-			pSessionConfig = new KConfig(QString::null, aSessionConfigName);
-			
-			// do not write back. the application will get
-			// a new one if demanded.
-			pSessionConfig->rollback();
-			
-			if (pSessionConfig){
-			  bIsRestored = True;
-			}
-			aConfigFile.remove();
-		  }
+		if( bSuccess ){
+		    // Set uid/gid (neccesary for SUID programs)
+		    chown(aConfigFile.name().ascii(), getuid(), getgid());
+		    
+		    aConfigFile.close();
+		    pSessionConfig = new KConfig(QString::null, aSessionConfigName);
+		    
+		    // do not write back. the application will get
+		    // a new one if demanded.
+		    pSessionConfig->rollback();
+		    
+		    if (pSessionConfig){
+			bIsRestored = True;
+		    }
+		    aConfigFile.remove();
 		}
-      }
-      break;
-    case unknown:
-      i++;
+	    }
+	}
+	break;
+	case unknown:
+	    i++;
+	}
+
+	if ( parameter != unknown ) { // remove arguments
+
+	    for( int j = i;  j < argc-2; j++ )
+		argv[j] = argv[j+2];
+
+	    argc -=2 ;
+	}
+
     }
-
-    if ( parameter != unknown ) { // remove arguments
-
-      for( int j = i;  j < argc-2; j++ )
-        argv[j] = argv[j+2];
-
-      argc -=2 ;
-    }
-
-  }
 }
 
 QPixmap KApplication::getIcon() const
@@ -493,8 +480,6 @@ QPixmap KApplication::getMiniIcon() const
 KApplication::~KApplication()
 {
   removeEventFilter( this );
-
-  delete pSearchPaths;
 
   delete pConfig;
 
@@ -821,93 +806,12 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
 }
 
 
-QString KApplication::findFile( const QString& file )
-{
-  QString fullPath;
-  QStrListIterator it( *pSearchPaths );
-
-  while ( it.current() )
-    {
-	  fullPath = it.current();
-	  fullPath += '/';
-	  fullPath += file;
-	  if ( !access( fullPath.ascii(), 0 ) )
-		return fullPath;
-	  ++it;
-    }
-
-  return QString::null;
-}
-
-
 QString KApplication::getCaption() const
 {
   if( !aCaption.isNull() )
 	return aCaption;
   else
 	return name();
-}
-
-
-void KApplication::buildSearchPaths()
-{
-  // Torben
-  // We want to search the local files with highest priority
-  QString tmp = KApplication::localkdedir();
-  appendSearchPath( tmp );
-
-  // add paths from "[KDE Setup]:Path=" config file entry
-  getConfig()->setGroup( "KDE Setup" );
-  QString kdePathRc = getConfig()->readEntry( "Path" );
-
-  if ( !kdePathRc.isNull() )
-    {
-      char *start, *end, *workPath = qstrdup( kdePathRc.ascii());
-	  start = workPath;
-	  while ( start )
-		{
-	  	  end = strchr( start, ':' );
-		  if ( end )
-		    *end = '\0';
-		  appendSearchPath( start );
-		  start = end ? end + 1 : end;
-		}
-	  delete [] workPath;
-    }
-
-  // add paths in the KDEPATH environment variable
-  QString kdePathEnv = getenv( "KDEPATH" );
-  if ( !kdePathEnv.isEmpty() )
-    {
-	char *start, *end, *workPath = qstrdup(kdePathEnv.ascii());
-	start = workPath;
-	  while ( start )
-		{
-	  	  end = strchr( start, ':' );
-		  if ( end )
-		    *end = '\0';
-		  appendSearchPath( start );
-		  start = end ? end + 1 : end;
-		}
-	  delete [] workPath;
-    }
-
-  appendSearchPath( kdedir() );
-}
-
-void KApplication::appendSearchPath( const QString& path )
-{
-  QStrListIterator it( *pSearchPaths );
-
-  // return if this path has already been added
-  while ( it.current() )
-    {
-	  if ( it.current() == path )
-		return;
-	  ++it;
-    }
-
-  pSearchPaths->append( path.ascii() );
 }
 
 void KApplication::readSettings()

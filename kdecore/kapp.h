@@ -290,15 +290,6 @@ public:
   static QString localkdedir();
 
   /**
-	* Find a file using standard KDE search paths.
-	*
-	* Possible search paths
-	* include $KDEDIR, $KDEPATH, and "[KDE Setup]:Path=" entry in a config
-	* file. If file is not found, isEmpty() will return True
-	*/
-  static QString findFile( const QString& file );
-
-  /**
    * Get the KDE font list.
    *
    * This method allows you to get the KDE font list which was
@@ -313,22 +304,22 @@ public:
   // QString appName () const { return name(); }
 
   /**
-	* Return a text for the window caption.
-	*
-	* This would be set either by
-	* "-caption", otherwise it will be equivalent to the name of the
-	* executable.
-	*/
+   * Return a text for the window caption.
+   *
+   * This would be set either by
+   * "-caption", otherwise it will be equivalent to the name of the
+   * executable.
+   */
   QString getCaption() const;
 
   /** Get a file name in order to make a temporary copy of your
-	* document.
-	*
-	* @param pFilename The full path to the current file of your
-	* document.
-	* @return A new filename for auto-saving. You have to free() this
-	* yourself, otherwise you have a memory leak!
-	*/
+   * document.
+   *
+   * @param pFilename The full path to the current file of your
+   * document.
+   * @return A new filename for auto-saving. You have to free() this
+   * yourself, otherwise you have a memory leak!
+   */
   QString tempSaveName( const QString& pFilename );
 
   /** Check if there is an auto-save file for the document you want to
@@ -458,7 +449,6 @@ private:
   QWidget* pTopWidget;
   QString aCaption; // the name for the window title
   QString aWmCommand; // for userdefined session management
-  static QStrList* pSearchPaths;
   void* dummy2; // do not use these without asking kalle@kde.org
   void* dummy3;
   void* dummy4;
@@ -477,9 +467,6 @@ private:
   
   void init( );
   void parseCommandLine( int&, char** ); // search for special KDE arguments
-
-  void buildSearchPaths();
-  void appendSearchPath( const QString& path );
 
   virtual void kdisplaySetPalette();
   virtual void kdisplaySetStyle();
@@ -599,6 +586,24 @@ private:
 #endif
 
 // $Log$
+// Revision 1.88  1999/06/18 16:48:27  kulow
+// ok, many changes for KConfig.
+//   KConfig's constructor doesn't take two absolute pathnames, but one
+//    filename ("kwmrc" for example) and looks for the files itself.
+//   KConfig has no longer a list of global system files, but looks for
+//    all kdeglobals and then system.kdeglobals
+// some changes to KApplication
+//   removed localkdeconfigdir - KConfig handles that on it's own now
+//   added obsolete message to localkdedir
+//   removed configstate and functions using it (I haven't found a single
+//   application caring if their config files is opened read only :)
+//   don't create directories before allocating KConfig object - KConfigBackend
+//   will do that in writeConfigFile if the file needs to be written - no
+//   empty k*rc files anymore :)
+// every other change is adopting to KConfig's new constructor. I'm wondering
+// why this has been that long this way - two full expanded path names aren't
+// really good arguments ;-)
+//
 // Revision 1.87  1999/06/17 22:06:21  kulow
 // thanks kde_toolbardir for the hard work you've done for us...
 //
