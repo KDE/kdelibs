@@ -212,6 +212,22 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     parseCommandLine( );
 }
 
+KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
+                           bool allowStyles, bool GUIenabled ) :
+  QApplication( display ), KInstance(rAppName)
+{
+    if (!GUIenabled)
+       allowStyles = false;
+    useStyles = allowStyles;
+
+    ASSERT (!rAppName.isEmpty());
+    setName(rAppName);
+    pAppData = new KApplicationPrivate;
+
+    init(GUIenabled);
+    parseCommandLine( argc, argv );
+}
+
 int KApplication::xioErrhandler()
 {
   emit shutDown();

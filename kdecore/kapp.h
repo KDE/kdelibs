@@ -115,6 +115,29 @@ public:
   KApplication( bool allowStyles=true, bool GUIenabled=true);
 
   /**
+   * Constructor. Parses command-line arguments. Use this constructor to use KApplication
+   * in a Motif or Xt program.
+   *
+   * @param display Will be passed to Qt as the X display. The display must be valid and already
+   * opened.
+   *
+   * @param rAppName application name. Will be used for finding the
+   * associated message files and icon files, and as the default
+   * registration name for DCOP. This is a mandatory parameter.
+   *
+   * @param allowStyles Set to false to disable the loading on plugin based
+   * styles. This is only useful to applications that do not display a GUI
+   * normally. If you do create an application with @p allowStyles set to false
+   * that normally runs in the background but under special circumstances
+   * displays widgets call @ref enableStyles() before displaying any widgets.
+   *
+   * @param GUIenabled Set to false to disable all GUI stuff. This implies
+   * no styles either.
+   */
+  KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
+               bool allowStyles=true, bool GUIenabled=true);
+
+  /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
   static void addCmdLineOptions();
@@ -687,6 +710,11 @@ public:
 #endif
 
 // $Log$
+// Revision 1.141  2000/03/25 20:08:00  charles
+// Why have we had a random() function, but not a randomString function?
+// What gives?!
+// Well. Ok. we have one now. muahaha!
+//
 // Revision 1.140  2000/03/24 22:18:59  ettrich
 // session management fixes
 //
