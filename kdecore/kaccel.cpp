@@ -36,13 +36,16 @@
 // KAccelPrivate
 //---------------------------------------------------------------------
 
-KAccelPrivate::KAccelPrivate( KAccel* pParent )
+KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 : KAccelBase( KAccelBase::QT_KEYS )
 {
 	//kdDebug(125) << "KAccelPrivate::KAccelPrivate( pParent = " << pParent << " ): this = " << this << endl;
 	m_pAccel = pParent;
+	m_pWatch = pWatch;
 	m_bAutoUpdate = true;
 	connect( (QAccel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
+	
+	m_pWatch->installEventFilter( this );
 }
 
 void KAccelPrivate::setEnabled( bool bEnabled )
@@ -72,8 +75,9 @@ bool KAccelPrivate::setEnabled( const QString& sAction, bool bEnable )
 
 bool KAccelPrivate::removeAction( const QString& sAction )
 {
-	// FIXME: I don't htink getID() contains any useful 
-	//  information.  Use mapIDToAction. --ellis, 2/May/2002
+	// FIXME: getID() doesn't contains any useful 
+	//  information!  Use mapIDToAction. --ellis, 2/May/2002
+	//  Or maybe KAccelBase::remove() takes care of QAccel indirectly...
 	KAccelAction* pAction = actions().actionPtr( sAction );
 	if( pAction ) {
 		int nID = pAction->getID();
@@ -167,8 +171,7 @@ void KAccelPrivate::slotKeyPressed( int id )
 	if( m_mapIDToKey.contains( id ) ) {
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
-		QWidget* pParent = dynamic_cast<QWidget*>(m_pAccel->parent());
-		QPopupMenu* pMenu = createPopupMenu( pParent, seq );
+		QPopupMenu* pMenu = createPopupMenu( m_pWatch, seq );
 
 		// If there was only one action mapped to this key,
 		//  and that action is not a multi-key shortcut,
@@ -181,10 +184,7 @@ void KAccelPrivate::slotKeyPressed( int id )
 			slotMenuActivated( iAction );
 		} else {
 			connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)) );
-			if( pParent )
-				pMenu->exec( pParent->mapToGlobal( QPoint( 0, 0 ) ) );
-			else
-				pMenu->exec( QPoint( 0, 0 ) );
+			pMenu->exec( m_pWatch->mapToGlobal( QPoint( 0, 0 ) ) );
 			disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)) );
 		}
 		delete pMenu;
@@ -206,6 +206,34 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 	}
 }
 
+bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
+{
+	if( pEvent->type() == QEvent::AccelOverride ) {
+		QKeyEvent* pKeyEvent = (QKeyEvent*) pEvent;
+		KKey key( pKeyEvent );
+		//kdDebug(125) << "KAccelPrivate::eventFilter( AccelOverride ): this = " << this << ", key = " << key.toStringInternal() << endl;
+		int keyCodeQt = key.keyCodeQt();
+		QMap<int, int>::iterator it = m_mapIDToKey.begin();
+		for( ; it != m_mapIDToKey.end(); ++it ) {
+			if( (*it) == keyCodeQt ) {
+				int nID = it.key();
+				//kdDebug(125) << "shortcut found!" << endl;
+				if( m_mapIDToAction.contains( nID ) ) {
+					// TODO: reduce duplication between here and slotMenuActivated
+					KAccelAction* pAction = m_mapIDToAction[nID];
+					connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+					emit menuItemActivated();
+					disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+				} else
+					slotKeyPressed( nID );
+				pKeyEvent->accept();
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 //---------------------------------------------------------------------
 // KAccel
 //---------------------------------------------------------------------
@@ -214,7 +242,7 @@ KAccel::KAccel( QWidget* pParent, const char* psName )
 : QAccel( pParent, (psName) ? psName : "KAccel-QAccel" )
 {
 	kdDebug(125) << "KAccel( pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
-	d = new KAccelPrivate( this );
+	d = new KAccelPrivate( this, pParent );
 }
 
 KAccel::KAccel( QWidget* watch, QObject* pParent, const char* psName )
@@ -223,7 +251,7 @@ KAccel::KAccel( QWidget* watch, QObject* pParent, const char* psName )
 	kdDebug(125) << "KAccel( watch = " << watch << ", pParent = " << pParent << ", psName = " << psName << " ): this = " << this << endl;
 	if( !watch )
 		kdDebug(125) << kdBacktrace() << endl;
-	d = new KAccelPrivate( this );
+	d = new KAccelPrivate( this, watch );
 }
 
 KAccel::~KAccel()

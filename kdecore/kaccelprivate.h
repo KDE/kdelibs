@@ -11,11 +11,12 @@ class KAccelPrivate : public QObject, public KAccelBase
 	Q_OBJECT
  public:
 	KAccel* m_pAccel;
+	QWidget* m_pWatch;
 	QMap<int, int> m_mapIDToKey;
 	QMap<int, KAccelAction*> m_mapIDToAction;
 	QTimer m_timerShowMenu;
 
-	KAccelPrivate( KAccel* pParent );
+	KAccelPrivate( KAccel* pParent, QWidget* pWatch );
 
 	virtual void setEnabled( bool );
 
@@ -37,6 +38,8 @@ class KAccelPrivate : public QObject, public KAccelBase
 	void slotKeyPressed( int id );
 	void slotShowMenu();
 	void slotMenuActivated( int iAction );
+	
+	bool eventFilter( QObject* pWatched, QEvent* pEvent ); // virtual method from QObject
 };
 
 #endif // !__KACCELPRIVATE_H
