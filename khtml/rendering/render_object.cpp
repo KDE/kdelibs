@@ -1,5 +1,5 @@
 /**
- * This file is part of the DOM implementation for KDE.
+ * This file is part of the html renderer for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
@@ -533,8 +533,9 @@ QString RenderObject::information() const
     if (overhangingContents()) ts << "oc ";
     if (layouted()) ts << "lt ";
     if (m_recalcMinMax) ts << "rmm ";
-    if (mouseInside()) ts << "mi";
-    if (element() && element()->active()) ts << "act";
+    if (mouseInside()) ts << "mi ";
+    if (element() && element()->active()) ts << "act ";
+    if (element() && element()->hasAnchor()) ts << "anchor ";
     if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 	<< (isTableCell() ?
@@ -835,17 +836,26 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
-     if (isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside()) {
+    if (isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside() )
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
+            if (!child->isPositioned() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
                 inside = true;
-    }
 
     if (inside && element()) {
         if (!info.innerNode())
             info.setInnerNode(element());
-        if (element()->hasAnchor() && !info.URLElement())
-            info.setURLElement(element());
+
+        if (!info.URLElement()) {
+            RenderObject* p = this;
+            while (p) {
+                if (p->element() && p->element()->hasAnchor()) {
+                    info.setURLElement(p->element());
+                    break;
+                }
+                if (!isSpecial()) break;
+                p = p->parent();
+            }
+        }
     }
 
     if (!info.readonly()) {
