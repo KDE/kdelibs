@@ -99,6 +99,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
                            QButton::ToggleState *sizeIsRelativeState )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
+  xlfdBox = 0;
+  charsetsCombo = 0;
+
   QString mainWhatsThisText =
     i18n( "Here you can choose the font to be used." );
   QWhatsThis::add( this, mainWhatsThisText );
@@ -140,7 +143,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
       i18n("Enable this checkbox to change the font family settings.");
     QWhatsThis::add( familyCheckbox, familyCBWhatsThisText );
     QToolTip::add(   familyCheckbox, familyCBToolTipText );
+    familyLabel = 0;
   } else {
+    familyCheckbox = 0;
     familyLabel = new QLabel( i18n("Font:"), page, "familyLabel" );
     familyLayout->addWidget(familyLabel, 1, Qt::AlignLeft);
   }
@@ -157,7 +162,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
       i18n("Enable this checkbox to change the font style settings.");
     QWhatsThis::add( styleCheckbox, styleCBWhatsThisText );
     QToolTip::add(   styleCheckbox, styleCBToolTipText );
+    styleLabel = 0;
   } else {
+    styleCheckbox = 0;
     styleLabel = new QLabel( i18n("Font style:"), page, "styleLabel");
     styleLayout->addWidget(styleLabel, 1, Qt::AlignLeft);
   }
@@ -175,7 +182,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
       i18n("Enable this checkbox to change the font size settings.");
     QWhatsThis::add( sizeCheckbox, sizeCBWhatsThisText );
     QToolTip::add(   sizeCheckbox, sizeCBToolTipText );
+    sizeLabel = 0;
   } else {
+    sizeCheckbox = 0;
     sizeLabel = new QLabel( i18n("Size:"), page, "sizeLabel");
     sizeLayout->addWidget(sizeLabel, 1, Qt::AlignLeft);
   }
