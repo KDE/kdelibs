@@ -180,7 +180,7 @@ void LdapClient::slotDone()
   }
 #endif
   int err = mJob->error();
-  if ( err ) {
+  if ( err && err != KIO::ERR_USER_CANCELED ) {
     emit error( KIO::buildErrorString( err, QString("%1:%2").arg( mHost ).arg( mPort ) ) );
   }
   emit done();
@@ -204,11 +204,7 @@ void LdapClient::parseLDIF( const QByteArray& data )
   if ( data.size() ) {
     d->ldif.setLDIF( data );
   } else {
-    QByteArray dummy( 3 );
-    dummy[ 0 ] = '\n';
-    dummy[ 1 ] = '\n';
-    dummy[ 2 ] = '\n';
-    d->ldif.setLDIF( dummy );
+    d->ldif.endLDIF();
   }
 
   LDIF::ParseVal ret;
