@@ -35,7 +35,7 @@
 # DEC systems (e.g. DECstation 5000) use a variant of the Sun/NeXT format
 # that uses little-endian encoding and has a different magic number
 # (0x0064732E in little-endian encoding).
-0	lelong		0x0064732E	
+0	lelong		0x0064732E
 >12	lelong		1		audio/x-adpcm
 >12	lelong		2		audio/x-adpcm
 >12	lelong		3		audio/x-adpcm
@@ -48,11 +48,11 @@
 
 # Bytes 0-3 of AIFF, AIFF-C, & 8SVX audio files are "FORM"
 #					AIFF audio data
-8	string		AIFF		audio/x-aiff	
+8	string		AIFF		audio/x-aiff
 #					AIFF-C audio data
-8	string		AIFC		audio/x-aiff	
+8	string		AIFC		audio/x-aiff
 #					IFF/8SVX audio data
-8	string		8SVX		audio/x-aiff	
+8	string		8SVX		audio/x-aiff
 
 # MIDI
 0       string		MThd            audio/x-midi
@@ -65,9 +65,9 @@
 # Microsoft WAVE format (*.wav)
 # [GRR 950115:  probably all of the shorts and longs should be leshort/lelong]
 #					Microsoft RIFF
-0	string		RIFF		audio/unknown	
+0	string		RIFF		audio/unknown
 #					- WAVE format
->8	string		WAVE		audio/x-wav	
+>8	string		WAVE		audio/x-wav
 # AVI                                   - AVI format
 >8	string		AVI\ 		video/x-msvideo
 #
@@ -79,7 +79,11 @@
 0       string          ID3             audio/x-mp3
 
 # OGG files
-0       string          OggS            application/ogg
+0	string		OggS		application/ogg
+>28	string		\x01vorbis	audio/vorbis
+>28	string		fLaC		audio/x-oggflac
+>28	string		\x80theora	video/x-theora
+>28	string		Speex\ \ 	audio/x-speex
 
 #------------------------------------------------------------------------------
 # KSysV stuff: logfiles and packages belonging to KSysV
@@ -228,7 +232,7 @@
 >>18	string		application/x-karbon\004\006	application/x-karbon
 
 #KOffice documents post v1.1 (may 1 2002) using zip as a wrapper
-0    string   PK\003\004                  application/x-zip 
+0    string   PK\003\004                  application/x-zip
 >30  string   mimetype
 >>38 string   application/x-kchart        application/x-kchart
 >>38 string   application/x-kformula      application/x-kformula
@@ -242,7 +246,7 @@
 
 #KOffice documents writen using the kzip rewrite now use 'unx' based
 #zips; dislocating the mimetype.   This is for koffice 1.3 (okt 2003)
-0    string   PK\003\004                  application/x-zip 
+0    string   PK\003\004                  application/x-zip
 >30  string   mimetype
 >>55 string   application/x-kchart        application/x-kchart
 >>55 string   application/x-kformula      application/x-kformula
@@ -666,7 +670,7 @@
 #
 # Executables
 #
-0       string          \177ELF 
+0       string          \177ELF
 >4      byte            0
 >4      byte            1
 >4      byte            2
@@ -836,9 +840,9 @@
 # (the others should be separate, anyway)
 #
 0	belong		0x000003f3	application/x-executable # AmigaOS loadseg()ble executable/binary
-0	belong		0x000003e7	application/x-sharedlib # AmigaOS object/library data 
+0	belong		0x000003e7	application/x-sharedlib # AmigaOS object/library data
 
-0 	string		%TGIF		application/x-tgif	
+0 	string		%TGIF		application/x-tgif
 
 0 	string		#FIG		application/x-xfig
 0	string		#LyX\ 1		application/x-lyx
