@@ -13,19 +13,19 @@
 <!ELEMENT group (entry*)>
   <!ATTLIST group name CDATA #REQUIRED>
 
-<!ELEMENT entry (key?,name?,label,code,default,values,hidden)>
-  <!ATTLIST entry name CDATA #REQUIRED>
-  <!ATTLIST entry type CDATA #REQUIRED>
-  <!ATTLIST entry key CDATA #REQUIRED>
+<!ELEMENT entry (key?,name?,desc?,label?,code?,values?,default?)>
+  <!ATTLIST entry 
+                  name CDATA #REQUIRED
+		  type CDATA #REQUIRED
+		  key  CDATA #IMPLIED
+		  hidden  (true|false) #IMPLIED>
 
+<!ELEMENT key (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT desc (#PCDATA)>
 <!ELEMENT label (#PCDATA)>
-
+<!ELEMENT code (#PCDATA)>
+<!ELEMENT values (value+)>
+<!ELEMENT value (#PCDATA)>
 <!ELEMENT default (#PCDATA)>
   <!ATTLIST default code CDATA #IMPLIED>
-
-<!ELEMENT code (#PCDATA)>
-
-<!ELEMENT values (value*)>
-<!ELEMENT value (#PCDATA)>
-
-<!ELEMENT hidden (#PCDATA)>

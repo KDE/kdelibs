@@ -16,6 +16,7 @@
       <default>5</default>
     </entry>
     <entry name="ListOption" type="Enum">
+      <desc>This is some funky option</desc>
       <values>
         <value>One</value>
         <value>Two</value>
