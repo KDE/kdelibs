@@ -1,14 +1,15 @@
-This is an approximation what remains todo to get aRts running on MCOP
-as it was before on CORBA.
+Index:
 
-1. KDE2.0
+1. KDE2.1
+2. To have more fun
+3. Other suggestions
+4. KDE 2.0.1 (backport list)
 
-<everything should really be done now>
+===============================================================================
 
-2. KDE2.1 (or earlier?)
+1. KDE2.1
 
 => optimization, not necessary but pretty
-- merge quick float -> integer conversion
 - get rid of additional Synth_MULTI_ADD pair in soundserver
 
 - change text in the kcmarts module regarding latency, it's plain confusing
@@ -33,7 +34,7 @@ as it was before on CORBA.
 - maybe make an explicit call like "suspend now" (esdctl off/esdctl on)
 - recording, try to fix autoSuspend in conjunction with full duplex
 
-3. To have more fun
+2. To have more fun
 
 - tune the transfer protocol (although MCOP theoretically could do 30000+
   synchronous invocations per second, it can only do 8000+)
@@ -60,7 +61,7 @@ as it was before on CORBA.
 - when being crazy, implement gatewaying from MCOP to DCOP, CORBA, XMLRPC
   or whatever else might be useful
 
-Other suggestions:
+3. Other suggestions:
 
   => Config dialog:
 
@@ -88,3 +89,9 @@ crash/hang).
   (useful for implementing SNDCTL_DSP_POST in artsdsp)
 - maybe implement atomic setting of fragmentcount and -size
   (useful for implementing SNDCTL_DSP_SETFRAGMENT)
+
+
+4. KDE2.0.1
+
+ - merge quick float -> integer conversion (I committed this to HEAD, maybe
+   it would be a good idea to backport it once tested widely)

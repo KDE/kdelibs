@@ -108,12 +108,41 @@ if test $ac_cv_ioctl_type = 3; then
 fi
 ])
 
+dnl check whether we can do rouding using asm optimization
+
+AC_DEFUN(AC_CHECK_X86_FLOAT_INT,
+[
+AC_MSG_CHECKING([for x86 float to int conversions])
+AC_CACHE_VAL(ac_cv_x86_float_int,
+[
+AC_TRY_LINK([
+static inline long QRound (float inval)
+{
+  long ret;
+  asm ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
+  return ret;
+}
+],
+[
+long i = QRound(41.93);  /* should be 42 */
+],
+ac_cv_x86_float_int=yes,
+ac_cv_x86_float_int=no)
+])
+AC_MSG_RESULT($ac_cv_x86_float_int)
+if eval "test \"`echo `$ac_cv_x86_float_int\" = yes"; then
+  AC_DEFINE(HAVE_X86_FLOAT_INT,1,
+        [Define if you want to use optimized x86 float to int conversion code])
+fi
+])
+                                                                      
 dnl call the tests
 
 AC_CHECK_LIBAUDIOFILE
 AC_CHECK_REALTIME_SCHED
 AC_CHECK_GETDOMAINNAME
 AC_CHECK_IOCTL_TYPE
+AC_CHECK_X86_FLOAT_INT
 KDE_CHECK_THREADING
 
 dnl Don't remove !

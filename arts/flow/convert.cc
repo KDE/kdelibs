@@ -24,6 +24,21 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
+#include <config.h>
+
+#ifdef HAVE_X86_FLOAT_INT
+static inline long QRound (float inval)
+{
+  long ret;
+  asm ("fistpl %0" : "=m" (ret) : "t" (inval) : "st");
+  return ret;
+}
+#else
+static inline long QRound (float inval)
+{
+  return (long)inval;
+}
+#endif
 
 /*---------------------------- new code begin -------------------------- */
 
@@ -176,7 +191,7 @@ void Arts::convert_stereo_2float_i16le(unsigned long samples, float *left, float
 
 	while(left < end)
 	{
-		syn = (long)((*left++)*32767);
+		syn = QRound((*left++)*32767);
 
 		if(syn < -32768) syn = -32768;				/* clipping */
 		if(syn > 32767) syn = 32767;
@@ -184,7 +199,7 @@ void Arts::convert_stereo_2float_i16le(unsigned long samples, float *left, float
 		*to++ = syn & 0xff;
 		*to++ = (syn >> 8) & 0xff;
 
-		syn = (long)((*right++)*32767);
+		syn = QRound((*right++)*32767);
 
 		if(syn < -32768) syn = -32768;				/* clipping */
 		if(syn > 32767) syn = 32767;
@@ -200,7 +215,7 @@ void Arts::convert_mono_float_16le(unsigned long samples, float *from, unsigned 
 
 	while(from < end)
 	{
-		long syn = (long)((*from++)*32767);
+		long syn = QRound((*from++)*32767);
 
 		if(syn < -32768) syn = -32768;				/* clipping */
 		if(syn > 32767) syn = 32767;
