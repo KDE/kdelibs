@@ -241,12 +241,15 @@ Value DOMEvent::getValueProperty(ExecState *exec, int token) const
   case EventPhase:
     return Number((unsigned int)event.eventPhase());
   case Bubbles:
-  case CancelBubble: // MSIE extension. not sure if readable. and returnValue ?
     return Boolean(event.bubbles());
   case Cancelable:
     return Boolean(event.cancelable());
   case TimeStamp:
     return Number((long unsigned int)event.timeStamp()); // ### long long ?
+  case ReturnValue: // MSIE extension
+    return Boolean(event.handle()->defaultPrevented());
+  case CancelBubble: // MSIE extension
+    return Boolean(event.handle()->propagationStopped());
   default:
     kdWarning() << "Unhandled token in DOMEvent::getValueProperty : " << token << endl;
     return Value();
@@ -263,13 +266,13 @@ void DOMEvent::tryPut(ExecState *exec, const UString &propertyName,
 void DOMEvent::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   switch (token) {
-  case ReturnValue:
-    if (value.toBoolean(exec))
-      event.preventDefault();
+  case ReturnValue: // MSIE equivalent for "preventDefault" (but with a way to reset it)
+    // returnValue=false means "default action of the event on the source object is canceled",
+    // which means preventDefault(true). Hence the '!'.
+    event.handle()->preventDefault(!value.toBoolean(exec));
     break;
-  case CancelBubble:
-    if (value.toBoolean(exec))
-      event.stopPropagation();
+  case CancelBubble: // MSIE equivalent for "stopPropagation" (but with a way to reset it)
+    event.handle()->stopPropagation(value.toBoolean(exec));
     break;
   default:
     break;
