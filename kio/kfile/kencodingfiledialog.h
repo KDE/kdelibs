@@ -24,7 +24,7 @@
 
 #include <kfiledialog.h>
 
-class     KEncodingFileDialogPrivate;
+struct KEncodingFileDialogPrivate;
 
 /**
  * Provides a user (and developer) friendly way to
