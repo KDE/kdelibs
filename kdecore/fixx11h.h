@@ -217,6 +217,6 @@ char* rindex( const char* s, int c )
 #endif
 #undef rindex
 #endif
-};
+}
 
 using namespace X;

@@ -105,7 +105,7 @@ static int IslamicLeapYear(int year) {
     return 1;
   else
     return 0;
-};
+}
 
 static const int IslamicEpoch = 227014; // Absolute date of start of
                                         // Islamic calendar

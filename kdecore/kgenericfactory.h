@@ -166,7 +166,7 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                   const char *className, const QStringList &args )
     {   
-        initializeMessageCatalogue();
+        KGenericFactoryBase<Product>::initializeMessageCatalogue();
         return KDEPrivate::ConcreteFactory<Product, ParentType>
             ::create( 0, 0, parent, name, className, args );
     }
@@ -253,7 +253,7 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                    const char *className, const QStringList &args )
     {
-        initializeMessageCatalogue();
+        this->initializeMessageCatalogue();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail > >
             ::create( 0, 0, parent, name, className, args );
     }
@@ -342,7 +342,7 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                    const char *className, const QStringList &args )
     {
-        initializeMessageCatalogue();
+        this->initializeMessageCatalogue();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail >,
                                          KTypeList< ParentType, ParentTypeListTail > >
                                        ::create( 0, 0, parent, name,
