@@ -148,10 +148,12 @@ QString clist = "";
     for (int k = 0; k < 2; k++) {
  
       if (k == 0) {                   // do v2, then v3
-        if (!m_bUseSSLv2) continue;
+        if (!m_bUseSSLv2)
+          continue;
         m_cfg->setGroup("SSLv2");
       } else {
-        if (!m_bUseSSLv3) continue;
+        if (!m_bUseSSLv3)
+          continue;
         m_cfg->setGroup("SSLv3");
       }
  
@@ -169,18 +171,20 @@ QString clist = "";
 
       for(int i = 0;; i++) {
         SSL_CIPHER *sc = (meth->get_cipher)(i);
-        if (!sc) break;;
+        if (!sc)
+          break;
         tcipher.sprintf("cipher_%s", sc->name);
         int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
  
         if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
           CipherNode *xx = new CipherNode(sc->name,bits);
-          if (!cipherSort.contains(xx))
+          if (!cipherSort.contains(xx)) {
              cipherSort.inSort(xx);
-          else delete xx;
+	  } else {
+             delete xx;
+          }
         } // if
       } // for  i
-
     } // for    k
 
     // Hack time
@@ -208,6 +212,17 @@ QString clist = "";
     AdjustCipher("RC4-MD5", 128);
 #undef AdjustCipher
 
+    // Remove any ADH ciphers as per RFC2246
+    for (unsigned int i = 0; i < cipherSort.count(); i++) {
+      CipherNode *j = 0L;
+      while ((j = cipherSort.at(i)) != 0L) {
+        if (j->name.left(3) == "ADH") {
+          cipherSort.remove(j);
+        } else {
+          break;
+	}
+      }
+    } 
 
     // now assemble the list  cipher1:cipher2:cipher3:...:ciphern
     while (!cipherSort.isEmpty()) {
