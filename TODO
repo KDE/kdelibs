@@ -175,3 +175,8 @@ an alternative help->contents action)
 - Merge all K*Label classes into one that offers all the features such as ellipsis (this time for center, middle and right in order to allow for sqeezing the text), links and selectable text with a consistant API.
 
 - Make sure all GUI classes adopt well to palette changes.
+
+- Rework KPanelExtension and KPanelApplet to have a sane set of global position
+  enums, make the geometry handling less spaghetti like and extend the API so
+  requests for things like re-reading the config of a KPanelExtension can be
+  done by its parent.
