@@ -116,11 +116,20 @@
 5202        kitchensync (OpieKonnector)
 5203        kitchensync (PhoneKonnector)
 5204        kitchensync (AgendaKonnector)
+5205	    kitchensync (CasioKonnector)
 5210        kitchensync (KitchenSyncApp)
 5220        kitchensync (ManipulatorParts)
 5221        kitchensync (overviewpart)
 5222        kitchensync (organizerpart)
 5223        kitchensync (fileviewpart)
+5224        kitchensync Desktop
+5225        kitchensync (QtopiaKonnector)
+5226        kitchensync Categories
+5227 	    kitchensync Todo
+5228	    kitchensync AddressBook
+5229	    kitchensync Datebook
+5230	    kitchensync SyncEntry
+5231	    kitchensync SyncUI
 5300        libkdepim
 5400        calendarsystem
 5500        knotes
