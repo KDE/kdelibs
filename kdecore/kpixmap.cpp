@@ -40,39 +40,35 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     uchar  *b;
     int	    y;
 	
-	//printf("kconvert_32_to_8\n");
-	
     if ( !dst->create(src->width(), src->height(), 8, 256) ) {
-		warning("KPixmap: destination image not valid\n");
-		return false;
-	}
+	warning("KPixmap: destination image not valid\n");
+	return false;
+    }
 
     int ncols = 256;
 
     static uint bm[16][16];
     static int init=0;
     if (!init) {
-		// Build a Bayer Matrix for dithering
 
-		init = 1;
-		int n, i, j;
+	// Build a Bayer Matrix for dithering
+	init = 1;
+	int n, i, j;
 
-		bm[0][0]=0;
+	bm[0][0]=0;
 
-		for (n=1; n<16; n*=2) {
-	    	for (i=0; i<n; i++) {
-			for (j=0; j<n; j++) {
-		    	bm[i][j]*=4;
-		    	bm[i+n][j]=bm[i][j]+2;
-		    	bm[i][j+n]=bm[i][j]+3;
-		    	bm[i+n][j+n]=bm[i][j]+1;
-			}
-	    	}
+	for (n=1; n<16; n*=2)
+	    for (i=0; i<n; i++)
+		for (j=0; j<n; j++) {
+		    bm[i][j]*=4;
+		    bm[i+n][j]=bm[i][j]+2;
+		    bm[i][j+n]=bm[i][j]+3;
+		    bm[i+n][j+n]=bm[i][j]+1;
 		}
 
-		for (i=0; i<16; i++)
-	    	for (j=0; j<16; j++)
-			bm[i][j]<<=8;
+	for (i=0; i<16; i++)
+	    for (j=0; j<16; j++)
+		bm[i][j]<<=8;
     }
 
     dst->setNumColors( ncols );
@@ -82,102 +78,104 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 #define MAX_B 2
 #define INDEXOF(r,g,b) (((r)*(MAX_G+1)+(g))*(MAX_B+1)+(b))
 
-	int rc, gc, bc;
+    int rc, gc, bc;
 
-	for ( rc=0; rc<=MAX_R; rc++ )		// build 2x2x2 color cube
-	    for ( gc=0; gc<=MAX_G; gc++ )
-		for ( bc=0; bc<=MAX_B; bc++ ) {
-		    dst->setColor( INDEXOF(rc,gc,bc),
-			qRgb( rc*255/MAX_R, gc*255/MAX_G, bc*255/MAX_B ) );
-		}	
+    for ( rc=0; rc<=MAX_R; rc++ )		// build 2x2x2 color cube
+        for ( gc=0; gc<=MAX_G; gc++ )
+	    for ( bc=0; bc<=MAX_B; bc++ ) {
+		dst->setColor( INDEXOF(rc,gc,bc),
+		qRgb( rc*255/MAX_R, gc*255/MAX_G, bc*255/MAX_B ) );
+	    }	
 
-	int sw = src->width();
-	int* line1[3];
-	int* line2[3];
-	int* pv[3];
+    int sw = src->width();
+    int* line1[3];
+    int* line2[3];
+    int* pv[3];
 
-	line1[0] = new int[src->width()];
-	line2[0] = new int[src->width()];
-	line1[1] = new int[src->width()];
-	line2[1] = new int[src->width()];
-	line1[2] = new int[src->width()];
-	line2[2] = new int[src->width()];
-	pv[0] = new int[sw];
-	pv[1] = new int[sw];
-	pv[2] = new int[sw];
+    line1[0] = new int[src->width()];
+    line2[0] = new int[src->width()];
+    line1[1] = new int[src->width()];
+    line2[1] = new int[src->width()];
+    line1[2] = new int[src->width()];
+    line2[2] = new int[src->width()];
+    pv[0] = new int[sw];
+    pv[1] = new int[sw];
+    pv[2] = new int[sw];
 
-	for ( y=0; y < src->height(); y++ ) {
-	    p = (QRgb *)src->scanLine(y);
+    for ( y=0; y < src->height(); y++ ) {
+	p = (QRgb *)src->scanLine(y);
+	b = dst->scanLine(y);
+	int endian = (QImage::systemByteOrder() == QImage::BigEndian);
+	int x;
+	uchar* q = src->scanLine(y);
+	uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
+
+	for (int chan = 0; chan < 3; chan++) {
 	    b = dst->scanLine(y);
-		int endian = (QImage::systemByteOrder() == QImage::BigEndian);
-		int x;
-		uchar* q = src->scanLine(y);
-		uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
-		for (int chan = 0; chan < 3; chan++) {
-		    b = dst->scanLine(y);
-		    int *l1 = (y&1) ? line2[chan] : line1[chan];
-		    int *l2 = (y&1) ? line1[chan] : line2[chan];
-		    if ( y == 0 ) {
-			for (int i=0; i<sw; i++)
-			    l1[i] = q[i*4+chan+endian];
-		    }
-		    if ( y+1 < src->height() ) {
-			for (int i=0; i<sw; i++)
-			    l2[i] = q2[i*4+chan+endian];
-		    }
-		    // Bi-directional error diffusion
-		    if ( y&1 ) {
-			for (x=0; x<sw; x++) {
-			    int pix = QMAX(QMIN(2, (l1[x] * 2 + 128)/ 255), 0);
-			    int err = l1[x] - pix * 255 / 2;
-			    pv[chan][x] = pix;
+	    int *l1 = (y&1) ? line2[chan] : line1[chan];
+	    int *l2 = (y&1) ? line1[chan] : line2[chan];
+	    if ( y == 0 ) {
+		for (int i=0; i<sw; i++)
+		    l1[i] = q[i*4+chan+endian];
+	    }
+	    if ( y+1 < src->height() ) {
+		for (int i=0; i<sw; i++)
+		    l2[i] = q2[i*4+chan+endian];
+	    }
 
-			    // Spread the error around...
-			    if ( x+1<sw ) {
-				l1[x+1] += (err*7)>>4;
-				l2[x+1] += err>>4;
-			    }
-			    l2[x]+=(err*5)>>4;
-			    if (x>1)
-				l2[x-1]+=(err*3)>>4;
-			}
-		    } else {
-			for (x=sw; x-->0; ) {
-			    int pix = QMAX(QMIN(2, (l1[x] * 2 + 128)/ 255), 0);
-			    int err = l1[x] - pix * 255 / 2;
-			    pv[chan][x] = pix;
+	    // Bi-directional error diffusion
+	    if ( y&1 ) {
+		for (x=0; x<sw; x++) {
+		    int pix = QMAX(QMIN(2, (l1[x] * 2 + 128)/ 255), 0);
+		    int err = l1[x] - pix * 255 / 2;
+		    pv[chan][x] = pix;
 
-			    // Spread the error around...
-			    if ( x > 0 ) {
-				l1[x-1] += (err*7)>>4;
-				l2[x-1] += err>>4;
-			    }
-			    l2[x]+=(err*5)>>4;
-			    if (x+1 < sw)
-				l2[x+1]+=(err*3)>>4;
-			}
+		    // Spread the error around...
+		    if ( x+1<sw ) {
+			l1[x+1] += (err*7)>>4;
+			l2[x+1] += err>>4;
 		    }
+		    l2[x]+=(err*5)>>4;
+		    if (x>1)
+			l2[x-1]+=(err*3)>>4;
 		}
-		if (endian) {
-		    for (x=0; x<sw; x++) {
-			*b++ = INDEXOF(pv[2][x],pv[1][x],pv[0][x]);
+	    } else {
+		for (x=sw; x-->0; ) {
+		    int pix = QMAX(QMIN(2, (l1[x] * 2 + 128)/ 255), 0);
+		    int err = l1[x] - pix * 255 / 2;
+		    pv[chan][x] = pix;
+
+		    // Spread the error around...
+		    if ( x > 0 ) {
+			l1[x-1] += (err*7)>>4;
+			l2[x-1] += err>>4;
 		    }
-		} else {
-		    for (x=0; x<sw; x++) {
-			*b++ = INDEXOF(pv[0][x],pv[1][x],pv[2][x]);
-		    }
+		    l2[x]+=(err*5)>>4;
+		    if (x+1 < sw)
+			l2[x+1]+=(err*3)>>4;
 		}
+	    }
 	}
 
-	delete [] line1[0];
-	delete [] line2[0];
-	delete [] line1[1];
-	delete [] line2[1];
-	delete [] line1[2];
-	delete [] line2[2];
-	delete [] pv[0];
-	delete [] pv[1];
-	delete [] pv[2];
+	if (endian) {
+	    for (x=0; x<sw; x++)
+		*b++ = INDEXOF(pv[2][x],pv[1][x],pv[0][x]);
+	} else {
+	    for (x=0; x<sw; x++) 
+		*b++ = INDEXOF(pv[0][x],pv[1][x],pv[2][x]);
+	}
+
+    }
+
+    delete [] line1[0];
+    delete [] line2[0];
+    delete [] line1[1];
+    delete [] line2[1];
+    delete [] line1[2];
+    delete [] line2[2];
+    delete [] pv[0];
+    delete [] pv[1];
+    delete [] pv[2];
 	
 #undef MAX_R
 #undef MAX_G
@@ -211,12 +209,12 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
     pt.setPen( ca );
 
     for ( int y = 0; y < 8; y++ ) {
-		uint v = pattern[y];
-		for ( int x = 0; x < 8; x++ ) {
-	    	if ( v & 1 )
-				pt.drawPoint( 7 - x, y );
-	    	v /= 2;
-		}
+	uint v = pattern[y];
+	for ( int x = 0; x < 8; x++ ) {
+	    if ( v & 1 )
+		pt.drawPoint( 7 - x, y );
+	    v /= 2;
+	}
     }
 
     pt.end();
@@ -236,12 +234,12 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 
     int sx, sy = 0;
     while ( sy < height() ) {
-		sx = 0;
-		while (sx < width()) {
-	    	bitBlt( this, sx, sy, &tile, 0, 0, 8, 8 );
-	    	sx += 8;
-		}
-		sy += 8;
+	sx = 0;
+	while (sx < width()) {
+	bitBlt( this, sx, sy, &tile, 0, 0, 8, 8 );
+	sx += 8;
+	}
+	sy += 8;
     }
 }
 
@@ -315,20 +313,20 @@ bool KPixmap::load( const QString& fileName, const char *format,
 {
     int conversion_flags = 0;
     switch (mode) {
-      case Color:
-		conversion_flags |= ColorOnly;
-		break;
-      case Mono:
-		conversion_flags |= MonoOnly;
-		break;
-	  case LowColor:
-		conversion_flags |= LowOnly;
-		break;
-	  case WebColor:
-		conversion_flags |= WebOnly;
-		break;
-      default:
-		break;// Nothing.
+    case Color:
+	conversion_flags |= ColorOnly;
+	break;
+    case Mono:
+	conversion_flags |= MonoOnly;
+	break;
+    case LowColor:
+	conversion_flags |= LowOnly;
+	break;
+    case WebColor:
+	conversion_flags |= WebOnly;
+	break;
+    default:
+	break;// Nothing.
     }
     return load( fileName, format, conversion_flags );
 }
@@ -337,27 +335,27 @@ bool KPixmap::convertFromImage( const QImage &img, ColorMode mode )
 {
     int conversion_flags = 0;
     switch (mode) {
-      case Color:
-		conversion_flags |= ColorOnly;
-		break;
-      case Mono:
-		conversion_flags |= MonoOnly;
-		break;
-		case LowColor:
-		conversion_flags |= LowOnly;
-		break;
-	  case WebColor:
-		conversion_flags |= WebOnly;
-		break;
-      default:
-		break;	// Nothing.
+    case Color:
+	conversion_flags |= ColorOnly;
+	break;
+    case Mono:
+	conversion_flags |= MonoOnly;
+	break;
+    case LowColor:
+	conversion_flags |= LowOnly;
+	break;
+    case WebColor:
+	conversion_flags |= WebOnly;
+	break;
+    default:
+	break;	// Nothing.
     }
     return convertFromImage( img, conversion_flags );
 }
 
 bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 {
-	if ( img.isNull() ) {
+    if ( img.isNull() ) {
 #if defined(CHECK_NULL)
 	warning( "KPixmap::convertFromImage: Cannot convert a null image" );
 #endif
@@ -365,62 +363,60 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
     }
     detach();					// detach other references
 	
-	int dd = defaultDepth();
+    int dd = defaultDepth();
 
-	// If color mode not one of KPixmaps extra modes nothing to do
-	if( ( conversion_flags & KColorMode_Mask ) != LowOnly &&
-	     ( conversion_flags & KColorMode_Mask ) != WebOnly ) {
-		return QPixmap::convertFromImage ( img, conversion_flags );
+    // If color mode not one of KPixmaps extra modes nothing to do
+    if ( ( conversion_flags & KColorMode_Mask ) != LowOnly &&
+	 ( conversion_flags & KColorMode_Mask ) != WebOnly ) {
+	    return QPixmap::convertFromImage ( img, conversion_flags );
+    }
+    
+    // If the default pixmap depth is not 8bpp, KPixmap color modes have no
+    // effect. Ignore them and use AutoColor instead.
+    if ( dd > 8 ) {
+	if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ||
+	     ( conversion_flags & KColorMode_Mask ) == WebOnly )
+	    conversion_flags = (conversion_flags & ~KColorMode_Mask) | Auto;
+	return QPixmap::convertFromImage ( img, conversion_flags );
+    }
+	
+    if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ) {
+	// Here we skimp a little on the possible conversion modes
+	// Don't offer ordered or threshold dither of RGB channels or
+	// diffuse or ordered dither of alpha channel. It hardly seems
+	// worth the effort for this specialised mode.
+	
+	// If image uses icon palette don't dither it.
+	if( img.numColors() > 0 && img.numColors() <=40 ) {
+	    if ( checkColorTable( img ) )
+		return QPixmap::convertFromImage( img, QPixmap::Auto );
 	}
 	
-	// If the default pixmap depth is not 8bpp, KPixmap color modes have no
-	// effect. Ignore them and use AutoColor instead.
-	if ( dd > 8 ) {
-		if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ||
-			 ( conversion_flags & KColorMode_Mask ) == WebOnly )
-			conversion_flags = (conversion_flags & ~KColorMode_Mask)
-					| Auto;
-		return QPixmap::convertFromImage ( img, conversion_flags );
-	}
-	
-	if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ) {
-		// Here we skimp a little on the possible conversion modes
-		// Don't offer ordered or threshold dither of RGB channels or
-		// diffuse or ordered dither of alpha channel. It hardly seems
-		// worth the effort for this specialised mode.
-		
-		// If image uses icon palette don't dither it.
-		if( img.numColors() > 0 && img.numColors() <=40 ) {
-			if ( checkColorTable( img ) ) {
-				return QPixmap::convertFromImage( img, QPixmap::Auto );
-			}
-		}
-		
-		QBitmap mask;
-		bool isMask = false;
+	QBitmap mask;
+	bool isMask = false;
 
-		QImage  image = img.convertDepth(32);
-		QImage tImage( image.width(), image.height(), 8, 256 );
-		
-		if( img.hasAlphaBuffer() ) {
-			image.setAlphaBuffer( true );
-			tImage.setAlphaBuffer( true );
-			isMask = mask.convertFromImage( img.createAlphaMask() );
-		}
-		
-		kdither_32_to_8( &image, &tImage );
-		
-		if( QPixmap::convertFromImage( tImage ) ) {
-			if ( isMask ) QPixmap::setMask( mask );
-			return true;
-		} else
-			return false;
-	} else {
-		QImage  image = img.convertDepth( 32 );
-		image.setAlphaBuffer( img.hasAlphaBuffer() );
-		conversion_flags = (conversion_flags & ~ColorMode_Mask) | Auto;
-		return QPixmap::convertFromImage ( image, conversion_flags );
+	QImage  image = img.convertDepth(32);
+	QImage tImage( image.width(), image.height(), 8, 256 );
+	
+	if( img.hasAlphaBuffer() ) {
+	    image.setAlphaBuffer( true );
+	    tImage.setAlphaBuffer( true );
+	    isMask = mask.convertFromImage( img.createAlphaMask() );
 	}
+	    
+	kdither_32_to_8( &image, &tImage );
+		
+	if( QPixmap::convertFromImage( tImage ) ) {
+	    if ( isMask ) QPixmap::setMask( mask );
+		return true;
+	} else
+	    return false;
+    } else {
+	QImage  image = img.convertDepth( 32 );
+	image.setAlphaBuffer( img.hasAlphaBuffer() );
+	conversion_flags = (conversion_flags & ~ColorMode_Mask) | Auto;
+	return QPixmap::convertFromImage ( image, conversion_flags );
+    }
 }
 
 static QColor* kpixmap_iconPalette = 0;
