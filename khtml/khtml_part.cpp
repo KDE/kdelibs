@@ -591,8 +591,8 @@ void KHTMLPart::clear()
   d->m_bClearing = true;
 
   {
-    QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-    QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+    ConstFrameIt it = d->m_frames.begin();
+    ConstFrameIt end = d->m_frames.end();
     for(; it != end; ++it )
     {
       // Stop HTMLRun jobs.
@@ -622,8 +622,8 @@ void KHTMLPart::clear()
     d->m_view->clear();
 
   {
-    QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-    QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+    ConstFrameIt it = d->m_frames.begin();
+    ConstFrameIt end = d->m_frames.end();
     for(; it != end; ++it )
     {
       if ( it.data().m_part )
@@ -878,8 +878,8 @@ void KHTMLPart::checkCompleted()
   //          << " complete: " << d->m_bComplete << endl;
   int requests = 0;
 
-  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !it.data().m_bCompleted )
       return;
@@ -1550,7 +1550,7 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
                               const QStringList &params )
 {
   kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
-  QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
+  FrameIt it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
   {
@@ -1905,8 +1905,8 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
   assert( obj->inherits( "KParts::ReadOnlyPart" ) );
   const KParts::ReadOnlyPart *part = (KParts::ReadOnlyPart *)obj;
 
-  QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::Iterator end = d->m_frames.end();
+  FrameIt it = d->m_frames.begin();
+  FrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( (KParts::ReadOnlyPart *)it.data().m_part == part )
       return &it.data();
@@ -1925,13 +1925,13 @@ KHTMLPart *KHTMLPart::parentPart()
 khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args,
                                                      bool callParent )
 {
-  QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( args.frameName );
+  FrameIt it = d->m_frames.find( args.frameName );
 
   if ( it != d->m_frames.end() )
     return &it.data();
 
   it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::Iterator end = d->m_frames.end();
+  FrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( it.data().m_part && it.data().m_part->inherits( "KHTMLPart" ) )
     {
@@ -2231,8 +2231,8 @@ QStringList KHTMLPart::frameNames() const
 {
   QStringList res;
 
-  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     res += it.key();
 
@@ -2243,8 +2243,8 @@ const QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
   QList<KParts::ReadOnlyPart> res;
 
-  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
      res.append( it.data().m_part );
 
@@ -2253,7 +2253,7 @@ const QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 
 bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
 {
-  QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( urlArgs.frameName );
+  FrameIt it = d->m_frames.find( urlArgs.frameName );
 
   if ( it == d->m_frames.end() )
     return false;
