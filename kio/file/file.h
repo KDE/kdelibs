@@ -59,7 +59,6 @@ protected:
 
   void createUDSEntry( const QString & filename, const QString & path, KIO::UDSEntry & entry );
 
-  FILE* m_fPut;
   QIntDict<QString> usercache;      // maps long ==> QString *
   QIntDict<QString> groupcache;
 

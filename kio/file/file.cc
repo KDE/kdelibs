@@ -31,6 +31,8 @@
 #include <kurl.h>
 #include <kprotocolmanager.h>
 #include <kinstance.h>
+#include <ktempfile.h>
+#include <klocale.h>
 #include <qfile.h>
 #include "file.h"
 #include <limits.h>
@@ -39,7 +41,7 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
 
-QString testLogFile( const QString& _filename );
+QString testLogFile( const char *_filename );
 
 extern "C" { int kdemain(int argc, char **argv); }
 
@@ -123,8 +125,8 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
 	return;
     }
 
-    FILE *f = fopen( path, "rb" );
-    if ( f == 0L ) {
+    int fd = open( path, O_RDONLY);
+    if ( fd < 0 ) {
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, path );
 	return;
     }
@@ -137,33 +139,37 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
 
-    while( !feof( f ) && !ferror(f) )
-	{
-	    int n = fread( buffer, 1, MAX_IPC_SIZE, f );
-            if (n == -1)
-            {
-               error( KIO::ERR_COULD_NOT_READ, path);
-               fclose(f);
-               return;
-            }
+    while( 1 )
+    {
+       int n = ::read( fd, buffer, MAX_IPC_SIZE );
+       if (n == -1)
+       {
+          if (errno == EINTR)
+              continue;
+          error( KIO::ERR_COULD_NOT_READ, path);
+          close(fd);
+          return;
+       }
+       if (n == 0)
+          break; // Finished
 
-	    array.setRawData(buffer, n);
-	    data( array );
-            array.resetRawData(buffer, n);
+       array.setRawData(buffer, n);
+       data( array );
+       array.resetRawData(buffer, n);
 
-	    processed_size += n;
-	    time_t t = time( 0L );
-	    if ( t - t_last >= 1 )
-		{
-		    processedSize( processed_size );
-		    speed( processed_size / ( t - t_start ) );
-		    t_last = t;
-		}
-	}
+       processed_size += n;
+       time_t t = time( 0L );
+       if ( t - t_last >= 1 )
+       {
+          processedSize( processed_size );
+          speed( processed_size / ( t - t_start ) );
+          t_last = t;
+       }
+    }
 
     data( QByteArray() );
 
-    fclose( f );
+    close( fd );
 
     processedSize( buff.st_size );
     time_t t = time( 0L );
@@ -173,6 +179,23 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
     finished();
 }
 
+static int
+write_all(int fd, const char *buf, size_t len)
+{
+   while (len > 0)
+   {
+      int written = write(fd, buf, len);
+      if (written < 0)
+      {
+          if (errno == EINTR)
+             continue;
+          return -1;
+      }
+      buf += written;
+      len -= written;
+   }
+   return 0;
+}
 
 void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bool _resume )
 {
@@ -223,8 +246,11 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
         }
     }
 
+    int fd;
+
     if ( _resume ) {
-        m_fPut = fopen( dest, "ab" );  // append if resuming
+        fd = open( dest, O_RDWR );  // append if resuming
+        lseek(fd, 0, SEEK_END); // Seek to end
     } else {
         // WABA: Make sure that we keep writing permissions ourselves,
         // otherwise we can be in for a surprise on NFS.
@@ -234,11 +260,10 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
         else
            initialMode = 0666;
 
-        int fd = open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
-	m_fPut = fdopen( fd, "wb" );
+        fd = open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     }
 
-    if ( m_fPut == 0L ) {
+    if ( fd < 0 ) {
 	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
@@ -257,7 +282,11 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
       result = readData( buffer );
       if (result > 0)
       {
-         fwrite( buffer.data(), buffer.size(), 1, m_fPut);
+         if (write_all( fd, buffer.data(), buffer.size()))
+         {
+            result = -1;
+            error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
+         }
       }
     }
     while ( result > 0 );
@@ -265,7 +294,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
 
     if (result != 0)
     {
-        fclose(m_fPut);
+        close(fd);
 	kdDebug(7101) << "Error during 'put'. Aborting." << endl;
         if (bMarkPartial)
         {
@@ -279,7 +308,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
         ::exit(255);
     }
 
-    if (fclose( m_fPut))
+    if ( close(fd) )
     {
         error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
         return;
@@ -308,6 +337,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     // We have done our job => finish
     finished();
 }
+
 
 void FileProtocol::copy( const QString &src, const QString &dest,
                          int _mode, bool _overwrite )
@@ -343,8 +373,8 @@ void FileProtocol::copy( const QString &src, const QString &dest,
         }
     }
 
-    FILE *f = fopen( src, "rb" );
-    if ( f == 0L ) {
+    int src_fd = open( src, O_RDONLY);
+    if ( src_fd < 0 ) {
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, src );
 	return;
     }
@@ -357,16 +387,15 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     else
        initialMode = 0666;
 
-    int fd = open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
-    m_fPut = fdopen( fd, "wb" );
-    if ( m_fPut == 0L ) {
+    int dest_fd = open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+    if ( dest_fd < 0 ) {
 	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
         } else {
             error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest );
         }
-        fclose(f);
+        close(src_fd);
         return;
     }
 
@@ -378,36 +407,42 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
 
-    while( !feof( f ) )
-	{
-	    int n = fread( buffer, 1, MAX_IPC_SIZE, f );
+    while( 1 )
+    {
+       int n = ::read( src_fd, buffer, MAX_IPC_SIZE );
+       if (n == -1)
+       {
+          if (errno == EINTR)
+              continue;
+          error( KIO::ERR_COULD_NOT_READ, src);
+          close(src_fd);
+          close(dest_fd);
+          return;
+       }
+       if (n == 0)
+          break; // Finished
 
-	    // delay loop
-// 	    for ( int ij = 0; ij < 500000; ij++ );
+       if (write_all( dest_fd, buffer, n))
+       {
+          error( KIO::ERR_COULD_NOT_WRITE, dest);
+          close(src_fd);
+          close(dest_fd);
+          return;
+       }
 
-            if (n == -1)
-            {
-               error( KIO::ERR_COULD_NOT_READ, src);
-               fclose(m_fPut);
-               fclose(f);
-               return;
-            }
+       processed_size += n;
+       time_t t = time( 0L );
+       if ( t - t_last >= 1 )
+       {
+          processedSize( processed_size );
+	  speed( processed_size / ( t - t_start ) );
+	  t_last = t;
+       }
+    }
 
-            fwrite( buffer, n, 1, m_fPut );
+    close( src_fd );
 
-	    processed_size += n;
-	    time_t t = time( 0L );
-	    if ( t - t_last >= 1 )
-		{
-		    processedSize( processed_size );
-		    speed( processed_size / ( t - t_start ) );
-		    t_last = t;
-		}
-	}
-
-    fclose( f );
-
-    if (fclose( m_fPut))
+    if (close( dest_fd))
     {
         error( KIO::ERR_COULD_NOT_WRITE, dest);
         return;
@@ -821,25 +856,25 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 {
     QString buffer;
 
-    int t = (int)time( 0L );
+    KTempFile tmpFile;
+    QCString tmpFileC = QFile::encodeName(tmpFile.name());
+    const char *tmp = tmpFileC.data();
 
     // Look in /etc/fstab ?
     if ( !_fstype || *_fstype == 0 || _point.isEmpty() )
-	buffer.sprintf( "mount %s 2>/tmp/mnt%i", QFile::encodeName(_dev).data(), t );
+	buffer.sprintf( "mount %s 2>%s", QFile::encodeName(_dev).data(), tmp );
     else if ( _ro )
-	buffer.sprintf( "mount -rt %s %s %s 2>/tmp/mnt%i",_fstype,
+	buffer.sprintf( "mount -rt %s %s %s 2>%s",_fstype,
 			QFile::encodeName(_dev).data(),
-			QFile::encodeName(_point).data(), t );
+			QFile::encodeName(_point).data(), tmp );
     else
-	buffer.sprintf( "mount -t %s %s %s 2>/tmp/mnt%i", _fstype,
+	buffer.sprintf( "mount -t %s %s %s 2>%s", _fstype,
 			QFile::encodeName(_dev).data(),
-			QFile::encodeName(_point).data(), t );
+			QFile::encodeName(_point).data(), tmp );
 
     system( buffer );
 
-    buffer.sprintf( "/tmp/mnt%i", t );
-
-    QString err = testLogFile( buffer );
+    QString err = testLogFile( tmp );
     if ( err.isEmpty() )
 	finished();
     else
@@ -851,14 +886,14 @@ void FileProtocol::unmount( const QString& _point )
 {
     QString buffer;
 
-    int t = (int)time( 0L );
+    KTempFile tmpFile;
+    QCString tmpFileC = QFile::encodeName(tmpFile.name());
+    const char *tmp = tmpFileC.data();
 
-    buffer.sprintf( "umount %s 2>/tmp/mnt%i", QFile::encodeName(_point).data(), t );
+    buffer.sprintf( "umount %s 2>%s", QFile::encodeName(_point).data(), tmp );
     system( buffer );
 
-    buffer.sprintf( "/tmp/mnt%i", t );
-
-    QString err = testLogFile( buffer );
+    QString err = testLogFile( tmp );
     if ( err.isEmpty() )
 	finished();
     else
@@ -871,25 +906,24 @@ void FileProtocol::unmount( const QString& _point )
  *
  *************************************/
 
-QString testLogFile( const QString& _filename )
+QString testLogFile( const char *_filename )
 {
     char buffer[ 1024 ];
     struct stat buff;
 
     QString result;
 
-    stat( _filename.local8Bit(), &buff );
+    stat( _filename, &buff );
     int size = buff.st_size;
     if ( size == 0 ) {
-	unlink( _filename.local8Bit() );
+	unlink( _filename );
 	return result;
     }
 
     FILE * f = fopen( _filename, "rb" );
     if ( f == 0L ) {
 	unlink( _filename );
-	result = "Could not read ";
-	result += _filename;
+	result = i18n("Could not read %1").arg(_filename);
 	return result;
     }
 
