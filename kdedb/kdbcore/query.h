@@ -97,7 +97,7 @@ typedef QListIterator<qryCond> CondIterator;
 
 class Query :public DataObject{
 
-    friend class Database;
+    friend class Connector;
     Q_OBJECT
 
  public:
@@ -236,7 +236,7 @@ class Query :public DataObject{
      * Creates a recordset based on this query.
      * If called on a command query, it will fail and generate an error.
      */
-    RecordsetPtr openRecordset();    
+    virtual RecordsetPtr openRecordset();    
 
 
     /**
@@ -273,6 +273,8 @@ class Query :public DataObject{
     
  protected:
 
+    Query( Connector * conn, QObject *parent = 0L, const char *name = 0L, const QString &sql = QString::null );
+
     /**
      * This function will create the SQL string to pass to
      * the DBMS engine. It can be overridden by special types of
@@ -281,8 +283,6 @@ class Query :public DataObject{
     virtual QString buildSQL();
 
  private:
-
-    Query( Connector * conn, QObject *parent = 0L, const char *name = 0L, const QString &sql = QString::null );
 
     QueryPrivate *d;
 

@@ -37,7 +37,8 @@ class Exception;
 class Handler;
 class Table;
 class Field;
- 
+class Query; 
+
 /**
  * @short base interaction class for plugins.
  *
@@ -168,6 +169,15 @@ class Connector :public Object {
      * result
      */
     virtual Handler *query(const QString &SQL) = 0;
+
+    /**
+     * Create a query object. Plugins can override some functions of the class Query to take
+     * advantage of some specific optimizations. This is entirely optional, default implementations
+     * with a meaningful behaviour are provided in the kdedb core library
+     */
+    virtual Query *createQueryObject(QObject *parent = 0L,
+                                     const char *name = 0L,
+                                     const QString &sql = QString::null);
 
     /**
      * start a transaction for the current connection

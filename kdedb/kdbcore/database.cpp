@@ -66,7 +66,7 @@ Database::getTable(const QString &name)
         return 0L;
     }
 
-    return new Table(connector, this, (*it).utf8());
+    return TablePtr(new Table(connector, this, (*it).utf8()));
 }
 
 TableList
@@ -121,7 +121,7 @@ Database::getQuery(const QString &name)
         return 0L;
     }
 
-    return new Query(connector, this, (*it).utf8());
+    return QueryPtr(connector->createQueryObject( this, (*it).utf8()));
 }
 
 QueryList
@@ -134,7 +134,7 @@ Database::queries()
 
     while ( it != m_queries.end() ) {
         if (! (*it).startsWith("__") ) {
-            lst << QueryPtr(new Query(connector, this, (*it).utf8()));
+            lst << QueryPtr(connector->createQueryObject(this, (*it).utf8()));
         }
         ++it;
     }
@@ -161,7 +161,7 @@ Database::newTable(const QString &name)
 {
     Table * tab = new Table(connector, this, name.utf8(), true);
     connect(tab, SIGNAL(created(KDB::Table *)),SLOT(tableCreated(KDB::Table *)));
-    return tab;
+    return TablePtr(tab);
 }
 
 bool
@@ -186,7 +186,7 @@ QueryPtr
 Database::newQuery(const QString &name, const QString &SQL) 
 {
     //modify this to behave like table creation (signal on query saving)
-    Query * q = new Query(connector, this, name.utf8(), SQL);
+    Query * q = connector->createQueryObject(this, name.utf8(), SQL);
     m_queries.append(name);
     // build the __KDBQueries table here. If they build a query, they are going
     // to save it, and it's better if we have the table then!
@@ -194,7 +194,7 @@ Database::newQuery(const QString &name, const QString &SQL)
     emit queryAdded(name);
     createQueryTable();
 
-    return q;
+    return QueryPtr(q);
 }
 
 

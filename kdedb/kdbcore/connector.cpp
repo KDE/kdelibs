@@ -18,6 +18,7 @@
    Boston, MA 02111-1307, USA.
 */     
 #include "connector.h"
+#include "query.h"
 #include "exception.h"
 
 #include <kdebug.h>
@@ -25,12 +26,14 @@
 using namespace KDB;
 
 Connector::Connector()
-    : _connected(false)
+    : Object(0L),
+      _connected(false)
 {
 }
 
 Connector::Connector(const Connector &)
-    : _connected(false)
+    : Object(0L),
+      _connected(false)
 {
 }
 
@@ -111,4 +114,10 @@ Connector::close()
 }
 
 
-
+Query *
+Connector::createQueryObject(QObject *parent = 0L,
+                               const char *name = 0L,
+                               const QString &sql = QString::null)
+{
+    return new Query(this, parent, name, sql);
+}

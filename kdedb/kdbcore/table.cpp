@@ -114,7 +114,13 @@ Table::fieldNames() const
     QStringList lst;
 
     // TODO: build list of field names
+    FieldIterator iter(m_fields);
 
+    while (iter.current()) {
+        lst << iter.current()->name();
+        ++iter;
+    }
+        
     return lst;
 }
 
