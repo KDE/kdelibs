@@ -37,9 +37,9 @@
 #include <list>
 
 class ObjectReference;
-class InterfaceRepo_base;
 class FlowSystem_impl;
-class GlobalComm_base;
+class GlobalComm;
+class InterfaceRepo;
 class ObjectManager;
 class Object_skel;
 class ReferenceClean;
@@ -49,6 +49,9 @@ extern "C" {
 }
 
 class Dispatcher {
+private:
+	class DispatcherPrivate *d;
+
 protected:
 	static Dispatcher *_instance;
 
@@ -64,9 +67,7 @@ protected:
 	TCPServer *tcpServer;
 	UnixServer *unixServer;
 	IOManager *_ioManager;
-	InterfaceRepo_base *_interfaceRepo;
 	FlowSystem_impl *_flowSystem;
-	GlobalComm_base *_globalComm;
 	ObjectManager *objectManager;
 	ReferenceClean *referenceClean;
 	NotificationManager *notificationManager;
@@ -86,9 +87,9 @@ public:
 
 	static Dispatcher *the();
 	inline IOManager *ioManager() { return _ioManager; };
-	InterfaceRepo_base *interfaceRepo();
+	InterfaceRepo interfaceRepo();
 	FlowSystem_impl *flowSystem();
-	GlobalComm_base *globalComm();
+	GlobalComm globalComm();
 	void setFlowSystem(FlowSystem_impl *fs);
 
 	void refillRequestIDs();

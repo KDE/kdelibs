@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 
 	/* start sound server implementation */
-	SimpleSoundServer_var server = SimpleSoundServer_base::_create();
+	SimpleSoundServer server;
 
 	bool result = ObjectManager::the()
 				->addGlobalReference(server,"Arts_SimpleSoundServer")
@@ -108,9 +108,10 @@ int main(int argc, char **argv)
 	{
 		cerr <<
 "Error: Can't add object reference (perhaps it is already running?)." << endl <<
-"       If you are sure it is not already running, remove the relevant file:"
+"       If you are sure it is not already running, remove the relevant files:"
               << endl << endl <<
-"       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl << endl;
+"       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
+"       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl << endl;
 		return 1;
 	}
 

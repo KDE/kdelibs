@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
@@ -787,26 +788,26 @@ void StdFlowSystem::restart()
 
 /* remote accessibility */
 
-void StdFlowSystem::startObject(Object* node)
+void StdFlowSystem::startObject(Object node)
 {
 	StdScheduleNode *sn =
-		(StdScheduleNode *)node->_node()->cast("StdScheduleNode");
+		(StdScheduleNode *)node._node()->cast("StdScheduleNode");
 	sn->start();
 }
 
-void StdFlowSystem::stopObject(Object* node)
+void StdFlowSystem::stopObject(Object node)
 {
 	StdScheduleNode *sn =
-		(StdScheduleNode *)node->_node()->cast("StdScheduleNode");
+		(StdScheduleNode *)node._node()->cast("StdScheduleNode");
 	sn->stop();
 }
 
-void StdFlowSystem::connectObject(Object* sourceObject,const string& sourcePort,
-					Object* destObject, const std::string& destPort)
+void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
+					Object destObject, const std::string& destPort)
 {
 	cout << "connect port " << sourcePort << " to " << destPort << endl;
 	StdScheduleNode *sn =
-		(StdScheduleNode *)sourceObject->_node()->cast("StdScheduleNode");
+		(StdScheduleNode *)sourceObject._node()->cast("StdScheduleNode");
 	assert(sn);
 
 	Port *port = sn->findPort(sourcePort);
@@ -819,33 +820,33 @@ void StdFlowSystem::connectObject(Object* sourceObject,const string& sourcePort,
 		ASyncNetSend *netsend = new ASyncNetSend();
 		ap->sendNet(netsend);
 
-		FlowSystem_var remoteFs = destObject->_flowSystem();
-		FlowSystemReceiver_var receiver;
-		receiver = remoteFs->createReceiver(destObject, destPort, netsend);
+		FlowSystem remoteFs = destObject._flowSystem();
+		FlowSystemReceiver receiver;
+		receiver = remoteFs.createReceiver(destObject, destPort, netsend);
 
 		netsend->setReceiver(receiver);
 		cout << "connected an asyncnetsend" << endl;		
 	}
 }
 
-void StdFlowSystem::disconnectObject(Object* sourceObject,
-		const string& sourcePort, Object* destObject, const string& destPort)
+void StdFlowSystem::disconnectObject(Object sourceObject,
+		const string& sourcePort, Object destObject, const string& destPort)
 {
 	assert(false);
 }
 
-AttributeType StdFlowSystem::queryFlags(Object* node, const std::string& port)
+AttributeType StdFlowSystem::queryFlags(Object node, const std::string& port)
 {
 	StdScheduleNode *sn =
-		(StdScheduleNode *)node->_node()->cast("StdScheduleNode");
+		(StdScheduleNode *)node._node()->cast("StdScheduleNode");
 	return sn->queryFlags(port);
 }
 
-FlowSystemReceiver_base *StdFlowSystem::createReceiver(Object *object,
-							const string &port, FlowSystemSender_base *sender)
+FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
+							const string &port, FlowSystemSender sender)
 {
 	StdScheduleNode *sn =
-		(StdScheduleNode *)object->_node()->cast("StdScheduleNode");
+		(StdScheduleNode *)object._node()->cast("StdScheduleNode");
 
 	Port *p = sn->findPort(port);
 	assert(p);

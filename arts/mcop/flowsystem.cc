@@ -24,7 +24,7 @@
 
 //-------------- ScheduleNode -----------------
 
-ScheduleNode::ScheduleNode(Object *object) : _nodeObject(object)
+ScheduleNode::ScheduleNode(Object_base *object) : _nodeObject(object)
 {
 	//
 }
@@ -34,9 +34,10 @@ ScheduleNode::~ScheduleNode()
 	//
 }
 
-Object *ScheduleNode::nodeObject()
+Object ScheduleNode::nodeObject()
 {
-	return _nodeObject;
+	assert(_nodeObject);
+	return _nodeObject->_copy();
 }
 
 RemoteScheduleNode *ScheduleNode::remoteScheduleNode()
@@ -78,32 +79,30 @@ void RemoteScheduleNode::requireFlow()
 	
 void RemoteScheduleNode::start()
 {
-	FlowSystem_var fs = nodeObject()->_flowSystem();
-	fs->startObject(nodeObject());
+	nodeObject()._flowSystem().startObject(nodeObject());
 }
 
 void RemoteScheduleNode::stop()
 {
-	FlowSystem_var fs = nodeObject()->_flowSystem();
-	fs->stopObject(nodeObject());
+	nodeObject()._flowSystem().stopObject(nodeObject());
 }
 
 void RemoteScheduleNode::connect(std::string port, ScheduleNode *remoteNode,
 			                        std::string remotePort)
 {
-	FlowSystem_var fs = nodeObject()->_flowSystem();
-	AttributeType flags = fs->queryFlags(nodeObject(),port);
+	FlowSystem fs = nodeObject()._flowSystem();
+	AttributeType flags = fs.queryFlags(nodeObject(),port);
 
 	// connectObject must be called as connectObject([sourcePort], [destPort]);
 
 	if(flags & streamOut)	// if our port is an output port, this order
 	{
-		fs->connectObject(nodeObject(),port,remoteNode->nodeObject(),remotePort);
+		fs.connectObject(nodeObject(),port,remoteNode->nodeObject(),remotePort);
 	}
 	else if(flags & streamIn)
 	{
-		FlowSystem_var remoteFs = remoteNode->nodeObject()->_flowSystem();
-		remoteFs->connectObject(remoteNode->nodeObject(),
+		FlowSystem remoteFs = remoteNode->nodeObject()._flowSystem();
+		remoteFs.connectObject(remoteNode->nodeObject(),
 										remotePort,nodeObject(),port);
 	} else {
 		assert(false);
@@ -113,19 +112,19 @@ void RemoteScheduleNode::connect(std::string port, ScheduleNode *remoteNode,
 void RemoteScheduleNode::disconnect(std::string port, ScheduleNode *remoteNode,
 			                            std::string remotePort)
 {
-	FlowSystem_var fs = nodeObject()->_flowSystem();
-	AttributeType flags = fs->queryFlags(nodeObject(),port);
+	FlowSystem fs = nodeObject()._flowSystem();
+	AttributeType flags = fs.queryFlags(nodeObject(),port);
 
 	// connectObject must be called as connectObject([sourcePort], [destPort]);
 
 	if(flags & streamOut)	// if our port is an output port, this order
 	{
-		fs->disconnectObject(nodeObject(),port,remoteNode->nodeObject(),remotePort);
+		fs.disconnectObject(nodeObject(),port,remoteNode->nodeObject(),remotePort);
 	}
 	else if(flags & streamIn)
 	{
-		FlowSystem_var remoteFs = remoteNode->nodeObject()->_flowSystem();
-		remoteFs->disconnectObject(remoteNode->nodeObject(),
+		FlowSystem remoteFs = remoteNode->nodeObject()._flowSystem();
+		remoteFs.disconnectObject(remoteNode->nodeObject(),
 										remotePort,nodeObject(),port);
 	} else {
 		assert(false);

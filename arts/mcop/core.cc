@@ -791,7 +791,7 @@ vector<std::string> InterfaceRepo_base::_defaultPortsOut() const {
 void *InterfaceRepo_base::_cast(unsigned long iid)
 {
 	if(iid == InterfaceRepo_base::_IID) return (InterfaceRepo_base *)this;
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object_base *)this;
 	return 0;
 }
 
@@ -992,7 +992,7 @@ vector<std::string> FlowSystemSender_base::_defaultPortsOut() const {
 void *FlowSystemSender_base::_cast(unsigned long iid)
 {
 	if(iid == FlowSystemSender_base::_IID) return (FlowSystemSender_base *)this;
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object_base *)this;
 	return 0;
 }
 
@@ -1100,7 +1100,7 @@ vector<std::string> FlowSystemReceiver_base::_defaultPortsOut() const {
 void *FlowSystemReceiver_base::_cast(unsigned long iid)
 {
 	if(iid == FlowSystemReceiver_base::_IID) return (FlowSystemReceiver_base *)this;
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object_base *)this;
 	return 0;
 }
 
@@ -1215,7 +1215,7 @@ vector<std::string> FlowSystem_base::_defaultPortsOut() const {
 void *FlowSystem_base::_cast(unsigned long iid)
 {
 	if(iid == FlowSystem_base::_IID) return (FlowSystem_base *)this;
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object_base *)this;
 	return 0;
 }
 
@@ -1230,13 +1230,13 @@ FlowSystem_stub::FlowSystem_stub(Connection *connection, long objectID)
 	// constructor to create a stub for an object
 }
 
-void FlowSystem_stub::startObject(Object_base * node)
+void FlowSystem_stub::startObject(Object node)
 {
 	long methodID = _lookupMethodFast("method:0c00000073746172744f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f646500");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,node);
+	writeObject(*request,node._base());
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
@@ -1244,13 +1244,13 @@ void FlowSystem_stub::startObject(Object_base * node)
 	if(result) delete result;
 }
 
-void FlowSystem_stub::stopObject(Object_base * node)
+void FlowSystem_stub::stopObject(Object node)
 {
 	long methodID = _lookupMethodFast("method:0b00000073746f704f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f646500");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,node);
+	writeObject(*request,node._base());
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
@@ -1258,15 +1258,15 @@ void FlowSystem_stub::stopObject(Object_base * node)
 	if(result) delete result;
 }
 
-void FlowSystem_stub::connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort)
+void FlowSystem_stub::connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort)
 {
 	long methodID = _lookupMethodFast("method:0e000000636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f727400");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,sourceObject);
+	writeObject(*request,sourceObject._base());
 	request->writeString(sourcePort);
-	writeObject(*request,destObject);
+	writeObject(*request,destObject._base());
 	request->writeString(destPort);
 	request->patchLength();
 	_connection->qSendBuffer(request);
@@ -1275,15 +1275,15 @@ void FlowSystem_stub::connectObject(Object_base * sourceObject, const std::strin
 	if(result) delete result;
 }
 
-void FlowSystem_stub::disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort)
+void FlowSystem_stub::disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort)
 {
 	long methodID = _lookupMethodFast("method:11000000646973636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f727400");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,sourceObject);
+	writeObject(*request,sourceObject._base());
 	request->writeString(sourcePort);
-	writeObject(*request,destObject);
+	writeObject(*request,destObject._base());
 	request->writeString(destPort);
 	request->patchLength();
 	_connection->qSendBuffer(request);
@@ -1292,13 +1292,13 @@ void FlowSystem_stub::disconnectObject(Object_base * sourceObject, const std::st
 	if(result) delete result;
 }
 
-AttributeType FlowSystem_stub::queryFlags(Object_base * node, const std::string& port)
+AttributeType FlowSystem_stub::queryFlags(Object node, const std::string& port)
 {
 	long methodID = _lookupMethodFast("method:0b0000007175657279466c616773000e00000041747472696275746554797065000200000002000000070000006f626a65637400050000006e6f64650007000000737472696e670005000000706f727400");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,node);
+	writeObject(*request,node._base());
 	request->writeString(port);
 	request->patchLength();
 	_connection->qSendBuffer(request);
@@ -1310,15 +1310,15 @@ AttributeType FlowSystem_stub::queryFlags(Object_base * node, const std::string&
 	return returnCode;
 }
 
-FlowSystemReceiver_base * FlowSystem_stub::createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender)
+FlowSystemReceiver FlowSystem_stub::createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender)
 {
 	long methodID = _lookupMethodFast("method:0f00000063726561746552656365697665720013000000466c6f7753797374656d5265636569766572000200000003000000070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000466c6f7753797374656d53656e646572000700000073656e64657200");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	writeObject(*request,destObject);
+	writeObject(*request,destObject._base());
 	request->writeString(destPort);
-	writeObject(*request,sender);
+	writeObject(*request,sender._base());
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
@@ -1327,7 +1327,7 @@ FlowSystemReceiver_base * FlowSystem_stub::createReceiver(Object_base * destObje
 	FlowSystemReceiver_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
-	return returnCode;
+	return FlowSystemReceiver(returnCode);
 }
 
 std::string FlowSystem_skel::_interfaceName()
@@ -1345,7 +1345,7 @@ static void _dispatch_FlowSystem_00(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_node;
 	readObject(*request,_temp_node);
-	Object_var node = _temp_node;
+	Object node = _temp_node;
 	((FlowSystem_skel *)object)->startObject(node);
 }
 
@@ -1354,7 +1354,7 @@ static void _dispatch_FlowSystem_01(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_node;
 	readObject(*request,_temp_node);
-	Object_var node = _temp_node;
+	Object node = _temp_node;
 	((FlowSystem_skel *)object)->stopObject(node);
 }
 
@@ -1363,12 +1363,12 @@ static void _dispatch_FlowSystem_02(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_sourceObject;
 	readObject(*request,_temp_sourceObject);
-	Object_var sourceObject = _temp_sourceObject;
+	Object sourceObject = _temp_sourceObject;
 	std::string sourcePort;
 	request->readString(sourcePort);
 	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
-	Object_var destObject = _temp_destObject;
+	Object destObject = _temp_destObject;
 	std::string destPort;
 	request->readString(destPort);
 	((FlowSystem_skel *)object)->connectObject(sourceObject,sourcePort,destObject,destPort);
@@ -1379,12 +1379,12 @@ static void _dispatch_FlowSystem_03(void *object, Buffer *request, Buffer *)
 {
 	Object_base* _temp_sourceObject;
 	readObject(*request,_temp_sourceObject);
-	Object_var sourceObject = _temp_sourceObject;
+	Object sourceObject = _temp_sourceObject;
 	std::string sourcePort;
 	request->readString(sourcePort);
 	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
-	Object_var destObject = _temp_destObject;
+	Object destObject = _temp_destObject;
 	std::string destPort;
 	request->readString(destPort);
 	((FlowSystem_skel *)object)->disconnectObject(sourceObject,sourcePort,destObject,destPort);
@@ -1395,7 +1395,7 @@ static void _dispatch_FlowSystem_04(void *object, Buffer *request, Buffer *resul
 {
 	Object_base* _temp_node;
 	readObject(*request,_temp_node);
-	Object_var node = _temp_node;
+	Object node = _temp_node;
 	std::string port;
 	request->readString(port);
 	result->writeLong(((FlowSystem_skel *)object)->queryFlags(node,port));
@@ -1406,15 +1406,14 @@ static void _dispatch_FlowSystem_05(void *object, Buffer *request, Buffer *resul
 {
 	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
-	Object_var destObject = _temp_destObject;
+	Object destObject = _temp_destObject;
 	std::string destPort;
 	request->readString(destPort);
 	FlowSystemSender_base* _temp_sender;
 	readObject(*request,_temp_sender);
-	FlowSystemSender_var sender = _temp_sender;
-	FlowSystemReceiver_base *returnCode = ((FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
-	writeObject(*result,returnCode);
-	if(returnCode) returnCode->_release();
+	FlowSystemSender sender = _temp_sender;
+	FlowSystemReceiver returnCode = ((FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
+	writeObject(*result,returnCode._base());
 }
 
 void FlowSystem_skel::_buildMethodTable()
@@ -1507,7 +1506,7 @@ vector<std::string> GlobalComm_base::_defaultPortsOut() const {
 void *GlobalComm_base::_cast(unsigned long iid)
 {
 	if(iid == GlobalComm_base::_IID) return (GlobalComm_base *)this;
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object_base *)this;
 	return 0;
 }
 
@@ -1683,7 +1682,7 @@ void *TmpGlobalComm_base::_cast(unsigned long iid)
 {
 	if(iid == TmpGlobalComm_base::_IID) return (TmpGlobalComm_base *)this;
 	if(iid == GlobalComm_base::_IID) return (GlobalComm_base *)this;
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object_base *)this;
 	return 0;
 }
 

@@ -30,25 +30,25 @@ using namespace std;
 class StereoEffectStack_impl : public StereoEffectStack_skel,
 							   public StdSynthModule
 {
-	Object_var leftIn,rightIn,leftOut,rightOut;
+	Object leftIn,rightIn,leftOut,rightOut;
 	string leftInP, rightInP, leftOutP, rightOutP;
 	bool haveIn, haveOut;
 	long nextID;
 
 	float *inleft, *inright, *outleft, *outright;
 	struct EffectEntry {
-		StereoEffect_var effect;
+		StereoEffect effect;
 		string name;
 		long id;
 	};
 	list<EffectEntry *> fx;
 
-	void xconnect(bool connect, Object *from, string fromP, Object *to, string toP)
+	void xconnect(bool connect, Object from, string fromP, Object to, string toP)
 	{
 		if(connect)
-			from->_node()->connect(fromP,to->_node(),toP);
+			from._node()->connect(fromP,to._node(),toP);
 		else
-			from->_node()->disconnect(fromP,to->_node(),toP);
+			from._node()->disconnect(fromP,to._node(),toP);
 	}
 	void internalconnect(bool c)
 	{
@@ -90,45 +90,45 @@ public:
 	StereoEffectStack_impl() : haveIn(false), haveOut(false), nextID(1)
 	{
 	}
-	void setInputs(Object *leftObj, const string& leftPort,
-					Object *rightObj, const string& rightPort)
+	void setInputs(Object leftObj, const string& leftPort,
+					Object rightObj, const string& rightPort)
 	{
 		disconnect();
-		leftIn = leftObj->_copy();
-		rightIn = rightObj->_copy();
+		leftIn = leftObj;
+		rightIn = rightObj;
 		leftInP = leftPort;
 		rightInP = rightPort;
 		haveIn = true;
 		reconnect();
 	}
-	void setOutputs(Object *leftObj, const string& leftPort,
-					Object *rightObj, const string& rightPort)
+	void setOutputs(Object leftObj, const string& leftPort,
+					Object rightObj, const string& rightPort)
 	{
 		disconnect();
-		leftOut = leftObj->_copy();
-		rightOut = rightObj->_copy();
+		leftOut = leftObj;
+		rightOut = rightObj;
 		leftOutP = leftPort;
 		rightOutP = rightPort;
 		haveOut = true;
 		reconnect();
 	}
 
-	long insertTop(StereoEffect_base* effect, const string& name)
+	long insertTop(StereoEffect effect, const string& name)
 	{
 		disconnect();
 		EffectEntry *e = new EffectEntry();
-		e->effect = effect->_copy();
+		e->effect = effect;
 		e->name = name;
 		e->id = nextID++;
 		fx.push_front(e);
 		reconnect();
 		return e->id;
 	}
-	long insertBottom(StereoEffect_base* effect, const string& name)
+	long insertBottom(StereoEffect effect, const string& name)
 	{
 		disconnect();
 		EffectEntry *e = new EffectEntry();
-		e->effect = effect->_copy();
+		e->effect = effect;
 		e->name = name;
 		e->id = nextID++;
 		fx.push_back(e);

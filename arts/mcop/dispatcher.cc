@@ -36,6 +36,14 @@
 #include <signal.h>
 #include <iostream.h>
 
+/* Dispatcher private data class (to ensure binary compatibility) */
+
+class DispatcherPrivate {
+public:
+	GlobalComm globalComm;
+	InterfaceRepo interfaceRepo;
+};
+
 using namespace std;
 
 Dispatcher *Dispatcher::_instance = 0;
@@ -44,6 +52,9 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 {
 	assert(!_instance);
 	_instance = this;
+
+	/* private data pointer */
+	d = new DispatcherPrivate();
 
 	generateServerID();
 
@@ -86,7 +97,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	}
 	else tcpServer = 0;
 
-	_interfaceRepo = new InterfaceRepo_impl();
+	d->interfaceRepo = new InterfaceRepo_impl();
 	_flowSystem = 0;
 	referenceClean = new ReferenceClean(objectPool);
 
@@ -110,7 +121,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	string globalCommName
 			= MCOPUtils::readConfigEntry("GlobalComm","TmpGlobalComm");
 
-	_globalComm = GlobalComm_base::_create(globalCommName);
+	d->globalComm = GlobalComm(SubClass(globalCommName));
 
 	// --- initialize MD5auth ---
 	/*
@@ -128,7 +139,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	 * secret cookie
 	 */
 	char *cookie = md5_auth_mkcookie();
-	_globalComm->put("secret-cookie",cookie);
+	globalComm().put("secret-cookie",cookie);
 	memset(cookie,0,strlen(cookie));	// try to keep memory clean
 	free(cookie);
 
@@ -136,7 +147,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	 * Then get the secret cookie from globalComm. As we've just set one,
 	 * and as it is never removed, this always works.
 	 */
-	string secretCookie = _globalComm->get("secret-cookie");
+	string secretCookie = globalComm().get("secret-cookie");
 	md5_auth_set_cookie(secretCookie.c_str());
 	string::iterator i;	// try to keep memory clean from secret cookie
 	for(i=secretCookie.begin();i != secretCookie.end();i++) *i = 'y';
@@ -157,16 +168,9 @@ Dispatcher::~Dispatcher()
 
 	delete referenceClean;
 
-	if(_interfaceRepo)
-	{
-		_interfaceRepo->_release();
-		_interfaceRepo = 0;
-	}
-	if(_globalComm)
-	{
-		_globalComm->_release();
-		_globalComm = 0;
-	}
+	d->interfaceRepo = 0;
+	d->globalComm = 0;
+
 	if(unixServer)
 	{
 		delete unixServer;
@@ -197,18 +201,28 @@ Dispatcher::~Dispatcher()
 		_ioManager = 0;
 	}
 
-	if(Object::_objectCount())
+	if(Object_base::_objectCount())
 	{
 		cerr << "warning: leaving MCOP Dispatcher and still "
-			 << Object::_objectCount << " objects alive." << endl;
+			 << Object_base::_objectCount() << " objects alive." << endl;
+		list<Object_skel *> which = objectPool.enumerate();
+		list<Object_skel *>::iterator i;
+		for(i = which.begin(); i != which.end();i++)
+			cerr << "  - " << (*i)->_interfaceName() << endl;
 	}
+
+	/* private data pointer */
+	assert(d);
+	delete d;
+	d = 0;
+
 	assert(_instance);
 	_instance = 0;
 }
 
-InterfaceRepo_base *Dispatcher::interfaceRepo()
+InterfaceRepo Dispatcher::interfaceRepo()
 {
-	return _interfaceRepo;
+	return d->interfaceRepo;
 }
 
 FlowSystem_impl *Dispatcher::flowSystem()
@@ -217,10 +231,10 @@ FlowSystem_impl *Dispatcher::flowSystem()
 	return _flowSystem;
 }
 
-GlobalComm_base *Dispatcher::globalComm()
+GlobalComm Dispatcher::globalComm()
 {
-	assert(_globalComm);
-	return _globalComm;
+	assert(!d->globalComm.isNull());
+	return d->globalComm;
 }
 
 void Dispatcher::setFlowSystem(FlowSystem_impl *fs)

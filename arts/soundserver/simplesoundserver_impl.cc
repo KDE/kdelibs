@@ -26,24 +26,25 @@
 #include "simplesoundserver_impl.h"
 #include "artsflow.h"
 #include "flowsystem.h"
+#include "connect.h"
 #include <stdio.h>
 #include <iostream>
 
 using namespace std;
 
-AttachedProducer::AttachedProducer(ByteSoundProducer_base *sender,
-										ByteStreamToAudio_base *receiver)
+AttachedProducer::AttachedProducer(ByteSoundProducer sender,
+										ByteStreamToAudio receiver)
 {
-	_sender = sender->_copy();
-	_receiver = receiver->_copy();
+	_sender = sender;
+	_receiver = receiver;
 }
 
-ByteSoundProducer_base *AttachedProducer::sender()
+ByteSoundProducer AttachedProducer::sender()
 {
 	return _sender;
 }
 
-ByteStreamToAudio_base *AttachedProducer::receiver()
+ByteStreamToAudio AttachedProducer::receiver()
 {
 	return _receiver;
 }
@@ -66,17 +67,12 @@ ByteStreamToAudio_base *AttachedProducer::receiver()
  */
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
-	playSound = Synth_PLAY_base::_create();
-	addLeft = Synth_MULTI_ADD_base::_create();
-	addRight = Synth_MULTI_ADD_base::_create();
+	_outstack.setInputs(addLeft,"outvalue",addRight,"outvalue");
+	_outstack.setOutputs(playSound,"invalue_left",playSound,"invalue_right");
 
-	_outstack = StereoEffectStack_base::_create();
-	_outstack->setInputs(addLeft,"outvalue",addRight,"outvalue");
-	_outstack->setOutputs(playSound,"invalue_left",playSound,"invalue_right");
-
-	addLeft->_node()->start();
-	addRight->_node()->start();
-	playSound->_node()->start();
+	addLeft.start();
+	addRight.start();
+	playSound.start();
 
 	asCount = 0; // AutoSuspend
 	Dispatcher::the()->ioManager()->addTimer(200,this);
@@ -96,38 +92,38 @@ long SimpleSoundServer_impl::play(const string& filename)
 {
 	printf("Play '%s'!\n",filename.c_str());
 
-	Synth_PLAY_WAV_base *playwav = Synth_PLAY_WAV_base::_create();
-	playwav->filename(filename);
+	Synth_PLAY_WAV playwav;
 
-	addLeft->_node()->connect("invalue",playwav->_node(),"left");
-	addRight->_node()->connect("invalue",playwav->_node(),"right");
+	connect(playwav,"left",addLeft);
+	connect(playwav,"right",addRight);
 
-	playwav->_node()->start();
+	playwav.filename(filename);
+	playwav.start();
 
 	activeWavs.push_back(playwav);
 	return 1;
 }
 
-void SimpleSoundServer_impl::attach(ByteSoundProducer_base *bsp)
+void SimpleSoundServer_impl::attach(ByteSoundProducer bsp)
 {
 	printf("Attach ByteSoundProducer!\n");
 
-	ByteStreamToAudio_var convert = ByteStreamToAudio_base::_create();
+	ByteStreamToAudio convert;
 
 //	convert->samplingRate(bsp->samplingRate());
 //	convert->channels(bsp->channels());
 //	convert->bits(bsp->bits());
 
-	convert->_node()->connect("indata",bsp->_node(),"outdata");
-	addLeft->_node()->connect("invalue",convert->_node(),"left");
-	addRight->_node()->connect("invalue",convert->_node(),"right");
+	connect(bsp,"outdata",convert,"indata");
+	connect(convert,"left",addLeft);
+	connect(convert,"right",addRight);
 
-	convert->_node()->start();
+	convert.start();
 
 	activeProducers.push_back(new AttachedProducer(bsp,convert));
 }
 
-void SimpleSoundServer_impl::detach(ByteSoundProducer_base *bsp)
+void SimpleSoundServer_impl::detach(ByteSoundProducer bsp)
 {
 	printf("Detach ByteSoundProducer!\n");
 	list<AttachedProducer *>::iterator p;
@@ -135,7 +131,8 @@ void SimpleSoundServer_impl::detach(ByteSoundProducer_base *bsp)
 	for(p = activeProducers.begin();p != activeProducers.end();p++)
 	{
 		AttachedProducer *prod = (*p);
-		if(bsp->_isEqual(prod->sender()))
+		ByteSoundProducer sender = prod->sender();
+		if(bsp._isEqual(sender))
 		{
 			/* 
 			 * Hint: the order of the next lines is not unimportant:
@@ -146,7 +143,7 @@ void SimpleSoundServer_impl::detach(ByteSoundProducer_base *bsp)
              */
 			activeProducers.erase(p);
 
-			activeConverters.push_back(prod->receiver()->_copy());
+			activeConverters.push_back(prod->receiver());
 			delete prod;
 
 			return;
@@ -155,14 +152,14 @@ void SimpleSoundServer_impl::detach(ByteSoundProducer_base *bsp)
 	assert(false);		// you shouldn't detach things you never attached!
 }
 
-StereoEffectStack_base *SimpleSoundServer_impl::outstack()
+StereoEffectStack SimpleSoundServer_impl::outstack()
 {
-	return _outstack->_copy();
+	return _outstack;
 }
 
-Object *SimpleSoundServer_impl::createObject(const string& name)
+Object SimpleSoundServer_impl::createObject(const string& name)
 {
-	return Object::_create(name);
+	return Object(SubClass(name));
 }
 
 void SimpleSoundServer_impl::notifyTime()
@@ -176,19 +173,15 @@ void SimpleSoundServer_impl::notifyTime()
 	 */
 
 	/* look for WAVs which may have terminated by now */
-	list<Synth_PLAY_WAV_base *>::iterator i;
+	list<Synth_PLAY_WAV>::iterator i;
 
 	i = activeWavs.begin();
 	while(i != activeWavs.end())
 	{
-		Synth_PLAY_WAV_base *playwav = (*i);
-		if(playwav->finished())
+		if(i->finished())
 		{
 			activeWavs.erase(i);
-
 			cout << "finished" << endl;
-			playwav->_release();
-
 			i = activeWavs.begin();
 		}
 		else i++;
@@ -201,12 +194,12 @@ void SimpleSoundServer_impl::notifyTime()
 	while(p != activeProducers.end())
 	{
 		AttachedProducer *prod = (*p);
-		if(prod->sender()->_error())
+		if(prod->sender().error())
 		{
 			activeProducers.erase(p);
 
 			cout << "stream closed (client died)" << endl;
-			activeConverters.push_back(prod->receiver()->_copy());
+			activeConverters.push_back(prod->receiver());
 			delete prod;
 
 			p = activeProducers.begin();
@@ -215,19 +208,15 @@ void SimpleSoundServer_impl::notifyTime()
 	}
 
 	/* look for converters which are no longer running */
-	list<ByteStreamToAudio_base *>::iterator ci;
+	list<ByteStreamToAudio>::iterator ci;
 
 	ci = activeConverters.begin();
 	while(ci != activeConverters.end())
 	{
-		ByteStreamToAudio_base *conv = (*ci);
-		if(!conv->running())
+		if(!ci->running())
 		{
 			activeConverters.erase(ci);
-
 			cout << "converter (for stream) finished" << endl;
-			conv->_release();
-
 			ci = activeConverters.begin();
 		}
 		else ci++;
@@ -250,7 +239,7 @@ void SimpleSoundServer_impl::notifyTime()
 	lock--;
 }
 
-PlayObject_base *SimpleSoundServer_impl::createPlayObject(const string& filename)
+PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 {
 	string extension="", objectType = "";
 	if(filename.size()>4)
@@ -270,14 +259,14 @@ PlayObject_base *SimpleSoundServer_impl::createPlayObject(const string& filename
 	if(objectType != "")
 	{
 		cout << "Creating " << objectType << " to play file." << endl;
-		PlayObject_var result = PlayObject_base::_create(objectType);
-		if(result->loadMedia(filename))
+		PlayObject result = SubClass(objectType);
+		if(result.loadMedia(filename))
 		{
 			// TODO: check for existence of left & right streams
-			addLeft->_node()->connect("invalue",result->_node(),"left");
-			addRight->_node()->connect("invalue",result->_node(),"right");
-			result->_node()->start();
-			return result->_copy();
+			connect(result,"left",addLeft);
+			connect(result,"right",addRight);
+			result._node()->start();
+			return result;
 		}
 		else
 		{

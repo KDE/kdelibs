@@ -33,12 +33,12 @@ class RemoteScheduleNode;
 class ScheduleNode
 {
 private:
-	Object *_nodeObject;
+	Object_base *_nodeObject;
 public:
-	ScheduleNode(Object *object);
+	ScheduleNode(Object_base *object);
 	virtual ~ScheduleNode();
 
-	Object *nodeObject();
+	Object nodeObject();
 
 	// check if this is a remote schedule node
 

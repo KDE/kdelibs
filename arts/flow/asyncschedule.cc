@@ -182,9 +182,9 @@ void ASyncNetSend::notify(const Notification& notification)
 	pqueue.push(dp);
 
 	// put it into a custom data message and send it to the receiver
-	Buffer *buffer = receiver->_allocCustomMessage(receiveHandlerID);
+	Buffer *buffer = receiver._allocCustomMessage(receiveHandlerID);
 	dp->write(*buffer);
-	receiver->_sendCustomMessage(buffer);
+	receiver._sendCustomMessage(buffer);
 }
 
 void ASyncNetSend::processed()
@@ -194,10 +194,10 @@ void ASyncNetSend::processed()
 	pqueue.pop();
 }
 
-void ASyncNetSend::setReceiver(FlowSystemReceiver_base *newReceiver)
+void ASyncNetSend::setReceiver(FlowSystemReceiver newReceiver)
 {
-	receiver = newReceiver->_copy();
-	receiveHandlerID = newReceiver->receiveHandlerID();
+	receiver = newReceiver;
+	receiveHandlerID = newReceiver.receiveHandlerID();
 }
 
 /* dispatching function for custom message */
@@ -207,11 +207,11 @@ static void _dispatch_ASyncNetReceive_receive(void *object, Buffer *buffer)
 	((ASyncNetReceive *)object)->receive(buffer);
 }
 
-ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender_base *sender)
+ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender sender)
 {
 	stream = port->receiveNetCreateStream();
 	stream->channel = this;
-	this->sender = sender->_copy();
+	this->sender = sender;
 	/* stream->_notifyID = _mkNotifyID(); */
 
 	gotPacketNotification.ID = port->receiveNetNotifyID();
@@ -250,7 +250,7 @@ void ASyncNetReceive::receive(Buffer *buffer)
 void ASyncNetReceive::processedPacket(GenericDataPacket *packet)
 {
 	stream->freePacket(packet);
-	sender->processed();
+	sender.processed();
 }
 
 void ASyncNetReceive::sendPacket(GenericDataPacket *packet)

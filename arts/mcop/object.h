@@ -39,18 +39,17 @@ typedef void (*OnewayDispatchFunction)(void *object, Buffer *request);
 class ScheduleNode;
 class Object_skel;
 class Object_stub;
-class FlowSystem_base;
+class FlowSystem;
 
-class Object : public NotificationClient {
+class Object_base : public NotificationClient {
 private:
 	bool _deleteOk;				// ensure that "delete" is not called manually
 
 protected:
 	struct ObjectStreamInfo;
-	static unsigned long _IID;	// interface ID
 
-	Object();
-	virtual ~Object();
+	Object_base();
+	virtual ~Object_base();
 
 	/*
 	 * internal management for streams
@@ -73,6 +72,7 @@ protected:
 	void _destroy();			// use this instead of delete (takes care of
 								// properly removing flow system node)
 public:
+	static unsigned long _IID;	// interface ID
 	/**
 	 * custom messaging: these can be used to send a custom data to other
 	 * objects. Warning: these are *not* usable for local objects. You may
@@ -100,7 +100,7 @@ public:
 	 */
 	virtual void calculateBlock(unsigned long cycles);
 	ScheduleNode *_node();
-	virtual FlowSystem_base * _flowSystem() = 0;
+	virtual FlowSystem _flowSystem() = 0;
 
 	/*
 	 * reference counting
@@ -110,7 +110,7 @@ public:
 	virtual void _useRemote() = 0;
 	virtual void _releaseRemote() = 0;
 
-	inline Object *_copy() {
+	inline Object_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
@@ -135,22 +135,17 @@ public:
 	inline long _mkNotifyID() { return _nextNotifyID++; }
 
 	// object creation
-	static Object *_create(const std::string& subClass = "Object");
+	static Object_base *_create(const std::string& subClass = "Object");
 
 	// comparision
-	inline bool _isEqual(Object *object) {
+	inline bool _isEqual(Object_base *object) {
 		return (_internalObjectID == object->_internalObjectID);
 	}
 
 	// static converter (from reference)
-	static Object *_fromString(std::string objectref);
-	static Object *_fromReference(class ObjectReference ref, bool needcopy);
+	static Object_base *_fromString(std::string objectref);
+	static Object_base *_fromReference(class ObjectReference ref, bool needcopy);
 };
-
-template<class T> class ReferenceHelper;
-
-typedef ReferenceHelper<Object> Object_var;
-typedef Object Object_base;
 
 /*
  * Dispatching
@@ -160,7 +155,7 @@ class Buffer;
 class MethodDef;
 
 
-class Object_skel : virtual public Object {
+class Object_skel : virtual public Object_base {
 private:
 	struct MethodTableEntry;
 
@@ -219,7 +214,7 @@ public:
 	/*
 	 * streaming
 	 */
-	FlowSystem_base * _flowSystem();
+	FlowSystem _flowSystem();
 
 	/*
 	 * to inspect the (remote) object interface
@@ -230,9 +225,9 @@ public:
 	virtual std::string _toString();
 };
 
-class Object_stub : virtual public Object {
+class Object_stub : virtual public Object_base {
 protected:
-	friend class Object;
+	friend class Object_base;
 
 	long _objectID,_lookupCacheRandom;
 	Connection *_connection;
@@ -269,7 +264,7 @@ public:
 	/*
 	 * streaming
 	 */
-	FlowSystem_base * _flowSystem();
+	FlowSystem _flowSystem();
 
 	/*
 	 * reference counting

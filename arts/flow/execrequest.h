@@ -26,13 +26,13 @@
 #include "artsflow.h"
 
 class ExecRequest {
-	ArtsServer *_Server;
+	ArtsServer _Server;
 	std::vector<ModuleDesc *> _Modules;
 	long _ServerID,_StructureID,mid;
 	std::string _structureName;
 
 public:
-	ExecRequest(ArtsServer *Server, long StructureID, const std::string&
+	ExecRequest(ArtsServer Server, long StructureID, const std::string&
 																structureName);
 
 	//const Arts::ModuleDescSeq& Modules();		// FIXME: remove me?
@@ -48,6 +48,6 @@ public:
    	void startModules();
    	void deleteModules();
 
-	ArtsServer *Server();
+	ArtsServer Server();
 };
 #endif

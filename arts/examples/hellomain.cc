@@ -68,10 +68,6 @@ int main()
 	dyn->hellobase("dynamic hellobase hello");
 	delete dyn;
 
-	// The old CORBA-like syntax is still accepted
-	Hello_var hh = Hello_base::_create();
-	hh->hello("created");
-
 //	dispatcher.run();
 	return 0;
 	

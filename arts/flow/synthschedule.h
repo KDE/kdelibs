@@ -253,16 +253,16 @@ public:
 	void restart();
 
 	/* remote accessibility */
-	void startObject(Object* node);
-	void stopObject(Object* node);
-	void connectObject(Object* sourceObject, const std::string& sourcePort,
-						Object* destObject, const std::string& destPort);
-	void disconnectObject(Object* sourceObject, const std::string& sourcePort,
-						Object* destObject, const std::string& destPort);
-	AttributeType queryFlags(Object* node, const std::string& port);
+	void startObject(Object node);
+	void stopObject(Object node);
+	void connectObject(Object sourceObject, const std::string& sourcePort,
+						Object destObject, const std::string& destPort);
+	void disconnectObject(Object sourceObject, const std::string& sourcePort,
+						Object destObject, const std::string& destPort);
+	AttributeType queryFlags(Object node, const std::string& port);
 
-	FlowSystemReceiver_base *createReceiver(Object *object, const std::string &port,
-										FlowSystemSender_base *sender);
+	FlowSystemReceiver createReceiver(Object object, const std::string &port,
+										FlowSystemSender sender);
 };
 
 #endif

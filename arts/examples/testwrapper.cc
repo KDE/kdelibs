@@ -45,8 +45,8 @@ public:
 	string d() { return "d"; }
 	void dummy() { x++; }
 
-	long sum(A_base *v1, A_base *v2) { return v1->value() + v2->value(); }
-	D_base *self() { return _copy(); }
+	long sum(A v1, A v2) { return v1.value() + v2.value(); }
+	D self() { return _copy(); }
 };
 
 REGISTER_IMPLEMENTATION(D_impl);
@@ -62,6 +62,9 @@ public:
 	string b() { return "b"; }
 };
 REGISTER_IMPLEMENTATION(B_impl);
+
+/* these are no longer automatically generated */
+typedef ReferenceHelper<D_base> D_var;
 
 #define CALLS 50000000
 
@@ -144,7 +147,7 @@ void test1()
 	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
 
-D afunc(D& arg)
+D afunc(D arg)
 {
 	arg.value(42);
 	return arg;
@@ -156,7 +159,7 @@ D_base *afunc_old(D_base *arg)
 	return arg->_copy();
 }
 
-void bfunc(D& arg)
+void bfunc(D arg)
 {
 	arg.value(42);
 }

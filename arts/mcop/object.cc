@@ -28,7 +28,7 @@
 
 using namespace std;
 
-struct Object::ObjectStreamInfo {
+struct Object_base::ObjectStreamInfo {
 	string name;
 	long flags;
 	void *ptr;
@@ -45,15 +45,15 @@ struct Object_skel::MethodTableEntry {
  * Object: common for every object
  */
 
-long Object::_staticObjectCount = 0;
+long Object_base::_staticObjectCount = 0;
 
-Object::Object() :  _deleteOk(false), _scheduleNode(0), _nextNotifyID(1),
+Object_base::Object_base() :  _deleteOk(false), _scheduleNode(0), _nextNotifyID(1),
 							_refCnt(1)
 {
 	_staticObjectCount++;
 }
 
-void Object::_destroy()
+void Object_base::_destroy()
 {
 	_deleteOk = true;
 
@@ -74,7 +74,7 @@ void Object::_destroy()
 	delete this;
 }
 
-Object::~Object()
+Object_base::~Object_base()
 {
 	if(!_deleteOk)
 	{
@@ -91,7 +91,7 @@ Object::~Object()
 	_staticObjectCount--;
 }
 
-ScheduleNode *Object::_node()
+ScheduleNode *Object_base::_node()
 {
 	if(!_scheduleNode)
 	{
@@ -123,36 +123,36 @@ ScheduleNode *Object::_node()
 	return _scheduleNode;
 }
 
-void *Object::_cast(unsigned long iid)
+void *Object_base::_cast(unsigned long iid)
 {
-	if(iid == Object::_IID) return (Object *)this;
+	if(iid == Object_base::_IID) return (Object *)this;
 	return 0;
 }
 
-void *Object::_cast(std::string interface)
+void *Object_base::_cast(std::string interface)
 {
 	return _cast(MCOPUtils::makeIID(interface));
 }
 
-bool Object::_error()
+bool Object_base::_error()
 {
 	// no error as default ;)
 	return false;
 }
 
-Object_skel *Object::_skel()
+Object_skel *Object_base::_skel()
 {
 	assert(false);
 	return 0;
 }
 
-Object::ObjectLocation Object::_location()
+Object_base::ObjectLocation Object_base::_location()
 {
 	assert(false);
 	return objectIsLocal;
 }
 
-Object_stub *Object::_stub()
+Object_stub *Object_base::_stub()
 {
 	assert(false);
 	return 0;
@@ -163,7 +163,7 @@ Object_stub *Object_stub::_stub()
 	return this;
 }
 
-Object::ObjectLocation Object_stub::_location()
+Object_base::ObjectLocation Object_stub::_location()
 {
 	return objectIsRemote;
 }
@@ -173,7 +173,7 @@ Object_skel *Object_skel::_skel()
 	return this;
 }
 
-Object::ObjectLocation Object_skel::_location()
+Object_base::ObjectLocation Object_skel::_location()
 {
 	return objectIsLocal;
 }
@@ -187,35 +187,35 @@ void Object_skel::_initStream(string name, void *ptr, long flags)
 	_streamList.push_back(osi);
 }
 
-void Object::calculateBlock(unsigned long)
+void Object_base::calculateBlock(unsigned long)
 {
 }
 
-string Object::_interfaceName()
+string Object_base::_interfaceName()
 {
 	assert(0); // derived classes *must* override this
 	return "";
 }
 
-Buffer *Object::_allocCustomMessage(long /*handlerID*/)
+Buffer *Object_base::_allocCustomMessage(long /*handlerID*/)
 {
 	assert(0);
 	return 0;
 }
 
-void Object::_sendCustomMessage(Buffer *buffer)
+void Object_base::_sendCustomMessage(Buffer *buffer)
 {
 	assert(0);
 	delete buffer;
 }
 
 // Default I/O: nothing at this level, use child virtuals
-vector<std::string> Object::_defaultPortsIn() const
+vector<std::string> Object_base::_defaultPortsIn() const
 {
 	vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Object::_defaultPortsOut() const
+vector<std::string> Object_base::_defaultPortsOut() const
 {
 	vector<std::string> ret;
 	return ret;
@@ -242,7 +242,7 @@ Object_skel::~Object_skel()
 
 // flow system
 
-FlowSystem_base *Object_skel::_flowSystem()
+FlowSystem Object_skel::_flowSystem()
 {
 	FlowSystem_base *fs = Dispatcher::the()->flowSystem();
 	if(fs)
@@ -372,12 +372,12 @@ string Object_skel::_interfaceNameSkel()
 
 InterfaceDef* Object_skel::_queryInterface(const string& name)
 {
-	return Dispatcher::the()->interfaceRepo()->queryInterface(name);
+	return Dispatcher::the()->interfaceRepo().queryInterface(name);
 }
 
 TypeDef* Object_skel::_queryType(const string& name)
 {
-	return Dispatcher::the()->interfaceRepo()->queryType(name);
+	return Dispatcher::the()->interfaceRepo().queryType(name);
 }
 
 void Object_skel::_addMethod(DispatchFunction disp, void *obj,
@@ -535,9 +535,8 @@ static void _dispatch_Object_07(void *object, Buffer *, Buffer *)
 // _get__flowSystem
 static void _dispatch_Object_08(void *object, Buffer *, Buffer *result)
 {
-	FlowSystem_base *returnCode = ((Object_skel *)object)->_flowSystem();
-	writeObject(*result,returnCode);
-	if(returnCode) returnCode->_release();
+	FlowSystem returnCode = ((Object_skel *)object)->_flowSystem();
+	writeObject(*result,returnCode._base());
 }
 
 void Object_skel::_buildMethodTable()
@@ -618,21 +617,21 @@ void Object_stub::_release()
 	}
 }
 
-Object *Object::_create(const std::string& subClass)
+Object_base *Object_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
 	return skel;
 }
 
-Object *Object::_fromString(string objectref)
+Object_base *Object_base::_fromString(string objectref)
 {
-	Object *result = 0;
+	Object_base *result = 0;
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
 	{
-		result = (Object *)Dispatcher::the()->connectObjectLocal(r,"Object");
+		result = (Object_base *)Dispatcher::the()->connectObjectLocal(r,"Object");
 		if(!result)
 		{
 			Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -646,10 +645,10 @@ Object *Object::_fromString(string objectref)
 	return result;
 }
 
-Object *Object::_fromReference(ObjectReference r, bool needcopy)
+Object_base *Object_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	Object *result;
-	result = (Object *)Dispatcher::the()->connectObjectLocal(r,"Object");
+	Object_base *result;
+	result = (Object_base *)Dispatcher::the()->connectObjectLocal(r,"Object");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -818,22 +817,21 @@ void Object_stub::_releaseRemote()
 	if(result) delete result;
 }
 
-FlowSystem_base *Object_stub::_flowSystem()
+FlowSystem Object_stub::_flowSystem()
 {
-	long methodID = _lookupMethodFast("method:110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000000000000000000");
+	long methodID = _lookupMethodFast("method:110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000200000000000000");
 	long requestID;
 	Buffer *request, *result;
 	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	// methodID = 11  =>  _get__flowSystem
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return 0; // error
+	if(!result) return (FlowSystem_base *)0; // error occured
 	FlowSystem_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
-	return returnCode;
+	return FlowSystem(returnCode);
 }
 
 /*
@@ -851,12 +849,4 @@ void Object_stub::_sendCustomMessage(Buffer *buffer)
 	_connection->qSendBuffer(buffer);
 }
 
-unsigned long Object::_IID = MCOPUtils::makeIID("Object");
-
-/*
-static class StartupClass_object :public StartupClass {
-	void startup() {
-		Object::_IID = MCOPUtils::makeIID("Object");
-	}
-} static_StartupClass_object;
-*/
+unsigned long Object_base::_IID = MCOPUtils::makeIID("Object");

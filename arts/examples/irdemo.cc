@@ -85,15 +85,15 @@ int main(int argc, char **argv)
 	}
 
 	Dispatcher dispatcher;
-	Object_var o = Object::_fromString(argv[1]);
-	if(!o)
+	Object o = Reference(argv[1]);
+	if(o.isNull())
 	{
 		fprintf(stderr,"can't connect to the object\n");
 		exit(1);
 	}
 
-	string iname = o->_interfaceName();
-	InterfaceDef *idef = o->_queryInterface(iname);
+	string iname = o._interfaceName();
+	InterfaceDef *idef = o._queryInterface(iname);
 	printInterface(idef);
 	delete idef;
 

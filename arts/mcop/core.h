@@ -278,7 +278,14 @@ public:
 	void writeType(Buffer& stream) const;
 };
 
-class InterfaceRepo_base : virtual public Object {
+class InterfaceRepo;
+class FlowSystemSender;
+class FlowSystemReceiver;
+class FlowSystem;
+class GlobalComm;
+class TmpGlobalComm;
+
+class InterfaceRepo_base : virtual public Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
@@ -302,8 +309,6 @@ public:
 	virtual InterfaceDef* queryInterface(const std::string& name) = 0;
 	virtual TypeDef* queryType(const std::string& name) = 0;
 };
-
-typedef ReferenceHelper<InterfaceRepo_base> InterfaceRepo_var;
 
 class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Object_stub {
 protected:
@@ -351,7 +356,7 @@ public:
 		SmartWrapper(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline InterfaceRepo(InterfaceRepo_base* b) : SmartWrapper(b), _cache(0) {}
 	inline InterfaceRepo(const InterfaceRepo& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline InterfaceRepo(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
+	inline InterfaceRepo(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -360,7 +365,8 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator InterfaceRepo_base*() {return _cache?_cache:_method_call();}
+	inline operator Object() const { return Object(*_pool); }
+	inline InterfaceRepo_base* _base() {return _cache?_cache:_method_call();}
 
 	inline long insertModule(const ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
 	inline void removeModule(long moduleID) {return _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
@@ -368,7 +374,7 @@ public:
 	inline TypeDef* queryType(const std::string& name) {return _cache?_cache->queryType(name):_method_call()->queryType(name);}
 };
 
-class FlowSystemSender_base : virtual public Object {
+class FlowSystemSender_base : virtual public Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
@@ -389,8 +395,6 @@ public:
 
 	virtual void processed() = 0;
 };
-
-typedef ReferenceHelper<FlowSystemSender_base> FlowSystemSender_var;
 
 class FlowSystemSender_stub : virtual public FlowSystemSender_base, virtual public Object_stub {
 protected:
@@ -435,7 +439,7 @@ public:
 		SmartWrapper(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline FlowSystemSender(FlowSystemSender_base* b) : SmartWrapper(b), _cache(0) {}
 	inline FlowSystemSender(const FlowSystemSender& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline FlowSystemSender(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
+	inline FlowSystemSender(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -444,12 +448,13 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator FlowSystemSender_base*() {return _cache?_cache:_method_call();}
+	inline operator Object() const { return Object(*_pool); }
+	inline FlowSystemSender_base* _base() {return _cache?_cache:_method_call();}
 
 	inline void processed() {return _cache?_cache->processed():_method_call()->processed();}
 };
 
-class FlowSystemReceiver_base : virtual public Object {
+class FlowSystemReceiver_base : virtual public Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
@@ -470,8 +475,6 @@ public:
 
 	virtual long receiveHandlerID() = 0;
 };
-
-typedef ReferenceHelper<FlowSystemReceiver_base> FlowSystemReceiver_var;
 
 class FlowSystemReceiver_stub : virtual public FlowSystemReceiver_base, virtual public Object_stub {
 protected:
@@ -516,7 +519,7 @@ public:
 		SmartWrapper(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline FlowSystemReceiver(FlowSystemReceiver_base* b) : SmartWrapper(b), _cache(0) {}
 	inline FlowSystemReceiver(const FlowSystemReceiver& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline FlowSystemReceiver(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
+	inline FlowSystemReceiver(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -525,12 +528,13 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator FlowSystemReceiver_base*() {return _cache?_cache:_method_call();}
+	inline operator Object() const { return Object(*_pool); }
+	inline FlowSystemReceiver_base* _base() {return _cache?_cache:_method_call();}
 
 	inline long receiveHandlerID() {return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();}
 };
 
-class FlowSystem_base : virtual public Object {
+class FlowSystem_base : virtual public Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
@@ -549,15 +553,13 @@ public:
 
 	void *_cast(unsigned long iid);
 
-	virtual void startObject(Object_base * node) = 0;
-	virtual void stopObject(Object_base * node) = 0;
-	virtual void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) = 0;
-	virtual void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) = 0;
-	virtual AttributeType queryFlags(Object_base * node, const std::string& port) = 0;
-	virtual FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender) = 0;
+	virtual void startObject(Object node) = 0;
+	virtual void stopObject(Object node) = 0;
+	virtual void connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) = 0;
+	virtual void disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) = 0;
+	virtual AttributeType queryFlags(Object node, const std::string& port) = 0;
+	virtual FlowSystemReceiver createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender) = 0;
 };
-
-typedef ReferenceHelper<FlowSystem_base> FlowSystem_var;
 
 class FlowSystem_stub : virtual public FlowSystem_base, virtual public Object_stub {
 protected:
@@ -566,12 +568,12 @@ protected:
 public:
 	FlowSystem_stub(Connection *connection, long objectID);
 
-	void startObject(Object_base * node);
-	void stopObject(Object_base * node);
-	void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort);
-	void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort);
-	AttributeType queryFlags(Object_base * node, const std::string& port);
-	FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender);
+	void startObject(Object node);
+	void stopObject(Object node);
+	void connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort);
+	void disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort);
+	AttributeType queryFlags(Object node, const std::string& port);
+	FlowSystemReceiver createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender);
 };
 
 class FlowSystem_skel : virtual public FlowSystem_base, virtual public Object_skel {
@@ -607,7 +609,7 @@ public:
 		SmartWrapper(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline FlowSystem(FlowSystem_base* b) : SmartWrapper(b), _cache(0) {}
 	inline FlowSystem(const FlowSystem& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline FlowSystem(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
+	inline FlowSystem(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
 	inline FlowSystem& operator=(const FlowSystem& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -616,17 +618,18 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator FlowSystem_base*() {return _cache?_cache:_method_call();}
+	inline operator Object() const { return Object(*_pool); }
+	inline FlowSystem_base* _base() {return _cache?_cache:_method_call();}
 
-	inline void startObject(Object_base * node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
-	inline void stopObject(Object_base * node) {return _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
-	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
-	inline FlowSystemReceiver createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Object node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
+	inline void stopObject(Object node) {return _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
+	inline void connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) {return _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) {return _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
+	inline FlowSystemReceiver createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
 };
 
-class GlobalComm_base : virtual public Object {
+class GlobalComm_base : virtual public Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
@@ -649,8 +652,6 @@ public:
 	virtual std::string get(const std::string& variable) = 0;
 	virtual void erase(const std::string& variable) = 0;
 };
-
-typedef ReferenceHelper<GlobalComm_base> GlobalComm_var;
 
 class GlobalComm_stub : virtual public GlobalComm_base, virtual public Object_stub {
 protected:
@@ -697,7 +698,7 @@ public:
 		SmartWrapper(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline GlobalComm(GlobalComm_base* b) : SmartWrapper(b), _cache(0) {}
 	inline GlobalComm(const GlobalComm& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline GlobalComm(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
+	inline GlobalComm(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
 	inline GlobalComm& operator=(const GlobalComm& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -706,7 +707,8 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator GlobalComm_base*() {return _cache?_cache:_method_call();}
+	inline operator Object() const { return Object(*_pool); }
+	inline GlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
 	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
@@ -733,8 +735,6 @@ public:
 	void *_cast(unsigned long iid);
 
 };
-
-typedef ReferenceHelper<TmpGlobalComm_base> TmpGlobalComm_var;
 
 class TmpGlobalComm_stub : virtual public TmpGlobalComm_base, virtual public GlobalComm_stub {
 protected:
@@ -778,7 +778,7 @@ public:
 		SmartWrapper(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
 	inline TmpGlobalComm(TmpGlobalComm_base* b) : SmartWrapper(b), _cache(0) {}
 	inline TmpGlobalComm(const TmpGlobalComm& target) : SmartWrapper(target._pool), _cache(target._cache) {}
-	inline TmpGlobalComm(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}
+	inline TmpGlobalComm(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
 		if (_pool == target._pool) return *this;
 		_pool->Dec();
@@ -787,8 +787,9 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator GlobalComm() const { return GlobalComm(_pool); }
-	inline operator TmpGlobalComm_base*() {return _cache?_cache:_method_call();}
+	inline operator GlobalComm() const { return GlobalComm(*_pool); }
+	inline operator Object() const { return Object(*_pool); }
+	inline TmpGlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
 	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}

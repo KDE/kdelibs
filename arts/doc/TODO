@@ -1,16 +1,92 @@
 This is an approximation what remains todo to get aRts running on MCOP
 as it was before on CORBA.
 
-1. To get some kind of an audio server running
+1. API changes
 
-It does run. See kdelibs/arts/examples/artsd. However, there are a few
-minor corrections missing to start to make it really useful for kde2.
+ => SmartWrappers
 
-These are:
+One of the last big changes before the API is more or less frozen. This is
+currently mostly done. Remaining issues are:
 
-- move required stuff
-   => knotify should probably be in kdebase
-- fix crash when playing wav files without libaudiofile installed
+- Dispatcher stores a FlowSystem_impl (not a FlowSystem) internally, since
+  it wants to have addObject() and removeObject() methods - this leads to
+  slightly unlogic accesses from outside
+- name clash: FlowSystem functionality is called (see SynthModule)
+   - initialize()
+   - start()
+   - unInitialize()
+  SmartWrapper provides the following
+   - start()
+   - stop()
+- much functionality resides under Object_base, which isn't available if
+  you use SmartWrappers now
+- code bloat through excessive inlining - probably ensuring that the whole
+  check creation stuff doesn't get inlined would be a good idea
+- writeObject/readObject need review/rewrite
+- maybe the two objects SmartWrapper and Object should be merged
+- perhaps move start() and stop() to Object, so that this funny stuff:
+  (flowsystem.cc)
+
+  void RemoteScheduleNode::stop()
+  {
+    nodeObject()._flowSystem().stopObject(nodeObject());
+  }
+
+  can be removed completely ;)
+
+- isEqual (and maybe others) would benefit a lot if everything inherited the
+  Object wrapper (so that SmartWrapper would be merged), since for conversion
+  to Object is currently non-const, which is the reason that (see
+  simplesoundserver_impl.cc)
+
+        ByteSoundProducer sender = prod->sender();
+        if(bsp._isEqual(sender))                                                
+
+  must be written instead of
+
+        ByteSoundProducer sender = prod->sender();
+        if(bsp._isEqual(prod->sender()))
+
+- check why
+
+     Foo f(SubClass("Bar"))
+
+  doesn't work, currently only
+
+    Foo f = SubClass("Bar");
+
+  the same is true for Reference()
+
+ => Other rough edges
+
+- casting local or remote objects (if you have manufactured them remotely)
+  really gives ugly code - maybe provide something like
+
+    StereoEffect effect(Factory(server));
+    // which provides typesafe remote manufacturing
+
+  and
+
+    Object o = ...;
+	StereoEffect effect(DynamicCast(o));
+    // which provides typesafe dynamic casting
+
+- should asynchronous streams start & initialize in the same way synchronous
+  do? (with initialize/start/uninitialize)? probably yes.
+
+- provide a way to detect whether clients like artscontrol have died, and
+  remove their effects again
+
+- maybe provide a way for clients to identify themselves before using the
+  server, so that you can (at a later point of time) configure effects, volume
+  and similar dependant on what the client is: no effects for games, but
+  effects for the music
+
+ => C Api
+
+- finalize C Api (move to -ldl base, so that people only need to link one
+  library and -ldl, and aRts loads what it needs dynamically)
+- release something on the C Api
 
 2. To get everything up again
 
@@ -46,6 +122,7 @@ These are:
      then (this would for instance also close if clients are connected but
      not playing anything)
    - make an explicit call like "shutdown now" (esdctl off/esdctl on)
+- maybe fix crash when playing wav files without libaudiofile installed
 
 3. To have more fun
 

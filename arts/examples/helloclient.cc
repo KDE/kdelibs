@@ -40,8 +40,8 @@ int main(int argc, char **argv)
 
 	Dispatcher dispatcher;
 
-	Hello_var h = Hello_base::_fromString(argv[1]);
-	if(!h)
+	Hello h = Reference(argv[1]);
+	if(h.isNull())
 	{
 		fprintf(stderr,"can't connect to the object\n");
 		exit(1);
@@ -50,8 +50,8 @@ int main(int argc, char **argv)
 	const char *who = getenv("LOGNAME");
 	if(!who) who = "stefan";
 
-	printf("calling h->hello(\"%s\")\n", who);
-	h->hello(who);
+	printf("calling h.hello(\"%s\")\n", who);
+	h.hello(who);
 /*
 	printf("h->sum(2,4) is %ld\n",
 		h->sum2(2,4));
@@ -59,12 +59,12 @@ int main(int argc, char **argv)
 	printf("h->sum(2,4,6) is %ld\n",
 		h->sum3(2,4,6));
 */
-	h->myValue(6);
-	printf("h->myValue(6), h->myValue()  is %ld\n",
-		h->myValue());
+	h.myValue(6);
+	printf("h.myValue(6), h.myValue()  is %ld\n",
+		h.myValue());
 	
-	printf("h->concat(\"MCOP \",\"is great!\") is \"%s\"\n",
-		h->concat("MCOP ","is great!").c_str());
+	printf("h.concat(\"MCOP \",\"is great!\") is \"%s\"\n",
+		h.concat("MCOP ","is great!").c_str());
 
 	/*
 	int i,j = 0;

@@ -24,11 +24,11 @@
 
 using namespace std;
 
-ExecRequest::ExecRequest(ArtsServer *Server, long StructureID,
+ExecRequest::ExecRequest(ArtsServer Server, long StructureID,
 										const string& structureName)
 {
-	this->_Server = Server;		// FIXME: duplicate?
-	mid = _Server->createModules();
+	_Server = Server;
+	mid = _Server.createModules();
 	_ServerID = 42; // FIXME: Server->ID();
 	_StructureID = StructureID;
 	_structureName = structureName;
@@ -39,7 +39,7 @@ const char *ExecRequest::structureName()
 	return _structureName.c_str();
 }
 
-ArtsServer *ExecRequest::Server()
+ArtsServer ExecRequest::Server()
 {
 	return _Server;
 }
@@ -73,12 +73,12 @@ bool ExecRequest::createModule(ModuleDesc *desc)
 {
 	_Modules.push_back(desc);	// FIXME: duplicate?
 
-	return(_Server->createModule(mid, *desc));
+	return(_Server.createModule(mid, *desc));
 }
 
 bool ExecRequest::localConnectModules()
 {
-	return(_Server->localConnectModules(mid));
+	return(_Server.localConnectModules(mid));
 }
 
 bool ExecRequest::remoteConnectModules(ExecRequest *)
@@ -92,15 +92,15 @@ bool ExecRequest::remoteConnectModules(ExecRequest *)
 
 bool ExecRequest::finalizeModules()
 {
-	return(_Server->finalizeModules(mid));
+	return(_Server.finalizeModules(mid));
 }
 
 void ExecRequest::startModules()
 {
-	_Server->startModules(mid);
+	_Server.startModules(mid);
 }
 
 void ExecRequest::deleteModules()
 {
-	_Server->deleteModules(mid);
+	_Server.deleteModules(mid);
 }

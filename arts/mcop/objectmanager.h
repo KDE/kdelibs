@@ -27,6 +27,8 @@
 #include "factory.h"
 #include <list>
 
+class Object;
+
 class ObjectManager {
 protected:
 	static ObjectManager *_instance;
@@ -40,7 +42,7 @@ public:
 	static ObjectManager *the();
 	Object_skel *create(std::string name);
 
-	bool addGlobalReference(Object *object, std::string name);
+	bool addGlobalReference(Object object, std::string name);
 	std::string getGlobalReference(std::string name);
 	void removeGlobalReferences();
 

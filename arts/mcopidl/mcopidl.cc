@@ -502,10 +502,10 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_ARG) switch (wrapperMode) {
 			case 1: result = type + ""; break;
 			case 2: result = type + "_var"; break;
-			default: result = type + "_base *";
+			default: result = type;
 		}
 		//if(model==MODEL_ARG_SEQ)	result = "const std::vector<"+type+">&";
-		if(model==MODEL_RESULT)		result = type+(wrapperMode?"":"_base *");
+		if(model==MODEL_RESULT)		result = type+(wrapperMode?"":"");
 		//if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
 			result = "readObject(stream,"+name+")";
@@ -517,23 +517,22 @@ string createTypeCode(string type, const string& name, long model,
 			result += indent + type+"_base* returnCode;\n";
 			result += indent + "readObject(*result,returnCode);\n";
 			result += indent + "delete result;\n";
-			result += indent + "return returnCode;\n";
+			result += indent + "return "+type+"(returnCode);\n";
 		}
 		if(model==MODEL_REQ_READ)
 		{
 			result = indent + type +"_base* _temp_"+name+";\n";
 			result += indent + "readObject(*request,_temp_"+name+");\n";
-			result += indent + type+"_var "+name+" = _temp_"+name+";\n";
+			result += indent + type+" "+name+" = _temp_"+name+";\n";
 		}
 		if(model==MODEL_WRITE)
-			result = "writeObject(stream,"+name+")";
+			result = "writeObject(stream,"+name+"._base())";
 		if(model==MODEL_REQ_WRITE)
-			result = "writeObject(*request,"+name+")";
+			result = "writeObject(*request,"+name+"._base())";
 		if(model==MODEL_INVOKE)
 		{
-			result = indent + type+"_base *returnCode = "+name+";\n"
-			       + indent + "writeObject(*result,returnCode);\n"
-			       + indent + "if(returnCode) returnCode->_release();\n";
+			result = indent + type+" returnCode = "+name+";\n"
+			       + indent + "writeObject(*result,returnCode._base());\n";
 		}
 	}
 
@@ -1061,6 +1060,18 @@ void doInterfacesHeader(FILE *header)
 	vector<AttributeDef *>::iterator ai;
 	string inherits;
 
+	/*
+	 * this allows it to the various interfaces as parameters, returncodes
+	 * and attributes even before their declaration
+	 */
+	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
+	{
+		InterfaceDef *d = *ii;
+		if(!fromInclude(d->name))
+			fprintf(header,"class %s;\n",d->name.c_str());
+	}
+	fprintf(header,"\n");
+
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
 		InterfaceDef *d = *ii;
@@ -1069,7 +1080,7 @@ void doInterfacesHeader(FILE *header)
 
 		// create abstract interface
 		inherits = buildInheritanceList(*d,"_base");
-		if(inherits == "") inherits = "virtual public Object";
+		if(inherits == "") inherits = "virtual public Object_base";
 
 		fprintf(header,"class %s_base : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
@@ -1129,11 +1140,6 @@ void doInterfacesHeader(FILE *header)
 				md->name.c_str(), params.c_str());
 		}		
 		fprintf(header,"};\n\n");
-
-		// create var
-
-		fprintf(header,"typedef ReferenceHelper<%s_base> %s_var;\n\n",
-									d->name.c_str(),d->name.c_str());
 
 		// create stub
 
@@ -1335,7 +1341,7 @@ void doInterfacesHeader(FILE *header)
 			d->name.c_str(),d->name.c_str());
 		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool), _cache(target._cache) {}\n",
 			d->name.c_str(),d->name.c_str());
-		fprintf(header,"\tinline %s(SmartWrapper::Pool* p) : SmartWrapper(p), _cache(0) {}\n",
+		fprintf(header,"\tinline %s(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}\n",
 			d->name.c_str());
 
 		// copy operator. copy from _base* extraneous (uses implicit const object)
@@ -1371,9 +1377,10 @@ void doInterfacesHeader(FILE *header)
 												si != parents.end(); si++)
 		{
 			string &s = *si;
-			fprintf(header,"\tinline operator %s() const { return %s(_pool); }\n",
+			fprintf(header,"\tinline operator %s() const { return %s(*_pool); }\n",
 									s.c_str(), s.c_str());
 		}
+		fprintf(header,"\tinline operator Object() const { return Object(*_pool); }\n");
 		//if(parents.empty()) /* no parents -> need to free pool self */
 		//{
 		//	fprintf(header,"\tinline ~%s() {\n",d->name.c_str());
@@ -1383,7 +1390,7 @@ void doInterfacesHeader(FILE *header)
 		// conversion to string
 //		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
 		// conversion to _base* object
-		fprintf(header,"\tinline operator %s_base*() {return _cache?_cache:_method_call();}\n",d->name.c_str());
+		fprintf(header,"\tinline %s_base* _base() {return _cache?_cache:_method_call();}\n",d->name.c_str());
 		fprintf(header,"\n");
 
 		InterfaceDef allMerged = mergeAllParents(*d);
@@ -1681,7 +1688,7 @@ void doInterfacesSource(FILE *source)
 			fprintf(source,"\tif(iid == %s_base::_IID) "
 							"return (%s_base *)this;\n",pc.c_str(),pc.c_str());
 		}
-		fprintf(source,"\tif(iid == Object::_IID) return (Object *)this;\n");
+		fprintf(source,"\tif(iid == Object_base::_IID) return (Object_base *)this;\n");
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
 

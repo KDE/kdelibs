@@ -27,7 +27,7 @@ class ExecutionManager_impl :virtual public ExecutionManager_skel
 {
 protected:
 	long nextID;
-	ArtsServer *localServer;
+	ArtsServer localServer;
 
 	void lockScheduler();
 	void unlockScheduler();
@@ -50,13 +50,8 @@ ExecutionManager_impl::ExecutionManager_impl()
 
 	/*
 	 * FIXME: which servers to access? should also be handled differently
+	 * than simply using a new localServer always
 	 */
-	Object_skel *localServer_object =
-		ObjectManager::the()->create("ArtsServer");
-	assert(localServer_object);
-
-	localServer = (ArtsServer *) localServer_object->_cast("ArtsServer");
-	assert(localServer);
 }
 
 StructureDesc* ExecutionManager_impl::expandStructureDesc(

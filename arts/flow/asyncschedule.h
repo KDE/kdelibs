@@ -30,7 +30,7 @@ class ASyncNetSend : public FlowSystemSender_skel
 {
 protected:
 	std::queue<GenericDataPacket *> pqueue;
-	FlowSystemReceiver_var receiver;
+	FlowSystemReceiver receiver;
 	long receiveHandlerID;
 
 public:
@@ -39,7 +39,7 @@ public:
 	/* this overwrites the Object::notify function */
 	void notify(const Notification& notification);
 	void processed();
-	void setReceiver(FlowSystemReceiver_base *receiver);
+	void setReceiver(FlowSystemReceiver receiver);
 };
 
 class ASyncNetReceive : public FlowSystemReceiver_skel,
@@ -47,12 +47,12 @@ class ASyncNetReceive : public FlowSystemReceiver_skel,
 {
 protected:
 	GenericAsyncStream *stream;
-	FlowSystemSender_var sender;
+	FlowSystemSender sender;
 	Notification gotPacketNotification;
 	long _receiveHandlerID;
 
 public:
-	ASyncNetReceive(ASyncPort *port, FlowSystemSender_base *sender);
+	ASyncNetReceive(ASyncPort *port, FlowSystemSender sender);
 
 	// GenericDataChannel interface
 	void processedPacket(GenericDataPacket *packet);

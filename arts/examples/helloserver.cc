@@ -32,15 +32,15 @@
 
 int main()
 {
-	Dispatcher dispatcher;
-	Hello_var server = new Hello_impl();
+	Dispatcher dispatcher(0,Dispatcher::startUnixServer);
+	Hello server;
 
-	string reference = server->_toString();
+	string reference = server.toString();
 	printf("%s\n",reference.c_str());
 
-	Hello_var h = Hello_base::_fromString(reference);
-	if(h)
-		h->hello("local test");
+	Hello h = Reference(reference);
+	if(!h.isNull())
+		h.hello("local test");
 	else
 		printf("Local access to the Hello_impl object failed?\n");
 

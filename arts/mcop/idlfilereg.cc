@@ -33,10 +33,10 @@ void IDLFileReg::startup()
 	Buffer b;
 	b.fromString(_contents,"IDLFile");
 
-	nr = Dispatcher::the()->interfaceRepo()->insertModule(ModuleDef(b));
+	nr = Dispatcher::the()->interfaceRepo().insertModule(ModuleDef(b));
 }
 
 void IDLFileReg::shutdown()
 {
-	Dispatcher::the()->interfaceRepo()->removeModule(nr);
+	Dispatcher::the()->interfaceRepo().removeModule(nr);
 }

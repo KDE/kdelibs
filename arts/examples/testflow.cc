@@ -106,10 +106,10 @@ int main()
 	printf("%s\n",b.toString("StructureDesc").c_str());
 
 */
-	ExecutionManager_var eman = ExecutionManager_base::_create();
+	ExecutionManager eman;
 
 	setartsdebug(true);
-	long id = eman->createStructure(sd);
+	long id = eman.createStructure(sd);
 	printf("id = %ld\n",id);
 
 	/* remove this (test only) */

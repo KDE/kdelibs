@@ -9,7 +9,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 ####### Files
 
 check_PROGRAMS = helloserver helloclient referenceinfo testflow testdynflow \
-  irdemo x11commtest testflowcxx streamsound capitest hellomain flow \
+  irdemo x11commtest streamsound capitest hellomain flow \
   testwrapper
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
@@ -30,9 +30,6 @@ capitest_LDFLAGS = $(FLOWLIBS) \
 
 testflow_LDFLAGS = $(FLOWLIBS)
 testflow_SOURCES = testflow.cc
-
-testflowcxx_LDFLAGS = $(FLOWLIBS)
-testflowcxx_SOURCES = testflowcxx.cc
 
 testdynflow_LDFLAGS = $(FLOWLIBS)
 testdynflow_SOURCES = testdynflow.cc

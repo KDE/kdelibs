@@ -40,7 +40,6 @@ Object_skel *ObjectManager::create(string name)
 	for(i = factories.begin();i != factories.end(); i++)
 	{
 		Factory *f = *i;
-		if(f->interfaceName() == name + "_base") return f->createInstance();
 		if(f->interfaceName() == name ) return f->createInstance();
 	}
 
@@ -59,7 +58,6 @@ Object_skel *ObjectManager::create(string name)
 			{
 				Factory *f = *i;
 //				cerr << "Found interfaceName: " << f->interfaceName() << endl;
-				if(f->interfaceName() == name + "_base") return f->createInstance();
 				if(f->interfaceName() == name) return f->createInstance();
 			}
 		}
@@ -116,11 +114,11 @@ ObjectManager *ObjectManager::the()
  * global references
  */
 
-bool ObjectManager::addGlobalReference(Object *object, string name)
+bool ObjectManager::addGlobalReference(Object object, string name)
 {
 	bool result;
 
-	result = Dispatcher::the()->globalComm()->put(name,object->_toString());
+	result = Dispatcher::the()->globalComm().put(name,object.toString());
 	if(result)
 		referenceNames.push_back(name);
 
@@ -129,7 +127,7 @@ bool ObjectManager::addGlobalReference(Object *object, string name)
 
 string ObjectManager::getGlobalReference(string name)
 {
-	return Dispatcher::the()->globalComm()->get(name);
+	return Dispatcher::the()->globalComm().get(name);
 }
 
 void ObjectManager::removeGlobalReferences()
@@ -137,5 +135,5 @@ void ObjectManager::removeGlobalReferences()
 	list<string>::iterator i;
 
 	for(i=referenceNames.begin(); i != referenceNames.end();i++)
-		Dispatcher::the()->globalComm()->erase(*i);
+		Dispatcher::the()->globalComm().erase(*i);
 }

@@ -113,6 +113,9 @@ protected:
 	inline SmartWrapper(Pool* p) : _pool(p) {
 		_pool->Inc();
 	}
+	inline SmartWrapper(Pool& p) : _pool(&p) {
+		_pool->Inc();
+	}
 public:
 	inline ~SmartWrapper() {
 		_pool->Dec();
@@ -139,14 +142,48 @@ public:
 		assert(_pool->base);
 		return _pool->base->_defaultPortsOut();
 	}
+
 	// Node info
-	inline ScheduleNode *node() const {
+	inline ScheduleNode *_node() const {
 		_pool->checkcreate();
 		assert(_pool->base);
 		return _pool->base->_node();
 	}
-	
-	inline std::string toString() const {return _pool->base->_toString();}
+	inline ScheduleNode *node() const { return _node(); }
+
+	// Stringification
+	inline std::string toString() const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_toString();
+	}
+
+	// Comparision
+	inline bool _isEqual(SmartWrapper& other) {
+		if(isNull() != other.isNull()) return false;
+
+		// we can assume that things are created here, as we've
+		// called isNull of both wrappers once
+		if(!isNull())
+			return _pool->base->_isEqual(other._pool->base);
+
+		// both null references
+		return true;
+	}
+
+	// Custom messaging - see Object_base for comments
+	inline Buffer *_allocCustomMessage(long handlerID) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_allocCustomMessage(handlerID);
+	}
+
+	inline void _sendCustomMessage(Buffer *data) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_sendCustomMessage(data);
+	}
 };
 
+#include "objectwrapper.h"
 #endif
