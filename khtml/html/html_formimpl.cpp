@@ -1365,7 +1365,7 @@ bool HTMLInputElementImpl::isEditable()
 // -------------------------------------------------------------------------
 
 HTMLLabelElementImpl::HTMLLabelElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
+    : HTMLGenericFormElementImpl(doc)
 {
 }
 
@@ -1395,13 +1395,15 @@ void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+#if 0
 ElementImpl *HTMLLabelElementImpl::formElement()
 {
     DOMString formElementId = getAttribute(ATTR_FOR);
-    if (formElementId.isNull() || formElementId.isEmpty())
+    if (formElementId.isEmpty())
         return 0;
     return getDocument()->getElementById(formElementId);
 }
+#endif
 
 // -------------------------------------------------------------------------
 
