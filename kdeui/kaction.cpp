@@ -1459,17 +1459,34 @@ public:
   KSelectActionPrivate()
   {
     m_edit = false;
-    m_bRemoveAmpersandsInCombo = false;
+    m_menuAccelsEnabled = true;
     m_menu = 0;
     m_current = -1;
     m_comboWidth = -1;
   }
   bool m_edit;
-  bool m_bRemoveAmpersandsInCombo;
+  bool m_menuAccelsEnabled;
   QPopupMenu *m_menu;
   int m_current;
   int m_comboWidth;
   QStringList m_list;
+
+  QString makeMenuText( const QString &_text )
+  {
+      if ( m_menuAccelsEnabled )
+        return _text;
+      QString text = _text;
+      uint i = 0;
+      while ( i < text.length() ) {
+          if ( text[ i ] == '&' ) {
+              text.insert( i, '&' );
+              i += 2;
+          }
+          else
+              ++i;
+      }
+      return text;
+  }
 };
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
@@ -1586,7 +1603,7 @@ QPopupMenu* KSelectAction::popupMenu() const
     int id = 0;
     for( ; it != d->m_list.end(); ++it ) {
       if (!((*it).isEmpty())) {
-        d->m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+        d->m_menu->insertItem( d->makeMenuText( *it ), this, SLOT( slotActivated( int ) ), 0, id++ );
       } else {
         d->m_menu->insertSeparator();
       }
@@ -1609,7 +1626,7 @@ void KSelectAction::changeItem( int index, const QString& text )
   d->m_list[ index ] = text;
 
   if ( d->m_menu )
-    d->m_menu->changeItem( index, text );
+    d->m_menu->changeItem( index, d->makeMenuText( text ) );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -1646,7 +1663,7 @@ void KSelectAction::setItems( const QStringList &lst )
     int id = 0;
     for( ; it != d->m_list.end(); ++it )
       if (!((*it).isEmpty())) {
-        d->m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+        d->m_menu->insertItem( d->makeMenuText( *it ), this, SLOT( slotActivated( int ) ), 0, id++ );
       } else {
         d->m_menu->insertSeparator();
       }
@@ -1798,7 +1815,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 
 QStringList KSelectAction::comboItems() const
 {
-  if( d->m_bRemoveAmpersandsInCombo ) {
+  if( d->m_menuAccelsEnabled ) {
     QStringList lst;
     QStringList::ConstIterator it = d->m_list.begin();
     for( ; it != d->m_list.end(); ++it )
@@ -1890,12 +1907,22 @@ bool KSelectAction::isEditable() const
 
 void KSelectAction::setRemoveAmpersandsInCombo( bool b )
 {
-    d->m_bRemoveAmpersandsInCombo = b;
+  setMenuAccelsEnabled( b );
 }
 
 bool KSelectAction::removeAmpersandsInCombo() const
 {
-    return d->m_bRemoveAmpersandsInCombo;
+  return menuAccelsEnabled( );
+}
+
+void KSelectAction::setMenuAccelsEnabled( bool b )
+{
+  d->m_menuAccelsEnabled = b;
+}
+
+bool KSelectAction::menuAccelsEnabled() const
+{
+  return d->m_menuAccelsEnabled;
 }
 
 class KListAction::KListActionPrivate
@@ -2010,8 +2037,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
-  connect( this, SIGNAL( activated( const QString& ) ),
-           this, SLOT( itemSelected( const QString& ) ) );
+  init();
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -2025,8 +2051,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
-  connect( this, SIGNAL( activated( const QString& ) ),
-           this, SLOT( itemSelected( const QString& ) ) );
+  init();
 
   if ( receiver )
     connect( this,     SIGNAL(urlSelected(const KURL&)),
@@ -2043,8 +2068,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
-  connect( this, SIGNAL( activated( const QString& ) ),
-           this, SLOT( itemSelected( const QString& ) ) );
+  init();
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -2057,8 +2081,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
-  connect( this, SIGNAL( activated( const QString& ) ),
-           this, SLOT( itemSelected( const QString& ) ) );
+  init();
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -2073,8 +2096,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
-  connect( this, SIGNAL( activated( const QString& ) ),
-           this, SLOT( itemSelected( const QString& ) ) );
+  init();
 
   if ( receiver )
     connect( this,     SIGNAL(urlSelected(const KURL&)),
@@ -2093,8 +2115,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
-  connect( this, SIGNAL( activated( const QString& ) ),
-           this, SLOT( itemSelected( const QString& ) ) );
+  init();
 
   if ( receiver )
     connect( this,     SIGNAL(urlSelected(const KURL&)),
@@ -2108,8 +2129,15 @@ KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
 
+  init();
+}
+
+void KRecentFilesAction::init()
+{
   connect( this, SIGNAL( activated( const QString& ) ),
            this, SLOT( itemSelected( const QString& ) ) );
+
+  setMenuAccelsEnabled( false );
 }
 
 KRecentFilesAction::~KRecentFilesAction()

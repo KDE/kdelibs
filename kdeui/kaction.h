@@ -841,6 +841,7 @@ class KSelectAction : public KAction
     Q_PROPERTY( bool editable READ isEditable WRITE setEditable )
     Q_PROPERTY( int comboWidth READ comboWidth WRITE setComboWidth )
     Q_PROPERTY( QString currentText READ currentText )
+    Q_PROPERTY( bool menuAccelsEnabled READ menuAccelsEnabled WRITE setMenuAccelsEnabled )
 public:
 
     /**
@@ -962,15 +963,18 @@ public:
     QPopupMenu* popupMenu() const;
 
     /**
-     * Call setRemoveAmpersandsInCombo to ask KSelectAction to remove
-     * '&' signs from the combobox that is created when plugging this action
-     * into a toolbar. This is useful when the items have an '&' for providing
-     * accelerators in the menu-items; those '&' shouldn't appear in comboboxes.
-     * By default this setting is false.
-     * Call this before plugging the action.
+     * Deprecated. See @ref setMenuAccelsEnabled .
      */
     void setRemoveAmpersandsInCombo( bool b );
     bool removeAmpersandsInCombo() const;
+
+    /**
+     * Sets whether any occurence of the ampersand character ( &amp; ) in items
+     * should be interpreted as keyboard accelerator for items displayed in a
+     * menu or not.
+     */
+    void setMenuAccelsEnabled( bool b );
+    bool menuAccelsEnabled() const;
 
 public slots:
     /**
@@ -1006,6 +1010,12 @@ public slots:
 
 protected:
     virtual void changeItem( int id, int index, const QString& text );
+
+    /**
+     * Depending on the menuAccelsEnabled property this method will return the
+     * actions items in a way for inclusion in a combobox with the ampersand
+     * character removed from all items or not.
+     */
     QStringList comboItems() const;
 
 protected slots:
@@ -1324,6 +1334,8 @@ protected slots:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  void init();
+
   class KRecentFilesActionPrivate;
   KRecentFilesActionPrivate *d;
 };
