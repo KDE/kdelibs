@@ -34,6 +34,7 @@
 #include "knuminput.h"
 #include "knuminput.h"
 #include "kkeybutton.h"
+#include "klanguagebutton.h"
 #include "kled.h"
 #include "klineedit.h"
 #include "klistbox.h"
@@ -317,6 +318,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KKeyButton", widget);
 
+	widget.group = "Input (KDE)";
+	widget.iconSet = "klanguagebutton.png";
+	widget.includeFile = "klanguagebutton.h";
+	widget.toolTip = "A widget for selecting a language";
+	widget.whatsThis = "KLanguageButton";
+	widget.isContainer = false;
+	m_widgets.insert("KLanguageButton", widget);
+
 	widget.group = "Display (KDE)";
 	widget.iconSet = "kled.png";
 	widget.includeFile = "kled.h";
@@ -506,6 +515,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KIntSpinBox(parent, name);
 	if (key == "KKeyButton")
 		return new KKeyButton(parent, name);
+	if (key == "KLanguageButton")
+		return new KLanguageButton(parent, name);
 	if (key == "KLed")
 		return new KLed(parent, name);
 	if (key == "KLineEdit")
