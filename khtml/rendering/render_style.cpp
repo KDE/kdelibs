@@ -21,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include "xml/dom_stringimpl.h"
@@ -323,20 +322,16 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     DataRef<StyleInheritedData> inherited;
 
     if ( *box.get() != *other->box.get() ||
-	 *visual.get() != *other->visual.get() ||
-	 *surround.get() != *other->surround.get() ||
+         *visual.get() != *other->visual.get() ||
+         *surround.get() != *other->surround.get() ||
          !(inherited->indent == other->inherited->indent) ||
          !(inherited->line_height == other->inherited->line_height) ||
          !(inherited->style_image == other->inherited->style_image) ||
          !(inherited->font == other->inherited->font) ||
          !(inherited->border_spacing == other->inherited->border_spacing) ||
          !(inherited_flags._visuallyOrdered == other->inherited_flags._visuallyOrdered) ||
-         !(inherited_flags._htmlHacks == other->inherited_flags._htmlHacks)
-        )
-        d = CbLayout;
-
-    if ( d == CbLayout )
-	return d;
+         !(inherited_flags._htmlHacks == other->inherited_flags._htmlHacks) )
+        return CbLayout;
 
     // changes causing Layout changes:
 
@@ -348,27 +343,25 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     EPosition _position : 2;
 //     EFloat _floating : 2;
     if ( ((int)noninherited_flags._display) >= TABLE ) {
-	if ( !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
+        if ( !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
              !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
              !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
-	     !(noninherited_flags._table_layout == other->noninherited_flags._table_layout) ||
-	     !(noninherited_flags._position == other->noninherited_flags._position) ||
-	     !(noninherited_flags._floating == other->noninherited_flags._floating) )
-
-	    d = CbLayout;
+             !(noninherited_flags._table_layout == other->noninherited_flags._table_layout) ||
+             !(noninherited_flags._position == other->noninherited_flags._position) ||
+             !(noninherited_flags._floating == other->noninherited_flags._floating) ||
+             !(noninherited_flags._flowAroundFloats == other->noninherited_flags._flowAroundFloats) ||
+             !(noninherited_flags._unicodeBidi == other->noninherited_flags._unicodeBidi) )
+            return CbLayout;
     }
 
 // only for lists:
 // 	EListStyleType _list_style_type : 5 ;
 // 	EListStylePosition _list_style_position :1;
     if (noninherited_flags._display == LIST_ITEM ) {
-	if ( !(inherited_flags._list_style_type == other->inherited_flags._list_style_type) ||
-	     !(inherited_flags._list_style_position == other->inherited_flags._list_style_position) )
-	    d = Layout;
+        if ( !(inherited_flags._list_style_type == other->inherited_flags._list_style_type) ||
+             !(inherited_flags._list_style_position == other->inherited_flags._list_style_position) )
+            return Layout;
     }
-
-    if ( d == Layout )
-	return d;
 
 // ### These could be better optimised
 // 	ETextAlign _text_align : 3;
@@ -384,19 +377,14 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	 !(inherited_flags._font_variant == other->inherited_flags._font_variant) ||
 	 !(noninherited_flags._clear == other->noninherited_flags._clear)
 	)
-	d = Layout;
+        return Layout;
 
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
-    if ( !(noninherited_flags._display == INLINE) ) {
-	if ( !(noninherited_flags._vertical_align == other->noninherited_flags._vertical_align))
-	    d = Layout;
-    }
-
-    if ( d == Layout )
-	return d;
-
+    if ( !(noninherited_flags._display == INLINE) && 
+         !(noninherited_flags._vertical_align == other->noninherited_flags._vertical_align) )
+	    return Layout;
 
     // Visible:
 // 	EVisibility _visibility : 2;
@@ -415,11 +403,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
         !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
         *background.get() != *other->background.get()
 	)
-	d = Visible;
+        return Visible;
 
-    // Position:
-
-    return d;
+    return Equal;
 }
 
 
