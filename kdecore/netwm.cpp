@@ -193,7 +193,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WORKAREA",
 	    "_NET_VIRTUAL_ROOTS",
 	    "_NET_CLOSE_WINDOW",
-	    
+
 	    "_NET_WM_MOVERESIZE",
 	    "_NET_WM_NAME",
 	    "_NET_WM_VISIBLE_NAME",
@@ -206,14 +206,14 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_PID",
 	    "_NET_WM_HANDLED_ICONS",
 	    "_NET_WM_PING",
-	    
+
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
 	    "_NET_WM_WINDOW_TYPE_DESKTOP",
 	    "_NET_WM_WINDOW_TYPE_DOCK",
 	    "_NET_WM_WINDOW_TYPE_TOOLBAR",
 	    "_NET_WM_WINDOW_TYPE_MENU",
 	    "_NET_WM_WINDOW_TYPE_DIALOG",
-	    
+
 	    "_NET_WM_STATE_MODAL",
 	    "_NET_WM_STATE_STICKY",
 	    "_NET_WM_STATE_MAXIMIZED_VERT",
@@ -245,7 +245,7 @@ static void create_atoms(Display *d) {
 	    &net_workarea,
 	    &net_virtual_roots,
 	    &net_close_window,
-	    
+
 	    &net_wm_moveresize,
 	    &net_wm_name,
 	    &net_wm_visible_name,
@@ -258,14 +258,14 @@ static void create_atoms(Display *d) {
 	    &net_wm_pid,
 	    &net_wm_handled_icons,
 	    &net_wm_ping,
-	    
+
 	    &net_wm_window_type_normal,
 	    &net_wm_window_type_desktop,
 	    &net_wm_window_type_dock,
 	    &net_wm_window_type_toolbar,
 	    &net_wm_window_type_menu,
 	    &net_wm_window_type_dialog,
-	    
+
 	    &net_wm_state_modal,
 	    &net_wm_state_sticky,
 	    &net_wm_state_max_vert,
@@ -273,12 +273,12 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_shaded,
 	    &net_wm_state_skip_taskbar,
 	    &net_wm_state_stays_on_top,
-	    
+
 	    &kde_net_system_tray_windows,
 	    &kde_net_wm_system_tray_window_for,
 	    &kde_net_wm_frame_strut,
 	    &kde_net_wm_window_type_override,
-	    
+
 	    &xa_wm_state,
 	    };
 
@@ -341,7 +341,7 @@ static void readIcon(NETWinInfoPrivate *p) {
 	    memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
 	    buffer_offset += nitems_ret * sizeof(long);
 	    offset += nitems_ret;
-	    
+
 	    XFree(data_ret);
 	} else {
 	    after_ret = 0;
@@ -1892,123 +1892,123 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	e.xclient.format = 32;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
-	    
-	if (mask & Modal && p->state & Modal != state & Modal) {
+
+	if ((mask & Modal) && (p->state & Modal) != (state & Modal)) {
 	    e.xclient.data.l[0] = (state & Modal) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_modal;
 	    e.xclient.data.l[2] = 0l;
-	    
+
 	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	}
-	    
-	if (mask & Sticky && p->state & Sticky != state & Sticky) {
+
+	if ((mask & Sticky) && (p->state & Sticky) != (state & Sticky)) {
 	    e.xclient.data.l[0] = (state & Sticky) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_sticky;
 	    e.xclient.data.l[2] = 0l;
-	    
+
 	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	}
-	
-	if (mask & Max && p->state & Max != state & Max) {
+
+	if ((mask & Max) && (p->state & Max) != (state & Max)) {
 	    if (state & Max == Max) {
 		// client wants to be fully maximized
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
 		e.xclient.data.l[2] = net_wm_state_max_horiz;
-		
+
 		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
-	    } else if (state & Max == MaxVert) {
+	    } else if ((state & Max) == MaxVert) {
 		// client wants to be maximized vertically
-		
+
 		if (p->state & MaxHoriz) {
 		    // if we are maximized horizontally, we need to clear it
 		    e.xclient.data.l[0] = 0;
 		    e.xclient.data.l[1] = net_wm_state_max_horiz;
 		    e.xclient.data.l[2] = 0l;
-		    
+
 		    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 		}
-		
+
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
 		e.xclient.data.l[2] = 0l;
-		
+
 		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
-	    } else if (state & Max == MaxHoriz) {
+	    } else if ((state & Max) == MaxHoriz) {
 		// client wants to be maximized horizontally
-		
+
 		if (p->state & MaxVert) {
 		    // if we are maximized vertically, we need to clear it
 		    e.xclient.data.l[0] = 0;
 		    e.xclient.data.l[1] = net_wm_state_max_vert;
 		    e.xclient.data.l[2] = 0l;
-		    
+
 		    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 		}
-		
+
 		e.xclient.data.l[0] = 1;
 		e.xclient.data.l[1] = net_wm_state_max_horiz;
 		e.xclient.data.l[2] = 0l;
-		
+
 		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	    } else {
 		// client doesn't want to be maximized at all
 		e.xclient.data.l[0] = 0;
 		e.xclient.data.l[1] = net_wm_state_max_vert;
 		e.xclient.data.l[2] = net_wm_state_max_horiz;
-		
+
 		XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	    }
 	}
-	
-	if (mask & Shaded && p->state & Shaded != state & Shaded) {
+
+	if ((mask & Shaded) && (p->state & Shaded) != (state & Shaded)) {
 	    e.xclient.data.l[0] = (state & Shaded) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_shaded;
 	    e.xclient.data.l[2] = 0l;
-	    
+
 	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	}
-	
-	if (mask & SkipTaskbar && p->state & SkipTaskbar != state & SkipTaskbar) {
+
+	if ((mask & SkipTaskbar) && (p->state & SkipTaskbar) != (state & SkipTaskbar)) {
 	    e.xclient.data.l[0] = (state & SkipTaskbar) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_skip_taskbar;
 	    e.xclient.data.l[2] = 0l;
-	    
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);   
+
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	}
-	
-	if (mask & StaysOnTop && p->state & StaysOnTop != state & StaysOnTop) {
+
+	if ((mask & StaysOnTop) && (p->state & StaysOnTop) != (state & StaysOnTop)) {
 	    e.xclient.data.l[0] = (state & StaysOnTop) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_stays_on_top;
 	    e.xclient.data.l[2] = 0l;
-	    
-	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);   
+
+	    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
 	}
     } else {
 	p->state &= ~mask;
 	p->state |= state;
-	
+
 	long data[7];
 	int count = 0;
-	
+
 	// hints
 	if (p->state & Modal) data[count++] = net_wm_state_modal;
 	if (p->state & MaxVert) data[count++] = net_wm_state_max_vert;
 	if (p->state & MaxHoriz) data[count++] = net_wm_state_max_horiz;
 	if (p->state & Shaded) data[count++] = net_wm_state_shaded;
-	
+
 	// policy
 	if (p->state & StaysOnTop) data[count++] = net_wm_state_stays_on_top;
 	if (p->state & Sticky) data[count++] = net_wm_state_sticky;
 	if (p->state & SkipTaskbar) data[count++] = net_wm_state_skip_taskbar;
-	
+
 #ifdef NETWMDEBUG
 	fprintf(stderr, "NETWinInfo::setState: setting state property (%d)\n", count);
 	for (int i = 0; i < count; i++)
 	    fprintf(stderr, "NETWinInfo::setState:   state %ld '%s'\n",
 		    data[i], XGetAtomName(p->display, (Atom) data[i]));
 #endif
-	
+
 	XChangeProperty(p->display, p->window, net_wm_state, XA_ATOM, 32,
 			PropModeReplace, (unsigned char *) data, count);
     }
@@ -2020,7 +2020,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 
     int len;
     long data[2];
-    
+
     switch (type) {
     case Override:
 	// spec extension: override window type.  we must comply with the spec
@@ -2029,37 +2029,37 @@ void NETWinInfo::setWindowType(WindowType type) {
 	data[1] = net_wm_window_type_normal;
 	len = 2;
 	break;
-	
+
     case  Dialog:
 	data[0] = net_wm_window_type_dialog;
 	data[1] = None;
 	len = 1;
 	break;
-	
+
     case Menu:
 	data[0] = net_wm_window_type_menu;
 	data[1] = None;
 	len = 1;
 	break;
-	
+
     case Tool:
 	data[0] = net_wm_window_type_toolbar;
 	data[1] = None;
 	len = 1;
 	break;
-	
+
     case Dock:
 	data[0] = net_wm_window_type_dock;
 	data[1] = None;
 	len = 1;
 	break;
-	
+
     case Desktop:
 	data[0] = net_wm_window_type_desktop;
 	data[1] = None;
 	len = 1;
 	break;
-	
+
     default:
     case Normal:
 	data[0] = net_wm_window_type_normal;
@@ -2067,7 +2067,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 1;
 	break;
     }
-    
+
     XChangeProperty(p->display, p->window, net_wm_window_type, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) &data, len);
 }
@@ -2243,24 +2243,24 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	event->xclient.format == 32) {
 	if (event->xclient.message_type == net_wm_state) {
 	    dirty = WMState;
-	    
+
 	    // we need to generate a change mask
-	    
+
 #ifdef NETWMDEBUG
 	    fprintf(stderr,
 		    "NETWinInfo::event: state client message, getting new state/mask\n");
 #endif
-	    
+
 	    int i;
 	    long state = 0, mask = 0;
-	    	    
+
 	    for (i = 1; i < 3; i++) {
 #ifdef NETWMDEBUG
 		fprintf(stderr, "NETWinInfo::event:  message %ld '%s'\n",
 			event->xclient.data.l[i],
 			XGetAtomName(p->display, (Atom) event->xclient.data.l[i]));
 #endif
-		
+
 		if ((Atom) event->xclient.data.l[i] == net_wm_state_modal)
 		    mask |= Modal;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_sticky)
@@ -2278,29 +2278,29 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
 		    mask |= StaysOnTop;
 	    }
-	    
+
 	    // when removing, we just leave newstate == 0
 	    switch (event->xclient.data.l[0]) {
 	    case 1: // set
 		// to set... the change state should be the same as the mask
 		state = mask;
 		break;
-		
+
 	    case 2: // toggle
 		// to toggle, we need to xor the current state with the new state
 		state = (p->state & mask) ^ mask;
 		break;
-		
+
 	    default:
 		// to clear state, the new state should stay zero
 		;
 	    }
-	    
+
 #ifdef NETWMDEBUG
 	    fprintf(stderr, "NETWinInfo::event: calling changeState(%lx, %lx)\n",
 		    state, mask);
 #endif
-	    
+
 	    changeState(state, mask);
 	} else if (event->xclient.message_type == net_wm_desktop) {
 	    dirty = WMDesktop;
@@ -2421,10 +2421,10 @@ void NETWinInfo::update(unsigned long dirty) {
 		fprintf(stderr, "NETWinInfo::update: updating window state (%ld)\n",
 			nitems_ret);
 #endif
-		
+
 		long *states = (long *) data_ret;
 		unsigned long count;
-		
+
 		for (count = 0; count < nitems_ret; count++) {
 #ifdef NETWMDEBUG
 		    fprintf(stderr,
@@ -2432,7 +2432,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			    states[count],
 			    XGetAtomName(p->display, (Atom) states[count]));
 #endif
-		    
+
 		    if ((Atom) states[count] == net_wm_state_modal)
 			p->state |= Modal;
 		    else if ((Atom) states[count] == net_wm_state_sticky)
@@ -2516,21 +2516,21 @@ void NETWinInfo::update(unsigned long dirty) {
 		fprintf(stderr, "NETWinInfo::update: getting window type (%ld)\n",
 			nitems_ret);
 #endif
-		
+
 		unsigned long count = 0;
 		long *types = (long *) data_ret;
-		
+
 		while (p->type == Unknown && count < nitems_ret) {
 		    // check the types for the types we know about... types[count] is
 		    // not known, p->type is unchanged (Unknown)
-		    
+
 #ifdef NETWMDEBUG
 		    fprintf(stderr,
 			    "NETWinInfo::update:   examining window type %ld %s\n",
 			    types[count],
 			    XGetAtomName(p->display, (Atom) types[count]));
 #endif
-		    
+
 		    if ((Atom) types[count] == net_wm_window_type_normal)
 			p->type = Normal;
 		    else if ((Atom) types[count] == net_wm_window_type_desktop)
@@ -2545,11 +2545,11 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->type = Dialog;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
 			p->type = Override;
-		    
+
 		    count++;
 		}
 	    }
-	    
+
 	    XFree(data_ret);
 	}
     }
