@@ -104,7 +104,11 @@ void ResourceFile::writeConfig( KConfig *config )
 {
   Resource::writeConfig( config );
 
-  config->writePathEntry( "FileName", mFileName );
+  if ( mFileName == StdAddressBook::fileName() )
+    config->deleteEntry( "FileName" );
+  else
+    config->writePathEntry( "FileName", mFileName );
+
   config->writeEntry( "FileFormat", mFormatName );
 }
 

@@ -60,7 +60,8 @@ ResourceDir::ResourceDir( const KConfig *config )
   : Resource( config ), mAsynchronous( false )
 {
   if ( config ) {
-    init( config->readPathEntry( "FilePath" ), config->readEntry( "FileFormat" ) );
+    init( config->readPathEntry( "FilePath", StdAddressBook::directoryName() ),
+          config->readEntry( "FileFormat", "vcard" ) );
   } else {
     init( StdAddressBook::directoryName(), "vcard" );
   }
@@ -103,7 +104,11 @@ void ResourceDir::writeConfig( KConfig *config )
 {
   Resource::writeConfig( config );
 
-  config->writePathEntry( "FilePath", mPath );
+  if ( mPath == StdAddressBook::directoryName() )
+    config->deleteEntry( "FilePath" );
+  else
+    config->writePathEntry( "FilePath", mPath );
+
   config->writeEntry( "FileFormat", mFormatName );
 }
 
