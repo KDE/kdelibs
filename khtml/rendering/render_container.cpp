@@ -22,7 +22,7 @@
  *
  * $Id$
  */
- 
+
 #include "render_container.h"
 #include "render_table.h"
 
@@ -34,15 +34,15 @@ RenderContainer::RenderContainer()
     : RenderObject()
 {
     m_first = 0;
-    m_last = 0;       
+    m_last = 0;
 }
 
 
 RenderContainer::~RenderContainer()
 {
     m_first = 0;
-    m_last = 0; 
-    
+    m_last = 0;
+
     //if not, it is mass a deletion, just kill everyone
     RenderObject *n;
     RenderObject *next;
@@ -51,7 +51,7 @@ RenderContainer::~RenderContainer()
         n->setParent(0); //zero the parent
         next = n->nextSibling();
         delete n;
-    }          
+    }
 }
 
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
@@ -180,6 +180,15 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
         setFirstChild(newChild);
 
     setLastChild(newChild);
+
+    if(newChild->isWidget())
+    {
+        RenderObject* o = this;
+        while(o) {
+            o->setContainsWidget();
+            o = o->parent();
+        }
+    }
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -202,6 +211,15 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     child->setPreviousSibling(prev);
 
     child->setParent(this);
+
+    if(child->isWidget())
+    {
+        RenderObject* o = this;
+        while(o) {
+            o->setContainsWidget();
+            o = o->parent();
+        }
+    }
 }
 
 
