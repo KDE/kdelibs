@@ -6,6 +6,11 @@
 #define DO_GZIP
 #endif
 
+#ifndef HTTPS
+#undef HAVE_SSL
+#undef DO_SSL
+#endif
+
 #ifdef HAVE_SSL
 #define DO_SSL
 #define DO_MD5
@@ -34,8 +39,10 @@
 
 #ifdef DO_MD5
 #include <openssl/md5.h>
-#endif
 #include "extern_md5.h"
+#endif
+
+#include "base64.h"
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -58,6 +65,7 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kservice.h>
+#include <kio/slavewrapper.h>
 
 using namespace KIO;
 
@@ -77,29 +85,26 @@ extern "C" {
 #endif
 };
 
-#if 0
-int main( int argc, char **argv )
+extern "C" { int kdemain(int argc, char **argv); }
+
+int kdemain( int argc, char **argv )
 {
   KInstance instance( "kio_http" );
 
   kDebugInfo(7103, "Starting %d", getpid());
 
-  if (argc != 2)
+  if (argc != 4)
   {
-     fprintf(stderr, "Usage: kio_file UNIX-domain-socket\n");
+     fprintf(stderr, "Usage: kio_http protocol domain-socket1 domain-socket2\n");
+     exit(-1);
   }
-  KSocket sock(argv[1]);
 
-  printf("kio_file: socket = %d\n", sock.socket());
-
-  KIOConnection parent( sock.socket(), sock.socket() );
-
-  HTTPProtocol http( &parent );
-  http.dispatchLoop();
+  HTTPProtocol slave(argv[1], argv[2], argv[3]);
+  slave.dispatchLoop();
 
   kDebugInfo(7103, "Done" );
+  return 0;
 }
-#endif
 
 static char * trimLead (char *orig_string) {
   while (*orig_string == ' ')
@@ -295,8 +300,8 @@ int verify_callback (int, X509_STORE_CTX *)
 
 /*****************************************************************************/
 
-HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol )
-  : SlaveBase( protocol, _conn )
+HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
+  : SlaveBase( protocol, pool, app)
 {
   m_maxCacheAge = 0;
   m_fsocket = 0L;
@@ -2169,14 +2174,3 @@ HTTPProtocol::cleanCache()
    }
 }
 
-extern "C" {
-    SlaveBase *init_http() {
-        return new HTTPProtocol(0, "http");
-    }
-    SlaveBase *init_httpf() {
-        return new HTTPProtocol(0, "httpf");
-    }
-    SlaveBase *init_https() {
-        return new HTTPProtocol(0, "https");
-    }
-}

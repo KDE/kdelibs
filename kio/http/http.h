@@ -51,7 +51,7 @@ class DCOPClient;
 class HTTPProtocol : public KIO::SlaveBase
 {
 public:
-  HTTPProtocol( KIO::Connection *_conn, const QCString &protocol );
+  HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app );
   virtual ~HTTPProtocol() { }
 
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
