@@ -206,7 +206,7 @@ void DefaultProgress::showTotals()
     if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
       tmps = i18n("%n folder", "%n folders", m_iTotalDirs) + "   ";
-    tmps += i18n("%n file", "%n files", m_iTotalFiles);    
+    tmps += i18n("%n file", "%n files", m_iTotalFiles);
     progressLabel->setText( tmps );
   }
 }
@@ -395,10 +395,15 @@ void DefaultProgress::setDestVisible( bool visible )
   // because it screws up the QGridLayout.
   if (visible)
   {
+      destInvite->show();
+      destEdit->show();
+
     destInvite->setText( i18n("Destination:") );
   }
   else
   {
+      destInvite->hide();
+      destEdit->hide();
     destInvite->setText( QString::null );
     destEdit->setText( QString::null );
   }
