@@ -496,17 +496,39 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
     }
 }
 
-//### KDE 3: remove
 void KListView::focusInEvent( QFocusEvent *fe )
 {
  //   kdDebug()<<"KListView::focusInEvent()"<<endl;
   QListView::focusInEvent( fe );
+  if ((d->selectedBySimpleMove)
+      && (d->selectionMode == Konqueror)
+      && (fe->reason()!=QFocusEvent::Popup)
+      && (fe->reason()!=QFocusEvent::ActiveWindow)
+      && (currentItem()!=0))
+  {
+      currentItem()->setSelected(true);
+      currentItem()->repaint();
+      emit selectionChanged();
+  };
 }
 
 void KListView::focusOutEvent( QFocusEvent *fe )
 {
   cleanDropVisualizer();
   cleanItemHighlighter();
+
+  d->autoSelect.stop();
+
+  if ((d->selectedBySimpleMove)
+      && (d->selectionMode == Konqueror)
+      && (fe->reason()!=QFocusEvent::Popup)
+      && (fe->reason()!=QFocusEvent::ActiveWindow)
+      && (currentItem()!=0))
+  {
+      currentItem()->setSelected(false);
+      currentItem()->repaint();
+      emit selectionChanged();
+  };
 
   QListView::focusOutEvent( fe );
 }
@@ -1147,10 +1169,16 @@ void KListView::keyPressEvent (QKeyEvent* e)
 }
 
 //this one is only called in konq_listviewwidget, aleXXX
-//### KDE 3: rename this as it doesn't select the current item anymore
+//### KDE 3: do something about it, aleXXX
 void KListView::selectCurrentItemAndEnableSelectedBySimpleMoveMode()
 {
    d->selectedBySimpleMove=true;
+   if (currentItem()!=0)
+   {
+      currentItem()->setSelected(true);
+      currentItem()->repaint();
+      emit selectionChanged();
+   };
 }
 
 void KListView::konquerorKeyPressEvent (QKeyEvent* e)
@@ -1214,11 +1242,11 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        //toggle selection of current item
        if (d->selectedBySimpleMove)
           d->selectedBySimpleMove=false;
-       else
-       {
-          item->setSelected(!item->isSelected());
-          emitSelectionChanged=TRUE;
-       };
+//       else
+//       {
+       item->setSelected(!item->isSelected());
+       emitSelectionChanged=TRUE;
+//       };
        break;
 
     case Key_Insert:
