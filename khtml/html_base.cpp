@@ -28,6 +28,7 @@
 #include "html_baseimpl.h"
 using namespace DOM;
 
+#include "khtmlattrs.h"
 
 HTMLBodyElement::HTMLBodyElement() : HTMLElement()
 {
@@ -54,67 +55,67 @@ HTMLBodyElement::~HTMLBodyElement()
 DOMString HTMLBodyElement::aLink() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("aLink");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALINK);
 }
 
 void HTMLBodyElement::setALink( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("aLink", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALINK, value);
 }
 
 DOMString HTMLBodyElement::background() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("background");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_BACKGROUND);
 }
 
 void HTMLBodyElement::setBackground( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("background", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_BACKGROUND, value);
 }
 
 DOMString HTMLBodyElement::bgColor() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("bgColor");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
 }
 
 void HTMLBodyElement::setBgColor( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("bgColor", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_BGCOLOR, value);
 }
 
 DOMString HTMLBodyElement::link() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("link");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_LINK);
 }
 
 void HTMLBodyElement::setLink( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("link", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LINK, value);
 }
 
 DOMString HTMLBodyElement::text() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("text");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TEXT);
 }
 
 void HTMLBodyElement::setText( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("text", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TEXT, value);
 }
 
 DOMString HTMLBodyElement::vLink() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("vLink");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VLINK);
 }
 
 void HTMLBodyElement::setVLink( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("vLink", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VLINK, value);
 }
 
 // --------------------------------------------------------------------------
@@ -144,56 +145,56 @@ HTMLFrameElement::~HTMLFrameElement()
 DOMString HTMLFrameElement::frameBorder() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("frameBorder");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_FRAMEBORDER);
 }
 
 void HTMLFrameElement::setFrameBorder( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("frameBorder", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_FRAMEBORDER, value);
 }
 
 DOMString HTMLFrameElement::longDesc() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("longDesc");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_LONGDESC);
 }
 
 void HTMLFrameElement::setLongDesc( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("longDesc", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LONGDESC, value);
 }
 
 DOMString HTMLFrameElement::marginHeight() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("marginHeight");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_MARGINHEIGHT);
 }
 
 void HTMLFrameElement::setMarginHeight( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("marginHeight", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_MARGINHEIGHT, value);
 }
 
 DOMString HTMLFrameElement::marginWidth() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("marginWidth");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_MARGINWIDTH);
 }
 
 void HTMLFrameElement::setMarginWidth( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("marginWidth", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_MARGINWIDTH, value);
 }
 
 DOMString HTMLFrameElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("name");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLFrameElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("name", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
 }
 
 bool HTMLFrameElement::noResize() const
@@ -204,7 +205,7 @@ bool HTMLFrameElement::noResize() const
 
 void HTMLFrameElement::setNoResize( const bool &_noResize )
 {
-
+    // ### fix the attribute too...
     if(impl)
         ((HTMLFrameElementImpl *)impl)->setNoResize( _noResize );
 }
@@ -212,23 +213,23 @@ void HTMLFrameElement::setNoResize( const bool &_noResize )
 DOMString HTMLFrameElement::scrolling() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("scrolling");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SCROLLING);
 }
 
 void HTMLFrameElement::setScrolling( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("scrolling", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SCROLLING, value);
 }
 
 DOMString HTMLFrameElement::src() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("src");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
 }
 
 void HTMLFrameElement::setSrc( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("src", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SRC, value);
 }
 
 // --------------------------------------------------------------------------
@@ -258,23 +259,23 @@ HTMLFrameSetElement::~HTMLFrameSetElement()
 DOMString HTMLFrameSetElement::cols() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("cols");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_COLS);
 }
 
 void HTMLFrameSetElement::setCols( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("cols", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_COLS, value);
 }
 
 DOMString HTMLFrameSetElement::rows() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("rows");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ROWS);
 }
 
 void HTMLFrameSetElement::setRows( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("rows", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ROWS, value);
 }
 
 // --------------------------------------------------------------------------
@@ -304,12 +305,12 @@ HTMLHeadElement::~HTMLHeadElement()
 DOMString HTMLHeadElement::profile() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("profile");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_PROFILE);
 }
 
 void HTMLHeadElement::setProfile( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("profile", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_PROFILE, value);
 }
 
 // --------------------------------------------------------------------------
@@ -339,11 +340,11 @@ HTMLHtmlElement::~HTMLHtmlElement()
 DOMString HTMLHtmlElement::version() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("version");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VERSION);
 }
 
 void HTMLHtmlElement::setVersion( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("version", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VERSION, value);
 }
 

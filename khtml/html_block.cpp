@@ -28,6 +28,7 @@
 #include "html_blockimpl.h"
 using namespace DOM;
 
+#include "khtmlattrs.h"
 
 HTMLBlockquoteElement::HTMLBlockquoteElement() : HTMLElement()
 {
@@ -54,12 +55,12 @@ HTMLBlockquoteElement::~HTMLBlockquoteElement()
 DOMString HTMLBlockquoteElement::cite() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("cite");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CITE);
 }
 
 void HTMLBlockquoteElement::setCite( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("cite", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CITE, value);
 }
 
 // --------------------------------------------------------------------------
@@ -89,12 +90,12 @@ HTMLDivElement::~HTMLDivElement()
 DOMString HTMLDivElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLDivElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 // --------------------------------------------------------------------------
@@ -124,12 +125,12 @@ HTMLHRElement::~HTMLHRElement()
 DOMString HTMLHRElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLHRElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 bool HTMLHRElement::noShade() const
@@ -140,7 +141,7 @@ bool HTMLHRElement::noShade() const
 
 void HTMLHRElement::setNoShade( bool _noShade )
 {
-
+    // ### 
     if(impl)
         ((HTMLHRElementImpl *)impl)->setNoShade( _noShade );
 }
@@ -148,23 +149,23 @@ void HTMLHRElement::setNoShade( bool _noShade )
 DOMString HTMLHRElement::size() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("size");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE);
 }
 
 void HTMLHRElement::setSize( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("size", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SIZE, value);
 }
 
 DOMString HTMLHRElement::width() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("width");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
 void HTMLHRElement::setWidth( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("width", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
 
 // --------------------------------------------------------------------------
@@ -194,12 +195,12 @@ HTMLHeadingElement::~HTMLHeadingElement()
 DOMString HTMLHeadingElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLHeadingElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 // --------------------------------------------------------------------------
@@ -229,12 +230,12 @@ HTMLParagraphElement::~HTMLParagraphElement()
 DOMString HTMLParagraphElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("align");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLParagraphElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("align", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 // --------------------------------------------------------------------------
@@ -264,13 +265,17 @@ HTMLPreElement::~HTMLPreElement()
 long HTMLPreElement::width() const
 {
     if(!impl) return 0;
-    return ((HTMLPreElementImpl *)impl)->width();
+    DOMString w = ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
+    return w.toInt();
 }
 
 void HTMLPreElement::setWidth( long _width )
 {
+    if(!impl) return;
 
-    if(impl)
-        ((HTMLPreElementImpl *)impl)->setWidth( _width );
+    QString aStr;
+    aStr.sprintf("%d", _width);
+    DOMString value(aStr);
+    ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
 

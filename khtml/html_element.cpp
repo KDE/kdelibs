@@ -25,6 +25,7 @@
 #include "html_elementimpl.h"
 using namespace DOM;
 
+#include "khtmlattrs.h"
 
 HTMLElement::HTMLElement() : Element()
 {
@@ -51,55 +52,55 @@ HTMLElement::~HTMLElement()
 DOMString HTMLElement::id() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("id");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_ID);
 }
 
 void HTMLElement::setId( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("id", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ID, value);
 }
 
 DOMString HTMLElement::title() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("title");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_TITLE);
 }
 
 void HTMLElement::setTitle( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("title", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TITLE, value);
 }
 
 DOMString HTMLElement::lang() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("lang");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_LANG);
 }
 
 void HTMLElement::setLang( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("lang", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LANG, value);
 }
 
 DOMString HTMLElement::dir() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("dir");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_DIR);
 }
 
 void HTMLElement::setDir( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("dir", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DIR, value);
 }
 
 DOMString HTMLElement::className() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("className");
+    return ((ElementImpl *)impl)->getAttribute(ATTR_CLASS);
 }
 
 void HTMLElement::setClassName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("className", value);
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CLASS, value);
 }
 

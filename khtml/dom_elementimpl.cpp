@@ -114,7 +114,7 @@ void AttrImpl::setNodeValue( const DOMString &v )
     setValue( v );
 }
 
-AttrImpl::AttrImpl(const DOMString &name, const DOMString &value, 
+AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
 		   DocumentImpl *doc, bool specified) : NodeImpl(doc)
 {
     attr = Attribute(name, value);
@@ -166,11 +166,34 @@ DOMString ElementImpl::getAttribute( const DOMString &name )
     return 0;
 }
 
+DOMString ElementImpl::getAttribute( int id )
+{
+    // search in already set attributes first
+    int index = attributeMap.find(id);
+    if (index != -1) return attributeMap.value(index);
+
+    // then search in default attr in case it is not yet set
+    index = defaultMap()->find(id);
+    if (index != -1) return defaultMap()->value(index);
+
+    return 0;
+}
+
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value )
 {
     checkReadOnly();
     // TODO: check for invalid characters in value -> throw exception
     Attribute a(name, value);
+    attributeMap.add(a);
+
+    parseAttribute(&a);
+}
+
+void ElementImpl::setAttribute( int id, const DOMString &value )
+{
+    checkReadOnly();
+    // TODO: check for invalid characters in value -> throw exception
+    Attribute a(id, value);
     attributeMap.add(a);
 
     parseAttribute(&a);
@@ -203,7 +226,7 @@ AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
 {
     // search in already set attributes first
     int index = attributeMap.find(name);
-    if (index != -1) 
+    if (index != -1)
 	return new AttrImpl(name, attributeMap.value(index), document, true);
 
     // then search in default attr in case it is not yet set
@@ -218,7 +241,7 @@ AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
 {
     checkReadOnly();
     checkSameDocument(newAttr);
-    
+
     // #### Fix this...
     //if (newAttr->isInUse())
     //  if (newAttr->father!=this)
@@ -227,7 +250,7 @@ AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
     Attribute a(newAttr->id(), newAttr->value());
     attributeMap.add(a);
     parseAttribute(&a);
-    
+
     return newAttr;
 }
 
@@ -250,21 +273,22 @@ AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr )
     return oldAttr;
 }
 
-NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
+NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &/*name*/ )
 {
     // ### TODO: make NodeList able to handle NodeList with specific tag
     // i.e. with constructor which takes another argument (the tag)
     //return new NodeListImpl(this, name);
+    return 0;
 }
 
 void ElementImpl::normalize(  )
 {
-// #### 
+// ####
 /*    NodeImpl *child = _first;
-    while (child != _last) 
+    while (child != _last)
     {
 	NodeImpl *nextChild= child->nextSibling();
-	if ( (child->nodeType() == Node::TEXT_NODE) 
+	if ( (child->nodeType() == Node::TEXT_NODE)
 	     && (nextChild->nodeType() == Node::TEXT_NODE))
 	{
 	    (TextImpl *)child->appendData((TextImpl *)nextChild->data());
@@ -281,15 +305,3 @@ AttributeList *ElementImpl::defaultMap() const
     return 0;
 }
 
-DOMString ElementImpl::getAttribute( int id )
-{
-    // search in already set attributes first
-    int index = attributeMap.find(id);
-    if (index != -1) return attributeMap.value(index);
-
-    // then search in default attr in case it is not yet set
-    index = defaultMap()->find(id);
-    if (index != -1) return defaultMap()->value(index);
-
-    return 0;
-}

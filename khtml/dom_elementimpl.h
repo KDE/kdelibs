@@ -91,7 +91,6 @@ public:
     DOMString getAttribute ( const DOMString &name );
 
     void setAttribute ( const DOMString &name, const DOMString &value );
-    void setAttribute ( AttributeList list );
 
     void removeAttribute ( const DOMString &name );
 
@@ -117,11 +116,13 @@ public:
     // not part of the DOM
 
     DOMString getAttribute ( int id );
+    void setAttribute ( int id, const DOMString &value );
+    void setAttribute ( AttributeList list );
 
 protected: // member variables
 
     AttributeList attributeMap;
-    
+
     // map of default attributes. derived element classes are responsible
     // for setting this according to the corresponding element description
     // in the DTD

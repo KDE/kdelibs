@@ -36,15 +36,15 @@
 using namespace DOM;
 
 
-HTMLDocument::HTMLDocument() : Document(false) // create the impl here 
+HTMLDocument::HTMLDocument() : Document(false) // create the impl here
 {
     impl = new HTMLDocumentImpl();
     impl->ref();
 
 }
 
-HTMLDocument::HTMLDocument(KHTMLWidget *parent, KHTMLCache *cache) 
-    : Document(false) // create the impl here 
+HTMLDocument::HTMLDocument(KHTMLWidget *parent, KHTMLCache *cache)
+    : Document(false) // create the impl here
 {
     impl = new HTMLDocumentImpl( parent, cache );
     impl->ref();
@@ -71,13 +71,16 @@ HTMLDocument::~HTMLDocument()
 
 DOMString HTMLDocument::title() const
 {
+    // ###
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("title");
+    return "unknown";
+    //return ((ElementImpl *)impl)->getAttribute("title");
 }
 
-void HTMLDocument::setTitle( const DOMString &value )
+void HTMLDocument::setTitle( const DOMString &/*value*/ )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("title", value);
+    // ###
+    //if(impl) ((ElementImpl *)impl)->setAttribute("title", value);
 }
 
 DOMString HTMLDocument::referrer() const
@@ -136,13 +139,16 @@ HTMLCollection HTMLDocument::anchors() const
 
 DOMString HTMLDocument::cookie() const
 {
-    if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute("cookie");
+    // ###
+    return 0;
+    //if(!impl) return 0;
+    //return ((ElementImpl *)impl)->getAttribute("cookie");
 }
 
-void HTMLDocument::setCookie( const DOMString &value )
+void HTMLDocument::setCookie( const DOMString &/*value*/ )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute("cookie", value);
+    // ###
+    //if(impl) ((ElementImpl *)impl)->setAttribute("cookie", value);
 }
 
 void HTMLDocument::open(  )
