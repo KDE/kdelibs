@@ -1,5 +1,4 @@
-/*  This file is part
-of the KDE libraries
+/*  This file is part of the KDE libraries
 
     This class was originally inspired by Torben Weis'
     fileentry.cpp for KFM II.
@@ -33,7 +32,7 @@ of the KDE libraries
 #include <kcompletion.h>
 
 /**
- * QLineEdit with added features.
+ * An enhanced QLineEdit widget for inputting text.
  *
  * This widget has the same behaviour as QLineEdit with the following
  * added functionalities : a popup menu that provides basic features
@@ -106,9 +105,8 @@ public:
     /**
     * Puts cursor at the end of the string.
     * 
-    * When using in a toolbar,
-    * call this in your slot connected to signal completion if necessary.
-    * This method is deprecated.  Please use @see QLineEdit::end( bool )
+    * When using in a toolbar, call this in your slot connected to signal completion if
+    * necessary.  This method is deprecated.  Please use @see QLineEdit::end( bool )
     * instead.
     *
     * @deprecated
@@ -152,9 +150,8 @@ public:
     /**
     * Disable the completion feature of this widget. 
     *
-    * If you were using a
-    * custom completion object, you would need to set it again as this method
-    * deletes any reference to it.
+    * If you were using a custom completion object, you would need
+    * to set it again as this method deletes any reference to it.
     * @see setCompletionObject().
     */
     void disableCompletion();
@@ -167,19 +164,19 @@ public:
     /**
     * Set the type of completion to be used.
     *
-    *  The completion modes supported
-    * are those defined in @ref KGlobal.  These completion types are
-    * CompletionNone, CompletionAuto, CompletionMan, and CompletionShell.
+    * The completion modes supported are those defined in @ref KGlobal.
+    * These completion types are CompletionNone, CompletionAuto,
+    * CompletionMan, and CompletionShell.
     *
     * @param mode Completion type:
-    *        @li CompletionNone - Disables all completion features.
-    *        @li CompletionAuto  - Attempts to find a match and fill-in the remaining
-    *                          text.
-    *        @li CompletionMan   - Acts the same way as "CompletionAuto" except the
-    *                          action has to be triggered using the pre-defined
-    *                          completion key.
-    *        @li CompletionShell - Attempts to mimic the completion feature found in
-    *                          typcial *nix shell enviornments.
+    *        @li CompletionNone  - Disables all completion features.
+    *        @li CompletionAuto  - Attempts to find a match and fill-in
+    *                              the remaining text.
+    *        @li CompletionMan   - Acts the same way as "CompletionAuto"
+    *                              except the action has to be triggered
+    *                              using the pre-defined completion key.
+    *        @li CompletionShell - Attempts to mimic the completion feature
+    *                              found in typcial *nix shell enviornments.
     *
     * Please note that if the EchoMode for this widget is set to something
     * other than @ref QLineEdit::Normal, this method refuses to accept the
@@ -193,186 +190,175 @@ public:
     /*
     * Retrieve the current completion mode.
     *
-    *  The return values are of type
-    * @ref KGlobal::Completion. See @see setCompletionMode() for details.
+    * The return values are of type @ref KGlobal::Completion.  See
+    * @see setCompletionMode for details.
     *
-    * @return The completion mode.
+    * @return the completion mode.
     */
     KGlobal::Completion completionMode() const { return m_iCompletionMode; }
 
     /**
     * Set the key-binding to be used for the two manual completion types:
-    * CompletionMan and CompletionShell. 
+    * CompletionMan and CompletionShell.
     *
-    * This function expects the value of
-    * the modifier key(s) (Shit, Ctrl, Alt), if present, to be @bf summed up with
-    * actual key i.e. Qt::CTRL+Qt::Key_End.  If no value is supplied for
-    * @p ckey or it is set to 0, then the completion key will be defaulted
-    * to the global setting.
+    * This function expects the value of the modifier key(s) (Shift, Ctrl, Alt),
+    * if present, to be @bf summed up with actual key, ex: Qt::CTRL+Qt::Key_E.
+    * If no value is supplied for @p ckey or it is set to 0, then the completion
+    * key will be defaulted to the global setting.  This function returns true if
+    * the supplied key-binding can be successfully assigned.
     *
-    * Returns true if the supplied key-binding can be successfully assigned,
-    * i.e. it does not conflict with the rotateUp() and rotateDown() key bindings.
-    * NOTE: If @p ckey has a negative value will cause this function to
-    * return false.
+    * NOTE: if @p ckey is negative or the key-binding conflicts with either
+    * @ref completion or @ref rotateDown keys, this function will return false.
     *
-    * @param ckey Key binding to use for completion. Default is 0.
+    * @param @p ckey Key binding to use for completion.  Default is 0.
     * @return @p true if key-binding can be successfully set.
     */
     bool setCompletionKey( int ckey = 0 );
 
     /**
-    * Set the key to be used for rotating (iterating) through a list of some
-    * kind to find the next match.
+    * Set the key-binding to be used for rotating through a list to find the
+    * next match.
     *
-    *  When this key is activated by the user a @ref rotateUp() signal
-    * will be emitted.  Rotation signals are only applicable when the
-    * completion mode is set to CompletionShell, since rotation is
-    * typically a *nix style command shell feature.  If no value is
-    * supplied for @p rDnkey or it is set to 0, then the
-    * completion key will be defaulted to the global setting.
+    * When this key is activated by the user a @ref rotateDown signal will be
+    * emitted.  If no value is supplied for @p rDnkey or it is set to 0, then
+    * the completion key will be defaulted to the global setting.  This method
+    * returns false if @p rDnkey is negative or the supplied key-binding
+    * conflicts with either @ref completion or @ref rotateUp keys.
     *
-    * @return @p true if the key and a modifier sequence can successful be
-    * assigned.  That is the supplied key-binding does not conflict with
-    * the bindings for rotateDown() and completion.  NOTE: If @p rDnkey
-    * has a negative value, this function will always return false.
-    *
-    * @param rDnkey Key-binding to use for rotating up in a list.
-    **/
+    * @param @p rDnkey the key-binding to use for rotating up in a list.
+    * @return @p true if key-binding can successfully be set.
+    */
     bool setRotateDownKey( int rDnKey = 0 );
 
     /**
-    * Set the key to be used for rotating (iterating) through a list of
-    * some kind to find the previous match.
+    * Sets the key-binding to be used for rotating through a list to find the
+    * previous match.
     *
-    * When this key is activated
-    * by the user a @ref rotateUp() signal will be emitted.  Rotation
-    * signals are only applicable when the completion mode is set to
-    * CompletionShell, since rotation is typically a *nix style command
-    * shell feature.  If no value is supplied for @p rDnkey or it
-    * is set to 0, then the completion key will be defaulted to the global
-    * setting.
+    * When this key is activated by the user a @ref rotateUp signal will be
+    * emitted.  If no value is supplied for @p rUpkey or it is set to 0, then
+    * the completion key will be defaulted to the global setting.  This method
+    * returns false if @p rUpkey is negative or the supplied key-binding
+    * conflicts with either @ref completion or @ref rotateDown keys.
     *
-    * @return @p true if the key and modifier sequence can successful,
-    * assigned.  That is the supplied key-binding does not conflict
-    * with the bindings for rotateDown() and completion.  NOTE: If
-    * @p rUpkey has a negative value, this function will always
-    * return false.
-    *
-    * @param rUpkey The key to use for rotating up in a list.
+    * @param @p rUpkey the key-binding to use for rotating down in a list.
+    * @return @p true if key-binding can successfully be set.
     */
     bool setRotateUpKey( int rUpKey = 0 );
 
     /**
-    * Return the current key used for completion.
+    * Returns the key-binding used for completion.
     *
-    * If the key
-    * binding contains modifier key(s), the @bf sum of the key and
-    * the modifier will be returned. See also @see setCompletionKey().
+    * If the key binding contains modifier key(s), the @bf sum of the key and
+    * the modifier will be returned. See also @see setCompletionKey.
     *
-    * @return The key-binding used for rotating through a list.
+    * @return the key-binding used for rotating through a list.
     */
     int completionKey() const { return m_iCompletionKey; }
 
     /**
-    * Return the current key used for rotating through a list
-    * in one direction - usually opposite to @ref rotateDown() key.
+    * Returns the key-binding used for rotating up in a list.
     *
-    * If the key binding contains modifier key(s), the @bf sum of the
-    * key and the modifier(s) will be returned.  See also
-    * @ref setRotateUpKey().
+    * This methods returns the key used to iterate through a list in the
+    * "ARROW-UP" direction.  This is opposite to what the @ref rotateDown
+    * key does.
     *
-    * @return The key-binding used for rotating through up a list.
+    * If the key binding contains modifier key(s), the SUM of their values
+    * is returned.  See also @ref setRotateUpKey.
+    *
+    * @return the key-binding used for rotating up in a list.
     */
     int rotateUpKey() const { return m_iRotateUpKey; }
 
     /**
-    * Return the current key used for rotating through
-    * a list in one direction - usually opposite to @ref
-    * rotateUp key.
+    * Returns the key-binding used for rotating down in a list.
     *
-    * If the key binding contains modifier
-    * key(s), the ORed value will be returned.  See also
-    * @ref setRotateDownKey().
+    * This methods returns the key used to iterate through a list in the
+    * "ARROW-DOWN" direction.  This is opposite to what the @ref rotateDown
+    * key does.
     *
-    * @return The key-binding used for rotating down through a list.
+    * If the key binding contains modifier key(s), the SUM of their values
+    * is returned.  See also @ref setRotateDownKey.
+    *
+    * @return the key-binding used for rotating down in a list.
     */
     int rotateDownKey() const { return m_iRotateDnKey; }
 
     /**
-    * Force this widget to check the global key
-    * bindings for completion and rotation each time it processes
-    * a key event.
+    * Sets this widget to use global values for key-bindings.
     *
-    *  This way the widget will immediately reflect
-    * the changes to the global settings.
+    * This method forces this widget to check the global key- bindings for
+    * the completion and rotation features each time it processes a key event.
+    * Hence this widget will immediately reflect the changes made to the
+    * global settings.
     *
-    * NOTE: By default this widget uses the global key-bindings.
-    * Hence there is no need to call this method unless you have
-    * locally modified the key bindings and want to change back.
+    * NOTE: By default this widget uses the global key-bindings.  Thus, there
+    * is no need to call this method unless you have locally modified the key
+    * bindings and want to revert back.
     */
     void useGlobalSettings();
 
     /**
+    * Checks whether or not the context menu is enabled.
+    *
     * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bShowContextMenu; }
 
     /**
-    * @return @p true if the mode changer is a visible item in the
-    * context menu.
-    **/
+    * Checks whether or not the mode changer is visible in the context menu.
+    *
+    * This is a convenient method that allows the programmer to provide the
+    * user the ability to change to the completion mode on the fly.  This way
+    * the programmer can defer what completion mode to use to the user.
+    *
+    * @return @p true if the mode changer is visible in context menu.
+    */
     bool isModeChangerEnabled() const { return m_bShowModeChanger; }
 
     /**
-    * Show/hide the Popup menu.
+    * Shows or hides the popup (context) menu.
     *
-      This method also allows you
-    * to show/hide the context or pop-up menu.  If the
-    * item is visible, the user can change the comepltion mode
-    * on the fly.  If this function is called without an argument,
-    * the context menu will be disabled.
+    * This method also allows you to show/hide the context menu.  If visible the
+    * user can change the comepltion mode on the fly.  If this function is called
+    * without an argument, the context menu will be disabled.
     *
     * @param <tt>showMenu</tt> if true, shows the context menu.
     */
     virtual void showContextMenu( bool showMenu = false );
 
     /**
-    * Show/Hide the completion mode changer item in the context
-    * menu.
+    * Shows or hides the completion mode changer in the context menu.
     *
-    * Note that if completion is disabled, setting the
-    * @ref showModeChanger() to @p true will not result
-    * in the mode changer being shown in the context menu.  You
-    * have to first enable completion.  See @ref enableCompletion().
-    * If this function is invoked without an argument, the mode
-    * changer item will be hidden.
+    * This function allows you to hide the completion mode changer as needed
+    * without completely disabling the popup menu.
     *
-    * @param <tt>showModeSwitcher</tt>if true, shows the mode changer.
+    * @param <tt>showChanger</tt>if true, shows the mode changer.
     */
     virtual void showModeChanger( bool showChanger = false );
 
 signals:
 
     /**
-    * Connect to this signal to receive a notification when
-    * the completion key, Ctrl-End by default, is pressed.
-    * The key used to initiate this signal can be changed
-    * using @ref setCompletionKey().
+    * Signal emitted when the completion key is pressed.
+    *
+    * Please note that this signal is NOT emitted if the completion
+    * mode is set to CompletionNone.
     */
     void completion( const QString& );
 
     /**
-    * Connect to this signal to receive a notification when
-    * the RotateUp key is pressed.  The key used to initiate
-    * this signal can be changed using @ref setRotateUpKey().
+    * Signal emitted when the rotate up key is pressed.
+    *
+    * Please note that this signal is NOT emitted if the completion
+    * mode is set to CompletionNone.
     */
     void rotateUp();
 
     /**
-    * Connect to this signal to receive a notification when
-    * the RotateDown key (eg., Down Arrow key) is pressed.
-    * The key used to initiate this signal can be changed
-    * using @ref setRotateDownKey().
+    * Signal emitted when the rotate down key is pressed.
+    *
+    * Please note that this signal is NOT emitted if the completion
+    * mode is set to CompletionNone.
     */
     void rotateDown();
 
