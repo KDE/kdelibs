@@ -5,3 +5,4 @@ MimeType=video/mp4
 Icon=video
 Patterns=*.mp4;*.MP4;*.m4v;*.M4V;
 Comment=MPEG-4 Video
+X-KDE-IsAlso=video/quicktime

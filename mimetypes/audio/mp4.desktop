@@ -5,3 +5,4 @@ MimeType=audio/mp4
 Icon=sound
 Patterns=*.m4a;*.M4A;
 Comment=MPEG-4 Audio
+X-KDE-IsAlso=video/quicktime
