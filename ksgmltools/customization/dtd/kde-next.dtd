@@ -87,7 +87,7 @@
      much simpler) -->
 <!ATTLIST QandASet 
                 DefaultLabel (qanda|number|none) #IMPLIED 
-                %common.idreq.attrib;   -- changed --
+                %idreq.common.attrib;   -- changed --
                 %qandset.role.attrib; 
                 %local.qandset.attrib;>
 <!ATTLIST QandADiv
