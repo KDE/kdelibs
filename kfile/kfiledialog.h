@@ -47,6 +47,7 @@ class KFileComboBox;
 class KFileFilter;
 class KFileView;
 class KToolBar;
+class KIO::Job;
 
 struct KFileDialogPrivate;
 
@@ -77,13 +78,13 @@ public:
     /**
       * Construct a KFileDialog
       *
-      * @param dirName  The name of the directory to start in.
+      * @param urlName  The url of the directory to start in.
       * @param filter   A shell glob that specifies which files to display.
       * See @ref setFilter for details on how to use this argument
       * @param acceptURLs If set to false, @ref KFileDialog will just accept
       * files on the local filesystem.
       */
-    KFileDialog(const QString& dirName, const QString& filter,
+    KFileDialog(const QString& urlName, const QString& filter,
 		QWidget *parent, const char *name,
 		bool modal);
 
@@ -139,7 +140,7 @@ public:
     /**
      * Set the filename to preselect.
      *
-     * This takes absolute and relative file names.
+     * This takes absolute URLs and relative file names.
      */
     void setSelection(const QString& name);
 
@@ -220,15 +221,15 @@ public:
      * Note that with
      * this method the user must select an existing URL.
      *
-     * @param dir This specifies the path the dialog will start in.
+     * @param url This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
      * @param name The name of the dialog widget.
      */
-    static KURL getOpenURL(const QString& dir= QString::null,
-			      const QString& filter= QString::null,
-			      QWidget *parent= 0,
-			      const QString& caption = QString::null);
+    static KURL getOpenURL(const QString& url = QString::null,
+			   const QString& filter= QString::null,
+			   QWidget *parent= 0,
+			   const QString& caption = QString::null);
 
 
     /**
@@ -238,12 +239,12 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
-     * @param dir This specifies the path the dialog will start in.
+     * @param url This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
      * @param name The name of the dialog widget.
      */
-    static KURL::List getOpenURLs(const QString& dir= QString::null,
+    static KURL::List getOpenURLs(const QString& url= QString::null,
 				  const QString& filter= QString::null,
 				  QWidget *parent = 0,
 				  const QString& caption= QString::null);
@@ -274,12 +275,12 @@ public:
      * Note that with this
      * method the user need not select an existing filename.
      *
-     * @param dir This specifies the path the dialog will start in.
+     * @param url This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KURL getSaveURL(const QString& dir= QString::null,
+    static KURL getSaveURL(const QString& url= QString::null,
 			   const QString& filter= QString::null,
 			   QWidget *parent= 0,
 			   const QString& caption = QString::null);
@@ -290,11 +291,11 @@ public:
      * Note that with this
      * method the user need not select an existing directory.
      *
-     * @param dir The directory the dialog will start in.
+     * @param url The directory the dialog will start in.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static QString getExistingDirectory(const QString & dir = QString::null,
+    static QString getExistingDirectory(const QString & url = QString::null,
 					QWidget * parent = 0,
 					const QString& caption= QString::null);
 
@@ -341,7 +342,7 @@ protected:
     KToolBar *toolbar;
 
     QStringList *visitedDirs;  // to fill the combo box
-    static QString *lastDirectory;
+    static KURL *lastDirectory;
 
     QPopupMenu *bookmarksMenu;
     KFileComboBox *locationEdit;
@@ -386,6 +387,7 @@ protected slots:
     void locationChanged(const QString&);
     void fileHightlighted(const KFileViewItem *i);
     void fileSelected(const KFileViewItem *i);
+    void slotStatResult(KIO::Job* job);
 
     virtual void updateStatusLine(int dirs, int files);
     virtual void slotOk();

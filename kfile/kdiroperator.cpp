@@ -50,9 +50,9 @@
 template class QStack<KURL>;
 template class QDict<KFileViewItem>;
 
-QString *KDirOperator::lastDirectory = 0; // to set the start path
+KURL *KDirOperator::lastDirectory = 0; // to set the start path
 
-KDirOperator::KDirOperator(const QString& dirName,
+KDirOperator::KDirOperator(const KURL& url,
 			   QWidget *parent, const char* _name)
     : QWidget(parent, _name), fileView(0), oldView(0), progress(0)
 {
@@ -61,10 +61,10 @@ KDirOperator::KDirOperator(const QString& dirName,
     viewKind = KFile::Simple;
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
 
-    if (dirName.isEmpty()) // no dir specified -> current dir
-	lastDirectory = new QString(QDir::currentDirPath());
+    if (url.isEmpty()) // no dir specified -> current dir
+	lastDirectory = new KURL(QDir::currentDirPath());
     else
-	lastDirectory = new QString(dirName);
+	lastDirectory = new KURL(url);
 
     dir = new KFileReader(*lastDirectory);
     dir->setAutoUpdate( true );

@@ -46,7 +46,7 @@ class KDirOperator : public QWidget {
     Q_OBJECT
 	
  public:
-    KDirOperator(const QString& dirName = QString::null,
+    KDirOperator(const KURL& urlName = KURL(),
 		 QWidget *parent = 0, const char* name = 0);
     virtual ~KDirOperator();
 
@@ -148,7 +148,7 @@ class KDirOperator : public QWidget {
      */
     QStack<KURL> forwardStack;
 
-    static QString *lastDirectory;
+    static KURL *lastDirectory;
 
     KFileReader *dir;
 
