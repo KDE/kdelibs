@@ -18,9 +18,9 @@ noinst_HEADERS = printcapentry.h printcapreader.h lprhandler.h \
 		 kmlprjobmanager.h matichelper.h klprprinterimpl.h \
 		 lprsettings.h
 
-#bin_PROGRAMS = make_driver_db_lpd
-#make_driver_db_lpd_SOURCES = make_driver_db_lpd.c
-#make_driver_db_lpd_LDADD =
+bin_PROGRAMS = make_driver_db_lpr
+make_driver_db_lpr_SOURCES = make_driver_db_lpr.c
+make_driver_db_lpr_LDADD =
 
 entry_DATA = lpr.print
 entrydir = $(kde_datadir)/kdeprint/plugins

@@ -46,6 +46,9 @@ public:
 	bool createPrinter(KMPrinter*);
 	bool removePrinter(KMPrinter*);
 	
+	QString driverDbCreationProgram();
+	QString driverDirectory();
+	
 	LpcHelper* lpcHelper()	{ return m_lpchelper; }
 
 protected:

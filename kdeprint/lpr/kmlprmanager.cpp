@@ -342,3 +342,14 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 	}
 	return false;
 }
+
+QString KMLprManager::driverDbCreationProgram()
+{
+	return QString::fromLatin1("make_driver_db_lpr");
+}
+
+QString KMLprManager::driverDirectory()
+{
+	QString	dbDirs = "/usr/share/foomatic/db/source";
+	return dbDirs;
+}
