@@ -513,7 +513,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
         // Matthias
         if (run_mode == DontCare)
-          setpgid(0,0);
+          setsid();
 
         // We set the close on exec flag.
         // Closing of fd[1] indicates that the execvp succeeded!
@@ -1261,19 +1261,9 @@ int KProcess::commSetupDoneC()
       ok &= dup2(out[1], STDOUT_FILENO) != -1;
       ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
     }
-    else {
-      int null_fd = open( "/dev/null", O_WRONLY );
-      ok &= dup2( null_fd, STDOUT_FILENO ) != -1;
-      close( null_fd );
-    }
     if (communication & Stderr) {
       ok &= dup2(err[1], STDERR_FILENO) != -1;
       ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&so), sizeof(so));
-    }
-    else {
-      int null_fd = open( "/dev/null", O_WRONLY );
-      ok &= dup2( null_fd, STDERR_FILENO ) != -1;
-      close( null_fd );
     }
   }
   
