@@ -129,12 +129,12 @@ FrameList::Iterator FrameList::find( const QString &name )
 static QString splitUrlTarget(const QString &url, QString *target=0)
 {
    QString result = url;
-   if(url.left(7) == "target:")
+   if(url.startsWith("target://"))
    {
-      KURL u(url);
-      result = u.ref();
+      int split_pos = url.find('#');
+      result = url.mid(split_pos+1);
       if (target)
-         *target = u.host();
+         *target = url.mid(9, split_pos-10);
    }
    return result;
 }
