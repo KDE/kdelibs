@@ -1050,6 +1050,8 @@ void KMdiMainFrm::slotDocCurrentChanged( QWidget* pWidget )
 			pWnd->raise();
 		}
 	}
+	if ( !switching() )
+		activeWindow()->updateTimeStamp();
 	emit collapseOverlapContainers();
 	pWnd->m_bMainframesActivateViewIsPending = false;
 }
@@ -2347,6 +2349,7 @@ void KMdiMainFrm::activatePrevWin()
 /** Activates the view we accessed the most time ago */
 void KMdiMainFrm::activateFirstWin()
 {
+	m_bSwitching= true; // flag that we are currently switching between windows
 	KMdiIterator<KMdiChildView*>* it = createIterator();
 	QMap<QDateTime, KMdiChildView*> m;
 	for ( it->first(); !it->isDone(); it->next() )
@@ -2373,13 +2376,13 @@ void KMdiMainFrm::activateFirstWin()
 		pos = m.begin();
 	}
 	activateView( pos.data() );
-	m_bSwitching = true; // flag that we are currently switching between windows
 	delete it;
 }
 
 /** Activates the previously accessed view before this one was activated */
 void KMdiMainFrm::activateLastWin()
 {
+	m_bSwitching= true; // flag that we are currently switching between windows
 	KMdiIterator<KMdiChildView*>* it = createIterator();
 	QMap<QDateTime, KMdiChildView*> m;
 	for ( it->first(); !it->isDone(); it->next() )
@@ -2402,7 +2405,6 @@ void KMdiMainFrm::activateLastWin()
 		--pos;
 	}
 	activateView( pos.data() );
-	m_bSwitching = true; // flag that we are currently switching between windows
 	delete it;
 }
 

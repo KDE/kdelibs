@@ -296,13 +296,7 @@ private:
 
 	// methods
 public:
-	/**
-	 * Constructor.
-	 */
 	KMdiMainFrm( QWidget* parentWidget, const char* name = "", KMdi::MdiMode mdiMode = KMdi::ChildframeMode, WFlags flags = WType_TopLevel | WDestructiveClose );
-	/**
-	 * Destructor.
-	 */
 	virtual ~KMdiMainFrm();
 
 	/**
