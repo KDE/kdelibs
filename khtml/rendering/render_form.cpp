@@ -311,6 +311,7 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     setQWidget(b);
     b->installEventFilter(this);
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
+    connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
 void RenderCheckBox::layout()

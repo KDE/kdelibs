@@ -394,7 +394,6 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "remove")          return new HTMLElementFunction(element,HTMLElementFunction::Remove);
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
-      else if (p == "submit")          return new HTMLElementFunction(select.form(),HTMLElementFunction::Submit); // ### temp - should use form
       else {
 	bool ok;
 	uint u = p.toULong(&ok);
@@ -447,8 +446,6 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "readOnly")        return Boolean(input.readOnly());
       else if (p == "size")            return getString(input.size());
       else if (p == "src")             return getString(input.src());
-      // ### remove this and have proper scoping on on* calls so the form's submit property is found
-      else if (p == "submit")          return new HTMLElementFunction(input.form(),HTMLElementFunction::Submit);
       else if (p == "tabIndex")        return Number(input.tabIndex());
       else if (p == "type")            return getString(input.type());
       else if (p == "useMap")          return getString(input.useMap());
@@ -489,7 +486,6 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
       else if (p == "select")          return new HTMLElementFunction(element,HTMLElementFunction::Select);
-      else if (p == "submit")          return new HTMLElementFunction(textarea.form(),HTMLElementFunction::Submit); // ### temp - should use form
     }
     break;
     case ID_BUTTON: {
@@ -899,29 +895,17 @@ bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
 List *KJS::HTMLElement::eventHandlerScope() const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
-  /// ######### Do we really need this ?
-  /// "this" (the element) should be in the scope, but the form ???? (DF)
-  DOM::HTMLFormElement form;
-  switch (element.elementId()) {
-    case ID_INPUT:
-      form = static_cast<DOM::HTMLInputElement>(element).form();
-      break;
-    case ID_SELECT:
-      form = static_cast<DOM::HTMLSelectElement>(element).form();
-      break;
-    case ID_TEXTAREA:
-      form = static_cast<DOM::HTMLTextAreaElement>(element).form();
-      break;
-    // ### add scoping rules for other types of elements
-    default:
-      break;
-  }
 
   List *scope = new List();
-  scope->append(getDOMNode(element));
+  scope->append(getDOMNode(element.ownerDocument()));
+
+  DOM::Node form = element.parentNode();
+  while (!form.isNull() && form.elementId() != ID_FORM)
+    form = form.parentNode();
   if (!form.isNull())
     scope->append(getDOMNode(form));
-  scope->append(getDOMNode(element.ownerDocument()));
+
+  scope->append(getDOMNode(element));
   return scope;
 }
 
