@@ -90,7 +90,9 @@ class Value :public QVariant {
     Value (const QDate& );
     Value (const QTime& );
     Value (const QDateTime& );
+    Value (const QString&);
     Value (long);
+    Value (int);
     Value (KDB_ULONG);
         
     Value & operator = (const Value &);

@@ -52,10 +52,10 @@ Value::Value (const Value &v)
 }
 
 Value::Value (const QVariant &v)
-    : QVariant(v)
+    : QVariant(v),
+      t(Invalid),
+      ptr(0L)
 {
-    this->t = Invalid;
-    this->ptr = 0;    
 }
 
 Value::Value (const QDate &d )
@@ -74,6 +74,20 @@ Value::Value (const QDateTime& dt )
 {
     t = DateTime;
     ptr = new QDateTime(dt);
+}
+
+Value::Value (const QString& str )
+    : QVariant(str),
+      t(Invalid),
+      ptr(0L)
+{
+}
+
+Value::Value (int i )
+    : QVariant(i),
+      t(Invalid),
+      ptr(0L)
+{
 }
 
 Value::Value ( long l )

@@ -34,3 +34,6 @@ Control::~Control()
 {
     kdDebug(20000) << "Control::~Control" << endl;
 }
+
+
+

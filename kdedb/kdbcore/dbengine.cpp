@@ -43,7 +43,8 @@ DBEngine *DBEngine::m_engine = 0L;
 
 
 DBEngine::DBEngine()
-    :Object(0L,"DBEngine")
+    :Object(0L,"DBEngine"),
+     m_config(0)
 {
     //kdDebug(20010) << "DBEngine::DBEngine" << endl;
 

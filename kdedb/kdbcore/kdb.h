@@ -128,7 +128,7 @@ class Value;
 namespace KDB {
 
     typedef QValueList< Value > Row;
-    typedef QValueList< Row > RowList;
+    typedef QValueList< KDB::Row > RowList;
 
     /**
      * These are all the datatypes natively supported
