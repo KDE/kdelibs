@@ -2305,6 +2305,10 @@ QString KHTMLPart::selectedText() const
 
       n = next;
     }
+    
+    if(text.isEmpty())
+        return QString::null;
+
     int start = 0;
     int end = text.length();
 
