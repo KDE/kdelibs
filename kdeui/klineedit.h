@@ -384,6 +384,20 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
+    * See @ref QLineEdit::mousePressEvent().
+    */
+    virtual void mousePressEvent( QMouseEvent * );
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See @ref QWidget::mouseDoubleClickEvent().
+    */
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
     * See @ref QLineEdit::createPopupMenu().
     */
     virtual QPopupMenu *createPopupMenu();
@@ -413,6 +427,7 @@ protected:
 
 private slots:
     void completionMenuActivated( int id );
+    void tripleClickTimeout();  // resets possibleTripleClick
 
 private:
     // Constants that represent the ID's of the popup menu.
@@ -442,6 +457,8 @@ private:
     bool m_bEnableMenu;
     class KLineEditPrivate;
     KLineEditPrivate *d;
+
+    bool possibleTripleClick;  // set in mousePressEvent, deleted in tripleClickTimeout
 };
 
 #endif

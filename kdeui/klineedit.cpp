@@ -26,6 +26,7 @@
 */
 
 #include <qclipboard.h>
+#include <qtimer.h>
 
 #include <kcursor.h>
 #include <klocale.h>
@@ -81,6 +82,7 @@ KLineEdit::~KLineEdit ()
 void KLineEdit::init()
 {
     d = new KLineEditPrivate;
+    possibleTripleClick=false;
     // Enable the context menu by default.
     setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );
@@ -326,6 +328,31 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
+}
+
+void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )
+{
+    if ( e->button() == Qt::LeftButton  )
+    {
+        possibleTripleClick=true;
+        QTimer::singleShot(QApplication::doubleClickInterval(),this,SLOT(tripleClickTimeout()));
+    }
+    QLineEdit::mouseDoubleClickEvent( e );
+}
+
+void KLineEdit::mousePressEvent( QMouseEvent* e )
+{
+    if ( possibleTripleClick && e->button() == Qt::LeftButton )
+    {
+        selectAll();
+        return;
+    }
+    QLineEdit::mousePressEvent( e );
+}
+
+void KLineEdit::tripleClickTimeout()
+{
+    possibleTripleClick=false;
 }
 
 QPopupMenu *KLineEdit::createPopupMenu()
