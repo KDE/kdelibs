@@ -311,15 +311,20 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     }
 
     //printf( "Slicing from %d to %d \n", begin, end );
-    for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
-      UString str = UString::from(k+begin);
-      UString str2 = UString::from(k);
-      if (thisObj.hasProperty(exec,str)) {
-        Value obj = thisObj.get(exec, str);
-        resObj.put(exec, str2, obj);
-      }
+    if (end >= begin) {
+      resObj.put(exec, "length", Number(0), DontEnum | DontDelete);
     }
-    resObj.put(exec, "length", Number(end - begin), DontEnum | DontDelete);
+    else {
+      for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
+        UString str = UString::from(k+begin);
+        UString str2 = UString::from(k);
+        if (thisObj.hasProperty(exec,str)) {
+          Value obj = thisObj.get(exec, str);
+          resObj.put(exec, str2, obj);
+        }
+      }
+      resObj.put(exec, "length", Number(end - begin), DontEnum | DontDelete);
+    }
     break;
   }
   case Sort:{

@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     // add debug() function
     //  kjs->enableDebug();
 
-    const int BufferSize = 100000;
+    const int BufferSize = 200000;
     char code[BufferSize];
 
     for (int i = 1; i < argc; i++) {
