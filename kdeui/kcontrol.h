@@ -28,13 +28,14 @@
 #include <qpushbutton.h>
 #include <kapp.h>
 
-// prototypes
+// forward declarations
 class KControlApplication;
 
-/**
- *  KControlDialog is a QTabDialog that is internally used by KControl Applications.
+/** 
+ * KControlDialog is a QTabDialog that is internally used by KControl
+ * Applications.
  *
- *  @see KConfigWidget, KControlApplication
+ *  @see KConfigWidget, KControlApplication 
  */
 class KControlDialog : public QTabDialog
 {
@@ -85,14 +86,14 @@ public:
   /**
    *  Loads the settings, usually from an rc-file.
    *
-   *  Rhis method is declared pure virtual and has to be overloaded.
+   *  This method is declared pure virtual and has to be overloaded.
    */
   virtual void loadSettings() = 0;
 
   /**
    *  Applies the settings.
    *
-   *  Rhis method is declared pure virtual and has to be overloaded.
+   *  This method is declared pure virtual and has to be overloaded.
    */
   virtual void applySettings() = 0;
 
@@ -112,7 +113,7 @@ public:
  *
  *  @see KControlDialog, KConfigWidget
  *
- *  @author Matthias H"olzer (hoelzer@physik.uni-wuerzburg.de)
+ *  @author Matthias Hoelzer (hoelzer@physik.uni-wuerzburg.de)
  *  @short Common base for setup applications.
  */
 class KControlApplication : public KApplication
@@ -124,13 +125,14 @@ public:
   /**
    *  Creates the setup application.
    *
-   *  The constructor scans the command line arguments. If there is a single argument, "-init",
-   *  the function init() is called and the application terminates.
-   *  Otherwise the setup dialog is created and inkoved.
+   *  The constructor scans the command line arguments. If there is a
+   *  single argument, "-init", the function init() is called and the
+   *  application terminates.  Otherwise the setup dialog is created
+   *  and inkoved.
    *
    *  @param argc  Number of commandline arguments
    *  @param argv  Commandline arguments
-   *  @param _name Name of the application
+   *  @param _name Name of the application 
    */
    KControlApplication( int& argc, char** argv, const QCString& _name );
 
@@ -153,11 +155,11 @@ public:
   /**
    *  Determines if the setup dialog has to be run.
    *
-   *  The setup dialog has to be run if the application has not been invoked with a single commandline
-   *  argument containing "-init".
+   *  The setup dialog has to be run if the application has not been
+   *  invoked with a single commandline argument containing "-init".
    *
-   *  Due to the fact the QApplication::exec() is not virtual, this construction has to be used to
-   *  execute a KControlApplication:
+   *  Due to the fact the QApplication::exec() is not virtual, this
+   *  construction has to be used to execute a KControlApplication:
    *
    *  <pre>
    *  KControlApplication app(argc, argv, "name", "title");
@@ -169,21 +171,22 @@ public:
    *    return 0;
    *  </pre>
    *
-   *  Just running app.exec() will fail if "-init" has been requested.
+   *  Just running app.exec() will fail if "-init" has been requested.  
    */
   bool runGUI() { return !justInit; };
 
-  /**
-   *  Returns the tabbed dialog object, normally a @ref KControlDialog object.
+  /** 
+   *  Returns the tabbed dialog object, normally a @ref KControlDialog
+   *  object.
    *
-   *  @return Pointer to a QTabDialog object.
-   */
+   *  @return Pointer to a QTabDialog object.  */
   QTabDialog* getDialog() { return dialog; };
 
   /**
    *  Returns the list of pages to show.
    *
-   *  @return Pointer to a QStrList obejct  or NULL if no special pages choosen.
+   *  @return Pointer to a QStrList obejct or NULL if no special pages
+   *  choosen.  
    */
   QStrList* getPageList() { return pages; };
 
@@ -201,15 +204,16 @@ public slots:
   /**
    *  This function is called at startup to initialize the settings.
    *   
-   *  This function must be overriden by all setup application that want to have persistent settings.
+   *  This function must be overriden by all setup application that
+   *  want to have persistent settings.  
    */
   virtual void init() {};
 
-  /**
-   *  This function is called to apply the settings currently selected in the dialog.
+  /** 
+   *  This function is called to apply the settings currently selected
+   *  in the dialog.
    *
-   *  This function must be overriden by all setup applications.
-   */
+   *  This function must be overriden by all setup applications.  */
   virtual void apply() {};
 
   /**

@@ -20,6 +20,9 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.6  1999/10/21 18:13:12  pbrown
+* position cursor at beginning of the line if text is pre-supplied.
+*
 * Revision 1.5  1999/09/30 21:29:42  espensa
 * KLineEditDlg now descends from KDialogBase with proper caption,
 * std margins and action button layout. Hmm, KLineEditDlg should not be
@@ -69,7 +72,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   
   connect( this, SIGNAL(user1Clicked()), edit, SLOT(doClear()) );
   edit->setText( _value );
-  edit->setCursorPosition(0);
+  edit->setSelection(0, edit->text().length());
   edit->setFocus();
 
   topLayout->activate();
@@ -140,7 +143,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   layout->activate();
 
   edit->setText( _value );
-  edit->setCursorPosition(0);
+  edit->setSelection(0, edit->text().length());
   edit->setFocus();
 }
 #endif
