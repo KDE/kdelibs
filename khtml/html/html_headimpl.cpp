@@ -412,3 +412,31 @@ void HTMLTitleElementImpl::childrenChanged()
     if (inDocument())
 	getDocument()->setTitle(m_title);
 }
+
+DOMString HTMLTitleElementImpl::text()
+{
+    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
+        return firstChild()->nodeValue();
+    }
+    return "";
+}
+
+void HTMLTitleElementImpl::setText( const DOMString& str )
+{
+    int exceptioncode = 0;
+    // Look for an existing text child node
+    DOM::NodeListImpl* nl(childNodes());
+    if (nl)
+    {
+        for (unsigned int i = 0; i < nl->length(); i++) {
+            if (nl->item(i)->nodeType() == DOM::Node::TEXT_NODE) {
+                static_cast<DOM::TextImpl *>(nl->item(i))->setData(str, exceptioncode);
+                return;
+            }
+        }
+        delete nl;
+    }
+    // No child text node found, creating one
+    DOM::TextImpl* t = getDocument()->createTextNode(str);
+    appendChild(t, exceptioncode);
+}

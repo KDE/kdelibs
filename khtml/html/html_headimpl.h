@@ -168,6 +168,9 @@ public:
 
     ~HTMLTitleElementImpl();
 
+    DOMString text();
+    void setText( const DOMString& str );
+
     virtual Id id() const;
 
     virtual void insertedIntoDocument();
