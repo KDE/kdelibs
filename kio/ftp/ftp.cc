@@ -675,7 +675,7 @@ bool Ftp::ftpOpenEPSVDataConnection()
     }
 
   ks.setSocketFlags(KExtendedSocket::noResolve);
-  ks.setAddress(sin->prettyHost(), portnum);
+  ks.setAddress(sin->nodeName(), portnum);
 
   if (ks.connect() < 0)
     {
@@ -711,7 +711,7 @@ bool Ftp::ftpOpenEPRTDataConnection()
 
   if (m_extControl & eprtUnknown || sin == NULL)
     return false;
-  ks.setHost(sin->prettyHost());
+  ks.setHost(sin->nodeName());
   ks.setPort(0);		// setting port to 0 will make us bind to a random, free port
   ks.setSocketFlags(KExtendedSocket::noResolve | KExtendedSocket::passiveSocket |
 		    KExtendedSocket::inetSocket);
@@ -728,11 +728,11 @@ bool Ftp::ftpOpenEPRTDataConnection()
     return false;
 
   //  QString command = QString::fromLatin1("eprt |%1|%2|%3|").arg(sin->ianaFamily())
-  //  .arg(sin->prettyHost())
+  //  .arg(sin->nodeName())
   //  .arg(sin->port());
   QCString command;
   command.sprintf("eprt |%d|%s|%d|", sin->ianaFamily(),
-		  sin->prettyHost().latin1(), sin->port());
+		  sin->nodeName().latin1(), sin->port());
 
   // FIXME! Encoding for hostnames?
   if (!ftpSendCmd(command, '2'))

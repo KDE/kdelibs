@@ -552,10 +552,7 @@ HTTPProtocol::http_openConnection()
 #ifdef DO_SSL
         // m_ssl_ip = inet_ntoa(server_name.sin_addr);
         KSocketAddress *sa = ks.peerAddress();
-        if (sa->isA("KInetSocketAddress"))
-            m_ssl_ip = ((KInetSocketAddress*)sa)->prettyHost();
-        else
-            m_ssl_ip = sa->pretty();
+	m_ssl_ip = sa->nodeName();
 #endif
         ks.release();
     }
