@@ -370,6 +370,7 @@ int KIconView::iconTextHeight() const
 
 void KIconView::setIconTextHeight( int n )
 {
+    int oldHeight = iconTextHeight();
     if ( n > 1 ) {
         d->textHeight = n;
         setWordWrapIconText( true );
@@ -378,6 +379,10 @@ void KIconView::setIconTextHeight( int n )
         d->textHeight = 1;
         setWordWrapIconText( false );
     }
+    
+    // update view if needed
+    if ( iconTextHeight() != oldHeight )
+        setFont( font() );  // hack to recalc items
 }
 
 /////////////
