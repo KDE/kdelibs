@@ -34,7 +34,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-font-bdf.desktop x-font-pcf.desktop x-font-speedo.desktop x-font-type1.desktop \
 	x-font-ghostscript.desktop x-font-snf.desktop x-font-ttf.desktop \
 	vnd.ms-asf.desktop x-msdos-program.desktop x-deb.desktop \
-	starwriter.desktop starcalc.desktop starimpress.desktop \
+	vnd.starwriter.desktop vnd.starcalc.desktop vnd.starimpress.desktop \
 	vnd.sun.xml.impress.desktop vnd.sun.xml.writer.desktop \
 	x-magicpoint.desktop x-vnd.kde.kugar.mixed.desktop x-vnd.kde.kexi.desktop \
 	vnd.palm.desktop x-kudesigner.desktop x-vnd.kde.kplato.desktop \
