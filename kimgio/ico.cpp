@@ -267,11 +267,13 @@ extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
         stream >> rec;
         icons.push_back( rec );
     }
-    IconList::const_iterator selected =
-        requestedIndex >= 0 ?
-        std::min( icons.begin() + requestedIndex, icons.end() ) :
-        std::min_element( icons.begin(), icons.end(),
+    IconList::const_iterator selected;
+    if (requestedIndex >= 0) {
+        selected = std::min( icons.begin() + requestedIndex, icons.end() );
+    } else {
+        selected = std::min_element( icons.begin(), icons.end(),
                           LessDifference( requestedSize, requestedColors ) );
+    }
     if ( stream.atEnd() || selected == icons.end() ||
          offset + selected->offset > io->ioDevice()->size() )
         return;
