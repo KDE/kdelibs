@@ -35,7 +35,7 @@ Description: KDE core shared data
 Package: kdelibs4
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, libkdefakes4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
+Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
 Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core libraries
