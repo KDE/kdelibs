@@ -339,7 +339,7 @@ Completion WindowFunc::tryExecute(const List &args)
                       winargs.menuBarVisible = (val == "1" || val == "yes");
                     else if (key == "toolbar")
                       winargs.toolBarsVisible = (val == "1" || val == "yes");
-                    else if (key == "status")
+                    else if (key == "status" || key == "statusbar")
                       winargs.statusBarVisible = (val == "1" || val == "yes");
                     else if (key == "resizable")
                       winargs.resizable = (val == "1" || val == "yes");
