@@ -277,14 +277,14 @@ public:
 
      bool destMatch(const KURL &url, const KURL &base)
      {
-        if (destProtWildCard)
-        {
-           if (!destProt.isEmpty() && !url.protocol().startsWith(destProt))
-              return false;
-        }
-        else if (destProtEqual)
+        if (destProtEqual)
         {
            if (url.protocol() != base.protocol())
+              return false;
+        }
+        else if (destProtWildCard)
+        {
+           if (!destProt.isEmpty() && !url.protocol().startsWith(destProt))
               return false;
         }
         else
