@@ -44,8 +44,13 @@ Range::Range()
 
 Range::Range(const Document rootContainer)
 {
-    impl = new RangeImpl(rootContainer.handle()->docPtr());
-    impl->ref();
+    if(rootContainer.handle())
+    {
+	impl = new RangeImpl(rootContainer.handle()->docPtr());
+	impl->ref();
+    }
+    else
+	impl = 0;
 }
 
 Range::Range(const Range &other)
