@@ -55,14 +55,14 @@ class Address
            Pref = 64 };
 
     /**
-      Construct an empty address. It is initialized with a unique id (@see
+      Construct an empty address. It is initialized with a unique id (see @ref
       id()).
     */
     Address();
   
     /**
       Construct an empty address of the given type. It is initialized with a
-      n unique id (@see id()).
+      n unique id (see @ref id()).
     */
     Address( int );
 
