@@ -113,12 +113,12 @@ void interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long sampl
 		float error = flpos - floor(flpos); \
 		*left =	(convert_ ## from_format ## _ ## to_format(from[position])) * \
 				(1.0-error) + (convert_ ## from_format ## _ ## \
-				to_format(from[position + datasize_ ## from_format])) * error; \
+				to_format(from[position + 2*datasize_ ## from_format]))*error; \
 		left += datasize_ ## to_format; \
-		position += 2*datasize_ ## to_format; \
+		position += datasize_ ## from_format; \
 		*right =(convert_ ## from_format ## _ ## to_format(from[position])) * \
 				(1.0-error) + (convert_ ## from_format ## _ ## \
-				to_format(from[position + datasize_ ## from_format])) * error; \
+				to_format(from[position + 2*datasize_ ## from_format]))*error; \
 		right += datasize_ ## to_format; \
 		flpos += speed; \
 		samples--; \
