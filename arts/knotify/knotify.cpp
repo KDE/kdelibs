@@ -274,6 +274,9 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
 bool KNotify::notifyBySound( const QString &sound )
 {
+    if (sound.isEmpty()) {
+	return false;
+    }
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
     QString soundFile(sound);
