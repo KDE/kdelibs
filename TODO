@@ -38,6 +38,11 @@ that we would like to make for the next binary incompatible release.
   leading e.g. to Kopete IRC duplicating a lot of stuff and all KDE Jabber clients
   based on libpsi (PSI, Light Hawk and Kopete) using homebrewn solutions.
 
+- Manually, properly clean up the includes in all of the headers.  Remove
+  unnecessary ones and change pointers to use class foo; decorations and move the 
+  headers into the cpp files.  When finished fixkdeincludes shouldn't find
+  anything (but don't rely on fixkdeinclude, it should be done manually first!)
+
 - Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
   (Contributors to that thread, please add specific items here.)
 
