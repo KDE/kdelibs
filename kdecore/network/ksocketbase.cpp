@@ -24,6 +24,7 @@
 
 #include <config.h>
 #include <qmutex.h>
+#include "klocale.h"
 
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
@@ -149,6 +150,107 @@ void KSocketBase::setError(SocketError error)
 KSocketBase::SocketError KSocketBase::error() const
 {
   return static_cast<KSocketBase::SocketError>(d->socketError);
+}
+
+// static
+QString KSocketBase::errorString(KSocketBase::SocketError code)
+{
+  QString reason;
+  switch (code)
+    {
+    case NoError:
+      reason = i18n("Socket error code NoError", "no error");
+      break;
+
+    case LookupFailure:
+      reason = i18n("Socket error code LookupFailure",
+		    "name lookup has failed");
+      break;
+
+    case AddressInUse:
+      reason = i18n("Socket error code AddressInUse",
+		    "address already in use");
+      break;
+
+    case AlreadyBound:
+      reason = i18n("Socket error code AlreadyBound",
+		    "socket is already bound");
+      break;
+
+    case AlreadyCreated:
+      reason = i18n("Socket error code AlreadyCreated",
+		    "socket is already created");
+      break;
+      
+    case NotBound:
+      reason = i18n("Socket error code NotBound",
+		    "socket is not bound");
+      break;
+
+    case NotCreated:
+      reason = i18n("Socket error code NotCreated",
+		    "socket has not been created");
+      break;
+
+    case WouldBlock:
+      reason = i18n("Socket error code WouldBlock",
+		    "operation would block");
+      break;
+
+    case ConnectionRefused:
+      reason = i18n("Socket error code ConnectionRefused",
+		    "connection actively refused");
+      break;
+
+    case ConnectionTimedOut:
+      reason = i18n("Socket error code ConnectionTimedOut",
+		    "connection timed out");
+      break;
+
+    case InProgress:
+      reason = i18n("Socket error code InProgress",
+		    "operation is already in progress");
+      break;
+
+    case NetFailure:
+      reason = i18n("Socket error code NetFailure",
+		    "network failure occurred");
+      break;
+
+    case NotSupported:
+      reason = i18n("Socket error code NotSupported",
+		    "operation is not supported");
+      break;
+
+    case Timeout:
+      reason = i18n("Socket error code Timeout",
+		    "timed operation timed out");
+      break;
+
+    case UnknownError:
+      reason = i18n("Socket error code UnknownError",
+		    "an unknown/unexpected error has happened");
+      break;
+
+    default:
+      reason = QString::null;
+      break;
+    }
+
+  return reason;
+}
+
+// static
+bool KSocketBase::isFatalError(int code)
+{
+  switch (code)
+    {
+    case WouldBlock:
+    case InProgress:
+      return false;
+    }
+
+  return true;
 }
 
 void KSocketBase::unsetSocketDevice()

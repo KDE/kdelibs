@@ -231,7 +231,7 @@ public:
    * Retrieves the error code associated with this resolution. The values
    * here are the same as in @ref KResolver::ErrorCodes.
    */
-  int errorCode() const;
+  int error() const;
 
   /**
    * Retrieves the system error code, if any.
@@ -471,10 +471,10 @@ public:
    * an error condition. See @ref status and @ref StatusCodes to
    * find out what the current status is.
    *
-   * @see strError for getting a textual representation of
+   * @see errorString for getting a textual representation of
    * this error
    */
-  int errorCode() const;
+  int error() const;
 
   /**
    * Retrieve the associated system error code in this object.
@@ -484,6 +484,12 @@ public:
    * object and can be retrieved by this function.
    */
   int systemError() const;
+
+  /**
+   * Returns the textual representation of the error in this object.
+   */
+  inline QString errorString() const
+  { return errorString(error()); }
 
   /**
    * Returns true if this object is currently running
@@ -709,7 +715,7 @@ public:
    * @return		the string representation. This is already
    *			i18n'ed.
    */
-  static QString strError(int errorcode, int syserror = 0);
+  static QString errorString(int errorcode, int syserror = 0);
 
   /**
    * Resolve the nodename and service name synchronously

@@ -50,6 +50,9 @@
 # include <idna.h>
 #endif
 
+// KDE
+#include <klocale.h>
+
 // Us
 #include "kresolver.h"
 #include "kresolver_p.h"
@@ -246,7 +249,7 @@ KResolverResults::operator= (const KResolverResults& other)
 }
 
 // gets the error code
-int KResolverResults::errorCode() const
+int KResolverResults::error() const
 {
   return d->errorcode;
 }
@@ -324,7 +327,7 @@ int KResolver::status() const
 }
 
 // get the error code
-int KResolver::errorCode() const
+int KResolver::error() const
 {
   return d->errorcode;
 }
@@ -551,11 +554,9 @@ void KResolver::emitFinished()
     deleteLater();		// in QObject
 }
 
-QString KResolver::strError(int errorcode, int syserror)
+QString KResolver::errorString(int errorcode, int syserror)
 {
   // no i18n now...
-#define i18n
-#define I18N_NOOP
   static const char * const messages[] =
   {
     I18N_NOOP("no error"),	// NoError
@@ -569,7 +570,8 @@ QString KResolver::strError(int errorcode, int syserror)
     I18N_NOOP("requested service not supported for this socket type"), // UnsupportedService
     I18N_NOOP("requested socket type not supported"),	// UnsupportedSocketType
     I18N_NOOP("unknown error"),			// UnknownError
-    I18N_NOOP("system error: %1")		// SystemError
+    I18N_NOOP2("1: the i18n'ed system error code, from errno",
+	      "system error: %1")		// SystemError
   };
 
   // handle the special value
@@ -584,9 +586,6 @@ QString KResolver::strError(int errorcode, int syserror)
     msg.arg(QString::fromLocal8Bit(strerror(syserror)));
 
   return msg;
-
-#undef i18n
-#undef I18N_NOOP
 }
 
 KResolverResults

@@ -141,6 +141,8 @@ public:
    * - NotSupported: requested operation is not supported
    * - Timeout: a timed operation timed out
    * - UnknownError: an unknown/unexpected error has happened
+   *
+   * @sa error, errorString
    */
   enum SocketError
     {
@@ -344,8 +346,15 @@ protected:
 public:
   /**
    * Retrieves the socket error code.
+   * @sa errorString
    */
   SocketError error() const;
+
+  /**
+   * Returns the error string corresponding to this error condition.
+   */
+  inline QString errorString() const
+  { return errorString(error()); }
 
   /**
    * Returns the internal mutex for this class.
@@ -363,6 +372,24 @@ public:
    * object when deleting it.
    */
   QMutex* mutex() const;
+
+public:
+  /**
+   * Returns the string describing the given error code, i18n'ed.
+   *
+   * @param code		the error code
+   */
+  static QString errorString(SocketError code);
+
+  /**
+   * Returns true if the given error code is a fatal one, false
+   * otherwise. The parameter here is of type int so that
+   * casting isn't necessary when using the parameter to signal
+   * QClientSocketBase::gotError.
+   *
+   * @param code		the code to test
+   */
+  static bool isFatalError(int code);
 
 private:
   /// @internal

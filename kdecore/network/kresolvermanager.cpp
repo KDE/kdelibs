@@ -546,7 +546,7 @@ void KResolverManager::doNotifying(RequestData *p)
 
 	  if (p->obj->status != KResolver::Canceled)
 	    {
-	      p->obj->errorcode = r.errorCode();
+	      p->obj->errorcode = r.error();
 	      p->obj->syserror = r.systemError();
 	      p->obj->status = !r.isEmpty() ? 
 		KResolver::Success : KResolver::Failed;

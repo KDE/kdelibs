@@ -780,8 +780,8 @@ int KExtendedSocket::startAsyncLookup()
 
       if (!d->resRemote.start())
 	{
-	  setError(IO_LookupError, d->resRemote.errorCode());
-	  return d->resRemote.errorCode();
+	  setError(IO_LookupError, d->resRemote.error());
+	  return d->resRemote.error();
 	}
     }
 
@@ -797,8 +797,8 @@ int KExtendedSocket::startAsyncLookup()
 
       if (!d->resLocal.start())
 	{
-	  setError(IO_LookupError, d->resLocal.errorCode());
-	  return d->resLocal.errorCode();
+	  setError(IO_LookupError, d->resLocal.error());
+	  return d->resLocal.error();
 	}
     }
 
@@ -833,7 +833,7 @@ int KExtendedSocket::listen(int N)
   if (d->status < lookupDone)
     if (lookup() != 0)
       return -2;		// error!
-  if (d->resRemote.errorCode())
+  if (d->resRemote.error())
     return -2;
   
   // doing the loop:
@@ -1002,8 +1002,8 @@ int KExtendedSocket::connect()
     local = d->resLocal.results();
   KResolverResults::const_iterator it, it2;
   //kdDebug(170) << "Starting connect to " << host() << '|' << port() 
-               << ": have " << local.count() << " local entries and "
-               << remote.count() << " remote" << endl;
+  //             << ": have " << local.count() << " local entries and "
+  //             << remote.count() << " remote" << endl;
   for (it = remote.begin(), it2 = local.begin(); it != remote.end(); ++it)
     {
       //kdDebug(170) << "Trying to connect to " << (*it).address().toString() << endl;
@@ -1982,10 +1982,10 @@ QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QStrin
 
 //  kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
   KResolverResults res = KResolver::resolve(host, port, flags, familyMask);
-  if (res.errorCode())
+  if (res.error())
     {
       if (error)
-	*error = res.errorCode();
+	*error = res.error();
       return l;
     }
 
