@@ -33,8 +33,8 @@ KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
   KServiceTypeFactory()
 {
    // Read servicetypes first, since they might be needed to read mimetype properties
-   (*m_pathList) += KGlobal::dirs()->resourceDirs( "servicetypes" );
-   (*m_pathList) += KGlobal::dirs()->resourceDirs( "mime" );
+   m_resourceList->append("servicetypes");
+   m_resourceList->append( "mime" );
 }
 
 KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_name)
@@ -47,39 +47,53 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
 
 
 KSycocaEntry * 
-KBuildServiceTypeFactory::createEntry(const QString &file)
+KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 {
-  //debug("KBuildServiceTypeFactory::createEntry(%s)",file.ascii());
+  QString name = file;
+  int pos = name.findRev('/');
+  if (pos != -1)
+  {
+     name = name.mid(pos+1);
+  }
+
+  if (name.isEmpty())
+     return 0;
+
   // Just a backup file ?
-  if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
+  if ( ( name.right(1) == "~") || 
+       ( name.right(4) == ".bak") || 
+       ( name[0] == '.') ||
+       ( name[0] == '%' && name.right(1) == "%" ) )
       return 0;
 
-  KSimpleConfig cfg( file, true);
-  cfg.setDesktopGroup();
+  if (name == "magic") 
+      return 0;
+
+  KDesktopFile desktopFile(file, true, resource);
 
   // TODO check Type field first
-  QString mime = cfg.readEntry( "MimeType" );
-  QString service = cfg.readEntry( "X-KDE-ServiceType" );
+  QString mime = desktopFile.readEntry( "MimeType" );
+  QString service = desktopFile.readEntry( "X-KDE-ServiceType" );
 
   if ( mime.isEmpty() && service.isEmpty() )
   {
-    QString tmp = i18n( "The service/mime type config file\n%1\n"
-			"does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
-    KMessageBoxWrapper::error( 0L, tmp);
+    QString tmp = QString("The service/mime type config file\n%1\n"
+		  "does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
+    kdebug( KDEBUG_WARN, 7012, tmp);
     return 0;
   }
   
   KServiceType* e;
   if ( mime == "inode/directory" )
-    e = new KFolderType( file );
+    e = new KFolderType( &desktopFile );
   else if ( mime == "application/x-desktop" )
-    e = new KDEDesktopMimeType( file );
+    e = new KDEDesktopMimeType( &desktopFile );
   else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( file );
+    e = new KExecMimeType( &desktopFile );
   else if ( !mime.isEmpty() )
-    e = new KMimeType( file );
+    e = new KMimeType( &desktopFile );
   else
-    e = new KServiceType( file );
+    e = new KServiceType( &desktopFile );
 
   if ( !(e->isValid()) )
   {

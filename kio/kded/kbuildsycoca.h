@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 
 class QDataStream;
-class KDirWatch;
 class KSycocaEntry;
 
 // No need for this in libkio - apps only get readonly access
@@ -26,24 +25,10 @@ public:
    bool process(const QCString &fun, const QByteArray &data, 
 		QCString &replyType, QByteArray &replyData);
 
-public slots:
-
    /**
     * Recreate the database file
     */
    void recreate();
-
-protected slots:
-
-   /**
-    * @internal Triggers rebuilding
-    */
-   void dirDeleted(const QString& path);
- 
-   /**
-    * @internal Triggers rebuilding
-    */
-   void update (const QString& dir );
 
 protected:
 
@@ -63,30 +48,10 @@ protected:
    void clear();
 
    /**
-    * Scans dir for new files and new subdirectories.
-    * Creates entries in factory.
-    */
-   void readDirectory(const QString& dir, KSycocaFactory * factory );
-   
-   /**
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);
     */
    virtual bool isBuilding() { return true; }
-
-protected:
-
-   /**
-    * Pointer to the dirwatch class which tells us, when some directories
-    * changed.
-    */
-   KDirWatch* m_pDirWatch;
-   /**
-    * When a desktop file is updated, a timer is started (5 sec)
-    * before rebuilding the binary - so that multiple updates result
-    * in only one rebuilding.
-    */
-   QTimer* m_pTimer;
 };
 
 #endif

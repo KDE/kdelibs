@@ -45,7 +45,7 @@ public:
   /**
    * Construct a KServiceType from a config file.
    */
-  virtual KSycocaEntry * createEntry(const QString &file);
+  virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
 
   /**
    * Write out service type specific index files.

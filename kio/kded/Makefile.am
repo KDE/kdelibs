@@ -1,5 +1,6 @@
 #    This file is part of the KDE libraries
 #    Copyright (C) 1997 David Faure <faure@kde.org>
+#    Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
 
 #    This library is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU Library General Public
@@ -18,12 +19,33 @@
 
 INCLUDES= -I$(srcdir)/.. $(all_includes)
 
-bin_PROGRAMS = kded
-kded_LDADD = ../libkio.la
+lib_LTLIBRARIES = libkded.la libkbuildsycoca.la
+#kded_LDADD = ../libkio.la
+libkded_la_LDFLAGS = $(all_libraries) -no-version -module
+libkded_la_LIBADD = $(LIB_KIO)
+libkded_la_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
+			kbuildservicefactory.cpp
+libkded_la_METASOURCES = AUTO
+
+libkbuildsycoca_la_LDFLAGS = $(all_libraries) -no-version 1:0:0 -module
+libkbuildsycoca_la_LIBADD = $(LIB_KIO)
+libkbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
+				kbuildservicefactory.cpp
+libkbuildsycoca_la_METASOURCES = AUTO
+
+bin_PROGRAMS = kded kbuildsycoca
+
 kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kded_SOURCES = main.cpp kbuildsycoca.cpp kbuildservicetypefactory.cpp \
-		kbuildservicefactory.cpp
+kded_LDADD = $(LIB_KIO)
+kded_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
+			kbuildservicefactory.cpp
 kded_METASOURCES = AUTO
+
+kbuildsycoca_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kbuildsycoca_LDADD = $(LIB_KIO)
+kbuildsycoca_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
+				kbuildservicefactory.cpp
+kbuildsycoca_METASOURCES = AUTO
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h

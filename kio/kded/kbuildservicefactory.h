@@ -38,6 +38,16 @@ public:
   virtual ~KBuildServiceFactory() { }
 
   /**
+   * Construct a KService from a config file.
+   */
+  virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
+
+  /**
+   * Add a new entry.
+   */
+  void addEntry(KSycocaEntry *newEntry);
+
+  /**
    * Write out service type specific index files.
    */
   virtual void save(QDataStream &str);

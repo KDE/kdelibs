@@ -18,22 +18,27 @@
 */
 
 #include "kbuildsycoca.h"
-#include <kuniqueapp.h>
+#include <kinstance.h>
 #include <dcopclient.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
-{
-     if (!KUniqueApplication::start(argc, argv, "kded"))
-     {
-        printf("KDED already running!\n");
-        exit(0);
-     }
-     KUniqueApplication k(argc,argv, "kded", false /* not GUI */);
+static const char *appName = "kbuildsycoca";
 
-     KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
-     sycoca->recreate();
-     return k.exec(); // keep running
+int main(int, char **)
+{
+   KInstance k("kbuildsycoca");
+
+   DCOPClient *dcopClient = new DCOPClient();
+
+   if (dcopClient->registerAs(appName) != appName)
+   {
+     fprintf(stderr, "%s already running!\n", appName);
+     exit(0);
+   }
+
+   KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
+   sycoca->recreate();
 }
+

@@ -30,7 +30,7 @@
 #include <qtimer.h>
 
 #include <assert.h>
-#include <kapp.h>
+#include <kinstance.h>
 #include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
@@ -44,49 +44,44 @@
 KBuildSycoca::KBuildSycoca() 
   : KSycoca( true )
 {
-  m_pTimer = new QTimer(this);
-  connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
-
-  m_pDirWatch = new KDirWatch;
-
-  QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
-	   this, SLOT(update(const QString&)));
-  QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
-	   this, SLOT(dirDeleted(const QString&)));
 }
    
 KBuildSycoca::~KBuildSycoca()
 {
-  m_pTimer->stop();
-  delete m_pTimer;
-  delete m_pDirWatch;
-}
-
-void KBuildSycoca::clear()
-{
-  // For each factory
-  QListIterator<KSycocaFactory> factit ( *m_lstFactories );
-  for ( ; factit.current(); ++factit )
-  {
-    // Clear it
-    factit.current()->clear();
-  }
-  m_lstFactories->clear();
 }
 
 void KBuildSycoca::build()
 {
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );
-  for ( ; factit.current(); ++factit )
+  for (KSycocaFactory *factory = m_lstFactories->first(); 
+       factory;
+       factory = m_lstFactories->next() )
   {
-    // Clear it
-    factit.current()->clear();
-    // For each path the factory deals with
-    QStringList::ConstIterator it = factit.current()->pathList()->begin();
-    for( ; it != factit.current()->pathList()->end(); ++it )
+    // For each resource the factory deals with
+    for( QStringList::ConstIterator it1 = factory->resourceList()->begin();
+         it1 != factory->resourceList()->end(); 
+         ++it1 )
     {
-      readDirectory( *it, factit.current() );
+      const char *resource = (*it1).ascii();
+
+      QStringList relFiles;
+      
+      (void) KGlobal::dirs()->findAllResources( resource, 
+                                                QString::null,
+                                                true, // Recursive!
+                                                true, // uniq
+                                                relFiles);
+      // For each file the factory deals with.
+      for( QStringList::ConstIterator it2 = relFiles.begin();
+           it2 != relFiles.end(); 
+           ++it2 )
+      {
+         // Create a new entry
+         KSycocaEntry* entry = factory->createEntry( *it2, resource );
+         if ( entry && entry->isValid() )
+           factory->addEntry( entry );
+      }
     }
   }
 }
@@ -106,7 +101,7 @@ void KBuildSycoca::recreate()
 
   m_str = database.dataStream();
 
-  kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
+  kdebug(KDEBUG_INFO, 7021, "Recreating ksycoca file");
      
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
@@ -115,96 +110,13 @@ void KBuildSycoca::recreate()
   
   build(); // Parse dirs
   save(); // Save database
-  clear(); // save memory usage
 
   m_str = 0L;
   if (!database.close())
   {
-     kdebug(KDEBUG_ERROR, 7020, "Error writing database to %s", database.name().ascii());
+     kdebug(KDEBUG_ERROR, 7021, "Error writing database to %s", database.name().ascii());
      return;  
   }
-  // Notify ALL applications that have a ksycoca object, using a broadcast
-  QByteArray data;
-  kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
-}
-
-void KBuildSycoca::dirDeleted(const QString& /*path*/)
-{
-  // We could be smarter here, and find out which factory
-  // deals with that dir, and update only that...
-  // But rebuilding everything is fine for me.
-  m_pTimer->start( 1200, true /* single shot */ );
-}
-
-void KBuildSycoca::update(const QString& path)
-{
-  kdebug(KDEBUG_INFO, 7020, QString("KBuildSycoca::update( %1 ) - starting timer").arg( path ));
-  // We could be smarter here, and find out which factory
-  // deals with that dir, and update only that...
-  // But rebuilding everything is fine for me.
-  m_pTimer->start( 1200, true /* single shot */ );
-}
-
-void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory )
-{
-  //kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));
-
-  QDir d( _path );                               // set QDir ...
-  if ( !d.exists() )                            // exists&isdir?
-    return;                             // return false
-  d.setSorting(QDir::Name);                  // just name
-
-  QString path( _path );
-  if ( path.right(1) != "/" )
-    path += "/";
-
-  QString file;
-
-  //************************************************************************
-  //                           Setting dirs
-  //************************************************************************
-
-  if ( !m_pDirWatch->contains( path ) ) // New dir?
-    m_pDirWatch->addDir(path);          // add watch on this dir
-
-  // Note: If some directory is gone, dirwatch will delete it from the list.
-
-  //************************************************************************
-  //                               Reading
-  //************************************************************************
-
-  unsigned int i;                           // counter and string length.
-  unsigned int count = d.count();
-  for( i = 0; i < count; i++ )                        // check all entries
-    {
-      if (d[i] == "." || d[i] == ".." || d[i] == "magic")
-	continue;                          // discard those ".", "..", "magic"...
-
-      file = path;                           // set full path
-      file += d[i];                          // and add the file name.
-      struct stat m_statbuff;
-      if ( stat( file.ascii(), &m_statbuff ) == -1 )           // get stat...
-	continue;                                   // no such, continue.
-
-      if ( S_ISDIR( m_statbuff.st_mode ) )               // isdir?
-	{
-          readDirectory( file, factory );      // yes, dive into it.
-	}
-      else                                         // no, not a dir/no recurse...
-	{
-          if ( file.right(1) != "~" )
-          {
-            // Can we read the file ?
-            if ( access( file.ascii(), R_OK ) != -1 )
-            {
-              // Create a new entry
-              KSycocaEntry* entry = factory->createEntry( file );
-              if ( entry && entry->isValid() )
-                factory->addEntry( entry );
-            }
-          }
-	}
-    }
 }
 
 void KBuildSycoca::save()
@@ -259,7 +171,7 @@ void KBuildSycoca::save()
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
 
-   kdebug(KDEBUG_INFO, 7020, QString("endOfData : %1").
+   kdebug(KDEBUG_INFO, 7021, QString("endOfData : %1").
           arg(endOfData,8,16));
 
    // Jump to end of database
@@ -276,7 +188,30 @@ bool KBuildSycoca::process(const QCString &fun, const QByteArray &/*data*/,
     return true;
   } else
     return false;
-    // don't call KSycoca::process - this is for other apps, not kded
+    // don't call KSycoca::process - this is for other apps, not k
 }
+
+static const char *appName = "kbuildsycoca";
+
+int main(int, char **)
+{
+   KInstance k("kbuildsycoca");
+
+   DCOPClient *dcopClient = new DCOPClient();
+
+   if (dcopClient->registerAs(appName, false) != appName)
+   {
+     fprintf(stderr, "%s already running!\n", appName);
+     exit(0);
+   }
+
+   KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
+   sycoca->recreate();
+   // Notify ALL applications that have a ksycoca object, using a broadcast
+   QByteArray data;
+   dcopClient->send( "*", "ksycoca", "databaseChanged()", data );
+}
+
+
 
 #include "kbuildsycoca.moc"
