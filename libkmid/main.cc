@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     char *map_path=NULL;
     char *inputfile=NULL;
     FILE *inputfh=NULL;
-    if (DEFAULT_MAP!=NULL)
+    if (DEFAULT_MAP)
     {
         map_path=new char[strlen(DEFAULT_MAP)+1];
         strcpy(map_path,DEFAULT_MAP);
