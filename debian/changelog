@@ -1,3 +1,9 @@
+kdelibs (4:2.0-20000927-0) unstable; urgency=low
+ 
+  * More upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 27 Sep 2000 23:30:00 -0700
+
 kdelibs (4:2.0-20000925-0) unstable; urgency=low
 
   * More upstream fixes

@@ -18,9 +18,10 @@ $(BUILDDIR)/build-stamp:
 	if test ! -f configure; then \
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
+	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
-	$$PWD/../configure $(configkde) --with-distribution=deb \
+	$$PWD/../configure $(configkde) --with-distribution="$$version" \
 	--libdir=$(kde_libdir) --includedir=$(kde_includedir) 
 
 	make -C $(BUILDDIR)
