@@ -4,7 +4,6 @@
 #include <kio/kprotocolmanager.h>
 
 #include <qtextstream.h>
-#include <iostream.h>
 #include <unistd.h>
 
 
@@ -184,17 +183,17 @@ void KJavaProcess::popBuffer()
     if( buf )
     {
 //        DEBUG stuff...
-        cout << "Sending buffer to java, buffer = >>";
+	kdDebug(6100) << "Sending buffer to java, buffer = >>";
         for( unsigned int i = 0; i < buf->size(); i++ )
         {
             if( buf->at(i) == (char)0 )
-                cout << "<SEP>";
+                kdDebug(6100) << "<SEP>";
             else if( buf->at(i) > 0 && buf->at(i) < 10 )
-                cout << "<CMD " << (int) buf->at(i) << ">";
+                kdDebug(6100) << "<CMD " << (int) buf->at(i) << ">";
             else
-                cout << buf->at(i);
+                kdDebug(6100) << buf->at(i);
         }
-        cout << "<<" << endl;
+        kdDebug(6100) << "<<" << endl;
 
         //write the data
         if ( !javaProcess->writeStdin( buf->data(),
