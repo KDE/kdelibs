@@ -1,10 +1,20 @@
 
 SGML_CATALOGS=
+USER_SGML_CAT_PATH=
+
+AC_ARG_WITH(sgml-cat,[  --with-sgml-cat=DIR     adds DIR to the search path for SGML catalogs],
+[ac_save_IFS=$IFS
+  IFS=':'
+  for d in $withval ; do
+    USER_SGML_CAT_PATH="$USER_SGML_CAT_PATH $d"
+  done
+  IFS=$ac_save_IFS])
 
 dnl The order of the directories in this list matters
+dtd_paths="/usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-3.1 /usr/lib/sgml/docbook-dtd /usr/lib/sgml/jade /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml /usr/local/share/sgml /etc /usr/share/sgml /usr/share/sgml/docbk31 $USER_SGML_CAT_PATH"
+
 AC_DEFUN(KDE_FIND_CAT, 
 [
-   dtd_paths="/usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-3.1 /usr/lib/sgml/docbook-dtd /usr/lib/sgml/jade /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml /usr/local/share/sgml /etc /usr/share/sgml /usr/share/sgml/docbk31"
    AC_FIND_FILE($1, $dtd_paths, CAT)
    if test ! "x$CAT" = "xNO"; then
      SGML_CATALOGS="$SGML_CATALOGS -c $CAT/$1"
