@@ -1,0 +1,2 @@
+#!/bin/sh
+cat headerBodies | awk -f generateHeaders.awk

@@ -1,0 +1,44 @@
+unique identifier,QString,uid
+name,QString,name
+
+formatted name,QString,formattedName
+
+family name,QString,familyName
+given name,QString,givenName
+additional names,QString,additionalName
+honorific prefixes,QString,prefix
+honorific suffixes,QString,suffix
+
+nick name,QString,nickName
+#QPixmap photo
+
+birthday,QDateTime,birthday,.toString()
+
+#Address address
+#QString label (part of Address)
+
+#phoneNumbers
+#emails
+mail client,QString,mailer
+
+time zone,TimeZone,timeZone,.asString()
+geographic position,Geo,geo,.asString()
+
+title,QString,title
+role,QString,role
+#QPixmap logo
+#Agent agent
+organization,QString,organization
+
+note,QString,note
+
+product identifier,QString,productId
+revision date,QDateTime,revision,.toString()
+
+sort string,QString,sortString
+
+#sound
+#class (PUBLIC, PRIVATE, CONFIDENTIAL)
+#key
+
+URL,KURL,url,.url()

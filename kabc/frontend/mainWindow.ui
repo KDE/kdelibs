@@ -1,0 +1,1328 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>MainWindow</class>
+<widget class="QMainWindow">
+    <property name="name">
+        <cstring>MainWindow</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>607</width>
+            <height>613</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>KABC Frontend</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>11</number>
+        </property>
+        <property name="spacing">
+            <number>6</number>
+        </property>
+        <widget class="QListView" row="0" column="0">
+            <column>
+                <property name="text">
+                    <string>Name</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>UID</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>mAddresseeList</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>1</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+        </widget>
+        <widget class="QTabWidget" row="0" column="1">
+            <property name="name">
+                <cstring>TabWidget2</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>2</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="tabPosition">
+                <enum>Top</enum>
+            </property>
+            <property name="tabShape">
+                <enum>Rounded</enum>
+            </property>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>General</string>
+                </attribute>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <property name="margin">
+                        <number>11</number>
+                    </property>
+                    <property name="spacing">
+                        <number>6</number>
+                    </property>
+                    <widget class="QLineEdit" row="0" column="1">
+                        <property name="name">
+                            <cstring>mNameEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="0" column="0">
+                        <property name="name">
+                            <cstring>TextLabel1</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Name</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="1" column="0">
+                        <property name="name">
+                            <cstring>TextLabel1_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>URL</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="1" column="1">
+                        <property name="name">
+                            <cstring>mUrlEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="5" column="1">
+                        <property name="name">
+                            <cstring>mAdditionalNameEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="7" column="1">
+                        <property name="name">
+                            <cstring>mSuffixEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="4" column="1">
+                        <property name="name">
+                            <cstring>mGivenNameEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="3" column="1">
+                        <property name="name">
+                            <cstring>mPrefixEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="6" column="1">
+                        <property name="name">
+                            <cstring>mFamilyNameEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="2" column="1">
+                        <property name="name">
+                            <cstring>mFormattedNameEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="8" column="1">
+                        <property name="name">
+                            <cstring>mNickNameEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="8" column="0">
+                        <property name="name">
+                            <cstring>TextLabel7</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Nickname</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="7" column="0">
+                        <property name="name">
+                            <cstring>TextLabel5</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Honorific Suffixes</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="6" column="0">
+                        <property name="name">
+                            <cstring>TextLabel3_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Family Name</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="5" column="0">
+                        <property name="name">
+                            <cstring>TextLabel4</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Additional Names</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="4" column="0">
+                        <property name="name">
+                            <cstring>TextLabel6</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Given Name</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="3" column="0">
+                        <property name="name">
+                            <cstring>TextLabel1_3</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Honorific Prefixes</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="2" column="0">
+                        <property name="name">
+                            <cstring>TextLabel8</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Formatted Name</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="9" column="0">
+                        <property name="name">
+                            <cstring>TextLabel15</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Sort String</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="9" column="1">
+                        <property name="name">
+                            <cstring>mSortStringEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="11" column="0">
+                        <property name="name">
+                            <cstring>TextLabel11</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Role</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="12" column="0">
+                        <property name="name">
+                            <cstring>TextLabel12</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Organization</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="10" column="0">
+                        <property name="name">
+                            <cstring>TextLabel10</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Title</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="10" column="1">
+                        <property name="name">
+                            <cstring>mTitleEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="11" column="1">
+                        <property name="name">
+                            <cstring>mRoleEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="12" column="1">
+                        <property name="name">
+                            <cstring>mOrganizationEdit</cstring>
+                        </property>
+                    </widget>
+                    <spacer row="13" column="1">
+                        <property name="name" stdset="0">
+                            <cstring>Spacer1</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>20</width>
+                                <height>20</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </grid>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Phone &amp;&amp; Mail</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <property name="margin">
+                        <number>11</number>
+                    </property>
+                    <property name="spacing">
+                        <number>6</number>
+                    </property>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>GroupBox2</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Email</string>
+                        </property>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>11</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="QListView" row="0" column="0" rowspan="4" colspan="1">
+                                <column>
+                                    <property name="text">
+                                        <string>Address</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizeable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>mEmailListView</cstring>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="3" column="1">
+                                <property name="name">
+                                    <cstring>PushButton6</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Remove</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="2" column="1">
+                                <property name="name">
+                                    <cstring>PushButton5</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Edit</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="1" column="1">
+                                <property name="name">
+                                    <cstring>PushButton7</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>New</string>
+                                </property>
+                            </widget>
+                            <spacer row="0" column="1">
+                                <property name="name" stdset="0">
+                                    <cstring>Spacer2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </grid>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>GroupBox1</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Phone</string>
+                        </property>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>11</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="QLabel" row="0" column="0">
+                                <property name="name">
+                                    <cstring>TextLabel2_3</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Id</string>
+                                </property>
+                            </widget>
+                            <widget class="QComboBox" row="0" column="1" rowspan="1" colspan="2">
+                                <property name="name">
+                                    <cstring>mPhoneIdCombo</cstring>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="0" column="3">
+                                <property name="name">
+                                    <cstring>PushButton3</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Remove</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="0" column="4">
+                                <property name="name">
+                                    <cstring>PushButton4</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>New</string>
+                                </property>
+                            </widget>
+                            <widget class="QLineEdit" row="1" column="2" rowspan="1" colspan="3">
+                                <property name="name">
+                                    <cstring>mPhoneNumberEdit</cstring>
+                                </property>
+                            </widget>
+                            <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+                                <property name="name">
+                                    <cstring>TextLabel1_5</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Number</string>
+                                </property>
+                            </widget>
+                            <widget class="QButtonGroup" row="2" column="0" rowspan="1" colspan="5">
+                                <property name="name">
+                                    <cstring>ButtonGroup2</cstring>
+                                </property>
+                                <property name="title">
+                                    <string>Type</string>
+                                </property>
+                                <grid>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <property name="margin">
+                                        <number>11</number>
+                                    </property>
+                                    <property name="spacing">
+                                        <number>6</number>
+                                    </property>
+                                    <widget class="QCheckBox" row="2" column="0">
+                                        <property name="name">
+                                            <cstring>mPhoneWorkCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Work</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="3" column="0">
+                                        <property name="name">
+                                            <cstring>mPhonePrefCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Pref</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="1" column="0">
+                                        <property name="name">
+                                            <cstring>mPhoneHomeCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Home</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="1" column="1">
+                                        <property name="name">
+                                            <cstring>mPhoneCellCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Cell</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="0" column="0">
+                                        <property name="name">
+                                            <cstring>mPhoneFaxCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Fax</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="3" column="1" rowspan="1" colspan="2">
+                                        <property name="name">
+                                            <cstring>mPhoneBbsCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>BBS</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="0" column="1">
+                                        <property name="name">
+                                            <cstring>mPhoneCarCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Car</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="2" column="1">
+                                        <property name="name">
+                                            <cstring>mPhoneVideoCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Video</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="0" column="2">
+                                        <property name="name">
+                                            <cstring>mPhoneIsdnCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>ISDN</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="0" column="3">
+                                        <property name="name">
+                                            <cstring>mPhoneVoiceCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Voice</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="1" column="2">
+                                        <property name="name">
+                                            <cstring>mPhonePcsCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>PCS</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="1" column="3">
+                                        <property name="name">
+                                            <cstring>mPhoneModemCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Modem</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="2" column="2">
+                                        <property name="name">
+                                            <cstring>mPhonePagerCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Pager</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox" row="2" column="3">
+                                        <property name="name">
+                                            <cstring>mPhoneMsgCheck</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Msg</string>
+                                        </property>
+                                    </widget>
+                                </grid>
+                            </widget>
+                        </grid>
+                    </widget>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Address</string>
+                </attribute>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <property name="margin">
+                        <number>11</number>
+                    </property>
+                    <property name="spacing">
+                        <number>6</number>
+                    </property>
+                    <widget class="QLabel" row="0" column="0">
+                        <property name="name">
+                            <cstring>TextLabel16</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Id</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel1_4</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Post Office Box</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel2_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Extended</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="4" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel3_3</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Street</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="5" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel4_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Locality</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="2" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressPostOfficeBoxEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="3" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressExtendedEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="4" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressStreetEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="5" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressLocalityEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="6" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressRegionEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="6" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel5_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Region</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="8" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel7_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Country</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="7" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel6_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Postal Code</string>
+                        </property>
+                    </widget>
+                    <widget class="QTextEdit" row="10" column="0" rowspan="1" colspan="5">
+                        <property name="name">
+                            <cstring>mAddressLabelEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="9" column="0" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>TextLabel13</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Label:</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="7" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressPostalCodeEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="8" column="2" rowspan="1" colspan="3">
+                        <property name="name">
+                            <cstring>mAddressCountryEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QButtonGroup" row="1" column="0" rowspan="1" colspan="5">
+                        <property name="name">
+                            <cstring>ButtonGroup1</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Type</string>
+                        </property>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>11</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="QCheckBox" row="0" column="3">
+                                <property name="name">
+                                    <cstring>mAddressDomCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Dom</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="1" column="3">
+                                <property name="name">
+                                    <cstring>mAddressIntlCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Intl</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="0" column="2">
+                                <property name="name">
+                                    <cstring>mAddressParcelCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Parcel</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="1" column="2">
+                                <property name="name">
+                                    <cstring>mAddressPostalCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Postal</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="0" column="1">
+                                <property name="name">
+                                    <cstring>mAddressHomeCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Home</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="0" column="0">
+                                <property name="name">
+                                    <cstring>mAddressPrefCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Pref</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox" row="1" column="1">
+                                <property name="name">
+                                    <cstring>mAddressWorkCheck</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Work</string>
+                                </property>
+                            </widget>
+                        </grid>
+                    </widget>
+                    <widget class="QPushButton" row="0" column="4">
+                        <property name="name">
+                            <cstring>PushButton1</cstring>
+                        </property>
+                        <property name="text">
+                            <string>New</string>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton" row="0" column="3">
+                        <property name="name">
+                            <cstring>PushButton2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Remove</string>
+                        </property>
+                    </widget>
+                    <widget class="QComboBox" row="0" column="1" rowspan="1" colspan="2">
+                        <property name="name">
+                            <cstring>mAddressIdCombo</cstring>
+                        </property>
+                    </widget>
+                </grid>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Special</string>
+                </attribute>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <property name="margin">
+                        <number>11</number>
+                    </property>
+                    <property name="spacing">
+                        <number>6</number>
+                    </property>
+                    <widget class="QTextEdit" row="2" column="0">
+                        <property name="name">
+                            <cstring>mNoteEdit</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="1" column="0">
+                        <property name="name">
+                            <cstring>TextLabel14</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Note:</string>
+                        </property>
+                    </widget>
+                    <widget class="QGroupBox" row="0" column="0">
+                        <property name="name">
+                            <cstring>GroupBox2_2</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Categories</string>
+                        </property>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>11</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="QListView" row="0" column="0" rowspan="4" colspan="1">
+                                <column>
+                                    <property name="text">
+                                        <string>Name</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizeable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>mCategoryListView</cstring>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="3" column="1">
+                                <property name="name">
+                                    <cstring>PushButton6_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Remove</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="2" column="1">
+                                <property name="name">
+                                    <cstring>PushButton5_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Edit</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="1" column="1">
+                                <property name="name">
+                                    <cstring>PushButton7_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>New</string>
+                                </property>
+                            </widget>
+                            <spacer row="0" column="1">
+                                <property name="name" stdset="0">
+                                    <cstring>Spacer2_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </grid>
+                    </widget>
+                </grid>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Custom</string>
+                </attribute>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <property name="margin">
+                        <number>11</number>
+                    </property>
+                    <property name="spacing">
+                        <number>6</number>
+                    </property>
+                    <widget class="QGroupBox" row="0" column="0">
+                        <property name="name">
+                            <cstring>GroupBox2_2_2</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Custom Entries</string>
+                        </property>
+                        <grid>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>11</number>
+                            </property>
+                            <property name="spacing">
+                                <number>6</number>
+                            </property>
+                            <widget class="QListView" row="0" column="0" rowspan="4" colspan="1">
+                                <column>
+                                    <property name="text">
+                                        <string>App</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizeable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Name</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizeable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Value</string>
+                                    </property>
+                                    <property name="clickable">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="resizeable">
+                                        <bool>true</bool>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>mCustomListView</cstring>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="3" column="1">
+                                <property name="name">
+                                    <cstring>PushButton6_2_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Remove</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="2" column="1">
+                                <property name="name">
+                                    <cstring>PushButton5_2_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Edit</string>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton" row="1" column="1">
+                                <property name="name">
+                                    <cstring>PushButton7_2_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>New</string>
+                                </property>
+                            </widget>
+                            <spacer row="0" column="1">
+                                <property name="name" stdset="0">
+                                    <cstring>Spacer2_2_2</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Vertical</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>20</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </grid>
+                    </widget>
+                </grid>
+            </widget>
+        </widget>
+    </grid>
+</widget>
+<menubar>
+    <property name="name">
+        <cstring>menubar</cstring>
+    </property>
+    <item text="File" name="PopupMenu">
+        <action name="open"/>
+        <action name="save"/>
+        <separator/>
+        <action name="dump"/>
+    </item>
+    <item text="Addressee" name="PopupMenu_2">
+        <action name="addressee_new"/>
+        <action name="addressee_remove"/>
+    </item>
+</menubar>
+<toolbars>
+    <toolbar dock="2">
+        <property name="name">
+            <cstring>Toolbar_3</cstring>
+        </property>
+        <property name="label">
+            <string>Toolbar_3</string>
+        </property>
+        <action name="open"/>
+        <action name="save"/>
+    </toolbar>
+</toolbars>
+<actions>
+    <action>
+        <property name="name">
+            <cstring>open</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image0</iconset>
+        </property>
+        <property name="text">
+            <string>Action</string>
+        </property>
+        <property name="menuText">
+            <string>Open</string>
+        </property>
+        <property name="statusTip">
+            <string>Open Address Book</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>save</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>image1</iconset>
+        </property>
+        <property name="text">
+            <string>Action</string>
+        </property>
+        <property name="menuText">
+            <string>Save</string>
+        </property>
+        <property name="statusTip">
+            <string>Save Address Book</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>addressee_new</cstring>
+        </property>
+        <property name="text">
+            <string>Action</string>
+        </property>
+        <property name="menuText">
+            <string>New</string>
+        </property>
+        <property name="statusTip">
+            <string>New Addressee</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>addressee_remove</cstring>
+        </property>
+        <property name="text">
+            <string>Action</string>
+        </property>
+        <property name="menuText">
+            <string>Remove</string>
+        </property>
+        <property name="statusTip">
+            <string>Remove Addressee</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>dump</cstring>
+        </property>
+        <property name="text">
+            <string>Dump</string>
+        </property>
+        <property name="menuText">
+            <string>Dump</string>
+        </property>
+        <property name="toolTip">
+            <string>Dump Addressbook</string>
+        </property>
+    </action>
+</actions>
+<images>
+    <image name="image0">
+        <data format="XPM.GZ" length="706">789cad92d10ac2201486ef7d8a83e76ec45623c6207a84a2cb20ba50d7a88b2da87511d1bbe7d169aed945d0ff0bfafb718e8266096c372b483276ed447752a08ee20249756b9afb6ebf7c309ee7a04701333e613c0505eb737ba035ea354e8d282a8ae5bccc6dac28aa824c5150acb52c952ed6b5691bd53f086a99f993d85da411ef86df087ae29a07c012145248f40aee8652041e9010889f6a70a8770da20ad49318f0e78c803b670cfa9a08b024067a1201ae869ec4bb3236df298d993f17ec054df19e43</data>
+    </image>
+    <image name="image1">
+        <data format="XPM.GZ" length="706">789cd3d7528808f055d0d2e72a2e492cc94c5648ce482c52d04a29cdcdad8c8eb5ade6523232520022330543251d2e253d856405bffcbc54105b19c856360003103711c4b530b13082709340dc644310047153c05c3310047193c1dcc424d31488b158015846190b80ca24262a2721012087349964a030ba69c9c9303d403e9132087b68279388ecff4414193440948c32aa71d86470bb808632a0e8d64385296099143d6c50a9d69a0b000eb5aa86</data>
+    </image>
+</images>
+<connections>
+    <connection>
+        <sender>mAddresseeList</sender>
+        <signal>selectionChanged(QListViewItem*)</signal>
+        <receiver>MainWindow</receiver>
+        <slot>updateAddressee(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>save</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>fileSave()</slot>
+    </connection>
+    <connection>
+        <sender>open</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>fileOpen()</slot>
+    </connection>
+    <connection>
+        <sender>addressee_remove</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>removeEntry()</slot>
+    </connection>
+    <connection>
+        <sender>addressee_new</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>newEntry()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton1</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>newAddress()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton2</sender>
+        <signal>pressed()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>removeAddress()</slot>
+    </connection>
+    <connection>
+        <sender>mAddressIdCombo</sender>
+        <signal>activated(int)</signal>
+        <receiver>MainWindow</receiver>
+        <slot>updateAddress(int)</slot>
+    </connection>
+    <connection>
+        <sender>dump</sender>
+        <signal>activated()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>dumpAddressBook()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton3</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>removePhoneNumber()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton4</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>newPhoneNumber()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton5</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>editEmail()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton7</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>newEmail()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton6</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>removeEmail()</slot>
+    </connection>
+    <connection>
+        <sender>mPhoneIdCombo</sender>
+        <signal>activated(int)</signal>
+        <receiver>MainWindow</receiver>
+        <slot>updatePhone(int)</slot>
+    </connection>
+    <connection>
+        <sender>PushButton7_2</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>newCategory()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton5_2</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>editCategory()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton6_2</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>removeCategory()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton7_2_2</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>newCustom()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton5_2_2</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>editCustom()</slot>
+    </connection>
+    <connection>
+        <sender>PushButton6_2_2</sender>
+        <signal>clicked()</signal>
+        <receiver>MainWindow</receiver>
+        <slot>removeCustom()</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="global" impldecl="in declaration">addressbook.h</include>
+    <include location="local" impldecl="in implementation">mainWindow.ui.h</include>
+</includes>
+<forwards>
+    <forward>class AddresseeItem</forward>
+</forwards>
+<variables>
+    <variable>QString mCurrentPhone</variable>
+    <variable>QString mCurrentAddress</variable>
+    <variable>KABC::AddressBook *mAddressBook</variable>
+    <variable>AddresseeItem *mCurrentItem</variable>
+</variables>
+<slots>
+    <slot>init()</slot>
+    <slot>destroy()</slot>
+    <slot>fileSave()</slot>
+    <slot>fileOpen()</slot>
+    <slot>loadAddressBook(const QString &amp; fileName)</slot>
+    <slot>updateAddressee(QListViewItem * item)</slot>
+    <slot>readAddressee(const KABC::Addressee &amp; a)</slot>
+    <slot returnType="KABC::Addressee">writeAddressee(const KABC::Addressee &amp; addressee)</slot>
+    <slot>newEntry()</slot>
+    <slot>removeEntry()</slot>
+    <slot>updateAddress(int id)</slot>
+    <slot returnType="KABC::Address">writeAddress(const KABC::Address &amp; address)</slot>
+    <slot>writeAddress(const QString &amp; id)</slot>
+    <slot>readAddress(const KABC::Address &amp; a)</slot>
+    <slot>readAddress(const QString &amp; id)</slot>
+    <slot>updatePhone(int id)</slot>
+    <slot returnType="KABC::PhoneNumber">writePhone(const KABC::PhoneNumber &amp; phoneNumber)</slot>
+    <slot>writePhone(const QString &amp; id)</slot>
+    <slot>readPhone(const KABC::PhoneNumber &amp; p)</slot>
+    <slot>readPhone(const QString &amp; id)</slot>
+    <slot>newAddress()</slot>
+    <slot>removeAddress()</slot>
+    <slot>dumpAddressBook()</slot>
+    <slot>newEmail()</slot>
+    <slot>editEmail()</slot>
+    <slot>removeEmail()</slot>
+    <slot>newPhoneNumber()</slot>
+    <slot>removePhoneNumber()</slot>
+    <slot>newCategory()</slot>
+    <slot>editCategory()</slot>
+    <slot>removeCategory()</slot>
+    <slot>editCustom()</slot>
+    <slot>newCustom()</slot>
+    <slot>removeCustom()</slot>
+    <slot>addressBookChanged()</slot>
+    <slot>addressBookLocked()</slot>
+    <slot>addressBookUnlocked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
