@@ -462,10 +462,16 @@ public:
      */
     WId win() const;
     /**
-     * Returns the window's state flags(see the NET::State enum for details).
+     * Returns the window's state flags (see the NET::State enum for details).
      * Requires NET::WMState passed to KWin::windowInfo().
      */
     unsigned long state() const;
+    /**
+     * Returns true if the window has the given state flag set (see the NET::State enum for details).
+     * Requires NET::WMState passed to KWin::windowInfo().
+     * @since 3.2.1
+     */
+    bool hasState( unsigned long s ) const { return ( state() & s ) == s; }
     /**
      * Returns true if the window is minimized. Note that it is true only if
      * the window is truly minimized, not shaded or on another virtual desktops,
