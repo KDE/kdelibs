@@ -255,13 +255,11 @@ void RenderTable::layout()
     int th=0;
     if (h.isFixed())
         th = h.value;
-    else if (h.isPercent())
-    {
+    else if (h.isPercent()) {
         Length ch = containingBlock()->style()->height();
         if (ch.isFixed())
             th = h.width(ch.value);
-        else
-        {
+        else {
             // check we or not inside a table
             RenderObject* ro = parent();
             for (; ro && !ro->isTableCell(); ro=ro->parent());
@@ -613,7 +611,7 @@ RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
-    cCol = -1;
+    cCol = 0;
     cRow = -1;
     needCellRecalc = false;
 }
@@ -667,12 +665,17 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         return;
     }
 
-//     if (beforeChild)
-// 	table->setNeedsCellsRecalc();
+    if (beforeChild)
+	setNeedCellRecalc();
 
     cRow++;
     cCol = 0;
+
     ensureRows( cRow+1 );
+
+    grid[cRow].height = child->style()->height();
+    if ( grid[cRow].height.type == Relative )
+	grid[cRow].height = Length();
 
     RenderContainer::addChild(child,beforeChild);
 }
@@ -729,6 +732,36 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 #endif
 
 //     qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
+
+    if ( rSpan == 1 ) {
+	// we ignore height settings on rowspan cells
+	Length height = cell->style()->height();
+	if ( height.value > 0 || (height.type == Relative && height.value >= 0) ) {
+	    Length cRowHeight = grid[cRow].height;
+	    switch( height.type ) {
+	    case Percent:
+		if ( !(cRowHeight.type == Percent) ||
+		     ( cRowHeight.type == Percent && cRowHeight.value < height.value ) )
+		    grid[cRow].height = height;
+		     break;
+	    case Fixed:
+		if ( cRowHeight.type < Percent ||
+		     ( cRowHeight.type == Fixed && cRowHeight.value < height.value ) )
+		    grid[cRow].height = height;
+		break;
+	    case Relative:
+#if 0
+		// we treat this as variable. This is correct according to HTML4, as it only specifies length for the height.
+		if ( cRowHeight.type == Variable ||
+		     ( cRowHeight.type == Relative && cRowHeight.value < height.value ) )
+		     grid[cRow].height = height;
+		     break;
+#endif
+	    default:
+		break;
+	    }
+	}
+    }
 
     // make sure we have enough rows
     ensureRows( cRow + rSpan );
@@ -822,12 +855,16 @@ void RenderTableSection::calcRowHeight()
     rowPos[0] =  spacing + borderTop();
 
     for ( int r = 0; r < totalRows; r++ ) {
-	//    int oldheight = rowPos[r+1] - rowPos[r];
 	rowPos[r+1] = 0;
 
 	int baseline=0;
-	int bdesc=0;
-	int ch = 0;
+	int bdesc = 0;
+// 	qDebug("height of row %d is %d/%d", r, grid[r].height.value, grid[r].height.type );
+	int ch = grid[r].height.minWidth( 0 );
+	int pos = rowPos[ r+1 ] + ch + table()->cellSpacing();
+
+	if ( pos > rowPos[r+1] )
+	    rowPos[r+1] = pos;
 
 	Row *row = grid[r].row;
 	int totalCols = row->size();
@@ -848,7 +885,7 @@ void RenderTableSection::calcRowHeight()
 	    if ( cell->height() > ch)
 		ch = cell->height();
 
-	    int pos = rowPos[ indx ] + ch + table()->cellSpacing();
+	    pos = rowPos[ indx ] + ch + table()->cellSpacing();
 
 	    if ( pos > rowPos[r+1] )
 		rowPos[r+1] = pos;
@@ -881,36 +918,71 @@ void RenderTableSection::calcRowHeight()
 
 	if ( rowPos[r+1] < rowPos[r] )
 	    rowPos[r+1] = rowPos[r];
-// 	qDebug("rowpos(%d)=%d",  r, rowPos[r] );
+//  	qDebug("rowpos(%d)=%d",  r, rowPos[r] );
     }
 }
 
-int RenderTableSection::layoutRows( int th )
+int RenderTableSection::layoutRows( int toAdd )
 {
-//     qDebug("layoutRows: th = %d",  th );
-
     int rHeight;
     int rindx;
     int totalRows = grid.size();
     int spacing = table()->cellSpacing();
 
-    if (th && totalRows && rowPos[totalRows])
-    {
-        th-=(totalRows+1)*spacing;
-        int dh = th-rowPos[totalRows];
-        if (dh>0)
-        {
+    if (toAdd && totalRows && rowPos[totalRows]) {
+
+	int totalHeight = rowPos[totalRows] + toAdd;
+// 	qDebug("layoutRows: totalHeight = %d",  totalHeight );
+
+        int dh = totalHeight-rowPos[totalRows];
+	int totalPercent = 0;
+	int numVariable = 0;
+	for ( int r = 0; r < totalRows; r++ ) {
+	    if ( grid[r].height.type == Variable )
+		numVariable++;
+	    else if ( grid[r].height.type == Percent )
+		totalPercent += grid[r].height.value;
+	}
+	if ( totalPercent ) {
+// 	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
+	    // try to satisfy percent
+	    int add = 0;
+	    if ( totalPercent > 100 )
+		totalPercent = 100;
+	    for ( int r = 0; r < totalRows; r++ ) {
+		if ( totalPercent > 0 && grid[r].height.type == Percent ) {
+		    int toAdd = QMIN( dh, totalHeight * grid[r].height.value / 100 );
+		    add += toAdd;
+		    dh -= toAdd;
+		    totalPercent -= grid[r].height.value;
+		}
+                rowPos[r+1] += add;
+	    }
+	}
+	if ( numVariable ) {
+	    // distribute over variable cols
+// 	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
+	    int add = 0;
+	    for ( int r = 0; r < totalRows; r++ ) {
+		if ( numVariable > 0 && grid[r].height.type == Variable ) {
+		    int toAdd = dh/numVariable;
+		    add += toAdd;
+		    dh -= toAdd;
+		}
+                rowPos[r+1] += add;
+	    }
+	}
+        if (dh>0) {
+	    // if some left overs, distribute equally.
             int tot=rowPos[totalRows];
             int add=0;
             int prev=rowPos[0];
-            for ( int r = 0; r < totalRows; r++ )
-            {
+            for ( int r = 0; r < totalRows; r++ ) {
                 //weight with the original height
                 add+=dh*(rowPos[r+1]-prev)/tot;
                 prev=rowPos[r+1];
                 rowPos[r+1]+=add;
             }
-            rowPos[totalRows]=th;
         }
     }
 

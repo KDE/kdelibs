@@ -216,6 +216,7 @@ public:
     struct RowStruct {
 	Row *row;
 	int baseLine;
+	Length height;
     };
 
     RenderTableCell *&cellAt( int row,  int col ) {
@@ -239,8 +240,8 @@ public:
     QMemArray<RowStruct> grid;
     QMemArray<int> rowPos;
 
-    short cCol : 16;
-    short cRow : 15;
+    ushort cCol : 15;
+    short cRow : 16;
     bool needCellRecalc : 1;
 
     void recalcCells();
