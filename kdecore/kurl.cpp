@@ -1928,7 +1928,7 @@ KURL KURL::fromPathOrURL( const QString& text )
     return url;
 }
 
-QString KURL::relativePath(const QString &base_dir, const QString &path, bool *isParent)
+static QString _relativePath(const QString &base_dir, const QString &path, bool &isParent)
 {
    QString _base_dir(QDir::cleanDirPath(base_dir));
    QString _path(QDir::cleanDirPath(path.isEmpty() || (path[0] != '/') ? _base_dir+"/"+path : path));
@@ -1959,15 +1959,24 @@ QString KURL::relativePath(const QString &base_dir, const QString &path, bool *i
    if ((level < list2.count()) && (path[path.length()-1] != '/'))
       result.truncate(result.length()-1);
 
-   if (isParent)
-      *isParent = (level == list1.count());
-
-   if (level == list1.count())
-      result.prepend("./");
-   
+   isParent = (level == list1.count());
 
    return result;
 }
+
+QString KURL::relativePath(const QString &base_dir, const QString &path, bool *isParent)
+{
+   bool parent;
+   QString result = _relativePath(base_dir, path, parent);
+   if (parent)
+      result.prepend("./");
+      
+   if (isParent)
+      *isParent = parent;
+   
+   return result;
+}
+
 
 QString KURL::relativeURL(const KURL &base_url, const KURL &url, int encoding_hint)
 {
@@ -1980,24 +1989,24 @@ QString KURL::relativeURL(const KURL &base_url, const KURL &url, int encoding_hi
       return url.url(0, encoding_hint);
    }
 
-   QString relative_path;
+   QString relURL;
    
    if ((base_url.path() != url.path()) || (base_url.query() != url.query()))
    {
+      bool dummy;
       QString basePath = base_url.directory(false, false);
-      relative_path = relativePath(basePath, url.path());
+      relURL = encode( _relativePath(basePath, url.path(), dummy), false, encoding_hint);
+      relURL += url.query();
    }
 
-   KURL tmp;
-   tmp.setPath(relative_path);
-   tmp.setQuery(url.query());
-   
-   if (url.hasRef())
-      tmp.setRef(url.ref());
-      
-   QString result = tmp.url(0, encoding_hint);
-   if (result.startsWith("file:"))
-      result = result.mid(5);
-      
-   return result;
+   if ( url.hasRef() )
+   {
+      relURL += "#";
+      relURL += url.ref();
+   }
+
+   if ( relURL.isEmpty() )
+      return "./";
+
+   return relURL;
 }

@@ -641,8 +641,8 @@ int main(int argc, char *argv[])
 
   baseURL = "http://www.kde.org/index.html";
   check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html#help\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html#help"), "#help");
-  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html?help=true\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html?help=true"), "./index.html?help=true");
-  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/contact.html"), "./contact.html");
+  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/index.html?help=true\")", KURL::relativeURL(baseURL, "http://www.kde.org/index.html?help=true"), "index.html?help=true");
+  check("relativeURL(\"http://www.kde.org/index.html\", \"http://www.kde.org/contact.html\")", KURL::relativeURL(baseURL, "http://www.kde.org/contact.html"), "contact.html");
   check("relativeURL(\"http://www.kde.org/index.html\", \"ftp://ftp.kde.org/pub/kde\")", KURL::relativeURL(baseURL, "ftp://ftp.kde.org/pub/kde"), "ftp://ftp.kde.org/pub/kde");
 
   baseURL = "http://www.kde.org/info/index.html";
