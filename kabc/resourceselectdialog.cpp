@@ -21,6 +21,7 @@
 #include <klocale.h>
 #include <kbuttonbox.h>
 #include <klistbox.h>
+#include <kstdguiitem.h>
 
 #include <qgroupbox.h>
 #include <qlayout.h>
@@ -40,7 +41,7 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( marginHint() );
-    
+
   QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
   groupBox->setTitle( i18n( "Resources" ) );
 
@@ -52,9 +53,9 @@ ResourceSelectDialog::ResourceSelectDialog( AddressBook *ab, QWidget *parent, co
 
   KButtonBox *buttonBox = new KButtonBox( this );
 
-  buttonBox->addStretch();    
-  buttonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
-  buttonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
+  buttonBox->addStretch();
+  buttonBox->addButton(  KStdGuiItem::ok().text(), this, SLOT( accept() ) );
+  buttonBox->addButton(  KStdGuiItem::cancel().text(), this, SLOT( reject() ) );
   buttonBox->layout();
 
   mainLayout->addWidget( buttonBox );
