@@ -61,9 +61,6 @@ protected:
 
 public slots:
 
-  virtual void slotTotalEntries( KIO::Job*, unsigned long );
-  virtual void slotEntries( KIO::Job*, const KIO::UDSEntryList& );
-
   virtual void slotTotalSize( KIO::Job*, unsigned long size );
   virtual void slotTotalFiles( KIO::Job*, unsigned long files );
   virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );

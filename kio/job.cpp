@@ -213,7 +213,7 @@ void SimpleJob::slotProcessedSize( unsigned long size )
     m_percent = 100;
   else
     m_percent = (unsigned long)(( (float)size / (float)m_totalSize ) * 100.0);
-  
+
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
     kdDebug(7007) << "SimpleJob::slotProcessedSize - percent =  " << m_percent << endl;
@@ -809,15 +809,16 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
 
     if (showProgressInfo)
     {
-      connect( this, SIGNAL( entries ( KIO::Job *, const KIO::UDSEntryList & ) ),
-               Observer::self(), SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
-      connect( this, SIGNAL( totalEntries ( KIO::Job *, unsigned long ) ),
-               Observer::self(), SLOT( slotTotalEntries( KIO::Job *, unsigned long ) ) );
+      connect( this, SIGNAL( processedSize ( KIO::Job *, unsigned long ) ),
+               Observer::self(), SLOT( slotProcessedSize( KIO::Job *, unsigned long ) ) );
+      connect( this, SIGNAL( totalSize ( KIO::Job *, unsigned long ) ),
+               Observer::self(), SLOT( slotTotalSize( KIO::Job *, unsigned long ) ) );
     }
 }
 
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 {
+    emit processedSize( this, list.count() );
     if (recursive) {
 	UDSEntryListIterator it(list);
 
@@ -902,7 +903,7 @@ void ListJob::slotResult( KIO::Job * job )
 
 void ListJob::slotTotalEntries( unsigned long count )
 {
-    emit totalEntries( this, count );
+    emit totalSize( this, count );
 }
 
 ListJob *KIO::listDir( const KURL& url, bool showProgressInfo )
@@ -1611,7 +1612,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
     m_percent = 100;
   else
     m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
-  
+
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
     kdDebug(7007) << "CopyJob::slotProcessedSize - percent =  " << m_percent << endl;
@@ -1876,7 +1877,7 @@ void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
     m_percent = 100;
   else
     m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
-  
+
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
     kdDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << m_percent << endl;

@@ -52,16 +52,6 @@ int Observer::newJob( KIO::Job* )
     return m_uiserver->newJob();
 }
 
-void Observer::slotTotalEntries( KIO::Job* job, unsigned long count )
-{
-  kdDebug() << "** Observer::slotTotalEntries " << job << " " << count << endl;
-}
-
-void Observer::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
-{
-  kdDebug() << "** Observer::slotEntries " << job << " " << entries.count() << endl;
-}
-
 void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
 {
   kdDebug() << "** Observer::slotTotalSize " << job << " " << size << endl;

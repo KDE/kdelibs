@@ -44,10 +44,6 @@ k_dcop:
    */
   int newJob( /* param: type of the job ? class name ? */ );
 
-  // ListJob
-  void totalEntries( int id, unsigned long total );
-  void entries( int id, unsigned long count );
-
   void totalSize( int id, unsigned long size );
   void totalFiles( int id, unsigned long files );
   void totalDirs( int id, unsigned long dirs );

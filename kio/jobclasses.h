@@ -391,12 +391,6 @@ namespace KIO {
          */
         void entries( KIO::Job *, const KIO::UDSEntryList& );
 
-        /**
-         * Progress Info signal. Indicates total number of files to be listed,
-         * sent before doing the actual listing.
-         */
-        void totalEntries( KIO::Job * job, unsigned long entries );
-
     protected slots:
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );

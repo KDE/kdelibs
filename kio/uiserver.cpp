@@ -68,16 +68,6 @@ int UIServer::newJob()
     return ++s_jobId;
 }
 
-void UIServer::totalEntries( int id, unsigned long total )
-{
-    kdDebug() << "UIServer::totalEntries " << id << " " << total << endl;
-}
-
-void UIServer::entries( int id, unsigned long count )
-{
-    kdDebug() << "UIServer::entries " << id << " " << count << endl;
-}
-
 void UIServer::totalSize( int id, unsigned long size )
 {
     kdDebug() << "UIServer::totalSize " << id << " " << size << endl;
