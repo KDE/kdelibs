@@ -372,7 +372,7 @@ bool KServerSocket::init( const char *_path )
     return false;
   }
   
-  if ( chmod( _path, 0666) < 0 )
+  if ( chmod( _path, 0600) < 0 )
   {
     warning("Could not setupt premissions for server socket\n");
     ::close( sock );
