@@ -264,7 +264,8 @@ bool CSSSelector::operator == ( const CSSSelector &other ) const
 	     sel1->relation != sel2->relation || sel1->match != sel2->match ||
 	     sel1->nonCSSHint != sel2->nonCSSHint ||
 	     sel1->value != sel2->value ||
-             sel1->pseudoType() != sel2->pseudoType())
+             sel1->pseudoType() != sel2->pseudoType() ||
+             sel1->string_arg != sel2->string_arg)
 	    return false;
 	sel1 = sel1->tagHistory;
 	sel2 = sel2->tagHistory;
