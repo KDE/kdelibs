@@ -117,7 +117,7 @@ bool DOMNode::toBoolean(ExecState *) const
   onkeypress	DOMNode::OnKeyPress		DontDelete
   onkeyup	DOMNode::OnKeyUp		DontDelete
   onload	DOMNode::OnLoad			DontDelete
-  onmousedwn	DOMNode::OnMouseDown		DontDelete
+  onmousedown	DOMNode::OnMouseDown		DontDelete
   onmousemove	DOMNode::OnMouseMove		DontDelete
   onmouseout	DOMNode::OnMouseOut		DontDelete
   onmouseover	DOMNode::OnMouseOver		DontDelete

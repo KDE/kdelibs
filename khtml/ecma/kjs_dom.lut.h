@@ -36,7 +36,7 @@ const struct HashEntry DOMNodeTableEntries[] = {
    { "onmouseout", DOMNode::OnMouseOut, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "localName", DOMNode::LocalName, DontDelete|ReadOnly, 0, 0 },
-   { "ownerDocument", DOMNode::OwnerDocument, DontDelete|ReadOnly, 0, &DOMNodeTableEntries[65] },
+   { "ownerDocument", DOMNode::OwnerDocument, DontDelete|ReadOnly, 0, &DOMNodeTableEntries[64] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -71,12 +71,12 @@ const struct HashEntry DOMNodeTableEntries[] = {
    { "onchange", DOMNode::OnChange, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "onmousedwn", DOMNode::OnMouseDown, DontDelete, 0, &DOMNodeTableEntries[64] },
+   { "scrollLeft", DOMNode::ScrollLeft, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "nodeType", DOMNode::NodeType, DontDelete|ReadOnly, 0, 0 },
    { "nextSibling", DOMNode::NextSibling, DontDelete|ReadOnly, 0, &DOMNodeTableEntries[60] },
    { "onkeypress", DOMNode::OnKeyPress, DontDelete, 0, &DOMNodeTableEntries[57] },
-   { 0, 0, 0, 0, 0 },
+   { "onmousedown", DOMNode::OnMouseDown, DontDelete, 0, 0 },
    { "onmouseup", DOMNode::OnMouseUp, DontDelete, 0, 0 },
    { "onclick", DOMNode::OnClick, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -92,11 +92,10 @@ const struct HashEntry DOMNodeTableEntries[] = {
    { "offsetHeight", DOMNode::OffsetHeight, DontDelete|ReadOnly, 0, 0 },
    { "offsetParent", DOMNode::OffsetParent, DontDelete|ReadOnly, 0, 0 },
    { "clientWidth", DOMNode::ClientWidth, DontDelete|ReadOnly, 0, 0 },
-   { "scrollLeft", DOMNode::ScrollLeft, DontDelete|ReadOnly, 0, 0 },
    { "scrollTop", DOMNode::ScrollTop, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMNodeTable = { 2, 66, DOMNodeTableEntries, 53 };
+const struct HashTable DOMNodeTable = { 2, 65, DOMNodeTableEntries, 53 };
 
 }; // namespace
 
