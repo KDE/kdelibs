@@ -561,7 +561,7 @@ KCmdLineArgs::usage(const char *id)
 
    QString optionFormatString		= "  %1 %2\n";
    QString optionFormatStringDef	= "  %1 %2 [%3]\n";
-   QString optionHeaderString = i18n("\n%1-options:\n");
+   QString optionHeaderString = i18n("\n%1:\n");
    QString tmp;
    QString usage;
 
@@ -600,7 +600,7 @@ KCmdLineArgs::usage(const char *id)
    printQ(i18n("Usage: %1 %2\n").arg(argv[0]).arg(usage));
    printQ("\n"+about->shortDescription()+"\n");
 
-   printQ(optionHeaderString.arg(i18n("Generic")));
+   printQ(optionHeaderString.arg(i18n("Generic options")));
    printQ(optionFormatString.arg("--help", -25).arg(i18n("Show help about options")));
 
    args = argsList->first();
@@ -677,7 +677,7 @@ KCmdLineArgs::usage(const char *id)
                if (!args->name)
                   printQ(i18n("\nOptions:\n"));
                else if (args->name)
-                  printQ(optionHeaderString.arg(args->name));
+                  printQ(optionHeaderString.arg(QString::fromLatin1(args->name)+" options"));
                hasOptions = true;
             }
 
