@@ -6,8 +6,6 @@ LDFLAGS   = $(all_libraries)
 
 bin_PROGRAMS = dcop dcopfind dcopclient dcopobject dcopref dcopstart
 
-noinst_HEADERS =
-
 dcop_SOURCES = dcop.cpp
 dcop_LDADD = $(LIB_QT) $(LIB_DCOP)
 dcop_LDFLAGS = $(KDE_RPATH)

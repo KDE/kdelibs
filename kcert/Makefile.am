@@ -20,5 +20,3 @@ service_DATA = kcertpart.desktop
 rcdir = $(kde_datadir)/kcertpart
 rc_DATA = kcertpart.rc
 
-SUBDIRS =
-

@@ -35,7 +35,7 @@ $(top_srcdir)/configure.files:
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
-include_HEADERS = kde.pot
+	include_HEADERS = kde.pot
 
 messages:
 	find . -type d | grep -v CVS | sed -e 's,$$,/,' > dirs

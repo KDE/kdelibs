@@ -16,7 +16,6 @@ noinst_HEADERS = kmfoomaticfactory.h \
 bin_PROGRAMS = make_driver_db_foomatic
 
 make_driver_db_foomatic_SOURCES = make_driver_db_foomatic.c
-make_driver_db_foomatic_LDADD =
 
 entry_DATA = foomatic.print
 entrydir = $(kde_datadir)/kdeprint/plugins

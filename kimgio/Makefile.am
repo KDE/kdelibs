@@ -15,19 +15,15 @@ kimg_g3_la_LIBADD = $(LIBTIFF)
 
 kimg_xview_la_SOURCES = xview.cpp
 kimg_xview_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
-kimg_xview_la_LIBADD = 
 
 kimg_krl_la_SOURCES = krl.cpp
 kimg_krl_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
-kimg_krl_la_LIBADD = 
 
 kimg_eps_la_SOURCES = eps.cpp
 kimg_eps_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
-kimg_eps_la_LIBADD = 
 
 kimg_ico_la_SOURCES = ico.cpp
 kimg_ico_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
-kimg_ico_la_LIBADD = 
 
 noinst_HEADERS= xview.h eps.h tiffr.h krl.h g3r.h ico.h
 
