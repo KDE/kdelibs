@@ -35,6 +35,7 @@ using namespace DOM;
 #include "khtml_part.h"
 #include "css/csshelper.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "css/cssstyleselector.h"
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_br.h"
