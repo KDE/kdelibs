@@ -42,7 +42,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 	lab->setText(i18n("You can use an external preview program (PS viewer) instead of the "
 					  "KDE built-in preview system."
 					  "<p><b><u>Warning:</u></b> using an external program means that "
-					  "printing can not be cancelled from the preview."));
+					  "printing can not be canceled from the preview."));
 	lab->setTextFormat(Qt::RichText);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
