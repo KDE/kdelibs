@@ -26,6 +26,14 @@ typedef void (*dcop_callback_t)(
 );
   
 /**
+ * \addtogroup dcopc C interface to DCOP
+ *  @{
+ * dcop_attach, dcop_register, dcop_detach, dcop_register_callback,
+ * dcop_send_signal, and dcop_call make up the C interface to DCOP.
+ */
+
+/**
+ * \relates DCOPClient
  * Attach to the DCOP server.
  * This registers you as anonymous-pid - you may then register with a 'real'
  * name with dcop_register().
@@ -33,6 +41,7 @@ typedef void (*dcop_callback_t)(
 Bool dcop_attach(void);
 
 /**
+ * \relates DCOPClient
  * Register as app 'app_name'.
  * If add_pid is true, you will be registered as app_name-pid.
  *
@@ -48,12 +57,14 @@ Bool dcop_attach(void);
 char * dcop_register(const char * app_name, Bool add_pid);
 
 /**
+ * \relates DCOPClient
  * Detach from the DCOP server.
  * @return true if successful, false otherwise
  */
 Bool dcop_detach(void);
 
 /**
+ * \relates DCOPClient
  * Register the callback function for an object id.
  * This function should have signature dcop_callback_t. The name of the
  * actual function that should be called is passed in the struct.
@@ -64,6 +75,7 @@ Bool dcop_detach(void);
 Bool dcop_register_callback(const char * object_id, dcop_callback_t callback);
 
 /**
+ * \relates DCOPClient
  * Send a signal to a DCOP object.
  *
  * @param receiving_app     Name the target application is registered under.
@@ -87,6 +99,7 @@ Bool dcop_send_signal(
 );
 
 /**
+ * \relates DCOPClient
  * Call a function of a DCOP object.
  *
  * @param app_name          Name this application is registered under.
@@ -111,6 +124,8 @@ Bool dcop_call(
   char ** reply_data,
   int * reply_data_length
 );
+
+/** @} */
 
 #ifdef __cplusplus
 }
