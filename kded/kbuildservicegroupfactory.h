@@ -51,6 +51,14 @@ public:
   KServiceGroup *addNewEntry( const QString& file, const char *resource, KSycocaEntry *newEntry);
 
   /**
+   * Adds the entry @p newEntry to the "parent group" @p parent, creating
+   * the group if necassery.
+   * A "parent group" is a group of services that all have the same
+   * "X-KDE-ParentApp".
+   */
+  KServiceGroup *addNewChild( const QString &parent, const char *resource, KSycocaEntry *newEntry);
+ 
+  /**
    * Add a new entry
    */
   virtual void addEntry( KSycocaEntry *newEntry, const char *resource );

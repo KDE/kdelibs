@@ -199,7 +199,12 @@ KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 
    KService * service = (KService *) newEntry;
    if (!service->isDeleted())
+   {
       m_serviceGroupFactory->addNewEntry(service->entryPath(), resource, service);
+      QString parent = service->parentApp();
+      if (!parent.isEmpty())
+         m_serviceGroupFactory->addNewChild(parent, resource, service);
+   }
 
    QString name = service->desktopEntryName();
    m_nameDict->add( name, newEntry );

@@ -108,6 +108,28 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
   return entry;
 }
 
+KServiceGroup *
+KBuildServiceGroupFactory::addNewChild( const QString &parent, const char *resource, KSycocaEntry *newEntry)
+{
+  QString name = "#parent#"+parent;
+
+  KServiceGroup *entry = 0;
+  KSycocaEntry::Ptr *ptr = m_entryDict->find(name);
+  if (ptr)
+     entry = dynamic_cast<KServiceGroup *>(ptr->data());
+
+  if (!entry)
+  {
+     entry = new KServiceGroup(name);
+     addEntry( entry, resource );
+  }
+  if (newEntry)
+     entry->addEntry( newEntry );
+
+  return entry;
+
+}
+
 void
 KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry, const char *resource)
 {
