@@ -29,8 +29,7 @@ typedef enum {
   ART_MOVETO_OPEN,
   ART_CURVETO,
   ART_LINETO,
-  ART_END,
-  ART_END2	/* // KSVG extension */
+  ART_END
 } ArtPathcode;
 
 #ifdef __cplusplus

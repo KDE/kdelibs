@@ -293,12 +293,6 @@ art_bez_path_to_vec (const ArtBpath *bez, double flatness)
 	  vec[vec_n].y = 0;
 	  vec_n++;
 	  break;
-	case ART_END2: /* // KSVG addition */
-	  vec[vec_n].code = bez[bez_index].code;
-	  vec[vec_n].x = bez[bez_index].x3;
-	  vec[vec_n].y = bez[bez_index].y3;
-	  vec_n++;
-	  break;
 	case ART_CURVETO:
 #ifdef VERBOSE
 	  printf ("%g,%g %g,%g %g,%g %g,%g\n", x, y,

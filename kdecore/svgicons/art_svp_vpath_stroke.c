@@ -455,13 +455,6 @@ art_svp_vpath_stroke_raw (ArtVpath *vpath,
       next = i;
       second = next;
 
-      /* // KSVG addition */ 
-	  /* // if ART_END2 dont draw that stroke */
-	  if(vpath[begin_idx].code == ART_END2)
-      {
-	      end_idx = next;
-          continue;
-      }
 
       /* invariant: this doesn't coincide with next */
       while (vpath[next].code == ART_LINETO)
