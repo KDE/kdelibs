@@ -50,6 +50,7 @@
 #include <qtextstream.h>
 #include <kinstance.h>
 #include <kstddirs.h>
+#include <kglobal.h>
 #include <klibloader.h>
 #include <kapp.h>
 
@@ -198,6 +199,8 @@ static pid_t launch(int argc, const char *_name, const char *args)
      d.handle = 0;
      if (lib.right(3) == ".la")
      {
+        KInstance instance( "kdeinit" ); // we need it for findLibrary, but it has to be destroyed
+                                         // asap, otherwise the app finds an existing global instance !
         QString libpath = KLibLoader::findLibrary( lib );
         if ( !libpath.isEmpty())
         {
@@ -771,6 +774,8 @@ static void handle_requests(pid_t waitForPid)
 
 static void kdeinit_library_path()
 {
+   KInstance instance( "kdeinit" );
+
    QCString ltdl_library_path = getenv("LTDL_LIBRARY_PATH");
    QCString ld_library_path = getenv("LD_LIBRARY_PATH");
    QStringList candidates = KGlobal::dirs()->resourceDirs("lib");
@@ -922,9 +927,6 @@ int main(int argc, char **argv, char **envp)
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
       setsid();
-
-   /** Needed for the locate and findLibrary calls */
-   KInstance instance( "kdeinit" );
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
