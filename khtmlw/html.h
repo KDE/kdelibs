@@ -1,7 +1,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  840
+#define KHTMLW_VERSION  806		// 00.08.06
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -16,6 +16,7 @@ class KHTMLWidget;
 
 #include "drag.h"
 #include "htmlobj.h"
+#include "htmlclue.h"
 #include "htmlform.h"
 #include "htmltoken.h"
 #include "htmlframe.h"
@@ -388,6 +389,11 @@ public:
       function to tell the widget to parse again.
       */
     void parseAfterLastImage();
+
+    /*
+     * return the map matching mapurl
+     */
+	HTMLMap *getMap( const char *mapurl );
 
     // Registers QImageIO handlers for JPEG and GIF
     static void registerFormats();
@@ -1009,6 +1015,11 @@ protected:
 
 	/// the text to be put in a form element
 	QString formText;
+
+	/*
+	 * Image maps used in this document
+	 */
+	QList<HTMLMap> mapList;
 
     /**
      * The toplevel frame set if we have frames otherwise 0L.

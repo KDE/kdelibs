@@ -1,6 +1,6 @@
 
 lib_LTLIBRARIES = libkhtmlw.la
-libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp
+libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp
 libkhtmlw_la_LIBADD = -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs -L@topdir@/jscript/.libs @all_libraries@ -lkdecore -lqt -lX11 -lgif @LIBJPEG@
 
 BUILT_SOURCES = html.moc htmlform.moc htmlframe.moc htmlview.moc
@@ -10,7 +10,7 @@ htmlframe.cpp: htmlframe.moc
 htmlview.cpp: htmlview.moc
 
 CLEANFILES = $(BUILT_SOURCES)
-include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h ampseq.h htmltoken.h htmlframe.h htmlview.h
+include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h ampseq.h htmltoken.h htmlframe.h htmlview.h htmlclue.h
 libkhtmlw_la_LDFLAGS = -version-info 0:8 -rpath $(libdir)
 
 MOC = @MOC@

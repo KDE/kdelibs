@@ -1,7 +1,15 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 31 July 1997 - Martin Jones.
+Last Change: 2 August 1997 - Martin Jones.
+
+
+Version 0.8.6 - Martin
+----------------------
+
+ Client side image maps.  Only works for maps defined within the HTML, not
+ separate files.  Haven't tested shape=poly or shape=circle yet.
+ Separated Clues from Objects.  Clues now in htmlclue.[h|cpp]
 
 
 Version 0.8.5 - Martin
@@ -61,7 +69,10 @@ Version 0.8.2a - Martin
  stable libraries.
 
  Added #define KHTMLW_VERSION 820 in html.h
+
+
 Version 0.8.1 - Martin
+----------------------
 
  Fixed bug introduced in 0.7.9 affecting lists and glossarys.
 

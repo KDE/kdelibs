@@ -118,6 +118,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 	bIsTextSelected = false;
     formList.setAutoDelete( true );
 	listStack.setAutoDelete( true );
+	mapList.setAutoDelete( true );
 
     standardFont = "times";
     fixedFont = "courier";
@@ -1078,6 +1079,9 @@ void KHTMLWidget::parse()
 	inTextArea = false;
 	inTitle = false;
 
+	listStack.clear();
+	mapList.clear();
+
 	parsing = true;
 	indent = 0;
 	vspace_inserted = false;
@@ -1332,13 +1336,127 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
     return 0L;
 }
 
-// <a               </a>            partial
+// <a               </a>
 // <address>        </address>
+// <area            </area>
 void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 {
-	if ( strncasecmp( str, "<a ", 3 ) == 0 )
+	if ( strncasecmp( str, "<area", 5 ) == 0 )
 	{
-		vspace_inserted = FALSE;
+		if ( mapList.isEmpty() )
+			return;
+
+		QString s = str + 3;
+		StringTokenizer st( s, " >" );
+
+		QString href;
+		QString coords;
+		QString target;
+		HTMLArea::Shape shape = HTMLArea::Rect;
+
+		while ( st.hasMoreTokens() )
+		{
+			const char* p = st.nextToken();
+
+			if ( strncasecmp( p, "shape=", 6 ) == 0 )
+			{
+				if ( strncasecmp( p+6, "rect", 4 ) == 0 )
+					shape = HTMLArea::Rect;
+				else if ( strncasecmp( p+6, "poly", 4 ) == 0 )
+					shape = HTMLArea::Poly;
+				else if ( strncasecmp( p+6, "circle", 6 ) == 0 )
+					shape = HTMLArea::Circle;
+			}
+			else if ( strncasecmp( p, "href=", 5 ) == 0 )
+			{
+				p += 5;
+				if ( *p == '#' )
+				{// reference
+					KURL u( actualURL );
+					u.setReference( p + 1 );
+					href = u.url();
+				}
+				else if ( strchr( p, ':' ) )
+				{// full URL
+					href =  p;
+				}
+				else
+				{// relative URL
+					KURL u( baseURL );
+					KURL u2( baseURL, p );
+					href = u2.url();
+				}
+			}
+			else if ( strncasecmp( p, "target=", 7 ) == 0 )
+			{
+				target = p+7;
+			}
+			else if ( strncasecmp( p, "coords=", 7 ) == 0 )
+			{
+				coords = p+7;
+			}
+		}
+
+		if ( !coords.isEmpty() )
+		{
+			HTMLArea *area = 0;
+
+			switch ( shape )
+			{
+				case HTMLArea::Rect:
+					{
+						int x1, y1, x2, y2;
+						sscanf( coords, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
+						QRect rect( x1, y1, x2-x1, y2-y1 );
+						area = new HTMLArea( rect, href, target );
+						printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
+					}
+					break;
+
+				case HTMLArea::Circle:
+					{
+						int xc, yc, rc;
+						sscanf( coords, "%d,%d,%d", &xc, &yc, &rc );
+						area = new HTMLArea( xc, yc, rc, href, target );
+						printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
+					}
+					break;
+
+				case HTMLArea::Poly:
+					{
+						printf( "Area Poly " );
+						int count = 0, x, y;
+						QPointArray parray;
+						const char *ptr = coords;
+						while ( ptr )
+						{
+							x = atoi( ptr );
+							ptr = strchr( ptr, ',' );
+							if ( ptr )
+							{
+								y = atoi( ++ptr );
+								parray.resize( count + 1 );
+								parray.setPoint( count, x, y );
+								printf( "%d, %d  ", x, y );
+								count++;
+								ptr = strchr( ptr, ',' );
+								if ( ptr ) ptr++;
+							}
+						}
+						printf( "\n" );
+						if ( count )
+							area = new HTMLArea( parray, href, target );
+					}
+					break;
+			}
+
+			if ( area )
+				mapList.getLast()->addArea( area );
+		}
+	}
+	else if ( strncasecmp( str, "<a ", 3 ) == 0 )
+	{
+		vspace_inserted = false;
 		url[0] = '\0';
 		target[0] = '\0';
 
@@ -2013,6 +2131,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		const char* filename = 0L;
 		QString s = str + 5;
 		QString fullfilename;
+		QString usemap;
 		int width = -1;
 		int height = -1;
 		int percent = 0;
@@ -2040,6 +2159,10 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 				else if ( strcasecmp( token + 6, "right" ) == 0 )
 					align = HTMLClue::Right;
 			}
+			else if ( strncasecmp( token, "usemap=", 7 ) == 0 )
+			{
+				usemap = token + 7;
+			}
 		}
 		// if we have a file name do it...
 		if ( filename != 0L )
@@ -2054,18 +2177,31 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 				_clue->append( flow );
 			}
 
+			HTMLImage *image;
+
+			if ( usemap.isEmpty() )
+			{
+			    image =  new HTMLImage( this, kurl.url(), url, target,
+							 _clue->getMaxWidth(), width, height, percent );
+			}
+			else
+			{
+				printf( "using map: %s\n", (const char *)usemap );
+			    image =  new HTMLImageMap( this, kurl.url(), url, target,
+							 _clue->getMaxWidth(), width, height, percent );
+				((HTMLImageMap *)image)->setMapURL( usemap );
+			}
+
 			if ( align != HTMLClue::Left && align != HTMLClue::Right )
 			{
-			    flow->append( new HTMLImage( this, kurl.url(), url, target,
-							 _clue->getMaxWidth(), width, height, percent ) );
+			    flow->append( image );
 			}
 			// we need to put the image in a HTMLClueAligned
 			else
 			{
 				HTMLClueAligned *aligned = new HTMLClueAligned (flow, 0, 0, _clue->getMaxWidth() );
 				aligned->setHAlign( align );
-				aligned->append( new HTMLImage( this, kurl.url(), url, target,
-								_clue->getMaxWidth(), width, height, percent ) );
+				aligned->append( image );
 				flow->append( aligned );
 			}
 		} 
@@ -2162,6 +2298,7 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 	}
 }
 
+// <map             </map>
 // <menu>           </menu>         partial
 void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 {
@@ -2173,11 +2310,29 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 //		parseList( _clue, _clue->getMaxWidth(), Menu );
 		flow = NULL;
 	}
-	if (strncasecmp( str, "</menu>", 7 ) == 0)
+	else if (strncasecmp( str, "</menu>", 7 ) == 0)
 	{
 		listStack.pop();
 		indent -= INDENT_SIZE;
 		flow = NULL;
+	}
+	else if ( strncasecmp( str, "<map", 4 ) == 0 )
+	{
+		QString s = str + 5;
+
+		StringTokenizer st( s, " >" );
+		while ( st.hasMoreTokens() )
+		{
+			const char* token = st.nextToken();
+			if ( strncasecmp( token, "name=", 5 ) == 0)
+			{
+				QString mapurl = "#";
+				mapurl += token+5;
+				HTMLMap *map = new HTMLMap( mapurl );
+				mapList.append( map );
+				printf( "Map: %s\n", (const char *)mapurl );
+			}
+		}
 	}
 }
 
@@ -3164,6 +3319,19 @@ void KHTMLWidget::positionFormElements()
 	}
 }
 
+HTMLMap *KHTMLWidget::getMap( const char *mapurl )
+{
+	HTMLMap *map;
+
+	for ( map = mapList.first(); map != 0; map = mapList.next() )
+	{
+		if ( strcasecmp( map->mapURL(), mapurl ) == 0 )
+			return map;
+	}
+
+	return 0;
+}
+
 void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 	int _w, int _h )
 {
@@ -3250,7 +3418,7 @@ void KHTMLWidget::slotAutoScrollY()
 
 // used to update the selection when the user has caused autoscrolling
 // by dragging the mouse out of the widget bounds.
-void KHTMLWidget::slotUpdateSelectText( int newy )
+void KHTMLWidget::slotUpdateSelectText( int )
 {
 	if ( pressed )
 	{

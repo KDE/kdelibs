@@ -1,3 +1,10 @@
+//-----------------------------------------------------------------------------
+//
+// KDE HTML Widget
+//
+
+#ifndef __HTMLFONT_H__
+#define __HTMLFONT_H__
 
 #include <qlist.h>
 #include <qcolor.h>
@@ -102,5 +109,7 @@ private:
 	QList<HTMLFont> list;
 };
 
+//-----------------------------------------------------------------------------
 
+#endif	// __HTMLFONT_H__
 
