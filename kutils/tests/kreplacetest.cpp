@@ -141,6 +141,34 @@ static void testReplaceSimple( int options, int button = 0 )
 }
 
 
+static void testReplaceBlank( int options, int button = 0 )
+{
+    kdDebug() << "testReplaceBlank: " << options << endl;
+    // Standard test of a replacement string longer than the matched string
+    KReplaceTest test( QString( "aaaaaa" ), button );
+    test.replace( "a", "", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "" ) {
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of ''" << endl;
+        exit(1);
+    }
+}
+
+static void testReplaceBlankSearch( int options, int button = 0 )
+{
+    kdDebug() << "testReplaceBlankSearch: " << options << endl;
+    // Standard test of a replacement string longer than the matched string
+    KReplaceTest test( QString( "bbbb" ), button );
+    test.replace( "", "foo", options );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "" ) {
+        kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'foobfoobfoobfoobfoo'" << endl;
+        exit(1);
+    }
+}
+
 static void testReplaceLonger( int options, int button = 0 )
 {
     kdDebug() << "testReplaceLonger: " << options << endl;
@@ -187,6 +215,20 @@ int main( int argc, char **argv )
 {
     KCmdLineArgs::init(argc, argv, "kreplacetest", 0, 0);
     KApplication app;
+
+    testReplaceBlank( 0 );
+    testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBlank( KReplaceDialog::FindBackwards, 0 );
+    testReplaceBlank( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBlank( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+
+    testReplaceBlankSearch( 0 );
+    testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
+    testReplaceBlankSearch( KReplaceDialog::FindBackwards, 0 );
+    testReplaceBlankSearch( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
+    testReplaceBlankSearch( KReplaceDialog::FindBackwards | KReplaceDialog::PromptOnReplace, KDialogBase::User1 ); // replace all
 
     testReplaceSimple( 0 );
     testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialogBase::User3 ); // replace
