@@ -546,7 +546,7 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
       if (!KDesktopFile::isAuthorizedDesktopFile( bin))
       {
          KMessageBox::sorry(0, i18n("You are not authorized to execute this file."));
-         return;
+         return 0;
       }
       if( bin[0] == '/' ) // Full path
           service = new KService( bin );
@@ -649,7 +649,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
   if (!KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
      KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
-     return;
+     return 0;
   }
 
   // Remember we opened those urls, for the "recent documents" menu in kicker
