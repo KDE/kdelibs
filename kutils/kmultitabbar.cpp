@@ -36,7 +36,7 @@
 
 #include <kiconloader.h>
 #include <kdebug.h>
-
+#include <qapplication.h>
 
 class KMultiTabBarTabPrivate {
 public:
@@ -49,6 +49,7 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 	m_expandedTabSize=-1;
 	m_showActiveTabTexts=false;
 	m_tabs.setAutoDelete(true);
+	m_barMode=bm;
 	setHScrollBarMode(AlwaysOff);
 	setVScrollBarMode(AlwaysOff);
 	if (bm==KMultiTabBar::Vertical)
@@ -80,7 +81,28 @@ void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 
 	if  ( (m_style==KMultiTabBar::KDEV3) ||
 		(m_style==KMultiTabBar::KDEV3ICON ) ) {
+		delete mainLayout;
+		mainLayout=0;
 		resizeEvent(0);
+	} else if (mainLayout==0) {
+		if (m_barMode==KMultiTabBar::Vertical)
+		{
+			box=new QWidget(viewport());
+			mainLayout=new QVBoxLayout(box);
+			box->setFixedWidth(24);
+			setFixedWidth(24);
+		}
+		else
+		{
+			box=new QWidget(viewport());
+			mainLayout=new QHBoxLayout(box);
+			box->setFixedHeight(24);
+			setFixedHeight(24);
+		}
+	        for (uint i=0;i<m_tabs.count();i++)
+        	        mainLayout->add(m_tabs.at(i));
+		mainLayout->setAutoAdd(true);
+
 	}
         viewport()->repaint();
 }
@@ -143,6 +165,10 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 
 void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 	kdDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
+	if (ev) QScrollView::resizeEvent(ev);
+
+	box->setPaletteBackgroundColor(Qt::green);
+	setPaletteBackgroundColor(Qt::red);
 	if ( (m_style==KMultiTabBar::KDEV3) ||
 		(m_style==KMultiTabBar::KDEV3ICON) ){
 		box->setGeometry(0,0,width(),height());
@@ -168,23 +194,39 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		}
 //SET SIZE & PLACE
 		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top)) {
+
 			setFixedHeight(lines*24);
 			box->setFixedHeight(lines*24);
+			QApplication::flush();
+			QApplication::syncX();
 			tmp=0;
 			cnt=0;
-			m_lines=lines;
+			m_lines=lines=height()/24;
+			kdDebug()<<"m_lines recalculated="<<m_lines<<endl;
 			lines=0;
 		        for (uint i=0;i<m_tabs.count();i++) {
 				cnt++;
 				tmp+=m_tabs.at(i)->neededSize();
 				if (tmp>space) {
+					kdDebug()<<"about to start new line"<<endl;
 					if (cnt>1) i--;
-					else
+					else {
+						kdDebug()<<"placing line on old line"<<endl;
 						m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
+					}
 					cnt=0;
 					tmp=0;
 					lines++;
-				} else 	m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
+					kdDebug()<<"starting new line:"<<lines<<endl;
+
+				} else 	{
+					kdDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")"<<endl;
+					
+					m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
+			QApplication::flush();
+			QApplication::syncX();
+
+				}
 			}
 		}
 		else {
@@ -192,7 +234,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 			box->setFixedWidth(lines*24);
 			tmp=0;
 			cnt=0;
-			m_lines=lines;
+			m_lines=lines=width()/24;
 			lines=0;
 		        for (uint i=0;i<m_tabs.count();i++) {
 				cnt++;
@@ -211,7 +253,6 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 
 		kdDebug()<<"needed lines:"<<m_lines<<endl;
 	}
-	if (ev) QScrollView::resizeEvent(ev);
 }
 
 
