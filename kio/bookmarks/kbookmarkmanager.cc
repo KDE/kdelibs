@@ -253,6 +253,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     QCString cstr;
 
     KSaveFile file( filename );
+
     if ( file.status() != 0 )
         goto failure;
 
@@ -265,6 +266,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
 
 failure:
     static int hadSaveError = false;
+    file.abort();
     if ( !hadSaveError )
         KMessageBox::error( 
             0L, i18n("Couldn't save bookmarks in %1. Reported error was: %2."
