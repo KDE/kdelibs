@@ -661,6 +661,7 @@ KDockWidget::~KDockWidget()
     undock();
   }
   delete pix;
+  emit iMBeingClosed();
   manager->childDock->remove( this );
 }
 
@@ -861,7 +862,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   if( target->formerBrotherDockWidget != 0L) {
     newDock->formerBrotherDockWidget = target->formerBrotherDockWidget;
     if( formerBrotherDockWidget != 0L)
-      QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
+      QObject::connect( newDock->formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
                         newDock, SLOT(loseFormerBrotherDockWidget()) );
       target->loseFormerBrotherDockWidget();
     }
@@ -976,6 +977,8 @@ void KDockWidget::undock()
   if ( parentTab ){
     parentTab->removePage( this );
     formerBrotherDockWidget = (KDockWidget*)parentTab->getFirstPage();
+    QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
+                      this, SLOT(loseFormerBrotherDockWidget()) );
     applyToWidget( 0L );
     if ( parentTab->pageCount() == 1 ){
 
@@ -1019,8 +1022,7 @@ void KDockWidget::undock()
       manager->blockSignals(false);
       emit manager->replaceDock( parentOfTab, lastTab );
       lastTab->currentDockPos = parentOfTab->currentDockPos;
-			if( parentOfTab->formerBrotherDockWidget)
-				emit parentOfTab->iMBeingClosed();
+			emit parentOfTab->iMBeingClosed();
       manager->blockSignals(true);
       delete parentOfTab;
 
@@ -1063,8 +1065,7 @@ void KDockWidget::undock()
       delete parentSplitterOfDockWidget;
       manager->blockSignals(false);
       emit manager->replaceDock( group, secondWidget );
-			if( group->formerBrotherDockWidget)
-				emit group->iMBeingClosed();
+			emit group->iMBeingClosed();
       manager->blockSignals(true);
       delete group;
 
