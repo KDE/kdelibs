@@ -293,7 +293,7 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
 
 void KCookieServer::slotSave()
 {
-   kdDebug(7104) << "Saving cookie stuff!\n" << endl;
+   kdDebug(7104) << "Saving cookie stuff!" << endl;
 
    delete mTimer;
    mTimer = 0;
