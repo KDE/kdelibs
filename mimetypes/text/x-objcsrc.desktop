@@ -1,0 +1,28 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Objective-C sources
+Comment[ca]=Fonts Objective-C
+Comment[cs]=Zdrojový kód v jazyku Objective-C
+Comment[da]=Objective-C kilder
+Comment[de]=Objective-C Quellcode
+Comment[es]=Código Objective-C
+Comment[fi]=Objective-C -lähdekoodi
+Comment[fr]=Fichier source Objective-C
+Comment[hr]=Objective-C izvorne datoteke
+Comment[hu]=Objective-C forrás
+Comment[is]='Objective-C'-forritstexti
+Comment[it]=Sorgenti Objective-C
+Comment[nl]=Objective-C bronbestand
+Comment[no]=Objective-C-kildekode
+Comment[pl]=¬ród³o Objective-C
+Comment[pt]=Programa Objective-C
+Comment[pt_BR]=Programas Objective-C
+Comment[ro]=Sursã Objective-C
+Comment[ru]=ðÒÏÇÒÁÍÍÁ ÎÁ ÑÚÙËÅ Objective-C
+Comment[sk]=Zdrojový kód v jazyku Objective-C
+Comment[sl]=Izvorna koda Objective-C
+Comment[sv]=Objective-C-källkod
+Icon=c_src.png
+Type=MimeType
+MimeType=text/x-objcsrc
+Patterns=*.m;
