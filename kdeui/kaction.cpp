@@ -2661,7 +2661,7 @@ int KActionMenu::plug( QWidget* widget, int index )
       id = menu->insertItem( text(), d->m_popup, -1, index );
 
     if ( !isEnabled() )
-        menu->setItemEnabled( id, false );
+      menu->setItemEnabled( id, false );
 
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -2693,6 +2693,9 @@ int KActionMenu::plug( QWidget* widget, int index )
     }
 
     addContainer( bar, id_ );
+
+    if (!whatsThis().isEmpty())
+      QWhatsThis::add( bar->getButton(id_), whatsThis() );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
     if (delayed()) {
