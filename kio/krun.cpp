@@ -40,6 +40,7 @@
 #include <dcopclient.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <kwm.h>
 #include <kdesktopfile.h>
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
@@ -290,6 +291,8 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
+  
+  int desktop = KWM::currentDesktop();
 
   KShellProcess proc;
 
@@ -303,11 +306,11 @@ pid_t KRun::run( const QString& _cmd )
 
     QString prefix =
       (QString(getenv("SHELL")).right(3) == "csh") ?
-      "setenv LD_PRELOAD %1 ;" :
-      "LD_PRELOAD=%1 ";
+      "setenv LD_PRELOAD %1 ; setenv X_INITIAL_DESKTOP %2 ;" :
+      "LD_PRELOAD=%1 X_INITIAL_DESKTOP=%2 ";
 
-    proc << prefix.arg(lib);
-    kdDebug(7010) << prefix.arg(lib) << endl;
+    proc << prefix.arg(lib).arg(desktop);
+    kdDebug(7010) << prefix.arg(lib).arg(desktop) << endl;
   }
 
   proc << _cmd;
