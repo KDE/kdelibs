@@ -185,7 +185,7 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     	{
 	// these have to come before the table definition!
 	if(head || foot || firstBody)
-	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	    return 0;
 	HTMLElementImpl::addChild(child);
 	// ###
 #if 0

@@ -488,6 +488,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	case ID_BODY:
 	case ID_FRAMESET:
 	case ID_NOFRAMES:
+	case ID_SCRIPT:
 	    return true;
 	default:
 	    return false;

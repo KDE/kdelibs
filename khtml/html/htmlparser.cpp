@@ -290,6 +290,7 @@ void KHTMLParser::parseToken(Token *t)
 
 #ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "\n\n==> parser: processing token " << t->id << " current = " << current->id() << endl;
+	kdDebug(6035) << "inline=" << _inline << " inBody=" << inBody << endl;
 #endif
 
     if(t->id > ID_CLOSE_TAG)
@@ -300,9 +301,12 @@ void KHTMLParser::parseToken(Token *t)
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
-    if( (t->id == ID_TEXT && !_inline ) || !inBody )
+    if( t->id == ID_TEXT && (!_inline  || !inBody) )
 //      || ( current && current->renderer() && !current->renderer()->isInline())))
     {
+#ifdef PARSER_DEBUG
+	kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
+#endif
         if(t->text.length() == 1 && t->text[0] == QChar(' '))
         {
             //kdDebug( 6035 ) << "discarding space!" << endl;
@@ -551,7 +555,16 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 insertNode(e);
                 handled = true;
                 break;
-            default:
+		case ID_FRAME:
+		    if( haveFrameSet ) break;
+		    e = new HTMLFrameSetElementImpl(document);
+		    inBody = true;
+		    haveFrameSet = true;
+		    document->createSelector();
+		    insertNode(e);
+		    handled = true;
+		    break;
+		default:
                 e = new HTMLBodyElementImpl(document);
                 inBody = true;
                 document->createSelector();
@@ -773,6 +786,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
+	inBody = true;
         break;
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
@@ -1042,7 +1056,7 @@ void KHTMLParser::processCloseTag(Token *t)
         map = 0;
         break;
     case ID_HEAD+ID_CLOSE_TAG:
-        inBody = true;
+        //inBody = true;
         document->createSelector();
         break;
     case ID_TITLE+ID_CLOSE_TAG:
