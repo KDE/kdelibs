@@ -253,7 +253,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             }
 
             QRect fix(cx,cy,cw,ch);
-            QRect ele(_tx+borderLeft()+paddingLeft(),_ty+borderTop()+paddingTop(),w-vpab,h-hpab);
+            QRect ele(_tx+borderLeft(),_ty+borderTop(),w-vpab,h-hpab);
             QRect b = fix.intersect(ele);
             sx+=b.x()-cx;
             sy+=b.y()-cy;
