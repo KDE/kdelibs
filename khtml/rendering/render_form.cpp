@@ -340,14 +340,16 @@ void RenderRadioButton::reset()
 
 void RenderRadioButton::slotClicked()
 {
-    m_form->radioClicked(this);
+    // ### make radio button groups work properly when not inside a form
+    if (m_form)
+	m_form->radioClicked(this);
 }
 
 // -------------------------------------------------------------------------------
 
 
-RenderSubmitButton::RenderSubmitButton(QScrollView *view,
-				     HTMLFormElementImpl *form)
+RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLFormElementImpl *form,
+		      HTMLInputElementImpl *domParent)
     : RenderButton(view, form)
 {
     QPushButton *p = new QPushButton(view->viewport());
@@ -355,6 +357,7 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view,
 
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
+    m_domParent = domParent;
 }
 
 RenderSubmitButton::~RenderSubmitButton()
@@ -364,7 +367,9 @@ RenderSubmitButton::~RenderSubmitButton()
 void RenderSubmitButton::slotClicked()
 {
     m_clicked = true;
-    m_form->submit();
+    m_domParent->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
+    if (m_form)
+	m_form->submit();
 }
 
 QCString RenderSubmitButton::encoding()
@@ -407,8 +412,9 @@ void RenderSubmitButton::reset()
 // -------------------------------------------------------------------------------
 
 RenderImageButton::RenderImageButton(QScrollView *view,
-				     HTMLFormElementImpl *form)
-    : RenderSubmitButton(view, form)
+				     HTMLFormElementImpl *form,
+		      HTMLInputElementImpl *domParent)
+    : RenderSubmitButton(view, form, domParent)
 {
     image = 0;
 }
@@ -444,9 +450,9 @@ void RenderImageButton::setPixmap( const QPixmap &p, CachedObject *, bool *manua
 
 // -------------------------------------------------------------------------------
 
-RenderResetButton::RenderResetButton(QScrollView *view,
-				     HTMLFormElementImpl *form)
-    : RenderSubmitButton(view, form)
+RenderResetButton::RenderResetButton(QScrollView *view, HTMLFormElementImpl *form,
+		      HTMLInputElementImpl *domParent)
+    : RenderSubmitButton(view, form, domParent)
 {
 }
 
@@ -454,22 +460,41 @@ RenderResetButton::~RenderResetButton()
 {
 }
 
+void RenderResetButton::setValue(const DOMString &value)
+{
+    m_value = value;
+    if(m_value != 0)
+	static_cast<QPushButton *>(m_widget)->setText(m_value.string());
+    else
+	static_cast<QPushButton *>(m_widget)->setText(i18n("Reset"));
+}
+
 void RenderResetButton::slotClicked()
 {
-    m_form->reset();
+    m_domParent->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
+    if (m_form)
+	m_form->reset();
 }
 
 // -------------------------------------------------------------------------------
 
 RenderPushButton::RenderPushButton(QScrollView *view,
-				     HTMLFormElementImpl *form, HTMLInputElementImpl *input)
-    : RenderSubmitButton(view, form)
+				     HTMLFormElementImpl *form, HTMLInputElementImpl *domParent)
+    : RenderSubmitButton(view, form, domParent)
 {
-    m_domParent = input;
 }
 
 RenderPushButton::~RenderPushButton()
 {
+}
+
+void RenderPushButton::setValue(const DOMString &value)
+{
+    m_value = value;
+    if(m_value != 0)
+	static_cast<QPushButton *>(m_widget)->setText(m_value.string());
+    else
+	static_cast<QPushButton *>(m_widget)->setText(i18n(""));
 }
 
 void RenderPushButton::slotClicked()
@@ -497,7 +522,8 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLFormElementImpl *form,
 
 void RenderLineEdit::slotReturnPressed()
 {
-    m_form->maybeSubmit();
+    if (m_form)
+	m_form->maybeSubmit();
 }
 
 void RenderLineEdit::setValue(const DOMString &value)
@@ -661,7 +687,8 @@ void RenderFileButton::reset()
 
 void RenderFileButton::slotReturnPressed()
 {
-    m_form->maybeSubmit();
+    if (m_form)
+	m_form->maybeSubmit();
 }
 
 void RenderFileButton::setValue(const DOMString &value)

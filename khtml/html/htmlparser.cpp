@@ -766,40 +766,31 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = form;
 	break;
     case ID_BUTTON:
-        if(form)
-            n = new HTMLButtonElementImpl(document, form);
+	n = new HTMLButtonElementImpl(document, form);
 	break;
     case ID_FIELDSET:
-        if(form)
-            n = new HTMLFieldSetElementImpl(document, form);
+	n = new HTMLFieldSetElementImpl(document, form);
 	break;
     case ID_INPUT:
-        if(form)
-            n = new HTMLInputElementImpl(document, form);
+	n = new HTMLInputElementImpl(document, form);
 	break;
     case ID_LABEL:
-        if(form)
-            n = new HTMLLabelElementImpl(document, form);
+	n = new HTMLLabelElementImpl(document, form);
 	break;
     case ID_LEGEND:
-        if(form)
-            n = new HTMLLegendElementImpl(document, form);
+	n = new HTMLLegendElementImpl(document, form);
 	break;
     case ID_OPTGROUP:
-        if(form)
-            n = new HTMLOptGroupElementImpl(document, form);
+	n = new HTMLOptGroupElementImpl(document, form);
 	break;
     case ID_OPTION:
-        if(form)
-            n = new HTMLOptionElementImpl(document, form);
+	n = new HTMLOptionElementImpl(document, form);
 	break;
     case ID_SELECT:
-        if(form)
-            n = new HTMLSelectElementImpl(document, form);
+	n = new HTMLSelectElementImpl(document, form);
 	break;
     case ID_TEXTAREA:
-        if(form)
-            n = new HTMLTextAreaElementImpl(document, form);
+	n = new HTMLTextAreaElementImpl(document, form);
 	break;
 
 // lists

@@ -204,7 +204,8 @@ class RenderSubmitButton : public RenderButton
 {
     Q_OBJECT
 public:
-    RenderSubmitButton(QScrollView *view, HTMLFormElementImpl *form);
+    RenderSubmitButton(QScrollView *view, HTMLFormElementImpl *form,
+		      HTMLInputElementImpl *domParent);
     virtual ~RenderSubmitButton();
 
     virtual const char *renderName() const { return "RenderButton"; }
@@ -221,6 +222,7 @@ public slots:
 
 protected:
     bool m_clicked;
+    HTMLInputElementImpl *m_domParent; // so we can trigger events
 };
 
 // -------------------------------------------------------------------------
@@ -228,7 +230,8 @@ protected:
 class RenderImageButton : public RenderSubmitButton
 {
 public:
-    RenderImageButton(QScrollView *view, HTMLFormElementImpl *form);
+    RenderImageButton(QScrollView *view, HTMLFormElementImpl *form,
+		      HTMLInputElementImpl *domParent);
     virtual ~RenderImageButton();
 
     virtual const char *renderName() const { return "RenderSubmitButton"; }
@@ -248,17 +251,17 @@ public:
 class RenderResetButton : public RenderSubmitButton
 {
 public:
-    RenderResetButton(QScrollView *view, HTMLFormElementImpl *form);
+    RenderResetButton(QScrollView *view, HTMLFormElementImpl *form,
+		      HTMLInputElementImpl *domParent);
     virtual ~RenderResetButton();
 
+    virtual void setValue(const DOMString &value);
     virtual void slotClicked();
 };
 
 // -------------------------------------------------------------------------
 
 // these define <Input type=button>, and can only work with scripts
-// so we need to know the corresponding HTMLInputElementImpl, to be able to trigger
-// execution of the script there
 
 class RenderPushButton : public RenderSubmitButton
 {
@@ -269,10 +272,8 @@ public:
 
     virtual Type type() { return PushButton; }
 
+    virtual void setValue(const DOMString &value);
     virtual void slotClicked();
-
-protected:
-    HTMLInputElementImpl *m_domParent;
 };
 
 

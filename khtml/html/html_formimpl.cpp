@@ -663,19 +663,19 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	}
 	case SUBMIT:
 	{
-	    f = new RenderSubmitButton(view, _form);
+	    f = new RenderSubmitButton(view, _form, this);
 	    break;
 	}
 	case IMAGE:
 	{
-	    RenderImageButton *i = new RenderImageButton(view, _form);
+	    RenderImageButton *i = new RenderImageButton(view, _form, this);
 	    i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL());
 	    f = i;
 	    break;
 	}
 	case RESET:
 	{
-	    f = new RenderResetButton(view, _form);
+	    f = new RenderResetButton(view, _form, this);
 	    break;
 	}
 	case FILE:
@@ -999,7 +999,9 @@ bool HTMLOptionElementImpl::selected() const
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
-    m_rows = m_cols = 0;
+    // DTD requires rows & cols be specified, but we will provide reasonable defaults
+    m_rows = 3;
+    m_cols = 60;
     m_wrap = ta_Virtual;
 }
 
@@ -1007,7 +1009,9 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
-    m_rows = m_cols = 0;
+    // DTD requires rows & cols be specified, but we will provide reasonable defaults
+    m_rows = 3;
+    m_cols = 60;
     m_wrap = ta_Virtual;
 }
 

@@ -235,19 +235,18 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    if (comment) currToken->id = ID_COMMENT; /// ###
 	    if (script)
 	    {
-#ifdef TOKEN_DEBUG
-		kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
-#endif
 		if (scriptSrc != "") {
 		    // forget what we just got; load from src url instead
 		    cachedScript = Cache::requestScript(scriptSrc, parser->doc()->baseURL());
-		    cachedScript->ref(this);
 		    loadingExtScript = true;
 		    pendingSrc = QString(src.current(), src.length());
 		    _src = "";
 		    src = DOMStringIt();
 		}
 		else {
+#ifdef TOKEN_DEBUG
+		    kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
+#endif
 		    // Parse scriptCode containing <script> info
 		    kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
 		    view->part()->executeScript(QString(scriptCode, scriptCodeSize));
@@ -278,7 +277,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		currToken->id = ID_LISTING + ID_CLOSE_TAG;
 	    processToken();
             script = style = listing = comment = false;
-	    return; // Finished parsing script/style/listing	
+	    if (cachedScript)
+		cachedScript->ref(this);
+	    return; // Finished parsing script/style/comment/listing
         }
         // Find out wether we see an end tag without looking at
         // any other then the current character, since further characters
@@ -1307,7 +1308,7 @@ void HTMLTokenizer::finish()
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
     if (!loadingExtScript)
-	end();
+	end(); // this actually causes us to be deleted
 }
 
 void HTMLTokenizer::processToken()
@@ -1405,13 +1406,13 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #ifdef TOKEN_DEBUG
 	kdDebug( 6036 ) << "External script is:" << endl << script.string() << endl;
 #endif
-	view->part()->executeScript(script.string());
-	write(pendingSrc); // ###
-	pendingSrc = "";
 	cachedScript->deref(this);
 	cachedScript = 0;
+	view->part()->executeScript(script.string());
+	write(pendingSrc);
+	pendingSrc = "";
 	if (noMoreData)
-	    end();
+	    end(); // this actually causes us to be deleted
     }
 }
 

@@ -141,6 +141,10 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(pressed()) click = true;
 	setPressed(false);
 	break;
+    case MouseClick:
+	id = ATTR_ONCLICK;
+	click = true;
+	break;
     case MouseDblClick:
 	id = ATTR_ONDBLCLICK;
 	break;

@@ -431,12 +431,12 @@ bool KHTMLPart::closeURL()
     d->m_job = 0;
   }
 
-  d->m_bComplete = true; // to avoid emitting completed() in end() (David)
+  d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
 
   if ( d->m_bParsing )
   {
     kdDebug( 6050 ) << " was still parsing... calling end " << endl;
-    end();
+    slotFinishedParsing();
     d->m_bParsing = false;
   }
 
