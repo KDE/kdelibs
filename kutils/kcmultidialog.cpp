@@ -38,11 +38,13 @@
 #include <assert.h>
 #include <qlayout.h>
 
-KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const char *name, bool modal)
-  : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply | Ok, Ok,
-                parent, name, modal, true)
+KCMultiDialog::KCMultiDialog(QWidget *parent, const char *name, bool modal)
+    : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply |
+            Ok | User1, Ok, parent, name, modal, true,
+            KGuiItem( i18n( "&Reset" ), "undo" ) )
     , dialogface( IconList )
 {
+    showButton( User1, false );;
     init();
 }
 
@@ -307,8 +309,9 @@ void KCMultiDialog::slotAboutToShow(QWidget *page)
 
     if( module->changed() )
     {
-        kdWarning(710) << "Just loaded a KCModule but it's already changed."
-            << endl;
+        kdWarning(710) << "The KCModule \"" << module->className() <<
+            "\" called setChanged( true ) in the constructor."
+            " Please fix the module." << endl;
         clientChanged( true );
     }
     //setHelp( docpath, QString::null );

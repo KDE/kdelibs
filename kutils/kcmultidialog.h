@@ -49,13 +49,9 @@ public:
      *
      * @param parent The parent widget
      * @param name The widget name
-     * @param baseGroup The baseGroup, if you want to call a module out of
-     *                  kcontrol, just keep "settings"
      * @param modal If you pass true here, the dialog will be modal
      **/
-    KCMultiDialog(const QString& baseGroup = QString::fromLatin1("settings"),
-                  QWidget *parent=0, const char *name=0,
-                  bool modal=false);
+    KCMultiDialog( QWidget *parent=0, const char *name=0, bool modal=false );
 
     /**
      * Construct a personalized KCMultiDialog.
