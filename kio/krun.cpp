@@ -60,7 +60,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
       return KDEDesktopMimeType::run( u, true );
   }
   else if ( _mimetype == "application/x-executable"  ||
-	    _mimetype == "application/x-shellscript")
+            _mimetype == "application/x-shellscript")
    {
     if ( u.isLocalFile() )
       return KRun::run(u.path()); // just execute the url as a command
@@ -108,7 +108,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
     if ( !(*it).isLocalFile() )
       b_local_files = false;
 
-  if ( !b_local_app || b_local_files )
+  if ( !b_local_app || !b_local_files )
   {
     QString error;
     if (KApplication::startServiceByDesktopPath( _service.desktopEntryPath(),
@@ -134,7 +134,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 }
 
 pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
-		const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
+                const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
 {
   bool b_local_files = true;
 
@@ -461,11 +461,11 @@ void KRun::init()
       struct stat buff;
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
-	KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.url() ) );
-	m_bFault = true;
-	m_bFinished = true;
-	m_timer.start( 0, true );
-	return;
+        KMessageBoxWrapper::error( 0L, i18n( "<qt>Unable to run the command specified. The file or directory <b>%1</b> does not exist.</qt>" ).arg( m_strURL.url() ) );
+        m_bFault = true;
+        m_bFinished = true;
+        m_timer.start( 0, true );
+        return;
       }
       m_mode = buff.st_mode;
     }
@@ -484,7 +484,7 @@ void KRun::init()
     KURL::List urls;
     urls.append( m_strURL );
     run( KProtocolInfo::exec( m_strURL.protocol() ),
-	 urls );
+         urls );
 
     kdDebug(7010) << "Launched helper:" << endl;
 
@@ -516,7 +516,7 @@ void KRun::init()
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
   connect( job, SIGNAL( result( KIO::Job * ) ),
-	   this, SLOT( slotStatResult( KIO::Job * ) ) );
+           this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
 }
 
@@ -702,7 +702,7 @@ void KRun::foundMimeType( const QString& type )
     // It may be a directory or a file, let's stat
     KIO::StatJob *job = KIO::stat( m_strURL, m_bProgressInfo );
     connect( job, SIGNAL( result( KIO::Job * ) ),
-	     this, SLOT( slotStatResult( KIO::Job * ) ) );
+             this, SLOT( slotStatResult( KIO::Job * ) ) );
     m_job = job;
 
     return;
