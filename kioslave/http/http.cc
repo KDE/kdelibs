@@ -28,7 +28,7 @@ int main( int argc, char **argv )
   signal(SIGCHLD,sig_handler);
   signal(SIGSEGV,sig_handler2);
 
-  ProtocolManager manager;
+  //ProtocolManager manager;
 
   Connection parent( 0, 1 );
   
@@ -200,9 +200,12 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_bIgnoreJobErrors = false;
   m_bIgnoreErrors = false;
   m_iSavedError = 0;
-  m_iSize = 0;
+  m_iSize = -1;
 
   m_bCanResume = true; // most of http servers support resuming ?
+
+  
+  HTTP = HTTP_Unknown;
 }
 
 bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *hostname, int port)
@@ -283,7 +286,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
 
   if( do_proxy )
   {
-    char buffer[ 100 ];
+    char buffer[ 64 ];
     sprintf( buffer, ":%i", port );
     command += "http://";
     command += _url.host();
@@ -294,12 +297,15 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   string tmp = _url.encodedPathAndQuery( 0, true );
   command += tmp;
   
-  command += " HTTP/1.0\r\n"; /* start header */
-  command += "User-Agent: Konqueror/1.0\r\n"; /* User agent */
-	
+  command += " HTTP/1.1\r\n"; /* start header */
+  command += "Connection: Close\r\n"; // Duh, we don't want keep-alive stuff quite yet.
+  command += "User-Agent: "; /* User agent */
+  command += getUserAgentString();
+  command += "\r\n";
+
   if ( _offset > 0 )
   {
-    char buffer[ 100 ];
+    char buffer[ 64 ];
     sprintf( buffer, "Range: bytes=%li-\r\n", _offset );
     command += buffer;
     debug( "kio_http : Range = %s", buffer );
@@ -319,11 +325,11 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   if ( !m_strLanguages.empty() )
     command += "Accept-Language: " + m_strLanguages + "\r\n";
   
-  command += "Host: "; /* support for virtual hosts */
+  command += "Host: "; /* support for virtual hosts and required by HTTP 1.1*/
   command += _url.host();
   if ( _url.port() != 0 )
   {
-    char buffer[ 100 ];
+    char buffer[ 64 ];
     sprintf( buffer, ":%i", port );
     command += buffer;
   }
@@ -332,7 +338,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   if ( _post_data )
   {
     command += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
-    char buffer[ 100 ];
+    char buffer[ 64 ];
     sprintf( buffer, "%i\r\n", _post_data_size );
     command += buffer;
   }
@@ -390,21 +396,33 @@ repeat2:
     len = strlen( buffer );
     while( len && (buffer[ len-1 ] == '\n' || buffer[ len-1 ] == '\r') )
       buffer[ --len ] = 0;
-
+debug( "kio_http : Header: %s", buffer );
     if ( strncmp( buffer, "Accept-Ranges: none", 19 ) == 0 )
       m_bCanResume = false;
-
-    // debug( "kio_http : Header: %s", buffer );
-    else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
-      m_iSize = atol( buffer + 16 );
+    
+    
+    //else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
+    //m_iSize = atol( buffer + 16 );
     else if ( strncmp( buffer, "Content-Type: ", 14 ) == 0 || strncmp( buffer, "Content-type: ", 14 ) == 0 )
     {
       // Jacek: We can't send mimeType signal now,
       // because there may be another Content-Type to come
       m_strMimeType = buffer + 14;
     }
-    else if ( strncmp( buffer, "HTTP/1.0 ", 9 ) == 0 || strncmp( buffer, "HTTP/1.1 ", 9 ) == 0 )
+    else if ( strncasecmp( buffer, "HTTP/1.0 ", 9 ) == 0 )
     {
+      HTTP = HTTP_10;
+      // Unauthorized access
+      if ( strncmp( buffer + 9, "401", 3 ) == 0 )
+	unauthorized = true;
+      //Jacek: server error codes added (5xx)
+      else if ( buffer[9] == '4' ||  buffer[9] == '5' )
+      {
+	// Tell that we will only get an error page here.
+	errorPage();
+      }
+    } else if ( strncasecmp( buffer, "HTTP/1.1 ", 9 ) == 0 ) {
+      HTTP = HTTP_11;
       // Unauthorized access
       if ( strncmp( buffer + 9, "401", 3 ) == 0 )
 	unauthorized = true;
@@ -416,16 +434,14 @@ repeat2:
       }
     }
     // In fact we should do redirection only if we got redirection code
-    else if ( strncmp( buffer, "Location: ", 10 ) == 0 )
-    {
+    else if ( strncmp( buffer, "Location:", 9 ) == 0 ) {
       http_close();
+      fflush(stderr);
       K2URL u( _url, buffer + 10 );
       string url = u.url();
       redirection( url.c_str() );
       return http_open( u, _post_data, _post_data_size, _reload, _offset );
-    }
-    else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 )
-    {
+    } else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 ) {
       const char *p = buffer + 17;
       while( *p == ' ' ) p++;
       if ( strncmp( p, "Basic", 5 ) != 0 ) continue;
@@ -436,9 +452,26 @@ repeat2:
       int i = 0;
       while( p[i] != '"' ) i++;
       realm.assign( p, i );
+    } else if (HTTP == HTTP_11) {
+      if ( strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
+
+	// If multiple encodings have been applied to an entity, the transfer-
+	// codings MUST be listed in the order in which they were applied.
+	QString tEncoding = buffer+19;
+	if (tEncoding == "chunked") {
+	  m_qEncodings.push("chunked");
+	} else if (tEncoding == "gzip") {
+	  m_qEncodings.push("gzip");
+	} else if (tEncoding == "identity") {
+	  continue;  // Identy is the same as no encoding.. AFAIK
+	} else {
+	  fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
+	  fflush(stderr);
+	  abort();
+	}
+      }
     }
   }
-  
   if ( unauthorized )
   {
     http_close();
@@ -501,7 +534,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
   }
   
   totalSize( m_iSize );
-
+  //totalSize(-1);
   http_close();
 
   finished();
@@ -510,9 +543,15 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 }
 
+string HTTPProtocol::getUserAgentString ()
+{
+  return "Konqueror/1.1";
+}
+
 
 void HTTPProtocol::slotGet( const char *_url )
 {
+  unsigned int old_len=0;
   string url = _url;
   
   K2URL usrc( _url );
@@ -543,51 +582,152 @@ void HTTPProtocol::slotGet( const char *_url )
 
   gettingFile( _url );
   
-  totalSize( m_iSize );  
   int processed_size = 0;
   time_t t_start = time( 0L );
   time_t t_last = t_start;
-
-  char buffer[ 4096 ];
-  while( !feof( m_fsocket ) )
-  {
-    long n = fread( buffer, 1, 2048, m_fsocket );
-    if ( n == -1 )
-    {
-      error( ERR_CONNECTION_BROKEN, usrc.host() );
-      m_cmd = CMD_NONE;
-      return;
-    }
-   
-    if ( n > 0 )
-    {
-      data( buffer, n );
-
-      processed_size += n;
-      time_t t = time( 0L );
-      if ( t - t_last >= 1 )
-      {
-	processedSize( processed_size );
-	speed( processed_size / ( t - t_start ) );
-	t_last = t;
+  
+  char buffer[ 2048 ];
+  long nbytes=0;
+  while (!feof(m_fsocket)) {
+    nbytes = fread(buffer, 1, 2048, m_fsocket);
+    if (nbytes > 0) {
+      if (m_qEncodings.isEmpty())
+	data(buffer, nbytes);
+      else {
+	old_len=big_buffer.size();
+	big_buffer.resize(old_len+nbytes);
+	memcpy(big_buffer.data()+old_len, buffer, nbytes);
       }
+    }
+    if (nbytes == -1) {
+      //error( ERR_CONNECTION_BROKEN, usrc.host() );
+      //m_cmd = CMD_NONE;
+      break;
     }
   }
 
-  processedSize( m_iSize );
-  time_t t = time( 0L );
-  if ( t - t_start >= 1 )
-    speed( processed_size / ( t - t_start ) );
-
-  dataEnd();
   
   http_close();
 
-  finished();
+  size_t sz =0;
+  if (!big_buffer.isNull()) {
+    while (!m_qEncodings.isEmpty()) {
+      const char *enc = m_qEncodings.pop();
+      if (!enc)
+	break;
+      if (strncasecmp(enc, "gzip", 4)==0)
+	decodeGzip();
+      else if (strncasecmp(enc, "chunked", 7)==0) {
+	decodeChunked();
+      }
+    }
+    sz = sendData();
+  }
 
-  m_cmd = CMD_NONE;
+  t_last = time(0L);
+  if (t_last - t_start)
+    speed( sz / ( t_last - t_start ) );
+  else
+    speed(0);
+  finished();
+  if (nbytes == -1) {
+    error( ERR_CONNECTION_BROKEN, usrc.host() );
+    m_cmd = CMD_NONE;
+    return;
+  }
 }
 
+
+void HTTPProtocol::decodeChunked()
+{
+  char chunk_id[2]={0,0};
+  bool m_bLastChunk = false;
+  long m_iLeftInChunk=-1;
+  size_t offset=0;
+
+  QByteArray ar;
+
+  // A bytesleft of -1 indicates that a chunk has been read,
+  // and we should check for a new one.  If the next chunk is of
+  // zero length, we're done with the document.
+  // Technically we're supposed to decode the end result of the first pass
+  // and keep doing so until we've got a completely decoded document, but
+  // I don't think that's really necesary
+  // **
+  // The chunk format basically consists of
+  // length in hex+\n+data
+  while (m_bLastChunk !=true && offset < big_buffer.size()) {
+    if (m_iLeftInChunk == -1) {
+      QString s_length;
+      while ((chunk_id[0] != '\r' && chunk_id[0] != '\n')) {
+	bzero(chunk_id, 2);
+	memcpy(chunk_id, big_buffer.data()+offset, 1); offset++;
+	if (offset >= big_buffer.size()) {
+	  m_iLeftInChunk=0; m_bLastChunk=true;
+	} else
+	  s_length.append(chunk_id);
+      }
+      
+      offset++;
+
+      // One extra read to catch the LF
+      // Use strtol to convert from hex to dec, thanks to libwww
+      // for that tidbit, but we should do error checking like
+      // they do, alas I put too much trust in the web servers
+      if (s_length.data()) {
+	m_iLeftInChunk=strtol(s_length.data(), 0, 16);
+      }
+      if (m_iLeftInChunk <= 0) {
+	m_bLastChunk=true;
+	m_iLeftInChunk=0;
+	break;
+      }
+
+      // Expand the buffer, and append the new data
+      long old_size = ar.size();
+      ar.resize(ar.size()+m_iLeftInChunk);
+      memcpy(ar.data()+old_size, big_buffer.data()+offset, m_iLeftInChunk);
+
+      // And then make sure to "seek" forward past any trailing garbage
+      offset+=m_iLeftInChunk+2;
+      m_iLeftInChunk = -1;
+      m_bLastChunk = false;
+      bzero(chunk_id,2);
+    }
+  }
+  // Is this necesary?
+  big_buffer.resize(0);
+  big_buffer=ar;
+  big_buffer.detach();
+}
+
+void HTTPProtocol::decodeGzip()
+{
+  // Note I haven't found an implementation
+  // that correctly handles this stuff.  Apache
+  // sends both Transfer-Encoding and Content-Length
+  // headers, which is a no-no because the content
+  // could really be bigger than the content-length
+  // header implies.. like with gzip.
+  // eek. This is no fun for progress indicators.
+}
+
+size_t HTTPProtocol::sendData()
+{
+  size_t sent=0;
+  size_t sz = big_buffer.size();
+  processedSize(sz);
+  totalSize(sz);
+  while (sent+2048 < sz) {
+    data(big_buffer.data()+sent, 2048);
+    sent+=2048;
+  }
+  if (sent < sz)
+    data(big_buffer.data()+sent, (sz-sent));
+  dataEnd();;
+  m_cmd = CMD_NONE;
+  return sz;
+}
 
 void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
@@ -761,7 +901,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
       // This is a hack, since total size should be the size of all files together
       // while we transmit only the size of the current file here.
-      totalSize( m_iSize + offset);
+      //totalSize( m_iSize + offset);
 
       canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
 

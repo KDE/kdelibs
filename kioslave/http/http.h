@@ -16,6 +16,9 @@
 #include <errno.h>
 #include <netdb.h>
 
+#include <qstack.h>
+#include <qstring.h>
+
 #include <k2url.h>
 
 class HTTPProtocol : public IOProtocol
@@ -23,7 +26,16 @@ class HTTPProtocol : public IOProtocol
 public:
   HTTPProtocol( Connection *_conn );
   virtual ~HTTPProtocol() { }
-  
+
+  enum HTTP_REV {HTTP_Unknown, HTTP_10, HTTP_11};
+  enum HTTP_AUTH {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Unknown};
+
+  string realm;
+  enum HTTP_REV HTTP;
+  enum HTTP_AUTH Authentication;
+  QStack<char> m_qEncodings;
+  QByteArray big_buffer;
+
   virtual void slotGet( const char *_url );
   virtual void slotGetSize( const char *_url );
   virtual void slotCopy( const char *_source, const char *_dest );
@@ -35,6 +47,11 @@ public:
   Connection* connection() { return ConnectionSignals::m_pConnection; }
 
 protected:
+
+  void decodeChunked();
+  void decodeGzip();
+  size_t sendData();
+
   bool initSockaddr( struct sockaddr_in *server_name, const char *hostname, int port);
   bool http_open( K2URL &_url, const char* _post_data, int _post_data_len, bool _reload, unsigned long _offset = 0 );
   void http_close();
@@ -45,6 +62,8 @@ protected:
       IOProtocol::error( m_iSavedError, m_strSavedError.c_str() );
     m_iSavedError = 0;
   }
+
+  string getUserAgentString();
   
   int m_cmd;
 
@@ -63,13 +82,12 @@ protected:
   string m_strProxyPort;
   string m_strProxyUser;
   string m_strProxyPass;
+  struct sockaddr m_proxySockaddr;
 
-  bool m_bIgnoreJobErrors;
-  bool m_bIgnoreErrors;
+  // Stuff to hold various error state information
   int m_iSavedError;
   string m_strSavedError;
-  
-  struct sockaddr m_proxySockaddr;
+  bool m_bIgnoreJobErrors, m_bIgnoreErrors; 
 
   bool m_bCanResume;
 };
