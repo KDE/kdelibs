@@ -1654,21 +1654,7 @@ QString KHTMLPart::baseTarget() const
 
 KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
 {
-  // WABA: The following check is necassery to fix forms which don't set
-  // an action URL in the believe that it default to the same URL as
-  // the current page which contains the form.
-  if (url.isEmpty()) {
-    return m_url;
-  }
-
-  if (d->m_baseURL.isEmpty())
-  {
-     return KURL( m_url, url );
-  }
-  else
-  {
-     return KURL( d->m_baseURL, url );
-  }
+  return KURL( d->m_baseURL.isEmpty() ? m_url : d->m_baseURL, url );
 }
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
@@ -2100,6 +2086,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
   }
 
   KURL u = completeURL( url );
+  // special case for <a href="">
+  if ( url.isEmpty() )
+    u.setFileName( url );
+
   QString com;
 
   KMimeType::Ptr typ = KMimeType::findByURL( u );
@@ -2250,7 +2240,11 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
   }
 
-  KURL cURL = completeURL( url );
+
+  KURL cURL = completeURL( url, target );
+  // special case for <a href="">
+  if ( url.isEmpty() )
+    cURL.setFileName( url );
 
   if ( !cURL.isValid() )
     // ### ERROR HANDLING
@@ -4150,12 +4144,12 @@ QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &funct
 
 DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code )
 {
-    KJSProxy *proxy = jScript();
+  KJSProxy *proxy = jScript();
 
-    if (!proxy)
-	return 0;
-	
-    return proxy->createHTMLEventHandler(code);
+  if (!proxy)
+    return 0;
+
+  return proxy->createHTMLEventHandler( code );
 }
 
 KHTMLPart *KHTMLPart::opener()
