@@ -38,6 +38,7 @@ protected:
     DOMStringImpl() { s = 0, l = 0; }
 public:
     DOMStringImpl(QChar *str, unsigned int len);
+    DOMStringImpl(const QChar &ch);
     virtual ~DOMStringImpl();
 
     void append(DOMStringImpl *str);

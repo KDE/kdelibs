@@ -27,7 +27,7 @@ using namespace khtml;
 
 
 RenderBR::RenderBR()
-    : RenderText(new DOM::DOMStringImpl(new QChar('\n'), 1 ) )
+    : RenderText(new DOM::DOMStringImpl(QChar('\n')))
 {
 }
 

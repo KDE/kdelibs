@@ -42,6 +42,13 @@ DOMStringImpl::DOMStringImpl(QChar *str, uint len)
     s = str, l = len;
 }
 
+DOMStringImpl::DOMStringImpl(const QChar &ch)
+{
+    s = QT_ALLOC_QCHAR_VEC( 1 );
+    memcpy(s, &ch, sizeof(QChar));
+    l = 1;
+}
+
 DOMStringImpl::~DOMStringImpl()
 {
     if(s) delete [] s;
