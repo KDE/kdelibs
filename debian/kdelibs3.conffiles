@@ -163,3 +163,16 @@
 /etc/kde2/mimelnk/message/news.desktop
 /etc/kde2/mimelnk/all/all.desktop
 /etc/kde2/mimelnk/all/allfiles.desktop
+/etc/kde2/servicetypes/application.desktop
+/etc/kde2/servicetypes/kurifilterplugin.desktop
+/etc/kde2/servicetypes/kcomprfilter.desktop
+/etc/kde2/servicetypes/kscan.desktop
+/etc/kde2/servicetypes/kdedmodule.desktop
+/etc/kde2/servicetypes/ksasl.desktop
+/etc/kde2/servicetypes/kpropsdlgplugin.desktop
+/etc/kde2/servicetypes/kpart.desktop
+/etc/kde2/servicetypes/krop.desktop
+/etc/kde2/servicetypes/krwp.desktop
+/etc/kde2/servicetypes/browserview.desktop
+/etc/kde2/servicetypes/ktexteditor.desktop
+/etc/kde2/servicetypes/kdbplugin.desktop

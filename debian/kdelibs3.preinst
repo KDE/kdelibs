@@ -34,6 +34,15 @@ case "$1" in
           mv /usr/share/services /etc/kde2/services
         fi
       fi
+      if [ -e /usr/share/servicetypes -a ! -L /usr/share/servicetypes ]; then
+        if [ -e /etc/kde2/servicetypes -a ! -L /etc/kde2/servicetypes ]; then
+          cd /usr/share/servicetypes && find ./ | cpio -pmd /etc/kde2/servicetypes/ >/dev/null 2>&1
+          rm -rf /usr/share/servicetypes> /dev/null 2>&1
+        else
+          rm -f /etc/kde2/servicetypes >/dev/null 2>&1
+          mv /usr/share/servicetypes /etc/kde2/servicetypes
+        fi
+      fi
     ;;
 
     abort-upgrade)
