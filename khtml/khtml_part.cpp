@@ -3865,7 +3865,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       return child->m_part->openURL( url );
   }
   else
+  {
+      child->m_bCompleted = true;
+      checkCompleted();
       return true;
+  }
 }
 
 KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,
