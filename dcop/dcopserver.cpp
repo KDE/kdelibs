@@ -688,9 +688,9 @@ void DCOPServer::removeConnection( void* data )
 {
   DCOPConnection* conn = (DCOPConnection*)data;
   clients.remove(conn->iceConn );
-  appIds.remove( conn->appId );
-  if ( conn->appId.data() ) {
+  if ( !conn->appId.isNull() ) {
       qDebug("remove connection '%s' (count=%d)", conn->appId.data(), clients.count() );
+      appIds.remove( conn->appId );
       QPtrDictIterator<DCOPConnection> it( clients );
       QByteArray data;
       QDataStream datas( data, IO_WriteOnly );
