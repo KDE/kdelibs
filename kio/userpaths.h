@@ -17,17 +17,17 @@
    Boston, MA 02111-1307, USA.
 */     
 
-#ifndef _KFMPATHS_H_
-#define _KFMPATHS_H_
+#ifndef _USERPATHS_H_
+#define _USERPATHS_H_
 
 #include <qstring.h>
 
 /**
- * This is a little service class for konqueror and kdesktop.
- * It contains only static members and it contains the paths
- * that they need. 
+ * This is a little service class providing information on user's paths
+ * It also provides methods for ensuring application-specific directories
+ * are created (in user's local kde dir).
  */
-class KfmPaths
+class UserPaths
 {
 public:
   /**
@@ -37,6 +37,12 @@ public:
   static QString templatesPath() { initStatic(); return *s_templatesPath; }
   static QString autostartPath() { initStatic(); return *s_autostartPath; }
   static QString trashPath() { initStatic(); return *s_trashPath; }
+
+  /**
+   * Test, and create if necessary, a directory in kapp->localkdedir()
+   * @param _name the relative path from it (e.g. "/share/apps/myapp")
+   */
+  static void testLocalDir( const char *_name );
 
 private:
   /**

@@ -19,17 +19,22 @@
 
 #include <qdir.h>
 
-#include "kfmpaths.h"
+#include "userpaths.h"
 #include <ksimpleconfig.h>
 #include <kapp.h>
 #include <qstring.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-QString* KfmPaths::s_desktopPath = 0;
-QString* KfmPaths::s_templatesPath = 0;
-QString* KfmPaths::s_autostartPath = 0;
-QString* KfmPaths::s_trashPath = 0;
+QString* UserPaths::s_desktopPath = 0;
+QString* UserPaths::s_templatesPath = 0;
+QString* UserPaths::s_autostartPath = 0;
+QString* UserPaths::s_trashPath = 0;
 
-void KfmPaths::initStatic() 
+void UserPaths::initStatic() 
 {
   if ( s_desktopPath != 0 )
     return;
@@ -66,3 +71,16 @@ void KfmPaths::initStatic()
   if ( s_autostartPath->right(1) != "/")
     *s_autostartPath += "/";
 }
+
+void UserPaths::testLocalDir( const char *_name )
+{
+  DIR *dp;
+  QString c = kapp->localkdedir().copy();
+  c += _name;
+  dp = opendir( c.data() );
+  if ( dp == NULL )
+    ::mkdir( c.data(), S_IRWXU );
+  else
+    closedir( dp );
+}
+

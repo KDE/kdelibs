@@ -54,7 +54,7 @@
 #include <kbookmark.h> // for encode. hum.
 
 #include "kio_propsdlg.h"
-#include "kfmpaths.h"
+#include "userpaths.h"
 
 #include <X11/Xlib.h> // for XSetTransientForHint
 
@@ -239,7 +239,7 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     bool isTrash = false;
     // is it the trash bin ?
     if ( strcmp( properties->getKURL()->protocol(), "file" ) == 0L &&
-	 tmp == KfmPaths::trashPath())
+	 tmp == UserPaths::trashPath())
            isTrash = true;
     
     /* directories may not have a slash at the end if
@@ -1197,7 +1197,7 @@ bool DirPropsPage::supports( KURL *_kurl, mode_t _mode )
     if ( tmp.right(1) != "/" )
 	tmp += "/";
     if ( strcmp( _kurl->protocol(), "file" ) == 0L &&
-	 tmp == KfmPaths::trashPath()) 
+	 tmp == UserPaths::trashPath()) 
         return false;
 
 /*
