@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
   KApplication app(argc,argv,"kurltest",false,false);
   KURL::List lst;
 
+  KURL emptyURL;
+  check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
+  check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
+  check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
   KURL baseURL ("http://www.foo.bar:80" );
   check( "KURL::isMalformed()", baseURL.isMalformed() ? "TRUE":"FALSE", "FALSE");
   KURL url1 ( baseURL, "//www1.foo.bar" );
