@@ -86,7 +86,7 @@ public:
       createChildren (true),
       pressedOnSelected (false),
       wasShiftEvent (false),
-      fullWidth (false), 
+      fullWidth (false),
       selectionDirection(0),
       tooltipColumn (0),
       selectionMode (Single),
@@ -194,7 +194,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         setFocus();
         qApp->processEvents(0);
         QApplication::flushX();
-        grabMouse();
+//        grabMouse();
 
 }
 
@@ -720,11 +720,11 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 
     QListViewItem *afterFirst = i->itemAbove();
 
-	if (!hasMoved)
-	{
-		emit aboutToMove();
-		hasMoved=true;
-	}
+        if (!hasMoved)
+        {
+                emit aboutToMove();
+                hasMoved=true;
+        }
 
     moveItem(i, parent, afterme);
 
@@ -1758,9 +1758,9 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
   QColorGroup _cg = cg;
   const QPixmap *pm = listView()->viewport()->backgroundPixmap();
   if (pm && !pm->isNull())
-	_cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
+        _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
   else
-	_cg.setColor(QColorGroup::Base, backgroundColor());
+        _cg.setColor(QColorGroup::Base, backgroundColor());
   QListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 
