@@ -800,20 +800,22 @@ declaration:
     property ':' maybe_space expr prio {
 	$$ = false;
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( $1 && $4 ) {
+	if ( $4 ) {
 	    p->valueList = $4;
+            if ( $1 ) {
 #ifdef CSS_DEBUG
-	    kdDebug( 6080 ) << "   got property: " << $1 <<
-		($5?" important":"")<< endl;
+	        kdDebug( 6080 ) << "   got property: " << $1
+                                << ($5?" important":"") << endl;
 #endif
-	    bool ok = p->parseValue( $1, $5 );
-	    if ( ok )
-		$$ = ok;
+	        bool ok = p->parseValue( $1, $5 );
+                if ( ok )
+		    $$ = ok;
 #ifdef CSS_DEBUG
-	    else
-		kdDebug( 6080 ) << "     couldn't parse value!" << endl;
+	        else
+		    kdDebug( 6080 ) << "     couldn't parse value!" << endl;
 #endif
-	}
+            }
+        }
 	delete p->valueList;
 	p->valueList = 0;
     }
