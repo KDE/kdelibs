@@ -103,7 +103,6 @@ AC_CHECK_SETENV
 AC_CHECK_UNSETENV
 AC_CHECK_RANDOM
 AC_CHECK_MKSTEMPS
-KDE_CHECK_STRLCPY
 AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday)
 
 AH_BOTTOM([
