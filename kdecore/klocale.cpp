@@ -588,36 +588,6 @@ QString KLocale::formatNumber(const QString &numStr) const
   return formatNumber(numStr.toDouble());
 }
 
-double KLocale::readMoney(const QString &str, bool * ok) const
-{
-    bool neg;
-    if (negativeMonetarySignPosition() == ParensAround)
-    {
-        int i1 = str.find('(');
-        neg = i1 != -1 && i1 < str.find(')');
-    }
-    else
-        neg = str.find(negativeSign()) != -1;
-
-    QString buf = monetaryDecimalSymbol();
-    int pos = str.find(buf);
-
-    QString major = str.left(pos);
-    QString minior;
-    if (pos != -1) minior = str.mid(pos + buf.length());
-
-    for (pos = major.length(); pos >= 0; pos--)
-        if (!major.at(pos).isNumber()) major.remove(pos, 1);
-
-    for (pos = minior.length(); pos >= 0; pos--)
-        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
-
-    QString tot;
-    if (neg) tot = '-';
-    tot += major + '.' + minior;
-    return tot.toDouble(ok);
-}
-
 QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 {
     QString rst = shortfmt?_datefmtshort:_datefmt;
@@ -679,6 +649,36 @@ double KLocale::readNumber(const QString &str, bool * ok) const
 {
     bool neg = str.find(negativeSign()) == 0;
     QString buf = decimalSymbol();
+    int pos = str.find(buf);
+
+    QString major = str.left(pos);
+    QString minior;
+    if (pos != -1) minior = str.mid(pos + buf.length());
+
+    for (pos = major.length(); pos >= 0; pos--)
+        if (!major.at(pos).isNumber()) major.remove(pos, 1);
+
+    for (pos = minior.length(); pos >= 0; pos--)
+        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
+
+    QString tot;
+    if (neg) tot = '-';
+    tot += major + '.' + minior;
+    return tot.toDouble(ok);
+}
+
+double KLocale::readMoney(const QString &str, bool * ok) const
+{
+    bool neg;
+    if (negativeMonetarySignPosition() == ParensAround)
+    {
+        int i1 = str.find('(');
+        neg = i1 != -1 && i1 < str.find(')');
+    }
+    else
+        neg = str.find(negativeSign()) != -1;
+
+    QString buf = monetaryDecimalSymbol();
     int pos = str.find(buf);
 
     QString major = str.left(pos);
