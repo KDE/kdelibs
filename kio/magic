@@ -90,7 +90,7 @@
 #					- WAVE format
 >8	string		WAVE		audio/x-wav	
 #
-0	belong		0x2e7261fd	application/x-realaudio
+0	belong		0x2e7261fd	application/x-pn-realaudio
 
 # MPEG Layer 3 sound files
 # Modified the 11/20/97 at 15:59:04 by Christophe Prud'homme <christophe.prudhomme@asci.fr>
@@ -357,7 +357,7 @@
 0	beshort		0xffd8		image/jpeg
 
 # PC bitmaps (OS/2, Windoze BMP files)  (Greg Roelofs, newt@uchicago.edu)
-0	string		BM		image/bmp
+0	string		BM		image/x-bmp
 #>14	byte		12		(OS/2 1.x format)
 #>14	byte		64		(OS/2 2.x format)
 #>14	byte		40		(Windows 3.x format)
