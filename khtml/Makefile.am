@@ -52,7 +52,8 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	$(LIB_KPARTS) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
-	$(top_builddir)/kutils/libkutils.la
+	$(top_builddir)/kutils/libkutils.la \
+        $(top_builddir)/kwallet/client/libkwalletclient.la
 
 dummy.cpp:
 	echo > $@
@@ -69,6 +70,7 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(top_srcdir)/kdeprint \
 	-I$(top_srcdir)/interfaces \
 	-I$(top_srcdir)/interfaces/kregexpeditor \
+        -I$(top_srcdir)/kwallet/client \
 	-I$(top_srcdir) $(all_includes)
 
 servicedir = $(kde_servicesdir)
@@ -109,5 +111,5 @@ test_regression_SOURCES = test_regression.cpp
 test_regression_LDADD = libkhtml.la ecma/libkjs_html.la $(top_builddir)/kjs/libkjs.la
 
 DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
-DOXYGEN_EXCLUDE =  test*.*
+DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test
 include ../admin/Doxyfile.am
