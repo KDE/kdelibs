@@ -945,13 +945,9 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
              ops, SLOT( updateSelectionDependentActions() ));
     menu->plug( toolbar );
 
-    /*
-     * ugly little hack to have a 5 pixel space between the buttons
-     * and the combo box
-     */
-    QWidget *spacerWidget = new QWidget(toolbar);
-    spacerWidget->setMinimumWidth(spacingHint());
-    spacerWidget->setMaximumWidth(spacingHint());
+    //Insert a separator.
+    KToolBarSeparator* spacerWidget = new KToolBarSeparator(Horizontal, false /*no line*/,
+                                                            toolbar);
     d->m_pathComboIndex = toolbar->insertWidget(-1, -1, spacerWidget);
     toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
 
