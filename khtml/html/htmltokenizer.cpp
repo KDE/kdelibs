@@ -656,7 +656,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             if(Entity == SearchSemicolon) {
                 if(cBufferPos > 1) {
                     const entity *e = kde_findEntity(cBuffer, cBufferPos);
-                    if(e)
+                    if(e && ( e->code < 256 || *src == ';' ))
                         EntityChar = e->code;
                 }
             }

@@ -1,3 +1,8 @@
+2003-10-19  Dirk Mueller  <dmuell@gmx.net>
+
+	* html/htmltokenizer.cpp (parseEntity): when entity is terminated and result
+	is not-ascii, require ending ';'. khtmltests/html/parser/obscure_entity_tokenizing.html
+
 2003-10-18  Dirk Mueller  <dmuell@gmx.net>
 
 	* css/cssstyleselector.cpp (checkOneSelector): fix selector list matching
