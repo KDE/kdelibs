@@ -20,6 +20,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <config.h>
+
 #include <arpa/inet.h>
 #include <errno.h>
 #include <stdio.h>
@@ -160,7 +162,7 @@ bool testKernel()
 
 #else
   int sock;
-  ksocklen_t len = 0;
+  socklen_t len = 0;
 
   printf("\tAF_INET6 == %d\n", AF_INET6);
   printf("\tTrying to create an IPv6 socket...");

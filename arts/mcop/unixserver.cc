@@ -130,7 +130,7 @@ void UnixServer::notifyIO(int fd, int types)
 	{
 		int clientfd;
 		struct sockaddr_un incoming;
-		ksize_t size_in = sizeof(struct sockaddr_un);
+		socklen_t size_in = sizeof(struct sockaddr_un);
 
 		clientfd = accept(theSocket, (struct sockaddr*) &incoming, &size_in );
 		if(clientfd > 0)

@@ -1,3 +1,7 @@
+/* this is included everywhere anyway (mostly indirecty)
+   and we need it for socklen_t being always available */
+#include <sys/types.h>
+
 /* provide a definition for a 32 bit entity, usable as a typedef, possibly
    extended by "unsigned" */
 #undef INT32_BASETYPE
@@ -81,7 +85,6 @@ int seteuid(INT32_BASETYPE euid); /* defined in fakes.c */
 #define __STDC__  1
 #endif
 typedef unsigned int u_int32_t;
-#include <sys/types.h>       /* for size_t below */
 #include <stdarg.h>          /* va_start and the like */
 #define RTLD_GLOBAL 0        /* dlopen flag not known under Tru64  */
 #ifndef HAVE_USLEEP          /* usleep not defined in Tru64        */

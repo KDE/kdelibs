@@ -490,7 +490,7 @@ static void init_signals()
 static void init_kdeinit_socket()
 {
   struct sockaddr_un sa;
-  ksize_t socklen;
+  socklen_t socklen;
   long options;
   char *home_dir = getenv("HOME");
   int max_tries = 10;
@@ -876,7 +876,7 @@ static void handle_requests(pid_t waitForPid)
       if ((result > 0) && (FD_ISSET(d.wrapper, &rd_set)))
       {
          struct sockaddr_un client;
-         ksize_t sClient = sizeof(client);
+         socklen_t sClient = sizeof(client);
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {

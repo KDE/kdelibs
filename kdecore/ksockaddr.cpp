@@ -717,7 +717,7 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
 
 bool KUnixSocketAddress::setAddress(QCString path)
 {
-  unsigned newsize = offsetof(sockaddr_un, sun_path) + path.length();
+  ksocklen_t newsize = offsetof(sockaddr_un, sun_path) + path.length();
 
   if (owndata && d->m_sun != NULL && datasize >= newsize)
     {

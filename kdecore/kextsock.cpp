@@ -641,7 +641,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
   // mode
   bool block = blockingMode();
   struct sockaddr sa;
-  ksize_t len = sizeof(sa);
+  ksocklen_t len = sizeof(sa);
   sock = NULL;
 
   if (d->timeout.tv_sec > 0 || d->timeout.tv_usec > 0)
@@ -828,7 +828,7 @@ int KExtendedSocket::connect()
 
 	      // this means that an event occurred in the socket
 	      int errcode;
-	      ksize_t len = sizeof(errcode);
+	      socklen_t len = sizeof(errcode);
 	      retval = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (char*)&errcode,
 				  &len);
 	      if (retval == -1 || errcode != 0)
@@ -1083,7 +1083,7 @@ KSocketAddress *KExtendedSocket::localAddress(int fd)
 {
   KSocketAddress *local;
   struct sockaddr static_sa, *sa = &static_sa;
-  ksize_t len = sizeof(static_sa);
+  ksocklen_t len = sizeof(static_sa);
 
   /* find out the socket length, in advance
    * we use a sockaddr allocated on the heap just not to pass down
@@ -1121,7 +1121,7 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
 {
   KSocketAddress *peer;
   struct sockaddr static_sa, *sa = &static_sa;
-  ksize_t len = sizeof(static_sa);
+  ksocklen_t len = sizeof(static_sa);
 
   /* find out the socket length, in advance
    * we use a sockaddr allocated on the heap just not to pass down

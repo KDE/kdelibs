@@ -41,7 +41,7 @@ public:
 };
 
 #ifndef SUN_LEN
-#define SUN_LEN(ptr) ((ksize_t) (((struct sockaddr_un *) 0)->sun_path) \
+#define SUN_LEN(ptr) ((socklen_t) (((struct sockaddr_un *) 0)->sun_path) \
 	             + strlen ((ptr)->sun_path))
 #endif
 
@@ -127,7 +127,7 @@ int KDEsuClient::connect()
     }
 #else
     struct ucred cred;
-    ksize_t siz = sizeof(cred);
+    socklen_t siz = sizeof(cred);
 
     // Security: if socket exists, we must own it
     if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)

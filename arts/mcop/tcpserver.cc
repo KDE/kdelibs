@@ -116,7 +116,7 @@ bool TCPServer::initSocket()
 		return false;
     }
 
-    ksize_t sz = sizeof(sizeof(struct sockaddr_in));
+    socklen_t sz = sizeof(struct sockaddr_in);
 	int r = getsockname (theSocket,(struct sockaddr *)&socket_addr, &sz);
 	if(r == 0) {
 		thePort = ntohs(socket_addr.sin_port);
@@ -157,7 +157,7 @@ void TCPServer::notifyIO(int fd, int types)
 	{
 		int clientfd;
 		struct sockaddr_in incoming;
-		ksize_t size_in = sizeof(struct sockaddr_in);
+		socklen_t size_in = sizeof(struct sockaddr_in);
 
 		clientfd = accept(theSocket, (struct sockaddr*) &incoming, &size_in );
 		if(clientfd > 0)

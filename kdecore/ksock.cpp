@@ -90,7 +90,7 @@ KSocket::KSocket( int _sock)
  : sock(_sock), readNotifier(0), writeNotifier(0)
 {
   struct sockaddr_in sin;
-  ksize_t len = sizeof(sin);
+  ksocklen_t len = sizeof(sin);
 
   memset(&sin, 0, len);
 

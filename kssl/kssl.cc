@@ -342,7 +342,7 @@ void KSSL::setPeerInfo(int sock) {
 // FIXME: Set the right value here
 //                          d->m_cert_vfy_res);
   ksockaddr_in sa;
-  unsigned nl = sizeof(ksockaddr_in); // should be socklen_t
+  socklen_t nl = sizeof(ksockaddr_in);
   int rc = getpeername (sock, (sockaddr *)&sa, &nl);
 
   if (rc != -1) {

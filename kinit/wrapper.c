@@ -19,7 +19,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "klauncher_cmds.h"
@@ -109,7 +109,7 @@ static int read_socket(int sock, char *buffer, int len)
 
 static int openSocket()
 {
-  ksize_t socklen;
+  socklen_t socklen;
   int s;
   struct sockaddr_un server;
 #define MAX_SOCK_FILE 255

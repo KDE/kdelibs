@@ -16,6 +16,12 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
 #include "ksocks.h"
 #include <qstring.h>
 #include <qmap.h>
@@ -423,7 +429,7 @@ int KSocks::connect (int sockfd, const sockaddr *serv_addr,
                                                    ksocklen_t addrlen) {
   if (_useSocks && F_connect)
     return (*F_connect)(sockfd, serv_addr, addrlen);
-  else return ::connect(sockfd, serv_addr, addrlen);
+  else return ::connect(sockfd, serv_addr, (socklen_t)addrlen);
 }
 
 
@@ -445,7 +451,12 @@ int KSocks::recvfrom (int s, void *buf, unsigned long int len, int flags,
                                 sockaddr *from, ksocklen_t *fromlen) {
   if (_useSocks && F_recvfrom)
     return (*F_recvfrom)(s, buf, len, flags, from, fromlen);
-  else return ::recvfrom(s, buf, len, flags, from, fromlen);
+  else {
+    socklen_t casted_len = (socklen_t) *fromlen;
+    int rc = ::recvfrom(s, buf, len, flags, from, &casted_len);
+    *fromlen = casted_len;
+    return rc;
+  }
 }
 
 
@@ -453,7 +464,7 @@ int KSocks::sendto (int s, const void *msg, unsigned long int len, int flags,
                              const sockaddr *to, ksocklen_t tolen) {
   if (_useSocks && F_sendto)
     return (*F_sendto)(s, msg, len, flags, to, tolen);
-  else return ::sendto(s, msg, len, flags, to, tolen);
+  else return ::sendto(s, msg, len, flags, to, (socklen_t)tolen);
 }
 
 
@@ -474,21 +485,36 @@ int KSocks::send (int s, const void *msg, unsigned long int len, int flags) {
 int KSocks::getsockname (int s, sockaddr *name, ksocklen_t *namelen) {
   if (_useSocks && F_getsockname)
     return (*F_getsockname)(s, name, namelen);
-  else return ::getsockname(s, name, namelen);
+  else {
+    socklen_t casted_len = *namelen;
+    int rc = ::getsockname(s, name, &casted_len);
+    *namelen = casted_len;
+    return rc;
+  }
 }
 
 
 int KSocks::getpeername (int s, sockaddr *name, ksocklen_t *namelen) {
   if (_useSocks && F_getpeername)
     return (*F_getpeername)(s, name, namelen);
-  else return ::getpeername(s, name, namelen);
+  else {
+    socklen_t casted_len = *namelen;
+    int rc = ::getpeername(s, name, &casted_len);
+    *namelen = casted_len;
+    return rc;
+  }
 }
 
 
 int KSocks::accept (int s, sockaddr *addr, ksocklen_t *addrlen) {
   if (_useSocks && F_accept)
     return (*F_accept)(s, addr, addrlen);
-  else return ::accept(s, addr, addrlen);
+  else {
+    socklen_t casted_len = *addrlen;
+    int rc = ::accept(s, addr, &casted_len);
+    *addrlen = casted_len;
+    return rc;
+  }
 }
 
 
@@ -510,7 +536,7 @@ int KSocks::listen (int s, int backlog) {
 int KSocks::bind (int sockfd, sockaddr *my_addr, ksocklen_t addrlen) {
   if (_useSocks && F_bind)
     return (*F_bind)(sockfd, my_addr, addrlen);
-  else return ::bind(sockfd, my_addr, addrlen);
+  else return ::bind(sockfd, my_addr, (socklen_t)addrlen);
 }
 
 
