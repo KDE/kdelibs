@@ -139,10 +139,9 @@ void HTMLAnchorElementImpl::parseAttribute(Attribute *attr)
 // other way. Lars
 void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 {
-#if 0
     if(_parent)
     {
-	_parent->getAbsolutePosition( xPos, yPos );
+	_parent->renderer()->absolutePosition( xPos, yPos );
 	// now we need to get the postion of this element. As it's
 	// not positioned, we use the first child which is positioned
 	NodeImpl *current = firstChild();
@@ -155,10 +154,13 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 		if(nodeStack.isEmpty()) break;
 		current = nodeStack.pop();
 	    }
-	    else if(current->isRendered())
+	    else
 	    {
-		found = true;
-		break;
+		RenderObject *o = current->renderer();
+		if( o && (o->isReplaced() || o->isText() || !o->isInline()) ) {
+		    found = true;
+		    break;
+		}
 	    }	
 
 	    NodeImpl *child = current->firstChild();
@@ -174,18 +176,11 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 	}
 	if(found)
 	{
-	    if(current->isTextNode())
+	    RenderObject *o = current->renderer();
+	    if(o)
 	    {
-		TextImpl *t = static_cast<TextImpl *>(current);
-		if(!t->first) return;
-		//printf("text is at: %d/%d\n", t->first->x, t->first->y);
-		xPos += t->first->x;
-		yPos += t->first->y;
-	    }
-	    else
-	    {
-		xPos += current->getXPos();
-		yPos += current->getYPos();
+		xPos += o->xPos();
+		yPos += o->yPos();
 	    }
 	}
 	else
@@ -196,7 +191,6 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
     }
     else
 	xPos = yPos = -1;
-#endif
 }
 // -------------------------------------------------------------------------
 
