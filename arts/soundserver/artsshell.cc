@@ -2,6 +2,9 @@
  
         Copyright (C) 2000-2001 Jeff Tranter
                                 tranter@kde.org
+
+								Stefan Westerfeld
+								stefan@space.twc.de
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -108,6 +111,7 @@ execute <module.arts>
 #include <stdio.h>
 
 bool quiet = false;
+const char *filename = 0;
 
 using namespace std;
 
@@ -118,9 +122,10 @@ void usage()
 "usage: artsshell [options] <command> [command-options]\n\
 \n\
 Options:\n\
-  -q   - suppress all output\n\
-  -h   - display command usage\n\
-  -v   - show version\n\
+  -q                  - suppress all output\n\
+  -h                  - display command usage\n\
+  -v                  - show version\n\
+  -f <filename>       - execute commands from <filename>\n\
 \n\
 Commands:\n\
   suspend             - suspend sound server\n\
@@ -145,7 +150,7 @@ void parseOptions(int argc, char **argv)
 	if (argc == 0)
 		usage();
 
-	while((optch = getopt(argc, argv, "qhv")) > 0)
+	while((optch = getopt(argc, argv, "qhvf:")) > 0)
 	{
 		switch(optch)
 		{
@@ -158,16 +163,13 @@ void parseOptions(int argc, char **argv)
 		  case 'h':
 			  usage();
 			  break;
+		  case 'f':
+		  	  filename = optarg;
+			  break;
 		  default:
 			  usage();
 			  break;
 		}
-	}
-
-	// should be at least one more argument
-	if (optind >= argc)
-	{
-		usage();
 	}
 }
 
@@ -399,6 +401,103 @@ void stereoEffect(Arts::SoundServerV2 server, int argc, char **argv)
 	cerr << "invalid arguments" << endl;
 }
 
+int executeCommand(Arts::SoundServerV2 server, int argc, char **argv)
+{
+	if (!strcmp(argv[0], "suspend")) {
+		suspend(server);
+		return 0;
+	}
+
+	if (!strcmp(argv[0], "status")) {
+		status(server);
+		return 0;
+	}
+
+	if(!strcmp(argv[0], "terminate")) {
+		terminate(server);
+		return 0;
+	}
+
+	if(!strcmp(argv[0], "volume") && (argc == 2)) {
+		setVolume(server,atof(argv[1]));
+		return 0;
+	}
+	if(!strcmp(argv[0], "volume") && (argc == 1)) {
+		cout << getVolume(server) << endl;;
+		return 0;
+	}
+
+	if(!strcmp(argv[0], "autosuspend") && (argc == 2)) {
+		int secs = atoi(argv[1]);
+		autosuspend(server, secs);
+		return 0;
+	}
+
+	if(!strcmp(argv[0], "networkbuffers") && (argc == 2)) {
+		int n = atoi(argv[1]);
+		networkBuffers(server, n);
+		return 0;
+	}
+
+	if(!strcmp(argv[0], "stereoeffect") && (argc >= 2)) {
+		stereoEffect(server, argc-1, &argv[1]);
+		return 0;
+	}
+	return 1;
+}
+
+int execute (Arts::SoundServerV2 server, const char *filename)
+{
+	char command[1024];
+	FILE *input = stdin;
+	bool prompt;
+
+	if(filename)
+	{
+		input = fopen(filename,"r");
+		if(!input)
+		{
+			printf("can't open file '%s'\n", filename);
+			return 1;
+		}
+	}
+
+	prompt = isatty(fileno(input));
+
+	if(prompt)
+	{
+		printf("> ");
+		fflush(stdout);
+	}
+
+	while(fgets(command, 1024, input) != 0)
+	{
+		char **argv = 0;
+		int argc = 0;
+		while(char *arg = strtok(argc?0:command, " \t\n"))
+		{
+			argv = (char **)realloc(argv, sizeof(char *)*(argc+1));
+			argv[argc++] = arg;
+		}
+		executeCommand(server, argc, argv);
+		free(argv);
+
+		if(prompt)
+		{
+			printf("> ");
+			fflush(stdout);
+		}
+	}
+
+	if(prompt)
+		printf("\n");
+	
+	if(input != stdin)
+		fclose(input);
+
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	Arts::Dispatcher dispatcher;
@@ -413,47 +512,11 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (!strcmp(argv[optind], "suspend")) {
-		suspend(server);
-		return 0;
-	}
+	if (argc == optind)
+		return execute (server, filename);
 
-	if (!strcmp(argv[optind], "status")) {
-		status(server);
-		return 0;
-	}
+	if (executeCommand (server, argc, &argv[optind]) != 0)
+		usage();
 
-	if(!strcmp(argv[optind], "terminate")) {
-		terminate(server);
-		return 0;
-	}
-
-	if(!strcmp(argv[optind], "volume") && ((argc - optind) == 2)) {
-		setVolume(server,atof(argv[optind+1]));
-		return 0;
-	}
-	if(!strcmp(argv[optind], "volume") && ((argc - optind) == 1)) {
-		cout << getVolume(server) << endl;;
-		return 0;
-	}
-
-	if(!strcmp(argv[optind], "autosuspend") && ((argc - optind) == 2)) {
-		int secs = atoi(argv[optind+1]);
-		autosuspend(server, secs);
-		return 0;
-	}
-
-	if(!strcmp(argv[optind], "networkbuffers") && ((argc - optind) == 2)) {
-		int n = atoi(argv[optind+1]);
-		networkBuffers(server, n);
-		return 0;
-	}
-
-	if(!strcmp(argv[optind], "stereoeffect") && ((argc - optind) >= 2)) {
-		stereoEffect(server, argc-optind-1, &argv[optind+1]);
-		return 0;
-	}
-	
-	usage();
 	return 0;
 }
