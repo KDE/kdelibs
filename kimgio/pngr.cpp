@@ -350,6 +350,8 @@ void kimgio_png_write( QImageIO *iio )
 #endif
 
 extern "C" void kimgio_init_png() {
+    QImageIO::defineIOHandler( "PNG", "^.PNG", 0,
+			       kimgio_png_read, kimgio_png_write );     
 }
 
 #endif /* HAVE_LIBPNG */
