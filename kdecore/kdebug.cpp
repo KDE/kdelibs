@@ -255,16 +255,20 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                 }
                 QString aOutputFileName = kDebug_data->config->readEntry(aKey, "kdebug.dbg");
 
-                char buf[4096] = "";
+                const int BUFSIZE = 4096;
+                char buf[BUFSIZE] = "";
 		int nSize;
                 if ( !kDebug_data->aAreaName.isEmpty() )
-		    nSize = sprintf( buf, "%s: %s", kDebug_data->aAreaName.ascii(), data);
+		    nSize = snprintf( buf, BUFSIZE, "%s: %s", kDebug_data->aAreaName.ascii(), data);
 		else
-		    nSize = sprintf( buf, "%s", data);
+		    nSize = snprintf( buf, BUFSIZE, "%s", data);
 
                 QFile aOutputFile( aOutputFileName );
                 aOutputFile.open( IO_WriteOnly | IO_Append );
-                aOutputFile.writeBlock( buf, nSize );
+                if ( ( nSize == -1 ) || ( nSize >= BUFSIZE ) )
+                    aOutputFile.writeBlock( buf, BUFSIZE-1 );
+                else
+                    aOutputFile.writeBlock( buf, nSize );
                 aOutputFile.close();
                 break;
           }
