@@ -279,10 +279,11 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     return DOMDocument::tryGet(exec, propertyName);
 
   //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
+  DOM::HTMLCollection coll = doc.all();
+  element = coll.namedItem(propertyName.string());
   if(!element.isNull())
   {
     /// ### We use the document.all collection here, but in fact in IE:
-    DOM::HTMLCollection coll = doc.all();
     // * document.all('bleh') looks for id=bleh or name=bleh,
     // * document.bleh looks for name=bleh only (!)
     // The other difference is what they return for frames/iframes, but we already take
