@@ -550,7 +550,9 @@ public final class KJASAppletStub
             rettype[0] = JNumber;
         else if (type.equals("java.lang.String"))
             rettype[0] = JString;
-        else {
+        else if (!type.startsWith("org.kde.kjas.server") &&
+                 !(obj instanceof java.lang.Class &&
+                   ((Class)obj).getName().startsWith("org.kde.kjas.server"))) {
             rettype[0] = JObject;
             rettype[1] = obj.hashCode();
             jsRefs.put(new Integer(rettype[1]), obj);

@@ -122,6 +122,7 @@ public final class KJASAppletClassLoader
     private AccessControlContext acc;
     // a mapping JS referenced Java objects
     private Hashtable jsReferencedObjects = new Hashtable();
+    final static RuntimePermission kjas_access = new RuntimePermission("accessClassInPackage.org.kde.kjas.server");
     
     public KJASAppletClassLoader( URL[] urlList, URL _docBaseURL, URL _codeBaseURL)
     {
@@ -238,7 +239,14 @@ public final class KJASAppletClassLoader
         }
         return rval;
     }
-    
+    public Class loadClass(String name) throws ClassNotFoundException {
+        if (name.startsWith("org.kde.kjas.server")) {
+            SecurityManager sec = System.getSecurityManager();
+            if (sec != null)
+                sec.checkPermission(kjas_access);
+       }
+        return super.loadClass(name);
+    }
     private Hashtable loadedClasses = new Hashtable();
 
     private synchronized final Class loadFixedClass(String name) throws ClassNotFoundException {

@@ -1,7 +1,8 @@
 package org.kde.javascript;
 
 import java.applet.Applet;
-import org.kde.kjas.server.*;
+import org.kde.kjas.server.KJASAppletContext;
+import org.kde.kjas.server.Main;
 
 public class JSObject extends netscape.javascript.JSObject {
     public String returnvalue = null;

@@ -1,4 +1,4 @@
-    package org.kde.kjas.server;
+package org.kde.kjas.server;
 
 import java.io.*;
 import java.security.*;
@@ -15,15 +15,15 @@ public class Main
 {
     //We need to save a reference to the original stdout
     //for sending messages back
-    public  static final KJASProtocolHandler protocol;
+    static final KJASProtocolHandler         protocol;
     private static       Console             console = null;
     private static final boolean             show_console;
     public  static final boolean             Debug;
     public  static final boolean             log;
     static final boolean                     cacheImages;
     static float                             java_version = (float) 0.0;
-    public static String                     proxyHost = null;
-    public static int                        proxyPort = 0;
+    static String                            proxyHost = null;
+    static int                               proxyPort = 0;
     private static boolean                   good_jdk = true;
 
     /**************************************************************************
@@ -100,7 +100,8 @@ public class Main
         System.err.println( msg );
         t.printStackTrace();
     }
-
+    private Main() {
+    }
 
     /**************************************************************************
      * Main- create the command loop
