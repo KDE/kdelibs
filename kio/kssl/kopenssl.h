@@ -775,6 +775,11 @@ public:
    /* Set the SSL session to reuse. */
    int SSL_set_session(SSL *ssl, SSL_SESSION *session);
 
+   /* Decode ASN.1 to SSL_SESSION */
+   SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, unsigned char **pp, long length);
+   /* Encode SSL_SESSION to ASN.1 */
+   int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp);
+
 #endif
 
 private:

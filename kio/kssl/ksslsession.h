@@ -43,9 +43,21 @@ public:
 	 */
 	~KSSLSession();
 
+	/**
+	 *  Convert to a base64 encoded string (so it can be copied safely)
+	 */
+	QString toString() const;
+
+	/**
+	 *  Create as session ID object from a base64 encoded string.
+	 *  @param s the session id in base64 encoded ASN.1 format
+	 *  @return a KSSLSession object, or 0L on error
+	 */
+	static KSSLSession* fromString(const QString& s);
+
 protected:
 	KSSLSession();
-
+	KSSLSession(const KSSLSession&);
 	void *_session;
 
 private:

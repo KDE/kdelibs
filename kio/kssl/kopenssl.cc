@@ -162,6 +162,8 @@ static int (*K_PKCS7_verify)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int) =
 static SSL_SESSION* (*K_SSL_get1_session)(SSL*) = 0L;
 static void (*K_SSL_SESSION_free)(SSL_SESSION*) = 0L;
 static int (*K_SSL_set_session)(SSL*,SSL_SESSION*) = 0L;
+static SSL_SESSION* (*K_d2i_SSL_SESSION)(SSL_SESSION**,unsigned char**, long) = 0L;
+static int (*K_i2d_SSL_SESSION)(SSL_SESSION*,unsigned char**);
 #endif
 };
 
@@ -486,6 +488,8 @@ KConfig *cfg;
       K_SSL_get1_session = (SSL_SESSION* (*)(SSL*)) _sslLib->symbol("SSL_get1_session");
       K_SSL_SESSION_free = (void (*)(SSL_SESSION*)) _sslLib->symbol("SSL_SESSION_free");
       K_SSL_set_session = (int (*)(SSL*,SSL_SESSION*)) _sslLib->symbol("SSL_set_session");
+      K_d2i_SSL_SESSION = (SSL_SESSION* (*)(SSL_SESSION**,unsigned char**, long)) _sslLib->symbol("d2i_SSL_SESSION");
+      K_i2d_SSL_SESSION = (int (*)(SSL_SESSION*,unsigned char**)) _sslLib->symbol("i2d_SSL_SESSION");
 #endif
 
 
@@ -1265,6 +1269,19 @@ int KOpenSSLProxy::SSL_set_session(SSL *ssl, SSL_SESSION *session) {
    if (K_SSL_set_session) return (K_SSL_set_session)(ssl, session);
    else return -1;
 }
+
+
+SSL_SESSION *KOpenSSLProxy::d2i_SSL_SESSION(SSL_SESSION **a, unsigned char **pp, long length) {
+   if (K_d2i_SSL_SESSION) return (K_d2i_SSL_SESSION)(a, pp, length);
+   else return 0L;
+}
+
+
+int KOpenSSLProxy::i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp) {
+   if (K_i2d_SSL_SESSION) return (K_i2d_SSL_SESSION)(in, pp);
+   else return -1;
+}
+
 
 #endif
 
