@@ -427,8 +427,8 @@ bool KAction::initShortcut( const KShortcut& cut )
     {
         insertKAccel( m_parentCollection->kaccel() );
         return true;
-    } else
-        return false;
+    }
+    return false;
  }
 
 // Only to be called from plug()
@@ -3398,6 +3398,8 @@ bool KActionCollection::readShortcutSettings( const QString& sConfigGroup, KConf
 }
 
 bool KActionCollection::writeShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig ) const
+3C
+3C
 {
   return KActionShortcutList((KActionCollection*)this).writeSettings( sConfigGroup, pConfig );
 }
