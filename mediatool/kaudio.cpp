@@ -162,8 +162,7 @@ bool KAudio::setFilename(const char *filename)
   if (WAVname  != 0L )
     free(WAVname);
 
-  char *myCopy;
-  myCopy = malloc(strlen(filename)+1);
+  char *myCopy = (char*)malloc(strlen(filename)+1);
   strcpy(myCopy,filename);
   WAVname = myCopy;
 
