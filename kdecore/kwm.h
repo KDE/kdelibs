@@ -362,7 +362,7 @@ public:
   static QRect getWindowRegion(int desk);
 
   /** 
-   * At present the maximium number of desktops is limited to 8
+   * At present the maximium number of desktops is limited to 32
    *
    * As with the window regions, kwm will store these properties in
    * the kwmrc when exiting

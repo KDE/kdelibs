@@ -490,8 +490,11 @@ void KWM::switchToDesktop(int desk){
 }
 
 void KWM::setWindowRegion(int desk, const QRect &region){
-  static Atom a[8] = {0,0,0,0,0,0,0,0};
-  if (desk < 1 || desk > 8){
+  static Atom a[32] = {0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0};
+  if (desk < 1 || desk > 32){
     kwm_error = TRUE;
     return;
   }
@@ -505,8 +508,11 @@ void KWM::setWindowRegion(int desk, const QRect &region){
 }
 
 QRect KWM::getWindowRegion(int desk){
-  static Atom a[8] = {0,0,0,0,0,0,0,0};
-  if (desk < 1 || desk > 8){
+  static Atom a[32] = {0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0};
+  if (desk < 1 || desk > 32){
     kwm_error = TRUE;
     return QApplication::desktop()->geometry();;
   }
@@ -538,8 +544,11 @@ void KWM::setNumberOfDesktops(int num){
 }
 
 void KWM::setDesktopName(int desk, const QString &name){
-  static Atom a[8] = {0,0,0,0,0,0,0,0};
-  if (desk < 1 || desk > 8){
+  static Atom a[32] = {0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0};
+  if (desk < 1 || desk > 32){
     kwm_error = TRUE;
     return;
   }
@@ -553,9 +562,12 @@ void KWM::setDesktopName(int desk, const QString &name){
 }
 
 QString KWM::getDesktopName(int desk){
-  static Atom a[8] = {0,0,0,0,0,0,0,0};
+  static Atom a[32] = {0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0,
+		       0,0,0,0,0,0,0,0};
   QString result;
-  if (desk < 1 || desk > 8){
+  if (desk < 1 || desk > 32){
     kwm_error = TRUE;
     return result;
   }
