@@ -292,7 +292,7 @@ typedef struct yyltype
 
 static inline int cssyyerror(const char *x ) {
 #ifdef CSS_DEBUG
-    qDebug( x );
+    qDebug( "%s", x );
 #else
     Q_UNUSED( x );
 #endif
@@ -562,26 +562,26 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "S", "SGML_CD", "INCLUDES", "DASHMATCH",
-  "BEGINSWITH", "ENDSWITH", "CONTAINS", "STRING", "IDENT", "HASH", "':'",
-  "'.'", "'['", "'|'", "'*'", "IMPORT_SYM", "PAGE_SYM", "MEDIA_SYM",
-  "FONT_FACE_SYM", "CHARSET_SYM", "NAMESPACE_SYM", "KHTML_RULE_SYM",
-  "KHTML_DECLS_SYM", "KHTML_VALUE_SYM", "IMPORTANT_SYM", "QEMS", "EMS",
-  "EXS", "PXS", "CMS", "MMS", "INS", "PTS", "PCS", "DEGS", "RADS",
-  "GRADS", "MSECS", "SECS", "HERZ", "KHERZ", "DIMEN", "PERCENTAGE",
-  "NUMBER", "URI", "FUNCTION", "UNICODERANGE", "'{'", "'}'", "';'", "','",
-  "'+'", "'>'", "'-'", "']'", "'='", "')'", "'/'", "'@'", "$accept",
-  "stylesheet", "khtml_rule", "khtml_decls", "khtml_value", "maybe_space",
-  "maybe_sgml", "maybe_charset", "import_list", "import",
-  "maybe_namespace", "namespace", "ns_prefix", "maybe_ns_prefix",
-  "rule_list", "rule", "string_or_uri", "maybe_media_list", "media_list",
-  "media", "ruleset_list", "medium", "page", "font_face", "combinator",
-  "unary_operator", "ruleset", "selector_list", "selector",
-  "simple_selector", "ns_element", "ns_selector", "element_name",
-  "specifier_list", "specifier", "class", "ns_attrib_id", "attrib_id",
-  "attrib", "match", "ident_or_string", "pseudo", "declaration_list",
-  "decl_list", "declaration", "property", "prio", "expr", "operator",
-  "term", "unary_term", "function", "hexcolor", "invalid_at",
+  "$end", "error", "$undefined", "S", "SGML_CD", "INCLUDES", "DASHMATCH", 
+  "BEGINSWITH", "ENDSWITH", "CONTAINS", "STRING", "IDENT", "HASH", "':'", 
+  "'.'", "'['", "'|'", "'*'", "IMPORT_SYM", "PAGE_SYM", "MEDIA_SYM", 
+  "FONT_FACE_SYM", "CHARSET_SYM", "NAMESPACE_SYM", "KHTML_RULE_SYM", 
+  "KHTML_DECLS_SYM", "KHTML_VALUE_SYM", "IMPORTANT_SYM", "QEMS", "EMS", 
+  "EXS", "PXS", "CMS", "MMS", "INS", "PTS", "PCS", "DEGS", "RADS", 
+  "GRADS", "MSECS", "SECS", "HERZ", "KHERZ", "DIMEN", "PERCENTAGE", 
+  "NUMBER", "URI", "FUNCTION", "UNICODERANGE", "'{'", "'}'", "';'", "','", 
+  "'+'", "'>'", "'-'", "']'", "'='", "')'", "'/'", "'@'", "$accept", 
+  "stylesheet", "khtml_rule", "khtml_decls", "khtml_value", "maybe_space", 
+  "maybe_sgml", "maybe_charset", "import_list", "import", 
+  "maybe_namespace", "namespace", "ns_prefix", "maybe_ns_prefix", 
+  "rule_list", "rule", "string_or_uri", "maybe_media_list", "media_list", 
+  "media", "ruleset_list", "medium", "page", "font_face", "combinator", 
+  "unary_operator", "ruleset", "selector_list", "selector", 
+  "simple_selector", "ns_element", "ns_selector", "element_name", 
+  "specifier_list", "specifier", "class", "ns_attrib_id", "attrib_id", 
+  "attrib", "match", "ident_or_string", "pseudo", "declaration_list", 
+  "decl_list", "declaration", "property", "prio", "expr", "operator", 
+  "term", "unary_term", "function", "hexcolor", "invalid_at", 
   "invalid_rule", "invalid_block", "invalid_block_list", 0
 };
 #endif
@@ -1511,7 +1511,7 @@ yyreduce:
 	kdDebug( 6080 ) << "@import: " << qString(yyvsp[-3].string) << endl;
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( p->styleElement && p->styleElement->isCSSStyleSheet() )
+	if ( yyvsp[-1].mediaList && p->styleElement && p->styleElement->isCSSStyleSheet() )
 	    yyval.rule = new CSSImportRuleImpl( p->styleElement, domString(yyvsp[-3].string), yyvsp[-1].mediaList );
 	else
 	    yyval.rule = 0;
@@ -1552,7 +1552,7 @@ yyreduce:
   case 39:
 #line 383 "parser.y"
     {
-	yyval.mediaList = 0;
+	yyval.mediaList = new MediaListImpl();
     }
     break;
 
@@ -1560,7 +1560,7 @@ yyreduce:
 #line 391 "parser.y"
     {
 	yyval.mediaList = new MediaListImpl();
-	yyval.mediaList->appendMedium( domString(yyvsp[0].string) );
+	yyval.mediaList->appendMedium( domString(yyvsp[0].string).lower() );
     }
     break;
 
@@ -1569,15 +1569,15 @@ yyreduce:
     {
 	yyval.mediaList = yyvsp[-3].mediaList;
 	if (yyval.mediaList)
-	    yyval.mediaList->appendMedium( domString(yyvsp[0].string) );
+	    yyval.mediaList->appendMedium( domString(yyvsp[0].string).lower() );
     }
     break;
 
   case 43:
 #line 400 "parser.y"
     {
-	delete yyvsp[-1].mediaList;
-	yyval.mediaList = 0;
+       delete yyvsp[-1].mediaList;
+       yyval.mediaList = 0;
     }
     break;
 

@@ -1,5 +1,14 @@
 2003-11-03  Dirk Mueller  <mueller@kde.org>
 
+	* css/parser.y: lowercase the media we get via CSS stylesheets. 
+	Its true that the media is case insensitive in CSS, but it is
+	case sensitive in HTML, and as we don't want to do the code twice
+	we cheat a little here. 
+
+	Also change media parsing logic for @import to handle
+	http://www.hixie.ch/tests/evil/css/import/extra/importexoticmedia.html
+	correctly (idea by Stephan Kulow). 
+
 	* html/html_formimpl.cpp (defaultEventHandler): react on space too
 	(#64200).
 
