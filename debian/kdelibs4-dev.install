@@ -1,4 +1,3 @@
-debian/debiandirs	usr/share/doc/kdelibs4-dev/dh-make/
 debian/dh-make/*	usr/share/doc/kdelibs4-dev/dh-make/
 debian/tmp/usr/bin/checkXML
 debian/tmp/usr/bin/dcopidl

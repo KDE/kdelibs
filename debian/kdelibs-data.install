@@ -293,6 +293,7 @@ debian/tmp/usr/share/apps/khtml/khtml_popupmenu.rc
 debian/tmp/usr/share/apps/kio_uiserver/icons/crystalsvg/16x16/apps/kio_uiserver.png
 debian/tmp/usr/share/apps/kjava/kjava.jar
 debian/tmp/usr/share/apps/kjava/kjava.policy
+debian/tmp/usr/share/apps/kjava/pluginsinfo
 debian/tmp/usr/share/apps/knotify/eventsrc
 debian/tmp/usr/share/apps/ksgmltools2/customization/README
 debian/tmp/usr/share/apps/ksgmltools2/customization/af/catalog
@@ -3174,7 +3175,6 @@ debian/tmp/usr/share/icons/crystalsvg/scalable/mimetypes/widget_doc.svgz
 debian/tmp/usr/share/icons/crystalsvg/scalable/mimetypes/wordprocessing.svgz
 debian/tmp/usr/share/icons/crystalsvg/scalable/mimetypes/zip.svgz
 debian/tmp/usr/share/icons/default.kde
-debian/tmp/usr/share/icons/hicolor/index.theme
 debian/tmp/usr/share/locale/all_languages
 debian/tmp/usr/share/mimelnk/all/all.desktop
 debian/tmp/usr/share/mimelnk/all/allfiles.desktop
@@ -3267,11 +3267,9 @@ debian/tmp/usr/share/mimelnk/application/x-kontour.desktop
 debian/tmp/usr/share/mimelnk/application/x-kpovmodeler.desktop
 debian/tmp/usr/share/mimelnk/application/x-kpresenter.desktop
 debian/tmp/usr/share/mimelnk/application/x-krita.desktop
-debian/tmp/usr/share/mimelnk/application/x-kspread-crypt.desktop
 debian/tmp/usr/share/mimelnk/application/x-kspread.desktop
 debian/tmp/usr/share/mimelnk/application/x-kudesigner.desktop
 debian/tmp/usr/share/mimelnk/application/x-kugar.desktop
-debian/tmp/usr/share/mimelnk/application/x-kword-crypt.desktop
 debian/tmp/usr/share/mimelnk/application/x-kword.desktop
 debian/tmp/usr/share/mimelnk/application/x-lha.desktop
 debian/tmp/usr/share/mimelnk/application/x-linguist.desktop

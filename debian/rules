@@ -9,9 +9,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatibility version to use.
-export DH_COMPAT=4
-
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
@@ -168,7 +165,7 @@ install-arch:
 	cd $(objdir) && \
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
-	dh_install -s --list-missing
+	dh_install -s
 
 install-indep:
 	dh_testdir
@@ -182,7 +179,7 @@ install-indep:
 	cd $(objdir) && \
 	$(MAKE) install-apidox DESTDIR=$(CURDIR)/debian/tmp
 
-	dh_install -i --list-missing
+	dh_install -i
 
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep
@@ -193,7 +190,7 @@ binary-common:
 	dh_installchangelogs
 	dh_installdocs
 #	dh_installexamples
-	dh_installmenu
+#	dh_installmenu
 #	dh_installdebconf
 #	dh_installlogrotate
 #	dh_installemacsen

@@ -1,65 +1,44 @@
 #!/usr/bin/make -f
+# -*- makefile -*-
 # Sample debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatibility version to use.
-export DH_COMPAT=3
 
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+#DPKG_ARCH#
 
-objdir = $(CURDIR)/obj-$(DEB_BUILD_GNU_TYPE)
+CFLAGS = -Wall -g
 
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
 endif
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
-  # Uncomment the following 2 lines to enable i686 optimziation
-  # You may want to tweak the settings to your likings
-  #export CFLAGS=-O3 -march=i686 -ffast-math -finline-functions
-  #export CXXFLAGS=-O3 -march=i686 -ffast-math -finline-functions
-endif
-
-ifeq ($(DEB_BUILD_GNU_TYPE),alpha-linux)
-  export CFLAGS +=-O0 -mieee
-  export CXXFLAGS +=-O0 -mieee
-endif
-
 -include debian/debiandirs
 
-# To be used with kde-style admin subdirectories if desired. debian/debiandirs is included in
-# this template. 
-#debian/debiandirs: admin/debianrules
-#	perl -w admin/debianrules echodirs > debian/debiandirs
+# To be used with kde-style admin subdirectories if desired.
+debian/debiandirs: admin/debianrules
+	perl -w admin/debianrules echodirs > debian/debiandirs
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# Add here commands to configure the package.
-
- 	# run configure with build tree $(objdir)
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(configkde) 
-
-	touch configure-stamp
+#CONFIGURE#
 
 build: build-stamp
-build-stamp: configure-stamp 
+
+build-stamp: #CONFIGURE_STAMP# #CONFIG_STATUS#
 	dh_testdir
 
 	# Add here commands to compile the package.
 	$(MAKE)
+	#/usr/bin/docbook-to-man debian/#PACKAGE#.sgml > #PACKAGE#.1
 
 	# generate manpages
-	#for i in debian/*.sgml; do \
+	#for i in debian/man/*.sgml; do \
 	#        docbook-to-man $$i > `dirname $$i`/`basename $$i .sgml`.1 ;\
 	#done
 
@@ -68,21 +47,21 @@ build-stamp: configure-stamp
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp 
+	rm -f build-stamp #CONFIGURE_STAMP#
 
 	# Add here commands to clean up after the build process.
 	-#CLEAN#
 
-	dh_clean 
+	dh_clean #PRESERVE#
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_clean -k #PRESERVE#
 	dh_installdirs
 
-	# Add here commands to install the package into debian/#PACKAGE#
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/#PACKAGE#
+	# Add here commands to install the package into debian/#PACKAGE#.
+	#INSTALL#
 
 
 # Build architecture-independent files here.
@@ -93,32 +72,32 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-
-#	dh_installdebconf	
+	dh_installchangelogs #CHANGELOGS#
 	dh_installdocs
 	dh_installexamples
-	dh_installmenu
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf
 #	dh_installlogrotate
 #	dh_installemacsen
 #	dh_installpam
 #	dh_installmime
 #	dh_installinit
-	dh_installcron
+#	dh_installcron
+#	dh_installinfo
 	dh_installman
-	dh_installinfo
-	dh_undocumented #PACKAGE#.1
-	dh_installchangelogs #CHANGELOGS#
 	dh_link
 	dh_strip
-	dh_compress -X.docbook -X.css -X-license -X.dcl -X.bz2
+	dh_compress -X.bz2 -X.css -X.dcl -X.docbook -X-license -X.tag
 	dh_fixperms
-	dh_makeshlibs
-	dh_installdeb
 #	dh_perl
+#	dh_python
+#	dh_makeshlibs
+	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+.PHONY: build clean binary-indep binary-arch binary install #PHONY_CONFIGURE#

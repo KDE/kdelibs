@@ -56,6 +56,18 @@ If you have the menu package installed, kpanel will display the debian menus
 of installed programs. Otherwise, you won't get any menus at all, so I do
 recommend you install the menu package.
 
+4. CUPS:
+-------
+It is possible to use cups printers from within kde,
+without running a cupsd from cupsys on every machine.
+to do this: create a ~/.cupsrc or /etc/cups/client.conf.
+
+it could be as short as:
+ServerName servername
+Encryption Never
+
+for a full example, see the client.conf from cupsys.
+
 ---
 
 There used to be two versions of kde.deb : one made by debian, and 

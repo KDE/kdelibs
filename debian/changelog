@@ -1,3 +1,33 @@
+kdelibs (4:3.2.2-2) unstable; urgency=high
+
+  * kdelibs-data Depends: hicolor-icon-theme. (Closes: #238839)
+  * Remove preinst bashism. (Closes: #242946, #242961, #243475)
+  * Do not remove /etc/kde3/system.kdeglobals. (Closes: #245149)
+  * kdelibs-bin Recommends: menu-xdg.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Wed, 21 Apr 2004 18:00:00 -0500
+
+kdelibs (4:3.2.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added CUPS usage information to README.Debian. (Closes: #132587)
+  * Update kdelibs-data Replaces: openoffice.org-mimlnk. (Closes: #233700,
+    #236508)
+  * Correct debian menu replacewith usage. (Closes: #237260, #238769,
+    #239260, #241083, #241420, #242266)
+  * debian/Packaging.txt, debian/dh-make/menu.ex: Removed references to
+    the obsolete kderemove menu tag in kdelibs' documentation.
+  * debian/Packaging.txt, debian/dh-make/menu.ex: Added quotes to the menu
+    file examples.
+  * debian/dh-make/rules, debian/Packaging.txt: updated the information to
+    the state that things currently are in sid.
+  * debian/dh-make/rules, debian/Packaging.txt: Added an example icon entry
+    to the example menu file content.
+  * debian/Packaging.txt: Added a paragraph by Nathaniel W. Turner
+    explaining how to use CDBS for packaging a KDE app.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Mon,  5 Apr 2004 23:00:00 -0500
+
 kdelibs (4:3.2.1-1) unstable; urgency=low
 
   * New upstream release.
