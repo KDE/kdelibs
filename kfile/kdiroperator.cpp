@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kdialogbase.h>
+#include <kfiledialog.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -394,8 +395,12 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 KIO::DeleteJob * KDirOperator::del( const KFileViewItemList& items,
                                     bool ask, bool showProgress )
 {
-    if ( items.isEmpty() )
+    if ( items.isEmpty() ) {
+        KMessageBox::information( this,
+                                  i18n("You didn't select a file to delete."),
+                                  i18n("Nothing to delete") );
         return 0L;
+    }
 
     KURL::List urls;
     QStringList files;
@@ -797,7 +802,7 @@ void KDirOperator::setView( KFile::FileView view )
         }
         else if ( !separateDirs )
             (static_cast<KRadioAction*>( myActionCollection->action("single") ))->setChecked(true);
-            
+
     }
 
     // if we don't have any files, we can't separate dirs from files :)
@@ -1287,8 +1292,15 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     if ( kc->readBoolEntry( QString::fromLatin1("Separate Directories"),
                              DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
-    else if ( kc->readBoolEntry( QString::fromLatin1("Show Preview"), DefaultShowPreview ))
-        defaultView |= KFile::PreviewContents;
+    else {
+        // we want KFileDialog to have a preview by default. Other apps
+        // using KDirOperator shouldn't get it by default, but an extra
+        // method for that would be overkill. So we have this nice lil hacklet.
+        KFileDialog *kfd = dynamic_cast<KFileDialog*>( topLevelWidget() );
+        if ( kc->readBoolEntry( QString::fromLatin1("Show Preview"),
+                                kfd != 0L ))
+            defaultView |= KFile::PreviewContents;
+    }
 
     if ( kc->readBoolEntry( QString::fromLatin1("Sort case insensitively"),
                             DefaultCaseInsensitive ) )
@@ -1358,7 +1370,7 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
         KImageFilePreview *tmp = dynamic_cast<KImageFilePreview*>( preview );
         appSpecificPreview = (tmp == 0L);
     }
-    
+
     if ( !appSpecificPreview ) {
         if ( separateDirsAction->isEnabled() )
             kc->writeEntry( QString::fromLatin1("Separate Directories"),
