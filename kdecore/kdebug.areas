@@ -51,6 +51,7 @@
 704        kutils (KSettings::ComponentsDialog)
 710        kutils (KCMultiDialog)
 750        kspell (kdelibs)
+760        kmdi
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
 912        ksmartcard (kdelibs)
