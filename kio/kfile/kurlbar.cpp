@@ -193,8 +193,8 @@ QSize KURLBarItem::sizeHint() const
         hmin = QListBoxPixmap::height( lb );
     }
     else {
-        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + 8;
-        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + 8;
+        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + 6;
+        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + 6;
     }
 
     if ( lb->isVertical() )
@@ -342,6 +342,13 @@ void KURLBar::resizeEvent( QResizeEvent *e )
 
 QSize KURLBar::sizeHint() const
 {
+    return m_listBox->sizeHint();
+
+#if 0
+    // this code causes vertical and or horizontal scrollbars appearing
+    // depending on the text, font, moonphase and earth rotation. Just using
+    // m_listBox->sizeHint() fixes this (although the widget can then be 
+    // resized to a smaller size so that scrollbars appear).
     int w = 0;
     int h = 0;
     KURLBarItem *item;
@@ -372,6 +379,7 @@ QSize KURLBar::sizeHint() const
         return QSize( 100, 200 );
     else
         return QSize( 6 + w, h );
+#endif
 }
 
 QSize KURLBar::minimumSizeHint() const
@@ -394,7 +402,7 @@ void KURLBar::slotSelected( QListBoxItem *item )
 {
     if ( item && item != m_activeItem )
         m_activeItem = static_cast<KURLBarItem*>( item );
-    
+
     if ( m_activeItem ) {
         m_listBox->setCurrentItem( m_activeItem );
         emit activated( m_activeItem->url() );
@@ -751,10 +759,10 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );
     box->setSpacing( spacingHint() );
-   
+
     QGrid *grid = new QGrid( 2, box );
     grid->setSpacing( spacingHint() );
-    
+
     QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access panel.<p>"
                                  "The description should consist of one or two words "
                                  "that will help you remember what this entry refers to.</qt>");
@@ -764,7 +772,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     label->setBuddy( m_edit );
     QWhatsThis::add( label, whatsThisText );
     QWhatsThis::add( m_edit, whatsThisText );
-    
+
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
                          "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
                          "By clicking on the button next to the text edit box you can browse to an "
@@ -775,7 +783,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     label->setBuddy( m_urlEdit );
     QWhatsThis::add( label, whatsThisText );
     QWhatsThis::add( m_urlEdit, whatsThisText );
-    
+
     whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<p>"
                          "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
