@@ -92,31 +92,31 @@ const char* KHTMLSettings::adviceToStr(KJavaScriptAdvice _advice)
 
 
 void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
-                                                                          KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
+                                      KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
 {
     QString tmp(configStr);
     int splitIndex = tmp.find(':');
     if ( splitIndex == -1)
     {
-        domain = configStr;
+        domain = configStr.lower();
         javaAdvice = KJavaScriptDunno;
-                javaScriptAdvice = KJavaScriptDunno;
+        javaScriptAdvice = KJavaScriptDunno;
     }
     else
     {
-        domain = tmp.left(splitIndex);
-                QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
-                int splitIndex2 = adviceString.find( ':' );
-                if( splitIndex2 == -1 ) {
-                  // Java advice only
-                  javaAdvice = strToAdvice( adviceString );
-                  javaScriptAdvice = KJavaScriptDunno;
-                } else {
-                  // Java and JavaScript advice
-                  javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
-                  javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
-                                                                                                                        adviceString.length() ) );
-                }
+        domain = tmp.left(splitIndex).lower();
+        QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
+        int splitIndex2 = adviceString.find( ':' );
+        if( splitIndex2 == -1 ) {
+            // Java advice only
+            javaAdvice = strToAdvice( adviceString );
+            javaScriptAdvice = KJavaScriptDunno;
+        } else {
+            // Java and JavaScript advice
+            javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
+            javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
+                                                              adviceString.length() ) );
+        }
     }
 }
 
@@ -398,12 +398,12 @@ static bool lookup_hostname_policy(const QString& hostname,
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname, d->javaDomainPolicy, d->m_bEnableJava);
+  return lookup_hostname_policy(hostname.lower(), d->javaDomainPolicy, d->m_bEnableJava);
 }
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname, d->javaScriptDomainPolicy, d->m_bEnableJavaScript);
+  return lookup_hostname_policy(hostname.lower(), d->javaScriptDomainPolicy, d->m_bEnableJavaScript);
 }
 
 bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
@@ -462,7 +462,7 @@ QString KHTMLSettings::settingsToCSS() const
 const QString &KHTMLSettings::availableFamilies()
 {
     if ( !avFamilies ) {
-	avFamilies = new QString;
+        avFamilies = new QString;
         QFontDatabase db;
         QStringList families = db.families();
         QStringList s;
