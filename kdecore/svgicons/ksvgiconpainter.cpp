@@ -313,15 +313,15 @@ public:
 			else
 				y2 = 0;
 
+			// Adjust to gradientTransform
+			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
+			m.map(x1, y1, &x1, &y1);
+			m.map(x2, y2, &x2, &y2);
+
 			double x1n = x1 * m_worldMatrix->m11() + y1 * m_worldMatrix->m21() + m_worldMatrix->dx();
 			double y1n = x1 * m_worldMatrix->m12() + y1 * m_worldMatrix->m22() + m_worldMatrix->dy();
 			double x2n = x2 * m_worldMatrix->m11() + y2 * m_worldMatrix->m21() + m_worldMatrix->dx();
 			double y2n = x2 * m_worldMatrix->m12() + y2 * m_worldMatrix->m22() + m_worldMatrix->dy();
-
-			// Adjust to gradientTransform
-			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
-			m.map(x1n, y1n, &x1n, &y1n);
-			m.map(x2n, y2n, &x2n, &y2n);
 
 			double dx = x2n - x1n;
 			double dy = y2n - y1n;
