@@ -474,7 +474,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
       return false;
     }
   }
-  return (expresp != 0) && (rsp == expresp);
+  return (expresp == 0) || (rsp == expresp);
 }
 
 /*
