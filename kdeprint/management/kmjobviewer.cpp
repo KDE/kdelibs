@@ -383,7 +383,11 @@ void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 	QPtrList<KMJob>	l;
 	jobSelection(l);
 	if (!m_manager->sendCommand(l,cmd,arg))
-		KMessageBox::error(this,"<qt>"+i18n("Unable to perform action \"%1\" on selected jobs.").arg(name)+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
+	{
+		KMessageBox::error(this,"<qt>"+i18n("Unable to perform action \"%1\" on selected jobs. Error received from manager:").arg(name)+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
+		// error reported, clean it
+		KMManager::self()->setErrorMsg(QString::null);
+	}
 
 	triggerRefresh();
 
