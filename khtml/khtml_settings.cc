@@ -319,24 +319,16 @@ void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
 }
 
 
-  //static
-/*
-KonqHTMLSettings * KonqHTMLSettings::defaultHTMLSettings()
+QString KHTMLSettings::settingsToCSS() const
 {
-  if (!s_HTMLSettings)
-    s_HTMLSettings = new KonqHTMLSettings();
-  return s_HTMLSettings;
+    // lets start with the link properties
+    QString str = "a[href] {\ncolor: ";    
+    str += m_linkColor.name();
+    str += ";";
+    if(m_underlineLink)
+	str += "\ntext-decoration: underline;";
+    if( m_underlineLink )
+	str += "\ncursor: pointer;";
+    str += "\n}\n";
+    return str;
 }
-*/
-//static
-/*
-void KonqHTMLSettings::reparseConfiguration()
-{
-  if ( s_HTMLSettings )
-  {
-    KConfig config ( "konquerorrc", true );
-    config.setGroup( "HTML Settings" );
-    s_HTMLSettings->init( &config );
-  }
-}
-*/
