@@ -33,6 +33,9 @@ class QPushButton;
  *
  * The lineedit provides a preview of the selected font. The preview text can
  * be customized. You can also have the font dialog show only the fixed fonts.
+ *
+ * @author Nadeem Hasan <nhasan@kde.org>
+ *
  */
 class KFontRequester : public QWidget
 {
