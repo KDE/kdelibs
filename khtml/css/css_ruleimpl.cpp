@@ -229,13 +229,14 @@ CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
     // Parse CSS data
     while( curP < endP )
     {
-        //kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
-        //                << "'" << endl;
+//         kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
+//                         << "'" << endl;
         CSSRuleImpl *rule = parseStyleRule( curP, endP );
         if ( rule ) {
             rule->ref();
             appendRule( rule );
         }
+        if (!curP) break;
         while( curP < endP && *curP == QChar( ' ' ) )
             curP++;
     }
