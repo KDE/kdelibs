@@ -1218,6 +1218,8 @@ void KMainWindow::setIcon( const QPixmap& p )
 #endif
 }
 
+QPtrList<KMainWindow>* KMainWindow::getMemberList() { return memberList; }
+
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
 // DF: because they compile KDE much faster :)
 void KMainWindow::finalizeGUI( KXMLGUIClient *client )

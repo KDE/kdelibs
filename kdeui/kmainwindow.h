@@ -379,6 +379,12 @@ public:
      */
     static QPtrList<KMainWindow>* memberList;
 
+    //KDE4: replace with memberList() and make memberList member private
+    /**
+     * List of members of KMainWindow class.
+     */
+    static QPtrList<KMainWindow>* getMemberList();
+
     /**
      * Returns a pointer to the toolbar with the specified name.
      * This refers to toolbars created dynamically from the XML UI
