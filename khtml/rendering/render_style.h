@@ -28,6 +28,10 @@
 
 #include <khtmllayout.h>
 
+#define SET_VAR(group,variable,value) \
+    if (group->variable != value) \
+        group.access()->variable = value;
+
 namespace khtml {
 
     class CachedImage;
@@ -49,25 +53,19 @@ public:
 
     const DATA* operator->() const
     {    	
-    	return get();
+    	return data;
     }
-
-
-
+    
     const DATA* get() const
-    {
-//    	kdDebug(300) << "get" << endl;
-	return data;
+    {    	
+    	return data;
     }
 
-    DATA* set()
+
+    DATA* access()
     {    	
-//    	kdDebug(300) << "set" << endl;
-//    	if (data==0)
-//	    createData();
     	if (!data->hasOneRef())
 	{
-//	    kdDebug(300) << "copy" << endl;
 	    data->deref();
 	    data = new DATA(*data);
 	    data->ref();
@@ -75,9 +73,8 @@ public:
 	return data;
     }
 
-    void createData()
+    void init()
     {
-//    	kdDebug(300) << "create" << endl;
     	if (data)
     	    data->deref();
     	data = new DATA;
@@ -86,7 +83,6 @@ public:
 
     DataRef<DATA>& operator=(const DataRef<DATA>& d)
     {
-    	//kdDebug(300) << "op=" << endl;
     	if (data==d.data)
 	    return *this;
     	if (data)
@@ -678,119 +674,89 @@ public:
     void setPosition(EPosition v) { _position = v; }
     void setFloating(EFloat v) { _floating = v; }
 
-    void setRight(Length v) {  surround.set()->offset.right = v; }
-    void setLeft(Length v) {  surround.set()->offset.left = v; }
-    void setTop(Length v) {  surround.set()->offset.top = v; }
-    void setBottom(Length v) {  surround.set()->offset.bottom = v; }
+    void setLeft(Length v)  {  SET_VAR(surround,offset.left,v) }
+    void setRight(Length v) {  SET_VAR(surround,offset.right,v) }
+    void setTop(Length v)   {  SET_VAR(surround,offset.top,v) }
+    void setBottom(Length v){  SET_VAR(surround,offset.bottom,v) }
 
-    void setWidth(Length v) { box.set()->width = v; }
-    void setHeight(Length v) { box.set()->height = v; }
+    void setWidth(Length v)  { SET_VAR(box,width,v) }
+    void setHeight(Length v) { SET_VAR(box,height,v) }
 
-    void setMinWidth(Length v) { box.set()->min_width = v; }
-    void setMaxWidth(Length v) { box.set()->max_width = v; }
-    void setMinHeight(Length v) { box.set()->min_height = v; }
-    void setMaxHeight(Length v) { box.set()->max_height = v; }
+    void setMinWidth(Length v)  { SET_VAR(box,min_width,v) }
+    void setMaxWidth(Length v)  { SET_VAR(box,max_width,v) }
+    void setMinHeight(Length v) { SET_VAR(box,min_height,v) }
+    void setMaxHeight(Length v) { SET_VAR(box,max_height,v) }
 
-    void setBorderWidth(unsigned short v) {	
-	BorderData& d = surround.set()->border;	
-	d.left.width = v;
-    	d.right.width = v;
-    	d.top.width = v;	
-    	d.bottom.width = v;
-    }	
-    void setBorderColor(const QColor & v) {
-    	BorderData& d = surround.set()->border;	
-    	d.left.color = v;
-    	d.right.color = v;
-    	d.top.color = v;	
-    	d.bottom.color = v;
-    }	
-    void setBorderStyle(EBorderStyle v) {	
-	BorderData& d = surround.set()->border;
-    	d.left.style = v;
-    	d.right.style = v;
-    	d.top.style = v;	
-    	d.bottom.style = v;
-    }	
-    void setBorderLeftWidth(unsigned short v) {  surround.set()->border.left.width = v; }
-    void setBorderLeftStyle(EBorderStyle v) {  surround.set()->border.left.style = v; }
-    void setBorderLeftColor(const QColor & v) {  surround.set()->border.left.color = v; }
-    void setBorderRightWidth(unsigned short v) {  surround.set()->border.right.width = v; }
-    void setBorderRightStyle(EBorderStyle v) {  surround.set()->border.right.style = v; }
-    void setBorderRightColor(const QColor & v) {  surround.set()->border.right.color = v; }
-    void setBorderTopWidth(unsigned short v) {  surround.set()->border.top.width = v; }
-    void setBorderTopStyle(EBorderStyle v) {  surround.set()->border.top.style = v; }
-    void setBorderTopColor(const QColor & v) {  surround.set()->border.top.color = v; }
-    void setBorderBottomWidth(unsigned short v) { surround.set()->border.bottom.width = v; }
-    void setBorderBottomStyle(EBorderStyle v) {  surround.set()->border.bottom.style = v; }
-    void setBorderBottomColor(const QColor & v) {  surround.set()->border.bottom.color = v; }
+    void setBorderLeftWidth(unsigned short v)   {  SET_VAR(surround,border.left.width,v) }
+    void setBorderLeftStyle(EBorderStyle v)     {  SET_VAR(surround,border.left.style,v) }
+    void setBorderLeftColor(const QColor & v)   {  SET_VAR(surround,border.left.color,v) }    
+    void setBorderRightWidth(unsigned short v)  {  SET_VAR(surround,border.right.width,v) }
+    void setBorderRightStyle(EBorderStyle v)    {  SET_VAR(surround,border.right.style,v) }
+    void setBorderRightColor(const QColor & v)  {  SET_VAR(surround,border.right.color,v) }    
+    void setBorderTopWidth(unsigned short v)    {  SET_VAR(surround,border.top.width,v) }
+    void setBorderTopStyle(EBorderStyle v)      {  SET_VAR(surround,border.top.style,v) }
+    void setBorderTopColor(const QColor & v)    {  SET_VAR(surround,border.top.color,v) }    
+    void setBorderBottomWidth(unsigned short v) {  SET_VAR(surround,border.bottom.width,v) }
+    void setBorderBottomStyle(EBorderStyle v)   {  SET_VAR(surround,border.bottom.style,v) }
+    void setBorderBottomColor(const QColor & v) {  SET_VAR(surround,border.bottom.color,v) }
 
     void setOverflow(EOverflow v) { _overflow = v; }
     void setVisiblity(EVisiblity v) { _visiblity = v; }
     void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
-
-    void setClip(Length v) {
-    	StyleVisualData* d = visual.set();
-	d->clip.left = v;
-	d->clip.right = v;
-	d->clip.top = v;
-	d->clip.bottom = v;
-    }	
-    void setClipLeft(Length v) { visual.set()->clip.left = v; }
-    void setClipRight(Length v) { visual.set()->clip.right = v; }
-    void setClipTop(Length v) { visual.set()->clip.top = v; }
-    void setClipBottom(Length v) { visual.set()->clip.bottom = v; }
+    
+    void setClipLeft(Length v) { SET_VAR(visual,clip.left,v) }
+    void setClipRight(Length v) { SET_VAR(visual,clip.right,v) }
+    void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
+    void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
 
     void setClear(EClear v) { _clear = v; }
     void setTableLayout(ETableLayout v) { _table_layout = v; }
-    void colSpan(short v) { visual.set()->colspan = v; }
+    void setColSpan(short v) { SET_VAR(visual,colspan,v) }
 
-    void setFont(const QFont & v) { inherited.set()->font = v; }
+    void setFont(const QFont & v) { SET_VAR(inherited,font,v) }
 
-    void setColor(const QColor & v) { inherited.set()->color = v; }
-    void setTextIndent(Length v) { inherited.set()->indent = v; }
+    void setColor(const QColor & v) { SET_VAR(inherited,color,v) }
+    void setTextIndent(Length v) { SET_VAR(inherited,indent,v) }
     void setTextAlign(ETextAlign v) { _text_align = v; }
     void setTextDecoration(int v) { _text_decoration = v; }
-    void setTextDecorationColor(const QColor &c) { inherited.set()->decoration_color = c; }
+    void setTextDecorationColor(const QColor &v) { SET_VAR(inherited,decoration_color,v) }
     void setDirection(EDirection v) { _direction = v; }
-    void setLineHeight(Length v) { inherited.set()->line_height = v; }
+    void setLineHeight(Length v) { SET_VAR(inherited,line_height,v) }
 
     void setWhiteSpace(EWhiteSpace v) { _white_space = v; }
-//////////////////// patched by S.G Hwnag //////////////////////////////
-    void setWordSpacing(int v) { inherited.set()->word_spacing = v; }
-    void setLetterSpacing(int v) { inherited.set()->letter_spacing = v; }
-//////////////////// end of patch //////////////////////////////////////
 
+    void setWordSpacing(int v) { SET_VAR(inherited,word_spacing,v) }
+    void setLetterSpacing(int v) { SET_VAR(inherited,letter_spacing,v) }
 
-    void setBackgroundColor(const QColor & v) {  background.set()->color = v; }
-    void setBackgroundImage(CachedImage *v) {  background.set()->image = v; }
+    void setBackgroundColor(const QColor & v) {  SET_VAR(background,color,v) }
+    void setBackgroundImage(CachedImage *v) {  SET_VAR(background,image,v) }
     void setBackgroundRepeat(EBackgroundRepeat v) {  _bg_repeat = v; }
     void setBackgroundAttachment(bool scroll) {  _bg_attachment = scroll; }
-    void setBackgroundXPosition(Length v) {  background.set()->x_position = v; }
-    void setBackgroundYPosition(Length v) {  background.set()->y_position = v; }
+    void setBackgroundXPosition(Length v) {  SET_VAR(background,x_position,v) }
+    void setBackgroundYPosition(Length v) {  SET_VAR(background,y_position,v) }
 
     void setBorderCollapse(bool collapse) { _border_collapse = collapse; }
-    void setBorderSpacing(short v) { inherited.set()->border_spacing = v; }
+    void setBorderSpacing(short v) { SET_VAR(inherited,border_spacing,v) }
     void setEmptyCells(EEmptyCell v) { _empty_cells = v; }
     void setCaptionSide(ECaptionSide v) { _caption_side = v; }
 
 
-    void setCounterIncrement(short v) {  visual.set()->counter_increment = v; }
-    void setCounterReset(short v) {  visual.set()->counter_reset = v; }
+    void setCounterIncrement(short v) {  SET_VAR(visual,counter_increment,v) }
+    void setCounterReset(short v) {  SET_VAR(visual,counter_reset,v) }
 
     void setListStyleType(EListStyleType v) {  _list_style_type = v; }
-    void setListStyleImage(CachedImage *v) {  inherited.set()->style_image = v; }
+    void setListStyleImage(CachedImage *v) {  SET_VAR(inherited,style_image,v)}
     void setListStylePosition(EListStylePosition v) {  _list_style_position = v; }
 
-    void setMarginTop(Length v) { surround.set()->margin.top = v; }
-    void setMarginBottom(Length v) {  surround.set()->margin.bottom = v; }
-    void setMarginLeft(Length v) {  surround.set()->margin.left = v; }
-    void setMarginRight(Length v) { surround.set()->margin.right = v; }
+    void setMarginTop(Length v)     {  SET_VAR(surround,margin.top,v) }
+    void setMarginBottom(Length v)  {  SET_VAR(surround,margin.bottom,v) }
+    void setMarginLeft(Length v)    {  SET_VAR(surround,margin.left,v) }
+    void setMarginRight(Length v)   {  SET_VAR(surround,margin.right,v) }
 
-    void setPaddingTop(Length v) {  surround.set()->padding.top = v; }
-    void setPaddingBottom(Length v) {  surround.set()->padding.bottom = v; }
-    void setPaddingLeft(Length v) {  surround.set()->padding.left = v; }
-    void setPaddingRight(Length v) {  surround.set()->padding.right = v; }
+    void setPaddingTop(Length v)    {  SET_VAR(surround,padding.top,v) }
+    void setPaddingBottom(Length v) {  SET_VAR(surround,padding.bottom,v) }
+    void setPaddingLeft(Length v)   {  SET_VAR(surround,padding.left,v) }
+    void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
     void setCursor( ECursor c ) { _cursor = c; }
     
@@ -801,7 +767,10 @@ public:
     void setFlowAroundFloats(bool b=true) { _flowAroundFloats = b; }
 
     int zIndex() const { return box->z_index; }
-    void setZIndex(int v) { box.set()->z_index = v; }
+    void setZIndex(int v) { SET_VAR(box,z_index,v) }
+    
+
+    
 };
 
 } // namespace

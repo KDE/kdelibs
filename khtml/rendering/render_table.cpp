@@ -76,8 +76,6 @@ RenderTable::RenderTable()
     foot = 0;
     firstBody = 0;
 
-    _htmlBorder = 0;
-
     incremental = false;
     m_maxWidth = 0;
 

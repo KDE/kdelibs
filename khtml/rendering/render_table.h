@@ -122,12 +122,6 @@ public:
 
     int getBaseline(int row) {return rowBaselines[row];}
 
-    void setHtmlBorder(short w) {
-    	style()->setBorderWidth(w);
-    	_htmlBorder=w;
-    }
-    short htmlBorder() { return _htmlBorder; }
-
     virtual void calcWidth();
 
     virtual int borderTopExtra();
@@ -250,8 +244,6 @@ protected:
 
     bool incremental;
     bool collapseBorders;
-
-    short _htmlBorder;
 
     short _lastParentWidth;
 

@@ -23,6 +23,8 @@
 
 #include "render_style.h"
 
+#include "kdebug.h"
+
 using namespace khtml;
 
 const QColor RenderStyle::undefinedColor;
@@ -137,14 +139,14 @@ RenderStyle::RenderStyle()
 
 RenderStyle::RenderStyle(bool)
 {
-    box.createData();
-    box.set()->setDefaultValues();    	
-    visual.createData();
-    background.createData();
-    surround.createData();		
+    box.init();
+    box.access()->setDefaultValues();    	
+    visual.init();
+    background.init();
+    surround.init();		
 
-    inherited.createData();
-    inherited.set()->setDefaultValues();		
+    inherited.init();
+    inherited.access()->setDefaultValues();		
 }
 
 RenderStyle::RenderStyle(const RenderStyle& other)
@@ -212,6 +214,9 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _htmlHacks = inheritParent->_htmlHacks;
 
     _display = INLINE;
+    
+//    kdDebug( 6040 ) << "style=" << counter << " data=" 
+//        << SharedData::counter << endl;
 }
 
 RenderStyle::~RenderStyle()
@@ -265,7 +270,7 @@ RenderStyle*
 RenderStyle::inheritFrom(RenderStyle* from)
 {
     if(!from) return this;
-    inherited = from->inherited;
+    inherited = from->inherited;   
 
     return this;
 }
