@@ -41,7 +41,7 @@
 
 #include "khtmlview.h"
 #include "khtml_ext.h"
-#include "xml/dom_docimpl.h" // ### remove dependency
+#include "xml/dom_docimpl.h"
 
 #include <kdebug.h>
 
@@ -985,19 +985,20 @@ void RenderSelect::updateSelection()
     }
     else {
         bool found = false;
-        for (i = 0; i < int(listItems.size()); i++)
-            if (listItems[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
-                static_cast<KComboBox*>(m_widget)->setCurrentItem(i);
-                found = true;
-                break;
+        int firstOption = listItems.size();
+        i = listItems.size();
+        while (i--)
+            if (listItems[i]->id() == ID_OPTION) {
+                if (found)
+                    static_cast<HTMLOptionElementImpl*>(listItems[i])->m_selected = false;
+                else if (static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
+                    static_cast<KComboBox*>( m_widget )->setCurrentItem(i);
+                    found = true;
+                }
+                firstOption = i;
             }
-        // ok, nothing was selected, select the first one..
-        for (i = 0; !found && i < int(listItems.size()); i++)
-            if ( listItems[i]->id() == ID_OPTION ) {
-//                static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = true;
-                static_cast<KComboBox*>( m_widget )->setCurrentItem( i );
-                break;
-            }
+
+        Q_ASSERT(firstOption == listItems.size() || found);
     }
 
     m_selectionChanged = false;
@@ -1019,7 +1020,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
-    KCursor::setAutoHideCursor(this, true);
+    KCursor::setAutoHideCursor(viewport(), true);
     setTextFormat(QTextEdit::PlainText);
     setAutoMask(true);
     setMouseTracking(true);
