@@ -60,7 +60,11 @@ void TextSlave::printSelection(const Font *f, QPainter *p, RenderStyle* style, i
 
     int _offset = 0;
     if ( startPos > 0 )
-        _offset = f->width(m_text, startPos );
+	_offset = f->width(m_text, startPos );
+    if ( m_reversed ) {
+	_offset = m_width - _width - _offset;
+    } 
+
 
     p->save();
     QColor c = style->color();
@@ -148,34 +152,46 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
     if ( _y < _ty + m_y )
         return SelectionPointBefore; // above -> before
 
-    if ( _y > _ty + m_y + lineHeight || _x > _tx + m_x + m_width )
-    {
-        // below or on the right -> after
+    if ( _y > _ty + m_y + lineHeight ) {
+        // below -> after
         // Set the offset to the max
         offset = m_len;
         return SelectionPointAfter;
     }
+    if ( _x > _tx + m_x + m_width ) {
+	// to the right
+	return m_reversed ? SelectionPointBefore : SelectionPointAfter;
+    }
 
     // The Y matches, check if we're on the left
-    if ( _x < _tx + m_x )
-        return SelectionPointBefore; // on the left (and not below) -> before
-
-    if ( m_reversed )
-        return SelectionPointBefore; // Abort if RTL (TODO)
+    if ( _x < _tx + m_x ) {
+        return m_reversed ? SelectionPointAfter : SelectionPointBefore; 
+    }
 
     int delta = _x - (_tx + m_x);
     //kdDebug(6040) << "TextSlave::checkSelectionPoint delta=" << delta << endl;
     int pos = 0;
-    while(pos < m_len)
-    {
-        // ### this will produce wrong results for RTL text!!!
-        int w = f->width(*(m_text+pos));
-        int w2 = w/2;
-        w -= w2;
-        delta -= w2;
-        if(delta <= 0) break;
-        pos++;
-        delta -= w;
+    if ( m_reversed ) {
+	delta -= m_width;
+	while(pos < m_len) {
+	    int w = f->width(*(m_text+pos));
+	    int w2 = w/2;
+	    w -= w2;
+	    delta += w2;
+	    if(delta >= 0) break;
+	    pos++;
+	    delta += w;
+	}
+    } else {
+	while(pos < m_len) {
+	    int w = f->width(*(m_text+pos));
+	    int w2 = w/2;
+	    w -= w2;
+	    delta -= w2;
+	    if(delta <= 0) break;
+	    pos++;
+	    delta -= w;
+	}
     }
     //kdDebug( 6040 ) << " Text  --> inside at position " << pos << endl;
     offset = pos;
@@ -313,9 +329,6 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     while(offset > off && si < m_lines.count())
     {
         s = m_lines[++si];
-        if ( s->m_reversed )
-            return 0L; // Abort if RTL (TODO)
-        // ### only for visuallyOrdered !
         off = s->m_text - str->s + s->m_len;
     }
     // we are now in the correct text slave
@@ -361,8 +374,6 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         TextSlave* s = m_lines[si];
-        if ( s->m_reversed )
-            return SelectionPointBefore; // abort if RTL (TODO)
         int result;
         const Font *f = htmlFont( si==0 );
         result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, offset, m_lineHeight);
@@ -523,16 +534,10 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             // Eat the lines we don't print (startPos and endPos are from line 0!)
             // Note that we do this even if si==0, because we may have \n as the first char,
             // and this takes care of it too (David)
-            if ( m_lines[si]->m_reversed )
-                endPos = -1; // No selection if RTL (TODO)
-            else
-            {
-                // ## Only valid for visuallyOrdered
-                int len = m_lines[si]->m_text - str->s;
-                //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
-                startPos -= len;
-                endPos -= len;
-            }
+	    int len = m_lines[si]->m_text - str->s;
+	    //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
+	    startPos -= len;
+	    endPos -= len;
         }
 
         TextSlave* s;
