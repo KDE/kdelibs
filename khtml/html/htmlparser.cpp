@@ -344,8 +344,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         case ID_LINK:
         case ID_ISINDEX:
         case ID_BASE:
-            // when there is no head yet, we will create it further below
-            // and arrive here again
+            if( !head )
+                createHead();
             if( head ) {
                 if ( head->addChild(n) ) {
 #if SPEED_DEBUG < 2
