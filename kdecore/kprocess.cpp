@@ -98,7 +98,7 @@ KProcess::~KProcess()
   // destroying the KProcess instance sends a SIGKILL to the
   // child process (if it is running) after removing it from the
   // list of valid processes (if the process is not started as
-  // "dont_care")
+  // "DontCare")
 
   theKProcessController->processList->remove(this);
   // this must happen before we kill the child
@@ -280,7 +280,7 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
   if (0 != input_data)
     return false;
 
-  if ( runs && communication) {
+  if (runs && (communication & Stdin)) {
     input_data = buffer;
     input_sent = 0;
     input_total = buflen;
