@@ -646,6 +646,40 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
 }
 
 
+QDateTime KConfigBase::readDateTimeEntry( const QString& pKey,
+					  const QDateTime* pDefault ) const
+{
+  QStrList list;
+  QDateTime aRetDateTime = QDateTime::currentDateTime();
+
+  if( !hasKey( pKey ) )
+    {
+      if( pDefault )
+	return *pDefault;
+      else
+	return aRetDateTime;
+    }
+
+  int count = readListEntry( pKey, list, ',' );
+  if( count == 6 ) {
+    QTime time;
+    QDate date;
+
+    date.setYMD( QString( list.at( 0 ) ).toInt(),
+		 QString( list.at( 1 ) ).toInt(),
+		 QString( list.at( 2 ) ).toInt() );
+    time.setHMS( QString( list.at( 3 ) ).toInt(),
+		 QString( list.at( 4 ) ).toInt(),
+		 QString( list.at( 5 ) ).toInt() );
+    
+    aRetDateTime.setTime( time );
+    aRetDateTime.setDate( date );
+  }
+
+  return aRetDateTime;
+}
+
+
 QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
 				 bool bPersistent,
 				 bool bGlobal,
@@ -977,6 +1011,27 @@ void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
   aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
 
   writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const QString& pKey, const QDateTime& rDateTime,
+			      bool bPersistent, bool bGlobal,
+			      bool bNLS )
+{
+  QStrList list;
+  QCString tempstr;
+
+  QTime time = rDateTime.time();
+  QDate date = rDateTime.date();
+
+  list.insert( 0, tempstr.setNum( date.day() ) );
+  list.insert( 1, tempstr.setNum( date.month() ) );
+  list.insert( 2, tempstr.setNum( date.year() ) );
+
+  list.insert( 3, tempstr.setNum( time.hour() ) );
+  list.insert( 4, tempstr.setNum( time.minute() ) );
+  list.insert( 5, tempstr.setNum( time.second() ) );
+
+  writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
 
 void KConfigBase::parseConfigFiles()

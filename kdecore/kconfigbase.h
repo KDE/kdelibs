@@ -22,6 +22,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.35  1999/11/05 19:48:58  ettrich
+// "Keys", not "Standard Keys", otherwise confiugrable keybindings in
+// KAccel are broken (it relies on KConfig's inheritance).
+//
+// KStdAccel is a namespace now, constructor remains for compatibility.
+//
 // Revision 1.34  1999/10/10 08:18:56  bero
 // Code cleanup ((void) stuff)
 //
@@ -85,6 +91,7 @@
 #include <qobject.h>
 #include <qcolor.h>
 #include <qfont.h>
+#include <qdatetime.h>
 #include <qstrlist.h>
 #include <qstringlist.h>
 #include <qvariant.h>
@@ -368,6 +375,20 @@ public:
                          const QColor* pDefault = 0L ) const;
 
   /**
+   * Read a QDateTime.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it as a date and time.
+   *
+   * @param pKey                The key to search for.
+   * @param pDefault    A default value returned if the key was not found.
+   * @return The value for this key or a currentDateTime() if no value
+   * was found.
+   */
+  QDateTime readDateTimeEntry( const QString& pKey,
+			       const QDateTime* pDefault = 0L ) const;
+
+  /**
    * Write the key/value pair.
    *
    * This is stored to the most specific config file when destroying the
@@ -634,6 +655,27 @@ public:
    *  when writing it back.
    */
   void writeEntry( const QString& pKey, const QColor& rColor,
+                   bool bPersistent = true, bool bGlobal = false,
+                   bool bNLS = false );
+
+  /**
+   * Write the key value pair.
+   * Same as above, but write a data & time.
+   *
+   * Note: Unlike the other writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write.
+   * @param rValue The date & time value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
+  void writeEntry( const QString& pKey, const QDateTime& rDateTime,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
 
