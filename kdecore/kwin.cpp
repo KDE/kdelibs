@@ -294,14 +294,14 @@ void KWin::setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon )
     NETIcon ni;
     ni.size.width = img.size().width();
     ni.size.height = img.size().height();
-    ni.data = (CARD32*) img.bits();
+    ni.data = (Q_UINT32*) img.bits();
     info.setIcon( ni, true );
     if ( miniIcon.isNull() )
 	return;
     img = miniIcon.convertToImage().convertDepth( 32 );
     ni.size.width = img.size().width();
     ni.size.height = img.size().height();
-    ni.data = (CARD32*) img.bits();
+    ni.data = (Q_UINT32*) img.bits();
     info.setIcon( ni, false );
 }
 
@@ -375,4 +375,3 @@ void KWin::setCurrentDesktop( int desktop )
     NETRootInfo info( qt_xdisplay(), NET::CurrentDesktop );
     info.setCurrentDesktop( desktop );
 }
-

@@ -29,11 +29,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#define INT8 _X11INT8
-#define INT32 _X11INT32
-#include <X11/Xmd.h>
-#undef INT32
-#undef INT8
+#include <qglobal.h>
 
 #include "netwm_def.h"
 #include "netwm_p.h"
@@ -60,13 +56,13 @@ public:
     void setClientList(Window *, unsigned int);
     void setClientListStacking(Window *, unsigned int);
     void setKDEDockingWindows(Window *, unsigned int);
-    void setCurrentDesktop(CARD32);
+    void setCurrentDesktop(Q_UINT32);
     void setDesktopGeometry(const NETSize &);
     void setDesktopViewport(const NETPoint &);
-    void setNumberOfDesktops(CARD32);
-    void setDesktopName(CARD32, const char *);
+    void setNumberOfDesktops(Q_UINT32);
+    void setDesktopName(Q_UINT32, const char *);
     void setActiveWindow(Window);
-    void setWorkArea(CARD32, const NETRect &);
+    void setWorkArea(Q_UINT32, const NETRect &);
     void setVirtualRoots(Window *, int);
 
     const NETRootInfo &operator=(const NETRootInfo &);
@@ -79,12 +75,12 @@ public:
     inline int kdeDockingWindowsCount() const;
     inline NETSize desktopGeometry() const;
     inline NETPoint desktopViewport() const;
-    inline NETRect workArea(CARD32) const;
-    inline const char *desktopName(CARD32) const;
+    inline NETRect workArea(Q_UINT32) const;
+    inline const char *desktopName(Q_UINT32) const;
     inline const Window *virtualRoots( ) const;
     inline int virtualRootsCount() const;
-    inline CARD32 numberOfDesktops() const;
-    inline CARD32 currentDesktop() const;
+    inline Q_UINT32 numberOfDesktops() const;
+    inline Q_UINT32 currentDesktop() const;
     inline Window activeWindow() const;
 
     // This function takes the pass XEvent and returns an ORed list of NETRootInfo
@@ -105,10 +101,10 @@ protected:
     virtual void removeDockWin(Window) { }
 
     // Notify a NETWindowManager that a request has been made.
-    virtual void changeNumberOfDesktops(CARD32) { }
+    virtual void changeNumberOfDesktops(Q_UINT32) { }
     virtual void changeDesktopGeometry(const NETSize &) { }
     virtual void changeDesktopViewport(const NETPoint &) { }
-    virtual void changeCurrentDesktop(CARD32) { }
+    virtual void changeCurrentDesktop(Q_UINT32) { }
     virtual void changeActiveWindow(Window) { }
     virtual void closeWindow(Window) { }
     virtual void moveResize(Window, int, int, unsigned long) { }
@@ -141,9 +137,9 @@ public:
     void setName(const char * /* name */);
     void setVisibleName(const char * /* visible name */);
 
-    static const CARD32 OnAllDesktops = (CARD32) -1;
-    void setDesktop(CARD32 /* desktop */);
-    void setPid(CARD32 /* pid */);
+    static const Q_UINT32 OnAllDesktops = (Q_UINT32) -1;
+    void setDesktop(Q_UINT32 /* desktop */);
+    void setPid(Q_UINT32 /* pid */);
     void setHandledIcons(Bool /* handled */);
     void setKDEDockWinFor(Window /* window */);
     void setKDEFrameStrut(NETStrut);
@@ -156,8 +152,8 @@ public:
     inline WindowType windowType() const;
     inline const char *name() const;
     inline const char *visibleName() const;
-    inline CARD32 desktop() const;
-    inline CARD32 pid() const;
+    inline Q_UINT32 desktop() const;
+    inline Q_UINT32 pid() const;
     inline Bool handledIcons() const;
     inline Window kdeDockWinFor() const;
     inline MappingState mappingState() const;
@@ -170,8 +166,8 @@ public:
 
 
 protected:
-    virtual void changeDesktop(CARD32 /* desktop */) { }
-    virtual void changeState(CARD32 /* state */, CARD32 /* mask */) { }
+    virtual void changeDesktop(Q_UINT32 /* desktop */) { }
+    virtual void changeState(Q_UINT32 /* state */, Q_UINT32 /* mask */) { }
 
 
 private:
@@ -220,9 +216,9 @@ inline NETSize NETRootInfo::desktopGeometry() const { return p->geometry; }
 
 inline NETPoint NETRootInfo::desktopViewport() const { return p->viewport; }
 
-inline NETRect NETRootInfo::workArea(CARD32 d) const { return p->workarea[d]; }
+inline NETRect NETRootInfo::workArea(Q_UINT32 d) const { return p->workarea[d]; }
 
-inline const char *NETRootInfo::desktopName(CARD32 d) const {
+inline const char *NETRootInfo::desktopName(Q_UINT32 d) const {
     return p->desktop_names[d];
 }
 
@@ -234,11 +230,11 @@ inline int NETRootInfo::virtualRootsCount() const {
     return p->virtual_roots_count;
 }
 
-inline CARD32 NETRootInfo::numberOfDesktops() const {
+inline Q_UINT32 NETRootInfo::numberOfDesktops() const {
     return p->number_of_desktops;
 }
 
-inline CARD32 NETRootInfo::currentDesktop() const { return p->current_desktop; }
+inline Q_UINT32 NETRootInfo::currentDesktop() const { return p->current_desktop; }
 
 inline Window NETRootInfo::activeWindow() const { return p->active; }
 
@@ -257,9 +253,9 @@ inline const char *NETWinInfo::name() const { return p->name; }
 
 inline const char *NETWinInfo::visibleName() const { return p->visible_name; }
 
-inline CARD32 NETWinInfo::desktop() const { return p->desktop; }
+inline Q_UINT32 NETWinInfo::desktop() const { return p->desktop; }
 
-inline CARD32 NETWinInfo::pid() const { return p->pid; }
+inline Q_UINT32 NETWinInfo::pid() const { return p->pid; }
 
 inline Bool NETWinInfo::handledIcons() const { return p->handled_icons; }
 

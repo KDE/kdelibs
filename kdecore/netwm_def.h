@@ -27,12 +27,12 @@
 
 
 struct NETPoint {
-    CARD32 x, y;
+    Q_UINT32 x, y;
 };
 
 
 struct NETSize {
-    CARD32 width, height;
+    Q_UINT32 width, height;
 };
 
 
@@ -44,12 +44,12 @@ struct NETRect {
 
 struct NETIcon {
     NETSize size;
-    CARD32 *data;
+    Q_UINT32 *data;
 };
 
 
 struct NETStrut {
-    CARD32 left, right, top, bottom;
+    Q_UINT32 left, right, top, bottom;
 };
 
 

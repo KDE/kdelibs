@@ -24,19 +24,6 @@
 #include <qstring.h>
 #include <qpixmap.h>
 
-#if defined(__alpha) || defined(__alpha__)
-#define LONG64                          /* 32/64-bit architecture */
-#endif
-#ifdef __sgi
-#if (_MIPS_SZLONG == 64)
-#define LONG64
-#endif
-#endif
-#ifdef LONG64
-typedef unsigned int CARD32;
-#else
-typedef unsigned long CARD32;
-#endif
 #include "netwm_def.h"
 
 /**
@@ -175,7 +162,7 @@ public:
      *
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
-
+    
     /**
      * Convienence function to access the current desktop.  See NETRootInfo.
      */
@@ -192,7 +179,6 @@ public:
      * See NETRootInfo.
      */
     static void setCurrentDesktop( int desktop );
-    
 };
 
 #endif
