@@ -152,7 +152,8 @@ KDE_Q_EXPORT_PLUGIN( PlastikStylePlugin )
 
 PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollBar),
     kickerMode(false),
-    kornMode(false)
+    kornMode(false),
+    flatMode(false)
 {
     hoverWidget = 0;
 
@@ -531,7 +532,7 @@ void PlastikStyle::renderSurface(QPainter *p,
         baseColor = alphaBlendColors(baseColor, highlightColor, 240);
     } else if (sunken) {
         // enforce a common sunken-style...
-        baseColor = baseColor.dark(100+intensity);
+        baseColor = baseColor.dark(110+intensity);
         intensity = _contrast/2;
     }
 // some often needed colors...
@@ -719,15 +720,11 @@ void PlastikStyle::renderButton(QPainter *p,
 
     const QPen oldPen( p->pen() );
 
-    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
     if(!enabled) contourFlags|=Is_Disabled;
     if(khtmlMode) contourFlags|=Draw_AlphaBlend;
-    renderContour(p, r, g.background(), getColor(g,ButtonContour),
-                  contourFlags);
 
-    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-                         Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
     if(horizontal) surfaceFlags|=Is_Horizontal;
     if(!enabled) surfaceFlags|=Is_Disabled;
     else {
@@ -745,8 +742,23 @@ void PlastikStyle::renderButton(QPainter *p,
             }
         }
     }
-    renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-                   g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast, surfaceFlags);
+
+    if (!flatMode) {
+        contourFlags |= Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+        surfaceFlags |= Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+
+        renderContour(p, r, g.background(), getColor(g,ButtonContour),
+                    contourFlags);
+        renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
+                    g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast, surfaceFlags);
+    } else {
+        renderContour(p, r, g.background(), g.button().dark(105+_contrast*3),
+                      contourFlags);
+        renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
+                      g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast/2, surfaceFlags);
+
+        flatMode = false;
+    }
 
     p->setPen(oldPen);
 }
@@ -2353,6 +2365,9 @@ void PlastikStyle::drawControl(ControlElement element,
             QPushButton *button = (QPushButton *)widget;
 
             const bool isDefault = enabled && button->isDefault();
+
+            if (button->isFlat() )
+                flatMode = true;
 
             if (widget == hoverWidget)
                 flags |= Style_MouseOver;

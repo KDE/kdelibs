@@ -278,6 +278,7 @@ private:
     PlastikStyle& operator=( const PlastikStyle & );
 
     bool kickerMode, kornMode;
+    mutable bool flatMode;
 
     int _contrast;
     bool _scrollBarLines;
