@@ -62,8 +62,8 @@ void khtml::setNamedColor(QColor &color, const QString &name)
     if( !htmlColors )
       htmlColors = new HTMLColors;
 
-    if(name == "transparent") {
-	//kdDebug( 6080 ) << "found transparent color" << endl; 
+    if(name == "transparent" || name == "") {
+	//kdDebug( 6080 ) << "found transparent color" << endl;
 	color = QColor(); // invalid color == transparent
 	//kdDebug( 6080 ) << "colorvalid" << color.isValid() << endl;
 	return;

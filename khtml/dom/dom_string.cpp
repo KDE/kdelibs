@@ -39,6 +39,11 @@ DOMString::DOMString(int)
 
 DOMString::DOMString(QChar *str, uint len, bool copy)
 {
+    if (!str) {
+	impl = 0;
+	return;
+    }
+
     QChar *c;
     if(copy)
     {
@@ -55,6 +60,11 @@ DOMString::DOMString(QChar *str, uint len, bool copy)
 
 DOMString::DOMString(const QChar *str, uint len)
 {
+    if (!str) {
+	impl = 0;
+	return;
+    }
+
     QChar *c;
     c = new QChar[len];
     memcpy(c, str, len*sizeof(QChar));
@@ -64,6 +74,11 @@ DOMString::DOMString(const QChar *str, uint len)
 
 DOMString::DOMString(const QString &str)
 {
+    if (!str) {
+	impl = 0;
+	return;
+    }
+
     QChar *c;
     c = new QChar[str.length()];
     memcpy(c, str.unicode(), str.length()*sizeof(QChar));
@@ -73,6 +88,11 @@ DOMString::DOMString(const QString &str)
 
 DOMString::DOMString(const char *str)
 {
+    if (!str) {
+	impl = 0;
+	return;
+    }
+
     int len = 0;
     const char *p = str;
     while(*p != '\0') p++, len++;

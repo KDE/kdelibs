@@ -782,7 +782,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	QString value(curP, endP - curP);
 	QColor c;
 	khtml::setNamedColor(c, value);
-	if(!c.isValid() && value != "transparent") return false;
+	if(!c.isValid() && (value != "transparent" && value != "")) return false;
 	//kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	parsedValue = new CSSPrimitiveValueImpl(c);
 	break;
@@ -1128,6 +1128,13 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
  end:
 
     if(!parsedValue) return false;
+
+    QListIterator<CSSProperty> propIt(*propList);
+    propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
+    while (propIt.current() && propIt.current()->m_id != propId)
+	--propIt;
+    if (propIt.current())
+	propList->removeRef(propIt.current());
 
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propId;

@@ -207,6 +207,11 @@ int ElementImpl::getAttributeCount()
 
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value )
 {
+    if (!value.implementation()) {
+	removeAttribute(name);
+	return;
+    }
+
     checkReadOnly();
     // TODO: check for invalid characters in value -> throw exception
     khtml::Attribute a(name, value);
@@ -220,6 +225,10 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
     checkReadOnly();
     // TODO: check for invalid characters in value -> throw exception
     khtml::Attribute a(id, value);
+    if (!value.implementation()) {
+	removeAttribute(a.name());
+	return;
+    }
     attributeMap.add(a);
 
     parseAttribute(&a);
