@@ -42,6 +42,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kfontcombo.h>
+#include <kfontdialog.h>
 #include <klocale.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
@@ -51,42 +52,6 @@
 #include <kurl.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
-
-static QFontDatabase *fontDataBase = 0;
-
-static void cleanupFontDatabase()
-{
-    delete fontDataBase;
-    fontDataBase = 0;
-}
-
-static void get_fonts( QStringList &lst )
-{
-    if ( !fontDataBase ) {
-        fontDataBase = new QFontDatabase();
-        qAddPostRoutine( cleanupFontDatabase );
-    }
-    lst.clear();
-    QStringList families = fontDataBase->families();
-    for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it )
-    {
-        QString family = *it;
-        if ( family. contains('-') ) // remove foundry
-            family = family.right( family.length() - family.find('-' ) - 1);
-        if ( !lst.contains( family ) )
-            lst.append( family );
-    }
-    lst.sort();
-}
-
-static QValueList<int> get_standard_font_sizes()
-{
-    if ( !fontDataBase ) {
-        fontDataBase = new QFontDatabase();
-        qAddPostRoutine( cleanupFontDatabase );
-    }
-    return fontDataBase->standardSizes();
-}
 
 class KToggleAction::KToggleActionPrivate
 {
@@ -567,7 +532,6 @@ void KSelectAction::changeItem( int id, int index, const QString& text)
 
 void KSelectAction::setItems( const QStringList &lst )
 {
-	kdDebug(129) << "KAction::setItems()" << endl; // remove -- ellis
   d->m_list = lst;
   d->m_current = -1;
 
@@ -1297,7 +1261,7 @@ KFontAction::KFontAction( const QString& text,
   : KSelectAction( text, cut, parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1308,7 +1272,7 @@ KFontAction::KFontAction( const QString& text, const KShortcut& cut,
     : KSelectAction( text, cut, receiver, slot, parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1319,7 +1283,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix,
     : KSelectAction( text, pix, cut, parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1330,7 +1294,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
     : KSelectAction( text, pix, cut, parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1342,7 +1306,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix,
     : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1354,7 +1318,7 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
     : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1364,7 +1328,7 @@ KFontAction::KFontAction( QObject* parent, const char* name )
   : KSelectAction( parent, name )
 {
     d = new KFontActionPrivate;
-    get_fonts( d->m_fonts );
+    KFontChooser::getFontList( d->m_fonts, 0 );
     KSelectAction::setItems( d->m_fonts );
     setEditable( true );
 }
@@ -1522,7 +1486,8 @@ void KFontSizeAction::init()
     d = new KFontSizeActionPrivate;
 
     setEditable( true );
-    QValueList<int> sizes = get_standard_font_sizes();
+    QFontDatabase fontDB;
+    QValueList<int> sizes = fontDB.standardSizes();
     QStringList lst;
     for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
         lst.append( QString::number( *it ) );
