@@ -673,9 +673,11 @@ QXEmbed::~QXEmbed()
             XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
             XSync(qt_xdisplay(), false);
             // L1022: Send the WM_DELETE_WINDOW message (close button)
-            //        Only for XPLAIN, XEMBED apps are 
-            //        supposed to detect when the embedding ends.
             if( autoDelete() /*&& d->xplain*/ ) 
+                // This sendDelete should only apply to XPLAIN.
+                // XEMBED apps are supposed to detect when the embedding ends.
+                // ??? [We do not do this detection yet! 
+                //      So we sendDelete() instead.]
                 sendDelete();
       }
     window = 0;
