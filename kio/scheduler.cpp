@@ -17,10 +17,10 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "sessiondata.h"
-#include "slaveconfig.h"
-#include "scheduler.h"
-#include "slave.h"
+#include "kio/sessiondata.h"
+#include "kio/slaveconfig.h"
+#include "kio/scheduler.h"
+#include "kio/slave.h"
 #include <qlist.h>
 #include <qdict.h>
 #include <kdebug.h>
@@ -459,11 +459,11 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
       connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                 SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
 
-      QObject::connect(slave,SIGNAL(authData(const QCString&, const QCString&, bool)),
+      connect(slave,SIGNAL(authData(const QCString&, const QCString&, bool)),
               sessionData,SLOT(slotAuthData(const QCString&, const QCString&, bool)));
-      QObject::connect(slave,SIGNAL(delAuthData(const QCString&, const QCString&, bool)),
+      connect(slave,SIGNAL(delAuthData(const QCString&, const QCString&, bool)),
               sessionData,SLOT(slotDelAuthData(const QCString&, const QCString&, bool)));
-      QObject::connect(slave,SIGNAL(sessionCookieData(const QCString&, const QCString&, bool)),
+      connect(slave,SIGNAL(sessionCookieData(const QCString&, const QCString&, bool)),
               sessionData,SLOT(slotSessionCookieData(const QCString&, const QCString&, bool)));      
    }
    else

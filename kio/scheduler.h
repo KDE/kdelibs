@@ -35,7 +35,7 @@ namespace KIO {
     class SlaveList;
     class SlaveConfig;
     class SessionData;
-    
+
     /**
      * The KIO::Scheduler manages io-slaves for the application.
      * It also queues jobs and assigns the job to a slave when one
@@ -120,7 +120,7 @@ namespace KIO {
         /**
          * Request a slave for use in connection-oriented mode.
          *
-         * @param url This defines the username,password,host & port to 
+         * @param url This defines the username,password,host & port to
          *            connect with.
          * @param config Configuration data for the slave.
          *
@@ -133,7 +133,7 @@ namespace KIO {
 
         /*
          * Use @p slave to do @p job.
-         * 
+         *
          * @param slave The slave to use. The slave must have been obtained
          *              with a call to @ref getConnectedSlave and must not
          *              be currently assigned to any other job.
@@ -153,9 +153,9 @@ namespace KIO {
 
         /*
          * Disconnect @p slave.
-         * 
-         * @param slave The slave to disconnect. The slave must have been 
-         *              obtained with a call to @ref getConnectedSlave 
+         *
+         * @param slave The slave to disconnect. The slave must have been
+         *              obtained with a call to @ref getConnectedSlave
          *              and must not be assigned to any job.
          *
          * @return true is successfull, false otherwise.
@@ -173,11 +173,21 @@ namespace KIO {
          * @see slaveError
          */
 
-        static bool connect(const char *signal, const QObject *receiver, const char *member)
-        	{ return QObject::connect(self(), signal, receiver, member); } 
-        	
-        bool connect(const QObject *sender, const char *signal, const char *member)
-                { return QObject::connect(sender, signal, member); }
+        static bool connect( const char *signal, const QObject *receiver,
+                             const char *member)
+          { return QObject::connect(self(), signal, receiver, member); }
+
+        static bool connect( const QObject* sender, const char* signal,
+                             const QObject* receiver, const char* member )
+          { return QObject::connect(sender, signal, receiver, member); }
+
+        static bool disconnect( const QObject* sender, const char* signal,
+                                const QObject* receiver, const char* member )
+          { return QObject::disconnect(sender, signal, receiver, member); }
+
+        bool connect( const QObject *sender, const char *signal,
+                      const char *member )
+          { return QObject::connect(sender, signal, member); }
 
         void debug_info();
 
