@@ -1398,6 +1398,8 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   	       this, SLOT( slotChildStarted( KIO::Job *) ) );
       connect( part, SIGNAL( completed() ),
 	       this, SLOT( slotChildCompleted() ) );
+      connect( part, SIGNAL( setStatusBarText( const QString & ) ),
+	       this, SIGNAL( setStatusBarText( const QString & ) ) );
     }
 
     child->m_extension = (KParts::BrowserExtension *)part->child( 0L, "KParts::BrowserExtension" );
@@ -1422,6 +1424,8 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
 	       d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
 
+      connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
+	       d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
     }
 
   }
@@ -2330,6 +2334,7 @@ public:
   KAction *m_paSaveLinkAs;
   KAction *m_paSaveImageAs;
   KAction *m_paCopyLinkLocation;
+  KAction *m_paCopyImageLocation;
   KAction *m_paReloadFrame;
 };
 
@@ -2365,6 +2370,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
     d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
 				      actionCollection(), "saveimageas" );
+    d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
+					    actionCollection(), "copyimagelocation" );
   }
 
   setXML( doc );
@@ -2398,6 +2405,11 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
   QApplication::clipboard()->setText( d->m_url.url() );
 }
+
+void KHTMLPopupGUIClient::slotCopyImageLocation()
+{
+  QApplication::clipboard()->setText( d->m_imageURL.url() ); 
+} 
 
 void KHTMLPopupGUIClient::slotReloadFrame()
 {
