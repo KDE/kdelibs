@@ -5,6 +5,7 @@
 #include <qmenudata.h>
 #include "kstep.h"
 #include <kapp.h>
+#include <kdrawutil.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
@@ -71,35 +72,9 @@ void KStepStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool sunken,
                             const QBrush *fill)
 {
-    QPen oldPen = p->pen();
-    int x2 = x+w-1;
-    int y2 = y+h-1;
-
-    if(!sunken){
-        p->fillRect(x+1, y+1, w-2, h-2,
-                    fill ? *fill : g.brush(QColorGroup::Button));
-        p->setPen(g.light());
-        p->drawLine(x, y, x2-1, y);
-        p->drawLine(x, y, x, y2-1);
-        p->setPen(g.mid());
-        p->drawLine(x+1, y2-1, x2-1, y2-1);
-        p->drawLine(x2-1, y+1, x2-1, y2-1);
-        p->setPen(g.dark());
-        p->drawLine(x, y2, x2, y2);
-        p->drawLine(x2, y, x2, y2);
-    }
-    else{
-        p->fillRect(x+1, y+1, w-2, h-2,
-                    fill ? *fill : g.brush(QColorGroup::Mid));
-        p->setPen(g.dark());
-        p->drawLine(x, y, x2-1, y);
-        p->drawLine(x, y, x, y2-1);
-        p->setPen(g.light());
-        p->drawLine(x, y2, x2, y2);
-        p->drawLine(x2, y, x2, y2);
-    }
-    p->setPen(oldPen);
+    kDrawNextButton(p, x, y, w, h, g, sunken, fill);
 }
+
 void KStepStyle::drawPushButton(QPushButton *btn, QPainter *p)
 {
     QRect r = btn->rect();
@@ -586,7 +561,7 @@ void KStepStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(sunken ? g.light() : g.dark());
     p->drawLine(x2, y, x2, y2);
     p->drawLine(x, y2, x2, y2);
-    p->fillRect(x+1, y+1, w-2, h-2, sunken? g.midlight() : g.mid());
+    p->fillRect(x+1, y+1, w-2, h-2, sunken? g.mid() : g.button());
     int dx, dy;
 
     if (icontext == Icon){ // icon only

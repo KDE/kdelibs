@@ -5,6 +5,7 @@
 #include <qmenudata.h>
 #include "pillbox.h"
 #include <kapp.h>
+#include <kdrawutil.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
@@ -85,93 +86,19 @@ void PillBoxStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
 
 void PillBoxStyle::drawPushButton(QPushButton *btn, QPainter *p)
 {
-    int x, y, x2, y2;
     QColorGroup cg = btn->colorGroup();
-    bool on = btn->isOn() || btn->isDown();
+    bool sunken = btn->isOn() || btn->isDown();
     QRect r = btn->rect();
-    r.coords(&x, &y, &x2, &y2);
 
-    if(r.width() > 16 && r.height() > 16){
-        p->fillRect(r, on ? cg.brush(QColorGroup::Mid) :
-                   cg.brush(QColorGroup::Button));
-        QPointArray hPntArray, lPntArray;
-        hPntArray.putPoints(0, 12, x+4,y+1, x+5,y+1, // top left
-                            x+3,y+2, x+2,y+3, x+1,y+4, x+1,y+5,
-                            x+1,y2-5, x+1,y2-4, x+2,y2-3, // half corners
-                            x2-5,y+1, x2-4,y+1, x2-3,y+2);
-
-        lPntArray.putPoints(0, 17, x2-5,y2-1, x2-4,y2-1, // btm right
-                            x2-3,y2-2, x2-2,y2-3, x2-1,y2-5, x2-1,y2-4,
- 
-                            x+3,y2-2, x+4,y2-1, x+5,y2-1, //half corners
-                            x2-2,y+3, x2-1,y+4, x2-1,y+5,
-
-                            x2-5,y2-2, x2-4,y2-2, // testing
-                            x2-3,y2-3,
-                            x2-2,y2-5, x2-2,y2-4);
-
-        p->setPen(on ? cg.dark() : cg.light());
-        p->drawLine(x+6, y, x2-6, y);
-        p->drawLine(0, y+6, 0, y2-6);
-        p->drawPoints(hPntArray);
-
-        p->setPen(on ? cg.light() : cg.dark());
-        p->drawLine(x+6, y2, x2-6, y2);
-        p->drawLine(x+6, y2-1, x2-6, y2-1);
-        p->drawLine(x2, y+6, x2, y2-6);
-        p->drawLine(x2-1, y+6, x2-1, y2-6);
-        p->drawPoints(lPntArray);
-    }
-    else
-        drawBevelButton(p, x, y, r.width(), r.height(),  cg, on,
-                        &cg.brush(QColorGroup::Button));
+    p->fillRect(r, sunken ? cg.brush(QColorGroup::Mid) :
+                cg.brush(QColorGroup::Button));
+    kDrawRoundButton(p, r, cg, sunken);
 }
 
 
 void PillBoxStyle::drawButtonMask(QPainter *p, int x, int y, int w, int h)
 {
-    // round edge fills
-    static QCOORD btm_left_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,1,
-    1,2,2,2,3,2,4,2,2,3,3,3,4,3,3,4,4,4 };
-
-    static QCOORD btm_right_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,
-    1,0,2,1,2,2,2,3,2,0,3,1,3,2,3,0,4,1,4 };
-
-    static QCOORD top_left_fill[]={ 3,0,4,0,2,1,3,1,4,1,1,2,2,2,3,2,4,2,0,3,
-    1,3,2,3,3,3,4,3,0,4,1,4,2,4,3,4,4,4 };
-
-    static QCOORD top_right_fill[]={ 0,0,1,0,0,1,1,1,2,1,0,2,1,2,2,2,3,2,0,
-    3,1,3,2,3,3,3,4,3,0,4,1,4,2,4,3,4,4,4 };
-
-    QBrush fillBrush(color1, SolidPattern);
-    p->setPen(color1);
-    if(w > 16 && h > 16){
-        int x2 = x+w-1;
-        int y2 = y+h-1;
-        QPointArray a(QCOORDARRLEN(top_left_fill), top_left_fill);
-        a.translate(1, 1);
-        p->drawPoints(a);
-        a.setPoints(QCOORDARRLEN(btm_left_fill), btm_left_fill);
-        a.translate(1, h-6);
-        p->drawPoints(a);
-        a.setPoints(QCOORDARRLEN(top_right_fill), top_right_fill);
-        a.translate(w-6, 1);
-        p->drawPoints(a);
-        a.setPoints(QCOORDARRLEN(btm_right_fill), btm_right_fill);
-        a.translate(w-6, h-6);
-        p->drawPoints(a);
-
-        p->fillRect(x+6, y, w-12, h, fillBrush);
-        p->fillRect(x, y+6, x+6, h-12, fillBrush);
-        p->fillRect(x2-6, y+6, x2, h-12, fillBrush);
-        p->drawLine(x+6, y, x2-6, y);
-        p->drawLine(x+6, y2, x2-6, y2);
-        p->drawLine(x, y+6, x, y2-6);
-        p->drawLine(x2, y+6, x2, y2-6);
-
-    }
-    else
-        p->fillRect(x, y, w, h, fillBrush);
+    kDrawRoundMask(p, x, y, w, h);
 }
 
 void PillBoxStyle::drawButton(QPainter *p, int x, int y, int w, int h,
