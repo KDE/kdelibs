@@ -1771,7 +1771,9 @@ Value VarDeclNode::value(ExecState *exec) const
 void VarDeclNode::processVarDecls(ExecState *exec)
 {
   Object variable = exec->context().variableObject();
-  variable.put(exec,ident, Undefined(), DontDelete);
+  if ( !variable.hasProperty( exec, ident ) ) // already declared ?
+    variable.put(exec,ident, Undefined(), DontDelete);
+  //else warning "variable %1 hides argument"
 }
 
 // ----------------------------- VarDeclListNode ------------------------------
