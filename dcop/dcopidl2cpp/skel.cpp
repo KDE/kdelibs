@@ -199,11 +199,13 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	str << "    { 0, 0, 0 }" << endl;
 	str << "};" << endl;
 
-	str << "static const int " << className << "_ftable_hiddens[" << functions.count() << "] = {" << endl;
-	for( QValueList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
-	    str << "    " << !!(*it).hidden << "," << endl;
+	if (functions.count() > 0) {
+	    str << "static const int " << className << "_ftable_hiddens[" << functions.count() << "] = {" << endl;
+	    for( QValueList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
+		str << "    " << !!(*it).hidden << "," << endl;
+	    }
+	    str << "};" << endl;
 	}
-	str << "};" << endl;
     
 	str << endl;
     
@@ -353,8 +355,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "    QCStringList funcs;" << endl;
 	}
 	str << "    for ( int i = 0; " << className << "_ftable[i][2]; i++ ) {" << endl;
-	str << "\tif (" << className << "_ftable_hiddens[i])" << endl;
-	str << "\t    continue;" << endl;
+        if (functions.count() > 0) {
+	    str << "\tif (" << className << "_ftable_hiddens[i])" << endl;
+	    str << "\t    continue;" << endl;
+        }
 	str << "\tQCString func = " << className << "_ftable[i][0];" << endl;
 	str << "\tfunc += ' ';" << endl;
 	str << "\tfunc += " << className << "_ftable[i][2];" << endl;
