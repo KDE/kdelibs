@@ -39,8 +39,8 @@
 #include <qtl.h>
 #include <qtooltip.h>
 #include <qvariant.h>
-#include <qtimer.h>
 #include <qwhatsthis.h>
+#include <qtimer.h>
 
 #include <kaccel.h>
 #include <kaccelbase.h>
@@ -1409,13 +1409,6 @@ void KSelectAction::setItems( const QStringList &lst )
 {
 	kdDebug(129) << "KAction::setItems()" << endl; // remove -- ellis
   d->m_list = lst;
-  // Delay this. Especially useful when this is called upon activation of a menuitem
-  // by the user, e.g. in the recent files action.
-  QTimer::singleShot( 0, this, SLOT( slotSetItemsDelayed() ) );
-}
-
-void KSelectAction::slotSetItemsDelayed()
-{
   d->m_current = -1;
 
   if ( d->m_menu )
@@ -1436,7 +1429,7 @@ void KSelectAction::slotSetItemsDelayed()
     updateItems( i );
 
   // Disable if empty and not editable
-  setEnabled ( d->m_list.count() > 0 || d->m_edit );
+  setEnabled ( lst.count() > 0 || d->m_edit );
 }
 
 QStringList KSelectAction::items() const
@@ -1598,9 +1591,9 @@ void KSelectAction::slotActivated( int id )
     return;
 
   setCurrentItem( id );
-  emit KAction::activated();
-  emit activated( currentItem() );
-  emit activated( currentText() );
+  // Delay this. Especially useful when the slot connected to activated() will re-create
+  // the menu, e.g. in the recent files action. This prevents a crash.
+  QTimer::singleShot( 0, this, SLOT( slotActivated() ) );
 }
 
 void KSelectAction::slotActivated( const QString &text )
@@ -1616,7 +1609,14 @@ void KSelectAction::slotActivated( const QString &text )
   }
 
   setCurrentItem( items().findIndex( text ) );
-  emit KAction::activated();
+  // Delay this. Especially useful when the slot connected to activated() will re-create
+  // the menu, e.g. in the recent files action. This prevents a crash.
+  QTimer::singleShot( 0, this, SLOT( slotActivated() ) );
+}
+
+void KSelectAction::slotActivated()
+{
+  KAction::slotActivated();
   emit activated( currentItem() );
   emit activated( currentText() );
 }
@@ -3271,4 +3271,3 @@ void KActionCollection::virtual_hook( int, void* )
 
 
 #include "kaction.moc"
-

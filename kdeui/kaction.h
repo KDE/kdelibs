@@ -422,7 +422,7 @@ public:
 #ifndef KDE_NO_COMPAT
     QIconSet iconSet() const { return iconSet( KIcon::Small ); }
 #endif
-    
+
     virtual QString icon() const;
 
     KActionCollection *parentCollection() const;
@@ -981,10 +981,7 @@ protected:
 protected slots:
     virtual void slotActivated( int id );
     virtual void slotActivated( const QString &text );
-    virtual void slotActivated() { KAction::slotActivated(); }
-    
-private slots:
-    void slotSetItemsDelayed();
+    virtual void slotActivated();
 
 signals:
     void activated( int index );
