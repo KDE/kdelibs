@@ -594,6 +594,8 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     int y2 = y+h-1;
     int dx, dy;
 
+    QFontMetrics fm(*font);
+
     p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
     p->setPen(g.dark());
     p->drawLine(x+1, y+1, x2-2, y+1);
@@ -627,7 +629,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     }
     else if (icontext == IconTextRight){ // icon and text (if any)
         if (pixmap){
-            dx = 1;
+            dx = 4;
             dy = ( h - pixmap->height() ) / 2;
             if ( sunken ){
                 ++dx;
@@ -640,9 +642,9 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             if (!enabled)
                 p->setPen(g.dark());
             if (pixmap)
-                dx= pixmap->width();
+                dx= 4 + pixmap->width() + 2;
             else
-                dx= 1;
+                dx= 4;
             dy = 0;
             if ( sunken ){
                 ++dx;
@@ -660,8 +662,8 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             int tf = AlignVCenter|AlignLeft;
             if (!enabled)
                 p->setPen(g.dark());
-            dx= 1;
-            dy= 0;
+            dx= (w - fm.width(btext)) / 2;
+            dy= (h - fm.lineSpacing()) / 2;
             if ( sunken ){
                 ++dx;
                 ++dy;
@@ -670,13 +672,13 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                 p->setFont(*font);
             if(raised)
                 p->setPen(Qt::blue);
-            p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
+            p->drawText(x+dx, y+dy, fm.width(btext), fm.lineSpacing(), tf, btext);
         }
     }
     else if (icontext == IconTextBottom){
         if (pixmap){
             dx = (w - pixmap->width()) / 2;
-            dy = 1;
+            dy = (h - fm.lineSpacing() - pixmap->height()) / 2;
             if ( sunken ){
                 ++dx;
                 ++dy;
