@@ -22,7 +22,7 @@ INCLUDES = -I$(top_srcdir)/libltdl \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
  $(all_includes)
 
-lib_LTLIBRARIES = libkjs.la kjs_html.la
+lib_LTLIBRARIES = kjs_html.la libkjs.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp math_object.cpp \
