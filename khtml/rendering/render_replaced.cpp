@@ -423,18 +423,21 @@ protected:
 
     QPixmap *getBuf( QSize s ) {
         assert( !m_grabbed );
+        if (s.isEmpty())
+            return 0;
+
         m_grabbed = true;
         bool cur_overflow = false;
-        if (!s.isEmpty()) {
-            int nw = kMax(m_buf.width(), s.width());
-            int nh = kMax(m_buf.height(), s.height());
 
-            if (!m_overflow && (nw*nh > maxPixelBuffering))
-                cur_overflow = true;
+        int nw = kMax(m_buf.width(), s.width());
+        int nh = kMax(m_buf.height(), s.height());
 
-            if (nw != m_buf.width() || nh != m_buf.height())
-                m_buf.resize(nw, nh);
-        }
+        if (!m_overflow && (nw*nh > maxPixelBuffering))
+            cur_overflow = true;
+
+        if (nw != m_buf.width() || nh != m_buf.height())
+            m_buf.resize(nw, nh);
+
         if (cur_overflow) {
             m_overflow = true;
             m_timer = startTimer( leaseTime );
@@ -491,6 +494,11 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     const int cnt = br.size();
     const bool external = p->device()->isExtDev();
     QPixmap* const pm = PaintBuffer::grab( widget->size() );
+    if (!pm)
+    {
+        kdWarning(6040) << "Rendering widget [ " << widget->className() << " ] failed due to invalid size." << endl;
+        return;
+    }
 
     // fill background
     if ( external ) {
