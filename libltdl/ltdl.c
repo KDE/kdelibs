@@ -1486,6 +1486,7 @@ tryall_dlopen (handle, filename)
   cur = *handle;
   if (filename)
     {
+      LT_DLFREE( cur->info.filename );
       cur->info.filename = strdup (filename);
       if (!cur->info.filename)
 	{
@@ -1496,6 +1497,7 @@ tryall_dlopen (handle, filename)
     }
   else
     {
+      LT_DLFREE( cur->info.filename );
       cur->info.filename = 0;
     }
 
@@ -2270,9 +2272,10 @@ lt_dlopen (filename)
 
     /* allocate the handle */
     handle = (lt_dlhandle) LT_DLMALLOC (struct lt_dlhandle_struct, 1);
+    memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
     if (!handle || error)
       {
-	LT_DLFREE (handle);
+        LT_DLFREE (handle);
 	if (!error)
 	  {
 	    MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
@@ -2310,6 +2313,7 @@ lt_dlopen (filename)
       {
 	unload_deplibs (handle);
       } else {
+	LT_DLFREE( handle->info.filename );
 	handle->info.filename = strdup( filename );
       }
     }
