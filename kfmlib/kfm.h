@@ -96,7 +96,7 @@ public:
 
     void refreshDesktop();
     void sortDesktop();
-    void showConfig();//CT
+    void configure();
     void openURL();
     void openURL( const char *_url );
     void refreshDirectory( const char *_url );

@@ -232,14 +232,12 @@ void KFM::sortDesktop()
     ipc->sortDesktop();
 }
 
-//CT 13Nov 1998
-void KFM::showConfig()
+void KFM::configure()
 {
   if ( !test() )
     return;
-  ipc->showConfig();
+  ipc->configure();
 }
-//CT
 
 void KFM::openURL()
 {
