@@ -15,7 +15,7 @@ libkresources_la_SOURCES = resource.cpp \
   configpage.cpp
 
 libkresources_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
-libkresources_la_LIBADD = $(LIB_KDEUI)
+libkresources_la_LIBADD = $(LIB_KDEUI) $(LIB_KIO)
 
 kresincludedir = $(includedir)/kresources
 kresinclude_HEADERS = resource.h \
@@ -33,3 +33,6 @@ check_PROGRAMS = testresources
 testresources_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testresources_LDADD   = libkderesources.la
 testresources_SOURCES = testresources.cpp
+
+servicetypedir = $(kde_servicetypesdir)
+servicetype_DATA = kresources_plugin.desktop

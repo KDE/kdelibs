@@ -25,10 +25,15 @@
 
 #include <qmutex.h>
 #include <qvaluelist.h>
+#include <qwidget.h>
+
+#include <klibloader.h>
 
 class KConfig;
 
 namespace KRES {
+
+class ConfigWidget;
 
 /**
  * @internal
@@ -223,8 +228,10 @@ link_DATA= resourceexample.desktop
  * @ref writeConfig method.
  *
    */
-class Resource
+class Resource : public QObject
 {
+  Q_OBJECT
+
   public:
     typedef QValueList<Resource *> List;
 
@@ -361,6 +368,21 @@ class Resource
   private:
     class ResourcePrivate;
     ResourcePrivate *d;
+};
+
+class PluginFactory : public KLibFactory
+{
+  public:
+    virtual Resource *resource( const KConfig *config ) = 0;
+
+    virtual ConfigWidget *configWidget( QWidget *parent ) = 0;
+
+  protected:
+    virtual QObject* createObject( QObject*, const char*, const char*,
+                                   const QStringList & )
+    {
+      return 0;
+    }
 };
 
 }

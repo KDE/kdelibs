@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=KResources/Plugin
+Comment=KResource Framework Plugin
+
+[PropertyDef::X-KDE-ResourceFamily]
+Type=QString
+
+[PropertyDef::X-KDE-ResourceType]
+Type=QString

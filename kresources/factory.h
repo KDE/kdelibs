@@ -29,18 +29,12 @@
 
 #include <kconfig.h>
 #include <klibloader.h>
+#include <ktrader.h>
 
 #include "resource.h"
 #include "configwidget.h"
 
 namespace KRES {
-
-struct ResourceInfo
-{
-  QString library;
-  QString nameLabel;
-  QString descriptionLabel;
-};
 
 /**
  * Class for loading resource plugins.
@@ -94,23 +88,26 @@ class Factory
     /**
      * Returns a list of all available resource types.
      */
-    QStringList resourceTypeNames() const;
+    QStringList typeNames() const;
 
     /**
-     * Returns the info structure for a special type.
+     * Returns the name for a special type.
      */
-    ResourceInfo *info( const QString &type );
+    QString typeName( const QString &type ) const;
+
+    /**
+     * Returns the description for a special type.
+     */
+    QString typeDescription( const QString &type ) const;
 
   protected:
     Factory( const QString& resourceFamily );
 
   private:
-    KLibrary *openLibrary( const QString& libName );
-
     static QDict<Factory> *mSelves;
 
     QString mResourceFamily;
-    QDict<ResourceInfo> mResourceList;
+    QMap<QString, KService::Ptr> mTypeMap;
 };
 
 }

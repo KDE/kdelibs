@@ -257,7 +257,7 @@ class Manager : private ManagerImplListener
     */
     QStringList resourceTypeNames() const
     {
-      return mFactory->resourceTypeNames();
+      return mFactory->typeNames();
     }
 
     void resourceChanged( T *resource )

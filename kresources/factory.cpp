@@ -51,144 +51,106 @@ Factory *Factory::self( const QString& resourceFamily )
     factory = new Factory( resourceFamily );
     mSelves->insert( resourceFamily, factory );
   } 
+
   return factory;
 }
 
 Factory::Factory( const QString& resourceFamily ) :
   mResourceFamily( resourceFamily )
 {
-  mResourceList.setAutoDelete( true );
-
-  QStringList list = KGlobal::dirs()->findAllResources( "data", 
-      "kresources/" + mResourceFamily + "/*.desktop", true, true );
-  kdDebug(5650) << "Factory(): Resource list" << endl;
-  for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
-    kdDebug() << "-- " << *it << endl;
-
-    KSimpleConfig config( *it, true );
-
-    if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )
-      continue;
-
-    ResourceInfo* info = new ResourceInfo;
-
-    config.setGroup( "Plugin" );
-    QString type = config.readEntry( "Type" );
-    kdDebug(5650) << "Found plugin of type " << type << endl;
-    info->library = config.readEntry( "X-KDE-Library" );
-	
-    config.setGroup( "Misc" );
-    info->nameLabel = config.readEntry( "Name" );
-    info->descriptionLabel = config.readEntry( "Comment", i18n( "No description available." ) );
-
-    mResourceList.insert( type, info );
+  KTrader::OfferList plugins = KTrader::self()->query( "KResources/Plugin", QString( "[X-KDE-ResourceFamily] == '%1'" )
+                                                .arg( resourceFamily ) );
+  KTrader::OfferList::ConstIterator it;
+  for ( it = plugins.begin(); it != plugins.end(); ++it ) {
+    QVariant type = (*it)->property( "X-KDE-ResourceType" );
+    if ( !type.toString().isEmpty() )
+      mTypeMap.insert( type.toString(), *it );
   }
 }
 
 Factory::~Factory()
 {
-  mResourceList.clear();
 }
 
-QStringList Factory::resourceTypeNames() const
+QStringList Factory::typeNames() const
 {
-  kdDebug(5650) << "Factory::resourceTypeNames()" << endl;
-  QStringList retval;
-	
-  QDictIterator<ResourceInfo> it( mResourceList );
-  for ( ; it.current(); ++it )
-    retval << it.currentKey();
-
-  return retval;
+  return mTypeMap.keys();
 }
 
 ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
 {
-  ConfigWidget *widget = 0;
-
-  if ( type.isEmpty() )
+  if ( type.isEmpty() || !mTypeMap.contains( type ) )
     return 0;
 
-  QString libName = mResourceList[ type ]->library;
-
-  KLibrary *library = openLibrary( libName );
-  if ( !library )
-    return 0;
-
-  void *widget_func = library->symbol( "config_widget" );
-
-  if ( widget_func ) {
-    kdDebug(5650) << "Creating config widget for type " << type << endl;
-    widget = ((ConfigWidget* (*)(QWidget *wdg))widget_func)( parent );
-  } else {
-    kdDebug(5650) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
+  KService::Ptr ptr = mTypeMap[ type ];
+  KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+  if ( !factory ) {
+    kdDebug() << "KRES::Factory::configWidget(): Factory creation failed" << endl;
     return 0;
   }
 
-  return widget;
+  PluginFactory *pluginFactory = static_cast<PluginFactory*>( factory );
+
+  if ( !pluginFactory ) {
+    kdDebug() << "KRES::Factory::configWidget(): Cast failed" << endl;
+    return 0;
+  }
+
+  ConfigWidget *wdg = pluginFactory->configWidget( parent );
+  if ( !wdg ) {
+    kdDebug() << "'" << ptr->library() << "' is not a " + mResourceFamily + " plugin." << endl;
+    return 0;
+  }
+
+  return wdg;
 }
 
-ResourceInfo *Factory::info( const QString &type )
+QString Factory::typeName( const QString &type ) const
 {
-  if ( type.isEmpty() )
-    return 0;
-  else
-    return mResourceList[ type ];
+  if ( type.isEmpty() || !mTypeMap.contains( type ) )
+    return QString();
+
+  KService::Ptr ptr = mTypeMap[ type ];
+  return ptr->name();
+}
+
+QString Factory::typeDescription( const QString &type ) const
+{
+  if ( type.isEmpty() || !mTypeMap.contains( type ) )
+    return QString();
+
+  KService::Ptr ptr = mTypeMap[ type ];
+  return ptr->comment();
 }
 
 Resource *Factory::resource( const QString& type, const KConfig *config )
 {
-  kdDebug(5650) << "Factory::resource( " << type << ", config)" << endl;
-  Resource *resource = 0;
+  kdDebug() << "Factory::resource( " << type << ", config)" << endl;
 
-  if ( type.isEmpty() )
+  if ( type.isEmpty() || !mTypeMap.contains( type ) )
     return 0;
 
-  ResourceInfo *info = mResourceList.find( type );
-  if ( !info ) {
-    kdDebug(5650) << "Factory::resource(): No info for type '" << type
-              << "'" << endl;
-    return 0;
-  }
-
-  QString libName = info->library;
-
-  KLibrary *library = openLibrary( libName );
-  if ( !library )
-    return 0;
-
-  void *resource_func = library->symbol( "resource" );
-
-  if ( resource_func ) {
-    kdDebug(5650) << "Creating resource of type " << type << endl;
-    resource = ((Resource* (*)(const KConfig *))resource_func)( config );
-    resource->setType( type );
-  } else {
-    kdDebug(5650) << "'" << libName << "' is not a " + mResourceFamily + " plugin." << endl;
+  KService::Ptr ptr = mTypeMap[ type ];
+  KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+  if ( !factory ) {
+    kdDebug() << "KRES::Factory::resource(): Factory creation failed" << endl;
     return 0;
   }
 
-  kdDebug(5650) << "Created resource of type " << type << endl;
+  PluginFactory *pluginFactory = static_cast<PluginFactory*>( factory );
+
+  if ( !pluginFactory ) {
+    kdDebug() << "KRES::Factory::resource(): Cast failed" << endl;
+    return 0;
+  }
+
+  Resource *resource = pluginFactory->resource( config );
+  if ( !resource ) {  
+    kdDebug() << "'" << ptr->library() << "' is not a " + mResourceFamily + " plugin." << endl;
+    return 0;
+  }
+
+  resource->setType( type );
+
   return resource;
-}
-
-KLibrary *Factory::openLibrary( const QString& libName )
-{
-  KLibrary *library = 0;
-
-  QString path = KLibLoader::findLibrary( QFile::encodeName( libName ) );
-
-  if ( path.isEmpty() ) {
-    kdDebug(5650) << "No resource plugin library was found!" << endl;
-    return 0;
-  }
-
-  library = KLibLoader::self()->library( QFile::encodeName( path ) );
-
-  if ( !library ) {
-    kdDebug(5650) << "Could not load library '" << libName << "'" << endl;
-    return 0;
-  }
-
-  return library;
 }
