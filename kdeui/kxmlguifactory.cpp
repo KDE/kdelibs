@@ -49,14 +49,10 @@ class KXMLGUIFactoryPrivate : public BuildState
 public:
     KXMLGUIFactoryPrivate()
     {
-        static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
-        static const QString &actionList = KGlobal::staticQString( "actionlist" );
-        static const QString &name = KGlobal::staticQString( "name" );
-
         m_rootNode = new ContainerNode( 0L, QString::null, 0L );
-        m_defaultMergingName = defaultMergingName;
-        tagActionList = actionList;
-        attrName = name;
+        m_defaultMergingName = KGlobal::staticQString( "<default>" );
+        tagActionList = KGlobal::staticQString( "actionlist" );
+        attrName = KGlobal::staticQString( "name" );
     }
     ~KXMLGUIFactoryPrivate()
     {

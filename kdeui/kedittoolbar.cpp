@@ -151,13 +151,11 @@ public:
    */
   ToolbarList findToolbars(QDomElement elem)
   {
-    static const QString &tagToolbar = KGlobal::staticQString( "ToolBar" );
-    static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );
     ToolbarList list;
 
     for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
     {
-      if (elem.tagName() == tagToolbar && elem.attribute( attrNoEdit ) != "true" )
+      if (elem.tagName() == KGlobal::staticQString( "ToolBar" ) && elem.attribute( KGlobal::staticQString( "noEdit" ) ) != "true" )
         list.append(elem);
 
       QDomElement child = elem.firstChild().toElement();
