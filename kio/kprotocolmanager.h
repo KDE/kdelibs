@@ -21,7 +21,8 @@
 #include <qstringlist.h>
 #include <kapp.h>
 
-#define DEFAULT_USERAGENT_STRING QString("Mozilla/4.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)")
+#define DEFAULT_USERAGENT_STRING    QString("Mozilla/4.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)")
+
 
 class KConfig;
 
@@ -190,8 +191,12 @@ public:
   static void reparseConfiguration();
 
   /**
-   * Returns the userAgent string configured for a particular
-   * host by the user.
+   * Returns the userAgent string configured for the
+   * specified host.
+   *
+   * If hostname is not found or is empty (i.e. "" or
+   * QString::null) this function will return the default
+   * agent string as defined above in DEFAULT_USERAGENT_STRING.
    *
    * @param hostname name of the host
    * @return specified userAgent string
@@ -201,11 +206,9 @@ public:
   /**
    * Sets the list of userAgent.
    *
-   * This function is intended to be used to set
-   * the different agent string to be used when
-   * connecting to sites. The default string is:
-   *
-   *    Mozilla/4.0 (compatible; Konqueror $KDE_VERSION; X11)
+   * Sets the user agent name to be sent when connecting
+   * to different sites. The default user agent string is
+   * defined above by DEFAULT_USERAGENT_STRING.
    *
    * @param list the list of user agent strings to use.
    */

@@ -29,6 +29,10 @@
 #include <kconfig.h>
 #include <kstringhandler.h>
 
+// CACHE SETTINGS
+#define DEFAULT_MAX_CACHE_SIZE      5000
+#define DEFAULT_MAX_CACHE_AGE       60*60*24*14
+
 KConfig *KProtocolManager::_config = 0;
 
 void KProtocolManager::reparseConfiguration()
@@ -100,14 +104,14 @@ int KProtocolManager::maxCacheAge()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Cache Settings" );
-  return cfg->readNumEntry( "MaxCacheAge", 60*60*24*14 ); // 14 days
+  return cfg->readNumEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
 }
 
 int KProtocolManager::maxCacheSize()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Cache Settings" );
-  return cfg->readNumEntry( "MaxCacheSize", 5000 );
+  return cfg->readNumEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE );
 }
 
 QString KProtocolManager::ftpProxy()
@@ -255,7 +259,6 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
       list.append( cfg->readEntry( key, "" ) );
   }
 
-  // Keep this in sync with kdebase/kcontrol/kio/defaults.h !!!
   QString user_agent = DEFAULT_USERAGENT_STRING;
 
   if ( list.count() == 0 )
