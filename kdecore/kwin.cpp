@@ -224,10 +224,10 @@ KWin::Info KWin::info( WId win )
     w.desktop = inf.desktop();
     w.onAllDesktops = inf.desktop() == NETWinInfo::OnAllDesktops;
     w.pid = inf.pid();
-    NETRect geom, frame;
-    inf.kdeGeometry( geom, frame );
+    NETRect frame, geom;
+    inf.kdeGeometry( frame, geom );
     w.geometry.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
-    w.frameGeometry.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    w.frameGeometry.setRect( frame.pos.x, frame.pos.y, frame.size.width, frame.size.height );
     return w;
 }
 

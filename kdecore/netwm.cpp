@@ -1700,6 +1700,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->visible_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
     p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
+    p->frame_strut.left = p->frame_strut.right = p->frame_strut.top = p->frame_strut.bottom = 0;
     p->kde_system_tray_win_for = 0;
 
     p->properties = properties;
