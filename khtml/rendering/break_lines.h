@@ -1,3 +1,6 @@
+#ifndef BREAK_LINES_H
+#define BREAK_LINES_H
+
 #include <qstring.h>
 
 namespace khtml {
@@ -31,3 +34,5 @@ namespace khtml {
     }
 
 };
+
+#endif
