@@ -23,7 +23,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
-#include <operations.h>
+#include <kjs/operations.h>
 #include "kjs_navigator.h"
 
 using namespace KJS;
@@ -37,9 +37,9 @@ KJSO *Navigator::get(const UString &p) const
   else if (p == "appName")
     str = "Konqueror";
   else if (p == "appVersion")
-    str = "1.0 (X11; Konqueror; Unix)";
+    str = "4.0 (X11; Konqueror; Unix)";
   else if (p == "userAgent")
-    str = "Mozilla/1.0 (X11; Konqueror; Unix)";
+    str = "Mozilla/4.0 (X11; Konqueror; Unix)";
   else
     return new KJSUndefined();
 

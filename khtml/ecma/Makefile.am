@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(top_srcdir)/khtml/kjs -I$(top_srcdir) \
+INCLUDES = -I$(top_srcdir) \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
  $(all_includes)

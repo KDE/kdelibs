@@ -23,7 +23,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
-#include <operations.h>
+#include <kjs/operations.h>
 #include "kjs_window.h"
 
 using namespace KJS;

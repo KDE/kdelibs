@@ -20,8 +20,8 @@
 #ifndef _KJS_WINDOW_H_
 #define _KJS_WINDOW_H_
 
-#include "global.h"
-#include "object.h"
+#include <kjs/global.h>
+#include <kjs/object.h>
 
 class KHTMLView;
 

@@ -24,8 +24,8 @@
 #include <html_base.h>
 #include <html_misc.h>
 
-#include "global.h"
-#include "object.h"
+#include <kjs/global.h>
+#include <kjs/object.h>
 
 class HTMLElement;
 class HTMLCollection;

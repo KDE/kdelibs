@@ -25,10 +25,11 @@ libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp math_object.cpp \
 	bool_object.cpp object_object.cpp array_object.cpp string_object.cpp
 
-include_HEADERS = kjs.h
+kjsincludedir = $(includedir)/kjs
+kjsinclude_HEADERS = kjs.h global.h object.h operations.h kjsstring.h
 
-noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
-	kjsstring.h grammar.h object_object.h function_object.h \
+noinst_HEADERS = nodes.h lexer.h \
+	grammar.h object_object.h function_object.h \
 	bool_object.h math_object.h array_object.h string_object.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 -no-undefined

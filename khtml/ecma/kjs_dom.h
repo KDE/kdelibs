@@ -24,8 +24,8 @@
 #include <dom_doc.h>
 #include <dom_element.h>
 
-#include "global.h"
-#include "object.h"
+#include <kjs/global.h>
+#include <kjs/object.h>
 
 namespace KJS {
 
