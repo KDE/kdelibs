@@ -584,7 +584,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
-     arg << ourHost+":"+QString::number(m_iPort);
+     arg << ourHost;
      arg << certs;
      bool rc = d->dcc->call("kio_uiserver", "UIServer",
                                "showSSLCertDialog(QString, QStringList)",
