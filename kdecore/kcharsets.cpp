@@ -34,6 +34,10 @@ KCharsetConverter::KCharsetConverter(const char * inputCharset
                                     ,bool iamps
 				    ,bool oamps){
 				    
+  if (!inputCharset) {
+    warning("KCharsetConverter: NULL charset on input!\n");
+    inputCharset="us-ascii";    
+  }  
   data=new KCharsetConverterData(inputCharset,iamps,oamps);
 }
 
@@ -41,6 +45,14 @@ KCharsetConverter::KCharsetConverter(const char * inputCharset
 				    ,bool iamps
 				    ,const char *outputCharset
 				    ,bool oamps){
+  if (!inputCharset) {
+    warning("KCharsetConverter: NULL charset on input!\n");
+    inputCharset="us-ascii";    
+  }  
+  if (!outputCharset) {
+    warning("KCharsetConverter: NULL charset on output!\n");
+    outputCharset="us-ascii";    
+  }  
   data=new KCharsetConverterData(inputCharset,iamps,outputCharset,oamps);
 }
 
@@ -48,6 +60,14 @@ KCharsetConverter::KCharsetConverter(const char * inputCharset
                                     ,const char * outputCharset
 				    ,bool oamps){
 
+  if (!inputCharset) {
+    warning("KCharsetConverter: NULL charset on input!\n");
+    inputCharset="us-ascii";    
+  }  
+  if (!outputCharset) {
+    warning("KCharsetConverter: NULL charset on output!\n");
+    outputCharset="us-ascii";    
+  }  
   data=new KCharsetConverterData(inputCharset,FALSE,outputCharset,oamps);
 }
 
@@ -87,6 +107,10 @@ QString KCharsets::defaultCharset()const{
 
 bool KCharsets::setDefault(const char *ch){
 
+  if (!ch){
+    warning("KCharsets NULL charset parameter!\n");
+    return FALSE;
+  }  
   if ( data->charsetEntry(ch) ){
      data->setDefaultCharset(ch);
      return TRUE; 
@@ -142,12 +166,22 @@ QStrList KCharsets::registered()const{
 
 bool KCharsets::isAvailable(const char* charset){
 
+  if (!charset) return FALSE;
   if (data->charsetEntry(charset)) return TRUE;
   else return FALSE;
 }
 
 bool KCharsets::isDisplayable(const char* charset,const char *face){
 
+  if (!charset) {
+    warning("KCharsets: NULL charset parameter!\n");
+    return FALSE;
+  }  
+  if (!face){
+    warning("KCharsets: NULL face parameter!\n");
+    return FALSE;
+  }  
+  
   kchdebug("Testing if %s is displayable\n",charset);
   if ( stricmp(charset,"any")==0 ) return TRUE;
 
@@ -175,6 +209,10 @@ bool KCharsets::isDisplayable(const char* charset,const char *face){
 
 bool KCharsets::isRegistered(const char* charset){
 
+  if (!charset) {
+    warning("KCharsets: NULL charset parameter!\n");
+    return FALSE;
+  }  
   KCharsetEntry *ce=data->charsetEntry(charset);
   if (!ce) return FALSE;
   if (ce->registered) return TRUE;
@@ -183,6 +221,10 @@ bool KCharsets::isRegistered(const char* charset){
 
 QFont::CharSet KCharsets::qtCharset(const char *charset){
 
+  if (!charset) {
+    warning("KCharsets: NULL charset parameter!\n");
+    return QFont::AnyCharSet;
+  }  
   if (!stricmp(charset,"any")) return QFont::AnyCharSet;
   KCharsetEntry *ce=data->charsetEntry(charset);
   if (ce) return ce->qtCharset;
@@ -191,11 +233,15 @@ QFont::CharSet KCharsets::qtCharset(const char *charset){
 
 int KCharsets::bits(const char * charset){
 
+  if (!charset) {
+    warning("KCharsets: NULL charset parameter!\n");
+    return 8;
+  }  
   if ( stricmp(charset,"unicode") == 0 ) return 16;
   else if ( stricmp(charset,"iso-10640") == 0 ) return 16;
   else if ( stricmp(charset,"us-ascii") ==0 ) return 7;
-  else if ( stricmp(charset,"UTF8") == 0 ) return 8;
-  else if ( stricmp(charset,"UTF7") == 0 ) return 7;
+  else if ( stricmp(charset,"UTF-8") == 0 ) return 8;
+  else if ( stricmp(charset,"UTF-7") == 0 ) return 7;
   else return 8;
 }
 
@@ -215,6 +261,10 @@ QFont::CharSet KCharsets::qtCharset(){
 
 QFont &KCharsets::setQFont(QFont &fnt,const char *charset){
 
+  if (!charset) {
+    warning("KCharsets: NULL charset parameter!\n");
+    return fnt;
+  }  
   if ( (stricmp(name(fnt),charset) == 0)
      || data->charsetOfFace(charset,fnt.family())) return fnt;
   kchdebug("Setting font to: \"%s\"\n",charset);

@@ -17,7 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 	*/
-	
+
 #include "kcharsetsdata.h"
 #include "kcharsets.h"
 #include <qdir.h>
@@ -32,6 +32,7 @@
 KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamps,
                        const char * outputCharset,bool oamps){
 
+  kchdebug("Creating converter...");
   convTable=0;
   convToUniDict=0;
   convFromUniDict=0;
@@ -74,6 +75,7 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamp
     if (!createFromUnicodeDict()) return;
   } 
   isOK=TRUE;
+  kchdebug("done");
 }
 
 KCharsetConverterData::~KCharsetConverterData(){
@@ -96,6 +98,7 @@ bool KCharsetConverterData::getToUnicodeTable(){
 
 KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamps,bool oamps){
 
+  kchdebug("Creating converter...");
   convTable=0;
   convToUniDict=0;
   convFromUniDict=0;
@@ -117,19 +120,20 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset,bool iamp
   setInputSettings();
   setOutputSettings();
   isOK=TRUE;
+  kchdebug("done");
 }
 
 void KCharsetConverterData::setInputSettings(){
 
   const char *name=input->name;
   
-  if ( ! stricmp(name,"utf7") ){
-    warning("Sorry, UTF7 encoding is not supported yet\n");
+  if ( ! stricmp(name,"utf-7") ){
+    warning("Sorry, UTF-7 encoding is not supported yet\n");
     inputEnc=UTF7;
     inBits=0;
     unicodeIn=TRUE;
   }  
-  else if ( ! stricmp(name,"utf8") ){
+  else if ( ! stricmp(name,"utf-8") ){
     inputEnc=UTF8;
     inBits=0;
     unicodeIn=TRUE;
@@ -155,13 +159,13 @@ void KCharsetConverterData::setOutputSettings(){
 
   const char *name=output->name;
   
-  if ( ! stricmp(name,"utf7") ){
-    warning("Sorry, UTF7 encoding is not supported yet\n");
+  if ( ! stricmp(name,"utf-7") ){
+    warning("Sorry, UTF-7 encoding is not supported yet\n");
     outputEnc=UTF7;
     outBits=0;
     unicodeOut=TRUE;
   }  
-  else if ( ! stricmp(name,"utf8") ){
+  else if ( ! stricmp(name,"utf-8") ){
     outputEnc=UTF8;
     outBits=0;
     unicodeOut=TRUE;
@@ -223,7 +227,7 @@ bool KCharsetConverterData::decodeUTF8(const char*str,unsigned int &code
     extrachars=5;
   }  
   else {
-    warning("Invalid UTF8 sequence!");
+    warning("Invalid UTF-8 sequence!");
     return FALSE;
   }  
 
@@ -288,6 +292,7 @@ void KCharsetConverterData::convert(const QString &str
                                     ,KCharsetConversionResult &result) {
 
 
+  kchdebug("Converting:\n-----\n%s\n-----\n",(const char *)str);
   if (!isOK) return;
   if (conversionType == NoConversion ){
     result.text=str;
@@ -385,6 +390,7 @@ void KCharsetConverterData::convert(const QString &str
     else
       i+=2;
   }
+  kchdebug("Result:\n-----\n%s\n-----\n",(const char *)result);
 }
 
 bool KCharsetConverterData::createFromUnicodeDict(){
@@ -504,7 +510,8 @@ KCharsetsData::~KCharsetsData(){
   KCharsetEntry *e;
   while( (e=it.current()) ){
     if (e->toUnicodeDict) delete e->toUnicodeDict;
-    if (e->name) delete e->name;
+// delete static members ... It is a new vision of C++ :-)
+//    if (e->name) delete e->name;
     delete e;
   }
   delete config;

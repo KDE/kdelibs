@@ -365,8 +365,8 @@ KCharsetEntry KCharsetsData::charsets[]={
     	{ "iso-8859-7",QFont::ISO_8859_7,iso_8859_7_tbl,TRUE},
     	{ "iso-8859-9",QFont::ISO_8859_9,iso_8859_9_tbl,TRUE},
     	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE},
-       	{ "utf7",QFont::AnyCharSet,null_tbl,TRUE},
-       	{ "utf8",QFont::AnyCharSet,null_tbl,TRUE},
+       	{ "utf-7",QFont::AnyCharSet,null_tbl,TRUE},
+       	{ "utf-8",QFont::AnyCharSet,null_tbl,TRUE},
        	{ "unicode",QFont::AnyCharSet,null_tbl,FALSE},
        	{0,QFont::AnyCharSet,null_tbl,FALSE}};
 
