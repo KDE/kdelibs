@@ -130,7 +130,7 @@ void Job::emitPercent( unsigned long processedSize, unsigned long totalSize )
   else
     m_percent = (unsigned long)(( (float)(processedSize) / (float)(totalSize) ) * 100.0);
 
-  if ( m_percent > ipercent ) {
+  if ( m_percent != ipercent ) {
     emit percent( this, m_percent );
     kdDebug(7007) << "Job::emitPercent - percent =  " << (unsigned int) m_percent << endl;
   }
