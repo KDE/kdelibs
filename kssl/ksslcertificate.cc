@@ -505,7 +505,9 @@ QString KSSLCertificate::verifyText(KSSLValidation x) {
   case KSSLCertificate::NoSSL:
      return i18n("SSL support was not found.");
   case KSSLCertificate::Untrusted:
+     return i18n("Signature is untrusted.");
   case KSSLCertificate::SignatureFailed:
+     return i18n("Signature test failed.");
   case KSSLCertificate::Rejected:
   case KSSLCertificate::InvalidPurpose:
   break;
