@@ -131,5 +131,5 @@ void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceE
 	}
 }
 #endif
-};
+}
 #include "query.moc"

@@ -71,6 +71,6 @@ bool domainIsLocal(const QString& domain);
 QCString domainToDNS(const QString &domain);
 QString DNSToDomain(const char* domain);
 
-};
+}
 
 #endif

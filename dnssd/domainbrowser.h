@@ -98,6 +98,6 @@ private slots:
 	void domainListChanged(int,int);
 };
 
-};
+}
 
 #endif

@@ -150,6 +150,6 @@ void resolve_callback    (    DNSServiceRef,
 #endif
 
 
-};
+}
 
 #include "remoteservice.moc"

@@ -135,6 +135,6 @@ protected:
 };
 
 
-};
+}
 
 #endif
