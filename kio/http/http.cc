@@ -87,7 +87,7 @@ using namespace KIO;
 #endif
 
 #define DEFAULT_MIME_TYPE       "text/html"
-#define DEFAULT_ACCEPT_HEADER   "text/*;q=1.0, image/png;q=1.0, image/jpeg;q=1.0, image/gif;q=1.0, image/*;q=0.8, */*;q=0.5"
+#define DEFAULT_ACCEPT_HEADER   "text/*, image/png, image/jpeg, image/gif, image/*, */*"
 
 extern "C" {
   void sigalrm_handler(int);
@@ -450,7 +450,6 @@ HTTPProtocol::http_openConnection()
 {
     m_bKeepAlive = false;
     KExtendedSocket ks;
-    // do we still want a proxy after all that?
     if ( m_state.do_proxy )
     {
         QString proxy_host = m_proxyURL.host();
@@ -837,7 +836,7 @@ bool HTTPProtocol::http_open()
 #endif
 
   if ( config()->readBoolEntry("SendUserAgent", true) )
-  {  
+  {
     QString agent = config()->readEntry("UserAgent");
 
     if( agent.isEmpty() )
@@ -891,8 +890,8 @@ bool HTTPProtocol::http_open()
 
 #ifdef DO_GZIP
   // Content negotiation
-  // header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
-    header += "Accept-Encoding: x-gzip; q=1.0, gzip; q=1.0, identity\r\n";
+  // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
+    header += "Accept-Encoding: x-gzip, gzip, identity\r\n";
 #endif
 
   // Charset negotiation:
@@ -2066,7 +2065,7 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   m_remoteConnTimeout = connectTimeout();
   m_remoteRespTimeout = responseTimeout();
 
-  kdDebug(7103) << "Timeout proxy = " << m_proxyConnTimeout << 
+  kdDebug(7103) << "Timeout proxy = " << m_proxyConnTimeout <<
                    " connection = " << m_remoteConnTimeout <<
                    " response = " << m_remoteRespTimeout << endl;
 }
@@ -3724,15 +3723,11 @@ void HTTPProtocol::reparseConfiguration()
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
   // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
   m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
-  m_strCharsets += QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
+  m_strCharsets += QString::fromLatin1(", utf-8, *");
 
   // Launch the cookiejar if not already running
   KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
-  if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
-      !cookieConfig->hasGroup("Cookie Policy") )
-    cookieConfig->setGroup("Browser Settings/HTTP");
-  else
-    cookieConfig->setGroup("Cookie Policy");
+  cookieConfig->setGroup("Cookie Policy");
   m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
   if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
   {
