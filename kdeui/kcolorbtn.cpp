@@ -22,6 +22,7 @@
 #endif
 
 #include <qpainter.h>
+#include <qdrawutl.h>
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
 
@@ -58,10 +59,22 @@ void KColorButton::slotClicked()
 
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
+	int w = ( style() == WindowsStyle ) ? 11 : 10;
+
 	if ( style() == WindowsStyle && isDown() )
-		painter->fillRect( 6, 6, width() - 10, height() - 10, col );
+	{
+		qDrawPlainRect( painter, w/2+1, w/2+1, width()-w, height()-w,
+		    black, 1, 0 );
+		w += 2;
+		painter->fillRect( w/2+1, w/2+1, width()-w, height()-w, col );
+	}
 	else
-		painter->fillRect( 5, 5, width() - 10, height() - 10, col );
+	{
+		qDrawPlainRect( painter, w/2, w/2, width()-w, height()-w,
+		    black, 1, 0 );
+		w += 2;
+		painter->fillRect( w/2, w/2, width() - w, height() - w, col );
+	}
 }
 
 
