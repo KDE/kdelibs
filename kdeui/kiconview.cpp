@@ -70,6 +70,10 @@ void KIconView::slotOnViewport()
 
 void KIconView::slotAutoSelect()
 {
+  //Give this widget the keyboard focus.
+  if( !hasFocus() )
+    setFocus();
+
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
