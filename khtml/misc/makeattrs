@@ -52,6 +52,9 @@ while (<IN>) {
     print header "#define ATTR_" . $up . " " . $num . "\n";
 
     }
+
+print header "#define ATTR_LAST_ATTR $num\n";
+
 print out "%%\n";
 close out;
 

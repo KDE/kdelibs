@@ -152,6 +152,7 @@ using namespace DOM;
 #define ATTR_WIDTH 142
 #define ATTR_WRAP 143
 #define ATTR_Z_INDEX 144
+#define ATTR_LAST_ATTR 144
 DOMString getAttrName(unsigned short id);
 
 #endif
