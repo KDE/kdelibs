@@ -58,6 +58,7 @@ int X11fd;
 static Display *X11display = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
+static char sock_link[MAX_SOCK_FILE];
 static QTime* smModificationTime = 0;
 
 /* Group data */
@@ -396,12 +397,38 @@ static void init_signals()
   sigaction( SIGPIPE, &act, 0L);
 }
 
+/*
+ * we need a temporary filename for the socket
+ */
+static char *unique_filename (const char *path, const char *prefix)
+{
+#ifndef X_NOT_POSIX
+    return ((char *) tempnam (path, prefix));
+#else
+    char tempFile[PATH_MAX];
+    char *tmp;
+
+    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    tmp = (char *) mktemp (tempFile);
+    if (tmp)
+        {
+            char *ptr = (char *) malloc (strlen (tmp) + 1);
+            strcpy (ptr, tmp);
+            return (ptr);
+        }
+    else
+        return (NULL);
+#endif
+}
+
 static void init_kdeinit_socket()
 {
   struct sockaddr_un sa;
   ksize_t socklen;
   long options;
   char *home_dir = getenv("HOME");
+  unsigned int file_len = 0;
+  int max_tries = 10;
   if (!home_dir || !home_dir[0])
   {
      fprintf(stderr, "Aborting. $HOME not set!");
@@ -413,14 +440,14 @@ static void init_kdeinit_socket()
      fprintf(stderr, "Aborting. Home directory path too long!");
      exit(255);
   }
-  strcpy(sock_file, home_dir);
+  strcpy(sock_link, home_dir);
   /** Strip trailing '/' **/
-  if ( sock_file[strlen(sock_file)-1] == '/')
-     sock_file[strlen(sock_file)-1] = 0;
+  if ( sock_link[strlen(sock_link)-1] == '/')
+     sock_link[strlen(sock_link)-1] = 0;
 
-  strcat(sock_file, "/.kdeinit-");
+  strcat(sock_link, "/.kdeinit-");
   // GJ: This should be the fully qualified hostname, IMHO.
-  if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
+  if (gethostname(sock_link+strlen(sock_link), MAX_SOCK_FILE - strlen(sock_link) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");
      exit(255);
@@ -432,22 +459,34 @@ static void init_kdeinit_socket()
      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
      exit(255);
   }
-  if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
+  if (strlen(sock_link)+strlen(display)+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Aborting. Socket name will be too long.\n");
      exit(255);
   }
-  strcat(sock_file, "-");
-  strcat(sock_file, display);
+  strcat(sock_link, "-");
+  strcat(sock_link, display);
 
-  if (strlen(sock_file) >= sizeof(sa.sun_path))
+
+  /* first check it the link exists, and points to something useable */
+  sock_file[0] = 0;
+  file_len = (unsigned)readlink(sock_link, sock_file, sizeof(sock_file));
+  if ((signed)file_len < 0) {
+      file_len = 0;
+  } else if (file_len < sizeof(sock_file)) {
+      sock_file[file_len] = 0;
+  }
+  if (file_len >= sizeof(sa.sun_path))
   {
      fprintf(stderr, "Aborting. Path of socketfile exceeds UNIX_PATH_MAX.\n");
+     fprintf(stderr, "  sock_file=%s\n", sock_file);
      exit(255);
   }
-
-  /** Test if socket file is already present **/
-  if (access(sock_file, W_OK) == 0)
+  /** Test if socket file is already present
+   *  note that access() resolves symlinks, and so we check the actual
+   *  socket file if it exists
+   */
+  if (file_len > 0 && access(sock_file, W_OK) == 0)
   {
      int s;
      struct sockaddr_un server;
@@ -476,8 +515,10 @@ static void init_kdeinit_socket()
      close(s);
   }
 
-  /** Delete any stale socket file **/
-  unlink(sock_file);
+  /** Delete any stale socket file (and symlink) **/
+  unlink(sock_link);
+  if (file_len > 0)
+      unlink(sock_file);
 
   /** create socket **/
   d.wrapper = socket(PF_UNIX, SOCK_STREAM, 0);
@@ -491,30 +532,55 @@ static void init_kdeinit_socket()
   if (options == -1)
   {
      perror("Aborting. Can't make socket non-blocking: ");
+     close(d.wrapper);
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFL, options | O_NONBLOCK) == -1)
   {
      perror("Aborting. Can't make socket non-blocking: ");
+     close(d.wrapper);
      exit(255);
   }
 
-  /** bind it **/
-  sa.sun_family = AF_UNIX;
-  strcpy(sa.sun_path, sock_file);
-  socklen = sizeof(sa);
-  if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0)
-  {
-     perror("Aborting. bind() failed: ");
-     close(d.wrapper);
-     exit(255);
+  while (1) {
+      char *tname = unique_filename("/tmp", ".kin");
+      if (!tname) {
+          perror("Aborting. Can't create temporary file name: ");
+	  close(d.wrapper);
+	  exit(255);
+      }
+      strcpy(sock_file, tname);
+      free(tname);
+      file_len = strlen(sock_file);
+      if (file_len >= sizeof(sa.sun_path))
+      {
+	  fprintf(stderr, "Aborting. Path of socketfile exceeds UNIX_PATH_MAX.\n");
+	  fprintf(stderr, "  sock_file=%s\n", sock_file);
+	  close(d.wrapper);
+	  exit(255);
+      }
+      /** bind it **/
+      sa.sun_family = AF_UNIX;
+      strcpy(sa.sun_path, sock_file);
+      socklen = sizeof(sa);
+      if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0)
+      {
+          if (max_tries == 0) {
+	      perror("Aborting. bind() failed: ");
+	      close(d.wrapper);
+	      exit(255);
+	  }
+	  max_tries--;
+      } else
+          break;
   }
 
   /** set permissions **/
   if (chmod(sock_file, 0600) != 0)
   {
      perror("Aborting. Can't set permissions on socket: ");
+     unlink(sock_file);
      close(d.wrapper);
      exit(255);
   }
@@ -522,6 +588,18 @@ static void init_kdeinit_socket()
   if(listen(d.wrapper, SOMAXCONN) < 0)
   {
      perror("Aborting. listen() failed: ");
+     unlink(sock_file);
+     close(d.wrapper);
+     exit(255);
+  }
+
+  /* now we have the socket and the name of a symlink.
+   * make the socket known under a well-known-name
+   */
+  if (symlink(sock_file, sock_link) != 0) {
+     perror("Aborting. symlink() failed: ");
+     unlink(sock_file);
+     unlink(sock_link);
      close(d.wrapper);
      exit(255);
   }
@@ -820,6 +898,9 @@ int kdeinit_xio_errhandler( Display * )
       /** Delete any stale socket file **/
       unlink(sock_file);
     }
+    if (sock_link[0]) {
+      unlink(sock_link);
+    }
 
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
@@ -889,6 +970,7 @@ int main(int argc, char **argv, char **envp)
    d.launcher_pid = 0;
    d.wrapper = 0;
    sock_file[0] = 0;
+   sock_link[0] = 0;
    init_signals();
 
 
