@@ -78,10 +78,14 @@
       PRE, TT, CODE,
       KBD, SAMP       { font-family: monospace }
       PRE             { white-space: pre }
-      BIG             { font-size: 1.6em }
-      SMALL, SUB, SUP { font-size: 1em }
-      SUB             { vertical-align: sub }
-      SUP             { vertical-align: super }
+      BIG             { font-size: large }
+      SMALL, SUB, SUP { font-size: small }
+/*      SUB             { vertical-align: sub }
+      SUP             { vertical-align: super }*/
+/* hack... should get removed once we support the two lines above */
+      SUB             { position: relative; top: 0.5em; }
+      SUP             { position: relative; top: -0.5em; }
+
       S, STRIKE, DEL  { text-decoration: line-through }
       HR              { margin-top: 5px; margin-bottom: 5px }
 
