@@ -401,10 +401,12 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		scriptCodeSize = scriptCodeDest-scriptCode;
 	    }
 	    else {
-                if( !script && !comment && ch == '\"')
+                if( !comment && ch == '\"')
                     quot = (quot == NoQuote) ? DoubleQuote : (quot == SingleQuote) ? SingleQuote : NoQuote;
-                else if( !script && !comment && ch == '\'')
+                else if( !comment && ch == '\'')
                     quot = (quot == NoQuote) ? SingleQuote : (quot == DoubleQuote) ? DoubleQuote : NoQuote;
+                else if (!comment && quot == DoubleQuote && (ch == '\r' || ch == '\n'))
+                    quot = NoQuote; // double quotes never go beyond end of line
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
 	    }
@@ -757,6 +759,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         kdDebug( 6036 ) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
 #endif
                         dest = buffer;
+                        tquote = IgnoreQuote;
                         tag = SearchEnd; // ignore the tag
                     }
                     else
