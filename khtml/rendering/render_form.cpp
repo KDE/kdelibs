@@ -187,13 +187,20 @@ bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
 
     switch(e->type()) {
     case QEvent::FocusOut:
-        m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-        if ( isEditable() ) {
-            KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
+        //static const char* const r[] = {"Mouse", "Tab", "Backtab", "ActiveWindow", "Popup", "Shortcut", "Other" };
+        //kdDebug() << "RenderFormElement::eventFilter FocusOut widget=" << m_widget << " reason:" << r[QFocusEvent::reason()] << endl;
+        // Don't count popup as a valid reason for losing the focus
+        // (example: opening the options of a select combobox shouldn't emit onblur)
+        if ( QFocusEvent::reason() != QFocusEvent::Popup )
+        {
+            m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+            if ( isEditable() ) {
+                KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
 
-            if ( ext )  ext->editableWidgetBlurred( m_widget );
+                if ( ext )  ext->editableWidgetBlurred( m_widget );
+            }
+            handleFocusOut();
         }
-        handleFocusOut();
         break;
     case QEvent::FocusIn:
         m_element->ownerDocument()->setFocusNode(m_element);
@@ -563,6 +570,11 @@ void RenderLineEdit::slotReturnPressed()
     KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
     if ( box && box->isVisible() && box->currentItem() != -1 )
 	return;
+
+    // Emit onChange if necessary
+    // Works but might not be enough, dirk said he had another solution at
+    // hand (can't remember which) - David
+    handleFocusOut();
 
     HTMLFormElementImpl* fe = m_element->form();
     if ( fe )

@@ -234,7 +234,7 @@ RenderWidget::~RenderWidget()
     delete m_widget;
 }
 
-void RenderWidget::setQWidget(QWidget *widget, bool changeFocusPolicy)
+void RenderWidget::setQWidget(QWidget *widget, bool /*now unused*/)
 {
     if (widget != m_widget)
     {
@@ -244,8 +244,6 @@ void RenderWidget::setQWidget(QWidget *widget, bool changeFocusPolicy)
             delete m_widget;
             m_widget = 0;
         }
-        if (changeFocusPolicy)
-            widget->setFocusPolicy(QWidget::NoFocus);
         m_widget = widget;
         connect( m_widget, SIGNAL( destroyed()),
                  this, SLOT( slotWidgetDestructed()));
