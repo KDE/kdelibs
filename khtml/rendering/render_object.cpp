@@ -125,6 +125,39 @@ RenderObject::~RenderObject()
 }
 
 
+
+RenderObject* RenderObject::objectBelow() const
+{
+    RenderObject* obj = firstChild();
+    if ( !obj ) {
+        obj = nextSibling();
+        if ( !obj )
+        {
+            obj = parent();
+            while (obj && !obj->nextSibling())
+                obj = obj->parent();
+            if (obj)
+                obj = obj->nextSibling();
+        }
+    }
+    return obj;
+}
+
+RenderObject* RenderObject::objectAbove() const
+{
+    RenderObject* obj = previousSibling();
+    if ( !obj )
+        return parent();
+
+    RenderObject* last = obj->lastChild();
+    while ( last )
+    {
+        obj = last;
+        last = last->lastChild();
+    }
+    return obj;
+}
+
 void RenderObject::addChild(RenderObject* , RenderObject *)
 {
     KHTMLAssert(0);

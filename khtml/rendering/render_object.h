@@ -85,6 +85,10 @@ public:
     virtual RenderObject *firstChild() const { return 0; }
     virtual RenderObject *lastChild() const { return 0; }
 
+    // Linear tree traversal
+    RenderObject *objectBelow() const;
+    RenderObject *objectAbove() const;
+
     // RenderObject tree manipulation
     //////////////////////////////////////////
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
