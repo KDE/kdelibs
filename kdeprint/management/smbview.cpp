@@ -27,15 +27,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-QString smbPasswordString(const QString& login, const QString& password)
-{
-	QString	s;
-	if (login.isEmpty()) s = "-N";
-	else if (password.isEmpty()) s = QString("-U %1").arg(login);
-	else s = QString("-U %1%%2").arg(login).arg(password);
-	return s;
-}
-
 //*********************************************************************************************
 
 SmbView::SmbView(QWidget *parent, const char *name)
@@ -120,23 +111,26 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 {
 	if (on && item->childCount() == 0)
 	{
+		if (!m_login.isEmpty())
+			m_proc->setEnvironment("USER", m_login);
+		if (!m_password.isEmpty())
+			m_proc->setEnvironment("PASSWD", m_password);
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
 			*m_proc << "nmblookup -M ";
                         *m_proc << KShellProcess::quote(item->text(0));
-                        *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -L 'serv_name' -W ";
-                        *m_proc << KShellProcess::quote(item->text(0)) + " "+ KShellProcess::quote(smbPasswordString(m_login,m_password));
+                        *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
+                        *m_proc << KShellProcess::quote(item->text(0));
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
 		{ // opening server
 			m_current = item;
-			*m_proc << "smbclient -L ";
+			*m_proc << "smbclient -N -L ";
                         *m_proc << KShellProcess::quote(item->text(0));
-                        *m_proc << "-W";
-                        *m_proc << KShellProcess::quote(item->text(0));
-                        *m_proc << KShellProcess::quote(smbPasswordString(m_login,m_password));
+                        *m_proc << " -W ";
+                        *m_proc << KShellProcess::quote(item->parent()->text(0));
 			startProcess(ShareListing);
 		}
 	}
