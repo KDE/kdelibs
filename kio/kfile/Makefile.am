@@ -28,7 +28,7 @@ METASOURCES = AUTO
 
 include_HEADERS = kfiledialog.h \
 	kdiroperator.h kfileview.h kfilefiltercombo.h \
-	kfiledetailview.h kcombiview.h \
+	kfiledetailview.h kcombiview.h kdiskfreesp.h \
 	kfileiconview.h krecentdocument.h kfileview.h \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
