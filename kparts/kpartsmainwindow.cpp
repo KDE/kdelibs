@@ -107,7 +107,7 @@ void MainWindow::setXML( const QString &document )
 
 QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer )
 {
-  kDebugInfo( 1001, "KPartsMainWindow::createContainer()" );
+  kDebugArea( 1001, "MainWindow::createContainer()" );
   kDebugInfo( 1001, "tagName() : %s", element.tagName().ascii() );
   if ( parent )
    kDebugInfo( 1001, "parent.className() : %s", parent->className() );
@@ -117,7 +117,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
 
   if ( element.tagName() == "Menu" && parent )
   {
-    QPopupMenu *popup = new QPopupMenu( this );
+    QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ) );
 
     QString text = element.namedItem( "text" ).toElement().text();
 
@@ -206,6 +206,7 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
 
 QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
 {
+  // Warning parent can be 0L
   QByteArray stateBuff;
 
   if ( !container->isWidgetType() )
@@ -213,7 +214,8 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
     if ( !container->inherits( "QAction" ) )
       return stateBuff;
 
-    ((QAction *)container)->unplug( parent );
+    kDebugInfo( 1002, "MainWindow::removeContainer : unplugging %s from %s", container->name(), parent ? parent->name() : 0L );
+    if (parent) ((QAction *)container)->unplug( parent );
     delete container;
   }
   else if ( container->inherits( "QPopupMenu" ) )
@@ -248,15 +250,13 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
 
 void MainWindow::createGUI( Part * part )
 {
-  kDebugInfo( 1000, QString("KPartsMainWindow::createGUI for %1").arg(part?part->name():"0L"));
-  // start the factory with this as an input (shell servant),
-  // the part servant (or none) as the other input, and this as an output (GUI builder)
+  kDebugStringArea( 1000, QString("MainWindow::createGUI for %1").arg(part?part->name():"0L"));
 
   setUpdatesEnabled( false );
 
   if ( d->m_activePart )
   {
-    kDebugInfo( 1000, "deactivating GUI for %s", d->m_activePart->name() );
+    kDebugStringArea( 1000, QString("deactivating GUI for %1").arg(d->m_activePart->name()) );
     QListIterator<XMLGUIServant> pIt( *d->m_activePart->pluginServants() );
     pIt.toLast();
     for (; pIt.current(); --pIt )

@@ -129,6 +129,7 @@ XMLGUIServant::XMLGUIServant()
 
 XMLGUIServant::~XMLGUIServant()
 {
+  kDebugArea( 1000, "XMLGUIServant::~XMLGUIServant()");
   if ( d->m_factory )
     d->m_factory->removeServant( this );
 
@@ -211,6 +212,7 @@ XMLGUIFactory::XMLGUIFactory( XMLGUIBuilder *builder )
 
 XMLGUIFactory::~XMLGUIFactory()
 {
+  kDebugArea( 1002, "XMLGUIFactory::~XMLGUIFactory(), calling removeRecursive" );
   m_servant = 0L;
   removeRecursive( d->m_rootNode );
   delete d;
@@ -239,6 +241,7 @@ void XMLGUIFactory::removeServant( XMLGUIServant *servant )
   if ( servant->factory() && servant->factory() != this )
     return;
 
+  kDebugArea( 1002, "XMLGUIFactory::removeServant, calling removeRecursive" );
   m_servant = servant;
   servant->setFactory( 0L );
   removeRecursive( d->m_rootNode );
@@ -331,7 +334,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
       {	
         if ( parentNode->container() && !parentNode->container()->isWidgetType() )
         {
-          kDebugInfo( 1000,"cannot create container widget with non-widget as parent!" );
+          kDebugWarning( 1000,"cannot create container widget with non-widget as parent!" );
     	  continue;
         }
 
@@ -393,7 +396,10 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
       {
         QListIterator<QAction> actionIt( clientIt.current()->m_actions );
         for (; actionIt.current(); ++actionIt )
+        {
+          kDebugInfo( 1002, "unplugging %s from %s", actionIt.current()->name(), (QWidget *)node->container()->name() );
           actionIt.current()->unplug( (QWidget *)node->container() );
+        }
 	
 	//now we have to adjust/correct the index. We do it the fast'n'dirty way by just substracting
 	//the amount of actions we just unplugged ;-)
@@ -430,6 +436,9 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
         (*p->index())--;
     }
 
+    if ( node == d->m_rootNode ) kDebugInfo( 1002, "root node !" );
+    if ( !node->container() ) kDebugInfo( 1002, "no container !" );
+    kDebugInfo( 1002, "remove/kill stuff : node is %s, container is %s (%s), parent container is %s", node->name().ascii(), node->container()->name(), node->container()->className(), parentContainer ? parentContainer->name() : 0L );
     //remove/kill the container and give the builder a chance to store abitrary state information of
     //the container in a QByteArray. This information will be re-used for the creation of the same
     //container in case we add the same servant again later.
