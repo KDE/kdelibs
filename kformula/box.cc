@@ -661,7 +661,7 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
 	      b2x * 2, rect.height(),
 	      100 * 16, 160 * 16);
 
-    p.drawArc(rect.right() - SPACE / 2 - b2x * 2 + x, rect.top() + y,
+    p.drawArc(rect.right() - b2x * 2 + x, rect.top() + y,
 	      b2x * 2, rect.height(), -80 * 16, 160 * 16);
 
     p.setPen(oldPen);
