@@ -32,17 +32,6 @@ class KGuiItem
 public:
     KGuiItem();
 
-    /*
-       BIC: This constructor takes both an iconset and an iconname, which
-       is redundant. remove this ctor on bic day!!!!
-     */
-    KGuiItem( const QString &text, 
-              const QIconSet &iconSet, 
-              const QString &iconName,
-              const QString &toolTip, 
-              const QString &whatsThis );
-    /* END BIC - Martijn */
-              
     KGuiItem( const QString &text, 
               const QString &iconName  = QString::null,
               const QString &toolTip   = QString::null, 

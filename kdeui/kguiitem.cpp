@@ -75,28 +75,6 @@ KGuiItem::KGuiItem() {
     d = new KGuiItemPrivate;
 }
 
-KGuiItem::KGuiItem( const QString &text, const QIconSet &iconSet,
-                    const QString &iconName,
-                    const QString &toolTip, const QString &whatsThis )
-{
-    kdWarning() << "This KGuiItem c'tor is deprecated! Please use the c'tor "
-                   "that takes either an iconName or an iconSet, but not "
-                   "both!" << endl;
-                   
-    d = new KGuiItemPrivate;
-    d->m_text = text;
-    if( iconName.isEmpty() )
-    {
-        if( !iconSet.isNull() )
-            setIconSet( iconSet );
-    }
-    else
-        setIconName( iconName );
-
-    d->m_toolTip =  toolTip;
-    d->m_whatsThis = whatsThis;
-}
-
 KGuiItem::KGuiItem( const QString &text,    const QString &iconName,
                     const QString &toolTip, const QString &whatsThis )
 {
