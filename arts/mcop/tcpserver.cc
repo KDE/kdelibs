@@ -134,6 +134,8 @@ bool TCPServer::initSocket()
         close(theSocket);
 		return false;
 	}
+
+	arts_debug("TCPServer: listening on '%s'", url().c_str());
 	return true;
 }
 
