@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define _DCOPSTUB_H
 
 class DCOPClient;
+class DCOPRef;
 class DCOPStubPrivate;
 
 #include <stdlib.h>
@@ -54,6 +55,12 @@ public:
        @param obj the object id
      */
     DCOPStub( DCOPClient* client, const QCString& app, const QCString& obj );
+    
+    /**
+       Creates a DCOPStub for application ref.app() and object ref.obj()
+       @param ref the DCOP reference
+     */
+    explicit DCOPStub( const DCOPRef& ref );
     virtual ~DCOPStub();
 
     /**

@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "dcopstub.h"
 #include "dcopclient.h"
+#include "dcopref.h"
 
 class DCOPStubPrivate
 {
@@ -44,6 +45,11 @@ DCOPStub::DCOPStub( DCOPClient* client, const QCString& app, const QCString& obj
 	d = new DCOPStubPrivate;
 	d->dcopClient = client;
     }
+}
+
+DCOPStub::DCOPStub( const DCOPRef& ref )
+    : m_app( ref.app() ), m_obj( ref.obj() ), m_status( CallSucceeded ),d(0)
+{
 }
 
 DCOPStub::~DCOPStub()

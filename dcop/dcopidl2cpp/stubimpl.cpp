@@ -131,6 +131,14 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
             str << "{" << endl;
             str << "}" << endl << endl;
 
+            str << className_stub << "::" << className_stub << "( const DCOPRef& ref )" << endl;
+            str << "  : ";
+        
+            str << "DCOPStub( ref )" << endl;
+
+            str << "{" << endl;
+            str << "}" << endl << endl;
+
 	    // Write marshalling code
 	    QDomElement s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
