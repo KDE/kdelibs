@@ -63,3 +63,13 @@
 		%local.sect1.attrib;
 >
 
+<!-- value of Type changed from IMPLIED CDATA -->
+<!ATTLIST OLink
+		TargetDocEnt	ENTITY 		#IMPLIED
+		LinkMode	IDREF		#IMPLIED
+		LocalInfo 	CDATA		#IMPLIED
+		Type		(Href|Other)	Href
+		%common.attrib;
+		%olink.role.attrib;
+		%local.olink.attrib;
+>
