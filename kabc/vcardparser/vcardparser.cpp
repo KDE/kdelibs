@@ -72,7 +72,13 @@ VCard::List VCardParser::parseVCards( const QString& text )
           for ( uint i = 1; i < params.count(); ++i ) {
             QStringList pair = QStringList::split( '=', params[i] );
             if ( pair.size() == 1 ) {
+              // correct the fucking 2.1 'standard'
+              if ( pair[0].lower() == "quoted-printable" ) {
+                pair[0] = "encoding";
+                pair[1] = "quoted-printable";
+              } else {
                 pair.prepend( "type" );
+              }
             }
             //This is pretty much a faster pair[1].contains( ',' )...
             if ( pair[1].find( ',' ) != -1 ) { // parameter in type=x,y,z format
@@ -92,7 +98,14 @@ VCard::List VCardParser::parseVCards( const QString& text )
             KCodecs::base64Decode( input, output );
           else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" )
             KCodecs::quotedPrintableDecode( input, output );
-          vCardLine.setValue( output );
+
+          if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
+            vCardLine.setValue( QString::fromUtf8( output.data(), output.size() ) );
+          } else {
+            vCardLine.setValue( QString::fromAscii( output.data(), output.size() ) );
+          }
+        } else if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
+          vCardLine.setValue( QString::fromUtf8( value.ascii() ) );
         } else
           vCardLine.setValue( value.replace( "\\n", "\n" ) );
 
