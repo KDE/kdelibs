@@ -48,7 +48,6 @@ struct AppPresence
 
 typedef QDict<AppPresence> PresenceMap;
 typedef QMap<int, QString> PresenceStringMap;
-typedef QMap<int, QPixmap> PresenceIconMap;
 
 /**
  * This class provides an easy-to-use interface to any instant messengers or chat programs
@@ -74,6 +73,9 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 {
 	Q_OBJECT
 
+	template<class> friend class KStaticDeleter;
+	~KIMProxy();
+
 	public:
 		/**
 		 * Obtain an instance of KIMProxy.
@@ -85,8 +87,6 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		 * @return The singleton instance of this class.
 		 */
 		static KIMProxy * instance( DCOPClient * client );
-
-		~KIMProxy();
 
 		/**
 		 * Get the proxy ready to connect
@@ -288,9 +288,6 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		// cache of the client strings in use by each application
 		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
 		QPtrDict<PresenceStringMap> m_client_presence_strings;
-		// cache of the presence pixmaps in use by each application
-		// dictionary of KIMIface_stub -> map of numeric presence -> presence icon
-		QPtrDict<PresenceIconMap> m_client_presence_icons;
 		DCOPClient *m_dc;
 		bool m_apps_available;
 		bool m_initialized;

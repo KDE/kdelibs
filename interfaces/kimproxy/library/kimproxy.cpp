@@ -35,6 +35,8 @@
 
 #include "kimproxy.h"
 
+static KStaticDeleter<KIMProxy> _staticDeleter;
+
 KIMProxy * KIMProxy::s_instance = 0L;
 
 KIMProxy * KIMProxy::instance( DCOPClient * client ) 
@@ -42,7 +44,7 @@ KIMProxy * KIMProxy::instance( DCOPClient * client )
 	if ( client )
 	{
 		if ( !s_instance )
-			s_instance = new KIMProxy(client);
+			_staticDeleter.setObject( s_instance, new KIMProxy( client ) );
 		return s_instance;
 	}
 	else
