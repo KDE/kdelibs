@@ -80,7 +80,7 @@ public:
      * Sets the KGuiItem for this button.
      */
     void setGuiItem( const KGuiItem& item );
-        
+
 protected:
     /**
      * Reimplement this and return the QDragObject that should be used
@@ -116,6 +116,10 @@ private:
      * Initialize the KPushButton instance
      */
     void init( const KGuiItem &item );
+    
+    void readSettings();
+    bool needIcons();
+    static bool s_useIcons;
 
     class KPushButtonPrivate;
     KPushButtonPrivate *d;

@@ -32,6 +32,8 @@ public:
     KGuiItem item;
 };
 
+bool KPushButton::s_useIcons = false;
+
 KPushButton::KPushButton( QWidget *parent, const char *name )
     : QPushButton( parent, name ),
       m_dragEnabled( false )
@@ -77,7 +79,16 @@ void KPushButton::init( const KGuiItem &item )
     d = new KPushButtonPrivate;
     d->item = item;
     setText( item.text() );
-    slotSettingsChanged( 0 );
+
+    static bool initialized = false;
+    if ( !initialized ) {
+        readSettings();
+        initialized = true;
+    }
+    
+    if ( needIcons() )
+        setIconSet( d->item.iconSet() );
+    
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
     if (kapp)
@@ -88,21 +99,30 @@ void KPushButton::init( const KGuiItem &item )
     }
 }
 
+bool KPushButton::needIcons()
+{
+    return s_useIcons && d->item.hasIconSet();;
+}
+
+void KPushButton::readSettings()
+{
+    KConfigGroup cg ( KGlobal::config(), "KDE" );
+    s_useIcons = cg.readBoolEntry( "ShowIconsOnPushButtons", false );
+}
+
 void KPushButton::setGuiItem( const KGuiItem& item )
 {
     d->item = item;
     setText( item.text() );
-    slotSettingsChanged( 0 );
+    if ( needIcons() )
+        setIconSet( d->item.iconSet() );
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )
 {
-    KConfigGroup cg ( KGlobal::config(), "KDE" );
-    if( d->item.hasIconSet() &&
-                        cg.readBoolEntry( "ShowIconsOnPushButtons", false ) )
-    {
+    readSettings();
+    if ( needIcons() )
         setIconSet( d->item.iconSet() );
-    }
     else
         setIconSet( QIconSet() );
 }
