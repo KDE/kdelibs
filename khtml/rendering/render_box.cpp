@@ -145,7 +145,7 @@ int RenderBox::contentHeight() const
 void RenderBox::setPos( int xPos, int yPos )
 {
     m_x = xPos; m_y = yPos;
-    if(containsWidget())
+    if(containsWidget() && (m_x != xPos || m_y != yPos))
     {
         int x,y;
         absolutePosition(x,y);

@@ -52,20 +52,7 @@ namespace khtml {
     class RenderRoot;
 
 /**
- * Abstract Base Class for the XML renderer.
- * the DOM implementation calls one of three functions to get the contents
- * to the screen:
- * - layout
- * - print
- * - repaint
- *
- * rendering objects are constructed by calling
- * createObject(DOM::NodeImpl *) on an existing renderer.
- * there, depending on the node's display() value, a particular
- * a RenderStyle is provided to the child via setStyle(RenderStyle *)
- * after that, they are attached to the
- * view. (##: where is this done?)
- *
+ * Base Class for all rendering tree objects.
  */
 class RenderObject : public CachedObjectClient
 {
