@@ -181,32 +181,6 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->isAttached())
 	client->attach();
 
-#if 0
-    // Check kioslave is running
-    if (!client->isApplicationRegistered( "kioslave" ))
-    {
-        kdDebug(7002) << "Trying to start kioslave" << endl;
-        // Launch the kioslave service
-        QString errort;
-        QCString dcopName;
-        if (KApplication::startServiceByDesktopName( "kioslave",
-		QString::null, dcopName, errort))
-        {
-	   error = KIO::ERR_INTERNAL;
-	   error_text=i18n("Can't launch kioslave: '%1'").arg(errort);
-	   kdError() << error_text << endl;
-           return 0;
-        }
-        if (dcopName != "kioslave")
-        {
-	   error = KIO::ERR_INTERNAL;
-	   error_text = i18n("Error launching kioslave: got '%1' but expected 'kioslave'")
-		.arg(dcopName);
-           return 0;
-        }
-    }
-#endif
-
     KTempFile socketfile(QString::null, QString::fromLatin1(".slave-socket"));
 
     KServerSocket *kss = new KServerSocket(socketfile.name());
