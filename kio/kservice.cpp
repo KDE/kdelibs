@@ -131,6 +131,7 @@ KService::init( KDesktopFile *config )
   m_strPath = config->readEntry( "Path" );
   m_strComment = config->readEntry( "Comment" );
   m_bDeleted = config->readBoolEntry( "Hidden", false );
+  m_lstKeywords = config->readListEntry("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
   m_libraryMajor = config->readNumEntry( "X-KDE-LibraryMajor", 0 );
   m_libraryMinor = config->readNumEntry( "X-KDE-LibraryMinor", 0 );
@@ -220,7 +221,8 @@ void KService::load( QDataStream& s )
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
     >> m_strDesktopEntryName
-    >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2;
+    >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2 
+    >> m_lstKeywords;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -248,7 +250,8 @@ void KService::save( QDataStream& s )
     << m_strLibrary << m_libraryMajor << m_libraryMinor
     << dst
     << m_strDesktopEntryName
-    << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2;
+    << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
+    << m_lstKeywords;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const

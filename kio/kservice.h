@@ -168,10 +168,16 @@ public:
    * @return the working directory to run the program in
    */
   QString path() const { return m_strPath; }
+
   /**
    * @return the descriptive comment for the service, if there is one.
    */
   QString comment() const { return m_strComment; }
+
+  /**
+   * @return a list of descriptive keywords the service, if there are any.
+   */
+  QStringList keywords() const { return m_lstKeywords; }
 
   /**
    * @return the service types that this service supports
@@ -290,5 +296,6 @@ private:
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
+  QStringList m_lstKeywords;
 };
 #endif
