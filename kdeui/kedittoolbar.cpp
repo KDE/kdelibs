@@ -501,7 +501,7 @@ void KEditToolbarWidget::setupLayout()
   options_layout->addWidget(m_textCombo, 1, 0);
   options_layout->setColStretch(1, 1);
   options_layout->addWidget(pos_label, 2, 0);
-  options_layout->addWidget(m_posCombo, 2, 0);
+  options_layout->addWidget(m_posCombo, 3, 0);
   options_layout->addWidget(icon_label, 0, 2);
   options_layout->addWidget(m_iconCombo, 1, 2);
 
