@@ -308,6 +308,7 @@ protected:
   Atom KDEChangePalette;
   Atom KDEChangeGeneral;
   Atom KDEChangeStyle;
+  Atom KDEChangeBackground;
 
   /// Current application object.
   static KApplication *KApp;
@@ -408,6 +409,13 @@ public:
 	* behavior. */
   void appearanceChanged();
 
+  /**
+   * The desktop background has been changed by kcmdisplay. 
+   * 
+   * NOTE: this method should move out of here as soon as DCOP is in place.
+   */
+  void backgroundChanged();
+
   /** Session management asks you to save the state of your application.
 	*
 	* Connect to this signal in order to save your data. Do NOT
@@ -485,6 +493,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.110  1999/10/15 15:06:51  pbrown
+// slot for DCOP communication faillures.
+//
 // Revision 1.109  1999/10/13 15:13:09  ettrich
 // the appname is programmers space and therefore QCString
 //

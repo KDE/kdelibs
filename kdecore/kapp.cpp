@@ -199,6 +199,7 @@ void KApplication::init()
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
+  KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", False);
 
   readSettings(false);
   kdisplaySetPalette();
@@ -634,12 +635,19 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	
 	return True;
       }
+
     if ( cme->message_type == KDEChangeGeneral )
       {
 	readSettings(true);
 	kdisplaySetPalette();
 	kdisplaySetStyleAndFont();
 	
+	return True;
+      }
+
+    if ( cme->message_type == KDEChangeBackground )
+      {
+	emit backgroundChanged();
 	return True;
       }
   }
