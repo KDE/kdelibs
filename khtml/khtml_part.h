@@ -872,6 +872,7 @@ public:
    * Returns 0L if no suitable frame can't be found.
    * Returns parent part if a suitable frame was found and
    * frame info in @p *childFrame
+   * @since 3.3
    */
   KHTMLPart *findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame=0 );
 
