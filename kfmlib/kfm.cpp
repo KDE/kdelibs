@@ -194,7 +194,7 @@ void KFM::init()
     if ( f == 0L )
     {
 	QString ErrorMessage;
-	ksprintf(ErrorMessage, i18n("You dont have the file %s\n"
+	ksprintf(&ErrorMessage, i18n("You dont have the file %s\n"
 				    "Could not do Authorization"), fn.data());
 	
 	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
@@ -204,7 +204,8 @@ void KFM::init()
     fclose( f );
     if ( p == 0L )
     {
-	ksprintf(ErrorMessage, i18n("The file %s is corrupted\n"
+	QString ErrorMessage;
+	ksprintf(&ErrorMessage, i18n("The file %s is corrupted\n"
 				    "Could not do Authorization"), fn.data());
 	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
 	return;
