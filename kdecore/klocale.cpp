@@ -410,6 +410,9 @@ void KLocale::initFormat(KConfig *config)
 void KLocale::setLanguage(const QString &_lang)
 {
   lang = _lang;
+  // k_dcgettext doesn't like NULL pointers, so default to C
+  if (lang.isEmpty()) lang = QString::fromLatin1("C");
+
   setEncodingLang(lang);
 
   QStrList *cats = catalogues;
