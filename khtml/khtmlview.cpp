@@ -750,7 +750,7 @@ void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
         QContextMenuEvent cme(_ce->reason(),pos,_ce->globalPos(),_ce->state());
 // ### what kind of c*** is that ?
 //        setIgnoreEvents(true);
-        QApplication::sendEvent(w,&cme);
+//        QApplication::sendEvent(w,&cme);
 //        setIgnoreEvents(false);
     }
 
