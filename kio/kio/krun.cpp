@@ -1170,7 +1170,9 @@ KProcessRunner::slotProcessExited(KProcess * p)
   {
     // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
     // We can't just rely on that, but it's a good hint.
-    if ( KStandardDirs::findExe( binName ).isEmpty() )
+    // Before assuming its really so, we'll try to find the binName
+    // relatively to current directory,  and then in the PATH.
+    if ( !QFile( binName ).exists() && KStandardDirs::findExe( binName ).isEmpty() )
     {
       kapp->ref();
       KMessageBox::sorry( 0L, i18n("Couldn't find the program '%1'").arg( binName ) );
