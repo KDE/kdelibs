@@ -578,6 +578,10 @@ int main(int argc, char *argv[])
   check( "encode_string('%')", KURL::encode_string( "%" ), "%25" );
   check( "encode_string(':')", KURL::encode_string( ":" ), "%3A" );
 
+  KURL amantia( "http://%E1.foo" );
+  check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
+  check("amantia.url()", amantia.url(), "http://"); // OK, an escaped char in a hostname is really evil, not sure what should happen.
+
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
   check("smb.user()", smb.user(), "domain;username");
