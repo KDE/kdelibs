@@ -37,6 +37,7 @@ namespace DOM {
     class ElementImpl;
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
+    class HTMLGenericFormElementImpl;
     class Range;
     class NodeImpl;
     class CSSProperty;
@@ -66,6 +67,7 @@ class KHTMLView : public QScrollView
     friend class DOM::HTMLTitleElementImpl;
     friend class KHTMLPart;
     friend class khtml::RenderRoot;
+    friend class DOM::HTMLGenericFormElementImpl;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 
 public:
@@ -144,6 +146,7 @@ public:
 
     static const QList<KHTMLView> *viewList() { return lstViews; }
 
+private:
     void setLinkCursor(DOM::HTMLElementImpl *);
 
 signals:
