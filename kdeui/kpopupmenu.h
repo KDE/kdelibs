@@ -117,7 +117,7 @@ private:
  *
  * @short A menu with title items.
  * @author Daniel M. Duley <mosfet@kde.org>
- * @author Hamish Rodda <meddie@yoyo.its.monash.edu.au>
+ * @author Hamish Rodda <rodda@kde.org>
  */
 class KPopupMenu : public QPopupMenu {
     Q_OBJECT

@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
-   Copyright (C) 2002 Hamish Rodda <meddie@yoyo.its.monash.edu.au>
+   Copyright (C) 2002 Hamish Rodda <rodda@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
