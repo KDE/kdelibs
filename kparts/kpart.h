@@ -186,9 +186,11 @@ public:
 
 signals:
   /**
-   * Emit this when you begin loading data.
+   * The part emits this when starting data.
+   * If using a KIOJob, it sets the jobId in the signal, so that
+   * progress information can be shown. Otherwise, jobId is 0.
    **/
-  void started();
+  void started( int jobId );
   /**
    * Emit this when you have completed loading data.
    * Hosting apps will want to know when the process of loading the data

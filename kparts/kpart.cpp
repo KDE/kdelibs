@@ -189,11 +189,11 @@ bool ReadOnlyPart::openURL( const KURL &url )
 {
   if ( url.isMalformed() )
     return false;
-  emit started();
   closeURL();
   m_url = url;
   if ( m_url.isLocalFile() )
   {
+    emit started( 0 );
     m_file = m_url.path();
     bool ret = openFile();
     emit completed();
@@ -208,6 +208,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
 
     KIOJob * job = new KIOJob;
     d->m_jobId = job->id();
+    emit started( d->m_jobId );
     connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotJobFinished (int) ) );
     connect( job, SIGNAL( sigError( int, int, const char * ) ),
              this, SLOT( slotJobError ( int, int, const char * ) ) );
