@@ -684,12 +684,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if (e->key() == Key_Delete )
                     d->autoSuggest=false;
 
+                if ( d->completionBox )
+                  d->completionBox->setCancelledText( txt );
+	
                 if ( emitSignals() )
                   emit completion( txt ); // emit when requested...
 
                 if ( handleSignals() ) {
-                  if ( d->completionBox )
-                    d->completionBox->setCancelledText( txt );
                   makeCompletion( txt );  // handle when requested...
                 }
 
