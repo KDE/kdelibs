@@ -364,8 +364,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     QCursor c = KCursor::arrowCursor();
     if ( !mev.innerNode.isNull() && mev.innerNode.handle()->style() ) {
-	kdDebug()<<"Mouse over:"<<mev.innerNode.handle()->nodeValue().string()<<endl;
-	kdDebug()<<"setting cursor to:"<<mev.innerNode.handle()->style()->cursor()<<endl;
         switch( mev.innerNode.handle()->style()->cursor() ) {
         case CURSOR_AUTO:
             if ( mev.url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
@@ -408,7 +406,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
     }
     setCursor( c );
-
 
     khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
