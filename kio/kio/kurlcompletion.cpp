@@ -135,17 +135,36 @@ void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 	if ( protocol_regex.search( url_copy ) == 0 ) {
 		m_kurl = new KURL( url_copy );
 
-		// KURL doesn't parse only a protocol (like "smb:")
-		if ( m_kurl->protocol().isEmpty() ) {
-			QString protocol = url_copy.left( protocol_regex.matchedLength() - 1 );
-			m_kurl->setProtocol( protocol );
-		}
+                // ### this looks broken
+// 		// KURL doesn't parse only a protocol (like "smb:")
+// 		if ( m_kurl->protocol().isEmpty() ) {
+// 			QString protocol = url_copy.left( protocol_regex.matchedLength() - 1 );
+// 			m_kurl->setProtocol( protocol );
+// 		}
 	}
-	else
+	else // relative path or ~ or $something
 	{
-		KURL base = KURL::fromPathOrURL( cwd );
-		base.adjustPath(+1);
-		m_kurl = new KURL( base, url_copy );
+		if ( cwd.isEmpty() )
+		{
+			m_kurl = new KURL();
+			if ( url_copy[0] == '/' || url_copy[0] == '$' || url_copy[0] == '~' )
+				m_kurl->setPath( url_copy );
+			else
+				*m_kurl = url_copy;
+		}
+		else
+		{
+			KURL base = KURL::fromPathOrURL( cwd );
+			base.adjustPath(+1);
+
+			if ( url_copy[0] == '/' || url_copy[0] == '~' || url_copy[0] == '$' )
+			{
+				m_kurl = new KURL();
+				m_kurl->setPath( url_copy );
+			}
+			else
+				m_kurl = new KURL( base, url_copy );
+		}
 	}
 
 	// URL with file stripped
@@ -870,7 +889,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
            if (url.url().length() == 1)
            {
 	      *match =
-		 ( completionMode() == KGlobalSettings::CompletionMan )? "." : ".."; 
+		 ( completionMode() == KGlobalSettings::CompletionMan )? "." : "..";
               return true;
            }
            if (url.url().length() == 2 && url.url()[1]=='.')
@@ -879,7 +898,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
               return true;
            }
         }
-        
+
 //        kdDebug() << "fileCompletion " << url.url() << ":" << dir << endl;
 
 	dir = unescape( dir ); // remove escapes
@@ -1073,7 +1092,7 @@ QString KURLCompletion::listDirectories(
 		bool only_exe,
 		bool only_dir,
 		bool no_hidden,
-        bool append_slash_to_dir)
+		bool append_slash_to_dir)
 {
 //	kdDebug() << "Listing (listDirectories): " << dirs.join(",") << endl;
 
@@ -1347,17 +1366,24 @@ void KURLCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) cons
 	// when there are a lot of matches...
 }
 
-QString KURLCompletion::replacedPath( const QString& text )
+// static
+QString KURLCompletion::replacedPath( const QString& text, bool replaceHome, bool replaceEnv )
 {
 	if ( text.isEmpty() )
 		return text;
-    
+
 	MyURL url( text, QString::null ); // no need to replace something of our current cwd
 	if ( !url.kurl()->isLocalFile() )
 		return text;
 
-	url.filter( d->replace_home, d->replace_env );
+	url.filter( replaceHome, replaceEnv );
 	return url.dir() + url.file();
+}
+
+
+QString KURLCompletion::replacedPath( const QString& text )
+{
+	return replacedPath( text, d->replace_home, d->replace_env );
 }
 
 /////////////////////////////////////////////////////////

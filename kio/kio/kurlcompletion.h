@@ -160,6 +160,13 @@ public:
 	 */
 	QString replacedPath( const QString& text );
 
+	/**
+	 * @internal I'll let ossi add a real one to KShell :)
+	 * @since 3.2
+	*/
+	static QString replacedPath( const QString& text,
+                                     bool replaceHome, bool replaceEnv = true );
+
 	class MyURL;
 	class DirLister;
 protected:
