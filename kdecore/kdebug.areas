@@ -8,6 +8,7 @@
 126	kurl (kdecore)
 200	KTMW (kdeui)
 250	kfile (kdelibs)
+300	khtml
 750	kspell (kdelibs)
 800	kabapi (kdelibs)
 
