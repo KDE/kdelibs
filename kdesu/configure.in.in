@@ -38,6 +38,19 @@ AC_CHECK_HEADERS(libutil.h util.h pty.h)
 AC_CHECK_LIB(util, openpty, [AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [Define if you have openpty in -lutil])])
 AC_CHECK_FUNCS(openpty initgroups setgroups getgroups grantpt setpriority getpt unlockpt ptsname)
 
+AH_VERBATIM(_OPENPTY,
+[
+/*
+ * Steven Schultz <sms@to.gd-es.com> tells us :
+ * BSD/OS 4.2 doesn't have a prototype for openpty in its system header files
+ */
+#ifdef __bsdi__
+__BEGIN_DECLS
+int openpty(int *, int *, char *, struct termios *, struct winsize *);
+__END_DECLS
+#endif
+])
+
 dnl irix pty stuff
 AC_CHECK_FUNCS(_getpty)
 

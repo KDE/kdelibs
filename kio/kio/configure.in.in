@@ -31,6 +31,18 @@ AC_FIND_ZLIB
 AC_CHECK_HEADERS(sys/mnttab.h mntent.h fstab.h sys/ucred.h sys/mount.h)
 AC_CHECK_FUNCS(setmntent getmntinfo)
 
+AH_VERBATIM(_GETMNTINFO, [
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <sys/mount.h>
+int getmntinfo(struct statfs **mntbufp, int flags);
+#include <sys/fs_types.h>    /* for mnt_names[] */
+#ifdef __cplusplus
+}
+#endif
+#endif
+])
 
 dnl ------------------------------------------------------------------------
 dnl Try to find if libvolmgt is installed (Solaris)
