@@ -28,7 +28,6 @@
 #include "misc/khtmllayout.h"
 
 class KHTMLView;
-class KJavaAppletWidget;
 class DOM::DOMStringImpl;
 using namespace DOM;
 
@@ -63,9 +62,9 @@ protected:
     DOMStringImpl *code;
     DOMStringImpl *archive;
     
-    KJavaAppletWidget *applet;
     KHTMLView *view;
     khtml::VAlign valign;
+    int width, height;
 };
 
 // -------------------------------------------------------------------------

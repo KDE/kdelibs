@@ -23,7 +23,6 @@
  */
 
 #include "khtml_part.h"
-#include "java/kjavaappletwidget.h"
 #include "html_objectimpl.h"
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
@@ -35,20 +34,24 @@
 #include "xml/dom_docimpl.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+
+#include "rendering/render_applet.h"
+
 #include <stdio.h>
 
 using namespace DOM;
+using namespace khtml;
 
 // -------------------------------------------------------------------------
 
 HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
   : HTMLElementImpl(doc)
 {
-    applet = 0;
     codeBase = 0;
     code = 0;
     name = 0;
     archive = 0;
+    width = height = 100;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
@@ -57,7 +60,6 @@ HTMLAppletElementImpl::~HTMLAppletElementImpl()
     if(code) code->deref();
     if(name) name->deref();
     if(archive) archive->deref();    
-    if(applet) delete applet;
 }
 
 const DOMString HTMLAppletElementImpl::nodeName() const
@@ -95,10 +97,10 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
 	name->ref();
 	break;
     case ATTR_WIDTH:
-	//###	width = attr->val()->toInt();
+        width = attr->val()->toInt();
 	break;
     case ATTR_HEIGHT:
-	//###ascent = attr->val()->toInt();
+	height = attr->val()->toInt();
 	break;
     case ATTR_ALIGN:
 	// vertical alignment with respect to the current baseline of the text
@@ -127,35 +129,40 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLAppletElementImpl::attach(KHTMLView *_view)
 {
-    m_style = document->styleSelector()->styleForElement(this);
-    if(!code) return;
+  if(!code)
+      return;
 
-    printf("initializing java widget I\n");
-    view = _view;
-    if(!view->part()->javaEnabled()) return;
-    applet = new KJavaAppletWidget(view->viewport());
+  khtml::RenderObject *r = _parent->renderer();
+  if(!r)
+      return;
+  
+  m_style = document->styleSelector()->styleForElement(this);
+  view = _view;
+  
+  QStringList args;
+  args.append( QString("code=%1").arg(QString(code->s, code->l)) );
+  if(codeBase)
+      args.append( QString("codeBase=%1").arg(QString(codeBase->s, codeBase->l)) );
+  if(name)
+      args.append( QString("name=%1").arg(QString(name->s, name->l)) );
+  if(archive)
+      args.append( QString("archive=%1").arg(QString(archive->s, archive->l)) );
 
-    //    printf("resizing applet to %d/%d\n", width, getHeight());
-    //applet->resize(width, getHeight());
-    //applet->show();
-    applet->setBaseURL(view->part()->url().url()); // ### use KURL!
-    QString tmp;
-    if(codeBase)
-	tmp = QString(codeBase->s, codeBase->l) + '/';
-    tmp += QString(code->s, code->l);
-    printf("setting applet to %s\n", tmp.ascii());
-    applet->setAppletClass(tmp);
-    if(name)
-	tmp = QConstString(name->s, name->l).string();
-    else
-	tmp = QConstString(code->s, code->l).string();
-    applet->setAppletName(tmp);
+  args.append( QString("width=%1").arg(width) );
+  args.append( QString("height=%1").arg(height) );
+  
+  RenderApplet *f = new RenderApplet(m_style, view, QSize(width, height),
+                                     view->part()->url(), &args);
+  if(f) 
+  {
+      m_render = f;
+      m_render->ref();
+      r->addChild(m_render); 
+  }
 }
 
 void HTMLAppletElementImpl::detach()
 {
-    if(applet) delete applet;
-    applet = 0;
     view = 0;
     NodeBaseImpl::detach();
 }
