@@ -1646,7 +1646,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		  }		
 		}
 		else{
-		  bool autoDelete;
+		  bool autoDelete = false;
 		  debugM("Getting current font...");
 	          const HTMLFont *fp = currentFont();
 		  debugM("OK\n");
@@ -1688,7 +1688,6 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		       autoDelete=TRUE;
 		     }  
 		  }
-		  else autoDelete=FALSE;
 		
 		  debugM("Adding string to flow...");
 		  if ( url || target )
@@ -2026,6 +2025,8 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
     else if ( strncmp(str, "/blockquote", 11 ) == 0 )
     {
 	indent -= INDENT_SIZE;
+	if (indent < 0)
+		indent = 0;
 	flow = 0;
     }
     else if ( strncmp( str, "body", 4 ) == 0 )
@@ -2240,6 +2241,8 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	if ( listStack.remove() )
 	{
 	    indent -= INDENT_SIZE;
+		 if (indent < 0)
+		 	indent = 0;
 	    flow = 0;
 	}
     }
@@ -2290,10 +2293,16 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	{
 	    glossaryStack.remove();
 	    indent -= INDENT_SIZE;
+		 if (indent < 0)
+		 	indent = 0;
 	}
 	glossaryStack.remove();
 	if ( glossaryStack.top() )
+	{
 	    indent -= INDENT_SIZE;
+		 if (indent < 0)
+		 	indent = 0;
+	}
 	vspace_inserted = insertVSpace( _clue, vspace_inserted );
     }
     else if (strncmp( str, "dt", 2 ) == 0)
@@ -2305,6 +2314,8 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	{
 	    glossaryStack.pop();
 	    indent -= INDENT_SIZE;
+		 if (indent < 0)
+		 	indent = 0;
 	}
 	vspace_inserted = false;
 	flow = 0;
@@ -3017,6 +3028,8 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		if ( listStack.remove() )
 		{
 		    indent -= INDENT_SIZE;
+          if (indent < 0)
+          	indent = 0;
 		    flow = 0;
 		}
 	}
@@ -3123,6 +3136,8 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
 	if ( listStack.remove() )
 	{
 	    indent -= INDENT_SIZE;
+	    if (indent < 0)
+	    	indent = 0;
 	    if ( listStack.isEmpty() )
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	}
@@ -3460,6 +3475,8 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
 	if ( listStack.remove() )
 	{
 	    indent -= INDENT_SIZE;
+		 if (indent < 0)
+		 	indent = 0;
 	    if ( listStack.isEmpty() )
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	}
