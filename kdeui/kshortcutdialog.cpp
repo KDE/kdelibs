@@ -237,6 +237,7 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 				}
 
 				KKey key = keyNative;
+				key.simplify();
 				KKeySequence seq;
 				if( m_iKey == 0 )
 					seq = key;
