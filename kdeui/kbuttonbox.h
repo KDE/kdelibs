@@ -164,7 +164,7 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KButtonBoxPrivate *data;
+  KButtonBoxPrivate* const data;
 };
 
 #endif

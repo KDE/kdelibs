@@ -25,6 +25,10 @@
 *
  * HISTORY
  *
+ * 05/11/2004 Andrew Coles <andrew_coles@yahoo.co.uk>
+ * Now uses QPtrListIterators instead of indexing through data->buttons
+ * Item.button and data are now const pointers, set in the relevant constructors
+ *
  * 03/08/2000 Mario Weilguni <mweilguni@kde.org>
  * Removed all those long outdated Motif stuff
  * Improved and clarified some if conditions (easier to understand)
@@ -56,10 +60,12 @@
 
 class KButtonBox::Item {
 public:
-  KPushButton *button;
+  KPushButton* const button;
   bool noexpand;
   unsigned short stretch;
   unsigned short actual_size;
+
+  Item(KPushButton* const _button) : button(_button) {};
 };
 
 template class QPtrList<KButtonBox::Item>;
@@ -75,9 +81,8 @@ public:
 
 KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,
 		       int border, int autoborder)
-  :  QWidget(parent)
+  :  QWidget(parent), data(new KButtonBoxPrivate)
 {
-  data = new KButtonBoxPrivate;
   assert(data);
 
   data->orientation = _orientation;
@@ -91,9 +96,8 @@ KButtonBox::~KButtonBox() {
 }
 
 QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
-  Item *item = new Item;
+  Item* const item = new Item(new KPushButton(text, this));
 
-  item->button = new KPushButton(text, this);
   item->noexpand  = noexpand;
   data->buttons.append(item);
   item->button->adjustSize();
@@ -104,9 +108,8 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
 }
 
 QPushButton *KButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
-  Item *item = new Item;
+  Item* const item = new Item(new KPushButton(guiitem, this));
 
-  item->button = new KPushButton( guiitem, this);
   item->noexpand  = noexpand;
   data->buttons.append(item);
   item->button->adjustSize();
@@ -150,8 +153,7 @@ KButtonBox::addButton(
 
 void KButtonBox::addStretch(int scale) {
   if(scale > 0) {
-    Item *item = new Item;
-    item->button = 0;
+    Item* const item = new Item(0);
     item->noexpand  = false;
     item->stretch = scale;
     data->buttons.append(item);
@@ -160,76 +162,109 @@ void KButtonBox::addStretch(int scale) {
 
 void KButtonBox::layout() {
   // resize all buttons
-  QSize bs = bestButtonSize();
+  const QSize bs = bestButtonSize();
 
-  for(unsigned int i = 0; i < data->buttons.count(); i++) {
-    Item *item = data->buttons.at(i);
-    QPushButton *b = item->button;
+  QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+  Item* item;
+
+  while ( (item = itr.current()) != 0 ) {
+    QPushButton* const b = item->button;
     if(b) {
       if(item->noexpand)
 	b->setFixedSize(buttonSizeHint(b));
       else
 	b->setFixedSize(bs);
     }
+    ++itr;
   }
 
   setMinimumSize(sizeHint());
 }
 
 void KButtonBox::placeButtons() {
-  unsigned int i;
 
   if(data->orientation == Horizontal) {
     // calculate free size and stretches
     int fs = width() - 2 * data->border;
     int stretch = 0;
-    for(i = 0; i < data->buttons.count(); i++) {
-      Item *item = data->buttons.at(i);
-      if(item->button) {
-	fs -= item->button->width();
+    {
+      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Item *item;
 
-	// Last button?
-	if(i != data->buttons.count() - 1)
-	  fs -= data->autoborder;
-      } else
-	stretch +=item->stretch;
+      while ( (item = itr.current()) != 0 ) {
+        QPushButton* const b = item->button;
+        if(b) {
+          fs -= b->width();
+
+          // Last button?
+          if(!itr.atLast())
+            fs -= data->autoborder;
+        } else {
+          stretch +=item->stretch;
+        }
+
+        ++itr;
+      }
     }
 
     // distribute buttons
     int x_pos = data->border;
-    for(i = 0; i < data->buttons.count(); i++) {
-      Item *item = data->buttons.at(i);
-      if(item->button) {
-	QPushButton *b = item->button;
-	b->move(x_pos, (height() - b->height()) / 2);
+    {
+      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Item *item;
 
-	x_pos += b->width() + data->autoborder;
-      } else
-	x_pos += (int)((((double)fs) * item->stretch) / stretch);
+      while ( (item = itr.current()) != 0 ) {
+        QPushButton* const b = item->button;
+        if(b) {
+          b->move(x_pos, (height() - b->height()) / 2);
+
+          x_pos += b->width() + data->autoborder;
+        } else {
+          x_pos += (int)((((double)fs) * item->stretch) / stretch);
+        }
+
+        ++itr;
+      }
     }
+
   } else { // VERTICAL
     // calcualte free size and stretches
     int fs = height() - 2 * data->border;
     int stretch = 0;
-    for(i = 0; i < data->buttons.count(); i++) {
-      Item *item = data->buttons.at(i);
-      if(item->button)
-	fs -= item->button->height() + data->autoborder;
-      else
-	stretch +=item->stretch;
+    {
+      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Item *item;
+
+      while ( (item = itr.current()) != 0 ) {
+        QPushButton* const b = item->button;
+        if(b)
+          fs -= b->height() + data->autoborder;
+        else
+          stretch +=item->stretch;
+
+	++itr;
+      }
+
     }
 
     // distribute buttons
     int y_pos = data->border;
-    for(i = 0; i < data->buttons.count(); i++) {
-      Item *item = data->buttons.at(i);
-      if(item->button) {
-	QPushButton *b = item->button;
-	b->move((width() - b->width()) / 2, y_pos);
+    {
+      QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+      Item *item;
 
-	y_pos += b->height() + data->autoborder;
-      } else
-	y_pos += (int)((((double)fs) * item->stretch) / stretch);
+      while ( (item = itr.current()) != 0 ) {
+        QPushButton* const b = item->button;
+        if(b) {
+          b->move((width() - b->width()) / 2, y_pos);
+
+          y_pos += b->height() + data->autoborder;
+        } else {
+          y_pos += (int)((((double)fs) * item->stretch) / stretch);
+        }
+
+        ++itr;
+      }
     }
   }
 }
@@ -240,44 +275,51 @@ void KButtonBox::resizeEvent(QResizeEvent *) {
 
 QSize KButtonBox::bestButtonSize() const {
   QSize s(0, 0);
-  unsigned int i;
 
   // calculate optimal size
-  for(i = 0; i < data->buttons.count(); i++) {
-    KButtonBox *that = (KButtonBox*)this; // to remove the const ;(
-    Item *item = that->data->buttons.at(i);
-    QPushButton *b = item->button;
+  QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+  Item *item;
+
+  while ( (item = itr.current()) != 0 ) {
+    QPushButton* const b = item->button;
 
     if(b && !item->noexpand) {
-      QSize bs = buttonSizeHint(b);
+      const QSize bs = buttonSizeHint(b);
 
-      if(bs.width() > s.width())
-	s.setWidth(bs.width());
-      if(bs.height() > s.height())
-	s.setHeight(bs.height());
+      const int bsWidth = bs.width();
+      const int bsHeight = bs.height();
+
+      if(bsWidth > s.width())
+	s.setWidth(bsWidth);
+      if(bsHeight > s.height())
+	s.setHeight(bsHeight);
     }
+    ++itr;
   }
 
   return s;
 }
 
 QSize KButtonBox::sizeHint() const {
-  unsigned int i, dw;
+  unsigned int dw;
 
   if(data->buttons.isEmpty())
     return QSize(0, 0);
   else {
     dw = 2 * data->border;
 
-    QSize bs = bestButtonSize();
-    for(i = 0; i < data->buttons.count(); i++) {
-      KButtonBox *that = (KButtonBox*)this;
-      Item *item = that->data->buttons.at(i);
-      QPushButton *b = item->button;
+    const QSize bs = bestButtonSize();
+
+    QPtrListIterator<KButtonBox::Item> itr(data->buttons);
+    Item *item;
+
+    while ( (item = itr.current()) != 0 ) {
+      QPushButton* const b = item->button;
+
       if(b) {
 	QSize s;
 	if(item->noexpand)
-	  s = that->buttonSizeHint(b);
+	  s = buttonSizeHint(b);
 	else
 	  s = bs;
 
@@ -286,9 +328,11 @@ QSize KButtonBox::sizeHint() const {
 	else
 	  dw += s.height();
 
-	if( i != data->buttons.count() - 1 )
+	if( !itr.atLast() )
 	  dw += data->autoborder;
       }
+
+      ++itr;
     }
 
     if(data->orientation == Horizontal)
@@ -312,15 +356,18 @@ QSizePolicy KButtonBox::sizePolicy() const
  */
 QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
   QSize s = b->sizeHint();
-  QSize ms = b->minimumSize();
+  const QSize ms = b->minimumSize();
   if(s.width() < minButtonWidth)
     s.setWidth(minButtonWidth);
 
   // allows the programmer to override the settings
-  if(ms.width() > s.width())
-    s.setWidth(ms.width());
-  if(ms.height() > s.height())
-    s.setHeight(ms.height());
+  const int msWidth = ms.width();
+  const int msHeight = ms.height();
+
+  if(msWidth > s.width())
+    s.setWidth(msWidth);
+  if(msHeight > s.height())
+    s.setHeight(msHeight);
 
   return s;
 }
