@@ -27,17 +27,17 @@ libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \
-	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp ksycocafactory.cc \
+	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
-	kservice.cc kservicefactory.cpp \
-	kautomount.cc kdirwatch.cc kio_base.cc kio_cache.cc \
-	kio_connection.cc kio_dlg.cc kio_error.cc kio_filter.cc \
-	kio_interface.cc kio_job.cc kio_listprogress_dlg.cc \
-	kio_littleprogress_dlg.cc kio_netaccess.cc kio_openwith.cc \
-	kio_pass_dlg.cc kio_paste.cc kio_rename_dlg.cc kio_simpleprogress_dlg.cc \
-	kio_skip_dlg.cc kpixmapcache.cc krun.cc ktar.cc \
-	kuserpaths.cc kuserprofile.cc 
+	kservice.cpp kservicefactory.cpp \
+	kautomount.cpp kdirwatch.cpp kio_base.cpp kio_cache.cpp \
+	kio_connection.cpp kio_dlg.cpp kio_error.cpp kio_filter.cpp \
+	kio_interface.cpp kio_job.cpp kio_listprogress_dlg.cpp \
+	kio_littleprogress_dlg.cpp kio_netaccess.cpp kio_openwith.cpp \
+	kio_pass_dlg.cpp kio_paste.cpp kio_rename_dlg.cpp kio_simpleprogress_dlg.cpp \
+	kio_skip_dlg.cpp kpixmapcache.cpp krun.cpp ktar.cpp \
+	kuserpaths.cpp kuserprofile.cpp 
 
 libkio_la_METASOURCES = AUTO
 

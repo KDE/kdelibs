@@ -54,11 +54,6 @@ KServiceTypeFactory::createEntry(const QString &file)
   QString service = cfg.readEntry( "X-KDE-ServiceType" );
   QString mime = cfg.readEntry( "MimeType" );
 
-/* disable this check because on some system kded tries to read the .desktop file
-   before it is really complete. Commenting this out might lead to a corrupt
-   kregistry though :-(((                             (Simon probably)
-   => what about a delay after the dir watch signal ? (David)
-
   if ( mime.isEmpty() && service.isEmpty() )
   {
     QString tmp = i18n( "The service/mime type config file\n%1\n"
@@ -66,7 +61,6 @@ KServiceTypeFactory::createEntry(const QString &file)
     KMessageBox::error( 0L, tmp);
     return 0;
   }
-*/
   
   KServiceType* e;
   if ( mime == "inode/directory" )
