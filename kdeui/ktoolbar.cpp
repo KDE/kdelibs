@@ -1814,7 +1814,11 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     QMainWindow::ToolBarDock dock = QMainWindow::Top;
+#if QT_VERSION < 300
     int index = 0xffffff /*append by default*/, offset = -1;
+#else
+    int index = -1 /*append by default*/, offset = -1;
+#endif
     bool nl = FALSE;
 
     //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;
