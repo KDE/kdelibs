@@ -47,9 +47,11 @@
 
 static void runBuildSycoca()
 {
-   QStringList args;
-   args.append("--incremental");
-   KApplication::kdeinitExec( "kbuildsycoca", args );
+   // Avoid relying on $PATH and on /bin/sh -> don't use system()
+   KProcess proc;
+   proc << locate("exe","kbuildsycoca");
+   proc << "--incremental";
+   proc.start( KProcess::Block );
 }
 
 
