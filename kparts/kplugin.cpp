@@ -32,12 +32,7 @@ QActionCollection* Plugin::actionCollection()
 
 QAction *Plugin::action( const QDomElement &element )
 {
-  QAction *a = action( element.attribute( "name" ).latin1() );
-
-  if ( !a && parent()->inherits( "KParts::Part" ) )
-    a = ((Part *)parent() )->action( element );
-
-  return a;
+  return action( element.attribute( "name" ).latin1() );
 }
 
 void Plugin::setDocument( QDomDocument doc )
