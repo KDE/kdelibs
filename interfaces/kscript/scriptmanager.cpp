@@ -5,6 +5,10 @@
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
 
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kdebug.h>
+
 //using namespace KScriptInterface;
 class ScriptInfo
 {
@@ -47,11 +51,8 @@ bool KScriptManager::addScript( const QString &scriptDesktopFile)
 		KDesktopFile desktop(scriptDesktopFile, true);
 		m_scripts.insert(desktop.readName(), new ScriptInfo());
 		m_scripts[desktop.readName()]->scriptType = desktop.readType();
-		QString localpath = QString(kapp->name()) + "/scripts/" + desktop.readEntry("X-ScriptName", "");
+		QString localpath = QString(kapp->name()) + "/scripts/" + desktop.readEntry("X-KDE-ScriptName", "");
 		m_scripts[desktop.readName()]->scriptFile = locate("data", localpath);
-#ifdef __GNUC__
-#warning FIX ME - we need to decide where we will set the method for the script.
-#endif
 //		m_scripts[desktop.readName()]->scriptMethod = tmpScriptMethod;
 		success = true;
 	}
@@ -83,7 +84,8 @@ void KScriptManager::clear()
 void KScriptManager::runScript( const QString &scriptName, QObject *context, const QVariant &arg)
 {
 	ScriptInfo *newScript = m_scripts[scriptName];
-	QString scriptType = "[X-Script-Runner] == '" + newScript->scriptType + "'";
+	QString scriptType = "([X-KDE-Script-Runner] == '" + newScript->scriptType + "')";
+        kdDebug()<<"running script, type = '"<<scriptType<<"'"<<endl;
 	if (newScript)
 	{
 		// See if the script is allready cached...
@@ -93,8 +95,17 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 			// some minutes...
 			// currently i am thinking a QTimer that will throw a signal in 10 minutes
 			// to remove m_scriptCache[m_currentScript]
-//			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType, this));
-			m_scriptCache.insert(scriptName, KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", QString::null, this));
+                        KScriptInterface *ksif = KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType, this );
+                        if ( ksif ) 
+                        {
+                          m_scriptCache.insert( scriptName, ksif );
+			  
+                        }
+                        else
+                        {
+                          KMessageBox::sorry(0, i18n("Unable to get KScript Runner for type ") + newScript->scriptType, i18n("KScript error"));
+                          return;
+                        }
 		}
 		m_currentScript = scriptName;
 

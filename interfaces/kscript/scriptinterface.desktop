@@ -11,9 +11,11 @@ Comment[da]=Dette er en generisk testscript-maskine til at teste scriptgrænsefl
 Comment[de]=Dies ist eine allgemeine Sammlung von Testroutinen für die Skript-Schnittstelle.
 Comment[eo]=Tio estas testprogram-maŝino por testi la programinterfaco.
 Comment[es]=Este es un motor de script genérico para probar el interfaz de script.
+Comment[et]=Üldise skriptimootori testskript liidese testimiseks.
 Comment[fi]=Tämä on yleinen skriptitestimoottori skriptiliitynnän testaamiseen
 Comment[fr]=Ceci est un moteur de script de test générique pour éprouver l'interface de script.
 Comment[he]=זהו מנוע תסריטים כללי לבדיקת ממשק התסריטים
+Comment[hr]=Ovo je pravitelj općenitih predložaka za provjeru sučelja za skripte.
 Comment[hu]=Ez egy tesztszkript a szkript-felület kipróbálásához.
 Comment[is]=Þetta er almennur þýðandi til að prófa skriftuviðmótið.
 Comment[it]=Questo è un motore di script generico per provare l'interfaccia di script.
@@ -22,9 +24,11 @@ Comment[lt]=Tai yra bendras testavimo skriptų variklis skirtas testuoti skript�
 Comment[lv]=Šis ir vispārējs skriptu testa dzinējs skriptu saskarsmes virsmas testēšanai.
 Comment[nl]=Dit is een generieke test script engine voor het testen van de script interface.
 Comment[nn]=Dette er ein generell testskriptmotor for å prøva ut skriptgrensesnittet.
+Comment[pl]=Moduł do testowania interfejsu skryptowego
 Comment[pt]=Este é um motor de 'scripts' de teste para testar a interface de 'scripting'.
 Comment[pt_BR]=Este é um mecanismo de testea genério para testar a interface dede script.
 Comment[ro]=Acesta este un script de test generic pentru testarea interfeţei de scripting.
+Comment[ru]=Этот движок предназначен для тестирования интерфейса скриптов.
 Comment[sk]=Toto je generický testovací skript pre testovanie skriptovacieho rozhrania.
 Comment[sl]=To je generični poskusni skriptni pogon za preizkušanje skriptnega vmesnika.
 Comment[sv]=Det här är ett generellt skripttestprogram för att testa skriptgränssnittet.
@@ -36,4 +40,9 @@ Comment[vi]=Đây là bộ script thử nghiệm chung cho việc thử các scr
 Comment[xh]=Olu luvavanyo ngokubanzi lenjini yokushicilelweyo yokuvavanya ujongano loshicilelo.
 Comment[xx]=xx
 Comment[zh_CN]=这是一个用于测试脚本接口的通用脚本测试引擎。
+Comment[zh_TW]=這是用來測試手稿介面用的一般性測試手稿引擎
 Comment[zu]=Lena uvivinyo oluhlangeneyo lwenjini ysikripti yokuvivinya uxhumaniso olubhekeneyo  lwesikripti
+
+[PropertyDef::X-KDE-Script-Runner]
+Type=QString
+

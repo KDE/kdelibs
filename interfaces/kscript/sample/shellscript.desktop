@@ -3,6 +3,6 @@ Encoding=UTF-8
 Name = Bash Shell Script Runner
 Type = Service
 X-KDE-Library = libshellscript
-X-Script-Runner = KShellScript/bash
+X-KDE-Script-Runner = ShellScript/bash
 ServiceTypes = KScriptRunner/KScriptRunner
 Comment = Runs bash shell scripts from inside the application.
