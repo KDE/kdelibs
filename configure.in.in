@@ -53,10 +53,6 @@ dnl Checks for libraries etc
 AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
 AC_CREATE_KFSSTND(default)
 AC_SUBST_KFSSTND
-AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
-AC_CHECK_LIB(util, main, [LIBUTIL="-lutil"]) dnl for FreeBSD
-AC_CHECK_FUNC(res_init, ,
-  AC_CHECK_LIB(resolv, res_init, [LIBRESOLV="-lresolv"], , $LIBSOCKET)) dnl for Sun
 
 dnl Image libraries
 KDE_CREATE_LIBS_ALIASES
@@ -101,7 +97,7 @@ AC_CHECK_BOOL
 dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp gettimeofday setenv unsetenv mkstemps res_init)
+AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp gettimeofday setenv unsetenv mkstemps)
 
 AC_LANG_SAVE
 AC_LANG_C
