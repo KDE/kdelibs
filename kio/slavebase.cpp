@@ -382,11 +382,6 @@ bool SlaveBase::dispatch()
     return true;
 }
 
-bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
-{
-	return openPassDlg( head, user, pass, QString::null );
-}
-
 bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, const QString& key )
 {
     kdDebug(7007) << "openPassDlg " << head << endl;

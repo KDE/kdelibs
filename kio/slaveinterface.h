@@ -159,20 +159,6 @@ protected:
     /**
      * Call this when requesting for a login and password.
      *
-     * BCI - remove me and use default value for the function
-     * below.
-     *
-     * @param head and i18n'ed message to explain the dialog box
-     * @param user user name, in and out
-     * @param pass password, in and out
-     *
-     * @return true on ok, false on cancel
-     */
-    void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/ );
-
-    /**
-     * Call this when requesting for a login and password.
-     *
      * This function is only different from the above only because
      * it takes one more extra argument, the name of the host, so
      * that any authorization can kept around for a whole session.
@@ -184,7 +170,7 @@ protected:
      *
      * @return true on ok, false on cancel
      */
-    void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ );
+    void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ = QString::null );
 
     /**
      * @internal

@@ -174,11 +174,6 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
 }
 
-void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
-{
-    openPassDlg( head, user, pass, QString::null );
-}
-
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )
 {
     kdDebug(7007) << "openPassDlg " << head << endl;
