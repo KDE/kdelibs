@@ -353,7 +353,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QString &itemName,
     mTabControl->addTab( page, itemName );
     mPageList->append(page);
   }
-  if( mFace == TreeList || mFace == IconList )
+  else if( mFace == TreeList || mFace == IconList )
   {
     mPageList->append( page );
     mPageStack->addWidget( page, 0 );
