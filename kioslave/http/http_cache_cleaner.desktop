@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Service
+Name=HTTP Cache Cleaner
+Exec=kio_http_cache_cleaner
+Comment=Cleans up old entries from the HTTP cache
