@@ -159,14 +159,8 @@ public:
    * @param widgetName - The class name of the widget (className())
    * @param signal - the signal (with SIGNAL() wrapper) that should be called.
    */ 
-#ifndef NDEBUG
   void addWidgetChangedSignal(const QString &widgetName, const char *signal);
-#else
-  inline void addWidgetChangedSignal(const QString &widgetName, const char *signal){
-    changedMap.insert(widgetName, signal);
-  }
-#endif
-  
+
 public slots:
   /**
    * Traverse the specified widgets, retrieve the settings for all known
