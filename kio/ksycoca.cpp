@@ -149,7 +149,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    {
       (*str) >> aId;
       assert( aId > 0 && aId <= 2 ); // to update in case of new factories
-      kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
+      //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
       if (aId == 0)
       {
          kdebug(KDEBUG_ERROR, 7011, "Error, KSycocaFactory (id = %d) not found!\n", id);
@@ -158,7 +158,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
       (*str) >> aOffset;
       if (aId == id)
       {
-         kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
+         //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
          str->device()->at(aOffset);
          return str;
       }
