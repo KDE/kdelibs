@@ -204,8 +204,8 @@ public:
     QString moviePath(const QString& name, KIcon::Group group, int size=0) const;
 
     /**
-     * Loads an animated icon. In the future, this will be replaced by a
-     * routine which loads an MNG animation and returns a QMovie.
+     * Loads an animated icon as a series of still frames. If you want to load
+     * a .mng animation as QMovie instead, please use @ref loadMovie() instead.
      * @param name The name of the icon.
      * @param group The icon group. See @ref loadIcon().
      * @param size Override the default size for @p group.
