@@ -16,10 +16,12 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
-#ifndef _KJS_STRING_H_
-#define _KJS_STRING_H_
+#ifndef _KJS_USTRING_H_
+#define _KJS_USTRING_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

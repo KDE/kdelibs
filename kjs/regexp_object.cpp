@@ -15,54 +15,165 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #include <stdio.h>
 
-#include "kjs.h"
-#include "operations.h"
+#include "value.h"
+#include "object.h"
 #include "types.h"
+#include "interpreter.h"
+#include "operations.h"
 #include "internal.h"
 #include "regexp.h"
 #include "regexp_object.h"
+#include "error_object.h"
 
 using namespace KJS;
 
-RegExpObject::RegExpObject(const Object& funcProto, const Object &regProto)
-    : ConstructorImp(funcProto, 2)
+// ------------------------------ RegExpPrototypeImp ---------------------------
+
+// ECMA 15.9.4
+
+RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
+                                       ObjectPrototypeImp *objProto,
+                                       FunctionPrototypeImp *funcProto)
+  : ObjectImp(objProto)
 {
+  Value protect(this);
+  setInternalValue(String(""));
+
+  // The constructor will be added later in RegExpObject's constructor (?)
+
+  put(exec,"exec",     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0), DontEnum);
+  put(exec,"test",     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0), DontEnum);
+  put(exec,"toString", new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0), DontEnum);
+}
+
+// ------------------------------ RegExpProtoFuncImp ---------------------------
+
+RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState *exec,
+                                       FunctionPrototypeImp *funcProto, int i, int len)
+  : InternalFunctionImp(funcProto), id(i)
+{
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
+bool RegExpProtoFuncImp::implementsCall() const
+{
+  return true;
+}
+
+Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
+{
+  Value result;
+
+  if (!thisObj.inherits(&RegExpImp::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
+
+  RegExp *re = static_cast<RegExpImp*>(thisObj.imp())->regExp();
+  String s;
+  Value lastIndex, tmp;
+  UString str;
+  int length, i;
+  switch (id) {
+  case Exec:
+  case Test:
+    s = args[0].toString(exec);
+    length = s.value().size();
+    lastIndex = thisObj.get(exec,"lastIndex");
+    i = lastIndex.isNull() ? 0 : lastIndex.toInt32(exec);
+    tmp = thisObj.get(exec,"global");
+    if (tmp.toBoolean(exec).value() == false)
+      i = 0;
+    if (i < 0 || i > length) {
+      thisObj.put(exec,"lastIndex", 0);
+      result = Null();
+      break;
+    }
+    str = re->match(s.value(), i);
+    if (id == Test) {
+      result = Boolean(str.size() != 0);
+      break;
+    }
+    // TODO complete
+    result = String(str);
+    break;
+  case ToString:
+    s = thisObj.get(exec,"source").toString(exec);
+    str = "/";
+    str += s.value();
+    str += "/";
+    result = String(str);
+    break;
+  }
+
+  return result;
+}
+
+// ------------------------------ RegExpImp ------------------------------------
+
+const ClassInfo RegExpImp::info = {"RegExp", 0, 0, 0};
+
+RegExpImp::RegExpImp(RegExpPrototypeImp *regexpProto)
+  : ObjectImp(regexpProto), reg(0L)
+{
+}
+
+RegExpImp::~RegExpImp()
+{
+  delete reg;
+}
+
+// ------------------------------ RegExpObjectImp ------------------------------
+
+RegExpObjectImp::RegExpObjectImp(ExecState *exec,
+                                 RegExpPrototypeImp *regProto,
+                                 FunctionPrototypeImp *funcProto)
+  : InternalFunctionImp(funcProto)
+{
+  Value protect(this);
   // ECMA 15.10.5.1 RegExp.prototype
-  setPrototypeProperty(regProto);
+  put(exec,"prototype",regProto,DontEnum|DontDelete|ReadOnly);
+
+  // no. of arguments for constructor
+  put(exec,"length", Number(2), ReadOnly|DontDelete|DontEnum);
 }
 
-// ECMA 15.9.2
-Completion RegExpObject::execute(const List &)
+bool RegExpObjectImp::implementsConstruct() const
 {
-  return Completion(ReturnValue, Undefined());
+  return true;
 }
 
-// ECMA 15.9.3
-Object RegExpObject::construct(const List &args)
+// ECMA 15.10.4
+Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
-  /* TODO: regexp arguments */
-  String p = args[0].toString();
-  String f = args[1].toString();
+  // TODO: regexp arguments
+  String p = args[0].toString(exec);
+  String f = args[1].toString(exec);
   UString flags = f.value();
 
-  RegExpImp *dat = new RegExpImp();
+  RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->interpreter()->builtinRegExpPrototype().imp());
+  RegExpImp *dat = new RegExpImp(proto);
   Object obj(dat); // protect from GC
 
   bool global = (flags.find("g") >= 0);
   bool ignoreCase = (flags.find("i") >= 0);
   bool multiline = (flags.find("m") >= 0);
-  /* TODO: throw an error on invalid flags */
+  // TODO: throw an error on invalid flags
 
-  dat->put("global", Boolean(global));
-  dat->put("ignoreCase", Boolean(ignoreCase));
-  dat->put("multiline", Boolean(multiline));
+  dat->put(exec, "global", Boolean(global));
+  dat->put(exec, "ignoreCase", Boolean(ignoreCase));
+  dat->put(exec, "multiline", Boolean(multiline));
 
-  dat->put("source", String(p.value()));
-  dat->put("lastIndex", 0, DontDelete | DontEnum);
+  dat->put(exec, "source", String(p.value()));
+  dat->put(exec, "lastIndex", Number(0), DontDelete | DontEnum);
 
   int reflags = RegExp::None;
   if (global)
@@ -72,76 +183,18 @@ Object RegExpObject::construct(const List &args)
   if (multiline)
       reflags |= RegExp::Multiline;
   dat->setRegExp(new RegExp(p.value(), reflags));
-  obj.setClass(RegExpClass);
-  obj.setPrototype(KJScriptImp::current()->globalObject().get("[[RegExp.prototype]]"));
 
   return obj;
 }
 
-// ECMA 15.9.4
-RegExpPrototype::RegExpPrototype(const Object& proto, const Object &funcProto)
-  : ObjectImp(RegExpClass, String(""), proto)
+bool RegExpObjectImp::implementsCall() const
 {
-  // The constructor will be added later in RegExpObject's constructor
-
-  put("exec",     new RegExpProtoFunc(funcProto,RegExpProtoFunc::Exec,     0), DontEnum);
-  put("test",     new RegExpProtoFunc(funcProto,RegExpProtoFunc::Test,     0), DontEnum);
-  put("toString", new RegExpProtoFunc(funcProto,RegExpProtoFunc::ToString, 0), DontEnum);
+  return true;
 }
 
-RegExpProtoFunc::RegExpProtoFunc(const Object &funcProto, int i, int len) : id(i)
+// ECMA 15.10.3
+Value RegExpObjectImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &/*args*/)
 {
-  setPrototype(funcProto);
-  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
-}
-
-Completion RegExpProtoFunc::execute(const List &args)
-{
-  KJSO result;
-
-  Object thisObj = Object::dynamicCast(thisValue());
-
-  if (thisObj.getClass() != RegExpClass) {
-    result = Error::create(TypeError);
-    return Completion(ReturnValue, result);
-  }
-
-  RegExp *re = static_cast<RegExpImp*>(thisObj.imp())->regExp();
-  String s;
-  KJSO lastIndex, tmp;
-  UString str;
-  int length, i;
-  switch (id) {
-  case Exec:
-  case Test:
-    s = args[0].toString();
-    length = s.value().size();
-    lastIndex = thisObj.get("lastIndex");
-    i = lastIndex.isNull() ? 0 : lastIndex.toInt32();
-    tmp = thisObj.get("global");
-    if (tmp.toBoolean().value() == false)
-      i = 0;
-    if (i < 0 || i > length) {
-      thisObj.put("lastIndex", 0);
-      result = Null();
-      break;
-    }
-    str = re->match(s.value(), i);
-    if (id == Test) {
-      result = Boolean(str.size() != 0);
-      break;
-    }
-    /* TODO complete */
-    result = String(str);
-    break;
-  case ToString:
-    s = thisObj.get("source").toString();
-    str = "/";
-    str += s.value();
-    str += "/";
-    result = String(str);
-    break;
-  }
-
-  return Completion(ReturnValue, result);
+  // TODO: implement constructor
+  return Undefined();
 }

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
@@ -17,35 +18,32 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
-#include "internal.h"
-
-#include <assert.h>
 #include <stdio.h>
+#include <math.h>
 #include <typeinfo>
+#include <assert.h>
 
-#include "kjs.h"
-#include "object.h"
-#include "types.h"
-#include "operations.h"
-#include "regexp.h"
-#include "nodes.h"
-#include "lexer.h"
-#include "collector.h"
-#include "debugger.h"
-
-#include "global_object.h"
-#include "object_object.h"
-#include "function_object.h"
 #include "array_object.h"
 #include "bool_object.h"
-#include "string_object.h"
-#include "number_object.h"
-#include "math_object.h"
+#include "collector.h"
 #include "date_object.h"
-#include "regexp_object.h"
+#include "debugger.h"
 #include "error_object.h"
+#include "function_object.h"
+#include "internal.h"
+#include "lexer.h"
+#include "math_object.h"
+#include "nodes.h"
+#include "number_object.h"
+#include "object.h"
+#include "object_object.h"
+#include "operations.h"
+#include "regexp_object.h"
+#include "string_object.h"
 
 #define I18N_NOOP(s) s
 
@@ -53,79 +51,84 @@ extern int kjsyyparse();
 
 using namespace KJS;
 
-const TypeInfo UndefinedImp::info = { "Undefined", UndefinedType, 0, 0, 0 };
-const TypeInfo NullImp::info = { "Null", NullType, 0, 0, 0 };
-const TypeInfo NumberImp::info = { "Number", NumberType, 0, 0,0  };
-const TypeInfo StringImp::info = { "String", StringType, 0, 0, 0 };
-const TypeInfo BooleanImp::info = { "Boolean", BooleanType, 0, 0, 0 };
-const TypeInfo CompletionImp::info = { "Completion", CompletionType, 0, 0, 0 };
-const TypeInfo ReferenceImp::info = { "Reference", ReferenceType, 0, 0, 0 };
-const TypeInfo ArgumentsImp::info = { "Arguments", ArgumentsType, &ObjectImp::info, 0, 0 };
+namespace KJS {
+#ifdef WORDS_BIGENDIAN
+  unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
+  unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
+#elif defined(arm)
+  unsigned char NaN_Bytes[] = { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 };
+  unsigned char Inf_Bytes[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
+#else
+  unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
+  unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
+#endif
+
+  const double NaN = *(const double*) NaN_Bytes;
+  const double Inf = *(const double*) Inf_Bytes;
+  static const double D16 = 65536.0;
+  static const double D32 = 4294967296.0;
+};
 
 // ------------------------------ UndefinedImp ---------------------------------
 
 UndefinedImp *UndefinedImp::staticUndefined = 0;
 
-UndefinedImp::UndefinedImp()
+Value UndefinedImp::toPrimitive(ExecState */*exec*/, Type) const
 {
+  return (ValueImp*)this;
 }
 
-KJSO UndefinedImp::toPrimitive(Type) const
-{
-  return (Imp*)this;
-}
-
-Boolean UndefinedImp::toBoolean() const
+Boolean UndefinedImp::toBoolean(ExecState */*exec*/) const
 {
   return Boolean(false);
 }
 
-Number UndefinedImp::toNumber() const
+Number UndefinedImp::toNumber(ExecState */*exec*/) const
 {
   return Number(NaN);
 }
 
-String UndefinedImp::toString() const
+String UndefinedImp::toString(ExecState */*exec*/) const
 {
   return String("undefined");
 }
 
-Object UndefinedImp::toObject() const
+Object UndefinedImp::toObject(ExecState *exec) const
 {
-  return Error::createObject(TypeError, I18N_NOOP("Undefined value"));
+  Object err = Error::create(exec, TypeError, I18N_NOOP("Undefined value"));
+  exec->setException(err);
+  return err;
 }
 
 // ------------------------------ NullImp --------------------------------------
 
 NullImp *NullImp::staticNull = 0;
 
-NullImp::NullImp()
+Value NullImp::toPrimitive(ExecState */*exec*/, Type) const
 {
+  return (ValueImp*)this;
 }
 
-KJSO NullImp::toPrimitive(Type) const
-{
-  return (Imp*)this;
-}
-
-Boolean NullImp::toBoolean() const
+Boolean NullImp::toBoolean(ExecState */*exec*/) const
 {
   return Boolean(false);
 }
 
-Number NullImp::toNumber() const
+Number NullImp::toNumber(ExecState */*exec*/) const
 {
   return Number(0);
 }
 
-String NullImp::toString() const
+String NullImp::toString(ExecState */*exec*/) const
 {
   return String("null");
 }
 
-Object NullImp::toObject() const
+Object NullImp::toObject(ExecState *exec) const
 {
-  return Error::createObject(TypeError, I18N_NOOP("Null value"));
+  Object err = Error::create(exec, TypeError, I18N_NOOP("Null value"));
+  exec->setException(err);
+  return err;
 }
 
 // ------------------------------ BooleanImp -----------------------------------
@@ -133,63 +136,31 @@ Object NullImp::toObject() const
 BooleanImp* BooleanImp::staticTrue = 0;
 BooleanImp* BooleanImp::staticFalse = 0;
 
-KJSO BooleanImp::toPrimitive(Type) const
+Value BooleanImp::toPrimitive(ExecState */*exec*/, Type) const
 {
-  return (Imp*)this;
+  return (ValueImp*)this;
 }
 
-Boolean BooleanImp::toBoolean() const
+Boolean BooleanImp::toBoolean(ExecState */*exec*/) const
 {
-  return Boolean((BooleanImp*)this);
+  return Boolean(val);
 }
 
-Number BooleanImp::toNumber() const
+Number BooleanImp::toNumber(ExecState */*exec*/) const
 {
   return Number(val ? 1 : 0);
 }
 
-String BooleanImp::toString() const
+String BooleanImp::toString(ExecState */*exec*/) const
 {
   return String(val ? "true" : "false");
 }
 
-Object BooleanImp::toObject() const
+Object BooleanImp::toObject(ExecState *exec) const
 {
-  return Object::create(BooleanClass, Boolean((BooleanImp*)this));
-}
-
-// ------------------------------ NumberImp ------------------------------------
-
-NumberImp::NumberImp(double v)
-  : val(v)
-{
-}
-
-KJSO NumberImp::toPrimitive(Type) const
-{
-  return (Imp*)this;
-}
-
-Boolean NumberImp::toBoolean() const
-{
-  bool b = !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
-
-  return Boolean(b);
-}
-
-Number NumberImp::toNumber() const
-{
-  return Number((NumberImp*)this);
-}
-
-String NumberImp::toString() const
-{
-  return String(UString::from(val));
-}
-
-Object NumberImp::toObject() const
-{
-  return Object::create(NumberClass, Number((NumberImp*)this));
+  List args;
+  args.append(const_cast<BooleanImp*>(this));
+  return Object::dynamicCast(exec->interpreter()->builtinBoolean().construct(exec,args));
 }
 
 // ------------------------------ StringImp ------------------------------------
@@ -199,82 +170,116 @@ StringImp::StringImp(const UString& v)
 {
 }
 
-KJSO StringImp::toPrimitive(Type) const
+Value StringImp::toPrimitive(ExecState */*exec*/, Type) const
 {
-  return (Imp*)this;
+  return (ValueImp*)this;
 }
 
-Boolean StringImp::toBoolean() const
+Boolean StringImp::toBoolean(ExecState */*exec*/) const
 {
   return Boolean(val.size() > 0);
 }
 
-Number StringImp::toNumber() const
+Number StringImp::toNumber(ExecState */*exec*/) const
 {
   return Number(val.toDouble());
 }
 
-String StringImp::toString() const
+String StringImp::toString(ExecState */*exec*/) const
 {
-  return String((StringImp*)this);
+  return String(val);
 }
 
-Object StringImp::toObject() const
+Object StringImp::toObject(ExecState *exec) const
 {
-  return Object::create(StringClass, String((StringImp*)this));
+  List args;
+  args.append(const_cast<StringImp*>(this));
+  return Object::dynamicCast(exec->interpreter()->builtinString().construct(exec,args));
+}
+
+// ------------------------------ NumberImp ------------------------------------
+
+NumberImp::NumberImp(double v)
+  : val(v)
+{
+}
+
+Value NumberImp::toPrimitive(ExecState */*exec*/, Type) const
+{
+  return (ValueImp*)this;
+}
+
+Boolean NumberImp::toBoolean(ExecState */*exec*/) const
+{
+  bool b = !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
+
+  return Boolean(b);
+}
+
+Number NumberImp::toNumber(ExecState */*exec*/) const
+{
+  return Number(val);
+}
+
+String NumberImp::toString(ExecState */*exec*/) const
+{
+  return String(UString::from(val));
+}
+
+Object NumberImp::toObject(ExecState *exec) const
+{
+  List args;
+  args.append(const_cast<NumberImp*>(this));
+  return Object::dynamicCast(exec->interpreter()->builtinNumber().construct(exec,args));
 }
 
 // ------------------------------ ReferenceImp ---------------------------------
 
-ReferenceImp::ReferenceImp(const KJSO& b, const UString& p)
-  : base(b), prop(p)
+ReferenceImp::ReferenceImp(const Value& v, const UString& p)
+  : base(v.imp()), prop(p)
 {
 }
 
-void ReferenceImp::mark(Imp*)
+void ReferenceImp::mark()
 {
-  Imp::mark();
-  Imp *im = base.imp();
-  if (im && !im->marked())
-    im->mark();
+  ValueImp::mark();
+  if (base && !base->marked())
+    base->mark();
 }
 
-// ------------------------------ CompletionImp --------------------------------
-
-CompletionImp::CompletionImp(Compl c, const KJSO& v, const UString& t)
-  : comp(c), val(v), tar(t)
+Value ReferenceImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
 {
+  // invalid for Reference
+  assert(false);
+  return 0;
 }
 
-void CompletionImp::mark(Imp*)
+Boolean ReferenceImp::toBoolean(ExecState */*exec*/) const
 {
-  Imp::mark();
-  Imp *im = val.imp();
-  if (im && !im->marked())
-    im->mark();
+  // invalid for Reference
+  assert(false);
+  return false;
 }
 
-// ------------------------------ RegExpImp ------------------------------------
-
-RegExpImp::RegExpImp()
-  : ObjectImp(RegExpClass), reg(0L)
+Number ReferenceImp::toNumber(ExecState */*exec*/) const
 {
+  // invalid for Reference
+  assert(false);
+  return 0;
 }
 
-RegExpImp::~RegExpImp()
+String ReferenceImp::toString(ExecState */*exec*/) const
 {
-  delete reg;
+  // invalid for Reference
+  assert(false);
+  return 0;
 }
 
-// ------------------------------ Reference ------------------------------------
-
-Reference::Reference(const KJSO& b, const UString &p)
-  : KJSO(new ReferenceImp(b, p))
+Object ReferenceImp::toObject(ExecState */*exec*/) const
 {
-}
-
-Reference::~Reference()
-{
+  // invalid for Reference
+  assert(false);
+  return 0;
 }
 
 // ------------------------------ LabelStack -----------------------------------
@@ -354,22 +359,263 @@ void LabelStack::clear()
   }
 }
 
-// ------------------------------ Context --------------------------------------
+// ------------------------------ CompletionImp --------------------------------
+
+CompletionImp::CompletionImp(ComplType c, const Value& v, const UString& t)
+  : comp(c), val(v), tar(t)
+{
+}
+
+CompletionImp::~CompletionImp()
+{
+}
+
+void CompletionImp::mark()
+{
+  ValueImp::mark();
+
+  ValueImp *v = val.imp();
+  if (v && !v->marked())
+    v->mark();
+}
+
+Value CompletionImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
+{
+  // invalid for Completion
+  assert(false);
+  return 0;
+}
+
+Boolean CompletionImp::toBoolean(ExecState */*exec*/) const
+{
+  // invalid for Completion
+  assert(false);
+  return false;
+}
+
+Number CompletionImp::toNumber(ExecState */*exec*/) const
+{
+  // invalid for Completion
+  assert(false);
+  return 0;
+}
+
+String CompletionImp::toString(ExecState */*exec*/) const
+{
+  // invalid for Completion
+  assert(false);
+  return 0;
+}
+
+Object CompletionImp::toObject(ExecState */*exec*/) const
+{
+  // invalid for Completion
+  assert(false);
+  return 0;
+}
+
+// ------------------------------ ListImp --------------------------------------
+
+#ifdef KJS_DEBUG_MEM
+int ListImp::count = 0;
+#endif
+
+Value ListImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const
+{
+  // invalid for List
+  assert(false);
+  return 0;
+}
+
+Boolean ListImp::toBoolean(ExecState */*exec*/) const
+{
+  // invalid for List
+  assert(false);
+  return false;
+}
+
+Number ListImp::toNumber(ExecState */*exec*/) const
+{
+  // invalid for List
+  assert(false);
+  return 0;
+}
+
+String ListImp::toString(ExecState */*exec*/) const
+{
+  // invalid for List
+  assert(false);
+  return 0;
+}
+
+Object ListImp::toObject(ExecState */*exec*/) const
+{
+  // invalid for List
+  assert(false);
+  return 0;
+}
+
+ListImp::ListImp()
+{
+#ifdef KJS_DEBUG_MEM
+  count++;
+#endif
+
+  hook = new ListNode(Null(), 0L, 0L);
+  hook->next = hook;
+  hook->prev = hook;
+  //fprintf(stderr,"ListImp::ListImp %p hook=%p\n",this,hook);
+}
+
+ListImp::~ListImp()
+{
+  //fprintf(stderr,"ListImp::~ListImp %p\n",this);
+#ifdef KJS_DEBUG_MEM
+  count--;
+#endif
+
+  clear();
+  delete hook;
+}
+
+void ListImp::mark()
+{
+  ListNode *n = hook->next;
+  while (n != hook) {
+    if (!n->member->marked())
+      n->member->mark();
+    n = n->next;
+  }
+  ValueImp::mark();
+}
+
+void ListImp::append(const Value& obj)
+{
+  ListNode *n = new ListNode(obj, hook->prev, hook);
+  hook->prev->next = n;
+  hook->prev = n;
+}
+
+void ListImp::prepend(const Value& obj)
+{
+  ListNode *n = new ListNode(obj, hook, hook->next);
+  hook->next->prev = n;
+  hook->next = n;
+}
+
+void ListImp::removeFirst()
+{
+  erase(hook->next);
+}
+
+void ListImp::removeLast()
+{
+  erase(hook->prev);
+}
+
+void ListImp::remove(const Value &obj)
+{
+  if (obj.isNull())
+    return;
+  ListNode *n = hook->next;
+  while (n != hook) {
+    if (n->member == obj.imp()) {
+      erase(n);
+      return;
+    }
+    n = n->next;
+  }
+}
+
+void ListImp::clear()
+{
+  ListNode *n = hook->next;
+  while (n != hook) {
+    n = n->next;
+    delete n->prev;
+  }
+
+  hook->next = hook;
+  hook->prev = hook;
+}
+
+ListImp *ListImp::copy() const
+{
+  ListImp* newList = new ListImp;
+
+  ListIterator e = end();
+  ListIterator it = begin();
+
+  while(it != e) {
+    newList->append(*it);
+    ++it;
+  }
+
+  return newList;
+}
+
+void ListImp::erase(ListNode *n)
+{
+  if (n != hook) {
+    n->next->prev = n->prev;
+    n->prev->next = n->next;
+    delete n;
+  }
+}
+
+bool ListImp::isEmpty() const
+{
+  return (hook->prev == hook);
+}
+
+int ListImp::size() const
+{
+  int s = 0;
+  ListNode *node = hook;
+  while ((node = node->next) != hook)
+    s++;
+
+  return s;
+}
+
+Value ListImp::at(int i) const
+{
+  if (i < 0 || i >= size())
+    return Undefined();
+
+  ListIterator it = begin();
+  int j = 0;
+  while ((j++ < i))
+    it++;
+
+  return *it;
+}
+
+ListImp *ListImp::emptyList = 0L;
+
+ListImp *ListImp::empty()
+{
+  if (!emptyList)
+    emptyList = new ListImp();
+  return emptyList;
+}
+
+// ------------------------------ ContextImp -----------------------------------
+
 
 // ECMA 10.2
-Context::Context(CodeType type, Context *_callingContext,
-		 FunctionImp *func, const List *args, Imp *thisV)
+ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType type,
+                       ContextImp *_callingContext, FunctionImp *func, const List &args)
 {
-  KJSO glob = KJScriptImp::current()->globalObject();
   codeType = type;
   callingCon = _callingContext;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
-    activation = new ActivationImp(func, args);
+    activation = new ActivationImp(exec,func,args);
     variable = activation;
   } else {
-    activation = KJSO();
+    activation = Object();
     variable = glob;
   }
 
@@ -377,193 +623,55 @@ Context::Context(CodeType type, Context *_callingContext,
   switch(type) {
     case EvalCode:
       if (callingCon) {
-	scopeChain = callingCon->copyOfChain();
+	scope = callingCon->scopeChain().copy();
 	variable = callingCon->variableObject();
 	thisVal = callingCon->thisValue();
 	break;
       } // else same as GlobalCode
     case GlobalCode:
-      scopeChain = new List();
-      scopeChain->append(glob);
-      thisVal = glob.imp();
+      scope = List();
+      scope.append(glob);
+      thisVal = static_cast<ObjectImp*>(glob.imp());
       break;
     case FunctionCode:
     case AnonymousCode:
       if (type == FunctionCode) {
-	scopeChain = ((DeclaredFunctionImp*)func)->scopeChain()->copy();
-	scopeChain->prepend(activation);
+	scope = func->scope().copy();
+	scope.prepend(activation);
       } else {
-	scopeChain = new List();
-	scopeChain->append(activation);
-	scopeChain->append(glob);
+	scope = List();
+	scope.append(activation);
+	scope.append(glob);
       }
-      variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
-      if (thisV->type() >= ObjectType) {
-	thisVal = thisV;
-      }
-      else
-	thisVal = glob.imp();
+      variable = activation; // TODO: DontDelete ? (ECMA 10.2.3)
+      thisVal = thisV;
       break;
     case HostCode:
-      if (thisV->type() >= ObjectType)
-	thisVal = thisV;
+      if (thisV.type() >= ObjectType)
+	thisVal = static_cast<ObjectImp*>(thisV.imp());
       else
 	thisVal = glob;
-      variable = activation; /* TODO: DontDelete (ECMA 10.2.4) */
-      scopeChain = new List();
-      scopeChain->append(activation);
-      if (func->hasAttribute(ImplicitThis))
-	scopeChain->append(KJSO(thisVal));
-      if (func->hasAttribute(ImplicitParents)) {
-	/* TODO ??? */
-      }
-      scopeChain->append(glob);
+      variable = activation; // TODO: DontDelete (ECMA 10.2.4)
+      scope = List();
+      scope.append(activation);
+      scope.append(glob);
       break;
     }
+
 }
 
-Context::~Context()
+ContextImp::~ContextImp()
 {
-  if (codeType == FunctionCode || codeType == AnonymousCode || codeType == HostCode)
-    static_cast<ActivationImp*>(activation.imp())->cleanup();
-  delete scopeChain;
 }
 
-void Context::pushScope(const KJSO &s)
+void ContextImp::pushScope(const Object &s)
 {
-  scopeChain->prepend(s);
+  scope.prepend(s);
 }
 
-void Context::popScope()
+void ContextImp::popScope()
 {
-  scopeChain->removeFirst();
-}
-
-List* Context::copyOfChain()
-{
-  return scopeChain->copy();
-}
-
-// ------------------------------ DeclaredFunctionImp --------------------------
-
-const TypeInfo DeclaredFunctionImp::info = { "Function", DeclaredFunctionType,
-					 &ConstructorImp::info, 0, 0 };
-
-DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
-					 FunctionBodyNode *b, const List *sc)
-  : ConstructorImp(n), body(b), scopes(sc->copy())
-{
-  body->ref();
-}
-
-DeclaredFunctionImp::~DeclaredFunctionImp()
-{
-  delete scopes;
-  if ( body->deref() )
-      delete body;
-}
-
-// step 2 of ECMA 13.2.1. rest in FunctionImp::executeCall()
-Completion DeclaredFunctionImp::execute(const List &)
-{
- /* TODO */
-
-  Debugger *dbg = KJScriptImp::current()->debugger();
-  //  int oldSourceId = -1;
-  if (dbg) {
-    // ###    oldSourceId = dbg->sourceId();
-    //    dbg->setSourceId(body->sourceId());
-  }
-
-  // ### use correct script & context
-  Completion result = body->execute(KJScriptImp::current(),KJScriptImp::current()->context());
-
-  if (dbg) {
-    // ###    dbg->setSourceId(oldSourceId);
-  }
-
-  if (result.complType() == Throw || result.complType() == ReturnValue)
-      return result;
-  return Completion(Normal, Undefined()); /* TODO: or ReturnValue ? */
-}
-
-// ECMA 13.2.2 [[Construct]]
-Object DeclaredFunctionImp::construct(const List &args)
-{
-  Object obj(ObjectClass);
-  KJSO p = get("prototype");
-  if (p.isObject())
-    obj.setPrototype(p);
-  else
-    obj.setPrototype(KJScriptImp::current()->objectPrototype());
-
-  KJSO res = executeCall(obj.imp(), &args);
-
-  Object v = Object::dynamicCast(res);
-  if (v.isNull())
-    return obj;
-  else
-    return v;
-}
-
-void DeclaredFunctionImp::processVarDecls()
-{
-  // ### use given script & context
-  body->processVarDecls(KJScriptImp::current(),KJScriptImp::current()->context());
-}
-
-// ------------------------------ AnonymousFunction ----------------------------
-
-AnonymousFunction::AnonymousFunction()
-  : Function(0L)
-{
-  /* TODO */
-}
-
-Completion AnonymousFunction::execute(const List &)
-{
- /* TODO */
-  return Completion(Normal, Null());
-}
-
-// ECMA 10.1.8
-ArgumentsImp::ArgumentsImp(FunctionImp *func, const List *args)
-  : ObjectImp(UndefClass)
-{
-  setPrototype(KJScriptImp::current()->objectPrototype());
-  put("callee", Function(func), DontEnum);
-  if (args) {
-    put("length", Number(args->size()), DontEnum);
-    ListIterator arg = args->begin();
-    for (int i = 0; arg != args->end(); arg++, i++) {
-      put(UString::from(i), *arg, DontEnum);
-    }
-  }
-}
-
-// ------------------------------ ActivationImp --------------------------------
-
-const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
-
-// ECMA 10.1.6
-ActivationImp::ActivationImp(FunctionImp *f, const List *args)
-{
-  KJSO aobj(new ArgumentsImp(f, args));
-  put("arguments", aobj, DontDelete);
-  /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
-     I can't see this described in the spec but it's possible in browsers. */
-  func = 0;
-  if (!f->name().isNull()) {
-    f->put("arguments", aobj);
-    f->pushArgs(aobj);
-    func = f;
-  }
-}
-
-void ActivationImp::cleanup()
-{
-  if (func)
-    func->popArgs();
+  scope.removeFirst();
 }
 
 // ------------------------------ Parser ---------------------------------------
@@ -571,30 +679,26 @@ void ActivationImp::cleanup()
 ProgramNode *Parser::progNode = 0;
 int Parser::sid = 0;
 
-ProgramNode *Parser::parse(const UChar *code, unsigned int length, int sourceId,
-			   int *errType, int *errLine, UString *errMsg)
+ProgramNode *Parser::parse(const UChar *code, unsigned int length, int *sourceId,
+			   int *errLine, UString *errMsg)
 {
-  if (errType)
-    *errType = -1;
   if (errLine)
     *errLine = -1;
   if (errMsg)
     *errMsg = 0;
 
-  assert(Lexer::curr());
   Lexer::curr()->setCode(code, length);
   progNode = 0;
-  sid = sourceId;
+  sid++;
+  if (sourceId)
+    *sourceId = sid;
   int parseError = kjsyyparse();
   ProgramNode *prog = progNode;
   progNode = 0;
   sid = -1;
 
   if (parseError) {
-    // ###
     int eline = Lexer::curr()->lineNo();
-    if (errType)
-      *errType = 99; /* TODO */
     if (errLine)
       *errLine = eline;
     if (errMsg)
@@ -609,82 +713,13 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length, int sourceId,
   return prog;
 }
 
-// ------------------------------ DebuggerImp ----------------------------------
+// ------------------------------ InterpreterImp -------------------------------
 
-DebuggerImp::DebuggerImp(Debugger *_dbg)
+InterpreterImp* InterpreterImp::s_hook = 0L;
+
+void InterpreterImp::globalInit()
 {
-  //  dmode = Debugger::Disabled;
-  dbg = _dbg;
-}
-
-DebuggerImp::~DebuggerImp()
-{
-}
-
-// called from the scripting engine each time a statement node is hit.
-bool DebuggerImp::hitStatement(KJScriptImp *script, Context *context,
-			       int sid, int line0, int line1)
-{
-  // ### parse second line to debugger
-  ExecutionContext ec(context);
-  dbg->atLine(script->scr,sid,line0,&ec);
-
-  return true;
-}
-
-// ------------------------------ KJScriptImp ----------------------------------
-
-KJScriptImp* KJScriptImp::curr = 0L;
-KJScriptImp* KJScriptImp::hook = 0L;
-int          KJScriptImp::instances = 0;
-int          KJScriptImp::running = 0;
-int          KJScriptImp::nextSid = 1;
-
-KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
-  : scr(s),
-    initialized(false),
-    glob(0L),
-    dbg(0L),
-    retVal(0L)
-{
-  instances++;
-  KJScriptImp::curr = this;
-#ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::KJScriptImp this=curr=%p\n", (void*)this);
-#endif
-  // are we the first interpreter instance ? Initialize some stuff
-  if (instances == 1)
-    globalInit();
-  glob = global;
-  clearException();
-  lex = new Lexer();
-  debugEnabled = false;
-}
-
-KJScriptImp::~KJScriptImp()
-{
-#ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::~KJScriptImp this=curr=%p\n", (void*)this);
-#endif
-  KJScriptImp::curr = this;
-
-  clear();
-
-  delete lex;
-  lex = 0L;
-
-  KJScriptImp::curr = 0L;
-#ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::~KJScriptImp (this=%p. Setting curr to 0L)\n", (void*)this);
-#endif
-  // are we the last of our kind ? Free global stuff.
-  if (instances == 1)
-    globalClear();
-  instances--;
-}
-
-void KJScriptImp::globalInit()
-{
+  //fprintf( stderr, "InterpreterImp::globalInit()\n" );
   UndefinedImp::staticUndefined = new UndefinedImp();
   UndefinedImp::staticUndefined->ref();
   NullImp::staticNull = new NullImp();
@@ -695,449 +730,386 @@ void KJScriptImp::globalInit()
   BooleanImp::staticFalse->ref();
 }
 
-void KJScriptImp::globalClear()
+void InterpreterImp::globalClear()
 {
+  //fprintf( stderr, "InterpreterImp::globalClear()\n" );
   UndefinedImp::staticUndefined->deref();
+  UndefinedImp::staticUndefined->setGcAllowed();
   UndefinedImp::staticUndefined = 0L;
   NullImp::staticNull->deref();
+  NullImp::staticNull->setGcAllowed();
   NullImp::staticNull = 0L;
   BooleanImp::staticTrue->deref();
+  BooleanImp::staticTrue->setGcAllowed();
   BooleanImp::staticTrue = 0L;
   BooleanImp::staticFalse->deref();
+  BooleanImp::staticFalse->setGcAllowed();
   BooleanImp::staticFalse = 0L;
-
-  while ( Collector::collect() )
-    ; // keep collecting until we have nothing to collect anymore
-
-  // We should have nothing left
-#ifndef NDEBUG
-  // Currently commented out since the commented out proto->deref() in ~Imp
-  // leads to quite a few problems.
-  //Node::finalCheck();
-  //Collector::finalCheck();
-#endif
 }
 
-void KJScriptImp::mark()
+InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
 {
-  if (exVal && !exVal->marked())
-    exVal->mark();
-  if (retVal && !retVal->marked())
-    retVal->mark();
-  UndefinedImp::staticUndefined->mark();
-  NullImp::staticNull->mark();
-  BooleanImp::staticTrue->mark();
-  BooleanImp::staticFalse->mark();
-  if (glob.imp())
-    glob.imp()->mark();
-}
-
-void KJScriptImp::init()
-{
-#ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::init() this=curr=%p\n", (void*)this);
-#endif
-  KJScriptImp::curr = this;
-
-  clearException();
-  retVal = 0L;
-
-  if (!initialized) {
-    // add this interpreter to the global chain
-    // as a root set for garbage collection
-    if (hook) {
-      prev = hook;
-      next = hook->next;
-      hook->next->prev = this;
-      hook->next = this;
-    } else {
-      hook = next = prev = this;
-    }
-
-    if (!glob.imp())
-      glob = new GlobalImp();
-    initGlobal(glob.imp());
-    con = new Context();
-    recursion = 0;
-    errMsg = "";
-    initialized = true;
-  }
-}
-
-void KJScriptImp::clear()
-{
-
-  if ( recursion ) {
-#ifndef NDEBUG
-      fprintf(stderr, "KJS: ignoring clear() while running\n");
-#endif
-      return;
-  }
-  KJScriptImp *old = curr;
-  if (initialized) {
-    KJScriptImp::curr = this;
-#ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::clear() this=%p, curr temporarily set\n", (void*)this);
-#endif
-
-    clearException();
-    retVal = 0L;
-
-    delete con; con = 0L;
-    glob = KJSO(); // Forget about global object so that the collector can destroy it
-
-    //fprintf( stderr, "KJScriptImp::clear() - calling garbage collector\n");
-    while ( Collector::collect() )
-        ; // keep collecting until we have nothing to collect anymore
-
-    // remove from global chain (see init())
-    next->prev = prev;
-    prev->next = next;
-    hook = next;
-    if (hook == this)
-      hook = 0L;
-
-    initialized = false;
-  }
-
-  if (old != this)
-      KJScriptImp::curr = old;
-  else
-      KJScriptImp::curr = 0L;
-
-#ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::clear() this=%p, curr is now %p\n", this, (void*)curr);
-#endif
-}
-
-bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &thisV,
-			   bool onlyCheckSyntax)
-{
-  init();
-
-  //  if (debugger())
-  // ###    debugger()->setSourceId(sid);
-  if (recursion > 7) {
-    fprintf(stderr, "KJS: breaking out of recursion\n");
-    return true;
-  } else if (recursion > 0) {
-#ifndef NDEBUG
-    fprintf(stderr, "KJS: entering recursion level %d\n", recursion);
-#endif
-  }
-
-  int sid = nextSourceId();
-
-  ProgramNode *progNode = Parser::parse(code,length,sid,&errType,&errLine,&errMsg);
-  if (dbg) {
-    UString parsedSource = UString(code,length);
-    dbg->sourceParsed(scr,sid,parsedSource,errLine);
-  }
-  if (!progNode)
-    return false;
-
-  if (onlyCheckSyntax) {
-    delete progNode;
-    return true;
-  }
-
-  progNode->ref();
-
-  clearException();
-
-  KJSO oldVar;
-  if (!thisV.isNull()) {
-    context()->setThisValue(thisV);
-    context()->pushScope(thisV);
-    oldVar = context()->variableObject();
-    context()->setVariableObject(thisV);
-  }
-
-  running++;
-  recursion++;
-  // ### use correct script & context
-  Completion res = progNode->execute(this,con);
-  recursion--;
-  running--;
-
-  if (hadException()) {
-    KJSO err = exception();
-    errType = 99; /* TODO */
-    errLine = err.get("line").toInt32();
-    errMsg = err.get("name").toString().value() + ". ";
-    errMsg += err.get("message").toString().value();
-    //###    if (dbg)
-    //      dbg->setSourceId(err.get("sid").toInt32());
-    clearException();
+  // add this interpreter to the global chain
+  // as a root set for garbage collection
+  if (s_hook) {
+    prev = s_hook;
+    next = s_hook->next;
+    s_hook->next->prev = this;
+    s_hook->next = this;
   } else {
-    errType = 0;
-    errLine = -1;
-    errMsg = "";
-
-    // catch return value
-    retVal = 0L;
-    if (res.complType() == ReturnValue || !thisV.isNull())
-	retVal = res.value().imp();
+    // This is the first interpreter
+    s_hook = next = prev = this;
+    globalInit();
   }
 
-  if (!thisV.isNull()) {
-    context()->popScope();
-    context()->setVariableObject(oldVar);
-  }
+  interpreter = interp;
+  global = glob;
+  globExec = new ExecState(interpreter,0);
+  dbg = 0;
 
-  if ( progNode->deref() )
-    delete progNode;
+  // initialize properties of the global object
 
-  return !errType;
-}
+  // Contructor prototype objects (Object.prototype, Array.prototype etc)
 
-bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
-{
-  init();
-  KJSO callScope(scope);
-  if (callScope.isNull())
-    callScope = KJScriptImp::current()->globalObject().imp();
-  if (!callScope.hasProperty(func)) {
-#ifndef NDEBUG
-      fprintf(stderr, "KJS: couldn't resolve function name %s. call() failed\n",
-	      func.ascii());
-#endif
-      return false;
-  }
-  KJSO v = callScope.get(func);
-  if (!v.derivedFrom(ConstructorType)) {
-#ifndef NDEBUG
-      fprintf(stderr, "KJS: %s is not a function. call() failed.\n", func.ascii());
-#endif
-      return false;
-  }
-  running++;
-  recursion++;
-  static_cast<ConstructorImp*>(v.imp())->executeCall(scope.imp(), &args);
-  recursion--;
-  running--;
-  return !hadException();
-}
+  FunctionPrototypeImp *funcProto = new FunctionPrototypeImp(globExec);
+  b_FunctionPrototype = funcProto;
+  ObjectPrototypeImp *objProto = new ObjectPrototypeImp(globExec,funcProto);
+  b_ObjectPrototype = objProto;
+  funcProto->setPrototype(objProto);
 
-bool KJScriptImp::call(const KJSO &func, const KJSO &thisV,
-		       const List &args, const List &extraScope)
-{
-  init();
-  if(!func.implementsCall())
-    return false;
+  ArrayPrototypeImp *arrayProto = new ArrayPrototypeImp(globExec,objProto,funcProto);
+  b_ArrayPrototype = arrayProto;
+  StringPrototypeImp *stringProto = new StringPrototypeImp(globExec,objProto,funcProto);
+  b_StringPrototype = stringProto;
+  BooleanPrototypeImp *booleanProto = new BooleanPrototypeImp(globExec,objProto,funcProto);
+  b_BooleanPrototype = booleanProto;
+  NumberPrototypeImp *numberProto = new NumberPrototypeImp(globExec,objProto,funcProto);
+  b_NumberPrototype = numberProto;
+  DatePrototypeImp *dateProto = new DatePrototypeImp(globExec,objProto,funcProto);
+  b_DatePrototype = dateProto;
+  RegExpPrototypeImp *regexpProto = new RegExpPrototypeImp(globExec,objProto,funcProto);
+  b_RegExpPrototype = regexpProto;
+  ErrorPrototypeImp *errorProto = new ErrorPrototypeImp(globExec,objProto,funcProto);
+  b_ErrorPrototype = errorProto;
 
-  running++;
-  recursion++;
-  retVal = func.executeCall(thisV, &args, &extraScope).imp();
-  recursion--;
-  running--;
+  static_cast<ObjectImp*>(global.imp())->setPrototype(objProto);
 
-  return !hadException();
-}
+  // Constructors (Object, Array, etc.)
 
-void KJScriptImp::setException(Imp *e)
-{
-  assert(curr);
-  curr->exVal = e;
-  curr->exMsg = "Exception"; // not very meaningful but we use !0L to test
-}
+  ObjectObjectImp *objectObj = new ObjectObjectImp(globExec,objProto,funcProto);
+  b_Object = objectObj;
+  FunctionObjectImp *funcObj = new FunctionObjectImp(globExec,funcProto);
+  b_Function = funcObj;
+  ArrayObjectImp *arrayObj = new ArrayObjectImp(globExec,funcProto,arrayProto);
+  b_Array = arrayObj;
+  StringObjectImp *stringObj = new StringObjectImp(globExec,funcProto,stringProto);
+  b_String = stringObj;
+  BooleanObjectImp *booleanObj = new BooleanObjectImp(globExec,funcProto,booleanProto);
+  b_Boolean = booleanObj;
+  NumberObjectImp *numberObj = new NumberObjectImp(globExec,funcProto,numberProto);
+  b_Number = numberObj;
+  DateObjectImp *dateObj = new DateObjectImp(globExec,funcProto,dateProto);
+  b_Date = dateObj;
+  RegExpObjectImp *regexpObj = new RegExpObjectImp(globExec,regexpProto,funcProto);
+  b_RegExp = regexpObj;
+  ErrorObjectImp *errorObj = new ErrorObjectImp(globExec,funcProto,errorProto);
+  b_Error = errorObj;
 
-void KJScriptImp::setException(const char *msg)
-{
-  assert(curr);
-  curr->exVal = 0L;		// will be created later on exception()
-  curr->exMsg = msg;
-}
+  // Error object prototypes
+  b_evalErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,EvalError,
+                                                            "EvalError","EvalError");
+  b_rangeErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,RangeError,
+                                                            "RangeError","RangeError");
+  b_referenceErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,ReferenceError,
+                                                            "ReferenceError","ReferenceError");
+  b_syntaxErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,SyntaxError,
+                                                            "SyntaxError","SyntaxError");
+  b_typeErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,TypeError,
+                                                            "TypeError","TypeError");
+  b_uriErrorPrototype = new NativeErrorPrototypeImp(globExec,errorProto,URIError,
+                                                            "URIError","URIError");
 
-KJSO KJScriptImp::exception()
-{
-  assert(curr);
-  if (!curr->exMsg)
-    return Undefined();
-  if (curr->exVal)
-    return curr->exVal;
-  return Error::create(GeneralError, curr->exMsg);
-}
-
-void KJScriptImp::clearException()
-{
-  assert(curr);
-  curr->exMsg = 0L;
-  curr->exVal = 0L;
-}
-
-void KJScriptImp::setDebugger(Debugger *debugger)
-{
-  dbg = debugger;
-}
-
-void KJScriptImp::initGlobal(Imp *global)
-{
-  // constructor properties. prototypes as Global's member variables first.
-  Object objProto = new ObjectPrototype();
-  Object funcProto = new FunctionPrototype(objProto);
-  Object arrayProto(new ArrayPrototype(objProto,funcProto));
-  Object stringProto(new StringPrototype(objProto,funcProto));
-  Object booleanProto(new BooleanPrototype(objProto,funcProto));
-  Object numberProto(new NumberPrototype(objProto,funcProto));
-  Object dateProto(new DatePrototype(objProto,funcProto));
-  Object regexpProto(new RegExpPrototype(objProto,funcProto));
-  Object errorProto(new ErrorPrototype(objProto,funcProto));
-
-  objProto.get("toString").setPrototype(funcProto);
-  objProto.get("valueOf").setPrototype(funcProto);
-  global->setPrototype(objProto);
-
-  // these are internal kjs properties
-  global->put("[[Object.prototype]]", objProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[Function.prototype]]", funcProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[Array.prototype]]", arrayProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[String.prototype]]", stringProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[Boolean.prototype]]", booleanProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[Number.prototype]]", numberProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[Date.prototype]]", dateProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[RegExp.prototype]]", regexpProto,ReadOnly|DontDelete|DontEnum);
-  global->put("[[Error.prototype]]", errorProto,ReadOnly|DontDelete|DontEnum);
-
-  Object objectObj(new ObjectObject(funcProto, objProto));
-  Object funcObj(new FunctionObject(funcProto));
-  Object arrayObj(new ArrayObject(funcProto, arrayProto));
-  Object stringObj(new StringObject(funcProto, stringProto));
-  Object boolObj(new BooleanObject(funcProto, booleanProto));
-  Object numObj(new NumberObject(funcProto, numberProto));
-  Object dateObj(new DateObject(funcProto, dateProto));
-  Object regObj(new RegExpObject(funcProto, regexpProto));
-  Object errObj(new ErrorObject(funcProto, errorProto));
+  // Error objects
+  b_evalError = new NativeErrorImp(globExec,funcProto,b_evalErrorPrototype);
+  b_rangeError = new NativeErrorImp(globExec,funcProto,b_rangeErrorPrototype);
+  b_referenceError = new NativeErrorImp(globExec,funcProto,b_referenceErrorPrototype);
+  b_syntaxError = new NativeErrorImp(globExec,funcProto,b_syntaxErrorPrototype);
+  b_typeError = new NativeErrorImp(globExec,funcProto,b_typeErrorPrototype);
+  b_uriError = new NativeErrorImp(globExec,funcProto,b_uriErrorPrototype);
 
   // ECMA 15.3.4.1
-  funcProto.put("constructor", funcObj, DontEnum);
+  funcProto->put(globExec,"constructor", funcObj, DontEnum);
 
-  global->put("Object", objectObj, DontEnum);
-  global->put("Function", funcObj, DontEnum);
-  global->put("Array", arrayObj, DontEnum);
-  global->put("Boolean", boolObj, DontEnum);
-  global->put("String", stringObj, DontEnum);
-  global->put("Number", numObj, DontEnum);
-  global->put("Date", dateObj, DontEnum);
-  global->put("RegExp", regObj, DontEnum);
-  global->put("Error", errObj, DontEnum);
+  global.put(globExec,"Object", objectObj, DontEnum);
+  global.put(globExec,"Function", funcObj, DontEnum);
+  global.put(globExec,"Array", arrayObj, DontEnum);
+  global.put(globExec,"Boolean", booleanObj, DontEnum);
+  global.put(globExec,"String", stringObj, DontEnum);
+  global.put(globExec,"Number", numberObj, DontEnum);
+  global.put(globExec,"Date", dateObj, DontEnum);
+  global.put(globExec,"RegExp", regexpObj, DontEnum);
+  global.put(globExec,"Error", errorObj, DontEnum);
+  // Using Internal for those to have something != 0
+  // (see kjs_window). Maybe DontEnum would be ok too ?
+  global.put(globExec,"EvalError",b_evalError, Internal);
+  global.put(globExec,"RangeError",b_rangeError, Internal);
+  global.put(globExec,"ReferenceError",b_referenceError, Internal);
+  global.put(globExec,"SyntaxError",b_syntaxError, Internal);
+  global.put(globExec,"TypeError",b_typeError, Internal);
+  global.put(globExec,"URIError",b_uriError, Internal);
 
-  objProto.setConstructor(objectObj);
-  funcProto.setConstructor(funcObj);
-  arrayProto.setConstructor(arrayObj);
-  booleanProto.setConstructor(boolObj);
-  stringProto.setConstructor(stringObj);
-  numberProto.setConstructor(numObj);
-  dateProto.setConstructor(dateObj);
-  regexpProto.setConstructor(regObj);
-  errorProto.setConstructor(errObj);
+  // Set the "constructor" property of all builtin constructors
+  objProto->put(globExec, "constructor", objectObj, DontEnum | DontDelete | ReadOnly);
+  funcProto->put(globExec, "constructor", funcObj, DontEnum | DontDelete | ReadOnly);
+  arrayProto->put(globExec, "constructor", arrayObj, DontEnum | DontDelete | ReadOnly);
+  booleanProto->put(globExec, "constructor", booleanObj, DontEnum | DontDelete | ReadOnly);
+  stringProto->put(globExec, "constructor", stringObj, DontEnum | DontDelete | ReadOnly);
+  numberProto->put(globExec, "constructor", numberObj, DontEnum | DontDelete | ReadOnly);
+  dateProto->put(globExec, "constructor", dateObj, DontEnum | DontDelete | ReadOnly);
+  regexpProto->put(globExec, "constructor", regexpObj, DontEnum | DontDelete | ReadOnly);
+  errorProto->put(globExec, "constructor", errorObj, DontEnum | DontDelete | ReadOnly);
+  b_evalErrorPrototype.put(globExec, "constructor", b_evalError, DontEnum | DontDelete | ReadOnly);
+  b_rangeErrorPrototype.put(globExec, "constructor", b_rangeError, DontEnum | DontDelete | ReadOnly);
+  b_referenceErrorPrototype.put(globExec, "constructor", b_referenceError, DontEnum | DontDelete | ReadOnly);
+  b_syntaxErrorPrototype.put(globExec, "constructor", b_syntaxError, DontEnum | DontDelete | ReadOnly);
+  b_typeErrorPrototype.put(globExec, "constructor", b_typeError, DontEnum | DontDelete | ReadOnly);
+  b_uriErrorPrototype.put(globExec, "constructor", b_uriError, DontEnum | DontDelete | ReadOnly);
 
-  global->put("NaN", Number(NaN), DontEnum);
-  global->put("Infinity", Number(Inf), DontEnum);
-  global->put("undefined", Undefined(), DontEnum);
+  // built-in values
+  global.put(globExec,"NaN",        Number(NaN), DontEnum);
+  global.put(globExec,"Infinity",   Number(Inf), DontEnum);
+  global.put(globExec,"undefined",  Undefined(), DontEnum);
 
   // built-in functions
-  global->put("eval",       new GlobalFunc(GlobalFunc::Eval,       1), DontEnum);
-  global->put("parseInt",   new GlobalFunc(GlobalFunc::ParseInt,   2), DontEnum);
-  global->put("parseFloat", new GlobalFunc(GlobalFunc::ParseFloat, 1), DontEnum);
-  global->put("isNaN",      new GlobalFunc(GlobalFunc::IsNaN,      1), DontEnum);
-  global->put("isFinite",   new GlobalFunc(GlobalFunc::IsFinite,   1), DontEnum);
-  global->put("escape",     new GlobalFunc(GlobalFunc::Escape,     1), DontEnum);
-  global->put("unescape",   new GlobalFunc(GlobalFunc::UnEscape,   1), DontEnum);
+  global.put(globExec,"eval",       new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Eval,       1), DontEnum);
+  global.put(globExec,"parseInt",   new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseInt,   2), DontEnum);
+  global.put(globExec,"parseFloat", new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseFloat, 1), DontEnum);
+  global.put(globExec,"isNaN",      new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsNaN,      1), DontEnum);
+  global.put(globExec,"isFinite",   new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsFinite,   1), DontEnum);
+  global.put(globExec,"escape",     new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Escape,     1), DontEnum);
+  global.put(globExec,"unescape",   new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::UnEscape,   1), DontEnum);
 
   // built-in objects
-  global->put("Math",       new Math(objProto),                        DontEnum);
+  global.put(globExec,"Math", new MathObjectImp(globExec,objProto,funcProto), DontEnum);
+
+  recursion = 0;
 }
 
-KJSO KJScriptImp::objectPrototype() const
+InterpreterImp::~InterpreterImp()
 {
-  return glob.get("[[Object.prototype]]");
+  if (dbg)
+    dbg->detach(interpreter);
+  delete globExec;
+  globExec = 0L;
+  clear();
 }
 
-KJSO KJScriptImp::functionPrototype() const
+void InterpreterImp::clear()
 {
-  return glob.get("[[Function.prototype]]");
-}
-
-Global KJScriptImp::globalObjectAsGlobal() const
-{
-  // Applications that do not pass in their own global object to the
-  // KJScript constructor will get a GlobalImp, and Global::current()
-  // will return a global object. However, if the app uses it's own
-  // global object, then this will return 0.
-  if (glob.derivedFrom(GlobalType))
+  //fprintf(stderr,"InterpreterImp::clear\n");
+  // remove from global chain (see init())
+  next->prev = prev;
+  prev->next = next;
+  s_hook = next;
+  if (s_hook == this)
   {
-#ifdef KJS_DEBUG_GLOBAL
-    fprintf( stderr, "KJScriptImp::globalObjectAsGlobal(): returning glob.imp()=%p\n",(void*)glob.imp() );
-#endif
-    return Global(static_cast<GlobalImp*>(glob.imp()));
-  }
-  else
-  {
-#ifdef KJS_DEBUG_GLOBAL
-    fprintf( stderr, "KJScriptImp::globalObjectAsGlobal(): returning Global() (imp=0L)\n" );
-#endif
-    return Global();
+    // This was the last interpreter
+    s_hook = 0L;
+    globalClear();
   }
 }
 
-// ------------------------------ PropList -------------------------------------
-
-bool PropList::contains(const UString &name)
+void InterpreterImp::mark()
 {
-  PropList *p = this;
-  while (p) {
-    if (name == p->name)
-      return true;
-    p = p->next;
-  }
-  return false;
+  //if (exVal && !exVal->marked())
+  //  exVal->mark();
+  //if (retVal && !retVal->marked())
+  //  retVal->mark();
+  if (UndefinedImp::staticUndefined && !UndefinedImp::staticUndefined->marked())
+    UndefinedImp::staticUndefined->mark();
+  if (NullImp::staticNull && !NullImp::staticNull->marked())
+    NullImp::staticNull->mark();
+  if (BooleanImp::staticTrue && !BooleanImp::staticTrue->marked())
+    BooleanImp::staticTrue->mark();
+  if (BooleanImp::staticFalse && !BooleanImp::staticFalse->marked())
+    BooleanImp::staticFalse->mark();
+  if (ListImp::emptyList && !ListImp::emptyList->marked())
+    ListImp::emptyList->mark();
+  //fprintf( stderr, "InterpreterImp::mark this=%p global.imp()=%p\n", this, global.imp() );
+  if (global.imp())
+    global.imp()->mark();
 }
 
-// -----------------------------------------------------------------------------
-
-// ECMA 15.3.5.3 [[HasInstance]]
-// see comment in header file
-KJSO KJS::hasInstance(const KJSO &F, const KJSO &V)
+bool InterpreterImp::checkSyntax(const UString &code)
 {
-  if (V.isObject()) {
-    KJSO prot = F.get("prototype");
-    if (!prot.isObject())
-      return Error::create(TypeError, "Invalid prototype encountered "
-			   "in instanceof operation.");
-    Imp *v = V.imp();
-    while ((v = v->prototype())) {
-      if (v == prot.imp())
-	return Boolean(true);
+  // Parser::parse() returns 0 in a syntax error occurs, so we just check for that
+  ProgramNode *progNode = Parser::parse(code.data(),code.size(),0,0,0);
+  bool ok = (progNode != 0);
+  delete progNode;
+  return ok;
+}
+
+Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
+{
+  // prevent against infinite recursion
+  if (recursion >= 20) {
+    return Completion(Throw,Error::create(globExec,GeneralError,"Recursion too deep"));
+  }
+
+  // parse the source code
+  int sid;
+  int errLine;
+  UString errMsg;
+  ProgramNode *progNode = Parser::parse(code.data(),code.size(),&sid,&errLine,&errMsg);
+
+  // notify debugger that source has been parsed
+  if (dbg) {
+    bool cont = dbg->sourceParsed(globExec,sid,code,errLine);
+    if (!cont)
+      return Completion(Break);
+  }
+
+  // no program node means a syntax occurred
+  if (!progNode) {
+    Object err = Error::create(globExec,SyntaxError,errMsg.ascii(),errLine);
+    err.put(globExec,"sid",Number(sid));
+    return Completion(Throw,err);
+  }
+
+  globExec->clearException();
+
+  recursion++;
+  progNode->ref();
+
+  Object globalObj = globalObject();
+  Object thisObj = globalObject();
+
+  if (!thisV.isNull()) {
+    // "this" must be an object... use same rules as Function.prototype.apply()
+    if (thisV.isA(NullType) || thisV.isA(UndefinedType))
+      thisObj = globalObject();
+    else {
+      thisObj = thisV.toObject(globExec);
     }
+  }
+
+  Completion res;
+  if (globExec->hadException()) {
+    // the thisArg.toObject() conversion above might have thrown an exception - if so,
+    // propagate it back
+    res = Completion(Throw,globExec->exception());
+  }
+  else {
+    // execute the code
+    ExecState *exec1 = 0;
+    ContextImp *ctx = new ContextImp(globalObj, exec1, thisObj);
+    ExecState *newExec = new ExecState(interpreter,ctx);
+
+    res = progNode->execute(newExec);
+
+    delete newExec;
+    delete ctx;
+  }
+
+  if (progNode->deref())
+    delete progNode;
+  recursion--;
+
+  return res;
+}
+
+void InterpreterImp::setDebugger(Debugger *d)
+{
+  if (d)
+    d->detach(interpreter);
+  dbg = d;
+}
+
+// ------------------------------ InternalFunctionImp --------------------------
+
+const ClassInfo InternalFunctionImp::info = {"Function", 0, 0, 0};
+
+InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto)
+  : ObjectImp(funcProto)
+{
+}
+
+bool InternalFunctionImp::implementsHasInstance() const
+{
+  return true;
+}
+
+Boolean InternalFunctionImp::hasInstance(ExecState *exec, const Value &value)
+{
+  if (value.type() != ObjectType)
+    return Boolean(false);
+
+  Value prot = get(exec,"prototype");
+  if (prot.type() != ObjectType && prot.type() != NullType) {
+    Object err = Error::create(exec, TypeError, "Invalid prototype encountered "
+                               "in instanceof operation.");
+    exec->setException(err);
+    return Boolean(false);
+  }
+
+  Object v = static_cast<ObjectImp*>(value.imp());
+  while ((v = Object::dynamicCast(v.prototype())).imp()) {
+    if (v.imp() == prot.imp())
+      return Boolean(true);
   }
   return Boolean(false);
 }
 
+// ------------------------------ global functions -----------------------------
+
+double KJS::roundValue(ExecState *exec, const Value &v)
+{
+  if (v.type() == UndefinedType) /* TODO: see below */
+    return 0.0;
+  Number n = v.toNumber(exec);
+  if (n.value() == 0.0)   /* TODO: -0, NaN, Inf */
+    return 0.0;
+  double d = floor(fabs(n.value()));
+  if (n.value() < 0)
+    d *= -1;
+
+  return d;
+}
+
 #ifndef NDEBUG
 #include <stdio.h>
-void KJS::printInfo( const char *s, const KJSO &o, int lineno )
+void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
 {
-    if (o.isNull())
-      fprintf(stderr, "KJS: %s: (null)", s);
-    else {
-      KJSO v = o;
-      if (o.isA(ReferenceType))
-	  v = o.getValue();
-      fprintf(stderr, "KJS: %s: %s : %s (%p)",
-	      s,
-	      v.toString().value().ascii(),
-	      v.imp()->typeInfo()->name,
-	      (void*)v.imp());
+  if (o.isNull())
+    fprintf(stderr, "KJS: %s: (null)", s);
+  else {
+    Value v = o;
+    if (o.isA(ReferenceType))
+      v = o.getValue(exec);
+
+    UString name;
+    if (v.type() == ObjectType) {
+      name = Object::dynamicCast(v).getClass();
+    }
+    if (name.isNull())
+      name = "(unknown class)";
+
+    // Can't use two UString::ascii() in the same fprintf call
+    char * vString = strdup( v.toString(exec).value().ascii() );
+
+    fprintf(stderr, "KJS: %s: %s : %s (%p)",
+            s, vString, name.ascii(), (void*)v.imp());
+    free(vString);
+
     if (lineno >= 0)
       fprintf(stderr, ", line %d\n",lineno);
     else
       fprintf(stderr, "\n");
     if (!o.isNull())
       if (o.isA(ReferenceType)) {
-	  fprintf(stderr, "KJS: Was property '%s'\n", o.getPropertyName().ascii());
-	  printInfo("of", o.getBase());
+        fprintf(stderr, "KJS: Was property '%s'\n", o.getPropertyName(exec).ascii());
+        printInfo(exec,"of", o.getBase(exec));
       }
-    }
+  }
 }
 #endif

@@ -16,6 +16,8 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
 #ifdef HAVE_CONFIG_H
@@ -28,7 +30,10 @@
 #include <string.h>
 #include <assert.h>
 
-#include "kjs.h"
+#include "value.h"
+#include "object.h"
+#include "types.h"
+#include "interpreter.h"
 #include "nodes.h"
 #include "lexer.h"
 #include "ustring.h"
@@ -37,6 +42,8 @@
 
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
+
+static Lexer *currLexer = 0;
 
 #ifndef KDE_USE_FINAL
 #include "grammar.h"
@@ -65,6 +72,7 @@ Lexer::Lexer()
   // allocate space for read buffers
   buffer8 = new char[size8];
   buffer16 = new UChar[size16];
+  currLexer = this;
 
 }
 
@@ -76,8 +84,11 @@ Lexer::~Lexer()
 
 Lexer *Lexer::curr()
 {
-  assert(KJScriptImp::current());
-  return KJScriptImp::current()->lex;
+  if (!currLexer) {
+    // create singleton instance
+    currLexer = new Lexer();
+  }
+  return currLexer;
 }
 
 void Lexer::setCode(const UChar *c, unsigned int len)

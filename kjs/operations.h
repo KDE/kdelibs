@@ -16,14 +16,18 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
 #ifndef _KJS_OPERATIONS_H_
 #define _KJS_OPERATIONS_H_
 
-#include "object.h"
+#include "value.h"
 
 namespace KJS {
+
+  class ExecState;
 
   /**
    * @return True if d is not a number (platform support required).
@@ -35,8 +39,8 @@ namespace KJS {
   bool isInf(double d);
   bool isPosInf(double d);
   bool isNegInf(double d);
-  bool equal(const KJSO& v1, const KJSO& v2);
-  bool strictEqual(const KJSO &v1, const KJSO &v2);
+  bool equal(ExecState *exec, const Value& v1, const Value& v2);
+  bool strictEqual(ExecState *exec, const Value &v1, const Value &v2);
   /**
    * This operator performs an abstract relational comparision of the two
    * arguments that can be of arbitrary type. If possible, conversions to the
@@ -45,7 +49,7 @@ namespace KJS {
    * @return 1 if v1 is "less-than" v2, 0 if the relation is "greater-than-or-
    * equal". -1 if the result is undefined.
    */
-  int relation(const KJSO& v1, const KJSO& v2);
+  int relation(ExecState *exec, const Value& v1, const Value& v2);
   double max(double d1, double d2);
   double min(double d1, double d2);
   /**
@@ -54,7 +58,7 @@ namespace KJS {
    * @param oper '+' or '-' for an addition or substraction, respectively.
    * @return The result of the operation.
    */
-  KJSO add(const KJSO &v1, const KJSO &v2, char oper);
+  Value add(ExecState *exec, const Value &v1, const Value &v2, char oper);
   /**
    * Multiplicative operator. Either multiplies/divides v1 and v2 or
    * calculates the remainder from an division.
@@ -62,7 +66,7 @@ namespace KJS {
    * modulo operation.
    * @return The result of the operation.
    */
-  KJSO mult(const KJSO &v1, const KJSO &v2, char oper);
+  Value mult(ExecState *exec, const Value &v1, const Value &v2, char oper);
 
 };
 

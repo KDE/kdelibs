@@ -17,13 +17,19 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 #include <string.h>
-#include "kjs.h"
+#include <stdlib.h>
+#include "value.h"
+#include "object.h"
+#include "types.h"
+#include "interpreter.h"
 #include "nodes.h"
 #include "lexer.h"
 #include "internal.h"

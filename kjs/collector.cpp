@@ -1,6 +1,8 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -15,16 +17,17 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #include "collector.h"
-#include "object.h"
 #include "internal.h"
 
-#include <typeinfo>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <typeinfo>
 
 namespace KJS {
 
@@ -66,6 +69,8 @@ unsigned long Collector::softLimit = KJS_MEM_INCREMENT;
 unsigned long Collector::timesFilled = 0;
 unsigned long Collector::increaseLimitAt = 1;
 
+bool Collector::memLimitReached = false;
+
 #ifdef KJS_DEBUG_MEM
 bool Collector::collecting = false;
 #endif
@@ -97,10 +102,13 @@ void* Collector::allocate(size_t s)
   }
 
   void *m = malloc(s);
+#ifdef KJS_DEBUG_MEM
+  //fprintf( stderr, "allocate: size=%d valueimp=%p\n",s,m);
+#endif
 
-  // hack to ensure obj is protected from GC before any constructors are run
-  static_cast<Imp*>(m)->gc_marked = false;
-  static_cast<Imp*>(m)->gc_allowed = false;
+  // VI_CREATED and VI_GCALLOWED being unset ensure that value
+  // is protected from GC before any constructors are run
+  static_cast<ValueImp*>(m)->_flags = 0;
 
   if (!root) {
     root = new CollectorBlock(BlockSize);
@@ -117,7 +125,7 @@ void* Collector::allocate(size_t s)
 
   if (block->filled >= block->size) {
 #ifdef KJS_DEBUG_MEM
-    fprintf(stderr,"allocating new block of size %d\n", block->size);
+    //fprintf( stderr, "allocating new block of size %d\n", block->size);
 #endif
     CollectorBlock *tmp = new CollectorBlock(BlockSize);
     block->next = tmp;
@@ -134,7 +142,8 @@ void* Collector::allocate(size_t s)
   block->filled++;
 
   if (softLimit >= KJS_MEM_LIMIT) {
-      KJScriptImp::setException("Out of memory");
+    memLimitReached = true;
+    fprintf(stderr,"Out of memory");
   }
 
   return m;
@@ -145,75 +154,77 @@ void* Collector::allocate(size_t s)
  */
 bool Collector::collect()
 {
-  if (KJScriptImp::running) {
-#ifndef NDEBUG
-    fprintf(stderr,"Warning: running garbage collection while other interpreter runs.\n");
-    //fprintf(stderr,"Refusing garbage collection while other interpreter runs.\n");
-    //return;
-#endif
-  }
 #ifdef KJS_DEBUG_MEM
-  fprintf(stderr,"collecting %d objects total\n", Imp::count);
-  collecting = true;
+  fprintf(stderr,"Collector::collect()\n");
 #endif
-
-  // MARK: first set all ref counts to 0 ....
+  bool deleted = false;
+  // MARK: first unmark everything
   CollectorBlock *block = root;
   while (block) {
-#ifdef KJS_DEBUG_MEM
-    fprintf(stderr,"cleaning block filled %d out of %d\n", block->filled, block->size);
-#endif
-    Imp **r = (Imp**)block->mem;
+    ValueImp **r = (ValueImp**)block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
       if (*r) {
-        (*r)->gc_marked = false;
+        (*r)->_flags &= ~ValueImp::VI_MARKED;
       }
     block = block->next;
   }
 
-  // ... increase counter for all referenced objects recursively
+  // mark all referenced objects recursively
   // starting out from the set of root objects
-  if (KJScriptImp::hook) {
-    KJScriptImp *scr = KJScriptImp::hook;
+  if (InterpreterImp::s_hook) {
+    InterpreterImp *scr = InterpreterImp::s_hook;
     do {
+      //fprintf( stderr, "Collector marking interpreter %p\n",(void*)scr);
       scr->mark();
       scr = scr->next;
-    } while (scr != KJScriptImp::hook);
+    } while (scr != InterpreterImp::s_hook);
   }
 
   // mark any other objects that we wouldn't delete anyway
   block = root;
   while (block) {
-    Imp **r = (Imp**)block->mem;
+    ValueImp **r = (ValueImp**)block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
-      if (*r && (*r)->gc_created && ((*r)->refcount || !(*r)->gc_allowed) && !(*r)->gc_marked)
-        (*r)->mark();
+    {
+      ValueImp *imp = (*r);
+      // Check for created=true, marked=false and (gcallowed=false or refcount>0)
+      if (imp &&
+          (imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
+          ( (imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount ) ) {
+        //fprintf( stderr, "Collector marking imp=%p\n",(void*)imp);
+        imp->mark();
+      }
+    }
     block = block->next;
   }
 
   // SWEEP: delete everything with a zero refcount (garbage)
-  bool deletedSomething = false;
   block = root;
   while (block) {
-    Imp **r = (Imp**)block->mem;
+    ValueImp **r = (ValueImp**)block->mem;
     int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
-      if (*r && ((*r)->refcount == 0) && !(*r)->gc_marked && (*r)->gc_allowed) {
-        //fprintf( stderr, "Collector: freeing Imp %p\n", (*r));
-	// emulate destructing part of 'operator delete()'
-	(*r)->~Imp();
-	free(*r);
-	*r = 0L;
-	del++;
+      ValueImp *imp = (*r);
+      // Can delete if refcount==0, created==true, gcAllowed==true, and marked==false
+      // Make sure to update the test if you add more bits to _flags.
+      if (imp &&
+          //imp->type() != ListType && // ### temp - don't GC lists
+          !imp->refcount && imp->_flags == (ValueImp::VI_GCALLOWED | ValueImp::VI_CREATED)) {
+        // emulate destructing part of 'operator delete()'
+        //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
+        imp->~ValueImp();
+        free(imp);
+        *r = 0L;
+        del++;
       }
     }
     filled -= del;
     block->filled -= del;
     block = block->next;
     if (del)
-        deletedSomething = true;
+      deleted = true;
   }
 
   // delete the empty containers
@@ -222,36 +233,38 @@ bool Collector::collect()
     CollectorBlock *next = block->next;
     if (block->filled == 0) {
       if (block->prev)
-	block->prev->next = next;
+        block->prev->next = next;
       if (block == root)
-	root = next;
+        root = next;
       if (next)
-	next->prev = block->prev;
+        next->prev = block->prev;
       if (block == currentBlock) // we don't want a dangling pointer
-	currentBlock = 0L;
+        currentBlock = 0L;
       assert(block != root);
       delete block;
     }
     block = next;
   }
-
-#ifdef KJS_DEBUG_MEM
-  collecting = false;
-#endif
-  return deletedSomething;
+  return deleted;
 }
 
+#ifndef NDEBUG
 void Collector::finalCheck()
 {
   CollectorBlock *block = root;
   while (block) {
-    Imp **r = (Imp**)block->mem;
+    ValueImp **r = (ValueImp**)block->mem;
     for (int i = 0; i < block->size; i++, r++) {
-      if (*r) {
-        fprintf( stderr, "Collector::finalCheck() still having Imp %p (%s)\n", (void*)(*r),
-                 typeid( **r ).name() );
+      if (*r ) {
+        fprintf( stderr, "Collector::finalCheck() still having ValueImp %p (%s)  [marked:%d gcAllowed:%d created:%d refcount:%d]\n",
+                 (void*)(*r), typeid( **r ).name(),
+                 (bool)((*r)->_flags & ValueImp::VI_MARKED),
+                 (bool)((*r)->_flags & ValueImp::VI_GCALLOWED),
+                 (bool)((*r)->_flags & ValueImp::VI_CREATED),
+                 (*r)->refcount);
       }
     }
     block = block->next;
   }
 }
+#endif

@@ -15,96 +15,149 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
-#include "kjs.h"
+#include "value.h"
+#include "object.h"
+#include "types.h"
+#include "interpreter.h"
 #include "operations.h"
 #include "number_object.h"
+#include "error_object.h"
 
 using namespace KJS;
 
-NumberObject::NumberObject(const Object& funcProto, const Object &numProto)
-  : ConstructorImp(funcProto, 1)
-{
-  // Number.Prototype
-  setPrototypeProperty(numProto);
 
-  // ECMA 15.7.3
-  put("NaN",               Number(NaN),                     DontEnum|DontDelete|ReadOnly);
-  put("NEGATIVE_INFINITY", Number(-Inf),                    DontEnum|DontDelete|ReadOnly);
-  put("POSITIVE_INFINITY", Number(Inf),                     DontEnum|DontDelete|ReadOnly);
-  put("MAX_VALUE",         Number(1.7976931348623157E+308), DontEnum|DontDelete|ReadOnly);
-  put("MIN_VALUE",         Number(5E-324),                  DontEnum|DontDelete|ReadOnly);
+// ------------------------------ NumberInstanceImp ----------------------------
+
+const ClassInfo NumberInstanceImp::info = {"Number", 0, 0, 0};
+
+NumberInstanceImp::NumberInstanceImp(const Object &proto)
+  : ObjectImp(proto)
+{
+}
+// ------------------------------ NumberPrototypeImp ---------------------------
+
+// ECMA 15.7.4
+
+NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
+                                       ObjectPrototypeImp *objProto,
+                                       FunctionPrototypeImp *funcProto)
+  : NumberInstanceImp(objProto)
+{
+  Value protect(this);
+  setInternalValue(Number(0));
+
+  // The constructor will be added later in NumberObject's constructor (?)
+
+  put(exec,"toString",       new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToString,       1), DontEnum);
+  put(exec,"toLocaleString", new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ToLocaleString, 0), DontEnum);
+  put(exec,"valueOf",        new NumberProtoFuncImp(exec,funcProto,NumberProtoFuncImp::ValueOf,        0), DontEnum);
 }
 
-// ECMA 15.7.1
-Completion NumberObject::execute(const List &args)
-{
-  Number n;
-  if (args.isEmpty())
-    n = Number(0);
-  else
-    n = args[0].toNumber();
 
-  return Completion(ReturnValue, n);
+// ------------------------------ NumberProtoFuncImp ---------------------------
+
+NumberProtoFuncImp::NumberProtoFuncImp(ExecState *exec,
+                                       FunctionPrototypeImp *funcProto, int i, int len)
+  : InternalFunctionImp(funcProto), id(i)
+{
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
-// ECMA 15.7.2
-Object NumberObject::construct(const List &args)
+
+bool NumberProtoFuncImp::implementsCall() const
 {
-  Number n;
-  if (args.isEmpty())
-    n = Number(0);
-  else
-    n = args[0].toNumber();
-
-  return Object::create(NumberClass, n);
+  return true;
 }
-
-class NumberProtoFunc : public InternalFunctionImp {
-public:
-  NumberProtoFunc(const Object &funcProto, int i) : id (i) { setPrototype(funcProto); }
-  Completion execute(const List &);
-  enum { ToString, ToLocaleString, ValueOf };
-private:
-  int id;
-};
 
 // ECMA 15.7.4.2 - 15.7.4.7
-Completion NumberProtoFunc::execute(const List &)
+Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*args*/)
 {
-  KJSO result;
-
-  Object thisObj = Object::dynamicCast(thisValue());
+  Value result;
 
   // no generic function. "this" has to be a Number object
-  if (thisObj.isNull() || thisObj.getClass() != NumberClass) {
-    result = Error::create(TypeError);
-    return Completion(ReturnValue, result);
+  if (!thisObj.inherits(&NumberInstanceImp::info)) {
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
   }
 
   // execute "toString()" or "valueOf()", respectively
-  KJSO v = thisObj.internalValue();
+  Value v = thisObj.internalValue();
   switch (id) {
   case ToString:
   case ToLocaleString: /* TODO */
-    result = v.toString();
+    result = v.toString(exec);
     break;
   case ValueOf:
-    result = v.toNumber();
+    result = v.toNumber(exec);
     break;
   }
 
-  return Completion(ReturnValue, result);
+  return result;
 }
 
-// ECMA 15.7.4
-NumberPrototype::NumberPrototype(const Object& proto, const Object &funcProto)
-  : ObjectImp(NumberClass, Number(0), proto)
-{
-  // The constructor will be added later in NumberObject's constructor
+// ------------------------------ NumberObjectImp ------------------------------
 
-  put("toString",       new NumberProtoFunc(funcProto,NumberProtoFunc::ToString),       DontEnum);
-  put("toLocaleString", new NumberProtoFunc(funcProto,NumberProtoFunc::ToLocaleString), DontEnum);
-  put("valueOf",        new NumberProtoFunc(funcProto,NumberProtoFunc::ValueOf),        DontEnum);
+NumberObjectImp::NumberObjectImp(ExecState *exec,
+                                 FunctionPrototypeImp *funcProto,
+                                 NumberPrototypeImp *numberProto)
+  : InternalFunctionImp(funcProto)
+{
+  Value protect(this);
+  // Number.Prototype
+  put(exec,"prototype",numberProto,DontEnum|DontDelete|ReadOnly);
+
+  // ECMA 15.7.3
+  put(exec,"NaN",               Number(NaN),                     DontEnum|DontDelete|ReadOnly);
+  put(exec,"NEGATIVE_INFINITY", Number(-Inf),                    DontEnum|DontDelete|ReadOnly);
+  put(exec,"POSITIVE_INFINITY", Number(Inf),                     DontEnum|DontDelete|ReadOnly);
+  put(exec,"MAX_VALUE",         Number(1.7976931348623157E+308), DontEnum|DontDelete|ReadOnly);
+  put(exec,"MIN_VALUE",         Number(5E-324),                  DontEnum|DontDelete|ReadOnly);
+
+  // no. of arguments for constructor
+  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+}
+
+
+
+bool NumberObjectImp::implementsConstruct() const
+{
+  return true;
+}
+
+
+// ECMA 15.7.1
+Object NumberObjectImp::construct(ExecState *exec, const List &args)
+{
+  Object proto = exec->interpreter()->builtinNumberPrototype();
+  Object obj(new NumberInstanceImp(proto));
+
+  Number n;
+  if (args.isEmpty())
+    n = Number(0);
+  else
+    n = args[0].toNumber(exec);
+
+  obj.setInternalValue(n);
+
+  return obj;
+}
+
+bool NumberObjectImp::implementsCall() const
+{
+  return true;
+}
+
+// ECMA 15.7.2
+Value NumberObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  if (args.isEmpty())
+    return Number(0);
+  else
+    return args[0].toNumber(exec);
 }

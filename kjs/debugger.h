@@ -16,177 +16,194 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #ifndef _KJSDEBUGGER_H_
 #define _KJSDEBUGGER_H_
 
-class KJScript;
-
 namespace KJS {
 
   class DebuggerImp;
-
-  //
-  // NOTE: this interface is not ready, yet. Do not use unless you
-  // don't mind source and binary incompatible changes that may arise
-  // before the final version is released.
-  //
-
-  class Context;
+  class Interpreter;
+  class ExecState;
+  class Object;
   class UString;
-  class FunctionImp;
   class List;
-  class KJSO;
 
-  class ExecutionContext {
-    friend class DebuggerImp;
-    friend class FunctionImp;
-  public:
-    KJSO resolveVar(const UString &varName) const;
-    KJSO executeCall(KJScript *script, KJSO &func, const KJSO &thisV, const List *args) const;
-    KJSO thisValue() const;
-  private:
-    Context *rep;
-    ExecutionContext(Context *c);
-  };
-
+  /**
+   * @internal
+   *
+   * Provides an interface which receives notification about various
+   * script-execution related events such as statement execution and function
+   * calls.
+   *
+   * WARNING: This interface is still a work in progress and is not yet
+   * offically publicly available. It is likely to change in binary incompatible
+   * (and possibly source incompatible) ways in future versions. It is
+   * anticipated that at some stage the interface will be frozen and made
+   * available for general use.
+   */
   class Debugger {
-    friend class KJScriptImp;
-    friend class StatementNode;
-    friend class DeclaredFunctionImp;
-    friend class FunctionImp;
-    friend class DebuggerImp;
-    friend class FunctionObject;
   public:
+
     /**
-     * Construct a debugger and attach it to the scripting engine s.
+     * Creates a new debugger
      */
     Debugger();
+
     /**
-     * Destruct the debugger and detach from the scripting engine we
-     * might have been attached to.
+     * Destroys the debugger. If the debugger is attached to any interpreters,
+     * it is automatically detached.
      */
     virtual ~Debugger();
+
+    DebuggerImp *imp() const { return rep; }
+
     /**
-     * Attaches the debugger to specified scripting engine.
+     * Attaches the debugger to specified interpreter. This will cause this
+     * object to receive notification of events from the interpreter.
+     *
+     * If the interpreter is deleted, the debugger will automatically be
+     * detached.
+     *
+     * Note: only one debugger can be attached to an interpreter at a time.
+     * Attaching another debugger to the same interpreter will cause the
+     * original debugger to be detached from that interpreter.
+     *
+     * @param interp The interpreter to attach to
+     *
+     * @see detach()
      */
-    void attach(KJScript *script);
+    void attach(Interpreter *interp);
+
     /**
-     * Detach the debugger from a scripting engine (or all if script == 0)
+     * Detach the debugger from an interpreter
+     *
+     * @param interp The interpreter to detach from. If 0, the debugger will be
+     * detached from all interpreters to which it is attached.
+     *
+     * @see attach()
      */
-    void detach(KJScript *script);
-    /**
-     * Returns the value of ident out of the current context in string form
-     */
-    //    UString varInfo(const UString &ident);
-    /**
-     * Set variable ident to value. Returns true if successful, false if
-     * the specified variable doesn't exist or isn't writable.
-     */
-    //    bool setVar(const UString &ident, const KJSO &value);
-  protected:
+    void detach(Interpreter *interp);
+
     /**
      * Called to notify the debugger that some javascript source code has
-     * been parsed. For calls to KJScript::evaluate(), this will be called
+     * been parsed. For calls to Interpreter::evaluate(), this will be called
      * with the supplied source code before any other code is parsed.
      * Other situations in which this may be called include creation of a
      * function using the Function() constructor, or the eval() function.
      *
-     * @param script The interpreter which parsed the script
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
      * @param sourceId The ID of the source code (corresponds to the
-     * sourceId supplied in other functions such as atLine()
+     * sourceId supplied in other functions such as @ref atStatement()
      * @param source The source code that was parsed
      * @param errorLine The line number at which parsing encountered an
      * error, or -1 if the source code was valid and parsed succesfully
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool sourceParsed(KJScript *script, int sourceId,
+    virtual bool sourceParsed(ExecState *exec, int sourceId,
 			      const UString &source, int errorLine);
+
     /**
      * Called when all functions/programs associated with a particular
      * sourceId have been deleted. After this function has been called for
      * a particular sourceId, that sourceId will not be used again.
+     *
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
+     * @param sourceId The ID of the source code (corresponds to the
+     * sourceId supplied in other functions such as atLine()
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool sourceUnused(KJScript *script, int sourceId);
+    virtual bool sourceUnused(ExecState *exec, int sourceId);
+
     /**
-     * Called when an error occurs during script execution.
+     * Called when an exception is thrown during script execution.
      *
-     * @param script The interpreter which is running the script
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
      * @param sourceId The ID of the source code being executed
      * @param lineno The line at which the error occurred
-     * @param errorType The type of error
-     * @param errorMessage A string containing a description of the error
+     * @param exceptionObj The exception object
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool error(KJScript *script, int sourceId, int lineno,
-		       int errorType, const UString &errorMessage);
+    virtual bool exception(ExecState *exec, int sourceId, int lineno,
+                           Object &exceptionObj);
+
     /**
      * Called when a line of the script is reached (before it is executed)
      *
-     * The default implementation does nothing. Overload this method if
-     * you want to process this event. After returning, execution of the
-     * script will continue.
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
      *
-     * @param script The interpreter which is running the script
+     * @param exec The current execution state
      * @param sourceId The ID of the source code being executed
-     * @param lineno The line that is about to be executed
-     * @param execContext The execution context within which the current
-     * line is being executed
+     * @param firstLine The starting line of the statement  that is about to be
+     * executed
+     * @param firstLine The ending line of the statement  that is about to be
+     * executed (usually the same as firstLine)
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool atLine(KJScript *script, int sourceId, int lineno,
-			const ExecutionContext *execContext);
+    virtual bool atStatement(ExecState *exec, int sourceId, int firstLine,
+                             int lastLine);
     /**
      * Called on each function call. Use together with @ref #returnEvent
      * if you want to keep track of the call stack.
      *
-     * The default implementation does nothing. Overload this method if
-     * you want to process this event. After returning, execution of the
-     * script will continue.
+     * Note: This only gets called for functions that are declared in ECMAScript
+     * source code or passed to eval(), not for internal KJS or
+     * application-supplied functions.
      *
-     * @param script The interpreter which is running the script
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
      * @param sourceId The ID of the source code being executed
      * @param lineno The line that is about to be executed
-     * @param execContext The execution context within which the current
      * @param function The function being called
      * @param args The arguments that were passed to the function
      * line is being executed
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool callEvent(KJScript *script, int sourceId, int lineno,
-			   const ExecutionContext *execContext,
-			   FunctionImp *function, const List *args);
+    virtual bool callEvent(ExecState *exec, int sourceId, int lineno,
+			   Object &function, const List &args);
+
     /**
      * Called on each function exit. The function being returned from is that
      * which was supplied in the last callEvent().
      *
-     * The default implementation does nothing. Overload this method if
-     * you want to process this event. After returning, execution of the
-     * script will continue.
+     * Note: This only gets called for functions that are declared in ECMAScript
+     * source code or passed to eval(), not for internal KJS or
+     * application-supplied functions.
      *
-     * @param script The interpreter which is running the script
+     * The default implementation does nothing. Override this method if
+     * you want to process this event.
+     *
+     * @param exec The current execution state
      * @param sourceId The ID of the source code being executed
      * @param lineno The line that is about to be executed
-     * @param execContext The execution context within which the current
      * @param function The function being called
-     * line is being executed
      * @return true if execution should be continue, false if it should
      * be aborted
      */
-    virtual bool returnEvent(KJScript *script, int sourceId, int lineno,
-			   const ExecutionContext *execContext,
-			   FunctionImp *function);
+    virtual bool returnEvent(ExecState *exec, int sourceId, int lineno,
+                             Object &function);
 
   private:
-    //    UString objInfo(const KJSO &obj) const;
-
     DebuggerImp *rep;
   };
 

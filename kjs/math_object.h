@@ -15,30 +15,33 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #ifndef _MATH_OBJECT_H_
 #define _MATH_OBJECT_H_
 
-#include "object.h"
-#include "function.h"
+#include "internal.h"
+#include "function_object.h"
 
 namespace KJS {
 
-  class Math : public ObjectImp {
+  class MathObjectImp : public ObjectImp {
   public:
-    Math(const Object &objProto);
+    MathObjectImp(ExecState *exec,
+                  ObjectPrototypeImp *objProto,
+                  FunctionPrototypeImp *funcProto);
+  };
+
+  class MathFuncImp : public InternalFunctionImp {
+  public:
+    MathFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int l);
+    virtual bool implementsCall() const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
 	   Abs, ACos, ASin, ATan, ATan2, Ceil, Cos, Pow,
 	   Exp, Floor, Log, Max, Min, Random, Round, Sin, Sqrt, Tan };
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-  };
-
-  class MathFunc : public InternalFunctionImp {
-  public:
-    MathFunc(int i, int l) : InternalFunctionImp(l), id(i) { }
-    Completion execute(const List &);
   private:
     int id;
   };

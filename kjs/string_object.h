@@ -15,38 +15,52 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #ifndef _STRING_OBJECT_H_
 #define _STRING_OBJECT_H_
 
-#include "object.h"
-#include "function.h"
+#include "internal.h"
+#include "function_object.h"
 
 namespace KJS {
 
-  class StringObject : public ConstructorImp {
+  class StringInstanceImp : public ObjectImp {
   public:
-    StringObject(const Object &funcProto, const Object &stringProto);
-    Completion execute(const List &);
-    Object construct(const List &);
+    StringInstanceImp(const Object &proto);
+
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
-  class StringObjectFunc : public InternalFunctionImp {
+  /**
+   * @internal
+   *
+   * The initial value of String.prototype (and thus all objects created
+   * with the String constructor
+   */
+  class StringPrototypeImp : public StringInstanceImp {
   public:
-    StringObjectFunc();
-    Completion execute(const List &);
+    StringPrototypeImp(ExecState *exec,
+                       ObjectPrototypeImp *objProto,
+                       FunctionPrototypeImp *funcProto);
   };
 
-  class StringPrototype : public ObjectImp {
+  /**
+   * @internal
+   *
+   * Class to implement all methods that are properties of the
+   * String.prototype object
+   */
+  class StringProtoFuncImp : public InternalFunctionImp {
   public:
-    StringPrototype(const Object& proto, const Object &funcProto);
-  };
+    StringProtoFuncImp(ExecState *exec,
+                       FunctionPrototypeImp *funcProto, int i, int len);
 
-  class StringProtoFunc : public InternalFunctionImp {
-  public:
-    StringProtoFunc(const Object &funcProto, int i, int len);
-    Completion execute(const List &);
+    virtual bool implementsCall() const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,
 	   Match, Replace, Search, Slice, Split,
@@ -60,6 +74,37 @@ namespace KJS {
     int id;
   };
 
+  /**
+   * @internal
+   *
+   * The initial value of the the global variable's "String" property
+   */
+  class StringObjectImp : public InternalFunctionImp {
+  public:
+    StringObjectImp(ExecState *exec,
+                    FunctionPrototypeImp *funcProto,
+                    StringPrototypeImp *stringProto);
+
+    virtual bool implementsConstruct() const;
+    virtual Object construct(ExecState *exec, const List &args);
+    virtual bool implementsCall() const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+  };
+
+  /**
+   * @internal
+   *
+   * Class to implement all methods that are properties of the
+   * String object
+   */
+  class StringObjectFuncImp : public InternalFunctionImp {
+  public:
+    StringObjectFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto);
+    virtual bool implementsCall() const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+  };
+
 }; // namespace
 
 #endif
+

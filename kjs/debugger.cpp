@@ -16,195 +16,117 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #include "debugger.h"
-#include "kjs.h"
+#include "value.h"
+#include "object.h"
+#include "types.h"
+#include "interpreter.h"
 #include "internal.h"
 #include "ustring.h"
 
 using namespace KJS;
 
-KJSO ExecutionContext::resolveVar(const UString &/*varName*/) const
-{
-  // ###
-  return KJSO();
-}
+// ------------------------------ Debugger -------------------------------------
 
-KJSO ExecutionContext::executeCall(KJScript *script, KJSO &func, const KJSO &thisV, const List *args) const
-{
-  KJScriptImp *oldCurrent = KJScriptImp::current(); // ### hack
-  KJScriptImp::setCurrent(script->rep);
-  Context *oldContext = script->rep->context(); // ### hack
-  script->rep->setContext(rep);
+namespace KJS {
+  struct AttachedInterpreter
+  {
+  public:
+    AttachedInterpreter(Interpreter *i) : interp(i) {}
+    Interpreter *interp;
+    AttachedInterpreter *next;
+  };
 
-  KJSO ret = func.executeCall(thisV,args);
-
-  script->rep->setContext(oldContext);
-  KJScriptImp::setCurrent(oldCurrent);
-  return ret;
-}
-
-KJSO ExecutionContext::thisValue() const
-{
-  return rep->thisValue();
-}
-
-ExecutionContext::ExecutionContext(Context *c)
-{
-  rep = c;
 }
 
 Debugger::Debugger()
 {
-  rep = new DebuggerImp(this);
+  rep = new DebuggerImp();
 }
 
 Debugger::~Debugger()
 {
+  // detach from all interpreters
+  while (rep->interps)
+    detach(rep->interps->interp);
+
   delete rep;
 }
 
-void Debugger::attach(KJScript *e)
+void Debugger::attach(Interpreter *interp)
 {
-  e->rep->setDebugger(this);
-}
+  if (interp->imp()->debugger() != this)
+    interp->imp()->setDebugger(this);
 
-void Debugger::detach(KJScript *script)
-{
-  // ### take care of script == 0 situation
-  if (script->rep->debugger() == this)
-    script->rep->setDebugger(0);
-}
-
-bool Debugger::sourceParsed(KJScript */*script*/, int /*sourceId*/,
-			    const UString &/*source*/, int /*errorLine*/)
-{
-  return true;
-}
-
-bool Debugger::sourceUnused(KJScript */*script*/, int /*sourceId*/)
-{
-  return true;
-}
-
-bool Debugger::error(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
-		     int /*errorType*/, const UString &/*errorMessage*/)
-{
-  return true;
-}
-
-bool Debugger::atLine(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
-		      const ExecutionContext */*execContext*/)
-{
-  return true;
-}
-
-bool Debugger::callEvent(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
-			 const ExecutionContext */*execContext*/,
-			 FunctionImp */*function*/, const List */*args*/)
-{
-  return true;
-}
-
-bool Debugger::returnEvent(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
-			   const ExecutionContext */*execContext*/,
-			   FunctionImp */*function*/)
-{
-  return true;
-}
-
-/*
-UString Debugger::varInfo(const UString &ident)
-{
-  // ###
-  //  if (!eng)
-  //    return UString();
-
-  int dot = ident.find('.');
-  if (dot < 0)
-      dot = ident.size();
-  UString sub = ident.substr(0, dot);
-  KJSO obj;
-  // resolve base
-  if (sub == "this") {
-      obj = KJScriptImp::current()->context()->thisValue();
-  } else {
-      const List *chain = KJScriptImp::current()->context()->pScopeChain();
-      ListIterator scope = chain->begin();
-      while (scope != chain->end()) {
-	  if (scope->hasProperty(ident)) {
-	      obj = scope->get(ident);
-	      break;
-	  }
-	  scope++;
-      }
-      if (scope == chain->end())
-	return UString();
-  }
-  // look up each part of a.b.c.
-  while (dot < ident.size()) {
-    int olddot = dot;
-    dot = ident.find('.', olddot+1);
-    if (dot < 0)
-      dot = ident.size();
-    sub = ident.substr(olddot+1, dot-olddot-1);
-    obj = obj.get(sub);
-    if (!obj.isDefined())
-      break;
-  }
-
-  return sub + "=" + objInfo(obj) + ":" + UString(obj.imp()->typeInfo()->name);
-}
-
-// called by varInfo() and recursively by itself on each properties
-UString Debugger::objInfo(const KJSO &obj) const
-{
-  // ###
-  const char *cnames[] = { "Undefined", "Array", "String", "Boolean",
-			   "Number", "Object", "Date", "RegExp",
-			   "Error", "Function" };
-  PropList *plist = obj.imp()->propList(0, 0, false);
-  if (!plist)
-    return obj.toString().value();
+  // add to the list of attached interpreters
+  if (!rep->interps)
+    rep->interps = new AttachedInterpreter(interp);
   else {
-    UString result = "{";
-    while (1) {
-      result += plist->name + "=";
-      KJSO p = obj.get(plist->name);
-      result += objInfo(p) + ":";
-      Object obj = Object::dynamicCast(p);
-      if (obj.isNull())
-	result += p.imp()->typeInfo()->name;
-      else
-	result += cnames[int(obj.getClass())];
-      plist = plist->next;
-      if (!plist)
-	break;
-      result += ",";
-    }
-    result += "}";
-    return result;
+    AttachedInterpreter *ai = rep->interps;
+    while (ai->next)
+      ai = ai->next;
+    ai->next = new AttachedInterpreter(interp);;
   }
 }
 
-bool Debugger::setVar(const UString &ident, const KJSO &value)
+void Debugger::detach(Interpreter *interp)
 {
-  // ###
-  //  if (!eng)
-  //    return false;
-  const List *chain = KJScriptImp::current()->context()->pScopeChain();
-  ListIterator scope = chain->begin();
-  while (scope != chain->end()) {
-    if (scope->hasProperty(ident)) {
-      if (!scope->canPut(ident))
-	return false;
-      scope->put(ident, value);
-      return true;
-    }
-    scope++;
+  if (interp->imp()->debugger() == this)
+    interp->imp()->setDebugger(this);
+
+  // remove from the list of attached interpreters
+  if (rep->interps->interp == interp) {
+    AttachedInterpreter *old = rep->interps;
+    rep->interps = rep->interps->next;
+    delete old;
   }
-  // didn't find variable
-  return false;
+
+  AttachedInterpreter *ai = rep->interps;
+  while (ai->next && ai->next->interp != interp)
+    ai = ai->next;
+  if (ai->next) {
+    AttachedInterpreter *old = ai->next;
+    ai->next = ai->next->next;
+    delete old;
+  }
 }
-*/
+
+bool Debugger::sourceParsed(ExecState */*exec*/, int /*sourceId*/,
+                            const UString &/*source*/, int /*errorLine*/)
+{
+  return true;
+}
+
+bool Debugger::sourceUnused(ExecState */*exec*/, int /*sourceId*/)
+{
+  return true;
+}
+
+bool Debugger::exception(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
+                         Object &/*exceptionObj*/)
+{
+  return true;
+}
+
+bool Debugger::atStatement(ExecState */*exec*/, int /*sourceId*/, int /*firstLine*/,
+                           int /*lastLine*/)
+{
+  return true;
+}
+
+bool Debugger::callEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
+                         Object &/*function*/, const List &/*args*/)
+{
+  return true;
+}
+
+bool Debugger::returnEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
+                           Object &/*function*/)
+{
+  return true;
+}
+

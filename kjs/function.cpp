@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
@@ -17,31 +18,28 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
 #include "function.h"
 
-#include "kjs.h"
-#include "types.h"
 #include "internal.h"
-#include "operations.h"
+#include "function_object.h"
+#include "lexer.h"
 #include "nodes.h"
-#ifndef NDEBUG
+#include "debugger.h"
+
 #include <stdio.h>
-#endif
+#include <assert.h>
 
 using namespace KJS;
 
-const TypeInfo FunctionImp::info = { "Function", FunctionType,
-				      &ObjectImp::info, 0, 0 };
-const TypeInfo InternalFunctionImp::info = { "InternalFunction",
-					      InternalFunctionType,
-					      &FunctionImp::info, 0, 0 };
-const TypeInfo ConstructorImp::info = { "Function", ConstructorType,
-					 &InternalFunctionImp::info, 0, 0 };
+// ------------------------------ FunctionImp ----------------------------------
+
+const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
 namespace KJS {
-
   class Parameter {
   public:
     Parameter(const UString &n) : name(n), next(0L) { }
@@ -49,31 +47,118 @@ namespace KJS {
     UString name;
     Parameter *next;
   };
-
 };
 
-FunctionImp::FunctionImp()
-  : ObjectImp(FunctionClass), param(0L)
+FunctionImp::FunctionImp(ExecState *exec, const UString &n)
+  : InternalFunctionImp(
+      static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+      ), param(0L), ident(n), argStack(0)
 {
-  argStack = 0;
-  put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
-}
-
-FunctionImp::FunctionImp(const UString &n)
-  : ObjectImp(FunctionClass), ident(n), param(0L)
-{
-  argStack = 0;
-  put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
+  Value protect(this);
+  argStack = new ListImp();
+  put(exec,"arguments",Null(),ReadOnly|DontDelete|DontEnum);
 }
 
 FunctionImp::~FunctionImp()
 {
+  argStack->setGcAllowed();
+  // The function shouldn't be deleted while it is still executed; argStack
+  // should be set to 0 by the last call to popArgs()
+  assert(argStack->isEmpty());
   delete param;
 }
 
-KJSO FunctionImp::thisValue() const
+void FunctionImp::mark()
 {
-  return KJSO(KJScriptImp::current()->context()->thisValue());
+  InternalFunctionImp::mark();
+  if (argStack && !argStack->marked())
+    argStack->mark();
+}
+
+bool FunctionImp::implementsCall() const
+{
+  return true;
+}
+
+Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
+{
+  Object globalObj = exec->interpreter()->globalObject();
+
+  Debugger *dbg = exec->interpreter()->imp()->debugger();
+  int sid = -1;
+  int lineno = -1;
+  if (dbg) {
+    if (inherits(&DeclaredFunctionImp::info)) {
+      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
+      lineno = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
+    }
+
+    Object func(this);
+    int cont = dbg->callEvent(exec,sid,lineno,func,args);
+    if (!cont) {
+      dbg->imp()->abort();
+      return Undefined();
+    }
+  }
+
+  // enter a new execution context
+  ContextImp *ctx = new ContextImp(globalObj, exec, thisObj,
+                                   codeType(), exec->context().imp(), this, args);
+  ExecState *newExec = new ExecState(exec->interpreter(),ctx);
+  newExec->setException(exec->exception()); // could be null
+
+  // In order to maintain our "arguments" property, we maintain a list of arguments
+  // properties from earlier in the execution stack. Upon return, we restore the
+  // previous arguments object using popArgs().
+  // Note: this does not appear to be part of the spec
+  if (codeType() == FunctionCode) {
+    assert(ctx->activationObject().inherits(&ActivationImp::info));
+    Object argsObj = static_cast<ActivationImp*>(ctx->activationObject().imp())->argumentsObject();
+    put(newExec,"arguments", argsObj);
+    pushArgs(newExec,argsObj);
+  }
+
+  // assign user supplied arguments to parameters
+  processParameters(newExec,args);
+  // add variable declarations (initialized to undefined)
+  processVarDecls(newExec);
+
+  Completion comp = execute(newExec);
+
+  // if an exception occured, propogate it back to the previous execution object
+  if (newExec->hadException())
+    exec->setException(newExec->exception());
+  if (codeType() == FunctionCode)
+    popArgs(newExec);
+  delete newExec;
+  delete ctx;
+
+#ifdef KJS_VERBOSE
+  if (comp.complType() == Throw)
+    printInfo(exec,"throwing", comp.value());
+  else if (comp.complType() == ReturnValue)
+    printInfo(exec,"returning", comp.value());
+  else
+    fprintf(stderr, "returning: undefined\n");
+#endif
+
+  if (dbg) {
+    Object func(this);
+    int cont = dbg->returnEvent(exec,sid,lineno,func);
+    if (!cont) {
+      dbg->imp()->abort();
+      return Undefined();
+    }
+  }
+
+  if (comp.complType() == Throw) {
+    exec->setException(comp.value());
+    return comp.value();
+  }
+  else if (comp.complType() == ReturnValue)
+    return comp.value();
+  else
+    return Undefined();
 }
 
 void FunctionImp::addParameter(const UString &n)
@@ -85,21 +170,11 @@ void FunctionImp::addParameter(const UString &n)
   *p = new Parameter(n);
 }
 
-void FunctionImp::setLength(int l)
-{
-  put("length", Number(l), ReadOnly|DontDelete|DontEnum);
-}
 
 // ECMA 10.1.3q
-void FunctionImp::processParameters(const List *args)
+void FunctionImp::processParameters(ExecState *exec, const List &args)
 {
-  // ### initialize script & context in parameters
-  KJScriptImp *script = KJScriptImp::current();
-  Context *context = script->context();
-
-  KJSO variable = context->variableObject();
-
-  assert(args);
+  Object variable = exec->context().imp()->variableObject();
 
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
@@ -108,281 +183,287 @@ void FunctionImp::processParameters(const List *args)
 #endif
 
   if (param) {
-    ListIterator it = args->begin();
+    ListIterator it = args.begin();
     Parameter **p = &param;
     while (*p) {
-      if (it != args->end()) {
+      if (it != args.end()) {
 #ifdef KJS_VERBOSE
 	fprintf(stderr, "setting parameter %s ", (*p)->name.ascii());
-	printInfo("to", *it);
+	printInfo(exec,"to", *it);
 #endif
-	variable.put((*p)->name, *it);
+	variable.put(exec,(*p)->name, *it);
 	it++;
       } else
-	variable.put((*p)->name, Undefined());
+	variable.put(exec,(*p)->name, Undefined());
       p = &(*p)->next;
     }
   }
 #ifdef KJS_VERBOSE
   else {
-    for (int i = 0; i < args->size(); i++)
-      printInfo("setting argument", (*args)[i]);
+    for (int i = 0; i < args.size(); i++)
+      printInfo(exec,"setting argument", args[i]);
   }
 #endif
-
-  if (script->debugger()) {
-    int sid = -1;
-    int lineno = -1;
-
-    if (typeInfo()->type == DeclaredFunctionType) {
-      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
-      lineno = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
-    }
-
-    ExecutionContext ec(context);
-    script->debugger()->callEvent(script->scr,sid,lineno,&ec,this,args);
-  }
 }
 
-void FunctionImp::pushArgs(const KJSO &args)
+void FunctionImp::processVarDecls(ExecState */*exec*/)
 {
-  if (!argStack)
-    argStack = new List();
-  argStack->append(args);
-  put("arguments",args,ReadOnly|DontDelete|DontEnum);
 }
 
-void FunctionImp::popArgs()
+void FunctionImp::pushArgs(ExecState *exec, const Object &args)
+{
+  argStack->append(args);
+  put(exec,"arguments",args,ReadOnly|DontDelete|DontEnum);
+}
+
+void FunctionImp::popArgs(ExecState *exec)
 {
   argStack->removeLast();
   if (argStack->isEmpty()) {
-    delete argStack;
-    argStack = 0;
-    put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
+    put(exec,"arguments",Null(),ReadOnly|DontDelete|DontEnum);
   }
   else
-    put("arguments",argStack->at(argStack->size()-1),ReadOnly|DontDelete|DontEnum);
+    put(exec,"arguments",argStack->at(argStack->size()-1),ReadOnly|DontDelete|DontEnum);
 }
 
-// ECMA 13.2.1
-KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
+// ------------------------------ DeclaredFunctionImp --------------------------
+
+// ### is "Function" correct here?
+const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 0};
+
+DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const UString &n,
+					 FunctionBodyNode *b, const List &sc)
+  : FunctionImp(exec,n), body(b)
 {
-  return executeCall(thisV,args,0);
+  Value protect(this);
+  body->ref();
+  setScope(sc.copy());
 }
 
-KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraScope)
+DeclaredFunctionImp::~DeclaredFunctionImp()
 {
-  KJScriptImp *script = KJScriptImp::current(); // ### get from parameters
+  if ( body->deref() )
+    delete body;
+}
 
-  bool dummyList = false;
-  if (!args) {
-    args = new List();
-    dummyList = true;
-  }
+bool DeclaredFunctionImp::implementsConstruct() const
+{
+  return true;
+}
 
-  Context *save = script->context();
+// ECMA 13.2.2 [[Construct]]
+Object DeclaredFunctionImp::construct(ExecState *exec, const List &args)
+{
+  Object proto;
+  Value p = get(exec,"prototype");
+  if (p.type() == ObjectType)
+    proto = static_cast<ObjectImp*>(p.imp());
+  else
+    proto = exec->interpreter()->builtinObjectPrototype();
 
-  Context *ctx = new Context(codeType(), save, this, args, thisV);
-  script->setContext(ctx);
+  Object obj(new ObjectImp(proto));
 
-  int numScopes = 0;
-  if (extraScope) {
-    ListIterator scopeIt = extraScope->begin();
-    for (; scopeIt != extraScope->end(); scopeIt++) {
-      KJSO obj(*scopeIt);
-      ctx->pushScope(obj);
-      numScopes++;
+  Value res = call(exec,obj,args);
+
+  if (res.type() == ObjectType)
+    return Object::dynamicCast(res);
+  else
+    return obj;
+}
+
+Completion DeclaredFunctionImp::execute(ExecState *exec)
+{
+  Completion result = body->execute(exec);
+
+  if (result.complType() == Throw || result.complType() == ReturnValue)
+      return result;
+  return Completion(Normal, Undefined()); // TODO: or ReturnValue ?
+}
+
+void DeclaredFunctionImp::processVarDecls(ExecState *exec)
+{
+  body->processVarDecls(exec);
+}
+
+// ------------------------------ ArgumentsImp ---------------------------------
+
+const ClassInfo ArgumentsImp::info = {"Arguments", 0, 0, 0};
+
+// ECMA 10.1.8
+ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args)
+  : ObjectImp(exec->interpreter()->builtinObjectPrototype())
+{
+  Value protect(this);
+  put(exec,"callee", func, DontEnum);
+  put(exec,"length", Number(args.size()), DontEnum);
+  if (!args.isEmpty()) {
+    ListIterator arg = args.begin();
+    for (int i = 0; arg != args.end(); arg++, i++) {
+      put(exec,UString::from(i), *arg, DontEnum);
     }
   }
+}
 
-  // assign user supplied arguments to parameters
-  processParameters(args);
-  // add variable declarations (initialized to undefined)
-  processVarDecls();
+// ------------------------------ ActivationImp --------------------------------
 
-  Completion comp = execute(*args);
+const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
-  if (dummyList)
-    delete args;
+// ECMA 10.1.6
+ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
+  : ObjectImp()
+{
+  Value protect(this);
+  arguments = new ArgumentsImp(exec,f, args);
+  put(exec,"arguments", arguments, DontDelete);
+}
 
-  int i;
-  for (i = 0; i < numScopes; i++)
-    ctx->popScope();
+// ------------------------------ GlobalFunc -----------------------------------
 
-  delete ctx;
-  script->setContext(save);
 
-#ifdef KJS_VERBOSE
-  if (comp.complType() == Throw)
-    printInfo("throwing", comp.value());
-  else if (comp.complType() == ReturnValue)
-    printInfo("returning", comp.value());
-  else
-    fprintf(stderr, "returning: undefined\n");
-#endif
+GlobalFuncImp::GlobalFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int len)
+  : InternalFunctionImp(funcProto), id(i)
+{
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
 
-  if (script->debugger()) {
-    int sid = -1;
-    int lineno = -1;
+CodeType GlobalFuncImp::codeType() const
+{
+  return id == Eval ? EvalCode : codeType();
+}
 
-    if (typeInfo()->type == DeclaredFunctionType) {
-      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
-      lineno = static_cast<DeclaredFunctionImp*>(this)->body->lastLine();
+bool GlobalFuncImp::implementsCall() const
+{
+  return true;
+}
+
+Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  Value res;
+
+  static const char non_escape[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				   "abcdefghijklmnopqrstuvwxyz"
+				   "0123456789@*_+-./";
+
+  if (id == Eval) { // eval()
+    Value x = args[0];
+    if (x.type() != StringType)
+      return x;
+    else {
+      UString s = x.toString(exec).value();
+
+      int sid;
+      int errLine;
+      UString errMsg;
+      ProgramNode *progNode = Parser::parse(s.data(),s.size(),&sid,&errLine,&errMsg);
+
+      // no program node means a syntax occurred
+      if (!progNode) {
+	Object err = Error::create(exec,SyntaxError,errMsg.ascii(),errLine);
+        err.put(exec,"sid",Number(sid));
+        exec->setException(err);
+        return err;
+      }
+
+      progNode->ref();
+
+      // enter a new execution context
+      Object glob(exec->interpreter()->globalObject());
+      Object thisVal(Object::dynamicCast(exec->context().thisValue()));
+      ContextImp *ctx = new ContextImp(glob,
+                                       exec,
+                                       thisVal,
+                                       EvalCode,
+                                       exec->context().imp());
+
+      ExecState *newExec = new ExecState(exec->interpreter(),ctx);
+      newExec->setException(exec->exception()); // could be null
+
+      // execute the code
+      Completion c = progNode->execute(newExec);
+
+      // if an exception occured, propogate it back to the previous execution object
+      if (newExec->hadException())
+        exec->setException(newExec->exception());
+      delete newExec;
+      delete ctx;
+
+      if ( progNode->deref() )
+          delete progNode;
+      if (c.complType() == ReturnValue)
+	  return c;
+      // ### setException() on throw?
+      else if (c.complType() == Normal) {
+	  if (c.isValueCompletion())
+	      return c.value();
+	  else
+	      return Undefined();
+      } else
+	  return c;
     }
-
-    Context *context = KJScriptImp::current()->context(); // ### get from parameter
-    ExecutionContext ec(context);
-    script->debugger()->returnEvent(script->scr,sid,lineno,&ec,this);
+  } else if (id == ParseInt) {
+    String str = args[0].toString(exec);
+    int radix = args[1].toInt32(exec);
+    if (radix == 0)
+      radix = 10;
+    else if (radix < 2 || radix > 36) {
+      res = Number(NaN);
+      return res;
+    }
+    /* TODO: use radix */
+    int i = 0;
+    sscanf(str.value().ascii(), "%d", &i);
+    res = Number(i);
+  } else if (id == ParseFloat) {
+    String str = args[0].toString(exec);
+    double d = 0.0;
+    sscanf(str.value().ascii(), "%lf", &d);
+    res = Number(d);
+  } else if (id == IsNaN) {
+    res = Boolean(args[0].toNumber(exec).isNaN());
+  } else if (id == IsFinite) {
+    Number n = args[0].toNumber(exec);
+    res = Boolean(!n.isNaN() && !n.isInf());
+  } else if (id == Escape) {
+    UString r = "", s, str = args[0].toString(exec).value();
+    const UChar *c = str.data();
+    for (int k = 0; k < str.size(); k++, c++) {
+      int u = c->unicode();
+      if (u > 255) {
+	char tmp[7];
+	sprintf(tmp, "%%u%04x", u);
+	s = UString(tmp);
+      } else if (strchr(non_escape, (char)u)) {
+	s = UString(c, 1);
+      } else {
+	char tmp[4];
+	sprintf(tmp, "%%%02x", u);
+	s = UString(tmp);
+      }
+      r += s;
+    }
+    res = String(r);
+  } else if (id == UnEscape) {
+    UString s, str = args[0].toString(exec).value();
+    int k = 0, len = str.size();
+    while (k < len) {
+      const UChar *c = str.data() + k;
+      UChar u;
+      if (*c == UChar('%') && k <= len - 6 && *(c+1) == UChar('u')) {
+	u = Lexer::convertUnicode((c+2)->unicode(), (c+3)->unicode(),
+				  (c+4)->unicode(), (c+5)->unicode());
+	c = &u;
+	k += 5;
+      } else if (*c == UChar('%') && k <= len - 3) {
+	u = UChar(Lexer::convertHex((c+1)->unicode(), (c+2)->unicode()));
+	c = &u;
+	k += 2;
+      }
+      k++;
+      s += UString(c, 1);
+    }
+    res = String(s);
   }
 
-  if (comp.complType() == Throw)
-    return comp.value();
-  else if (comp.complType() == ReturnValue)
-    return comp.value();
-  else
-    return Undefined();
-}
-
-UString FunctionImp::name() const
-{
-  return ident;
-}
-
-InternalFunctionImp::InternalFunctionImp()
-{
-}
-
-InternalFunctionImp::InternalFunctionImp(int l)
-{
-  if (l >= 0)
-    setLength(l);
-}
-
-InternalFunctionImp::InternalFunctionImp(const UString &n)
-  : FunctionImp(n)
-{
-}
-
-Completion InternalFunctionImp::execute(const List &)
-{
-  return Completion(ReturnValue, Undefined());
-}
-
-ConstructorImp::ConstructorImp() {
-  setPrototype(KJScriptImp::current()->functionPrototype());
-  // TODO ???  put("constructor", this);
-  setLength(1);
-}
-
-ConstructorImp::ConstructorImp(const UString &n)
-  : InternalFunctionImp(n)
-{
-}
-
-ConstructorImp::ConstructorImp(const KJSO &p, int len)
-{
-  setPrototype(p);
-  // TODO ???  put("constructor", *this);
-  setLength(len);
-}
-
-ConstructorImp::ConstructorImp(const UString &n, const KJSO &p, int len)
-  : InternalFunctionImp(n)
-{
-  setPrototype(p);
-  // TODO ???  put("constructor", *this);
-  setLength(len);
-}
-
-ConstructorImp::~ConstructorImp() { }
-
-Completion ConstructorImp::execute(const List &)
-{
-  /* TODO */
-  return Completion(ReturnValue, Null());
-}
-
-Function::Function(Imp *d)
-  : KJSO(d)
-{
-  if (d) {
-    static_cast<FunctionImp*>(rep)->attr = ImplicitNone;
-    assert(KJScriptImp::current()->globalObject().hasProperty("[[Function.prototype]]"));
-    setPrototype(KJScriptImp::current()->functionPrototype());
-  }
-}
-
-Completion Function::execute(const List &args)
-{
-  assert(rep);
-  return static_cast<FunctionImp*>(rep)->execute(args);
-}
-
-bool Function::hasAttribute(FunctionAttribute a) const
-{
-  assert(rep);
-  return static_cast<FunctionImp*>(rep)->hasAttribute(a);
-}
-
-#if 0
-InternalFunction::InternalFunction(Imp *d)
-  : Function(d)
-{
-  param = 0L;
-}
-
-InternalFunction::~InternalFunction()
-{
-}
-#endif
-
-Constructor::Constructor(Imp *d)
-  : Function(d)
-{
-  if (d) {
-    assert(KJScriptImp::current()->globalObject().hasProperty("[[Function.prototype]]"));
-    setPrototype(KJScriptImp::current()->globalObject().get("[[Function.prototype]]"));
-    put("constructor", *this);
-    KJSO tmp(d); // protect from GC
-    ((FunctionImp*)d)->setLength(1);
-  }
-}
-
-#if 0
-Constructor::Constructor(const Object& proto, int len)
-{
-  setPrototype(proto);
-  put("constructor", *this);
-  put("length", len, DontEnum);
-}
-#endif
-
-Constructor::~Constructor()
-{
-}
-
-Completion Constructor::execute(const List &)
-{
-  /* TODO: call construct instead ? */
-  return Completion(ReturnValue, Undefined());
-}
-
-Object Constructor::construct(const List &args)
-{
-  assert(rep && (rep->type() == ConstructorType || rep->type() == DeclaredFunctionType));
-  return ((ConstructorImp*)rep)->construct(args);
-}
-
-Constructor Constructor::dynamicCast(const KJSO &obj)
-{
-  // return null object on type mismatch
-  if (!obj.derivedFrom(ConstructorType))
-    return Constructor(0L);
-
-  return Constructor(obj.imp());
-}
-
-KJSO Function::thisValue() const
-{
-  return KJSO(KJScriptImp::current()->context()->thisValue());
+  return res;
 }

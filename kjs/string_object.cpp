@@ -15,143 +15,106 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
-#include "kjs.h"
-#include "operations.h"
+#include "value.h"
+#include "object.h"
 #include "types.h"
-#include "internal.h"
+#include "interpreter.h"
+#include "operations.h"
 #include "regexp.h"
+#include "regexp_object.h"
 #include "string_object.h"
+#include "error_object.h"
 #include <stdio.h>
 
 using namespace KJS;
 
-StringObject::StringObject(const Object &funcProto, const Object &stringProto)
-  : ConstructorImp(funcProto, 1)
-{
-  // ECMA 15.5.3.1 String.prototype
-  setPrototypeProperty(stringProto);
+// ------------------------------ StringInstanceImp ----------------------------
 
-  put("fromCharCode", new StringObjectFunc(), DontEnum);
+const ClassInfo StringInstanceImp::info = {"String", 0, 0, 0};
+
+StringInstanceImp::StringInstanceImp(const Object &proto)
+  : ObjectImp(proto)
+{
+  setInternalValue(String(""));
 }
 
-// ECMA 15.5.1
-Completion StringObject::execute(const List &args)
-{
-  KJSO v;
-  String s;
-
-  if (args.isEmpty())
-    s = String("");
-  else {
-    v = args[0];
-    s = v.toString();
-  }
-
-  return Completion(ReturnValue, s);
-}
-
-// ECMA 15.5.2
-Object StringObject::construct(const List &args)
-{
-  String s;
-  if (args.size() > 0)
-    s = args.begin()->toString();
-  else
-    s = String("");
-
-  return Object::create(StringClass, s);
-}
-
-// ECMA 15.5.3.2 fromCharCode()
-StringObjectFunc::StringObjectFunc()
-{
-  put("length",Number(1),DontDelete|ReadOnly|DontEnum);
-}
-
-Completion StringObjectFunc::execute(const List &args)
-{
-  UString s;
-  if (args.size()) {
-    UChar *buf = new UChar[args.size()];
-    UChar *p = buf;
-    ListIterator it = args.begin();
-    while (it != args.end()) {
-      unsigned short u = it->toUInt16();
-      *p++ = UChar(u);
-      it++;
-    }
-    s = UString(buf, args.size(), false);
-  } else
-    s = "";
-
-  return Completion(ReturnValue, String(s));
-}
-
+// ------------------------------ StringPrototypeImp ---------------------------
 // ECMA 15.5.4
-StringPrototype::StringPrototype(const Object& proto, const Object &funcProto)
-  : ObjectImp(StringClass, String(""), proto)
+
+StringPrototypeImp::StringPrototypeImp(ExecState *exec,
+                                       ObjectPrototypeImp *objProto,
+                                       FunctionPrototypeImp *funcProto)
+  : StringInstanceImp(objProto)
 {
+  Value protect(this);
   // The constructor will be added later in StringObject's constructor
-//  setPrototype(Global::current().get("[[Function.prototype]]"));
+  put(exec,"length",Number(0),DontDelete|ReadOnly|DontEnum);
 
-  put("length",Number(0),DontDelete|ReadOnly|DontEnum);
-
-  put("toString",    new StringProtoFunc(funcProto,StringProtoFunc::ToString,    0), DontEnum);
-  put("valueOf",     new StringProtoFunc(funcProto,StringProtoFunc::ValueOf,     0), DontEnum);
-  put("charAt",      new StringProtoFunc(funcProto,StringProtoFunc::CharAt,      1), DontEnum);
-  put("charCodeAt",  new StringProtoFunc(funcProto,StringProtoFunc::CharCodeAt,  1), DontEnum);
-  put("indexOf",     new StringProtoFunc(funcProto,StringProtoFunc::IndexOf,     2), DontEnum);
-  put("lastIndexOf", new StringProtoFunc(funcProto,StringProtoFunc::LastIndexOf, 2), DontEnum);
-  put("match",       new StringProtoFunc(funcProto,StringProtoFunc::Match,       1), DontEnum);
-  put("replace",     new StringProtoFunc(funcProto,StringProtoFunc::Replace,     2), DontEnum);
-  put("search",      new StringProtoFunc(funcProto,StringProtoFunc::Search,      1), DontEnum);
-  put("slice",       new StringProtoFunc(funcProto,StringProtoFunc::Slice,       0), DontEnum);
-  put("split",       new StringProtoFunc(funcProto,StringProtoFunc::Split,       1), DontEnum);
-  put("substr",      new StringProtoFunc(funcProto,StringProtoFunc::Substr,      2), DontEnum);
-  put("substring",   new StringProtoFunc(funcProto,StringProtoFunc::Substring,   2), DontEnum);
-  put("toLowerCase", new StringProtoFunc(funcProto,StringProtoFunc::ToLowerCase, 0), DontEnum);
-  put("toUpperCase", new StringProtoFunc(funcProto,StringProtoFunc::ToUpperCase, 0), DontEnum);
+  put(exec,"toString",    new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ToString,    0), DontEnum);
+  put(exec,"valueOf",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ValueOf,     0), DontEnum);
+  put(exec,"charAt",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::CharAt,      1), DontEnum);
+  put(exec,"charCodeAt",  new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::CharCodeAt,  1), DontEnum);
+  put(exec,"indexOf",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::IndexOf,     2), DontEnum);
+  put(exec,"lastIndexOf", new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::LastIndexOf, 2), DontEnum);
+  put(exec,"match",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Match,       1), DontEnum);
+  put(exec,"replace",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Replace,     2), DontEnum);
+  put(exec,"search",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Search,      1), DontEnum);
+  put(exec,"slice",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Slice,       0), DontEnum);
+  put(exec,"split",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Split,       1), DontEnum);
+  put(exec,"substr",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Substr,      2), DontEnum);
+  put(exec,"substring",   new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Substring,   2), DontEnum);
+  put(exec,"toLowerCase", new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ToLowerCase, 0), DontEnum);
+  put(exec,"toUpperCase", new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::ToUpperCase, 0), DontEnum);
 #ifndef KJS_PURE_ECMA
-  put("big",         new StringProtoFunc(funcProto,StringProtoFunc::Big,         0), DontEnum);
-  put("small",       new StringProtoFunc(funcProto,StringProtoFunc::Small,       0), DontEnum);
-  put("blink",       new StringProtoFunc(funcProto,StringProtoFunc::Blink,       0), DontEnum);
-  put("bold",        new StringProtoFunc(funcProto,StringProtoFunc::Bold,        0), DontEnum);
-  put("fixed",       new StringProtoFunc(funcProto,StringProtoFunc::Fixed,       0), DontEnum);
-  put("italics",     new StringProtoFunc(funcProto,StringProtoFunc::Italics,     0), DontEnum);
-  put("strike",      new StringProtoFunc(funcProto,StringProtoFunc::Strike,      0), DontEnum);
-  put("sub",         new StringProtoFunc(funcProto,StringProtoFunc::Sub,         0), DontEnum);
-  put("sup",         new StringProtoFunc(funcProto,StringProtoFunc::Sup,         0), DontEnum);
-  put("fontcolor",   new StringProtoFunc(funcProto,StringProtoFunc::Fontcolor,   1), DontEnum);
-  put("fontsize",    new StringProtoFunc(funcProto,StringProtoFunc::Fontsize,    1), DontEnum);
-  put("anchor",      new StringProtoFunc(funcProto,StringProtoFunc::Anchor,      1), DontEnum);
-  put("link",        new StringProtoFunc(funcProto,StringProtoFunc::Link,        1), DontEnum);
+  put(exec,"big",         new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Big,         0), DontEnum);
+  put(exec,"small",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Small,       0), DontEnum);
+  put(exec,"blink",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Blink,       0), DontEnum);
+  put(exec,"bold",        new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Bold,        0), DontEnum);
+  put(exec,"fixed",       new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Fixed,       0), DontEnum);
+  put(exec,"italics",     new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Italics,     0), DontEnum);
+  put(exec,"strike",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Strike,      0), DontEnum);
+  put(exec,"sub",         new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Sub,         0), DontEnum);
+  put(exec,"sup",         new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Sup,         0), DontEnum);
+  put(exec,"fontcolor",   new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Fontcolor,   1), DontEnum);
+  put(exec,"fontsize",    new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Fontsize,    1), DontEnum);
+  put(exec,"anchor",      new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Anchor,      1), DontEnum);
+  put(exec,"link",        new StringProtoFuncImp(exec,funcProto,StringProtoFuncImp::Link,        1), DontEnum);
 #endif
 }
 
-StringProtoFunc::StringProtoFunc(const Object &funcProto, int i, int len)
-  : id(i)
+// ------------------------------ StringProtoFuncImp ---------------------------
+
+StringProtoFuncImp::StringProtoFuncImp(ExecState *exec,
+                                       FunctionPrototypeImp *funcProto, int i, int len)
+  : InternalFunctionImp(funcProto), id(i)
 {
-  setPrototype(funcProto);
-  put("length",Number(len),DontDelete|ReadOnly|DontEnum);
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
+bool StringProtoFuncImp::implementsCall() const
+{
+  return true;
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20
-Completion StringProtoFunc::execute(const List &args)
+Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJSO result;
-
-  Object thisObj = Object::dynamicCast(thisValue());
+  Value result;
 
   // toString and valueOf are no generic function.
   if (id == ToString || id == ValueOf) {
-    if (thisObj.isNull() || thisObj.getClass() != StringClass) {
-      result = Error::create(TypeError);
-      return Completion(ReturnValue, result);
+    if (thisObj.isNull() || !thisObj.inherits(&StringInstanceImp::info)) {
+      Object err = Error::create(exec,TypeError);
+      exec->setException(err);
+      return err;
     }
 
-    return Completion(ReturnValue,thisObj.internalValue().toString());
+    return thisObj.internalValue().toString(exec);
   }
 
   String s2;
@@ -160,12 +123,12 @@ Completion StringProtoFunc::execute(const List &args)
   int pos, p0, i;
   double d, d2;
 
-  KJSO tv = thisValue();
-  String s = tv.toString();
+  Value tv = thisObj;
+  String s = tv.toString(exec);
 
   int len = s.value().size();
-  KJSO a0 = args[0];
-  KJSO a1 = args[1];
+  Value a0 = args[0];
+  Value a1 = args[1];
 
   switch (id) {
   case ToString:
@@ -173,7 +136,7 @@ Completion StringProtoFunc::execute(const List &args)
     // handled above
     break;
   case CharAt:
-    n = a0.toInteger();
+    n = a0.toInteger(exec);
     pos = (int) n.value();
     if (pos < 0 || pos >= len)
       u = "";
@@ -182,7 +145,7 @@ Completion StringProtoFunc::execute(const List &args)
     result = String(u);
     break;
   case CharCodeAt:
-    n = a0.toInteger();
+    n = a0.toInteger(exec);
     pos = (int) n.value();
     if (pos < 0 || pos >= len)
       d = NaN;
@@ -193,21 +156,21 @@ Completion StringProtoFunc::execute(const List &args)
     result = Number(d);
     break;
   case IndexOf:
-    s2 = a0.toString();
-    if (a1.isA(UndefinedType))
+    s2 = a0.toString(exec);
+    if (a1.type() == UndefinedType)
       pos = 0;
     else
-      pos = a1.toInteger().intValue();
+      pos = a1.toInteger(exec).intValue();
     d = s.value().find(s2.value(), pos);
     result = Number(d);
     break;
   case LastIndexOf:
-    s2 = a0.toString();
-    d = a1.toNumber().value();
-    if (a1.isA(UndefinedType) || KJS::isNaN(d) || KJS::isPosInf(d))
+    s2 = a0.toString(exec);
+    d = a1.toNumber(exec).value();
+    if (a1.type() == UndefinedType || KJS::isNaN(d) || KJS::isPosInf(d))
       pos = len;
     else
-      pos = a1.toInteger().intValue();
+      pos = a1.toInteger(exec).intValue();
     if (pos < 0)
       pos = 0;
     d = s.value().rfind(s2.value(), pos);
@@ -217,50 +180,51 @@ Completion StringProtoFunc::execute(const List &args)
   case Search: {
     u = s.value();
     RegExp* reg = 0;
-    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass)
-    {
-      //s2 = a0.get("source").toString();     // this loses the flags
-      RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject().imp() );
-      reg = imp->regExp();
-    }
+    if (a0.isA(ObjectType) && a0.toObject(exec).inherits(&RegExpImp::info))
+      {
+        //s2 = a0.get("source").toString();     // this loses the flags
+        RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
+        reg = imp->regExp();
+      }
     else if (a0.isA(StringType))
-    {
-      //s2 = a0.toString();
-      reg = new RegExp( a0.toString().value(), RegExp::None );
-    }
+      {
+        //s2 = a0.toString();
+        reg = new RegExp( a0.toString(exec).value(), RegExp::None );
+      }
     else
-    {
-      printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
-      result = Undefined(); // No idea what to do here
-      break;
-    }
+      {
+        printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
+        result = Undefined(); // No idea what to do here
+        break;
+      }
     {
       //RegExp reg(s2.value());
       UString mstr = reg->match(u, -1, &pos);
       if (a0.isA(StringType))
-          delete reg;
+        delete reg;
       if (id == Search) {
         result = Number(pos);
         break;
       }
       if (mstr.isNull()) {
         result = Null();
-      break;
+        break;
       }
       /* TODO return an array, with the matches, etc. */
       result = String(mstr);
     }
-    } break;
+  }
+    break;
   case Replace:
-    /* TODO: this is just a hack to get the most common cases going */
+    // TODO: this is just a hack to get the most common cases going
     u = s.value();
-    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass) {
-      s2 = a0.get("source").toString();
+    if (a0.type() == ObjectType && a0.toObject(exec).inherits(&RegExpImp::info)) {
+      s2 = Object::dynamicCast(a0).get(exec,"source").toString(exec);
       RegExp reg(s2.value());
       UString mstr = reg.match(u, -1, &pos);
       len = mstr.size();
     } else {
-      s2 = a0.toString();
+      s2 = a0.toString(exec);
       u2 = s2.value();
       pos = u.find(u2);
       len = u2.size();
@@ -268,7 +232,7 @@ Completion StringProtoFunc::execute(const List &args)
     if (pos == -1)
         result = s;
     else {
-        u3 = u.substr(0, pos) + a1.toString().value() +
+        u3 = u.substr(0, pos) + a1.toString(exec).value() +
              u.substr(pos + len);
         result = String(u3);
     }
@@ -276,12 +240,13 @@ Completion StringProtoFunc::execute(const List &args)
   case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/string.htm#1194366
     {
         // The arg processing is very much like ArrayProtoFunc::Slice
-        result = Object::create(ArrayClass); // We return a new array
-        int begin = args[0].toUInt32();
+        // We return a new array
+        result = exec->interpreter()->builtinArray().construct(exec,List::empty());
+        int begin = args[0].toUInt32(exec);
         int end = len;
-        if (!args[1].isA(UndefinedType))
+        if (args[1].type() != UndefinedType)
         {
-          end = args[1].toUInt32();
+          end = args[1].toUInt32(exec);
           if ( end < 0 )
             end += len;
         }
@@ -294,46 +259,49 @@ Completion StringProtoFunc::execute(const List &args)
         result = String( s.value().substr(begin, end-begin) );
         break;
     }
-  case Split:
-    result = Object::create(ArrayClass);
+    case Split: {
+    Object constructor = exec->interpreter()->builtinArray();
+    Object res = Object::dynamicCast(constructor.construct(exec,List::empty()));
+    result = res;
     u = s.value();
     i = p0 = 0;
-    d = a1.isDefined() ? a1.toInteger().intValue() : -1; // optional max number
-    if (a0.isA(ObjectType) && Object(a0.imp()).getClass() == RegExpClass) {
-      RegExp reg(a0.get("source").toString().value());
+    d = (a1.type() != UndefinedType) ? a1.toInteger(exec).intValue() : -1; // optional max number
+    if (a0.type() == ObjectType && Object::dynamicCast(a0.imp()).inherits(&RegExpImp::info)) {
+      Object obj0 = Object::dynamicCast(a0);
+      RegExp reg(obj0.get(exec,"source").toString(exec).value());
       if (u.isEmpty() && !reg.match(u, 0).isNull()) {
 	// empty string matched by regexp -> empty array
-	result.put("length", 0);
+	res.put(exec,"length", Number(0));
 	break;
       }
       int mpos;
       pos = 0;
       while (1) {
-	/* TODO: back references */
+	// TODO: back references
 	UString mstr = reg.match(u, pos, &mpos);
 	if (mpos < 0)
 	  break;
 	pos = mpos + (mstr.isEmpty() ? 1 : mstr.size());
 	if (mpos != p0 || !mstr.isEmpty()) {
-	  result.put(UString::from(i), String(u.substr(p0, mpos-p0)));
+	  res.put(exec,UString::from(i), String(u.substr(p0, mpos-p0)));
 	  p0 = mpos + mstr.size();
 	  i++;
 	}
       }
-    } else if (a0.isDefined()) {
-      u2 = a0.toString().value();
+    } else if (a0.type() != UndefinedType) {
+      u2 = a0.toString(exec).value();
       if (u2.isEmpty()) {
 	if (u.isEmpty()) {
 	  // empty separator matches empty string -> empty array
-	  put("length", 0);
+	  put(exec,"length", Number(0));
 	  break;
 	} else {
 	  while (i != d && i < u.size()-1)
-	    result.put(UString::from(i++), String(u.substr(p0++, 1)));
+	    res.put(exec,UString::from(i++), String(u.substr(p0++, 1)));
 	}
       } else {
 	while (i != d && (pos = u.find(u2, p0)) >= 0) {
-	  result.put(UString::from(i), String(u.substr(p0, pos-p0)));
+	  res.put(exec,UString::from(i), String(u.substr(p0, pos-p0)));
 	  p0 = pos + u2.size();
 	  i++;
 	}
@@ -341,25 +309,26 @@ Completion StringProtoFunc::execute(const List &args)
     }
     // add remaining string, if any
     if (i != d)
-      result.put(UString::from(i++), String(u.substr(p0)));
-    result.put("length", i);
+      res.put(exec,UString::from(i++), String(u.substr(p0)));
+    res.put(exec,"length", Number(i));
+    }
     break;
   case Substr:
-    n = a0.toInteger();
-    m = a1.toInteger();
+    n = a0.toInteger(exec);
+    m = a1.toInteger(exec);
     if (n.value() >= 0)
       d = n.value();
     else
       d = max(len + n.value(), 0);
-    if (a1.isA(UndefinedType))
+    if (a1.type() == UndefinedType)
       d2 = len - d;
     else
       d2 = min(max(m.value(), 0), len - d);
     result = String(s.value().substr((int)d, (int)d2));
     break;
   case Substring: {
-    n = a0.toInteger();
-    m = a1.toInteger();
+    n = a0.toInteger(exec);
+    m = a1.toInteger(exec);
     double start = n.value();
     double end = m.value();
     if (KJS::isNaN(start))
@@ -370,7 +339,7 @@ Completion StringProtoFunc::execute(const List &args)
       start = len;
     if (end > len)
       end = len;
-    if (a1.isA(UndefinedType))
+    if (a1.type() == UndefinedType)
       end = len;
     if (start > end) {
       double temp = end;
@@ -421,23 +390,114 @@ Completion StringProtoFunc::execute(const List &args)
     result = String("<SUP>" + s.value() + "</SUP>");
     break;
   case Fontcolor:
-    result = String("<FONT COLOR=" + a0.toString().value() + ">"
+    result = String("<FONT COLOR=" + a0.toString(exec).value() + ">"
 		    + s.value() + "</FONT>");
     break;
   case Fontsize:
-    result = String("<FONT SIZE=" + a0.toString().value() + ">"
+    result = String("<FONT SIZE=" + a0.toString(exec).value() + ">"
 		    + s.value() + "</FONT>");
     break;
   case Anchor:
-    result = String("<a name=" + a0.toString().value() + ">"
+    result = String("<a name=" + a0.toString(exec).value() + ">"
 		    + s.value() + "</a>");
     break;
   case Link:
-    result = String("<a href=" + a0.toString().value() + ">"
+    result = String("<a href=" + a0.toString(exec).value() + ">"
 		    + s.value() + "</a>");
     break;
 #endif
   }
 
-  return Completion(ReturnValue, result);
+  return result;
+}
+
+// ------------------------------ StringObjectImp ------------------------------
+
+StringObjectImp::StringObjectImp(ExecState *exec,
+                                 FunctionPrototypeImp *funcProto,
+                                 StringPrototypeImp *stringProto)
+  : InternalFunctionImp(funcProto)
+{
+  Value protect(this);
+  // ECMA 15.5.3.1 String.prototype
+  put(exec,"prototype",stringProto,DontEnum|DontDelete|ReadOnly);
+
+  put(exec,"fromCharCode", new StringObjectFuncImp(exec,funcProto), DontEnum);
+
+  // no. of arguments for constructor
+  put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
+}
+
+
+bool StringObjectImp::implementsConstruct() const
+{
+  return true;
+}
+
+// ECMA 15.5.2
+Object StringObjectImp::construct(ExecState *exec, const List &args)
+{
+  Object proto = exec->interpreter()->builtinStringPrototype();
+  Object obj(new StringInstanceImp(proto ));
+
+  String s;
+  if (args.size() > 0)
+    s = args.begin()->toString(exec);
+  else
+    s = String("");
+
+  obj.setInternalValue(s);
+  obj.put(exec,"length",Number(s.value().size()),ReadOnly|DontEnum|DontDelete);
+
+  return obj;
+}
+
+bool StringObjectImp::implementsCall() const
+{
+  return true;
+}
+
+// ECMA 15.5.1
+Value StringObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  if (args.isEmpty())
+    return String("");
+  else {
+    Value v = args[0];
+    return v.toString(exec);
+  }
+}
+
+// ------------------------------ StringObjectFuncImp --------------------------
+
+// ECMA 15.5.3.2 fromCharCode()
+StringObjectFuncImp::StringObjectFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto)
+  : InternalFunctionImp(funcProto)
+{
+  Value protect(this);
+  put(exec,"length",Number(1),DontDelete|ReadOnly|DontEnum);
+}
+
+bool StringObjectFuncImp::implementsCall() const
+{
+  return true;
+}
+
+Value StringObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  UString s;
+  if (args.size()) {
+    UChar *buf = new UChar[args.size()];
+    UChar *p = buf;
+    ListIterator it = args.begin();
+    while (it != args.end()) {
+      unsigned short u = it->toUInt16(exec);
+      *p++ = UChar(u);
+      it++;
+    }
+    s = UString(buf, args.size(), false);
+  } else
+    s = "";
+
+  return String(s);
 }

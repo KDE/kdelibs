@@ -16,15 +16,37 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
 #include <stdio.h>
+#include <iostream.h>
 
-#include "kjs.h"
-
+#include "value.h"
 #include "object.h"
 #include "types.h"
-#include "internal.h"
+#include "interpreter.h"
+
+using namespace KJS;
+
+class TestFunctionImp : public ObjectImp {
+public:
+  TestFunctionImp() : ObjectImp() {}
+  virtual bool implementsCall() const { return true; }
+  virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+};
+
+Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  fprintf(stderr,"--> %s\n",args[0].toString(exec).value().ascii());
+  return Undefined();
+}
+
+class GlobalImp : public ObjectImp {
+public:
+  virtual UString getClass() const { return "global"; }
+};
 
 int main(int argc, char **argv)
 {
@@ -34,50 +56,58 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  KJS::KJSO global(new KJS::ObjectImp(KJS::ObjectClass));
-
-  // create interpreter
-//  KJScript *kjs = new KJScript(global);
-  KJScript *kjs = new KJScript();
-
-  // add debug() function
-  kjs->enableDebug();
-
-  const int BufferSize = 100000;
-  char code[BufferSize];
-
   bool ret = true;
-  for (int i = 1; i < argc; i++) {
-    const char *file = argv[i];
-    FILE *f = fopen(file, "r");
-    if (!f) {
-      fprintf(stderr, "Error opening %s.\n", file);
-      return -1;
+  {
+    Object global(new GlobalImp());
+
+    // create interpreter
+    Interpreter interp(global);
+    global.put(interp.globalExec(),"debug",new TestFunctionImp());
+    // add "print" for compatibility with the mozilla js shell
+    global.put(interp.globalExec(),"print",new TestFunctionImp());
+
+    // add debug() function
+    //  kjs->enableDebug();
+
+    const int BufferSize = 100000;
+    char code[BufferSize];
+
+    for (int i = 1; i < argc; i++) {
+      const char *file = argv[i];
+      FILE *f = fopen(file, "r");
+      if (!f) {
+        fprintf(stderr, "Error opening %s.\n", file);
+        return -1;
+      }
+      int num = fread(code, 1, BufferSize, f);
+      code[num] = '\0';
+      if(num >= BufferSize)
+        fprintf(stderr, "Warning: File may have been too long.\n");
+
+      // run
+      Completion comp(interp.evaluate(code));
+
+      fclose(f);
+
+      if (comp.complType() == Throw) {
+        char *msg = comp.value().toString(interp.globalExec()).value().ascii();
+        fprintf(stderr,"Exception: %s\n",msg);
+        ret = false;
+      }
+      else if (comp.complType() == ReturnValue) {
+        char *msg = comp.value().toString(interp.globalExec()).value().ascii();
+        fprintf(stderr,"Return value: %s\n",msg);
+      }
     }
-    int num = fread(code, 1, BufferSize, f);
-    code[num] = '\0';
-    if(num >= BufferSize)
-      fprintf(stderr, "Warning: File may have been too long.\n");
 
-    // run
-    ret = ret && kjs->evaluate(code);
-    if (kjs->errorType() != 0)
-      printf("%s returned: %s\n", file, kjs->errorMsg());
-    else if (kjs->returnValue())
-      printf("returned a value\n");
+    //  delete kjs;
+  } // end block, so that Interpreter and global get deleted
 
-    fclose(f);
-  }
-
-  delete kjs;
+  if (ret)
+    fprintf(stderr, "OK.\n");
 
 #ifdef KJS_DEBUG_MEM
-  printf("List::count = %d\n", KJS::List::count);
-  assert(KJS::List::count == 0);
-  printf("Imp::count = %d\n", KJS::Imp::count);
-  assert(KJS::Imp::count == 0);
+  Interpreter::finalCheck();
 #endif
-
-  fprintf(stderr, "OK.\n");
   return ret;
 }

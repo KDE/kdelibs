@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
@@ -17,23 +18,21 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
  */
 
 #ifndef _NODES_H_
 #define _NODES_H_
 
 #include "internal.h"
-#include "ustring.h"
-#include "object.h"
-#include "types.h"
-#include "debugger.h"
+//#include "debugger.h"
 #ifndef NDEBUG
 #include <list>
 #endif
 
 namespace KJS {
 
-  class KJSO;
   class RegExp;
   class SourceElementsNode;
   class ProgramNode;
@@ -73,23 +72,28 @@ namespace KJS {
   public:
     Node();
     virtual ~Node();
-    virtual KJSO evaluate(KJScriptImp *script, Context *context) = 0;
-    virtual void processVarDecls(KJScriptImp */*script*/, Context */*context*/) {}
+    virtual Value evaluate(ExecState *exec) = 0;
+    virtual void processVarDecls(ExecState */*exec*/) {}
     int lineNo() const { return line; }
 
   public:
     // reference counting mechanism
     virtual void ref() { refcount++; }
+#ifdef KJS_DEBUG_MEM
+    virtual bool deref() { assert( refcount > 0 ); return (!--refcount); }
+#else
     virtual bool deref() { return (!--refcount); }
+#endif
 
 #ifndef NDEBUG
     static void finalCheck();
 #endif
   protected:
-    KJSO throwError(ErrorType e, const char *msg);
+    Value throwError(ExecState *exec, ErrorType e, const char *msg);
     int line;
-  private:
     unsigned int refcount;
+    virtual int sourceId() const { return -1; }
+  private:
 #ifndef NDEBUG
     // List of all nodes, for debugging purposes. Don't remove!
     static std::list<Node *> s_nodes;
@@ -107,16 +111,16 @@ namespace KJS {
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
     int sourceId() const { return sid; }
-    bool hitStatement(KJScriptImp *script, Context *context);
-    bool abortStatement(KJScriptImp *script, Context *context);
-    virtual Completion execute(KJScriptImp *script, Context *context) = 0;
+    bool hitStatement(ExecState *exec);
+    bool abortStatement(ExecState *exec);
+    virtual Completion execute(ExecState *exec) = 0;
     void pushLabel(const UString *id) {
       if (id) ls.push(*id);
     }
   protected:
     LabelStack ls;
   private:
-    KJSO evaluate(KJScriptImp */*script*/, Context */*context*/) { return Undefined(); }
+    Value evaluate(ExecState */*exec*/) { return Undefined(); }
     int l0, l1;
     int sid;
     bool breakPoint;
@@ -125,13 +129,13 @@ namespace KJS {
   class NullNode : public Node {
   public:
     NullNode() {}
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   };
 
   class BooleanNode : public Node {
   public:
     BooleanNode(bool v) : value(v) {}
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     bool value;
   };
@@ -139,7 +143,7 @@ namespace KJS {
   class NumberNode : public Node {
   public:
     NumberNode(double v) : value(v) { }
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     double value;
   };
@@ -147,7 +151,7 @@ namespace KJS {
   class StringNode : public Node {
   public:
     StringNode(const UString *v) { value = *v; }
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     UString value;
   };
@@ -156,7 +160,7 @@ namespace KJS {
   public:
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     UString pattern, flags;
   };
@@ -164,13 +168,13 @@ namespace KJS {
   class ThisNode : public Node {
   public:
     ThisNode() {}
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   };
 
   class ResolveNode : public Node {
   public:
     ResolveNode(const UString *s) : ident(*s) { }
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     UString ident;
   };
@@ -181,7 +185,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~GroupNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *group;
   };
@@ -192,7 +196,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ElisionNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     ElisionNode *elision;
   };
@@ -205,7 +209,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ElementNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     ElementNode *list;
     ElisionNode *elision;
@@ -222,7 +226,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ArrayNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     ElementNode *element;
     ElisionNode *elision;
@@ -235,7 +239,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ObjectLiteralNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *list;
   };
@@ -247,7 +251,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~PropertyValueNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *name, *assign, *list;
   };
@@ -256,7 +260,7 @@ namespace KJS {
   public:
     PropertyNode(double d) : numeric(d) { }
     PropertyNode(const UString *s) : str(*s) { }
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     double numeric;
     UString str;
@@ -268,7 +272,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AccessorNode1();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr1;
     Node *expr2;
@@ -280,7 +284,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AccessorNode2();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
     UString ident;
@@ -293,8 +297,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ArgumentListNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
-    List *evaluateList(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
+    List evaluateList(ExecState *exec);
   private:
     ArgumentListNode *list;
     Node *expr;
@@ -306,8 +310,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ArgumentsNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
-    List *evaluateList(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
+    List evaluateList(ExecState *exec);
   private:
     ArgumentListNode *list;
   };
@@ -319,7 +323,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~NewExprNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
     ArgumentsNode *args;
@@ -331,7 +335,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~FunctionCallNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
     ArgumentsNode *args;
@@ -343,7 +347,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~PostfixNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
     Operator oper;
@@ -355,7 +359,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~DeleteNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -366,7 +370,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~VoidNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -377,7 +381,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~TypeOfNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -388,7 +392,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~PrefixNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Operator oper;
     Node *expr;
@@ -400,7 +404,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~UnaryPlusNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -411,7 +415,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~NegateNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -422,7 +426,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BitwiseNotNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -433,7 +437,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~LogicalNotNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -444,7 +448,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~MultNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *term1, *term2;
     char oper;
@@ -456,7 +460,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AddNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *term1, *term2;
     char oper;
@@ -469,7 +473,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ShiftNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *term1, *term2;
     Operator oper;
@@ -482,7 +486,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~RelationalNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -495,7 +499,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~EqualNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -508,7 +512,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BitOperNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -521,7 +525,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BinaryLogicalNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -534,7 +538,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ConditionalNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *logical, *expr1, *expr2;
   };
@@ -545,7 +549,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AssignNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *left;
     Operator oper;
@@ -558,7 +562,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~CommaNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr1, *expr2;
   };
@@ -570,8 +574,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~StatListNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     StatementNode *statement;
     StatListNode *list;
@@ -583,7 +587,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AssignExprNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     Node *expr;
   };
@@ -594,8 +598,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~VarDeclNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     UString ident;
     AssignExprNode *init;
@@ -608,8 +612,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~VarDeclListNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *list;
     VarDeclNode *var;
@@ -621,8 +625,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~VarStatementNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     VarDeclListNode *list;
   };
@@ -633,8 +637,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BlockNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     StatListNode *statlist;
   };
@@ -642,7 +646,7 @@ namespace KJS {
   class EmptyStatementNode : public StatementNode {
   public:
     EmptyStatementNode() { } // debug
-    Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
   };
 
   class ExprStatementNode : public StatementNode {
@@ -651,7 +655,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ExprStatementNode();
-    Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
   private:
     Node *expr;
   };
@@ -663,8 +667,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~IfNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *expr;
     StatementNode *statement1, *statement2;
@@ -676,8 +680,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~DoWhileNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     StatementNode *statement;
     Node *expr;
@@ -689,8 +693,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~WhileNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *expr;
     StatementNode *statement;
@@ -703,8 +707,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ForNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *expr1, *expr2, *expr3;
     StatementNode *statement;
@@ -719,8 +723,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ForInNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     UString ident;
     AssignExprNode *init;
@@ -732,7 +736,7 @@ namespace KJS {
   public:
     ContinueNode() { }
     ContinueNode(const UString *i) : ident(*i) { }
-    Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
   private:
     UString ident;
   };
@@ -741,7 +745,7 @@ namespace KJS {
   public:
     BreakNode() { }
     BreakNode(const UString *i) : ident(*i) { }
-    Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
   private:
     UString ident;
   };
@@ -752,7 +756,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ReturnNode();
-    Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
   private:
     Node *value;
   };
@@ -763,8 +767,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~WithNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *expr;
     StatementNode *statement;
@@ -776,9 +780,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~CaseClauseNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
-    Completion evalStatements(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
+    Completion evalStatements(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *expr;
     StatListNode *list;
@@ -791,10 +795,10 @@ namespace KJS {
     virtual bool deref();
     virtual ~ClauseListNode();
     ClauseListNode* append(CaseClauseNode *c);
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
     CaseClauseNode *clause() const { return cl; }
     ClauseListNode *next() const { return nx; }
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual void processVarDecls(ExecState *exec);
   private:
     CaseClauseNode *cl;
     ClauseListNode *nx;
@@ -807,9 +811,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~CaseBlockNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
-    Completion evalBlock(KJScriptImp *script, Context *context, const KJSO& input);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
+    Completion evalBlock(ExecState *exec, const Value& input);
+    virtual void processVarDecls(ExecState *exec);
   private:
     ClauseListNode *list1;
     CaseClauseNode *def;
@@ -822,8 +826,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~SwitchNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     Node *expr;
     CaseBlockNode *block;
@@ -835,8 +839,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~LabelNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     UString label;
     StatementNode *statement;
@@ -848,7 +852,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ThrowNode();
-    Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
   private:
     Node *expr;
   };
@@ -859,9 +863,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~CatchNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    Completion execute(KJScriptImp *script, Context *context, const KJSO &arg);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    Completion execute(ExecState *exec, const Value &arg);
+    virtual void processVarDecls(ExecState *exec);
   private:
     UString ident;
     StatementNode *block;
@@ -873,8 +877,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~FinallyNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     StatementNode *block;
   };
@@ -886,8 +890,8 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~TryNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    virtual Completion execute(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     StatementNode *block;
     CatchNode *_catch;
@@ -901,7 +905,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ParameterNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
     UString ident() { return id; }
     ParameterNode *nextParam() { return next; }
   private:
@@ -916,8 +920,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~FunctionBodyNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Completion execute(ExecState *exec);
+    virtual void processFuncDecl(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   protected:
     SourceElementsNode *source;
   };
@@ -929,9 +934,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~FuncDeclNode();
-    Completion execute(KJScriptImp */*script*/, Context */*context*/)
+    Completion execute(ExecState */*exec*/)
       { /* empty */ return Completion(); }
-    void processFuncDecl(KJScriptImp *script, Context *context);
+    void processFuncDecl(ExecState *exec);
   private:
     UString ident;
     ParameterNode *param;
@@ -945,7 +950,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~FuncExprNode();
-    KJSO evaluate(KJScriptImp *script, Context *context);
+    Value evaluate(ExecState *exec);
   private:
     ParameterNode *param;
     FunctionBodyNode *body;
@@ -958,9 +963,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~SourceElementNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processFuncDecl(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Completion execute(ExecState *exec);
+    virtual void processFuncDecl(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     StatementNode *statement;
     FuncDeclNode *function;
@@ -975,9 +980,9 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~SourceElementsNode();
-    Completion execute(KJScriptImp *script, Context *context);
-    virtual void processFuncDecl(KJScriptImp *script, Context *context);
-    virtual void processVarDecls(KJScriptImp *script, Context *context);
+    Completion execute(ExecState *exec);
+    virtual void processFuncDecl(ExecState *exec);
+    virtual void processVarDecls(ExecState *exec);
   private:
     SourceElementNode *element; // 'this' element
     SourceElementsNode *elements; // pointer to next
@@ -985,7 +990,8 @@ namespace KJS {
 
   class ProgramNode : public FunctionBodyNode {
   public:
-    ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s) { }
+    ProgramNode(SourceElementsNode *s);
+    ~ProgramNode();
   private:
     // Disallow copy
     ProgramNode(const ProgramNode &other);

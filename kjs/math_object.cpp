@@ -15,106 +15,125 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #include <math.h>
 #include <stdlib.h>
+#include <assert.h>
 
-#include "kjs.h"
+#include "value.h"
+#include "object.h"
 #include "types.h"
+#include "interpreter.h"
 #include "operations.h"
 #include "math_object.h"
-#include "lookup.h"
-#include "object.h"
 
 using namespace KJS;
 
-const TypeInfo Math::info = { "Math", ObjectType,
-			      &ObjectImp::info, 0, 0 };
+// ------------------------------ MathObjectImp --------------------------------
 
-Math::Math(const Object &objProto) : ObjectImp(ObjectClass)
+MathObjectImp::MathObjectImp(ExecState *exec,
+                             ObjectPrototypeImp *objProto,
+                             FunctionPrototypeImp *funcProto)
+  : ObjectImp(objProto)
 {
+  Value protect(this);
   // ECMA 15.8
-  setPrototype(objProto);
 
-  put("E",       Number(exp(1.0)),             DontEnum|DontDelete|ReadOnly);
-  put("LN10",    Number(log(10.0)),            DontEnum|DontDelete|ReadOnly);
-  put("LN2",     Number(log(2.0)),             DontEnum|DontDelete|ReadOnly);
-  put("LOG2E",   Number(1.0/log(2.0)),         DontEnum|DontDelete|ReadOnly);
-  put("LOG10E",  Number(1.0/log(10.0)),        DontEnum|DontDelete|ReadOnly);
-  put("PI",      Number(2.0 * asin(1.0)),      DontEnum|DontDelete|ReadOnly);
-  put("SQRT1_2", Number(sqrt(0.5)),            DontEnum|DontDelete|ReadOnly);
-  put("SQRT2",   Number(sqrt(2.0)),            DontEnum|DontDelete|ReadOnly);
+  put(exec,"E",       Number(exp(1.0)),             DontEnum|DontDelete|ReadOnly);
+  put(exec,"LN10",    Number(log(10.0)),            DontEnum|DontDelete|ReadOnly);
+  put(exec,"LN2",     Number(log(2.0)),             DontEnum|DontDelete|ReadOnly);
+  put(exec,"LOG2E",   Number(1.0/log(2.0)),         DontEnum|DontDelete|ReadOnly);
+  put(exec,"LOG10E",  Number(1.0/log(10.0)),        DontEnum|DontDelete|ReadOnly);
+  put(exec,"PI",      Number(2.0 * asin(1.0)),      DontEnum|DontDelete|ReadOnly);
+  put(exec,"SQRT1_2", Number(sqrt(0.5)),            DontEnum|DontDelete|ReadOnly);
+  put(exec,"SQRT2",   Number(sqrt(2.0)),            DontEnum|DontDelete|ReadOnly);
 
-  put("abs",     new MathFunc(Math::Abs,1),    DontEnum|DontDelete|ReadOnly);
-  put("acos",    new MathFunc(Math::ACos,1),   DontEnum|DontDelete|ReadOnly);
-  put("asin",    new MathFunc(Math::ASin,1),   DontEnum|DontDelete|ReadOnly);
-  put("atan",    new MathFunc(Math::ATan,1),   DontEnum|DontDelete|ReadOnly);
-  put("atan2",   new MathFunc(Math::ATan2,2),  DontEnum|DontDelete|ReadOnly);
-  put("ceil",    new MathFunc(Math::Ceil,1),   DontEnum|DontDelete|ReadOnly);
-  put("cos",     new MathFunc(Math::Cos,1),    DontEnum|DontDelete|ReadOnly);
-  put("exp",     new MathFunc(Math::Exp,1),    DontEnum|DontDelete|ReadOnly);
-  put("floor",   new MathFunc(Math::Floor,1),  DontEnum|DontDelete|ReadOnly);
-  put("log",     new MathFunc(Math::Log,1),    DontEnum|DontDelete|ReadOnly);
-  put("max",     new MathFunc(Math::Max,2),    DontEnum|DontDelete|ReadOnly);
-  put("min",     new MathFunc(Math::Min,2),    DontEnum|DontDelete|ReadOnly);
-  put("pow",     new MathFunc(Math::Pow,2),    DontEnum|DontDelete|ReadOnly);
-  put("random",  new MathFunc(Math::Random,0), DontEnum|DontDelete|ReadOnly);
-  put("round",   new MathFunc(Math::Round,1),  DontEnum|DontDelete|ReadOnly);
-  put("sin",     new MathFunc(Math::Sin,1),    DontEnum|DontDelete|ReadOnly);
-  put("sqrt",    new MathFunc(Math::Sqrt,1),   DontEnum|DontDelete|ReadOnly);
-  put("tan",     new MathFunc(Math::Tan,1),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"abs",     new MathFuncImp(exec,funcProto,MathFuncImp::Abs,1),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"acos",    new MathFuncImp(exec,funcProto,MathFuncImp::ACos,1),   DontEnum|DontDelete|ReadOnly);
+  put(exec,"asin",    new MathFuncImp(exec,funcProto,MathFuncImp::ASin,1),   DontEnum|DontDelete|ReadOnly);
+  put(exec,"atan",    new MathFuncImp(exec,funcProto,MathFuncImp::ATan,1),   DontEnum|DontDelete|ReadOnly);
+  put(exec,"atan2",   new MathFuncImp(exec,funcProto,MathFuncImp::ATan2,2),  DontEnum|DontDelete|ReadOnly);
+  put(exec,"ceil",    new MathFuncImp(exec,funcProto,MathFuncImp::Ceil,1),   DontEnum|DontDelete|ReadOnly);
+  put(exec,"cos",     new MathFuncImp(exec,funcProto,MathFuncImp::Cos,1),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"exp",     new MathFuncImp(exec,funcProto,MathFuncImp::Exp,1),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"floor",   new MathFuncImp(exec,funcProto,MathFuncImp::Floor,1),  DontEnum|DontDelete|ReadOnly);
+  put(exec,"log",     new MathFuncImp(exec,funcProto,MathFuncImp::Log,1),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"max",     new MathFuncImp(exec,funcProto,MathFuncImp::Max,2),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"min",     new MathFuncImp(exec,funcProto,MathFuncImp::Min,2),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"pow",     new MathFuncImp(exec,funcProto,MathFuncImp::Pow,2),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"random",  new MathFuncImp(exec,funcProto,MathFuncImp::Random,0), DontEnum|DontDelete|ReadOnly);
+  put(exec,"round",   new MathFuncImp(exec,funcProto,MathFuncImp::Round,1),  DontEnum|DontDelete|ReadOnly);
+  put(exec,"sin",     new MathFuncImp(exec,funcProto,MathFuncImp::Sin,1),    DontEnum|DontDelete|ReadOnly);
+  put(exec,"sqrt",    new MathFuncImp(exec,funcProto,MathFuncImp::Sqrt,1),   DontEnum|DontDelete|ReadOnly);
+  put(exec,"tan",     new MathFuncImp(exec,funcProto,MathFuncImp::Tan,1),    DontEnum|DontDelete|ReadOnly);
 }
 
-Completion MathFunc::execute(const List &args)
+// ------------------------------ MathObjectImp --------------------------------
+
+MathFuncImp::MathFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int l)
+  : InternalFunctionImp(funcProto), id(i)
 {
-  KJSO v = args[0];
-  Number n = v.toNumber();
+  Value protect(this);
+  put(exec,"length",Number(l),DontDelete|ReadOnly|DontEnum);
+}
+
+bool MathFuncImp::implementsCall() const
+{
+  return true;
+}
+
+Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  Value v = args[0];
+  Number n = v.toNumber(exec);
   double arg = n.value();
 
-  KJSO v2 = args[1];
-  Number n2 = v2.toNumber();
+  Value v2 = args[1];
+  Number n2 = v2.toNumber(exec);
   double arg2 = n2.value();
   double result;
 
   switch (id) {
-  case Math::Abs:
+  case Abs:
     result = ( arg < 0 ) ? (-arg) : arg;
     break;
-  case Math::ACos:
+  case ACos:
     result = ::acos(arg);
     break;
-  case Math::ASin:
+  case ASin:
     result = ::asin(arg);
     break;
-  case Math::ATan:
+  case ATan:
     result = ::atan(arg);
     break;
-  case Math::ATan2:
+  case ATan2:
     result = ::atan2(arg, arg2);
     break;
-  case Math::Ceil:
+  case Ceil:
     result = ::ceil(arg);
     break;
-  case Math::Cos:
+  case Cos:
     result = ::cos(arg);
     break;
-  case Math::Exp:
+  case Exp:
     result = ::exp(arg);
     break;
-  case Math::Floor:
+  case Floor:
     result = ::floor(arg);
     break;
-  case Math::Log:
+  case Log:
     result = ::log(arg);
     break;
-  case Math::Max: // ### variable args
+  case Max: // TODO: support variable args
     result = ( arg > arg2 ) ? arg : arg2;
     break;
-  case Math::Min: // ### variable args
+  case Min: // TODO: support variable args
     result = ( arg < arg2 ) ? arg : arg2;
     break;
-  case Math::Pow:
+  case Pow:
     // ECMA 15.8.2.1.13 (::pow takes care of most of the critera)
     if (KJS::isNaN(arg2))
       result = NaN;
@@ -137,11 +156,11 @@ Completion MathFunc::execute(const List &args)
     else
       result = ::pow(arg, arg2);
     break;
-  case Math::Random:
+  case Random:
     result = ::rand();
     result = result / RAND_MAX;
     break;
-  case Math::Round:
+  case Round:
     if (isNaN(arg))
       result = arg;
     if (isInf(arg) || isInf(-arg))
@@ -151,13 +170,13 @@ Completion MathFunc::execute(const List &args)
     else
       result = (double)(arg >= 0.0 ? int(arg + 0.5) : int(arg - 0.5));
     break;
-  case Math::Sin:
+  case Sin:
     result = ::sin(arg);
     break;
-  case Math::Sqrt:
+  case Sqrt:
     result = ::sqrt(arg);
     break;
-  case Math::Tan:
+  case Tan:
     result = ::tan(arg);
     break;
 
@@ -166,5 +185,5 @@ Completion MathFunc::execute(const List &args)
     assert(0);
   }
 
-  return Completion(ReturnValue, Number(result));
+  return Number(result);
 }
