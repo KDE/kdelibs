@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.5  1999/11/07 01:40:16  ettrich
+    some updates, new kwin access to window manager functionality
+
     Revision 1.4  1999/10/09 09:48:42  kalle
     more get killing
     You need to cvs update your libc (joke!)
@@ -156,6 +159,7 @@ public:
     bool x11Event( XEvent * ev );
     void timerEvent( QTimerEvent * )
     {
+	killTimers();
 	updateWindows();
 	updateWindowsSorted();
     }
