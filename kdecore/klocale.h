@@ -238,7 +238,7 @@ public:
    * @return True if one of the specified languages were used.
    */
   bool setLanguage(const QStringList & languages);
-
+ 
   /**
    * Changes the current country. The current country will be left
    * unchanged if failed. It will force a reload of the country specific
@@ -964,7 +964,7 @@ public:
    * @return value The preferred measuring system
    */
   void setMeasureSystem(MeasureSystem value);
-
+  
   /**
    * Adds another catalog to search for translation lookup.
    * This function is useful for extern libraries and/or code,
@@ -1132,15 +1132,24 @@ private:
    * @param config The configuration object used for init.
    */
   void initFormat(KConfig *config);
-
+  
   /**
-   * @internal Inits the language part of the instance with the given config
-   * object. It should be valid and contain the global entries.
+   * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
    *
    * @param config The configuration object used for init
    * @param useEnv True if we should use environment variables
    */
-  void initLanguage(KConfig * config, bool useEnv);
+  void initMainCatalogues(const QString & catalog);
+  
+  /**
+   * @internal Initializes the list of valid languages from the user's point of view. This is the list of
+   * languages that the user picks in kcontrol. The config object should be valid and contain the global
+   * entries.
+   *
+   * @param config The configuration object used for init
+   * @param useEnv True if we should use environment variables
+   */
+  void initLanguageList(KConfig * config, bool useEnv);
 
   /**
    * @internal Figures out which encoding the user prefers.
@@ -1148,13 +1157,6 @@ private:
    * @param config The configuration object used for init
    */
   void initEncoding(KConfig * config);
-
-  /**
-   * @internal Figures out which catalogues to use.
-   *
-   * @param catalog The name of the main catalog
-   */
-  void initCatalogue(const QString & catalog);
 
   /**
    * @internal Figures out which encoding the user prefers for filenames
@@ -1179,11 +1181,6 @@ private:
   void initCatalogue( KCatalogue & catalog );
 
   /**
-   * @internal Reads the language and format configuration form disk.
-   */
-  void doBindInit();
-
-  /**
    * @internal Ensures that the format configuration is read.
    */
   void doFormatInit() const;
@@ -1198,7 +1195,8 @@ private:
    */
   QString translate_priv(const char *index,
 			 const char *text,
-			 const char ** original = 0) const;
+			 const char ** original = 0,
+			 int* pluralType = 0) const;
 
   /**
    * @internal function used to determine if we are using the en_US translation
@@ -1209,6 +1207,39 @@ private:
    * @internal Checks if the specified language is installed
    */
   bool isLanguageInstalled(const QString & language) const;
+  
+  /**
+   * @internal evaluate the list of catalogs and check that all instances for all languages are loaded 
+   * and that they are sorted according to the catalog names
+   */
+  void updateCatalogues( );
+  
+  /**
+   * @internal Find the plural type for all loaded catalogs
+   */
+  void initPluralTypes( );
+  /**
+   * @internal Find the plural type for a language. Look this up in the corresponding kdelibs.po.
+   *
+   * @param language The language to examine
+   */
+  int pluralType( const QString & language );
+  
+  /**
+   * @internal Find the plural type information for a given catalog. This catalog will be a kdelibs.mo. Method
+   * just exists to make code more readable.
+   *
+   * @param language The language to examine
+   */
+  int pluralType( const KCatalogue& catalog );
+  /**
+   * @internal Find catalog for given language and given catalog name.
+   *
+   * @param language language of the catalog
+   * @param name name of the catalog
+   */
+  // const KCatalogue * catalog( const QString & language, const QString & name );
+  
 
   /**
    * @internal Retrieves the file name of the catalog, or QString::null

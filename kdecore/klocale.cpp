@@ -51,11 +51,11 @@ class KLocalePrivate
 {
 public:
   int weekStartDay;
-  int plural_form;
   bool nounDeclension;
   bool dateMonthNamePossessive;
   QStringList languageList;
-  QValueList<KCatalogue> catalogues;
+  QStringList catalogNames; // list of all catalogs (regardless of language)
+  QValueList<KCatalogue> catalogues; // list of all loaded catalogs, contains one instance per catalog name and language
   QString encoding;
   QTextCodec * codecForEncoding;
   KConfig * config;
@@ -67,7 +67,6 @@ public:
 
   QString calendarType;
   KCalendarSystem * calendar;
-  QString first_language;
   bool utf8FileEncoding;
 };
 
@@ -79,8 +78,8 @@ KLocale::KLocale( const QString & catalog, KConfig * config )
   d->config = config;
   d->languages = 0;
   d->calendar = 0;
+  d->formatInited = false;
 
-  initCatalogue(catalog);
   initEncoding(0);
   initFileNameEncoding(0);
 
@@ -90,8 +89,8 @@ KLocale::KLocale( const QString & catalog, KConfig * config )
   this_klocale = 0;
   Q_ASSERT( cfg );
 
-  if (m_language.isEmpty())
-     initLanguage(cfg, config == 0);
+  initLanguageList( cfg, config == 0);
+  initMainCatalogues(catalog);
 }
 
 QString KLocale::_initLanguage(KConfigBase *config)
@@ -99,13 +98,14 @@ QString KLocale::_initLanguage(KConfigBase *config)
   if (this_klocale)
   {
      // ### HPB Why this cast??
-     this_klocale->initLanguage((KConfig *) config, true);
+     this_klocale->initLanguageList((KConfig *) config, true);
+     // todo: adapt current catalog list: remove unused languages, insert main catalogs, if not already found
      return this_klocale->language();
   }
   return QString::null;
 }
 
-void KLocale::initCatalogue(const QString & catalog)
+void KLocale::initMainCatalogues(const QString & catalog)
 {
   // Use the first non-null string.
   QString mainCatalogue = catalog;
@@ -117,15 +117,16 @@ void KLocale::initCatalogue(const QString & catalog)
                  << "catalog! Give an argument or call setMainCatalogue "
                  << "before init" << endl;
   }
-  else
-    d->catalogues.append( KCatalogue(mainCatalogue ) );
-
-  // always include kdelibs's mo files
-  d->catalogues.append( KCatalogue( SYSTEM_MESSAGES ) );
-  d->catalogues.append( KCatalogue( "kio" ) );
+  else {
+    // do not use insertCatalogue here, that would already trigger updateCatalogs
+    d->catalogNames.append( mainCatalogue );   // application catalog
+    d->catalogNames.append( SYSTEM_MESSAGES ); // always include kdelibs.mo
+    d->catalogNames.append( "kio" );            // always include kio.mo
+    updateCatalogues(); // evaluate this for all languages
+  }
 }
 
-void KLocale::initLanguage(KConfig * config, bool useEnv)
+void KLocale::initLanguageList(KConfig * config, bool useEnv)
 {
   KConfigGroupSaver saver(config, "Locale");
 
@@ -174,58 +175,78 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
   setLanguage( languageList );
 }
 
-void KLocale::doBindInit()
+void KLocale::initPluralTypes()
 {
   for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
-	it != d->catalogues.end();
-	++it )
-    initCatalogue( *it );
+    it != d->catalogues.end();
+    ++it )
+  {
+    QString language = (*it).language();
+    int pt = pluralType( language );
+    (*it).setPluralType( pt );
+  }
+}
 
-  if ( useDefaultLanguage() )
-    d->plural_form = -1;
-  else
-    {
-      QString pf = translate_priv
-	( I18N_NOOP("_: Dear translator, please do not translate this string "
-		    "in any form, but pick the _right_ value out of "
-		    "NoPlural/TwoForms/French... If not sure what to do mail "
-		    "thd@kde.org and coolo@kde.org, they will tell you. "
-		    "Better leave that out if unsure, the programs will "
-		    "crash!!\nDefinition of PluralForm - to be set by the "
-		    "translator of kdelibs.po"), 0);
-      if ( pf.isEmpty() ) {
-	kdWarning(173) << "found no definition of PluralForm for " << m_language << endl;
-	d->plural_form = -1;
-      } else if ( pf == "NoPlural" )
-	d->plural_form = 0;
-      else if ( pf == "TwoForms" )
-	d->plural_form = 1;
-      else if ( pf == "French" )
-	d->plural_form = 2;
-      else if ( pf == "OneTwoRest" || pf == "Gaeilge" ) // Gaelige is the old name
-	d->plural_form = 3;
-      else if ( pf == "Russian" )
-	d->plural_form = 4;
-      else if ( pf == "Polish" )
-	d->plural_form = 5;
-      else if ( pf == "Slovenian" )
-	d->plural_form = 6;
-      else if ( pf == "Lithuanian" )
-	d->plural_form = 7;
-      else if ( pf == "Czech" )
-	d->plural_form = 8;
-      else if ( pf == "Slovak" )
-	d->plural_form = 9;
-      else if ( pf == "Maltese" )
-	d->plural_form = 10;
-      else if ( pf == "Arabic" )
-	d->plural_form = 11;
-      else if ( pf == "Balcan" )
-	d->plural_form = 12;
-      else if ( pf == "Macedonian" )
-	d->plural_form = 13;
-      else {
-	kdWarning(173) << "Definition of PluralForm is none of "
+
+int KLocale::pluralType( const QString & language )
+{
+  for ( QValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
+    it != d->catalogues.end();
+    ++it )
+  {
+    if ( ((*it).name() == SYSTEM_MESSAGES ) && ((*it).language() == language )) {
+      return pluralType( *it );
+    }
+  }
+  // kdelibs.mo does not seem to exist for this language
+  return -1;
+}
+
+int KLocale::pluralType( const KCatalogue& catalog )
+{
+    const char* pluralFormString = 	
+    I18N_NOOP("_: Dear translator, please do not translate this string "
+      "in any form, but pick the _right_ value out of "
+      "NoPlural/TwoForms/French... If not sure what to do mail "
+      "thd@kde.org and coolo@kde.org, they will tell you. "
+      "Better leave that out if unsure, the programs will "
+      "crash!!\nDefinition of PluralForm - to be set by the "
+      "translator of kdelibs.po");
+    QString pf (catalog.translate( pluralFormString));
+    if ( pf.isEmpty() ) {
+      kdWarning(173) << "found no definition of PluralForm for language " << catalog.language() << endl;
+      return -1;
+    } 
+	else if ( pf == "NoPlural" )
+      return 0;
+    else if ( pf == "TwoForms" )
+      return 1;
+    else if ( pf == "French" )
+      return 2;
+    else if ( pf == "OneTwoRest" || pf == "Gaeilge" ) // Gaelige is the old name
+      return 3;
+    else if ( pf == "Russian" )
+      return 4;
+    else if ( pf == "Polish" )
+      return 5;
+    else if ( pf == "Slovenian" )
+      return 6;
+    else if ( pf == "Lithuanian" )
+      return 7;
+    else if ( pf == "Czech" )
+      return 8;
+    else if ( pf == "Slovak" )
+      return 9;
+    else if ( pf == "Maltese" )
+      return 10;
+    else if ( pf == "Arabic" )
+      return 11;
+    else if ( pf == "Balcan" )
+      return 12;
+    else if ( pf == "Macedonian" )
+      return 13;
+    else {
+      kdWarning(173) << "Definition of PluralForm is none of "
 		       << "NoPlural/"
 		       << "TwoForms/"
 		       << "French/"
@@ -240,11 +261,8 @@ void KLocale::doBindInit()
 		       << "Balcan/"
 		       << "Macedonian/"
 		       << "Maltese: " << pf << endl;
-	exit(1);
-      }
+      exit(1);
     }
-
-  d->formatInited = false;
 }
 
 void KLocale::doFormatInit() const
@@ -373,45 +391,22 @@ QString KLocale::catalogueFileName(const QString & language,
   return locate( "locale", path );
 }
 
-bool KLocale::isLanguageInstalled(const QString & language) const
-{
-  // Do not allow empty languages
-  if ( language.isEmpty() ) return false;
-
-  bool bRes = true;
-  if ( language != defaultLanguage() )
-    for ( QValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
-	  it != d->catalogues.end() && bRes;
-	  ++it )
-      {
-	bRes = !catalogueFileName( language, *it ).isNull();
-        if ( !bRes )
-	  kdDebug(173) << "message catalog not found: "
-		       << (*it).name() << endl;
-      }
-
-  return bRes;
-}
-
 bool KLocale::setLanguage(const QString & language)
 {
-  bool bRes = true;
+  if ( d->languageList.contains( language ) ) {
+ 	 d->languageList.remove( language );
+  }
+  d->languageList.prepend( language ); // let us consider this language to be the most important one 
+  
+  m_language = language; // remember main language for shortcut evaluation
+  
+  // important when called from the outside and harmless when called before populating the 
+  // catalog name list
+  updateCatalogues(); 
 
-  if (d->first_language.isNull() || language != d->first_language)
-    bRes = isLanguageInstalled( language );
+  d->formatInited = false; 
 
-  if ( bRes )
-    {
-      m_language = language;
-
-      // remember our first time - it will be our true love
-      if (d->first_language.isNull())
-        d->first_language = language;
-
-      doBindInit();
-    }
-
-  return bRes;
+  return true; // Maybe the mo-files for this language are empty, but in principle we can speak all languages
 }
 
 bool KLocale::setLanguage(const QStringList & languages)
@@ -423,23 +418,26 @@ bool KLocale::setLanguage(const QStringList & languages)
   for( QStringList::Iterator it = languageList.fromLast();
          it != languageList.begin();
          --it )
-    if ( languageList.contains(*it) > 1 || (*it).isEmpty() )
+  {
+    if ( languageList.contains(*it) > 1 || (*it).isEmpty() ) {
       it = languageList.remove( it );
+	}
+  }
 
-  bool bRes = false;
-  for ( QStringList::ConstIterator it = languageList.begin();
-	it != languageList.end();
-	++it )
-    if ( bRes = setLanguage( *it ) )
-      break;
-
-  if ( !bRes )
-    setLanguage(defaultLanguage());
-
-  d->languageList = languageList;
+  if ( languageList.isEmpty() ) {
+	// user picked no language, so we assume he/she speaks English. 
+	languageList.append( defaultLanguage() );
+  } 
+  m_language = languageList.first(); // keep this for shortcut evaluations
+  
+  d->languageList = languageList; // keep this new list of languages to use
   d->langTwoAlpha.clear(); // Flush cache
 
-  return bRes;
+  // important when called from the outside and harmless when called before populating the 
+  // catalog name list
+  updateCatalogues(); 
+  
+  return true; // we found something. Maybe it's only English, but we found something
 }
 
 void KLocale::splitLocale(const QString & aStr,
@@ -568,34 +566,68 @@ QString KLocale::weekDayName (int i, bool shortName) const
 
 void KLocale::insertCatalogue( const QString & catalog )
 {
-  KCatalogue cat( catalog );
-
-  initCatalogue( cat );
-
-  d->catalogues.append( cat );
+  if ( !d->catalogNames.contains( catalog) ) {
+    d->catalogNames.append( catalog );
+  }
+  updateCatalogues( ); // evaluate the changed list and generate the neccessary KCatalog objects
 }
+
+void KLocale::updateCatalogues( )
+{
+  // some changes have occured. Maybe we have learned or forgotten some languages.
+  // Maybe the language precedence has changed.
+  // Maybe we have learned or forgotten some catalog names.
+  // Now examine the list of KCatalogue objects and change it according to the new circumstances.
+  
+  // this could be optimized: try to reuse old KCatalog objects, but remember that the order of
+  // catalogs might have changed: e.g. in this fashion
+  // 1) move all catalogs into a temporary list
+  // 2) iterate over all languages and catalog names
+  // 3.1) pick the catalog from the saved list, if it already exists
+  // 3.2) else create a new catalog.
+  // but we will do this later. 
+  
+  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+	it != d->catalogues.end(); )
+  {
+     it = d->catalogues.remove(it);
+  }
+  
+  // now iterate over all languages and all wanted catalog names and append or create them in the right order
+  // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
+  // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
+  // sequende nds,en_US, de. In this case en_US must hide everything below in the language list.
+  for ( QStringList::ConstIterator itLangs =  d->languageList.begin();
+	  itLangs != d->languageList.end(); ++itLangs)
+  {
+    for ( QStringList::ConstIterator itNames =  d->catalogNames.begin();
+	itNames != d->catalogNames.end(); ++itNames)
+    {
+      KCatalogue cat( *itNames, *itLangs ); // create Catalog for this name and this language
+      d->catalogues.append( cat );
+	}
+  }
+  initPluralTypes();  // evaluate the plural type for all languages and remember this in each KCatalogue
+}
+
+
+
 
 void KLocale::removeCatalogue(const QString &catalog)
 {
-  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
-	it != d->catalogues.end(); )
-    if ((*it).name() == catalog) {
-      it = d->catalogues.remove(it);
-      return;
-    } else
-      ++it;
+  if ( d->catalogNames.contains( catalog )) {
+    d->catalogNames.remove( catalog );
+	updateCatalogues();  // walk through the KCatalogue instances and weed out everything we no longer need
+  }
 }
 
 void KLocale::setActiveCatalogue(const QString &catalog)
 {
-  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
-	it != d->catalogues.end(); ++it)
-    if ((*it).name() == catalog) {
-      KCatalogue save = *it;
-      d->catalogues.remove(it);
-      d->catalogues.prepend(save);
-      return;
-    }
+  if ( d->catalogNames.contains( catalog ) ) {
+    d->catalogNames.remove( catalog );
+	d->catalogNames.prepend( catalog );
+	updateCatalogues();  // walk through the KCatalogue instances and adapt to the new order
+  }
 }
 
 KLocale::~KLocale()
@@ -608,8 +640,12 @@ KLocale::~KLocale()
 
 QString KLocale::translate_priv(const char *msgid,
 				const char *fallback,
-				const char **translated) const
+				const char **translated,
+				int* pluralType ) const
 {
+  if ( pluralType) {
+  	*pluralType = -1; // unless we find something more precise
+  }
   if (!msgid || !msgid[0])
     {
       kdWarning() << "KLocale: trying to look up \"\" in catalog. "
@@ -617,21 +653,32 @@ QString KLocale::translate_priv(const char *msgid,
       return QString::null;
     }
 
-  if ( useDefaultLanguage() )
+  if ( useDefaultLanguage() ) { // shortcut evaluation if en_US is main language: do not consult the catalogs
     return QString::fromUtf8( fallback );
+  }
 
   for ( QValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
 	it != d->catalogues.end();
 	++it )
     {
-      // kdDebug(173) << "translate " << msgid << " " << (*it).name() << " " << (!KGlobal::activeInstance() ? QCString("no instance") : KGlobal::activeInstance()->instanceName()) << endl;
+	  // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
+	  // the catalog as it will not have an assiciated mo-file. For this default language we can
+	  // immediately pick the fallback string.
+	  if ( (*it).language() == defaultLanguage() ) {
+	  	return QString::fromUtf8( fallback );
+	  }
+	  
       const char * text = (*it).translate( msgid );
 
       if ( text )
 	{
 	  // we found it
-	  if (translated)
+	  if (translated) {
 	    *translated = text;
+	  }
+	  if ( pluralType) {
+	  	*pluralType = (*it).pluralType(); // remember the plural type information from the catalog that was used
+	  }
 	  return QString::fromUtf8( text );
 	}
     }
@@ -694,10 +741,11 @@ QString KLocale::translate( const char *singular, const char *plural,
   char *newstring = new char[strlen(singular) + strlen(plural) + 6];
   sprintf(newstring, "_n: %s\n%s", singular, plural);
   // as copying QString is very fast, it looks slower as it is ;/
-  QString r = translate_priv(newstring, 0);
+  int pluralType = -1;
+  QString r = translate_priv(newstring, 0, 0, &pluralType);
   delete [] newstring;
 
-  if ( r.isEmpty() || useDefaultLanguage() || d->plural_form == -1) {
+  if ( r.isEmpty() || useDefaultLanguage() || pluralType == -1) {
     if ( n == 1 ) {
       return put_n_in( QString::fromUtf8( singular ),  n );
 	} else {
@@ -712,7 +760,7 @@ QString KLocale::translate( const char *singular, const char *plural,
   }
 
   QStringList forms = QStringList::split( "\n", r, false );
-  switch ( d->plural_form ) {
+  switch ( pluralType ) {
   case 0: // NoPlural
     EXPECT_LENGTH( 1 );
     return put_n_in( forms[0], n);
@@ -1827,11 +1875,6 @@ QCString KLocale::encodeFileNameUTF8( const QString & fileName )
 QString KLocale::decodeFileNameUTF8( const QCString & localFileName )
 {
   return QString::fromUtf8(localFileName);
-}
-
-void KLocale::initCatalogue( KCatalogue & catalog )
-{
-  catalog.setFileName( catalogueFileName( language(), catalog ) );
 }
 
 void KLocale::setDateFormat(const QString & format)

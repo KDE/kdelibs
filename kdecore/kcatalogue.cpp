@@ -24,6 +24,7 @@
 #include <kdebug.h>
 
 #include "kcatalogue.h"
+#include "kstandarddirs.h"
 
 char *k_nl_find_msg(struct kde_loaded_l10nfile *domain_file,
 	       const char *msgid);
@@ -45,14 +46,28 @@ class KCataloguePrivate
 {
 public:
   QString name;
+  QString language;
+  int	  pluralType;
 
   kde_loaded_l10nfile domain;
 };
 
-KCatalogue::KCatalogue(const QString & name)
+KCatalogue::KCatalogue(const QString & name, const QString & language = QString::null)
   : d( new KCataloguePrivate )
 {
   d->name = name;
+  d->language = language;
+  // at the moment we do not know more. To find out the plural type we first have to look into
+  // kdelibs.mo for the language. And for this we already need a catalog object. So this data
+  // has to be set after we have the first catalog objects.
+  d->pluralType = -1; 
+
+  QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
+    .arg( d->language )
+    .arg( d->name );
+
+  setFileName( locate( "locale", path ) );
+    
 }
 
 KCatalogue::KCatalogue(const KCatalogue & rhs)
@@ -63,7 +78,9 @@ KCatalogue::KCatalogue(const KCatalogue & rhs)
 
 KCatalogue & KCatalogue::operator=(const KCatalogue & rhs)
 {
-  d->name = rhs.d->name;
+  d->name       = rhs.d->name;
+  d->language   = rhs.d->language;
+  d->pluralType = rhs.d->pluralType;
   setFileName( rhs.fileName() );
 
   return *this;
@@ -81,6 +98,22 @@ QString KCatalogue::name() const
   return d->name;
 }
 
+QString KCatalogue::language() const
+{
+  return d->language;
+}	  
+
+void KCatalogue::setPluralType( int pluralType) 
+{
+  d->pluralType = pluralType;
+}
+
+int KCatalogue::pluralType() const
+{
+  return d->pluralType;
+}
+
+  
 void KCatalogue::setFileName( const QString & fileName )
 {
   // nothing to do if the file name is already the same
