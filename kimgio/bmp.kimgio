@@ -2,6 +2,7 @@
 Type=BMP
 Header=
 Name=BMP Image
+Name[be]=Малюнак BMP
 Name[ga]=Íomhá BMP
 Name[hu]=BMP kép
 Name[pt_BR]=Imagem BMP
