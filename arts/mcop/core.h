@@ -359,6 +359,8 @@ protected:
 
 
 public:
+	typedef InterfaceRepo_base _base_class;
+
 	inline InterfaceRepo() : Arts::Object(_Creator), _cache(0) {}
 	inline InterfaceRepo(const Arts::SubClass& s) :
 		Arts::Object(InterfaceRepo_base::_create(s.string())), _cache(0) {}
@@ -456,6 +458,8 @@ protected:
 
 
 public:
+	typedef FlowSystemSender_base _base_class;
+
 	inline FlowSystemSender() : Arts::Object(_Creator), _cache(0) {}
 	inline FlowSystemSender(const Arts::SubClass& s) :
 		Arts::Object(FlowSystemSender_base::_create(s.string())), _cache(0) {}
@@ -550,6 +554,8 @@ protected:
 
 
 public:
+	typedef FlowSystemReceiver_base _base_class;
+
 	inline FlowSystemReceiver() : Arts::Object(_Creator), _cache(0) {}
 	inline FlowSystemReceiver(const Arts::SubClass& s) :
 		Arts::Object(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
@@ -654,6 +660,8 @@ protected:
 
 
 public:
+	typedef FlowSystem_base _base_class;
+
 	inline FlowSystem() : Arts::Object(_Creator), _cache(0) {}
 	inline FlowSystem(const Arts::SubClass& s) :
 		Arts::Object(FlowSystem_base::_create(s.string())), _cache(0) {}
@@ -757,6 +765,8 @@ protected:
 
 
 public:
+	typedef GlobalComm_base _base_class;
+
 	inline GlobalComm() : Arts::Object(_Creator), _cache(0) {}
 	inline GlobalComm(const Arts::SubClass& s) :
 		Arts::Object(GlobalComm_base::_create(s.string())), _cache(0) {}
@@ -851,6 +861,8 @@ protected:
 
 
 public:
+	typedef TmpGlobalComm_base _base_class;
+
 	inline TmpGlobalComm() : Arts::Object(_Creator), _cache(0) {}
 	inline TmpGlobalComm(const Arts::SubClass& s) :
 		Arts::Object(TmpGlobalComm_base::_create(s.string())), _cache(0) {}

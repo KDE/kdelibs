@@ -150,6 +150,29 @@ void readObject(Buffer& stream, T*& result) {
 		result = T::_fromReference(reference,false);
 }
 
+template<class T>
+void readObjectSeq(Buffer& stream, std::vector<T>& sequence)
+{
+	sequence.clear();
+
+	unsigned long l = stream.readLong();
+	while(l--)
+	{
+		typename T::_base_class *temp;
+		readObject(stream, temp);
+		sequence.push_back(T::_from_base(temp));
+	}
+}
+
+template<class T>
+void writeObjectSeq(Buffer& stream, std::vector<T>& sequence)
+{
+	stream.writeLong(sequence.size());
+
+	for(unsigned long l=0;l<sequence.size();l++)
+		writeObject(stream,sequence[l]._base());
+}
+
 #ifndef MCOPBYTE_DEFINED
 #define MCOPBYTE_DEFINED
 typedef unsigned char mcopbyte;

@@ -120,6 +120,8 @@ protected:
 		_pool = new Pool(b);
 	}
 public:
+	typedef Object_base _base_class;
+
 	// Dynamic cast constructor of inherited classes needs to access the _pool
 	// of a generic object if casting successful. But it could not without this
 	inline Pool* _get_pool() const {return _pool;}
