@@ -32,7 +32,8 @@
 
 #include "klauncher_cmds.h"
 
-extern "C" { int start_launcher(int); }
+extern "C" { int kdemain(int, char* []); }
+
 
 static void sig_handler(int sig_num)
 {
@@ -87,7 +88,13 @@ start_launcher(int socket)
    return 0;
 }
 
-int main(/*int argc, char **argv*/)
+int kdemain( int, char** )
+{
+   start_launcher(LAUNCHER_FD);
+   return 0;
+}
+
+int main( int, char ** )
 {
    start_launcher(LAUNCHER_FD);
    return 0;
