@@ -247,21 +247,13 @@ static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions, bool &atF
         // else we jump to the previous index
         index--;
     }
-    else
+    else // (!b)
     {
-        /*
-        kdDebug(7043) << tb << endl;
-        kdDebug(7043) << tb->count()-1 << endl;
-        kdDebug(7043) << tb->idAt(tb->count()-1) << endl;
-        kdDebug(7043) << tb->getButton(tb->idAt(tb->count()-1)) << endl;
-        kdDebug(7043) << tb->getButton(tb->idAt(tb->count()-1))->geometry().topLeft().x() << endl;
-        if (pos.x() > tb->getButton(tb->idAt(tb->count()-1))->geometry().topLeft().x());
+        index = actions.count() - 1;
+        b = tb->getButton(tb->idAt(index));
+        // if !b and not past last button, we didn't find button
+        if (pos.x() <= b->geometry().topLeft().x())
             goto failure_exit;
-        // past the last button, lets just position at end
-        kdDebug(7043) << "jumping to last one" << endl;
-        index = tb->count() - 1;
-        */
-        goto failure_exit;
     }
 
     // search for the button at the given index
