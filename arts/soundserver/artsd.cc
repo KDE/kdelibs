@@ -71,6 +71,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
 	fprintf(stderr,"-s <seconds>        auto-suspend time in seconds\n");
+	fprintf(stderr,"-f                  force starting artsd (if no soundcard is there, uses the null output device)\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"misc options:\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
@@ -106,6 +107,7 @@ static int  					cfgPort			= 0;
 static int  					cfgDebugLevel	= 2;
 static const char			   *cfgDebugApp		= 0;
 static bool  					cfgFullDuplex	= 0;
+static bool  					cfgForceStart	= 0;
 static const char			   *cfgDeviceName   = 0;
 static const char              *cfgAudioIO      = 0;
 static int                      cfgAutoSuspend  = 0;
@@ -116,7 +118,7 @@ static bool						cmdListAudioIO  = false;
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:vNw:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:vNw:f")) > 0)
 	{
 		switch(optch)
 		{
@@ -153,6 +155,8 @@ static void handleArgs(int argc, char **argv)
 			case 'N': cfgBuffers = 5;
 				break;
 			case 'w': cfgBuffers = atoi(optarg);
+				break;
+			case 'f': cfgForceStart = true;
 				break;
 			case 'h':
 			default:
@@ -250,6 +254,19 @@ int main(int argc, char **argv)
 	if(cfgFullDuplex)	 AudioSubSystem::the()->fullDuplex(cfgFullDuplex);
 	if(cfgDeviceName)	 AudioSubSystem::the()->deviceName(cfgDeviceName);
 	if(cfgBits)			 AudioSubSystem::the()->format(cfgBits);
+
+	if(cfgForceStart && !AudioSubSystem::the()->check())
+	{
+		/* hack to get this message to the user in any case */
+		Debug::init("[artsd]", static_cast<Debug::Level>(1));
+		arts_info(
+			"Error while initializing the sound driver:\n"
+			"%s\n\n"
+			"The sound server will continue, using the null output device.",
+			AudioSubSystem::the()->error());
+		Debug::init("[artsd]", static_cast<Debug::Level>(cfgDebugLevel));
+		AudioSubSystem::the()->audioIO("null");
+	}
 
 	if(!AudioSubSystem::the()->check())
 	{

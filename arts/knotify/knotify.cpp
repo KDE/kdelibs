@@ -63,7 +63,7 @@ public:
     QString externalPlayer;
     KProcess *externalPlayerProc;
 
-    Arts::SimpleSoundServer soundServer;
+    Arts::SoundServerV2 soundServer;
     Arts::PlayObjectFactory playObjectFactory;
     QValueList<Arts::PlayObject> playObjects;
 
@@ -110,7 +110,7 @@ KNotify::KNotify()
     : QObject(), DCOPObject("Notify")
 {
     d = new KNotifyPrivate;
-    d->soundServer = Arts::SimpleSoundServer::null();
+    d->soundServer = Arts::SoundServerV2::null();
     d->globalEvents = new KConfig("knotify/eventsrc", true, false, "data");
     d->globalConfig = new KConfig("knotify.eventsrc", true, false);
     d->externalPlayerProc = 0;
@@ -267,6 +267,9 @@ bool KNotify::notifyBySound( const QString &sound )
         while( d->playObjects.count()>5 )
             d->playObjects.remove( d->playObjects.begin() );
 
+        if (d->soundServer.audioDevice() == "null")
+            return false;
+
         Arts::PlayObject player =
             d->playObjectFactory.createPlayObject( QFile::encodeName(soundFile).data() );
 		if (player.isNull())
@@ -397,13 +400,13 @@ void KNotify::connectSoundServer()
      * startup sequence, even if artsd is started some time after the first
      * process requests knotify to do some notifications
      */
-    Arts::SimpleSoundServer result;
-    d->soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
+    Arts::SoundServerV2 result;
+    d->soundServer = Arts::Reference("global:Arts_SoundServerV2");
     if ( firstTime && d->soundServer.isNull() )
         for( int tries=0; tries<7; tries++ )
         {
             sleep( 1 );
-            d->soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
+            d->soundServer = Arts::Reference("global:Arts_SoundServerV2");
             if( !d->soundServer.isNull() ) break;
         }
 
