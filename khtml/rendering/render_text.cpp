@@ -298,7 +298,7 @@ void RenderText::setStyle(RenderStyle *_style)
         fm = new QFontMetrics( style()->font() );
     }
     m_contentHeight = style()->lineHeight().width(metrics().height());
-    
+
     if(m_contentHeight<=0)
         m_contentHeight = metrics().height();
 
@@ -558,16 +558,16 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             s = m_lines[si];
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
 
+            if((hasSpecialObjects()  &&
+                (parent()->isInline() || pseudoStyle)) &&
+               (!pseudoStyle || s->m_firstLine))
+                s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count());
+
             if(_style->font() != p->font())
                 p->setFont(_style->font());
 
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
-
-            if((hasSpecialObjects()  &&
-                (parent()->isInline() || pseudoStyle)) &&
-               (!pseudoStyle || s->m_firstLine))
-                s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count());
 
             s->print(p, tx, ty);
 
