@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qcstring.h>
 #include <qdict.h>
 #include <qptrdict.h>
+#include <qintdict.h>
 #include <qapplication.h>
 
 #define INT32 QINT32
