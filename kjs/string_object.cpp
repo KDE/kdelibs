@@ -232,6 +232,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  list.append(String(mstr));
 	  lastIndex = pos;
 	  pos += mstr.isEmpty() ? 1 : mstr.size();
+	  delete [] *ovector;
 	  mstr = reg->match(u, pos, &pos, ovector);
 	}
 	if (imp)
@@ -344,12 +345,13 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	res.put(exec,"length", Number(0));
 	break;
       }
-      int *ovector = 0;
-      int mpos;
       pos = 0;
       while (pos < u.size()) {
 	// TODO: back references
+        int mpos;
+        int *ovector = 0L;
 	UString mstr = reg.match(u, pos, &mpos, &ovector);
+        delete [] ovector; ovector = 0L;
 	if (mpos < 0)
 	  break;
 	pos = mpos + (mstr.isEmpty() ? 1 : mstr.size());
@@ -359,7 +361,6 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  i++;
 	}
       }
-      delete [] ovector;
     } else if (a0.type() != UndefinedType) {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {

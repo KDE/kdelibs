@@ -1,3 +1,13 @@
+2002-06-08  Harri Porten  <porten@kde.org>
+
+	* string_object.cpp: fixed the leaks introduced by the previous
+	fixes of match() and split(). One has to clean up after each
+	call to RegExp::match().
+	* added some KJS_DEBUG_MEM ifdef'ed globalClear() functions
+	that clear up static allocations. Makes debugging memory
+	leaks easier as we're down to 0 "still reachable" leaks (apart
+	from STL related issue in the node leak check list).
+
 2002-06-02  Harri Porten  <porten@kde.org>
 
 	* math_object.cpp: fixed handling of NaN in Math.round()

@@ -73,7 +73,7 @@ using namespace KJS;
     return List(); // will be picked up by KJS_CHECKEXCEPTION
 
 #ifdef KJS_DEBUG_MEM
-std::list<Node *> Node::s_nodes;
+std::list<Node *> * Node::s_nodes = 0L;
 #endif
 // ------------------------------ Node -----------------------------------------
 
@@ -82,24 +82,28 @@ Node::Node()
   line = Lexer::curr()->lineNo();
   refcount = 0;
 #ifdef KJS_DEBUG_MEM
-  s_nodes.push_back( this );
+  if (!s_nodes)
+    s_nodes = new std::list<Node *>;
+  s_nodes->push_back(this);
 #endif
 }
 
 Node::~Node()
 {
 #ifdef KJS_DEBUG_MEM
-  s_nodes.remove( this );
+  s_nodes->remove( this );
 #endif
 }
 
 #ifdef KJS_DEBUG_MEM
 void Node::finalCheck()
 {
-  fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes.size() );
-  std::list<Node *>::iterator it = s_nodes.begin();
-  for ( uint i = 0; it != s_nodes.end() ; ++it, ++i )
+  fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes->size() );
+  std::list<Node *>::iterator it = s_nodes->begin();
+  for ( uint i = 0; it != s_nodes->end() ; ++it, ++i )
     fprintf( stderr, "[%d] Still having node %p (%s) (refcount %d)\n", i, (void*)*it, typeid( **it ).name(), (*it)->refcount );
+  delete s_nodes;
+  s_nodes = 0L;
 }
 #endif
 
