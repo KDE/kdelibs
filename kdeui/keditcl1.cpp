@@ -454,9 +454,9 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
   if ( KStdAccel::copy().contains( key ) )
     copy();
   else if ( isReadOnly() )
-    QMultiLineEdit::keyPressEvent( e );
+    QMultiLineEdit::keyPressEvent( e );       
   // If this is an unmodified printable key, send it directly to QMultiLineEdit.
-  else if ( (key.keyCodeQt() & (CTRL | ALT)) == 0 && !e->text().isNull() && e->text().unicode()->isPrint() )
+  else if ( (key.keyCodeQt() & (CTRL | ALT)) == 0 && !e->text().isEmpty() && e->text().unicode()->isPrint() )
     QMultiLineEdit::keyPressEvent( e );
   else if ( KStdAccel::paste().contains( key ) ) {
     paste();
