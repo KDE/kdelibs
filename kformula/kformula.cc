@@ -365,6 +365,9 @@ void KFormula::makeDirty()
 void KFormula::refetchReferencesAndCalculate(QPainter &p)
 {
   if(boxes.size() == 0) return;
+
+  if(p.device()->devType() == QInternal::Printer) makeDirty();
+
   if(boxes[boxes.size() - 1]->dirty == false) return;
 
   unsigned int i;
