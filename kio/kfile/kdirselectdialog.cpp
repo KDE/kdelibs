@@ -122,7 +122,14 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
     if ( localOnly && !d->startURL.isLocalFile() )
-        d->startURL = KURL::fromPathOrURL( KGlobalSettings::documentPath() );
+    {
+        d->startURL = KURL();
+        QString docPath = KGlobalSettings::documentPath();
+        if (QDir(docPath).exists())
+            d->startURL.setPath( docPath );
+        else
+            d->startURL.setPath( QDir::homeDirPath() );
+    }
 
     KURL root = rootUrl(d->startURL);
 

@@ -849,7 +849,9 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     KURL docPath;
     docPath.setPath( KGlobalSettings::documentPath() );
-    if ( u.path(+1) != docPath.path(+1) ) {
+    if ( (u.path(+1) != docPath.path(+1)) && 
+         QDir(docPath.path(+1)).exists() )
+    {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
         d->pathCombo->addDefaultURL( docPath,
                                      KMimeType::pixmapForURL( docPath, 0, KIcon::Small ),
@@ -2182,15 +2184,17 @@ KURL KFileDialog::getStartURL( const QString& startDir,
     if ( useDefaultStartDir )
     {
         if (lastDirectory->isEmpty()) {
-            *lastDirectory = KGlobalSettings::documentPath();
+            lastDirectory->setPath(KGlobalSettings::documentPath());
             KURL home;
             home.setPath( QDir::homeDirPath() );
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
-            // different from our homedirectory
+            // different from our homedirectory or when the document dir
+            // does not exist
             if ( lastDirectory->path(+1) == home.path(+1) ||
-                 QDir::currentDirPath() != QDir::homeDirPath() )
-                *lastDirectory = QDir::currentDirPath();
+                 QDir::currentDirPath() != QDir::homeDirPath() ||
+                 !QDir(lastDirectory->path(+1)).exists() )
+                lastDirectory->setPath(QDir::currentDirPath());
         }
         ret = *lastDirectory;
     }
