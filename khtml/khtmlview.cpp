@@ -179,8 +179,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     QScrollView::setVScrollBarMode(d->vmode);
     QScrollView::setHScrollBarMode(d->hmode);
     connect(kapp, SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
-    connect(verticalScrollBar()  , SIGNAL(valueChanged(int)), this, SLOT(slotScrollBarMoved()));
-    connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(slotScrollBarMoved()));
+    connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
 
     // initialize QScrollview
     enableClipper(true);
@@ -663,11 +662,11 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 bool KHTMLView::focusNextPrevChild( bool next )
 {
     if (focusWidget()!=this)
-	setFocus();
+        setFocus();
     if (m_part->xmlDocImpl() && gotoLink(next))
-	return true;
+        return true;
     if (m_part->parentPart() && m_part->parentPart()->view())
-	return m_part->parentPart()->view()->focusNextPrevChild(next);
+        return m_part->parentPart()->view()->focusNextPrevChild(next);
     m_part->overURL(QString(), 0);
 
     return QWidget::focusNextPrevChild(next);
@@ -768,6 +767,16 @@ bool KHTMLView::scrollTo(const QRect &bounds)
 
 bool KHTMLView::gotoLink(bool forward)
 {
+  disconnect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
+  bool retval = gotoLinkInternal(forward);
+  connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
+  if (retval)
+      d->scrollBarMoved = false;
+  return retval;
+}
+
+bool KHTMLView::gotoLinkInternal(bool forward)
+{
     if (!m_part->xmlDocImpl())
         return false;
 
@@ -781,8 +790,12 @@ bool KHTMLView::gotoLink(bool forward)
 
 	if (contentsY() != (forward?0:(contentsHeight()-visibleHeight())))
         {
+
             if (d->scrollBarMoved)
             {
+                // jump to {top,left}most visible selectable element
+                // if the scrollbars were moved since the last gotoLink-call
+                // and the view is not at the end/beginning.
                 ElementImpl *candidate = 0;
                 while ((candidate = m_part->xmlDocImpl()->findNextLink(candidate, forward)))
                 {
@@ -792,16 +805,13 @@ bool KHTMLView::gotoLink(bool forward)
                     {
                         m_part->xmlDocImpl()->setFocusNode(candidate);
                         emit m_part->nodeActivated(Node(candidate));
-                        d->scrollBarMoved = false;
                         return true;
                     }
                 }
                 kdDebug() << "ARGL! no visible node available\n";
-            }
+	    }
 
             setContentsPos(contentsX(), (forward?0:contentsHeight()));
-            d->scrollBarMoved = false;
-
             if (!nextTarget)
                 return true;
             else
@@ -814,7 +824,6 @@ bool KHTMLView::gotoLink(bool forward)
         }
     }
 
-    d->scrollBarMoved = false;
     if (!currentNode && d->borderStart != forward)
 	nextTarget = 0;
 
@@ -824,9 +833,13 @@ bool KHTMLView::gotoLink(bool forward)
     else
 	nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
 
+    //    kdDebug(6000)<<"scrolling to dest ("<<nextRect.left()<<";"<<nextRect.top()
+    //		 <<" : "<<nextRect.bottom()<<";"<<nextRect.right()<<")...\n";
+
     if (scrollTo(nextRect))
     {
-	if (!nextTarget)
+      //        kdDebug(6000)<<"   ...reached.\n";
+ 	if (!nextTarget)
 	{
 	    if (m_part->xmlDocImpl()->focusNode()) m_part->xmlDocImpl()->setFocusNode(0);
 	    d->borderTouched = false;
@@ -836,7 +849,7 @@ bool KHTMLView::gotoLink(bool forward)
 	{
 	    HTMLAnchorElementImpl *anchor = 0;
 	    if ( ( nextTarget->id() == ID_A || nextTarget->id() == ID_AREA ) )
-		anchor = static_cast<HTMLAnchorElementImpl *>( nextTarget );
+	        anchor = static_cast<HTMLAnchorElementImpl *>( nextTarget );
 
 	    if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
 	    else m_part->overURL(QString(), 0);

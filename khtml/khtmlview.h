@@ -191,6 +191,11 @@ private:
      */
     bool gotoLink(bool);
 
+    /**
+     * @internal
+     */
+    bool gotoLinkInternal(bool);
+
     void useSlowRepaints();
 
     void setIgnoreWheelEvents(bool e);
