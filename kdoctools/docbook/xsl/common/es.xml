@@ -67,6 +67,7 @@
    <gentext key="preface" text="Prefacio"/>
    <gentext key="Procedure" text="Procedimiento"/>
    <gentext key="procedure" text="Procedimiento"/>
+   <gentext key="ProductionSet" text="Producci&#243;n"/> 
    <gentext key="PubDate" text="Fecha de publicaci&#243;n"/>
    <gentext key="pubdate" text="Fecha de publicaci&#243;n"/>
    <gentext key="Published" text="Publicado"/>
@@ -136,8 +137,8 @@
    <gentext key="unsupported" text="no soportado"/>
    <gentext key="xrefto" text="referido a"/>
    <gentext key="unexpectedelementname" text="Nombre de elemento inesperado"/>
-   <gentext key="Revisedby" text="Revised by: "/>
-   <gentext key="revisedby" text="Revised by: "/>
+   <gentext key="Revisedby" text="Revisado por: "/>
+   <gentext key="revisedby" text="Revisado por: "/>
    <gentext key="ListofTables" text="Lista de tablas"/>
    <gentext key="listoftables" text="Lista de tablas"/>
    <gentext key="ListofExamples" text="Tabla de ejemplos"/>
@@ -154,6 +155,8 @@
    <gentext key="nav-next" text="Siguiente"/>
    <gentext key="nav-up" text="Subir"/>
    <gentext key="nav-home" text="Inicio"/>
+   <gentext key="sectioncalled" text="la secci&#243;n llamada"/>
+   <gentext key="index symbols" text="S&#237;mbolos"/>
    <dingbat key="startquote" text="&#8220;"/>
    <dingbat key="endquote" text="&#8221;"/>
    <dingbat key="nestedstartquote" text="&#8216;"/>
@@ -162,6 +165,7 @@
 
    <context name="title">
       <template name="abstract" text="%t"/>
+      <template name="answer" text="%t"/>
       <template name="appendix" text="Ap&#233;ndice %n. %t"/>
       <template name="article" text="%t"/>
       <template name="authorblurb" text="%t"/>
@@ -202,8 +206,13 @@
       <template name="partintro" text="%t"/>
       <template name="preface" text="%t"/>
       <template name="procedure" text="%t"/>
+      <template name="procedure.formal" text="Procedimiento %n. %t"/>
+      <template name="productionset" text="%t"/>
+      <template name="productionset.formal" text="Producci&#243;n %n"/>
       <template name="qandadiv" text="%t"/>
+      <template name="qandaentry" text="%t"/>
       <template name="qandaset" text="%t"/>
+      <template name="question" text="%t"/>
       <template name="reference" text="%t"/>
       <template name="refsect1" text="%t"/>
       <template name="refsect2" text="%t"/>
@@ -230,6 +239,7 @@
       <template name="sect5" text="%t"/>
       <template name="section" text="%t"/>
       <template name="simplesect" text="%t"/>
+      <template name="bridgehead" text="%t"/>
    </context>
 
    <context name="section-title-numbered">
@@ -283,6 +293,7 @@
    </context>
 
    <context name="xref">
+      <template name="answer" text="R: %n"/>
       <template name="appendix" text="Ap&#233;ndice %n. %t"/>
       <template name="article" text="%t"/>
       <template name="bibliography" text="%t"/>
@@ -290,12 +301,18 @@
       <template name="chapter" text="Cap&#237;tulo %n. %t"/>
       <template name="colophon" text="%t"/>
       <template name="dedication" text="%t"/>
+      <template name="equation" text="Ecuaci&#243;n %n"/>
       <template name="example" text="Ejemplo %n. %t"/>
       <template name="figure" text="Figura %n. %t"/>
       <template name="glossary" text="%t"/>
       <template name="index" text="%t"/>
       <template name="part" text="Parte %n. %t"/>
       <template name="preface" text="%t"/>
+      <template name="procedure" text="Procedimiento %n"/>
+      <template name="qandadiv" text="%t"/>
+      <template name="qandaentry" text="P: %n"/>
+      <template name="qandaset" text="%t"/>
+      <template name="question" text="P: %n"/>
       <template name="reference" text="%t"/>
       <template name="set" text="%t"/>
       <template name="setindex" text="%t"/>
@@ -310,6 +327,7 @@
       <template name="sect5" text="&#8220;%t&#8221;"/>
       <template name="section" text="&#8220;%t&#8221;"/>
       <template name="simplesect" text="&#8220;%t&#8221;"/>
+      <template name="bridgehead" text="&#8220;%t&#8221;"/>
    </context>
 
    <context name="section-xref-numbered">
