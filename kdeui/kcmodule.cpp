@@ -37,11 +37,14 @@ public:
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 	: QWidget(parent, name), _btn(Help|Default|Apply)
 {
-	d = new KCModulePrivate;
-	d->_useRootOnlyMsg = true;
+    d = new KCModulePrivate;
+    d->_useRootOnlyMsg = true;
     d->_instance = new KInstance(name);
-	if (name && strlen(name))
+	if (name && strlen(name)) {
+		d->_instance = new KInstance(name);
 		KGlobal::locale()->insertCatalogue(name);
+	} else
+		d->_instance = new KInstance("kcontrol");
     d->_hasOwnInstance = true;
     KGlobal::setActiveInstance(this->instance());
 }
