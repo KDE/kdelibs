@@ -345,13 +345,14 @@ void KHTMLView::showEvent(QShowEvent* e)
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
     QScrollView::resizeEvent(e);
+
+    if ( m_part && m_part->xmlDocImpl() )
+        m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
 }
 
 void KHTMLView::viewportResizeEvent (QResizeEvent* e)
 {
     QScrollView::viewportResizeEvent(e);
-
-
 
      int w = visibleWidth();
      int h = visibleHeight();
@@ -359,8 +360,6 @@ void KHTMLView::viewportResizeEvent (QResizeEvent* e)
     if (d->layoutSchedulingEnabled)
         layout();
 
-    if ( m_part && m_part->xmlDocImpl() )
-        m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
     KApplication::sendPostedEvents(viewport(), QEvent::Paint);
 }
 
