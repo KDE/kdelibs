@@ -148,7 +148,7 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 
   switch (id) {
   case MathObjectImp::Abs:
-    result = ( arg < 0 ) ? (-arg) : arg;
+    result = ( arg < 0 || arg == -0) ? (-arg) : arg;
     break;
   case MathObjectImp::ACos:
     result = ::acos(arg);

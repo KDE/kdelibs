@@ -437,13 +437,13 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
       int u = c->unicode();
       if (u > 255) {
 	char tmp[7];
-	sprintf(tmp, "%%u%04x", u);
+	sprintf(tmp, "%%u%04X", u);
 	s = UString(tmp);
       } else if (strchr(non_escape, (char)u)) {
 	s = UString(c, 1);
       } else {
 	char tmp[4];
-	sprintf(tmp, "%%%02x", u);
+	sprintf(tmp, "%%%02X", u);
 	s = UString(tmp);
       }
       r += s;

@@ -1291,9 +1291,15 @@ Value RelationalNode::evaluate(ExecState *exec)
                            "Called instanceof operator on non-object." );
 
     Object o2 = static_cast<ObjectImp*>(v2.imp());
-    if (!o2.implementsHasInstance())
-      return throwError(exec, TypeError,
-			"Object does not implement the [[HasInstance]] method." );
+    if (!o2.implementsHasInstance()) {
+      // According to the spec, only some types of objects "imlement" the [[HasInstance]] property.
+      // But we are supposed to throw an exception where the object does not "have" the [[HasInstance]]
+      // property. It seems that all object have the property, but not all implement it, so in this
+      // case we return false (consistent with mozilla)
+      return Boolean(false);
+      //      return throwError(exec, TypeError,
+      //			"Object does not implement the [[HasInstance]] method." );
+    }
     return o2.hasInstance(exec, v1);
   }
 

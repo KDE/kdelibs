@@ -238,7 +238,9 @@ UString UString::from(double d)
 {
   char buf[40];
 
-  if (KJS::isNaN(d))
+  if (d == -0)
+    strcpy(buf,"0");
+  else if (KJS::isNaN(d))
     strcpy(buf,"NaN");
   else if (KJS::isPosInf(d))
     strcpy(buf,"Infinity");
