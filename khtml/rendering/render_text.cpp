@@ -318,6 +318,7 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
                  borderBottom() + paddingBottom();
 
     bool inside = false;
+    if (style()->visibility() != HIDDEN) {
     TextSlave *s = m_lines.count() ? m_lines[0] : 0;
     int si = 0;
     while(s) {
@@ -328,6 +329,7 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
         }
 
         s = si < (int) m_lines.count()-1 ? m_lines[++si] : 0;
+        }
     }
 
     setMouseInside(inside);
