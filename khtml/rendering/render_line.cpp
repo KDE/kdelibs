@@ -606,13 +606,13 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
             int underlineOffset = ( fm.height() + m_baseline ) / 2;
             if (underlineOffset <= m_baseline) underlineOffset = m_baseline+1;
 
-            pI.p->fillRect(_tx, _ty + underlineOffset, w, thickness, underline );
+            pI.p->fillRect(_tx, _ty + underlineOffset, w+1, thickness, underline );
         }
         if (deco & OVERLINE) {
-            pI.p->fillRect(_tx, _ty, w, thickness, overline );
+            pI.p->fillRect(_tx, _ty, w+1, thickness, overline );
         }
         if (deco & LINE_THROUGH) {
-            pI.p->fillRect(_tx, _ty + 2*m_baseline/3, w, thickness, linethrough );
+            pI.p->fillRect(_tx, _ty + 2*m_baseline/3, w+1, thickness, linethrough );
         }
     }
 }

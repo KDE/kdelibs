@@ -402,13 +402,13 @@ void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int widt
         int underlineOffset = ( fm.height() + baseline ) / 2;
         if (underlineOffset <= baseline) underlineOffset = baseline+1;
 
-        pt->fillRect(_tx, _ty + underlineOffset, width, thickness, brush );
+        pt->fillRect(_tx, _ty + underlineOffset, width + 1, thickness, brush );
     }
     if (deco & OVERLINE) {
-        pt->fillRect(_tx, _ty, width, thickness, brush );
+        pt->fillRect(_tx, _ty, width + 1, thickness, brush );
     }
     if (deco & LINE_THROUGH) {
-        pt->fillRect(_tx, _ty + 2*baseline/3, width, thickness, brush );
+        pt->fillRect(_tx, _ty + 2*baseline/3, width + 1, thickness, brush );
     }
 }
 
