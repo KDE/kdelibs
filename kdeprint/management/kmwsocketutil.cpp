@@ -31,6 +31,7 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <qregexp.h>
+#include <knumvalidator.h>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -48,7 +49,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 {
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
-
+        KIntValidator *val = new KIntValidator( this );
 	QLabel	*masklabel = new QLabel(i18n("&Subnetwork:"),dummy);
 	QLabel	*portlabel = new QLabel(i18n("&Port:"),dummy);
 	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),dummy);
@@ -60,7 +61,10 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	mask_ = new QLineEdit(dummy);
 	mask_->setAlignment(Qt::AlignRight);
 	port_ = new QComboBox(true,dummy);
+        if ( port_->lineEdit() )
+            port_->lineEdit()->setValidator( val );
 	tout_ = new QLineEdit(dummy);
+        tout_->setValidator( val );
 
 	masklabel->setBuddy(mask_);
 	portlabel->setBuddy(port_);

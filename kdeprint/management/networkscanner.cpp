@@ -33,6 +33,7 @@
 #include <klocale.h>
 #include <kextendedsocket.h>
 #include <kmessagebox.h>
+#include <knumvalidator.h>
 #include <kdebug.h>
 #include <unistd.h>
 
@@ -333,7 +334,7 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
 	scanner_ = scanner;
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
-
+        KIntValidator *val = new KIntValidator( this );
 	QLabel	*masklabel = new QLabel(i18n("&Subnetwork:"),dummy);
 	QLabel	*portlabel = new QLabel(i18n("&Port:"),dummy);
 	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),dummy);
@@ -345,7 +346,10 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
 	mask_ = new QLineEdit(dummy);
 	mask_->setAlignment(Qt::AlignRight);
 	port_ = new QComboBox(true,dummy);
+        if ( port_->lineEdit() )
+            port_->lineEdit()->setValidator( val );
 	tout_ = new QLineEdit(dummy);
+        tout_->setValidator( val );
 
 	masklabel->setBuddy(mask_);
 	portlabel->setBuddy(port_);
