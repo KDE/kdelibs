@@ -864,7 +864,10 @@ DocLoader::~DocLoader()
 
 void DocLoader::setCacheCreationDate(time_t _creationDate)
 {
-    m_creationDate = _creationDate;
+    if (_creationDate)
+       m_creationDate = _creationDate;
+    else
+       m_creationDate = time(0); // Now
 }
 
 void DocLoader::setExpireDate(time_t _expireDate, bool relative)
