@@ -67,6 +67,9 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     setWidget( box );
 
+    // VBox can't take focus, so pass it on to sub-widget
+    box->setFocusProxy( m_khtml->widget() );
+
     m_ext = new KHTMLImageBrowserExtension( this, "be" );
 
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
