@@ -32,12 +32,14 @@ namespace KJS {
     enum { None, Global, IgnoreCase, Multiline };
     RegExp(const UString &p, int f = None);
     ~RegExp();
-    UString match(const UString &s, int i = -1);
+    UString match(const UString &s, int i = -1, int *pos = 0L);
     bool test(const UString &s, int i = -1);
   private:
     const UString &pattern;
     int flags;
     regex_t preg;
+
+    RegExp();
   };
 
 }; // namespace

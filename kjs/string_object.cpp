@@ -20,6 +20,7 @@
 #include "kjs.h"
 #include "operations.h"
 #include "types.h"
+#include "regexp.h"
 #include "string_object.h"
 
 using namespace KJS;
@@ -224,17 +225,22 @@ Completion StringProtoFunc::execute(const List &args)
   case Replace:
     /* TODO: this is just a hack to get the most common cases going */
     u = s.value();
-    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass)
+    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass) {
       s2 = a0.get("source").toString();
-    else
+      RegExp reg(s2.value());
+      UString mstr = reg.match(u, -1, &pos);
+      len = mstr.size();
+    } else {
       s2 = a0.toString();
-    u2 = s2.value();
-    pos = u.find(u2);
+      u2 = s2.value();
+      pos = u.find(u2);
+      len = u2.size();
+    }
     if (pos == -1)
 	result = s;
     else {
 	u3 = u.substr(0, pos) + a1.toString().value() +
-	     u.substr(pos + u2.size());
+	     u.substr(pos + len);
 	result = String(u3);
     }
     break;

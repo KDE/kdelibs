@@ -37,13 +37,18 @@ RegExp::~RegExp()
   regfree(&preg);
 }
 
-UString RegExp::match(const UString &s, int)
+UString RegExp::match(const UString &s, int, int *pos)
 {
   regmatch_t rmatch[10];
 
-  if (regexec(&preg, s.ascii(), 10, rmatch, 0))
+  if (regexec(&preg, s.ascii(), 10, rmatch, 0)) {
+    if (pos)
+      *pos = rmatch[0].rm_so;
     return "";
+  }
 
+  if (pos)
+    *pos = rmatch[0].rm_so;
   return s.substr(rmatch[0].rm_so, rmatch[0].rm_eo - rmatch[0].rm_so);
 }
 
