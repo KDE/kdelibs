@@ -2853,7 +2853,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   if( d->m_bMousePressed && !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE ) {
         d->m_selectionEnd = innerNode;
         d->m_endOffset = event->offset();
-        //      kdDebug( 6000 ) << "setting end of selection to " << innerNode << "/" << offset << endl;
+	//kdDebug( 6000 ) << "setting end of selection to " << innerNode.handle() << "/" << event->offset() << endl;
 
         // we have to get to know if end is before start or not...
         DOM::Node n = d->m_selectionStart;
@@ -2974,6 +2974,10 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
         // we have to get to know if end is before start or not...
         DOM::Node n = d->m_selectionStart;
         d->m_startBeforeEnd = false;
+	if( d->m_selectionStart == d->m_selectionEnd ) {
+	    if( d->m_startOffset < d->m_endOffset )
+		d->m_startBeforeEnd = true;
+	} else {
         while(!n.isNull()) {
             if(n == d->m_selectionEnd) {
                 d->m_startBeforeEnd = true;
@@ -2987,6 +2991,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
             }
             n = next;
         }
+	}
         if(!d->m_startBeforeEnd)
         {
             DOM::Node tmpNode = d->m_selectionStart;
