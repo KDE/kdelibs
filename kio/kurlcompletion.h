@@ -46,11 +46,12 @@ class KURLCompletion : public KCompletion
 public:
 	/**
 	 * Determines how completion is done.
-	 * @li ExeCompletion - executables in $PATH or with full path
+	 * @li ExeCompletion - executables in $PATH or with full path.
 	 * @li FileCompletion - all files with full path or in dir(), URLs
-	 * are listed using KIO
+	 * are listed using KIO.
+	 * @li DirCompletion - as FileCompletion but only returns directories.
 	 */
-	enum Mode { ExeCompletion=1, FileCompletion };
+	enum Mode { ExeCompletion=1, FileCompletion, DirCompletion };
 
 	/**
 	 * Constructs a KURLCompletion object in FileCompletion mode.
@@ -179,6 +180,7 @@ private:
 	QString listDirectories(const QStringList &,
 	                        const QString &,
 	                        bool only_exe = false,
+	                        bool only_dir = false,
 	                        bool no_hidden = false,
 	                        bool stat_files = true);
 

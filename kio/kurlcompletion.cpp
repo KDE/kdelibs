@@ -196,6 +196,7 @@ public:
 	bool listDirectories( const QStringList &dirs,
 	                      const QString &filter,
 	                      bool only_exe,
+	                      bool only_dir,
 	                      bool no_hidden,
 	                      bool append_slash_to_dir);
 
@@ -216,6 +217,7 @@ private:
 
 	QString m_filter;
 	bool    m_only_exe;
+	bool    m_only_dir;
 	bool    m_no_hidden;
 	bool    m_append_slash_to_dir;
 
@@ -284,6 +286,7 @@ bool KURLCompletion::DirLister::listDirectories(
 		const QStringList& dir_list,
 		const QString& filter,
 		bool only_exe,
+		bool only_dir,
 		bool no_hidden,
         bool append_slash_to_dir)
 {
@@ -292,6 +295,7 @@ bool KURLCompletion::DirLister::listDirectories(
 	m_dir_list = dir_list;
 	m_filter = filter;
 	m_only_exe = only_exe;
+	m_only_dir = only_dir;
 	m_no_hidden = no_hidden;
 	m_append_slash_to_dir = append_slash_to_dir;
 
@@ -360,7 +364,7 @@ bool KURLCompletion::DirLister::listBatch()
 
 			if ( filter_len == 0 || file.startsWith( m_filter ) ) {
 				
-				if ( m_only_exe || m_append_slash_to_dir ) {
+				if ( m_only_exe || m_only_dir || m_append_slash_to_dir ) {
 					struct stat sbuff;
 			
 					if ( ::stat( ep->d_name, &sbuff ) == 0 ) {
@@ -368,7 +372,12 @@ bool KURLCompletion::DirLister::listBatch()
 						//
 						if ( m_only_exe && 0 == (sbuff.st_mode & MODE_EXE) )
 							continue;
-						
+					
+						// Verify directory
+						//
+						if ( m_only_dir && !S_ISDIR ( sbuff.st_mode ) )
+							continue;
+
 						// Add '/' to directories
 						//
 						if ( m_append_slash_to_dir && S_ISDIR ( sbuff.st_mode ) )
@@ -523,7 +532,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 			return match;
 	}
 	else {
-		// Local files
+		// Local files, directories
 		//
 		if ( fileCompletion( url, &match ) )
 			return match;
@@ -766,7 +775,7 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *match)
 		
 		setListedURL( CTExe, dir, url.file(), no_hidden_files );
 
-		*match = listDirectories( dirList, url.file(), true, no_hidden_files );
+		*match = listDirectories( dirList, url.file(), true, false, no_hidden_files );
 	}
 	else if ( !isRunning() ) {
 		*match = finished();
@@ -829,7 +838,9 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 		bool append_slash = ( d->popup_append_slash
 	    	&& completionMode() == KGlobalSettings::CompletionPopup );
 
-		*match = listDirectories( dirList, "", false, no_hidden_files,
+		bool only_dir = ( m_mode == DirCompletion );
+		
+		*match = listDirectories( dirList, "", false, only_dir, no_hidden_files,
 		                          append_slash );
 	}
 	else if ( !isRunning() ) {
@@ -978,6 +989,7 @@ QString KURLCompletion::listDirectories(
 		const QStringList &dirs,
 		const QString &filter,
 		bool only_exe,
+		bool only_dir,
 		bool no_hidden,
         bool append_slash_to_dir)
 {
@@ -1007,6 +1019,7 @@ QString KURLCompletion::listDirectories(
 		bool done = d->dir_lister->listDirectories(dirs,
 		                                      filter,
 		                                      only_exe,
+		                                      only_dir,
 		                                      no_hidden,
 		                                      append_slash_to_dir);
 		
@@ -1124,6 +1137,9 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 		     ( m_list_urls_no_hidden ||
 		        name.length() == 1 ||
 		          ( name.length() == 2 && name[1] == '.' ) ) )
+			continue;
+
+		if ( m_mode == DirCompletion && !is_dir )
 			continue;
 
 		if ( filter_len == 0 || name.left(filter_len) == filter ) {
