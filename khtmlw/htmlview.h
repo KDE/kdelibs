@@ -429,6 +429,16 @@ public:
     KHTMLView* getParentView() { return parentView; }
     
     /**
+     * Called when a URL is encountered.  Overload this method to indicate
+     * which links have been visited previously.
+     *
+     * @return true if the URL has been visited previously.  If true is
+     * returned the URL will be rendered in the vlink color.  If false
+     * is returned the URL will be rendered in the link color.
+     */
+    virtual bool URLVisited( const char * /*_url*/ ) { return false; }
+
+    /**
      * For internal use only.
      *
      * @see #cookie
@@ -785,22 +795,22 @@ protected:
 
     virtual void initGUI();
 
-    /**
+    /*
      * Determiens wether scrollbars are needed and displays or hides them
      */
     virtual void calcScrollBars();
   
-    /**
+    /*
      * The horizontal scrollbar
      */    
     QScrollBar *horz;
 
-    /**
+    /*
      * The vertical scrollbar
      */    
     QScrollBar *vert;
 
-    /**
+    /*
      * The HTML Widget.
      */
     KHTMLWidget *view;
@@ -812,26 +822,26 @@ protected:
      */
     QString url;
 
-    /**
+    /*
      * Flag that indicates wether we show a horizontal scrollbar.
      *
      * @see horz
      */
     bool displayHScroll;
 
-    /**
+    /*
      * Flag that indicates wether we show a vertictal scrollbar.
      *
      * @see vert
      */
     bool displayVScroll;
 
-    /**
+    /*
      * List of all open html views.
      */
     static QList<KHTMLView> *viewList;
 
-    /**
+    /*
      * The name of the window. You can refer to this name in the
      * &lt;a href=... target=... &gt> tag.
      *
@@ -841,28 +851,28 @@ protected:
      */
     QString frameName;
 
-    /**
+    /*
      * @see #setAllowResize
      */
     bool bAllowResize;
 
-    /**
+    /*
      * @see #setScrolling
      */
     int scrolling;
 
-    /**
+    /*
      * @see #setFrameBorder
      */
     int frameBorder;
 
-    /**
+    /*
      * Pointer to the parent KHTMLView. If this view is the toplevel frame or
      * if there are no frames at all then this pointer is 0L.
      */
     KHTMLView *parentView;
 
-    /**
+    /*
      * This string holds some temporary data. It is used by @ref KHTMLWidget
      *
      * @see #setCookie

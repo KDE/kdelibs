@@ -93,6 +93,7 @@ void HTMLTokenizer::begin()
     comment = false;
     squote = false;
     dquote = false;
+    tquote = false;
     scriptCount = 0;
 }
 
@@ -344,6 +345,7 @@ void HTMLTokenizer::write( const char *str )
 	    }
 
 	    space = false;
+	    tquote = false;
 
 	    if ( !script )
 	    {
@@ -359,7 +361,7 @@ void HTMLTokenizer::write( const char *str )
 		src++;
 	    }
 	}
-	else if ( *src == '>' )
+	else if ( *src == '>' && !tquote )
 	{
 	    space = false;
 
@@ -431,6 +433,9 @@ void HTMLTokenizer::write( const char *str )
 	    space = false;
 	    if ( pre )
 		pre_pos++;
+
+	    if ( tag && *src == '\"' )
+		tquote = !tquote;
 	    
 	    *dest++ = *src++;
 	}

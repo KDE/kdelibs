@@ -294,12 +294,12 @@ class HTMLImage : public HTMLObject
 public:
     HTMLImage( KHTMLWidget *widget, const char*, const char *_url,
 		const char *_target, int _max_width, int _width = -1,
-		int _height = -1, int _percent = 0 );
+		int _height = -1, int _percent = 0, int bdr = 0 );
     virtual ~HTMLImage();
 
-	virtual int  calcMinWidth();
-	virtual int  calcPreferredWidth();
-	virtual void setMaxWidth( int );
+    virtual int  calcMinWidth();
+    virtual int  calcPreferredWidth();
+    virtual void setMaxWidth( int );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
@@ -310,9 +310,12 @@ public:
      *
      * The image is on the local disk in the file named '_filename.'
      */
-	virtual void fileLoaded( const char *_filename );
-	virtual const char *requestedFile()
-		{	return imageURL.data(); }
+    virtual void fileLoaded( const char *_filename );
+    virtual const char *requestedFile()
+       	{	return imageURL.data(); }
+
+    void setBorderColor( const QColor &color )
+	{   borderColor = color; }
 
 protected:
 
@@ -376,6 +379,11 @@ protected:
       the constructor then this flag is set to TRUE.
       */
     bool synchron;
+
+    // border width
+    int border;
+
+    QColor borderColor;
 };
 
 //----------------------------------------------------------------------------
@@ -444,7 +452,7 @@ class HTMLImageMap : public HTMLImage
 public:
 	HTMLImageMap( KHTMLWidget *widget, const char*, const char *_url,
 		const char *_target, int _max_width, int _width = -1,
-		int _height = -1, int _percent = 0 );
+		int _height = -1, int _percent = 0, int brd = 0 );
 	virtual ~HTMLImageMap() {}
 
 	virtual HTMLObject* checkPoint( int, int );

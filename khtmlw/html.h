@@ -678,24 +678,34 @@ protected:
 
     virtual void mousePressEvent( QMouseEvent * );
 
-    /*
+    /**
      * This function emits the 'doubleClick' signal when the user
      * double clicks a &lt;a href=...&gt; tag.
      */
     virtual void mouseDoubleClickEvent( QMouseEvent * );
 
-    /*
+    /**
      * Overload this method if you dont want any drag actions.
      */
     virtual void dndMouseMoveEvent( QMouseEvent * _mouse );
 
-    /*
+    /**
      * This function emits the 'URLSelected' signal when the user
      * pressed a &lt;a href=...&gt; tag.
      */
     virtual void dndMouseReleaseEvent( QMouseEvent * );
 
     virtual void dragEndEvent();
+
+    /**
+     * Called when a URL is encountered.  Overload this method to indicate
+     * which links have been visited previously.
+     *
+     * @return true if the URL has been visited previously.  If true is
+     * returned the URL will be rendered in the vlink color.  If false
+     * is returned the URL will be rendered in the link color.
+     */
+    virtual bool URLVisited( const char *_url );
 
     virtual void paintEvent( QPaintEvent * );
 
@@ -882,6 +892,8 @@ protected:
 
     const HTMLFont *currentFont()  { return font_stack.top(); }
 
+    void popColor();
+
     // List of all objects waiting to get a remote file loaded
     QList<HTMLObject> waitingFileList;
     
@@ -993,6 +1005,11 @@ protected:
     QColor defTextColor;
     QColor defLinkColor;
     QColor defVLinkColor;
+
+    /*
+     * Current text color is at the top of the stack
+     */
+    QStack<QColor> colorStack;
 
     /*
      * Timer to parse html in background

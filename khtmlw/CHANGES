@@ -1,7 +1,19 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 14 August 1997 - Martin Jones.
+Last Change: 21 August 1997 - Martin Jones.
+
+
+Version 0.8.9 - Martin
+----------------------
+
+ Add support for vlink color
+  - overload: virtual bool URLVisited( const char *_url );
+  and return true if the _url has been visited previously.
+ Underline URLs.
+ Image borders.
+ Remove dependancy on '>' being found in tags so that ignored attributes are
+  accepted, e.g. find "<dl", not "<dl>".
 
 
 Version 0.8.8 - Martin

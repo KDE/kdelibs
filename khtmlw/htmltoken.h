@@ -94,6 +94,9 @@ protected:
     
     // are we in a html tag
     bool tag;
+
+    // are we in quotes within a html tag
+    bool tquote;
     
     // To avoid multiple spaces
     bool space;
