@@ -364,6 +364,7 @@ AC_LANG_CPLUSPLUS
 cat > conftest.$ac_ext <<EOF
 #include "confdefs.h"
 #include <qmovie.h>
+#include <qapplication.h>
 int main() {
   QMovie m;
   m.setSpeed(20);
@@ -479,7 +480,7 @@ for dir in $qt_libdirs; do
   if test=`eval $try 2> /dev/null`; then qt_libdir=$dir; break; else echo "tried $dir" >&AC_FD_CC ; fi
 done
 
-dnl AC_FIND_FILE(libqt.so libqt.so.1.30 libqt.so.1.31 libqt.so.1 libqt.a libqt.sl, $qt_libdirs, qt_libdir)
+dnl AC_FIND_FILE(libqt.so libqt.so.1.40 libqt.so.1.41 libqt.so.1 libqt.a libqt.sl, $qt_libdirs, qt_libdir)
 ac_qt_libraries="$qt_libdir"
 
 ac_cxxflags_safe="$CXXFLAGS"
@@ -517,7 +518,7 @@ if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
     ac_qt_notfound="(libraries)";
   fi
 
-  AC_MSG_ERROR([QT-1.3 $ac_qt_notfound not found. Please check your installation! ]);
+  AC_MSG_ERROR([QT-1.4 $ac_qt_notfound not found. Please check your installation! ]);
 else
   have_qt="yes"
 fi
