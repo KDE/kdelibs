@@ -155,8 +155,6 @@ LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la'
 AC_SUBST(LIB_KDEUI)
 LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la'
 AC_SUBST(LIB_KFORMULA)
-LIB_KDEUTIL='$(top_builddir)/kdeutils/libkdeutil.la'
-AC_SUBST(LIB_KDEUTIL)
 LIB_KIO='$(top_builddir)/kio/libkio.la'
 AC_SUBST(LIB_KIO)
 LIB_KFILE='$(top_builddir)/kfile/libkfile.la'
@@ -235,7 +233,6 @@ AC_OUTPUT(Makefile \
 	khtml/Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
-	kdeutils/Makefile \
 	kio/Makefile \
 	jscript/Makefile \
 	corba/Makefile \

@@ -4,16 +4,13 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = kdecore kdeui kdeutils kimgio kio kfile jscript khtml kformula kspell kab kom kpartsui kparts
+kde_MODULES = kdecore kdeui kimgio kio kfile jscript khtml kformula kspell kab kom kpartsui kparts
 
 kdecore_FILES = *.h
 kdecore_LIBS = -lqt
 
 kdeui_FILES = *.h
 kdeui_LIBS = -lkdecore -lqt
-
-kdeutils_FILES = *.h
-kdeutils_LIBS = -lkdecore -lqt
 
 kab_FILES = kabapi.h
 kab_LIBS = -lkdecore -lkdeui -lqt
