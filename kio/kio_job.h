@@ -3,6 +3,8 @@
 
 #include "kio_base.h"
 
+#include <k2url.h>
+
 #include <qobject.h>
 #include <qstring.h>
 #include <qstrlist.h>
@@ -275,6 +277,18 @@ protected:
    */
   Slave* createSlave( const char *_protocol, int& _error, string& _error_text );
 
+  /**
+   * Creates a new slave if the @ref KIOSlavePool has no matching one.
+   * @ref m_pSlave and @ref m_strSlaveProtocol are set accordingly on success.
+   * 
+   * @param _error is the error code on failure and undefined else.
+   * @param _error_text is the error text on failure and undefined else.
+   *
+   * @return @ref m_pSlave on success or 0L on failure.
+   */
+  Slave* createSlave(  const char *_protocol, const char *_host, const char *_user,
+		       const char *_pass, int& _error, string& _error_text );
+
   QDialog* createDialog( const char *_text );
   
   bool m_bAutoDelete;
@@ -289,6 +303,9 @@ protected:
   Slave* m_pSlave;
   QSocketNotifier* m_pNotifier;
   string m_strSlaveProtocol;
+  string m_strSlaveHost;
+  string m_strSlaveUser;
+  string m_strSlavePass;
 
   unsigned long m_iTotalSize;
   unsigned long m_iTotalFiles;
@@ -323,7 +340,11 @@ public:
   KIOSlavePool() { }
   
   Slave* slave( const char *_protocol );
-  void addSlave( Slave *_slave, const char *_protocol );
+  Slave* slave( const char *_protocol, const char *_host, const char *_user,
+		const char *_pass);
+
+  void addSlave( Slave *_slave, const char *_protocol, const char *_host,
+		 const char *_user, const char *_pass );
   
   static KIOSlavePool* self();
   
@@ -334,6 +355,9 @@ protected:
   {
     time_t m_time;
     Slave* m_pSlave;
+    string m_host;
+    string m_user;
+    string m_pass;
   };
   
   multimap<string,Entry> m_mapSlaves;

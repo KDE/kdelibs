@@ -29,6 +29,7 @@ public:
   bool getMarkPartial();
   int getMinimumKeepSize();
   bool getAutoResume();
+  bool getPersistent();
 
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
@@ -69,6 +70,14 @@ public:
    *
    */
   void setAutoResume( bool _mode );
+
+  /**
+   * Set this flag if you want slaves to have persistent connections ( ftp )
+   *
+   * Default value is true - keep persistent connections
+   *
+   */
+  void setPersistent( bool _mode );
 
   static ProtocolManager* self() { 
     if ( ! s_pManager )

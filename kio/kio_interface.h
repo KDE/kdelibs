@@ -61,43 +61,44 @@
 #define ERR_UNSUPPORTED_PROTOCOL 6
 #define ERR_NO_SOURCE_PROTOCOL 7
 #define ERR_UNSUPPORTED_ACTION 8
-#define ERR_DOES_NOT_EXIST 9
-#define ERR_IS_DIRECTORY 10 // ... where a file was expected
-#define ERR_COULD_NOT_MKDIR 11
+#define ERR_IS_DIRECTORY 9 // ... where a file was expected
+#define ERR_IS_FILE 10 // If one tries to get a listing of a file. This does only work for directories :-)
+#define ERR_DOES_NOT_EXIST 11
 #define ERR_DOES_ALREADY_EXIST 12
-#define ERR_ACCESS_DENIED 13
-#define ERR_CANNOT_ENTER_DIRECTORY 14
-#define ERR_PROTOCOL_IS_NOT_A_FILESYSTEM 15
-#define ERR_CYCLIC_LINK 16
-#define ERR_CANNOT_CHMOD 17
-#define ERR_WRITE_ACCESS_DENIED 18
-#define ERR_USER_CANCELED 19
-#define ERR_CYCLIC_COPY 20
-#define ERR_COULD_NOT_CREATE_SOCKET 21
-#define ERR_COULD_NOT_CONNECT 22
-#define ERR_UNKNOWN_HOST 23
+#define ERR_DOES_ALREADY_EXIST_FULL 13
+#define ERR_UNKNOWN_HOST 14
+#define ERR_ACCESS_DENIED 15
+#define ERR_WRITE_ACCESS_DENIED 16
+#define ERR_CANNOT_ENTER_DIRECTORY 17
+#define ERR_PROTOCOL_IS_NOT_A_FILESYSTEM 18
+#define ERR_CYCLIC_LINK 19
+#define ERR_USER_CANCELED 20
+#define ERR_CYCLIC_COPY 21
+#define ERR_COULD_NOT_CREATE_SOCKET 22
+#define ERR_COULD_NOT_CONNECT 23
 #define ERR_CONNECTION_BROKEN 24
 #define ERR_NOT_FILTER_PROTOCOL 25
-#define ERR_IS_FILE 26 // If one tries to get a listing of a file. This does only work for directories :-)
-#define ERR_COULD_NOT_MOUNT 27
-#define ERR_COULD_NOT_UNMOUNT 28
+#define ERR_COULD_NOT_MOUNT 26
+#define ERR_COULD_NOT_UNMOUNT 27
+#define ERR_COULD_NOT_READ 28
+#define ERR_COULD_NOT_WRITE 29
+#define ERR_COULD_NOT_BIND 30
+#define ERR_COULD_NOT_LISTEN 31
+#define ERR_COULD_NOT_ACCEPT 32
+#define ERR_COULD_NOT_LOGIN 33
+#define ERR_COULD_NOT_STAT 34
+#define ERR_COULD_NOT_CLOSEDIR 35
+#define ERR_COULD_NOT_READSIZE 36
+#define ERR_COULD_NOT_MKDIR 37
+#define ERR_COULD_NOT_RMDIR 38
+#define ERR_CANNOT_RESUME 39
+#define ERR_CANNOT_RENAME 40
+#define ERR_CANNOT_CHMOD 41
+#define ERR_CANNOT_DELETE 42
 // The text argument is the protocol that the dead slave supported.
 // This means for example: file, ftp, http, ...
-#define ERR_SLAVE_DIED 29
-#define ERR_COULD_NOT_READ 30
-#define ERR_COULD_NOT_WRITE 31
-#define ERR_COULD_NOT_BIND 32
-#define ERR_COULD_NOT_LISTEN 33
-#define ERR_COULD_NOT_ACCEPT 34
-#define ERR_COULD_NOT_LOGIN 35
-#define ERR_OUT_OF_MEMORY 36
-#define ERR_COULD_NOT_STAT 37
-#define ERR_COULD_NOT_CLOSEDIR 38
-#define ERR_CANNOT_RESUME 39
-#define ERR_COULD_NOT_READSIZE 40
-#define ERR_CANNOT_RENAME 41
-#define ERR_CANNOT_DELETE 42
-#define ERR_DOES_ALREADY_EXIST_FULL 43
+#define ERR_SLAVE_DIED 43
+#define ERR_OUT_OF_MEMORY 44
 
 /************
  *

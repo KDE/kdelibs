@@ -276,6 +276,19 @@ ProtocolManager::getAutoResume() {
 }
 
 
+bool
+ProtocolManager::getPersistent() {
+  K2Config *g = findIntern( "common" );
+
+  bool persistent = true;
+
+  if ( g )
+    g->readBool( "persistentConnections", persistent );
+
+  return persistent;
+}
+
+
 void ProtocolManager::setReadTimeout( int _timeout ) {
   K2Config *g = findIntern( "common" );
 
@@ -311,6 +324,16 @@ void ProtocolManager::setAutoResume( bool _mode ) {
 
   if ( g )
     g->writeBool( "autoResume", _mode );
+
+  m_pConfig->save();
+}
+
+
+void ProtocolManager::setPersistent( bool _mode ) {
+  K2Config *g = findIntern( "common" );
+
+  if ( g )
+    g->writeBool( "persistentConnections", _mode );
 
   m_pConfig->save();
 }

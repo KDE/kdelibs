@@ -6,7 +6,6 @@
 #include <qdialog.h>
 #include <qpushbutton.h>
 
-#include <k2url.h>
 #include <kapp.h>
 #include <kwm.h>
 #include <kdebug.h>
@@ -225,11 +224,10 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
     return false;
   }
 
-  string protocol = lst.back().protocol();
-
   string error;
   int errid = 0;
-  if ( !createSlave( protocol.c_str(), errid, error ) )
+  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
+		      lst.back().pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -264,6 +262,8 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
 
   string protocol;
   string host;
+  string user;
+  string pass;
   list<string>::iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
@@ -273,10 +273,13 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
       slotError( ERR_MALFORMED_URL, it->c_str() );
       return false;
     }
+
     if ( protocol.empty() )
     {
       protocol = lst.back().protocol();
       host = lst.back().host();
+      user = lst.back().user();
+      pass = lst.back().pass();
     }
     // Still the same host and protocol ?
     else if ( protocol != lst.back().protocol() || host != lst.back().host() )
@@ -288,7 +291,8 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
   
   string error;
   int errid = 0;
-  if ( !createSlave( protocol.c_str(), errid, error ) )
+  if ( !createSlave( protocol.c_str(), host.c_str(), user.c_str(),
+		     pass.c_str(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -333,11 +337,10 @@ bool KIOJob::del( const char *_source )
     return false;
   }
 
-  string protocol = lst.back().protocol();
-
   string error;
   int errid = 0;
-  if ( !createSlave( protocol.c_str(), errid, error ) )
+  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
+		      lst.back().pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -369,6 +372,8 @@ bool KIOJob::del( list<string>& _source )
 
   string protocol;
   string host;
+  string user;
+  string pass;
   list<string>::iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
@@ -378,10 +383,13 @@ bool KIOJob::del( list<string>& _source )
       slotError( ERR_MALFORMED_URL, it->c_str() );
       return false;
     }
+
     if ( protocol.empty() )
     {
       protocol = lst.back().protocol();
       host = lst.back().host();
+      user = lst.back().user();
+      pass = lst.back().pass();
     }
     // Still the same host and protocol ?
     else if ( protocol != lst.back().protocol() || host != lst.back().host() )
@@ -393,7 +401,8 @@ bool KIOJob::del( list<string>& _source )
   
   string error;
   int errid = 0;
-  if ( !createSlave( protocol.c_str(), errid, error ) )
+  if ( !createSlave( protocol.c_str(), host.c_str(), user.c_str(),
+		     pass.c_str(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -421,7 +430,8 @@ bool KIOJob::testDir( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), errid, error ) )
+  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
+		      lst.back().pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -449,7 +459,8 @@ bool KIOJob::get( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), errid, error ) )
+  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
+		      lst.back().pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -486,7 +497,8 @@ bool KIOJob::getSize( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), errid, error ) )
+  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
+		      lst.back().pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -524,7 +536,8 @@ bool KIOJob::listDir( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), errid, error ) )
+  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
+		      lst.back().pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -618,7 +631,10 @@ void KIOJob::slotFinished()
     }
 
     if ( m_bCacheToPool )
-      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str() );
+      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str(),
+				      m_strSlaveHost.c_str(),
+				      m_strSlaveUser.c_str(),
+				      m_strSlavePass.c_str() );
     else
       delete m_pSlave;
 
@@ -664,7 +680,10 @@ void KIOJob::slotError( int _errid, const char *_txt )
     }
 
     if ( m_bCacheToPool )
-      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str() );
+      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str(),
+				      m_strSlaveHost.c_str(),
+				      m_strSlaveUser.c_str(),
+				      m_strSlavePass.c_str() );
     else
       delete m_pSlave;
 
@@ -894,6 +913,50 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_t
 }
 
 
+Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
+			    const char *_user, const char *_pass,
+			    int& _error, string& _error_text )
+{
+  Slave *s = KIOSlavePool::self()->slave( _protocol, _host, _user, _pass );
+  if ( s )
+  {
+    m_pSlave = s;
+    m_strSlaveProtocol = _protocol;
+    m_strSlaveHost = _host;
+    m_strSlaveUser = _user;
+    m_strSlavePass = _pass;
+    connectSlave( s );
+    return s;
+  }
+  
+  string exec = ProtocolManager::self()->find( _protocol );
+  kdebug( KDEBUG_INFO, 7007, "TRYING TO START %s", exec.c_str() );
+  
+  if ( exec.empty() )
+  {
+    _error = ERR_UNSUPPORTED_PROTOCOL;
+    _error_text = _protocol;
+    return 0L;
+  }
+  
+  s = new Slave( exec.c_str() );
+  if ( s->pid() == -1 )
+  {
+    _error = ERR_CANNOT_LAUNCH_PROCESS;
+    _error_text = exec;
+    return 0L;
+  }
+
+  m_pSlave = s;
+  m_strSlaveProtocol = _protocol;
+  m_strSlaveHost = _host;
+  m_strSlaveUser = _user;
+  m_strSlavePass = _pass;
+  connectSlave( s );
+  return s;
+}
+
+
 void KIOJob::slotDispatch( int )
 {
   if ( !dispatch() )
@@ -953,6 +1016,7 @@ QDialog* KIOJob::createDialog( const char *_text )
 
 KIOSlavePool* KIOSlavePool::s_pSelf = 0L;
 
+
 Slave* KIOSlavePool::slave( const char *_protocol )
 {
   multimap<string,Entry>::iterator it = m_mapSlaves.find( _protocol );
@@ -965,7 +1029,39 @@ Slave* KIOSlavePool::slave( const char *_protocol )
   return s;
 }
 
-void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol )
+
+Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
+			    const char *_user, const char *_pass)
+{
+  multimap<string,Entry>::iterator it = m_mapSlaves.begin();
+
+  for( ; it != m_mapSlaves.end(); ++it ) {    
+    if ( it->first == _protocol && it->second.m_host == _host &&
+	 it->second.m_user == _user && it->second.m_pass == _pass ){
+	kdebug( KDEBUG_INFO, 7007, "found matching slave - total match" );
+	break;
+    }
+  }
+
+  // if we didn't find complete match, try at least protocol
+  if ( it == m_mapSlaves.end() ) {
+    it == m_mapSlaves.find( _protocol );
+
+    if ( it == m_mapSlaves.end() ) // sorry, no match
+      return 0L;
+
+    kdebug( KDEBUG_INFO, 7007, "found matching slave - protocol" );
+  }
+
+  Slave* s = it->second.m_pSlave;
+  m_mapSlaves.erase( it );
+
+  return s;
+}
+
+
+void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol, const char *_host,
+			     const char *_user, const char *_pass )
 {
   if ( m_mapSlaves.size() == 6 )
     eraseOldest();
@@ -973,8 +1069,12 @@ void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol )
   Entry e;
   e.m_time = time( 0L );
   e.m_pSlave = _slave;
+  e.m_host = _host;
+  e.m_user = _user;
+  e.m_pass = _pass;
   m_mapSlaves.insert( multimap<string,Entry>::value_type( _protocol, e ) );
 }
+
 
 void KIOSlavePool::eraseOldest()
 {
@@ -990,6 +1090,7 @@ void KIOSlavePool::eraseOldest()
   
   m_mapSlaves.erase( oldie );
 }
+
     
 KIOSlavePool* KIOSlavePool::self()
 {
@@ -998,11 +1099,13 @@ KIOSlavePool* KIOSlavePool::self()
   return s_pSelf;
 }
 
+
 /***************************************************************
  *
  * Utility functions
  *
  ***************************************************************/
+
 
 QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file )
 {
