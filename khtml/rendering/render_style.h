@@ -25,11 +25,8 @@
 
 #include <qcolor.h>
 #include <qfont.h>
-#include <dom/dom_string.h>
-#include <dom/dom_misc.h>
-#include <khtmllayout.h>
 
-#include <stdio.h>
+#include <khtmllayout.h>
 
 namespace khtml {
 

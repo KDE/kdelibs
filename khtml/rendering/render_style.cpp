@@ -27,8 +27,6 @@ using namespace khtml;
 
 const QColor RenderStyle::undefinedColor;
 
-
-
 void
 RenderStyle::setBitDefaults()
 {

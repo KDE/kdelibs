@@ -22,12 +22,6 @@
  * $Id$
  */
 
-#include "dom_node.h"
-#include "dom_doc.h"
-#include "dom_exception.h"
-#include "dom_string.h"
-#include "dtd.h"
-
 #include "dom_nodeimpl.h"
 #include "render_object.h"
 #include "render_box.h"

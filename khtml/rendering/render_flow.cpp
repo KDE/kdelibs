@@ -29,22 +29,13 @@
 
 #include "dom_string.h"
 
-#include <qpainter.h>
 #include <qfontmetrics.h>
-#include <qstack.h>
 #include <qlist.h>
-#include <qscrollview.h>
 
 #include "render_flow.h"
 #include "render_text.h"
 
-#include "dom_node.h"
-#include "dom_textimpl.h"
-#include "dom_stringimpl.h"
-#include "dom_exception.h"
-
 #include "htmlhashes.h"
-#include "khtmlview.h"
 
 #include "render_style.h"
 #include "render_root.h"

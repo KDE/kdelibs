@@ -28,19 +28,8 @@
 #include <qpixmap.h>
 #include <qdrawutil.h>
 #include <qpalette.h>
-#include <qstack.h>
-
-#include "htmlhashes.h"
-
-#include "html_image.h"
-#include "dom_string.h"
-#include "html_documentimpl.h"
-
-#include "khtmlview.h"
 
 #include <stdio.h>
-
-#include <iostream>
 
 #include "rendering/render_style.h"
 

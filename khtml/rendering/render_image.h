@@ -40,7 +40,7 @@ class RenderImage : public RenderReplaced
 public:
     RenderImage(RenderStyle *style);
     virtual ~RenderImage();
-    
+
     virtual const char *renderName() const { return "RenderImage"; }
 
     virtual bool isInline() const { return !isFloating(); }
@@ -57,7 +57,7 @@ public:
 
     void setImageUrl(DOM::DOMString url, DOM::DOMString baseUrl);
     void setAlt(DOM::DOMString text);
-    
+
     virtual short baselineOffset() const;
 
 protected:
@@ -75,7 +75,7 @@ protected:
     QPixmap resizeCache;
 
     // text to display as long as the image isn't available
-    DOMString alt;
+    DOM::DOMString alt;
 
     bool bComplete;
 

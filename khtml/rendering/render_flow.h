@@ -24,16 +24,9 @@
 #ifndef RENDER_FLOW_H
 #define RENDER_FLOW_H
 
-#include <qptrdict.h>
-#include <qstring.h>
-#include <qfontmetrics.h>
-
 #include <qlist.h>
 
-#include "dtd.h"
 #include "render_box.h"
-#include "htmlhashes.h"
-
 
 namespace khtml {
 

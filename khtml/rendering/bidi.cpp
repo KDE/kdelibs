@@ -6,7 +6,7 @@
  * This file is Licensed under QPL version 1.
  */
 // setting BIDI_DEBUG to 1 gives some information, 2 gives a _lot_
-#define BIDI_DEBUG 1
+//#define BIDI_DEBUG 1
 
 #include "bidi.h"
 

@@ -24,13 +24,7 @@
 #ifndef RENDER_OBJECT_H
 #define RENDER_OBJECT_H
 
-#include <qptrdict.h>
-#include <qstring.h>
-#include <qfontmetrics.h>
-
-#include "dtd.h"
 #include "render_object.h"
-#include "htmlhashes.h"
 
 namespace khtml {
 

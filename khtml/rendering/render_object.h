@@ -25,7 +25,6 @@
 #define render_object_h
 
 #include "dom_misc.h"
-#include "khtmllayout.h"
 
 #include "qcolor.h"
 #include "qsize.h"

@@ -32,20 +32,8 @@
 #include <qfontmetrics.h>
 #include <qstack.h>
 
-#include "dom_node.h"
-#include "dom_textimpl.h"
-#include "dom_stringimpl.h"
-#include "dom_exception.h"
-
-#include "htmlhashes.h"
-#include "khtmlview.h"
-
 #include "render_box.h"
 #include "render_style.h"
-#include "render_object.h"
-#include "render_text.h"
-
-#include "render_root.h"
 
 #include <stdio.h>
 #include <assert.h>

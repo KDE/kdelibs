@@ -23,7 +23,6 @@
 #include "render_replaced.h"
 
 #include <qscrollview.h>
-#include <qfont.h>
 
 using namespace khtml;
 

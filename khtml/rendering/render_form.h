@@ -39,7 +39,6 @@ class QMultiLineEdit;
 class QScrollView;
 
 #include <qpixmap.h>
-#include <qlist.h>
 
 namespace DOM {
     class HTMLFormElementImpl;
