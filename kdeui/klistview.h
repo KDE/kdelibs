@@ -783,13 +783,12 @@ protected:
    * Handle dropEvent when itemsMovable() is set to true.
    * ### for 3.0 : make this virtual
    */
-  void movableDropEvent (QListViewItem* parent, QListViewItem* afterme);
+  virtual void movableDropEvent (QListViewItem* parent, QListViewItem* afterme);
 
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
-   * ### for 3.0 : make this virtual
    */
-  void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
+  virtual void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
 
   /**
    * A special keyPressEvent (for Konqueror-style selection).

@@ -2,26 +2,12 @@
 
 #include "ksqueezedtextlabel.h"
 
-KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent)
- : QLabel ( parent) {
-  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  setSizePolicy(myLabelSizePolicy);
-  fullText = text;
-  squeezeTextToLabel();
-}
-
 KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent, const char *name )
  : QLabel ( parent, name ) {
   QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   setSizePolicy(myLabelSizePolicy);
   fullText = text;
   squeezeTextToLabel();
-}
-
-KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent)
- : QLabel ( parent) {
-  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  setSizePolicy(myLabelSizePolicy);
 }
 
 KSqueezedTextLabel::KSqueezedTextLabel( QWidget *parent, const char *name )

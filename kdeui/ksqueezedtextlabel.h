@@ -48,10 +48,8 @@ public:
   /**
    * Default constructor.
    */
-  KSqueezedTextLabel( QWidget *parent );
-  KSqueezedTextLabel( QWidget *parent, const char *name);                       //### merge with the above
-  KSqueezedTextLabel( const QString &text, QWidget *parent );
-  KSqueezedTextLabel( const QString &text, QWidget *parent, const char *name ); //### merge with the above
+  KSqueezedTextLabel( QWidget *parent, const char *name = 0 );
+  KSqueezedTextLabel( const QString &text, QWidget *parent, const char *name = 0 );
 
 public slots:
   void setText( const QString & );
