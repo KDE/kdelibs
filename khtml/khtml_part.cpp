@@ -4656,10 +4656,8 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
   {
-    QClipboard *cb = QApplication::clipboard();
-    cb->setSelectionMode( true );
     QCString plain("plain");
-    QString url = cb->text(plain).stripWhiteSpace();
+    QString url = QApplication::clipboard()->text(plain,QClipboard::Selection).stripWhiteSpace();
 
     // Check if it's a URL
     KURIFilterData m_filterData;
@@ -4725,12 +4723,9 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #ifndef QT_NO_CLIPBOARD
     QString text = selectedText();
     text.replace(QRegExp(QChar(0xa0)), " ");
-    QClipboard *cb = QApplication::clipboard();
-    cb->setSelectionMode( true );
     disconnect( kapp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
-    cb->setText(text);
+    kapp->clipboard()->setText(text,QClipboard::Selection);
     connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
-    cb->setSelectionMode( false );
 #endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;
     emitSelectionChanged();
