@@ -438,6 +438,58 @@ public:
   unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const;
 
   /**
+   * Reads a 64-bit numerical value.
+   *
+   * Read the value of an entry specified by @p pKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
+   */
+  Q_INT64 readNum64Entry( const QString& pKey, Q_INT64 nDefault = 0 ) const;
+
+  /**
+   * Reads a 64-bit numerical value.
+   *
+   * Read the value of an entry specified by @p pKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
+   */
+  Q_INT64 readNum64Entry( const char *pKey, Q_INT64 nDefault = 0 ) const;
+
+  /**
+   * Read an 64-bit unsigned numerical value.
+   *
+   * Read the value of an entry specified by @p pKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
+   */
+  Q_UINT64 readUnsignedNum64Entry( const QString& pKey, Q_UINT64 nDefault = 0 ) const;
+
+  /**
+   * Read an 64-bit unsigned numerical value.
+   *
+   * Read the value of an entry specified by @p pKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found or if
+   * the read value cannot be interpreted.
+   * @return The value for this key.
+   */
+  Q_UINT64 readUnsignedNum64Entry( const char *pKey, Q_UINT64 nDefault = 0 ) const;
+
+  /**
    * Reads a floating point value.
    *
    * Read the value of an entry specified by @p pKey in the current group
@@ -1075,6 +1127,76 @@ public:
    *  when writing it back.
    */
   void writeEntry( const char *pKey, unsigned long nValue,
+                      bool bPersistent = true, bool bGlobal = false,
+                      bool bNLS = false );
+
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but write a 64-bit numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
+  void writeEntry( const QString& pKey, Q_LLONG nValue,
+                      bool bPersistent = true, bool bGlobal = false,
+                      bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but write a long numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
+  void writeEntry( const char *pKey, Q_LLONG nValue,
+                      bool bPersistent = true, bool bGlobal = false,
+                      bool bNLS = false );
+
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes an unsigned 64-bit numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
+  void writeEntry( const QString& pKey, Q_ULLONG nValue,
+                      bool bPersistent = true, bool bGlobal = false,
+                      bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes an unsigned 64-bit numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
+  void writeEntry( const char *pKey, Q_ULLONG nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 

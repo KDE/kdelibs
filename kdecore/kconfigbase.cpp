@@ -488,6 +488,10 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           return QVariant( readNumEntry( pKey, aDefault.toInt() ) );
       case QVariant::UInt:
           return QVariant( readUnsignedNumEntry( pKey, aDefault.toUInt() ) );
+      case QVariant::LongLong:
+          return QVariant( readNum64Entry( pKey, aDefault.toLongLong() ) );
+      case QVariant::ULongLong:
+          return QVariant( readUnsignedNum64Entry( pKey, aDefault.toULongLong() ) );
       case QVariant::Bool:
           return QVariant( readBoolEntry( pKey, aDefault.toBool() ), 0 );
       case QVariant::Double:
@@ -731,6 +735,45 @@ unsigned long KConfigBase::readUnsignedLongNumEntry( const char *pKey, unsigned 
     {
       bool ok;
       unsigned long rc = aValue.toULong( &ok );
+      return( ok ? rc : nDefault );
+    }
+}
+
+Q_INT64 KConfigBase::readNum64Entry( const QString& pKey, Q_INT64 nDefault) const
+{
+  return readNum64Entry(pKey.utf8().data(), nDefault);
+}
+
+Q_INT64 KConfigBase::readNum64Entry( const char *pKey, Q_INT64 nDefault) const
+{
+  // Note that QCString::toLongLong() is missing, we muse use a QString instead.
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+    return nDefault;
+  else
+    {
+      bool ok;
+      Q_INT64 rc = aValue.toLongLong( &ok );
+      return( ok ? rc : nDefault );
+    }
+}
+
+
+Q_UINT64 KConfigBase::readUnsignedNum64Entry( const QString& pKey, Q_UINT64 nDefault) const
+{
+  return readUnsignedNum64Entry(pKey.utf8().data(), nDefault);
+}
+
+Q_UINT64 KConfigBase::readUnsignedNum64Entry( const char *pKey, Q_UINT64 nDefault) const
+{
+  // Note that QCString::toULongLong() is missing, we muse use a QString instead.
+  QString aValue = readEntry( pKey );
+  if( aValue.isNull() )
+    return nDefault;
+  else
+    {
+      bool ok;
+      Q_UINT64 rc = aValue.toULongLong( &ok );
       return( ok ? rc : nDefault );
     }
 }
@@ -1299,6 +1342,12 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::UInt:
       writeEntry( pKey, prop.toUInt(), bPersistent, bGlobal, bNLS );
       return;
+    case QVariant::LongLong:
+      writeEntry( pKey, prop.toLongLong(), bPersistent, bGlobal, bNLS );
+      return;
+    case QVariant::ULongLong:
+      writeEntry( pKey, prop.toULongLong(), bPersistent, bGlobal, bNLS );
+      return;
     case QVariant::Bool:
       writeEntry( pKey, prop.toBool(), bPersistent, bGlobal, bNLS );
       return;
@@ -1488,6 +1537,34 @@ void KConfigBase::writeEntry( const char *pKey, unsigned long nValue,
   writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
+void KConfigBase::writeEntry( const QString& pKey, Q_INT64 nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const char *pKey, Q_INT64 nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+
+void KConfigBase::writeEntry( const QString& pKey, Q_UINT64 nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const char *pKey, Q_UINT64 nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
 
 void KConfigBase::writeEntry( const QString& pKey, double nValue,
                                  bool bPersistent, bool bGlobal,

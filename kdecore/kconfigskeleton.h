@@ -378,6 +378,20 @@ public:
   };
 
   /**
+   * Class for handling an 64-bit integer preferences item.
+   */
+  class ItemInt64:public KConfigSkeletonGenericItem < Q_INT64 >
+  {
+  public:
+    ItemInt64(const QString & group, const QString & name, Q_INT64 &reference,
+            Q_INT64 defaultValue = 0);
+
+    void readConfig(KConfig * config);
+    void setProperty(const QVariant & p);
+    QVariant property() const;
+  };
+
+  /**
    * Class for handling enums.
    */
   class ItemEnum:public ItemInt
@@ -440,6 +454,19 @@ public:
     QVariant property() const;
   };
 
+  /**
+   * Class for handling unsigned 64-bit integer preferences item.
+   */
+  class ItemUInt64:public KConfigSkeletonGenericItem < Q_UINT64 >
+  {
+  public:
+    ItemUInt64(const QString & group, const QString & name, Q_UINT64 &reference,
+            Q_UINT64 defaultValue = 0);
+
+    void readConfig(KConfig * config);
+    void setProperty(const QVariant & p);
+    QVariant property() const;
+  };
 
   /**
    * Class for handling a floating point preference item.
@@ -761,6 +788,33 @@ public:
   void addItemULong(const QString & name,
                     const QString & key, unsigned long &reference,
                     unsigned long defaultValue = 0);
+
+  /**
+   * Register an item of type Q_INT64.
+   * 
+   * @param name Name used to indentify this setting
+   * @param key Key used in config file.
+   * @param reference Pointer to the variable, which is set by readConfig()
+   * calls and read by writeConfig() calls.
+   * @param defaultValue Default value, which is used when the config file
+   * does not yet contain the key of this item.
+   */
+  void addItemInt64(const QString & name,
+                  const QString & key, Q_INT64 &reference, Q_INT64 defaultValue = 0);
+
+  /**
+   * Register an item of type Q_UINT64
+   * 
+   * @param name Name used to indentify this setting
+   * @param key Key used in config file.
+   * @param reference Pointer to the variable, which is set by readConfig()
+   * calls and read by writeConfig() calls.
+   * @param defaultValue Default value, which is used when the config file
+   * does not yet contain the key of this item.
+   */
+  void addItemUInt64(const QString & name,
+                   const QString & key, Q_UINT64 &reference,
+                   Q_UINT64 defaultValue = 0);
 
   /**
    * Register an item of type double.

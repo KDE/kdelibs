@@ -177,6 +177,31 @@ QVariant KConfigSkeleton::ItemInt::property() const
   return QVariant(mReference);
 }
 
+KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &name,
+                              Q_INT64 &reference, Q_INT64 defaultValue )
+  : KConfigSkeletonGenericItem<Q_INT64>( group, name, reference, defaultValue )
+{
+}
+
+void KConfigSkeleton::ItemInt64::readConfig( KConfig *config )
+{
+  config->setGroup( mGroup );
+  mReference = config->readNum64Entry( mName, mDefault );
+  mLoadedValue = mReference;
+
+  readImmutability( config );
+}
+
+void KConfigSkeleton::ItemInt64::setProperty(const QVariant & p)
+{
+  mReference = p.toLongLong();
+}
+
+QVariant KConfigSkeleton::ItemInt64::property() const
+{
+  return QVariant(mReference);
+}
+
 KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &name,
                               int &reference, const QStringList &choices, 
                               int defaultValue )
@@ -255,6 +280,31 @@ void KConfigSkeleton::ItemUInt::setProperty(const QVariant & p)
 }
 
 QVariant KConfigSkeleton::ItemUInt::property() const
+{
+  return QVariant(mReference);
+}
+
+KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &name,
+                              Q_UINT64 &reference, Q_UINT64 defaultValue )
+  : KConfigSkeletonGenericItem<Q_UINT64>( group, name, reference, defaultValue )
+{
+}
+
+void KConfigSkeleton::ItemUInt64::readConfig( KConfig *config )
+{
+  config->setGroup( mGroup );
+  mReference = config->readUnsignedNum64Entry( mName, mDefault );
+  mLoadedValue = mReference;
+
+  readImmutability( config );
+}
+
+void KConfigSkeleton::ItemUInt64::setProperty(const QVariant & p)
+{
+  mReference = p.toULongLong();
+}
+
+QVariant KConfigSkeleton::ItemUInt64::property() const
 {
   return QVariant(mReference);
 }
@@ -694,6 +744,17 @@ void KConfigSkeleton::addItemUInt( const QString &name, const QString &key, unsi
                           unsigned int defaultValue )
 {
   addItem( name, new KConfigSkeleton::ItemUInt( mCurrentGroup, key, reference, defaultValue ) );
+}
+
+void KConfigSkeleton::addItemInt64( const QString &name, const QString &key, Q_INT64 &reference, Q_INT64 defaultValue )
+{
+  addItem( name, new KConfigSkeleton::ItemInt64( mCurrentGroup, key, reference, defaultValue ) );
+}
+
+void KConfigSkeleton::addItemUInt64( const QString &name, const QString &key, Q_UINT64 &reference,
+                          Q_UINT64 defaultValue )
+{
+  addItem( name, new KConfigSkeleton::ItemUInt64( mCurrentGroup, key, reference, defaultValue ) );
 }
 
 void KConfigSkeleton::addItemLong( const QString &name, const QString &key, long &reference, long defaultValue )

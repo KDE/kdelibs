@@ -478,8 +478,8 @@ QString param( const QString &type )
     else if ( type == "Bool" )        return "bool";
     else if ( type == "Double" )      return "double";
     else if ( type == "DateTime" )    return "const QDateTime &";
-    else if ( type == "LongLong" )    return "Q_LLONG";
-    else if ( type == "ULongLong" )   return "Q_ULLONG";
+    else if ( type == "Int64" )       return "Q_INT64";
+    else if ( type == "UInt64" )      return "Q_UINT64";
     else if ( type == "IntList" )     return "const QValueList<int> &";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "const QString &";
@@ -506,8 +506,8 @@ QString cppType( const QString &type )
     else if ( type == "Bool" )        return "bool";
     else if ( type == "Double" )      return "double";
     else if ( type == "DateTime" )    return "QDateTime";
-    else if ( type == "LongLong" )    return "Q_LLONG";
-    else if ( type == "ULongLong" )   return "Q_ULLONG";
+    else if ( type == "Int64" )       return "Q_INT64";
+    else if ( type == "UInt64" )      return "Q_UINT64";
     else if ( type == "IntList" )     return "QValueList<int>";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "QString";
