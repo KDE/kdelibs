@@ -49,7 +49,8 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(top_builddir)/kparts/libkparts.la \
 	$(top_builddir)/kfile/libkfile.la \
 	$(top_builddir)/kssl/libkssl.la \
-	$(top_builddir)/kdeprint/libkdeprint.la -lkregexpeditor
+	$(top_builddir)/kdeprint/libkdeprint.la \
+	$(top_builddir)/interfaces/libkregexpeditor.la
 
 libkhtmlimage_la_SOURCES = khtmlimage.cpp
 libkhtmlimage_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
@@ -60,6 +61,7 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
 	-I$(top_srcdir)/kfile -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kssl -I$(top_srcdir)/kdeprint \
+	-I$(top_srcdir)/interfaces \
 	-I$(top_srcdir) $(all_includes)
 
 servicedir = $(kde_servicesdir)
