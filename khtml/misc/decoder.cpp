@@ -72,7 +72,7 @@ void Decoder::setEncoding(const char *_encoding, bool force)
         m_codec = QTextCodec::codecForName("iso8859-8-i");
         visualRTL = true;
     }
-    kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl; 
+    kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl;
 }
 
 const char *Decoder::encoding() const
@@ -217,7 +217,14 @@ QString Decoder::decode(const char *data, int len)
             if(*(d+i) == 0) *(d+i) = ' ';
             i--;
         }
+#if QT_VERSION == 220
+        if(m_codec->mibEnum() == 4 && len > 0) // latin1
+            out = QString::fromLatin1(data, len);
+        else
+            out = m_codec->toUnicode(data, len);
+#else
         out = m_codec->toUnicode(data, len);
+#endif
     }
 
 
