@@ -227,8 +227,8 @@ bool DOM::strncmp( const DOMString &a, const DOMString &b, unsigned int len)
 
 int DOM::strcmp( const DOMString &a, const DOMString &b )
 {
-    if( a.length() != b.length() ) return -1;
     unsigned int l = a.length();
+    if( l != b.length() ) return -1;
     return strncmp(a, b, l);
 }
 
@@ -248,8 +248,8 @@ int DOM::strncasecmp( const DOMString &s1, const DOMString &s2, unsigned int l )
 
 int DOM::strcasecmp( const DOMString &a, const DOMString &b )
 {
-    if( a.length() != b.length() ) return -1;
     unsigned int l = a.length();
+    if( l != b.length() ) return -1;
     return strncasecmp(a, b, l);
 }
 
@@ -270,9 +270,10 @@ const QChar *DOMString::stringPtr() const
 
 bool DOM::operator==( const DOMString &a, const DOMString &b )
 {
-    if( a.length() != b.length() ) return false;
+    unsigned int l = a.length();
 
-    int l = a.length();
+    if( l != b.length() ) return false;
+
     if(!memcmp(a.unicode(), b.unicode(), l*sizeof(QChar)))
 	return true;
     return false;
@@ -280,9 +281,10 @@ bool DOM::operator==( const DOMString &a, const DOMString &b )
 
 bool DOM::operator==( const DOMString &a, const QString &b )
 {
-    if( a.length() != b.length() ) return false;
+    unsigned int l = a.length();
 
-    int l = a.length();
+    if( l != b.length() ) return false;
+
     if(!memcmp(a.unicode(), b.unicode(), l*sizeof(QChar)))
 	return true;
     return false;
@@ -290,7 +292,17 @@ bool DOM::operator==( const DOMString &a, const QString &b )
 
 bool DOM::operator==( const DOMString &a, const char *b )
 {
-    return a == DOMString(b);
+    unsigned int blen = strlen(b);
+    if(a.length() != blen) return false;
+
+    const QChar* aptr = a.stringPtr();
+    for(int i = 0; i < blen; i++)
+    {
+        if((*aptr++).latin1() != *b++)
+            return false;
+    }
+
+    return true;
 }
 
 bool DOM::operator==( const DOMString &a, int )
