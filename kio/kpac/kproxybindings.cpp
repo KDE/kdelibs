@@ -141,13 +141,14 @@ Completion KProxyFunc::execute(const List &args)
                     result = Boolean(false);
                 else
                 {
-                    struct in_addr ip, pattern, mask;
-                    if (!inet_aton(host.ascii(), &ip)
-                        || !inet_aton(args[1].toString().value().ascii(), &pattern)
-                        || !inet_aton(args[2].toString().value().ascii(), &mask))
+                    unsigned long ip, pattern, mask;
+                    // unfortunately inet_aton is not available on Solaris (malte)
+                    if ((ip = inet_addr(host.ascii())) == INADDR_NONE
+                        || (pattern = inet_addr(args[1].toString().value().ascii())) == INADDR_NONE
+                        || (mask = inet_addr(args[2].toString().value().ascii())) == INADDR_NONE)
                         result = Boolean(false);
                     else
-                        result = Boolean((ip.s_addr & mask.s_addr) == (pattern.s_addr & mask.s_addr));
+                        result = Boolean((ip & mask) == (pattern & mask));
                 }
             }
             break;
