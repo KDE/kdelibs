@@ -405,8 +405,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     quot = (quot == NoQuote) ? DoubleQuote : (quot == SingleQuote) ? SingleQuote : NoQuote;
                 else if( !comment && ch == '\'')
                     quot = (quot == NoQuote) ? SingleQuote : (quot == DoubleQuote) ? DoubleQuote : NoQuote;
-                else if (!comment && quot == DoubleQuote && (ch == '\r' || ch == '\n'))
-                    quot = NoQuote; // double quotes never go beyond end of line
+                else if (!comment && quot != NoQuote && (ch == '\r' || ch == '\n'))
+                    quot = NoQuote; // HACK!!! 
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
 	    }
