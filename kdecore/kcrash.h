@@ -73,13 +73,13 @@ class KCrash
   static HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
 
   /**
-   * Sets the application path @param path which should be passed to
+   * Sets the application path @p path which should be passed to
    * Dr. Konqi, our nice crash display application.
    */
   static void setApplicationPath (QString path) { appPath = qstrdup(path.local8Bit().data()); }
 
   /**
-   * Sets the application name @param name which should be passed to
+   * Sets the application name @p name which should be passed to
    * Dr. Konqi, our nice crash display application.
    */
   static void setApplicationName (QString name) { appName = qstrdup(name.local8Bit().data()); }
