@@ -33,6 +33,7 @@
 #include <kiconloader.h>
 #include <qvbox.h>
 #include <qlabel.h>
+#include "kcmoduleinfo.h"
 
 namespace KSettings
 {
@@ -593,6 +594,7 @@ void Dialog::createDialogFromServices()
 void Dialog::configureTree()
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
+	// FIXME mem leak
 	ComponentsDialog * subdlg = new ComponentsDialog( d->dlg );
 	subdlg->setPluginInfos( d->plugininfomap );
 	subdlg->show();
