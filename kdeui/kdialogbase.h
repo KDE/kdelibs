@@ -659,7 +659,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *
      * The function will make a QVBox widget
      * and use setMainWidget() to register it. You @em can use this
-     * function more than once, @em not if you have already defined a
+     * function more than once, but @em not if you have already defined a
      * main widget with setMainWidget() and @em not if you have used the
      * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
      * @p TreeList, @p IconList).
