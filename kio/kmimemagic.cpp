@@ -70,7 +70,7 @@ void KMimeMagic::initStatic()
 #define MIME_BINARY_UNREADABLE "application/x-unreadable"
 #define MIME_BINARY_ZEROSIZE   "application/x-zerosize"
 #define MIME_TEXT_UNKNOWN      "text/plain"
-#define MIME_TEXT_INTERNATIONAL "text/plain" // should we create a new one ? (David)
+#define MIME_TEXT_PLAIN        "text/plain"
 #define MIME_INODE_DIR         "inode/directory"
 #define MIME_INODE_CDEV        "inode/chardevice"
 #define MIME_INODE_BDEV        "inode/blockdevice"
@@ -768,8 +768,7 @@ int KMimeMagic::parse(char *l, int lineno)
 	while ((m->desc[i++] = *l++) != '\0' && i < MAXDESC)
 		/* NULLBODY */ ;
 
-	/*kdDebug(7018) << "parse: line=" << lineno << " m=" << m << " next=" << m->next << " cont=" << m->cont_level << " desc=" << (m->desc ? m->desc : "NULL") << endl;
-*/
+	//kdDebug(7018) << "parse: line=" << lineno << " m=" << m << " next=" << m->next << " cont=" << m->cont_level << " desc=" << (m->desc ? m->desc : "NULL") << endl;
 	return 0;
 }
 
@@ -1057,6 +1056,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 				register unsigned char *a = (unsigned char *) m->value.s;
 				register unsigned char *b = (unsigned char *) p->s;
 				register int len = m->vallen;
+				ASSERT(len);
 
 				while (--len >= 0)
 					if ((v = *b++ - *a++) != 0)
@@ -1119,22 +1119,7 @@ mcheck(union VALUETYPE *p, struct magic *m)
 	return matched;
 }
 
-/* hook for printf-type functions */
-void
-KMimeMagic::resultBufPrintf(char *str,...)
-{
-	va_list ap;
-
-	char buf[MAXMIMESTRING];
-
-	/* assemble the string into the buffer */
-	va_start(ap, str);
-	vsprintf(buf, str, ap);
-	va_end(ap);
-
-	/* add the buffer to the list */
-	resultBuf += QString(buf);
-}
+#if 0
 
 /* states for the state-machine algorithm in finishResult() */
 typedef enum {
@@ -1156,6 +1141,7 @@ KMimeMagic::finishResult()
 	state = rsl_leading_space;
 	type_pos = type_len = 0;
 	encoding_pos = encoding_len = 0;
+        //kdDebug(7018) << "KMimeMagic::finishResult " << resultBuf << endl;
 	/* loop through the characters in the result */
 	for (cur_pos = 0; cur_pos < (int)resultBuf.length(); cur_pos++) {
 		if (resultBuf[cur_pos].isSpace()) {
@@ -1245,6 +1231,7 @@ KMimeMagic::finishResult()
 	/* success! */
 	return OK;
 }
+#endif
 
 /*
  * magic_process - process input file fn. Opens the file and reads a
@@ -1263,7 +1250,7 @@ KMimeMagic::process(const char * fn)
 	 * first try judging the file based on its filesystem status
 	 */
 	if (fsmagic(fn, &sb) != 0) {
-		resultBuf += "\n";
+		//resultBuf += "\n";
 		return;
 	}
 	if ((fd = open(fn, O_RDONLY)) < 0) {
@@ -1272,8 +1259,8 @@ KMimeMagic::process(const char * fn)
 		 * if (sb.st_mode & 0002) addResult("writable, ");
 		 * if (sb.st_mode & 0111) addResult("executable, ");
 		 */
-		kdDebug(7018) << "can't read `" << fn << "' (" << strerror(errno) << ")." << endl;
-		resultBuf += MIME_BINARY_UNREADABLE;
+		//kdDebug(7018) << "can't read `" << fn << "' (" << strerror(errno) << ")." << endl;
+		resultBuf = MIME_BINARY_UNREADABLE;
 		return;
 	}
 	/*
@@ -1281,12 +1268,12 @@ KMimeMagic::process(const char * fn)
 	 */
 	if ((nbytes = read(fd, (char *) buf, HOWMANY)) == -1) {
 		kdError(7018) << "" << fn << " read failed (" << strerror(errno) << ")." << endl;
-		resultBuf += MIME_BINARY_UNREADABLE;
+		resultBuf = MIME_BINARY_UNREADABLE;
 		return;
 		/* NOTREACHED */
 	}
 	if (nbytes == 0) {
-		resultBuf += MIME_BINARY_ZEROSIZE;
+		resultBuf = MIME_BINARY_ZEROSIZE;
 	} else {
 		buf[nbytes++] = '\0';	/* null-terminate it */
 		tryit(buf, nbytes);
@@ -1301,7 +1288,6 @@ KMimeMagic::process(const char * fn)
 	utbuf.modtime = sb.st_mtime;
 	(void) utime(fn, &utbuf);       /* we don't care if this fails */
 	(void) close(fd);
-	resultBuf += "\n";
 }
 
 
@@ -1309,19 +1295,19 @@ void
 KMimeMagic::tryit(unsigned char *buf, int nb)
 {
 	/* try tests in /etc/magic (or surrogate magic file) */
-	if (softmagic(buf, nb) == 1)
+	if (match(buf, nb))
 		return;
 
 	/* try known keywords, check for ascii-ness too. */
 	if (ascmagic(buf, nb) == 1)
 		return;
 
-        /* see if it's international language text */
-        if (internatmagic(buf, nb))
+        /* see if it's plain text */
+        if (textmagic(buf, nb))
                 return;
 
 	/* abandon hope, all ye who remain here */
-	resultBuf += MIME_BINARY_UNKNOWN;
+	resultBuf = MIME_BINARY_UNKNOWN;
 	accuracy = 0;
 }
 
@@ -1347,18 +1333,18 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 
 	switch (sb->st_mode & S_IFMT) {
 		case S_IFDIR:
-			resultBuf += MIME_INODE_DIR;
+			resultBuf = MIME_INODE_DIR;
 			return 1;
 		case S_IFCHR:
-			resultBuf += MIME_INODE_CDEV;
+			resultBuf = MIME_INODE_CDEV;
 			return 1;
 		case S_IFBLK:
-			resultBuf += MIME_INODE_BDEV;
+			resultBuf = MIME_INODE_BDEV;
 			return 1;
 			/* TODO add code to handle V7 MUX and Blit MUX files */
 #ifdef    S_IFIFO
 		case S_IFIFO:
-			resultBuf += MIME_INODE_FIFO;;
+			resultBuf = MIME_INODE_FIFO;;
 			return 1;
 #endif
 #ifdef    S_IFLNK
@@ -1369,16 +1355,16 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 				struct stat tstatbuf;
 
 				if ((nch = readlink(fn, buf, BUFSIZ - 1)) <= 0) {
-					resultBuf += MIME_INODE_LINK;
-					resultBuf += "\nunreadable";
+					resultBuf = MIME_INODE_LINK;
+					//resultBuf += "\nunreadable";
 					return 1;
 				}
 				buf[nch] = '\0'; /* readlink(2) forgets this */
 				/* If broken symlink, say so and quit early. */
 				if (*buf == '/') {
 					if (stat(buf, &tstatbuf) < 0) {
-						resultBuf += MIME_INODE_LINK;
-						resultBuf += "\nbroken";
+						resultBuf = MIME_INODE_LINK;
+						//resultBuf += "\nbroken";
 						return 1;
 					}
 				} else {
@@ -1395,8 +1381,8 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 						tmp = buf2;
 					}
 					if (stat(tmp, &tstatbuf) < 0) {
-						resultBuf += MIME_INODE_LINK;
-						resultBuf += "\nbroken";
+						resultBuf = MIME_INODE_LINK;
+						//resultBuf += "\nbroken";
 						return 1;
 					} else
 						strcpy(buf, tmp);
@@ -1404,7 +1390,7 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 				if (followLinks)
 					process(buf);
 				else
-					resultBuf += MIME_INODE_LINK;
+					resultBuf = MIME_INODE_LINK;
 				return 1;
 			}
 			return 1;
@@ -1412,7 +1398,7 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 #ifdef    S_IFSOCK
 #ifndef __COHERENT__
 		case S_IFSOCK:
-			resultBuf += MIME_INODE_SOCK;
+			resultBuf = MIME_INODE_SOCK;
 			return 1;
 #endif
 #endif
@@ -1427,22 +1413,9 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 	 * regular file, check next possibility
 	 */
 	if (sb->st_size == 0) {
-		resultBuf += MIME_BINARY_ZEROSIZE;
+		resultBuf = MIME_BINARY_ZEROSIZE;
 		return 1;
 	}
-	return 0;
-}
-
-/*
- * softmagic - lookup one file in database (already read from /etc/magic by
- * apprentice.c). Passed the name and FILE * of one file to be typed.
- */
-int
-KMimeMagic::softmagic(unsigned char *buf, int nbytes)
-{
-	if (match(buf, nbytes))
-		return 1;
-
 	return 0;
 }
 
@@ -1476,7 +1449,6 @@ int
 KMimeMagic::match(unsigned char *s, int nbytes)
 {
 	int cont_level = 0;
-	int need_separator = 0;
 	union VALUETYPE p;
 	struct magic *m;
 
@@ -1486,13 +1458,13 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		    isprint((((unsigned long) m) >> 16) & 255) &&
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
-			kdDebug(7018) << "match: POINTER CLOBBERED! " << endl;
+			//kdDebug(7018) << "match: POINTER CLOBBERED! " << endl;
 			break;
 		}
 	}
 
 	for (m = conf->magic; m; m = m->next) {
-		//kdDebug(7018) << "match: line=" << //      m->lineno << " desc=" << m->desc << endl;
+		//kdDebug(7018) << "match: line=" << m->lineno << " desc=" << m->desc << endl;
 
 		/* check if main entry matches */
 		if (!mget(&p, s, m, nbytes) ||
@@ -1507,8 +1479,8 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			}
 			m_cont = m->next;
 			while (m_cont && (m_cont->cont_level != 0)) {
-				/*kdDebug(7018) << "match: line=" << "cont=%d desc=%s" << " mc=" << m_cont->lineno << " mc->next=" << m_cont << " " << endl;
-*/				/*
+				//kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m_cont->cont_level << " mc=" << m_cont->lineno << " mc->next=" << m_cont << " " << endl;
+				/*
 				 * this trick allows us to keep *m in sync
 				 * when the continue advances the pointer
 				 */
@@ -1521,16 +1493,9 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		/* this will be the last run through the loop */
 		//kdDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
 
-		/* print the match */
-		mprint(&p, m);
+		/* remember the match */
+		resultBuf = m->desc;
 
-		/*
-		 * If we printed something, we'll need to print a blank
-		 * before we print something else.
-		 */
-		if (m->desc[0])
-			need_separator = 1;
-		/* and any continuations that match */
 		cont_level++;
 		/*
 		 * while (m && m->next && m->next->cont_level != 0 && ( m =
@@ -1555,22 +1520,8 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 					 * it if the previous item printed
 					 * and this item isn't empty.
 					 */
-					/* space if previous printed */
-					if (need_separator
-					    && (m->nospflag == 0)
-					    && (m->desc[0] != '\0')
-					    ) {
-						resultBuf += " ";
-						need_separator = 0;
-					}
-					mprint(&p, m);
-					if (m->desc[0])
-						need_separator = 1;
-
-					/*
-					 * If we see any continuations at a
-					 * higher level, process them.
-					 */
+                                        //kdDebug() << "continuation matched" << endl;
+					resultBuf = m->desc;
 					cont_level++;
 				}
 			}
@@ -1582,55 +1533,6 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 	}
 	//kdDebug(7018) << "match: failed" << endl;
 	return 0;               /* no match at all */
-}
-
-void
-KMimeMagic::mprint(union VALUETYPE *p, struct magic *m)
-{
-	char *pp,
-	*rt;
-	unsigned long v;
-
-	switch (m->type) {
-		case BYTE:
-			v = p->b;
-			break;
-
-		case SHORT:
-		case BESHORT:
-		case LESHORT:
-			v = p->h;
-			break;
-
-		case LONG:
-		case BELONG:
-		case LELONG:
-			v = p->l;
-			break;
-
-		case STRING:
-			if (m->reln == '=') {
-				resultBufPrintf(m->desc, m->value.s);
-			} else {
-				resultBufPrintf(m->desc, p->s);
-			}
-			return;
-
-		case DATE:
-		case BEDATE:
-		case LEDATE:
-			pp = ctime((time_t *) & p->l);
-			if ((rt = strchr(pp, '\n')) != NULL)
-				*rt = '\0';
-			resultBufPrintf(m->desc, pp);
-			return;
-		default:
-			kdError(7018) << "mprint: invalid m->type (" << m->type << ")" << endl;
-			return;
-	}
-
-	v = signextend(m, v) & m->mask;
-	resultBufPrintf(m->desc, (unsigned long) v);
 }
 
 /* an optimization over plain strcmp() */
@@ -1666,14 +1568,14 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 			++tp;   /* skip leading whitespace */
 		if ((isascii(*tp) && (isalnum(*tp) || *tp == '\\') &&
 		     isascii(*(tp + 1)) && (isalnum(*(tp + 1)) || *tp == '"'))) {
-			resultBuf += MIME_APPL_TROFF;
+			resultBuf = MIME_APPL_TROFF;
 			return 1;
 		}
 	}
 	if ((*buf == 'c' || *buf == 'C') &&
 	    isascii(*(buf + 1)) && isspace(*(buf + 1))) {
 		/* Fortran */
-		resultBuf += MIME_TEXT_FORTRAN;
+		resultBuf = MIME_TEXT_FORTRAN;
 		return 1;
 	}
 	assert(nbytes-1 < HOWMANY + 1);
@@ -1727,27 +1629,27 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 			  kdError(7018) << "Oops, jonly && conly?!" << endl;
 			if (jonly) {
 				// A java-only token has matched
-				resultBuf += QString(types[P_JAVA].type);
+				resultBuf = QString(types[P_JAVA].type);
 				return 1;
 			}
 			if (jconly) {
 				// A non-C (only C++ or Java) token has matched.
 				if (typecount[P_JAVA] > typecount[P_CPP])
-				  resultBuf += QString(types[P_JAVA].type);
+				  resultBuf = QString(types[P_JAVA].type);
 				else
-				  resultBuf += QString(types[P_CPP].type);
+				  resultBuf = QString(types[P_CPP].type);
 				return 1;
 			}
 			if (conly) {
 				// Either C or C++, rely on comments.
 				if (cppcomm)
-				  resultBuf += QString(types[P_CPP].type);
+				  resultBuf = QString(types[P_CPP].type);
 				else
-				  resultBuf += QString(types[P_C].type);
+				  resultBuf = QString(types[P_C].type);
 				return 1;
 			}
 			if (ccomm) {
-				resultBuf += QString(types[P_C].type);
+				resultBuf = QString(types[P_C].type);
 				return 1;
 			}
 	      }
@@ -1774,19 +1676,19 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	}
 	if (mostaccurate >= 0.0) {
 		accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
-		resultBuf += QString(types[mostaccurate].type);
+		resultBuf = QString(types[mostaccurate].type);
 		return 1;
 	}
 
 	switch (is_tar(buf, nbytes)) {
 		case 1:
 			/* V7 tar archive */
-			resultBuf += MIME_APPL_TAR;
+			resultBuf = MIME_APPL_TAR;
 			accuracy = 90;
 			return 1;
 		case 2:
 			/* POSIX tar archive */
-			resultBuf += MIME_APPL_TAR;
+			resultBuf = MIME_APPL_TAR;
 			accuracy = 90;
 			return 1;
 	}
@@ -1801,22 +1703,22 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	if (has_escapes) {
 		/* text with escape sequences */
 		/* we leave this open for further differentiation later */
-		resultBuf += MIME_TEXT_UNKNOWN;
+		resultBuf = MIME_TEXT_UNKNOWN;
 	} else {
 		/* plain text */
-		resultBuf += MIME_TEXT_UNKNOWN;
+		resultBuf = MIME_TEXT_PLAIN;
 	}
 	return 1;
 }
 
 /* Maximal length of a line we consider "reasonable". */
-#define INTERNAT_MAXLINELEN 300
+#define TEXT_MAXLINELEN 300
 
 // This code is taken from the "file" command, where it is licensed
 // in the "beer-ware license" :-)
 // Original author: <joerg@FreeBSD.ORG>
 // Simplified by David Faure to avoid the static array char[256].
-int KMimeMagic::internatmagic(unsigned char * buf, int nbytes)
+int KMimeMagic::textmagic(unsigned char * buf, int nbytes)
 {
     int i;
     unsigned char *cp;
@@ -1835,17 +1737,17 @@ int KMimeMagic::internatmagic(unsigned char * buf, int nbytes)
         cp = (unsigned char *) memchr(buf, '\n', nbytes - i);
         if (cp == NULL) {
             /* Don't fail if we hit the end of buffer. */
-            if (i + INTERNAT_MAXLINELEN >= nbytes)
+            if (i + TEXT_MAXLINELEN >= nbytes)
                 break;
             else
                 return 0;
         }
-        if (cp - buf > INTERNAT_MAXLINELEN)
+        if (cp - buf > TEXT_MAXLINELEN)
             return 0;
         i += (cp - buf + 1);
         buf = cp + 1;
     }
-    resultBuf += MIME_TEXT_INTERNATIONAL;
+    resultBuf = MIME_TEXT_PLAIN;
     return 1;
 }
 
@@ -2030,12 +1932,7 @@ KMimeMagic::findBufferType(const QByteArray &array)
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
 
 	resultBuf = QString::null;
-	if ( magicResult )
-	{
-	  magicResult->setMimeType( "" );
-	  magicResult->setEncoding( "" );
-	}
-	else
+	if ( !magicResult )
 	  magicResult = new KMimeMagicResult();
 	magicResult->setInvalid();
 	accuracy = 100;
@@ -2046,20 +1943,20 @@ KMimeMagic::findBufferType(const QByteArray &array)
                 nbytes = HOWMANY;
         memcpy(buf, array.data(), nbytes);
         if (nbytes == 0) {
-                resultBuf += MIME_BINARY_ZEROSIZE;
+                resultBuf = MIME_BINARY_ZEROSIZE;
         } else {
                 buf[nbytes++] = '\0';   /* null-terminate it */
                 tryit(buf, nbytes);
         }
-        resultBuf += "\n";
         /* if we have any results, put them in the request structure */
-        finishResult();
+        //finishResult();
+	magicResult->setMimeType(resultBuf.stripWhiteSpace());
 	magicResult->setAccuracy(accuracy);
         return magicResult;
 }
 
 static void
-refineResult(KMimeMagicResult *r, const char * _filename)
+refineResult(KMimeMagicResult *r, const QString & _filename)
 {
 	QString tmp = r->mimeType();
 	if (tmp.isEmpty())
@@ -2067,11 +1964,11 @@ refineResult(KMimeMagicResult *r, const char * _filename)
 	if ( tmp == "text/x-c"  ||
 	     tmp == "text/x-c++" )
 	{
-		if ( QString(_filename).right(2) == ".h" )
+		if ( _filename.right(2) == ".h" )
 			tmp += "hdr";
 		else
 			tmp += "src";
-		r->setMimeType(tmp.ascii());
+		r->setMimeType(tmp);
 	}
 }
 
@@ -2080,7 +1977,7 @@ KMimeMagic::findBufferFileType( const QByteArray &data,
 				const QString &fn)
 {
         KMimeMagicResult * r = findBufferType( data );
-	refineResult(r, QFile::encodeName(fn).data());
+	refineResult(r, fn);
         return r;
 }
 
@@ -2091,12 +1988,7 @@ KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 {
         resultBuf = QString::null;
 
-        if ( magicResult )
-	{
-	  magicResult->setMimeType( "" );
-	  magicResult->setEncoding( "" );
-        }
-	else
+        if ( !magicResult )
 	  magicResult = new KMimeMagicResult();
 	magicResult->setInvalid();
 	accuracy = 100;
@@ -2105,8 +1997,9 @@ KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
         process(QFile::encodeName(fn).data());
 
         /* if we have any results, put them in the request structure */
-        finishResult();
+        //finishResult();
+	magicResult->setMimeType(resultBuf.stripWhiteSpace());
 	magicResult->setAccuracy(accuracy);
-	refineResult(magicResult, QFile::encodeName(fn).data());
+	refineResult(magicResult, fn);
         return magicResult;
 }

@@ -5,7 +5,6 @@
 #    Column #2: type of data to match
 #    Column #3: contents of data to match
 #    Column #4: MIME type of result
-#    Column #5: MIME encoding of result (optional)
 
 #------------------------------------------------------------------------------
 # Localstuff:  file(1) magic for locally observed files
@@ -60,8 +59,6 @@
 # Creative Labs AUDIO stuff
 #					Standard MIDI data
 0	string	MThd			audio/unknown	
-#>9 	byte	>0			(format %d)
-#>11	byte	>1			using %d channels
 #					Creative Music (CMF) data
 0	string	CTMF			audio/unknown	
 #					SoundBlaster instrument data
@@ -70,14 +67,11 @@
 0	string	Creative\ Voice\ File	audio/unknown	
 ## is this next line right?  it came this way...
 #>19	byte	0x1A
-#>23	byte	>0			- version %d
-#>22	byte	>0			\b.%d
 
 # [GRR 950115:  is this also Creative Labs?  Guessing that first line
 #  should be string instead of unknown-endian long...]
 #0	long		0x4e54524b	MultiTrack sound data
 #0	string		NTRK		MultiTrack sound data
-#>4	long		x		- version %ld
 
 # Microsoft WAVE format (*.wav)
 # [GRR 950115:  probably all of the shorts and longs should be leshort/lelong]
@@ -85,6 +79,8 @@
 0	string		RIFF		audio/unknown	
 #					- WAVE format
 >8	string		WAVE		audio/x-wav	
+# AVI                                   - AVI format
+>8	string		AVI\ 		video/x-msvideo
 #
 0	belong		0x2e7261fd	application/x-pn-realaudio
 
@@ -103,7 +99,7 @@
 #
 
 # KSysV logfiles
-0	string		KDE System V Init Editor	text/x-ksysv-log
+0	string		KDE\ System\ V\ Init\ Editor	text/x-ksysv-log
 
 # KSysV init packages
 4	string	KSysV
@@ -115,7 +111,7 @@
 
 # XPM icons (Greg Roelofs, newt@uchicago.edu)
 # ideally should go into "images", but entries below would tag XPM as C source
-0	string		/*\ XPM		image/x-xpm	7bit
+0	string		/*\ XPM		image/x-xpm
 
 # this first will upset you if you're a PL/1 shop... (are there any left?)
 # in which case rm it; ascmagic will catch real C programs
@@ -200,7 +196,7 @@
 0       string          #!/usr/local/bin/python           application/x-python
 0       string          #!\ /usr/local/bin/python         application/x-python
 0       string          eval\ "exec\ /usr/local/bin/python application/x-python
-0	belongs		0x994e0d0a		application/x-python-bytecode
+0	belong		0x994e0d0a		application/x-python-bytecode
 
 #------------------------------------------------------------------------------
 # compress:  file(1) magic for pure-compression formats (no archives)
@@ -215,7 +211,18 @@
 0	string		\037\235	application/x-compress
 
 # gzip (GNU zip, not to be confused with [Info-ZIP/PKWARE] zip archiver)
-0       string          \037\213        application/x-gzip
+0       string          \037\213	application/x-gzip
+
+# KOffice documents (gzipped, with an idenfication string in the 'orig filename' header)
+>10	string		KOffice
+>>18	string		application/x-kchart\004\006	application/x-kchart
+>>18	string		application/x-kformula\004\006	application/x-kformula
+>>18	string		application/x-killustrator\004\006	application/x-killustrator
+>>18	string		application/x-kpresenter\004\006	application/x-kpresenter
+>>18	string		application/x-kspread\004\006	application/x-kspread
+>>18	string		application/x-kword\004\006	application/x-kword
+>>18	string		application/x-krayon\004\006	application/x-krayon
+>>18	string		application/x-kivio\004\006	application/x-kivio
 
 # BZIP2
 0	string          BZh             application/x-bzip2
@@ -224,15 +231,17 @@
 0		string			PK\003\004		application/x-zip
 
 # Zoo archiver
+# DF: the continuation lines are a bit useless, since the mimetype is
+# already set at the top level -> commenting out.
 20	lelong		0xfdc4a7dc	application/x-zoo
->4	byte		>48		application/x-zoo
->>6	byte		>47		application/x-zoo
->>>7	byte		>47		application/x-zoo
->32	byte		>0		application/x-zoo
->>33	byte		x		application/x-zoo
->42	lelong		0xfdc4a7dc	application/x-zoo
->>70	byte		>0		application/x-zoo
->>>71	byte		x		application/x-zoo
+#>4	byte		>48		application/x-zoo
+#>>6	byte		>47		application/x-zoo
+#>>>7	byte		>47		application/x-zoo
+#>32	byte		>0		application/x-zoo
+#>>33	byte		x		application/x-zoo
+#>42	lelong		0xfdc4a7dc	application/x-zoo
+#>>70	byte		>0		application/x-zoo
+#>>>71	byte		x		application/x-zoo
 
 # According to gzip.h, this is the correct byte order for packed data.
 0	string		\037\036	application/octet-stream
@@ -265,13 +274,16 @@
 # lzh?
 #0	string		\037\240	LZH compressed data
 
-257	string		ustar\0		application/x-tar	posix
-257	string		ustar\040\040\0		application/x-tar	gnu
+#POSIX tar file
+257	string		ustar\0		application/x-tar
+#GNU tar file
+257	string		ustar\040\040\0		application/x-tar
 
 0	short		070707		application/x-cpio
 0       string          070701          application/x-cpio
 0       string          070702          application/x-cpio
-0	short		0143561		application/x-cpio	swapped
+#swapped
+0	short		0143561		application/x-cpio
 
 0	string		=<ar>		application/x-archive
 0	string		!<arch>		application/x-archive
@@ -284,30 +296,36 @@
 0       beshort         0xedab
 >2      beshort         0xeedb          application/x-rpm
 
-0	lelong&0x8080ffff	0x0000081a	application/x-arc	lzw
-0	lelong&0x8080ffff	0x0000091a	application/x-arc	squashed
-0	lelong&0x8080ffff	0x0000021a	application/x-arc	uncompressed
-0	lelong&0x8080ffff	0x0000031a	application/x-arc	packed
-0	lelong&0x8080ffff	0x0000041a	application/x-arc	squeezed
-0	lelong&0x8080ffff	0x0000061a	application/x-arc	crunched
+# lzw
+0	lelong&0x8080ffff	0x0000081a	application/x-arc
+# squashed
+0	lelong&0x8080ffff	0x0000091a	application/x-arc
+# uncompressed
+0	lelong&0x8080ffff	0x0000021a	application/x-arc
+# packed
+0	lelong&0x8080ffff	0x0000031a	application/x-arc
+# squeezed
+0	lelong&0x8080ffff	0x0000041a	application/x-arc
+# crunched
+0	lelong&0x8080ffff	0x0000061a	application/x-arc
 
 0	leshort	0xea60	application/octet-stream	x-arj
 
 # LHARC/LHA archiver (Greg Roelofs, newt@uchicago.edu)
-2	string	-lh0-	application/x-lharc	lh0
-2	string	-lh1-	application/x-lharc	lh1
-2	string	-lz4-	application/x-lharc	lz4
-2	string	-lz5-	application/x-lharc	lz5
+2	string	-lh0-	application/x-lharc
+2	string	-lh1-	application/x-lharc
+2	string	-lz4-	application/x-lharc
+2	string	-lz5-	application/x-lharc
 #	[never seen any but the last; -lh4- reported in comp.compression:]
-2	string	-lzs-	application/x-lha	lzs
-2	string	-lh\ -	application/x-lha	lh
-2	string	-lhd-	application/x-lha	lhd
-2	string	-lh2-	application/x-lha	lh2
-2	string	-lh3-	application/x-lha	lh3
-2	string	-lh4-	application/x-lha	lh4
-2	string	-lh5-	application/x-lha	lh5
+2	string	-lzs-	application/x-lha
+2	string	-lh\ -	application/x-lha
+2	string	-lhd-	application/x-lha
+2	string	-lh2-	application/x-lha
+2	string	-lh3-	application/x-lha
+2	string	-lh4-	application/x-lha
+2	string	-lh5-	application/x-lha
 # Shell archives
-10	string	#\ This\ is\ a\ shell\ archive	application/octet-stream	x-shell
+10	string	#\ This\ is\ a\ shell\ archive	application/x-shellscript
 
 # RAR archiver (Greg Roelofs, newt@uchicago.edu)
 0	string		Rar!		application/x-rar
@@ -376,11 +394,11 @@
 
 # PBMPLUS
 #					PBM file
-0	string		P1		image/x-portable-bitmap	7bit
+0	string		P1		image/x-portable-bitmap
 #					PGM file
-0	string		P2		image/x-portable-greymap	7bit
+0	string		P2		image/x-portable-greymap
 #					PPM file
-0	string		P3		image/x-portable-pixmap	7bit
+0	string		P3		image/x-portable-pixmap
 #					PBM "rawbits" file
 0	string		P4		image/x-portable-bitmap
 #					PGM "rawbits" file
@@ -423,12 +441,15 @@
 # PNG images
 0       string          \x89PNG         image/png
 
-
 # PC bitmaps (OS/2, Windoze BMP files)  (Greg Roelofs, newt@uchicago.edu)
-0	string		BM		image/x-bmp
-#>14	byte		12		(OS/2 1.x format)
-#>14	byte		64		(OS/2 2.x format)
-#>14	byte		40		(Windows 3.x format)
+0	string		BM
+#(OS/2 1.x format)
+>14	byte		12		image/x-bmp
+#(OS/2 2.x format)
+>14	byte		64		image/x-bmp
+# (Windows 3.x format)
+>14	byte		40		image/x-bmp
+
 #0	string		IC		icon
 #0	string		PI		pointer
 #0	string		CI		color icon
@@ -440,7 +461,7 @@
 # lisp:  file(1) magic for lisp programs
 #
 # various lisp types, from Daniel Quinlan (quinlan@yggdrasil.com)
-0	string	;;			text/plain	8bit
+#0	string	;;			text/plain
 # Emacs 18 - this is always correct, but not very magical.
 0	string	\012(			application/x-elc
 # Emacs 19
@@ -450,22 +471,22 @@
 # mail.news:  file(1) magic for mail and news
 #
 # There are tests to ascmagic.c to cope with mail and news.
-0	string		Relay-Version: 	message/rfc822	7bit
-0	string		#!\ rnews	message/rfc822	7bit
-0	string		N#!\ rnews	message/rfc822	7bit
-0	string		Forward\ to 	message/rfc822	7bit
-0	string		Pipe\ to 	message/rfc822	7bit
-0	string		Return-Path:	message/rfc822	7bit
-0	string		Path:		message/news	8bit
-0	string		Xref:		message/news	8bit
-0	string		From:		message/rfc822	7bit
-0	string		Article 	message/news	8bit
+0	string		Relay-Version: 	message/rfc822
+0	string		#!\ rnews	message/rfc822
+0	string		N#!\ rnews	message/rfc822
+0	string		Forward\ to 	message/rfc822
+0	string		Pipe\ to 	message/rfc822
+0	string		Return-Path:	message/rfc822
+0	string		Path:		message/news
+0	string		Xref:		message/news
+0	string		From:		message/rfc822
+0	string		Article 	message/news
 #------------------------------------------------------------------------------
 # msword: file(1) magic for MS Word files
 #
 # Contributor claims:
 # Reversed-engineered MS Word magic numbers
-#
+# Except that they are generic MSOffice magic numbers ! (DF)
 
 0	string		\376\067\0\043			application/msword
 0	string		\320\317\021\340\241\261	application/msword
@@ -523,7 +544,6 @@
 # match most *.tfm files generated by METAFONT or afm2tfm.
 2	string		\000\021	application/x-tex-tfm
 2	string		\000\022	application/x-tex-tfm
-#>34	string		>\0		(%s)
 
 # Texinfo and GNU Info, from Daniel Quinlan (quinlan@yggdrasil.com)
 #0	string		\\input\ texinfo	Texinfo source text
@@ -550,14 +570,12 @@
 0	leshort		0xAF11				video/fli
 # FLC animation format
 0	leshort		0xAF12				video/flc
-# AVI
->8	string		AVI\ 				video/avi
 #
 # SGI and Apple formats
 #
 0	string		MOVI				video/sgi
-4	string		moov				video/quicktime	moov
-4	string		mdat				video/quicktime	mdat
+4	string		moov				video/quicktime
+4	string		mdat				video/quicktime
 # The contributor claims:
 #   I couldn't find a real magic number for these, however, this
 #   -appears- to work.  Note that it might catch other files, too,
@@ -568,8 +586,8 @@
 # 255 (hex FF)! DL format SUCKS BIG ROCKS.
 #
 #						DL file version 1 , medium format (160x100, 4 images/screen)
-0	byte		1			video/unknown
-0	byte		2			video/unknown
+#0	byte		1			video/unknown
+#0	byte		2			video/unknown
 #
 # Databases
 #
@@ -603,9 +621,9 @@
 >>16    beshort         4               application/x-coredump
 #
 # DOS
-0		string			MZ				application/x-dosexec
+0	string		MZ		application/x-executable
 #
-# KDE
+# KDE desktop file
 0		string  [Desktop\ Entry]        application/x-desktop
 0		string  [Desktop\ Action        application/x-desktop
 0		string	[KDE\ Desktop\ Entry]	application/x-desktop

@@ -51,9 +51,9 @@ public:
    */
   const QString mimeType() { return m_strMimeType; }
   /**
-   * Retrieve the encoding (e.g. "8bit", see 'magic' file) of the file or buffer parsed.
+   * @deprecated
    */
-  const QString encoding() { return m_strEncoding; }
+  const QString encoding() { return QString::null; }
   /**
    * Retrievee the accuracy of the matching.
    */
@@ -67,12 +67,10 @@ public:
   // Internal functions only
   /////////////////
   void setMimeType( const QString& _mime ) { m_strMimeType = _mime; }
-  void setEncoding( const QString& _encoding) { m_strEncoding = _encoding;}
   void setAccuracy( int _accuracy ) { m_iAccuracy = _accuracy; }
-  void setInvalid() { m_strMimeType = ""; }
+  void setInvalid() { m_strMimeType = QString::null; }
 
 protected:
-  QString m_strEncoding;
   QString m_strMimeType;
   int m_iAccuracy;
 };
@@ -198,20 +196,17 @@ private:
    */
   QString resultBuf;
 
-  void resultBufPrintf(char *, ...);
   int finishResult();
   void process(const char *);
   void tryit(unsigned char *, int);
   int fsmagic(const char *, struct stat *);
   int match(unsigned char *, int);
-  void mprint(union VALUETYPE *, struct magic *);
   int parse_line(char *line, int *rule, int lineno);
   int parse(char *, int);
   int buff_apprentice(char*buff);
   int apprentice();
   int ascmagic(unsigned char *, int);
-  int internatmagic(unsigned char *, int);
-  int softmagic(unsigned char *, int);
+  int textmagic(unsigned char *, int);
 
   struct config_rec *conf;
   int accuracy;
