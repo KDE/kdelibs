@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -42,6 +42,8 @@ KDatagramSocket::KDatagramSocket(QObject* parent, const char *name)
 
   peerResolver().setSocketType(SOCK_DGRAM);
   localResolver().setSocketType(SOCK_DGRAM);
+
+  localResolver().setFlags(KResolver::Passive);
 
   //  QObject::connect(localResolver(), SIGNAL(finished(KResolverResults)),
   //		   this, SLOT(lookupFinishedLocal()));
