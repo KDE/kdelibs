@@ -47,18 +47,18 @@ KJScript::~KJScript()
 
 bool KJScript::evaluate(const char *code)
 {
-  return rep->evaluate((QChar*)UString(code).data(), strlen(code));
+  return rep->evaluate(UString(code).data(), strlen(code));
 }
 
 bool KJScript::evaluate(const UString &code)
 {
-  return rep->evaluate((QChar*)code.data(), code.size());
+  return rep->evaluate(code.data(), code.size());
 }
 
 bool KJScript::evaluate(const KJSO &thisV,
 			const QChar *code, unsigned int length)
 {
-  return rep->evaluate(code, length, thisV.imp());
+  return rep->evaluate((UChar*)code, length, thisV.imp());
 }
 
 void KJScript::clear()

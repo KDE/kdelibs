@@ -446,7 +446,7 @@ void KJScriptImp::clear()
   }
 }
 
-bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
+bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
 {
   init();
   
@@ -456,7 +456,7 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
   }
 
   assert(Lexer::curr());
-  Lexer::curr()->setCode((UChar*)code, length);
+  Lexer::curr()->setCode(code, length);
   int parseError = kjsyyparse();
 
   if (parseError) {

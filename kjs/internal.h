@@ -239,7 +239,7 @@ namespace KJS {
      */
     void init();
     void clear();
-    bool evaluate(const QChar *code, unsigned int length, Imp *thisV = 0);
+    bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0);
   public:
     ProgramNode *progNode;
     Node *firstNode;

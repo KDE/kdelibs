@@ -201,8 +201,7 @@ Completion Function::execute(const List &args)
 bool Function::hasAttribute(FunctionAttribute a) const
 {
   assert(rep);
-  FunctionImp* fdata = static_cast<FunctionImp*>(rep);
-  return (fdata->attr & a);
+  return static_cast<FunctionImp*>(rep)->hasAttribute(a);
 }
 
 #if 0
