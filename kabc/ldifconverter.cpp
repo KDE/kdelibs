@@ -18,6 +18,21 @@
     Boston, MA 02111-1307, USA.
 */
 
+
+/*
+    Useful links:
+	- http://tldp.org/HOWTO/LDAP-Implementation-HOWTO/schemas.html
+	- http://www.faqs.org/rfcs/rfc2849.html
+
+    Not yet handled items:
+	- objectclass microsoftaddressbook
+		- info,
+		- initials,
+		- otherfacsimiletelephonenumber,
+		- otherpager,
+		- physicaldeliveryofficename,
+*/
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qregexp.h>
@@ -46,12 +61,68 @@ bool LDIFConverter::addresseeToLDIF( const AddresseeList &addrList, QString &str
   return true;
 }
 
-static void ldif_out( QTextStream &t, const QString &str, const QString &field )
+QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bool allowEncode )
 {
-  if ( field.isEmpty() )
-    return;
-  t << str.arg( field );
+  if ( value.isEmpty() )
+    return QString();
+
+  // append format if not given
+  if (formatStr.find(':') == -1)
+    formatStr.append(": %1\n");
+ 
+  // check if base64-encoding is needed 
+  bool printable = true;
+  unsigned int i, len;
+  len = value.length();
+  for (i = 0; i<len; ++i ) {
+     if (!value[i].isPrint()) {
+        printable = false;
+	break;
+     }
+  }
+  
+  if (printable) // always encode if we find special chars...
+    printable = (value.find('\n') == -1);
+
+  if (!printable && allowEncode) { 
+     // encode to base64
+     value = KCodecs::base64Encode( value.utf8() );
+     int p = formatStr.find(':');
+     if (p>=0)
+	formatStr.insert(p, ':');
+  }
+
+  // generate the new string and split it to 72 chars/line
+  QCString txt = (formatStr.arg(value)).utf8();
+
+  if (allowEncode) {
+    len = txt.length();
+    if (len && txt[len-1] == '\n')
+      --len;
+    i = 72;
+    while (i < len) {
+      txt.insert(i, "\n ");
+      i += 72+1;
+      len += 2;
+    }
+  }
+
+  return QString::fromUtf8(txt);
 }
+
+
+
+static void ldif_out( QTextStream &t, QString formatStr, QString value, bool allowEncode = true )
+{
+  if ( value.isEmpty() )
+    return;
+
+  QString txt = LDIFConverter::makeLDIFfieldString( formatStr, value, allowEncode );
+
+  // write the string
+  t << txt;
+}
+
 
 bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
 {
@@ -65,11 +136,11 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   const Address workAddr = addr.address( Address::Work );
 
   ldif_out( t, "%1", QString( "dn: cn=%1,mail=%2\n" )
-            .arg( addr.formattedName() )
-            .arg( addr.preferredEmail() ) );
+            .arg( addr.formattedName().simplifyWhiteSpace() )
+            .arg( addr.preferredEmail() ), false /*never encode!*/ );
   ldif_out( t, "givenname: %1\n", addr.givenName() );
   ldif_out( t, "sn: %1\n", addr.familyName() );
-  ldif_out( t, "cn: %1\n", addr.formattedName() );
+  ldif_out( t, "cn: %1\n", addr.formattedName().simplifyWhiteSpace() );
   ldif_out( t, "uid: %1\n", addr.uid() );
   ldif_out( t, "nickname: %1\n", addr.nickName() );
   ldif_out( t, "xmozillanickname: %1\n", addr.nickName() );
@@ -85,9 +156,11 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "mobile: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() );
   ldif_out( t, "cellphone: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() );
   ldif_out( t, "pager: %1\n", addr.phoneNumber( PhoneNumber::Pager ).number() );
+  ldif_out( t, "pagerphone: %1\n", addr.phoneNumber( PhoneNumber::Pager ).number() );
 
   ldif_out( t, "streethomeaddress: %1\n", homeAddr.street() );
   ldif_out( t, "postalcode: %1\n", workAddr.postalCode() );
+  ldif_out( t, "postofficebox: %1\n", workAddr.postOfficeBox() );
 
   QStringList streets = QStringList::split( '\n', homeAddr.street() );
   if ( streets.count() > 0 )
@@ -97,7 +170,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "mozillahomelocalityname: %1\n", homeAddr.locality() );
   ldif_out( t, "mozillahomestate: %1\n", homeAddr.region() );
   ldif_out( t, "mozillahomepostalcode: %1\n", homeAddr.postalCode() );
-  ldif_out( t, "mozillahomecountryname: %1\n", homeAddr.country() );
+  ldif_out( t, "mozillahomecountryname: %1\n", Address::ISOtoCountry(homeAddr.country()) );
   ldif_out( t, "locality: %1\n", workAddr.locality() );
   ldif_out( t, "streetaddress: %1\n", workAddr.street() );
 
@@ -106,12 +179,13 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
     ldif_out( t, "postaladdress: %1\n", streets[ 0 ] );
   if ( streets.count() > 1 )
     ldif_out( t, "mozillapostaladdress2: %1\n", streets[ 1 ] );
-  ldif_out( t, "countryname: %1\n", workAddr.country() );
+  ldif_out( t, "countryname: %1\n", Address::ISOtoCountry(workAddr.country()) );
   ldif_out( t, "l: %1\n", workAddr.locality() );
-  ldif_out( t, "c: %1\n", workAddr.country() );
+  ldif_out( t, "c: %1\n", Address::ISOtoCountry(workAddr.country()) );
   ldif_out( t, "st: %1\n", workAddr.region() );
 
   ldif_out( t, "title: %1\n", addr.title() );
+  ldif_out( t, "vocation: %1\n", addr.prefix() );
   ldif_out( t, "ou: %1\n", addr.role() );
   ldif_out( t, "o: %1\n", addr.organization() );
   ldif_out( t, "organization: %1\n", addr.organization() );
@@ -119,7 +193,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "department: %1\n", addr.custom("KADDRESSBOOK", "X-Department") );
   ldif_out( t, "workurl: %1\n", addr.url().prettyURL() );
   ldif_out( t, "homeurl: %1\n", addr.url().prettyURL() );
-  ldif_out( t, "description:: %1\n", KCodecs::base64Encode( addr.note().utf8() ) );
+  ldif_out( t, "description: %1\n", addr.note() );
   if (addr.revision().isValid())
     ldif_out(t, "modifytimestamp: %1\n", dateToVCardString( addr.revision()) );
 
@@ -158,11 +232,13 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
     if ((*last).find("::")!=-1 && (*it).find(":")==-1) { // this is a multi-line BASE64
 	*last += (*it);
 	lines.remove(it);
+	it = last;
 	continue;
     }
     if ((*last).find(":")!=-1 && (*it).startsWith(" ")) { // this is a folded item
 	*last += (*it).mid(1);
         lines.remove(it);
+	it = last;
 	continue;
     }
     last = it;
@@ -173,7 +249,9 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
 
   Addressee a;
   Address homeAddr, workAddr;
-  bool ok;
+  bool cont;
+  QStringList dnList;
+  QString dnEntry;
 
   // do the loop...
   for ( QStringList::Iterator it = lines.begin(); it != lines.end(); ++it ) {
@@ -184,14 +262,22 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
     homeAddr = Address( Address::Home );
     workAddr = Address( Address::Work );
 
+    // evaluate previous "dn: *" header values
+    if (dnList.count()) {
+      for ( QStringList::Iterator dne = dnList.begin(); dne != dnList.end(); ++dne ) {
+         parseSingleLine( a, homeAddr, workAddr, *dne );
+      }
+    }
+
+    // evaluate until we find another "dn: *" entry or until end of list
     do {
-      ok = parseSingleLine( a, homeAddr, workAddr, *it );
-      if (ok && it!=lines.end()) {
+      cont = parseSingleLine( a, homeAddr, workAddr, *it );
+      if (cont && it!=lines.end()) {
 	++it;
       }
-    } while (ok && it!=lines.end());
+    } while (cont && it!=lines.end());
 
-    // if new address it is not empty, append it
+    // if the new address is not empty, append it
     if ( !a.formattedName().isEmpty() || !a.name().isEmpty() || 
          !a.familyName().isEmpty() ) {
       a.insertAddress( homeAddr );
@@ -199,8 +285,16 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
       addrList.append( a );
     }
 
+    // did we reached the end of the list
     if ( it == lines.end() )
 	break;
+
+    // we found the "dn: cn=.." entry (e.g. "n: cn=Engelhardt Gerald,l=Frankfurt,ou=BKG,o=Bund,c=DE").
+    // Split it now and parse it later.
+    dnEntry = (*it).replace( '=', ": " );
+    dnList = QStringList::split( ',', dnEntry, false );
+    dnList.pop_front();
+    
   } // for()...
 
   return true;
@@ -224,7 +318,7 @@ bool LDIFConverter::splitLine( QString &line, QString &fieldname, QString &value
 
   position = line.find( "::" );
   if ( position != -1 ) {
-    // String is BASE64 encoded
+    // String is BASE64 encoded -> decode it now.
     fieldname = line.left( position ).lower();
     value = QString::fromUtf8( KCodecs::base64Decode(
               line.mid( position + 3, line.length() - position - 2 ).latin1() ) )
@@ -287,18 +381,20 @@ bool LDIFConverter::evaluatePair( Addressee &a,
     a.setUid( value );
     return true;
   }
-  if ( fieldname == QString::fromLatin1( "mail" ) ) {
-    a.insertEmail( value );
-    return true;
-  }
-
-  if ( fieldname == QString::fromLatin1( "mozillasecondemail" ) ) { // mozilla
-    a.insertEmail( value );
+  if ( fieldname == QString::fromLatin1( "mail" ) ||
+       fieldname == QString::fromLatin1( "mozillasecondemail" ) ) { // mozilla
+    if (!a.emails().contains(value))
+      a.insertEmail( value );
     return true;
   }
 
   if ( fieldname == QString::fromLatin1( "title" ) ) {
     a.setTitle( value );
+    return true;
+  }
+
+  if ( fieldname == QString::fromLatin1( "vocation" ) ) {
+    a.setPrefix( value );
     return true;
   }
 
@@ -361,7 +457,8 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "pager" ) ) {  // mozilla
+  if ( fieldname == QString::fromLatin1( "pager" )  ||       // mozilla
+       fieldname == QString::fromLatin1( "pagerphone" ) ) {  // mozilla
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Pager ) );
     return true;
   }
@@ -396,6 +493,11 @@ addComment:
     return true;
   }
 
+  if ( fieldname == QString::fromLatin1( "postofficebox" ) ) {
+    workAddr.setPostOfficeBox( value );
+    return true;
+  }
+
   if ( fieldname == QString::fromLatin1( "homepostaladdress" ) ) {  // mozilla
     homeAddr.setStreet( value );
     return true;
@@ -422,8 +524,8 @@ addComment:
   }
 
   if ( fieldname == QString::fromLatin1( "mozillahomecountryname" ) ) { // mozilla
-    if ( value.length() > 2 )
-	value = Address::countryToISO(value);
+    if ( value.length() <= 2 )
+	value = Address::ISOtoCountry(value);
     homeAddr.setCountry( value );
     return true;
   }
@@ -438,20 +540,16 @@ addComment:
     return true;
   }
   
-  if ( fieldname == QString::fromLatin1( "countryname" ) ) {
-    if ( value.length() > 2 )
-	value = Address::countryToISO(value);
+  if ( fieldname == QString::fromLatin1( "countryname" ) ||
+       fieldname == QString::fromLatin1( "c" ) ) {  // mozilla
+    if ( value.length() <= 2 )
+	value = Address::ISOtoCountry(value);
     workAddr.setCountry( value );
     return true;
   }
 
   if ( fieldname == QString::fromLatin1( "l" ) ) {  // mozilla
     workAddr.setLocality( value );
-    return true;
-  }
-
-  if ( fieldname == QString::fromLatin1( "c" ) ) {  // mozilla
-    workAddr.setCountry( value );
     return true;
   }
 
@@ -500,74 +598,9 @@ addComment:
   if ( fieldname == QString::fromLatin1( "objectclass" ) ) // ignore 
     return true;
 
-  kdWarning() << QString("LDIFConverter: Unknown field: '%1=%2' for '%3'\n")
-	.arg(fieldname).arg(value).arg(a.formattedName());
+  kdWarning() << QString("LDIFConverter: Unknown field for '%1': '%2=%3'\n")
+	.arg(a.formattedName()).arg(fieldname).arg(value);
 
   return true;
 }
 
-
-/*
-
-URL: 
-http://tldp.org/HOWTO/LDAP-Implementation-HOWTO/schemas.html
-http://www.faqs.org/rfcs/rfc2849.html
-
-# Addressbook related classes
-
-objectclass netscapeaddressbook
-        requires
-                objectclass,
-                cn
-        allows
-                cellphone,
-                countryname,
-                description,
-                facsimiletelephonenumber,
-                givenname,
-                homephone,
-                homeurl,
-                locality,
-                mail,
-                nickname,
-                o,
-                ou,
-                pagerphone,
-                postalcode,
-                sn,
-                st,
-                streetaddress,
-                telephonenumber,
-                title,
-                xmozillanickname,
-                xmozillausehtmlmail,
-                xmozillaanyphone
-
-objectclass microsoftaddressbook
-        requires
-                objectclass,
-                cn
-        allows
-                c,
-                department,
-                facsimiletelephonenumber,
-                givenname,
-                homephone,
-                homepostaladdress,
-                info,
-                initials,
-                l,
-                mail,
-                mobile,
-                organizationname,
-                otherfacsimiletelephonenumber,
-                otherpager,
-                physicaldeliveryofficename,
-                postaladdress,
-                postalcode,
-                sn,
-                st,
-                telephonenumber,
-                title,
-                url
-*/

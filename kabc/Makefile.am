@@ -111,7 +111,7 @@ kabcdata_DATA = kabc.desktop
 kabcdatadir = $(kde_appsdir)/Settings/Components
 
 map_DATA = countrytransl.map
-mapdir = $(kde_datadir)/kabc/
+mapdir = $(kde_datadir)/kabc
 
 EXTRA_DIST = $(kabcdata_DATA) $(map_DATA)
 

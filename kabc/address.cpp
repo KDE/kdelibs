@@ -511,7 +511,7 @@ QString Address::countryToISO( const QString &cname )
     return isoCode;
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
-          QString::fromLatin1( "countrytransl.map" ) );
+          QString::fromLatin1( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
   if ( file.open( IO_ReadOnly ) ) {
@@ -520,7 +520,7 @@ QString Address::countryToISO( const QString &cname )
     while( !strbuf.isNull() ) {
       if ( strbuf.startsWith( cname ) ) {
         int index = strbuf.findRev('\t');
-        strbuf.mid(index+1);
+        strbuf = strbuf.mid(index+1, 2);
         file.close();
         mISOMap[ cname ] = strbuf;
         return strbuf;
@@ -533,6 +533,33 @@ QString Address::countryToISO( const QString &cname )
   // fall back to system country
   mISOMap[ cname ] = KGlobal::locale()->country();
   return KGlobal::locale()->country();
+}
+
+QString Address::ISOtoCountry( const QString &ISOname )
+{
+  // get country name from ISO country code (e.g. "no" -> i18n("Norway"))
+  QString mapfile = KGlobal::dirs()->findResource( "data", 
+          QString::fromLatin1( "kabc/countrytransl.map" ) );
+
+kdWarning() << "MAPFILE : " << mapfile << endl;
+  QFile file( mapfile );
+  if ( file.open( IO_ReadOnly ) ) {
+    QTextStream s( &file );
+    QString searchStr = "\t" + ISOname.simplifyWhiteSpace().lower();
+kdWarning() << "Suche : " << searchStr << endl;
+    QString strbuf = s.readLine();
+    int pos;
+    while( !strbuf.isNull() ) {
+      if ( (pos=strbuf.find( searchStr )) != -1 ) {
+        file.close();
+        return i18n(strbuf.left(pos).utf8());
+      }
+      strbuf = s.readLine();
+    }
+    file.close();
+  }
+
+  return ISOname;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Address &addr )

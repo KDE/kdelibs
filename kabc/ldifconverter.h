@@ -73,6 +73,18 @@ namespace KABC {
    */
   // bool createLDAPSearchString( const Addressee &addr, QString &str );
 
+  /**
+   * Returns a LDIF compatible string representing a given field/value pair.
+   * If necessary, the value parameter will be base64encoded and split into multiple.
+   * This function will return an empty string if the given value is empty.
+   *
+   * @param field   The LDAP field name or a complete LDIF field string (e.g. "cn" or "cn = %1\n").
+   * @param value   The value for this field.
+   * @param allowEncode Set to false if you wish no encoding of the value.
+   * @since 3.2
+   */
+  QString LDIFConverter::makeLDIFfieldString( QString field, QString value, bool allowEncode = true );
+
 
 
   /* internal functions - do not use !! */

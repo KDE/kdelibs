@@ -285,7 +285,16 @@ class Address
       @return       two digit ISO code
     */
     static QString countryToISO( const QString &cname );
-    
+
+    /**
+      Returns a localized country name for a ISO code. 
+      This might be replaced by a KLocale method in the future.
+      @param ISOname two digit ISO code
+      @return        localized name of the country
+      @since 3.2
+    */
+    static QString ISOtoCountry( const QString &ISOname );
+
   private:
     /** 
       Parses a snippet of an address template
