@@ -297,6 +297,8 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 {
   for (int i=0; i<bar->count(); i++)
   {
+    if (!bar->tab(i))
+	continue;
     QString content = bar->tab(i)->text();
     if (content.isEmpty())
       continue;
