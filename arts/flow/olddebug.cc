@@ -25,6 +25,8 @@
  * be recompiled (including new debug.h) and will then not use this any longer
  */
 
+#ifndef KDE_USE_FINAL
+
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -44,4 +46,6 @@ void artsdebug(const char *fmt,...)
     	(void) vfprintf(stdout, fmt, ap);
     	va_end(ap);
 	}
+
 }
+#endif
