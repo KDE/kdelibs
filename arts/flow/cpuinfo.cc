@@ -23,6 +23,9 @@
 #include "startupmanager.h"
 #include "cpuinfo.h"
 
+#include <setjmp.h>
+#include <signal.h>
+
 using namespace Arts;
 
 int CpuInfo::s_flags = 0;
@@ -33,8 +36,19 @@ namespace Arts
 	{
 	public:
 		virtual void startup();
+	
+	private:
+		static jmp_buf s_sseCheckEnv;
+		static void sseCheckHandler(int);
 	};
 };
+
+jmp_buf CpuInfoStartup::s_sseCheckEnv;
+
+void CpuInfoStartup::sseCheckHandler(int)
+{
+	longjmp(s_sseCheckEnv, 1);
+}
 
 void CpuInfoStartup::startup()
 {
@@ -181,6 +195,28 @@ void CpuInfoStartup::startup()
 		: /* no input */
 		: "memory"
 	);
+	// SSE must be supported by the OS, if it's not, any SSE insn will
+	// trigger an invalid opcode exception, to check for this, a SIGILL
+	// handler is installed and a SSE insn run. If the handler is called,
+	// the SSE bit is cleared in CpuInfo::s_flags
+	if (CpuInfo::s_flags & CpuInfo::CpuSSE)
+	{
+		void (*oldHandler)(int) = signal(SIGILL, sseCheckHandler);
+		if (setjmp(s_sseCheckEnv))
+		{
+			CpuInfo::s_flags &= ~CpuInfo::CpuSSE;
+		}
+		else
+		{
+			__asm__ __volatile__ (
+				"subl $0x10, %esp     \n"
+				"movups %xmm0, (%esp) \n"
+				"emms                 \n"
+				"addl $0x10, %esp     \n"
+			);
+		}
+		signal(SIGILL, oldHandler);
+	}
 #endif /* GCC and x86 */
 }
 
