@@ -2412,6 +2412,7 @@ QPtrList<QChar> StyleBaseImpl::splitContent(const QChar *curP, const QChar *endP
         list.append(nextP-((q||dq)?1:0));
 
         if ( last ) break;
+        curP = nextP;
         while(nextP->isSpace()) { // skip over WS between tokens
             nextP++;
             curP = nextP;
