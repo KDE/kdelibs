@@ -20,7 +20,6 @@
 
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp jpeg.cpp formats.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp
-libkhtmlw_la_LIBADD = $(all_libraries) -lqt -lX11 $(LIBJPEG)
 
 BUILT_SOURCES = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
 html.cpp: html.moc
