@@ -276,7 +276,6 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 
         kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
         delete( kfti );
-        it->removeExtraData( this );
     }
     else
     {
