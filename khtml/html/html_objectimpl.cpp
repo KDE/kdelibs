@@ -109,7 +109,7 @@ void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString
     }
     script += ")";
 
-    kdDebug(6036) << "HTMLEmbedElementImpl::liveConnectEvent " << script << endl;
+    kdDebug(6036) << "LiveConnectElementImpl::liveConnectEvent " << script << endl;
     KHTMLView* w = getDocument()->view();
     w->part()->executeScript(this, script);
     //timer->start(0, true);
@@ -210,19 +210,14 @@ void HTMLAppletElementImpl::attach()
 	args.insert( "baseURL", getDocument()->baseURL() );
         m_render = new RenderApplet(this, args);
         setLiveConnect(applet()->getLiveConnectExtension());
-    }
-    else
-        // ### remove me. we should never show an empty applet, instead
-        // render the alternative content given by the webpage
-        m_render = new RenderEmptyApplet(this);
-#endif
 
-    if (m_render) {
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
+        NodeBaseImpl::attach();
     }
-
-    NodeBaseImpl::attach();
+    else
+#endif
+        ElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -403,6 +398,12 @@ void HTMLObjectElementImpl::attach()
 
     KHTMLView* w = getDocument()->view();
     bool loadplugin = w->part()->pluginsEnabled();
+    if (!loadplugin) {
+        // render alternative content
+        ElementImpl::attach();
+        return;
+    }
+
     KURL u = getDocument()->completeURL(url);
     for (KHTMLPart* part = w->part()->parentPart(); part; part = part->parentPart())
         if (part->url() == u) {

@@ -57,17 +57,5 @@ private:
     void processArguments( const QMap<QString, QString> &args );
 };
 
-class RenderEmptyApplet : public RenderWidget
-{
-public:
-    RenderEmptyApplet(DOM::NodeImpl* node);
-
-    virtual const char *renderName() const { return "RenderEmptyApplet"; }
-
-    virtual short intrinsicWidth() const;
-    virtual int intrinsicHeight() const;
-    virtual void layout();
-};
-
 };
 #endif

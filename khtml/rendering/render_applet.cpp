@@ -138,47 +138,9 @@ void RenderApplet::processArguments(const QMap<QString, QString> &args)
             applet->setAppletName( args[QString::fromLatin1("code") ] );
 
 	str = args[QString::fromLatin1("archive") ];
-        if( !str.isEmpty() ) 
+        if( !str.isEmpty() )
             applet->setArchives( args[QString::fromLatin1("archive") ] );
     }
 }
 
-RenderEmptyApplet::RenderEmptyApplet(DOM::NodeImpl* node)
-  : RenderWidget(node)
-{
-    // init RenderObject attributes
-    setInline(true);
-
-    QLabel* label = new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"), node->getDocument()->view()->viewport());
-    label->setAlignment( Qt::AlignCenter | Qt::WordBreak );
-    setQWidget(label);
-}
-
-short RenderEmptyApplet::intrinsicWidth() const
-{
-    return (m_widget ? m_widget->sizeHint().width() : 150);
-}
-
-int RenderEmptyApplet::intrinsicHeight() const
-{
-    return (m_widget ? m_widget->sizeHint().height() : 150);
-}
-
-void RenderEmptyApplet::layout()
-{
-    KHTMLAssert( !layouted() );
-    KHTMLAssert( minMaxKnown() );
-
-    calcWidth();
-    calcHeight();
-
-    if(m_widget)
-    {
-        //kdDebug(6100) << "RenderEmptyApplet::layout, m_width = " << m_width << ", m_height = " << m_height << endl;
-        m_widget->resize(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-                         m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
-    }
-
-    setLayouted();
-}
 #endif
