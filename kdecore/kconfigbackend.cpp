@@ -126,8 +126,11 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
   if (!fileName.isEmpty()) {
 
+// WABA: Why recursive?
+//    QStringList list = KGlobal::dirs()->
+//      findAllResources(resType, fileName, true);
     QStringList list = KGlobal::dirs()->
-      findAllResources(resType, fileName, true);
+      findAllResources(resType, fileName);
 
     QStringList::ConstIterator it;
 
