@@ -47,7 +47,7 @@ class DOMString;
  * BUTTON element definition </a> in HTML 4.0.
  *
  */
-class HTMLButtonElement : public HTMLElement
+class KHTML_EXPORT HTMLButtonElement : public HTMLElement
 {
 public:
     HTMLButtonElement();
@@ -157,7 +157,7 @@ class HTMLFieldSetElementImpl;
  * FIELDSET element definition </a> in HTML 4.0.
  *
  */
-class HTMLFieldSetElement : public HTMLElement
+class KHTML_EXPORT HTMLFieldSetElement : public HTMLElement
 {
 public:
     HTMLFieldSetElement();
@@ -191,7 +191,7 @@ class HTMLFormElementImpl;
  * FORM element definition </a> in HTML 4.0.
  *
  */
-class HTMLFormElement : public HTMLElement
+class KHTML_EXPORT HTMLFormElement : public HTMLElement
 {
     friend class HTMLButtonElement;
     friend class HTMLFieldSetElement;
@@ -334,7 +334,7 @@ class HTMLInputElementImpl;
  * INPUT element definition </a> in HTML 4.0.
  *
  */
-class HTMLInputElement : public HTMLElement
+class KHTML_EXPORT HTMLInputElement : public HTMLElement
 {
 public:
     HTMLInputElement();
@@ -639,7 +639,7 @@ class HTMLLabelElementImpl;
  * LABEL element definition </a> in HTML 4.0.
  *
  */
-class HTMLLabelElement : public HTMLElement
+class KHTML_EXPORT HTMLLabelElement : public HTMLElement
 {
 public:
     HTMLLabelElement();
@@ -694,7 +694,7 @@ class HTMLLegendElementImpl;
  * LEGEND element definition </a> in HTML 4.0.
  *
  */
-class HTMLLegendElement : public HTMLElement
+class KHTML_EXPORT HTMLLegendElement : public HTMLElement
 {
 public:
     HTMLLegendElement();
@@ -753,7 +753,7 @@ class HTMLOptGroupElementImpl;
  * OPTGROUP element definition </a> in HTML 4.0.
  *
  */
-class HTMLOptGroupElement : public HTMLElement
+class KHTML_EXPORT HTMLOptGroupElement : public HTMLElement
 {
 public:
     HTMLOptGroupElement();
@@ -807,7 +807,7 @@ class HTMLSelectElementImpl;
  * SELECT element definition </a> in HTML 4.0.
  *
  */
-class HTMLSelectElement : public HTMLElement
+class KHTML_EXPORT HTMLSelectElement : public HTMLElement
 {
 public:
     HTMLSelectElement();
@@ -983,7 +983,7 @@ class HTMLTextAreaElementImpl;
  * TEXTAREA element definition </a> in HTML 4.0.
  *
  */
-class HTMLTextAreaElement : public HTMLElement
+class KHTML_EXPORT HTMLTextAreaElement : public HTMLElement
 {
 public:
     HTMLTextAreaElement();
@@ -1154,7 +1154,7 @@ class HTMLOptionElementImpl;
  * OPTION element definition </a> in HTML 4.0.
  *
  */
-class HTMLOptionElement : public HTMLElement
+class KHTML_EXPORT HTMLOptionElement : public HTMLElement
 {
 public:
     HTMLOptionElement();
@@ -1274,7 +1274,7 @@ class HTMLFormElement;
  * deprecated in HTML 4.0.
  *
  */
-class HTMLIsIndexElement : public HTMLElement
+class KHTML_EXPORT HTMLIsIndexElement : public HTMLElement
 {
 public:
     HTMLIsIndexElement();

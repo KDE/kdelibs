@@ -695,7 +695,7 @@ class CounterImpl;
  * made through this interface modify the style property.
  *
  */
-class Counter
+class KHTML_EXPORT Counter
 {
     friend class CSSPrimitiveValue;
 public:

@@ -63,7 +63,7 @@ class ProcessingInstructionImpl;
  * merged by use of the Element.normalize() method.
  *
  */
-class CDATASection : public Text
+class KHTML_EXPORT CDATASection : public Text
 {
     friend class Document;
 public:

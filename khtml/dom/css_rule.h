@@ -49,7 +49,7 @@ class CSSRuleImpl;
  * interface.
  *
  */
-class CSSRule
+class KHTML_EXPORT CSSRule
 {
 public:
     CSSRule();
@@ -146,7 +146,7 @@ class CSSCharsetRuleImpl;
  * be used to define the encoding of the style sheet.
  *
  */
-class CSSCharsetRule : public CSSRule
+class KHTML_EXPORT CSSCharsetRule : public CSSRule
 {
 public:
     CSSCharsetRule();
@@ -190,7 +190,7 @@ class CSSFontFaceRuleImpl;
  * rule is used to hold a set of font descriptions.
  *
  */
-class CSSFontFaceRule : public CSSRule
+class KHTML_EXPORT CSSFontFaceRule : public CSSRule
 {
 public:
     CSSFontFaceRule();
@@ -220,7 +220,7 @@ class CSSImportRuleImpl;
  * rule is used to import style rules from other style sheets.
  *
  */
-class CSSImportRule : public CSSRule
+class KHTML_EXPORT CSSImportRule : public CSSRule
 {
 public:
     CSSImportRule();
@@ -267,7 +267,7 @@ class CSSMediaRuleImpl;
  * can be used to delimit style rules for specific media types.
  *
  */
-class CSSMediaRule : public CSSRule
+class KHTML_EXPORT CSSMediaRule : public CSSRule
 {
 public:
     CSSMediaRule();
@@ -359,7 +359,7 @@ class CSSPageRuleImpl;
  * page box for paged media.
  *
  */
-class CSSPageRule : public CSSRule
+class KHTML_EXPORT CSSPageRule : public CSSRule
 {
 public:
     CSSPageRule();
@@ -408,7 +408,7 @@ class CSSStyleRuleImpl;
  * in a CSS style sheet.
  *
  */
-class CSSStyleRule : public CSSRule
+class KHTML_EXPORT CSSStyleRule : public CSSRule
 {
 public:
     CSSStyleRule();
@@ -458,7 +458,7 @@ class CSSUnknownRuleImpl;
  * not supported by this user agent.
  *
  */
-class CSSUnknownRule : public CSSRule
+class KHTML_EXPORT CSSUnknownRule : public CSSRule
 {
 public:
     CSSUnknownRule();
@@ -481,7 +481,7 @@ class StyleListImpl;
  * of an ordered collection of CSS rules.
  *
  */
-class CSSRuleList
+class KHTML_EXPORT CSSRuleList
 {
 public:
     CSSRuleList();

@@ -43,7 +43,7 @@ class DOMString;
  * BASE element definition </a> in HTML 4.0.
  *
  */
-class HTMLBaseElement : public HTMLElement
+class KHTML_EXPORT HTMLBaseElement : public HTMLElement
 {
 public:
     HTMLBaseElement();
@@ -98,7 +98,7 @@ class HTMLLinkElementImpl;
  * LINK element definition </a> in HTML 4.0.
  *
  */
-class HTMLLinkElement : public HTMLElement
+class KHTML_EXPORT HTMLLinkElement : public HTMLElement
 {
 public:
     HTMLLinkElement();
@@ -253,7 +253,7 @@ class HTMLMetaElementImpl;
  * META element definition </a> in HTML 4.0.
  *
  */
-class HTMLMetaElement : public HTMLElement
+class KHTML_EXPORT HTMLMetaElement : public HTMLElement
 {
 public:
     HTMLMetaElement();

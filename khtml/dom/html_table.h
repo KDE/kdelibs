@@ -31,6 +31,7 @@
 
 // --------------------------------------------------------------------------
 #include <dom/html_element.h>
+#include <kdelibs_export.h>
 
 namespace DOM {
 
@@ -43,7 +44,7 @@ class DOMString;
  * CAPTION element definition </a> in HTML 4.0.
  *
  */
-class HTMLTableCaptionElement : public HTMLElement
+class KHTML_EXPORT HTMLTableCaptionElement : public HTMLElement
 {
     friend class HTMLTableElement;
 
@@ -87,7 +88,7 @@ class HTMLTableCellElementImpl;
  * TD element definition </a> in HTML 4.0.
  *
  */
-class HTMLTableCellElement : public HTMLElement
+class KHTML_EXPORT HTMLTableCellElement : public HTMLElement
 {
     friend class HTMLTableElement;
 
@@ -318,7 +319,7 @@ class HTMLTableColElementImpl;
  * COL element definition </a> in HTML 4.0.
  *
  */
-class HTMLTableColElement : public HTMLElement
+class KHTML_EXPORT HTMLTableColElement : public HTMLElement
 {
     friend class HTMLTableElement;
 
@@ -437,7 +438,7 @@ class DOMString;
  * TABLE element definition </a> in HTML 4.0.
  *
  */
-class HTMLTableElement : public HTMLElement
+class KHTML_EXPORT HTMLTableElement : public HTMLElement
 {
 public:
     HTMLTableElement();
@@ -721,7 +722,7 @@ class DOMString;
  * TR element definition </a> in HTML 4.0.
  *
  */
-class HTMLTableRowElement : public HTMLElement
+class KHTML_EXPORT HTMLTableRowElement : public HTMLElement
 {
     friend class HTMLTableElement;
 
@@ -891,7 +892,7 @@ class DOMString;
  * elements.
  *
  */
-class HTMLTableSectionElement : public HTMLElement
+class KHTML_EXPORT HTMLTableSectionElement : public HTMLElement
 {
     friend class HTMLTableElement;
 

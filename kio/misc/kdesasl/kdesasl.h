@@ -22,6 +22,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 class KURL;
 class QStrIList;
 
@@ -67,7 +69,7 @@ class QStrIList;
  * @version $Id$
  */
 
-class KDESasl
+class KIO_EXPORT KDESasl
 {
 
 public:

@@ -30,6 +30,7 @@
 #define HTML_LIST_H
 
 #include <dom/html_element.h>
+#include <kdelibs_export.h>
 
 namespace DOM {
 
@@ -48,7 +49,7 @@ class DOMString;
  * DL element definition </a> in HTML 4.0.
  *
  */
-class HTMLDListElement : public HTMLElement
+class KHTML_EXPORT HTMLDListElement : public HTMLElement
 {
 public:
     HTMLDListElement();
@@ -88,7 +89,7 @@ public:
  * in HTML 4.0.
  *
  */
-class HTMLDirectoryElement : public HTMLElement
+class KHTML_EXPORT HTMLDirectoryElement : public HTMLElement
 {
 public:
     HTMLDirectoryElement();
@@ -127,7 +128,7 @@ public:
  * LI element definition </a> in HTML 4.0.
  *
  */
-class HTMLLIElement : public HTMLElement
+class KHTML_EXPORT HTMLLIElement : public HTMLElement
 {
 public:
     HTMLLIElement();
@@ -182,7 +183,7 @@ public:
  * deprecated in HTML 4.0.
  *
  */
-class HTMLMenuElement : public HTMLElement
+class KHTML_EXPORT HTMLMenuElement : public HTMLElement
 {
 public:
     HTMLMenuElement();
@@ -222,7 +223,7 @@ public:
  * OL element definition </a> in HTML 4.0.
  *
  */
-class HTMLOListElement : public HTMLElement
+class KHTML_EXPORT HTMLOListElement : public HTMLElement
 {
 public:
     HTMLOListElement();
@@ -290,7 +291,7 @@ public:
  * UL element definition </a> in HTML 4.0.
  *
  */
-class HTMLUListElement : public HTMLElement
+class KHTML_EXPORT HTMLUListElement : public HTMLElement
 {
 public:
     HTMLUListElement();
