@@ -234,6 +234,9 @@ public final class KJASAppletClassLoader
                 } catch (ClassFormatError cfe) {
                     Main.debug(name + ": Catched " + cfe + ". Trying to repair...");
                     rval = loadFixedClass( name );
+                } catch (Exception ex)
+                {
+                    Main.debug("findClass " + name + " " + ex.getMessage());
                 }
             }
         }

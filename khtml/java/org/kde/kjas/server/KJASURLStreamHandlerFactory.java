@@ -82,7 +82,7 @@ class KIOConnection
 
         KJASInputStream() {
         }
-        private boolean getData() throws IOException {
+        private boolean getData(boolean mayblock) throws IOException {
             if (haveError()) {
                 //disconnect();
                 eof = true;
@@ -114,30 +114,39 @@ class KIOConnection
                 }
                 return false;
             }
+            if (!mayblock)
+                return false;
             thread = Thread.currentThread();
             try {
                 Thread.currentThread().sleep(10000);
             } catch (InterruptedException ie) {
-                return getData();
+                return getData(true);
             }
             thread = null;
             disconnect();
             throw new IOException("timeout");
         }
         public int read() throws IOException {
-            if (getData())
+            if (getData(true))
                 return 0x00ff & buf[bufpos++];
             return -1;
         }
         public int read(byte[] b, int off, int len) throws IOException {
-            if (!getData())
-                return -1;
-            int nr = buf.length - bufpos; // FIXME add length of all buffers
-            if (nr > len)
-                nr = len;
-            System.arraycopy(buf, bufpos, b, off, nr);
-            bufpos += nr;
-            return nr;
+            boolean mayblock = true;
+            int total = 0;
+            do {
+                if (!getData(true)) break;
+                mayblock = false;
+                int nr = buf.length - bufpos;
+                if (nr > len)
+                    nr = len;
+                System.arraycopy(buf, bufpos, b, off, nr);
+                len -= nr;
+                total += nr;
+                off += nr;
+                bufpos += nr;
+            } while (len > 0);
+            return total > 0 ? total : -1;
         }
         public int read(byte[] b) throws IOException {
             return read(b, 0, b.length);
@@ -146,7 +155,15 @@ class KIOConnection
             if (eof)
                 return 0;
             checkConnected();
-            return buf == null ? 0 : buf.length - bufpos; // FIXME see read
+            if (buf == null)
+                return 0;
+            int total = buf.length - bufpos;
+            synchronized (jobs) {
+                ListIterator it = data.listIterator(0);
+                while (it.hasNext())
+                    total += ((byte []) it.next()).length;
+            }
+            return total;
         }
         public boolean markSupported() {
             return false;
@@ -189,9 +206,9 @@ class KIOConnection
         }
     }
     synchronized void connect(boolean doInput) throws IOException {
-        Main.debug ("connect " + url);
         if (connected)
-            throw new IOException("already connected");
+            return; // javadocs: call is ignored
+        Main.debug ("connect " + url);
         errorcode = 0;
         synchronized (jobs) {
             jobid = String.valueOf(id++);
@@ -369,13 +386,21 @@ final class KJASHttpURLConnection extends HttpURLConnection
 final class KJASSimpleURLConnection extends URLConnection
 {
     private KIOSimpleConnection kioconnection;
+    private int default_port;
 
-    KJASSimpleURLConnection(URL u) {
+    KJASSimpleURLConnection(URL u, int p) {
         super(u);
+        default_port = p;
         kioconnection = new KIOSimpleConnection(u);
     }
     public boolean usingProxy() {
         return false; // FIXME
+    }
+    public Permission getPermission() throws IOException {
+        int p = url.getPort();
+        if (p < 0)
+            p = default_port;
+        return new SocketPermission(url.getHost() + ":" + p, "connect");
     }
     public synchronized void connect() throws IOException {
         kioconnection.connect(doInput);
@@ -414,7 +439,11 @@ final class KJASSimpleURLStreamHandler extends URLStreamHandler
     }
     protected URLConnection openConnection(URL u) throws IOException {
         Main.debug ("KJASSimpleURLStreamHandler.openConnection " + u);
-        return new KJASSimpleURLConnection(u);
+        URLConnection conn = new KJASSimpleURLConnection(u, default_port);
+        SecurityManager security = System.getSecurityManager();
+        if (security != null)
+            security.checkPermission(conn.getPermission());
+        return conn;
     }
     protected int getDefaultPort() {
         return default_port;
@@ -426,7 +455,10 @@ public final class KJASURLStreamHandlerFactory
     implements URLStreamHandlerFactory
 {
     public URLStreamHandler createURLStreamHandler(String protocol) {
+        if (protocol.equals("jar") || protocol.equals("file"))
+            return null;
         //outputs to early: Main.debug ("createURLStreamHandler " + protocol);
+        Main.debug ("createURLStreamHandler " + protocol);
         if (protocol.equals("http"))
             return new KJASHttpURLStreamHandler(80);
         else if (protocol.equals("https"))
