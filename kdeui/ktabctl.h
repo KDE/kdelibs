@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/05/08 12:47:59  ssk
+ * Various documentation changes.
+ *
  * Revision 1.7  1999/04/19 18:28:17  cschlaeg
  * sizeHint() added; showTab() now also selects the tab; paintEvent updated to
  * match Qt 2.0 style frame
@@ -68,7 +71,7 @@ public:
     void setTabEnabled(const QString&, bool);
     void setBorder(bool);
     void setShape( QTabBar::Shape shape );
-	virtual QSize sizeHint(void);
+    virtual QSize sizeHint(void) const;
 
 protected:
     void paintEvent(QPaintEvent *);

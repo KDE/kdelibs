@@ -31,7 +31,7 @@ class KCharSelectTable : public QTableView
 public:
   KCharSelectTable( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum ); 
 
-  virtual QSize sizeHint(); 
+  virtual QSize sizeHint() const;
 
   virtual void setFont( const QString &_font ); 
   virtual void setChar( const QChar &_chr ); 
@@ -86,7 +86,7 @@ class KCharSelect : public QVBox
 public:
   KCharSelect( QWidget *parent, const char *name, const QString &_font = QString::null, const QChar &_chr = ' ', int _tableNum = 0 ); 
 
-  virtual QSize sizeHint(); 
+  virtual QSize sizeHint() const; 
 
   virtual void setFont( const QString &_font ); 
   virtual void setChar( const QChar &_chr ); 

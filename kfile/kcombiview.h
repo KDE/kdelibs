@@ -38,7 +38,7 @@ public:
     
     virtual QWidget *widget() { return this; }
     virtual void setAutoUpdate(bool);
-    virtual void setCurrentItem(QString &filename, const KFileInfo *i);
+    virtual void setCurrentItem(const QString &filename, const KFileInfo *i);
     virtual void repaint(bool f = true);
 
     virtual QString findCompletion( const char *base, bool activateFound );

@@ -136,7 +136,7 @@ void KCombiView::highlightItem(unsigned int)
     warning("KCombiView::highlightItem: does nothing");
 }
 
-void KCombiView::setCurrentItem(QString &item, const KFileInfo *i)
+void KCombiView::setCurrentItem(const QString &item, const KFileInfo *i)
 {
     if (item != 0) {
 	i = 0;

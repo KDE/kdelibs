@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.18  1999/04/19 18:28:16  cschlaeg
+ * sizeHint() added; showTab() now also selects the tab; paintEvent updated to
+ * match Qt 2.0 style frame
+ *
  * Revision 1.17  1999/03/01 23:35:18  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -282,7 +286,7 @@ void KTabCtl::setShape( QTabBar::Shape shape )
 }
 
 QSize
-KTabCtl::sizeHint(void)
+KTabCtl::sizeHint(void) const
 {
 	/* desired size of the tabbar */
 	QSize hint(tabs->sizeHint());

@@ -70,13 +70,13 @@ bool KStandardDirs::addResourceType( const QString& type,
 bool KStandardDirs::addResourceDir( const QString& type,
 		     const QString& absdir, bool)
 {
-    QStringList *abs = absolutes.find(type);
-    if (!abs) {
-	abs = new QStringList();
-	absolutes.insert(type, abs);
+    QStringList *paths = absolutes.find(type);
+    if (!paths) {
+	paths = new QStringList();
+	absolutes.insert(type, paths);
     }
-    if (!abs->contains(absdir)) {
-	abs->append(absdir);
+    if (!paths->contains(absdir)) {
+	paths->append(absdir);
 	dircache.remove(type); // clean the cache
 	return true;
     }

@@ -68,7 +68,7 @@ void KCharSelectTable::setTableNum( int _tableNum )
 }
 
 //==================================================================
-QSize KCharSelectTable::sizeHint()
+QSize KCharSelectTable::sizeHint() const
 {
     int w = cellWidth();
     int h = cellHeight();
@@ -327,7 +327,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 }
 
 //==================================================================
-QSize KCharSelect::sizeHint()
+QSize KCharSelect::sizeHint() const
 {
     return QVBox::sizeHint();
 }
