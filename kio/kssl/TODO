@@ -5,8 +5,7 @@
   certificates (self signed) for users.
   This should be a separate app I guess, and can include a CA signer even.
 
-- Document libkssl interface:
-ksslcertificate.h ksslcertificatecache.h ksslcertificatehome.h
+- Document libkssl interface: ksslcertificatecache.h ksslcertificatehome.h
 
 - KDE4 - fix constness and reference arguments
 
