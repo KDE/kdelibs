@@ -22,6 +22,7 @@
 #include <qlayout.h>
 #include <qgroupbox.h>
 #include <qcheckbox.h>
+#include <qsettings.h>
 #include <kpushbutton.h>
 #include <klocale.h>
 #include <kurlrequester.h>
@@ -57,11 +58,14 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_testpage->setDisabled(true);
 	m_preview->setDisabled(true);
 	m_defaulttestpage->setCursor(KCursor::handCursor());
+	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), this);
+	m_embedfonts->setChecked(QSettings().readBoolEntry("/qt/embedFonts"));
 
 	//layout
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
 	lay0->addWidget(m_timerbox);
 	lay0->addWidget(m_testpagebox);
+	lay0->addWidget(m_embedfonts);
 	lay0->addStretch(1);
 	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(), 0);
 	lay1->addSpacing(10);
@@ -106,6 +110,7 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 	if (m_defaulttestpage->isChecked() && KMimeMagic::self()->findFileType(m_testpage->url())->mimeType() != "application/postscript")
 		KMessageBox::sorry(this, i18n("The selected test page is not a PostScript file. You may not "
 		                              "be able to test your printer anymore."));
+	QSettings().writeEntry("/qt/embedFonts", m_embedfonts->isChecked());
 }
 
 void KMConfigGeneral::slotTestPagePreview()
@@ -116,4 +121,5 @@ void KMConfigGeneral::slotTestPagePreview()
 	else
 		KRun::runURL(tpage, KMimeMagic::self()->findFileType(tpage)->mimeType());
 }
+
 #include "kmconfiggeneral.moc"
