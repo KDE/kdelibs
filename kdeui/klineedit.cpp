@@ -177,8 +177,6 @@ void KLineEdit::makeCompletion( const QString& text )
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
-    qDebug("**** GOT KEYPRESS: %s", e->text().latin1());
-    
     // Filter key-events if EchoMode is normal &
     // completion mode is not set to CompletionNone
     if ( echoMode() == QLineEdit::Normal &&
@@ -401,7 +399,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
         if( ev->type() == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-            qDebug("*** EVENTFILTER: got keypress: %s", e->text().latin1());
+
             if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
 		emit QLineEdit::returnPressed();
