@@ -2,6 +2,7 @@
     Copyright (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
               (C) 1998, 1999 Daniel M. Duley <mosfet@kde.org>
               (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
+	      (C) 2000       Josef Weidendorfer <weidendo@in.tum.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -312,8 +313,10 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
     if (yfactor > 200 ) yfactor = 200;
 
 
-    float xbal = xfactor/5000.;
-    float ybal = yfactor/5000.;
+    //    float xbal = xfactor/5000.;
+    //    float ybal = yfactor/5000.;
+    float xbal = xfactor/30./size.width();
+    float ybal = yfactor/30./size.height();
     float rat;
 
     int rDiff, gDiff, bDiff;
@@ -674,6 +677,121 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
     return image;
 }
 
+// Modulate an image with an RBG channel of another image
+//
+QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
+	ModulationType type, int factor, RGBComponent channel)
+{
+    int r, g, b, h, s, v, a;
+    QColor clr;
+    int mod=0;
+    unsigned int x1, x2, y1, y2;
+    register int x, y;
+    
+    // for image, we handle only depth 32
+    if (image.depth()<32) image = image.convertDepth(32);
+    
+    // for modImage, we handle depth 8 and 32
+    if (modImage.depth()<8) modImage = modImage.convertDepth(8);
+    
+    unsigned int *colorTable2 = (modImage.depth()==8) ?
+				 modImage.colorTable():0;
+    unsigned int *data1, *data2;
+    unsigned char *data2b;
+    unsigned int color1, color2;
+
+    x1 = image.width();    y1 = image.height();
+    x2 = modImage.width(); y2 = modImage.height();
+
+    for (y = 0; y < (int)y1; y++) {
+        data1 =  (unsigned int *) image.scanLine(y);
+	data2 =  (unsigned int *) modImage.scanLine( y%y2 );
+	data2b = (unsigned char *) modImage.scanLine( y%y2 );
+
+	x=0;
+	while(x < (int)x1) {
+	  color2 = (colorTable2) ? colorTable2[*data2b] : *data2;
+	  if (reverse) {
+	      color1 = color2;
+	      color2 = *data1;
+	  }
+	  else
+	      color1 = *data1;
+	  
+	  if (type == Intensity || type == Contrast) {
+              r = qRed(color1);
+	      g = qGreen(color1);
+	      b = qBlue(color1);
+	      if (channel != All) {
+      	        mod = (channel == Red) ? qRed(color2) :
+		    (channel == Green) ? qGreen(color2) :
+	    	    (channel == Blue) ? qBlue(color2) :
+		    (channel == Gray) ? qGray(color2) : 0;
+	        mod = mod*factor/50;
+	      }
+	      
+	      if (type == Intensity) {
+	        if (channel == All) {
+	          r += r * factor/50 * qRed(color2)/256;
+	          g += g * factor/50 * qGreen(color2)/256;
+	          b += b * factor/50 * qBlue(color2)/256;
+	        }
+	        else {
+	          r += r * mod/256;
+	          g += g * mod/256;
+	          b += b * mod/256;
+	        }	      
+	      }
+	      else { // Contrast
+	        if (channel == All) {
+		  r += (r-128) * factor/50 * qRed(color2)/128;
+	          g += (g-128) * factor/50 * qGreen(color2)/128;
+	          b += (b-128) * factor/50 * qBlue(color2)/128;
+	        }
+	        else {
+	          r += (r-128) * mod/128;
+	          g += (g-128) * mod/128;
+	          b += (b-128) * mod/128;
+	        }
+	      }
+	      
+	      if (r<0) r=0; if (r>255) r=255;
+	      if (g<0) g=0; if (g>255) g=255;
+	      if (b<0) b=0; if (b>255) b=255;
+	      a = qAlpha(*data1);
+	      *data1 = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+	  }
+	  else if (type == Saturation || type == HueShift) {
+	      clr.setRgb(color1);
+	      clr.hsv(&h, &s, &v);
+      	      mod = (channel == Red) ? qRed(color2) :
+		    (channel == Green) ? qGreen(color2) :
+	    	    (channel == Blue) ? qBlue(color2) :
+		    (channel == Gray) ? qGray(color2) : 0;
+	      mod = mod*factor/50;
+	      
+	      if (type == Saturation) {
+		  s -= s * mod/256;
+		  if (s<0) s=0; if (s>255) s=255;
+	      }
+	      else { // HueShift
+	        h += mod;
+		while(h<0) h+=360;
+		h %= 360;
+	      }
+	      
+	      clr.setHsv(h, s, v);
+	      a = qAlpha(*data1);
+	      *data1 = clr.rgb() | ((uint)(a & 0xff) << 24);
+	  }	
+	  data1++; data2++; data2b++; x++;
+	  if ( (x%x2) ==0) { data2 -= x2; data2b -= x2; }
+        }
+    }
+    return image;
+}
+
+
 
 //======================================================================
 //
@@ -870,6 +988,82 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
 
     return image;
 }
+
+// Not very efficient as we create a third big image...
+//
+QImage& KImageEffect::blend(QImage &image1, QImage &image2, 
+			    GradientType gt, int xf, int yf)
+{
+  QImage image3;
+
+  image3 = KImageEffect::unbalancedGradient(image1.size(), 
+				    QColor(0,0,0), QColor(255,255,255),
+				    gt, xf, yf, 0);
+
+  return blend(image1,image2,image3, Red); // Channel to use is arbitrary
+}
+
+// Blend image2 into image1, using an RBG channel of blendImage
+// 
+QImage& KImageEffect::blend(QImage &image1, QImage &image2, 
+			    QImage &blendImage, RGBComponent channel)
+{
+    int r, g, b;
+    int ind1, ind2, ind3;
+
+    unsigned int x1, x2, x3, y1, y2, y3;
+    unsigned int a;
+
+    register int x, y;
+
+    // for image1 and image2, we only handle depth 32
+    if (image1.depth()<32) image1 = image1.convertDepth(32);
+    if (image2.depth()<32) image2 = image2.convertDepth(32);
+
+    // for blendImage, we handle depth 8 and 32
+    if (blendImage.depth()<8) blendImage = blendImage.convertDepth(8);
+    
+    unsigned int *colorTable3 = (blendImage.depth()==8) ?
+				 blendImage.colorTable():0;
+
+    unsigned int *data1 =  (unsigned int *)image1.bits();
+    unsigned int *data2 =  (unsigned int *)image2.bits();
+    unsigned int *data3   =  (unsigned int *)blendImage.bits();
+    unsigned char *data3b =  (unsigned char *)blendImage.bits();
+    unsigned int color3;
+
+    x1 = image1.width();     y1 = image1.height();
+    x2 = image2.width();     y2 = image2.height();
+    x3 = blendImage.width(); y3 = blendImage.height();
+
+    for (y = 0; y < (int)y1; y++) {
+	ind1 = x1*y;
+	ind2 = x2*(y%y2);
+	ind3 = x3*(y%y3);
+
+	x=0;
+	while(x < (int)x1) {
+	  color3 = (colorTable3) ? colorTable3[data3b[ind3]] : data3[ind3];
+
+          a = (channel == Red) ? qRed(color3) :
+              (channel == Green) ? qGreen(color3) :
+	      (channel == Blue) ? qBlue(color3) : qGray(color3);
+
+	  r = (a*qRed(data1[ind1]) + (256-a)*qRed(data2[ind2]))/256;
+	  g = (a*qGreen(data1[ind1]) + (256-a)*qGreen(data2[ind2]))/256;
+	  b = (a*qBlue(data1[ind1]) + (256-a)*qBlue(data2[ind2]))/256;
+
+	  a = qAlpha(data1[ind1]);
+	  data1[ind1] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+	
+	  ind1++; ind2++; ind3++; x++;
+	  if ( (x%x2) ==0) ind2 -= x2;
+	  if ( (x%x3) ==0) ind3 -= x3;
+        }
+    }
+    return image1;
+}
+
 
 //======================================================================
 //

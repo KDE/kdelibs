@@ -40,10 +40,12 @@ public:
                         DiagonalGradient, CrossDiagonalGradient,
                         PyramidGradient, RectangleGradient,
                         PipeCrossGradient, EllipticGradient };
-    enum RGBComponent { Red, Green, Blue };
+    enum RGBComponent { Red, Green, Blue, Gray, All };
 
     enum Lighting {NorthLite, NWLite, WestLite, SWLite,
                    SouthLite, SELite, EastLite, NELite};
+
+    enum ModulationType { Intensity, Saturation, HueShift, Contrast };
 
     /**
      * Create a gradient from color a to color b of the specified type.
@@ -91,6 +93,34 @@ public:
     static QImage& blend(QImage &image, float initial_intensity,
                       const QColor &bgnd, GradientType eff,
                       bool anti_dir=false);
+
+    /**
+     * Blends an image into another one, using a gradient type
+     * for blending from one to another.
+     *
+     * @param image1 source1 and result of blending
+     * @param image2 source2 of blending
+     * @param gt gradient type for blending between source1 and source2
+     * @param xf x decay length for unbalanced gradient tpye
+     * @param yf y decay length for unbalanced gradient tpye
+     */
+    static QImage& blend(QImage &image1,QImage &image2,
+			 GradientType gt, int xf=100, int yf=100);
+
+    /**
+     * Blends an image into another one, using a color channel of a 
+     * third image for the decision of blending from one to another.
+     *
+     * @param image1 Source 1 and result of blending
+     * @param image2 Source 2 of blending
+     * @param blendImage If the gray value of of pixel is 0, the result
+     *               for this pixel is that of image1; for a gray value
+     *               of 1, the pixel of image2 is used; for a value
+     *               inbetween, a corresponding blending is used.
+     * @param channel The RBG channel to use for the blending decision.
+     */
+    static QImage& blend(QImage &image1, QImage &image2,
+			 QImage &blendImage, RGBComponent channel);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
@@ -149,6 +179,20 @@ public:
     static QImage& intensity(QImage &image, float percent);
 
     /**
+     * Modulate the image with a color channel of another image
+     *
+     * @param image The QImage to modulate and result.
+     * @param modImage The QImage to use for modulation.
+     * @param reverse Invert the meaning of image/modImage; result is image!
+     * @param type The modulation Type to use.
+     * @param factor The modulation amplitude; with 0 no effect [-200;200].
+     * @param channel The RBG channel of image2 to use for modulation.
+     * @return Returns the @ref #image, provided for convenience.
+     */
+    static QImage& modulate(QImage &image, QImage &modImage, bool reverse,
+		ModulationType type, int factor, RGBComponent channel);
+
+    /**
      * Converts an image to grayscale.
      *
      * @param image The QImage to process.
@@ -166,6 +210,7 @@ public:
      * @return Returns the @ref #image, provided for convenience.
      */
     static QImage& desaturate(QImage &image, float desat = 0.3);
+
     /**
      * Modifies the contrast of an image.
      * @param image The QImage to process.
