@@ -39,7 +39,7 @@ kdejava_LIBS = -lkdecore -lkdeui -lkimgio -lqt
 kio_FILES = *.h
 kio_LIBS = -lkdecore -lkdeui -ldcop -lqt
 
-kimgio_FILES = kimageio.h
+kimgio_FILES = *.h
 kimgio_LIBS = -lqt
 
 kformula_FILES = *.h
