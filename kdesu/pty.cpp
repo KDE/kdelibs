@@ -54,10 +54,12 @@ extern "C" int unlockpt(int fd);
 #endif
 
 #ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__
+#define ID __PRETTY_FUNCTION__ << ": "
 #else
-#define ID "PTY"
+#define ID "PTY: "
 #endif
+
+#define ERR strerror(errno)
 
 PTY::PTY()
 {
@@ -86,14 +88,16 @@ int PTY::getpt()
     // Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
 
     ptyfd = open("/dev/ptmx", O_RDWR);
-    if (ptyfd >= 0) {
+    if (ptyfd >= 0) 
+    {
 	ptyname = "/dev/ptmx";
 #ifdef HAVE_PTSNAME
 	ttyname = ::ptsname(ptyfd);
 	return ptyfd;
 #elif defined (TIOCGPTN)
 	int ptyno;
-	if (ioctl(ptyfd, TIOCGPTN, &ptyno) == 0) {
+	if (ioctl(ptyfd, TIOCGPTN, &ptyno) == 0) 
+	{
 	    ttyname.sprintf("/dev/pts/%d", ptyno);
 	    return ptyfd;
 	}
@@ -103,8 +107,10 @@ int PTY::getpt()
 
     // Try /dev/pty[p-e][0-f] (Linux w/o UNIX98 PTY's)
 
-    for (const char *c1 = "pqrstuvwxyzabcde"; *c1 != '\0'; c1++) {
-	for (const char *c2 = "0123456789abcdef"; *c2 != '\0'; c2++) {
+    for (const char *c1 = "pqrstuvwxyzabcde"; *c1 != '\0'; c1++) 
+    {
+	for (const char *c2 = "0123456789abcdef"; *c2 != '\0'; c2++) 
+	{
 	    ptyname.sprintf("/dev/pty%c%c", *c1, *c2);
 	    ttyname.sprintf("/dev/tty%c%c", *c1, *c2);
 	    if (access(ptyname, F_OK) < 0)
@@ -118,7 +124,8 @@ linux_out:
 	
     // Try /dev/pty%d (SCO, Unixware)
 
-    for (int i=0; i<256; i++) {
+    for (int i=0; i<256; i++) 
+    {
 	ptyname.sprintf("/dev/ptyp%d", i);
 	ttyname.sprintf("/dev/ttyp%d", i);
 	if (access(ptyname, F_OK) < 0)
@@ -132,7 +139,7 @@ linux_out:
     // Other systems ??
 
     ptyfd = -1;
-    kDebugError("%s: Unknown system or all methods failed", ID);
+    kdDebug(900) << ID << "Unknown system or all methods failed.\n";
     return -1;
 
 #endif // HAVE_GETPT
@@ -156,8 +163,9 @@ int PTY::grantpt()
 	return 0;
 
     // Use konsole_grantpty:
-    if (KStandardDirs::findExe("konsole_grantpty").isEmpty()) {
-	kDebugError("%s: konsole_grantpty not found", ID);
+    if (KStandardDirs::findExe("konsole_grantpty").isEmpty()) 
+    {
+	kdError(900) << ID << "konsole_grantpty not found.\n";
 	return -1;
     }
 
@@ -165,26 +173,29 @@ int PTY::grantpt()
     const int pty_fileno = 3;
 
     pid_t pid;
-    if ((pid = fork()) == -1) {
-	kDebugError("%s: fork(): %m", ID);
+    if ((pid = fork()) == -1) 
+    {
+	kdError(900) << ID << "fork(): " << ERR << "\n";
 	return -1;
     }
 
-    if (pid) {
+    if (pid) 
+    {
 	// Parent: wait for child
 	int ret;
 	waitpid(pid, &ret, 0);
     	if (WIFEXITED(ret) && !WEXITSTATUS(ret))
 	    return 0;
-	kDebugError("konsole_grantpty returned with error: %d", 
-		WEXITSTATUS(ret));
+	kdError(900) << ID << "konsole_grantpty returned with error: " 
+		     << WEXITSTATUS(ret) << "\n";
 	return -1;
-    } else {
+    } else 
+    {
 	// Child: exec konsole_grantpty
 	if (ptyfd != pty_fileno && dup2(ptyfd, pty_fileno) < 0) 
 	    _exit(1);
 	execlp("konsole_grantpty", "konsole_grantpty", "--grant", NULL);
-	kDebugError("%s: exec(): %m", ID);
+	kdError(900) << ID << "exec(): " << ERR << "\n";
 	_exit(1);
     }
 
@@ -233,7 +244,7 @@ int PTY::unlockpt()
 QCString PTY::ptsname()
 {
     if (ptyfd < 0)
-	return QCString();
+	return 0;
 
     return ttyname;
 }

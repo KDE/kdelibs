@@ -55,11 +55,12 @@
 #include "kcookie.h"
 
 #ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__
+#define ID __PRETTY_FUNCTION__ << ": "
 #else
-#define ID "PtyProcess"
+#define ID "PtyProcess: "
 #endif
 
+#define ERR strerror(errno)
 
 PtyProcess::PtyProcess()
 {
@@ -76,8 +77,9 @@ int PtyProcess::init()
     m_Fd = m_pPTY->getpt();
     if (m_Fd < 0)
 	return -1;
-    if ((m_pPTY->grantpt() < 0) || (m_pPTY->unlockpt() < 0)) {
-	kDebugWarning("%s: Master setup failed.", ID);
+    if ((m_pPTY->grantpt() < 0) || (m_pPTY->unlockpt() < 0)) 
+    {
+	kdError(900) << ID << "Master setup failed.\n";
 	m_Fd = -1;
 	return -1;
     }
@@ -104,12 +106,15 @@ QCString PtyProcess::readLine(bool block)
     int pos;
     QCString ret;
 
-    if (!m_Inbuf.isEmpty()) {
+    if (!m_Inbuf.isEmpty()) 
+    {
 	pos = m_Inbuf.find('\n');
-	if (pos == -1) {
+	if (pos == -1) 
+	{
 	    ret = m_Inbuf;
 	    m_Inbuf.resize(0);
-	} else {
+	} else 
+	{
 	    ret = m_Inbuf.left(pos);
 	    m_Inbuf = m_Inbuf.mid(pos+1);
 	}
@@ -117,24 +122,28 @@ QCString PtyProcess::readLine(bool block)
     }
 
     int flags = fcntl(m_Fd, F_GETFL);
-    if (flags < 0) {
-	kDebugPError("%s: fcntl(F_GETFL)", ID);
+    if (flags < 0) 
+    {
+	kdError(900) << ID << "fcntl(F_GETFL): " << ERR << "\n";
 	return ret;
     }
     if (block)
 	flags &= ~O_NONBLOCK;
     else
 	flags |= O_NONBLOCK;
-    if (fcntl(m_Fd, F_SETFL, flags) < 0) {
-	kDebugPError("%s: fcntl(F_SETFL)", ID);
+    if (fcntl(m_Fd, F_SETFL, flags) < 0) 
+    {
+	kdError(900) << ID << "fcntl(F_SETFL): " << ERR << "\n";
 	return ret;
     }
 
     int nbytes;
     char buf[256];
-    while (1) {
+    while (1) 
+    {
 	nbytes = read(m_Fd, buf, 255);
-	if (nbytes == -1) {
+	if (nbytes == -1) 
+	{
 	    if (errno == EINTR)
 		continue;
 	    else break;
@@ -146,10 +155,12 @@ QCString PtyProcess::readLine(bool block)
 	m_Inbuf += buf;
 
 	pos = m_Inbuf.find('\n');
-	if (pos == -1) {
+	if (pos == -1) 
+	{
 	    ret = m_Inbuf;
 	    m_Inbuf.resize(0);
-	} else {
+	} else 
+	{
 	    ret = m_Inbuf.left(pos);
 	    m_Inbuf = m_Inbuf.mid(pos+1);
 	}
@@ -178,18 +189,21 @@ int PtyProcess::exec(QCString command, QCStringList args)
 
     // Open the pty slave before forking. See SetupTTY()
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) {
-        kDebugError("%s: Could not open slave pty", ID);
+    if (slave < 0) 
+    {
+        kdError(900) << ID << "Could not open slave pty.\n";
         return -1;
     } 
 
-    if ((m_Pid = fork()) == -1) {
-        kDebugPError("%s: fork()", ID);
+    if ((m_Pid = fork()) == -1) 
+    {
+        kdError(900) << ID << "fork(): " << ERR << "\n";
         return -1;
     } 
 
     // Parent
-    if (m_Pid) {
+    if (m_Pid) 
+    {
 	close(slave);
 	return 0;
     }
@@ -203,10 +217,12 @@ int PtyProcess::exec(QCString command, QCStringList args)
     QCString path;
     if (command.contains('/'))
 	path = command;
-    else {
+    else 
+    {
 	QString file = KStandardDirs::findExe(command);
-	if (file.isEmpty()) {
-	    kDebugError("%s: %s not found!", ID, command.data());
+	if (file.isEmpty()) 
+	{
+	    kdError(900) << ID << command << " not found\n"; 
 	    _exit(1);
 	} 
 	path = QFile::encodeName(file);
@@ -221,7 +237,7 @@ int PtyProcess::exec(QCString command, QCStringList args)
     argp[i] = 0L;
 	
     execv(path, (char * const *)argp);
-    kDebugPError("%s: execv(\"%s\")", ID, path.data());
+    kdError(900) << ID << "execv(\"" << path << "\"): " << ERR << "\n";
     _exit(1);
 }
 
@@ -239,21 +255,25 @@ int PtyProcess::exec(QCString command, QCStringList args)
 int PtyProcess::WaitSlave()
 {
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) {
-	kDebugError("%s: Could not open slave tty", ID);
+    if (slave < 0) 
+    {
+	kdError(900) << ID << "Could not open slave tty.\n";
 	return -1;
     }
 
     struct termios tio;
     struct timeval tv;
-    while (1) {
-	if (tcgetattr(slave, &tio) < 0) {
-	    kDebugPError("%s: tcgetattr()", ID);
+    while (1) 
+    {
+	if (tcgetattr(slave, &tio) < 0) 
+	{
+	    kdError(900) << ID << "tcgetattr(): " << ERR << "\n";
 	    close(slave);
 	    return -1;
 	}
-	if (tio.c_lflag & ECHO) {
-	    kDebugInfo("%s: Echo mode still on.", ID);
+	if (tio.c_lflag & ECHO) 
+	{
+	    kdDebug(900) << ID << "Echo mode still on.\n";
 	    // sleep 1/10 sec
 	    tv.tv_sec = 0; tv.tv_usec = 100000;
 	    select(slave, 0L, 0L, 0L, &tv);
@@ -269,23 +289,27 @@ int PtyProcess::WaitSlave()
 int PtyProcess::enableLocalEcho(bool enable)
 {
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) {
-	kDebugError("%s: Could not open slave tty.", ID);
+    if (slave < 0) 
+    {
+	kdError(900) << ID << "Could not open slave tty.\n";
 	return -1;
     }
     struct termios tio;
-    if (tcgetattr(slave, &tio) < 0) {
-	kDebugPError("%s: tcgetattr()", ID);
+    if (tcgetattr(slave, &tio) < 0) 
+    {
+	kdError(900) << ID << "tcgetattr(): " << ERR << "\n";
 	close(slave); return -1;
     }
     if (enable)
 	tio.c_lflag |= ECHO;
     else
 	tio.c_lflag &= ~ECHO;
-    if (tcsetattr(slave, TCSANOW, &tio) < 0) {
-	kDebugPError("%s: tcsetattr()", ID);
+    if (tcsetattr(slave, TCSANOW, &tio) < 0) 
+    {
+	kdError(900) << ID << "tcsetattr(): " << ERR << "\n";
 	close(slave); return -1;
     }
+    tcdrain(slave);
     close(slave);
     return 0;
 }
@@ -307,21 +331,26 @@ int PtyProcess::waitForChild()
     fd_set fds;
     FD_ZERO(&fds);
 
-    while (1) {
+    while (1) 
+    {
 	tv.tv_sec = 1; tv.tv_usec = 0;
 	FD_SET(m_Fd, &fds);
 	ret = select(m_Fd+1, &fds, 0L, 0L, &tv);
-	if (ret == -1) {
+	if (ret == -1) 
+	{
 	    if (errno == EINTR) continue;
-	    else {
-		kDebugPError("%s: select()", ID);
+	    else 
+	    {
+		kdError(900) << ID << "select(): " << ERR << "\n";
 		return -1;
 	    }
 	}
 
-	if (ret) {
+	if (ret) 
+	{
 	    QCString line = readLine(false);
-	    while (!line.isNull()) {
+	    while (!line.isNull()) 
+	    {
 		if (!m_Exit.isEmpty() && !strnicmp(line, m_Exit, m_Exit.length()))
 		    kill(m_Pid, SIGTERM);
 		if (m_bTerminal) {
@@ -334,11 +363,13 @@ int PtyProcess::waitForChild()
 
 	// Check if the process is still alive
 	ret = waitpid(m_Pid, &state, WNOHANG);
-	if (ret < 0) {
-	    kDebugPError("%s: waitpid()", ID);
+	if (ret < 0) 
+	{
+	    kdError(900) << ID << "waitpid(): " << ERR << "\n";
 	    break;
 	}
-	if (ret == m_Pid) {
+	if (ret == m_Pid) 
+	{
 	    if (WIFEXITED(state))
 		retval = WEXITSTATUS(state);
 	    break;
@@ -373,8 +404,9 @@ int PtyProcess::SetupTTY(int fd)
 
     // Open slave. This will make it our controlling terminal
     int slave = open(m_TTY, O_RDWR);
-    if (slave < 0) {
-	kDebugPError("%s: Could not open slave side", ID);
+    if (slave < 0) 
+    {
+	kdError(900) << ID << "Could not open slave side: " << ERR << "\n";
 	return -1;
     }
     close(fd);
@@ -396,13 +428,15 @@ int PtyProcess::SetupTTY(int fd)
     // Disable OPOST processing. Otherwise, '\n' are (on Linux at least)
     // translated to '\r\n'.
     struct termios tio;
-    if (tcgetattr(0, &tio) < 0) {
-	kDebugPError("%s: tcgetattr()", ID);
+    if (tcgetattr(0, &tio) < 0) 
+    {
+	kdError(900) << ID << "tcgetattr(): " << ERR << "\n";
 	return -1;
     }
     tio.c_oflag &= ~OPOST;
-    if (tcsetattr(0, TCSANOW, &tio) < 0) {
-	kDebugPError("%s: tcsetattr()", ID);
+    if (tcsetattr(0, TCSANOW, &tio) < 0) 
+    {
+	kdError(900) << ID << "tcsetattr(): " << ERR << "\n";
 	return -1;
     }
 
