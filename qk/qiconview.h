@@ -96,6 +96,11 @@ class Q_EXPORT QIconDrag : public QDragObject
     friend class QIconViewPrivate;
 
 private:
+#if !defined(_CC_EDG_)
+    struct Item;
+#endif
+    friend struct Item;
+
     struct IconDragItem
     {
 	IconDragItem();
@@ -122,8 +127,6 @@ private:
 	bool operator== ( const QIconDrag::Item& ) const;
 #endif
     };
-
-    friend struct Item;
 
 public:
     QIconDrag( QWidget * dragSource, const char* name = 0 );
