@@ -179,29 +179,12 @@ KDockWidgetHeaderDrag::KDockWidgetHeaderDrag( KDockWidgetAbstractHeader* parent,
 
 void KDockWidgetHeaderDrag::paintEvent( QPaintEvent* )
 {
-  QPixmap drawBuffer( width(), height() );
   QPainter paint;
 
-  paint.begin( &drawBuffer );
-  paint.fillRect( drawBuffer.rect(), QBrush(colorGroup().brush(QColorGroup::Background)) );
-
-  paint.setPen( colorGroup().light() );
-  paint.drawLine( 1, 3, 1, 2 );
-  paint.drawLine( 1, 2, width(), 2 );
-
-  paint.setPen( colorGroup().mid() );
-  paint.drawLine( 1, 4, width(), 4 );
-  paint.drawLine( width(), 4, width(), 3 );
-
-  paint.setPen( colorGroup().light() );
-  paint.drawLine( 1, 6, 1, 5 );
-  paint.drawLine( 1, 5, width(), 5 );
-
-  paint.setPen( colorGroup().mid() );
-  paint.drawLine( 1, 7, width(), 7 );
-  paint.drawLine( width(), 7, width(), 6 );
-
-  bitBlt( this,0,0,&drawBuffer,0,0,width(),height() );
+  paint.begin( this );
+ 
+  style().drawPrimitive (QStyle::PE_DockWindowHandle, &paint, QRect(0,0,width(), height()), colorGroup());
+  
   paint.end();
 }
 /*************************************************************************/
