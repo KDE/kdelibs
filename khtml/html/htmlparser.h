@@ -73,6 +73,8 @@ public:
 
     bool parsingBody() { return inBody; }
 
+    bool skipMode() { return (discard_until != 0); }
+
     DOM::HTMLDocumentImpl *doc() { return document; }
 
 protected:
@@ -129,7 +131,7 @@ protected:
      */
     DOM::NodeImpl *isindex;
     DOM::NodeImpl *handleIsindex( khtml::Token *t );
-    
+
     /*
      * inserts the stupid isIndex element.
      */
@@ -139,7 +141,7 @@ protected:
      * removes the body element with it's contents. Needed for broken stuff as <html><center><frameset>
      */
     void removeBody();
-    
+
     bool inBody;
     // in case we haven't found an explicit body element up to now, this is true.
     // needed for broken HTML as: <center><frameset>... as the center element creates an implicit body

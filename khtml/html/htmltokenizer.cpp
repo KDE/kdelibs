@@ -264,7 +264,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 
         char ch = src[0].latin1();
-        if ( ((script && tquote == NoQuote) || !script) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( (!script || tquote == NoQuote) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -322,7 +322,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     src = DOMStringIt();
                 }
             }
-            else if (view && doScriptExec && javascript) {
+            else if (view && doScriptExec && javascript && !parser->skipMode()) {
                 executingScript = true;
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
                 executingScript = false;
