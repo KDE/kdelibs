@@ -771,6 +771,7 @@ CSSImageValueImpl::~CSSImageValueImpl()
 FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     : CSSPrimitiveValueImpl( DOMString(string), CSSPrimitiveValue::CSS_STRING)
 {
+    // standard faces as serif, cursive etc. are handled by the parser.
     static const QRegExp parenReg(" \\(.*\\)$");
     static const QRegExp braceReg(" \\[.*\\]$");
 
@@ -782,38 +783,28 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     // remove [Xft] qualifiers
     face = face.replace(braceReg, "");
     //kdDebug(0) << "searching for face '" << face << "'" << endl;
-    if(face == "serif" ||
-       face == "sans-serif" ||
-       face == "cursive" ||
-       face == "fantasy" ||
-       face == "monospace" ||
-       face == "konq_default") {
-	parsedFontName = face;
-    } else if (parsedFontName == "konq_body") {
-	_isKonqBody = true;
-    } else {
-	int pos = available.find( face, 0, false );
-	if( pos == -1 ) {
-	    QString str = face;
-	    int p = face.find(' ');
-	    // Arial Blk --> Arial
-	    // MS Sans Serif --> Sans Serif
-	    if ( p != -1 ) {
-		if(p > 0 && (int)str.length() - p > p + 1)
-		    str = str.mid( p+1 );
-		else
-		    str.truncate( p );
-		pos = available.find( str, 0, false);
-	    }
-	}
 
-	if ( pos != -1 ) {
-	    int pos1 = available.findRev( ',', pos ) + 1;
-	    pos = available.find( ',', pos );
-	    if ( pos == -1 )
-		pos = available.length();
-	    parsedFontName = available.mid( pos1, pos - pos1 );
+    int pos = available.find( face, 0, false );
+    if( pos == -1 ) {
+	QString str = face;
+	int p = face.find(' ');
+	// Arial Blk --> Arial
+	// MS Sans Serif --> Sans Serif
+	if ( p != -1 ) {
+	    if(p > 0 && (int)str.length() - p > p + 1)
+		str = str.mid( p+1 );
+	    else
+		str.truncate( p );
+	    pos = available.find( str, 0, false);
 	}
+    }
+
+    if ( pos != -1 ) {
+	int pos1 = available.findRev( ',', pos ) + 1;
+	pos = available.find( ',', pos );
+	if ( pos == -1 )
+	    pos = available.length();
+	parsedFontName = available.mid( pos1, pos - pos1 );
     }
 }
 

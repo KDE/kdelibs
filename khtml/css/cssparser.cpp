@@ -21,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// #define CSS_DEBUG
-// #define TOKEN_DEBUG
+#define CSS_DEBUG
+#define TOKEN_DEBUG
 #define YYDEBUG 0
 
 #include <kdebug.h>
@@ -1432,7 +1432,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 // 			<< endl;
 	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
 	    id = value->iValue;
-	    if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_DEFAULT )
+	    if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_BODY )
 		list->append( new CSSPrimitiveValueImpl( id ) );
 	    else
 		break;

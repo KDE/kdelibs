@@ -67,7 +67,7 @@ DOM::DOMString getValueName(unsigned short id);
 #define CSS_VAL_CURSIVE 56
 #define CSS_VAL_FANTASY 57
 #define CSS_VAL_MONOSPACE 58
-#define CSS_VAL__KONQ_DEFAULT 59
+#define CSS_VAL__KONQ_BODY 59
 #define CSS_VAL_TRANSPARENT 60
 #define CSS_VAL_REPEAT 61
 #define CSS_VAL_REPEAT_X 62

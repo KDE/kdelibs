@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -44,7 +44,7 @@ void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
     {
         DOMString v = attr->value();
         if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "-konq-center";
+            v = "\\2d konq-center";
         addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }

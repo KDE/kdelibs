@@ -96,7 +96,7 @@ sans-serif
 cursive
 fantasy
 monospace
--konq-default
+-konq-body
 #
 #
 # CSS_PROP_BACKGROUND_COLOR:

@@ -4,7 +4,7 @@
  * Copyright (C) 1997 Martin Jones (mjones@kde.org)
  *           (C) 1997 Torben Weis (weis@kde.org)
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
- *           (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -68,8 +68,8 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
     if ( getDocument()->parseMode() < DocumentImpl::Transitional ) {
         addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
-        addCSSProperty( CSS_PROP_COLOR, "-konq-text" );
-        addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_body" );
+        addCSSProperty( CSS_PROP_COLOR, "\\2d konq-text" );
+        addCSSProperty( CSS_PROP_FONT_FAMILY, "\\2d konq-body" );
     }
 }
 
@@ -764,7 +764,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         if (attr->val()) {
             if ( strcasecmp(attr->value(), "middle" ) == 0 ||
                 strcasecmp(attr->value(), "center" ) == 0 )
-                addCSSProperty( CSS_PROP_TEXT_ALIGN, "-konq-center" );
+                addCSSProperty( CSS_PROP_TEXT_ALIGN, "\\2d konq-center" );
             else
                 addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
         }

@@ -754,7 +754,7 @@ term:
   | STRING maybe_space { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
-      $$.iValue = getValueID( str.latin1(), str.length() );
+      $$.iValue = getValueID( str.lower().latin1(), str.length() );
       $$.unit = CSSPrimitiveValue::CSS_IDENT;
       if ( !$$.iValue ) {
 	  $$.string = $1;
