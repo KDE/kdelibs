@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+Comment=CD Audio
+MimeType=application/x-cda
+Icon=cdaudio_unmount
+Patterns=*.cda;*.CDA
