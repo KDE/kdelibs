@@ -11,7 +11,7 @@
 #include <kapp.h>
 
 KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wflags,
-				const char *_head, const char *_user, const char *_pass )
+			const QString& _head, const QString& _user, const QString& _pass )
    : QDialog(parent, name, modal, wflags)
 {
    QVBoxLayout *layout = new QVBoxLayout( this );
@@ -98,7 +98,7 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    resize( sizeHint() );
 }
 
-bool open_PassDlg( const char *_head, string& _user, string& _pass )
+bool open_PassDlg( const QString& _head, QString& _user, QString& _pass )
 {
   if ( kapp == 0L )
   {
@@ -107,7 +107,7 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass )
     (void)new KApplication( b, a );
   }
   
-  KIOPassDlg dlg( 0L, 0L, true, 0, _head, _user.c_str(), _pass.c_str() );
+  KIOPassDlg dlg( 0L, 0L, true, 0, _head, _user, _pass );
   if ( dlg.exec() )
   {
     _user = dlg.user();

@@ -23,7 +23,7 @@ libkio_la_LDFLAGS = -version-info 3:0
 
 libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_filter.cc kio_dlg.cc kio_skip_dlg.cc kio_interface.cc \
-	kio_pass_dlg.cc kio_manager.cc kautomount.cc \
+	kio_pass_dlg.cc kautomount.cc \
 	kio_simpleprogress_dlg.cc kio_littleprogress_dlg.cc kio_listprogress_dlg.cc \
 	krun.cc kdirwatch.cc kmimemagic.cc \
 	kservices.cc kmimetypes.cc kio_cache.cc \
@@ -39,18 +39,15 @@ libkio_la_METASOURCES = kautomount.moc kdirwatch.moc kio_cache.moc \
 
 include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \
-	kio_pass_dlg.h kio_manager.h kautomount.h \
+	kio_pass_dlg.h kautomount.h \
 	kio_simpleprogress_dlg.h kio_littleprogress_dlg.h kio_listprogress_dlg.h \
 	krun.h kdirwatch.h kmimemagic.h kservices.h kmimetypes.h \
 	kio_cache.h kpixmapcache.h kuserprofile.h \
 	kio_error.h kregfactories.h kio_job.h kregistry.h \
 	kio_paste.h kio_openwith.h kbookmark.h kfmpaths.h kio_propsdlg.h
 
-kioconfig_DATA = kio.kfg 
-kioconfigdir = $(kde_datadir)/kio
-
 magic_DATA = magic
 magicdir = $(kde_mimedir)
 
-EXTRA_DIST = $(kioconfig_DATA) $(magic_DATA)
+EXTRA_DIST = $(magic_DATA)
 

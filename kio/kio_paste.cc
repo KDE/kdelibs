@@ -32,8 +32,7 @@ bool isClipboardEmpty()
 
 void pasteClipboard( const char *_dest_url )
 {
-  KURLList lst;
-  if ( !KURL::split( _dest_url, lst ) )
+  if ( KURL::split( _dest_url ).isEmpty() )
   {
     kioErrorDialog( ERR_MALFORMED_URL, _dest_url );
     return;

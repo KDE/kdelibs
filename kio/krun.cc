@@ -4,12 +4,12 @@
 #include "kmimemagic.h"
 #include "kio_job.h"
 #include "kio_error.h"
-#include "kio_manager.h"
 
 #include <qmessagebox.h>
 
 #include <kurl.h>
 #include <kapp.h>
+#include <kprotocolmanager.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -346,9 +346,7 @@ void KRun::init()
   }
 
   // Let's see whether it is a directory
-  KURLList lst;
-  KURL::split( m_strURL, lst );
-  if ( !ProtocolManager::self()->supportsListing( lst.getLast()->protocol() ) )
+  if ( !KProtocolManager::self().supportsListing( url.protocol() ) )
   {
     kdebug( KDEBUG_INFO, 7010, "##### NOT A DIRECTORY" );
     // No support for listing => we can scan the file
@@ -496,11 +494,12 @@ void KRun::slotPreData( int, const char *_data, int _len )
 void KRun::foundMimeType( const char *_type )
 {
   kdebug( KDEBUG_INFO, 7010, "Resulting mime type is %s", _type );
-  
+
+  // Automatically unzip stuff
   if ( strcmp( _type, "application/x-gzip" ) == 0 )
   {
-    KURLList lst;
-    if ( !KURL::split( m_strURL, lst ) )
+    KURL::List lst = KURL::split( m_strURL );
+    if ( lst.isEmpty() )
     {
       QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
@@ -509,22 +508,17 @@ void KRun::foundMimeType( const char *_type )
       return;
     }
 
-    QString tmp = lst.getLast()->ref();
-    QString ref;
-    if ( tmp.isEmpty() )
-      ref = "gzip:/decompress";
-    else
-    {
-      ref = "gzip:/decompress#";
-      ref += tmp;
-    }
-    lst.getLast()->setRef( ref );
+    lst.prepend( KURL( "gzip:/decompress" ) );
+    // Move the HTML style reference to the leftmost URL
+    KURL::List::Iterator it = lst.begin();
+    ++it;
+    lst.begin()->setRef( it->ref() );
+    it->setRef( QString::null );
     
     // Create the new URL
-    KURL::join( lst, tmp );
-    m_strURL = tmp;
+    m_strURL = KURL::join( lst );
     
-    kdebug( KDEBUG_INFO, 7010, "Now trying with %s", m_strURL.data() );
+    kdebug( KDEBUG_INFO, 7010, "Now trying with %s", m_strURL.ascii() );
     
     killJob();
 

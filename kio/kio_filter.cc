@@ -50,8 +50,7 @@ Filter::Filter( const char *_cmd )
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execv( argv[0], argv );
-    cerr << "Slave: exec failed...!" << endl;
-    cerr << "Have you installed kdebase?" << endl;
+    fprintf( stderr, "Filter Slave: exec failed for %s ...!\n", _cmd );
     _exit( 0 );
   }
   close( recv_in );

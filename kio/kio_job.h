@@ -217,11 +217,6 @@ public:
    */
   virtual void kill( bool quiet = false );
   
-  /**
-   * Call this before you use any other function of this class and before you create
-   * an instance of this class.
-   */
-  static void initStatic();
   static KIOJob* find( int id );
 
   static QString findDeviceMountPoint( const char *device, const char *file = "/etc/mtab" );
@@ -410,6 +405,8 @@ protected:
   QDialog* createDialog( const char *_text );
   
   void createGUI();
+
+  static void initStatic();
 
   bool m_bAutoDelete;
 

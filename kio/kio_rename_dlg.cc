@@ -1,5 +1,4 @@
 #include "kio_rename_dlg.h"
-#include "kio_manager.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -9,7 +8,7 @@
 
 #include <kapp.h>
 #include <kurl.h>
-
+#include <kprotocolmanager.h>
 
 KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
 			   RenameDlg_Mode _mode, bool _modal ) :
@@ -284,7 +283,7 @@ void KIORenameDlg::b7Pressed()
     emit result( this, 7, src.c_str(), dest.c_str() );
 }
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new )
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, QString& _new )
 {
   if ( kapp == 0L )
   {
@@ -300,12 +299,12 @@ RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_
   return (RenameDlg_Result)i;
 }
 
-unsigned long getOffset( string dest ) {
+unsigned long getOffset( QString dest ) {
 
-  if ( ProtocolManager::self()->getMarkPartial() )
+  if ( KProtocolManager::self().getMarkPartial() )
     dest += ".part";
 
-  KURL d( dest.c_str() );
+  KURL d( dest );
   QFileInfo info;
   info.setFile( d.path() );
 

@@ -538,14 +538,9 @@ bool KIOCache::isCacheable(const QString &_url)
 QString KIOCache::trimURL(const QString &url)
 {
   // Delete the reference of the right most (sub)protocol.
-  KURLList lst;
-  assert( KURL::split( url, lst ) );
-  lst.getLast()->setRef( "" );
-  QString s1;
-  KURL::join( lst, s1 );
-
-  QString s2 = s1;  
-  return s2;
+  KURL u( url );
+  u.setHTMLRef( QString::null );
+  return u.url();
 }
 
 QDateTime KIOCache::defaultExpire(const KIOCacheEntry *entry)

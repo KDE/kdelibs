@@ -7,6 +7,7 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
+#include <qstring.h>
 
 #include <string>
 
@@ -46,9 +47,9 @@ signals:
   void result( QWidget* _widget, int _button, const char* _src, const char* _data );
 };
 
-RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, string& _new );
+RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_Mode _mode, QString& _new );
 
-unsigned long getOffset( string dest );
+unsigned long getOffset( QString dest );
 
 
 #endif

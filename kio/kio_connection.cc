@@ -167,8 +167,8 @@ Slave::Slave( const char *_cmd ) : Connection()
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execv( argv[0], argv );
-    cerr << "Slave: exec failed...!" << endl;
-    cerr << "Have you installed kdebase?" << endl;
+    cerr << "Slave: exec failed for " << _cmd << endl;
+    cerr << "PATH=" << (const char*)getenv("PATH") << endl;
     _exit( 0 );
   }
   close( recv_in );
