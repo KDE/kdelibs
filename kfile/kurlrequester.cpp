@@ -89,14 +89,7 @@ void KURLRequester::init()
 
     myCompletion = new KURLCompletion();
     
-    connect( myEdit, SIGNAL( urlCompletion_() ),
-	     myCompletion, SLOT( make_urlCompletion_() ) );
-    connect( myEdit, SIGNAL( rotation() ),
-	     myCompletion, SLOT( make_rotation() ) );
-    connect( myEdit, SIGNAL( textChanged( const QString& ) ),
-	     myCompletion, SLOT( myEdited( const QString& ) ) );
-    connect( myCompletion, SIGNAL( setText( const QString& ) ),
-	     myEdit, SLOT( setText( const QString& ) ) );
+	myEdit->setCompletionObject( myCompletion );
 
     KAccel *accel = new KAccel( this );
     accel->connectItem( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
