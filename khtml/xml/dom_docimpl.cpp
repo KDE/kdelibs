@@ -1843,8 +1843,6 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 oldFocusNode->setActive(false);
 
             oldFocusNode->setFocus(false);
-	    if( oldFocusNode->renderer() )
-		 oldFocusNode->renderer()->repaint(true); // erase previous outline immediately
 	    oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
 	    oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
             if ((oldFocusNode == this) && oldFocusNode->hasOneRef()) {
