@@ -206,8 +206,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     // These have to match the order in kicontheme.h
     const char *groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
     KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs(config, "dummy");
-    config->setGroup("General");
+    KConfigGroupSaver cs(config, "General");
     d->alphaBlending=config->readBoolEntry( "alphaBlending", false);
 
     // loading config and default sizes
