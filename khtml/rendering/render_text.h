@@ -41,7 +41,7 @@ class TextSlave
 {
 public:
     TextSlave(int _x, int _y, QChar *text, int _len,
-              int height, int baseline, int width, bool _deleteText = false)
+              int height, int baseline, int width, bool _deleteText = false, bool _firstLine = false)
     {
         x = _x;
         y = _y;
@@ -52,6 +52,7 @@ public:
         m_baseline = baseline;
         m_width = width;
         deleteText = _deleteText;
+        firstLine = _firstLine;
     }
     ~TextSlave();
     void print( QPainter *p, int _tx, int _ty);
@@ -86,6 +87,7 @@ public:
     // this is needed for right to left text. In this case, m_text will point to a QChar array which
     // holds the already reversed string. The slave has to delete this string by itself.
     bool deleteText;
+    bool firstLine;
 };
 
 class RenderText : public RenderObject
@@ -117,7 +119,7 @@ public:
     virtual unsigned int length() const { return str->l; }
     // no need for this to be virtual, however length needs to be!
     inline QChar *text() const { return str->s; }
-    virtual void position(int x, int y, int from, int len, int width, bool reverse);
+    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
     virtual unsigned int width( int from, int len) const;
 
     virtual int height() const;

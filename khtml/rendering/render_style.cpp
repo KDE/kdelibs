@@ -121,7 +121,7 @@ RenderStyle::setBitDefaults()
 
 RenderStyle::RenderStyle()
 {
-    counter++;
+//    counter++;
     if (!_default)
 	_default = new RenderStyle(true);
 
@@ -134,7 +134,11 @@ RenderStyle::RenderStyle()
 
     setBitDefaults();
 
+    _styleType=NOPSEUDO;
+    pseudoStyle = 0;
+                
     _display = INLINE;
+        
 }
 
 RenderStyle::RenderStyle(bool)
@@ -147,11 +151,18 @@ RenderStyle::RenderStyle(bool)
 
     inherited.init();
     inherited.access()->setDefaultValues();		
+    
+    _styleType=NOPSEUDO;
+    pseudoStyle = 0;
+        
 }
 
 RenderStyle::RenderStyle(const RenderStyle& other)
 {
-    counter++;
+    _styleType=NOPSEUDO;
+    pseudoStyle=0;
+        
+//    counter++;
     box = other.box;
     visual = other.visual;
     background = other.background;
@@ -188,7 +199,10 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
 RenderStyle::RenderStyle(const RenderStyle* inheritParent)
 {
-    counter++;
+    _styleType=NOPSEUDO;
+    pseudoStyle = 0;
+            
+//    counter++;
     box = _default->box;
     visual = _default->visual;
     surround = _default->surround;
@@ -221,7 +235,14 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
 
 RenderStyle::~RenderStyle()
 {
-    counter--;
+    RenderStyle *ps = pseudoStyle;
+    RenderStyle *prev = 0;
+    
+    while (ps) {        
+        prev = ps;
+        ps = ps->pseudoStyle;
+        delete prev;
+    }
 }
 
 bool RenderStyle::operator==(const RenderStyle& other) const
@@ -236,53 +257,60 @@ bool RenderStyle::operator==(const RenderStyle& other) const
         _display == other._display;
 }
 
-void RenderStyle::mergeData(RenderStyle* other)
-{
-    if ( box.get()!=other->box.get() &&
-    	*box.get() == *other->box.get()) {
-    	box=other->box;
-//	kdDebug( 6040 ) << "STYLE box merge " << endl;
-	}
-    if (visual.get()!=other->visual.get() &&
-    	*visual.get() == *other->visual.get()) {
-    	visual=other->visual;
-//	kdDebug( 6040 ) << "STYLE visual merge " << endl;
-	}
-    if (background.get()!=other->background.get() &&
-     	*background.get() == *other->background.get()) {
-    	background=other->background;
-//	kdDebug( 6040 ) << "STYLE bg merge " << endl;
-	}
-    if (surround.get()!=other->surround.get() &&
-    	*surround.get() == *other->surround.get()) {
-    	surround=other->surround;
-//	kdDebug( 6040 ) << "STYLE surround merge " << endl;
-	}
-    if (inherited.get()!=other->inherited.get() &&
-    	*inherited.get() == *other->inherited.get()) {
-    	inherited=other->inherited;
-//	kdDebug( 6040 ) << "STYLE text merge " << endl;
-	}
-
+RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
+{    
+    RenderStyle *ps = pseudoStyle;
+    
+    while (ps) {        
+        if (ps->_styleType==pid) return ps;
+        ps = ps->pseudoStyle;
+    }
+    
+    return 0;       
 }
 
-RenderStyle*
-RenderStyle::inheritFrom(RenderStyle* from)
+RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
 {
-    if(!from) return this;
-    inherited = from->inherited;   
+    RenderStyle *ps = getPseudoStyle(pid);
 
-    return this;
+    if (!ps)
+    {            
+        ps = new RenderStyle(this);
+        ps->_styleType = pid;
+        ps->pseudoStyle = pseudoStyle;
+
+        pseudoStyle = ps;
+    }
+    
+    return ps;
 }
+
+void RenderStyle::removePseudoStyle(PseudoId pid)
+{
+    RenderStyle *ps = pseudoStyle;
+    RenderStyle *prev = this;
+    
+    while (ps) {        
+        if (ps->_styleType==pid) {
+            prev->pseudoStyle = ps->pseudoStyle;
+            delete ps;
+            return;
+        }
+        prev = ps;
+        ps = ps->pseudoStyle;        
+    }
+}
+
+
 
 RenderStyle* RenderStyle::_default = 0;
-int RenderStyle::counter = 0;
-int SharedData::counter = 0;
+//int RenderStyle::counter = 0;
+//int SharedData::counter = 0;
 
 void RenderStyle::cleanup()
 {
     delete _default;
     _default = 0;
-    counter = 0;
-    SharedData::counter = 0;
+//    counter = 0;
+//    SharedData::counter = 0;
 }

@@ -417,7 +417,7 @@ void RenderBox::updateHeight()
 
 }
 
-void RenderBox::position(int x, int y, int, int, int, bool)
+void RenderBox::position(int x, int y, int, int, int, bool, bool)
 {
     m_x = x + marginLeft();
     m_y = y;
@@ -591,6 +591,12 @@ void RenderBox::calcWidth()
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 
             if(m_width < m_minWidth) m_width = m_minWidth;
+            
+            if (isFloating())
+            {
+                calcMinMaxWidth();
+                if(m_width > m_maxWidth) m_width = m_maxWidth;
+            }
         }
         else
         {

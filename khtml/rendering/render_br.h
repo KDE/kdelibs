@@ -44,7 +44,7 @@ public:
 
     // from BiDiObject
     virtual unsigned int length() const { return 1; }
-    virtual void position(int, int, int, int, int, bool) {}
+    virtual void position(int, int, int, int, int, bool, bool) {}
     virtual unsigned int width( int, int) const { return 0; }
 
     virtual int height() const { return 0; }

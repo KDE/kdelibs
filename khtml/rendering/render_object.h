@@ -329,7 +329,7 @@ public:
     virtual bool hasOverhangingFloats() { return false; }
 
     virtual int bidiHeight() const { return 0; }
-    virtual void position(int, int, int, int, int, bool) {}
+    virtual void position(int, int, int, int, int, bool, bool) {}
 
     enum SelectionState {
         SelectionNone,

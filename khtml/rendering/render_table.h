@@ -273,7 +273,7 @@ public:
     virtual unsigned int width(int, int) const { return 0;}
     virtual short baselineOffset() const { return 0; }
     virtual int bidiHeight() const { return 0; }
-    virtual void position(int, int, int, int, int, bool) {}
+    virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
@@ -308,7 +308,7 @@ public:
     virtual unsigned int width(int, int) const { return 0;}
     virtual short baselineOffset() const { return 0; }
     virtual int bidiHeight() const { return 0; }
-    virtual void position(int, int, int, int, int, bool) {}
+    virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
     
     virtual void close();
@@ -430,7 +430,7 @@ public:
     virtual unsigned int width(int, int) const { return 0;}
     virtual short baselineOffset() const { return 0; }
     virtual int bidiHeight() const { return 0; }
-    virtual void position(int, int, int, int, int, bool) {}
+    virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }

@@ -65,8 +65,10 @@ CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
 CSSStyleSheetImpl *CSSStyleSelector::userSheet = 0;
 
-enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited };
+enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
+
+static RenderStyle::PseudoId dynamicPseudo;
 
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * /*doc*/)
 {
@@ -207,7 +209,16 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
      
     for(int i = 0; i < (int)propsToApply->count(); i++)
-        applyRule(style, propsToApply->at(i)->prop, e);
+    {   
+        CSSOrderedProperty* ordprop = propsToApply->at(i);
+        RenderStyle* applyToStyle;
+        if (ordprop->pseudoId==RenderStyle::NOPSEUDO)
+            applyToStyle = style;
+        else
+            applyToStyle = style->addPseudoStyle(ordprop->pseudoId);
+        applyRule(applyToStyle, ordprop->prop, e);
+    }
+        
 
     delete propsToApply;
 
@@ -377,8 +388,14 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 		return true;
 	    else 
 		return false;
-	} else
-	    return false;
+	} else if ( sel->value == ":first-line" ) {
+            dynamicPseudo=RenderStyle::FIRST_LINE;
+            return true;
+        } else if ( sel->value == ":first-letter" ) {
+            dynamicPseudo=RenderStyle::FIRST_LETTER;
+            return true;
+        }
+        return false; 
     }
     // ### add the rest of the checks...
     return true;
@@ -460,6 +477,7 @@ void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::El
             //kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
             CSSStyleDeclarationImpl *decl = at(i)->rule->declaration();
             propsToApply->append(decl, offset + i, important);
+            dynamicPseudo=RenderStyle::NOPSEUDO;
         }
     }
 }
@@ -503,12 +521,12 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
         }
 
         append(prop, thisOffset);
-    }
+    }    
 }
 
 void CSSOrderedPropertyList::append(DOM::CSSProperty *prop, int priority)
 {
-    QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, priority));
+    QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, priority, dynamicPseudo));    
 }
 
 // -------------------------------------------------------------------------------------

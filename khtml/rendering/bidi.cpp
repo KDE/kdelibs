@@ -766,7 +766,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     }
     while ( r ) {
         //kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->yOffset << endl;
-        r->obj->position(x, r->yOffset, r->start, r->stop - r->start, r->width, r->level%2);
+        r->obj->position(x, r->yOffset, r->start, r->stop - r->start, r->width, r->level%2, firstLine);
         x += r->width;
         r = runs.next();
     }

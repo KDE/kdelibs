@@ -125,13 +125,25 @@ void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
 void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
     _tx += x;
-    _ty += y - p->paddingTop() - p->borderTop();
+    _ty += y;
+    
+    bool parentInline = p->parent()->isInline();    
 
     //kdDebug( 6040 ) << "renderBox::printDecorations()" << endl;
+    
+    RenderStyle* pseudo=0;
     RenderStyle *style = p->style();
+    if (firstLine && 
+        (pseudo=style->getPseudoStyle(RenderStyle::FIRST_LINE)))
+    {
+        style = pseudo;
+    }                
+    
+    if (parentInline)
+        _ty -= p->paddingTop() + p->borderTop();    
 
     int width = m_width;
-    if(begin)
+    if(begin && parentInline)
         _tx -= p->paddingLeft() + p->borderLeft();
 
     QColor c = style->backgroundColor();
@@ -378,15 +390,21 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     TextSlave *s = m_first;
 
     //kdDebug( 6040 ) << "Text::printObject(2)" << endl;
+    
+    RenderStyle* pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE);
 
     bool start = true;
 #ifndef BIDI_DEBUG
-    if(m_printSpecial && m_parent->isInline())
+    if(m_printSpecial && 
+        (m_parent->isInline() || pseudoStyle))
 #endif
     {
         bool breakallowed = false;
         while(s)
         {
+            if (pseudoStyle && !s->firstLine)
+                break;
+            
             bool end = false;
             if(!s->next()) end = true;
             if(s->checkVerticalPoint(y, ty, h))
@@ -635,8 +653,11 @@ void RenderText::setText(DOMStringImpl *text)
     if(str) str->ref();
 
     setLayouted(false);
-    containingBlock()->setLayouted(false);
-    containingBlock()->layout();
+    if (containingBlock()!=this)
+    {
+        containingBlock()->setLayouted(false);
+        containingBlock()->layout();
+    }
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
@@ -666,7 +687,7 @@ short RenderText::verticalPositionHint() const
     return (m_contentHeight - fm->height())/2 + fm->ascent();
 }
 
-void RenderText::position(int x, int y, int from, int len, int width, bool reverse)
+void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
 {
     // ### should not be needed!!!
     if(len == 0) return;
@@ -761,7 +782,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-                                 bidiHeight(), baselineOffset(), width, deleteChar);
+                                 bidiHeight(), baselineOffset(), width, deleteChar, firstLine);
 
     if(!m_first)
         m_first = m_last = s;

@@ -25,6 +25,7 @@
 
 #include <qcolor.h>
 #include <qfont.h>
+#include <qlist.h>
 
 #include <khtmllayout.h>
 
@@ -102,15 +103,15 @@ private:
 class SharedData
 {
 public:
-    SharedData() { _ref=0; counter++; }
-    virtual ~SharedData() { counter--; }
+    SharedData() { _ref=0; /*counter++;*/ }
+    virtual ~SharedData() { /*counter--;*/ }
 
     void ref() { _ref++;  }
     void deref() { if(_ref) _ref--; if(_ref<=0) delete this; }
     bool hasOneRef() { //kdDebug(300) << "ref=" << _ref << endl;
     	return _ref==1; }
 
-    static int counter;
+//    static int counter;
 protected:
     unsigned int _ref;
 };
@@ -487,17 +488,17 @@ enum EDisplay {
     TABLE_COLUMN_GROUP, TABLE_COLUMN, TABLE_CELL,
     TABLE_CAPTION, NONE
 };
-
+    
 class RenderStyle
 {
 public:
     static void cleanup();
+
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER };
     
 protected:
 
     EDisplay _display : 5;
-
-
 
 // inherit
     bool _border_collapse : 1 ;
@@ -527,6 +528,8 @@ protected:
     EFloat _floating : 2;
 
     bool _flowAroundFloats :1;
+    
+    PseudoId _styleType:3;
 
     static RenderStyle* _default;
 
@@ -540,28 +543,31 @@ protected:
 // inherited attributes
     DataRef<StyleInheritedData> inherited;
 
+// list of associated pseudo styles
+    RenderStyle* pseudoStyle;
+    
     static const QColor undefinedColor;
 
     void setBitDefaults();
 
-public:
+public:        
+        
     RenderStyle();
     // used to create the default style.
     RenderStyle(bool _default);
     RenderStyle(const RenderStyle&);
     RenderStyle(const RenderStyle* inheritParent);
     ~RenderStyle();
+    
+    PseudoId styleType() { return _styleType; }
+    
+    RenderStyle* getPseudoStyle(PseudoId pi);
+    RenderStyle* addPseudoStyle(PseudoId pi);
+    void removePseudoStyle(PseudoId pi);
 
     bool operator==(const RenderStyle& other) const;
-    void mergeData(RenderStyle* other);
 
-    static int counter;
-
-    /**
-     * Intantiates new style object following the
-     * css2 inheritance rules.
-     */
-    RenderStyle* inheritFrom(RenderStyle* inherit);
+//    static int counter;
 
     bool        isFloating() const { return (_floating == FLEFT || _floating == FRIGHT); }
     bool        hasMargin() const { return surround->margin.nonZero(); }

@@ -1120,6 +1120,42 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                        ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
+    
+    
+    RenderStyle* pseudoStyle;
+    if ((!m_first || m_first==beforeChild) 
+            && (pseudoStyle=m_style->getPseudoStyle(RenderStyle::FIRST_LETTER))
+            && newChild->style()->styleType()==RenderStyle::NOPSEUDO)
+    {
+
+        RenderText* newTextChild=0;            
+        if (newChild->isText())
+        {
+            newTextChild = static_cast<RenderText*>(newChild);
+        }
+        
+        kdDebug( 6040 ) << "first letter" << endl;
+        
+        if (newTextChild)
+        {
+            kdDebug( 6040 ) << "letter=" << endl;
+            
+            RenderFlow* firstLetter = new RenderFlow();
+            firstLetter->setStyle(pseudoStyle);
+
+            addChild(firstLetter);
+
+            DOMStringImpl* oldText = newTextChild->string();
+                                                
+            newTextChild->setText(oldText->substring(1,oldText->l-1));
+            
+            RenderText* letter = new RenderText(oldText->substring(0,1));        
+            letter->setStyle(new RenderStyle(pseudoStyle));
+            firstLetter->addChild(letter);
+            firstLetter->close();            
+        }
+                
+    }
 
     bool nonInlineInChild = false;
 

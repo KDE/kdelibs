@@ -25,6 +25,8 @@
 
 #include <qlist.h>
 
+#include "rendering/render_style.h"
+
 class KHTMLSettings;
 
 namespace DOM {
@@ -119,14 +121,16 @@ namespace khtml
     class CSSOrderedProperty
     {
     public:
-	CSSOrderedProperty(DOM::CSSProperty *_prop, int _priority)
+	CSSOrderedProperty(DOM::CSSProperty *_prop, int _priority, RenderStyle::PseudoId _pid)
 	{
 	    prop = _prop;
 	    priority = _priority;
+            pseudoId = _pid;
 	}
 	
 	DOM::CSSProperty *prop;
 	int priority;
+        RenderStyle::PseudoId pseudoId;        
     };
 
     /*
