@@ -1,5 +1,5 @@
 [Desktop Entry]
-ncoding=UTF-8
+Encoding=UTF-8
 Type=MimeType
 MimeType=text/x-mswinurl
 Patterns=*.url;*.URL;
@@ -39,6 +39,7 @@ Comment[mn]=Интэрнет-Богино тушаал
 Comment[ms]=Pintasan Internet
 Comment[mt]=Taqsira tal-internet
 Comment[nb]=Snarvei til internett
+Comment[nds]=Internet-Afkörten
 Comment[nl]=Internet snelkoppeling
 Comment[nn]=Internett-snarveg
 Comment[nso]=Tselakopana ya Internet
