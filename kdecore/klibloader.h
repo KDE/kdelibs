@@ -222,18 +222,14 @@ private:
 
 /**
  * If you develop a library that is to be loaded dynamically at runtime, then
- * you should provide a function that returns a pointer to your factory like this:
+ * you should return a pointer to your factory. The  K_EXPORT_COMPONENT_FACTORY
+ * macro is provided for this purpose:
  * <pre>
- * extern "C"
- * {
- *   void* init_libkspread()
- *   {
- *     return new KSpreadFactory;
- *   }
- * };
+ *   K_EXPORT_COMPONENT_FACTORY( libkspread, KSpreadFactory )
  * </pre>
- * You should especially see that the function must follow the naming pattern
- * "init_libname".
+ * 
+ * The first macro argument is the name of your library, the second specifies the name 
+ * of your factory.
  *
  * In the constructor of your factory you should create an instance of @ref KInstance
  * like this:
