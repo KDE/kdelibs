@@ -88,6 +88,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 
     QDict<KCModuleInfo> pluginconfigmodules;
     QMap<QString, int> widgetIDs;
+    QMap<KPluginInfo*, bool> plugincheckedchanged;
     QString catname;
     QValueList<KCModule*> modulelist;
     QPtrDict<QStringList> moduleParentComponents;
@@ -159,6 +160,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
     for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it )
     {
+        d->plugincheckedchanged[ *it ] = false;
         if( !( *it )->isHidden() &&
                 ( category.isNull() || ( *it )->category() == category ) )
         {
@@ -277,21 +279,20 @@ void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
         return;
     }
 
-    // if no widget exists for the plugin (yet)
-    if( !d->widgetIDs.contains( plugininfo->pluginName() ) )
-    {
-        if( !plugininfo->kcmServices().empty() )
-            embeddPluginKCMs( plugininfo, checked );
-        else
-            //else no config...
-            d->kps->configPage( 1 );
-    }
+    if( plugininfo->kcmServices().empty() )
+        d->kps->configPage( 1 );
     else
     {
-        // the page already exists
-        int id = d->widgetIDs[ plugininfo->pluginName() ];
-        d->kps->configPage( id );
-        d->widgetstack->widget( id )->setEnabled( checked );
+        if( !d->widgetIDs.contains( plugininfo->pluginName() ) )
+            // if no widget exists for the plugin create it
+            embeddPluginKCMs( plugininfo, checked );
+        else
+        {
+            // the page already exists
+            int id = d->widgetIDs[ plugininfo->pluginName() ];
+            d->kps->configPage( id );
+            d->widgetstack->widget( id )->setEnabled( checked );
+        }
     }
 }
 
@@ -313,7 +314,9 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
     if( item == 0 )
         return;
 
-    // FIXME: Why not a dynamic_cast? - Martijn
+    // Why not a dynamic_cast? - Martijn
+    // because this is what the Qt API suggests; and since gcc 3.x I don't
+    // trust dynamic_cast anymore - mkretz
     if( item->rtti() != 1 ) //check for a QCheckListItem
         return;
 
@@ -330,12 +333,26 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
     {
         kdDebug( 702 ) << "Item changed state, emitting changed()" << endl;
 
-        //FIXME:
-        ++d->changed;
-        if ( d->changed == 1 )
-            emit changed( true );
+        if( ! d->plugincheckedchanged[ info ] )
+        {
+            ++d->changed;
+            if ( d->changed == 1 )
+                emit changed( true );
+        }
+        d->plugincheckedchanged[ info ] = true;
 
         checkDependencies( info );
+    }
+    else
+    {
+        if( d->plugincheckedchanged[ info ] )
+        {
+            --d->changed;
+            if ( d->changed == 0 )
+                emit changed( false );
+        }
+        d->plugincheckedchanged[ info ] = false;
+        // FIXME: plugins that depend on this plugin need to be disabled, too
     }
 
     updateConfigPage( info, checked );
