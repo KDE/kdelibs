@@ -20,7 +20,8 @@
 #ifndef _KJS_REGEXP_H_
 #define _KJS_REGEXP_H_
 
-#include "regex.h"
+#include <sys/types.h>
+#include <regex.h>
 
 #include "ustring.h"
 
