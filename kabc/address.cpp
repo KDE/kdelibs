@@ -266,7 +266,7 @@ QString Address::labelLabel()
 Address::TypeList Address::typeList()
 {
   TypeList list;
-  
+
   list << Dom << Intl << Postal << Parcel << Home << Work << Pref;
 
   return list;
@@ -288,13 +288,13 @@ QString Address::typeLabel( int type )
       return i18n("Parcel");
       break;
     case Home:
-      return i18n("Home address");
+      return i18n("Home Address");
       break;
     case Work:
-      return i18n("Address at work");
+      return i18n("Address at Work");
       break;
     case Pref:
-      return i18n("Preferred address");
+      return i18n("Preferred Address");
       break;
     default:
       return i18n("Unknown");

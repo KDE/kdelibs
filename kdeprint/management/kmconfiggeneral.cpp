@@ -40,7 +40,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 : KMConfigPage(parent,"ConfigTimer")
 {
 	setPageName(i18n("General"));
-	setPageHeader(i18n("General settings"));
+	setPageHeader(i18n("General Settings"));
 	setPagePixmap("fileprint");
 
 	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh Interval"), this);

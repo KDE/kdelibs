@@ -35,7 +35,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
 {
 	setPageName(i18n("Filter"));
-	setPageHeader(i18n("Printer filtering settings"));
+	setPageHeader(i18n("Printer Filtering Settings"));
 	setPagePixmap("filter");
 
 	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Printer Filter"), this);

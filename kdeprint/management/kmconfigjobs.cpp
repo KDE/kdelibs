@@ -29,7 +29,7 @@ KMConfigJobs::KMConfigJobs(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
 {
 	setPageName(i18n("Jobs"));
-	setPageHeader(i18n("Print job settings"));
+	setPageHeader(i18n("Print Job Settings"));
 	setPagePixmap("exec");
 
 	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Jobs Shown"), this);

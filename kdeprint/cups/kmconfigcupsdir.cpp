@@ -32,7 +32,7 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 : KMConfigPage(parent,"ConfigCupsDir")
 {
 	setPageName(i18n("Directory"));
-	setPageHeader(i18n("CUPS directory settings"));
+	setPageHeader(i18n("CUPS Directory Settings"));
 	setPagePixmap("folder");
 
 	QGroupBox	*m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Directory"), this);

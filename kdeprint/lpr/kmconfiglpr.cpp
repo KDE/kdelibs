@@ -31,7 +31,7 @@ KMConfigLpr::KMConfigLpr(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
 {
 	setPageName(i18n("Spooler"));
-	setPageHeader(i18n("Spooler settings"));
+	setPageHeader(i18n("Spooler Settings"));
 	setPagePixmap("gear");
 
 	QGroupBox	*m_modebox = new QGroupBox(1, Qt::Vertical, i18n("Spooler"), this);

@@ -38,7 +38,7 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
 {
 	setPageName(i18n("Fonts"));
-	setPageHeader(i18n("Fonts settings"));
+	setPageHeader(i18n("Fonts Settings"));
 	setPagePixmap("fonts");
 
 	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Fonts Embedding"), this);
