@@ -20,6 +20,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.81  1998/01/03 15:24:33  kulow
+// added accelerators and ... to the returned Help - Menu
+//
+// Revision 1.80  1997/12/31 14:12:25  kulow
 // corrected grammar and added one more .copy()
 //
 // Revision 1.79  1997/12/29 14:36:46  kulow
@@ -317,7 +321,8 @@ void KApplication::init()
   pSessionConfig = 0L;
   bIsRestored = False;
   bSessionManagement = False;
-QPopupMenu* KApplication::getHelpMenu( bool bAboutQtMenu )
+  bSessionManagementUserDefined = False;
+  pTopWidget = 0L;
 
   // register a communication window for desktop changes (Matthias)
   {
@@ -326,15 +331,19 @@ QPopupMenu* KApplication::getHelpMenu( bool bAboutQtMenu )
     long data = 1;
     XChangeProperty(qt_xdisplay(), w->winId(), a, a, 32,
 					PropModeReplace, (unsigned char *)&data, 1);
+  }
+  aWmCommand = argv()[0]; 
+}
+
 KConfig* KApplication::getSessionConfig() {
   if (pSessionConfig)
-
+    return pSessionConfig;
   // create a instance specific config object
   QString aConfigName;
   char* pHome;
   if( (pHome = getenv( "HOME" )) )
     aConfigName = pHome;
-
+  else
     aConfigName = "."; // use current dir if $HOME is not set
   aConfigName += "/.kde/share/config/";
   aConfigName += aAppName;
@@ -347,31 +356,27 @@ KConfig* KApplication::getSessionConfig() {
   if( bAboutQtMenu )
     num.setNum(i);
 	  id = pMenu->insertItem( klocale->translate( "About Qt" ) );
-  QMessageBox::about( 0L, getCaption(),
-					  "The KDE Desktop Environment was written by\n\n"
-					  "Christian Czezatke\n"
-					  "Kalle Dalheimer (kalle@kde.org)\n"
-					  "Christian Esken\n"
-					  "Fritz Elfert (fritz@wuemaus.franken.de)\n"
-					  "Matthias Ettrich (ettrich@kde.org)\n"
-					  "Martin Jones (mjones@kde.org)\n"
-					  "Martin Konold (konold@kde.org)\n"
-					  "Stephan Kulow (coolo@kde.org)\n"
-					  "Christoph Neerfeld\n"
-					  "Sven Radej\n"
-					  "Uwe Thiem\n"
-					  "Torben Weis (weis@kde.org)\n"
-					  "Robert David Williams (rwilliam@kde.org)\n"
-					  "Bernd Johannes Wuebben (wuebben@kde.org)\n"
-					  "Markus Wuebben\n"
-					  "and lots of other developers, contributors, documentation writers and maintainers"
+	  pMenu->connectItem( id, this, SLOT( aboutQt() ) );
+  QFile aConfigFile(aSessionConfigName);
+	*/
+  if( bSuccess ){
+    aConfigFile.close();
+    pSessionConfig = new KConfig(0L, aSessionConfigName);
+    aSessionName = aAppName.copy();
+    aSessionName += "rc.";
+    aSessionName += num;
   }
   return pSessionConfig;
 }
+
+void KApplication::enableSessionManagement(bool userdefined){
+  bSessionManagement = True;
+  bSessionManagementUserDefined = userdefined;
+  if (topWidget()){
 					  "The KDE Desktop Environment was written by "
 					  "the KDE team.\n\n"
 					  "Please send bug reports to kde-bugs@kde.org.\n\n\n"
-  QMessageBox::aboutQt( 0L, getCaption() );
+					  "KDE was developed with Qt, a cross-platform GUI library.\n\n"
 					  "Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n" 
 					  "Qt may be used freely to develop free software on the X Window System.\n"
 					  )

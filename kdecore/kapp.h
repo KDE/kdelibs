@@ -19,6 +19,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// fixed my new macro. I guess, this way it's better
+//
+// Revision 1.40  1998/01/06 21:22:47  kulow
 // added a macro i18n. klocale->translate is much to long and I should have done
 // this way earlier ;)
 // I would like to add this macro to klocale.h, but I'm afraid, this will make
@@ -113,7 +116,7 @@
 #define i18n KApplication::getKApplication()->getLocale()->translate
 // klocale->translate is much to long
 #ifndef i18n
-* @version $Id$
+#define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
 #endif
 
 class KIconLoader;
@@ -216,7 +219,7 @@ class KApplication : public QApplication
 * @ enabled with userdefined=True.
 */
 	*
-	QPopupMenu* getHelpMenu( bool bAboutQtMenu = false );
+	* @ In this case the getSessionConfig()-object probably contains 
 	* @ important data.
 	*/
   bool isRestored() const { return bIsRestored; }
@@ -469,6 +472,7 @@ protected:
   /**
 	* Used to catch X11 events
 	*/
+  bool x11EventFilter( XEvent * );
 
   /**
 	* Two X11 atoms used for session management
@@ -487,7 +491,7 @@ private slots:
 
   /**
 	* The X11 display
-  QString aDummyString1; // do not touch
+	*/
   Display *display;
 
   Atom KDEChangePalette;
