@@ -218,10 +218,10 @@ patent issues. -->
 <screeninfo>Here's a screenshot of &kapp;</screeninfo>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="screenshot.png" format="png">
+	    <imagedata fileref="screenshot.png" format="PNG">
 	  </imageobject>
 	  <imageobject>
-	    <imagedata fileref="screenshot.eps" format="eps">
+	    <imagedata fileref="screenshot.eps" format="EPS">
 	  </imageobject>
 	  <textobject>
 	    <phrase>Screenshot</phrase>
@@ -238,10 +238,10 @@ patent issues. -->
 <para>
 The Squiggle Tool <guiicon><inlinemediaobject>
 	  <imageobject>
-	    <imagedata fileref="squiggle.png" format="png">
+	    <imagedata fileref="squiggle.png" format="PNG">
 	  </imageobject>
 	  <imageobject>
-	    <imagedata fileref="squiggle.eps" format="eps">
+	    <imagedata fileref="squiggle.eps" format="EPS">
 	  </imageobject>
 	  <textobject>
 	    <phrase>Squiggle</phrase>
