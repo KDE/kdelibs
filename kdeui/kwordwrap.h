@@ -28,6 +28,7 @@
 
 /**
  * Word-wrap algorithm that takes into account beautifulness ;)
+ *
  * That means:
  * @li not letting a letter alone on the last line,
  * @li breaking at punctuation signs (not only at spaces)
@@ -41,6 +42,7 @@
  *
  * This design allows to call the word-wrap algorithm only when the text changes
  * and not every time we want to know the bounding rect or draw the text.
+ *
  * @author David Faure <faure@kde.org>
  */
 class KDEUI_EXPORT KWordWrap
