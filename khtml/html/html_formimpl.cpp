@@ -1924,8 +1924,8 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc)
     : HTMLGenericFormElementImpl(doc)
 {
     // DTD requires rows & cols be specified, but we will provide reasonable defaults
-    m_rows = 3;
-    m_cols = 60;
+    m_rows = 2;
+    m_cols = 20;
     m_wrap = ta_Virtual;
     m_dirtyvalue = true;
 }
@@ -1935,8 +1935,8 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     : HTMLGenericFormElementImpl(doc, f)
 {
     // DTD requires rows & cols be specified, but we will provide reasonable defaults
-    m_rows = 3;
-    m_cols = 60;
+    m_rows = 2;
+    m_cols = 20;
     m_wrap = ta_Virtual;
     m_dirtyvalue = true;
 }
