@@ -634,9 +634,8 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   KProcess * proc = new KProcess;
   proc->setUseShell(true);
   *proc << cmd;
-  QString bin = binaryName( cmd, false );
-  KService::Ptr service = KService::serviceByDesktopName( bin );
-  return runCommandInternal( proc, service.data(), bin, execName, iconName );
+  KService::Ptr service = KService::serviceByDesktopName( binaryName( cmd, true ));
+  return runCommandInternal( proc, service.data(), binaryName( cmd, false ), execName, iconName );
 }
 
 KRun::KRun( const KURL& url, mode_t mode, bool isLocalFile, bool showProgressInfo )
