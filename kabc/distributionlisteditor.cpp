@@ -29,6 +29,7 @@
 
 #include <klocale.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
 
 #include "addressbook.h"
 #include "addresseedialog.h"
@@ -42,10 +43,10 @@ using namespace KABC;
 DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidget *parent)
     : KDialogBase( parent, "", true, i18n("Configure distribution lists"), Ok, Ok, true)
 {
-    mEditor = new DistributionListEditorWidget( addressBook, this );
-    setMainWidget( mEditor );
+  mEditor = new DistributionListEditorWidget( addressBook, this );
+  setMainWidget( mEditor );
 
-    connect( this, SIGNAL( okClicked() ), mEditor, SLOT( save() ) );
+  connect( this, SIGNAL( okClicked() ), mEditor, SLOT( save() ) );
 }
 
 DistributionListEditor::~DistributionListEditor()
@@ -135,7 +136,6 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   kdDebug() << "DistributionListEditor()" << endl;
 
   QBoxLayout *topLayout = new QVBoxLayout( this );
-  topLayout->setMargin( KDialog::marginHint() );
   topLayout->setSpacing( KDialog::spacingHint() );
 
   QBoxLayout *nameLayout = new QHBoxLayout( topLayout) ;
@@ -144,23 +144,23 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   nameLayout->addWidget( mNameCombo );
   connect( mNameCombo, SIGNAL( activated( int ) ), SLOT( updateEntryView() ) );
 
-  newButton = new QPushButton( i18n("New List"), this );
-  nameLayout->addWidget( newButton );
-  connect( newButton, SIGNAL( clicked() ), SLOT( newList() ) );
+  mNewButton = new QPushButton( i18n("New List"), this );
+  nameLayout->addWidget( mNewButton );
+  connect( mNewButton, SIGNAL( clicked() ), SLOT( newList() ) );
 
-  editButton = new QPushButton( i18n("Edit List"), this );
-  nameLayout->addWidget( editButton );
-  connect( editButton, SIGNAL( clicked() ), SLOT( editList() ) );
+  mEditButton = new QPushButton( i18n("Edit List"), this );
+  nameLayout->addWidget( mEditButton );
+  connect( mEditButton, SIGNAL( clicked() ), SLOT( editList() ) );
 
-  removeButton = new QPushButton( i18n("Remove List"), this );
-  nameLayout->addWidget( removeButton );
-  connect( removeButton, SIGNAL( clicked() ), SLOT( removeList() ) );
+  mRemoveButton = new QPushButton( i18n("Remove List"), this );
+  nameLayout->addWidget( mRemoveButton );
+  connect( mRemoveButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 
   QGridLayout *gridLayout = new QGridLayout( topLayout, 3, 3 );
   gridLayout->setColStretch(1, 1);
 
-  mListLabel = new QLabel( i18n("Available addresses:"), this );
-  gridLayout->addWidget( mListLabel, 0, 0 );
+  QLabel *listLabel = new QLabel( i18n("Available addresses:"), this );
+  gridLayout->addWidget( listLabel, 0, 0 );
 
   mListLabel = new QLabel( this );
   gridLayout->addMultiCellWidget( mListLabel, 0, 0, 1, 2 );
@@ -169,12 +169,15 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   mAddresseeView->addColumn( i18n("Name") );
   mAddresseeView->addColumn( i18n("Preferred Email") );
   gridLayout->addWidget( mAddresseeView, 1, 0 );
-  connect(mAddresseeView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionAddresseeViewChanged()));
+  connect( mAddresseeView, SIGNAL( selectionChanged() ),
+           SLOT( slotSelectionAddresseeViewChanged() ) );
+  connect( mAddresseeView, SIGNAL( doubleClicked( QListViewItem * ) ),
+           SLOT( addEntry() ) );
 
-  addEntryButton = new QPushButton( i18n("Add Entry"), this );
-  addEntryButton->setEnabled(false);
-  gridLayout->addWidget( addEntryButton, 2, 0 );
-  connect( addEntryButton, SIGNAL( clicked() ), SLOT( addEntry() ) );
+  mAddEntryButton = new QPushButton( i18n("Add Entry"), this );
+  mAddEntryButton->setEnabled(false);
+  gridLayout->addWidget( mAddEntryButton, 2, 0 );
+  connect( mAddEntryButton, SIGNAL( clicked() ), SLOT( addEntry() ) );
 
   mEntryView = new QListView( this );
   mEntryView->addColumn( i18n("Name") );
@@ -182,15 +185,16 @@ DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *address
   mEntryView->addColumn( i18n("Use preferred") );
   mEntryView->setEnabled(false);
   gridLayout->addMultiCellWidget( mEntryView, 1, 1, 1, 2 );
-  connect(mEntryView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionEntryViewChanged()));
+  connect( mEntryView, SIGNAL( selectionChanged() ),
+           SLOT( slotSelectionEntryViewChanged() ) );
 
-  changeEmailButton = new QPushButton( i18n("Change Email"), this );
-  gridLayout->addWidget( changeEmailButton, 2, 1 );
-  connect( changeEmailButton, SIGNAL( clicked() ), SLOT( changeEmail() ) );
+  mChangeEmailButton = new QPushButton( i18n("Change Email"), this );
+  gridLayout->addWidget( mChangeEmailButton, 2, 1 );
+  connect( mChangeEmailButton, SIGNAL( clicked() ), SLOT( changeEmail() ) );
 
-  removeEntryButton = new QPushButton( i18n("Remove Entry"), this );
-  gridLayout->addWidget( removeEntryButton, 2, 2 );
-  connect( removeEntryButton, SIGNAL( clicked() ), SLOT( removeEntry() ) );
+  mRemoveEntryButton = new QPushButton( i18n("Remove Entry"), this );
+  gridLayout->addWidget( mRemoveEntryButton, 2, 2 );
+  connect( mRemoveEntryButton, SIGNAL( clicked() ), SLOT( removeEntry() ) );
 
   mManager = new DistributionListManager( mAddressBook );
   mManager->load();
@@ -213,11 +217,11 @@ void DistributionListEditorWidget::save()
 
 void DistributionListEditorWidget::slotSelectionEntryViewChanged()
 {
-    EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
-    bool state=entryItem;
+  EntryItem *entryItem = static_cast<EntryItem *>( mEntryView->selectedItem() );
+  bool state=entryItem;
 
-    changeEmailButton->setEnabled(state);
-    removeEntryButton->setEnabled(state);
+  mChangeEmailButton->setEnabled(state);
+  mRemoveEntryButton->setEnabled(state);
 }
 
 void DistributionListEditorWidget::newList()
@@ -245,9 +249,9 @@ void DistributionListEditorWidget::editList()
   QString oldName = mNameCombo->currentText();
 
   QString newName = QInputDialog::getText( i18n("Distribution List"),
-                                        i18n("Please change name."),
-                                        QLineEdit::Normal, oldName, &ok,
-                                        this );
+                                           i18n("Please change name."),
+                                           QLineEdit::Normal, oldName, &ok,
+                                           this );
   if ( !ok || newName.isEmpty() ) return;
 
   DistributionList *list = mManager->list( oldName );
@@ -263,6 +267,12 @@ void DistributionListEditorWidget::editList()
 
 void DistributionListEditorWidget::removeList()
 {
+  int result = KMessageBox::warningContinueCancel( this,
+      i18n("Delete distibution list '%1'?") .arg( mNameCombo->currentText() ),
+      QString::null, i18n("Delete") );
+
+  if ( result != KMessageBox::Continue ) return;
+
   delete mManager->list( mNameCombo->currentText() );
   mNameCombo->removeItem( mNameCombo->currentItem() );
 
@@ -273,7 +283,7 @@ void DistributionListEditorWidget::removeList()
 void DistributionListEditorWidget::addEntry()
 {
   AddresseeItem *addresseeItem =
-      dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
+      static_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
 
   if( !addresseeItem ) {
     kdDebug() << "DLE::addEntry(): No addressee selected." << endl;
@@ -297,7 +307,7 @@ void DistributionListEditorWidget::removeEntry()
   if ( !list ) return;
 
   EntryItem *entryItem =
-      dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+      static_cast<EntryItem *>( mEntryView->selectedItem() );
   if ( !entryItem ) return;
 
   list->removeEntry( entryItem->addressee(), entryItem->email() );
@@ -310,7 +320,7 @@ void DistributionListEditorWidget::changeEmail()
   if ( !list ) return;
 
   EntryItem *entryItem =
-      dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+      static_cast<EntryItem *>( mEntryView->selectedItem() );
   if ( !entryItem ) return;
 
   QString email = EmailSelectDialog::getEmail( entryItem->addressee().emails(),
@@ -323,21 +333,28 @@ void DistributionListEditorWidget::changeEmail()
 
 void DistributionListEditorWidget::updateEntryView()
 {
-  mListLabel->setText( QString( i18n("Selected addresses in '%1':") ).arg( mNameCombo->currentText() ) );
+  if ( mNameCombo->currentText().isEmpty() ) {
+    mListLabel->setText( i18n("Selected addressees:") );
+  } else {
+    mListLabel->setText( i18n("Selected addresses in '%1':")
+                         .arg( mNameCombo->currentText() ) );
+  }
 
   mEntryView->clear();
 
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) {
-    editButton->setEnabled(false);
-    removeButton->setEnabled(false);
-    changeEmailButton->setEnabled(false);
-    removeEntryButton->setEnabled(false);
+    mEditButton->setEnabled(false);
+    mRemoveButton->setEnabled(false);
+    mChangeEmailButton->setEnabled(false);
+    mRemoveEntryButton->setEnabled(false);
+    mAddresseeView->setEnabled(false);
     mEntryView->setEnabled(false);
     return;
   } else {
-    editButton->setEnabled(true);
-    removeButton->setEnabled(true);
+    mEditButton->setEnabled(true);
+    mRemoveButton->setEnabled(true);
+    mAddresseeView->setEnabled(true);
     mEntryView->setEnabled(true);
   }
 
@@ -347,11 +364,11 @@ void DistributionListEditorWidget::updateEntryView()
     new EntryItem( mEntryView, (*it).addressee, (*it).email );
   }
 
-  EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+  EntryItem *entryItem = static_cast<EntryItem *>( mEntryView->selectedItem() );
   bool state=entryItem;
 
-  changeEmailButton->setEnabled(state);
-  removeEntryButton->setEnabled(state);
+  mChangeEmailButton->setEnabled(state);
+  mRemoveEntryButton->setEnabled(state);
 }
 
 void DistributionListEditorWidget::updateAddresseeView()
@@ -373,8 +390,8 @@ void DistributionListEditorWidget::updateNameCombo()
 
 void DistributionListEditorWidget::slotSelectionAddresseeViewChanged()
 {
-    AddresseeItem *addresseeItem =
-        dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
-    bool state=addresseeItem;
-    addEntryButton->setEnabled( state && !mNameCombo->currentText().isEmpty());
+  AddresseeItem *addresseeItem =
+      static_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
+  bool state=addresseeItem;
+  mAddEntryButton->setEnabled( state && !mNameCombo->currentText().isEmpty());
 }

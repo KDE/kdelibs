@@ -89,8 +89,8 @@ class DistributionListEditorWidget : public QWidget
 
     AddressBook *mAddressBook;
     DistributionListManager *mManager;
-    QPushButton *newButton, *editButton, *removeButton;
-    QPushButton *changeEmailButton, *removeEntryButton, *addEntryButton;
+    QPushButton *mNewButton, *mEditButton, *mRemoveButton;
+    QPushButton *mChangeEmailButton, *mRemoveEntryButton, *mAddEntryButton;
 };
 
 }
