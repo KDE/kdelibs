@@ -323,6 +323,7 @@ DD {
 
 DL {
 	display: block;
+        margin: .83em auto;
         \2d konq-flow-mode: \2d konq-around-floats
 } 
 

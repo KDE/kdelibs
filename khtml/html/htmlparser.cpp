@@ -359,7 +359,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_HEAD:
             // ### alllow not having <HTML> in at all, as per HTML spec
-            if (!current->isDocumentNode() && !current->id() == ID_HTML )
+            if (!current->isDocumentNode() && current->id() != ID_HTML )
                 return false;
             break;
         case ID_META:
@@ -474,12 +474,20 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 // fall through!!
             };
             break;
+        case ID_DL:
+            popBlock( ID_DT );
+            e = new HTMLGenericElementImpl( document, ID_DD );
+            insertNode( e );
+            handled = true;
+            break;
         case ID_DD:
+            popBlock( ID_DD );
+            /* nobreak */
         case ID_DT:
-            e = new HTMLDListElementImpl(document);
-            if ( insertNode(e) ) {
-                insertNode(n);
-                return true;
+            if ( checkChild( current->id(), ID_DL ) ) {
+                e = new HTMLDListElementImpl( document );
+                insertNode( e );
+                handled = true;
             }
             break;
         case ID_AREA:
@@ -492,10 +500,9 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 		    n->attach();
 #endif
                 handled = true;
+                return true;
             }
-            else
-                return false;
-            return true;
+            return false;
         }
         case ID_THEAD:
         case ID_TBODY:
@@ -640,6 +647,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_NONE);
             insertNode(e);
             handled = true;
+        case ID_DL:
+            e = new HTMLGenericElementImpl( document, ID_DT );
+            insertNode( e );
+            handled = true;
             break;
         case ID_SELECT:
             if( n->isInline() )
@@ -673,8 +684,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
             // head elements in the body should be ignored.
 
-        case ID_DL:
-        case ID_DT:
         case ID_ADDRESS:
         case ID_COLGROUP:
         case ID_FONT:
@@ -1069,8 +1078,10 @@ void KHTMLParser::processCloseTag(Token *t)
     {
     case ID_HTML+ID_CLOSE_TAG:
     case ID_BODY+ID_CLOSE_TAG:
-        // we never close the body tag, since some stupid web pages close it before the actual end of the doc.
-        // let's rely on the end() call to close things.
+    case ID_DT+ID_CLOSE_TAG:
+    case ID_DD+ID_CLOSE_TAG:
+        // we never trust those close tags, since stupid webpages close
+        // them prematurely
         return;
     case ID_FORM+ID_CLOSE_TAG:
         form = 0;

@@ -621,8 +621,9 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // ADDRESS: ( _0 | P ) *
         if( check_array(childID, tag_list_0) ) return true;
         return (childID == ID_P);
-    case ID_LI:
     case ID_DT:
+        if ( childID == ID_DL ) return false;
+    case ID_LI:
     case ID_DIV:
     case ID_SPAN:
     case ID_LAYER:
