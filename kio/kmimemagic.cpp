@@ -7,7 +7,7 @@
  */
 
 #include "kmimemagic.h"
-#include <assert.h>
+#include <kdebug.h>
 #include <kapp.h>
 #include <kstddirs.h>
 
@@ -46,7 +46,7 @@ void KMimeMagic::initStatic()
 /*
  * data structures and related constants
  */
-#define MIME_MAGIC_DEBUG  0
+#define MIME_MAGIC_DEBUG_TABLE 0
 
 #define DECLINED 999
 #define ERROR    998
@@ -288,6 +288,15 @@ static struct names {
 		"the", L_ENG
 	},
 	{
+		"of", L_ENG
+	},
+	{
+		"from", L_ENG
+	},
+	{
+		"in", L_ENG
+	},
+	{
 		"double", L_C|L_CPP|L_JAVA
 	},
 	{
@@ -412,7 +421,7 @@ void  error( const char *msg, ... )
     accuracy = 0;
 }
 
-#if (MIME_MAGIC_DEBUG > 1)
+#if (MIME_MAGIC_DEBUG_TABLE > 1)
 static void
 test_table()
 {
@@ -502,16 +511,16 @@ apprentice()
 
 	fclose(f);
 
-#if (MIME_MAGIC_DEBUG > 1)
-	debug("%s: conf=%p file=%s m=%s m->next=%s last=%s",
+	kDebugInfo(7018, "%s: conf=%p file=%s m=%s m->next=%s last=%s",
 	      __FUNCTION__, conf,
 	      conf->magicfile ? conf->magicfile : "NULL",
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
 	      conf->last ? "set" : "NULL");
-	debug("%s: read %d lines, %d rules, %d errors",
+	kDebugInfo(7018, "%s: read %d lines, %d rules, %d errors",
 	      __FUNCTION__, lineno, rule, errs);
 
+#if (MIME_MAGIC_DEBUG_TABLE > 1)
 	test_table();
 #endif
 
@@ -547,15 +556,15 @@ buff_apprentice(char *buff)
 		lineno++;
 	} while (len > 0);
 
-#if (MIME_MAGIC_DEBUG > 1)
-	debug("%s: conf=%p m=%s m->next=%s last=%s",
+	kDebugInfo(7018, "%s: conf=%p m=%s m->next=%s last=%s",
 	      __FUNCTION__, conf,
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
 	      conf->last ? "set" : "NULL");
-	debug("%s: read %d lines, %d rules, %d errors",
+	kDebugInfo(7018, "%s: read %d lines, %d rules, %d errors",
 	      __FUNCTION__, lineno, rule, errs);
 
+#if ( MIME_MAGIC_DEBUG_TABLE > 1 )
 	test_table();
 #endif
 
@@ -797,11 +806,9 @@ parse(char *l, int lineno)
 	while ((m->desc[i++] = *l++) != '\0' && i < MAXDESC)
 		/* NULLBODY */ ;
 
-#if (MIME_MAGIC_DEBUG > 1)
-	debug("%s: line=%d m=%p next=%p cont=%d desc=%s",
+	/*kDebugInfo(7018, "%s: line=%d m=%p next=%p cont=%d desc=%s",
 	      __FUNCTION__, lineno, m, m->next, m->cont_level,
-	      m->desc ? m->desc : "NULL");
-#endif                          /* MIME_MAGIC_DEBUG */
+	      m->desc ? m->desc : "NULL");*/
 
 	return 0;
 }
@@ -1501,16 +1508,12 @@ KMimeMagic::softmagic(unsigned char *buf, int nbytes)
 int
 KMimeMagic::match(unsigned char *s, int nbytes)
 {
-#if (MIME_MAGIC_DEBUG > 1)
-	int rule_counter = 0;
-#endif
 	int cont_level = 0;
 	int need_separator = 0;
 	union VALUETYPE p;
 	struct magic *m;
 
-#if (MIME_MAGIC_DEBUG > 1)
-	debug("%s: conf=%p file=%s m=%s m->next=%s last=%s",
+	kDebugInfo(7018, "%s: conf=%p file=%s m=%s m->next=%s last=%s",
 	      __FUNCTION__, conf,
 	      conf->magicfile ? conf->magicfile : "NULL",
 	      conf->magic ? "set" : "NULL",
@@ -1521,23 +1524,19 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		    isprint((((unsigned long) m) >> 16) & 255) &&
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
-			debug("%s: POINTER CLOBBERED! "
+			kDebugInfo(7018, "%s: POINTER CLOBBERED! "
 			      "m=\"%c%c%c%c\"", __FUNCTION__,
-			      (((unsigned long) m) >> 24) & 255,
-			      (((unsigned long) m) >> 16) & 255,
-			      (((unsigned long) m) >> 8) & 255,
-			      ((unsigned long) m) & 255);
+			      (int)((((unsigned long) m) >> 24) & 255),
+			      (int)((((unsigned long) m) >> 16) & 255),
+			      (int)((((unsigned long) m) >> 8) & 255),
+			      (int)(((unsigned long) m) & 255));
 			break;
 		}
 	}
-#endif
 
 	for (m = conf->magic; m; m = m->next) {
-#if (MIME_MAGIC_DEBUG > 1)
-		rule_counter++;
-		debug("%s: line=%d desc=%s", __FUNCTION__,
-		      m->lineno, m->desc);
-#endif
+		//kDebugInfo(7018, "%s: line=%d desc=%s", __FUNCTION__,
+		//      m->lineno, m->desc);
 
 		/* check if main entry matches */
 		if (!mget(&p, s, m, nbytes) ||
@@ -1552,14 +1551,11 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			}
 			m_cont = m->next;
 			while (m_cont && (m_cont->cont_level != 0)) {
-#if (MIME_MAGIC_DEBUG > 1)
-				rule_counter++;
-				debug("%s: line=%d mc=%p mc->next=%p "
+				/*kDebugInfo(7018, "%s: line=%d mc=%p mc->next=%p "
 				      "cont=%d desc=%s",
 				      __FUNCTION__, m_cont->lineno, m_cont,
 				      m_cont->next, m_cont->cont_level,
-				   m_cont->desc ? m_cont->desc : "NULL");
-#endif
+				   m_cont->desc ? m_cont->desc : "NULL");*/
 				/*
 				 * this trick allows us to keep *m in sync
 				 * when the continue advances the pointer
@@ -1571,11 +1567,9 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		}
 		/* if we get here, the main entry rule was a match */
 		/* this will be the last run through the loop */
-#if (MIME_MAGIC_DEBUG > 1)
-		debug("%s: rule matched, line=%d type=%d %s",
+		kDebugInfo(7018, "%s: rule matched, line=%d type=%d %s",
 		      __FUNCTION__, m->lineno, m->type,
 		      (m->type == STRING) ? m->value.s : "");
-#endif
 
 		/* print the match */
 		mprint(&p, m);
@@ -1594,11 +1588,9 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		 */
 		m = m->next;
 		while (m && (m->cont_level != 0)) {
-#if (MIME_MAGIC_DEBUG > 1)
-			debug("%s: line=%d cont=%d type=%d %s",
+			kDebugInfo(7018, "%s: line=%d cont=%d type=%d %s",
 			      __FUNCTION__, m->lineno, m->cont_level, m->type,
 			      (m->type == STRING) ? m->value.s : "");
-#endif
 			if (cont_level >= m->cont_level) {
 				if (cont_level > m->cont_level) {
 					/*
@@ -1637,14 +1629,10 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			/* move to next continuation record */
 			m = m->next;
 		}
-#if (MIME_MAGIC_DEBUG > 1)
-		debug("%s: matched after %d rules", __FUNCTION__, rule_counter);
-#endif
+		kDebugInfo(7018, "%s: matched", __FUNCTION__);
 		return 1;       /* all through */
 	}
-#if (MIME_MAGIC_DEBUG > 1)
-	debug("%s: failed after %d rules", __FUNCTION__, rule_counter);
-#endif
+	kDebugInfo(7018, "%s: failed", __FUNCTION__);
 	return 0;               /* no match at all */
 }
 
@@ -1832,11 +1820,9 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		    maxpct = pct;
 		    mostaccurate = i;
 		  }
-#if MIME_MAGIC_DEBUG
-		  printf("%s has %d hits, %d kw, weight %f, %f -> max = %f\n",
+		  kDebugInfo(7018, "%s has %d hits, %d kw, weight %f, %f -> max = %f\n",
 			 types[i].type, typecount[i], types[i].kwords, types[i].weight,
 			 pct, maxpct);
-#endif
 	  }
 	}
 	if (mostaccurate >= 0.0) {
@@ -1983,14 +1969,10 @@ KMimeMagic::revision_suffix(const char * fn)
 	int suffix_pos;
 	QString newfn = QString(fn);
 
-#if (MIME_MAGIC_DEBUG > 2)
-	debug("%s: checking %s", __FUNCTION__, fn);
-#endif
+	kDebugInfo(7018, "%s: checking %s", __FUNCTION__, fn);
 	/* check for recognized revision suffix */
 	suffix_pos = newfn.findRev(QRegExp("@[0-9]*$"));
-#if (MIME_MAGIC_DEBUG > 2)
-	debug("%s: suffix_pos=%d", __FUNCTION__, suffix_pos);
-#endif
+	kDebugInfo(7018, "%s: suffix_pos=%d", __FUNCTION__, suffix_pos);
 	if (suffix_pos == -1)
 		return NULL;
 	return findFileType(newfn.left(suffix_pos).ascii());
