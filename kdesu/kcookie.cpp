@@ -97,8 +97,8 @@ void KCookie::getXCookie()
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
     QCString disp = m_Display;
-    if (disp.left(10) == "localhost:")
-       disp = disp.mid(9);
+    if (!memcmp(disp.data(), "localhost:", 10))
+       disp.remove(0, 9);
 
     QString cmd = "xauth list "+KProcess::quote(disp);
     blockSigChild(); // pclose uses waitpid()
@@ -143,8 +143,7 @@ void KCookie::getICECookie()
 	QCString dcopFile = DCOPClient::dcopServerFile();
 	if (!(f = fopen(dcopFile, "r"))) 
 	{
-	    kdWarning(900) << k_lineinfo 
-					   << "Cannot open " << dcopFile << ".\n";
+	    kdWarning(900) << k_lineinfo << "Cannot open " << dcopFile << ".\n";
 	    return;
 	}
 	dcopsrv = fgets(buf, 1024, f);
@@ -152,19 +151,19 @@ void KCookie::getICECookie()
 	fclose(f);
     }
     QCStringList dcopServerList = split(dcopsrv, ',');
-    if (dcopServerList.count() == 0) 
+    if (dcopServerList.isEmpty()) 
     {
 	kdError(900) << k_lineinfo << "No DCOP servers found.\n";
 	return;
     }
 
     QCStringList::Iterator it;
-    for (it=dcopServerList.begin(); it != dcopServerList.end(); it++) 
+    for (it=dcopServerList.begin(); it != dcopServerList.end(); ++it) 
     {
         if (strncmp((*it).data(), m_dcopTransport.data(), m_dcopTransport.length()) != 0)
             continue;
         m_DCOPSrv = *it;
-	QString cmd = "iceauth list "+KProcess::quote("netid="+m_DCOPSrv);
+	QString cmd = "iceauth list netid="+KProcess::quote(m_DCOPSrv);
 	blockSigChild();
 	if (!(f = popen(QFile::encodeName(cmd), "r"))) 
 	{
@@ -183,7 +182,7 @@ void KCookie::getICECookie()
 	}
 	unblockSigChild();
 	QCStringList::Iterator it2;
-	for (it2=output.begin(); it2!=output.end(); it2++) 
+	for (it2=output.begin(); it2!=output.end(); ++it2) 
 	{
 	    QCStringList lst = split((*it2).simplifyWhiteSpace(), ' ');
 	    if (lst.count() != 5) 
