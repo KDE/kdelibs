@@ -1901,7 +1901,10 @@ void HTTPProtocol::stat(const KURL& url)
 {
   kdDebug() << "HTTPProtocol::stat " << url.prettyURL() << endl;
   if (m_request.hostname.isEmpty())
-    error( KIO::ERR_INTERNAL, "stat: No host specified!");
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return;
+  }
 
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
@@ -1945,7 +1948,10 @@ void HTTPProtocol::stat(const KURL& url)
 void HTTPProtocol::get( const KURL& url )
 {
   if (m_request.hostname.isEmpty())
-     error( KIO::ERR_INTERNAL, "http GET: No host specified!");
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return;
+  }
 
   m_request.method = HTTP_GET;
   m_request.path = url.path();
@@ -1978,7 +1984,10 @@ void HTTPProtocol::get( const KURL& url )
 void HTTPProtocol::put( const KURL &url, int, bool, bool)
 {
   if (m_request.hostname.isEmpty())
-     error( KIO::ERR_INTERNAL, "http PUT: No host specified!");
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return;
+  }
 
   m_request.method = HTTP_PUT;
   m_request.path = url.path();
@@ -2005,7 +2014,10 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
 void HTTPProtocol::post( const KURL& url)
 {
   if (m_request.hostname.isEmpty())
-     error( KIO::ERR_INTERNAL, "http POST: No host specified!");
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return;
+  }
 
   m_request.method = HTTP_POST;
   m_request.path = url.path();
@@ -2060,8 +2072,10 @@ void HTTPProtocol::mimetype( const KURL& url )
 {
   kdDebug() << "HTTPProtocol::mimetype " << url.prettyURL() << endl;
   if (m_request.hostname.isEmpty())
-     //error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
-     error( KIO::ERR_UNKNOWN_HOST, "No host specified!");
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return;
+  }
 
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
