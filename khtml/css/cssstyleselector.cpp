@@ -2280,7 +2280,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	style->setClipLeft( left );
 
 
-	style->setJsClipMode( (prop->m_id == CSS_PROP__KONQ_JS_CLIP) ? true : false );
+	style->setJsClipMode( (!strictParsing && prop->m_id == CSS_PROP__KONQ_JS_CLIP) ? true : false );
         // rect, ident
         break;
     }
