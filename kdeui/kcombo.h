@@ -25,8 +25,8 @@ class KCombo : public QFrame {
 	Q_OBJECT
 
 public:
-	KCombo( QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
-	KCombo( bool readWrite, QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
+	KCombo( QWidget* parent = 0, const char* name = 0, WFlags f = 0 );
+	KCombo( bool readWrite, QWidget* parent = 0, const char* name = 0, WFlags f = 0 );
 	virtual ~KCombo();
 
 	// public functions special to KCombo

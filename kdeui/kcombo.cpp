@@ -10,7 +10,7 @@
 KCombo::KCombo( QWidget* parent, const char* name, WFlags f ) :
 	QFrame( parent, name, f )
 {
-	popup = new QPopupMenu; lined = NULL; listBox = NULL;
+	popup = new QPopupMenu; lined = 0; listBox = 0;
 	tf = AlignCenter | ExpandTabs | WordBreak;
 	setFrameStyle( QFrame::Panel | QFrame::Raised );
 	setLineWidth( 2 );
@@ -24,9 +24,9 @@ KCombo::KCombo( bool readWrite, QWidget* parent, const char* name, WFlags f ) :
 	QFrame( parent, name, f )
 {
 	policy = NoInsertion;
-	popup = NULL; lined = readWrite ? new KLined( this, NULL ) : (KLined*)NULL;
+	popup = 0; lined = readWrite ? new KLined( this, 0 ) : (KLined*)0;
 	//* can we use WStyle_Tool here??:
-	listBox = new QListBox( NULL, NULL, WType_Popup ); // must be top-level..
+	listBox = new QListBox( 0, 0, WType_Popup ); // must be top-level..
 	listBox->installEventFilter( this );
 	tf = AlignCenter | ExpandTabs | WordBreak;
 	setFrameStyle( QFrame::Panel | QFrame::Raised );
