@@ -1,0 +1,69 @@
+/*
+   This file is part of the KDE libraries
+   Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
+
+#ifndef KDE_WIN32_UTILS_H
+#define KDE_WIN32_UTILS_H
+
+#include <windows.h>
+
+#include <kdecore/kdelibs_export.h>
+
+#ifdef  __cplusplus
+#include <qstring.h>
+
+extern "C" {
+#endif
+
+#define fcopy_src_err -1
+#define fcopy_dest_err -2
+
+/**
+ Copies @p src file to @p dest file.
+ @return 0 on success, fcopy_src_err on source file error,
+ fcopy_dest_err on destination file error.
+*/
+KDEWIN32_EXPORT int fcopy(const char *src, const char *dest);
+
+#ifdef  __cplusplus
+}
+
+/**
+ Returns registry value from MS Windows native registry.
+ @param key is usually one of HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE
+        constants defined in WinReg.h. 
+ @param subKey is a registry subkey defined as a path to a registry folder, eg.
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"
+        ('\' delimiter must be used)
+ @param item is an item inside subKey or "" if default folder's value should be returned
+ @param ok if not null, will be set to true on success and false on failure
+*/
+KDEWIN32_EXPORT QString getWin32RegistryValue(HKEY key, const QString& subKey, 
+	const QString& item, bool *ok = 0);
+
+/**
+ Shows native MS Windows file property dialog.
+ Return true on success. Only works for local absolute paths.
+ Used by KPropertiesDialog, if possible.
+*/
+KDEWIN32_EXPORT
+bool showWin32FilePropertyDialog(const QString& fileName);
+
+#endif //__cplusplus
+
+#endif
