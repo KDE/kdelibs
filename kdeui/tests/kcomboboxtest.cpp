@@ -22,6 +22,7 @@ int main ( int argc, char **argv)
     // All the other widgets
     KComboBox *rwc = new KComboBox( true, w, "rwcombobox" );
     QLabel* lblrw = new QLabel( rwc, i18n("&Editable ComboBox"), w, "rwcombolabel" );
+    KCompletion* comp = rwc->completionObject();
     rwc->setEnableContextMenu();
     KComboBox *soc = new KComboBox( w, "socombobox" );
     QLabel* lblso = new QLabel( soc, i18n("&Select-Only ComboBox"), w, "socombolabel" );
@@ -29,11 +30,11 @@ int main ( int argc, char **argv)
 
     // Set up the editable combo box.
     rwc->setDuplicatesEnabled( false );
-    QObject::connect( rwc, SIGNAL( returnPressed( const QString& ) ), rwc->completionObject(), SLOT( addItem( const QString& ) ) );
+    QObject::connect( rwc, SIGNAL( returnPressed( const QString& ) ), comp, SLOT( addItem( const QString& ) ) );
 
 
     // Set up select-only combo box.
-    soc->setCompletionMode( KGlobal::CompletionAuto );
+    soc->setCompletionMode( KGlobalSettings::CompletionAuto );
     soc->setDuplicatesEnabled( false );
     // Popuplate the select-only list box
     QStringList list;
@@ -42,6 +43,12 @@ int main ( int argc, char **argv)
     // This is to test a feature that does not currently work.
     soc->completionObject()->setItems( list );
     soc->insertStringList( list );
+
+    // Test auto completion on item insert Through
+    rwc->completionObject()->setItems( list );
+    rwc->insertStringList( list );
+    rwc->setCompletionMode( KGlobalSettings::CompletionAuto );
+    rwc->setEditText( "Pe" );
 
     // Insert the widgets into the layout manager.
     vbox->addWidget( lblrw );
