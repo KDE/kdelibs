@@ -600,11 +600,8 @@ bool KURL::cd( const char* _dir, bool zapRef)
     {
 	path_part = _dir;
     }
-    else if ( _dir[0] == '~' )
+    else if (( _dir[0] == '~' ) && ( protocol_part == "file" ))
     {
-	if ( protocol_part != "file" )
-	    return false;
-	
 	path_part = getenv( "HOME" );
 	path_part += "/";
 	path_part += _dir + 1;
