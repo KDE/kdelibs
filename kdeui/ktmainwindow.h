@@ -468,7 +468,7 @@ public:
      *     @ref KXMLGuiClient::conserveMemory() to free all memory
      *     allocated by the @ref QDomDocument .
      */
-    virtual void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
+    void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
 
 protected:
     /**
