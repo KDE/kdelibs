@@ -93,7 +93,6 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	int sampleFormat;
 	AFframecount	frameCount;
 	AFfilehandle	file;
-	int				byteorder;
 
 	setKey(string("CachedWav:")+filename);
 
@@ -114,15 +113,8 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 
-	byteorder = get_byteorder();
-
-	assert(byteorder != ORDER_UNKNOWN);
-
-	if(byteorder == ORDER_BIGENDIAN)
-		afSetVirtualByteOrder(file,AF_DEFAULT_TRACK, AF_BYTEORDER_BIGENDIAN);
-
-	if(byteorder == ORDER_LITTLEENDIAN)
-		afSetVirtualByteOrder(file,AF_DEFAULT_TRACK, AF_BYTEORDER_LITTLEENDIAN);
+	// we want everything converted to little endian unconditionally
+	afSetVirtualByteOrder(file,AF_DEFAULT_TRACK, AF_BYTEORDER_LITTLEENDIAN);
 
 	printf("loaded wav %s\n",filename.c_str());
 	printf("  sample format: %d, sample width: %d\n",
