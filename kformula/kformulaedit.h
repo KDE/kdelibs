@@ -46,8 +46,6 @@ struct _cursorInfo { //private
 };
 
 /**
- * Disclaimer: I don't have time right now for real documentation.
- *
  * This guy is a formula editor--kind of like a line editor but
  * you can do formulas.  If you construct it with restricted
  * set to true, it prevents you from typing things it doesn't know
@@ -64,6 +62,9 @@ struct _cursorInfo { //private
  *
  * Keyboard shortcuts are availiable, but it's probably easier to
  * use a KFormulaToolBar (which see).
+ * @short A WYSIWYG formula editor widget.
+ * @author Ilya Baran <ibaran@acs.bu.edu>
+ * @version $Id$
  */
 class KFormulaEdit : public QWidget
 {

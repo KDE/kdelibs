@@ -5,8 +5,11 @@
 #include <ktoolbar.h>
 
 /**
+ * Toolbar for formula editing functions.
+ *
  * Just make one of these and call connectToFormula passing
  * your KFormulaEdit.
+ * @author Ilya Baran <ibaran@acs.bu.edu>
  */
 class KFormulaToolBar : public KToolBar
 {

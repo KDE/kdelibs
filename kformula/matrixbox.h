@@ -22,6 +22,10 @@
 
 #include "box.h"
 
+/**
+ * Matrix formula layout helper.
+ * @internal
+ */
 class matrixbox : public box
 {
 protected:

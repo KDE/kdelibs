@@ -24,7 +24,12 @@
 #include <qdialog.h>
 #include <qvalidator.h>
 
-//  Here's a dialog for entering matrix sizes:
+/**
+ * Dialog for entering matrix sizes.
+ * @internal
+ * @author Ilya Baran (ibaran@acs.bu.edu)
+ * @version $Id$
+ */
 class MatrixDialog : public QDialog
 {
   Q_OBJECT

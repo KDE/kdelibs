@@ -46,6 +46,10 @@ struct charinfo;
 
 //each BoxType must be equal to the character that represents it in
 //the string.  The parser depends on that.
+
+/**
+ * @internal
+ */
 enum BoxType {
   PLUS = '+',
   MINUS = '-',
@@ -92,6 +96,10 @@ enum SymbolType {
  * tree of boxes which can then be "calculated" (arranged)
  * and drawn.  You probably don't want to use this class
  * in your own programs.  If you do, see the header file.
+ *
+ * @short Formula layout helper.
+ *
+ * @internal
  */
 class box {
 friend class KFormula;

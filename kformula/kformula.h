@@ -52,10 +52,7 @@ enum ErrorType {
     PARSE_ERROR
 };
 
-//this class is for parsing and storing the actual boxes that
-//make up a formula
 /**
- * I don't have time now to write real documentation.
  * The KFormula class is used for parsing and displaying formulas.
  *
  * If you want to draw a formula from a c-style expression,
@@ -74,6 +71,8 @@ enum ErrorType {
  *
  * The other use of KFormula is with KFormulaEdit--it's much cooler
  * that way.
+ * @short Parse and display formulas
+ * @author Ilya Baran <ibaran@acs.bu.edu>
  */
 class KFormula {
 private:
@@ -160,11 +159,14 @@ public:
 };
 
 /**
- * @libdoc Parse and display formulas in KDE applications.
+ * @libdoc Display and edit formulas in KDE applications.
  *
  * This library allows you to render formulas for pretty display. It is
  * used within the KOffice environment for this purpose, but can be used
- * by any KDE application using the @ref KFormula class.
+ * by any KDE application using the @ref KFormula class. @ref KFormulaEdit
+ * can be used to WYSIWYG-edit formulas, with @ref KFormulaToolBar allowing
+ * better integration within a full KDE application.
+ * @author Ilya Baran <ibaran@acs.bu.edu>
  */
 
 
