@@ -182,6 +182,12 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "decrypted", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
+  d->m_paSecurity->setWhatsThis( i18n( "Security Settings<p>"
+                                       "Shows the certificate of the displayed page. Only "
+				       "pages that have been transmitted using a secure, encrypted connection have a "
+				       "certificate.<p> "
+				       "Hint: if the image shows a closed lock, the page has been transmitted over a "
+				       "secure connection.") );
   d->m_paDebugScript = new KAction( "Script Debugger", 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( "Print Rendering Tree to STDOUT", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( "Print DOM Tree to STDOUT", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
@@ -199,10 +205,22 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
 
   d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
+  d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
+                                            "Make the font in this window bigger. "
+					    "Hold the mouse button for a menu with all available font sizes." ) );
   d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
+  d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
+                                            "Make the font in this window smaller. "
+					    "Hold the mouse button for a menu with all available font sizes." ) );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
+  d->m_paFind->setWhatsThis( i18n( "Find text<p>"
+				   "Shows a dialog that allows you to find text on the displayed page." ) );
+
   d->m_paFindNext = KStdAction::findNext( this, SLOT( slotFindNext() ), actionCollection(), "findNext" );
+  d->m_paFindNext->setWhatsThis( i18n( "Find next<p>"
+				       "Find the next occurrence of the text that you " 
+				       "have found using the <b>Find Text</b> function" ) );
   if ( parentPart() )
   {
       d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
@@ -210,6 +228,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   }
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "frameprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
+  d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<p>"
+					 "Some pages have several frames. To print only a single frame, click "
+					 "on it and then use this function." ) );
 
   d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
   if ( parentPart() )
