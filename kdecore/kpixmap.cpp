@@ -289,7 +289,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
             }
         }
 
-        if ( depth() > 16 ) {
+        if ( depth() <= 16 ) {
 
             if( depth() == 16 ) ncols = 32;
             if ( ncols < 2 || ncols > 256 ) ncols = 3;
