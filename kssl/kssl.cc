@@ -44,6 +44,7 @@
 #include <ksockaddr.h>
 
 #include <kopenssl.h>
+#include <ksslpkcs12.h>
 
 class KSSLPrivate {
 public:
@@ -368,12 +369,20 @@ KSSLPeerInfo& KSSL::peerInfo() {
 }
 
 
-bool KSSL::setClientCertificate(KSSLCertificate *cert) {
+bool KSSL::setClientCertificate(KSSLPKCS12 *pkcs) {
 #ifdef HAVE_SSL
   int rc;
+  X509 *x = pkcs->getCertificate()->getCert();
+  EVP_PKEY *k = pkcs->getPrivateKey();
 
-  rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, cert->getCert());
+  if (!x || !k) return false;
 
+  rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, x);
+  if (rc != 0) {
+    return false;
+  }
+
+  rc = d->kossl->SSL_CTX_use_PrivateKey(d->m_ctx, k);
   if (rc != 0) {
     return false;
   }

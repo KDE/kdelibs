@@ -42,19 +42,33 @@ class X509;
 #define STACK_OF(x) void
 #endif
 
+class KSSL;
 class KSSLCertificate;
 class KSSLPKCS12Private;
 
 
 class KSSLPKCS12 {
+friend class KSSL;
+
 public:
   virtual ~KSSLPKCS12();
+
+  /*
+   *   Create a KSSLPKCS12 object from a Base64 in a QString.  Returns NULL
+   *   on failure.
+   */
+  static KSSLPKCS12* fromString(QString base64, QString password = "");
 
   /*
    *   Create a KSSLPKCS12 object by reading a PKCS#12 file.  Returns NULL
    *   on failure.
    */
   static KSSLPKCS12* loadCertFile(QString filename, QString password = "");
+
+  /*
+   *   Convert to a Base64 string.
+   */
+  QString toString();
 
   /*
    *   Raw set the PKCS12 object.
@@ -66,6 +80,24 @@ public:
    */
   bool changePassword(QString pold, QString pnew);
  
+
+  /*
+   *   Get the private key
+   */
+  EVP_PKEY *getPrivateKey();
+
+
+  /*
+   *   Get the X.509 certificate
+   */
+  KSSLCertificate *getCertificate();
+
+
+  /*
+   *   Write the PKCS#12 to a file in raw mode
+   */
+  bool toFile(QString filename);
+
 
 protected:
   KSSLPKCS12();

@@ -27,6 +27,8 @@
 #include <qfile.h>
 #include <ksslall.h>
 #include <kdebug.h>
+#include <ktempfile.h>
+#include <kmdcodec.h>
 
 #include <assert.h>
 
@@ -50,6 +52,24 @@ KSSLPKCS12::~KSSLPKCS12() {
 #endif
    if (_cert) delete _cert;
 }
+
+
+KSSLPKCS12* KSSLPKCS12::fromString(QString base64, QString password) {
+#ifdef HAVE_SSL
+KTempFile ktf;
+
+    if (base64.isEmpty()) return NULL;
+    QByteArray qba, qbb = QCString(base64.latin1()).copy();
+    KCodecs::base64Decode(qbb, qba);
+    ktf.file()->writeBlock(qba);
+    ktf.close();
+    KSSLPKCS12* rc = loadCertFile(ktf.name(), password);
+    ktf.unlink();
+    return rc;
+#endif
+return NULL;
+}
+
 
 
 KSSLPKCS12* KSSLPKCS12::loadCertFile(QString filename, QString password) {
@@ -119,5 +139,62 @@ X509 *x = NULL;
 return false;  
 }
 
+
+EVP_PKEY *KSSLPKCS12::getPrivateKey() {
+   return _pkey;
+}
+
+
+KSSLCertificate *KSSLPKCS12::getCertificate() {
+   return _cert;
+}
+
+
+QString KSSLPKCS12::toString() {
+QString base64;
+#ifdef HAVE_SSL
+KTempFile ktf;
+
+   kossl->i2d_PKCS12_fp(ktf.fstream(), _pkcs);
+   ktf.close();
+   QFile qf(ktf.name());
+   qf.open(IO_ReadOnly);
+   char *buf = new char[qf.size()];
+   qf.readBlock(buf, qf.size());
+   QByteArray qba;
+   qba.setRawData(buf, qf.size());
+   base64 = KCodecs::base64Encode(qba);
+   qba.resetRawData(buf, qf.size());
+   delete[] buf;
+   qf.close();
+   ktf.unlink();
+
+#endif
+return base64;
+}
+
+
+
+bool KSSLPKCS12::toFile(QString filename) {
+#ifdef HAVE_SSL
+QFile out(filename);
+
+   if (!out.open(IO_WriteOnly)) return false;
+
+   int fd = out.handle();
+   FILE *fp = fdopen(fd, "w");
+
+   if (!fp) {
+      unlink(filename.latin1());
+      return false;
+   }
+
+   kossl->i2d_PKCS12_fp(fp, _pkcs);
+
+   fclose(fp);
+   return true;
+#endif
+return false;
+}
 
 

@@ -27,6 +27,7 @@
 
 class KSSLPrivate;
 class KSSLCertificate;
+class KSSLPKCS12;
 
 class KSSL {
 
@@ -73,8 +74,10 @@ public:
   /**
    * @return true if the certificate was properly set to the session.
    * Use this to set the certificate to send to the server.
+   * Do NOT delete the KSSLPKCS12 object until you are done with the session.
+   * It is not defined when KSSL will be done with this.
    */
-  bool setClientCertificate(KSSLCertificate *cert);
+  bool setClientCertificate(KSSLPKCS12 *pkcs);
 
   int connect(int sock);
 
