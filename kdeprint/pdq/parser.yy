@@ -12,7 +12,7 @@ static QList<QString>* split_string(QString* str);
 static BlockT	*main_block = 0;
 
 extern int yylex();
-int yyerror(char *s);
+void yyerror(const char *s);
 
 QString	BlockT::prefix_ = "";
 %}
@@ -242,7 +242,7 @@ language_driver_block:	  LANGUAGE_DRIVER string_ident '{' interface_body '}'	{ $
 /* Additional code */
 /*******************/
 
-int yyerror(char *s)
+void yyerror(const char *s)
 {
 	fprintf(stderr, "%s\n", s);
 }
