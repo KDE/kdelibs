@@ -15,6 +15,7 @@
 #include "kwindowtest.moc"
 
 #include <kmsgbox.h>
+#include <dclock.h>
 
 /*
  Ok this is a constructor of our top widget. It inherits KTW.
@@ -29,7 +30,7 @@
 testWindow::testWindow (QWidget *, const char *name)
     : KTopLevelWidget (name)
 {
-
+    ena=false;
     setCaption ("Test KTW");
     /******************************/
     /* First, we setup setup Menus */
@@ -68,6 +69,8 @@ testWindow::testWindow (QWidget *, const char *name)
     itemsMenu->insertItem ("Clear comboBox", this, SLOT(slotClearCombo()));
     itemsMenu->insertItem ("Insert List in Combo", this, SLOT(slotInsertListInCombo()));
     itemsMenu->insertItem ("Make item 3 curent", this, SLOT(slotMakeItem3Current()));
+    itemsMenu->insertItem ("Insert clock!", this, SLOT(slotInsertClock()));
+    itemsMenu->insertItem ("Important!", this, SLOT(slotImportant()));
 
 	menuBar->insertSeparator();
 	helpMenu = kapp->getHelpMenu( true, "KWindowTest was programmed by Sven Radej");
@@ -77,7 +80,12 @@ testWindow::testWindow (QWidget *, const char *name)
     /*Now, we setup statusbar order is not important. */
     /**************************************************/
     statusBar = new KStatusBar (this);
-    statusBar->insertItem("(ctrl-d for completions in LineEdit or Combo) ", 0);
+    statusBar->insertItem("Hi there! Can you see the clock?) ", 0);
+    statusBar->insertItem("What?", 1);
+
+    DigitalClock *clk = new DigitalClock (statusBar);
+    clk->setFrameStyle(QFrame::NoFrame);
+    statusBar->insertWidget(clk, 70, 2);
 
     /***********************/
     /* And now the toolbar */
@@ -103,7 +111,7 @@ testWindow::testWindow (QWidget *, const char *name)
                          TRUE, "Create new file");
     pix = loader->loadIcon("fileopen.xpm");
     toolBar->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                         TRUE, "Read window properties");
+                         false, "Read window properties");
     pix = loader->loadIcon("filefloppy.xpm");
     toolBar->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
                          TRUE, "Save window properties");
@@ -137,11 +145,6 @@ testWindow::testWindow (QWidget *, const char *name)
     // Add signal rotation also (ctrl-s)
 
     toolBar->addConnection(5, SIGNAL(rotation()), this, SLOT(slotCompletion()));
-
-    // Add signals for combo, too
-
-    toolBar->addConnection(4, SIGNAL(completion()), this, SLOT(slotListCompletion()));
-    toolBar->addConnection(4, SIGNAL(rotation()), this, SLOT(slotListCompletion()));
 
     // Now add another button and align it right
     pix = loader->loadIcon("exit.xpm");
@@ -239,32 +242,48 @@ testWindow::testWindow (QWidget *, const char *name)
 /*  Now slots for toolbar actions  */
 /***********************************/
 
+void testWindow::slotInsertClock()
+{
+  DigitalClock *clock = new DigitalClock(tb1);;
+  clock->setFrameStyle(QFrame::NoFrame);
+  tb1->insertWidget(8, 70, clock);
+}
+
 void testWindow::slotNew()
 {
  tb1->toggleButton(0);
 }
 void testWindow::slotOpen()
 {
-    statusBar->changeItem("Reading properties...", 0);
-//     if (readProperties () == TRUE) // specific then global
-//         statusBar->changeItem("Reading properties... Done.", 0);
-//     else
-//         statusBar->changeItem("Error reading properties.", 0);
+  pr= new QProgressBar (statusBar);
+  statusBar->message(pr);
+  timer = new QTimer (pr);
 
+  connect (timer, SIGNAL(timeout()), this, SLOT(slotGoGoGoo()));
+  timer->start(100);
 }
+
+void testWindow::slotGoGoGoo()
+{
+  pr->setProgress(pr->progress()+1);
+  if (pr->progress()==100)
+  {
+    timer->stop();
+    statusBar->clear();
+    delete pr;
+  }
+}
+
 void testWindow::slotSave()
 {
     statusBar->changeItem("Saving properties...", 0);
-//     if (saveProperties (FALSE) == TRUE) // global
-//         statusBar->changeItem("Saving properties... Done.", 0);
-//     else
-//         statusBar->changeItem("Error saving properties.", 0);
 
 }
 void testWindow::slotPrint()
 {
     statusBar->changeItem("Print file pressed", 0);
-
+    ena=!ena;
+    toolBar->setItemEnabled(1,ena );
 }
 void testWindow::slotReturn()
 {
@@ -307,7 +326,7 @@ void testWindow::slotListCompletion()
      */
   QString s(toolBar->getComboItem(4));  // get text in combo
   s+= "(completing)";
-  toolBar->changeComboItem(4, s.data());   // setTextIncombo
+  //toolBar->getCombo(4)->changeItem(s.data());   // setTextIncombo
 
 }
 
@@ -332,13 +351,21 @@ testWindow::~testWindow ()
 {
     /********************************************************/
     /*                                                      */
-    /*                THIS IS IMPORTANT!!                  */
+    /*                THIS IS IMPORTANT!!!                  */
     /*                                                      */
-    /********************************************************/
-    
-  delete toolBar;
-  delete tb1;
+  /********************************************************/
+
+  delete tb1->getWidget(8);
+  debug ("kwindowtest: deleted clock");
+  
+  if (toolBar)
+    delete toolBar;
+  if (tb1)
+    delete tb1;
+  if (menuBar)
   delete menuBar;
+
+  debug ("kwindowtest finished");
 }
 
 void testWindow::beFixed()
@@ -350,6 +377,11 @@ void testWindow::beYFixed()
 {
     widget->setMinimumSize(400, 300);
     widget->setMaximumSize(9999, 300);
+}
+
+void testWindow::slotImportant ()
+{
+  statusBar->message("This important message will go away in 15 seconds", 15000);
 }
 
 void testWindow::slotExit ()
@@ -431,7 +463,7 @@ void testWindow::slotWidth()
 
 void testWindow::slotClearCombo()
 {
-  toolBar->clearCombo(4);
+  toolBar->getCombo(4)->clear();
 }
 
 void testWindow::slotInsertListInCombo()
@@ -449,32 +481,34 @@ void testWindow::slotInsertListInCombo()
   list->append("ListTen");
   list->append("ListEleven");
   list->append("ListAndSoOn");
-  toolBar->insertComboList (4, list, 0);
+  toolBar->getCombo(4)->insertStrList (list,0);
 }
 
 void testWindow::slotMakeItem3Current()
 {
-  toolBar->setCurrentComboItem(4, 3);
+  toolBar->getCombo(4)->setCurrentItem(3);
 }
 
 int main( int argc, char *argv[] )
 {
-    int i;
+//    int i;
     KApplication *myApp = new KApplication( argc, argv );
-    testWindow *test = new testWindow;
+//    testWindow *test = new testWindow;
+    testWindow test;
 
-    myApp->setMainWidget(test);
+    myApp->setMainWidget(&test);
+    /*
     i = KMsgBox::yesNoCancel(0, "Select", "Select type of mainwidget",
                              0, "Fixed", "Y-fixed", "Resizable");
     if (i == 1)
         test->beFixed();
     else if (i == 2)
         test->beYFixed();
-
-    test->show();
+    */
+    test.show();
     int ret = myApp->exec();
 
-    delete test;
+    //delete test;
     return ret;
 }
 
