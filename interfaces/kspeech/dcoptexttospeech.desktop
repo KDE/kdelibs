@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=DCOP/Text-to-Speech
+Comment=Text-to-Speech Service with a DCOP interface
+Comment[bg]=Услуга за синтез на глас с интерфейс DCOP
+Comment[da]=Tekst-til-tale tjeneste med DCOP-grænseflade
+Comment[ga]=Seirbhís Téacs-go-Caint le comhéadan DCOP
+Comment[pt]=Service Texto-para-Fala com interface DCOP
+Comment[pt_BR]=Service Texto-para-Fala com interface DCOP
+Comment[ru]=Интерфейс DCOP для синтеза речи
+Comment[sv]=Text-till-tal tjänst med DCOP-gränssnitt
+Comment[ta]=ஒரு DCOP இடைமுகத்துடன் உரையில் இருந்து பேச்சு சேவை
+Comment[uk]=Інтерфейс DCOP для служби синтезу мовлення з тексту
