@@ -96,7 +96,7 @@
                 <string>Alt+E</string>
             </property>
         </widget>
-        <widget class="KListView" row="3" column="0" rowspan="5" colspan="5">
+        <widget class="QListView" row="3" column="0" rowspan="5" colspan="5">
             <column>
                 <property name="text">
                     <string>Suggested Words</string>
@@ -175,7 +175,7 @@
                 <string>Alt+U</string>
             </property>
         </widget>
-        <widget class="KComboBox" row="8" column="1" rowspan="1" colspan="4">
+        <widget class="QComboBox" row="8" column="1" rowspan="1" colspan="4">
             <item>
                 <property name="text">
                     <string>English</string>
