@@ -77,7 +77,7 @@ public:
       * Ie:
       *
       * "0"        returns the very first word
-      * "0:"    returns the first the the last word
+      * "0:"    returns the first to the last word
       * "0:3"    returns the first to fourth words
       * ":3"    returns everything up to the fourth word
       *
