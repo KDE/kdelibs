@@ -20,6 +20,7 @@
 #include <config.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <qdialog.h>
 #include <klocale.h>
@@ -79,6 +80,7 @@ protected:
 
 int main(int argc, char *argv[])
 {
+    KLocale::setMainCatalogue("klock");
     KCmdLineArgs::init(argc, argv, kss_applicationName, kss_description, kss_version);
 
     KCmdLineArgs::addCmdLineOptions(options);
