@@ -43,19 +43,22 @@ void KDirSize::processList()
     {
         KFileItem * item = m_lstItems.first();
         m_lstItems.removeFirst();
-        if ( item->isDir() && !item->isLink() )
-        {
-            kdDebug(kfile_area) << "KDirSize::processList dir -> listing" << endl;
-            KURL url = item->url();
-            startNextJob( url );
-            return; // we'll come back later, when this one's finished
-        }
-        else
-        {
-            m_totalSize += item->size();
+	if ( !item->isLink() )
+	{
+            if ( item->isDir() )
+            {
+                kdDebug(kfile_area) << "KDirSize::processList dir -> listing" << endl;
+                KURL url = item->url();
+                startNextJob( url );
+                return; // we'll come back later, when this one's finished
+            }
+            else
+            {
+                m_totalSize += item->size();
 // no long long with kdDebug()
 //            kdDebug(kfile_area) << "KDirSize::processList file -> " << m_totalSize << endl;
-        }
+            }
+	}
     }
     kdDebug(kfile_area) << "KDirSize::processList finished" << endl;
     if ( !m_bAsync )
