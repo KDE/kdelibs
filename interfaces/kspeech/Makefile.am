@@ -22,6 +22,3 @@ noinst_HEADERS = ktts.h
 
 # Header files to be installed.
 include_HEADERS = kspeech.h kspeech_stub.h kspeechsink.h
-
-# Generate API documentation.
-include $(top_srcdir)/admin/Doxyfile.am
