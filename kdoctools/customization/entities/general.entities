@@ -276,6 +276,7 @@
 <!ENTITY ktalk  "<application>KTalk</application>">
 <!ENTITY ktalkd	"<application>KTalkd</application>">
 <!ENTITY kteatime "<application>KTeaTime</application>">
+<!ENTITY kthesaurus "<application>KThesaurus</application>">
 <!ENTITY ktimemon "<application>KTimemon</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
 <!ENTITY ktouch "<application>KTouch</application>">
