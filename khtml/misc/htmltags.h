@@ -6,9 +6,8 @@ khtmltags.in by maketags, do not edit */
 #define KHTML_TAGS_H
 
 #include "dom_string.h"
-using namespace DOM;
 
-const DOMString &getTagName(unsigned short id);
+const DOM::DOMString &getTagName(unsigned short id);
 #define ID_A 1
 #define ID_ABBR 2
 #define ID_ACRONYM 3
