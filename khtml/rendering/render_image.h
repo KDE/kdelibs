@@ -88,6 +88,8 @@ private:
     bool berrorPic : 1;
 
     DOM::HTMLElementImpl *element;
+
+    bool loadEventSent;
 };
 
 

@@ -54,6 +54,7 @@ namespace DOM
   class HTMLFormElementImpl;
   class HTMLAnchorElementImpl;
   class HTMLMetaElementImpl;
+  class NodeImpl;
   class Node;
   class HTMLEventListener;
   class EventListener;
@@ -136,6 +137,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLObjectElementImpl;
   friend class DOM::HTMLAnchorElementImpl;
   friend class DOM::HTMLMetaElementImpl;
+  friend class DOM::NodeImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;

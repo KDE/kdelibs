@@ -265,7 +265,7 @@ public:
     void setHTMLEventListener(int id, EventListener *listener);
     EventListener *getHTMLEventListener(int id);
 
-    bool dispatchEvent(EventImpl *evt, int &exceptioncode);
+    bool dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent = false);
     bool dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
     bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
     bool dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg);

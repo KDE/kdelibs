@@ -1161,7 +1161,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,targetNode);
 		me->ref();
-		oldUnder->dispatchEvent(me,exceptioncode);
+		oldUnder->dispatchEvent(me,exceptioncode,true);
 		me->deref();
 	    }
 
@@ -1175,7 +1175,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 							button,oldUnder);
 
 		me->ref();
-		targetNode->dispatchEvent(me,exceptioncode);
+		targetNode->dispatchEvent(me,exceptioncode,true);
 		me->deref();
 	    }
 
@@ -1192,7 +1192,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,0);
 	me->ref();
-	targetNode->dispatchEvent(me,exceptioncode);
+	targetNode->dispatchEvent(me,exceptioncode,true);
 	bool defaultHandled = me->defaultHandled();
 	me->deref();
 
@@ -1207,7 +1207,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    me->ref();
 	    if (defaultHandled)
 		me->setDefaultHandled();
-	    targetNode->dispatchEvent(me,exceptioncode);
+	    targetNode->dispatchEvent(me,exceptioncode,true);
 	    me->deref();
 	}
     }

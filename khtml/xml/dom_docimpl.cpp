@@ -1495,7 +1495,7 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
 					      0);
 
 	    ue->ref();
-	    m_focusNode->dispatchEvent(ue,exceptioncode);
+	    m_focusNode->dispatchEvent(ue,exceptioncode,true);
 	    ue->deref();
         }
         m_focusNode = n;
@@ -1509,7 +1509,7 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
 					      0);
 
 	    ue->ref();
-	    m_focusNode->dispatchEvent(ue,exceptioncode);
+	    m_focusNode->dispatchEvent(ue,exceptioncode,true);
 	    ue->deref();
 
             n->setFocus();

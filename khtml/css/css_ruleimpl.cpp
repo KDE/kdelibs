@@ -35,7 +35,6 @@
 using namespace DOM;
 
 #include <kdebug.h>
-#include <iostream.h>
 
 CSSRuleImpl::CSSRuleImpl(StyleBaseImpl *parent)
     : StyleBaseImpl(parent)
@@ -181,14 +180,12 @@ void CSSImportRuleImpl::init()
     DOMString absHref = m_strHref;
     if (!parentStyleSheet()->href().isNull()) {
       // use parent styleheet's URL as the base URL
-      cerr << "CSSImportRuleImpl::init(): parent stylesheet url is " << parentStyleSheet()->href().string().ascii() << endl;
       absHref = KURL(parentStyleSheet()->href().string(),m_strHref.string()).url();
     }
 /*
     else {
       // use documents's URL as the base URL
       DocumentImpl *doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
-      cerr << "CSSImportRuleImpl::init(): document url is " << doc->URL().ascii() << endl;
       absHref = KURL(doc->URL(),m_strHref.string()).url();
     }
 */

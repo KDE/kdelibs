@@ -31,6 +31,7 @@ class KJSDebugWin;
 namespace DOM {
   class Node;
   class EventListener;
+  class Event;
 };
 
 namespace KJS {
@@ -50,6 +51,7 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n) = 0;
   virtual void clear() = 0;
   virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code) = 0;
+  virtual void finishedWithEvent(const DOM::Event &event) = 0;
   virtual KJS::Interpreter *interpreter() = 0;
 
   virtual void setDebugEnabled(bool enabled) = 0;

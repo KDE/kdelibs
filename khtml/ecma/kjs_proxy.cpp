@@ -40,6 +40,7 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString&str, const DOM::Node &n);
   virtual void clear();
   virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code);
+  virtual void finishedWithEvent(const DOM::Event &event);
   virtual KJS::ScriptInterpreter *interpreter();
 
   virtual void setDebugEnabled(bool enabled);
@@ -165,6 +166,15 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   Object handlerFunc = constr.construct(m_script->globalExec(), args); // ### is globalExec ok ?
 
   return KJS::Window::retrieveWindow(m_part)->getJSEventListener(handlerFunc,true);
+}
+
+void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)
+{
+  // This is called when the DOM implementation has finished with a particular event. This
+  // is the case in sitations where an event has been created just for temporary usage,
+  // e.g. an image load or mouse move. Once the event has been dispatched, it is forgotten
+  // by the DOM implementation and so does not need to be cached still by the interpreter
+  m_script->forgetDOMObject(event.handle());
 }
 
 KJS::ScriptInterpreter *KJSProxyImpl::interpreter()

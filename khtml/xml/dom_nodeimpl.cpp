@@ -35,6 +35,11 @@
 
 #include "rendering/render_object.h"
 #include "rendering/render_text.h"
+
+#include "ecma/kjs_proxy.h"
+#include "khtmlview.h"
+#include "khtml_part.h"
+
 #include <qrect.h>
 #include <qevent.h>
 #include <qnamespace.h>
@@ -547,10 +552,23 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
 }
 
 
-bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode)
+bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 {
     evt->setTarget(this);
-    return dispatchGenericEvent( evt, exceptioncode );
+
+    // Since event handling code could cause this object to be deleted, grab a reference to the view now
+    KHTMLView *view = document->document()->view();
+
+    bool ret = dispatchGenericEvent( evt, exceptioncode );
+
+    // If tempEvent is true, this means that the DOM implementation will not be storing
+    // a reference to the event, i.e. there is no way to retrieve it from javascript if a
+    // script does not already have a reference to it in a variable. So there is no need
+    // for the interpreter to keep the event in it's cache
+    if (tempEvent && view && view->part()->jScript())
+        view->part()->jScript()->finishedWithEvent(evt);
+
+    return ret;
 }
 
 bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
@@ -633,7 +651,7 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
     int exceptioncode = 0;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
-    bool r = dispatchEvent(evt,exceptioncode);
+    bool r = dispatchEvent(evt,exceptioncode,true);
     evt->deref();
     return r;
 }
@@ -719,7 +737,7 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
                    detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
-    bool r = dispatchEvent(evt,exceptioncode);
+    bool r = dispatchEvent(evt,exceptioncode,true);
     evt->deref();
     return r;
 
@@ -740,7 +758,7 @@ bool NodeImpl::dispatchUIEvent(int _id, int detail)
     UIEventImpl *evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
                                        cancelable,getDocument()->defaultView(),detail);
     evt->ref();
-    bool r = dispatchEvent(evt,exceptioncode);
+    bool r = dispatchEvent(evt,exceptioncode,true);
     evt->deref();
     return r;
 }
@@ -751,7 +769,7 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
 	return false;
     int exceptioncode = 0;
     return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
-			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
+			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 }
 
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key)
@@ -760,7 +778,7 @@ bool NodeImpl::dispatchKeyEvent(QKeyEvent *key)
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
     KeyEventImpl *keyEventImpl = new KeyEventImpl(key, getDocument()->defaultView());
     keyEventImpl->ref();
-    bool r = dispatchEvent(keyEventImpl, exceptioncode);
+    bool r = dispatchEvent(keyEventImpl,exceptioncode,true);
     // the default event handler should accept() the internal QKeyEvent
     // to prevent the view from further evaluating it.
     if (!keyEventImpl->defaultPrevented() && !keyEventImpl->qKeyEvent->isAccepted())
@@ -1305,7 +1323,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
 	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode);
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 	if (exceptioncode)
 	    return 0;
     }
@@ -1319,7 +1337,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 	    NodeImpl *c;
 	    for (c = oldChild; c; c = c->traverseNextNode(oldChild)) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
-				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 		if (exceptioncode)
 		    return 0;
 	    }
@@ -1782,7 +1800,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 {
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
 	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode);
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 	if (exceptioncode)
 	    return;
     }
@@ -1796,7 +1814,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 	    NodeImpl *c;
 	    for (c = child; c; c = c->traverseNextNode(child)) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
-				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 		if (exceptioncode)
 		    return;
 	    }

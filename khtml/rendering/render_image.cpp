@@ -54,6 +54,7 @@ RenderImage::RenderImage(HTMLElementImpl *_element)
     image = 0;
     berrorPic = false;
     element = _element;
+    loadEventSent = false;
 
     setIntrinsicWidth( 0 );
     setIntrinsicHeight( 0 );
@@ -334,6 +335,10 @@ void RenderImage::setAlt(DOM::DOMString text)
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if ( image == finishedObj && element)
+    // ### in some cases this seems to get called repeatedly when an image completes loading
+    // (e.g. on xml.apache.org) - qt bug?
+    if (image == finishedObj && element && !loadEventSent) {
+        loadEventSent = true;
         element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+    }
 }

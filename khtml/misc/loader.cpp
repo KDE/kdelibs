@@ -387,7 +387,7 @@ static QString buildAcceptHeader()
 
 // -------------------------------------------------------------------------------------
 
-CachedImage::CachedImage(DocLoader* dl, const DOMString &url, bool reload, int _expireDate)
+CachedImage::CachedImage(DocLoader* /*dl*/, const DOMString &url, bool reload, int _expireDate)
     : QObject(), CachedObject(url, Image, reload, _expireDate)
 {
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );

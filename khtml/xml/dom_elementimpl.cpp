@@ -233,7 +233,7 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
 	if (getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER)) {
 	    int exceptioncode = 0;
 	    _element->dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,this,prevValue,
-				    _value,_name,MutationEvent::MODIFICATION),exceptioncode);
+				    _value,_name,MutationEvent::MODIFICATION),exceptioncode,true);
 	}
     }
     if (prevValue) prevValue->deref();
