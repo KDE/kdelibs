@@ -18,24 +18,14 @@
 */
 #include <qcursor.h>
 #include <qpainter.h>
-#include <qdrawutil.h>
 #include <qtimer.h>
-#include <qfont.h>
 #include <qfontmetrics.h>
-#include <qregexp.h>
 #include <qstyle.h>
 
 #include "kpopupmenu.h"
 
-#include <kconfig.h>
 #include <kdebug.h>
 #include <kapplication.h>
-#include <kipc.h>
-#include <kiconloader.h>
-#include <klocale.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
-#include <kstandarddirs.h>
 
 KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     : QWidget(parent, name)
