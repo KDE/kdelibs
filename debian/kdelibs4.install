@@ -1,32 +1,32 @@
-debian/tmp/usr/lib/libDCOP.so.*	usr/lib/
-debian/tmp/usr/lib/libartskde.so.*	usr/lib/
-debian/tmp/usr/lib/libkabc.so.*	usr/lib/
+debian/tmp/usr/lib/libDCOP.so.*
+debian/tmp/usr/lib/libartskde.so.*
+debian/tmp/usr/lib/libkabc.so.*
 debian/tmp/usr/lib/libkatepartinterfaces.la
-debian/tmp/usr/lib/libkatepartinterfaces.so.*	usr/lib/
-debian/tmp/usr/lib/libkdecore.so.*	usr/lib/
-debian/tmp/usr/lib/libkdefakes.so.*	usr/lib/
-debian/tmp/usr/lib/libkdefx.so.*	usr/lib/
+debian/tmp/usr/lib/libkatepartinterfaces.so.*
+debian/tmp/usr/lib/libkdecore.so.*
+debian/tmp/usr/lib/libkdefakes.so.*
+debian/tmp/usr/lib/libkdefx.so.*
 debian/tmp/usr/lib/libkdeprint.la
-debian/tmp/usr/lib/libkdeprint.so.*	usr/lib/
+debian/tmp/usr/lib/libkdeprint.so.*
 debian/tmp/usr/lib/libkdeprint_management.la
-debian/tmp/usr/lib/libkdeprint_management.so.*	usr/lib/
-debian/tmp/usr/lib/libkdesasl.so.*	usr/lib/
-debian/tmp/usr/lib/libkdesu.so.*	usr/lib/
-debian/tmp/usr/lib/libkdeui.so.*	usr/lib/
+debian/tmp/usr/lib/libkdeprint_management.so.*
+debian/tmp/usr/lib/libkdesasl.so.*
+debian/tmp/usr/lib/libkdesu.so.*
+debian/tmp/usr/lib/libkdeui.so.*
 debian/tmp/usr/lib/libkhtml.la
-debian/tmp/usr/lib/libkhtml.so.*	usr/lib/
-debian/tmp/usr/lib/libkio.so.*	usr/lib/
-debian/tmp/usr/lib/libkjava.so.*	usr/lib/
-debian/tmp/usr/lib/libkjs.so.*	usr/lib/
-debian/tmp/usr/lib/libkmid.so.*	usr/lib/
-debian/tmp/usr/lib/libkparts.so.*	usr/lib/
-debian/tmp/usr/lib/libkscreensaver.so.*	usr/lib/
-debian/tmp/usr/lib/libkscript.so.*	usr/lib/
-debian/tmp/usr/lib/libkspell.so.*	usr/lib/
+debian/tmp/usr/lib/libkhtml.so.*
+debian/tmp/usr/lib/libkio.so.*
+debian/tmp/usr/lib/libkjava.so.*
+debian/tmp/usr/lib/libkjs.so.*
+debian/tmp/usr/lib/libkmid.so.*
+debian/tmp/usr/lib/libkparts.so.*
+debian/tmp/usr/lib/libkscreensaver.so.*
+debian/tmp/usr/lib/libkscript.so.*
+debian/tmp/usr/lib/libkspell.so.*
 debian/tmp/usr/lib/libktexteditor.la
-debian/tmp/usr/lib/libktexteditor.so.*	usr/lib/
-debian/tmp/usr/lib/libshellscript.so.*	usr/lib/
-debian/tmp/usr/lib/libvcard.so.*	usr/lib/
+debian/tmp/usr/lib/libktexteditor.so.*
+debian/tmp/usr/lib/libshellscript.so.*
+debian/tmp/usr/lib/libvcard.so.*
 debian/tmp/usr/lib/libcupsdconf.la
 debian/tmp/usr/lib/libcupsdconf.so
 debian/tmp/usr/lib/libkatepart.la
