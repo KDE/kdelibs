@@ -125,7 +125,7 @@ long int random(void)
     return lrand48();
 }
 
-void srandom(unsigned int seed);
+void srandom(unsigned int seed)
 {
     srand48(seed);
 }
