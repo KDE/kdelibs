@@ -53,6 +53,7 @@ as Authors, publish date, the abstract, and Keywords -->
 </author>
 </authorgroup>
 
+<!-- TRANS:ROLES_OF_TRANSLATORS -->
 
 <copyright>
 <year>1999</year>
@@ -435,13 +436,8 @@ Contributors:
 Documentation copyright 1999 George N. Ugnacious <email>gnu@kde.org</email>
 </para>
 <para>
-Translations done by:
-<itemizedlist>
-<listitem>
-<para>Babel D. Fish <email>babelfish@kde.org</email> (Sanskrit)</para>
-</listitem>
-</itemizedlist>
-</para>
+
+<!-- TRANS:CREDIT_FOR_TRANSLATORS -->
 
 &underFDL;               <!-- FDL: do not remove -->
 
@@ -539,8 +535,10 @@ dicer-toaster daemon first, or KApp won't work !</para>
 <!--
 Local Variables:
 mode: sgml
-sgml-minimize-attributes: nil
-sgml-general-insert-case: lower
+sgml-minimize-attributes:nil
+sgml-general-insert-case:lower
+sgml-indent-step:0
+sgml-indent-data:nil
 End:
 -->
 
