@@ -134,7 +134,7 @@ bool KProcess::setExecutable(const QString& proc)
   if (proc.isEmpty())  return false;
 
   arguments.removeFirst();
-  arguments.insert(0, proc.ascii());
+  arguments.insert(0, QFile::encodeName(proc));
 
   return true;
 }
@@ -142,7 +142,7 @@ bool KProcess::setExecutable(const QString& proc)
 
 KProcess &KProcess::operator<<(const QString& arg)
 {
-  arguments.append(arg.ascii());
+  arguments.append(QFile::encodeName(arg));
   return *this;
 }
 
@@ -690,7 +690,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   uint i;
   uint n = arguments.count();
   const char *arglist[4];
-  QString cmd;
+  QCString cmd;
 
   if (runs || (0 == n)) {
 	return false;  // cannot start a process that is already running
@@ -743,7 +743,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 
         arglist[0] = shell.data();
         arglist[1] = "-c";
-        arglist[2] = cmd.ascii();
+        arglist[2] = cmd.data();
         arglist[3] = 0;
 
 	if(!commSetupDoneC())
@@ -801,9 +801,10 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 QString KShellProcess::quote(const QString &arg)
 {
     QString res = arg;
-    res.replace(QRegExp("'"), "'\"'\"'");
-    res.prepend("'");
-    res.append("'");
+    res.replace(QRegExp(QString::fromLatin1("'")),
+		QString::fromLatin1("'\"'\"'"));
+    res.prepend('\'');
+    res.append('\'');
     return res;
 }
 
