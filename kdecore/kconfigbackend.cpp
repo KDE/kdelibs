@@ -352,7 +352,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
 
-  KSaveFile rConfigFile( filename );
+  KSaveFile rConfigFile( filename, 0600 );
 
   if (rConfigFile.status() != 0)
      return bEntriesLeft;
