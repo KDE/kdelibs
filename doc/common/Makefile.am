@@ -10,4 +10,6 @@ common_DATA = artistic-license.html bottom1.png bottom2.png bsd-license.html \
 	kde-localised.css.template lgpl-license lgpl-license.html \
 	logotp3-small.png logotp3.png note.png prev.png \
 	qpl-license.html shadow.png tip.png toc-blank.png toc-minus.png \
-	toc-plus.png up.png warning.png x11-license.html xml.dcl doctop1a.png 
+	toc-plus.png up.png warning.png x11-license.html xml.dcl \
+	doctop1a.png doctop1b.png
+
