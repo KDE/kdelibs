@@ -1,15 +1,19 @@
 
-INCLUDES= $(all_includes) -I$(kde_includes)/arts
+INCLUDES= -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/qtmcop \
+	-I$(top_builddir)/arts/flow \
+	-I$(top_srcdir)/arts/soundserver -I$(top_builddir)/arts/soundserver \
+	$(all_includes)
 
 ####### Files
 
-bin_PROGRAMS	= knotify knotifytest
+bin_PROGRAMS	= knotify
 knotify_SOURCES	= knotify.cpp knotify.skel
-knotify_LDADD	= $(kde_libraries)/libsoundserver_idl.la \
-                  $(kde_libraries)/libqtmcop.la $(LIB_KDEUI) $(LIB_KDECORE)
+knotify_LDADD	= ../soundserver/libsoundserver_idl.la \
+                  ../qtmcop/libqtmcop.la $(LIB_KDEUI) $(LIB_KDECORE)
 knotify_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
-METASOURCES = knotify.moc
+METASOURCES = AUTO
 
+check_PROGRAMS		= knotifytest
 knotifytest_SOURCES	= knotifytest.cpp
 knotifytest_LDADD	= $(LIB_KDECORE)
 knotifytest_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
@@ -19,5 +23,3 @@ noinst_HEADERS	=  knotify.h
 messages:
 	$(XGETTEXT) $(knotify_SOURCES) -o $(podir)/knotify.pot
 
-edit:
-	xemacs $(knotify_SOURCES) $(noinst_HEADERS) &
