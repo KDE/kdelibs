@@ -282,7 +282,7 @@ void KSlider::valueChange()
   else
     repaint(0,0,width(),ARROW_LENGTH);
 
-  emit valueChanged( value() );
+//  emit valueChanged( value() );
 }
 
 
