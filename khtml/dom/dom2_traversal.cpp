@@ -213,7 +213,7 @@ short CustomNodeFilter::acceptNode (const Node &/*n*/)
     return NodeFilter::FILTER_ACCEPT;
 }
 
-void CustomNodeFilter::isNull()
+bool CustomNodeFilter::isNull()
 {
     return false;
 }

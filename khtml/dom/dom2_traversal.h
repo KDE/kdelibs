@@ -67,7 +67,7 @@ public:
     NodeIterator & operator = (const NodeIterator &other);
 
     ~NodeIterator();
-    
+
     /**
      * The root node of the NodeIterator, as specified when it was created.
      */
@@ -190,7 +190,7 @@ class NodeFilter
 public:
     NodeFilter();
     NodeFilter(const NodeFilter &other);
-    
+
     virtual NodeFilter & operator = (const NodeFilter &other);
 
     virtual ~NodeFilter();
@@ -296,7 +296,7 @@ public:
     CustomNodeFilter();
     virtual ~CustomNodeFilter();
     virtual short acceptNode (const Node &n);
-    virtual void isNull();
+    virtual bool isNull();
 protected:
     /**
      * @internal
@@ -595,7 +595,7 @@ public:
      * node is null.
      *
      *
-    TreeWalker createTreeWalker ( const Node &root, long whatToShow, 
+    TreeWalker createTreeWalker ( const Node &root, long whatToShow,
 				  const NodeFilter &filter, bool entityReferenceExpansion );
 };
 */
