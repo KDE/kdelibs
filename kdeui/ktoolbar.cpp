@@ -318,7 +318,11 @@ int KToolBar::insertLineSeparator( int index )
   
   for ( KToolBarItem *b = items.first(); b!=NULL; b=items.next() )
     items.remove();
-  delete context;
+  
+  // MD: Get a seg. fault if following line included.
+  // Sven recommeds, as a temporary measure, remove it.
+  //delete context;
+  
   debug ("KToolBar Destructor: finished");
 }
   if (position == Floating)

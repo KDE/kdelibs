@@ -134,7 +134,11 @@ void KMenuBar::ContextCallback( int index )
 }
   if (position == Floating)
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
-  delete context;
+  
+  // MD: Get a seg. fault if following line included.
+  // Sven recommeds, as a temporary measure, remove it.
+  //delete context; 
+  
   debug ("KMenuBar Destructor: finished");
 KMenuBar::~KMenuBar()
 {
