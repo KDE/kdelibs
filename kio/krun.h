@@ -45,11 +45,11 @@ class KRun : public QObject
   Q_OBJECT
 public:
   /**
-   * @param _mode The @tt st_mode field of <tt>struct stat</tt>. If
+   * @param _mode The @p st_mode field of <tt>struct stat</tt>. If
    *        you dont know this set it to 0.
    *
    * @param _is_local_file
-   *        If this parameter is set to @tt false then @p _url is
+   *        If this parameter is set to @p false then @p _url is
    *        examnined to find out whether it is a local URL or
    *        not. This flag is just used to improve speed, since the
    *        function @ref KURL::isLocalFile is a bit slow.
@@ -215,7 +215,7 @@ private:
  * This behaviour is overriden by KFileOpenWithHandler, in libkfile,
  * which displays the real open-with dialog box.
  *
- * If you use KRun you @tt need to create an instance of KFileOpenWithHandler
+ * If you use KRun you @p need to create an instance of KFileOpenWithHandler
  * (except if you can make sure you only use it for executables or
  *  Type=Application desktop files)
  *

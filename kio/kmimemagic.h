@@ -35,7 +35,7 @@
 class KMimeMagic; // see below (read this one first)
 
 /**
- * Returned by @ref KMimeMagic @tt find...Type methods.
+ * Returned by @ref KMimeMagic @p find...Type methods.
  *
  * It contains the mimetype and the encoding of
  * the file or buffer read. 
@@ -88,7 +88,7 @@ protected:
  * The basic usage of @ref KMimeMagic is :
  * @li Get a pointer to it, using @ref KMimeMagic::self().
  * @li Use it for any file or buffer you want, using one of the three 
- * @tt find...Type() methods.
+ * @p find...Type() methods.
  *
  * The result is contained in the class @ref KMimeMagicResult.
  */
@@ -109,7 +109,7 @@ public:
    * Merge an existing parse table with the data from the
    * given file.
    *
-   * @return @tt true on success.
+   * @return @p true on success.
    */
   bool mergeConfig( const QString & configFile );
 
@@ -117,7 +117,7 @@ public:
    * Merge an existing parse table with the data from the
    * given buffer.
    *
-   * @return @tt true on success.
+   * @return @p true on success.
    */
   bool mergeBufConfig(char *);
 

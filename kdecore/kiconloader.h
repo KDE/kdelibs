@@ -95,8 +95,8 @@ public:
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
-     * @param state The icon state: @tt DefaultState, @tt ActiveState or
-     * @tt DisabledState. Depending on the user's preferences, the iconloader
+     * @param state The icon state: @p DefaultState, @p ActiveState or
+     * @p DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the

@@ -57,7 +57,7 @@ public:
    * This function is maps an absolute or relative name for a resource to 
    * the absolute one.
    *
-   * To load an icon, prepend the @tt category name before the @tt icon name, in the style
+   * To load an icon, prepend the @p category name before the @p icon name, in the style
    * of <category>|<icon>.
    *
    * Example:

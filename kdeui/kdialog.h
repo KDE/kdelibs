@@ -30,7 +30,7 @@ class QLayoutItem;
  * compliance.
  *
  * If the dialog is modeless and has a parent, the default keybindings 
- * (@tt escape = @tt reject(), @tt enter = @tt accept(), etc.) are disabled.
+ * (@p escape = @p reject(), @p enter = @p accept(), etc.) are disabled.
  *
  * The @ref marginHint() and @ref spacingHint() sizes shall be used
  * whenever you layout the interior of a dialog. One special note. If
@@ -90,7 +90,7 @@ class KDialog : public QDialog
     /**
      * Make a KDE compliant caption.
      * 
-     * @param caption Your caption. Do @tt not include the application name
+     * @param caption Your caption. Do @p not include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
      */

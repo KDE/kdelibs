@@ -47,7 +47,7 @@ private:
  * This class provides an interface for receiving DCOP messages.  To use it,
  * simply multiply-inherit from DCOPObject and from some other class, and
  * then implement the @ref DCOPObject::process() method.  Because this method is
- * pure virtual, you @tt must implement the method.
+ * pure virtual, you @p must implement the method.
  *
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
  */
@@ -207,7 +207,7 @@ public:
      *
      * This method is called of all proxies if the @ref DCOPClient
      * knows no object with the id @p obj. If the first proxy returns
-     * @tt true, the @ref DCOPClient will no longer call other proxies.
+     * @p true, the @ref DCOPClient will no longer call other proxies.
      *
      * The object id @p obj may be empty for app-wide function calls no
      * associated with any object.

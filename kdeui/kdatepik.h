@@ -71,7 +71,7 @@ public:
 
   /** Set the date.
    *
-   *  @returns @tt false and does not change anything 
+   *  @returns @p false and does not change anything 
    *      if the date given is invalid. 
    **/
   bool setDate(const QDate&);

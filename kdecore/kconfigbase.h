@@ -755,7 +755,7 @@ public:
    * method and implement storage-specific behaviour, as well as
    * calling the @ref KConfigBase::rollback() explicitly in the initializer.
    *
-   * @param bDeep If @tt true, the dirty flags of all entries are cleared,
+   * @param bDeep If @p true, the dirty flags of all entries are cleared,
    *        as well as the global dirty flag.
    */
   virtual void rollback( bool bDeep = true );
@@ -932,7 +932,7 @@ protected:
    *
    * @param _key The key to look up  It contains information both on
    *        the group of the key and the entry's key itself.
-   * @return The @ref KEntry value (data) found for the key.  @tt KEntry.aValue
+   * @return The @ref KEntry value (data) found for the key.  @p KEntry.aValue
    * will be the null string if nothing was located.
    * @internal
    */

@@ -186,7 +186,7 @@ public:
      * Convert an image to grayscale.
      *
      * @param image The @ref QImage to process.
-     * @param fast Set to @tt true in order to use a faster but non-photographic
+     * @param fast Set to @p true in order to use a faster but non-photographic
      * quality algorithm. Appropriate for things such as toolbar icons.
      * @return Returns the @ref image(), provided for convenience.
      */

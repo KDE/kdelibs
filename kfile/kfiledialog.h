@@ -90,7 +90,7 @@ public:
       * @param filter   A shell glob that specifies which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
-      * @param acceptURLs If set to @tt false, @ref KFileDialog will
+      * @param acceptURLs If set to @p false, @ref KFileDialog will
       * just accept files on the local filesystem.  
       */
     KFileDialog(const QString& urlName, const QString& filter,

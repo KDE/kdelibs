@@ -91,8 +91,8 @@ class KDialogBaseTile : public QObject
  * It offers the standard action buttons you'd expect to find in a
  * dialog as well as the capability to define at most three configurable
  * buttons. You can define a main widget that contains your specific
- * dialog layout or you can use a predefined layout. Currently, @tt
- * TreeList/Paged, @tt Tabbed, @tt Plain,@tt Swallow and @tt IconList
+ * dialog layout or you can use a predefined layout. Currently, @p
+ * TreeList/Paged, @p Tabbed, @p Plain,@p Swallow and @p IconList
  * mode layouts (faces) are available.
  *
  * The class takes care of the geometry management. You only need to define
@@ -416,13 +416,13 @@ class KDialogBase : public KDialog
      * @param buttonMask Specifies which buttons will be visible.
      * @param defaultButton Specifies which button we be marked as the default.
      * @param escapeButton Specifies which button will be activated by
-     *        when the dialog receives a @tt Key_Escape keypress. 
+     *        when the dialog receives a @p Key_Escape keypress. 
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only).
-     * @param modal Controls dialog modality. If @tt false, the rest of the 
+     * @param modal Controls dialog modality. If @p false, the rest of the 
      *        program interface (example: other dialogs) is accessible 
      *        while the dialog is open.
-     * @param separator If @tt true, a separator line is drawn between the 
+     * @param separator If @p true, a separator line is drawn between the 
      *        action buttons and the main widget.
      * @param user1 User button1 text.
      * @param user2 User button2 text.
@@ -455,9 +455,9 @@ class KDialogBase : public KDialog
     /**
      * Sets the orientation of the button box.
      *
-     * It can be @tt Vertical or @tt Horizontal. If @tt Horizontal
+     * It can be @p Vertical or @p Horizontal. If @p Horizontal
      * (default), the button box is positioned at the bottom of the
-     * dialog. If @tt Vertical it will be placed at the right edge of the
+     * dialog. If @p Vertical it will be placed at the right edge of the
      * dialog.
      *
      * @param orientation The button box orientation.
@@ -489,13 +489,13 @@ class KDialogBase : public KDialog
 
 
     /**
-     * Retrieve the empty page when the predefined layout is used in @tt Plain
+     * Retrieve the empty page when the predefined layout is used in @p Plain
      * mode.
      *
      * This widget must used as the toplevel widget of your dialog
      * code.
      *
-     * @return The widget or 0 if the predefined layout mode is not @tt Plain
+     * @return The widget or 0 if the predefined layout mode is not @p Plain
      *         or if you don't use any predefined layout.
      */
     QFrame *plainPage();
@@ -519,9 +519,9 @@ class KDialogBase : public KDialog
      * </pre>
      *
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in @tt Tabbed 
+     * @param header Header text use in the list modes. Ignored in @p Tabbed 
      *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in @tt IconList mode. You should prefer a pixmap
+     * @param pixmap Used in @p IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
      *
      * @return The page widget which must be used as the toplevel widget for
@@ -539,16 +539,16 @@ class KDialogBase : public KDialog
      * of folders down to the given page. The initial elements are names
      * for the folders, while the last element is the name of the page.
      * Note: This does yet only work for the TreeList face. Later this may
-     * be added for the @tt IconList face too. In other faces than the
-     * @tt TreeList, all the strings except the last one is ignored.
+     * be added for the @p IconList face too. In other faces than the
+     * @p TreeList, all the strings except the last one is ignored.
      **/
     QFrame  *addPage( const QStringList &items, 
                       const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
     /**
-     * Add a page to the dialog when the class is used in @tt TreeList, 
-     * @tt IconList or @tt Tabbed mode.
+     * Add a page to the dialog when the class is used in @p TreeList, 
+     * @p IconList or @p Tabbed mode.
      *
      * The returned widget must be used as the toplevel widget for
      * this particular page. The widget contains a @ref QVBoxLayout
@@ -562,9 +562,9 @@ class KDialogBase : public KDialog
      * </pre>
      *
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in @tt Tabbed 
+     * @param header Header text use in the list modes. Ignored in @p Tabbed 
      *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in @tt IconList mode. You should prefer a pixmap
+     * @param pixmap Used in @p IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
      *
      * @return The page widget which must be used as the toplevel widget for
@@ -581,17 +581,17 @@ class KDialogBase : public KDialog
      * These strings are used to form a path
      * of folders down to the given page. The initial elements are names
      * for the folders, while the last element is the name of the page.
-     * Note: This does yet only work for the @tt TreeList face. Later this may
-     * be added for the @tt IconList face too. In other faces than the
-     * @tt TreeList, all the strings except the last one is ignored.
+     * Note: This does yet only work for the @p TreeList face. Later this may
+     * be added for the @p IconList face too. In other faces than the
+     * @p TreeList, all the strings except the last one is ignored.
      **/
     QVBox *addVBoxPage( const QStringList &items, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
     /**
-     * Add a page to the dialog when the class is used in @tt TreeList,
-     * @tt IconList or @tt Tabbed mode.
+     * Add a page to the dialog when the class is used in @p TreeList,
+     * @p IconList or @p Tabbed mode.
      *
      * The returned widget must be used as the
      * toplevel widget for this particular page. The widget contains a
@@ -618,17 +618,17 @@ class KDialogBase : public KDialog
      * These strings are used to form a path
      * of folders down to the given page. The initial elements are names
      * for the folders, while the last element is the name of the page.
-     * Note: This does yet only work for the @tt TreeList face. Later this may
-     * be added for the @tt IconList face too. In other faces than the
-     * @tt TreeList, all the strings except the last one is ignored.
+     * Note: This does yet only work for the @p TreeList face. Later this may
+     * be added for the @p IconList face too. In other faces than the
+     * @p TreeList, all the strings except the last one is ignored.
      **/
     QHBox *addHBoxPage( const QStringList &items, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
     /**
-     * Add a page to the dialog when the class is used in @tt TreeList, 
-     * @tt IconList or @tt Tabbed mode.
+     * Add a page to the dialog when the class is used in @p TreeList, 
+     * @p IconList or @p Tabbed mode.
      *
      * The returned widget must be used as the 
      * toplevel widget for this particular page. The widget contains a 
@@ -638,9 +638,9 @@ class KDialogBase : public KDialog
      *          or the number of rows if @p dir is @ref QGrid::Vertical.
      * @param dir Can be @ref QGrid::Horizontal or @ref QGrid::Vertical.
      * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes @tt Ignored in @tt Tabbed 
+     * @param header Header text use in the list modes @p Ignored in @p Tabbed 
      *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in @tt IconList mode. You should prefer a pixmap
+     * @param pixmap Used in @p IconList mode. You should prefer a pixmap
      *        with size 32x32 pixels.
      *
      * @return The page widget which must be used as the toplevel widget for
@@ -659,9 +659,9 @@ class KDialogBase : public KDialog
      * These strings are used to form a path
      * of folders down to the given page. The initial elements are names
      * for the folders, while the last element is the name of the page.
-     * Note: This does yet only work for the @tt TreeList face. Later this may
-     * be added for the @tt IconList face too. In other faces than the
-     * @tt TreeList, all the strings except the last one is ignored.
+     * Note: This does yet only work for the @p TreeList face. Later this may
+     * be added for the @p IconList face too. In other faces than the
+     * @p TreeList, all the strings except the last one is ignored.
      **/
     QGrid *addGridPage( int n, QGrid::Direction dir, 
 			const QStringList &items, 
@@ -670,7 +670,7 @@ class KDialogBase : public KDialog
 
   
     /**
-     * Set the icon used in @tt TreeList Mode for the given path.
+     * Set the icon used in @p TreeList Mode for the given path.
      *
      * @param path The path for which this icon should be shown.
      * @param pixmap The icon used.
@@ -684,8 +684,8 @@ class KDialogBase : public KDialog
      * and use @ref setMainWidget() to register it. You can @em not use this
      * function more than once, @em not if you have already defined a
      * main widget with @ref setMainWidget() and @em not if you have used the
-     * constructor where you define the face (@tt Plain, @tt Swallow, @tt Tabbed,
-     * @tt TreeList).
+     * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
+     * @p TreeList).
      *
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.
@@ -699,8 +699,8 @@ class KDialogBase : public KDialog
      * and use @ref setMainWidget() to register it. You @em can use this
      * function more than once, @em not if you have already defined a
      * main widget with @ref setMainWidget() and @em not if you have used the
-     * constructor where you define the face (@tt Plain, @tt Swallow, @tt Tabbed,
-     * @tt TreeList, @tt IconList).
+     * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
+     * @p TreeList, @p IconList).
      *
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.
@@ -713,9 +713,9 @@ class KDialogBase : public KDialog
      * The function will make a @ref QHBox widget
      * and use @ref setMainWidget() to register it. You can @em not use this
      * function more than once, @em not if you have already defined a
-     * main widget with @ref setMainWidget() and @tt not if you have used the
-     * constructor where you define the face (@tt Plain, @tt Swallow, @tt Tabbed,
-     * @tt TreeList, @tt IconList).
+     * main widget with @ref setMainWidget() and @p not if you have used the
+     * constructor where you define the face (@p Plain, @p Swallow, @p Tabbed,
+     * @p TreeList, @p IconList).
      *
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.

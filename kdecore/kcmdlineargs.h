@@ -385,7 +385,7 @@ public:
    *  @param n The argument to read. 0 is the first argument.
    *           @ref count()-1 is the last argument.
    *
-   *  @return A @tt const @tt char @tt * pointer to the n'th argument.
+   *  @return A @p const @p char @p * pointer to the n'th argument.
    */
   const char *arg(int n);
 

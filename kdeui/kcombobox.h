@@ -74,8 +74,8 @@
  * function with the default the second argument.
  *
  * Note that if this widget is not editable, i.e. it is constructed as a
- * "select-only" widget, then only one completion mode, @tt CompletionAuto,
- * is allowed.  All the other modes are simply ignored.  The @tt CompletionAuto
+ * "select-only" widget, then only one completion mode, @p CompletionAuto,
+ * is allowed.  All the other modes are simply ignored.  The @p CompletionAuto
  * mode in this case allows you to automatically select an item from the list
  * that matches the key-code of the first key pressed.
  *
@@ -140,7 +140,7 @@ public:
     * the value of the first argument( @p rw ) with a parent, a
     * name.
     *
-    * @param rw When @tt true, widget will be editable.
+    * @param rw When @p true, widget will be editable.
     * @param parent The parent object of this widget.
     * @param name The name of this widget.  
     */
@@ -164,7 +164,7 @@ public:
     /**
     * Re-implemented from @ref QComboBox.
     *
-    * If @tt true, the completion mode will be set to automatic.
+    * If @p true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the gloabl setting.  This
     * methods has been replaced by the more comprehensive 
     * @ref setCompletionMode().
@@ -176,11 +176,11 @@ public:
     /**
     * Re-implemented from QComboBox.
     *
-    * Returns @tt true if the current completion mode is set
+    * Returns @p true if the current completion mode is set
     * to automatic.  See its more comprehensive replacement
     * @ref completionMode().
     *
-    * @return @tt true when completion mode is automatic.
+    * @return @p true when completion mode is automatic.
     */
     bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
@@ -197,22 +197,22 @@ public:
     * this widget is editable. Call this function with the
     * argument set to false to disable the popup menu.
     *
-    * @param showMenu If @tt true, show the context menu.
-    * @param showMode If @tt true, show the mode changer.
+    * @param showMenu If @p true, show the context menu.
+    * @param showMode If @p true, show the mode changer.
     */
     virtual void setContextMenuEnabled( bool showMenu );
 
     /**
-    * Returns @tt true when the context menu is enabled.
+    * Returns @p true when the context menu is enabled.
     *
-    * @return @tt true if context menu is enabled.
+    * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
     /**
-    * Returns @tt true if the combo-box is editable.
+    * Returns @p true if the combo-box is editable.
     *
-    * @return @tt true if combo is editable.
+    * @return @p true if combo is editable.
     */
     bool isEditable() const { return !m_pEdit.isNull() ; }
 
@@ -220,10 +220,10 @@ public:
      * Convenience method which iterates over all items and checks if
      * any of them is equal to @p text.
      *
-     * If @p text is an empty string, @tt false
+     * If @p text is an empty string, @p false
      * is returned.
      *
-     * @return @tt true if an item with the string @p text is in the combobox.
+     * @return @p true if an item with the string @p text is in the combobox.
      */
     bool contains( const QString& text ) const;
 
@@ -233,7 +233,7 @@ public:
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @p grab equal to @tt true to make @ref KComboBox
+     * Call this method with @p grab equal to @p true to make @ref KComboBox
      * stop these
      * events. The signals will still be emitted of course.
      *
@@ -244,7 +244,7 @@ public:
     void setTrapReturnKey( bool grab );
 
     /**
-     * @return @tt true if keyevents of Key_Return or Key_Enter will
+     * @return @p true if keyevents of Key_Return or Key_Enter will
      * be stopped or if they will be propagated.
      *
      * @see setGrabReturnKeyEvents ()
@@ -283,7 +283,7 @@ signals:
     *
     * Note that this signal is @em not available if this
     * widget is non-editable or the completion mode is
-    * set to @tt KGlobalSettings::CompletionNone.
+    * set to @p KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
 
@@ -292,7 +292,7 @@ signals:
     *
     * The argument indicates which key-binding was pressed.
     * In this case this can be either one of four values:
-    * @tt PrevCompletionMatch, @tt NextCompletionMatch, @tt RotateUp or
+    * @p PrevCompletionMatch, @p NextCompletionMatch, @p RotateUp or
     * @Tt RotateDown. See @ref KCompletionBase::setKeyBinding() for
     * details.
     *
@@ -511,7 +511,7 @@ public:
     /**
      * Remove all items named @p item.
      *
-     * @return @tt true if at least one item was removed.
+     * @return @p true if at least one item was removed.
      *
      * @see #addToHistory
      */

@@ -314,7 +314,7 @@ public:
    * Construct a dockwidget.
    *
    * Initially, docking to another and docking to this is allowed for
-   * every @tt DockPosition.  It is supposed to be no (tab) group. It will
+   * every @p DockPosition.  It is supposed to be no (tab) group. It will
    * taken under control of its dockmanager.
    *
    * @param dockManager The responsible manager (dock helper)
@@ -366,14 +366,14 @@ public:
    * @param  pos The dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
    * @param  check Only for internal use;
    * @param  tabIndex The position index of the tab widget (when in tab page mode), -1 (default) means append
-   * @return result The group dockwidget that replaces the target dockwidget and will be grandparent of target and @tt this. 
+   * @return result The group dockwidget that replaces the target dockwidget and will be grandparent of target and @p this. 
    */
   KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false, int tabIndex = -1);
 
   /**
    * Specify where it is either possible or impossible for this to dock to another dockwidget.
    *
-   * @param pos An OR'ed set of @tt DockPositions
+   * @param pos An OR'ed set of @p DockPositions
    */
   void setEnableDocking( int pos );
 
@@ -385,12 +385,12 @@ public:
   /**
    * Specify where it is either possible or impossible for another dockwidget to dock to this.
    *
-   * @param pos An OR'ed set of @tt DockPositions
+   * @param pos An OR'ed set of @p DockPositions
    */
   void setDockSite( int pos ){ sDocking = pos;}
 
   /**
-   * @return There it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of @tt DockPositions).
+   * @return There it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of @p DockPositions).
    */
   int dockSite(){ return sDocking; }
 
@@ -423,7 +423,7 @@ public:
   /**
    * Normally it simply shows the dockwidget. 
    *
-   * But additionally, if it is docked to a tab widget (@tt DockCenter), it is set as the active (visible) tab page.
+   * But additionally, if it is docked to a tab widget (@p DockCenter), it is set as the active (visible) tab page.
    */
   void makeDockVisible();
   
@@ -443,7 +443,7 @@ public:
    * There are reasons that it's impossible:
    * @li It is a (tab) group.
    * @li It is already visible ;-)
-   * @li The parent of this is the @tt KDockMainWindow.
+   * @li The parent of this is the @p KDockMainWindow.
    */
   bool mayBeShow();
 
@@ -469,7 +469,7 @@ public:
    */
   const QString& toolTipString() { return toolTipStr; };
 
-  /** @return @tt true, if a dockback is possible, otherwise @tt false. */
+  /** @return @p true, if a dockback is possible, otherwise @p false. */
   bool isDockBackPossible();
 
   /** Set a string that is used for the label of the tab page when in tab page mode 

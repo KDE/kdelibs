@@ -48,15 +48,15 @@ public:
   /**
    * Possible states of the spell checker.
    *
-   * @li @tt Starting - After creation of @ref KSpell.
-   * @li @tt Running - After the ready signal has been emitted.
-   * @li @tt Cleaning - After @ref cleanUp() has been called.
-   * @li @tt Finished - After @ref cleanUp() has been completed.
+   * @li @p Starting - After creation of @ref KSpell.
+   * @li @p Running - After the ready signal has been emitted.
+   * @li @p Cleaning - After @ref cleanUp() has been called.
+   * @li @p Finished - After @ref cleanUp() has been completed.
    *
    * The following error states exist:
    *
-   * @li @tt Error -  An error occured in the @p Starting state.
-   * @li @tt Crashed - An error occured in the @p Running state.
+   * @li @p Error -  An error occured in the @p Starting state.
+   * @li @p Crashed - An error occured in the @p Running state.
    **/
   enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed };
   
@@ -149,10 +149,10 @@ public:
    *  Use this method for implementing  "online" spellchecking (i.e.,
    *  spellcheck as-you-type).
    *
-   * checkWord () returns @tt false if @p buffer is not a word, otherwise it
-   *  returns @tt true;
+   * checkWord () returns @p false if @p buffer is not a word, otherwise it
+   *  returns @p true;
    *
-   * If @p usedialog is set to @tt true, @ref KSpell will put up the standard
+   * If @p usedialog is set to @p true, @ref KSpell will put up the standard
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using  @ref dlgResult() and @ref replacement(). 
    *
@@ -227,7 +227,7 @@ public:
   /**
    * Tell ISpell/ASpell to ignore this word for the life of this @ref KSpell instance.
    *
-   *  @ref ignore() returns @tt false if word is not a word or there was an error
+   *  @ref ignore() returns @p false if word is not a word or there was an error
    *  communicating with ISpell/ASpell.
    */
   virtual bool ignore (QString word);
@@ -235,7 +235,7 @@ public:
   /**
    * Add a word to the user's personal dictionary. 
    *
-   * Returns @tt false if @p word
+   * Returns @p false if @p word
    *  is not a word or there was an error communicating with ISpell/ASpell.
    */
   virtual bool addPersonal (QString word);

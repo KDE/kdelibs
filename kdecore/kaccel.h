@@ -320,9 +320,9 @@ class KAccel : public QAccel
 	 *
 	 * If an action already exists the old association and connections
 	 * will be removed.
-	 * param id One of the following: @tt Open,
-	 *	@tt New, @tt Close, @tt Save, @tt Print, @tt Quit, @tt Cut, @tt Copy, @tt Paste, @tt Undo, @tt Redo,
-	 *	@tt Find, @tt Replace, @tt Insert, @tt Home, @tt End, @tt Prior, @tt Next, or @ttHelp.
+	 * param id One of the following: @p Open,
+	 *	@p New, @p Close, @p Save, @p Print, @p Quit, @p Cut, @p Copy, @p Paste, @p Undo, @p Redo,
+	 *	@p Find, @p Replace, @p Insert, @p Home, @p End, @p Prior, @p Next, or @pHelp.
 	 * param descr You can optionally also assign a description to
 	 * the standard item which may be used a in a popup menu.
 	 */

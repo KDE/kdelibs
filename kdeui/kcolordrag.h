@@ -26,7 +26,7 @@
 #include <qcolor.h>
 
 /**
- * Drag (XDnD) objects of type @tt application/x-color.
+ * Drag (XDnD) objects of type @p application/x-color.
  *
  * 
  *

@@ -116,7 +116,7 @@ public:
   QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
                   QString * _path = 0L ) const;
   /**
-   * Returns @tt true is the service is run in a terminal.
+   * Returns @p true is the service is run in a terminal.
    */
   bool terminal() const { return m_bTerminal; }
   /**
@@ -127,7 +127,7 @@ public:
    */
   QString terminalOptions() const { return m_strTerminalOptions; }
   /**
-   * Returns @tt true if the service has to be run under a different uid.
+   * Returns @p true if the service has to be run under a different uid.
    */
   bool substituteUid() const;
   /**
@@ -192,15 +192,15 @@ public:
    * @param _service The name of the service type you are
    *        interested in determining whether this services supports.
    *
-   * @return @tt true if the service you specified is supported,
-   *        otherwise @tt false.
+   * @return @p true if the service you specified is supported,
+   *        otherwise @p false.
    */
   bool hasServiceType( const QString& _service ) const;
   /**
-   * Returns @tt true if the service may be used as a default setting, for
+   * Returns @p true if the service may be used as a default setting, for
    *         example in a file manager. Usually that is the case, but
    *         some services may only be started when the user selected
-   *         them. This kind of services returns @tt false here.
+   *         them. This kind of services returns @p false here.
    */
   bool allowAsDefault() const { return m_bAllowAsDefault; }
 
@@ -229,7 +229,7 @@ public:
   virtual QStringList propertyNames() const;
 
   /**
-   * Returns @tt true if the service is valid (e.g. name is not empty)
+   * Returns @p true if the service is valid (e.g. name is not empty)
    */
   bool isValid() const { return m_bValid; }
 

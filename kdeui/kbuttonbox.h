@@ -28,7 +28,7 @@
  * 
  * This class uses Qt layout control to place the buttons; can handle
  * both vertical and horizontal button placement.  The default border
- * is now @tt 0 (making it easier to deal with layouts). The space
+ * is now @p 0 (making it easier to deal with layouts). The space
  * between buttons is now more Motif compliant.
  *
  * @author Mario Weilguni <mweilguni@sime.com>
@@ -74,9 +74,9 @@ public:
   /**
     * Add a new @ref QPushButton.  
     *
-    * @param noexpand If @p noexpand is @tt false, the width
+    * @param noexpand If @p noexpand is @p false, the width
     * of the button is adjusted to fit the other buttons (the maximum
-    * of all buttons is taken). If @p noexpand is @tt true, the width of this
+    * of all buttons is taken). If @p noexpand is @p true, the width of this
     * button will be set to the minimum width needed for the given text).
     *
     * @return A pointer to the new button.

@@ -28,9 +28,11 @@
 
 
 /**
- * This is a class for KDE themed styles. It provides methods for
+ * KDE themed styles.
+ *
+ * It provides methods for
  * drawing most widgets with user-specified borders, highlights, pixmaps,
- * etc.. It also handles various other settings such as scrollbar types,
+ * etc. It also handles various other settings such as scrollbar types,
  * rounded buttons, and shading types. For a full list of parameters this
  * class handles refer to the KDE theme configuration documentation.
  *
@@ -41,7 +43,7 @@ class KThemeStyle: public KThemeBase
     Q_OBJECT
 public:
     /**
-     * Constructs a new KThemeStyle object.
+     * Construct a new @ref KThemeStyle object.
      *
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
@@ -69,7 +71,7 @@ public:
      *
      * @param p The QPainter to draw on.
      * @param g The color group to use.
-     * @param rounded True if the widget is rounded, false if rectangular.
+     * @param rounded @p true if the widget is rounded, @p false if rectangular.
      * @param type The widget type to paint.
      * @param fill An optional fill brush. Currently ignored (the config file
      * is used instead).
@@ -79,30 +81,36 @@ public:
                                 bool rounded = FALSE, WidgetType type=Bevel,
                                 const QBrush *fill = 0);
     /**
-     * Draws a mask with for widgets that may be rounded. Currently used
+     * Draw a mask with for widgets that may be rounded. 
+     *
+     *Currently used
      * by pushbuttons and comboboxes.
      *
      * @param p The QPainter to draw on.
-     * @param rounded True if the widget is rounded, false if rectangular.
+     * @param rounded @p true if the widget is rounded, @p false if rectangular.
      */
     virtual void drawBaseMask(QPainter *p, int x, int y, int w, int h,
                               bool rounded);
     /**
-     * Draws a pushbutton. This calls drawBaseButton with PushButton as the
+     * Draw a pushbutton.
+     *
+     * This calls @ref drawBaseButton() with @p PushButton as the
      * widget type.
      */
     virtual void drawButton(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool sunken = FALSE,
                             const QBrush *fill = 0);
     /**
-     * Draws a bevel button. This calls drawBaseButton with Bevel as the
+     * Draw a bevel button.
+     *
+     * This calls @rerf drawBaseButton() with Bevel as the
      * widget type.
      */
     virtual void drawBevelButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken = FALSE,
                                  const QBrush *fill = 0);
     /**
-     * Draws a toolbar button.
+     * Draw a toolbar button.
      */
     virtual void drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, bool sunken=false,
@@ -112,37 +120,39 @@ public:
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL, QWidget *btn=NULL);
     /**
-     * Draws the handle used in toolbars.
+     * Draw the handle used in toolbars.
      */
     void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                         const QColorGroup &g,
                         KToolBarPos type, QBrush *fill=NULL);
 
     /**
-     * Draws a toolbar.
+     * Draw a toolbar.
      */
     void drawKToolBar(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, KToolBarPos type,
                       QBrush *fill=NULL);
 
     /**
-     * Returns the space available in a pushbutton, taking configurable
+     * Return the space available in a pushbutton, taking configurable
      * borders and highlights into account.
      */
     virtual QRect buttonRect(int x, int y, int w, int h);
     /**
-     * Draws an arrow in the style specified by the config file.
+     * Draw an arrow in the style specified by the config file.
      */
     virtual void drawArrow(QPainter *p, Qt::ArrowType type, bool down,
                            int x, int y, int w, int h, const QColorGroup &g,
                            bool enabled=true, const QBrush *fill = 0);
     /**
-     * Returns the size of the exclusive indicator pixmap if one is specified
+     * Return the size of the exclusive indicator pixmap if one is specified
      * in the config file, otherwise it uses the base style's size.
      */
     virtual QSize exclusiveIndicatorSize() const;
     /**
-     * Draws an exclusive indicator widget. If a pixmap is specified in the
+     * Draw an exclusive indicator widget.
+     *
+     * If a pixmap is specified in the
      * config file that is used, otherwise the base style's widget is drawn.
      */
     virtual void drawExclusiveIndicator(QPainter* p, int x, int y, int w,
@@ -150,101 +160,109 @@ public:
                                         bool down = FALSE,
                                         bool enabled = TRUE);
     /**
-     * Sets the mask of an exclusive indicator widget. If a pixmap is specified
+     * Set the mask of an exclusive indicator widget.
+     *
+     * If a pixmap is specified
      * it is masked according to it's transparent pixels, otherwise the
      * base style's mask is used.
      */
     virtual void drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
                                             int h, bool on);
     /**
-     * Sets the mask of an indicator widget. If a pixmap is specified
+     * Set the mask of an indicator widget.
+     *
+     * If a pixmap is specified
      * it is masked according to it's transparent pixels, otherwise the
      * base style's mask is used.
      */
     virtual void drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
                                    int state);
     /**
-     * Sets the mask for pushbuttons.
+     * Set the mask for pushbuttons.
      */
     virtual void drawButtonMask(QPainter *p, int x, int y, int w, int h);
     /**
-     * Sets the mask for combo boxes.
+     * Set the mask for combo boxes.
      */
     virtual void drawComboButtonMask(QPainter *p, int x, int y, int w, int h);
     /**
-     * Returns the size of the indicator pixmap if one is specified
+     * Return the size of the indicator pixmap if one is specified
      * in the config file, otherwise it uses the base style's size.
      */
     virtual QSize indicatorSize() const;
     /**
-     * Draws an indicator widget. If a pixmap is specified in the
+     * Draw an indicator widget.
+     *
+     * If a pixmap is specified in the
      * config file that is used, otherwise the base style's widget is drawn.
      */
     virtual void drawIndicator(QPainter* p, int x, int y, int w, int h,
                                const QColorGroup &g, int state,
                                bool down = FALSE, bool enabled = TRUE);
     /**
-     * Draws a combobox.
+     * Draw a combobox.
      */
     virtual void drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken = FALSE,
                                  bool editable = FALSE, bool enabled = TRUE,
                                  const QBrush *fill = 0);
     /**
-     * Draws a pushbutton.
+     * Draw a pushbutton.
      */
     virtual void drawPushButton(QPushButton* btn, QPainter *p);
     /**
-     * Returns the amount of button content displacement specified by the
+     * Return the amount of button content displacement specified by the
      * config file.
      */
     virtual void getButtonShift(int &x, int &y);
     /**
-     * Returns the frame width.
+     * Return the frame width.
      */
     virtual int defaultFrameWidth() const;
     /**
-     * Calculates the metrics of the scrollbar controls according to the
+     * Calculate the metrics of the scrollbar controls according to the
      * layout specified by the config file.
      */
     virtual void scrollBarMetrics(const QScrollBar*, int&, int&, int&, int&);
     /**
-     * Draws a themed scrollbar.
+     * Draw a themed scrollbar.
      */
     virtual void drawScrollBarControls(QPainter*, const QScrollBar*,
                                        int sliderStart, uint controls,
                                        uint activeControl);
     /**
-     * Returns the control that the given point is over according to the
+     * Return the control that the given point is over according to the
      * layout in the config file.
      */
     virtual ScrollControl scrollBarPointOver(const QScrollBar*,
                                              int sliderStart, const QPoint& );
     /**
-     * Returns the configurable default slider length.
+     * Return the configurable default slider length.
      */
     virtual int sliderLength() const;
     /**
-     * Draws a slider control.
+     * Draw a slider control.
      */
     virtual void drawSlider(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, Orientation, bool tickAbove,
                             bool tickBelow);
     /**
-     * Draws a slider groove.
+     * Draw a slider groove.
      */
     void drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup& g, QCOORD c,
                           Orientation );
     /**
-     * Draws the mask for a slider (both the control and groove.
+     * Draw the mask for a slider (both the control and groove.
      */
     virtual void drawSliderMask(QPainter *p, int x, int y, int w, int h,
                                 Orientation, bool tickAbove, bool tickBelow);
 //    void drawSliderGrooveMask(QPainter *p,int x, int y, int w, int h,
 //                              QCOORD c, Orientation );
     /**
-     * Convience method for drawing themed scrollbar grooves. Since the
+     * Convience method for drawing themed scrollbar grooves.
+     *
+     * Since the
      * grooves may be a scaled pixmap you cannot just bitblt the pixmap at
      * any offset. This generates a cached pixmap at full size if needed and
      * then copies the requested area.
@@ -258,7 +276,7 @@ public:
     virtual void drawScrollBarGroove(QPainter *p, const QScrollBar *sb,
                                      bool horizontal, QRect r, QColorGroup g);
     /**
-     * Draws a shaded rectangle using the given style.
+     * Draw a shaded rectangle using the given style.
      *
      * @param p The painter to draw on.
      * @param g The color group to use.
@@ -272,37 +290,39 @@ public:
                            const QColorGroup &g, bool sunken, bool rounded,
                            int hWidth, int bWidth, ShadeStyle style);
     /**
-     * Draws the text for a pushbutton.
+     * Draw the text for a pushbutton.
      */
     virtual void drawPushButtonLabel(QPushButton *btn, QPainter *p);
     /**
-     * Draws a menubar.
+     * Draw a menubar.
      */
     void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, bool macMode,
                       QBrush *fill=NULL);
     /**
-     * Draws a menubar item.
+     * Draw a menubar item.
      */
     virtual void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool active,
                                QMenuItem *item, QBrush *fill=NULL);
     /**
-     * Returns the width of the splitter as specified in the config file.
+     * Return the width of the splitter as specified in the config file.
      */
     virtual int splitterWidth() const;
     /**
-     * Draws a splitter widget.
+     * Draw a splitter widget.
      */
     virtual void drawSplitter(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, Orientation);
     /**
-     * Draws a checkmark.
+     * Draw a checkmark.
      */
     virtual void drawCheckMark(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool act, bool dis);
     /**
-     * Draws a menu item. Note: This method manually handles applying
+     * Draw a menu item.
+     *
+     * Note: This method manually handles applying
      * inactive menu backgrounds to the entire widget.
      */
     virtual void drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw,
@@ -312,17 +332,17 @@ public:
     int popupMenuItemHeight(bool checkable, QMenuItem *mi,
                             const QFontMetrics &fm);
     /**
-     * Draws the focus rectangle.
+     * Draw the focus rectangle.
      */
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
                        const QColor *c=0, bool atBorder=false);
     /**
-     * Draws a KProgess Bar.
+     * Draw a @ref KProgess bar.
      */
     virtual void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QBrush *fill);
     /**
-     * Returns the background for KProgress.
+     * Return the background for @ref KProgress.
      */
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
     virtual void tabbarMetrics(const QTabBar*, int&, int&, int&);

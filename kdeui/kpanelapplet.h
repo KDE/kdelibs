@@ -29,18 +29,15 @@ class KConfig;
 #include <qframe.h>
 
 /**
- * KDE Panel Applet class
- * ----------------------
- *
- * This class implements panel applets.
+ * Implement a panel applet.
  *
  * Panel applets
- *   ...are small applications living in the KDE panel.
- *   ...are implemented as DSOs (Dynamic Shared Objects).
+ *   @li Are small applications living in the KDE panel.
+ *   @li Are implemented as DSOs (Dynamic Shared Objects).
  *
- * Note: For security and stability reasons the panel wont load untrusted third
- *       party applets directly into its namespace but via a external wrapper
- *       process.
+ * Note: For security and stability reasons the panel won't load
+ * untrusted third party applets directly into its namespace but via an
+ * external wrapper process.
  *
  * The panel locates available applets by searching for applet desktop
  * files in (ALL_KDEDIRS)/share/apps/kicker/applets. Every panel applet should
@@ -49,29 +46,31 @@ class KConfig;
  * Besides standard keys like "Name", "Comment" and "Icon" there are
  * two panel applet specific keys:
  *
- * X-KDE-Library:
- * --------------
+ * @sect X-KDE-Library
+ *
  * Used by the panel to locate the applet DSO (Dynamic Shared Object)
  * Example: X-KDE-Library=libexampleapplet
  *
- * X-KDE-UniqueApplet:
- * -------------------
- * Similar to KApplication and KUniqueApplication there are two types of panel
- * appelts. Use unique applets when it makes no sence to run more than one instance
- * of a applet in the panel. A good example for unique applets is the taskbar applet.
- * Use normal applets when you need instance specific configuration. An example
- * is the koolclock applet where you might want to run two instances in your panel, one
- * configured as analog clock, the other one as digital clock. X-KDE-UniqueApplet is a
- * boolean key which defaults to "false".
- * Example: X-KDE-UniqueApplet=true
+ * @sect X-KDE-UniqueApplet
+ *
+ * Similar to @ref KApplication and @ref KUniqueApplication there are
+ * two types of panel appelts. Use unique applets when it makes no
+ * sence to run more than one instance of a applet in the panel. A
+ * good example for unique applets is the taskbar applet.  Use normal
+ * applets when you need instance specific configuration. An example
+ * is the koolclock applet where you might want to run two instances
+ * in your panel, one configured as analog clock, the other one as
+ * digital clock. X-KDE-UniqueApplet is a boolean key which defaults
+ * to "false".  Example: X-KDE-UniqueApplet=true
  *
  * Back to panel applet DSOs, the following conventions are used for KDE:
  * Name:    lib<appletname>applet.la
  * LDFLAGS: -module -no-undefined
  *
- * To implement a panel applet it is not enough to write a class inheriting from
- * KPanelApplet but you also have to provide a factory function in your DSO.
- * A sample factory function could look like this:
+ * To implement a panel applet it is not enough to write a class
+ * inheriting from @ref KPanelApplet but you also have to provide a
+ * factory function in your DSO.  A sample factory function could look
+ * like this:
  *
  * <pre>
  *
@@ -88,7 +87,8 @@ class KConfig;
  *
  * </pre>
  *
- * Note: Don't change the factory function signature or the panel will fail to load your applet.
+ * Note: Don't change the factory function signature or the panel will
+ * fail to load your applet.
  *
  * @author Matthias Elter <elter@kde.org>
  * @short KDE Panel Applet class
@@ -104,24 +104,24 @@ public:
   enum Direction { Up = 0, Down, Left, Right };
 
   /**
-   * Construct a KPanelApplet justlike any other widget.
+   * Construct a @ref KPanelApplet just like any other widget.
    * 
-   * @param configFile the configFile handed over in the factory function.
-   * @param Type the applet Type. @ref Type
-   * @param actions standard RMB menu actions supported by the applet. @ref Action
-   * @param parent the pointer to the parent widget handed over in the factory function.
-   * @param name a Qt object name for your applet.
+   * @param configFile The configFile handed over in the factory function.
+   * @param Type The applet @ref type().
+   * @param actions Standard RMB menu actions supported by the applet (see @ref action() ).
+   * @param parent The pointer to the parent widget handed over in the factory function.
+   * @param name A Qt object name for your applet.
    **/
   KPanelApplet(const QString& configFile, Type t = Normal,
                int actions = 0, QWidget *parent = 0, const char *name = 0);
 
   /**
-   * Destructor
+   * Destructor.
    **/
   ~KPanelApplet();
 
   /**
-   * @return a suggested width for a given height.
+   * Retrieve a suggested width for a given height.
    *
    * Every applet should reimplement this function.
    *
@@ -130,8 +130,9 @@ public:
    * The exact values of the fixed size component depend on the panel size.
    *
    * On a horizontal panel the applet height is fixed, the panel will
-   * call widthForHeight(int height) with height == 'the fixed applet height'
-   * when layouting the applets.
+   * call @ref widthForHeight(int height) with @p height
+   * equal to 'the fixed applet height'
+   * when laying out the applets.
    *
    * The applet can now choose the other size component (width)
    * based on the given height.
@@ -141,7 +142,7 @@ public:
   virtual int widthForHeight(int height) { return height; }
 
   /**
-   * @return a suggested height for a given width.
+   * @return A suggested height for a given width.
    *
    * Every applet should reimplement this function.
    *
@@ -150,8 +151,9 @@ public:
    * The exact values of the fixed size component depend on the panel size.
    *
    * On a vertical panel the applet width is fixed, the panel will
-   * call heightForWidth(int width) with width == 'the fixed applet width'
-   * when layouting the applets.
+   * call @ref heightForWidth(int width) with @p width
+   * equal to 'the fixed applet width'
+   * when layint out the applets.
    *
    * The applet can now choose the other size component (height)
    * based on the given width.
@@ -188,7 +190,7 @@ public:
   virtual void preferences() {}
 
   /**
-   * Always use this KConfig object to save/load your applets configuration.
+   * Always use this @ref KConfig object to save/load your applets configuration.
    * 
    * For unique applets this config object will write to a config file called
    * <appletname>rc in the users local KDE directory.

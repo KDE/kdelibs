@@ -456,7 +456,7 @@ public:
    *
    * This is useful only to applications that normally
    * do not display a GUI and create the @ref KApplication with
-   *  @p allowStyles set to @tt false.
+   *  @p allowStyles set to @p false.
    */
   void enableStyles();
 
@@ -606,7 +606,7 @@ public:
   void appearanceChanged();
 
   /**
-   * The desktop background has been changed by @tt kcmdisplay.
+   * The desktop background has been changed by @p kcmdisplay.
    *
    * @param desk The desktop whose background has changed.
    */
@@ -662,7 +662,7 @@ public:
   void saveYourself();
 
   /** Your application is killed. Either by your program itself,
-      @tt xkill or (the usual case) by KDE's logout.
+      @p xkill or (the usual case) by KDE's logout.
 
       The signal is particularly useful if your application has to do some
       last-second cleanups. Note that no user interaction is possible at
@@ -743,6 +743,22 @@ public:
 #endif
 
 // $Log$
+// Revision 1.169  2000/06/24 15:24:29  faure
+// Implemented Waldo's idea. KApplication holds a reference counter:
+// * This counter indicates when to exit the application.
+// * It starts at 1, is decremented by the "last window close" event, but
+// * is incremented by operations that should outlive the last window closed
+// * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+//
+// This fixes "konqueror aborts a save as operation when closing the last window"
+// (#4561, from Waldo as well :-) and could be useful to e.g. kmail.
+//
+// Note: QApplication's lastWindowClosed signal breaks this. BUT KTMainWindow
+// was already doing the app->quit on last window, so it was already useless.
+// Do NOT use QApplication's lastWindowClosed.
+//
+// The change is binary compatible, long live d pointers.
+//
 // Revision 1.168  2000/06/24 00:35:18  dsweet
 // Editing header file documentation.
 //

@@ -33,8 +33,8 @@ class KStdActionPrivate;
  * conform to the KDE UI Style Guide
  * ( @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html ).
  *
- * All of the documentation for @ref KAction holds for KStdAction
- * also.  When in doubt on how things work, check the KAction
+ * All of the documentation for @ref KAction holds for @ref KStdAction
+ * also.  When in doubt on how things work, check the @ref KAction
  * documention first.
  *
  * @sect Simple Example:
@@ -69,7 +69,7 @@ class KStdActionPrivate;
  * Basically, the XML building code matches names in the XML code with
  * the internal names of the actions.  You can find out the internal
  * names of each of the standard actions by using the @ref stdName
- * action like so: KStdAction::stdName(KStdAction::Cut) would return
+ * action like so: @ref KStdAction::stdName(KStdAction::Cut) would return
  * 'edit_cut'.  The XML building code will match 'edit_cut' to the
  * attribute in the global XML file and place your action there.
  *
@@ -95,9 +95,9 @@ class KStdActionPrivate;
  *
  * Another non-standard usage concerns instantiating the action in the
  * first place.  Usually, you would use the static member functions as
- * shown above (e.g., 'KStdAction::cut(this, SLOT, parent)').  You
+ * shown above (e.g., KStdAction::cut(this, SLOT, parent)).  You
  * may, however, do this using the enums provided.  This author can't
- * think of a reason why you would want to.. but hey, if you do,
+ * think of a reason why you would want to, but, hey, if you do,
  * here's how:
  *
  * <pre>
@@ -227,7 +227,7 @@ public:
                                  QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Mail this document
+     * Mail this document.
      */
     static KAction *mail(const QObject *recvr = 0, const char *slot = 0,
                          QObject *parent = 0, const char *name = 0L );
@@ -384,7 +384,7 @@ public:
                          QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Go to somewhere.. in general
+     * Go to somewhere in general.
      */
     static KAction *goTo(const QObject *recvr = 0, const char *slot = 0,
                          QObject *parent = 0, const char *name = 0L );
@@ -427,7 +427,7 @@ public:
                                   QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Popup the spell checker
+     * Pop up the spell checker.
      */
     static KAction *spelling(const QObject *recvr = 0, const char *slot = 0,
                                   QObject *parent = 0, const char *name = 0L );
@@ -452,7 +452,7 @@ public:
 					QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Display the save options dialog
+     * Display the save options dialog.
      */
     static KAction *saveOptions(const QObject *recvr = 0, const char *slot = 0,
                                 QObject *parent = 0, const char *name = 0L );
@@ -470,7 +470,7 @@ public:
                                 QObject *parent = 0, const char *name = 0L );
 
     /**
-     * The Customize Toolbar dialog
+     * The Customize Toolbar dialog.
      */
     static KAction *configureToolbars(const QObject *recvr = 0,
                                       const char *slot = 0,
@@ -490,25 +490,25 @@ public:
                                  QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Trigger the What's This cursor
+     * Trigger the What's This cursor.
      */
     static KAction *whatsThis(const QObject *recvr = 0, const char *slot = 0,
                               QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Open up the Report Bug dialog
+     * Open up the Report Bug dialog.
      */
     static KAction *reportBug(const QObject *recvr = 0, const char *slot = 0,
                               QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Display the About app box
+     * Display the application's About box.
      */
     static KAction *aboutApp(const QObject *recvr = 0, const char *slot = 0,
                              QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Display the About KDE dialog
+     * Display the About KDE dialog.
      */
     static KAction *aboutKDE(const QObject *recvr = 0, const char *slot = 0,
                              QObject *parent = 0, const char *name = 0L );

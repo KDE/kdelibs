@@ -48,8 +48,8 @@ public:
 
     enum Status{ CallSucceeded, CallFailed };
     /**
-     * Return the status of the last call, either @tt CallSucceeded or
-     * @tt CallFailed
+     * Return the status of the last call, either @p CallSucceeded or
+     * @p CallFailed
      *
      *See @ref ok(); 
      */

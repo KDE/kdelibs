@@ -34,8 +34,8 @@ class KXMLGUIClient
 {
 public:
   /**
-   * Constructs a KXMLGUIClient which can be used with a @ref
-   * KXMLGUIFactory to create a GUI from actions and an XML document, and
+   * Constructs a KXMLGUIClient which can be used with a
+   * @ref KXMLGUIFactory to create a GUI from actions and an XML document, and
    * which can be dynamically merged with other KXMLGUIClients.
    */
   KXMLGUIClient();

@@ -23,13 +23,13 @@ class KSharedPixmap;
 class KRootPixmapData;
 
 /**
- * Implements pseudo transparent widgets. 
+ * Create pseudo-transparent widgets. 
  * 
- * A pseudo transparent widget is a widget with its background pixmap set to
- * that part of the desktop background which it is currently obscuring. This
+ * A pseudo-transparent widget is a widget with its background pixmap set to
+ * that part of the desktop background that it is currently obscuring. This
  * gives a transparency effect.
  *
- * To create a transparent widget, construct a KRootPixmap and pass it a 
+ * To create a transparent widget, construct a @ref KRootPixmap and pass it a 
  * pointer to your widget. That's it! Moving, resizing and background changes 
  * are handled automatically.
  *
@@ -51,7 +51,9 @@ public:
     ~KRootPixmap();
     
     /**
-     * Sets the fade effect. This effect will fade the background to the
+     * Set the fade effect.
+     *
+     * This effect will fade the background to the
      * specified color. 
      * @param strength A value between 0 and 1, indicating the strength
      * of the fade. A value of 0 will not change the image, a value of 1
@@ -71,13 +73,15 @@ public:
     void stop();
 
     /**
-     * Check if pseudo transparency is available.
-     * @return True if transparency is available, false otherwise.
+     * Check if pseudo-transparency is available.
+     * @return @p true if transparency is available, @p false otherwise.
      */
     bool checkAvailable(bool ignored);
 
     /**
-     * Repaint the widget background. Normally, you shouldn't need this.
+     * Repaint the widget background.
+     *
+     * Normally, you shouldn't need this.
      *
      * @param force Force a repaint, even if the contents did not change.
      */

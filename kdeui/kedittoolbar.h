@@ -95,16 +95,16 @@ public:
    * pretty safe in leaving it blank.
    *
    * The third parameter, @ref global(), controls whether or not the
-   * global resource file is used.  If this is @tt true, then you may
+   * global resource file is used.  If this is @p true, then you may
    * edit all of the actions in your toolbars -- global ones and
-   * local one.  If it is @tt false, then you may edit only your
+   * local one.  If it is @p false, then you may edit only your
    * application's entries.  The only time you should set this to
    * false is if your application does not use the global resource
    * file at all (very rare).
    *
    * @param collection The collection of actions to work on.
    * @param xmlfile The application's local resource file.
-   * @param global If @tt true, then the global resource file will also
+   * @param global If @p true, then the global resource file will also
    *               be parsed.
    * @param parent The parent of the dialog.
    * @param name An internal name.
@@ -171,7 +171,7 @@ class KEditToolbarWidget : public QWidget, virtual public KXMLGUIClient
 public:
   /**
    * Constructor.  This is the only entry point to this class.  You
-   * @tt must pass along your collection of actions (some of which
+   * @p must pass along your collection of actions (some of which
    * appear in your toolbars).  The other three parameters are
    * optional.
    *
@@ -226,7 +226,7 @@ public:
 
   /**
    * Destructor.  Note that any changes done in this widget will
-   * @tt NOT be saved in the destructor.  You @tt must call @ref save()
+   * @p NOT be saved in the destructor.  You @p must call @ref save()
    * to do that.
    */
   virtual ~KEditToolbarWidget();

@@ -28,25 +28,27 @@
 #include <qrangecontrol.h>
 
 /** 
- * The KProgress widget provides a stylized progress bar.
+ * A stylized progress bar.
  *
- * KProgress is derived from @ref QFrame and @ref QRangeControl, so you can use all 
- * the methods from those classes. The only difference is that @ref setValue(int) 
- * is now made a slot, so you can connect stuff to it. 
+ * KProgress is derived from @ref QFrame and @ref QRangeControl, so
+ * you can use all the methods from those classes. The only difference
+ * is that @ref setValue() is now made a slot, so you can connect
+ * stuff to it.
+ *
+ * @sect Details
  *
  * None of the constructors take line step and page step as arguments, 
  * so by default they're set to 1 and 10 respectively.
  *
  * The Blocked style ignores the @ref textEnabled() setting and displays
  * no text, since it looks truly ugly (and for other reasons). Signal 
- * @ref percentageChanged(int) is emitted whenever the value changes so you
+ * @ref percentageChanged() is emitted whenever the value changes so you
  * can set up a different widget to display the current percentage complete
  * and connect the signal to it. 
  *
  * @short A progress indicator widget.
  * @author Martynas Kunigelis
- * @version $Id$
- */
+ * @version $Id$ */
 class KProgress : public QFrame, public QRangeControl
 {
   Q_OBJECT
@@ -61,51 +63,52 @@ public:
   /** 
   * Possible values for bar style.
   *
-  * Solid means one continuous progress bar, Blocked means a 
+  * @p Solid means one continuous progress bar, @p Blocked means a 
   * progress bar made up of several blocks. 
   */ 
   enum BarStyle { Solid, Blocked };
 
   /** 
-  * Constructs a horizontal progress bar.
+  * Construct a horizontal progress bar.
   */
   KProgress(QWidget *parent=0, const char *name=0);
 
   /** 
-  * Constructs a progress bar with orientation @p orient. 
+  * Construct a progress bar with orientation @p orient. 
   */
   KProgress(Orientation orient, QWidget *parent=0, const char *name=0);
 
   /** 
-  * Constructs a progress bar with minimum, maximum and initial values.
+  * Construct a progress bar with minimum, maximum and initial values.
   */
   KProgress(int minValue, int maxValue, int value, Orientation, 
 	    QWidget *parent=0, const char *name=0);
 	
   /** 
-   * Destructs the progress bar.
+   * Destruct the progress bar.
    */
   ~KProgress();
 	
   /** 
-  * Sets the progress bar style.
+  * Set the progress bar style.
   *
   * Allowed values are @p Solid and @p Blocked.
   */
   void setBarStyle(BarStyle style);  
 	
   /** 
-  * Sets the color of the progress bar. 
+  * Set the color of the progress bar. 
   */
   void setBarColor(const QColor &); 
   
   /** 
-  * Sets a pixmap to be shown in the progress bar. 
+  * Set a pixmap to be shown in the progress bar. 
   */
   void setBarPixmap(const QPixmap &);
 
   /** 
-  * Sets the orientation of the progress bar. 
+  * Set the orientation of the progress bar. 
+  *
   * Allowed values are @p Horizontal and @p Vertical. 
   */
   void setOrientation(Orientation);
@@ -117,33 +120,37 @@ public:
   void setTextEnabled(bool);
 	
   /** 
-  * @returns the bar style.
-  * @see #setBarStyle()
+  * Retrieve the bar style.
+  *
+  * @see setBarStyle()
   */
   BarStyle barStyle() const;
 
   /** 
-  * @returns the bar color.
-  * @see #setBarColor()
+  * Retrieve the bar color.
+  * @see setBarColor()
   */
   const QColor &barColor() const;
 
   /** 
-  * @returns the bar pixmap.
-  * @see #setBarPixmap()
+  * Retrieve the bar pixmap.
+  *
+  * @see setBarPixmap()
   */
   const QPixmap *barPixmap() const;
 
   /** 
-  * @returns the orientation of the progress bar.
-  * @see #setOrientation()
+  * Retrive the orientation of the progress bar.
+  *
+  * @see setOrientation()
   */
   Orientation orientation() const;
 
   /**
-  * @return @p true if progress text will be displayed,
+  * Returns @p true if progress text will be displayed,
   * @p false otherwise.
-  * @see #setFormat()
+  *
+  * @see setFormat()
   */
   bool textEnabled() const;
 
@@ -158,7 +165,7 @@ public:
   virtual QSizePolicy sizePolicy() const;
 
   /**
-   * Sets the format of the text to use to display status.
+   * Set the format of the text to use to display status.
    *
    * The default format is "%p%" (which looks like "42%".)
    * 
@@ -168,22 +175,25 @@ public:
   void setFormat(const QString & format);
 
   /**
-   * @returns the current format for printing status text.
-   * @see #setFormat()
+   * Retrieve the current format for printing status text.
+   * @see setFormat()
    */
   QString format() const;
 			
 public slots:
 	/**
-	 * Sets the current value of the progress bar to @p value.
+	 * Set the current value of the progress bar to @p value.
+	 *
          * This must be a number in the range 0..100.
 	 **/
 	  void setValue(int value);
 
         /**
-	 * Advances the progress bar by @p prog. This method is
+	 * Advance the progress bar by @p prog.
+	 *
+	 * This method is
          * provided for convenience and is equivalent with
-         * setValue(value()+prog).
+         * @ref setValue(value()+prog).
 	 **/
 	void advance(int prog);
 	

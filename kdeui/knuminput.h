@@ -67,16 +67,16 @@ public:
      * @param label The text of the label.
      *              Use @ref QString::null to remove an existing one.
      *
-     * @param a one of @tt AlignLeft, @tt AlignHCenter, YAlignRight and
-     *          @tt AlignTop, @tt AlignVCenter, @tt AlignBottom.
-     *          default is @tt AlignLeft | @tt AlignTop.
+     * @param a one of @p AlignLeft, @p AlignHCenter, YAlignRight and
+     *          @p AlignTop, @p AlignVCenter, @p AlignBottom.
+     *          default is @p AlignLeft | @p AlignTop.
      *
      * The vertical alignment flags have special meaning with this
      * widget:
      *
-     *     @li @tt AlignTop     The label is placed above the edit/slider
-     *     @li @tt AlignVCenter The label is placed left beside the edit
-     *     @li @tt AlignBottom  The label is placed below the edit/slider
+     *     @li @p AlignTop     The label is placed above the edit/slider
+     *     @li @p AlignVCenter The label is placed left beside the edit
+     *     @li @p AlignBottom  The label is placed below the edit/slider
      *
      */
     virtual void setLabel(QString label, int a = AlignLeft | AlignTop);

@@ -76,11 +76,11 @@
  * key-binding by simply calling the @ref setKeyBinding() member function
  * with the default the second argument.
  *
- * NOTE: If the @tt EchoMode for this widget is set to something other
+ * NOTE: If the @p EchoMode for this widget is set to something other
  * than @p QLineEdit::Normal, the completion mode will always be
  * defaulted to @ref KGlobal::CompletionNone.  This is done
  * purposefully to guard against protected entries such as passwords
- * being cached in @ref KCompletion's list. Hence, if the @tt EchoMode is not
+ * being cached in @ref KCompletion's list. Hence, if the @p EchoMode is not
  * @ref QLineEdit::Normal, the completion mode is automatically disabled.
  *
  * @sect Examples:
@@ -181,7 +181,7 @@ public:
     * Enables/disables the popup (context) menu.
     *
     * Note that when this function is invoked with its argument
-    * set to @tt true, then both the context menu and the completion
+    * set to @p true, then both the context menu and the completion
     * menu item are enabled.  If you do not want to the completion
     * item to be visible simply invoke @ref hideModechanger() right
     * after calling this method.  Also by default, the context
@@ -189,23 +189,23 @@ public:
     * you need to call this function with the argument set to false
     * if you do not want this behaviour.
     *
-    * @param showMenu If @tt true, show the context menu.
+    * @param showMenu If @p true, show the context menu.
     */
     virtual void setContextMenuEnabled( bool showMenu ) {  m_bEnableMenu = showMenu; }
 
     /**
-    * Returns @tt true when the context menu is enabled.
+    * Returns @p true when the context menu is enabled.
     *
     * @return @p true If context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
     
     /**
-     * By default, @ref KComboBox recognizes @tt Key_Return and @tt Key_Enter and emits
+     * By default, @ref KComboBox recognizes @p Key_Return and @p Key_Enter and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
-     * Call this method with @tt grab = @tt true to make @tt KComboBox stop these
+     * Call this method with @p grab = @p true to make @p KComboBox stop these
      * events. The signals will still be emitted of course.
      *
      * Only affects read-writable comboboxes.
@@ -215,8 +215,8 @@ public:
     void setTrapReturnKey( bool grab );
 
     /**
-     * @returns @tt true if keyevents of @tt Key_Return or 
-     * @tt Key_Enter will be stopped or if they will be propagated.
+     * @returns @p true if keyevents of @p Key_Return or 
+     * @p Key_Enter will be stopped or if they will be propagated.
      *
      * @see setTrapReturnKey ()
      */
@@ -229,7 +229,7 @@ signals:
     * key.
     *
     *  The argument is the current text.  Note that this
-    * signal is @em not emitted if the widget's @tt EchoMode is set to
+    * signal is @em not emitted if the widget's @p EchoMode is set to
     * @ref QLineEdit::Password.
     */
     void returnPressed( const QString& );
@@ -238,7 +238,7 @@ signals:
     * Emitted when the completion key is pressed.
     *
     * Please note that this signal is @em not emitted if the
-    * completion mode is set to @tt CompletionNone or @tt EchoMode is
+    * completion mode is set to @p CompletionNone or @p EchoMode is
     * @em normal.
     */
     void completion( const QString& );
@@ -252,7 +252,7 @@ signals:
     * @ref KCompletionBase::setKeyBinding for details.
     *
     * Note that this signal is @em not emitted if the completion
-    * mode is set to @tt CompletionNone or @tt EchoMode is @em not  normal.
+    * mode is set to @p CompletionNone or @p EchoMode is @em not  normal.
     */    
     void textRotation( KCompletionBase::KeyBindingType );
 

@@ -40,9 +40,9 @@ namespace KIO {
    *
    * This class isn't meant to be used as a class but only as a simple
    *  namespace for static functions, though an instance of the class
-   *  is built for internal purposes.  Whereas a @tt kiojob is
+   *  is built for internal purposes.  Whereas a @p kiojob is
    *  asynchronous, meaning that the developer has to connect slots
-   *  for it, @tt KIO::NetAccess provides synchronous downloads and
+   *  for it, @p KIO::NetAccess provides synchronous downloads and
    *  uploads, as well as temporary file creation and removal.
    *
    *  Port to kio done by David Faure, faure@kde.org
@@ -61,16 +61,16 @@ public:
      * for @p target is an empty string, download will generate a
      * unique temporary filename in /tmp. Since @p target is a reference
      * to @ref QString you can access this filename easily. Download will
-     * return @tt true if the download was successful, otherwise @tt false.
+     * return @p true if the download was successful, otherwise @p false.
      *
      * Special case:
-     * If the URL is of kind @tt file: then no downloading is
-     * processed but the full filename is returned in @tt target.
-     * That means you @em have to take care about the @tt target argument.
+     * If the URL is of kind @p file: then no downloading is
+     * processed but the full filename is returned in @p target.
+     * That means you @em have to take care about the @p target argument.
      * (This is very easy to do, please see the example below.)
      *
      * Download is synchronous. That means you can use it like
-     * this, (assuming @tt u is a string which represents a URL and your
+     * this, (assuming @p u is a string which represents a URL and your
      * application has a @ref loadFile() function):
      *
      * <pre>
@@ -156,18 +156,18 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The file or directory to delete.
-     * @return @tt true on success, @tt false on failure.
+     * @return @p true on success, @p false on failure.
      */
     static bool del( const KURL & url );
 
     /**
      * Create a directory in an synchronous way.
      *
-     * This is a convenience function for @tt KIO::mkdir
+     * This is a convenience function for @p KIO::mkdir
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The directory to create.
-     * @return @tt true on success, @tt false on failure.
+     * @return @p true on success, @p false on failure.
      */
     static bool mkdir( const KURL & url, int permissions = -1 );
 

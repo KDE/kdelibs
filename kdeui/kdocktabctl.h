@@ -89,7 +89,7 @@ public:
   /**
    * Set the position to tabpos and repaints this.
    *
-   * @param tabpos Either @tt TAB_TOP or @tt TAB_RIGHT, just where you
+   * @param tabpos Either @p TAB_TOP or @p TAB_RIGHT, just where you
    *  want it to be
    */
   void setTabPos( TabPos tabpos);
@@ -193,7 +193,7 @@ public:
   virtual void show();
 
   /**
-   * Set the font of @tt this.
+   * Set the font of @p this.
    */
   virtual void setFont( const QFont & );
 

@@ -104,8 +104,8 @@ public:
    * entries for example.
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
-   * @param _state The icon state, one of: @tt KIcon::DefaultState,
-   * @tt KIcon::ActiveState or @tt KIcon::DisabledState.
+   * @param _state The icon state, one of: @p KIcon::DefaultState,
+   * @p KIcon::ActiveState or @p KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    */
   virtual QPixmap pixmap( int _group, int _force_size = 0, int _state = 0,
@@ -120,8 +120,8 @@ public:
    * @param _url URL for the file.
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globallly configured icon size.
-   * @param _state The icon state, one of: @tt KIcon::DefaultState,
-   * @p KIcon::ActiveState or @tt KIcon::DisabledState.
+   * @param _state The icon state, one of: @p KIcon::DefaultState,
+   * @p KIcon::ActiveState or @p KIcon::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.  
    */
   virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
@@ -200,7 +200,7 @@ public:
    *        have to pass the "tar:/..." part of the URL, since gzip is
    *        a filter protocol and not a filesystem protocol.
    *
-   * @param _fast_mode If set to @tt true no disk access is allowed to
+   * @param _fast_mode If set to @p true no disk access is allowed to
    *        find out the mimetype. The result may be suboptimal, but
    *        it is @em fast.
    * @return A pointer to the matching mimetype. 0L is @em never returned.
@@ -235,7 +235,7 @@ protected:
    */
   static void checkEssentialMimeTypes();
   /**
-   * Returns @tt true if check for vital mime types has been done.
+   * Returns @p true if check for vital mime types has been done.
    */
   static bool s_bChecked;
 

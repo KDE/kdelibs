@@ -54,9 +54,9 @@ class KFontChooser : public QWidget
   
 public:
   /**
-   *  @li @tt FamilyList - Identifies the family (leftmost) list.
-   *  @li @tt StyleList -  Identifies the style (center) list.
-   *  @li @tt SizeList -   Identifies the size (rightmost) list.
+   *  @li @p FamilyList - Identifies the family (leftmost) list.
+   *  @li @p StyleList -  Identifies the style (center) list.
+   *  @li @p SizeList -   Identifies the size (rightmost) list.
    */
   enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04 };
 
@@ -87,8 +87,8 @@ public:
    * properties.
    *
    * @param font Specifie the columns. An or'ed combination of 
-   *        @tt FamilyList, @tt StyleList and @tt SizeList is possible.
-   * @param state If @tt false the columns are disabled.
+   *        @p FamilyList, @p StyleList and @p SizeList is possible.
+   * @param state If @p false the columns are disabled.
    */
   void enableColumn( int column, bool state );
 
@@ -97,7 +97,7 @@ public:
    * 
    * @param font The font to select.
    * @param onlyFixed Readjust the font list to display only fixed
-   *        width fonts if @tt true, or vice-versa.
+   *        width fonts if @p true, or vice-versa.
    */
   void setFont( const QFont &font, bool onlyFixed = false );
 

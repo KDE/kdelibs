@@ -104,9 +104,9 @@ namespace KParts
  *
  * You can do as many calls to write as you want. But there are two
  * @ref write() methods, one accepting a @ref QString one accepting a
- * @tt char @tt * argument. You should use one or the other 
+ * @p char @p * argument. You should use one or the other 
  * (but not both) since the method using
- * the @tt char @tt * argument does an additional decoding step to convert the
+ * the @p char @p * argument does an additional decoding step to convert the
  * written data to Unicode.
  *
  * @short HTML Browser Widget
@@ -193,7 +193,7 @@ public:
   void enableJScript( bool enable );
 
   /**
-   * Returns @tt true if Javascript support is enabled or @tt false
+   * Returns @p true if Javascript support is enabled or @p false
    * otherwise.
    */
   bool jScriptEnabled() const;
@@ -201,8 +201,8 @@ public:
   /**
    * Execute the specified snippet of JavaScript code.
    *
-   * Returns @tt true if JavaScript was enabled, no error occured
-   * and the code returned true itself or @tt false otherwise.
+   * Returns @p true if JavaScript was enabled, no error occured
+   * and the code returned true itself or @p false otherwise.
    */
   bool executeScript( const QString &script );
 
@@ -220,7 +220,7 @@ public:
   bool javaEnabled() const;
 
   /**
-   * Should images be loaded automatically? Default is @tt true.
+   * Should images be loaded automatically? Default is @p true.
    *
    * (not implemented at the moment)
    */
@@ -337,7 +337,7 @@ public:
   /**
    * Set the charset to use for displaying HTML pages.
    *
-   * If override is @tt true,
+   * If override is @p true,
    * it will override charset specifications of the document.
    */
   bool setCharset( const QString &name, bool override = false );
@@ -416,7 +416,7 @@ public:
    * Find the anchor named @p name.
    *
    * If the anchor is found, the widget
-   * scrolls to the closest position. Returns @tt if the anchor has
+   * scrolls to the closest position. Returns @p if the anchor has
    * been found.
    */
   bool gotoAnchor( const QString &name );
@@ -462,7 +462,7 @@ public:
    *  Call @ref selectedText() to
    * retrieve the selected text.
    *
-   * @return @tt true if there is text selected.
+   * @return @p true if there is text selected.
    */
   bool hasSelection() const;
 
@@ -509,7 +509,7 @@ public:
   virtual void restoreState( QDataStream &stream );
 
   /**
-   * Retrieve the @tt Node currently under the mouse
+   * Retrieve the @p Node currently under the mouse
    */
   DOM::Node nodeUnderMouse() const;
 

@@ -47,9 +47,9 @@ struct KKeyEntry;
  * easily encapsulate a "real" user-selected action or event in your
  * program.
  *
- * For instance, a user may want to @tt paste the contents of
- * the clipboard or @tt scroll @tt down a document or @ quit the
- * application.  These are all @tt actions -- events that the
+ * For instance, a user may want to @p paste the contents of
+ * the clipboard or @p scroll @p down a document or @ quit the
+ * application.  These are all @p actions -- events that the
  * user causes to happen.  The KAction class allows the developer to
  * deal with these actions in an easy and intuitive manner.
  *
@@ -58,7 +58,7 @@ struct KKeyEntry;
  * that goes along with it (a clipboard for a "paste" action or
  * scissors for a "cut" action).  The action might have some text to
  * describe the action.  It will certainly have a method or function
- * that actually @tt executes the action!  All these attributes
+ * that actually @p executes the action!  All these attributes
  * are contained within the KAction object.
  *
  * The advantage of dealing with Actions is that you can manipulate
@@ -257,7 +257,7 @@ public:
      * @p accel param to 0.
      *
      * This is the other common KAction used.  Use it when you
-     * @tt do have a corresponding icon.
+     * @p do have a corresponding icon.
      *
      * @param text The text that will be displayed.
      * @param pix The icon to display.
@@ -280,7 +280,7 @@ public:
      * @p accel param to 0.
      *
      * This is the other common KAction used.  Use it when you
-     * @tt do have a corresponding icon.
+     * @p do have a corresponding icon.
      *
      * @param text The text that will be displayed.
      * @param pix The icon to display.

@@ -56,7 +56,7 @@ public:
      *
      * @param isURL Local files and URL .desktop files are encoded differently
      * in order for the filename to be easier for Konqueror users to read. Set
-     * to @tt true if @p documentStr is an URL and not a local file path.
+     * to @p true if @p documentStr is an URL and not a local file path.
      */
     static void add(const QString &documentStr, bool isURL = false);
     /**

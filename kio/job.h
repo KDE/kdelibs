@@ -69,26 +69,26 @@ namespace KIO {
      * @param url The URL isn't passed to the slave, but is used to know
      *        which slave to send it to :-)
      * @param data Packed data.  The meaning is completely dependent on the
-     *        slave, but usually starts with an @tt int for the command number.
+     *        slave, but usually starts with an @p int for the command number.
      */
     SimpleJob * special( const KURL& url, const QByteArray & data, bool showProgressInfo = true );
 
     /**
      * Mount filesystem.
      *
-     * Special job for @tt kio_file.
+     * Special job for @p kio_file.
      *
-     * @param ro Mount read-only if @tt true.
+     * @param ro Mount read-only if @p true.
      * @param fstype File system type (e.g. "ext2", can be 0L).
      * @param dev Device (e.g. /dev/sda0).
-     * @param point Mount point, can be @tt null.
+     * @param point Mount point, can be @p null.
      */
     SimpleJob *mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
 
     /**
      * Unmount filesystem.
      *
-     * Special job for @tt kio_file.
+     * Special job for @p kio_file.
      *
      * @param mount Point to unmount.
      */
@@ -111,7 +111,7 @@ namespace KIO {
      *
      * @param url Where to write data.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If @tt true, any existing file will be overwritten.
+     * @param overwrite If @p true, any existing file will be overwritten.
      * @param resume
      */
     TransferJob *put( const KURL& url, int permissions,
@@ -155,7 +155,7 @@ namespace KIO {
      * @param src Where to get the file.
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If @tt true, any existing file will be overwritten.
+     * @param overwrite If @p true, any existing file will be overwritten.
      * @param resume
      */
     FileCopyJob *file_copy( const KURL& src, const KURL& dest, int permissions=-1,
@@ -170,7 +170,7 @@ namespace KIO {
      * @param src Where to get the file.
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If @tt true, any existing file will be overwritten.
+     * @param overwrite If @p true, any existing file will be overwritten.
      * @param resume
      */
     FileCopyJob *file_move( const KURL& src, const KURL& dest, int permissions=-1,
@@ -231,14 +231,14 @@ namespace KIO {
      * which can be a file (including the final filename) or a directory
      * (into which @p src will be copied).
      *
-     * This emulates the @tt cp command completely.
+     * This emulates the @p cp command completely.
      */
     CopyJob *copy( const KURL& src, const KURL& dest, bool showProgressInfo = true );
     /**
      * Copy a file or directory @p src into the destination @dest,
      * which is the destination name in any case, even for a directory.
      *
-     * As opposed to @ref copy, this doesn't emulate @tt cp, but is the only
+     * As opposed to @ref copy, this doesn't emulate @p cp, but is the only
      * way to copy a directory, giving it a new name and getting an error
      * box if a directory already exists with the same name.
      */
@@ -266,7 +266,7 @@ namespace KIO {
      * Delete a file or directory.
      *
      * @param src file to delete
-     * @param shred If @tt true, delete in a way that makes recovery impossible
+     * @param shred If @p true, delete in a way that makes recovery impossible
      * (only supported for local files currently)
      */
     DeleteJob *del( const KURL& src, bool shred = false, bool showProgressInfo = true );

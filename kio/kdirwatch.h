@@ -32,7 +32,7 @@ class KDirWatchPrivate;
  /**
   * Watch directories for changes.
   *
-  * It uses @tt stat (2) and
+  * It uses @p stat (2) and
   * compares stored and actual changed time of directories. If
   * there is a difference it notifies about the change. Directories can be
   * added, removed from the list and scanning of particular directories
@@ -95,7 +95,7 @@ class KDirWatch : public QObject
     * Call this function when you perform an huge operation
     * on this directory (copy/move big files or many files). When finished,
     * call @ref restartDirScan (path).
-    * Returns @tt false if specified path is not in list, @tt true otherwise.
+    * Returns @p false if specified path is not in list, @p true otherwise.
     */
    bool stopDirScan(const QString& path);
 
@@ -106,20 +106,20 @@ class KDirWatch : public QObject
     * the change (by emitted a signal), since the ctime value is reset.
     *
     * Call it when you are finished with big operations on that path,
-    * @em and when @em you have refreshed that path.  Returns @tt false
-    * if specified path is not in list, @tt true otherwise.  
+    * @em and when @em you have refreshed that path.  Returns @p false
+    * if specified path is not in list, @p true otherwise.  
     */
    bool restartDirScan(const QString& path);
 
    /**
     * Start scanning of all dirs in list.
     *
-    * If notify is @tt true, all changed directories (since @ref
+    * If notify is @p true, all changed directories (since @ref
     * stopScan() call) will be notified for refresh. If notify is
-    * @tt false, all ctimes will be reset (except those who are stopped,
-    * but only if @p skippedToo is @tt false) and changed dirs won't be
+    * @p false, all ctimes will be reset (except those who are stopped,
+    * but only if @p skippedToo is @p false) and changed dirs won't be
     * notified. You can start scanning even if the list is
-    * empty. First call should be called with @tt false or else all 
+    * empty. First call should be called with @p false or else all 
     * directories 
     * in list will be notified.  If
     * @p skippedToo is true, the skipped directoris (scanning of which was

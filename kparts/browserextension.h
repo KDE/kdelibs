@@ -90,19 +90,19 @@ class BrowserExtensionPrivate;
   * The following standard actions are defined by the host of the view :
   *
   * [selection-dependent actions]
-  * @li @tt cut : Copy selected items to clipboard and store 'not cut' in clipboard.
-  * @li @tt copy : Copy selected items to clipboard and store 'cut' in clipboard.
-  * @li @tt paste : Paste clipboard into selected items.
-  * @li @tt trash : Move selected items to trash.
-  * @li @tt del : Delete selected items (couldn't call it delete!).
-  * @li @tt shred : Shred selected items (secure deletion).
-  * @li @tt properties : Show file/document properties.
-  * @li @tt editMimeType : show file/document's mimetype properties.
+  * @li @p cut : Copy selected items to clipboard and store 'not cut' in clipboard.
+  * @li @p copy : Copy selected items to clipboard and store 'cut' in clipboard.
+  * @li @p paste : Paste clipboard into selected items.
+  * @li @p trash : Move selected items to trash.
+  * @li @p del : Delete selected items (couldn't call it delete!).
+  * @li @p shred : Shred selected items (secure deletion).
+  * @li @p properties : Show file/document properties.
+  * @li @p editMimeType : show file/document's mimetype properties.
   *
   * [normal actions]
-  * @li @tt print : Print :-)
-  * @li @tt reparseConfiguration : Re-read configuration and apply it.
-  * @li @tt refreshMimeTypes : If the view uses mimetypes it should re-determine them.
+  * @li @p print : Print :-)
+  * @li @p reparseConfiguration : Re-read configuration and apply it.
+  * @li @p refreshMimeTypes : If the view uses mimetypes it should re-determine them.
   *
   *
   * The view defines a slot with the name of the action in order to implement the action.
@@ -120,7 +120,7 @@ class BrowserExtensionPrivate;
   * and having parameters.
   *
   * [configuration slot]
-  * @li @tt setSaveViewPropertiesLocally( bool ): If @tt true, view properties are saved into .directory
+  * @li @p setSaveViewPropertiesLocally( bool ): If @p true, view properties are saved into .directory
   *                                       otherwise, they are saved globally.
   */
 class BrowserExtension : public QObject
@@ -190,7 +190,7 @@ public:
    *   extension->metaObject()->slotNames().contains( actionName + "()" )
    * </pre>
    *
-   * (note that @tt actionName is the iterator's key value if already
+   * (note that @p actionName is the iterator's key value if already
    *  iterating over the action slot map, returned by this method)
    *
    * Connecting to the slot can be done like this:

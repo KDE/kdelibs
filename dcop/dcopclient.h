@@ -129,7 +129,7 @@ class DCOPClient : public QObject
    * If the application was already registered,
    * the registration will be re-done with the new @ref appId.
    *
-   * @p appId is a @tt unique application/program id that the server
+   * @p appId is a @p unique application/program id that the server
    * will use to associate requests with. If there is already an application
    * registered with the same name, the server will add a number to the
    * id to unify it. If @p addPID is true, the PID of the current process
@@ -229,20 +229,20 @@ class DCOPClient : public QObject
    *        the network.  "fast" is only a hint not an order.
    *
    * findObject calls @p remFun in the applications and objects identified
-   * by @p remApp and @p remObj until @p remFun returns @tt true. The name of 
-   * the application and object that returned @tt true are returned in
+   * by @p remApp and @p remObj until @p remFun returns @p true. The name of 
+   * the application and object that returned @p true are returned in
    * @p foundApp and @p foundObj respectively.
    *
    * If @p remFun is empty a default function is called in the object 
-   * which always returns @tt true.
+   * which always returns @p true.
    *
-   * @return @tt true is returned when an object was found for which @remFun
-   * returned @tt true. If no such object is the function returns @tt false.
+   * @return @p true is returned when an object was found for which @remFun
+   * returned @p true. If no such object is the function returns @p false.
    *
    * A findObject blocks the application until the process receives the
    * answer.
    *
-   * If @p useEventLoop is @tt true, a local event loop will be started after
+   * If @p useEventLoop is @p true, a local event loop will be started after
    * 1/10th of a second in order to keep the user interface updated 
    * (by processing paint events and such) until an answer is received.
    *
@@ -317,7 +317,7 @@ class DCOPClient : public QObject
 	       QCString& replyType, QByteArray &replyData);
 
   /**
-   * Receive a @tt DCOPFind message from the server.
+   * Receive a @p DCOPFind message from the server.
    *
    * @param app The application the message was intended for.  Should be
    *        equal to our appId that we passed when the @ref DCOPClient was
@@ -352,16 +352,16 @@ class DCOPClient : public QObject
 
 
   /**
-   * Retrieve the @tt appId of the last application that talked to us.
+   * Retrieve the @p appId of the last application that talked to us.
    */
   QCString senderId() const;
 
 
     /**
-     * Installs object @tt objId as application-wide default object.
+     * Installs object @p objId as application-wide default object.
      *
      * All app-wide messages that have not been processed by the dcopclient
-     * will be send further to @tt objId.
+     * will be send further to @p objId.
      */
     void setDefaultObject( const QCString& objId );
 
@@ -384,7 +384,7 @@ class DCOPClient : public QObject
 
 signals:
   /**
-   * Indicate that the application @tt appId has been registered with
+   * Indicate that the application @p appId has been registered with
    * the server we are attached to.
    *
    * You need to call @ref setNotifications() first, to tell the @ref DCOPServer
@@ -392,7 +392,7 @@ signals:
    */
   void applicationRegistered( const QCString& appId );
   /**
-   * Indicate that the formerly registered application @tt appId has
+   * Indicate that the formerly registered application @p appId has
    * been removed.
    *
    * You need to call @ref setNotifications() first, to tell the @ref

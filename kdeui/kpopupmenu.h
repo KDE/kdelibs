@@ -24,44 +24,47 @@
 #include <kpixmapeffect.h>
 
 /**
- * Title widget for use in KPopupMenu. You usually don't have to create this
- * manually since KPopupMenu::insertTitle will do it for you, but it is allowed
- * if you wish to customize it's look.
+ * Title widget for use in @ref KPopupMenu.
+ *
+ * You usually don't have to create this manually since 
+ * @ref KPopupMenu::insertTitle will do it for you, but it is allowed if
+ * you wish to customize it's look.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
- * @short KPopupMenu title widget.
- */
+ * @short KPopupMenu title widget.  */
 class KPopupTitle : public QWidget
 {
 public:
     /**
-     * Creates a title widget with the user specified gradient, pixmap,
+     * Create a title widget with the user specified gradient, pixmap,
      * and colors.
      */
     KPopupTitle(QWidget *parent=0, const char *name=0);
     /**
-     * Creates a title widget with the specified gradient and colors.
+     * Create a title widget with the specified gradient and colors.
      */
     KPopupTitle(KPixmapEffect::GradientType gradient, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
                 const char *name=0);
     /**
-     * Creates a title widget with the specified pixmap and colors.
+     * Create a title widget with the specified pixmap and colors.
      */
     KPopupTitle(const KPixmap &background, const QColor &color,
                 const QColor &textColor, QWidget *parent=0,
                 const char *name=0);
     /**
-     * Sets the title string and optional icon for the title widget. You will
+     * Set the title string and optional icon for the title widget.
+     *
+     * You will
      * want to call this before inserting into a menu.
      */
     void setTitle(const QString &text, const QPixmap *icon=NULL);
     /**
-     * Returns the current title.
+     * Retrieve the current title.
      */
     QString title(){ return(titleStr); }
     /**
-     * Returns the current icon.
+     * Retrieve the current icon.
      */
     QPixmap icon(){ return(miniicon); }
     QSize sizeHint() const;
