@@ -388,11 +388,9 @@ KPixmapEffect:: [Vertical,
 Gradients. See kdelibs/kdetest/kgradienttest && kunbalancedgradienttest for
 information on how they actually look. 
 
-There is still some code in KPixmap::gradientFill() kept there because
-of the backwards compatibility and because we can't link kdecore to
-kdeui (as KPixmapEffect is in kdeui) but be warned it will be taken
-out (and supposedly replaced with a bare warning) ASA the applications
-in the base package have been corrected.
+The code in KPixmap::gradientFill() is replaced with warnings. It isn't 
+possible to make this old method call the new functionalities in kdeui because
+we can't link-compile kdecore to kdeui.
 
 ////////////////////////////////////////////////////////////////////////
 // * KTabListBox
