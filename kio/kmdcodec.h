@@ -40,6 +40,31 @@ typedef char HASHHEX[33];
 
 #define KBase64 KCodecs
 
+/**
+ * A wrapper class for the most commonly used encoding and
+ * decoding algorithms.  Currently it provides encoding and
+ * decoding facilities for the base64 and uuencode/uudecode
+ * algorithms.
+ *
+ * @section Useage:
+ *
+ * <PRE>
+ * QCString input = "Aladdin:open sesame";
+ * QCString result = KCodecs::base64Encode( input );
+ * printf ( "Result: %c", result.data() );
+ * </PRE>
+ *
+ * Output should be
+ * Result: QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+ *
+ * <u>NOTE:</u> A unit test program is available under the tests
+ * directory that exercises all the codecs provided here.  You
+ * can compile the unit test program under @p kdelibs/kio/tests
+ * by doing @p "make kmdcodectest".
+ *
+ * @short A collection of commonly used encoding/decoding algorithms.
+ * @author Dawit Alemayheu <adawit@kde.org>
+ */
 class KCodecs
 {
 public:
@@ -266,7 +291,7 @@ private:
  * respectivelly.  The extra byte in the latter format is is a NULL
  * character to terminate the string!
  *
- * @sect Example:
+ * @sect Useage:
  *
  * The simplest way of using this class through one of the
  * accessor methods:

@@ -117,9 +117,7 @@ QCString KCodecs::base64Encode( const QCString& str )
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
-    QCString out = base64Encode( in );
-    in.resize( 0 );
-    return out;
+    return base64Encode( in );
 }
 
 QCString KCodecs::base64Encode( const QByteArray& in )
