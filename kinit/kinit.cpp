@@ -1060,14 +1060,14 @@ int main(int argc, char **argv, char **envp)
    kdeinit_setproctitle("Running...");
 
    if (!keep_running)
-      exit(0);
+      return 0;
 
    //
    // Fork here and let parent process exit.
    // Parent process may only exit after all required services have been
    // launched. (dcopserver/klauncher and services which start with '+')
    if (fork() > 0) // Go into background
-       exit(0);
+       return 0;
 
 
    handle_requests(0);
