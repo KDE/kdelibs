@@ -4167,11 +4167,11 @@ void KHTMLPart::slotPrintFrame()
     (ext->*(mdata->ptr))();
 #else
   QMetaObject *mo = ext->metaObject();
-  const QMetaData *mdata = mo->slot( mo->findSlot( "print()" ) );
-  if ( mdata )
-  {
+
+  int idx = mo->findSlot( "print()", TRUE );
+  if ( idx >= 0 ) {
     QUObject o[ 1 ];
-    ext->qt_invoke( mdata->ptr, o );
+    ext->qt_invoke( idx, o );
   }
 #endif
 }
