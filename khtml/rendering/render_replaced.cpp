@@ -169,7 +169,8 @@ public:
 
 void  RenderWidget::resizeWidget( int w, int h )
 {
-    // ugly hack to limit the maximum size of the widget (as X11 has problems i
+    // ugly hack to limit the maximum size of the widget ( as X11 has problems if
+	 // its bigger )
     h = QMIN( h, 3072 );
     w = QMIN( w, 2000 );
 
