@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
                        David Faure <faure@kde.org>
+                  2001 Holger Freyther <freyther@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -83,23 +84,7 @@ public:
    */
   KURL newDestURL();
 
-protected:
-  QPushButton *b0;
-  QPushButton *b1;
-  QPushButton *b2;
-  QPushButton *b3;
-  QPushButton *b4;
-  QPushButton *b5;
-  QPushButton *b6;
-  QPushButton *b7;
-  QPushButton *b8; //why isn't it an array 
-  QLineEdit* m_pLineEdit;
-  QVBoxLayout* m_pLayout; // ### doesn't need to be here
 
-  QString src;
-  QString dest;
-
-  bool modal;
 
 public slots:
   void b0Pressed();
@@ -114,6 +99,9 @@ public slots:
 
 protected slots:
   void enableRenameButton(const QString &);
+private:
+ class RenameDlgPrivate;
+ RenameDlgPrivate *d;
 };
 
   /**
