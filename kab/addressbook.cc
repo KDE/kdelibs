@@ -77,8 +77,6 @@ AddressBook::AddressBook(bool readonly_)
     } else {
       LG(GUARD, "AddressBook constructor: initializing"
 	 " class.\n");
-      KApplication::getKApplication()->getLocale()
-	->insertCatalogue("kab");
       initialized=true;
       LG(GUARD, "AddressBook constructor: done.\n");
     }
