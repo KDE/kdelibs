@@ -78,17 +78,17 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	QString txt = i18n( "<p><b>Samba server</b></p>"
 						"Adobe Windows PostScript driver files plus the CUPS printer PPD will be "
 						"exported to the <tt>[print$]</tt> special share of the Samba server (to change "
-						"source CUPS server, use the <nobr><i>Configure Manager --> CUPS server</i></nobr> first). "
-						"The <tt>[print$]</tt> share must exists on the Samba side prior to hitting the "
+						"the source CUPS server, use the <nobr><i>Configure Manager -> CUPS server</i></nobr> first). "
+						"The <tt>[print$]</tt> share must exist on the Samba side prior to clicking the "
 						"<b>Export</b> button below." );
 	QWhatsThis::add( m_serverlab, txt );
 	QWhatsThis::add( m_servered, txt );
 
 	txt = i18n( "<p><b>Samba username</b></p>"
-				"User needs to have write access to the <tt>[print$]</tt> share on Samba server. "
+				"User needs to have write access to the <tt>[print$]</tt> share on the Samba server. "
 				"<tt>[print$]</tt> holds printer drivers prepared for download to Windows clients. "
 				"This dialog does not work for Samba servers configured with <tt>security = share</tt> "
-				"(but works f.e. with <tt>security = user</tt>)." );
+				"(but works fine with <tt>security = user</tt>)." );
 	QWhatsThis::add( m_loginlab, txt );
 	QWhatsThis::add( m_logined, txt );
 
