@@ -657,6 +657,9 @@ void KFileIconView::determineIcon( KFileIconViewItem *item )
 
 void KFileIconView::listingCompleted()
 {
+    if ( !currentItem() )
+        setCurrentItem( firstFileItem() );
+        
     arrangeItemsInGrid();
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
 }

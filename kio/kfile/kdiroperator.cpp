@@ -866,14 +866,14 @@ void KDirOperator::connectView(KFileView *view)
             view->setCurrentItem( oldCurrentItem );
 	    view->ensureItemVisible( oldCurrentItem );
         }
-        
+
         const KFileItemList *oldSelected = m_fileView->selectedItems();
         if ( !oldSelected->isEmpty() ) {
             KFileItemListIterator it( *oldSelected );
             for ( ; it.current(); ++it )
                 view->setSelected( it.current(), true );
         }
-        
+
         m_fileView->widget()->hide();
         delete m_fileView;
     }
@@ -899,11 +899,13 @@ void KDirOperator::connectView(KFileView *view)
     updateViewActions();
     m_fileView->widget()->resize(size());
     m_fileView->widget()->show();
-    
+
     if ( listDir ) {
         QApplication::setOverrideCursor( waitCursor );
         dir->openURL( currUrl );
     }
+    else
+        view->listingCompleted();
 }
 
 KFile::Mode KDirOperator::mode() const
