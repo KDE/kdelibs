@@ -833,8 +833,8 @@ RenderFlow::clearFloats()
 		special->count = specialObjects->count();
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
-		special->left = r->left - offsetX; // ### the object might have different m,p&b
-		special->width = r->width - offsetX;
+		special->left = r->left;// - offsetX; // ### the object might have different m,p&b
+		special->width = r->width;// - offsetX;
 		special->node = r->node;
 		special->type = r->type;
 		specialObjects->append(special);

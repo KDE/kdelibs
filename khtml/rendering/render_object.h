@@ -310,10 +310,6 @@ public:
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
-    /**
-     * force a repaint of this objects containing block
-     */
-    virtual void repaintContainingBlock();
 
     virtual unsigned int length() const { return 0; }
 

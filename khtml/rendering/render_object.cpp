@@ -391,11 +391,6 @@ void RenderObject::repaintObject(RenderObject *o, int x, int y)
     if(m_parent) m_parent->repaintObject(o, x, y);
 }
 
-void RenderObject::repaintContainingBlock()
-{
-    containingBlock()->repaint();
-}
-
 // used for clear property & to layout replaced elements
 bool RenderObject::isSpecial() const
 {

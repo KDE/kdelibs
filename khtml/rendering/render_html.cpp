@@ -148,14 +148,9 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
 void RenderHtml::repaint()
 {
-    repaintContainingBlock();
-#if 0    
-    int bx = - marginLeft();
-    int by = - marginTop();
-    int bw = m_width + marginLeft() + marginRight() + borderLeft() + borderRight();
-    int bh = m_height + marginTop() + marginBottom() + borderTop() + borderBottom();
-    repaintRectangle(bx, by, bw, bh);
-#endif
+    RenderObject *cb = containingBlock();
+    if(cb != this)
+	cb->repaint();
 }
 
 void RenderHtml::layout()
