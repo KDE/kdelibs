@@ -26,6 +26,7 @@
 #define KDE_DEFAULT_INSERTTEAROFFHANDLES true
 #define KDE_DEFAULT_AUTOSELECTDELAY -1
 #define KDE_DEFAULT_CHANGECURSOR true
+#define KDE_DEFAULT_LARGE_CURSOR false
 
 /**
  * Access the KDE global configuration.
