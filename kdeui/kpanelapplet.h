@@ -95,7 +95,7 @@ class KConfig;
  **/
 class KPanelApplet : public QFrame
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
 
