@@ -57,6 +57,7 @@ class SearchDialog : public KDialogBase
     void slotOk();
     void selectedStateChanged (int);
     void slotEditRegExp();
+    void slotSearchTextChanged( const QString & );
 
   protected:
     KComboBox *m_search;
@@ -207,7 +208,7 @@ public:
 
   void setFont ( const QFont &font );
   QFont getFont ( ) { return myFont; };
-  
+
   void setFontPrint ( const QFont &font );
   QFont getFontPrint ( ) { return myFontPrint; };
 

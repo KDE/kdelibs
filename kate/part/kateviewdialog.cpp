@@ -148,6 +148,13 @@ SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList
   m_opt4->setChecked( flags & KateDocument::sfBackward );
 
   m_search->setFocus();
+  connect (  m_search->lineEdit (),  SIGNAL( textChanged ( const QString & ) ), this, SLOT( slotSearchTextChanged( const QString & )));
+  slotSearchTextChanged( m_search->lineEdit ()->text());
+}
+
+void SearchDialog::slotSearchTextChanged( const QString & _text)
+{
+    enableButtonOK( !_text.isEmpty() );
 }
 
 QString SearchDialog::getSearchFor()
@@ -232,7 +239,7 @@ void SearchDialog::slotEditRegExp()
   iface->setRegExp( m_search->currentText() );
   int ok = m_regExpDialog->exec();
   if (ok == QDialog::Accepted) {
-    m_search->setCurrentText( iface->regExp() );    
+    m_search->setCurrentText( iface->regExp() );
   }
 }
 
@@ -600,7 +607,7 @@ FontConfig::FontConfig( QWidget *parent, const char *, KateDocument *doc )
   m_fontchooserPrint = new KFontChooser ( tab, 0L, false, QStringList(), false );
   m_fontchooserPrint->enableColumn(KFontChooser::StyleList, false);
   tab->addTab (m_fontchooserPrint, i18n("Printer Font"));
-  
+
   tab->show ();
 
   connect (m_fontchooser, SIGNAL (fontSelected( const QFont & )), this, SLOT (slotFontSelected( const QFont & )));
