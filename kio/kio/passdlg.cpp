@@ -28,6 +28,7 @@
 #include <kapplication.h>
 #include <klineedit.h>
 #include <kconfig.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <kbuttonbox.h>
 #include <kstandarddirs.h>
@@ -80,7 +81,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
 
     // Row 0: pixmap  prompt
     QLabel* lbl;
-    QPixmap pix(locate("data", QString::fromLatin1("kdeui/pics/keys.png")));
+    QPixmap pix( KGlobal::iconLoader()->loadIcon( "password", KIcon::NoGroup, KIcon::SizeHuge, 0, 0, true));
     if ( !pix.isNull() )
     {
         lbl = new QLabel( main );
