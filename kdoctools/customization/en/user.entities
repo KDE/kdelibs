@@ -25,8 +25,8 @@
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon>"><!-- if image is localised, then entityref should be used instead
-                 of fileref -->
+</guiicon> icon"><!-- if image is localised, then entityref should be used 
+                      instead of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> menu">
 <!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button">
 <!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button">
