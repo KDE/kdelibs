@@ -72,7 +72,7 @@
 
 #include "ktablistbox.h"
 
-template QDict<QPixmap>;
+template class QDict<QPixmap>;
 
 //=============================================================================
 //

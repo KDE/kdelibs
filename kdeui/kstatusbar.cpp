@@ -23,10 +23,13 @@
 #include <ktmainwindow.h>
 #include <kstatusbar.h>
 
-template QList<KStatusBarItem>;
+template class QList<KStatusBarItem>;
 
 // $Id$
 // $Log$
+// Revision 1.25  1999/10/31 19:44:46  bero
+// More template definitions for -frepo
+//
 // Revision 1.24  1999/10/08 23:13:42  bero
 // ktopwidget.h no longer included
 //

@@ -48,6 +48,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.90  1999/12/13 13:06:19  mosfet
+// Font metrics fix for the latest Qt and KStyle. Should work with older Qt's but
+// I dunno - at least it will compile but may look funny >:)
+//
 // Revision 1.89  1999/11/24 12:35:32  navindra
 // do not collapse the bars on MidButton press *and* release.  do it only
 // on Mid release, just like is done with the Left button.  i believe the
@@ -323,10 +327,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   init();
 }
 
-#if QT2_WORKAROUND
 void KMenuBar::show() {
-#warning <mweilguni@kde.org> Test if this hack is really necessary in the next version (Qt-2 beta4)
-#warning If it works without the menu->show() call, remove the whole method
   /* TODO: it seems to be necessary to have an extra show() call for
    * the QMenuBar, otherwise not all menu items are redrawn correctly
    * Recheck this after the next Qt-Beta (Beta 4?)
@@ -334,7 +335,6 @@ void KMenuBar::show() {
   QFrame::show();
   menu->show();
 }
-#endif
 
 int KMenuBar::idAt( int index )
 {

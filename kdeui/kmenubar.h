@@ -20,6 +20,10 @@
 
 //$Id$
 //$Log$
+//Revision 1.30  1999/11/02 08:41:55  ssk
+//More class doc updates, nearly all classes have atleast short docs and/or
+//internal/deprecated flags.
+//
 //Revision 1.29  1999/10/29 14:28:03  mosfet
 //Fix for KStyle menubar active items to work correctly with the latest Qt CVS.
 //Should be fine with older ones too ;-)
@@ -178,10 +182,8 @@ class KMenuBar : public QFrame
     */
    bool enable( BarStatus stat );
 
-#if QT2_WORKAROUND
    /** Hack: this is needed for Qt-2 */
    void show();
-#endif
 
    /**
     * Reimplemented to return some useful measures.

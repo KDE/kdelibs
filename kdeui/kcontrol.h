@@ -22,7 +22,9 @@
 #ifndef _K_CONTROL_
 #define _K_CONTROL_
 
+#ifdef __GNUC__
 #warning This is obsolete, please use kcmodule.h instead
+#endif
 
 #include <qtabbar.h>
 #include <qtabdialog.h>

@@ -23,7 +23,9 @@
 #ifndef KTabListBox_h
 #define KTabListBox_h
 
+#ifdef __GNUC__
 #warning This is obsolete, use QListView instead
+#endif
 
 #undef del_item
 #include <qdict.h>
