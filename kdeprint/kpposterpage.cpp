@@ -29,6 +29,7 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qlineedit.h>
+#include <qwhatsthis.h>
 #include <kpushbutton.h>
 #include <klocale.h>
 #include <knuminput.h>
@@ -37,27 +38,158 @@
 KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 	: KPrintDialogPage( parent, name )
 {
+        //WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThis5_PosterPage = i18n( " <qt> "
+			" 5. "
+			" </qt>" );
+
+	QString whatsThisEnablePosterPage = i18n( " <qt> "
+                        " <b>Print Poster</b> (enabled or disabled). "
+			" <p>If you enable this option, you can print posters of different sizes "
+			" The printout will happen in the form <em>'tiles'</em> printed on smaller "
+			" paper sizes, which you can stitch together later. <em>If you enable this "
+			" option here, the <em>'Poster Printing' filter</em> will be auto-loaded in "
+			" the 'Filters' tab of this dialog. </p>"
+			" <p>This tab is only visible if the external <em>'poster'</em> utility is "
+			" discovered by KDEPrint on your system. [<em>'poster'</em> is a commandline "
+			" utility that enables you to convert PostScript files into tiled printouts "
+			" which allow for oversized appearance of the stitched-together tiles.] </p>"
+			" <p><b>Note:</b> The standard version of 'poster' will not work. Your system "
+			" must use a patched version of 'poster'. Ask your operating system vendor to "
+			" provide a patched version of 'poster' if he does not already. </p>"
+			" <p><b>Additional hint for power users:</b> A patched version of 'poster' is "
+			" available from the <a href=\"http://printing.kde.org/\">KDEPrint Website</a> "
+			" at <a href=\"http://printing.kde.org/downloads/\">http://printing.kde.org/downloads/</a>. "
+			" The direct link to the patched source tarball is "
+			" <a href=\"ftp://ftp.kde.org/pub/kde/printing/poster.tar.bz2\">ftp://ftp.kde.org/pub/kde/printing/poster.tar.bz2</a> "
+			" </p> "
+			" </qt>" );
+
+	QString whatsThisTileSelectionPosterPage = i18n( " <qt> "
+                        " <b>Tile Selection widget</b> "
+			" <p>This GUI element is <em>not only for viewing</em> your selections! It also "
+			" lets you interactively select the tile(s) you want to print. "
+			" </p>"
+			" <p><b>Hints</b> "
+			" <ul> "
+			" <li>Click any tile to select it for printing.</li> "
+			" <li>To select multiple tiles to be printed "
+			" at once, <em>'shift-click'</em> on the tiles ('shift-click' means: hold down the "
+			" [SHIFT]-key on your keyboard and click with the mouse while [SHIFT]-key is held.)  "
+			" <em>Be aware</em> that the order "
+			" of your clicking is also significant to the order of printing the different tiles. </li>"
+			" </ul> "
+			" <b>Note 1:</b> The order of your selection (and the order for printout of the tiles) "
+			" is indicated by the contents of the text field below, "
+			" labelled as <em>'Tile pages (to be printed):'</em><p>"
+			" <b>Note 2:</b> By default no tile is selected. Before you can print (a part "
+			" of) your poster, you must select at least one tile. </p> "
+			" </qt>" );
+
+	QString whatsThisPostersizePosterPage = i18n( " <qt> "
+                        " <b>Poster Size</b> "
+			" <p>Select the poster size you want from the dropdown list. </p> "
+			" Available sizes are all standard paper sizes up to "
+			" 'A0'. [A0 is the same size as 16 sheets of A4, or '84cm x 118.2cm'.] </p> "
+			" <p><b>Notice</b>, how the little preview window below changes with your change of poster "
+			" size. It indicates to you how many tiles need to be printed to make the poster, "
+			" given the selected paper size.</p>  "
+			" <p><b>Hint:</b> The little preview window below is not just a passive icon. You can click "
+			" on its individual tiles to select them for printing. To select multiple tiles to be printed "
+			" at once, you need to <em>'shift-click'</em> on the tiles ('shift-click' means: hold down the "
+			" [SHIFT]-key on your keyboard and click with the mouse while [SHIFT]-key is held.) The order "
+			" of your clicking is significant to the order of printing the different tiles. The order of "
+			" your selection (and for the printed tiles) is indicated by the contents of the text field "
+			" labelled as <em>'Tile pages (to be printed):'</em><p>"
+			" <b>Note:</b> By default no tile is selected. Before you can print (a part "
+			" of) your poster, you must select at least one tile. </p> "
+			" </qt>" );
+
+	QString whatsThisPrintsizePosterPage = i18n( " <qt> "
+                        " <b>Paper Size</b> "
+			" <p>This field indicates the paper size the poster tiles will be printed on. "
+			" To select a different paper size for your poster tiles, go to the 'General' tab "
+			" of this dialog and select one from the dropdown list. </p> "
+			" Available sizes are most standard paper sizes supported by your printer. Your printer's "
+			" supported paper sizes are read from the printer driver info (as layed down in the <em>'PPD'</em>, "
+			" the printer description file). <em>Be aware that the 'Paper Size' selected may not be supportd "
+			" by 'poster' (example: 'HalfLetter') while it may well be supportd by your printer.</em>  If "
+			" you hit that obstacle, simply use another, supported Paper Size, like 'A4' or 'Letter'. "
+			" <p><b>Notice</b>, how the little preview window below changes with your change of paper "
+			" size. It indicates how many tiles need to be printed to make up the poster, "
+			" given the selected paper and poster size.</p>  "
+			" <p><b>Hint:</b> The little preview window below is not just a passive icon. You can click "
+			" on its individual tiles to select them for printing. To select multiple tiles to be printed "
+			" at once, you need to <em>'shift-click'</em> on the tiles ('shift-click' means: hold down the "
+			" [SHIFT]-key on your keyboard and click with the mouse while [SHIFT]-key is held.) The order "
+			" of your clicking is significant to the order of printing the different tiles. The order of "
+			" your selection (and for the printed tiles) is indicated by the contents of the text field "
+			" labelled as <em>'Tile pages (to be printed):'</em><p>"
+			" <b>Note:</b> By default no tile is selected. Before you can print (a part "
+			" of) your poster, you must select at least one tile. </p> "
+			" </qt>" );
+
+	QString whatsThisCutmarginPosterPage = i18n( " <qt> "
+                        " <b>Cut Margin selection</b> "
+			" <p>Slider and spinbox let you determine a <em>'cut margin'</em> which will be printed onto "
+			" each tile of your poster to help you cut the pieces as needed. </p>"
+			" <p><b>Notice</b>, how the little preview window above changes with your change of cut "
+			" margins. It indicates to you how much space the cut margins will take away fomr each tile. "
+			" <p><b>Be aware</b>, that your cut margins need to be equal to or greater than the margins your "
+			" printer uses. The printer's capabilities are described in the <em>'ImageableArea'</em> "
+			" keywords of its driver PPD file. </p> "
+			" </qt>" );
+
+	QString whatsThisTileselectionPosterPage = i18n( " <qt> "
+                        " <b>Order and number of tile pages to be printed</b> "
+			" <p>This field displays and sets the individual tiles to be printed, as well as the order "
+			" for their printout. </p> "
+			" You can file the field with 2 different methods: "
+			" <ul> "
+			" <li>Either use the interactive thumbnail preview above and '[SHIFT]-click' on the tiles. </li> "
+			" <li>Or edit this text field accordingly. </li> "
+			" </ul> "
+			" <p>When editing the field, you can use a '3-7' syntax instead of a '3,4,5,6,7' one. </p> "
+			" <p><b>Examples:</b></p> "
+			" <pre> "
+			"   \"2,3,7,9,3\" "
+			" <br> "
+			"   \"1-3,6,8-11\" "
+			" </qt>" );
+
 	setTitle( i18n( "Poster" ) );
 
 	m_postercheck = new QCheckBox( i18n( "&Print poster" ), this );
+          QWhatsThis::add(m_postercheck, whatsThisEnablePosterPage);
 	QWidget *dummy = new QWidget( this );
 	m_preview = new PosterPreview( dummy );
+          QWhatsThis::add(m_preview, whatsThisTileSelectionPosterPage);
 	m_postersize = new QComboBox( dummy );
+          QWhatsThis::add(m_postersize, whatsThisPostersizePosterPage);
 	m_printsize = new QComboBox( dummy );
+          QWhatsThis::add(m_printsize, whatsThisPrintsizePosterPage);
 	m_lockbtn = new KPushButton( dummy );
+          //QWhatsThis::add(m_lockbtn, whatsThis5_PosterPage);           //FIXME ASK_MICHAEL: which pushbutton would that be?
 	m_mediasize = new QLabel( dummy );
+          QWhatsThis::add(m_mediasize, whatsThisPrintsizePosterPage);
 	m_mediasize->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	QLabel *posterlab = new QLabel( i18n( "Poste&r size:" ), dummy );
+          QWhatsThis::add(posterlab, whatsThisPostersizePosterPage);
 	QLabel *medialab = new QLabel( i18n( "Media size:" ), dummy );
+          QWhatsThis::add(medialab, whatsThisPrintsizePosterPage);
 	QLabel *printlab = new QLabel( i18n( "Pri&nt size:" ), dummy );
+          QWhatsThis::add(printlab, whatsThisPrintsizePosterPage);
 	posterlab->setBuddy( m_postersize );
 	printlab->setBuddy( m_printsize );
 	m_cutmargin = new KIntNumInput( 5, dummy );
+          QWhatsThis::add(m_cutmargin, whatsThisCutmarginPosterPage);
 	// xgettext:no-c-format
 	m_cutmargin->setLabel( i18n( "C&ut margin (% of media):" ) );
-	m_cutmargin->setRange( 0, 100, 10, true );
+	m_cutmargin->setRange( 0, 100, 2, true );                     // step width was too big, changed from 10 to 2 (-kp-)
 	m_selection = new QLineEdit( dummy );
+          QWhatsThis::add(m_selection, whatsThisTileselectionPosterPage);
 	QLabel *selectionlab = new QLabel( i18n( "&Tile pages (to be printed):" ), dummy );
+          QWhatsThis::add(selectionlab, whatsThisTileSelectionPosterPage);
 	selectionlab->setBuddy( m_selection );
 	m_lockbtn->setToggleButton( true );
 	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );
