@@ -172,6 +172,11 @@ QString KCModule::quickHelp() const
 }
 
 
+QPtrList<KConfigDialogManager> KCModule::configs() const
+{
+    return d->managers;
+}
+
 void KCModule::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 

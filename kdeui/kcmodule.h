@@ -227,6 +227,12 @@ public:
 
   KInstance *instance() const;
 
+  /**
+   * @return a list of @ref KConfigDialogManager's in use, if any.
+   * @since 3.4
+   */
+  QPtrList<KConfigDialogManager> configs() const;
+
 protected:
   /**
    * Adds a KConfigskeleton @p config to watch the widget @p widget
