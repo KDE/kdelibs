@@ -152,14 +152,14 @@ class BuildHelper
 {
 public:
     BuildHelper( BuildState &state, 
-                 const QStringList &customTags,
-                 const QStringList &containerTags,
                  ContainerNode *node, 
                  KXMLGUIFactory *factory );
 
-    void processElement( const QDomElement &element );
+    void build( const QDomElement &element );
 
 private:
+    void processElement( const QDomElement &element );
+
     void processActionOrCustomElement( const QDomElement &e, bool isActionTag );
     void processActionElement( const QDomElement &e, int idx );
     void processCustomElement( const QDomElement &e, int idx );

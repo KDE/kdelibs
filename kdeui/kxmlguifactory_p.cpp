@@ -277,17 +277,32 @@ void ContainerNode::reset()
         client->setFactory( 0L );
 }
 
-BuildHelper::BuildHelper( BuildState &state, const QStringList &_customTags,
-                          const QStringList &_containerTags, ContainerNode *node, 
+BuildHelper::BuildHelper( BuildState &state, ContainerNode *node, 
                           KXMLGUIFactory *_factory )
-    : customTags( _customTags ), containerTags( _containerTags ), containerClient( 0 ),
-      ignoreDefaultMergingIndex( false ), m_state( state ), m_factory( _factory ), 
-      parentNode( node )
+    : containerClient( 0 ), ignoreDefaultMergingIndex( false ), m_state( state ), 
+      m_factory( _factory ), parentNode( node )
 {
     static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
 
+    // create a list of supported container and custom tags
+    customTags = m_state.builderCustomTags;
+    containerTags = m_state.builderContainerTags;
+
+    if ( parentNode->builder != m_state.builder )
+    {
+        customTags += parentNode->builderCustomTags;
+        containerTags += parentNode->builderContainerTags;
+    }
+
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
     m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt, false );
+}
+
+void BuildHelper::build( const QDomElement &element )
+{
+    QDomElement e = element.firstChild().toElement();
+    for (; !e.isNull(); e = e.nextSibling().toElement() )
+        processElement( e );
 }
 
 void BuildHelper::processElement( const QDomElement &e )
@@ -484,10 +499,8 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
     if ( matchingContainer )
     {
-        /*
-         * Enter the next level, as the container already exists :)
-         */
-        m_factory->buildRecursive( e, matchingContainer );
+        BuildHelper( m_state, matchingContainer, m_factory ).build( e );
+
         // re-calculate current default merging indices and client merging indices,
         // as they have changed in the recursive invocation.
         m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
@@ -553,7 +566,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
                                                mergingName, group, cusTags, conTags );
         }
 
-        m_factory->buildRecursive( e, containerNode );
+        BuildHelper( m_state, containerNode, m_factory ).build( e );
 
         // and re-calculate running values, for better performance
         m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );

@@ -254,7 +254,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( !actionPropElement.isNull() )
         applyActionProperties( actionPropElement );
 
-    buildRecursive( docElement, d->m_rootNode );
+    BuildHelper( *d, d->m_rootNode, this ).build( docElement );
 
     // let the client know that we built its GUI.
     client->setFactory( this );
@@ -379,26 +379,6 @@ void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagNa
     //  resetInternal( container );
 
     parent->removeChild( container );
-}
-
-void KXMLGUIFactory::buildRecursive( const QDomElement &element, 
-                                     KXMLGUI::ContainerNode *parentNode )
-{
-    // create a list of supported container and custom tags
-    QStringList customTags = d->builderCustomTags;
-    QStringList containerTags = d->builderContainerTags;
-
-    if ( parentNode->builder != d->builder )
-    {
-        customTags += parentNode->builderCustomTags;
-        containerTags += parentNode->builderContainerTags;
-    }
-
-    BuildHelper helper( *d, customTags, containerTags, parentNode, this );
-
-    QDomElement e = element.firstChild().toElement();
-    for (; !e.isNull(); e = e.nextSibling().toElement() )
-        helper.processElement( e );
 }
 
 bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUI::ContainerNode *node )
