@@ -134,8 +134,8 @@ void KHTMLFind::slotEditRegExp()
   assert( iface );
 
   iface->setRegExp( getText() );
-  bool ok = m_editorDialog->exec();
-  if (ok) 
+  bool ret = m_editorDialog->exec();
+  if ( ret == QDialog::Accepted) 
     setText( iface->regExp() );
 }
 
