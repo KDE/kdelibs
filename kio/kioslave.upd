@@ -12,3 +12,7 @@ Id=kde2.2/r2
 File=kioslaverc,kio_httprc
 Group=UserAgent
 Script=useragent.pl,perl
+Id=kde2.2/r3
+File=kioslaverc
+Group=Proxy Settings
+Script=proxytype.pl,perl

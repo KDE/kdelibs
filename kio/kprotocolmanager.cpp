@@ -74,21 +74,29 @@ KConfig *KProtocolManager::http_config()
 
 KPAC *KProtocolManager::pac()
 {
+  ProxyType type = proxyType();
+  if (type < PACProxy)
+    return 0;
+
   if (!_pac)
   {
-    KConfig *cfg = config();
-    cfg->setGroup( "Proxy Settings" );
-    QString proxyScript = proxyConfigScript();
-    if (!proxyScript.isEmpty())
+    KLibrary *lib = KLibLoader::self()->library("libkpac");
+    if (lib)
     {
-      KLibrary *lib = KLibLoader::self()->library("libkpac");
-      if (lib)
+      KPAC *(*create_pac)() = (KPAC *(*)())(lib->symbol("create_pac"));
+      if (create_pac)
       {
-        KPAC *(*create_pac)() = (KPAC *(*)())(lib->symbol("create_pac"));
-        if (create_pac)
+        // Need to set _pac here to avoid infinite recursion
+        _pacDeleter.setObject(_pac = create_pac());
+        switch (type)
         {
-          _pacDeleter.setObject(_pac = create_pac());
-          _pac->init( proxyScript );
+          case PACProxy:
+            _pac->init( proxyConfigScript() );
+            break;
+          case WPADProxy:
+            _pac->discover();
+          default:
+            break;
         }
       }
     }
@@ -183,9 +191,14 @@ int KProtocolManager::minimumTimeoutThreshold()
 
 bool KProtocolManager::useProxy()
 {
+  return proxyType() != NoProxy;
+}
+
+KProtocolManager::ProxyType KProtocolManager::proxyType()
+{
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readBoolEntry( "UseProxy", false );
+  return static_cast<ProxyType>(cfg->readNumEntry( "ProxyType" ));
 }
 
 bool KProtocolManager::useCache()
@@ -262,11 +275,6 @@ void KProtocolManager::badProxy( const QString &proxy )
 {
   if ( _pac ) // don't load KPAC here if it isn't already
     _pac->badProxy( proxy );
-}
-
-bool KProtocolManager::hasProxyConfigScript()
-{
-    return pac() != 0;
 }
 
 QString KProtocolManager::slaveProtocol( const QString & protocol )
@@ -412,9 +420,14 @@ void KProtocolManager::setMaxCacheAge( int cache_age )
 
 void KProtocolManager::setUseProxy( bool _mode )
 {
+  setProxyType( _mode ? ManualProxy : NoProxy );
+}
+
+void KProtocolManager::setProxyType(ProxyType type)
+{
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  cfg->writeEntry( "UseProxy", _mode );
+  cfg->writeEntry( "ProxyType", static_cast<int>(type) );
   cfg->sync();
 }
 

@@ -231,6 +231,26 @@ public:
    */
   static bool useProxy();
 
+  /**
+   * Types of proxy configuration
+   * @li NoProxy     - No proxy is used
+   * @li ManualProxy - Proxies are manually configured
+   * @li PACProxy    - A Proxy configuration URL has been given
+   * @li WPADProxy   - A proxy should be automatically discovered
+   */
+  enum ProxyType
+  {
+      NoProxy,
+      ManualProxy,
+      PACProxy,
+      WPADProxy
+  };
+
+  /**
+   * Returns the type of proxy configuration that is used.
+   */
+  static ProxyType proxyType();
+
   /*
    * This method has been deprecated, please
    * use @ref proxyFor.
@@ -282,18 +302,18 @@ public:
   static void badProxy( const QString & /* proxy */ );
 
   /**
-   * Returns whether a proxy config script is being used
+   * This method has been deprecated. Use
+   * @ref setProxyType instead.
    *
-   * @returns true if a proxy config script is used
-   */
-  static bool hasProxyConfigScript();
-  /**
-   * Set this flag if you want use proxies.
-   *
-   * @param Default value is false: Don't use proxies.
-   *
+   * @deprecated
    */
   static void setUseProxy( bool _mode );
+  /**
+   * Set the type of proxy configuration to use.
+   *
+   * @param type the @ref ProxyType to use.
+   */
+  static void setProxyType( ProxyType type );
 
   /**
    * Set the proxy for FTP transfer.

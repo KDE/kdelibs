@@ -23,25 +23,27 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <kapp.h>
 #include <kdebug.h>
-#include <kinstance.h>
-#include <klibloader.h>
 #include <kurl.h>
-#include <kjs/object.h>
-#include <kjs/types.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
-#include <kio/job.h>
+#include <kprocess.h>
+#include <kjs/kjs.h>
+#include <kjs/object.h>
+#include <kjs/types.h>
 
 #include "kproxybindings.h"
-#include "kpac_impl.moc"
+#include "kpac_impl.h"
+#include "kpac_downloader.h"
+#include "kpac_discovery.h"
 
 using namespace KJS;
 
 KPACImpl::KPACImpl()
     : m_kjs(0),
-      m_configRead(false)
+      m_configRead(false),
+      m_inDiscovery(false),
+      m_downloader(0)
 {
 }
 
@@ -52,7 +54,7 @@ KPACImpl::~KPACImpl()
 
 QString KPACImpl::proxyForURL(const KURL &url)
 {
-    kdDebug(7025) << "KPACImpl::proxyForURL(), url=" << url.url() << endl;
+    kdDebug(7025) << "KPACImpl::proxyForURL(), url=" << url.prettyURL() << endl;
     if (!m_configRead)
     {
         kdDebug(7025) << "KPACImpl::proxyForURL(): config not read, not using a proxy" << endl;
@@ -113,29 +115,54 @@ bool KPACImpl::init(const KURL &url)
         m_configRead = false;
     }
 
-    QCString code = KPACDownloader::download(url);
-    if (code.isEmpty())
-    {
-        kdError(7025) << "KPACImpl::init(): couldn't download proxy config script " << url.url() << endl;
-        return false;
-    }
-        
-    if (!m_kjs)
-    {
-        m_kjs = new KJScript();
-        Global global(Global::current());
-        KJSO bindings(new KProxyBindings);
-        global.put("ProxyConfig", bindings);
-        global.setPrototype(bindings);
-    }
+    bool ownDownloader = m_downloader == 0;
+    if (ownDownloader)
+        m_downloader = new KPACDownloader;
 
-    if (!(m_configRead = m_kjs->evaluate(code)))
+    if (m_downloader->download(url))
     {
-        kdError(7025) << "KPACImpl::init(): JS error in config file" << endl;
-        m_kjs->clear();
+        if (!m_kjs)
+        {
+            m_kjs = new KJScript();
+            Global global(Global::current());
+            KJSO bindings(new KProxyBindings);
+            global.put("ProxyConfig", bindings);
+            global.setPrototype(bindings);
+        }
+        if (!(m_configRead = m_kjs->evaluate(m_downloader->data())))
+        {
+            kdError(7025) << "KPACImpl::init(): JS error in config file" << endl;
+            m_kjs->clear();
+        }
+    }
+    else
+        kdError(7025) << "KPACImpl::init(): couldn't download proxy config script " << url.url() << endl;
+    if (ownDownloader)
+    {
+        delete m_downloader;
+        m_downloader = 0;
     }
 
     return m_configRead;
+}
+
+bool KPACImpl::discover()
+{
+    if (m_inDiscovery)
+        return false;
+    m_inDiscovery = true;
+    bool success = false;
+    KPACDiscovery discovery;
+    m_downloader = new KPACDownloader;
+    while (discovery.tryDiscovery())
+    {
+        if ((success = init(discovery.curl())))
+            break;
+    }
+    delete m_downloader;
+    m_downloader = 0;
+    m_inDiscovery = false;
+    return success;
 }
 
 void KPACImpl::badProxy(const QString &proxy)
@@ -145,40 +172,10 @@ void KPACImpl::badProxy(const QString &proxy)
     blackList.writeEntry(proxy, time(0));
 }
 
-const QCString KPACDownloader::download(const KURL &url)
-{
-    KPACDownloader downloader(url);
-    while (downloader.m_downloading)
-        kapp->processOneEvent();
-    return downloader.m_data;
-}
-
-KPACDownloader::KPACDownloader(const KURL &url)
-    : QObject()
-{
-    KIO::TransferJob *job = KIO::get(url, false /* reload */, false /* No GUI */);
-    m_downloading = true;
-    connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotData(KIO::Job *, const QByteArray &)));
-    connect(job, SIGNAL(result(KIO::Job *)), SLOT(slotResult(KIO::Job *)));
-}
-
-void KPACDownloader::slotData(KIO::Job *, const QByteArray &data)
-{
-    m_data += data;
-}
-
-void KPACDownloader::slotResult(KIO::Job *job)
-{
-    if (job->error())
-        m_data = 0;
-    m_downloading = false;
-}
-
 extern "C"
 {
-    void *create_pac()
+    KPAC *create_pac()
     {
-        kdDebug(7025) << "create_pac() creating a KPACImpl" << endl;
         return new KPACImpl;
     }
 };

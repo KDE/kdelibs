@@ -130,7 +130,7 @@ kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 kmailprotocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
 kmailprotocoldir = $(kde_servicesdir)
 
-update_DATA = kioslave.upd useragent.pl
+update_DATA = kioslave.upd useragent.pl proxytype.pl
 updatedir = $(kde_datadir)/kconf_update
 
 parser: $(parserfiles)
