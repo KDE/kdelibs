@@ -376,8 +376,26 @@ QFont KGlobalSettings::largeFont(const QString &text)
 {
     QFontDatabase db;
     QStringList fam = db.families();
+        
+    // Move a bunch of preferred fonts to the front.
+    if (fam.remove("Arial"))
+       fam.prepend("Arial");
+    if (fam.remove("Verdana"))
+       fam.prepend("Verdana");
+    if (fam.remove("Tahoma"))
+       fam.prepend("Tahoma");
+    if (fam.remove("Lucida Sans"))
+       fam.prepend("Lucida Sans");
+    if (fam.remove("Lucidux Sans"))
+       fam.prepend("Lucidux Sans");
+    if (fam.remove("Nimbus Sans"))
+       fam.prepend("Nimbus Sans");
+    if (fam.remove("Gothic I"))
+       fam.prepend("Gothic I");
+
     if (_largeFont)
         fam.prepend(_largeFont->family());
+
     for(QStringList::ConstIterator it = fam.begin();
         it != fam.end(); ++it)
     {
