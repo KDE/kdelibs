@@ -154,6 +154,7 @@ namespace KIO {
          * Examples of message are "Resolving host", "Connecting to host...", etc.
          */
         void infoMessage( KIO::Job *, const QString & msg );
+        // KDE 3.0: Separate rich-text string from plain-text string, for different widgets.
 
         /**
          * Emitted when the slave successfully connected to the host.
