@@ -14,6 +14,7 @@ Comment[nl]=CUPS (Common Unix Print System)
 Comment[pt_BR]=Servidor de Impressão CUPS (Common Unix Print System)
 Comment[ro]=CUPS (Sistem de tipărire Unix comun)
 Comment[sv]=Cups (Common Unix Print System)
+Comment[xh]=CUPS (Indlela Elula Yoshicilelo lwe UNIX)
 Comment[zh_TW]=CUPS (通用 Unix 列印系統)
 DetectUris=service:/ipp,config:/cups/cupsd.conf
 DetectPrecedence=10

@@ -21,6 +21,7 @@ Comment[ro]=Mediu RLPR (Servere LPD distante)
 Comment[sk]=Prostredie RLPR (Vzdialené LPD servery)
 Comment[sv]=RLPR-miljö (LPD-fjärrservrar)
 Comment[uk]=Оточення RLPR (віддалені сервери LPD)
+Comment[xh]=RLPR Imeko-bume ye RLPR (Abancedisi be LPD ababeka kude)
 Comment[zh_TW]=RLPR 環境(遠端 LPD 伺服器)
 DetectUris=exec:/rlpr
 DetectPrecedence=0
