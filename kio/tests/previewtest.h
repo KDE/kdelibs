@@ -15,6 +15,7 @@ private slots:
     void slotGenerate();
     void slotResult(KIO::Job *);
     void slotPreview( const KURL &, const QPixmap & );
+    void slotFailed();
 
 private:
     KLineEdit *m_url;

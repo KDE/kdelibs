@@ -16,7 +16,7 @@ PreviewTest::PreviewTest()
 {
     QGridLayout *layout = new QGridLayout(this, 2, 2);
     m_url = new KLineEdit(this);
-    m_url->setText("/home/malte/favicons1.cpp");
+    m_url->setText("/home/malte/gore_bush.jpg");
     layout->addWidget(m_url, 0, 0);
     QPushButton *btn = new QPushButton("Generate", this);
     connect(btn, SIGNAL(clicked()), SLOT(slotGenerate()));
@@ -33,6 +33,7 @@ void PreviewTest::slotGenerate()
     KIO::PreviewJob *job = KIO::filePreview(urls, m_preview->width(), m_preview->height(), true, 48);
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
     connect(job, SIGNAL(gotPreview(const KURL &, const QPixmap &)), SLOT(slotPreview(const KURL &, const QPixmap &)));
+    connect(job, SIGNAL(failed(const KURL &)), SLOT(slotFailed()));
 }
 
 void PreviewTest::slotResult(KIO::Job*)
@@ -44,6 +45,12 @@ void PreviewTest::slotPreview(const KURL &url, const QPixmap &pix)
 {
     kdDebug() << "PreviewTest::slotPreview(" << url.url() << ", ...)" << endl;
     m_preview->setPixmap(pix);
+}
+
+void PreviewTest::slotFailed()
+{
+    kdDebug() << "PreviewTest::slotFailed()" << endl;
+    m_preview->setText("failed");
 }
 
 int main(int argc, char **argv)

@@ -63,6 +63,8 @@ namespace KIO {
     signals:
         void gotPreview( const KURL &url, const QPixmap &preview );
         void gotPreview( const KFileItem *item, const QPixmap &preview );
+        void failed( const KURL &url );
+        void failed( const KFileItem *item );
 
     protected:
         void getOrCreateThumbnail();
@@ -73,10 +75,13 @@ namespace KIO {
         virtual void slotResult( KIO::Job *job );
 
     private slots:
-        void determineNextFile();
+        void startPreview();
         void slotThumbData(KIO::Job *, const QByteArray &);
 
     private:
+        void determineNextFile();
+        void emitPreview(const QPixmap &pix);
+        void emitFailed(const KFileItem *item = 0);
         void saveThumbnail(const QByteArray &imgData);
 
     private:
