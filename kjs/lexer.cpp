@@ -191,7 +191,7 @@ int Lexer::lex()
 
     switch (state) {
     case Start:
-      if (isWhiteSpace()) {
+      if (isWhiteSpace(current)) {
         // do nothing
       } else if (current == '/' && next1 == '/') {
         shift(1);
@@ -450,19 +450,32 @@ int Lexer::lex()
   fprintf(stderr, "%s ", buffer8);
 #endif
 
-  double dval = 0;
+  long double dval = 0;
   if (state == Number) {
     dval = strtod(buffer8, 0L);
   } else if (state == Hex) { // scan hex numbers
-    // TODO: support long unsigned int
-    unsigned int i;
-    sscanf(buffer8, "%x", &i);
-    dval = i;
+    dval = 0;
+    if (buffer8[0] == '0' && (buffer8[1] == 'x' || buffer8[1] == 'X')) {
+      for (const char *p = buffer8+2; *p; p++) {
+	if (!isHexDigit(*p)) {
+	  dval = 0;
+	  break;
+	}
+	dval = dval * 16 + convertHex(*p);
+      }
+    }
     state = Number;
   } else if (state == Octal) {   // scan octal number
-    unsigned int ui;
-    sscanf(buffer8, "%o", &ui);
-    dval = ui;
+    dval = 0;
+    if (buffer8[0] == '0') {
+      for (const char *p = buffer8+1; *p; p++) {
+	if (*p < '0' || *p > '7') {
+	  dval = 0;
+	  break;
+	}
+	dval = dval * 8 + *p - '0';
+      }
+    }
     state = Number;
   }
 
@@ -553,10 +566,10 @@ int Lexer::lex()
   return token;
 }
 
-bool Lexer::isWhiteSpace() const
+bool Lexer::isWhiteSpace(unsigned short c)
 {
-  return (current == ' ' || current == '\t' ||
-          current == 0x0b || current == 0x0c);
+  return (c == ' ' || c == '\t' ||
+          c == 0x0b || c == 0x0c);
 }
 
 bool Lexer::isIdentLetter(unsigned short c)
@@ -572,14 +585,14 @@ bool Lexer::isDecimalDigit(unsigned short c)
   return (c >= '0' && c <= '9');
 }
 
-bool Lexer::isHexDigit(unsigned short c) const
+bool Lexer::isHexDigit(unsigned short c)
 {
   return (c >= '0' && c <= '9' ||
           c >= 'a' && c <= 'f' ||
           c >= 'A' && c <= 'F');
 }
 
-bool Lexer::isOctalDigit(unsigned short c) const
+bool Lexer::isOctalDigit(unsigned short c)
 {
   return (c >= '0' && c <= '7');
 }

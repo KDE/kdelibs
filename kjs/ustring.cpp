@@ -564,9 +564,36 @@ UCharReference UString::operator[](int pos)
   return UCharReference(this, pos);
 }
 
+int skipInfString(const char *start)
+{
+  const char *c = start;
+  if (*c == '+' || *c == '-')
+    c++;
+  if (!strncmp(c,"Infinity",8))
+    return c+8-start;
+
+  while (*c >= '0' && *c <= '9')
+    c++;
+  if (*c == '.')
+    c++;
+  while (*c >= '0' && *c <= '9')
+    c++;
+
+  if (*c != 'e')
+    return c-start;
+
+  c++;
+  if (*c == '+' || *c == '-')
+    c++;
+  while (*c >= '0' && *c <= '9')
+    c++;
+  return c-start;
+}
+
 double UString::toDouble( bool tolerant ) const
 {
   double d;
+  double sign = 1;
 
   if (!is8Bit())
     return NaN;
@@ -580,6 +607,15 @@ double UString::toDouble( bool tolerant ) const
   // empty string ?
   if (*c == '\0')
     return tolerant ? NaN : 0.0;
+
+  if (*c == '-') {
+    sign = -1;
+    c++;
+  }
+  else if (*c == '+') {
+    sign = 1;
+    c++;
+  }
 
   // hex number ?
   if (*c == '0' && (*(c+1) == 'x' || *(c+1) == 'X')) {
@@ -601,17 +637,12 @@ double UString::toDouble( bool tolerant ) const
       c = end;
     } else {
       // infinity ?
-      d = 1.0;
-      if (*c == '+')
-	c++;
-      else if (*c == '-') {
-	d = -1.0;
-	c++;
-      }
-      if (strncmp(c, "Infinity", 8) != 0)
+
+      int count = skipInfString(c);
+      if (count == 0)
 	return NaN;
-      d = d * Inf;
-      c += 8;
+      d = Inf;
+      c += count;
     }
   }
 
@@ -622,7 +653,7 @@ double UString::toDouble( bool tolerant ) const
   if ( !tolerant && *c != '\0')
     d = NaN;
 
-  return d;
+  return d*sign;
 }
 
 unsigned long UString::toULong(bool *ok) const

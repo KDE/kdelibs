@@ -860,7 +860,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       startptr++;
     }
     else if (*startptr == '+') {
-      sign = -1;
+      sign = 1;
       startptr++;
     }
 
@@ -883,7 +883,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       res = Number(NaN);
     }
     else {
-      double val = 0;
+      long double val = 0;
       int index = 0;
       for (; *startptr; startptr++) {
 	int thisval = -1;
@@ -905,12 +905,25 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       if (index == 0 && !leading0)
 	res = Number(NaN);
       else
-	res = Number(val*sign);
+	res = Number(double(val)*sign);
     }
     break;
   }
-  case ParseFloat:
-    res = Number(args[0].toString(exec).toDouble( true /*tolerant*/ ));
+  case ParseFloat: {
+    UString str = args[0].toString(exec);
+    // don't allow hex numbers here
+    bool isHex = false;
+    if (str.is8Bit()) {
+      const char *c = str.ascii();
+      while (isspace(*c))
+	c++;
+      isHex = (c[0] == '0' && (c[1] == 'x' || c[1] == 'X'));
+    }
+    if (isHex)
+      res = Number(0);
+    else
+      res = Number(str.toDouble( true /*tolerant*/ ));
+    }
     break;
   case IsNaN:
     res = Boolean(isNaN(args[0].toNumber(exec)));
@@ -960,11 +973,15 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       const UChar *c = str.data() + k;
       UChar u;
       if (*c == UChar('%') && k <= len - 6 && *(c+1) == UChar('u')) {
-	u = Lexer::convertUnicode((c+2)->uc, (c+3)->uc,
-				  (c+4)->uc, (c+5)->uc);
-	c = &u;
-	k += 5;
-      } else if (*c == UChar('%') && k <= len - 3) {
+	if (Lexer::isHexDigit((c+2)->uc) && Lexer::isHexDigit((c+3)->uc) &&
+	    Lexer::isHexDigit((c+4)->uc) && Lexer::isHexDigit((c+5)->uc)) {
+	  u = Lexer::convertUnicode((c+2)->uc, (c+3)->uc,
+				    (c+4)->uc, (c+5)->uc);
+	  c = &u;
+	  k += 5;
+	}
+      } else if (*c == UChar('%') && k <= len - 3 &&
+		 Lexer::isHexDigit((c+1)->uc) && Lexer::isHexDigit((c+2)->uc)) {
 	u = UChar(Lexer::convertHex((c+1)->uc, (c+2)->uc));
 	c = &u;
 	k += 2;

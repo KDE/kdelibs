@@ -70,6 +70,12 @@ namespace KJS {
     UString pattern, flags;
     bool hadError() const { return foundBad; }
 
+    static bool isWhiteSpace(unsigned short c);
+    static bool isIdentLetter(unsigned short c);
+    static bool isDecimalDigit(unsigned short c);
+    static bool isHexDigit(unsigned short c);
+    static bool isOctalDigit(unsigned short c);
+
   private:
     int yylineno;
     bool done;
@@ -95,10 +101,6 @@ namespace KJS {
     void nextLine();
     int lookupKeyword(const char *);
 
-    bool isWhiteSpace() const;
-    bool isHexDigit(unsigned short c) const;
-    bool isOctalDigit(unsigned short c) const;
-
     int matchPunctuator(unsigned short c1, unsigned short c2,
                         unsigned short c3, unsigned short c4);
     unsigned short singleEscape(unsigned short c) const;
@@ -109,8 +111,6 @@ namespace KJS {
     static unsigned char convertHex(unsigned short c1, unsigned short c2);
     static UChar convertUnicode(unsigned short c1, unsigned short c2,
                                 unsigned short c3, unsigned short c4);
-    static bool isIdentLetter(unsigned short c);
-    static bool isDecimalDigit(unsigned short c);
 
 #ifdef KJS_DEBUG_MEM
     /**
