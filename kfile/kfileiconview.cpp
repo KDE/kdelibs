@@ -236,7 +236,10 @@ void KFileIconView::hideEvent( QHideEvent *e )
 void KFileIconView::keyPressEvent( QKeyEvent *e )
 {
     KIconView::keyPressEvent( e );
-    if ( e->key() == Key_Return || e->key() == Key_Enter )
+    
+    // ignore Ctrl-Return so that the dialog can catch it.
+    if ( (e->state() & ControlButton) && 
+         (e->key() == Key_Return || e->key() == Key_Enter) )
         e->ignore();
 }
 

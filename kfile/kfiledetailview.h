@@ -23,6 +23,7 @@
 
 class KFileItem;
 class QWidget;
+class QKeyEvent;
 
 #include <klistview.h>
 #include "kfileview.h"
@@ -120,6 +121,8 @@ public:
 
 
 protected:
+    virtual void keyPressEvent( QKeyEvent * );
+    
     int m_sortingCol;
 
 protected slots:
@@ -144,7 +147,7 @@ private:
     }
 
     bool m_blockSortingSignal;
-    
+
     class KFileDetailViewPrivate;
     KFileDetailViewPrivate *d;
 };

@@ -19,6 +19,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qevent.h>
 #include <qkeycode.h>
 #include <qheader.h>
 #include <qpainter.h>
@@ -395,14 +396,14 @@ void KFileDetailView::setSorting( QDir::SortSpec spec )
         col = COL_NAME;
 
     // inversed, because slotSortingChanged will revers it
-    if ( spec & QDir::Reversed ) 
+    if ( spec & QDir::Reversed )
         spec = (QDir::SortSpec) (spec & ~QDir::Reversed);
     else
         spec = (QDir::SortSpec) (spec | QDir::Reversed);
 
     m_sortingCol = col;
     KFileView::setSorting( (QDir::SortSpec) spec );
-    
+
 
     // don't emit sortingChanged() when called via setSorting()
     m_blockSortingSignal = true; // can't use blockSignals()
@@ -458,6 +459,18 @@ KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
     }
     else
         return firstFileItem();
+}
+
+void KFileDetailView::keyPressEvent( QKeyEvent *e )
+{
+    KListView::keyPressEvent( e );
+    
+    if ( e->key() == Key_Return || e->key() == Key_Enter ) {
+        if ( e->state() & ControlButton )
+            e->ignore();
+        else
+            e->accept();
+    }
 }
 
 #include "kfiledetailview.moc"
