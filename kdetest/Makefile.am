@@ -8,7 +8,7 @@ INCLUDES = -I$(topdir)/kdeui -I$(topdir)/kdecore -I@qt_includes@ -I@x_includes@
 
 LDADD = ../kdecore/libkdecore.la ../kdeui/libkdeui.la @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 -lXext
 
-CLEANFILES = *.moc
+DISTCLEANFILES = *.moc
 
 noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\

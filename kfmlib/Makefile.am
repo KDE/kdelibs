@@ -4,7 +4,7 @@
 
 MOC = @MOC@
 INCLUDES = @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
-CLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkfm.la
 libkfm_la_LDFLAGS = -version-info 0:1  
