@@ -158,7 +158,7 @@ public:
   /**
    * Returns a pointer to an DCOPClient for the application.
    */
-  DCOPClient *dcopClient() const;
+  DCOPClient *dcopClient();
 
   /**
    * Get the standard help menu.
@@ -482,6 +482,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.107  1999/10/10 22:02:50  pbrown
+// require libDCOP, set up DCOPClient in kapp constructor.
+//
 // Revision 1.106  1999/10/09 00:08:27  kalle
 // The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
 //

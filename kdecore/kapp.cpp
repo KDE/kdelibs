@@ -229,7 +229,7 @@ void KApplication::init()
   captionLayout = CaptionAppLast;
 }
 
-DCOPClient *KApplication::dcopClient()
+DCOPClient *KApplication::dcopClient() 
 {
   if (pDCOPClient)
     return pDCOPClient;
