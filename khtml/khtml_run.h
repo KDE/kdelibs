@@ -38,12 +38,12 @@ class KHTMLRun : public KRun
 {
   Q_OBJECT
 public:
-  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, KParts::URLArgs *args );
+  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args );
 
   virtual void foundMimeType( const QString &mimetype );
 
   KHTMLPart *part() const { return m_part; }
-  KParts::URLArgs *urlArgs() const { return m_args; }
+  KParts::URLArgs urlArgs() const { return m_args; }
 
 protected:
   virtual void scanFile();
@@ -54,7 +54,7 @@ protected slots:
 
 private:
   KHTMLPart *m_part;
-  KParts::URLArgs *m_args;
+  KParts::URLArgs m_args;
   khtml::ChildFrame *m_child;
 };
 

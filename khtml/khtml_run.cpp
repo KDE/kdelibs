@@ -25,7 +25,7 @@
 #include <kio/job.h>
 #include <kdebug.h>
 
-KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, KParts::URLArgs *args )
+KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args )
 : KRun( url, 0, false, false /* No GUI */ )
 {
   m_part = part;
@@ -57,15 +57,15 @@ void KHTMLRun::scanFile()
   // No check for well-known extensions, since we don't trust HTTP
 
   KIO::TransferJob *job;
-  if ( m_args->postData.size() > 0 )
+  if ( m_args.postData.size() > 0 )
   {
-      job = KIO::http_post( m_strURL, m_args->postData, false );
-      job->addMetaData("content-type", m_args->contentType());
+      job = KIO::http_post( m_strURL, m_args.postData, false );
+      job->addMetaData("content-type", m_args.contentType());
   }
   else
       job = KIO::get(m_strURL, false, false);
 
-  job->addMetaData(m_args->metaData());
+  job->addMetaData(m_args.metaData());
 
   //job->setWindow((KMainWindow *)m_pMainWindow);
   connect( job, SIGNAL( result( KIO::Job *)),
