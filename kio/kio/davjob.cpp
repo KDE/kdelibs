@@ -63,8 +63,19 @@ void DavJob::slotFinished()
 {
   // kdDebug() << "DavJob::slotFinished()" << endl;
   // kdDebug() << m_str_response << endl;
-	 
-  m_response.setContent( m_str_response, true );
+
+  if ( ! m_response.setContent( m_str_response, true ) ) {
+    // An error occured parsing the XML response
+    QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
+    m_response.appendChild( root );
+
+    QDomElement el = m_response.createElementNS( "DAV:", "offending-response" );
+    QDomText textnode = m_response.createTextNode( m_str_response );
+    el.appendChild( textnode );
+    root.appendChild( el );
+  }
+
+  // kdDebug() << m_response.toString() << endl;
   TransferJob::slotFinished();
 }
 
