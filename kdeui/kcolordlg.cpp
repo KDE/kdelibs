@@ -359,30 +359,76 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	QVBoxLayout *l_left = new QVBoxLayout;
 	tl_layout->addLayout(l_left, 0, 0);
 	
-	// system colors
+        // We now use the full 40color system palette (taken from kpixmap.cpp)
+        // (mosfet)
+        
+        // system colors
 	label = new QLabel( i18n("System Colors"), this );
 	label->setFixedSize(label->sizeHint());
 	l_left->addWidget(label, 0, AlignLeft);
-	sysColorCells = new KColorCells( this, 3, 6 );
-	sysColorCells->setMinimumSize(90, 60);
+	sysColorCells = new KColorCells( this, 5, 8 );
+	sysColorCells->setMinimumSize(160, 100);
 	sysColorCells->setGeometry( 15, 35, 180, 60 );
-	sysColorCells->setColor( 0, red );
-	sysColorCells->setColor( 1, green );
-	sysColorCells->setColor( 2, blue );
-	sysColorCells->setColor( 3, cyan );
-	sysColorCells->setColor( 4, magenta );
-	sysColorCells->setColor( 5, yellow );
-	sysColorCells->setColor( 6, darkRed );
-	sysColorCells->setColor( 7, darkGreen );
-	sysColorCells->setColor( 8, darkBlue );
-	sysColorCells->setColor( 9, darkCyan );
-	sysColorCells->setColor( 10, darkMagenta );
-	sysColorCells->setColor( 11, darkYellow );
-	sysColorCells->setColor( 12, white );
-	sysColorCells->setColor( 13, lightGray );
-	sysColorCells->setColor( 14, gray );
-	sysColorCells->setColor( 15, darkGray );
-	sysColorCells->setColor( 16, black );
+
+        sysColorCells->setColor( 0, Qt::red );
+        sysColorCells->setColor( 1, Qt::green );
+        sysColorCells->setColor( 2, Qt::blue );
+        sysColorCells->setColor( 3, Qt::cyan );
+        sysColorCells->setColor( 4, Qt::magenta );
+        sysColorCells->setColor( 5, Qt::yellow );
+        sysColorCells->setColor( 6, Qt::darkRed );
+	sysColorCells->setColor( 7, Qt::darkGreen );
+	sysColorCells->setColor( 8, Qt::darkBlue );
+	sysColorCells->setColor( 9, Qt::darkCyan );
+	sysColorCells->setColor( 10, Qt::darkMagenta );
+	sysColorCells->setColor( 11, Qt::darkYellow );
+	sysColorCells->setColor( 12, Qt::white );
+	sysColorCells->setColor( 13, Qt::lightGray );
+	sysColorCells->setColor( 14, Qt::gray );
+	sysColorCells->setColor( 15, Qt::darkGray );
+        sysColorCells->setColor( 16, Qt::black );
+
+        // Pastels
+        sysColorCells->setColor( 17, QColor(255, 192, 192 ));
+	sysColorCells->setColor( 18, QColor(192, 255, 192 ));
+	sysColorCells->setColor( 19, QColor(192, 192, 255 ));
+	sysColorCells->setColor( 20, QColor(255, 255, 192 ));
+	sysColorCells->setColor( 21, QColor(255, 192, 255 ));
+	sysColorCells->setColor( 22, QColor(192, 255, 255 ));
+
+	// Reds
+	sysColorCells->setColor( 23, QColor(64,   0,   0 ));
+	sysColorCells->setColor( 24, QColor(192,  0,   0 ));
+
+	// Oranges
+	sysColorCells->setColor( 25, QColor(255, 128,   0 ));
+	sysColorCells->setColor( 26, QColor(192,  88,   0 ));
+	sysColorCells->setColor( 27, QColor(255, 168,  88 ));
+	sysColorCells->setColor( 28, QColor(255, 220, 168 ));
+
+	// Blues
+	sysColorCells->setColor( 29, QColor(0,   0, 192 ));
+
+	// Turquoise
+	sysColorCells->setColor( 30,   QColor(0,  64,  64 ));
+	sysColorCells->setColor( 31,   QColor(0, 192, 192 ));
+
+	// Yellows
+	sysColorCells->setColor(32,   QColor(64,  64,   0 ));
+	sysColorCells->setColor(33,  QColor(192, 192,   0 ));
+
+	// Greens
+	sysColorCells->setColor(34,   QColor(0,  64,   0 ));
+	sysColorCells->setColor(35,   QColor(0, 192,   0 ));
+                                      
+	// Purples
+	sysColorCells->setColor(36,  QColor(192,   0, 192 ));
+
+	// Greys
+	sysColorCells->setColor(37,  QColor(88,  88,  88 ));
+	sysColorCells->setColor(38,  QColor(48,  48,  48 ));
+	sysColorCells->setColor(39,  QColor(220, 220, 220 ));
+
 	connect( sysColorCells, SIGNAL( colorSelected( int ) ),
 		 SLOT( slotSysColorSelected( int ) ) );
 	l_left->addWidget(sysColorCells, 10);
