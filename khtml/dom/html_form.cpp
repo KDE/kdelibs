@@ -106,15 +106,13 @@ void HTMLButtonElement::setName( const DOMString &value )
 long HTMLButtonElement::tabIndex() const
 {
     if(!impl) return 0;
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_TABINDEX).toInt();
+    return static_cast<ElementImpl*>(impl)->tabIndex();
 }
 
 void HTMLButtonElement::setTabIndex( long _tabIndex )
 {
-    if (!impl) {
-	DOMString value(QString::number(_tabIndex));
-	static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX, value);
-    }
+    if (!impl) return;
+    static_cast<ElementImpl*>(impl)->setTabIndex(_tabIndex);
 }
 
 DOMString HTMLButtonElement::type() const
@@ -496,16 +494,13 @@ void HTMLInputElement::setSrc( const DOMString &value )
 long HTMLInputElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
+    return static_cast<ElementImpl*>(impl)->tabIndex();
 }
 
 void HTMLInputElement::setTabIndex( long _tabIndex )
 {
-
-    if(impl) {
-	DOMString value(QString::number(_tabIndex));
-        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX,value);
-    }
+    if (!impl) return;
+    static_cast<ElementImpl*>(impl)->setTabIndex(_tabIndex);
 }
 
 DOMString HTMLInputElement::type() const
@@ -880,15 +875,13 @@ void HTMLSelectElement::setSize( long _size )
 long HTMLSelectElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLSelectElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
+    return static_cast<ElementImpl*>(impl)->tabIndex();
 }
 
 void HTMLSelectElement::setTabIndex( long _tabIndex )
 {
-    if(impl) {
-	DOMString value(QString::number(_tabIndex));
-        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX,value);
-    }
+    if (!impl) return;
+    static_cast<ElementImpl*>(impl)->setTabIndex(_tabIndex);
 }
 
 void HTMLSelectElement::add( const HTMLElement &element, const HTMLElement &before )
@@ -1040,16 +1033,13 @@ void HTMLTextAreaElement::setRows( long _rows )
 long HTMLTextAreaElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
+    return static_cast<ElementImpl*>(impl)->tabIndex();
 }
 
 void HTMLTextAreaElement::setTabIndex( long _tabIndex )
 {
-
-    if(impl) {
-	DOMString value(QString::number(_tabIndex));
-        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX,value);
-    }
+    if (!impl) return;
+    static_cast<ElementImpl*>(impl)->setTabIndex(_tabIndex);
 }
 
 DOMString HTMLTextAreaElement::type() const
