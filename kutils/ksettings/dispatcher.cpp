@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kinstance.h>
 #include <kconfig.h>
+#include <assert.h>
 
 //class KCDDispatcher::KCDDispatcherPrivate
 //{
@@ -59,6 +60,7 @@ KCDDispatcher::~KCDDispatcher()
 
 void KCDDispatcher::registerInstance( KInstance * instance, QObject * recv, const char * slot )
 {
+    assert( instance != 0 );
     // keep the KInstance around and call
     // instance->config()->reparseConfiguration when the app should reparse
     QCString instanceName = instance->instanceName();
@@ -94,6 +96,9 @@ QStrList KCDDispatcher::instanceNames() const
 void KCDDispatcher::reparseConfiguration( const QCString & instanceName )
 {
     kdDebug( 701 ) << k_funcinfo << instanceName << endl;
+    // check if the instanceName is valid:
+    if( ! m_instanceInfo.contains( instanceName ) )
+        return;
     // first we reparse the config of the instance so that the KConfig object
     // will be up to date
     m_instanceInfo[ instanceName ].instance->config()->reparseConfiguration();
