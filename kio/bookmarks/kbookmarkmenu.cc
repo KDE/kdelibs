@@ -94,7 +94,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 
 KBookmarkMenu::~KBookmarkMenu()
 {
-  kdDebug() << "KBookmarkMenu::~KBookmarkMenu()" << endl;
+  //kdDebug(1203) << "KBookmarkMenu::~KBookmarkMenu() " << this << endl;
   QPtrListIterator<KAction> it( m_actions );
   for (; it.current(); ++it )
     it.current()->unplugAll();
