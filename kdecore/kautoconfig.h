@@ -207,12 +207,14 @@ protected:
 
   /**
    * Recursive function that finds all known children.
-   * Goes through the children of widget and if any are known, stores them in
-   * currentGroup.
+   * Goes through the children of widget and if any are known and not being 
+   * ignored, stores them in currentGroup.  Also checks if the widget
+   * should be disabled because it is set immutible.
    * @param widget - Parent of the children to look at.
    * @param currentGroup - Place to store known children of widget.
-   * @param trackChanges - If changes by children of widget should be tracked.
-   * @return bool - If a widget was changed from the default
+   * @param trackChanges - If true then tracks any changes to the children of
+   * widget that are known.
+   * @return bool - If a widget was set to semething other then its default.
    */ 
   bool parseChildren(const QWidget *widget,
 		  QPtrList<QWidget>&currentGroup, bool trackChanges);
