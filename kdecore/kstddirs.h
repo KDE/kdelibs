@@ -36,7 +36,7 @@
 * @li cgi - CGIs to run from kdehelp
 * @li config - configuration files
 * @li data - where applications store data
-* @li exe - executables in $prefix/bin. @see findExe for a function that takes $PATH into account 
+* @li exe - executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account 
 * @li html - HTML documentation 
 * @li icon - icons
 * @li lib - libs

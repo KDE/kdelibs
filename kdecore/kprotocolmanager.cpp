@@ -19,7 +19,7 @@ KProtocolManager::KProtocolManager()
   
   s_pManager = this;
 
-  scanConfig( KApplication::kde_configdir() + "/protocols", FALSE );
+  scanConfig( locate( "config", "protocols" ), FALSE );
 
   scanConfig( KApplication::localconfigdir() + "/protocols", TRUE );
 }
@@ -243,7 +243,7 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
 
 int KProtocolManager::readTimeout() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readNumEntry( "ReadTimeout", 15 ); // 15 seconds
@@ -251,7 +251,7 @@ int KProtocolManager::readTimeout() const
 
 bool KProtocolManager::markPartial() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   return config.readBoolEntry( "MarkPartial", TRUE );
@@ -259,7 +259,7 @@ bool KProtocolManager::markPartial() const
 
 int KProtocolManager::minimumKeepSize() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytes
@@ -267,7 +267,7 @@ int KProtocolManager::minimumKeepSize() const
 
 bool KProtocolManager::autoResume() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readBoolEntry( "AutoResume", FALSE );
@@ -275,7 +275,7 @@ bool KProtocolManager::autoResume() const
 
 bool KProtocolManager::persistentConnections() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readBoolEntry( "PersistentConnections", TRUE );
@@ -283,7 +283,7 @@ bool KProtocolManager::persistentConnections() const
 
 bool KProtocolManager::useProxy() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readBoolEntry( "UseProxy", false );
@@ -291,7 +291,7 @@ bool KProtocolManager::useProxy() const
 
 QString KProtocolManager::ftpProxy() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readEntry( "FtpProxy" );
@@ -299,7 +299,7 @@ QString KProtocolManager::ftpProxy() const
 
 QString KProtocolManager::httpProxy() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		  KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readEntry( "HttpProxy" );
@@ -307,7 +307,7 @@ QString KProtocolManager::httpProxy() const
 
 QString KProtocolManager::noProxyFor() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		  KApplication::localconfigdir() + "/kioslaverc" );
 
   return config.readEntry( "NoProxyFor" );
@@ -315,7 +315,7 @@ QString KProtocolManager::noProxyFor() const
 
 void KProtocolManager::setReadTimeout( int _timeout )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   config.writeEntry( "ReadTimeout", _timeout );
@@ -326,7 +326,7 @@ void KProtocolManager::setReadTimeout( int _timeout )
 
 void KProtocolManager::setMarkPartial( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		  KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "MarkPartial", _mode );
@@ -337,7 +337,7 @@ void KProtocolManager::setMarkPartial( bool _mode )
 
 void KProtocolManager::setMinimumKeepSize( int _size )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "MinimumKeepSize", _size );
@@ -348,7 +348,7 @@ void KProtocolManager::setMinimumKeepSize( int _size )
 
 void KProtocolManager::setAutoResume( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "AutoResume", _mode );
@@ -359,7 +359,7 @@ void KProtocolManager::setAutoResume( bool _mode )
 
 void KProtocolManager::setPersistentConnections( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "PersistentConnections", _mode );
@@ -370,7 +370,7 @@ void KProtocolManager::setPersistentConnections( bool _mode )
 
 void KProtocolManager::setUseProxy( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "UseProxy", _mode );
@@ -381,7 +381,7 @@ void KProtocolManager::setUseProxy( bool _mode )
 
 void KProtocolManager::setFtpProxy( const QString& _proxy )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
 
   config.writeEntry( "FtpProxy", _proxy );
@@ -392,7 +392,7 @@ void KProtocolManager::setFtpProxy( const QString& _proxy )
 
 void KProtocolManager::setHttpProxy( const QString& _proxy )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		  KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "HttpProxy", _proxy );
@@ -403,7 +403,7 @@ void KProtocolManager::setHttpProxy( const QString& _proxy )
 
 void KProtocolManager::setNoProxyFor( const QString& _noproxy )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+  KConfig config(locate( "config", "kioslaverc" ),
 		 KApplication::localconfigdir() + "/kioslaverc" );
   
   config.writeEntry( "NoProxyFor", _noproxy );
