@@ -31,7 +31,7 @@ class DCOPClient;
 
 #define K_DCOP \
 public:        \
-  virtual bool process(const QString &fun, const QByteArray &data, QByteArray &replyData); \
+  virtual bool process(const QString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
 private:
 
 /**
@@ -47,6 +47,7 @@ private:
 class DCOPObject
 {
  public:
+  DCOPObject();
   DCOPObject(QObject *obj);
   DCOPObject(const QCString &objId);
   virtual ~DCOPObject();
