@@ -79,7 +79,7 @@ namespace KIO
   /**
    * Convert @p seconds to a string representing number of days, hours, minutes and seconds
    *
-   * @param  number of seconds to convert
+   * @param  seconds number of seconds to convert
    * @return string representation in a locale depending format
    *
    * @since 3.4
@@ -426,6 +426,7 @@ namespace KIO
   /**
    * Checks the capabilities of the filesystem to which a given file belongs.
    * given feature (e.g. chmod).
+   * @param filename the file name to check
    * @param flag the flag to check
    * @return true if the filesystem has that flag, false if not (or some error occurred)
    *

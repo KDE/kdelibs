@@ -83,7 +83,7 @@ class ForwardingSlaveBasePrivate;
  * 
  * @see ForwardingSlaveBase::rewriteURL()
  * @since 3.4
- * @author Kevin Ottens <ervin ipsquad net>
+ * @author Kevin Ottens <ervin@ipsquad.net>
  */
 class KIO_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
 {
