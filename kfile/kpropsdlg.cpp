@@ -1116,7 +1116,7 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
   if ( !termOptionsStr.isNull() )
     terminalEdit->setText( termOptionsStr );
 
-  if ( !termStr.isNull() )
+  if ( !termOptionsStr.isNull() )
     terminalCheck->setChecked( termBool );
   enableCheckedEdit();
 
@@ -1189,9 +1189,9 @@ void ExecPropsPage::applyChanges()
   config.writeEntry( QString::fromLatin1("Exec"), execEdit->text() );
   config.writeEntry( QString::fromLatin1("SwallowExec"), swallowExecEdit->text() );
   config.writeEntry( QString::fromLatin1("SwallowTitle"), swallowTitleEdit->text() );
-  config.writeEntry( QString::fromLatin1("Terminal"), terrminalCheck->isChecked() );
+  config.writeEntry( QString::fromLatin1("Terminal"), terminalCheck->isChecked() );
   config.writeEntry( QString::fromLatin1("TerminalOptions"), terminalEdit->text() );
-  config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), QString::fromLatin1( suidCheck->isChecked() );
+  config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), suidCheck->isChecked() );
   config.writeEntry( QString::fromLatin1("X-KDE-Username"), suidEdit->text() );
 }
 

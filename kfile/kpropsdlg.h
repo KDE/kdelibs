@@ -413,7 +413,7 @@ protected:
     QString execStr;
     QString swallowExecStr;
     QString swallowTitleStr;
-    QString termStr;
+    QString termOptionsStr;
     bool termBool;
     bool suidBool;
     QString suidUserStr;
