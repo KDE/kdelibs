@@ -41,6 +41,8 @@
 298        kdeui (KDatePicker)
 400        artskde
 500        kdeprint
+700        kutils (KCD)
+701        kutils (KCDDispatcher)
 750        kspell (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
