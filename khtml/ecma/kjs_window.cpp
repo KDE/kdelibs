@@ -353,6 +353,8 @@ void Window::mark()
   //kdDebug(6070) << "Window::mark " << this << " marking loc=" << loc << endl;
   if (loc && !loc->marked())
     loc->mark();
+  if (winq)
+    winq->mark();
 }
 
 bool Window::hasProperty(ExecState *exec, const Identifier &p) const
@@ -823,16 +825,6 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
 bool Window::toBoolean(ExecState *) const
 {
   return !m_part.isNull();
-}
-
-int Window::installTimeout(const Identifier &handler, int t, bool singleShot)
-{
-  return winq->installTimeout(handler, t, singleShot);
-}
-
-void Window::clearTimeout(int timerId)
-{
-  winq->clearTimeout(timerId);
 }
 
 void Window::scheduleClose()
@@ -1356,51 +1348,33 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return Undefined();
   }
   case Window::SetTimeout:
-    if (args.size() == 2 && v.isA(StringType)) {
+  case Window::SetInterval: {
+    bool singleShot = (id == Window::SetTimeout);
+    if (args.size() >= 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
-      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, true /*single shot*/);
+      int r = (const_cast<Window*>(window))->winq->installTimeout(Identifier(s), i, singleShot );
       return Number(r);
     }
     else if (args.size() >= 2 && v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
-      Value func = args[0];
+      Object func = Object::dynamicCast(v);
       int i = args[1].toInt32(exec);
-#if 0
-//  ### TODO
-      List *funcArgs = args.copy();
-      funcArgs->removeFirst(); // all args after 2 go to the function
-      funcArgs->removeFirst();
-#endif
-      if ( args.size() > 2 )
-        kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
-      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, true /*single shot*/);
+      List funcArgs;
+      ListIterator it = args.begin();
+      int argno = 0;
+      while (it != args.end()) {
+	Value arg = it++;
+	if (argno++ >= 2)
+	    funcArgs.append(arg);
+      }
+      int r = (const_cast<Window*>(window))->winq->installTimeout(func, funcArgs, i, singleShot );
       return Number(r);
     }
     else
       return Undefined();
-  case Window::SetInterval:
-    if (args.size() >= 2 && v.isA(StringType)) {
-      int i = args[1].toInt32(exec);
-      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, false);
-      return Number(r);
-    }
-    else if (args.size() >= 2 && !Object::dynamicCast(v).isNull() &&
-	     Object::dynamicCast(v).implementsCall()) {
-      Value func = args[0];
-      int i = args[1].toInt32(exec);
-#if 0
-// ### TODO
-      List *funcArgs = args.copy();
-      funcArgs->removeFirst(); // all args after 2 go to the function
-      funcArgs->removeFirst();
-#endif
-      int r = (const_cast<Window*>(window))->installTimeout(Identifier(s), i, false);
-      return Number(r);
-    }
-    else
-      return Undefined();
+  }
   case Window::ClearTimeout:
   case Window::ClearInterval:
-    (const_cast<Window*>(window))->clearTimeout(v.toInt32(exec));
+    (const_cast<Window*>(window))->winq->clearTimeout(v.toInt32(exec));
     return Undefined();
   case Window::Close: {
     /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
@@ -1488,24 +1462,34 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 ////////////////////// ScheduledAction ////////////////////////
 
 // KDE 4: Make those parameters const ... &
-ScheduledAction::ScheduledAction(Object _func, List _args, bool _singleShot)
+ScheduledAction::ScheduledAction(Object _func, List _args, QTime _nextTime, int _interval, bool _singleShot,
+				  int _timerId)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this << endl;
-  func = _func;
+  func = static_cast<ObjectImp*>(_func.imp());
   args = _args;
   isFunction = true;
   singleShot = _singleShot;
+  nextTime = _nextTime;
+  interval = _interval;
+  executing = false;
+  timerId = _timerId;
 }
 
 // KDE 4: Make it const QString &
-ScheduledAction::ScheduledAction(QString _code, bool _singleShot)
+ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(!isFunction) " << this << endl;
   //func = 0;
   //args = 0;
+  func = 0;
   code = _code;
   isFunction = false;
   singleShot = _singleShot;
+  nextTime = _nextTime;
+  interval = _interval;
+  executing = false;
+  timerId = _timerId;
 }
 
 void ScheduledAction::execute(Window *window)
@@ -1516,7 +1500,7 @@ void ScheduledAction::execute(Window *window)
 
   //kdDebug(6070) << "ScheduledAction::execute " << this << endl;
   if (isFunction) {
-    if (func.implementsCall()) {
+    if (func->implementsCall()) {
       // #### check this
       Q_ASSERT( window->m_part );
       if ( window->m_part )
@@ -1525,7 +1509,7 @@ void ScheduledAction::execute(Window *window)
         ExecState *exec = interpreter->globalExec();
         Q_ASSERT( window == interpreter->globalObject().imp() );
         Object obj( window );
-        func.call(exec,obj,args); // note that call() creates its own execution state for the func call
+        func->call(exec,obj,args); // note that call() creates its own execution state for the func call
 	if (exec->hadException())
 	  exec->clearException();
       }
@@ -1536,6 +1520,13 @@ void ScheduledAction::execute(Window *window)
   }
 
   interpreter->setProcessingTimerCallback(false);
+}
+
+void ScheduledAction::mark()
+{
+  if (func && !func->marked())
+    func->mark();
+  args.mark();
 }
 
 ScheduledAction::~ScheduledAction()
@@ -1555,6 +1546,8 @@ WindowQObject::WindowQObject(Window *w)
   else
       connect( part, SIGNAL( destroyed() ),
                this, SLOT( parentDestroyed() ) );
+  pausedTime = 0;
+  lastTimerId = 0;
 }
 
 WindowQObject::~WindowQObject()
@@ -1565,76 +1558,121 @@ WindowQObject::~WindowQObject()
 
 void WindowQObject::parentDestroyed()
 {
-  //kdDebug(6070) << "WindowQObject::parentDestroyed " << this << " we have " << scheduledActions.count() << " actions in the map" << endl;
   killTimers();
-  QMapIterator<int,ScheduledAction*> it;
-  for (it = scheduledActions.begin(); it != scheduledActions.end(); ++it) {
-    ScheduledAction *action = *it;
-    //kdDebug(6070) << "WindowQObject::parentDestroyed deleting action " << action << endl;
-    delete action;
-  }
+
+  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  for (; it.current(); ++it)
+    delete it.current();
   scheduledActions.clear();
 }
 
 int WindowQObject::installTimeout(const Identifier &handler, int t, bool singleShot)
 {
-  //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << " milliseconds=" << t << endl;
+  int id = ++lastTimerId;
   if (t < 10) t = 10;
-  int id = startTimer(t);
-  ScheduledAction *action = new ScheduledAction(handler.qstring(),singleShot);
-  scheduledActions.insert(id, action);
-  //kdDebug(6070) << this << " got id=" << id << " action=" << action << " - now having " << scheduledActions.count() << " actions"<<endl;
+  QTime nextTime = QTime::currentTime().addMSecs(-pausedTime).addMSecs(t);
+  ScheduledAction *action = new ScheduledAction(handler.qstring(),nextTime,t,singleShot,id);
+  scheduledActions.append(action);
+  setNextTimer();
   return id;
 }
 
 int WindowQObject::installTimeout(const Value &func, List args, int t, bool singleShot)
 {
   Object objFunc = Object::dynamicCast( func );
+  if (!objFunc.isValid())
+    return 0;
+  int id = ++lastTimerId;
   if (t < 10) t = 10;
-  int id = startTimer(t);
-  scheduledActions.insert(id, new ScheduledAction(objFunc,args,singleShot));
+  QTime nextTime = QTime::currentTime().addMSecs(-pausedTime).addMSecs(t);
+  ScheduledAction *action = new ScheduledAction(objFunc,args,nextTime,t,singleShot,id);
+  scheduledActions.append(action);
+  setNextTimer();
   return id;
 }
 
-void WindowQObject::clearTimeout(int timerId, bool delAction)
+void WindowQObject::clearTimeout(int timerId)
 {
-  //kdDebug(6070) << "WindowQObject::clearTimeout " << this << " timerId=" << timerId << " delAction=" << delAction << endl;
-  killTimer(timerId);
-  if (delAction) {
-    QMapIterator<int,ScheduledAction*> it = scheduledActions.find(timerId);
-    if (it != scheduledActions.end()) {
-      ScheduledAction *action = *it;
-      scheduledActions.remove(it);
-      delete action;
+  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  for (; it.current(); ++it) {
+    ScheduledAction *action = it.current();
+    if (action->timerId == timerId) {
+      scheduledActions.removeRef(action);
+      if (!action->executing)
+	delete action;
+      return;
     }
   }
 }
 
-void WindowQObject::timerEvent(QTimerEvent *e)
+void WindowQObject::mark()
 {
-  QMapIterator<int,ScheduledAction*> it = scheduledActions.find(e->timerId());
-  if (it != scheduledActions.end()) {
-    ScheduledAction *action = *it;
-    bool singleShot = action->singleShot;
-    //kdDebug(6070) << "WindowQObject::timerEvent " << this << " action=" << action << " singleShot:" << singleShot << endl;
+  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  for (; it.current(); ++it)
+    it.current()->mark();
+}
 
-    // remove single shots installed by setTimeout()
-    if (singleShot)
-    {
-      clearTimeout(e->timerId(),false);
-      scheduledActions.remove(it);
-    }
+void WindowQObject::timerEvent(QTimerEvent *)
+{
+  assert(!scheduledActions.isEmpty());
+
+  killTimers();
+
+  QTime currentActual = QTime::currentTime();
+  QTime currentAdjusted = currentActual.addMSecs(-pausedTime);
+
+  // Work out which actions are to be executed. We take a separate copy of
+  // this list since the main one may be modified during action execution
+  QPtrList<ScheduledAction> toExecute;
+  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  for (; it.current(); ++it)
+    if (currentAdjusted >= it.current()->nextTime)
+      toExecute.append(it.current());
+
+  // ### verify that the window can't be closed (and action deleted) during execution
+  it = QPtrListIterator<ScheduledAction>(toExecute);
+  for (; it.current(); ++it) {
+    ScheduledAction *action = it.current();
+    if (!scheduledActions.containsRef(action)) // removed by clearTimeout()
+      continue;
+
+    action->executing = true; // prevent deletion in clearTimeout()
+
+    if (action->singleShot)
+      scheduledActions.removeRef(action);
     if (!parent->part().isNull())
       action->execute(parent);
 
-    // It is important to test singleShot and not action->singleShot here - the
-    // action could have been deleted already if not single shot and if the
-    // JS code called by execute() calls clearTimeout().
-    if (singleShot)
+    action->executing = false;
+
+    if (!scheduledActions.containsRef(action))
       delete action;
-  } else
-    kdWarning(6070) << "WindowQObject::timerEvent this=" << this << " timer " << e->timerId()
-                    << " not found (" << scheduledActions.count() << " actions in map)" << endl;
+    else
+      action->nextTime = action->nextTime.addMSecs(action->interval);
+  }
+
+  pausedTime += currentActual.msecsTo(QTime::currentTime());
+
+  // Work out when next event is to occur
+  setNextTimer();
+}
+
+void WindowQObject::setNextTimer()
+{
+  if (scheduledActions.isEmpty())
+    return;
+
+  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  QTime nextTime = it.current()->nextTime;
+  for (++it; it.current(); ++it)
+    if (nextTime > it.current()->nextTime)
+      nextTime = it.current()->nextTime;
+
+  QTime nextTimeActual = nextTime.addMSecs(pausedTime);
+  int nextInterval = QTime::currentTime().msecsTo(nextTimeActual);
+  if (nextInterval < 0)
+    nextInterval = 0;
+  startTimer(nextInterval);
 }
 
 void WindowQObject::timeoutClose()

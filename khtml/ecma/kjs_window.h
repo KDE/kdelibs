@@ -26,6 +26,7 @@
 #include <qguardedptr.h>
 #include <qmap.h>
 #include <qptrlist.h>
+#include <qdatetime.h>
 
 #include "kjs_binding.h"
 
@@ -88,8 +89,6 @@ namespace KJS {
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
     virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
-    int installTimeout(const Identifier &handler, int t, bool singleShot);
-    void clearTimeout(int timerId);
     void scheduleClose();
     void closeNow();
     void delayedGoHistory(int steps);
@@ -130,6 +129,7 @@ namespace KJS {
            Onkeydown, Onkeypress, Onkeyup, Onload, Onmousedown, Onmousemove,
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
            Onselect, Onsubmit, Onunload };
+    WindowQObject *winq;
   protected:
     enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
 
@@ -146,7 +146,6 @@ namespace KJS {
     History *history;
     FrameArray *m_frames;
     Location *loc;
-    WindowQObject *winq;
     DOM::Event *m_evt;
 
     struct DelayedAction {
@@ -165,16 +164,22 @@ namespace KJS {
    */
   class ScheduledAction {
   public:
-    ScheduledAction(Object _func, List _args, bool _singleShot);
-    ScheduledAction(QString _code, bool _singleShot);
+    ScheduledAction(Object _func, List _args, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
+    ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
     ~ScheduledAction();
     void execute(Window *window);
+    void mark();
 
-    Object func;
+    ObjectImp *func;
     List args;
     QString code;
     bool isFunction;
     bool singleShot;
+
+    QTime nextTime;
+    int interval;
+    bool executing;
+    int timerId;
   };
 
   class WindowQObject : public QObject {
@@ -184,17 +189,21 @@ namespace KJS {
     ~WindowQObject();
     int installTimeout(const Identifier &handler, int t, bool singleShot);
     int installTimeout(const Value &func, List args, int t, bool singleShot);
-    void clearTimeout(int timerId, bool delAction = true);
+    void clearTimeout(int timerId);
+    void mark();
   public slots:
     void timeoutClose();
   protected slots:
     void parentDestroyed();
   protected:
     void timerEvent(QTimerEvent *e);
+    void setNextTimer();
   private:
     Window *parent;
     KHTMLPart *part;   		// not guarded, may be dangling
-    QMap<int, ScheduledAction*> scheduledActions;
+    QPtrList<ScheduledAction> scheduledActions;
+    int pausedTime;
+    int lastTimerId;
   };
 
   class Location : public ObjectImp {
