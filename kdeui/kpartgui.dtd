@@ -32,7 +32,9 @@
   -- Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
   --             fullWidth: if true (default), the toolbar extends to the full width of the window
   --             position: the position of the toolbar in the window
+  --             newline: if true, this toolbar will start a new line (i.e. under the ones before it).
   --             group: optional group name, for named merging (?)
+  --             hidden: if true, the toolbar is initially hidden. There should be a menu entry for showing it.
   --             noEdit: if true, the toolbar won't appear in the toolbar editor
   -->
 <!ELEMENT ToolBar ((Action | Separator | ActionList | Merge | DefineGroup)*)>
@@ -40,7 +42,9 @@
   name CDATA #REQUIRED
   fullWidth (true|false) "true"
   position (top|bottom|left|right) "top"
+  newline (true|false) "false"
   group CDATA #IMPLIED
+  hidden (true|false) "false"
   noEdit (true|false) "false"
 >
 
