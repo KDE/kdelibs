@@ -1,8 +1,8 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="NotepadPart">
+<kpartgui name="NotepadPart" version="2">
 <MenuBar>
  <Menu name="file"><Text>&amp;File</Text>
-  <Menu name="NodepadSubMenu"><text>Nodepad Stuff</text>
+  <Menu name="NotepadSubMenu"><text>Notepad Stuff</text>
     <Action name="searchreplace"/>
   </Menu>
  </Menu>

@@ -8,6 +8,7 @@
 #include <qtextstream.h>
 #include <qmultilineedit.h>
 
+#include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kaction.h>
@@ -15,13 +16,16 @@
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
 
-NotepadPart::NotepadPart( QWidget * parent, const char * name )
+K_EXPORT_COMPONENT_FACTORY( libnotepadpart, NotepadFactory );
+
+NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
+                          QObject* parent, const char* name,
+                          const QStringList& )
  : KParts::ReadWritePart( parent, name )
 {
-  KInstance * instance = new KInstance( "notepadpart" );
-  setInstance( instance );
+  setInstance( NotepadFactory::instance() );
 
-  m_edit = new QMultiLineEdit( parent, "NotepadPart's multiline edit" );
+  m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
   (void)new KAction( "Search and replace", 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
@@ -42,6 +46,11 @@ void NotepadPart::setReadWrite( bool rw )
         disconnect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
 
     ReadWritePart::setReadWrite( rw );
+}
+
+KAboutData* NotepadPart::createAboutData()
+{
+  return new KAboutData( "notepadpart", I18N_NOOP( "Notepad" ), "2.0" );
 }
 
 bool NotepadPart::openFile()

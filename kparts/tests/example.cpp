@@ -82,7 +82,8 @@ void Shell::embedEditor()
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
-  m_editorpart = new NotepadPart( /*this, */m_splitter, "NotepadPart" );
+  m_editorpart = new NotepadPart( m_splitter, "editor", 
+                                  this, "NotepadPart" );
   m_editorpart->setReadWrite(); // read-write mode
   m_manager->addPart( m_editorpart );
   m_paEditFile->setEnabled(false);
