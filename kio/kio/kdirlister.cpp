@@ -413,6 +413,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
 
 void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
 {
+  kdDebug() << k_funcinfo << url.prettyURL() << endl;
   QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url.url()];
   Q_ASSERT( listers );
   listers->removeRef( lister );
@@ -603,68 +604,59 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
 
 void KDirListerCache::FilesChanged( const KURL::List &fileList )
 {
-  kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
+  kdWarning(7004) << k_funcinfo << "ONLY HALF IMPLEMENTED!" << endl;
+  KURL::List::ConstIterator it = fileList.begin();
+  for ( ; it != fileList.end() ; ++it )
+  {
+      KFileItem* fileitem = findByURL( 0, *it );
+      if ( fileitem )
+          emitRefreshItem( fileitem );
+  }
+  // ## TODO problems with current jobs listing/updating that dir
+  // ( see kde-2.2.2's kdirlister )
 }
 
 void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
 {
-  kdDebug(7004) << k_funcinfo << " " << src.prettyURL() << " -> " << dst.prettyURL() << endl;
+  kdDebug(7004) << k_funcinfo << src.prettyURL() << " -> " << dst.prettyURL() << endl;
   QString oldUrl = src.url(-1);
   // Is oldUrl a directory currently displayed/listed/updated?
-  DirItem *dir = itemsInUse.take( oldUrl );
-  if ( dir )
+  if ( itemsInUse[oldUrl] )
   {
-    // Is oldUrl a directory being listed/updated?
-#if 0
-    QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( oldUrl );
-    if ( listers ) {
-      updateDirectory( oldUrl ); // ARGL wrong URL
-    }
-#endif
-    dir->rootItem->setURL( dst );
-    itemsInUse.insert( dst.url(-1), dir );
-
-    // Emit the change in the dirlisters holding that URL
-    // ## maybe find a way to merge with code below? Just afraid
-    // that findByURL won't find it after the changes being done here...
-    KFileItemList refreshList;
-    refreshList.append( dir->rootItem );
-    QPtrList<KDirLister> *holders = urlsCurrentlyHeld.take(oldUrl);
-    urlsCurrentlyHeld.insert( dst.url(-1), holders );
-    for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
-      emit kdl->refreshItems( refreshList );
-  }
-  else {
-    // Is oldUrl a directory in the cache?
-    dir = itemsCached.take(oldUrl);
-    if ( dir )
-    {
-      // Update item in cache
-      dir->rootItem->setURL( dst );
-      itemsCached.insert( dst.url(-1), dir );
-    }
+    // Tell the views to update. Just like in a redirection.
+    handleRedirection( src, dst );
   }
 
-  // Now update any KFileItem representing that dir (not exclusive with the above!)
+  // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   KFileItem* fileitem = findByURL( 0, oldUrl );
   if ( fileitem )
   {
     fileitem->setURL( dst );
-    // Code below copied from slotFileDirty
-    // ### code should be shared. Current slotFileDirty doesn't handle renaming...
-    // Hmm, not sure if it should, in fact.
-    KFileItemList refreshList;
-    refreshList.append( fileitem );
+    fileitem->refreshMimeType();
 
-    // TODO: use urlsCurrentlyListed as well?
-
-    KURL parentDir(dst);
-    parentDir.setPath( dst.directory() );
-    QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url(-1)];
-    if ( listers )
-      for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-        emit kdl->refreshItems( refreshList );
+    emitRefreshItem( fileitem );
   }
+}
+
+void KDirListerCache::emitRefreshItem( KFileItem* fileitem )
+{
+  KFileItemList refreshList;
+  refreshList.append( fileitem );
+
+  // Look whether this item was shown in any view, i.e. held by any dirlister
+  KURL parentDir( fileitem->url() );
+  parentDir.setPath( parentDir.directory() );
+  QString parentDirURL = parentDir.url();
+  QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDirURL];
+  if ( listers )
+    for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+      emit kdl->refreshItems( refreshList );
+
+  // Also look in urlsCurrentlyListed, in case the user manages to rename during a listing
+  listers = urlsCurrentlyListed[parentDirURL];
+  if ( listers )
+    for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+      emit kdl->refreshItems( refreshList );
 }
 
 KDirListerCache* KDirListerCache::self()
@@ -845,48 +837,104 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
 {
   Q_ASSERT( job );
   KURL oldUrl = static_cast<KIO::ListJob *>( job )->url();
+  handleRedirection( oldUrl, url );
+}
 
+// Common handler for slotRedirection and for FileRenamed
+void KDirListerCache::handleRedirection( const KURL &oldUrl, const KURL &url )
+{
   kdDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << url.prettyURL() << endl;
 
-  // I don't think there can be dirItems that are childs of oldUrl.
-  // Am I wrong here? And even if so, we don't need to delete them, right?
-  // DF: redirection happens before listDir emits any item. Makes little sense otherwise.
+  QString oldUrlStr = oldUrl.url(-1);
 
-  DirItem *dir = itemsInUse.take( oldUrl.url() );
-  Q_ASSERT( dir );
-
-  QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( oldUrl.url() );
-  Q_ASSERT( listers );
-  Q_ASSERT( !listers->isEmpty() );
-
-  for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+  DirItem *dir = itemsInUse.take( oldUrlStr );
+  if ( dir )
   {
-    if ( kdl->d->url.cmp( oldUrl, true ) )
+    dir->rootItem->setURL( url );
+    itemsInUse.insert( url.url(-1), dir );
+    // Rename all items under there
+    KFileItemListIterator kit( *dir->lstItems );
+    for ( ; kit.current(); ++kit )
     {
-      kdl->d->rootFileItem = 0;
-      kdl->d->url = url;
+      KURL oldUrl = (*kit)->url();
+      QString oldUrlStr( oldUrl.url(-1) );
+      KURL newUrl( oldUrl );
+      newUrl.setPath( url.path() );
+      newUrl.addPath( oldUrl.fileName() );
+      kdDebug() << "KDirListerCache::handleRedirection renaming " << oldUrlStr << " to " << newUrl.url() << endl;
+      (*kit)->setURL( newUrl );
+      if ( (*kit)->isDir() && ( urlsCurrentlyHeld[oldUrlStr] || urlsCurrentlyListed[oldUrlStr] ) )
+      {
+        // A dir that we're listing/showing? need to 'redirect' it...
+        handleRedirection( oldUrl, newUrl );
+      }
     }
+  }
 
+  // Check if we were listing this dir (always the case when called by slotRedirection,
+  // and sometimes when called by FileRenamed)
+  QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( oldUrlStr );
+  if ( listers )
+  {
+    for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+    {
+      if ( kdl->d->url.cmp( oldUrl, true ) )
+      {
+        kdl->d->rootFileItem = 0;
+        kdl->d->url = url;
+      }
+
+      *kdl->d->lstDirs.find( oldUrl ) = url;
+
+      if ( kdl->d->lstDirs.count() == 1 )
+      {
+        emit kdl->clear();
+        emit kdl->redirection( url );
+        emit kdl->redirection( oldUrl, url );
+      }
+      else
+      {
+        emit kdl->clear( oldUrl );
+        emit kdl->redirection( oldUrl, url );
+      }
+    }
+    urlsCurrentlyListed.insert( url.url(-1), listers );
+  }
+
+  // Check if we are currently displaying this directory (odds opposite wrt above)
+  // Update urlsCurrentlyHeld dict with new URL
+  QPtrList<KDirLister> *holders = urlsCurrentlyHeld.take( oldUrlStr );
+  urlsCurrentlyHeld.insert( url.url(-1), holders );
+  // And notify the dirlisters of the redirection
+  for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
+  {
     *kdl->d->lstDirs.find( oldUrl ) = url;
-
     if ( kdl->d->lstDirs.count() == 1 )
     {
-      emit kdl->clear();
       emit kdl->redirection( url );
       emit kdl->redirection( oldUrl, url );
     }
     else
-    {
-      emit kdl->clear( oldUrl );
       emit kdl->redirection( oldUrl, url );
-    }
   }
+  // Is oldUrl a directory in the cache?
+  //dir = itemsCached.remove( oldUrlStr );
+  //if ( dir )
+  // Remove any child of oldUrl from the cache - even if the renamed dir itself isn't in it!
+  removeDirFromCache( oldUrl );
+  // TODO rename, instead.
+}
 
-  delete dir->rootItem;
-  dir->rootItem = 0;
-  dir->lstItems->clear();
-  itemsInUse.insert( url.url(-1), dir );
-  urlsCurrentlyListed.insert( url.url(-1), listers );
+void KDirListerCache::removeDirFromCache( const KURL& dir )
+{
+  QCacheIterator<DirItem> itc( itemsCached );
+  while ( itc.current() )
+  {
+    if ( dir.isParentOf( itc.current()->rootItem->url() ) )
+      itemsCached.remove( itc.currentKey() );
+    else
+      ++itc;
+  }
 }
 
 void KDirListerCache::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList& list )
@@ -1170,15 +1218,8 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
             ++itu;
         }
 
-        // remove the childs from the cache
-        QCacheIterator<DirItem> itc( itemsCached );
-        while ( itc.current() )
-        {
-          if ( item->url().isParentOf( itc.current()->rootItem->url() ) )
-            itemsCached.remove( itc.currentKey() );
-          else
-            ++itc;
-        }
+        // remove the children from the cache
+        removeDirFromCache( item->url() );
 
         // finally actually delete the item
         lstItems->take();

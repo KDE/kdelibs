@@ -185,6 +185,11 @@ private:
   void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList *, bool really );
   void processPendingUpdates();
   void forgetDirInternal( KDirLister *lister, const KURL &_url );
+  // common for slotRedirection and FileRenamed
+  void handleRedirection( const KURL &oldUrl, const KURL &url );
+  // remove directory from cache (itemsCached), including all child dirs
+  void removeDirFromCache( const KURL& dir );
+  void emitRefreshItem( KFileItem* fileitem );
 
   struct DirItem
   {
