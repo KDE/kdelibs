@@ -12,9 +12,6 @@
             <height>323</height>
         </rect>
     </property>
-    <property name="caption">
-        <string>KPropertiesDesktopBase</string>
-    </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
