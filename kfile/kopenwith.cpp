@@ -468,7 +468,7 @@ void KOpenWithDlg::slotOK()
   desktop.sync();
 
   // rebuild the database
-  kdDebug() << "rebuilding the database" << endl;
+  QApplication::setOverrideCursor( waitCursor );
   DCOPClient *dcc = kapp->dcopClient();
   QByteArray replyData;
   QCString retType;
@@ -478,6 +478,7 @@ void KOpenWithDlg::slotOK()
   // get the new service pointer
   kdDebug() << pathName << endl;
   m_pService = KService::serviceByDesktopPath( pathName );
+  QApplication::restoreOverrideCursor();
 
   ASSERT( m_pService );
 
