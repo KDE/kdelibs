@@ -21,7 +21,6 @@
 #define __kxmlguibuilder_h__
 
 #include <qdom.h>
-#include <qcstring.h>
 
 class KXMLGUIBuilderPrivate;
 class QWidget;
@@ -69,8 +68,7 @@ class KXMLGUIBuilder
    *                             removeContainer .
    */
   virtual QWidget *createContainer( QWidget *parent, int index,
-          const QDomElement &element, const QByteArray &containerStateBuffer,
-          int &id );
+          const QDomElement &element, int &id );
 
   /**
    * Remove the given (and previously via @ref createContainer )
@@ -82,8 +80,8 @@ class KXMLGUIBuilder
    *         @ref createContainer when the same container is about to be
    *         created again later.
    */
-  virtual QByteArray removeContainer( QWidget *container, QWidget *parent,
-          int id );
+  virtual void removeContainer( QWidget *container, QWidget *parent,
+				QDomElement &element, int id );
 
   virtual QStringList customTags() const;
 
@@ -91,9 +89,8 @@ class KXMLGUIBuilder
 
   virtual void removeCustomElement( QWidget *parent, int id );
 
-  // ### make virtual next Wednesday ;-)
-  void finalizeGUI( KXMLGUIClient *client );
-    
+  virtual void finalizeGUI( KXMLGUIClient *client );
+
 private:
   KXMLGUIBuilderPrivate *d;
 };

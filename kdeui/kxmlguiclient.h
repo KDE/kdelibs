@@ -105,27 +105,13 @@ public:
   virtual QString xmlFile() const;
 
   /**
-   * default implementation, storing the given data in an internal
-   * map. Called from KXMLGUIFactory when removing containers which
-   * were owned by the servant.
+   * @internal
    */
-  virtual void storeContainerStateBuffer( const QString &key, const QByteArray &data );
-
-  /**
-   * default implementation, returning a previously via
-   * @ref #storeContainerStateBuffer() saved data. Called from
-   * KXMLGUIFactory when creating a new container.
-   */
-  virtual QByteArray takeContainerStateBuffer( const QString &key );
-
+  void setXMLGUIBuildDocument( const QDomDocument &doc );
   /**
    * @internal
    */
-  void setContainerStates( const QMap<QString,QByteArray> &states );
-  /**
-   * @internal
-   */
-  QMap<QString,QByteArray> containerStates() const;
+  QDomDocument xmlguiBuildDocument() const;
 
   /**
    * This method is called by the @ref KXMLGUIFactory as soon as the client

@@ -352,7 +352,7 @@ bool KEditToolbarWidget::save()
   for ( client = clients.begin(); client != clients.end(); ++client )
   {
     // passing an empty stream forces the clients to reread the XML
-    (*client)->setContainerStates( QMap<QString,QByteArray>() );
+    (*client)->setXMLGUIBuildDocument( QDomDocument() );
 
     // and this forces it to use the *new* XML file
     (*client)->reloadXML();

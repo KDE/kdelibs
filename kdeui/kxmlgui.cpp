@@ -305,7 +305,11 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   if ( d->m_clients.contains( client ) == 0 )
     d->m_clients.append( client );
 
-  QDomElement docElement = client->domDocument().documentElement();
+  QDomDocument doc = client->xmlguiBuildDocument();
+  if ( doc.isNull() )
+    doc = client->domDocument();
+
+  QDomElement docElement = doc.documentElement();
 
   d->m_rootNode->index = -1;
   d->m_clientName = docElement.attribute( d->attrName );
@@ -357,12 +361,14 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     }
   }
 
+  kdDebug() << documentToXML( doc ) << endl;
+  
   buildRecursive( docElement, d->m_rootNode );
 
   client->setFactory( this );
 
   m_builder->finalizeGUI( m_client );
-  
+
   m_client = 0L;
   d->m_clientName = QString::null;
   d->m_clientBuilder = 0L;
@@ -399,7 +405,16 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
   d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
   d->m_clientBuilder = client->clientBuilder();
   client->setFactory( 0L );
-  removeRecursive( d->m_rootNode );
+
+  QDomDocument doc = client->xmlguiBuildDocument();
+  if ( doc.isNull() )
+  {
+      doc = client->domDocument().cloneNode( true ).toDocument();
+      client->setXMLGUIBuildDocument( doc );
+  }
+
+  QDomElement tmp = doc.documentElement();
+  removeRecursive( tmp, d->m_rootNode );
   m_client = 0L;
   d->m_clientBuilder = 0L;
   d->m_clientName = QString::null;
@@ -625,10 +640,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	
 	int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
 	
-        // query the client for possible container state information (like toolbar positions for example)
-	// (the array might be empty in case there's no info available)
-	QByteArray stateBuffer = m_client->takeContainerStateBuffer( e.tagName() + e.attribute( d->attrName ) );
-	
 	/*
 	 * let the builder create the container
 	 */
@@ -637,7 +648,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	
 	KXMLGUIBuilder *builder;
 	
-        QWidget *container = createContainer( parentNode->container, idx, e, stateBuffer, id, &builder );
+        QWidget *container = createContainer( parentNode->container, idx, e, id, &builder );
 	
 	// no container? (probably some <text> tag or so ;-)
 	if ( !container )
@@ -666,15 +677,35 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
 }
 
-bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
+bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode *node )
 {
+  QDomNodeList childElements = element.childNodes();
+  uint childElementCount = childElements.count();
+
   QListIterator<KXMLGUIContainerNode> childIt( node->children );
   while ( childIt.current() )
+  {
+    KXMLGUIContainerNode *childNode = childIt.current();
+    QDomElement child;
+    // ### slow
+    uint i = 0;
+    for (; i < childElementCount; ++i )
+    {
+      QDomElement e = childElements.item( i ).toElement();
+      if ( e.tagName() == childNode->tagName &&
+	   e.attribute( d->attrName ) == childNode->name )
+      {
+	child = e;
+	break;
+      }
+    }				
+					
     // removeRecursive returns true in case the container really got deleted
-    if ( removeRecursive( childIt.current() ) )
-      node->children.removeRef( childIt.current() );
+    if ( removeRecursive( child, childNode ) )
+      node->children.removeRef( childNode );
     else
       ++childIt;
+  }
 
   QValueList<MergingIndex>::Iterator mergingIt = node->mergingIndices.end();
 
@@ -776,10 +807,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
     //remove/kill the container and give the builder a chance to store abitrary state information of
     //the container in a QByteArray. This information will be re-used for the creation of the same
     //container in case we add the same client again later.
-    QByteArray containerStateBuffer = node->builder->removeContainer( node->container, parentContainer, node->containerId );
-
-    if ( containerStateBuffer.size() > 0 && !node->name.isEmpty() )
-      m_client->storeContainerStateBuffer( node->tagName + node->name, containerStateBuffer );
+    node->builder->removeContainer( node->container, parentContainer, element, node->containerId );
 
     node->client = 0L;
 
@@ -882,13 +910,13 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, bool tag )
   return 0L;
 }
 
-QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id, KXMLGUIBuilder **builder )
+QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDomElement &element, int &id, KXMLGUIBuilder **builder )
 {
   QWidget *res = 0L;
 
   if ( d->m_clientBuilder )
   {
-    res = d->m_clientBuilder->createContainer( parent, index, element, containerStateBuffer, id );
+    res = d->m_clientBuilder->createContainer( parent, index, element, id );
 
     if ( res )
     {
@@ -902,7 +930,7 @@ QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDom
 
   m_builder->setBuilderClient( m_client );
 
-  res = m_builder->createContainer( parent, index, element, containerStateBuffer, id );
+  res = m_builder->createContainer( parent, index, element, id );
 
   m_builder->setBuilderInstance( oldInstance );
   m_builder->setBuilderClient( oldClient );

@@ -64,19 +64,6 @@ public:
 
     KInstance *m_instance;
     KXMLGUIClient *m_client;
-
-    struct ToolBarInfo
-    {
-	ToolBarInfo() {}
-	ToolBarInfo( QMainWindow::ToolBarDock d,
-		     int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {
-	}
-	int index, offset;
-	bool newline;
-	QMainWindow::ToolBarDock dock;
-    };
-
-    QMap<KToolBar*, ToolBarInfo > toolBarInfos;
 };
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
@@ -124,7 +111,7 @@ QStringList KXMLGUIBuilder::containerTags() const
   return res;
 }
 
-QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
+QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, int &id )
 {
   id = -1;
   if ( element.tagName().lower() == d->tagMainWindow )
@@ -205,13 +192,6 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     else
 	bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
 
-    QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
-    if (text.isEmpty())  // try with capital T
-      text = element.namedItem( d->attrText2 ).toElement().text().utf8();
-
-    if (!text.isEmpty())
-      bar->setText( i18n( text ) );
-
     if ( d->m_widget->inherits( "KTMainWindow" ) )
     {
       KTMainWindow *mw = static_cast<KTMainWindow *>( d->m_widget );
@@ -220,78 +200,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
         bar->setXMLGUIClient( d->m_client );
     }
 
-    QCString attrFullWidth = element.attribute( d->attrFullWidth ).lower().latin1();
-    QCString attrPosition = element.attribute( d->attrPosition ).lower().latin1();
-    QCString attrIconText = element.attribute( d->attrIconText ).lower().latin1();
-    QString attrIconSize = element.attribute( d->attrIconSize ).lower();
-    QString attrIndex = element.attribute( d->attrIndex ).lower();
-    QString attrOffset = element.attribute( d->attrOffset ).lower();
-    QString attrNewLine = element.attribute( d->attrNewLine ).lower();
-
-    if ( honor || ( !attrFullWidth.isEmpty() && attrFullWidth == "true" ) )
-      bar->setFullSize( true );
-    else
-      bar->setFullSize( false );
-
-    QMainWindow::ToolBarDock dock;
-    int index = 0, offset = -1;
-    bool nl = FALSE;
-
-    if ( !attrPosition.isEmpty() && containerStateBuffer.size() == 0 ) {
-	if ( attrPosition == "top" )
-	    dock = QMainWindow::Top;
-	else if ( attrPosition == "left" )
-	    dock = QMainWindow::Left;
-	else if ( attrPosition == "right" )
-	    dock = QMainWindow::Right;
-	else if ( attrPosition == "bottom" )
-	    dock = QMainWindow::Bottom;
-	else if ( attrPosition == "floating" )
-	    dock = QMainWindow::TornOff;
-	else if ( attrPosition == "flat" )
-	    dock = QMainWindow::Minimized;
-    }
-
-    if ( !attrIndex.isEmpty() && containerStateBuffer.size() == 0 )
-	index = attrIndex.toInt();
-    if ( !attrOffset.isEmpty() && containerStateBuffer.size() == 0 )
-	offset = attrOffset.toInt();
-    if ( !attrNewLine.isEmpty() && containerStateBuffer.size() == 0 )
-	nl = attrNewLine == "true" ? TRUE : FALSE;
-
-    d->toolBarInfos.insert( bar, KXMLGUIBuilderPrivate::ToolBarInfo( dock, index, nl, offset ) );
-
-    bar->setBarPos( (KToolBar::BarPosition)dock );
-
-    if ( !attrIconText.isEmpty() && containerStateBuffer.size() == 0 )
-    {
-      if ( attrIconText == "icontextright" )
-        bar->setIconText( KToolBar::IconTextRight );
-      else if ( attrIconText == "textonly" )
-        bar->setIconText( KToolBar::TextOnly );
-      else if ( attrIconText == "icontextbottom" )
-        bar->setIconText( KToolBar::IconTextBottom );
-      else if ( attrIconText == "icononly" )
-        bar->setIconText( KToolBar::IconOnly );
-    }
-
-    if ( !attrIconSize.isEmpty() && containerStateBuffer.size() == 0 )
-    {
-      bar->setIconSize( attrIconSize.toInt() );
-    }
-
-    if ( containerStateBuffer.size() > 0 )
-    {
-      QDataStream stream( containerStateBuffer, IO_ReadOnly );
-      QVariant iconText, barPos, fullSize, iconSize;
-      stream >> iconText >> barPos >> fullSize >> iconSize;
-      bar->setProperty( "iconText", iconText );
-      bar->setProperty( "barPos", barPos );
-      bar->setProperty( "fullSize", fullSize );
-      bar->setProperty( "iconSize", iconSize );
-    }
-
-    bar->show();
+    bar->loadState( element );
 
     return bar;
   }
@@ -311,10 +220,9 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   return 0L;
 }
 
-QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, int id )
+void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomElement &element, int id )
 {
   // Warning parent can be 0L
-  QByteArray stateBuff;
 
   if ( container->inherits( "QPopupMenu" ) )
   {
@@ -327,10 +235,8 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
   }
   else if ( container->inherits( "KToolBar" ) )
   {
-    QDataStream stream( stateBuff, IO_WriteOnly );
-    stream << container->property( "iconText" ) << container->property( "barPos" ) << container->property( "fullSize" ) << container->property( "iconSize" );
     KToolBar *tb = static_cast<KToolBar *>( container );
-    tb->saveState();
+    tb->saveState( element );
     delete tb;
   }
   else if ( container->inherits( "KStatusBar" ) )
@@ -340,8 +246,6 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
     else
       delete static_cast<KStatusBar *>(container);
   }
-
-  return stateBuff;
 }
 
 QStringList KXMLGUIBuilder::customTags() const
@@ -427,26 +331,6 @@ void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
-    if ( !d->m_widget || !d->m_widget->inherits( "KTMainWindow" ) ||
-         d->toolBarInfos.count() == 0 )
+    if ( !d->m_widget || !d->m_widget->inherits( "KTMainWindow" ) )
 	return;
-
-    KTMainWindow *mw = (KTMainWindow*)d->m_widget;
-    KToolBar *toolbar;
-    QListIterator<KToolBar> it( mw->toolBarIterator() );
-
-    for ( ; it.current(); ++it) {
-	toolbar= it.current();
-	QMap<KToolBar*, KXMLGUIBuilderPrivate::ToolBarInfo>::Iterator it = d->toolBarInfos.find( toolbar );
-	if ( it == d->toolBarInfos.end() ) {
-	    mw->moveToolBar( toolbar, QMainWindow::Top, FALSE, 0, -1 );
-	    if ( toolbar->testWState( Qt::WState_ForceHide ) )
-		toolbar->hide();
-	    continue;
-	}
-	mw->moveToolBar( toolbar, (*it).dock, (*it).newline, (*it).index, (*it).offset );
-	if ( toolbar->testWState( Qt::WState_ForceHide ) )
-	    toolbar->hide();
-    }
-    d->toolBarInfos.clear();
 }

@@ -51,7 +51,7 @@ public:
 
   QDomDocument m_doc;
   KActionCollection m_actionCollection;
-  QMap<QString,QByteArray> m_containerStates;
+  QDomDocument m_buildDocument;
   KXMLGUIFactory *m_factory;
   KXMLGUIClient *m_parent;
   QList<KXMLGUIClient> m_children;
@@ -194,6 +194,8 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
   }
   else
     d->m_doc = document;
+  
+  setXMLGUIBuildDocument( QDomDocument() );
 }
 
 bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )
@@ -464,39 +466,17 @@ QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const Q
 void KXMLGUIClient::conserveMemory()
 {
   d->m_doc = QDomDocument();
+  d->m_buildDocument = QDomDocument();
 }
 
-void KXMLGUIClient::storeContainerStateBuffer( const QString &key, const QByteArray &data )
+void KXMLGUIClient::setXMLGUIBuildDocument( const QDomDocument &doc )
 {
-  if ( !key.isEmpty() )
-    d->m_containerStates.replace( key, data );
+  d->m_buildDocument = doc;
 }
 
-QByteArray KXMLGUIClient::takeContainerStateBuffer( const QString &key )
+QDomDocument KXMLGUIClient::xmlguiBuildDocument() const
 {
-  QByteArray res;
-
-  if ( key.isEmpty() )
-    return res;
-
-  QMap<QString,QByteArray>::Iterator it = d->m_containerStates.find( key );
-  if ( it != d->m_containerStates.end() )
-  {
-    res = it.data();
-    d->m_containerStates.remove( it );
-  }
-
-  return res;
-}
-
-void KXMLGUIClient::setContainerStates( const QMap<QString,QByteArray> &states )
-{
-  d->m_containerStates = states;
-}
-
-QMap<QString,QByteArray> KXMLGUIClient::containerStates() const
-{
-  return d->m_containerStates;
+  return d->m_buildDocument;
 }
 
 void KXMLGUIClient::setFactory( KXMLGUIFactory *factory )

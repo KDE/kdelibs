@@ -235,7 +235,7 @@ void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     }
 
     // make sure we don't have any state saved already
-    setContainerStates(QMap<QString,QByteArray>());
+    setXMLGUIBuildDocument( QDomDocument() );
 
     // do the actual GUI building
     guiFactory()->addClient( this );
