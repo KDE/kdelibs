@@ -434,10 +434,22 @@ QSize KJanusWidget::minimumSizeHint( void ) const
   {
     return( mSwallowPage->minimumSize() );
   }
-  else /*if( mFace == Plain )*/
+  else if( mFace == Plain )
   {
     return( mPlainPage->sizeHint() );
   }
+  else
+  {
+    return( QSize( 100, 100 ) ); // Should never happen though.
+  }
+
 }
+
+
+QSize KJanusWidget::sizeHint( void ) const
+{
+  return( minimumSizeHint() );
+}
+
 
 #include "kjanuswidget.moc"

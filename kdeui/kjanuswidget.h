@@ -27,7 +27,6 @@
 class QLabel;
 class QTabWidget;
 class QWidgetStack;
-
 class KSeparator;
 
 /**
@@ -61,7 +60,7 @@ class KSeparator;
  * For all modes it is important that you specify the @ref QWidget::minimumSize
  * on the page, plain widget or the swallowed widget. This size is used
  * when the KJanusWidget determines its own minimum size. You get the latter
- * minimum size by using the @ref minimumSizeHint method.
+ * minimum size by using the @ref minimumSizeHint or @ref sizeHint methods.
  *
  * To be continued...
  *
@@ -132,9 +131,17 @@ class KJanusWidget : public QWidget
      * Returns the minimum size that must be made available for the widget
      * so that uis can be displayed properly
      *
-     * @return the minimum size.
+     * @return The minimum size.
      */
     virtual QSize minimumSizeHint( void ) const;
+
+    /**
+     * Returns the recommended size for the widget in order to be displayed
+     * properly.
+     *
+     * @return The recommended size.
+     */
+    virtual QSize sizeHint( void ) const;
 
     /**
      * Returns the empty widget that is available in Plain mode.
@@ -165,6 +172,9 @@ class KJanusWidget : public QWidget
     bool setSwallowedWidget( QWidget *widget );
 
   public slots:
+    /**
+     * Gives the keyboard input focus to the widget 
+     */
     virtual void setFocus( void ); 
 
   private slots:
