@@ -47,6 +47,7 @@ DCOPIDL="compiled"
 MCOPIDL="compiled"
 ARTSCCONFIG="compiled"
 KDB2HTML="compiled"
+KDECONFIG="compiled"
 
 dnl Checks for libraries etc
 AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
