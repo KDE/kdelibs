@@ -546,14 +546,9 @@ void KAction::updateShortcut( int i )
     QPopupMenu* menu = static_cast<QPopupMenu*>(w);
     updateShortcut( menu, id );
   }
-  // FIXME: It may be that the following should only be done
-  //  if d->m_kaccel == 0, otherwise we may be setting up
-  //  the shortcut twice. --ellis 2002/01/18
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
 }
-
-// TODO: continue copying over diffs! -- ellis xxx
 
 void KAction::updateShortcut( QPopupMenu* menu, int id )
 {
