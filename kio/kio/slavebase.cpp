@@ -1065,8 +1065,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
-    kdWarning(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl; 
-            
+    kdDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl; 
+
     (void) dcopClient(); // Make sure to have a dcop client.
 
     QDataStream stream(params, IO_WriteOnly);
@@ -1078,7 +1078,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
        kdWarning(7019) << "Can't communicate with kded!" << endl;
        return false;
     }
-    
+
     if ( replyType == "KIO::AuthInfo" )
     {
        QDataStream stream2( reply, IO_ReadOnly );
@@ -1093,7 +1093,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     if (!authResult.isModified())
     {
        return false;
-    }       
+    }
 
     info = authResult;
     return true;
@@ -1110,7 +1110,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
     QByteArray params;
     long windowId = metaData("window-id").toLong();
-            
+
     (void) dcopClient(); // Make sure to have a dcop client.
 
     QDataStream stream(params, IO_WriteOnly);
