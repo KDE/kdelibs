@@ -25,7 +25,8 @@ To use these formats, you only need to:
 
 Writing handlers
 ----------------
-Please read the documentation for the QImageIO class in the Qt
+
+0. Please read the documentation for the QImageIO class in the Qt
 documentation.
 
 1. When writing handlers, there is a function naming convention;
@@ -41,11 +42,25 @@ kimgio_<format>_<read/write>
 
 This should reduce the chance of identifier clashes with other code.
 
-2. If you only have either a reader or the writer for a particular
+2. Remember that a given KDE application may try to load dozens of
+images at once such as when loading icons, or creating thumbnails.
+Also, it may well be loading them over a network connection.
+Therefore,
+
+	- Avoid creating temporary files or allocating too much memory
+	when decoding and encoding. Especially try to avoid firing off
+	external programs.
+
+	- Don't assume that the IODevice which is the source or target
+	of the image data is pointing to a file on the local filesystem.
+	Use the IODevice methods to read and write image data.
+
+3. If you only have either a reader or the writer for a particular
 format, don't use NULL in QImageIO::defineIOHandler. Instead, write
 a stub function for the unimplemented handler which displays a message
 on standard output. This prevents kimgio-using programs dumping core
 when attempting to call the unimplemented handler.
+
 
 Yours in good faith and pedantry,
 
