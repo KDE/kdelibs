@@ -2069,7 +2069,7 @@ KListViewItem::~KListViewItem()
 
 void KListViewItem::init()
 {
-  m_known = false;
+  m_odd = m_known = false;
   KListView *lv = static_cast<KListView *>(listView());
   setDragEnabled( dragEnabled() || lv->dragEnabled() );
 }
