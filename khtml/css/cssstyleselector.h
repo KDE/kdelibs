@@ -165,6 +165,8 @@ namespace khtml
         DOM::CSSStyleSheetImpl *userSheet;
 
 public:
+	static RenderStyle* styleNotYetAvailable;
+	
     private:
         void init();
 

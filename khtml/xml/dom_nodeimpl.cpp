@@ -62,7 +62,8 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_focused( false ),
       m_active( false ),
       m_styleElement( false ),
-      m_implicit( false )
+      m_implicit( false ),
+      m_rendererNeedsClose( false )
 {
     if (document)
         document->ref();
@@ -888,12 +889,30 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
 }
 #endif
 
-void NodeImpl::attach()
+void NodeImpl::closeRenderer()
 {
-    assert(!attached());
-    assert(!m_render || (m_render->style() && m_render->parent()));
-    m_attached = true;
+    // It's important that we close the renderer, even if it hasn't been
+    // created yet. This happens even more because of the FOUC fixes we did
+    // at Apple, which prevent renderers from being created until the stylesheets
+    // are all loaded. If the renderer is not here to be closed, we set a flag,
+    // then close it later when it's attached.
+    assert(!m_rendererNeedsClose);
+    if (m_render)
+        m_render->close();
+    else
+        m_rendererNeedsClose = true;
 }
+
+ void NodeImpl::attach()
+ {
+    assert(!attached());
+	assert(!m_render || (m_render->style() && m_render->parent()));
+    if (m_render && m_rendererNeedsClose) {
+        m_render->close();
+        m_rendererNeedsClose = false;
+    }
+    m_attached = true;
+ }
 
 void NodeImpl::detach()
 {
@@ -1044,8 +1063,14 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 
         // Add child to the rendering tree
         // ### should we detach() it first if it's already attached?
-        if (attached() && !child->attached())
+        if (attached() && !child->attached()) {
             child->attach();
+	    // This is extremely important, as otherwise a fresh layout
+            // isn't scheduled, and you end up with stale data (especially
+            // with inline runs of text). -dwh
+            if (child->renderer())
+                child->renderer()->setLayouted(false);
+	}
 
         // Dispatch the mutation events
         dispatchChildInsertedEvents(child,exceptioncode);
@@ -1113,8 +1138,14 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
         // Add child to the rendering tree
         // ### should we detach() it first if it's already attached?
-        if (attached() && !child->attached())
+        if (attached() && !child->attached()) {
             child->attach();
+	    // This is extremely important, as otherwise a fresh layout
+            // isn't scheduled, and you end up with stale data (especially
+            // with inline runs of text). -dwh
+            if (child->renderer())
+                child->renderer()->setLayouted(false);
+	}
 
         // Dispatch the mutation events
         dispatchChildInsertedEvents(child,exceptioncode);
@@ -1260,8 +1291,14 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 
         // Add child to the rendering tree
         // ### should we detach() it first if it's already attached?
-        if (attached() && !child->attached())
+        if (attached() && !child->attached()) {
             child->attach();
+	    // This is extremely important, as otherwise a fresh layout
+            // isn't scheduled, and you end up with stale data (especially
+            // with inline runs of text). -dwh
+            if (child->renderer())
+                child->renderer()->setLayouted(false);
+	}
 
         // Dispatch the mutation events
         dispatchChildInsertedEvents(child,exceptioncode);

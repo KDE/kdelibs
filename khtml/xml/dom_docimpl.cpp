@@ -1749,6 +1749,24 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
     return m_styleSheets;
 }
 
+
+// This method is called whenever a top-level stylesheet has finished loading.
+void DocumentImpl::stylesheetLoaded()
+{
+  // Make sure we knew this sheet was pending, and that our count isn't out of sync.
+  assert(m_pendingStylesheets > 0);
+
+  m_pendingStylesheets--;
+  updateStyleSelector();    
+}
+
+void DocumentImpl::addPendingSheet() 
+{ 
+m_pendingStylesheets++;
+//kdDebug()<<"ADDED SHEET pending="<<m_pendingStylesheets<<endl; 
+}
+
+
 DOMString DocumentImpl::selectedStylesheetSet() const
 {
     if (!view()) return DOMString();
@@ -1767,6 +1785,12 @@ void DocumentImpl::setSelectedStylesheetSet(const DOMString& s)
 
 void DocumentImpl::updateStyleSelector()
 {
+//    kdDebug() << "PENDING " << m_pendingStylesheets << endl;
+		    
+    // Don't bother updating, since we haven't loaded all our style info yet.
+    if (m_pendingStylesheets > 0)
+        return;
+	
     recalcStyleSelector();
     recalcStyle(Force);
 #if 0
@@ -1786,8 +1810,10 @@ QStringList DocumentImpl::availableStyleSheets() const
 }
 
 void DocumentImpl::recalcStyleSelector()
-{
+{    
     if ( !m_render || !attached() ) return;
+    
+    assert(m_pendingStylesheets==0);
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
@@ -1827,13 +1853,15 @@ void DocumentImpl::recalcStyleSelector()
         else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
             ElementImpl *e = static_cast<ElementImpl *>(n);
             QString title = e->getAttribute( ATTR_TITLE ).string();
+	    bool enabledViaScript = false;
             if (n->id() == ID_LINK) {
                 // <LINK> element
                 HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
-                // awful hack to ensure that we ignore the title attribute for non-stylesheets
-                // ### make that nicer!
-                if (!(l->sheet() || l->isLoading()))
+		if (l->isLoading() || l->isDisabled())
+                    continue;
+                if (!l->sheet())
                     title = QString::null;
+		enabledViaScript = l->isEnabledViaScript();
             }
             else {
                 HTMLStyleElementImpl* s = static_cast<HTMLStyleElementImpl*>(n);
@@ -1866,6 +1894,7 @@ void DocumentImpl::recalcStyleSelector()
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
         }
         if (sheet) {
+	kdDebug() << "SHEET FOUND" << endl;
             sheet->ref();
             m_styleSheets->styleSheets.append(sheet);
         }

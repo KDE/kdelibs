@@ -197,7 +197,8 @@ void HTMLBodyElementImpl::attach()
 {
     assert(!m_render);
     assert(parentNode());
-    assert(parentNode()->renderer());
+    if (!parentNode()->renderer())
+        return;
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
@@ -525,11 +526,16 @@ void HTMLHtmlElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
     assert(parentNode()->renderer());
-
-    m_render = new RenderHtml(this);
-    m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-    parentNode()->renderer()->addChild(m_render, nextRenderer());
-
+    
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (_style->display() != NONE)
+    {
+        m_render = new RenderHtml(this);
+        m_render->setStyle(_style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
+    }
+    _style->deref();
     NodeBaseImpl::attach();
 }
 

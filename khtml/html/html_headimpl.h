@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -71,7 +72,8 @@ class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElement
 {
 public:
     HTMLLinkElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc), m_cachedSheet(0), m_sheet(0), m_loading(false) {}
+        : HTMLElementImpl(doc), m_cachedSheet(0), m_sheet(0), m_disabledState(0),
+	m_loading(false), m_alternate(false) {}
 
     ~HTMLLinkElementImpl();
 
@@ -92,7 +94,10 @@ public:
     bool isLoading() const;
     void sheetLoaded();
 
-
+    bool isAlternate() const { return m_disabledState == 0 && m_alternate; }
+    bool isDisabled() const { return m_disabledState == 2; }
+    bool isEnabledViaScript() const { return m_disabledState == 1; }
+    
 protected:
     khtml::CachedCSSStyleSheet *m_cachedSheet;
     CSSStyleSheetImpl *m_sheet;
@@ -100,7 +105,9 @@ protected:
     DOMString m_type;
     QString m_media;
     DOMString m_rel;
+    int m_disabledState; // 0=unset(default), 1=enabled via script, 2=disabled
     bool m_loading;
+    bool m_alternate;
     QString m_data; // needed for temporarily storing the loaded style sheet data
 };
 
@@ -143,7 +150,7 @@ class HTMLStyleElementImpl : public HTMLElementImpl
 {
 public:
     HTMLStyleElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc), m_sheet(0) {}
+        : HTMLElementImpl(doc), m_sheet(0), m_loading(false) {}
     ~HTMLStyleElementImpl();
 
     virtual Id id() const;
@@ -161,6 +168,9 @@ public:
 
 protected:
     StyleSheetImpl *m_sheet;
+    bool m_loading;
+    DOMString m_type;
+    QString m_media;
 };
 
 // -------------------------------------------------------------------------

@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 2000 Peter Kelly (pmk@post.com)
+ * Copyright (C) 2002 Apple Computer, Inc. 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -113,8 +114,7 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
     if (m_currentNode->parentNode() != 0) {
-        if (m_currentNode->renderer())
-            m_currentNode->renderer()->close();
+        m_currentNode->closeRenderer();
         m_currentNode = m_currentNode->parentNode();
     }
 // ###  else error

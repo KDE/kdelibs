@@ -73,6 +73,7 @@ CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultQuirksStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
+RenderStyle* CSSStyleSelector::styleNotYetAvailable = 0;
 CSSStyleSheetImpl *CSSStyleSelector::quirksSheet = 0;
 
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
@@ -313,6 +314,16 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 {
+
+    if (!e->getDocument()->haveStylesheetsLoaded()) {
+        if (!styleNotYetAvailable) {
+            styleNotYetAvailable = new RenderStyle();
+            styleNotYetAvailable->setDisplay(NONE);
+            styleNotYetAvailable->ref();
+        }
+        return styleNotYetAvailable;
+    }
+
     // set some variables we will need
     dynamicState = state;
     usedDynamicStates = StyleSelector::None;
