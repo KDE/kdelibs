@@ -7,4 +7,4 @@ Type=QString
 [PropertyDef::X-KDE-Smartcard-SubType]
 Type=QString
 [PropertyDef::X-KDE-Smartcard-SubSubType]
-Type=QString
+Type=QStringList
