@@ -1,6 +1,7 @@
 // programm to test the CSS implementation
 
 #include <kapp.h>
+#include <kdebug.h>
 
 #include <sys/stat.h>
 #include <fcntl.h>
