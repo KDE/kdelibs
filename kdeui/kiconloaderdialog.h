@@ -154,6 +154,10 @@ protected:
  * It shows the currently selected icon. Pressing on
  * the icon will open the dialog. If the icon changes, a
  * signal is emitted and the buttons pixmap becomes updated.
+ *
+ * HACK
+ * Since I did not want to break binary compatibility, it does
+ * NOT use the same search path as the dialog. This IS a bug.
  */
 class KIconLoaderButton : public QPushButton
 {
