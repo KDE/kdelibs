@@ -357,8 +357,7 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
   func = f;
 
-  /* TODO: solve deleting problem due to circular reference */
-  // put("arguments", this, DontDelete | DontEnum);
+  put("arguments", this, DontDelete | DontEnum);
   if (func->hasProperty("arguments"))
     put("OldArguments", func->get("arguments"));
   put("callee", Function(func), DontEnum);
@@ -369,8 +368,7 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
       put(UString::from(i), *arg);
     }
   }
-  /* TODO: solve deleting problem due to circular reference */
-  //  func->put("arguments", this);
+  func->put("arguments", this);
 }
 
 // ECMA 10.1.6
