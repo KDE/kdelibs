@@ -9,7 +9,7 @@
 
 html {
 	display: block;
-	color: windowtext;
+	color: \2d konq-text;
 } 
 
 /*
@@ -367,9 +367,18 @@ FORM {
 	display: block;
 }
 
+LEGEND { 
+        display: block;
+        padding-left: 2px;
+        padding-right: 2px;
+        border: none;
+}
+
 FIELDSET {
 	display: block;
+        padding: 0.75em 0.625em;
 	margin: 1.0em auto;
+        border: 2px groove ThreeDFace;
 } 
 
 BUTTON {
@@ -475,7 +484,7 @@ acronym {
 	font-style: italic;
 }
 
-a:focus          { outline: 1px dotted invert }
+:focus          { outline: 1px dotted invert }
 a:link:active          { color: red; outline: 1px dotted invert; }
 a:visited:active          { color: red; outline: 1px dotted invert; }
 
