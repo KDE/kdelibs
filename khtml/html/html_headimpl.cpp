@@ -238,7 +238,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
     {
         // get delay and url
         QString str = _content.string();
-        int pos = str.find(QRegExp("[;,]"));
+        int pos = str.find(QRegExp("[;, ]"));
         if (pos == -1) // There can be no url (David)
         {
             int delay = str.toInt();
