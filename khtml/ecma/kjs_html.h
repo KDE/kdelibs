@@ -29,6 +29,7 @@
 
 #include "kjs_binding.h"
 
+class KHTMLPart;
 class HTMLElement;
 class HTMLCollection;
 
@@ -48,14 +49,14 @@ namespace KJS {
 
   class HTMLDocument : public NodeObject {
   public:
-    HTMLDocument(DOM::HTMLDocument d) : doc(d) { }
+    HTMLDocument(KHTMLPart *p) : part(p) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual DOM::Node toNode() const { return doc; }
+    virtual DOM::Node toNode() const;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
   private:
-    DOM::HTMLDocument doc;
+    KHTMLPart *part;
   };
 
   class HTMLElement : public NodeObject {

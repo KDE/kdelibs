@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 
+#include <khtml_part.h>
 #include <dom/html_base.h>
 #include <dom/html_block.h>
 #include <dom/html_document.h>
@@ -36,6 +37,7 @@
 #include <kjs/operations.h>
 #include "kjs_dom.h"
 #include "kjs_html.h"
+#include "kjs_window.h"
 
 #include <htmltags.h>
 
@@ -140,6 +142,8 @@ const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
 
 KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
+  DOM::HTMLDocument doc = part->htmlDocument();
+
   KJSO result;
 
   if (p == "title")
@@ -152,6 +156,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     result = getString(doc.URL());
   else if (p == "body")
     result = getDOMNode(doc.body());
+  else if (p == "location")
+    result = new Location(part);
   else if (p == "images")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Images);
   else if (p == "applets")
@@ -195,6 +201,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 
 void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 {
+  DOM::HTMLDocument doc = part->htmlDocument();
+
   if (p == "title")
     doc.setTitle(v.toString().value().string());
   else if (p == "body")
@@ -205,6 +213,11 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
     KJSO tmp(new DOMDocument(doc));
     tmp.put(p,v);
   }
+}
+
+DOM::Node HTMLDocument::toNode() const
+{ 
+  return part->htmlDocument();
 }
 
 const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,
