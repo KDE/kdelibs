@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir)/kabc $(all_includes)
 
 # these are the headers for your project
 noinst_HEADERS   = resourceldap.h resourceldapconfig.h
