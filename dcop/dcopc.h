@@ -15,6 +15,14 @@
 #define DCOP_ERROR_SERVER_REFUSED_CONNECTION 4
 #define DCOP_ERROR_SERVER_REFUSED_DATA 5
 
+typedef void (*dcop_callback_t)(
+  const char * app_name,
+  const char * object_id,
+  const char * function,
+  const char * data,
+  unsigned int data_length
+);
+
 char * dcop_write_int(char * buf, int);
 
 char * dcop_write_string(char * buf, const char *);
@@ -26,6 +34,13 @@ dcop_send_signal(
   const char * function,
   char * data,
   int data_length
+);
+
+  Bool
+dcop_register(
+  const char * app_name,
+  const char * object_id,
+  dcop_callback_t callback
 );
 
 #endif /* __dcopc_h__ */

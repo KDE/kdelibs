@@ -33,7 +33,41 @@
 #include <X11/ICE/ICEmsg.h>
 #include <X11/ICE/ICEproto.h>
 
+#include "dcopglobal.h"
 #include "dcopc.h"
+
+static dcop_callback_t dcop_callback = 0L;
+static Bool dcop_attached = False;
+static IceConn dcop_ice_conn;
+static int dcop_major_opcode;
+static CARD32 dcop_time;
+
+  void
+dcop_process_message(
+  IceConn iceConn,
+  IcePointer clientObject,
+  int opcode,
+  unsigned long length,
+  Bool swap,
+  IceReplyWaitInfo * replyWait,
+  Bool * replyWaitRet
+);
+
+static IcePoVersionRec DCOPVersions[] = {
+  { DCOPVersionMajor, DCOPVersionMinor, dcop_process_message }
+};
+
+  Bool
+dcop_call(
+  const char * remApp,
+  const char * remObjId,
+  const char * remFun,
+  const char * data,
+  int dataLength,
+  char * replyType,
+  char * replyData,
+  int replyDataLength
+);
 
   char *
 dcop_write_int(char * buf, int i)
@@ -49,6 +83,13 @@ dcop_write_int(char * buf, int i)
 }
 
   char *
+dcop_read_int(char * buf, int * i)
+{
+  *i = *((int *)buf);
+  return buf + 4;
+}
+
+  char *
 dcop_write_string(char * buf, const char * text)
 {
   char * pos = buf;
@@ -56,6 +97,16 @@ dcop_write_string(char * buf, const char * text)
   pos = dcop_write_int(buf, l);
   memcpy(pos, text, l);
   return pos + l;
+}
+
+  char *
+dcop_read_string(char * buf, char * output)
+{
+  int length;
+  char * pos = dcop_read_int(buf, &length);
+  output = (char *)malloc(length);
+  memcpy(output, pos, length);
+  return pos + length;
 }
 
   int
@@ -68,29 +119,6 @@ dcop_send_signal(
 )
 {
   /* Vars *****************************************************************/
-
-    struct
-  DCOPMsg {
-    CARD8 majorOpcode;
-    CARD8 minorOpcode;
-    CARD8 data[2];
-    CARD32 length B32;
-    CARD32 time;
-  };
-
-    extern
-    IcePoAuthStatus
-  _IcePoMagicCookie1Proc(
-    IceConn,
-    void **,
-    int,
-    int,
-    int,
-    void *,
-    int *,
-    void **,
-    char **
-  );
 
   char  * pos               = 0L;
   char  * vendor            = 0L;
@@ -116,14 +144,6 @@ dcop_send_signal(
 
   struct DCOPMsg * pMsgPtr = 0;
 
-  static IcePoVersionRec DCOPVersions[] = {
-    { 1, 1, 0L } /* last arg is callback - none ok as 0L ? */
-  };
-
-  const char * DCOPAuthNames[] = { "MIT-MAGIC-COOKIE-1" };
-
-  IcePoAuthProc DCOPClientAuthProcs[] = { _IcePoMagicCookie1Proc };
-
   /* Find home dir ********************************************************/
 
   homeDir = getenv("HOME");
@@ -136,11 +156,11 @@ dcop_send_signal(
   majorOpcode =
     IceRegisterForProtocolSetup(
       (char *)("DCOP"),
-      (char *)("KDE"),
-      (char *)("1.1"),
+      DCOPVendorString,
+      DCOPReleaseString,
       1,
       DCOPVersions,
-      1,
+      DCOPAuthCount,
       (char **)DCOPAuthNames,
       DCOPClientAuthProcs,
       0L
@@ -237,7 +257,7 @@ dcop_send_signal(
   IceGetHeader(
     iceConn,
     majorOpcode,
-    2 /* DCOPSend */,
+    DCOPSend,
     sizeof(struct DCOPMsg),
     struct DCOPMsg,
     pMsgPtr
@@ -298,5 +318,182 @@ dcop_send_signal(
 
   return DCOP_OK;
 }
+
+  Bool
+dcop_register(
+  const char * app_name,
+  const char * object_id,
+  dcop_callback_t callback
+)
+{
+#if 0
+  QCString replyType;
+  QByteArray data, replyData;
+  QDataStream arg( data, IO_WriteOnly );
+  arg <<appId;
+  if ( call( "DCOPServer", "", "registerAs(QCString)", data, replyType, replyData ) ) {
+    QDataStream reply( replyData, IO_ReadOnly );
+    reply >> result;
+  }
+  d->appId = result;
+  d->registered = !result.isNull();
+  return result;
+#endif
+}
+
+  void
+dcop_process_message(
+  IceConn iceConn,
+  IcePointer clientObject,
+  int opcode,
+  unsigned long length,
+  Bool swap,
+  IceReplyWaitInfo * replyWait,
+  Bool * replyWaitRet
+)
+{
+  struct DCOPMsg * pMsg = 0L;
+  char * buf = 0L;
+  char * senderId = 0L;
+  char * app = 0L;
+  char * objId = 0L;
+  char * fun = 0L;
+  char * pos = 0L;
+  unsigned int dataLength = 0L;
+
+  /* Avoid unused param warnings */
+  (void)sizeof(clientObject);
+  (void)sizeof(swap);
+  (void)sizeof(replyWait);
+  (void)sizeof(replyWaitRet);
+
+  if (0 == dcop_callback) {
+    fprintf(stderr, "No callback registered\n");
+    return;
+  }
+
+  IceReadMessageHeader(iceConn, sizeof(struct DCOPMsg), struct DCOPMsg, pMsg);
+
+  switch (opcode) {
+
+    case DCOPSend:
+
+      buf = (char *)malloc(length);
+      IceReadData(iceConn, length, buf);
+      /* Now read strings 'senderID', 'app', 'objId' and 'fun' from buf. */
+
+      pos = buf;
+
+      pos = dcop_read_string(pos, senderId);
+      free(senderId); /* Don't need this right now */
+      pos = dcop_read_string(pos, app);
+      pos = dcop_read_string(pos, objId);
+      pos = dcop_read_string(pos, fun);
+      pos = dcop_read_int(pos, &dataLength);
+
+      /* Run user-provided callback. */
+      dcop_callback(app, objId, fun, pos, dataLength);
+
+      free(app);
+      free(objId);
+      free(fun);
+      free(buf);
+
+      break;
+
+    case DCOPCall:
+      fprintf(stderr, "DCOPCall not yet implemented\n");
+    default:
+      fprintf(stderr, "Ignoring this opcode\n");
+      break;
+  }
+}
+
+  Bool
+dcop_call(
+  const char * remApp,
+  const char * remObjId,
+  const char * remFun,
+  const char * data,
+  int dataLength,
+  char * replyType,
+  char * replyData,
+  int replyDataLength)
+{
+  char * outputData = 0L;
+  int outputDataLength = 0;
+  Bool success = False;
+  int datalen = 0;
+  IceReplyWaitInfo waitInfo;
+  Bool readyRet = False;
+  IceProcessMessagesStatus status;
+  unsigned long replyStatus = -1;
+
+  if (0 == dcop_attached)
+    return -1;
+
+  while (1) {
+
+    struct DCOPMsg * pMsg;
+
+/*    outputData << d->appId << remApp << remObjId <<
+ *    normalizeFunctionSignature(remFun) << data.size(); */
+/*    And set outputDataLength */
+
+    IceGetHeader(
+      dcop_ice_conn,
+      dcop_major_opcode,
+      DCOPCall,
+      sizeof(struct DCOPMsg),
+      struct DCOPMsg,
+      pMsg
+    );
+
+    pMsg->time = dcop_time;
+    datalen = outputDataLength + dataLength;
+    pMsg->length += datalen;
+
+    IceSendData(dcop_ice_conn, outputDataLength, outputData);
+    IceSendData(dcop_ice_conn, dataLength, (char *)data);
+
+    if (IceConnectionStatus(dcop_ice_conn) != IceConnectAccepted)
+      return -1;
+
+    IceFlush(dcop_ice_conn);
+
+    waitInfo.sequence_of_request = IceLastSentSequenceNumber(dcop_ice_conn);
+    waitInfo.major_opcode_of_request = dcop_major_opcode;
+    waitInfo.minor_opcode_of_request = DCOPCall;
+
+    replyType = &replyType;
+    replyData = &replyData;
+
+    /* Hmm... need to figure out what this is for */
+/*    waitInfo.reply = (IcePointer)&tmpReplyStruct; */
+
+    do {
+      
+      status = IceProcessMessages(dcop_ice_conn, &waitInfo, &readyRet);
+
+      if (status == IceProcessMessagesIOError) {
+        IceCloseConnection(dcop_ice_conn);
+        return False;
+      }
+
+    } while (!readyRet);
+
+    // if we were rejected by the server, we try again, otherwise we return
+    if (replyStatus == 2 /* Rejected */)
+      continue;
+
+    success = (replyStatus == 1 /* Ok */) ? True : False;
+
+    break;
+  }
+
+  return success;
+}
+
+
 
 /* vim: set ts=2:sw=2:tw=78: */
