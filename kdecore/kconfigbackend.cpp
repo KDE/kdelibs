@@ -51,13 +51,13 @@ static QString printableToString(const QString& s)
         if (s[i] == '\\')
           result.insert(result.length(), s[i]);
         else if (s[i] == 'n')
-          result.append("\n");
+          result.append(QString::fromLatin1("\n"));
         else if (s[i] == 't')
-          result.append("\t");
+          result.append(QString::fromLatin1("\t"));
         else if (s[i] == 'r')
-          result.append("\r");
+          result.append(QString::fromLatin1("\r"));
         else {
-          result.append("\\");
+          result.append(QString::fromLatin1("\\"));
           result.insert(result.length(), s[i]);
         }
       }
@@ -75,13 +75,13 @@ static QString stringToPrintable(const QString& s){
   unsigned int i;
   for (i=0;i<s.length();i++){
     if (s[i] == '\n')
-      result.append("\\n");
+      result.append(QString::fromLatin1("\\n"));
     else if (s[i] == '\t')
-      result.append("\\t");
+      result.append(QString::fromLatin1("\\t"));
     else if (s[i] == '\r')
-      result.append("\\r");
+      result.append(QString::fromLatin1("\\r"));
     else if (s[i] == '\\')
-      result.append("\\\\");
+      result.append(QString::fromLatin1("\\\\"));
     else
       result.insert(result.length(), s[i]);
   }
@@ -105,13 +105,13 @@ bool KConfigINIBackEnd::parseConfigFiles()
   if (useKDEGlobals) {
 
     QStringList kdercs = KGlobal::dirs()->
-      findAllResources("config", "kdeglobals");
+      findAllResources("config", QString::fromLatin1("kdeglobals"));
 
-    if (checkAccess("/etc/kderc", R_OK))
-      kdercs += "/etc/kderc";
+    if (checkAccess(QString::fromLatin1("/etc/kderc"), R_OK))
+      kdercs += QString::fromLatin1("/etc/kderc");
 
     kdercs += KGlobal::dirs()->
-      findAllResources("config", "system.kdeglobals");
+      findAllResources("config", QString::fromLatin1("system.kdeglobals"));
 
     QStringList::ConstIterator it;
 
@@ -130,7 +130,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
 //    QStringList list = KGlobal::dirs()->
 //      findAllResources(resType, fileName, true);
     QStringList list = KGlobal::dirs()->
-      findAllResources(resType, fileName);
+      findAllResources(resType.latin1(), fileName);
 
     QStringList::ConstIterator it;
 
@@ -175,7 +175,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
     return;
 
   QString aCurrentLine;
-  QString aCurrentGroup("<default>");
+  QString aCurrentGroup(QString::fromLatin1("<default>"));
 
   // reset the stream's device
   rFile.at(0);
@@ -194,7 +194,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (pWriteBackMap) {
 	// add the special group key indicator
-	KEntryKey groupKey(aCurrentGroup, "");
+	KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
 	pWriteBackMap->insert(groupKey, KEntry());
       }
       continue;
@@ -268,7 +268,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
   if (bEntriesLeft && useKDEGlobals) {
 
     QString aFileName = KGlobal::dirs()->saveLocation("config") +
-      "kdeglobals";
+      QString::fromLatin1("kdeglobals");
 
     // can we allow the write? (see above)
     if (checkAccess ( aFileName, W_OK )) {
@@ -326,7 +326,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 	else
         {
 	  // add special group key and then the entry
-	  KEntryKey groupKey(entryKey.group, "");
+	  KEntryKey groupKey(entryKey.group, QString::fromLatin1(""));
 	  if (!aTempMap.contains(groupKey))
 	    aTempMap.insert(groupKey, KEntry());
 
@@ -361,9 +361,9 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   KEntryMapConstIterator aWriteIt;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
 
-      if ( aWriteIt.key().group == "<default>" && !aWriteIt.key().key.isEmpty() ) {
+      if ( aWriteIt.key().group == QString::fromLatin1("<default>") && !aWriteIt.key().key.isEmpty() ) {
 	  if ( (*aWriteIt).bNLS &&
-	       aWriteIt.key().key.right(1) != "]")
+	       aWriteIt.key().key.right(1) != QString::fromLatin1("]"))
 	      // not yet localized, but should be
 	      (*pStream) << aWriteIt.key().key << '['
 		       << pConfig->locale() << ']' << "="
@@ -379,7 +379,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   QString currentGroup;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
     // check if it's not the default group (which has already been written)
-    if (aWriteIt.key().group == "<default>")
+    if (aWriteIt.key().group == QString::fromLatin1("<default>"))
       continue;
 
     if ( currentGroup != aWriteIt.key().group ) {
@@ -392,7 +392,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
     } else {
       // it is data for a group
       if ( (*aWriteIt).bNLS &&
-	  aWriteIt.key().key.right(1) != "]")
+	  aWriteIt.key().key.right(1) != QString::fromLatin1("]"))
 	// not yet localized, but should be
 	(*pStream) << aWriteIt.key().key << '['
 		 << pConfig->locale() << ']' << "="

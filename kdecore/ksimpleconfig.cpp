@@ -39,15 +39,15 @@
 #include "ksimpleconfig.moc"
 
 KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
-  : KConfig("", bReadOnly, false)
+  : KConfig(QString::fromLatin1(""), bReadOnly, false)
 {
   // the difference between KConfig and KSimpleConfig is just that
   // for KSimpleConfig an absolute filename is guaranteed
   if (!pFileName.isNull() && pFileName[0] != '/') {
      backEnd->changeFileName( KGlobal::dirs()->
-	saveLocation("config")+pFileName, "config", false);
+	saveLocation("config")+pFileName, QString::fromLatin1("config"), false);
   } else {
-     backEnd->changeFileName(pFileName, "config", false);
+     backEnd->changeFileName(pFileName, QString::fromLatin1("config"), false);
   }
   parseConfigFiles();
 }
@@ -67,9 +67,9 @@ QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 
   // localize the key, if requested
   if (bLocalized) {
-      aLocalizedKey += "[";
+      aLocalizedKey += QString::fromLatin1("[");
       aLocalizedKey += locale();
-      aLocalizedKey += "]";
+      aLocalizedKey += QString::fromLatin1("]");
   }
 
   // retrieve the current entry map for the group specified by pKey

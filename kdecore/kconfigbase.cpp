@@ -55,7 +55,7 @@ void KConfigBase::setGroup( const QString& pGroup )
 {
   if ( pGroup.isNull() )
     aGroup = "<default>";
-  else if (pGroup.find("Desktop Entry") != -1) {
+  else if (pGroup.find(QString::fromLatin1("Desktop Entry")) != -1) {
     debug("warning, setting Desktop Entry group through KConfig::setGroup() is deprecated.");
     debug("please use KConfig::setDesktopGroup() instead.");
     abort();
@@ -68,7 +68,7 @@ void KConfigBase::setDesktopGroup()
 {
   // we maintain the first for backwards compatibility with
   // old .kdelnk files
-  if (hasGroup("KDE Desktop Entry"))
+  if (hasGroup(QString::fromLatin1("KDE Desktop Entry")))
     aGroup = "KDE Desktop Entry";
   else
     aGroup = "Desktop Entry";
@@ -132,7 +132,7 @@ QString KConfigBase::readEntry( const QString& aKey,
 	  if (!aVarName.isEmpty())
 	       pEnv = getenv( aVarName.ascii() );
 	  if( pEnv )
-	    aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
+	    aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromLatin1(pEnv) );
 	  else
 	    aValue.remove( nDollarPos, nEndPos-nDollarPos );
 	} else {
@@ -303,11 +303,11 @@ int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )
     return nDefault;
-  else if( aValue == "true" )
+  else if( aValue == QString::fromLatin1("true") )
     return 1;
-  else if( aValue == "on" )
+  else if( aValue == QString::fromLatin1("on") )
     return 1;
-  else if( aValue == "yes" )
+  else if( aValue == QString::fromLatin1("yes") )
     return 1;
   else
     {
@@ -389,7 +389,7 @@ bool KConfigBase::readBoolEntry( const QString& pKey, const bool bDefault ) cons
     return bDefault;
   else
     {
-      if( aValue == "true" || aValue == "on" || aValue == "1")
+      if( aValue == QString::fromLatin1("true") || aValue == QString::fromLatin1("on") || aValue == QString::fromLatin1("1"))
 	return true;
       else
 	{
@@ -465,7 +465,7 @@ QFont KConfigBase::readFontEntry( const QString& pKey,
       if (chOldEntry)
 	aRetFont.setCharSet( chId );
       else if (kapp) {
-	if (chStr == "default")
+	if (chStr == QString::fromLatin1("default"))
 	  if (KGlobal::locale())
 	    chStr = KGlobal::locale()->charset();
 	  else chStr = "iso-8859-1";
@@ -538,10 +538,10 @@ QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) c
   if( count != 4 )
     return QRect();
   else
-    return QRect( QString( list.at( 0 ) ).toInt(),
-		  QString( list.at( 1 ) ).toInt(),
-		  QString( list.at( 2 ) ).toInt(),
-		  QString( list.at( 3 ) ).toInt() );
+    return QRect( QString::fromLatin1( list.at( 0 ) ).toInt(),
+		  QString::fromLatin1( list.at( 1 ) ).toInt(),
+		  QString::fromLatin1( list.at( 2 ) ).toInt(),
+		  QString::fromLatin1( list.at( 3 ) ).toInt() );
 }
 
 
@@ -562,8 +562,8 @@ QPoint KConfigBase::readPointEntry( const QString& pKey,
   if( count != 2 )
     return QPoint();
   else
-    return QPoint( QString( list.at( 0 ) ).toInt(),
-		   QString( list.at( 1 ) ).toInt() );
+    return QPoint( QString::fromLatin1( list.at( 0 ) ).toInt(),
+		   QString::fromLatin1( list.at( 1 ) ).toInt() );
 }
 
 
@@ -584,8 +584,8 @@ QSize KConfigBase::readSizeEntry( const QString& pKey,
   if( count != 2 )
     return QSize();
   else
-    return QSize( QString( list.at( 0 ) ).toInt(),
-		  QString( list.at( 1 ) ).toInt() );
+    return QSize( QString::fromLatin1( list.at( 0 ) ).toInt(),
+		  QString::fromLatin1( list.at( 1 ) ).toInt() );
 }
 
 
@@ -667,12 +667,12 @@ QDateTime KConfigBase::readDateTimeEntry( const QString& pKey,
     QTime time;
     QDate date;
 
-    date.setYMD( QString( list.at( 0 ) ).toInt(),
-		 QString( list.at( 1 ) ).toInt(),
-		 QString( list.at( 2 ) ).toInt() );
-    time.setHMS( QString( list.at( 3 ) ).toInt(),
-		 QString( list.at( 4 ) ).toInt(),
-		 QString( list.at( 5 ) ).toInt() );
+    date.setYMD( QString::fromLatin1( list.at( 0 ) ).toInt(),
+		 QString::fromLatin1( list.at( 1 ) ).toInt(),
+		 QString::fromLatin1( list.at( 2 ) ).toInt() );
+    time.setHMS( QString::fromLatin1( list.at( 3 ) ).toInt(),
+		 QString::fromLatin1( list.at( 4 ) ).toInt(),
+		 QString::fromLatin1( list.at( 5 ) ).toInt() );
 
     aRetDateTime.setTime( time );
     aRetDateTime.setDate( date );
@@ -825,7 +825,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
 {
   if( list.isEmpty() )
     {
-      writeEntry( pKey, QString(""), bPersistent );
+      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
       return;
     }
   QString str_list;
@@ -853,7 +853,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
 {
   if( list.isEmpty() )
     {
-      writeEntry( pKey, QString(""), bPersistent );
+      writeEntry( pKey, QString::fromLatin1(""), bPersistent );
       return;
     }
   QString str_list;
@@ -949,7 +949,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
   if( rFont.rawMode() )
     nFontBits = nFontBits | 0x20;
 
-  QString aCharset = "default";
+  QString aCharset = QString::fromLatin1("default");
   if( rFont.charSet() != QFont::AnyCharSet )
       aCharset.setNum( static_cast<int>(rFont.charSet()) );
 
