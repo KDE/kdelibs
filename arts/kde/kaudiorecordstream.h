@@ -105,7 +105,9 @@ class KAudioRecordStream : public QObject
 
 	signals:
 		/**
-		 * Data from the aRts server has arrived
+		 * Data from the aRts server has arrived. You should copy the data
+		 * because the passed QByteArray will be deleted right after
+		 * returning from your slot(s).
 		 *
 		 * @param data the data from the server
 		 */
