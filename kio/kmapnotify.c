@@ -64,9 +64,9 @@ void KDE_SetNetWmPid(Display *, Window);
   int
 XMapWindow(Display * d, Window w)
 {
-  //fprintf(stderr, "XMapWindow\n");
+  /*fprintf(stderr, "XMapWindow\n");*/
   if (NULL == KDE_RealXMapWindow) {
-    //fprintf(stderr, "intercepting XMapWindow\n");
+    /*fprintf(stderr, "intercepting XMapWindow\n");*/
     KDE_InterceptXMapRequest(d, w);
   }
 
