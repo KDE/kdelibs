@@ -15,11 +15,10 @@ pixmaploader.cpp: pixmaps.embed
 
 QEMBED = $(QTDIR)/tools/qembed/qembed
 
-PICS := $(shell ls $(srcdir)/pics/*.png 2>/dev/null)
-
-.PHONY: make-embed
-
-make-embed: $(PICS)
-	$(QEMBED) --images $^ | \
+make-embed:
+	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 
+	$(QEMBED) --images $$pics | \
 	sed -e 's,static QDict<QImage> dict;,,' | \
 	sed -e 's,dict\.find,imageDict.find,' > $(srcdir)/pixmaps.embed
+
+.PHONY: make-embed

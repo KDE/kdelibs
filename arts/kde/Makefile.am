@@ -20,6 +20,7 @@ $(srcdir)/kartsfloatwatch.cpp: artskde.h
 artskde.cc: artskde.h
 artskde.mcoptype: artskde.h
 artskde.mcopclass: artskde.h
+MCOPINC = -I$(srcdir)
 artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
 	    $(MCOPIDL) -I$(includedir)/arts -I$(includedir)/arts -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
 
