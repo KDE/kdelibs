@@ -406,3 +406,9 @@ This widget has been replaced by the almighty QListView. Everything said
 about KTreeList could be repeated here. The good thing is, that you now
 can combine TreeView's and normal Tablists without problems. 
 
+////////////////////////////////////////////////////////////////////////
+// * KToolBarButton & KRadioGroup
+
+If you need to do anything with KToolBarButton you now need to include
+<ktoolbarbutton.h> KRadioGroup has been renamed to KTooBarRadioGroup and
+requires you to include <ktoolbarradiogroup.h>
