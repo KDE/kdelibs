@@ -53,7 +53,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-
+#include <knuminput.h>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
@@ -230,6 +230,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
 
   sizeListBox = new KListBox( page, "sizeListBox");
+  sizeOfFont = new KIntNumInput( page, "sizeOfFont");
+  sizeOfFont->setMinValue(4);
+
   sizeListBox->setEnabled( !diff );
   if( sizeIsRelativeState ) {
     QString sizeIsRelativeCBText =
@@ -244,17 +247,21 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
                                             page,
                                            "sizeIsRelativeCheckBox" );
     sizeIsRelativeCheckBox->setTristate( diff );
-    QGridLayout *sizeLayout2 = new QGridLayout( 2,2, KDialog::spacingHint()/2, "sizeLayout2" );
+    QGridLayout *sizeLayout2 = new QGridLayout( 3,2, KDialog::spacingHint()/2, "sizeLayout2" );
     gridLayout->addLayout(sizeLayout2, row, 2);
     sizeLayout2->setColStretch( 1, 1 ); // to prevent text from eating the right border
-    sizeLayout2->addMultiCellWidget(sizeListBox, 0,0, 0,1);
-    sizeLayout2->addWidget(sizeIsRelativeCheckBox, 1, 0, Qt::AlignLeft);
+    sizeLayout2->addMultiCellWidget( sizeOfFont, 0, 0, 0, 1);
+    sizeLayout2->addMultiCellWidget(sizeListBox, 1,1, 0,1);
+    sizeLayout2->addWidget(sizeIsRelativeCheckBox, 2, 0, Qt::AlignLeft);
     QWhatsThis::add( sizeIsRelativeCheckBox, sizeIsRelativeCBWhatsThisText );
     QToolTip::add(   sizeIsRelativeCheckBox, sizeIsRelativeCBToolTipText );
   }
   else {
     sizeIsRelativeCheckBox = 0L;
-    gridLayout->addWidget(sizeListBox, row, 2);
+    QGridLayout *sizeLayout2 = new QGridLayout( 2,1, KDialog::spacingHint()/2, "sizeLayout2" );
+    gridLayout->addLayout(sizeLayout2, row, 2);
+    sizeLayout2->addWidget( sizeOfFont, 0, 0);
+    sizeLayout2->addMultiCellWidget(sizeListBox, 1,1, 0,0);
   }
   QString fontSizeWhatsThisText =
     i18n("Here you can choose the font size to be used." );
@@ -266,6 +273,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     sizeListBox->fontMetrics().maxWidth() );
   sizeListBox->setMinimumHeight(
     minimumListHeight( sizeListBox, visibleListSize  ) );
+
+  connect( sizeOfFont, SIGNAL( valueChanged(int) ),
+           SLOT(size_value_slot(int)));
 
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
 	   SLOT(size_chosen_slot(const QString&)) );
@@ -312,7 +322,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   setFont( KGlobalSettings::generalFont(), usingFixed );
   // check or uncheck or gray out the "relative" checkbox
   if( sizeIsRelativeState && sizeIsRelativeCheckBox )
-    setSizeIsRelative( *sizeIsRelativeState ); 
+    setSizeIsRelative( *sizeIsRelativeState );
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver(config, QString::fromLatin1("General"));
@@ -479,16 +489,21 @@ void KFontChooser::family_chosen_slot(const QString& family)
 void KFontChooser::size_chosen_slot(const QString& size){
 
   selectedSize=size.toInt();
-
+  sizeOfFont->setValue(selectedSize);
   selFont.setPointSize(selectedSize);
+  emit fontSelected(selFont);
+}
+
+void KFontChooser::size_value_slot(int val) {
+  selFont.setPointSize(val);
   emit fontSelected(selFont);
 }
 
 void KFontChooser::style_chosen_slot(const QString& style)
 {
-    QString currentStyle;    
+    QString currentStyle;
     if (style.isEmpty())
-       currentStyle = styleListBox->currentText(); 
+       currentStyle = styleListBox->currentText();
     else
        currentStyle = style;
 
@@ -510,7 +525,7 @@ void KFontChooser::style_chosen_slot(const QString& style)
                 sizeListBox->insertItem(QString::number(*it));
             }
         } else // there are times QT does not provide the list..
-            fillSizeList(); 
+            fillSizeList();
     }
     sizeListBox->blockSignals(true);
     sizeListBox->setSelected(sizeListBox->findItem(QString::number(selectedSize)), true);
@@ -581,7 +596,7 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     for (QStringList::Iterator it = lstSys.begin(); it != lstSys.end(); ++it)
     {
         if ((fontListCriteria & FixedWidthFonts) > 0 && !dbase.isFixedPitch(*it)) continue;
-        if ((fontListCriteria & (SmoothScalableFonts | ScalableFonts) == ScalableFonts) && 
+        if ((fontListCriteria & (SmoothScalableFonts | ScalableFonts) == ScalableFonts) &&
                 !dbase.isBitmapScalable(*it)) continue;
         if ((fontListCriteria & SmoothScalableFonts) > 0 && !dbase.isSmoothlyScalable(*it)) continue;
         lstFonts.append(*it);

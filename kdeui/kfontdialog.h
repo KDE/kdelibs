@@ -37,7 +37,7 @@ class QGroupBox;
 class QLabel;
 class QStringList;
 class KListBox;
-
+class KIntNumInput;
 /**
  * While KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
@@ -69,8 +69,8 @@ public:
 
   /**
    * Constructs a font picker widget.
-   * It normally comes up with all font families present on the system; the 
-   * getFont method below does allow some more fine-tuning of the selection of fonts 
+   * It normally comes up with all font families present on the system; the
+   * getFont method below does allow some more fine-tuning of the selection of fonts
    * that will be displayed in the dialog.
    * <p>Consider the following code snippet;<pre>
    *
@@ -208,14 +208,14 @@ public:
   static QString getXLFD( const QFont &theFont )
     { return theFont.rawName(); }
 
-  /** 
+  /**
    * The selection criteria for the font families shown in the dialog.
-   *  @li @p FixedWidthFont when included only fixed-width fonts are returned. 
+   *  @li @p FixedWidthFont when included only fixed-width fonts are returned.
    *        The fonts where the width of every character is equal.
-   *  @li @p ScalableFont when included only scalable fonts are returned; 
-   *        certain configurations allow bitmap fonts to remain unscaled and 
+   *  @li @p ScalableFont when included only scalable fonts are returned;
+   *        certain configurations allow bitmap fonts to remain unscaled and
    *        thus these fonts have limited number of sizes.
-   *  @li @p SmoothScalableFont when included only return smooth scalable fonts. 
+   *  @li @p SmoothScalableFont when included only return smooth scalable fonts.
    *        this will return only non-bitmap fonts which are scalable to any size requested.
    *        Setting this option to true will mean the "scalable" flag is irrelavant.
    */
@@ -248,7 +248,7 @@ private slots:
   void style_chosen_slot(const QString&);
   void displaySample(const QFont &font);
   void showXLFDArea(bool);
-
+  void size_value_slot(int);
 private:
   void fillFamilyListBox(bool onlyFixedFonts = false);
   void fillSizeList();
@@ -277,7 +277,7 @@ private:
   KListBox     *sizeListBox;
   QCheckBox    *sizeIsRelativeCheckBox;
   QComboBox    *charsetsCombo;
-
+  KIntNumInput *sizeOfFont;
   QFont        selFont;
 
   QString      selectedStyle;
