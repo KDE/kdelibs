@@ -50,7 +50,7 @@ public:
 	{
 	    return 90.0; // TODO: make modal?
 	}
-	
+
 	double toPixel(const QString &s, bool hmode)
 	{
 		if(s.isEmpty())
@@ -100,7 +100,7 @@ public:
 
 		return ret;
 	}
-	
+
 	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
 	{
 		QMemArray<ArtGradientStop> *stopArray = new QMemArray<ArtGradientStop>();
@@ -109,7 +109,7 @@ public:
 		for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())
 		{
 			QDomElement element = node.toElement();
-			
+
 			oldOffset = newOffset;
 			QString temp = element.attribute("offset");
 
@@ -120,7 +120,7 @@ public:
 			}
 			else
 				newOffset = temp.toFloat();
-			
+
 			// Spec  skip double offset specifications
 			if(oldOffset == newOffset)
 				continue;
@@ -130,19 +130,19 @@ public:
 
 			(*stopArray)[offsets].offset = newOffset;
 
-			QString parseOpacity;			
+			QString parseOpacity;
 			QString parseColor;
-			
+
 			if(element.hasAttribute("stop-opacity"))
 				parseOpacity = element.attribute("stop-opacity");
-			
+
 			if(element.hasAttribute("stop-color"))
 				parseColor = element.attribute("stop-color");
-			
+
 			if(parseOpacity.isEmpty() || parseColor.isEmpty())
 			{
 				QString style = element.attribute("style");
-					
+
 				QStringList substyles = QStringList::split(';', style);
 				for(QStringList::Iterator it = substyles.begin(); it != substyles.end(); ++it)
 				{
@@ -155,32 +155,32 @@ public:
 					if(command == "stop-color")
 					{
 						parseColor = params;
-						
+
 						if(!parseOpacity.isEmpty())
 							break;
 					}
 					else if(command == "stop-opacity")
 					{
 						parseOpacity = params;
-						
+
 						if(!parseColor.isEmpty())
 							break;
 					}
 				}
 			}
-	
+
 			// Parse color using KSVGIconPainter (which uses Qt)
 			// Supports all svg-needed color formats
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
 
 			// Convert in a libart suitable form
 			Q_UINT32 stopColor = m_engine->painter()->toArtColor(qStopColor);
-		
+
 			int opacity = m_engine->painter()->parseOpacity(parseOpacity);
 
 			Q_UINT32 rgba = (stopColor << 8) | opacity;
-			Q_UINT32 r, g, b, a;				
-				
+			Q_UINT32 r, g, b, a;
+
 			// Convert from separated to premultiplied alpha
 			a = rgba & 0xff;
 			r = (rgba >> 24) * a + 0x80;
@@ -189,7 +189,7 @@ public:
 			g = (g + (g >> 8)) >> 8;
 			b = ((rgba >> 8) & 0xff) * a + 0x80;
 			b = (b + (b >> 8)) >> 8;
-				
+
 			(*stopArray)[offsets].color[0] = ART_PIX_MAX_FROM_8(r);
 			(*stopArray)[offsets].color[1] = ART_PIX_MAX_FROM_8(g);
 			(*stopArray)[offsets].color[2] = ART_PIX_MAX_FROM_8(b);
@@ -209,7 +209,7 @@ public:
 		if(points.contains(",,") || points.contains(", ,"))
 			return QPointArray();
 
-		points.replace(QRegExp(","), " ");
+		points.replace(",", " ");
 		points.replace(QRegExp("\r"), "");
 		points.replace(QRegExp("\n"), "");
 
@@ -218,13 +218,13 @@ public:
 		QStringList pointList = QStringList::split(' ', points);
 
 		QPointArray array(pointList.count() / 2);
-		int i = 0;		
-		
+		int i = 0;
+
 		for(QStringList::Iterator it = pointList.begin(); it != pointList.end(); it++)
 		{
 			float x = (*(it++)).toFloat();
 			float y = (*(it)).toFloat();
-			
+
 			array.setPoint(i, static_cast<int>(x), static_cast<int>(y));
 	        i++;
 		}
@@ -236,7 +236,7 @@ public:
 	{
 		// Combine new and old matrix
 		QWMatrix matrix = m_engine->painter()->parseTransform(transform);
-		
+
 		QWMatrix *current = m_engine->painter()->worldMatrix();
 		*current *= matrix;
 	}
@@ -280,7 +280,7 @@ public:
 				else
 					parsePA(name, value);
 			}
-		}	
+		}
 
 		// Apply local attributes
 		QDomNamedNodeMap attr = node.attributes();
@@ -307,7 +307,7 @@ public:
 			int offsets = -1;
 			gradient->stops = parseGradientStops(element, offsets);
 			gradient->n_stops = offsets + 1;
-			
+
 			QString spread = element.attribute("spreadMethod");
 			if(spread == "repeat")
 				gradient->spread = ART_GRADIENT_REPEAT;
@@ -315,9 +315,9 @@ public:
 				gradient->spread = ART_GRADIENT_REFLECT;
 			else
 				gradient->spread = ART_GRADIENT_PAD;
-		
-			m_engine->painter()->addLinearGradient(element.attribute("id"), gradient);	
-			m_engine->painter()->addLinearGradientElement(gradient, element);	
+
+			m_engine->painter()->addLinearGradient(element.attribute("id"), gradient);
+			m_engine->painter()->addLinearGradientElement(gradient, element);
 			return;
 		}
 		else if(element.tagName() == "radialGradient")
@@ -327,12 +327,12 @@ public:
 			int offsets = -1;
 			gradient->stops = parseGradientStops(element, offsets);
 			gradient->n_stops = offsets + 1;
-				
-			m_engine->painter()->addRadialGradient(element.attribute("id"), gradient);	
-			m_engine->painter()->addRadialGradientElement(gradient, element);	
+
+			m_engine->painter()->addRadialGradient(element.attribute("id"), gradient);
+			m_engine->painter()->addRadialGradientElement(gradient, element);
 			return;
 		}
-		
+
 		if(!paint)
 			return;
 
@@ -348,10 +348,10 @@ public:
 			double ry = 0.0;
 
 			if(element.hasAttribute("rx"))
-				rx = toPixel(element.attribute("rx"), true);		
+				rx = toPixel(element.attribute("rx"), true);
 
 			if(element.hasAttribute("ry"))
-				ry = toPixel(element.attribute("ry"), false);		
+				ry = toPixel(element.attribute("ry"), false);
 
 			m_engine->painter()->drawRectangle(x, y, w, h, rx, ry);
 		}
@@ -366,7 +366,7 @@ public:
 
 				// Parse common attributes, style / transform
 				parseCommonAttributes(iterate);
-				
+
 				handleTags(iterate.toElement(), (element.tagName() == "defs") ? false : true);
 				iterate = iterate.nextSibling();
 			}
@@ -396,7 +396,7 @@ public:
 
 			double rx = toPixel(element.attribute("rx"), true);
 			double ry = toPixel(element.attribute("ry"), false);
-				
+
 			m_engine->painter()->drawEllipse(cx, cy, rx, ry);
 		}
 		else if(element.tagName() == "polyline")
@@ -429,7 +429,7 @@ public:
 			double h = toPixel(element.attribute("height"), false);
 
 			QString href = element.attribute("xlink:href");
-			
+
 			if(href.startsWith("data:"))
 			{
 				// Get input
@@ -453,7 +453,7 @@ public:
 			}
 		}
 	}
-	
+
 	void parseStyle(const QString &style)
 	{
 		QStringList substyles = QStringList::split(';', style);
@@ -464,7 +464,7 @@ public:
 			QString params = substyle[1];
 			command = command.stripWhiteSpace();
 			params = params.stripWhiteSpace();
-			
+
 			parsePA(command, params);
 		}
 	}
@@ -506,7 +506,7 @@ public:
 
 private:
 	friend class KSVGIconEngine;
-	
+
 	KSVGIconEngine *m_engine;
 	QWMatrix m_initialMatrix;
 };
@@ -560,22 +560,22 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 
 		QString data;
 		bool done = false;
-		
+
 		char *buffer = new char[1024];
 
 		while(!done)
 		{
 			memset(buffer, 0, 1024);
-			
+
 			int ret = gzread(svgz, buffer, 1024);
 			if(ret == 0)
 				done = true;
 			else if(ret == -1)
 				return false;
-			
+
 			data += QString::fromUtf8(buffer);
 		}
-		
+
 		gzclose(svgz);
 
 		svgDocument.setContent(data);
@@ -640,11 +640,11 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 
 	QWMatrix initialMatrix = *d->painter->worldMatrix();
 	d->helper->m_initialMatrix = initialMatrix;
-	
+
 	// Apply transform
 	if(rootElement.hasAttribute("transform"))
 		d->helper->parseTransform(rootElement.attribute("transform"));
-	
+
 	// Go through all elements
 	QDomNode svgNode = rootElement.firstChild();
 	while(!svgNode.isNull())

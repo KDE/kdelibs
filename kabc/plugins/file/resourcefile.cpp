@@ -164,7 +164,7 @@ bool ResourceFile::save( Ticket *ticket )
 
   if ( !ok )
     addressBook()->error( i18n( "Unable to save file '%1'." ).arg( mFileName ) );
-  
+
   delete ticket;
   unlock( mFileName );
 
@@ -176,7 +176,7 @@ bool ResourceFile::lock( const QString &fileName )
   kdDebug(5700) << "ResourceFile::lock()" << endl;
 
   QString fn = fileName;
-  fn.replace( QRegExp("/"), "_" );
+  fn.replace( "/", "_" );
 
   QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
   kdDebug(5700) << "-- lock name: " << lockName << endl;
@@ -210,7 +210,7 @@ bool ResourceFile::lock( const QString &fileName )
 void ResourceFile::unlock( const QString &fileName )
 {
   QString fn = fileName;
-  fn.replace( QRegExp( "/" ), "_" );
+  fn.replace( "/" , "_" );
 
   QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
   QFile::remove( lockName );
@@ -238,7 +238,7 @@ void ResourceFile::setFormat( const QString &format )
 {
   mFormatName = format;
   delete mFormat;
-  
+
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( mFormatName );
 }

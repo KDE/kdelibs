@@ -368,7 +368,7 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 	check(true);
 
 	QString		str, cmd = d->m_command;
-	QRegExp re( "%value" ), quotedRe( "'%value'" );
+	QString re( "%value" ), quotedRe( "'%value'" );
 
 	if (d->m_driver)
 	{
@@ -383,7 +383,7 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 			{
 				QString	format = dopt->get("format");
 				QString value = dopt->valueText();
-				if ( format.find( "'%value'" ) != -1 )
+				if ( format.find( quotedRe ) != -1 )
 				{
 					if ( ( value.right( 1 ) == "'" && value.left( 1 ) == "'" )  ||
 					     ( value.right( 1 ) == "\"" && value.left( 1 ) == "\"" ) )
@@ -398,11 +398,11 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 				str.append(format).append(" ");
 			}
 		}
-		cmd.replace(QRegExp("%filterargs"), str);
+		cmd.replace("%filterargs", str);
 	}
 
-	cmd.replace(QRegExp("%filterinput"), d->m_io[0].m_format[(pipein?1:0)]);
-	cmd.replace(QRegExp("%filteroutput"), d->m_io[1].m_format[(pipeout?1:0)]);
+	cmd.replace("%filterinput", d->m_io[0].m_format[(pipein?1:0)]);
+	cmd.replace("%filteroutput", d->m_io[1].m_format[(pipeout?1:0)]);
 
 	return cmd;
 }

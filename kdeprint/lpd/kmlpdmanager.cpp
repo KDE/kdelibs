@@ -148,7 +148,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	{
 		// remote lpd queue
 		ent->m_args["rm"] = printer->device().host();
-		ent->m_args["rp"] = printer->device().path().replace(QRegExp("/"),QString::fromLatin1(""));
+		ent->m_args["rp"] = printer->device().path().replace("/",QString::fromLatin1(""));
 		ent->m_args["lpd_bounce"] = "true";
 		ent->m_comment = QString::fromLatin1("##PRINTTOOL3## REMOTE");
 	}
@@ -477,8 +477,8 @@ QMap<QString,QString> KMLpdManager::loadPrinttoolCfgFile(const QString& filename
 			{
 				name = line.left(p);
 				val = line.right(line.length()-p-1);
-				val.replace(QRegExp("\""),"");
-				val.replace(QRegExp("'"),"");
+				val.replace("\"","");
+				val.replace("'","");
 				if (!name.isEmpty() && !val.isEmpty())
 					map[name] = val;
 			}
@@ -602,7 +602,7 @@ bool KMLpdManager::createPrinttoolEntry(KMPrinter *printer, PrintcapEntry *entry
 			else if (prot == "ncp")
 			{
 				t << "server=" << dev.host() << endl;
-				t << "queue=" << dev.path().replace(QRegExp("/"),QString::fromLatin1("")) << endl;
+				t << "queue=" << dev.path().replace("/",QString::fromLatin1("")) << endl;
 				t << "user=" << dev.user() << endl;
 				t << "password=" << dev.pass() << endl;
 				entry->m_args["if"] = driverDirectory()+QString::fromLatin1("/ncpprint");

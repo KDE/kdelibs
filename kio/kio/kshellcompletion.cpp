@@ -41,14 +41,14 @@ KShellCompletion::KShellCompletion() : KURLCompletion()
 /*
  * makeCompletion()
  *
- * Entry point for file name completion 
+ * Entry point for file name completion
  */
 QString KShellCompletion::makeCompletion(const QString &text)
 {
-	// Split text at the last unquoted space 
+	// Split text at the last unquoted space
 	//
 	splitText(text, m_text_start, m_text_compl);
-	
+
 	// Remove quotes from the text to be completed
 	//
 	QString tmp = unquote(m_text_compl);
@@ -57,14 +57,14 @@ QString KShellCompletion::makeCompletion(const QString &text)
 	// Do exe-completion if there was no unquoted space
 	//
 	bool is_exe_completion = true;
-	
+
 	for ( uint i = 0; i < m_text_start.length(); i++ ) {
 		if ( m_text_start[i] != m_word_break_char ) {
 			is_exe_completion = false;
 			break;
 		}
 	}
-	
+
 	Mode mode = (is_exe_completion ? ExeCompletion : FileCompletion );
 
 	setMode(mode);
@@ -80,7 +80,7 @@ QString KShellCompletion::makeCompletion(const QString &text)
  * Called by KCompletion before emitting match() and matches()
  *
  * Add add the part of the text that was not completed
- * Add quotes when needed 
+ * Add quotes when needed
  */
 void KShellCompletion::postProcessMatch( QString *match ) const
 {
@@ -91,12 +91,12 @@ void KShellCompletion::postProcessMatch( QString *match ) const
 
 	if ( match->isNull() )
 		return;
-		
+
 	if ( match->right(1) == QChar('/') )
 		quoteText( match, false, true ); // don't quote the trailing '/'
 	else
 		quoteText( match, false, false ); // quote the whole text
-	
+
 	match->prepend( m_text_start );
 
 	//kDebugInfo("KShellCompletion::postProcessMatch() ut: '%s'",
@@ -142,12 +142,12 @@ void KShellCompletion::postProcessMatches( KCompletionMatches *matches ) const
 /*
  * splitText
  *
- * Split text at the last unquoted space 
+ * Split text at the last unquoted space
  *
  * text_start = [out] text at the left, including the space
  * text_compl = [out] text at the right
  */
-void KShellCompletion::splitText(const QString &text, QString &text_start, 
+void KShellCompletion::splitText(const QString &text, QString &text_start,
 		QString &text_compl) const
 {
 	bool in_quote = false;
@@ -155,11 +155,11 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 	QChar p_last_quote_char;
 	int last_unquoted_space = -1;
 	int end_space_len = 0;
-	
+
 	for (uint pos = 0; pos < text.length(); pos++) {
-		
+
 		end_space_len = 0;
-		
+
 		if ( escaped ) {
 			escaped = false;
 		}
@@ -180,14 +180,14 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 		else if ( !in_quote && text[pos] == m_word_break_char ) {
 
 			end_space_len = 1;
-			
+
 			while ( pos+1 < text.length() && text[pos+1] == m_word_break_char ) {
 				end_space_len++;
 				pos++;
 			}
 
-			if ( pos+1 == text.length() ) 
-				break; 
+			if ( pos+1 == text.length() )
+				break;
 
 			last_unquoted_space = pos;
 		}
@@ -196,9 +196,9 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 	text_start = text.left( last_unquoted_space + 1 );
 
 	// the last part without trailing blanks
-	text_compl = text.mid( last_unquoted_space + 1 ); 
+	text_compl = text.mid( last_unquoted_space + 1 );
 
-//	text_compl = text.mid( last_unquoted_space + 1, 
+//	text_compl = text.mid( last_unquoted_space + 1,
 //						   text.length() - end_space_len - (last_unquoted_space + 1) );
 
 	//kDebugInfo("split right = '%s'", text_compl.latin1());
@@ -239,11 +239,11 @@ bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last) cons
 	if ( force || (pos >= 0) ) {
 
 		// Escape \ in the string
-		text->replace( QRegExp( m_escape_char ),
+		text->replace( m_escape_char,
 		               QString( m_escape_char ) + m_escape_char );
 
 		// Escape " in the string
-		text->replace( QRegExp( m_quote_char1 ),
+		text->replace( m_quote_char1,
 		               QString( m_escape_char ) + m_quote_char1 );
 
 		// " at the beginning
@@ -260,7 +260,7 @@ bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last) cons
 
 	return false;
 }
- 
+
 /*
  * unquote
  *

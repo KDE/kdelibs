@@ -267,7 +267,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 
 	if (printfiles.count() > 0)
 	{
-		command.replace(QRegExp("%in"),filestr);
+		command.replace("%in",filestr);
 		int pid = dcopPrint(command,files,flag);
 		if (pid > 0)
 		{
@@ -370,7 +370,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	}
 	kdDebug(500) << "kdeprint: filter command: " << filtercmd << endl;
 
-	QRegExp	rin("%in"), rout("%out"), rpsl("%psl"), rpsu("%psu");
+	QString	rin("%in"), rout("%out"), rpsl("%psl"), rpsu("%psu");
 	QString	ps = pageSizeToPageName( printer->option( "kde-printsize" ).isEmpty() ? printer->pageSize() : ( KPrinter::PageSize )printer->option( "kde-printsize" ).toInt() );
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
@@ -544,9 +544,9 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 	s = KMFactory::self()->specialManager()->setupCommand(s, p->options());
 
 	QString	ps = pageSizeToPageName( p->option( "kde-printsize" ).isEmpty() ? p->pageSize() : ( KPrinter::PageSize )p->option( "kde-printsize" ).toInt() );
-	s.replace(QRegExp("%psl"), ps.lower());
-	s.replace(QRegExp("%psu"), ps);
-	s.replace(QRegExp("%out"), "$out{" + p->outputFileName() + "}"); // Replace as last
+	s.replace("%psl", ps.lower());
+	s.replace("%psu", ps);
+	s.replace("%out", "$out{" + p->outputFileName() + "}"); // Replace as last
 	cmd = s;
 	return true;
 }

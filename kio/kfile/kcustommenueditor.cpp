@@ -3,7 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; version 2 
+    License as published by the Free Software Foundation; version 2
     of the License.
 
     This library is distributed in the hope that it will be useful,
@@ -57,7 +57,7 @@ public:
 
       // item names may contain ampersands. To avoid them being converted
       // to accelators, replace them with two ampersands.
-      serviceName.replace(QRegExp("&"), "&&");
+      serviceName.replace("&", "&&");
 
       QPixmap normal = KGlobal::instance()->iconLoader()->loadIcon(s->icon(), KIcon::Small,
                               0, KIcon::DefaultState, 0L, true);
@@ -92,7 +92,7 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
    buttonBox->layout();
 }
 
-void 
+void
 KCustomMenuEditor::load(KConfigBase *cfg)
 {
    cfg->setGroup(QString::null);
@@ -120,7 +120,7 @@ KCustomMenuEditor::load(KConfigBase *cfg)
    }
 }
 
-void 
+void
 KCustomMenuEditor::save(KConfigBase *cfg)
 {
    // First clear the whole config file.
@@ -150,9 +150,9 @@ void
 KCustomMenuEditor::slotNewItem()
 {
    QListViewItem *item = m_listView->currentItem();
-   
+
    KOpenWithDlg dlg(this);
-   
+
    if (dlg.exec())
    {
       KService::Ptr s = dlg.service();
@@ -170,7 +170,7 @@ KCustomMenuEditor::slotRemoveItem()
    QListViewItem *item = m_listView->currentItem();
    if (!item)
       return;
-      
+
    delete item;
 }
 
@@ -180,7 +180,7 @@ KCustomMenuEditor::slotMoveUp()
    QListViewItem *item = m_listView->currentItem();
    if (!item)
       return;
-      
+
    QListViewItem *searchItem = m_listView->firstChild();
    while(searchItem)
    {
@@ -191,7 +191,7 @@ KCustomMenuEditor::slotMoveUp()
          break;
       }
       searchItem = next;
-   }      
+   }
 }
 
 void
@@ -204,7 +204,7 @@ KCustomMenuEditor::slotMoveDown()
    QListViewItem *after = item->nextSibling();
    if (!after)
       return;
-      
+
    item->moveItem( after );
 }
 

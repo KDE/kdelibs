@@ -69,7 +69,7 @@ KAr::~KAr()
 bool KAr::openArchive( int mode )
 {
     // Open archive
-    
+
     //kdDebug(7042) << "openarchive reached." << endl;
 
     if ( mode == IO_WriteOnly )
@@ -81,7 +81,7 @@ bool KAr::openArchive( int mode )
     }
 
     QIODevice* dev = device();
-    
+
     char magic[8];
     dev->readBlock (magic, 8);
     if (qstrncmp(magic, "!<arch>", 7) != 0) {
@@ -144,13 +144,13 @@ bool KAr::openArchive( int mode )
         if (skip_entry) continue;
 
         name = name.stripWhiteSpace(); // Process filename
-        name.replace( QRegExp("/"), "" );
+        name.replace( "/", "" );
         kdDebug(7042) << "Filename: " << name << " Size: " << size << endl;
 
         KArchiveEntry* entry;
         entry = new KArchiveFile(this, name, mode, date, /*uid*/ 0, /*gid*/ 0, 0, dev->at(), size);
-        rootDir()->addEntry(entry); // Ar files don't support directorys, so everything in root    
-        
+        rootDir()->addEntry(entry); // Ar files don't support directorys, so everything in root
+
         dev->at( dev->at() + size ); // Skip contents
     }
     if (ar_longnames) delete[] ar_longnames;

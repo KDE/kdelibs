@@ -183,7 +183,7 @@ bool ResourceDir::lock( const QString &path )
   kdDebug(5700) << "ResourceDir::lock()" << endl;
 
   QString p = path;
-  p.replace( QRegExp("/"), "_" );
+  p.replace( "/", "_" );
 
   QString lockName = locateLocal( "data", "kabc/lock/" + p + ".lock" );
   kdDebug(5700) << "-- lock name: " << lockName << endl;
@@ -217,7 +217,7 @@ bool ResourceDir::lock( const QString &path )
 void ResourceDir::unlock( const QString &path )
 {
   QString p = path;
-  p.replace( QRegExp( "/" ), "_" );
+  p.replace( "/" , "_" );
 
   QString lockName = locate( "data", "kabc/lock/" + p + ".lock" );
   ::unlink( QFile::encodeName( lockName ) );

@@ -54,12 +54,12 @@ so that one can do (R*T+GreyAdd, G*T+GreyAdd, B*T+GreyAdd, SrcAlpha) as pixel va
 
 int evalSuffix(QString suffix)
 {
-	if (suffix == "-tl") 
+	if (suffix == "-tl")
 		return 0;
 
 	if (suffix == "-tc")
 		return 1;
-		
+
 	if (suffix == "-tr")
 		return 2;
 
@@ -68,7 +68,7 @@ int evalSuffix(QString suffix)
 
 	if (suffix == "-cc")
 		return 4;
-		
+
 	if (suffix == "-cr")
 		return 5;
 
@@ -77,37 +77,37 @@ int evalSuffix(QString suffix)
 
 	if (suffix == "-bc")
 		return 7;
-		
+
 	if (suffix == "-br")
 		return 8;
-		
+
 	if (suffix == "-separator")
 		return KeramikTileSeparator;
-		
+
 	if (suffix == "-slider1")
 		return KeramikSlider1;
-		
+
 	if (suffix == "-slider2")
 		return KeramikSlider2;
-		
+
 	if (suffix == "-slider3")
 		return KeramikSlider3;
-		
+
 	if (suffix == "-slider4")
 		return KeramikSlider4;
-	
+
 	if (suffix == "-groove1")
 		return KeramikGroove1;
-		
+
 	if (suffix == "-groove2")
 		return KeramikGroove2;
 
 	if (suffix == "-1")
 		return 1;
-		
+
 	if (suffix == "-2")
 		return 2;
-		
+
 	if (suffix == "-3")
 		return 3;
 
@@ -124,7 +124,7 @@ int main(int argc, char** argv)
 
 	cout<<"#include <qintdict.h>\n\n";
 	cout<<"#include \"keramikimage.h\"\n\n";
-	
+
 	QMap<QString, int> assignID;
 	int nextID = 0;
 
@@ -136,15 +136,15 @@ int main(int argc, char** argv)
 
 		QFileInfo fi(argv[c]);
 		QString s = fi.baseName();
-		
+
 		KeramikEmbedImage image;
-		
+
 		int pos;
-		
+
 		QString id = s;
-		
+
 		int readJustID = 0;
-		
+
 
 		if ((pos = s.findRev("-")) != -1)
 		{
@@ -155,29 +155,29 @@ int main(int argc, char** argv)
 						readJustID = suffix;
 				}
 		}
-		
+
 		if (!assignID.contains(id))
 		{
 			assignID[id] = nextID;
 			nextID += 256;
 		}
-		
-		s.replace(QRegExp("-"),"_");
-		
-								
+
+		s.replace("-","_");
+
+
 		if (s.contains("button"))
 			KImageEffect::contrastHSV(input);
-			
+
 		int fullID = assignID[id] + readJustID;//Subwidget..
-		
+
 		bool highlights = true;
 		bool shadows  = true;
-		
+
 		float gamma    = 1.0;
 		int brightAdj = 0;
 
 
-			
+
 		if (s.contains("toolbar") || s.contains("tab-top-active") || s.contains("menubar") )
 		{
 //			highlights = false;
@@ -185,7 +185,7 @@ int main(int argc, char** argv)
 			//brightAdj = 10;
 			shadows = false;
 		}
-		
+
 		if (s.contains("scrollbar") && s.contains("groove"))
 		{
 			//highlights = false;
@@ -193,14 +193,14 @@ int main(int argc, char** argv)
 			shadows = false;
 		}
 			//brightAdj = -10;
-		
+
 		if (s.contains("scrollbar") && s.contains("slider"))
 		{
 			//highlights = false;
 			gamma =1/0.7f;
 			//shadows = false;
 		}
-		
+
 
 		if (s.contains("menuitem"))
 		{
@@ -208,23 +208,23 @@ int main(int argc, char** argv)
 			gamma =1/0.6f;
 			//shadows = false;
 		}
-		
+
 		image.width   = input.width();
 		image.height = input.height();
 		image.id         = fullID;
 		image.data     = reinterpret_cast<unsigned char*>(strdup(s.latin1()));
-		
+
 
 		bool reallySolid = true;
-		
+
 		int pixCount = 0;
 		int pixSolid = 0;
 
 		cout<<"static const unsigned char "<<s.latin1()<<"[]={\n";
-		
+
 		Q_UINT32* read  = reinterpret_cast< Q_UINT32* >(input.bits() );
 		int size = input.width()*input.height();
-		
+
 		for (int pos=0; pos<size; pos++)
 		{
 			QRgb basePix = (QRgb)*read;
@@ -233,13 +233,13 @@ int main(int argc, char** argv)
 				reallySolid = false;
 			else
 				pixSolid++;
-				
+
 			pixCount++;
 			read++;
 		}
-		
+
 		image.haveAlpha = !reallySolid;
-		
+
 		images.push_back(image);
 
 		read  = reinterpret_cast< Q_UINT32* >(input.bits() );
@@ -251,12 +251,12 @@ int main(int argc, char** argv)
 			QColor clr(basePix);
 			int h,s,v;
 			clr.hsv(&h,&s,&v);
-			
+
 			v=qGray(basePix);
 
 			int targetColorAlpha = 0 , greyAdd = 0;
 			//int srcAlpha = qAlpha(basePix);
-			
+
 			if (s>0 || v > 128)
 			{ //Non-shadow
 				float fv = v/255.0;
@@ -304,16 +304,16 @@ int main(int argc, char** argv)
 
 			read++;
 		}
-		
+
 		cerr<<s.latin1()<<":"<<pixSolid<<"/"<<pixCount<<"("<<reallySolid<<")\n";
-		
+
 		cout<<!reallySolid<<"\n";
 
 		cout<<"};\n\n";
 	}
-	
+
 	cout<<"static const KeramikEmbedImage  image_db[] = {\n";
-	
+
 	for (unsigned int c=0; c<images.size(); c++)
 	{
 		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<(char *)images[c].data<<"},";
@@ -321,7 +321,7 @@ int main(int argc, char** argv)
 	}
 	cout<<"\t{0, 0, 0, 0, 0}\n";
 	cout<<"};\n\n";
-	
+
 	cout<<"class KeramikImageDb\n";
 	cout<<"{\n";
 	cout<<"public:\n";
@@ -334,7 +334,7 @@ int main(int argc, char** argv)
 	cout<<"\t{\n";
 	cout<<"\t\tdelete instance;\n";
 	cout<<"\t\tinstance=0;\n";
-	cout<<"\t}\n\n";	
+	cout<<"\t}\n\n";
 	cout<<"\tKeramikEmbedImage* getImage(int id)\n";
 	cout<<"\t{\n";
 	cout<<"\t\treturn images[id];\n";
@@ -349,38 +349,38 @@ int main(int argc, char** argv)
 	cout<<"\tQIntDict<KeramikEmbedImage> images;\n";
 	cout<<"};\n\n";
 	cout<<"KeramikImageDb* KeramikImageDb::instance = 0;\n\n";
-	
+
 	cout<<"KeramikEmbedImage* KeramikGetDbImage(int id)\n";
 	cout<<"{\n";
 	cout<<"\treturn KeramikImageDb::getInstance()->getImage(id);\n";
 	cout<<"}\n\n";
-	
+
 	cout<<"void KeramikDbCleanup()\n";
 	cout<<"{\n";
 	cout<<"\t\tKeramikImageDb::release();\n";
 	cout<<"}\n";
-	
-	
-	
-	
+
+
+
+
 	QFile file("keramikrc.h");
 	file.open(IO_WriteOnly);
 	QTextStream ts( &file);
 	ts<<"#ifndef KERAMIK_RC_H\n";
 	ts<<"#define KERAMIK_RC_H\n";
-	
+
 	ts<<"enum KeramikWidget {\n";
 	for (QMap<QString, int>::iterator i = assignID.begin(); i != assignID.end(); i++)
 	{
 		QString name = "keramik_"+i.key();
-		name.replace(QRegExp("-"),"_");
+		name.replace("-","_");
 		ts<<"\t"<<name<<" = "<<i.data()<<",\n";
 	}
 	ts<<"\tkeramik_last\n";
 	ts<<"};\n";
-	
+
 	ts<<"#endif\n";
-	
+
 	return 0;
 }
 
