@@ -132,8 +132,6 @@ static int cssyylex( YYSTYPE *yylval ) {
 %no-lines
 %verbose
 
-%expect 16
-
 %left UNIMPORTANT_TOK
 
 %token S SGML_CD
@@ -148,11 +146,12 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %right <string> IDENT
 
-%token <string> HASH
-%token ':'
-%token '.'
-%token '['
+%nonassoc <string> HASH
+%nonassoc ':'
+%nonassoc '.'
+%nonassoc '['
 %nonassoc '*'
+%nonassoc error
 %left '|'
 
 %left IMPORT_SYM
@@ -296,7 +295,7 @@ khtml_value:
 ;
 
 maybe_space:
-    /* empty */
+    /* empty */ %prec UNIMPORTANT_TOK
   | maybe_space S
   ;
 
@@ -514,7 +513,7 @@ ruleset:
   ;
 
 selector_list:
-    selector {
+    selector %prec UNIMPORTANT_TOK {
 	if ( $1 ) {
 	    $$ = new QPtrList<CSSSelector>;
             $$->setAutoDelete( true );
@@ -527,7 +526,7 @@ selector_list:
 	    $$ = 0;
 	}
     }
-    | selector_list ',' maybe_space selector {
+    | selector_list ',' maybe_space selector %prec UNIMPORTANT_TOK {
 	if ( $1 && $4 ) {
 	    $$ = $1;
 	    $$->append( $4 );
