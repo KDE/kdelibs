@@ -59,6 +59,8 @@ struct URLArgs
   void setContentType( const QString & contentType ); // Header for POST
   QString contentType() const; // Header for POST
 
+  QMap<QString, QString> &metaData();
+
   QString frameName;
 
   bool trustedSource;

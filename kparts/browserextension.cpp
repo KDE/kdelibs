@@ -53,6 +53,7 @@ namespace KParts
 struct URLArgsPrivate
 {
     QString contentType; // for POST
+    QMap<QString, QString> metaData;
 };
 
 };
@@ -118,6 +119,13 @@ void URLArgs::setContentType( const QString & contentType )
 QString URLArgs::contentType() const
 {
   return d ? d->contentType : QString::null;
+}
+
+QMap<QString, QString> &URLArgs::metaData()
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  return d->metaData;
 }
 
 namespace KParts
@@ -298,6 +306,7 @@ void BrowserExtension::slotOpenURLRequest( const KURL &url, const KParts::URLArg
 
 void BrowserExtension::slotEmitOpenURLRequestDelayed()
 {
+    if (d->m_delayedURL.isEmpty()) return;
     KURL u = d->m_delayedURL;
     KParts::URLArgs args = d->m_delayedArgs;
     d->m_delayedURL = KURL();
