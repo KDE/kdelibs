@@ -491,6 +491,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		      (( tquote == DoubleQuote )&&( src[0] == QChar('\"'))) )
 	    {
 		tquote = NoQuote;
+                discard = NoneDiscard;
 		pending = NonePending; // remove space at the end of value
 	    }
 	    else
