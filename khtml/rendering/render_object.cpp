@@ -336,8 +336,13 @@ RenderLayer* RenderObject::enclosingLayer() const
 
 int RenderObject::offsetLeft() const
 {
+    if ( isPositioned() )
+        return xPos();
+
+    if ( isBody() )
+        return 0;
+
     int x = xPos();
-    if (!isPositioned()) {
         if (isRelPositioned()) {
             int y = 0;
             static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
@@ -348,14 +353,26 @@ int RenderObject::offsetLeft() const
              curr && curr != offsetPar;
              curr = curr->parent() )
             x += curr->xPos();
-    }
+
+    if ( offsetPar && offsetPar->isBody() )
+        x += offsetPar->xPos();
+
+    // hacky
+    if ( isInline() && firstChild() && firstChild()->isText() )
+        x += static_cast<RenderText*>(firstChild() )->minXPos();
+
     return x;
 }
 
 int RenderObject::offsetTop() const
 {
+    if ( isPositioned() )
+        return yPos();
+
+    if ( isBody() )
+        return 0;
+
     int y = yPos();
-    if (!isPositioned()) {
         if (isRelPositioned()) {
             int x = 0;
             static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
@@ -365,7 +382,14 @@ int RenderObject::offsetTop() const
              curr && curr != offsetPar;
              curr = curr->parent() )
             y += curr->yPos();
-    }
+
+    if ( offsetPar && offsetPar->isBody() )
+        y += offsetPar->yPos();
+
+    // hacky
+    if ( isInline() && firstChild() && firstChild()->isText() )
+        y += static_cast<RenderText*>(firstChild() )->yPos();
+
     return y;
 }
 
@@ -373,8 +397,7 @@ RenderObject* RenderObject::offsetParent() const
 {
     bool skipTables = isPositioned() || isRelPositioned();
     RenderObject* curr = parent();
-    while (curr && !curr->isPositioned() && !curr->isRelPositioned() &&
-           !curr->isBody()) {
+    while (curr && !curr->isPositioned() && !curr->isRelPositioned() && !curr->isBody()) {
         if (!skipTables && (curr->isTableCell() || curr->isTable()))
             break;
         curr = curr->parent();
