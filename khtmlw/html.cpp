@@ -4171,75 +4171,110 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
 void KHTMLWidget::slotScrollVert( int _val )
 {
+    int ofs = 0;
+    int diff = y_offset - _val;
+    
     if ( !isUpdatesEnabled() )
 	return;
 
     if ( clue == 0 )
 	return;
 
-    if ( _val == y_offset )
+    if ( diff == 0 )
 	return;
 
     bDrawBackground = true;
 
-    if ( abs( y_offset - _val ) < height() )
+    if (bIsSelected)
     {
-	if ( bIsSelected )	
-	{
-	    bitBlt( this, 2, 2 + ( y_offset - _val ), this, 2, 2, width() - 4,
-		height() - 4 );
-	}
-	else 
-	{
-	    bitBlt( this, 0, ( y_offset - _val ), this );
-	}
+        ofs = 2;
     }
 
-    if ( _val > y_offset)
+    y_offset = _val;
+
+    if (diff < 0)
     {
-	int diff = _val - y_offset + 2;
-	if ( diff > height() )
-	    diff = height();
-	y_offset = _val;
-	repaint( 0, height() - diff, width(), diff, false );
+    	diff = -diff;
+    	if (diff < height() - ofs - ofs)
+    	{
+	    bitBlt( this, ofs, ofs, 
+	            this, ofs, ofs + diff, 
+	            width()-ofs-ofs, height()-diff-ofs-ofs);    
+	}
+	else
+	{
+	   diff = height() - ofs - ofs;
+	}
+	repaint( ofs, height() - ofs - diff, 
+		 width()-ofs-ofs, diff, false);
     }
-    else
-    {
-	int diff = y_offset - _val + 2;
-	if ( diff > height() )
-	    diff = height();
-	y_offset = _val;
-	repaint( 0, 0, width(), diff, false );
+    else {
+	if (diff < height() - ofs - ofs)
+	{
+	    bitBlt( this, ofs, ofs + diff,
+	    	    this, ofs, ofs,
+	    	    width()-ofs-ofs, height()-diff-ofs-ofs);
+	}
+	else
+	{
+	    diff = height() - ofs - ofs;
+	}
+	repaint( ofs, ofs, width()-ofs-ofs, diff, false);
     }
 }
 
 void KHTMLWidget::slotScrollHorz( int _val )
 {
-	if ( !isUpdatesEnabled() )
-		return;
+    int ofs = 0;
+    int diff = x_offset - _val;
 
-	if ( clue == 0L )
-		return;
+    if ( !isUpdatesEnabled() )
+	return;
+
+    if ( clue == 0L )
+	return;
+
+    if ( diff == 0)
+	return;
     
-	if ( bIsSelected )
-	  bitBlt( this, 2 + x_offset - _val, 2, this, 2, 2, width() - 4, height() - 4 );
-	else
-	  bitBlt( this, x_offset - _val, 0, this );
+    bDrawBackground = true;
 
-	bDrawBackground = true;
+    if (bIsSelected)
+    {
+        ofs = 2;
+    }
 
-	if ( _val > x_offset)
-	{
-		int diff = _val - x_offset + 2;
-		x_offset = _val;
-		repaint( width() - diff, 0, diff, height(), false );
+    x_offset = _val;
+
+    if (diff < 0)
+    {
+    	diff = -diff;
+    	if (diff < width() - ofs - ofs)
+    	{
+	    bitBlt( this, ofs, ofs, 
+	            this, ofs + diff, ofs, 
+	            width()-diff-ofs-ofs, height()-ofs-ofs);    
 	}
 	else
 	{
-		int diff = x_offset - _val + 2;
-		x_offset = _val;
-		repaint( 0, 0, diff, height(), false );
+	   diff = width() - ofs - ofs;
 	}
+	repaint( width() - ofs - diff, ofs, 
+		 diff, height() - ofs - ofs, false);
+    }
+    else {
+	if (diff < width() - ofs - ofs)
+	{
+	    bitBlt( this, ofs + diff, ofs,
+	    	    this, ofs, ofs,
+	    	    width()-diff-ofs-ofs, height()-ofs-ofs);
+	}
+	else
+	{
+	    diff = width() - ofs - ofs;
+	}
+	repaint( ofs, ofs, diff, height()-ofs-ofs, false);
+    }
 }
 
 void KHTMLWidget::positionFormElements()
