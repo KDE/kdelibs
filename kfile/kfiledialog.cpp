@@ -141,7 +141,13 @@ void KFileBaseDialog::init()
 	     this, SLOT( bookmarksChanged() ) );
 
     QString bmFile = KApplication::localkdedir() + 
-	"/share/apps/kdeui/bookmarks.html";
+      "/share/apps/kdeui/";
+
+    QDir tmpdir( bmFile );
+    if ( !tmpdir.exists() )
+      tmpdir.mkdir(bmFile.data());
+
+    bmFile += "bookmarks.html";
 
     bookmarks->read(bmFile);
 
