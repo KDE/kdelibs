@@ -116,7 +116,7 @@ AC_MSG_CHECKING([for posix realtime scheduling support])
 save_LIBS="$LIBS"
 LIBPOSIX4=""
 ARTS_TRY_LINK_POSIX_REALTIME
-if text "x$arts_realtime_sched" = "xno"; then
+if test "x$arts_realtime_sched" = "xno"; then
    LIBS="$LIBS -lposix4"
    ARTS_TRY_LINK_POSIX_REALTIME
    if test "x$arts_realtime_sched" = "xyes"; then
