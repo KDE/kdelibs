@@ -2753,6 +2753,11 @@ bool HTTPProtocol::readHeader()
       ungets(buf, strlen(buf));
       break;
     }
+    
+    else if (strncasecmp(buf, "Content-location:", 17) == 0) {
+      setMetaData ("content-location",
+                   QString::fromLatin1(trimLead(buf+17)).stripWhiteSpace());
+    }   
 
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
