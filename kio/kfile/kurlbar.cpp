@@ -193,8 +193,8 @@ QSize KURLBarItem::sizeHint() const
         hmin = QListBoxPixmap::height( lb );
     }
     else {
-        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + 6;
-        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + 6;
+        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + 8;
+        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + 8;
     }
 
     if ( lb->isVertical() )
