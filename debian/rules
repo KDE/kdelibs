@@ -49,6 +49,7 @@ build-stamp:
 alsa-stamp:
 	dh_testdir
 	-$(MAKE) -C arts/ clean
+	-rm -f `find arts -name "*.mcoptype"`
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
@@ -71,6 +72,8 @@ clean: debian-clean
 	#  $(MAKE) -f admin/Makefile.common cvs-clean ;\
 	#fi
 	-$(MAKE) distclean
+	-rm -f `find arts -name "*.mcoptype"`
+	-rm -f kdoctools/kgzipfilter.cpp kdoctools/kbzip2filter.cpp
 
 binary-indep:	build-stamp alsa-stamp indep-stamp
 indep-stamp:
