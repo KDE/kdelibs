@@ -344,6 +344,10 @@ namespace KJS {
     bool contains(const UString &name);
   };
 
+#ifndef NDEBUG
+  void printInfo( const char *s, const KJSO &o );
+#endif
+
 }; // namespace
 
 

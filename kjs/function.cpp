@@ -125,7 +125,7 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 
   if (comp.complType() == Throw)
     return comp.value();
-  else if (comp.isValueCompletion())
+  else if (comp.complType() == ReturnValue)
     return comp.value();
   else
     return Undefined();
@@ -149,6 +149,14 @@ InternalFunctionImp::InternalFunctionImp(int l)
 InternalFunctionImp::InternalFunctionImp(const UString &n)
   : FunctionImp(n)
 {
+}
+
+String InternalFunctionImp::toString() const
+{
+  if (name().isNull())
+    return UString("(Internal function)");
+  else
+    return "function " + name() + "()";
 }
 
 Completion InternalFunctionImp::execute(const List &)

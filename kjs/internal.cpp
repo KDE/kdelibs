@@ -359,6 +359,7 @@ DeclaredFunctionImp::~DeclaredFunctionImp()
   delete scopes;
 }
 
+// step 2 of ECMA 13.2.1. rest in FunctionImp::executeCall()
 Completion DeclaredFunctionImp::execute(const List &)
 {
  /* TODO */
@@ -383,6 +384,7 @@ Completion DeclaredFunctionImp::execute(const List &)
   return result;
 }
 
+// ECMA 13.2.2
 Object DeclaredFunctionImp::construct(const List &args)
 {
   Object obj(ObjectClass);
@@ -613,7 +615,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     retVal = 0L;
     if (res.isA(CompletionType)) {
       Completion *com = static_cast<Completion*>(&res);
-      if (com->isValueCompletion())
+      if (com->complType() == ReturnValue)
 	retVal = com->value().imp();
     }
   }
@@ -768,3 +770,15 @@ LabelStack::~LabelStack()
     tos = prev;
   }
 }
+
+#ifndef NDEBUG
+#include <stdio.h>
+void KJS::printInfo( const char *s, const KJSO &o )
+{
+    fprintf(stderr, "%s: %s : %s (%p)\n",
+	    s,
+	    o.toString().value().ascii(),
+	    o.imp()->typeInfo()->name,
+	    o.imp());
+}
+#endif
