@@ -116,7 +116,6 @@ KEdit::insertText(QTextStream *stream)
    }
    setUndoEnabled(oldUndo);
 
-   insertAt( textLine, line, col);
    setCursorPosition(saveline, savecol);
    setAutoUpdate(true);
 
