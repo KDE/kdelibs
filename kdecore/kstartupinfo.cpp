@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 #include "kstartupinfo.h"
-
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>
@@ -37,7 +36,9 @@ DEALINGS IN THE SOFTWARE.
 #include <netwm.h>
 #include <kdebug.h>
 #include <kapp.h>
+#include <signal.h>
 #include <kwinmodule.h>
+#include <kxmessages.h>
 #ifndef KDE_USE_FINAL
 #include <X11/Xlibint.h> // cannot be included multiple times
 #endif
@@ -72,17 +73,19 @@ struct KStartupInfoPrivate
     public:
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
         KWinModule* wm_module;
+        KXMessages msgs;
+       KStartupInfoPrivate() : msgs( KDE_STARTUP_INFO ) {}
     };
     
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
-    : QObject( parent_P, name_P ), msgs( KDE_STARTUP_INFO ),
+    : QObject( parent_P, name_P ), 
         clean_on_cantdetect( clean_on_cantdetect_P )
     {
     d = new KStartupInfoPrivate;
     d->wm_module = new KWinModule( this );
     connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( window_added( WId )));
     connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( window_added( WId )));
-    connect( &msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
+    connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     QTimer* cleanup = new QTimer( this );
     connect( cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
     cleanup->start( 10000 ); // 10 secs

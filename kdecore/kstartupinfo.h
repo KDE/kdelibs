@@ -28,14 +28,9 @@ DEALINGS IN THE SOFTWARE.
 #define __KSTARTUPINFO_H
 
 #include <sys/types.h>
-#include <signal.h>
-
 #include <qobject.h>
-#include <kxmessages.h>
 #include <qcstring.h>
 #include <qstring.h>
-
-#undef Data   // crappy X11
 
 class KStartupInfoId;
 class KStartupInfoData;
@@ -91,7 +86,6 @@ class KStartupInfo
         static QString get_window_startup_id( WId w_P );
         static QString get_window_hostname( WId w_P );
         void clean_all_noncompliant();
-        KXMessages msgs;
         bool clean_on_cantdetect;
         KStartupInfoPrivate* d;
     };
