@@ -228,7 +228,7 @@ void HTMLElementImpl::setAvailableWidth(int w)
     printf("%s(Element)::setAvailableWidth(%d)\n", nodeName().string().ascii(), w);
 #endif
 
-    if (w != availableWidth)
+    if (w != -1 && w != availableWidth)
     	setLayouted(false);
 
     if(w != -1) availableWidth = w;
@@ -574,7 +574,7 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
-    if(!layouted()) return;
+    //if(!layouted()) return;
 
 #ifdef DEBUG_LAYOUT
     printf("print 2\n");

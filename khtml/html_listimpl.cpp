@@ -20,7 +20,7 @@
  *
  * $Id$
  */
-#define INDENT 30
+#define INDENT 20
 #define LISTSEP 5
 
 #include <qpainter.h>
@@ -196,7 +196,11 @@ void HTMLUListElementImpl::setAvailableWidth(int w)
     printf("%s(UList)::setAvailableWidth(%d)\n", nodeName().string().ascii(), w);
 #endif
 
-    if(w != -1) availableWidth = w;
+    if(w != -1) 
+    {
+	availableWidth = w;
+	setLayouted(false);
+    }
 
     int childWidth;
     if(availableWidth)
@@ -207,6 +211,13 @@ void HTMLUListElementImpl::setAvailableWidth(int w)
     NodeImpl *child = firstChild();
     while(child != 0) 
     {
+    	if (child->getMinWidth() > availableWidth)
+	{
+	    printf("ERROR: %d too narrow availableWidth=%d minWidth=%d\n",
+	    id(), availableWidth, child->getMinWidth());
+	    calcMinMaxWidth();
+	    setLayouted(false);
+	}
 	child->setAvailableWidth(childWidth);
 	child = child->nextSibling();
     }
@@ -423,7 +434,7 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
 	    break;
 	}
 	QFont font = p->font();
-	QFont f = font;
+	QFont f = *getFont();
 	f.setBold(true);
 	p->setFont(f);
 	p->drawText(_tx-5, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
