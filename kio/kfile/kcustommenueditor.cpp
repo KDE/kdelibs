@@ -78,11 +78,6 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
   : KDialogBase(parent, "custommenueditor", true, i18n("Menu Editor"), Ok|Cancel, Ok, true),
     m_listView(0)
 {
-}
-
-void KCustomMenuEditor::init()
-{  
-   if (m_listView) return;
    QHBox *page = makeHBoxMainWidget();
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));

@@ -39,8 +39,6 @@ public:
      */
     KCustomMenuEditor(QWidget *parent);
 
-    void init();
-
     /**
      * load the custom menu
      */
