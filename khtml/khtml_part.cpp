@@ -1078,6 +1078,8 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 	       this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
 	       d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
+      connect( child->m_extension, SIGNAL( openURLNotify() ),
+	       d->m_extension, SIGNAL( openURLNotify() ) );
     }
 
     connect( part, SIGNAL( setStatusBarText( const QString & ) ),
@@ -1211,7 +1213,11 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
   child->m_bCompleted = false;
 
   if ( d->m_bComplete )
+  {
+    if ( !parentPart() ) // "toplevel" html document? if yes, then notify the hosting browser about the document (url) changes
+      emit d->m_extension->openURLNotify();
     emit started( job );
+  }
 }
 
 void KHTMLPart::slotChildCompleted()
