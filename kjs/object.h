@@ -346,6 +346,8 @@ namespace KJS {
     Imp *proto;
     static const TypeInfo info;
     
+    // reserved for memory managment
+    Imp *prev, *next;
     // for future extensions
     class ImpInternal;
     ImpInternal *internal;
