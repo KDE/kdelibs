@@ -87,5 +87,5 @@ void KDirSize::slotResult( KIO::Job * job )
     kdDebug() << " KDirSize::slotResult( KIO::Job * job ) " << endl;
     if ( !m_bAsync )
         qApp->exit_loop();
-    Job::slotResult( job );
+    KIO::Job::slotResult( job );
 }
