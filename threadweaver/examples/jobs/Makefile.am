@@ -5,7 +5,7 @@
 # email: mirko@kde.org
 # www.hackerbuero.org
 
-INCLUDES= $(all_includes) -I../../weaver -I../../weaverextensions
+INCLUDES= -I../../weaver -I../../weaverextensions $(all_includes)
 
 bin_PROGRAMS = jobs
 

@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libweaverextensions.la
 
-INCLUDES= $(all_includes) -I../weaver
+INCLUDES= -I../weaver $(all_includes)
 
 include_HEADERS = weaverlogger.h
 
