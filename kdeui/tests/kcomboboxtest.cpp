@@ -3,8 +3,12 @@
 #include <qlabel.h>
 
 #include <kapp.h>
+#include <kdebug.h>
+#include <kdialog.h>
 #include <kcombobox.h>
 #include <klocale.h>
+#include <kiconloader.h>
+#include <ksimpleconfig.h>
 
 int main ( int argc, char **argv)
 {
@@ -14,7 +18,7 @@ int main ( int argc, char **argv)
     QWidget * w = new QWidget();
     // Insert the widget container (parent widget) into
     // a layout manager (VERTICAL).
-    QVBoxLayout *vbox = new QVBoxLayout( w );
+    QVBoxLayout *vbox = new QVBoxLayout( w, KDialog::marginHint(), KDialog::spacingHint() );
     // Resize the widget
     w->resize( 500, 100 );
 
@@ -33,6 +37,22 @@ int main ( int argc, char **argv)
     rwc->setEditText( "file:/home/adawit/" );
     // rwc->setCompletionMode( KGlobalSettings::CompletionAuto );
 
+    // Create a read-write combobox and reproduce konqueror's code
+    KComboBox *konqc = new KComboBox( true, w, "konqc" );
+    konqc->setMaxCount( 10 );
+      KSimpleConfig historyConfig( "konq_history" );
+      historyConfig.setGroup( "History" );
+      KCompletion * s_pCompletion = new KCompletion;
+      s_pCompletion->setOrder( KCompletion::Weighted );
+      s_pCompletion->setItems( historyConfig.readListEntry( "CompletionItems" ) );
+      s_pCompletion->setCompletionMode( KGlobalSettings::completionMode() );
+      konqc->setCompletionObject( s_pCompletion, false );
+    QLabel* lblkonq = new QLabel( konqc, "&Konqueror's ComboBox", w );
+    QPixmap pix = SmallIcon("www");
+    konqc->insertItem( pix, "http://www.kde.org" );
+    konqc->setCurrentItem( konqc->count()-1 );
+    kdDebug() << "setLocationBarURL setCurrentItem " << konqc->count()-1 << endl;
+
     // Create a read-only widget
     KComboBox *soc = new KComboBox( w, "socombobox" );
     QLabel* lblso = new QLabel( soc, "&Select-Only ComboBox", w, "socombolabel" );
@@ -49,6 +69,8 @@ int main ( int argc, char **argv)
     vbox->addWidget( rwc );
     vbox->addWidget( lblso );
     vbox->addWidget( soc );
+    vbox->addWidget( lblkonq );
+    vbox->addWidget( konqc );
     vbox->addWidget( push );
 
     a.setMainWidget(w);
