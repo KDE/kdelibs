@@ -326,32 +326,33 @@ class KAccel : public QAccel
  public:
 	// Source compatibility to KDE 2.x
 	/** 
-	 * @deprecated
+	 * @deprecated use insert
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 const char* psKey,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
 	/** 
-	 * @deprecated
+	 * @deprecated use insert
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 int key,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
 	/** 
-	 * @deprecated
+	 * @deprecated use insert
 	 */
 	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null );
 	/** 
-	 * @deprecated
+	 * @deprecated use insert
 	 */
 	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true );
 	/** 
-	 * @deprecated
+	 * @deprecated use insert( accel, pObjSlot, psMethodSlot );
+	 * 
 	 */
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insert( accel, pObjSlot, psMethodSlot ); }
 	/** 
-	 * @deprecated
+	 * @deprecated use remove
 	 */
 	bool removeItem( const QString& sAction );
 	/** 
@@ -372,7 +373,8 @@ class KAccel : public QAccel
 	static int stringToKey( const QString& );
 
 	/**
-	 * @deprecated.  Use shortcut().
+	 * @deprecated  Use shortcut().
+	 *
 	 * Retrieve the key code of the accelerator item with the action name
 	 * @p action, or zero if either the action name cannot be
 	 * found or the current key is set to no key.
@@ -380,7 +382,8 @@ class KAccel : public QAccel
 	int currentKey( const QString& action ) const;
 
 	/**
-	 * @deprecated.  Use actions().actionPtr().
+	 * @deprecated  Use actions().actionPtr().
+	 *
 	 * Return the name of the accelerator item with the keycode @p key,
 	 * or QString::null if the item cannot be found.
 	 */
