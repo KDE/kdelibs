@@ -1,3 +1,5 @@
+debian/local/freedesktop-desktop-entry-spec-apps        etc/menu-methods/
+debian/local/freedesktop-desktop-entry-spec-dirs        etc/menu-methods/
 debian/tmp/usr/bin/artsmessage
 debian/tmp/usr/bin/cupsdconf
 debian/tmp/usr/bin/cupsdoprint

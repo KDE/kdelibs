@@ -1,3 +1,10 @@
+kdelibs (4:3.2.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added kdelibs4 Depends xbase-clients. (Closes: #232348)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Thu, 04 Mar 2004 22:00:00 -0600
+
 kdelibs (4:3.2.0-0pre1v1) experimental; urgency=low
 
   * New upstream release.
