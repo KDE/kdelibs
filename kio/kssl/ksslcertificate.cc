@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2003 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -426,57 +426,55 @@ if (c) {
 		      << endl;
 	if (c->ex_flags & EXFLAG_KUSAGE)
 		kdDebug(7029) << "     --- Key Usage extensions found" << endl;
-        else
-		kdDebug(7029) << "     --- Key Usage extensions NOT found" << endl;
+        else kdDebug(7029) << "     --- Key Usage extensions NOT found" << endl;
+
 	if (c->ex_flags & EXFLAG_XKUSAGE)
 		kdDebug(7029) << "     --- Extended key usage extensions found" << endl;
-        else
-		kdDebug(7029) << "     --- Extended key usage extensions NOT found" << endl;
+        else kdDebug(7029) << "     --- Extended key usage extensions NOT found" << endl;
+
 	if (c->ex_flags & EXFLAG_NSCERT)
 		kdDebug(7029) << "     --- NS extensions found" << endl;
-        else
-		kdDebug(7029) << "     --- NS extensions NOT found" << endl;
+        else kdDebug(7029) << "     --- NS extensions NOT found" << endl;
 
         if (d->_extensions.certTypeSSLCA())
                 kdDebug(7029) << "NOTE: this is an SSL CA file." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an SSL CA file." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an SSL CA file." << endl;
+
         if (d->_extensions.certTypeEmailCA())
                 kdDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an EMAIL CA file." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an EMAIL CA file." << endl;
+
         if (d->_extensions.certTypeCodeCA())
                 kdDebug(7029) << "NOTE: this is a CODE CA file." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT a CODE CA file." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT a CODE CA file." << endl;
+
         if (d->_extensions.certTypeSSLClient())
                 kdDebug(7029) << "NOTE: this is an SSL client." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an SSL client." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an SSL client." << endl;
+
         if (d->_extensions.certTypeSSLServer())
                 kdDebug(7029) << "NOTE: this is an SSL server." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an SSL server." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an SSL server." << endl;
+
         if (d->_extensions.certTypeNSSSLServer())
                 kdDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server." << endl;
+
         if (d->_extensions.certTypeSMIME())
                 kdDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an SMIME certificate." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an SMIME certificate." << endl;
+
         if (d->_extensions.certTypeSMIMEEncrypt())
                 kdDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert." << endl;
+
         if (d->_extensions.certTypeSMIMESign())
                 kdDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT an SMIME sign cert." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT an SMIME sign cert." << endl;
+
         if (d->_extensions.certTypeCRLSign())
                 kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
-        else
-                kdDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
+        else kdDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
 
 	kdDebug(7029) << "-----------------------------------------------" 
 		      << endl;
