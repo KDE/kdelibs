@@ -18,6 +18,8 @@
 #ifndef _KGLOBAL_H
 #define _KGLOBAL_H
 
+#include <qstring.h>
+
 class KStandardDirs;
 class KConfig;
 class KLocale;
@@ -25,6 +27,7 @@ class KIconLoader;
 class KCharsets;
 class QFont;
 class KInstance;
+class KStringDict;
 
 /**
  * Access the KDE global objects.
@@ -58,10 +61,37 @@ public:
      */
     static KIconLoader	        *iconLoader();
 
-    static KLocale             *locale();
+    static KLocale              *locale();
     static KCharsets	        *charsets();
+    
+    /**
+     * Create a static QString
+     *
+     * To be used inside functions(!) like:
+     * static const QString &myString = KGlobal::staticQString("myText");
+     *
+     * !!! Do _NOT_ use: !!!
+     * static QString myString = KGlobal::staticQString("myText");
+     * This creates a static object (instead of a static reference) 
+     * and as you know static objects are EVIL.
+     */
+    static const QString        &staticQString(const char *);
+
+    /**
+     * Create a static QString
+     *
+     * To be used inside functions(!) like:
+     * static const QString &myString = KGlobal::staticQString(i18n("My Text"));
+     *
+     * !!! Do _NOT_ use: !!!
+     * static QString myString = KGlobal::staticQString(i18n("myText"));
+     * This creates a static object (instead of a static reference)
+     * and as you know static objects are EVIL.
+     */
+    static const QString        &staticQString(const QString &);
 
     //private:
+    static  KStringDict         *_stringDict;
     static  KInstance           *_instance;
     static  KLocale             *_locale;
     static  KCharsets	        *_charsets;

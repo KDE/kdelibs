@@ -23,6 +23,7 @@
 */
 
 #include <qglobal.h>
+#include <qdict.h>
 #include "kglobal.h"
 
 #include <kapp.h>
@@ -120,9 +121,49 @@ void KGlobal::freeAll()
     _instance = 0;
 }
 */
+
+/**
+ * Create a static QString
+ *
+ * To be used inside functions(!) like:
+ * static const QString &myString = KGlobal::staticQString("myText");
+ */
+const QString &
+KGlobal::staticQString(const char *str)
+{ 
+   return staticQString(QString::fromLatin1(str)); 
+}
+
+class KStringDict : public QDict<QString>
+{
+public:
+   KStringDict() : QDict<QString>() { };
+};
+
+/**
+ * Create a static QString
+ *
+ * To be used inside functions(!) like:
+ * static const QString &myString = KGlobal::staticQString(i18n("My Text"));
+ */
+const QString &
+KGlobal::staticQString(const QString &str)
+{
+   if (!_stringDict)
+      _stringDict = new KStringDict;
+   QString *result = _stringDict->find(str);
+   if (!result)
+   {
+      result = new QString(str);
+      _stringDict->insert(str, result);
+   }
+   return *result;
+}
+
 	
 // The Variables
 
+KStringDict     *KGlobal::_stringDict   = 0;
 KInstance       *KGlobal::_instance     = 0;
 KInstance       *KGlobal::_activeInstance = 0;
 KLocale         *KGlobal::_locale	= 0;
