@@ -1,0 +1,7 @@
+[Desktop Entry]
+ServiceTypes=kdedevice/floppy_mounted
+Actions=floppy_unmount
+
+[Desktop Action floppy_unmount]
+Name=Unmount
+Exec=kmycomputermounthelper -u %u
