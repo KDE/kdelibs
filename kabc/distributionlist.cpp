@@ -287,7 +287,7 @@ DistributionListWatcher::~DistributionListWatcher()
 
 DistributionListWatcher *DistributionListWatcher::self()
 {
-  kdWarning( qApp ) << "No QApplication object available, you'll get a memleak!" << endl;
+  kdWarning( !qApp ) << "No QApplication object available, you'll get a memleak!" << endl;
 
   if ( !mSelf )
     mSelf = new DistributionListWatcher();
