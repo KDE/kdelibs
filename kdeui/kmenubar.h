@@ -20,6 +20,10 @@
 
 //$Id$
 //$Log$
+//Revision 1.24  1999/07/25 09:11:29  kulow
+///me thinks these warnings should be default for the moment to bug
+//Mosfet :)
+//
 //Revision 1.23  1999/07/24 21:35:46  mosfet
 //Added kmenubar to kstyle since qmenubar didn't get in qstyle. I can easily
 //switch if that eventually happens.
@@ -143,7 +147,7 @@ class KMenuBar : public QFrame
     * or hide, but if you do that the signal @ref #moved won't be emitted.
     */
    bool enable( BarStatus stat );
-#if 0
+#if QT2_WORKAROUND
    /** Hack: this is needed for Qt-2 */
    void show();
 #endif

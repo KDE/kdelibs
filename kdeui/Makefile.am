@@ -22,6 +22,9 @@
 INCLUDES= $(all_includes)
 EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 
+#uncomment that if the menus look strange
+#AM_CPPFLAGS = -DQT2_WORKAROUND
+
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0
 # we should get this to work when libtool 1.3 is released
