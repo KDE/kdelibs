@@ -164,7 +164,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             KJavaApplet* tmp = d->applets[appletID];
             tmp->resizeAppletWidget( width, height );
         }
-    } 
+    }
     else if (cmd.startsWith(QString::fromLatin1("audioclip_"))) {
         kdDebug(6002) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
     }
@@ -174,10 +174,10 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         bool ok;
         int appletID = arg[0].toInt(&ok);
         unsigned long objid = arg[1].toInt(&ok);
-        if (ok) 
+        if (ok)
         {
             KJavaApplet * applet = d->applets[appletID];
-            if (applet) 
+            if (applet)
             {
                 KParts::LiveConnectExtension::ArgList arglist;
                 for (unsigned i = 3; i < arg.count(); i += 2)
@@ -185,10 +185,10 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                     arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) arg[i].toInt(), arg[i+1]));
 
                 emit static_cast<KJavaLiveConnect*>(applet->getLiveConnectExtension())->sendEvent(objid, arg[2], arglist);
-            } 
+            }
             else
                 kdError(6002) << "could find applet for JS event" << endl;
-        } 
+        }
         else
             kdError(6002) << "could not parse applet ID for JS event " << arg[0] << " " << arg[1] << endl;
     }
@@ -199,17 +199,18 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         if (ok)
         {
             KJavaApplet * applet = d->applets[appletID];
-            int newState   = arg[1].toInt(&ok);
-            if (ok)
+            if ( applet )
             {
-                applet->stateChange(newState);
-            } else {
-                kdError(6002) << "AppletStateNotification: status is not numerical" << endl;
-            }
-        } else {
-            kdWarning(6002) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
-        }
-            
+                int newState   = arg[1].toInt(&ok);
+                if (ok)
+                {
+                    applet->stateChange(newState);
+                } else
+                    kdError(6002) << "AppletStateNotification: status is not numerical" << endl;
+            } else
+                kdWarning(6002) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
+        } else
+            kdError(6002) << "AppletStateNotification: Applet ID is not numerical" << endl;
     }
     else if ( cmd == QString::fromLatin1( "AppletFailed" ) ) {
         bool ok;
