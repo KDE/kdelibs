@@ -219,7 +219,7 @@ void KBookmarkBar::slotBookmarkSelected()
 }
 
 static KToolBar* sepToolBar = 0;
-static int sepId = -9999; // fixme with define for num?
+static const int sepId = -9999; // fixme with define for num?
 
 static void removeTempSep()
 {
@@ -238,10 +238,9 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBarButton *b, 
     return 0;
 }
 
-static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
+static KAction* doFunkySepThing(QPoint pos, QPtrList<KAction> actions)
 {
     static int sepIndex;
-    bool found = false;
 
     KToolBarButton* b; 
     int index;
@@ -256,28 +255,23 @@ static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
     b = dynamic_cast<KToolBarButton*>(ttb->childAt(pos));
     KAction *ita;
     ita = findPluggedAction(actions, b, ttb);
-    found = !!ita;
 
     int id;
 
-    if (found)
+    if (ita)
     {
         index = ttb->itemIndex(b->id());
         QRect r = b->geometry();
 
         // if in 0th position or in second half of button then we are done
         if (pos.x() > ((r.left() + r.right())/2) || index == 0)
-        {
-            found = true;
             goto okay_exit;
-        }
      
         // else we jump to the previous index
         index--;
     }
     else
     {
-        found = false;
         goto failure_exit;
         /*
         kdDebug(7043) << ttb << endl;
@@ -286,10 +280,7 @@ static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
         kdDebug(7043) << ttb->getButton(ttb->idAt(ttb->count()-1)) << endl;
         kdDebug(7043) << ttb->getButton(ttb->idAt(ttb->count()-1))->geometry().topLeft().x() << endl;
         if (pos.x() > ttb->getButton(ttb->idAt(ttb->count()-1))->geometry().topLeft().x());
-        {
-            found = false;
             goto failure_exit;
-        }
         // past the last button, lets just position at end
         kdDebug(7043) << "jumping to last one" << endl;
         index = ttb->count() - 1;
@@ -301,20 +292,18 @@ static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
     // search for the button at the given index
     b = ttb->getButton(id);
     Q_ASSERT(id == b->id());
-    found = false;
+
     ita = findPluggedAction(actions, b, ttb);
-    found = !!ita;
-    Q_ASSERT(found);
+    Q_ASSERT(ita);
 
     index = ttb->itemIndex(id);
 
 okay_exit:
-    a = ita;
     sepIndex = index + 1;
 
 failure_exit:
     ttb->insertLineSeparator(sepIndex, sepId);
-    return found;
+    return ita;
 }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
@@ -356,7 +345,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        if (doFunkySepThing(dme->pos(), dptr()->m_actions, a))
+        if (a = doFunkySepThing(dme->pos(), dptr()->m_actions), a)
             dme->accept();
     }
     return false;
