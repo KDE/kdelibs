@@ -5,3 +5,7 @@
 750	kspell
 125	kaccel (kdecore)
 1501	khexedit (kdeutils)
+1901	kfind (kdebase)
+1902	kfind (KfindWindow::updateResults)
+1903	kfind (KfindTabDialog::createQuery)
+2000	kfind (kdebase)
