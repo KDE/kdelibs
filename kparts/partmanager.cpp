@@ -194,7 +194,11 @@ void PartManager::addPart( Part *part, bool setActive )
   part->setManager( this );
 
   if ( setActive )
+  {
     setActivePart( part );
+    if ( part->widget() )
+      part->widget()->setFocus();
+  }
 
   // Prevent focus problems
   if ( part->widget() &&
