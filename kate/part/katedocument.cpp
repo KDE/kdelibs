@@ -2126,7 +2126,7 @@ bool KateDocument::printDialog ()
          tags["y"] =  KGlobal::locale()->formatDate(dt.date(), true);
          tags["Y"] =  KGlobal::locale()->formatDate(dt.date(), false);
          tags["f"] =  url().fileName();
-         tags["F"] =  url().prettyURL();
+         tags["U"] =  url().prettyURL();
          if ( selectionOnly )
          {
            QString s( i18n("(Selection of) ") );
