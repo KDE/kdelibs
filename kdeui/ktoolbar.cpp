@@ -182,6 +182,14 @@ KToolBar::KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock, bo
     init( readConfig, honorStyle );
 }
 
+KToolBar::KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
+    : QToolBar( QString::fromLatin1( name ),
+      parentWindow, dock, newLine,
+      name ? name : "mainToolBar")
+{
+    init( readConfig, honorStyle );
+}
+
 KToolBar::~KToolBar()
 {
     for ( QWidget *w = widgets.first(); w; w = widgets.next() )
