@@ -40,6 +40,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+class KMainWindowPrivate {
+public:
+
+    bool showHelpMenu;
+};
+
 QList<KMainWindow>* KMainWindow::memberList = 0L;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
@@ -119,10 +125,15 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 	s.setNum( memberList->count() );
 	setName( kapp->instanceName() + "-mainwindow#" + s );
     }
+   
+    d = new KMainWindowPrivate;
+    d->showHelpMenu = true;
+    
 }
 
 KMainWindow::~KMainWindow()
 {
+    delete d;
     memberList->remove( this );
 }
 
@@ -215,10 +226,13 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     if ( internalMenuBar() )
 	internalMenuBar()->clear();
 
-    // we always want a help menu
-    if (helpMenu2 == 0)
-        helpMenu2 = new KHelpMenu(this, instance()->aboutData(), true,
-				  actionCollection());
+    // don't build a help menu unless the user ask for it
+    if (d->showHelpMenu) {
+        // we always want a help menu
+        if (helpMenu2 == 0)
+            helpMenu2 = new KHelpMenu(this, instance()->aboutData(), true,
+                                      actionCollection());
+    }
 
     // we always want to load in our global standards file
     setXMLFile( locate( "config", "ui/ui_standards.rc", instance() ) );
@@ -269,6 +283,16 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
     setUpdatesEnabled( true );
     updateGeometry();
+}
+
+void KMainWindow::setHelpMenuEnabled(bool showHelpMenu)
+{
+    d->showHelpMenu = showHelpMenu;
+}
+
+bool KMainWindow::isHelpMenuEnabled()
+{
+    return d->showHelpMenu;
 }
 
 void KMainWindow::setCaption( const QString &caption )

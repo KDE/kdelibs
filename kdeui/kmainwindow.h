@@ -254,7 +254,16 @@ public:
      *     allocated by the @ref QDomDocument .
      */
     void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = TRUE );
-
+    /**
+     * enables the build of a standard help menu when calling createGUI().
+     * The default behaviour is to build one, you must call this function
+     * to disable it
+     */
+    void setHelpMenuEnabled(bool showHelpMenu = true);
+    /**
+     * return @p true when the help menu is enabled
+     */
+    bool isHelpMenuEnabled();
     /**
      * @sect Methods you probably don't need.
      *
