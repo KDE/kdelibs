@@ -56,7 +56,8 @@ public:
      * Create a dialog that asks for a application to open a given
      * URL(s) with.
      *
-     * @param urls   is the URL that should be opened
+     * @param urls   the URLs that should be opened. The list can be empty,
+     * if the dialog is used to choose an application but not for some particular URLs.
      * @param parent parent widget
      */
     KOpenWithDlg( const KURL::List& urls, QWidget *parent = (QWidget*)0 );
@@ -70,11 +71,21 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const KURL::List& urls, const QString&text, const QString&value, QWidget *parent );
+    KOpenWithDlg( const KURL::List& urls, const QString& text, const QString& value, QWidget *parent /* = 0L  BCI! */);
 
     /**
-    * Destructor
-    */
+     * Create a dialog to select a service for a given service type.
+     * Note that this dialog doesn't apply to URLs.
+     *
+     * @param serviceType the service type we want to choose an application for.
+     * @param value  is the initial value of the line
+     * @param parent parent widget
+     */
+    KOpenWithDlg( const QString& serviceType, const QString& value, QWidget *parent = 0L );
+
+    /**
+     * Destructor
+     */
     ~KOpenWithDlg();
 
     /**
@@ -83,6 +94,7 @@ public:
     QString text();
     /**
      * @return the chosen service in the application tree
+     * Can be null, if the user typed some text and didn't select a service.
      */
     KService::Ptr service() { return m_pService; }
 
@@ -98,13 +110,18 @@ public slots:
 protected:
 
     /**
+     * Determine service type from URLs
+     */
+    void setServiceType( const KURL::List& _urls );
+
+    /**
      * Create a dialog that asks for a application to open a given
      * URL(s) with.
      *
-     * @param urls   is the URL that should be opened
-     * @param parent parent widget
+     * @param text   appears as a label on top of the entry box.
+     * @param value  is the initial value of the line
      */
-    void init( const KURL::List&, const QString&, const QString& );
+    void init( const QString& text, const QString& value );
 
     KURLRequester * edit;
     QString m_command;

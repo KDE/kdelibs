@@ -52,6 +52,9 @@
 #include "kopenwith.h"
 #include <kdebug.h>
 
+#include <assert.h>
+#include <stdlib.h>
+
 template class QList<QString>;
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
@@ -241,7 +244,8 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
     else
         // Should never happen ??
         text = i18n( "Choose the name of the program to open the selected files with." );
-    init( _urls, text, QString() );
+    setServiceType( _urls );
+    init( text, QString() );
 }
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
@@ -252,12 +256,26 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setCaption(caption);
-  init( _urls, _text, _value );
+  setServiceType( _urls );
+  init( _text, _value );
 }
 
-void KOpenWithDlg::init( const KURL::List& _urls, const QString& _text, const QString& _value )
+KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
+                            QWidget *parent)
+    : QDialog( parent, 0L, true )
 {
+  setCaption(i18n("Choose application for %1").arg(serviceType));
+  QString text = i18n("<qt>Select the program to add for the file type: <b>%1</b>. "
+                      "If the program is not listed, enter the name or click "
+                      "the browse button.</qt>").arg(serviceType);
+  qServiceType = serviceType;
+  init( text, value );
+  remember->setChecked( true );
+  remember->hide();
+}
 
+void KOpenWithDlg::setServiceType( const KURL::List& _urls )
+{
   if ( _urls.count() == 1 )
   {
     qServiceType = KMimeType::findByURL( _urls.first())->name();
@@ -266,6 +284,10 @@ void KOpenWithDlg::init( const KURL::List& _urls, const QString& _text, const QS
   }
   else
       qServiceType = QString::null;
+}
+
+void KOpenWithDlg::init( const QString& _text, const QString& _value )
+{
 
   m_pTree = 0L;
   m_pService = 0L;
@@ -285,7 +307,7 @@ void KOpenWithDlg::init( const KURL::List& _urls, const QString& _text, const QS
   edit->lineEdit()->setCompletionObject( comp );
   edit->lineEdit()->setAutoDeleteCompletionObject( true );
 
-  connect ( edit, SIGNAL(returnPressed()), SLOT(accept()) );
+  connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
 
 
   m_pTree = new KApplicationTree( this );
@@ -402,7 +424,7 @@ void KOpenWithDlg::slotOK()
       accept();
       return;
     }
-
+  kdDebug() << "slotOK 5" << endl;
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
@@ -430,7 +452,7 @@ void KOpenWithDlg::slotOK()
     if (remember->isChecked()) {
       QStringList mimeList;
       KDesktopFile oldDesktop(locate("apps", pathName), true);
-      mimeList = oldDesktop.readEntry(QString::fromLatin1("MimeType"));
+      mimeList = oldDesktop.readListEntry(QString::fromLatin1("MimeType"));
       if (!mimeList.contains(qServiceType))
 	mimeList.append(qServiceType);
       desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
@@ -452,7 +474,10 @@ void KOpenWithDlg::slotOK()
 	    retType, replyData);
 
   // get the new service pointer
-  m_pService = KService::serviceByDesktopPath( path );
+  kdDebug() << pathName << endl;
+  m_pService = KService::serviceByDesktopPath( pathName );
+
+  assert( m_pService );
 
   haveApp = false;
   accept();
