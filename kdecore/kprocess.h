@@ -833,6 +833,10 @@ protected:
    */
   friend class KProcessController;
 
+  // Disallow assignment and copy-construction
+  KProcess( const KProcess& );
+  KProcess& operator=( const KProcess& );
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
