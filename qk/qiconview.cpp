@@ -739,11 +739,13 @@ QIconViewItem::~QIconViewItem()
     if ( view && !view->d->clearing )
 	view->takeItem( this );
     view = 0;
+    if ( itemIcon && itemIcon->serialNumber() != unknown_icon->serialNumber() )
+	delete itemIcon;
     delete d;
 }
 
 /*!
-  Sets \a text as text of the iconview item.  This method might be a no-op
+  Sets  \a text as text of the iconview item.  This method might be a no-op
   if you reimplement text().
 
   \sa text()
@@ -4286,7 +4288,7 @@ QDragObject *QIconView::dragObject()
 				     item->textRect().width(), item->textRect().height() ) );
 	    }
 	}
-    }    
+    }
 
     return drag;
 }
