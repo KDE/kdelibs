@@ -121,7 +121,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	int numSpaces = 0;
 	if ( toAdd ) {
 	    for( int i = 0; i < len; i++ )
-		if ( str[i+pos].direction() == QChar::DirWS )
+		if ( str[i+pos].isSpace() )
 		    numSpaces++;
 	}
 

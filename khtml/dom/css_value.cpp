@@ -106,6 +106,11 @@ DOMString CSSStyleDeclaration::removeProperty( const DOMString &property )
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
 {
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyPriority( propertyName );
+}
+
+DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName ) const
+{
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
     if(!impl || !id) return DOMString();
     if (impl->getPropertyPriority(id))

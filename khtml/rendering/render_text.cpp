@@ -347,7 +347,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     if (justified) {
 
         for( int i = 0; i < m_len; i++ )
-            if ( text->str->s[m_start+i].direction() == QChar::DirWS )
+            if ( text->str->s[m_start+i].isSpace() )
 	        numSpaces++;
 
     }/*end if*/
@@ -427,7 +427,7 @@ int InlineTextBox::width(int pos) const
 
 //    QConstString cstr = QConstString(t->str->s + m_start, m_len);
     for( int i = 0; i < m_len; i++ )
-      if ( t->str->s[m_start+i].direction() == QChar::DirWS )
+      if ( t->str->s[m_start+i].isSpace() )
 	numSpaces++;
     if (numSpaces == 0) break;
 
