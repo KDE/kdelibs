@@ -24,10 +24,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.1"
+#define KDE_VERSION 220
+#define KDE_VERSION_STRING "2.1.9 >= 20010223"
 #define KDE_VERSION_MAJOR 2
-#define KDE_VERSION_MINOR 1
+#define KDE_VERSION_MINOR 2
 #define KDE_VERSION_RELEASE 0
 
 class KConfig;
@@ -800,6 +800,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.210  2001/02/19 11:05:10  faure
+// 2.1, and fixing a docu bug found by werner
+//
 // Revision 1.209  2001/02/16 23:54:27  pfeiffer
 // KDoc fixes from Otto Bruggeman <bruggie@home.nl>
 //
