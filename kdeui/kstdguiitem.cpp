@@ -78,7 +78,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
 
 KGuiItem KStdGuiItem::ok()
 {
-  return KGuiItem( i18n( "&OK" ), "button_ok" ); 
+  return KGuiItem( i18n( "&OK" ), "button_ok" );
 }
 
 
@@ -186,7 +186,7 @@ QPair<KGuiItem, KGuiItem> KStdGuiItem::backAndForward()
 
 KGuiItem KStdGuiItem::print()
 {
-  return KGuiItem( i18n( "&Print" ), "fileprint",
+  return KGuiItem( i18n( "&Print..." ), "fileprint",
                    i18n( "Opens the print dialog to print "
                          "the current document" ) );
 }
@@ -199,13 +199,13 @@ KGuiItem KStdGuiItem::cont()
 
 KGuiItem KStdGuiItem::open()
 {
-  return KGuiItem( i18n( "&Open" ), "fileopen",
+  return KGuiItem( i18n( "&Open..." ), "fileopen",
                    i18n( "Open file" ) );
 }
 
 KGuiItem KStdGuiItem::quit()
 {
-  return KGuiItem( i18n( "&Quit" ), "exit", 
+  return KGuiItem( i18n( "&Quit" ), "exit",
                    i18n( "Quit application" ) );
 }
 
