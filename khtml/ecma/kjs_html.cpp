@@ -157,6 +157,41 @@ const ClassInfo KJS::HTMLDocument::info =
 # ids
 @end
 */
+
+/* Helper function object for determining the number
+ * of occurrences of xxxx as in document.xxxx.
+ * The order of the TagLength array is the order of preference.
+ */
+class NamedTagLengthDeterminer {
+public:
+  struct TagLength {
+    NodeImpl::Id id; unsigned long length; NodeImpl *last;
+  };
+  NamedTagLengthDeterminer(const DOMString& n, TagLength *t, int l)
+    : name(n), tags(t), nrTags(l) {}
+  void operator () (NodeImpl *start);
+private:
+  const DOMString& name;
+  TagLength *tags;
+  int nrTags;
+  void determineNamedTagLength(NodeImpl *start);
+};
+
+void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
+  for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
+    if ( n->nodeType() == Node::ELEMENT_NODE ) {
+      for (int i = 0; i < nrTags; i++)
+        if (n->id() == tags[i].id &&
+            static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
+          tags[i].length++;
+          tags[i].last = n;   // cache this NodeImpl*
+          nrTags = i+1;       // forget about Tags with lower preference
+          break;
+        }
+      (*this)(n);
+    }
+}
+
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
@@ -169,15 +204,14 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
     return false;
 
   // Keep in sync with tryGet
-  DOM::NodeList list( new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() ) );
-  if ( list.length() )
-    return true;
-  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
-  if ( list.length() )
-    return true;
-  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_APPLET, propertyName.string() );
-  if ( list.length() )
-    return true;
+  NamedTagLengthDeterminer::TagLength tags[3] = {
+    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L} 
+  };
+  NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
+  for (int i = 0; i < 3; i++)
+    if (tags[i].length > 0)
+        return true;
+ 
   if ( view && view->part() )
   {
     KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
@@ -186,42 +220,6 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   }
 
   return DOMDocument::hasProperty(exec, propertyName);
-}
-
-/* Helper function object for KJS::HTMLDocument::tryGet(..) for determining
- * the number of occurrences of xxxx as in document.xxxx.
- * The order of the TagLength array is the order of preference.
- */
-class NamedTagLengthDeterminer {
-public:
-  struct TagLength {
-    NodeImpl::Id id; unsigned long length; NodeImpl *last;
-  };
-  NamedTagLengthDeterminer(NodeImpl *s, const DOMString& n, TagLength *t, int l)
-    : name(n), tags(t), nrTags(l) {
-      determineNamedTagLength(s);
-  }
-private:
-  const DOMString& name;
-  TagLength *tags;
-  int nrTags;
-  void determineNamedTagLength(NodeImpl *start);
-
-};
-
-void NamedTagLengthDeterminer::determineNamedTagLength(NodeImpl *start) {
-  for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
-    if ( n->nodeType() == Node::ELEMENT_NODE ) {
-      for (int i = 0; i < nrTags; i++)
-        if (n->id() == tags[i].id &&
-            static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
-          tags[i].length++;
-          tags[i].last = n;   // cache this NodeImpl*
-          nrTags = i+1;       // forget about Tags with lower preference
-          break;
-        }
-      determineNamedTagLength(n);
-    }
 }
 
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
@@ -246,7 +244,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   NamedTagLengthDeterminer::TagLength tags[3] = {
     {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L} 
   };
-  NamedTagLengthDeterminer(doc.handle(), propertyName.string(), tags, 3);
+  NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
   for (int i = 0; i < 3; i++)
     if (tags[i].length > 0) {
       if (tags[i].length == 1)
