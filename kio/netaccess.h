@@ -22,6 +22,7 @@
 #ifndef __kio_netaccess_h
 #define __kio_netaccess_h
 
+#include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
 
