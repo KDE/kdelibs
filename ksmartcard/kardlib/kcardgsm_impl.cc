@@ -93,7 +93,7 @@ int KCardGsmImplementation::selectFile (const QString fileID){
 }
 
 
-int getResponse (QString & resp){
+int KCardGsmImplementation::getResponse (QString & resp){
 
   resp=_fileHeader;
   return 0;
