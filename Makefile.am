@@ -19,7 +19,7 @@
 
 
 SUBDIRS = qk dcop libltdl kdecore kdeui kformula mimetypes \
-	mediatool kspell kio kimgio kinit kfile kab kparts khtml kstyles \
+	mediatool kspell kio kimgio kinit kfile kab kparts kjs khtml kstyles \
 	libkmid arts kdesu ksgmltools doc pics
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
