@@ -62,7 +62,7 @@ int KCalendarSystemGregorian::weeksInYear(int year) const
   // If the last day of the year is in the first week, we have to check the
   // week before
   if ( temp.weekNumber() == 1 )
-    temp.addDays(-7);
+    temp = temp.addDays(-7);
 
   return temp.weekNumber();
 }
