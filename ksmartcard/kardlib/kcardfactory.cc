@@ -115,7 +115,7 @@ int KCardFactory::loadModules() {
 		KService::Ptr service = *it;
 		QString _type = service->property("X-KDE-Smartcard-Type").toString();
 		QString _subType = service->property("X-KDE-Smartcard-SubType").toString();
-		QString _subSubType = service->property("X-KDE-Smartcard-SubSubType").toString();
+		QStringList _subSubType = service->property("X-KDE-Smartcard-SubSubType").toStringList();
 
 		if (_type == QString::null)
 			continue;
@@ -126,10 +126,16 @@ int KCardFactory::loadModules() {
 		// subSubType can be NULL for instances where a manufacturer
 		// only makes one type of card or there is a driver which can
 		// handle all cards from that manufacturer.
+		// A better solution is to put them all in the property as
+		// a list though.
 
 		void *f = loadModule(service);
 
-		_modules[_type][_subType][_subSubType] = f;
+		for (QStringList::Iterator j = _subSubType.begin();
+					    j != _subSubType.end();
+								++j) {
+			_modules[_type][_subType][*j] = f;
+		}
 	}
 	return 0;
 }
