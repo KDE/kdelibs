@@ -862,6 +862,7 @@ private slots:
 	void setActiveToolDock( KMdiDockContainer* );
 	void removeFromActiveDockList( KMdiDockContainer* );
 	void slotDocCurrentChanged( QWidget* );
+	void verifyToplevelHeight();
 #define protected public
 signals:
 #undef protected

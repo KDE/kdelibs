@@ -55,6 +55,7 @@
 
 
 #include <qtoolbutton.h>
+#include <qdockarea.h>
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qtextstream.h>
@@ -253,6 +254,22 @@ KMdiMainFrm::KMdiMainFrm( QWidget* parentWidget, const char* name, KMdi::MdiMode
 	// drag end timer
 	m_pDragEndTimer = new QTimer();
 	connect( m_pDragEndTimer, SIGNAL( timeout() ), this, SLOT( dragEndTimeOut() ) );
+	connect( guiFactory(), SIGNAL( clientAdded( KXMLGUIClient* ) ),
+	         this, SLOT( verifyToplevelHeight() ) );
+	connect( guiFactory(), SIGNAL( clientRemoved( KXMLGUIClient* ) ),
+	         this, SLOT( verifyToplevelHeight() ) );
+}
+
+void KMdiMainFrm::verifyToplevelHeight()
+{
+	if ( m_mdiMode != KMdi::ToplevelMode )
+		return;
+	
+	//kdDebug(760) << k_funcinfo << endl;
+	int topDockHeight = topDock() ? topDock()->height() : 0;
+	int menuBarHeight = hasMenuBar() ? menuBar()->height() : 0;
+	setFixedHeight( topDockHeight + menuBarHeight );
+	resize( width(), height() );
 }
 
 void KMdiMainFrm::setStandardMDIMenuEnabled( bool showModeMenu )
@@ -1149,6 +1166,12 @@ bool KMdiMainFrm::event( QEvent* e )
 
 bool KMdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 {
+	if ( e->type() == QEvent::Resize && m_mdiMode == KMdi::ToplevelMode )
+	{
+		verifyToplevelHeight();
+		return false; //let the rest of the resize magic do its work
+	}
+	
 	if ( e->type() == QEvent::FocusIn )
 	{
 		QFocusEvent * pFE = ( QFocusEvent* ) e;
@@ -1376,15 +1399,25 @@ void KMdiMainFrm::switchToToplevelMode()
 	//	QApplication::sendPostedEvents(); //why do we need to empty the event queue?
 	if ( !parentWidget() )
 	{
-		m_oldMainFrmMinHeight = minimumHeight();
-		m_oldMainFrmMaxHeight = maximumHeight();
-		m_oldMainFrmHeight = height();
+		//if we don't have a parent widget ( which i expect we wouldn't )
+		//make sure we take into account the size of the docks provided by
+		//QMainWindow
+		int topDockHeight = topDock() ? topDock()->height() : 0;
+		int bottomDockHeight = bottomDock() ? bottomDock()->height() : 0;
+		int menuBarHeight = hasMenuBar() ? menuBar()->height() : 0;
 		if ( m_pDocumentViews->count() != 0 )
 			setFixedHeight( height() - m_pDockbaseAreaOfDocumentViews->height() );
 		else
-			setFixedHeight( height() - m_pDockbaseAreaOfDocumentViews->height() + 27 );
-	}
-
+		{
+			kdDebug(760) << k_funcinfo << "height is: " << height() << endl;
+			kdDebug(760) << k_funcinfo << "top dock height: " << topDockHeight << endl;
+			kdDebug(760) << k_funcinfo << "bottom dock height: " << bottomDockHeight << endl;
+			kdDebug(760) << k_funcinfo << "menu bar height: " << menuBarHeight << endl;
+			kdDebug(760) << k_funcinfo << "dock base area height: " << m_pDockbaseAreaOfDocumentViews->height() << endl;
+			setFixedHeight( topDockHeight + menuBarHeight );
+		}
+	} 
+   
 	//FIXME although i don't know what to fix
 	// 5. show the child views again
 	QPtrListIterator<KMdiChildView> kmdicvit( *m_pDocumentViews );
