@@ -296,9 +296,9 @@ int RenderTable::realSpan( unsigned int r, unsigned int c)
 void RenderTable::setCells( unsigned int r, unsigned int c,
                                      RenderTableCell *cell )
 {
-#ifdef TABLE_DEBUG
+//#ifdef TABLE_DEBUG
     kdDebug( 6040 ) << "span = " << cell->rowSpan() << "d/" << cell->colSpan() << "d" << endl;
-#endif
+//#endif
     cell->setRow(r);
     cell->setCol(c);
 
@@ -398,12 +398,15 @@ void RenderTable::addColumns( int num )
     for ( unsigned int r=0 ; r < row ; r++)
     {
         RenderTableCell* cell = cells[r][totalCols-1];
-        for ( unsigned int c = totalCols; (int)c < newCols; c++ )
+        if (cell && cell->rowSpan()==1) //might need to be more generic
         {
-            if (cells[r][c]==0L)
+            for ( unsigned int c = totalCols; (int)c < newCols; c++ )
             {
-                cells[r][c] = cell;
-                recalc=true;
+                if (cells[r][c]==0L)
+                {
+                    cells[r][c] = cell;
+                    recalc=true;
+                }
             }
         }
     }
@@ -942,10 +945,6 @@ void RenderTable::calcColMinMax()
 
 //    setMinMaxKnown(true);
 
-
-
-    // ### HACK, implement anonymous table box
-    // ### copied from renderbox
 
     int cw = containingBlockWidth();
 
