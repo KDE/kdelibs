@@ -30,8 +30,8 @@
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
                     const KParts::URLArgs &args, bool hideErrorDialog )
     : KParts::BrowserRun( url, args, part, part->widget() ? part->widget()->topLevelWidget() : 0,
-                          false, false ),
-  m_child( child ), m_bHideErrorDialog( hideErrorDialog )
+                          false, false, hideErrorDialog ),
+  m_child( child )
 {
     // get the wheel to start spinning
     part->started(0L);
@@ -73,16 +73,18 @@ void KHTMLRun::save( const KURL & url, const QString & suggestedFilename )
 
 void KHTMLRun::handleError( KIO::Job *job )
 {
-    Q_ASSERT( job->error() ); // there's always an error if we're here
-    if ( m_bHideErrorDialog ) {
+    if ( hideErrorDialog() ) {
         // pass an empty url and mimetype to indicate a loading error
         static_cast<KHTMLPart *>(m_part)->processObjectRequest( m_child, KURL(), QString::null );
         m_job = 0;
         m_bFault = true;
         m_bFinished = true;
         m_timer.start( 0, true );
-    } else
+    } else {
+        Q_ASSERT( job );
+        Q_ASSERT( job->error() );
         KRun::slotScanFinished( job ); // standard "show the error dialog" code
+    }
 }
 
 #include "khtml_run.moc"
