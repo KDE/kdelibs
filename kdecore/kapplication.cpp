@@ -2407,6 +2407,10 @@ void KApplication::initUrlActionRestrictions()
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", "lan", QString::null, QString::null, QString::null, QString::null, QString::null, true));
 
+  // info:/ kioslave may redirect to help:/
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", "info", QString::null, QString::null, "help", QString::null, QString::null, true));
+
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
