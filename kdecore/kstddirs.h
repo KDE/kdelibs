@@ -351,6 +351,9 @@ public:
 	KStandardDirs& operator= ( const KStandardDirs& );
 
 	bool addedCustoms;
+
+	// checks for existance and accessability
+	static bool exists(const QString &fullPath);
 };
 
 /**
