@@ -839,6 +839,12 @@ JSEventListener *Window::getJSEventListener(const KJSO &obj, bool html)
   return listener;
 }
 
+void Window::clear()
+{
+  delete winq;
+  winq = 0;
+}
+
 Completion WindowFunc::tryExecute(const List &args)
 {
   KJSO result;

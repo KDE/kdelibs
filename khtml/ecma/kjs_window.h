@@ -92,6 +92,8 @@ namespace KJS {
     void setListener(int eventId, KJSO func);
     KJSO getListener(int eventId) const;
     JSEventListener *getJSEventListener(const KJSO &obj, bool html = false);
+    void clear();
+
     QList<JSEventListener> jsEventListeners;
   private:
     QGuardedPtr<KHTMLPart> m_part;

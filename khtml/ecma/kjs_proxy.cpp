@@ -136,9 +136,11 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
       return QVariant();
   }
   // clear resources allocated by the interpreter
-  void kjs_clear(KJScript *script, KHTMLPart * /*part*/)
+  void kjs_clear(KJScript *script, KHTMLPart * part)
   {
     script->clear();
+    Window *win = Window::retrieveWindow(part);
+    win->clear();
     //    delete script;
   }
   // for later extensions.
