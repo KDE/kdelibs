@@ -32,6 +32,7 @@
    This resizable array is used to simplify the implementation.  The existance of
    this class is to keep the implementation from depending on a separate
    framework/library.
+   @internal  
 **/
 
 template <class Z> class RArray {
@@ -69,6 +70,7 @@ private:
 
 /**
    Private data for the NETRootInfo class.
+   @internal  
 **/
 
 struct NETRootInfoPrivate {
@@ -104,6 +106,7 @@ struct NETRootInfoPrivate {
 
 /**
    Private data for the NETWinInfo class.
+   @internal  
 **/
 
 struct NETWinInfoPrivate {
