@@ -43,6 +43,46 @@ namespace DOM {
 
     int getPropertyID(const char *tagStr, int len);
 
+// this class represents a selector for a StyleRule
+class CSSSelector
+{
+public:
+    CSSSelector(void);
+    ~CSSSelector(void);
+    void print(void);
+    // tag == -1 means apply to all elements (Selector = *)
+
+    /* how the attribute value has to match.... Default is Exact */
+    enum Match
+    {
+	None = 0,
+	Exact,
+	Set,
+	List,
+	Hyphen,
+	Pseudo
+    };
+
+    enum Relation
+    {
+	Descendant = 0,
+	Child,
+	Sibling,
+	SubSelector
+    };
+
+    Relation relation 	: 2;
+    Match 	 match 	: 3;
+    bool	nonCSSHint : 1;
+    int          attr;
+    int          tag;
+    DOM::DOMString value;
+
+    CSSSelector *tagHistory;
+
+    int specificity();
+};
+
     // a style class which has a parent (almost all have)
     class StyleBaseImpl : public DomShared
     {
@@ -84,7 +124,7 @@ namespace DOM {
 	const QChar *parseToChar(const QChar *curP, const QChar *endP,
 				 QChar c, bool chkws, bool endAtBlock = false);
 
-	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP);
+	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP, CSSSelector *stack, CSSSelector::Relation relation);
 	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
 	QList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
 
@@ -144,45 +184,6 @@ namespace DOM {
 	QList<StyleBaseImpl> *m_lstChildren;
     };
 
-
-// this class represents a selector for a StyleRule
-class CSSSelector
-{
-public:
-    CSSSelector(void);
-    ~CSSSelector(void);
-    void print(void);
-    // tag == -1 means apply to all elements (Selector = *)
-
-    /* how the attribute value has to match.... Default is Exact */
-    enum Match
-    {
-	None = 0,
-	Exact,
-	Set,
-	List,
-	Hyphen,
-	Pseudo
-    };
-
-    enum Relation
-    {
-	Descendant = 0,
-	Child,
-	Sibling
-    };
-
-    Relation relation 	: 2;
-    Match 	 match 	: 3;
-    bool	nonCSSHint : 1;
-    int          attr;
-    int          tag;
-    DOM::DOMString value;
-
-    CSSSelector *tagHistory;
-
-    int specificity();
-};
 
 // another helper class
 class CSSProperty

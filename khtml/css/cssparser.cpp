@@ -296,34 +296,49 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     return 0;
 }
 
+static DOMString getValue( const QChar *curP, const QChar *endP, const QChar *&endVal)
+{
+    QString selecString( curP, endP - curP );
+    //kdDebug( 6080 ) << "getValue = \"" << selecString << "\"" << endl;
+    endVal = curP;
+    endVal++; // ignore first char (could be the ':' form the pseudo classes)
+    while( endVal < endP && *endVal != '.' && *endVal != ':' && *endVal != '[' )
+	endVal++;
+    const QChar *end = endVal;
+    if(endVal == endP)
+	endVal = 0;
+    return DOMString( curP, end - curP);
+}
+
 CSSSelector *
-StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
+StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector *stack,
+			      CSSSelector::Relation relation)
 {
     CSSSelector *cs = new CSSSelector();
-    QString selecString( curP, endP - curP );
-
 #ifdef CSS_DEBUG
+    QString selecString( curP, endP - curP );
     kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
 #endif
+    const QChar *endVal = 0;
 
     if (*curP == '#' && (curP < endP && !((*(curP+1)).isDigit())))
     {
         cs->tag = -1;
         cs->attr = ATTR_ID;
         cs->match = CSSSelector::Exact;
-        cs->value = DOMString( curP + 1, endP - curP -1 );
+        cs->value = getValue( curP+1, endP, endVal);
     }
     else if (*curP == '.' && (curP < endP && !((*(curP+1)).isDigit())))
     {
         cs->tag = -1;
         cs->attr = ATTR_CLASS;
         cs->match = CSSSelector::List;
-        cs->value = DOMString( curP + 1, endP - curP -1 );
+        cs->value = getValue( curP+1, endP, endVal);
     }
     else if (*curP == ':')
     {
         cs->tag = -1;
-        cs->value = DOMString( curP, endP - curP );
+        cs->value = getValue(curP, endP, endVal);
         cs->match = CSSSelector::Pseudo;
     }
     else
@@ -337,7 +352,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
                 tag = QString( startP, curP-startP );
                 cs->attr = ATTR_ID;
                 cs->match = CSSSelector::Exact;
-                cs->value = DOMString( curP + 1, endP - curP - 1);
+                cs->value = getValue(curP+1, endP, endVal);
                 break;
             }
             else if (*curP == '.' && (curP < endP && !((*(curP+1)).isDigit())))
@@ -345,14 +360,14 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
                 tag = QString( startP, curP - startP );
                 cs->attr = ATTR_CLASS;
                 cs->match = CSSSelector::List;
-                cs->value = DOMString( curP + 1, endP - curP - 1);
+                cs->value = getValue(curP+1, endP, endVal);
                 break;
             }
             else if (*curP == ':')
             {
                 // pseudo attributes (:link, :hover, ...)
                 tag = QString( startP, curP - startP );
-                cs->value = DOMString( curP, endP - curP);
+                cs->value = getValue(curP, endP, endVal);
                 cs->match = CSSSelector::Pseudo;
                 break;
             }
@@ -408,21 +423,32 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
                         delete cs;
                         return 0;
                     }
+		    endVal = endP;
+		    bool hasQuote = false;
                     if(*equal == '\'')
                     {
                         equal++;
-                        while(*endP != '\'' && endP > equal)
-                            endP--;
+                        while(*endVal != '\'' && endVal > equal)
+                            endVal--;
+			hasQuote = true;
                     }
                     else if(*equal == '\"')
                     {
                         equal++;
-                        while(*endP != '\"' && endP > equal)
-                            endP--;
+                        while(*endVal != '\"' && endVal > equal)
+                            endVal--;
+			hasQuote = true;
                     }
                     else
-                        endP--;
-                    cs->value = DOMString(equal, endP - equal);
+                        endVal--;
+                    cs->value = DOMString(equal, endVal - equal);
+		    if ( hasQuote )
+			endVal++;
+		    while( endVal < endP && *endVal != ']' )
+			endVal++;
+		    // ### fixme we ignore everything after [..]
+		    //if( endVal == endP )
+			endVal = 0;
                 }
                 break;
             }
@@ -446,12 +472,25 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
    if (cs->tag == 0)
    {
        delete cs;
+       delete stack;
        return(0);
    }
 #ifdef CSS_DEBUG
-   kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " relation=" << (int)cs->match << " value=" << cs->value.string() << " specificity=" << cs->specificity() << "]" << endl;
+   kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " match=" << (int)cs->match << " value=" << cs->value.string() << " specificity=" << cs->specificity() << "]" << endl;
 #endif
-   return(cs);
+
+   cs->tagHistory = stack;
+   cs->relation = relation;
+   relation = CSSSelector::SubSelector;
+   stack = cs;
+
+   stack->print();
+   if( endVal ) {
+       // lets be recursive
+       stack = parseSelector2(endVal, endP, stack, relation);
+   }
+
+   return(stack);
 }
 
 CSSSelector *
@@ -474,19 +513,9 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
     {
         if ((curP == endP) || isspace(*curP) || *curP == '+' || *curP == '>')
         {
-            CSSSelector *cs = parseSelector2(startP, curP);
-            if (cs)
-            {
-                cs->tagHistory = selecStack;
-                cs->relation = relation;
-                selecStack = cs;
-            }
-            else
-            {
-                // invalid selector, delete
-                delete selecStack;
+            selecStack = parseSelector2(startP, curP, selecStack, relation);
+            if (!selecStack)
                 return 0;
-            }
 
             curP = parseSpace(curP, endP);
             if (!curP)
@@ -508,8 +537,8 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
                 curP++;
                 curP = parseSpace(curP, endP);
             }
-            if(cs)
-                cs->print();
+            //if(selecStack)
+            //    selecStack->print();
             startP = curP;
         }
         else
@@ -1755,8 +1784,6 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 
     slist = parseSelector(startP, curP );
 
-    curP++; // need to get past the '{' from above
-
     startP = curP;
     curP = parseToChar(startP, endP, '}', false);
 #ifdef CSS_DEBUG
@@ -1769,6 +1796,8 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
     }
 
     plist = parseProperties(startP, curP );
+
+    curP++; // need to get past the '}' from above
 
     if (!plist || !slist)
     {
@@ -1898,7 +1927,7 @@ CSSSelector::~CSSSelector(void)
 
 void CSSSelector::print(void)
 {
-//    kdDebug( 6080 ) << "[Selector: tag = " << //      tag << ", attr = \"" << attr << "\", value = \"" << value.string().data() << "\" relation = " << (int)relation << endl;
+//    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
 }
 
 int CSSSelector::specificity()

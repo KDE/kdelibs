@@ -73,7 +73,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * /*doc*/)
 CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
 {
     if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
- 
+
     authorStyle = new CSSStyleSelectorList();
     // ### go through DOM tree for style elements
 
@@ -276,6 +276,14 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
             if(!checkOneSelector(sel, elem)) return false;
             break;
         }
+        case CSSSelector::SubSelector:
+	{
+	    //kdDebug() << "CSSOrderedRule::checkSelector" << endl;
+	    ElementImpl *elem = static_cast<ElementImpl *>(n);
+	    if(!checkOneSelector(sel, elem)) return false;
+	    //kdDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
+	    break;
+	}
         }
         relation = sel->relation;
     }
@@ -335,6 +343,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
     }
     if(sel->match == CSSSelector::Pseudo)
     {
+	//kdDebug() << "CSSOrderedRule::pseudo" << endl;
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
 	if(sel->value == ":first-child") {
@@ -350,6 +359,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    for( it = list->begin(); it != list->end(); ++it )
 		if( *it == url )
 		    return false;
+	    //kdDebug() << "matches" << endl;
 	    return true;
 	} else if ( sel->value == ":visited" ) {
 	    if( e->getAttribute(ATTR_HREF).isNull() )
