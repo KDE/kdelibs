@@ -21,30 +21,31 @@
 
 KStandardDirs *KGlobal::dirs()
 {
-    return _instance->dirs();
+    return instance()->dirs();
 }
 
 KConfig	*KGlobal::config()
 {
-    return _instance->config();
+    return instance()->config();
 }
 
 KIconLoader *KGlobal::iconLoader()
 {
-    return _instance->iconLoader();
+    return instance()->iconLoader();
 }
 
 KInstance *KGlobal::instance() 
 {
+    init();
     return _instance;
 }
 
 KLocale	*KGlobal::locale()
 {	
     if( _locale == 0 ) {
-	init();
-	// will set _locale if it works - otherwise 0 is returned
-	KLocale::initInstance();
+        init();
+        // will set _locale if it works - otherwise 0 is returned
+        KLocale::initInstance();
     }
     
     return _locale;
@@ -53,8 +54,8 @@ KLocale	*KGlobal::locale()
 KCharsets *KGlobal::charsets()
 {
     if( _charsets == 0 ) {
-	init();
-	_charsets =new KCharsets();
+        init();
+        _charsets =new KCharsets();
     }
     
     return _charsets;
@@ -62,10 +63,11 @@ KCharsets *KGlobal::charsets()
 
 QFont KGlobal::generalFont()
 {
-    if(_generalFont) return *_generalFont;
-
+    if(_generalFont)
+        return *_generalFont;
+    
     init();
-
+    
     _generalFont = new QFont("helvetica", 12, QFont::Normal);
     charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
     KConfig *c = KGlobal::config();
@@ -113,7 +115,8 @@ int KGlobal::dndEventDelay()
 void KGlobal::init()
 {
     if (_instance)
-	return;
+        return;
+    
     _instance = new KInstance("unknown");
     qAddPostRoutine( freeAll );
 }
