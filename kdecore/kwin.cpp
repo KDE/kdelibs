@@ -348,7 +348,7 @@ KWin::Info KWin::info( WId win )
     w.state = inf.state();
     w.mappingState = inf.mappingState();
     w.strut = inf.strut();
-    w.windowType = inf.windowType();
+    w.windowType = inf.windowType( -1U );
     if ( inf.name() ) {
 	w.name = QString::fromUtf8( inf.name() );
     } else {
