@@ -51,6 +51,7 @@ public:
       topLevel = false;
     }
     bool topLevel;
+    int frameStyle;
 };
 
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
@@ -76,13 +77,14 @@ void KMenuBar::setTopLevelMenu(bool top_level)
         return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
-      bool wasVisible = isVisibleTo( 0 );
+      bool wasVisible = isVisibleTo( parentWidget() );
+      d->frameStyle = frameStyle();
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
       KWin::setState( winId(), NET::StaysOnTop );
-
+      setFrameStyle( StyledPanel | Raised );
       if ( wasVisible )
           show();
   } else {
@@ -90,6 +92,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
           reparent( parentWidget(), QPoint(0,0), TRUE );
           setBackgroundMode( PaletteButton );
           installEventFilter( topLevelWidget() );
+          setFrameStyle( d->frameStyle );
       }
   }
 }
