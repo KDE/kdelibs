@@ -27,6 +27,7 @@
 #include <qvaluelist.h>
 #include <qobject.h>
 
+class QWidgetStack;
 
 /**
  * A string class handling accelerators.
@@ -151,6 +152,35 @@ private:
   QPopupMenu       *m_popup;
   KAccelStringList m_entries;
   int              m_count;
+
+};
+
+
+class QWidgetStackAccelManager : public QObject
+{
+  Q_OBJECT
+
+public:
+
+  static void manage(QWidgetStack *popup);
+
+
+protected:
+
+  QWidgetStackAccelManager(QWidgetStack *popup);
+
+
+private slots:
+
+  void aboutToShow(QWidget *);
+    bool eventFilter ( QObject * watched, QEvent * e );
+
+private:
+
+  void calculateAccelerators();
+
+  QWidgetStack     *m_stack;
+  KAccelStringList m_entries;
 
 };
 
