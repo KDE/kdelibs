@@ -47,7 +47,7 @@ public:
     QCString obj() const;
     
     enum Status{ CallSucceeded, CallFailed };
-    /*
+    /**
       Returns the status of the last call, either 'CallSucceeded' or 'CallFailed'
      */
     Status status() const;

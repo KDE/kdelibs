@@ -73,8 +73,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "bool " << className;
 	    str << "::process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)" << endl;
 	    str << "{" << endl;
-
 	    s = n.nextSibling().toElement();
+	    QStringList funcNames;
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
@@ -105,6 +105,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			funcName += *it;
 		    }
 		    funcName += ")";
+		    funcNames.append( funcName );
 			
 		    str << "    if ( fun == \"" << funcName << "\" ) {" << endl;
 		    if ( !args.isEmpty() ) {
@@ -145,6 +146,20 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    } else {
 		str << "    return FALSE;" << endl;
 	    }
+	    str << "}" << endl << endl;
+	    
+	    str << "QCString " << className;
+	    str << "::functions()" << endl;
+	    str << "{" << endl;
+	    if (!DCOPParent.isEmpty()) {
+		str << "    return " << DCOPParent << "::functions() + " << endl;
+	    } else {
+		str << "    return " << endl;
+	    }
+	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
+		str << "\t\"" << *it << ";\"" << endl;
+	    }
+	    str << "\t;" << endl;
 	    str << "}" << endl << endl;
 	}
     }

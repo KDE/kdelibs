@@ -34,6 +34,7 @@ class DCOPClient;
 #define K_DCOP \
 public:        \
   virtual bool process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
+  QCString functions(); \
 private:
 
 #define k_dcop public
@@ -50,7 +51,7 @@ private:
  */
 class DCOPObject
 {
- public:
+public:
   /**
    * Create a non valid @ref DCOPObject
    */
@@ -88,7 +89,10 @@ class DCOPObject
    *            qualifiers like "const" etc. are not part of
    *            the signature.
    *
-   * @see DCOPClient::normalizeFunctionSignature()
+   * Note to implementators: remember to call the baseclasses
+   * implementation.
+   *
+   * @see DCOPClient::normalizeFunctionSignature(), functions()
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
@@ -103,11 +107,28 @@ class DCOPObject
    *
    * @return @p false by default.
    *
-   * @see process()
+   * @see process(), DCOPClient::normalizeFunctionSignature(), functions(), 
    */
   virtual bool processDynamic(const QCString &fun, const QByteArray &data,
 			      QCString& replyType, QByteArray &replyData);
 
+    
+  /** 
+   * Returns a semicolon-separated list of functions understood by
+   * the object. It gets reimplemented by the IDL compiler. If you
+   * don't use the IDL compiler, consider implementing this function
+   * manually if you want your object to be easily scriptable.
+   *
+   * Rationale: functions() allows an interpreter to do client-side
+   * type-casting properly.
+   *
+   * Note to implementators: remember to call the baseclasses
+   * implementation.
+   *
+   * @see process(), processDynamic(), DCOPClient::normalizeFunctionSignature()
+   */
+  virtual QCString functions();
+    
   /**
    * @return @p true if an obejct with the questionable @p objId is
    *         known in this process. This query does not ask proxies.
@@ -128,8 +149,8 @@ class DCOPObject
    * using the @ref QObject::name function.
    */
   static QCString objectName( QObject* obj );
-
- private:
+    
+private:
   /**
    * The object id of this DCOPObject.
    */

@@ -57,3 +57,4 @@ QCString DCOPStub::obj() const
 {
     return m_obj;
 }
+

@@ -54,9 +54,9 @@ typedef QValueList<QCString> QCStringList;
  *
  * <pre>
  *   QByteArray data;
- *   QDataStream dataStream(data, IO_WriteOnly);
- *   dataStream << QString("This is text I am serializing");
- *   client->send("someApp", "someObject", "someFunction", data);
+ *   QDataStream arg(data, IO_WriteOnly);
+ *   arg << QString("This is text I am serializing");
+ *   client->send("someApp", "someObject", "someFunction", arg);
  * </pre>
  *
  * @see KApplication::dcopClient()
@@ -275,10 +275,10 @@ class DCOPClient : public QObject
    *
    * Example for a normalized signature:
    * <pre>
-   *   "void someFunction(QString,int)"
+   *   "someFunction(QString,int)"
    * </pre>
    *
-   * When using @ref send() or @ref call(), normlization is done
+   * When using @ref send() or @ref call(), normalization is done
    * automatically for you.
    *
    */
