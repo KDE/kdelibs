@@ -19,6 +19,8 @@ int main(int argc, char **argv)
 {
     KCmdLineArgs::init( argc, argv, "testKJASSever", "test program", "0.0" );
 
+    KCmdLineArgs::addCmdLineOptions( options );
+
     KApplication app;
 
     QString path_to_kdelibs = "/build/wynnw/kde-src";

@@ -30,6 +30,7 @@
 #include <kaboutdata.h>
 #include <kstaticdeleter.h>
 #include <klocale.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kio/authinfo.h>
