@@ -112,7 +112,13 @@ bool KDatagramSocket::connect(const QString& node, const QString& service)
     }
 
   // it has to be finished here
-  lookupFinishedPeer();
+  if (state() != Connected)
+    {
+      setState(Connecting);
+      emit stateChanged(Connecting);
+      lookupFinishedPeer();
+    }
+
   return state() == Connected;
 }
 
