@@ -1672,7 +1672,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   bool isDir = (d->pmode == PermissionsOnlyDirs) || (d->pmode == PermissionsMixed);
-  KDialogBase dlg(0, 0, true, i18n("Advanced Permissions"),
+  KDialogBase dlg(properties, 0, true, i18n("Advanced Permissions"),
 		  KDialogBase::Ok|KDialogBase::Cancel);
 
   QLabel *l, *cl[3];
