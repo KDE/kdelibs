@@ -561,12 +561,9 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         cookieList = new KHttpCookieList();
 
         // All cookies whose domain is not already
-        // known to us should be added with the default
-        // value set to global policy, not the hard-coded
-        // "KCookieDunno" value.  This allows us to
-        // automatically follow what the user has already
-        // set. (DA)
-        cookieList->setAdvice( globalAdvice );
+        // known to us should be added with KCookieDunno.
+        // KCookieDunno means that we use the global policy.
+        cookieList->setAdvice( KCookieDunno );
         cookieDomains.insert( domain, cookieList);
         // Update the list of domains
         domainList.append(domain);
@@ -647,8 +644,15 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 
     if (cookieList)
     {
-        kdDebug(7104) << "Found domain specific policy. Use it..." << endl;
+        kdDebug(7104) << "Found domain..." << endl;
         advice = cookieList->getAdvice();
+        if (advice == KCookieDunno)
+        {
+           kdDebug(7104) << "No domain specific advice, defaulting to global policy." << endl;
+           advice = globalAdvice;
+        }
+        else
+           kdDebug(7104) << "Using domain specific advice." << endl;
     }
     else
     {
@@ -1066,13 +1070,13 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     globalAdvice = strToAdvice(value);
     domainSettings = _config->readListEntry("CookieDomainAdvice");
 
-    // Reset current domain settings first.  Always reset to what
-    // the user choose as default!!  Don't know why it was hard-coded
-    // to the wrong value.  This has caused many bug reports.(DA)
+    // Reset current domain settings first. 
     for ( QStringList::Iterator it=domainList.begin(); it != domainList.end();)
     {
+         // Make sure to update iterator before calling setDomainAdvice()
+         // setDomainAdvice() might delete the domain from domainList.
          QString domain = *it++;
-         setDomainAdvice(domain, globalAdvice);
+         setDomainAdvice(domain, KCookieDunno); 
     }
 
     // Now apply the
