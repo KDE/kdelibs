@@ -4,6 +4,10 @@
 #include <qptrlist.h>
 #include <qstringlist.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 class QRegExp;
 class KFileItem;
 
