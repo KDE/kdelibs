@@ -40,6 +40,7 @@ extern Atom	qt_embedded_window_support_tab_focus;
 extern Atom	qt_wheel_event;
 extern Atom	qt_unicode_key_press;
 extern Atom	qt_unicode_key_release;
+extern Atom	qt_wm_delete_window;
 
 class QXEmbedData
 {
@@ -173,14 +174,30 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
  */
 QXEmbed::~QXEmbed()
 {
-    if ( topLevelWidget()->isActiveWindow() ) {
-	XEvent e;
-	e.type = FocusIn;
-	e.xfocus.window = topLevelWidget()->winId();
-	e.xfocus.mode = NotifyNormal;
-	e.xfocus.detail = NotifyDetailNone;
-	XSendEvent(qt_xdisplay(), topLevelWidget()->winId(), 0, FALSE, &e);
+    static Atom wm_protocols = 0;
+    if (!wm_protocols )
+	wm_protocols = XInternAtom( qt_xdisplay(), "WM_PROTOCOLS", False );
+//     if ( topLevelWidget()->isActiveWindow() ) {
+// 	XEvent e;
+// 	e.type = FocusIn;
+// 	e.xfocus.window = topLevelWidget()->winId();
+// 	e.xfocus.mode = NotifyNormal;
+// 	e.xfocus.detail = NotifyDetailNone;
+// 	XSendEvent(qt_xdisplay(), topLevelWidget()->winId(), 0, FALSE, &e);
+//     }
+    
+
+    if ( window != 0 ) {
+	XEvent ev;
+	memset(&ev, 0, sizeof(ev));
+	ev.xclient.type = ClientMessage;
+	ev.xclient.window = window;
+	ev.xclient.message_type = wm_protocols;
+	ev.xclient.format = 32;
+	ev.xclient.data.s[0] = qt_wm_delete_window;
+	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
     }
+    window = 0;
 }
 
 
@@ -335,7 +352,6 @@ void QXEmbed::embed(WId w)
 	XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
     QApplication::syncX();
     XResizeWindow(qt_xdisplay(), w, width(), height());
-    XMapRaised(qt_xdisplay(), w);
     extraData()->xDndProxy = w;
 
     if ( parent() ) {
@@ -416,6 +432,10 @@ bool QXEmbed::x11Event( XEvent* e)
 	    window = e->xreparent.window;
 	    embed( window );
 	}
+	break;
+    case MapRequest:
+	if ( window && e->xmaprequest.window == window )
+	    XMapRaised(qt_xdisplay(), window );
 	break;
     case ClientMessage:
 	if ( e->xclient.format == 32 && e->xclient.message_type ) {
