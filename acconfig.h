@@ -25,3 +25,6 @@
 
 /* Define if your locale.h file contains LC_MESSAGES.  */
 #undef HAVE_LC_MESSAGES    
+
+/* Define if you need the GNU extensions to compile */
+#undef _GNU_SOURCE

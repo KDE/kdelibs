@@ -38,6 +38,7 @@ AC_MINIX
 
 dnl for NLS support. Call them in this order!
 dnl WITH_NLS is for the po files, GNU_GETTEXT for the sources
+AC_LANG_CPLUSPLUS
 AM_KDE_WITH_NLS
 AM_KDE_GNU_GETTEXT  
 
@@ -59,6 +60,24 @@ AC_HEADER_TIME
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
+
+AC_MSG_CHECKING(if you need GNU extensions)
+cat > conftest.c << EOF
+#include <features.h>
+
+#ifdef __GNU_LIBRARY__
+yes
+#endif
+EOF
+
+if (eval "$ac_cpp conftest.c") 2>&5 |
+  egrep "yes" >/dev/null 2>&1; then
+  rm -rf conftest*
+  AC_DEFINE_UNQUOTED(_GNU_SOURCE)
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
 
 dnl Checks for library functions. 
 AC_CHECK_FUNCS(socket)
