@@ -16,9 +16,11 @@ typedef struct sdate {
 	double nmtime;
 } SDATE;
 
-extern SDATE *caldate(double), *hdate(int,int,int), *gdate(int,int,int);
-extern double julianday(int,int,int,float);
-extern int ndays(int,int);
+extern SDATE *julianToGregorian(double julian);
+extern SDATE *hdate(int,int,int);
+extern SDATE *gdate(int,int,int);
+extern double gregorianToJulian(int,int,int,float);
+extern int hijriDaysInMonth(int m, int y);
 
 #ifdef __cplusplus
 	}

@@ -143,7 +143,7 @@ julianday( int year, int month, int day, float time)
  * inverse function of Julianday.
  */
 SDATE *
-caldate( double julday )
+julianToGregorian( double julday )
 {
 	static SDATE sd;
 	long	z, alpha, a, b, c, d, e;
@@ -219,14 +219,13 @@ gdate(int y, int m, int d)
 	if (y<0) y++;
 	k = m+ y*12 - NMONTHS;   /* # of months since 1/1/1405 */
 	jd = visible(k+1048L, &rjd) +d;
-	sd = caldate(jd);
+	sd = julianToGregorian(jd);
 	sd->nmtime = rjd;
 	return (sd);
 }
 
 
-int
-ndays(int m, int y)
+int hijriDaysInMonth(int m, int y)
 {
 	static short  ndmnth[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
 

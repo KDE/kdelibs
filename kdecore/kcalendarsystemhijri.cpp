@@ -191,8 +191,6 @@ QString KCalendarSystemHijri::monthName(int month, bool shortName) const
 QString KCalendarSystemHijri::monthNamePossessive(int month,
                                                   bool shortName) const
 {
-  kdDebug(5400) << "Arabic getMonthName " << hmname[month - 1] << endl;
-
   if (shortName)
     switch ( month )
       {
@@ -347,11 +345,11 @@ int KCalendarSystemHijri::hndays(int mon, int year) const
   int nd = 666;
   fd = *gdate(year, mon, 1);
   ld = *gdate(year, mon + 1, 1);
-  ld = *caldate(julianday(ld.year, ld.mon, ld.day, 0.0) - 1.0);
+  ld = *julianToGregorian(gregorianToJulian(ld.year, ld.mon, ld.day, 0.0) - 1.0);
   if (fd.mon == ld.mon)
     nd = ld.day - fd.day + 1;
   else
-    nd = ndays(fd.mon, fd.year) - fd.day + ld.day + 1;
+    nd = hijriDaysInMonth(fd.mon, fd.year) - fd.day + ld.day + 1;
 
   return nd;
 }
