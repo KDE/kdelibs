@@ -257,12 +257,12 @@ public:
      * If no | is found in the expression, just the namefilter is
      * shown. Examples:
      *
-     * <pre>
+     * <code>
      * kfile->setFilter("*.cpp|C++ Source Files\n*.h|Header files");
      * kfile->setFilter("*.cpp");
      * kfile->setFilter("*.cpp|Sources (*.cpp)");
      * kfile->setFilter("*.cpp *.cc *.C|C++ Source Files\n*.h *.H|Header files");
-     * </pre>
+     * </code>
      *
      * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
@@ -271,9 +271,9 @@ public:
      * If the filter contains a '/', a mimetype-filter is assumed. You can
      * specify multiple mimetypes like this (separated with space):
      *
-     * <pre>
+     * <code>
      * kfile->setFilter( "image/png text/html text/plain" );
-     * </pre>
+     * </code>
      *
      * @see #filterChanged
      * @see #setMimeFilter
@@ -617,21 +617,22 @@ public:
      * Sets the mode of the dialog.
      *
      * The mode is defined as (in kfile.h):
-     * <pre>    enum Mode {
-     *                      File         = 1,
-     *                      Directory    = 2,
-     *                      Files        = 4,
-     *                      ExistingOnly = 8,
-     *                      LocalOnly    = 16
-     *                    };
-     * </pre>
+     * <code>
+     *    enum Mode {
+     *         File         = 1,
+     *         Directory    = 2,
+     *         Files        = 4,
+     *         ExistingOnly = 8,
+     *         LocalOnly    = 16
+     *    };
+     * </code>
      * You can OR the values, e.g.
-     * <pre>
+     * <code>
      * KFile::Mode mode = static_cast<KFile::Mode>( KFile::Files |
      *                                              KFile::ExistingOnly |
      *                                              KFile::LocalOnly );
      * setMode( mode );
-     * </pre>
+     * </code>
      */
     void setMode( unsigned int m );
 
@@ -655,12 +656,12 @@ public:
      *
      * You can use this to insert custom
      * items into it, e.g.:
-     * <pre>
+     * <code>
      *      yourAction = new KAction( i18n("Your Action"), 0,
      *                                this, SLOT( yourSlot() ),
      *                                this, "action name" );
      *      yourAction->plug( kfileDialog->toolBar() );
-     * </pre>
+     * </code>
      */
     KToolBar *toolBar() const { return toolbar; }
 
