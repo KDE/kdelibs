@@ -403,11 +403,13 @@ void KApplication::saveState( QSessionManager& sm )
     QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
 	sessionConfigName();
 
-    // remove former session config, we want a new and fresh one
+    // remove former session config if still existing, we want a new and fresh one
     if ( pSessionConfig ) {
 	delete pSessionConfig;
 	pSessionConfig = 0;
-	QDir d; d.remove( aLocalFileName, TRUE );
+	QFile f ( aLocalFileName );
+	if ( f.exists() )
+	    f.remove();
     }
 
     // tell the session manager about our new lifecycle
