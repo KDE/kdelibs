@@ -463,7 +463,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
             m_slider->setGeometry(w, h, e->size().width() - w, m_sizeSpin.height());
     }
     else if(m_slider) {
-        m_slider->setGeometry(w, h, e->size().width() - (w + m_colw2 - KDialog::spacingHint()), m_sizeSpin.height());
+        m_slider->setGeometry(w, h, e->size().width() - (w + m_colw2 + KDialog::spacingHint()), m_sizeSpin.height());
         m_spin->setGeometry(w + m_slider->size().width() + KDialog::spacingHint(), h, m_colw2, m_sizeSpin.height());
     }
     else {
