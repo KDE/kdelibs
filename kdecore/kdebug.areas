@@ -51,6 +51,7 @@
 7016	kio (KIOSlave)
 7017	kio (KIOConnection)
 7018	kio (KMimeMagic)
+7019    kio (kioslave)
 7020	kded
 7021    kbuildsycoca
 
