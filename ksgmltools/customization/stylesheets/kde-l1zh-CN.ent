@@ -12,8 +12,8 @@
     the Unicode ftp server (may be not correct).
     Byte1*16^2+Byte2-0x8080=GB2312 code, this is looked up in conversion
  -->
-<!ENTITY Default "\U-9ED8\U-8BA4" --GB2312 "默认"-->
-<!ENTITY Chinese "\U-4E2D\U-6587" --GB2312 "中文"-->
+<!ENTITY Default "\U-9ED8;\U-8BA4;" --GB2312 "默认"-->
+<!ENTITY Chinese "\U-4E2D;\U-6587;" --GB2312 "中文"-->
 <!ENTITY Version "Version">
 <!ENTITY LastUpdated "Last updated">
 <!--ENTITY By "By"-->

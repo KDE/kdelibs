@@ -30,7 +30,7 @@
 
 (define %kde-gentext-ja-home-url% "http://www.kde.gr.jp/")
 ;(define %kde-gentext-ja-logo-alt% "KDEプロジェクト") ; K\U-FF65\U-FF97\U-FF65\U-FF65\U-FF78\U-FF65\U-FF67\U-FF65\U-FF6F\U-FF65\U-FF88
-(define %kde-gentext-ja-logo-alt% "K\U-30C7\U-30B9\U-30AF\U-30C8\U-30C3\U-30D7\U-74B0\U-5883")
+(define %kde-gentext-ja-logo-alt% "K\U-30C7;\U-30B9;\U-30AF;\U-30C8;\U-30C3;\U-30D7;\U-74B0;\U-5883;")
 (define %kde-gentext-ja-encoding% "euc-jp")
 (define %kde-gentext-ja-html-header-tags% '())
 (define %kde-gentext-ja-default% "&Default;")

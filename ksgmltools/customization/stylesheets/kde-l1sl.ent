@@ -9,7 +9,7 @@
     Let us know should you know of other encodings that work.
  -->
 <!ENTITY Default "Privzeto">
-<!ENTITY Slovenian "Sloven\U-0161\U-010D;ina">
+<!ENTITY Slovenian "Sloven\U-0161;\U-010D;ina">
 <!ENTITY Version "Razli\U-010D;ica">
 <!ENTITY LastUpdated "Zadnji\U-010D; osve\U-017E;eno">
 <!--ENTITY By "By"-->
