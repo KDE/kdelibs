@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -45,13 +45,13 @@ public:
       * Construct a KFileInfo object from a KDirEntry.
       */
     KFileInfo(const KDirEntry &);
-    
+
     /**
       * Constructs a KFileInfo object from a QFileInfo.
       * This is only useful for local files
       */
     KFileInfo(const QFileInfo &);
-    
+
     /**
       * Constructs a "little" KFileInfo (just for local files)
       **/
@@ -60,13 +60,13 @@ public:
     /**
       * Destroy the KFileInfo object.
       */
-    ~KFileInfo();
-    
+    ~KFileInfo(){};
+
     /**
       * Copy a KFileInfo.
       */
     KFileInfo &operator=(const KFileInfo &);
-    
+
     /**
       * Returns true if this file is a directory.
       */
@@ -85,7 +85,7 @@ public:
       **/
     const char *fileName() const { return myName; }
     QString filePath();
-    
+
     /**
       * Returns the group of the file.
       */
@@ -95,27 +95,27 @@ public:
       * Returns the access permissions for the file as a string.
       */
     const char *access() const { return myAccess; }
-    
+
     /**
       * Returns the owner of the file.
       */
     const char *owner() const { return myOwner; }
-    
+
     /**
       * Returns the group of the file.
       */
     const char *group() const { return myGroup; }
-    
+
     /**
       * Returns the size of the file.
       */
     uint size() const { return mySize; }
-    
+
     /**
       * Returns true if the specified permission flag is set.
       */
     bool permission(uint permissionSpec);
-    
+
     // overriding QFileInfo's function
     bool isReadable() const ;
 
@@ -124,7 +124,7 @@ public:
 protected:
     void parsePermissions(const char *perms);
     void parsePermissions(uint perm);
-    
+
 private:
     QString myName;
     QString myBaseURL;

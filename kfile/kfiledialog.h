@@ -1,9 +1,9 @@
-// -*- c++ -*-
+
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -68,7 +68,7 @@ class KFileFilter;
 class KFileBaseDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     /**
       * Construct a KFileBaseDialog
@@ -80,45 +80,45 @@ public:
       * files on the local filesystem.
       */
     KFileBaseDialog(const char *dirName, const char *filter= 0,
-		QWidget *parent= 0, const char *name= 0, 
+		QWidget *parent= 0, const char *name= 0,
 		bool modal = false, bool acceptURLs = true);
-    
-    
+
+
     /**
       * Cleans up
       */
     ~KFileBaseDialog();
-    
+
     /**
       * Returns the fully qualified filename.
       */
     QString selectedFile();
-    
+
     /**
       * Return the path of the selected directory.
       */
     QString dirPath();
-    
+
     /**
       * Rereads the currently selected directory.
       */
     void rereadDir();
-    
+
     /**
       * Go back to the previous directory if this is not the first.
       */
     void back();
-    
+
     /**
       * Go forward to the next directory if this is not the last.
       */
     void forward();
-    
+
     /**
       * Go home.
       */
     void home();
-    
+
     /**
       * Go to parent.
       */
@@ -128,37 +128,37 @@ public:
       * Returns true for local files, false for remote files.
       */
     bool dirIsLocal() const { return !acceptUrls; }
-    
+
     /**
       * Returns the url of the selected filename
       */
     QString selectedFileURL();
-    
+
     /**
       * Returns the URLs of the selected files.
       */
     QStrList selectedFileURLList();
-    
+
     /**
       * If the argument is true the dialog will accept multiple selections.
       */
     void setMultiSelection(bool multi= true);
-    
+
     /**
       * Returns true if multiple selections are enabled.
       */
     bool isMultiSelection() const { return false; }
-    
+
     /**
-      * This method creates a modal directory dialog and returns the selected 
-      * directory or an empty string if none was chosen. Note that with 
+      * This method creates a modal directory dialog and returns the selected
+      * directory or an empty string if none was chosen. Note that with
       * this method the user must select an existing directory.
       *
       * @param url This specifies the path the dialog will start in.
       * @param parent The widget the dialog will be centered on initially.
       * @param name The name of the dialog widget.
       */
-    static QString getDirectory(const char *url, QWidget *parent = 0,  
+    static QString getDirectory(const char *url, QWidget *parent = 0,
 				const char *name = 0);
 
     /**
@@ -168,15 +168,15 @@ public:
 				const char *filter= 0,
 				QWidget *parent= 0,
 				const char *name= 0);
-    
+
     /**
       * This a multiple selection version of getSaveFileURL().
       */
     QStrList getSaveFileURLList(const char *url= 0, const char *filter= 0,
 				QWidget *parent= 0, const char *name= 0);
-    
+
     /**
-      * Set the directory to view
+      * Sets the directory to view
       * @param name URL to show
       * @param clearforward indicate, if the forward queue
       * should be cleared
@@ -184,7 +184,7 @@ public:
     void setDir(const char *name, bool clearforward = true);
 
     /**
-     * Sets the filename to preselect. 
+     * Sets the filename to preselect.
      * It takes absolute and relative file names
      */
     void setSelection(const char *name);
@@ -213,17 +213,17 @@ signals:
       * Emitted when the user selects a file.
       */
     void fileSelected(const char *);
-    
+
     /**
       * Emitted when the user highlights a file.
       */
     void fileHighlighted(const char *);
-    
+
     /**
       * Emitted when a new directory is entered.
       */
     void dirEntered(const char *);
-    
+
     /**
       * Emitted when the allowable history operations change.
       */
@@ -232,11 +232,11 @@ signals:
 protected:
     KToolBar *toolbar;
     KFileInfoContents *fileList;
-    
+
     QStrIList *visitedDirs;  // to fill the combo box
     static QString *lastDirectory;
 
-    QPopupMenu *bookmarksMenu; 
+    QPopupMenu *bookmarksMenu;
     QCheckBox *hiddenToggle;
     KCombo *locationEdit;
 
@@ -245,7 +245,7 @@ protected:
     KBookmarkManager *bookmarks;
     QStrList history;
     KDir *dir;
-    
+
     QLabel *myStatusLine;
 
     // the last selected filename
@@ -257,9 +257,9 @@ protected:
     bool showHidden;
 
     /*
-     * indicates, if the status bar should be shown. 
+     * indicates, if the status bar should be shown.
      * Initialized by "ShowStatusLine"
-     */ 
+     */
     bool showStatusLine;
     bool showFilter;
     bool acceptUrls;
@@ -268,19 +268,19 @@ protected:
       * Contains all URLs you can reach with the back button.
       */
     QStack<QString> backStack;
-    
+
     /**
       * Contains all URLs you can reach with the forward button.
       */
     QStack<QString> forwardStack;
-    
+
     /**
       * Lock @ref #backStack and @ref #forwardStack .
       */
     bool stackLock;
-    
+
     void resizeEvent(QResizeEvent *);
-    
+
     /**
       * Subclasses should reimplement this method to swallow the main
       * layout. This allows the addition of children that are outside
@@ -290,7 +290,7 @@ protected:
     virtual QWidget *swallower() { return this; }
 
     /**
-      * Subclasses, that want another view should override this 
+      * Subclasses, that want another view should override this
       * function to provide another file view.
       * It will be used to display files.
       **/
@@ -300,15 +300,16 @@ protected:
       * Overload this function, if you want the filter shown/unshown
       */
     virtual bool getShowFilter() = 0;
-    
+
     /**
+
       * adds a entry of the current directory. If disableUpdating is set
       * to true, it will care about clever updating
       **/
     void addDirEntry(KFileInfo *entry, bool disableUpdating);
 
     /**
-      * rebuild geometry managment. 
+      * rebuild geometry managment.
       *
       */
     void initGUI();
@@ -329,7 +330,7 @@ protected:
 
     /**
       * this functions must be called by the constructor of a derived
-      * class. 
+      * class.
       **/
     void init();
 
@@ -344,7 +345,7 @@ protected slots:
     void updateHistory(bool, bool);
     void filterChanged();
     void locationChanged(const char*);
-    
+
     void setHiddenToggle(bool);
     void slotDirEntry(KFileInfo *);
     void slotFinished();
@@ -359,7 +360,7 @@ protected slots:
       * this dialog in a subclass in order to invoke your updated user help.
       */
     virtual void help();
-    
+
     /**
       * Add the current location to the global bookmarks list
       */
@@ -370,16 +371,16 @@ protected slots:
 private:
     //
     // the father of the widget. By default itself, but
-    // to make it customable, this can be overriden by 
+    // to make it customable, this can be overriden by
     // overriding swallower()
     //
     QWidget *wrapper;
-  
+
     // flag for perfomance hype ;)
-    bool repaint_files; 
+    bool repaint_files;
     // for the handling of the cursor
     bool finished;
-    
+
     // indicates, if the file selector accepts just existing
     // files or not. If set to true, it will check for local
     // files, if they exist
@@ -400,7 +401,7 @@ private:
  * select directories. It is a specalised KFileDialog.
  *
  * You will usually want to use one of the two static methods
- * KFileDialog::getDirectory. 
+ * KFileDialog::getDirectory.
  *
  * Being a subclass of KFileKFileBaseDialog, it can therefore be easily
  * customised.
@@ -411,9 +412,9 @@ private:
 class KDirDialog : public KFileBaseDialog
 {
 public:
-    
+
     KDirDialog(const char *url, QWidget *parent, const char *name);
-    
+
 protected:
     virtual KFileInfoContents *initFileList( QWidget *parent );
     virtual bool getShowFilter() { return false; }
@@ -422,14 +423,14 @@ protected:
 
 class KFileDialog : public KFileBaseDialog
 {
-public: 
+public:
     KFileDialog(const char *dirName, const char *filter= 0,
-		QWidget *parent= 0, const char *name= 0, 
+		QWidget *parent= 0, const char *name= 0,
 		bool modal = false, bool acceptURLs = true);
 
     /**
-      * This method creates a modal file dialog and returns the selected 
-      * filename or an empty string if none was chosen. Note that with 
+      * This method creates a modal file dialog and returns the selected
+      * filename or an empty string if none was chosen. Note that with
       * this method the user must select an existing filename.
       *
       * @param dir This specifies the path the dialog will start in.
@@ -441,8 +442,8 @@ public:
 				   QWidget *parent= 0, const char *name= 0);
 
     /**
-     * This method creates a modal file dialog and returns the selected 
-     * filename or an empty string if none was chosen. Note that with this 
+     * This method creates a modal file dialog and returns the selected
+     * filename or an empty string if none was chosen. Note that with this
      * method the user need not select an existing filename.
      *
      * @param dir This specifies the path the dialog will start in.
@@ -459,14 +460,14 @@ public:
      */
     static QString getOpenFileURL(const char *url= 0, const char *filter= 0,
 				  QWidget *parent= 0, const char *name= 0);
-    
+
     /**
      * This function is similar to getSaveFileName() but allows the
      * user to select a local file or a remote file.
      */
     static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
 				  QWidget *parent= 0, const char *name= 0);
-    
+
 protected:
     virtual KFileInfoContents *initFileList( QWidget *parent);
     virtual bool getShowFilter();
@@ -490,7 +491,7 @@ enum PreviewType { PreviewText = 0x001,
  *
  * You will usually want to use one of the static methods
  * KFilePreviewDialog::get[Open|Save][Name|URL](...) which are the same
- * as the KFileDialog ones. 
+ * as the KFileDialog ones.
  *
  * Being a subclass of KFileKFileBaseDialog, it can therefore be easily
  * customised.
@@ -501,9 +502,9 @@ enum PreviewType { PreviewText = 0x001,
 class KFilePreviewDialog : public KFileBaseDialog
 {
 public:
-    
+
     KFilePreviewDialog(const char *dirName, const char *filter= 0,
-		       QWidget *parent= 0, const char *name= 0, 
+		       QWidget *parent= 0, const char *name= 0,
 		       bool modal = false, bool acceptURLs = true);
     ~KFilePreviewDialog() {}
 
@@ -527,7 +528,7 @@ public:
     static void registerPreviewModule( const char * format, PreviewHandler readPreview,
                                 PreviewType type);
 
-    
+
 protected:
     virtual KFileInfoContents *initFileList( QWidget *parent );
     virtual bool getShowFilter();

@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -80,7 +80,7 @@ KFileInfo::KFileInfo(const char *dir, const char *name)
 	if (S_ISLNK(buf.st_mode)) {
 	  myIsSymLink = true;
 	  struct stat st;
-	  if (stat((dir + myName).data(), &st) == 0) 
+	  if (stat((dir + myName).data(), &st) == 0)
 	      myIsDir = S_ISDIR(st.st_mode) != 0;
 	  else
 	      myName = ""; // indicate, that the link is broken
@@ -116,9 +116,10 @@ KFileInfo::KFileInfo(const char *dir, const char *name)
 
 }
 
-KFileInfo::~KFileInfo()
-{
-}
+// KFileInfo::~KFileInfo()
+// {
+//     debug("~KFileInfo");
+// }
 
 KFileInfo &KFileInfo::operator=(const KFileInfo &i)
 {
@@ -142,11 +143,11 @@ void KFileInfo::parsePermissions(const char *perms)
 {
     myPermissions = 0;
     char p[11] = {0, 0, 0, 0, 0,
-		  0, 0, 0, 0, 0, 
+		  0, 0, 0, 0, 0,
 		  0};
 
     strncpy(p, perms, sizeof(p));
-    
+
     myIsDir = (bool)(p[0] == 'd');
     myIsSymLink = (bool)(p[0] == 'l');
     myIsFile = !myIsDir;
@@ -201,7 +202,7 @@ void KFileInfo::parsePermissions(uint perm)
 	p[5]='w';
     if (perm & QFileInfo::ExeGroup)
 	p[6]='x';
-    
+
     if (perm & QFileInfo::ReadOther)
 	p[7]='r';
     if (perm & QFileInfo::WriteOther)
@@ -230,26 +231,26 @@ QString KFileInfo::dateTime(time_t _time) {
 	months[10] = i18n("Nov");
 	months[11] = i18n("Dec");
     }
-    
+
     QDateTime t;
     time_t now = time(0);
     t.setTime_t(_time);
-    
+
     /* isn't there a sprintf modifier for this? */
     QString number;
     number.sprintf("%d",t.date().day());
     if (number.length() < 2)
 	number = " " + number;
-    
+
     QString sTime;
     if (_time > now || now - _time >= 365 * 24 * 60 * 60)
 	sTime.sprintf(" %04d", t.date().year());
     else
 	sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
-    
+
     QString text;
-    text.sprintf("% 3s %s %s", months[t.date().month() - 1], number.data(), 
+    text.sprintf("% 3s %s %s", months[t.date().month() - 1], number.data(),
 		 sTime.data());
-    
+
     return text;
 }
