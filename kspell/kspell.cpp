@@ -948,7 +948,8 @@ void KSpell::cleanUp ()
 
 void KSpell::ispellExit (KProcess *)
 {
-  kdDebug(750) << "KSpell::ispellExit()" << endl;
+  kdDebug() << "KSpell::ispellExit() " << m_status << endl;
+
   if ((m_status == Starting) && (trystart<maxtrystart))
   {
     trystart++;
@@ -963,10 +964,12 @@ void KSpell::ispellExit (KProcess *)
   else if (m_status == Running)
      m_status = Crashed;
   else // Error, Finished, Crashed
+    {
+      kdError(750) << "Death" << endl;
+      QTimer::singleShot( 0, this, SLOT(emitDeath()));
      return; // Dead already
+    }
 
-  kdError(750) << "Death" << endl;
-  QTimer::singleShot( 0, this, SLOT(emitDeath()));
 }
 
 // This is always called from the event loop to make
@@ -1017,27 +1020,38 @@ KSpell::modalCheck( QString& text )
     modalreturn = 0;
     modaltext = text;
 
-    modalWidgetHack = new QWidget(0,0,WType_Modal);
+    /*modalWidgetHack = new QWidget(0,0,WType_Modal);
     modalWidgetHack->setGeometry(-10,-10,2,2);
+    */
 
     // kdDebug() << "KSpell1" << endl;
-    KSpell* spell = new KSpell( 0L, i18n("Spell Checker"), 0 ,0, 0, TRUE, TRUE );
-    // kdDebug() << "KSpell2" << endl;
-    modalWidgetHack->show();
-    qApp->enter_loop();
-    // kdDebug() << "KSpell3" << endl;
+    KSpell* spell = new KSpell( 0L, i18n("Spell Checker"), 0 ,
+				0, 0, true, true );
+    //modalWidgetHack->show();
+    //qApp->enter_loop();
+
+    while (spell->status()!=Finished)
+      kapp->processEvents();
 
     text = modaltext;
+
+    //delete modalWidgetHack;
+    //modalWidgetHack = 0;
+
     delete spell;
     return modalreturn;
 }
 
 void KSpell::slotModalReady()
 {
-    // kdDebug() << "MODAL READY" << endl;
-    ASSERT( m_status == Running );
-    connect( this, SIGNAL( done( const QString & ) ), this, SLOT( slotModalDone( const QString & ) ) );
-    check( modaltext );
+  //kdDebug() << qApp->loopLevel() << endl;
+  // kdDebug() << "MODAL READY" << endl;
+  
+  ASSERT( m_status == Running );
+  connect( this, SIGNAL( done( const QString & ) ), 
+	   this, SLOT( slotModalDone( const QString & ) ) );
+  check( modaltext );
+
 }
 
 void KSpell::slotModalDone( const QString &_buffer )
@@ -1046,9 +1060,10 @@ void KSpell::slotModalDone( const QString &_buffer )
     modaltext = _buffer;
     cleanUp();
 
-    modalWidgetHack->close(true);
-    modalWidgetHack = 0;
-    qApp->exit_loop();
+    //kdDebug() << "ABOUT TO EXIT LOOP" << endl;
+    //qApp->exit_loop();
+
+    //modalWidgetHack->close(true);
 }
 
 QString KSpell::modaltext;

@@ -69,20 +69,20 @@ KSpellDlg::KSpellDlg(
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
   qpbrep = b;
 
-  b = buttonBox->addButton(i18n("Replace &All"), this, SLOT(replaceAll())),
+  b = buttonBox->addButton(i18n("Replace &All"), this, SLOT(replaceAll()));
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
   qpbrepa = b;
 
-  b = buttonBox->addButton(i18n("&Ignore"), this, SLOT(ignore())),
+  b = buttonBox->addButton(i18n("&Ignore"), this, SLOT(ignore()));
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
 
-  b = buttonBox->addButton(i18n("I&gnore All"), this, SLOT(ignoreAll())),
+  b = buttonBox->addButton(i18n("I&gnore All"), this, SLOT(ignoreAll()));
   connect(this, SIGNAL(ready(bool)), this, SLOT(setEnabled(bool)));
 
-  b = buttonBox->addButton(i18n("A&dd"), this, SLOT(add())),
+  b = buttonBox->addButton(i18n("A&dd"), this, SLOT(add()));
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
 
-  b = buttonBox->addButton(i18n("&Stop"), this, SLOT(stop())),
+  b = buttonBox->addButton(i18n("&Stop"), this, SLOT(stop()));
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
 
   QHBoxLayout * layout = 0L;
