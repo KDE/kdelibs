@@ -45,7 +45,7 @@ namespace khtml
     {
 	Length() : _length(0) {}
         Length(LengthType t) { l.value = 0; l.type = t; l.quirk = 0; }
-        Length(int v, LengthType t, bool q=false) 
+        Length(int v, LengthType t, bool q=false)
         {  l.value = v; l.type = t; l.quirk = q; }
         bool operator==(const Length& o) const
         { return _length == o._length; }
@@ -85,19 +85,20 @@ namespace khtml
 		    return 0;
 		}
 	    }
-        bool isVariable() const { return (l.type == Variable); }
-        bool isRelative() const { return (l.type == Relative); }
-        bool isPercent() const { return (l.type == Percent); }
-        bool isFixed() const { return (l.type == Fixed); }
-        bool isStatic() const { return (l.type == Static); }
+        bool isVariable() const { return ((LengthType) l.type == Variable); }
+        bool isRelative() const { return ((LengthType) l.type == Relative); }
+        bool isPercent() const { return ((LengthType ) l.type == Percent); }
+        bool isFixed() const { return ((LengthType) l.type == Fixed); }
+        bool isStatic() const { return ((LengthType) l.type == Static); }
+        bool isQuirk() const { return l.quirk; }
 
         int value() const { return l.value; }
-        LengthType type() const { return l.type; }
+        LengthType type() const { return (LengthType) l.type; }
 
         union {
             struct {
                 signed int value : 28;
-                LengthType type : 3;
+                unsigned type : 3;
                 bool quirk : 1;
             } l;
             Q_UINT32 _length;
