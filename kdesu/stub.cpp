@@ -95,9 +95,9 @@ int StubProcess::ConverseStub(bool check_only)
 	} else if (line == "display_auth") {
 	    writeLine(displayAuth());
 	} else if (line == "dcopserver") {
-	    writeLine(commaSeparatedList(dcopServer()));
+	    writeLine("no");
 	} else if (line == "dcop_auth") {
-	    writeLine(commaSeparatedList(dcopAuth()));
+	    writeLine("no");
 	} else if (line == "ice_auth") {
 	    writeLine(commaSeparatedList(iceAuth()));
 	} else if (line == "command") {

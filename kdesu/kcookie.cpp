@@ -29,7 +29,7 @@
 KCookie::KCookie()
 {
     getXCookie();
-    getICECookie();
+    //getICECookie(); not needed anymore
 }
 
 

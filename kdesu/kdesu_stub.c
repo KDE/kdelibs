@@ -342,7 +342,7 @@ int main()
 	printf("kdesu_stub: unable to create sycoca\n");
 
     /* Start kdeinit + klauncher */
-    if (system("kdeinit --no-dcop"))
+    if (system("kdeinit"))
 	printf("kdesu_stub: unable to start kdeinit or already started\n");
 
     /* Execute the command */
