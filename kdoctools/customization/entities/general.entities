@@ -194,6 +194,7 @@
 <!ENTITY kfouleggs "<application>KFoulEggs</application>">
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY khangman "<application>KHangMan</application>">
+<!ENTITY kgeo	"<application>KGeo</application>">
 <!ENTITY kghostview	"<application>Kghostview</application>">
 <!ENTITY khelpcenter	"<application>KHelpcenter</application>">
 <!ENTITY khexedit	"<application>KHexEdit</application>">
@@ -291,6 +292,7 @@
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
+<!ENTITY lisa	"<application>Lisa</application>">
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
 <!ENTITY Linux-Mandrake	"<trademark>Linux-Mandrake</trademark>">
 <!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>">
@@ -316,6 +318,7 @@
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
+<!ENTITY reslisa "<application>ResLisa</application>">
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
