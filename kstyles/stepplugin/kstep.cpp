@@ -45,6 +45,7 @@ KStepStyle::KStepStyle()
     :KStyle()
 {
     setButtonDefaultIndicatorWidth(4);
+    setScrollBarExtent(19);
 }
 
 KStepStyle::~KStepStyle()
@@ -52,9 +53,9 @@ KStepStyle::~KStepStyle()
     ;
 }
 
-void KStepStyle::polish(QApplication *)
+void KStepStyle::polish(QApplication *app)
 {
-    setScrollBarExtent(19, 19);
+    app->setPalette( QPalette(nextGrp, nextGrp, nextGrp), TRUE, "QPopupMenu" );
 }
 
 void KStepStyle::polish(QPalette &)
@@ -63,23 +64,16 @@ void KStepStyle::polish(QPalette &)
     nextGrp.setColor(QColorGroup::Dark, Qt::black);
 }
 
-void KStepStyle::unPolish(QApplication *)
+void KStepStyle::unPolish(QApplication *app)
 {
-    setScrollBarExtent(16, 16);
 }
 
 void KStepStyle::polish(QWidget *w)
 {
-    if(w->inherits("QPopupMenu")){ // force to our colorgroup
-        oldPopupPal = w->palette();
-        w->setPalette(QPalette(nextGrp, nextGrp, nextGrp));
-    }
 }
 
 void KStepStyle::unPolish(QWidget *w)
 {
-    if(w->inherits("QPopupMenu"))
-        w->setPalette(oldPopupPal);
 }
 
 void KStepStyle::drawButton(QPainter *p, int x, int y, int w, int h,
@@ -97,7 +91,7 @@ void KStepStyle::drawPushButton(QPushButton *btn, QPainter *p)
             kDrawNextButton(p, r, nextGrp, true);
         drawButton(p, r.x()+4, r.y()+4, r.width()-8, r.height()-8, nextGrp,
                    btn->isOn() || btn->isDown());
-        
+
     }
     else
         drawButton(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
@@ -119,7 +113,7 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
         arrowDarkBmp.setMask(arrowDarkBmp);
         arrowMidBmp.setMask(arrowMidBmp);
     }
-    
+
     if (btn->isDefault()) {
 
       // If this is a default button, we have a 4 pixel border which is
@@ -134,7 +128,7 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
                       btn->height() / 2 - 4, &arrowLightBmp, &arrowMidBmp,
                       NULL, &arrowDarkBmp, NULL, NULL);
 
-        
+
         drawItem(p,
           (x1+act?1:0) + 6, y1+act?1:0,
           btn->width() - 26, btn->height(),
@@ -143,7 +137,7 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
           act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
 
     } else {
-     
+
         drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
           AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
           btn->pixmap(), btn->text(), -1,

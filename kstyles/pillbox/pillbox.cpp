@@ -50,19 +50,10 @@ void PillBoxStyle::polish(QPalette &)
 
 void PillBoxStyle::polish(QWidget *w)
 {
-    if ( !w->isTopLevel() ) {
-        if (w->inherits("QPushButton"))
-            w->setAutoMask(true);
-    }
 }
 
 void PillBoxStyle::unPolish(QWidget *w)
 {
-    if ( !w->isTopLevel() ) {
-        if (w->inherits("QLabel") || w->inherits("QPushButton")
-            || w->inherits("QSlider"))
-            w->setAutoMask(false);
-    }
 }
 
 void PillBoxStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
