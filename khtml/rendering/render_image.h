@@ -46,7 +46,7 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    virtual void printObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
+    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
 
     virtual void layout();
 

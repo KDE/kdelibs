@@ -61,11 +61,11 @@ public:
 
     // overrides RenderObject
 
-    virtual void print( QPainter *, int x, int y, int w, int h,
+    virtual void paint( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h,
+    virtual void paintObject( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
-    void printSpecialObjects( QPainter *, int x, int y, int w, int h,
+    void paintSpecialObjects( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
 
     virtual void layout( );
