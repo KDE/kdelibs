@@ -1193,9 +1193,8 @@ void KHTMLParser::popOneBlock()
     HTMLStackElem *Elem = blockStack;
 
     // we should never get here, but some bad html might cause it.
-#ifndef PARSER_DEBUG
     if(!Elem) return;
-#else
+#ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 
