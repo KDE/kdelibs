@@ -32,7 +32,7 @@ type the following special types are supported:
   In particular paths in the home directory are prefixed with $HOME in
   when being stored in the configuration file.
   
-- Enum  This indicates an enumaration. The possible enum values should
+- Enum  This indicates an enumeration. The possible enum values should
   be provided via the <choices> tag. Enum values are accessed as integers
   by the application but stored as string in the configuration file. This
   makes it possible to add more values at a later date without breaking
@@ -105,10 +105,9 @@ Example 2:
   <entry name="Sound$(SoundEvent)" type="String" key="sound_$(SoundEvent)">
     <parameter name="SoundEvent" type="Enum"/>
     <choices>
-      <choice>Explosion</choice>
-      <choice>Crash</choice>
-      <choice>Missile</choice>
-      <choice>Shield</choice>
+      <choice name="Explosion"/>
+      <choice name="Crash"/>
+      <choice name="Missile"/>
     </choices>
     <default param="Explosion">boom.wav</default>
     <default param="Crash">crash.wav</default>
