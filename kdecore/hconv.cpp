@@ -22,32 +22,6 @@
 
 #define RPD     (0.01745329251994329577) /* radians per degree (pi/180) */
 
-const char* const dow[]= {
-	"Yaum al-Ithnain", " Yau al-Thulatha", " Yaum al-Arbi'a",
-	"Yaum al-Khamees", "Yaum al-Jumma", "Yaum al-Sabt", "Yaum al-Ahad"
-};
-
-const char* const sdow[] = {
-	 "Ith", "Thl", "Arb", "Kha", "Jum", "Sab", "Ahd"
-};
-
-const char* const mname[]= {
-	"January", "February", "March", "April",
-	"May", "June", "July", "August",
-	"September", "October", "November", "December"
-};
-
-const char* const hmname[] = {
-	"Muharram", "Safar", "Rabi` al-Awal", "Rabi` al-Thaani",
-	"Jumaada al-Awal", "Jumaada al-Thaani", "Rajab", "Sha`ban",
-	"Ramadan", "Shawwal", "Thu al-Qi`dah", "Thu al-Hijjah"
-};
-
-const char* const hmnameshort[] = {
-	"Muharram", "Safar", "R. Awal", "R. Thaani",
-	"J. Awal", "J. Thaani", "Rajab", "Sha`ban",
-	"Ramadan", "Shawwal", "Qi`dah", "Hijjah"
-};
 /*
  * Given an integer _n_ and a phase selector (nph=0,1,2,3 for
  * new,first,full,last quarters respectively, function returns the
@@ -55,7 +29,7 @@ const char* const hmnameshort[] = {
  * Adapted from "Astronomical  Formulae for Calculators" by
  * Jean Meeus, Third Edition, Willmann-Bell, 1985.
  */
-double
+static double
 tmoonphase( long n, int nph)
 {
 	double jd, t, t2, t3, k, ma, sa, tf, xtra;
@@ -119,7 +93,7 @@ tmoonphase( long n, int nph)
 #define SUNSET 19.5 /*approximate */
 #define TIMDIF (SUNSET-MINAGE) 
 
-double
+static double
 visible(long n, double * rjd)
 {
 	double jd;
