@@ -257,7 +257,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
     QBitmap hand_bitmap(HAND_WIDTH, HAND_HEIGHT, HAND_BITS, true); 
     QBitmap hand_mask(HAND_WIDTH, HAND_HEIGHT, HAND_MASK_BITS, true); 
-    handCursor = QCursor(hand_bitmap, hand_mask, HAND_HOT_X, HAND_HOT_Y);
+    QCursor handCursor(hand_bitmap, hand_mask, HAND_HOT_X, HAND_HOT_Y);
 }
 
 void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
