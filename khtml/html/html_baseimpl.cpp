@@ -139,14 +139,14 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
     if(w->marginWidth() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginWidth());
-	addCSSProperty(CSS_PROP_PADDING_LEFT, str);
-        addCSSProperty(CSS_PROP_PADDING_RIGHT, str);
+	addCSSProperty(CSS_PROP_MARGIN_LEFT, str);
+        addCSSProperty(CSS_PROP_MARGIN_RIGHT, str);
     }
     if(w->marginHeight() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginHeight());
-	addCSSProperty(CSS_PROP_PADDING_TOP, str);
-        addCSSProperty(CSS_PROP_PADDING_BOTTOM, str);
+	addCSSProperty(CSS_PROP_MARGIN_TOP, str);
+        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str);
     }
 
     setStyle(document->styleSelector()->styleForElement( this ));
@@ -406,91 +406,6 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
     }
 
     return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, ev->type );
-
-    /*
-    {
-      kdDebug( 6030 ) << "mouseEvent:check" << endl;
-
-	hSplit = -1;
-	vSplit = -1;
-	//bool resizePossible = true;
-
-	// check if we're over a horizontal or vertical boundary
-	int pos = m_colWidth[0];
-	for(int c = 1; c < m_totalCols; c++)
-	{
-	    if(_x >= pos && _x <= pos+m_border)
-	    {
-		if(vSplitVar && vSplitVar[c-1] == true) vSplit = c-1;
-		kdDebug( 6030 ) << "vsplit!" << endl;
-		break;
-	    }
-	    pos += m_colWidth[c] + m_border;
-	}
-	pos = m_rowHeight[0];
-	for(int r = 1; r < m_totalRows; r++)
-	{
-	    if( _y >= pos && _y <= pos+m_border)
-	    {
-		if(hSplitVar && hSplitVar[r-1] == true) hSplit = r-1;
-		kdDebug( 6030 ) << "hsplitvar = " << hSplitVar << endl;
-		kdDebug( 6030 ) << "hsplit!" << endl;
-		break;
-	    }
-	    pos += m_rowHeight[r] + m_border;
-	}
-	kdDebug( 6030 ) << hSplit << "/" << vSplit << endl;
-
-	QCursor cursor;
-	if(hSplit != -1 && vSplit != -1)
-	{
-	    cursor = Qt::sizeAllCursor;
-	}
-	else if( vSplit != -1 )
-	{
-	    cursor = Qt::splitHCursor;
-	}
-	else if( hSplit != -1 )
-	{
-	    cursor = Qt::splitVCursor;
-	}
-
-	if(type == MousePress)
-	{
-	    resizing = true;
-	    KApplication::setOverrideCursor(cursor);
-	    vSplitPos = _x;
-	    hSplitPos = _y;
-	}
-	else
-	    view->setCursor(cursor);
-    }
-
-    // ### need to draw a nice movin indicator for the resize.
-    // ### check the resize is not going out of bounds.
-    if(resizing && type == MouseRelease)
-    {
-	resizing = false;
-	KApplication::restoreOverrideCursor();
-
-	if(hSplit)
-	{
-	    kdDebug( 6030 ) << "split xpos=" << _x << endl;
-	    int delta = vSplitPos - _x;
-	    m_colWidth[vSplit] -= delta;
-	    m_colWidth[vSplit+1] += delta;
-	}
-	if(vSplit)
-	{
-	    kdDebug( 6030 ) << "split ypos=" << _y << endl;
-	    int delta = hSplitPos - _y;
-	    m_rowHeight[hSplit] -= delta;
-	    m_rowHeight[hSplit+1] += delta;
-	}
-	kdDebug( 6030 ) << "starting relayout!" << endl;
-	m_render->layout( true );
-    }
-    */
 }
 
 int HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
@@ -571,6 +486,9 @@ ushort HTMLHtmlElementImpl::id() const
 
 HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentImpl *doc) : HTMLFrameElementImpl(doc)
 {
+    frameBorder = false;
+    marginWidth = 0;
+    marginHeight = 0;
 }
 
 HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
