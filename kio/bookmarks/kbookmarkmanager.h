@@ -75,7 +75,7 @@ public:
      * Set the update flag.
      * @param update iff true will KBookmarkManager listen to DCOP update requests.
      */
-    void setUpdate(bool update);
+    void setUpdate( bool update );
 
     /**
      * Save the bookmarks to the default konqueror XML file on disk.
@@ -93,8 +93,8 @@ public:
     bool saveAs( const QString & filename, bool toolbarCache = true ) const;
 
     /**
-     * Update access time stamps for a given page.
-     * @param url the accessed/viewed url
+     * Update access time stamps for a given url.
+     * @param url the viewed url
      * @emitSignal iff true emit KBookmarkNotifier signal
      * @since 3.2
      */
