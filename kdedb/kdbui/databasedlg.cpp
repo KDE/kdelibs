@@ -48,7 +48,7 @@ DatabaseDialog::DatabaseDialog(QWidget *parent, const char *name)
     connectionList = new DBListView(choosePage,"ConnectionList");
 
     connect( connectionList,
-             SIGNAL( databaseSelected( Database * ) ),
+             SIGNAL( databaseSelected( KDB::Database * ) ),
              SLOT( slotEnableOK() ) );
 
     connect( connectionList,

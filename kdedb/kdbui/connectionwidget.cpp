@@ -33,7 +33,7 @@ ConnectionWidget::ConnectionWidget(QWidget * parent, const char * name, bool sho
         databaseList = new DBListView( this, "databaseList", true, DBListView::SemiAuto );
         databaseList->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)7, (QSizePolicy::SizeType)7 ) );
         ConnectionBaseLayout->addMultiCellWidget( databaseList, 6, 6, 0, 2 );
-        connect(databaseList, SIGNAL(databaseSelected(Database *)), this, SIGNAL(databaseSelected()));
+        connect(databaseList, SIGNAL(databaseSelected(KDB::Database *)), this, SIGNAL(databaseSelected()));
 	connect(databaseList, SIGNAL(nonDatabaseSelected()), this, SIGNAL(nonDatabaseSelected()));
     } else {
         Line2->hide();
