@@ -385,6 +385,24 @@ void KDictSpellingHighlighter::restartBackgroundSpellCheck()
     slotDictionaryChanged();
 }
 
+void KDictSpellingHighlighter::setActive( bool active )
+{
+    if ( active == d->active )
+        return;
+
+    d->active = active;
+    rehighlight();
+    if ( d->active )
+        emit activeChanged( i18n("As-you-type spell checking enabled.") );
+    else
+        emit activeChanged( i18n("As-you-type spell checking disabled.") );
+}
+
+bool KDictSpellingHighlighter::isActive()
+{
+    return d->active;
+}
+
 void KDictSpellingHighlighter::slotRehighlight()
 {
     rehighlight();

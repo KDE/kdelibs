@@ -102,6 +102,27 @@ public:
     static void dictionaryChanged();
     void restartBackgroundSpellCheck();
 
+    /**
+     * @short Enable/Disable spell checking.
+     *
+     * If @p active is true then spell checking is enabled; otherwise it
+     * is disabled.
+     *
+     * @param active if true, then spell checking is enabled
+     *
+     * @see isActive()
+     */
+    void setActive( bool active );
+
+    /**
+     * Returns the state of spell checking.
+     *
+     * @return true if spell checking is active
+     * 
+     * @see setActive()
+     */
+    bool isActive();
+
 signals:
     void activeChanged(const QString &);
     void newSuggestions(const QString& originalword, const QStringList& suggestions,
