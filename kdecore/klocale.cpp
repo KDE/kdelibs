@@ -991,6 +991,7 @@ QString i18n(const char* text) {
   register KLocale *instance = KGlobal::locale();
   if (instance)
      return instance->translate(text);
+  debug("there is no KLocale instance, but i18n is used.");
 #endif
   return text;
 }
@@ -999,8 +1000,10 @@ void KLocale::initInstance() {
   if (KGlobal::_locale)
      return;
 
-  KApplication *app = KApplication::kApplication();
+  KInstance *app = KGlobal::instance();
   if (app)
-    KGlobal::_locale = new KLocale(app->name());
-
+    KGlobal::_locale = new KLocale(app->instanceName());
+  else
+    debug("no app name available using KLocale - nothing to do");
 }
+
