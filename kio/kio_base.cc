@@ -99,7 +99,7 @@ bool IOJob::getSize( const char* _url )
   return ConnectionSignals::getSize( _url );
 }
 
-bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, long int _size )
+bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, unsigned int _size )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_PUT;

@@ -96,6 +96,7 @@
 #define ERR_CANNOT_RESUME 39
 #define ERR_COULD_NOT_READSIZE 40
 #define ERR_CANNOT_RENAME 41
+#define ERR_CANNOT_DELETE 42
 
 /************
  *
@@ -158,7 +159,7 @@ public:
 
   virtual bool put( const char *_url, int _mode,
 		    bool _overwrite, bool _resume,
-		    long int _size );
+		    unsigned int _size );
   virtual bool copy( const char* _source, const char *_dest );
   virtual bool copy( list<string>&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
@@ -231,7 +232,7 @@ public:
   virtual void slotGet( const char *_url ) { };
   virtual void slotGetSize( const char *_url ) { };
   virtual void slotPut( const char *_url, int _mode,
-			bool _overwrite, bool _resume, long int _size) { };
+			bool _overwrite, bool _resume, unsigned int _size) { };
   virtual void slotCopy( const char* _source, const char *_dest ) { };
   virtual void slotCopy( list<string>& _source, const char *_dest ) { };
   virtual void slotMove( const char *_source, const char *_dest ) { };

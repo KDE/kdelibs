@@ -56,7 +56,7 @@ bool ConnectionSignals::getSize( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume, long int _size )
+bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume, unsigned int _size )
 {
   assert( m_pConnection );
 
@@ -64,11 +64,6 @@ bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool 
   if ( l >= 0xFFF0 )
     return false;
   
-//     sprintf( m_pConnection->buffer(), "%c%c%8x_", '0' + (char)_overwrite,
-//   	   '0' + (char)_resume, _mode );
-//     strcpy( m_pConnection->buffer() + 11, _url );
-//     m_pConnection->send( CMD_PUT, m_pConnection->buffer(), 11 + l + 1 );
-
   sprintf( m_pConnection->buffer(), "%c%c%8x_%8x_", '0' + (char)_overwrite,
 	   '0' + (char)_resume, _mode, _size );
   strcpy( m_pConnection->buffer() + 20, _url );
@@ -552,7 +547,6 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
  	int mode = strtol( p, 0L, 16 );
 
   	p = (char*)_p + 11;
-  	//while( *p == ' ' ) p++;
   	int size = strtol( p, 0L, 16 );
 
 	bool overwrite = false;

@@ -61,6 +61,7 @@ KIOJob::KIOJob() : QObject(), IOJob( 0L )
   m_bPreGetFinished = false;
 }
 
+
 KIOJob::~KIOJob()
 {
   if ( m_pPreGetBuffer )
@@ -71,11 +72,13 @@ KIOJob::~KIOJob()
   clean();  
 }
 
+
 void KIOJob::initStatic()
 {
   if ( !s_mapJobs )
     s_mapJobs = new map<int,KIOJob*>;
 }
+
 
 KIOJob* KIOJob::find( int _id )
 {
@@ -85,6 +88,7 @@ KIOJob* KIOJob::find( int _id )
   
   return it->second;
 }
+
 
 void KIOJob::kill( bool quiet )
 {
@@ -97,6 +101,7 @@ void KIOJob::kill( bool quiet )
   delete this;
   return;
 }
+
 
 void KIOJob::clean()
 {
@@ -120,6 +125,8 @@ void KIOJob::clean()
     delete m_pCopyProgressDlg;
     m_pCopyProgressDlg = 0L;
   }
+
+  cerr << "clean()\n";
 
   // Do not putback the slave into the pool because we may have
   // died in action. This means that the slave is in an undefined
@@ -188,6 +195,7 @@ bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char 
   return IOJob::mount( _ro, _fstype, _dev, _point );  
 }
 
+
 bool KIOJob::unmount( const char *_point )
 {
   string error;
@@ -207,6 +215,7 @@ bool KIOJob::unmount( const char *_point )
   
   return IOJob::unmount( _point );  
 }
+
 
 bool KIOJob::copy( const char *_source, const char *_dest )
 {
@@ -235,6 +244,7 @@ bool KIOJob::copy( const char *_source, const char *_dest )
   return IOJob::copy( _source, _dest );
 }
 
+
 bool KIOJob::copy( QStrList& _source, const char *_dest )
 {
   list<string> stlurls;
@@ -244,6 +254,7 @@ bool KIOJob::copy( QStrList& _source, const char *_dest )
 
   return copy( stlurls, _dest );
 }
+
 
 bool KIOJob::copy( list<string>& _source, const char *_dest )
 {
@@ -289,6 +300,7 @@ bool KIOJob::copy( list<string>& _source, const char *_dest )
   return IOJob::copy( _source, _dest );
 }
 
+
 bool KIOJob::testDir( const char *_url )
 {
   assert( !m_pSlave );
@@ -315,6 +327,7 @@ bool KIOJob::testDir( const char *_url )
 
   return IOJob::testDir( _url );
 }
+
 
 bool KIOJob::get( const char *_url )
 {
@@ -343,6 +356,7 @@ bool KIOJob::get( const char *_url )
   return IOJob::get( _url );
 }
 
+
 bool KIOJob::preget( const char *_url, int _max_size )
 {
   m_bPreGet = true;
@@ -350,6 +364,7 @@ bool KIOJob::preget( const char *_url, int _max_size )
   
   return get( _url );
 }
+
 
 bool KIOJob::getSize( const char *_url )
 {
@@ -373,6 +388,7 @@ bool KIOJob::getSize( const char *_url )
   return IOJob::getSize( _url );
 }
 
+
 void KIOJob::cont()
 {
   if ( !m_strPreGetMimeType.empty() )
@@ -386,6 +402,7 @@ void KIOJob::cont()
   if ( m_bPreGetFinished )
     slotFinished();  
 }
+
 
 bool KIOJob::listDir( const char *_url )
 {
@@ -409,15 +426,18 @@ bool KIOJob::listDir( const char *_url )
   return IOJob::listDir( _url );
 }
 
+
 void KIOJob::slotIsDirectory()
 {
   emit sigIsDirectory( m_id );
 }
 
+
 void KIOJob::slotIsFile()
 {
   emit sigIsFile( m_id );
 }
+
 
 void KIOJob::slotData( void *_p, int _len )
 {
@@ -448,10 +468,12 @@ void KIOJob::slotData( void *_p, int _len )
   emit sigData( m_id, (const char*)_p, _len );
 }
 
+
 void KIOJob::slotListEntry( UDSEntry& _entry )
 {
   emit sigListEntry( m_id, _entry );
 }
+
 
 void KIOJob::slotFinished()
 {
@@ -475,7 +497,6 @@ void KIOJob::slotFinished()
   s_mapJobs->erase( m_id );
 
   emit sigFinished( m_id );
-
   m_id = 0;
   
   // Put the slave back to the pool
@@ -506,8 +527,10 @@ void KIOJob::slotFinished()
   }
 }
 
+
 void KIOJob::slotError( int _errid, const char *_txt )
 {
+  cerr << "KIOJob::slotError " << _errid << "   " << _txt << endl;
   IOJob::slotError( _errid, _txt );
   
   // If someone tries to delete us because we emitted sigError
@@ -519,9 +542,7 @@ void KIOJob::slotError( int _errid, const char *_txt )
   s_mapJobs->erase( m_id );
 
   emit sigError( m_id, _errid, _txt );
-
   m_id = 0;
-  
 
   // NOTE: This may be dangerous. I really hope that the
   // slaves are still in a good shape after reporting an error.
@@ -536,7 +557,11 @@ void KIOJob::slotError( int _errid, const char *_txt )
       m_pNotifier = 0L;
     }
 
-    KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str() );
+    if ( m_bCacheToPool )
+      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str() );
+    else
+      delete m_pSlave;
+
     m_pSlave = 0L;
   }
 
@@ -549,15 +574,18 @@ void KIOJob::slotError( int _errid, const char *_txt )
   }
 }
 
+
 void KIOJob::slotRenamed( const char *_new )
 {
   emit sigRenamed( m_id, _new );
 }
 
+
 void KIOJob::slotCanResume( bool _resume )
 {
   emit sigCanResume( m_id, _resume );
 }
+
 
 void KIOJob::slotTotalSize( unsigned long _bytes )
 {
@@ -570,6 +598,7 @@ void KIOJob::slotTotalSize( unsigned long _bytes )
   cerr << "TotalSize " << _bytes << endl;
 }
 
+
 void KIOJob::slotTotalFiles( unsigned long _files )
 {
   m_iTotalFiles = _files;
@@ -580,6 +609,7 @@ void KIOJob::slotTotalFiles( unsigned long _files )
   cerr << "TotalFiles " << _files << endl;
 }
 
+
 void KIOJob::slotTotalDirs( unsigned long _dirs )
 {
   m_iTotalDirs = _dirs;
@@ -589,6 +619,7 @@ void KIOJob::slotTotalDirs( unsigned long _dirs )
   emit sigTotalDirs( m_id, _dirs );
   cerr << "TotalDirs " << _dirs << endl;
 }
+
 
 void KIOJob::slotProcessedSize( unsigned long _bytes )
 {
@@ -601,6 +632,7 @@ void KIOJob::slotProcessedSize( unsigned long _bytes )
   cerr << "ProcessedSize " << _bytes << endl;
 }
 
+
 void KIOJob::slotProcessedFiles( unsigned long _files )
 {
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
@@ -609,6 +641,7 @@ void KIOJob::slotProcessedFiles( unsigned long _files )
   emit sigProcessedFiles( m_id, _files );
   cerr << "ProcessedFiles " << _files << endl;
 }
+
 
 void KIOJob::slotProcessedDirs( unsigned long _dirs )
 {
@@ -619,6 +652,7 @@ void KIOJob::slotProcessedDirs( unsigned long _dirs )
   cerr << "ProcessedDirs " << _dirs << endl;
 }
 
+
 void KIOJob::slotScanningDir( const char *_dir )
 {
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
@@ -626,6 +660,7 @@ void KIOJob::slotScanningDir( const char *_dir )
 
   cerr << "ScanningDir " << _dir << endl;
 }
+
 
 void KIOJob::slotSpeed( unsigned long _bytes_per_second )
 {
@@ -636,6 +671,7 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second )
   emit sigSpeed( m_id, _bytes_per_second );
   cerr << "Speed " << _bytes_per_second << endl;
 }
+
 
 void KIOJob::slotCopyingFile( const char *_from, const char *_to )
 {
@@ -649,6 +685,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to )
   cerr << "CopyingFile " << _from << " -> " << _to << endl;
 }
 
+
 void KIOJob::slotMakingDir( const char *_dir )
 {
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
@@ -657,6 +694,7 @@ void KIOJob::slotMakingDir( const char *_dir )
   cerr << "MakingDir " << _dir << endl;
 }
 
+
 void KIOJob::slotGettingFile( const char *_url )
 {
   if ( m_cmd == CMD_GET && m_pCopyProgressDlg )
@@ -664,6 +702,7 @@ void KIOJob::slotGettingFile( const char *_url )
 
   cerr << "GettingFile " << _url << endl;
 }
+
 
 void KIOJob::slotMimeType( const char *_type )
 {
@@ -679,10 +718,12 @@ void KIOJob::slotMimeType( const char *_type )
   cerr << "MimeType " << _type << endl;
 }
 
+
 void KIOJob::slotRedirection( const char *_url )
 {
   emit sigRedirection( m_id, _url );
 }
+
 
 void KIOJob::slotCancel()
 {
@@ -694,12 +735,14 @@ void KIOJob::slotCancel()
     delete this;
 }
 
+
 void KIOJob::connectSlave( Slave *_s )
 {
   setConnection( _s );
   m_pNotifier = new QSocketNotifier( _s->inFD(), QSocketNotifier::Read, this );
   connect( m_pNotifier, SIGNAL( activated( int ) ), this, SLOT( slotDispatch( int ) ) );
 }
+
 
 Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_text )
 {
@@ -736,6 +779,7 @@ Slave* KIOJob::createSlave( const char *_protocol, int& _error, string& _error_t
   return s;
 }
 
+
 void KIOJob::slotDispatch( int )
 {
   if ( !dispatch() )
@@ -759,6 +803,7 @@ void KIOJob::slotDispatch( int )
     }
   }
 }
+
 
 QDialog* KIOJob::createDialog( const char *_text )
 {
