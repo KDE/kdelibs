@@ -202,6 +202,7 @@ static int qxembed_x11_event_filter( XEvent* e)
 	    switch ( message) {
 	    case XEMBED_EMBEDDED_NOTIFY:
 		((QPublicWidget*)w->topLevelWidget())->topData()->embedded = 1;
+		w->topLevelWidget()->show();
 		break;
 	    case XEMBED_PROCESS_NEXT_EVENT:
 		process_next_event = TRUE;
