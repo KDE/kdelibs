@@ -541,6 +541,8 @@ bool ReadWritePart::closeURL( bool promptToSave )
 bool ReadWritePart::save()
 {
   d->m_saveOk = false;
+  if ( m_file.isEmpty() ) // document was created empty
+      prepareSaving();
   if( saveFile() )
     return saveToURL();
   else
@@ -558,6 +560,23 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   d->m_duringSaveAs = true;
   d->m_originalURL = m_url;
   m_url = kurl; // Store where to upload in saveToURL
+  prepareSaving();
+  bool result = save(); // Save local file and upload local file
+  if (result)
+    emit setWindowCaption( m_url.prettyURL() );
+  else
+  {
+    m_url = d->m_originalURL;
+    d->m_duringSaveAs = false;
+    d->m_originalURL = KURL();
+  }
+
+  return result;
+}
+
+// Set m_file correctly for m_url
+void ReadWritePart::prepareSaving()
+{
   // Local file
   if ( m_url.isLocalFile() )
   {
@@ -579,17 +598,6 @@ bool ReadWritePart::saveAs( const KURL & kurl )
     }
     // otherwise, we already had a temp file
   }
-  bool result = save(); // Save local file and upload local file
-  if (result)
-    emit setWindowCaption( m_url.prettyURL() );
-  else
-  {
-    m_url = d->m_originalURL;
-    d->m_duringSaveAs = false;
-    d->m_originalURL = KURL();
-  }
-
-  return result;
 }
 
 bool ReadWritePart::saveToURL()

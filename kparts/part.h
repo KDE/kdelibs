@@ -680,6 +680,9 @@ protected slots:
   void slotUploadFinished( KIO::Job * job );
 
 private:
+  void prepareSaving();
+
+private:
   bool m_bModified;
   bool m_bReadWrite;
   bool m_bClosing;
