@@ -14,7 +14,7 @@ namespace KParts
      * @internal
      */
     template <class T>
-    class KPARTS_EXPORT GenericFactoryBase : public KParts::Factory
+    class GenericFactoryBase : public KParts::Factory
     {
     public:
         GenericFactoryBase()
@@ -92,7 +92,7 @@ namespace KParts
      * yourlibrary is the library name that you compiled your KPart into.
      */
     template <class T>
-    class KPARTS_EXPORT GenericFactory : public GenericFactoryBase<T>
+    class GenericFactory : public GenericFactoryBase<T>
     {
     public:
         GenericFactory() { }

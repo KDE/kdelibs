@@ -29,7 +29,7 @@
 
 
 template<class Item>
-class KMDI_EXPORT KMdiIterator {
+class KMdiIterator {
 public:
    virtual ~KMdiIterator() {}
 
