@@ -337,6 +337,12 @@ private:
     SignPosition _positiveMonetarySignPosition;
     SignPosition _negativeMonetarySignPosition;
 
+    // Date and time
+    QString _timefmt;
+    QString _datefmt;
+    QString MonthName(int i) const;
+    QString WeekDayName(int i) const;
+
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );
     KLocale& operator= ( const KLocale& );

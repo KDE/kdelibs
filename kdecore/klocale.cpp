@@ -362,6 +362,20 @@ KLocale::KLocale( QString catalogue )
     _negativeMonetarySignPosition = (SignPosition)config->readNumEntry("NegativeMonetarySignPosition", -1);
     if (_negativeMonetarySignPosition == -1)
         _negativeMonetarySignPosition = (SignPosition)monentry.readNumEntry("NegativeMonetarySignPosition", ParensAround);
+
+    // date and time
+    str = config->readEntry("Time", lang);
+    KSimpleConfig timentry(locate("locale", str + "/entry.desktop"), true);
+    timentry.setGroup("KCM Locale");
+
+    _timefmt = config->readEntry("TimeFormat");
+    if (_timefmt.isNull())
+        _timefmt = timentry.readEntry("TimeFormat", "%I:%M:%S %p");
+    
+    _datefmt = config->readEntry("DateFormat");
+    if (_datefmt.isNull())
+        _datefmt = timentry.readEntry("DateFormat", "%m/%d/%y");
+
 }
 
 void KLocale::insertCatalogue( const QString& catalogue )
@@ -443,6 +457,43 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return _negativeMonetarySignPosition;
 }
 
+QString KLocale::MonthName(int i) const
+{
+    switch (i)
+    {
+      case 1:   return translate("January");
+      case 2:   return translate("February");
+      case 3:   return translate("March");
+      case 4:   return translate("April");
+      case 5:   return translate("May");
+      case 6:   return translate("Juni");
+      case 7:   return translate("July");
+      case 8:   return translate("August");
+      case 9:   return translate("September");
+      case 10:  return translate("October");
+      case 11:  return translate("November");
+      case 12:  return translate("December");
+    }
+
+    return QString::null;
+}
+
+QString KLocale::WeekDayName (int i) const
+{
+    switch (i )
+    {
+      case 1:  return translate("Monday");
+      case 2:  return translate("Tuesday");
+      case 3:  return translate("Wednesday");
+      case 4:  return translate("Thuesday");
+      case 5:  return translate("Friday");
+      case 6:  return translate("Saturday");
+      case 7:  return translate("Sunday");
+    }
+
+    return QString::null;
+}
+
 QString KLocale::formatMoney(double num) const
 {
     // the number itself
@@ -521,39 +572,109 @@ QString KLocale::formatNumber(const QString &numStr) const
 
 QString KLocale::formatDate(const QDate &pDate) const
 {
-  // #### is it the right way to initialize the struct ? (Nicolas)
-  // #### strftime() was causing a segfault on my system
-  time_t t = time(0); // get current time
-  struct tm tm = *localtime(&t); // initialize with local time
-  char s[256];
+    QString rst(_datefmt);
 
-  tm.tm_mday = pDate.day();
-  tm.tm_mon  = pDate.month() - 1;
-  tm.tm_year = pDate.year() - 1900;
+    int i = -1;
+    while ( (i = rst.findRev('%', i)) != -1 )
+        switch ( rst.at(i + 1).latin1() )
+        {
+        case 'Y':
+                rst.replace(i, 2, QString().sprintf("%02d", pDate.year()));
+		continue;
+	case 'y':
+                rst.replace(i, 2, QString().sprintf("%02d", pDate.year() % 100));
+		continue;
+	case 'C':
+                rst.replace(i, 2, QString().sprintf("%02d", pDate.year() / 100));
+		continue;
+	case 'm':
+                rst.replace(i, 2, QString().sprintf("%02d", pDate.month()));
+		continue;
+	case 'b':
+	case 'h':
+                rst.replace(i, 2, MonthName(pDate.month()).left(3));
+		continue;
+	case 'B':
+                rst.replace(i, 2, MonthName(pDate.month()));
+		continue;
+	case 'd':
+                rst.replace(i, 2, QString().sprintf("%02d", pDate.day() ));
+		continue;
+	case 'e':
+                rst.replace(i, 2, QString().sprintf("%2d", pDate.day() ));
+		continue;
+	case 'j':
+                rst.replace(i, 2, QString().sprintf("03d", pDate.dayOfYear()) );
+		continue;
+	case 'a':
+                rst.replace(i, 2, WeekDayName( pDate.dayOfWeek() ).left(3) );
+		continue;
+	case 'A':
+                rst.replace(i, 2, WeekDayName( pDate.dayOfWeek() ) );
+		continue;
+	case 'u':
+                rst.replace(i, 2, QString::number( pDate.dayOfWeek() ) );
+		continue;
+	case 'w':
+                rst.replace(i, 2, QString::number( pDate.dayOfWeek()==7?0:pDate.dayOfWeek() ) );
+		continue;
+	case '%':
+                rst.remove(i, 1);
+		continue;
+	case 'n':
+                rst.replace(i, 2, "\n");
+		continue;
+	case 't':
+                rst.replace(i, 2, "\t");
+                continue;
+        }
 
-  if (strftime(s, 255, "%x", &tm) != 0)
-    return QString(s);
-  else
-    return pDate.toString();
+    return rst;
 }
 
 QString KLocale::formatTime(const QTime &pTime) const
 {
-  // #### is it the right way to initialize the struct ? (Nicolas)
-  // #### strftime() was causing a segfault on my system
-  time_t t = time(0); // get current time
-  struct tm tm = *localtime(&t); // initialize with local time
-  char s[256];
+    QString rst(_timefmt);
 
-  tm.tm_sec = pTime.second();
-  tm.tm_min = pTime.minute();
-  tm.tm_hour = pTime.hour();
+    int i = -1;
+    while ( (i = rst.findRev('%', i)) != -1 )
+        switch ( rst.at(i + 1).latin1() )
+        {
+        case 'H':
+                rst.replace(i, 2, QString().sprintf("%02d", pTime.hour()));
+		continue;
+        case 'k':
+                rst.replace(i, 2, QString().sprintf("%2d", pTime.hour()));
+		continue;
+        case 'I':
+                rst.replace(i, 2, QString().sprintf("%02d", pTime.hour() % 12?pTime.hour() % 12 : 12));
+		continue;
+        case 'l':
+                rst.replace(i, 2, QString().sprintf("%2d", (pTime.hour() - 1) % 12 + 1));
+		continue;
+        case 'M':
+                rst.replace(i, 2, QString().sprintf("%02d", pTime.minute()));
+		continue;
+        case 'S':
+                rst.replace(i, 2, QString().sprintf("%02d", pTime.second()));
+		continue;
+        case 'p':
+                rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
+		continue;
+        case '%':
+                rst.remove(i, 1);
+		continue;
+        case 'n':
+                rst.replace(i, 2, "\n");
+		continue;
+        case 't':
+                rst.replace(i, 2, "\t");
+		continue;
+        }
 
-  if (strftime(s, 255, "%X", &tm) != 0)
-    return QString(s);
-  else
-    return pTime.toString();
+    return rst;
 }
+
 
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
