@@ -31,7 +31,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
 
   QWidget * grid = new QWidget(this);
-  QGridLayout * gridlayout = new QGridLayout( grid, 4, 2 );
+  QGridLayout * gridlayout = new QGridLayout( grid, 5, 2 );
 
   QPushButton * addTab = new QPushButton( "Add Tab", grid );
   gridlayout->addWidget( addTab, 0, 0 );
@@ -70,6 +70,10 @@ Test::Test( QWidget* parent, const char *name )
   QCheckBox * tabshape = new QCheckBox( "Triangular tab shape", grid );
   gridlayout->addWidget( tabshape, 3, 1 );
   connect( tabshape, SIGNAL( toggled(bool) ), this, SLOT( toggleTabShape(bool) ) );
+
+  QCheckBox *tabClose = new QCheckBox( "Close buttons on tabs", grid );
+  gridlayout->addWidget( tabClose, 4, 0 );
+  connect( tabClose, SIGNAL( toggled(bool) ), this, SLOT( toggleCloseButtons(bool) ) );
 
   mTimer = new QTimer( this );
   srand( time(0) );
@@ -195,6 +199,11 @@ void Test::toggleTabPosition(bool state)
 void Test::toggleTabShape(bool state)
 {
   mWidget->setTabShape(state ? QTabWidget::Triangular : QTabWidget::Rounded);
+}
+
+void Test::toggleCloseButtons(bool state)
+{
+  mWidget->setCloseButtons( state );
 }
 
 void Test::contextMenu(QWidget *w, const QPoint &p)
