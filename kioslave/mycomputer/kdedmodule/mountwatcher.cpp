@@ -37,8 +37,10 @@
 
 
 MountWatcherModule::MountWatcherModule(const QCString &obj)
-    : KDEDModule(obj)
+    : KDEDModule(obj),mDiskList(this)
 {
+	mDiskList.readFSTAB();
+	mDiskList.readDF();
 }
 
 MountWatcherModule::~MountWatcherModule()
@@ -47,12 +49,12 @@ MountWatcherModule::~MountWatcherModule()
 
 uint MountWatcherModule::mountpointMappingCount()
 {
-	return 2;
+	return mDiskList.count();
 }
 
 QString  MountWatcherModule::mountpoint(int id)
 {
-	return (id==1)?"/mnt":"/mnt2";
+	return mDiskList.at(id)->mountPoint();
 }
 
 QString MountWatcherModule::mountpoint(QString name)
@@ -62,7 +64,8 @@ QString MountWatcherModule::mountpoint(QString name)
 
 QString  MountWatcherModule::devicenode(int id)
 {
-	return (id==1)?"/dev/fd0":"//ide1/MP3";
+	return mDiskList.at(id)->deviceName();
+
 }
 
 QString  MountWatcherModule::type(int id)
@@ -72,7 +75,7 @@ QString  MountWatcherModule::type(int id)
 
 bool   MountWatcherModule::mounted(int id)
 {
-	return (id==1)?false:true;
+	return mDiskList.at(id)->mounted();
 }
 
 bool   MountWatcherModule::mounted(QString name)
