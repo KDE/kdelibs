@@ -64,13 +64,14 @@ public:
      * this, (assuming u is a string which represents a URL and your
      * application has a loadFile function):
      *
-     * <CODE>
-     *       QString s;
-     *       if (KIONetAccess::download(u, s)){
-     *         loadFile(s);
-     *         KIONetAccess::removeTempFile(s);
-     *       }
-     * </CODE>
+     * <pre>
+     * QString s;
+     * if( KIONetAccess::download( u, s ) )
+     * {
+     *   loadFile( s );
+     *   KIONetAccess::removeTempFile( s );
+     * }
+     * </pre>
      *
      * Of course, your user interface will still process exposure/repaint
      * events during the download.
