@@ -127,8 +127,10 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
 
 PreviewJob::~PreviewJob()
 {
-    if (d->shmaddr)
+    if (d->shmaddr) {
         shmdt((char*)d->shmaddr);
+        shmctl(d->shmid, IPC_RMID, 0);
+    }
     delete d;
 }
 
@@ -405,15 +407,17 @@ void PreviewJob::createThumbnail( QString pixPath )
     job->addMetaData("plugin", d->currentItem.plugin->library());
     if (d->shmid == -1)
     {
-        if (d->shmaddr)
+        if (d->shmaddr) {
             shmdt((char*)d->shmaddr);
+            shmctl(d->shmid, IPC_RMID, 0);
+        }
         d->shmid = shmget(IPC_PRIVATE, d->width * d->height * 4, IPC_CREAT|0777);
         if (d->shmid != -1)
         {
             d->shmaddr = static_cast<uchar *>(shmat(d->shmid, 0, SHM_RDONLY));
-            shmctl(d->shmid, IPC_RMID, 0);
             if (d->shmaddr == (uchar *)-1)
             {
+                shmctl(d->shmid, IPC_RMID, 0);
                 d->shmaddr = 0;
                 d->shmid = -1;
             }
