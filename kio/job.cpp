@@ -316,7 +316,8 @@ TransferJob::TransferJob( const KURL& url, int command,
 // Slave sends data
 void TransferJob::slotData( const QByteArray &_data)
 {
-    emit data( this, _data);
+    if(m_redirectionURL.isEmpty() || m_error)
+      emit data( this, _data);
 }
 
 // Slave got a redirection request
@@ -325,6 +326,8 @@ void TransferJob::slotRedirection( const KURL &url)
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.url() << ")" << endl;
     m_redirectionURL = url;
     // We'll remember that when the job finishes
+    emit redirection(m_redirectionURL);
+    // tell the user that we haven't finished yet
 }
 
 void TransferJob::slotFinished()
@@ -332,8 +335,6 @@ void TransferJob::slotFinished()
     if ( m_redirectionURL.isEmpty() || m_error )
         SimpleJob::slotFinished();
     else {
-        // tell the user that we haven't finished yet
-        emit redirection(m_redirectionURL);
         // Honour the redirection
         // We take the approach of "redirecting this same job"
         // Another solution would be to create a subjob, but the same problem
