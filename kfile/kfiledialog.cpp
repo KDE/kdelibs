@@ -425,7 +425,7 @@ void KFileDialog::slotOk()
 	KURL::List list = parseSelectedURLs();
 	KURL::List::ConstIterator it = list.begin();
 	for ( ; it != list.end(); ++it ) {
-	    job = KIO::stat( *it );
+	    job = KIO::stat( *it, !(*it).isLocalFile() );
 	    d->statJobs.append( job );
 	    connect( job, SIGNAL( result(KIO::Job *) ),
 		     SLOT( slotStatResult( KIO::Job *) ));
@@ -433,7 +433,7 @@ void KFileDialog::slotOk()
 	return;
     }
 
-    job = KIO::stat(d->url);
+    job = KIO::stat(d->url,!d->url.isLocalFile());
     d->statJobs.append( job );
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotStatResult(KIO::Job*)));
 }
