@@ -1,0 +1,9 @@
+- Uses KDE language in IPP requests instead of standard CUPS
+  language.
+
+- Implement a generic banner behaviour: banners would be insrted
+  as standard print file before and/or after the actual file. This
+  would allow for KDE-specific banners and translated banners.
+
+- Implement a check mechanism for filters, plugins and special
+  printers.
