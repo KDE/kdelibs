@@ -1465,18 +1465,18 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     // read in the global ('kdeglobals') config file
     KConfig *gconfig = KGlobal::config();
 
-    static QString grpKDE     = QString::fromLatin1("KDE");
+    static const QString &grpKDE     = KGlobal::staticQString("KDE");
 
-    static QString attrIconText  = QString::fromLatin1("IconText");
-    static QString attrHighlight = QString::fromLatin1("Highlighting");
-    static QString attrTrans     = QString::fromLatin1("TransparentMoving");
-    static QString attrIconStyle = QString::fromLatin1("KDEIconStyle");
-    static QString attrSize      = QString::fromLatin1("IconSize");
-    static QString attrPosition  = QString::fromLatin1("Position");
-    static QString attrIndex  = QString::fromLatin1("Index");
-    static QString attrOffset  = QString::fromLatin1("Offset");
-    static QString attrNewLine  = QString::fromLatin1("NewLine");
-    static QString attrHidden  = QString::fromLatin1("Hidden");
+    static const QString &attrIconText  = KGlobal::staticQString("IconText");
+    static const QString &attrHighlight = KGlobal::staticQString("Highlighting");
+    static const QString &attrTrans     = KGlobal::staticQString("TransparentMoving");
+    static const QString &attrIconStyle = KGlobal::staticQString("KDEIconStyle");
+    static const QString &attrSize      = KGlobal::staticQString("IconSize");
+    static const QString &attrPosition  = KGlobal::staticQString("Position");
+    static const QString &attrIndex  = KGlobal::staticQString("Index");
+    static const QString &attrOffset  = KGlobal::staticQString("Offset");
+    static const QString &attrNewLine  = KGlobal::staticQString("NewLine");
+    static const QString &attrHidden  = KGlobal::staticQString("Hidden");
 
     // we actually do this in two steps.  first, we read in the global
     // styles [Toolbar style].  then, if the toolbar is NOT

@@ -112,8 +112,8 @@ bool KMenuBar::isTopLevelMenu() const
 
 void KMenuBar::slotReadConfig()
 {
-  static QString grpKDE = QString::fromLatin1("KDE");
-  static QString keyMac = QString::fromLatin1("macStyle");
+  static const QString &grpKDE = KGlobal::staticQString("KDE");
+  static const QString &keyMac = KGlobal::staticQString("macStyle");
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, grpKDE );

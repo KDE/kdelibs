@@ -98,7 +98,7 @@ KActionCollection *KXMLGUIClient::actionCollection() const
 
 KAction *KXMLGUIClient::action( const QDomElement &element ) const
 {
-  static QString attrName = QString::fromLatin1( "name" );
+  static const QString &attrName = KGlobal::staticQString( "name" );
   return action( element.attribute( attrName ).latin1() );
 }
 
@@ -226,17 +226,17 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
 
 bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )
 {
-  static QString tagAction = QString::fromLatin1( "Action" );
-  static QString tagMerge = QString::fromLatin1( "Merge" );
-  static QString tagSeparator = QString::fromLatin1( "Separator" );
-  static QString attrName = QString::fromLatin1( "name" );
-  static QString attrAppend = QString::fromLatin1( "append" );
-  static QString attrWeakSeparator = QString::fromLatin1( "weakSeparator" );
-  static QString tagMergeLocal = QString::fromLatin1( "MergeLocal" );
-  static QString tagText = QString::fromLatin1( "text" );
-  static QString attrAlreadyVisited = QString::fromLatin1( "alreadyVisited" );
-  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
-  static QString attrOne = QString::fromLatin1( "1" );
+  static const QString &tagAction = KGlobal::staticQString( "Action" );
+  static const QString &tagMerge = KGlobal::staticQString( "Merge" );
+  static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
+  static const QString &attrName = KGlobal::staticQString( "name" );
+  static const QString &attrAppend = KGlobal::staticQString( "append" );
+  static const QString &attrWeakSeparator = KGlobal::staticQString( "weakSeparator" );
+  static const QString &tagMergeLocal = KGlobal::staticQString( "MergeLocal" );
+  static const QString &tagText = KGlobal::staticQString( "text" );
+  static const QString &attrAlreadyVisited = KGlobal::staticQString( "alreadyVisited" );
+  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
+  static const QString &attrOne = KGlobal::staticQString( "1" );
 
   // there is a possibility that we don't want to merge in the
   // additive.. rather, we might want to *replace* the base with the
@@ -464,9 +464,9 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
 
 QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const QDomElement &additive )
 {
-  static QString tagAction = QString::fromLatin1( "Action" );
-  static QString tagMergeLocal = QString::fromLatin1( "MergeLocal" );
-  static QString attrName = QString::fromLatin1( "name" );
+  static const QString &tagAction = KGlobal::staticQString( "Action" );
+  static const QString &tagMergeLocal = KGlobal::staticQString( "MergeLocal" );
+  static const QString &attrName = KGlobal::staticQString( "name" );
 
   QDomElement e = additive.firstChild().toElement();
   for ( ; !e.isNull(); e = e.nextSibling().toElement() )

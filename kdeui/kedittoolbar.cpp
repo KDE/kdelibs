@@ -159,7 +159,7 @@ public:
    */
   ToolbarList findToolbars(QDomElement& elem)
   {
-    static QString tagToolbar = QString::fromLatin1( "ToolBar" );
+    static const QString &tagToolbar = KGlobal::staticQString( "ToolBar" );
     ToolbarList list;
 
     for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
@@ -515,9 +515,9 @@ void KEditToolbarWidget::setupLayout()
 
 void KEditToolbarWidget::loadToolbarCombo()
 {
-  static QString attrName = QString::fromLatin1( "name" );
-  static QString tagText = QString::fromLatin1( "text" );
-  static QString tagText2 = QString::fromLatin1( "Text" );
+  static const QString &attrName = KGlobal::staticQString( "name" );
+  static const QString &tagText = KGlobal::staticQString( "text" );
+  static const QString &tagText2 = KGlobal::staticQString( "Text" );
 
   // just in case, we clear our combo
   m_toolbarCombo->clear();
@@ -564,10 +564,10 @@ void KEditToolbarWidget::loadToolbarCombo()
 
 void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
 {
-  static QString attrName      = QString::fromLatin1( "name" );
-  static QString attrIconText  = QString::fromLatin1( "iconText" );
-  static QString attrIconSize  = QString::fromLatin1( "iconSize" );
-  static QString attrPosition  = QString::fromLatin1( "position" );
+  static const QString &attrName      = KGlobal::staticQString( "name" );
+  static const QString &attrIconText  = KGlobal::staticQString( "iconText" );
+  static const QString &attrIconSize  = KGlobal::staticQString( "iconSize" );
+  static const QString &attrPosition  = KGlobal::staticQString( "position" );
 
   QString name(elem.attribute(attrName));
   QString icon_text(elem.attribute(attrIconText).lower());
@@ -658,9 +658,9 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
 
 void KEditToolbarWidget::loadActionList(QDomElement& elem)
 {
-  static QString tagSeparator = QString::fromLatin1( "Separator" );
-  static QString tagMerge     = QString::fromLatin1( "Merge" );
-  static QString attrName     = QString::fromLatin1( "name" );
+  static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
+  static const QString &tagMerge     = KGlobal::staticQString( "Merge" );
+  static const QString &attrName     = KGlobal::staticQString( "name" );
 
   int     sep_num = 0;
   QString sep_name("separator_%1");
@@ -747,9 +747,9 @@ KActionCollection *KEditToolbarWidget::actionCollection() const
 
 void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 {
-  static QString attrName = QString::fromLatin1( "name" );
-  static QString tagText = QString::fromLatin1( "text" );
-  static QString tagText2 = QString::fromLatin1( "Text" );
+  static const QString &attrName = KGlobal::staticQString( "name" );
+  static const QString &tagText = KGlobal::staticQString( "text" );
+  static const QString &tagText2 = KGlobal::staticQString( "Text" );
 
   // iterate through everything
   XmlDataList::Iterator xit = d->m_xmlFiles.begin();
@@ -839,9 +839,9 @@ void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
 
 void KEditToolbarWidget::slotInsertButton()
 {
-  static QString tagAction    = QString::fromLatin1( "Action" );
-  static QString tagSeparator = QString::fromLatin1( "Separator" );
-  static QString attrName     = QString::fromLatin1( "name" );
+  static const QString &tagAction    = KGlobal::staticQString( "Action" );
+  static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
+  static const QString &attrName     = KGlobal::staticQString( "name" );
 
   // we're modified, so let this change
   enableOk(true);
@@ -888,8 +888,8 @@ void KEditToolbarWidget::slotInsertButton()
 
 void KEditToolbarWidget::slotRemoveButton()
 {
-  static QString attrName    = QString::fromLatin1( "name" );
-  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
+  static const QString &attrName    = KGlobal::staticQString( "name" );
+  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
   enableOk(true);
@@ -926,8 +926,8 @@ void KEditToolbarWidget::slotUpButton()
   if (!item->itemAbove())
     return;
 
-  static QString attrName    = QString::fromLatin1( "name" );
-  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
+  static const QString &attrName    = KGlobal::staticQString( "name" );
+  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
   enableOk(true);
@@ -976,8 +976,8 @@ void KEditToolbarWidget::slotDownButton()
   if (!item->itemBelow())
     return;
 
-  static QString attrName    = QString::fromLatin1( "name" );
-  static QString attrNoMerge = QString::fromLatin1( "noMerge" );
+  static const QString &attrName    = KGlobal::staticQString( "name" );
+  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
   enableOk(true);
@@ -1020,9 +1020,9 @@ void KEditToolbarWidget::slotDownButton()
 
 void KEditToolbarWidget::slotTextClicked(int index)
 {
-  static QString attrIconText = QString::fromLatin1( "iconText" );
-  static QString attrName     = QString::fromLatin1( "name" );
-  static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
+  static const QString &attrIconText = KGlobal::staticQString( "iconText" );
+  static const QString &attrName     = KGlobal::staticQString( "name" );
+  static const QString &attrNoMerge  = KGlobal::staticQString( "noMerge" );
 
   enableOk(true);
 
@@ -1048,9 +1048,9 @@ void KEditToolbarWidget::slotTextClicked(int index)
 
 void KEditToolbarWidget::slotPosClicked(int index)
 {
-  static QString attrPosition = QString::fromLatin1( "position" );
-  static QString attrName     = QString::fromLatin1( "name" );
-  static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
+  static const QString &attrPosition = KGlobal::staticQString( "position" );
+  static const QString &attrName     = KGlobal::staticQString( "name" );
+  static const QString &attrNoMerge  = KGlobal::staticQString( "noMerge" );
 
   enableOk(true);
 
@@ -1082,9 +1082,9 @@ void KEditToolbarWidget::slotPosClicked(int index)
 
 void KEditToolbarWidget::slotIconClicked(int index)
 {
-  static QString attrIconSize = QString::fromLatin1( "iconSize" );
-  static QString attrName     = QString::fromLatin1( "name" );
-  static QString attrNoMerge  = QString::fromLatin1( "noMerge" );
+  static const QString &attrIconSize = KGlobal::staticQString( "iconSize" );
+  static const QString &attrName     = KGlobal::staticQString( "name" );
+  static const QString &attrNoMerge  = KGlobal::staticQString( "noMerge" );
 
   enableOk(true);
   d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
@@ -1104,7 +1104,7 @@ void KEditToolbarWidget::slotIconClicked(int index)
 
 void KEditToolbarWidget::updateLocal(QDomElement& elem)
 {
-  static QString attrName = QString::fromLatin1( "name" );
+  static const QString &attrName = KGlobal::staticQString( "name" );
 
   XmlDataList::Iterator xit = d->m_xmlFiles.begin();
   for ( ; xit != d->m_xmlFiles.end(); ++xit)
