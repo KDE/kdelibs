@@ -89,7 +89,7 @@ KStaticDeleter<KTrader> ktradersd;
 KTrader* KTrader::self()
 {
     if ( !s_self )
-	s_self = ktradersd.setObject( new KTrader );
+	ktradersd.setObject( s_self, new KTrader );
 
     return s_self;
 }
