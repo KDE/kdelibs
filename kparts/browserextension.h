@@ -27,6 +27,7 @@
 #include <qptrlist.h>
 #include <qdatastream.h>
 #include <qstringlist.h>
+#include <qpair.h>
 
 #include <kparts/part.h>
 #include <kparts/event.h>
