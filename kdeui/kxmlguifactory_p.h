@@ -189,8 +189,8 @@ private:
     void processElement( const QDomElement &element );
 
     void processActionOrCustomElement( const QDomElement &e, bool isActionTag );
-    void processActionElement( const QDomElement &e, int idx );
-    void processCustomElement( const QDomElement &e, int idx );
+    bool processActionElement( const QDomElement &e, int idx );
+    bool processCustomElement( const QDomElement &e, int idx );
 
     void processStateElement( const QDomElement &element );
 
