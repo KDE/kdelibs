@@ -25,6 +25,7 @@
 #include <qtimer.h>
 
 #include <kapp.h>
+#include <kcursor.h>
 #include <kdebug.h>
 #include <kcmenumngr.h>
 #include <kfontdialog.h>
@@ -64,6 +65,7 @@ KEdit::KEdit(QWidget *_parent, const char *name)
     gotodialog = NULL;
 
     setAcceptDrops(true);
+    KCursor::setAutoHideCursor( this, true );
 }
 
 

@@ -181,10 +181,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             {
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
-                if( !hasMarkedText() && txt.length() )
+                if( !hasMarkedText() && txt.length() && 
+		    cursorPosition() == (int) txt.length() )
                 {
-                    kdDebug() << "Key Pressed: " << keycode << endl;
-                    kdDebug() << "Current text: " << txt << endl;
                     if( emitSignals() )
                         emit completion( txt );
                     if( handleSignals() )
@@ -203,9 +202,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // the cursor is at the end of the string.
             QString txt = text();
             int len = txt.length();
-            if( (mode == KGlobalSettings::CompletionMan ||
-                (mode == KGlobalSettings::CompletionShell &&
-                cursorPosition() == len && len != 0 ) ) )
+            if(	(mode == KGlobalSettings::CompletionMan ||
+		 mode == KGlobalSettings::CompletionShell) &&
+		 cursorPosition() == len && len != 0 )
             {
                 if( emitSignals() )
                     emit completion( txt );

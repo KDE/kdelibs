@@ -3,6 +3,7 @@
 #include <kapp.h>
 #include <klineedit.h>
 #include <klocale.h>
+#include <kglobalsettings.h>
 
 int main ( int argc, char **argv)
 {
@@ -15,7 +16,7 @@ int main ( int argc, char **argv)
     KLineEdit *l = new KLineEdit( w, "mylineedit" );
     //l->hideModeChanger();
     QStringList list;
-    list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind";
+    list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind" << "Super" << "Sapperlot" << "Sushi" << "Supermuschi";
     list.sort();
     l->completionObject()->setItems( list );
     // Shows of the value of the returnPressed signals with the QString argument.
@@ -23,6 +24,7 @@ int main ( int argc, char **argv)
     // QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );
     l->resize(500,30);
     l->setFocus();
+l->setCompletionMode( KGlobalSettings::CompletionPopup );
     QPushButton * push = new QPushButton( "E&xit", w );
     push->resize(100,30);
     push->move(50,50);

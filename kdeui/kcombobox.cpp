@@ -117,7 +117,7 @@ void KComboBox::setContextMenuEnabled( bool showMenu )
 
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
-//     if ( completionMode() == KGlobalSettings::CompletionPopup && 
+//     if ( completionMode() == KGlobalSettings::CompletionPopup &&
 // 	 d->completionBox ) {
 
 // 	d->completionBox->clear();
@@ -184,7 +184,7 @@ void KComboBox::makeCompletion( const QString& text )
     // Read - only combobox
     else if( !m_pEdit )
     {
-	if( text.isNull() )
+	if( text.isNull() || !listBox() )
 	    return;
 
 	int index = listBox()->index( listBox()->findItem( text ) );
@@ -243,7 +243,8 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             {
                 QComboBox::keyPressEvent ( e );
                 QString txt = currentText();
-                if( !m_pEdit->hasMarkedText() && txt.length() )
+                if( !m_pEdit->hasMarkedText() && txt.length() &&
+		    cursorPosition() == (int) txt.length() )
                 {
                     if( emitSignals() )
                         emit completion( txt ); // emit when requested...
@@ -264,14 +265,14 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 // current text is not the same as the previous and the cursor
                 // is at the end of the string.
                 QString txt = currentText();
-                if( mode == KGlobalSettings::CompletionMan ||
-                    (mode == KGlobalSettings::CompletionShell &&
-                    m_pEdit->cursorPosition() == (int) txt.length() ) )
+                if( (mode == KGlobalSettings::CompletionMan ||
+		     mode == KGlobalSettings::CompletionShell) &&
+                    m_pEdit->cursorPosition() == (int) txt.length() )
                 {
                     if( emitSignals() )
                         emit completion( txt ); // emit when requested...
                     if( handleSignals() )
-                        makeCompletion( txt );  // handle when requested...		
+                        makeCompletion( txt );  // handle when requested...
                     return;
                 }
             }
@@ -285,6 +286,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                     rotateText( KCompletionBase::PrevCompletionMatch );
                 return;
             }
+
             // Handles nextMatch.
             key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
             if( KStdAccel::isEqual( e, key ) )
