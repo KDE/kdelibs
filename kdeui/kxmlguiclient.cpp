@@ -376,7 +376,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
 
         // Merge attributes
         QDomNamedNodeMap attribs = matchingElement.attributes();
-        for(int i = 0; i < attribs.count(); i++)
+        for(uint i = 0; i < attribs.count(); i++)
         {
           QDomNode node = attribs.item(i);
           currElement.setAttribute(node.nodeName(), node.nodeValue());
