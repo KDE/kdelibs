@@ -13,6 +13,9 @@ KDE's kiosk-framework builds on KDE's configuration framework and adds a
 simple application API that applications can query to get authorisation
 for certain operations.
 
+The KDE kiosk-framework should be used IN ADDITION to the standard UNIX
+security measures. 
+
 The configuration framework in KDE3
 ===================================
 
@@ -107,13 +110,93 @@ KDE3 Kiosk Application API
 
 Two new methods will be added to KApplication:
 
-- bool authorize(QString action);
-
+- bool authorize(QString action); // Generic actions
+- bool authorizeKAction(QString action); // For KActions exclusively
 - bool authorizeURLAction(QString, referringURL, destinationURL)
 
 .desktop files can have an additional field "X-KDE-AuthorizeAction". If this
-field is present the .desktop file is only considered if the action mentioned
-in this field gets authorized.
+field is present the .desktop file is only considered if the action(s) 
+mentioned in this field get(s) authorized. If multiple actions are listed
+they should be seperated by commas (','). 
+
+To restrict access to function the kdeglobals file should contain the 
+group "[KDE Action Restrictions]", each action can then restricted by 
+adding <action>="true". E.g. to disable the action "shell access" one 
+would add:
+[KDE Action Restrictions]
+shell access=false
+
+Actions that refer to menu and toolbar actions are prefixed with action/' the
+following standard actions are defined:
+
+action/file_new
+action/file_open
+action/file_open_recent
+action/file_save
+action/file_save_as
+action/file_revert
+action/file_close
+action/file_print
+action/file_print_preview
+action/file_mail
+action/file_quit
+action/edit_undo
+action/edit_redo
+action/edit_cut
+action/edit_copy
+action/edit_paste
+action/edit_select_all
+action/edit_deselect
+action/edit_find
+action/edit_find_next
+action/edit_find_last
+action/edit_replace
+action/view_actual_size
+action/view_fit_to_page
+action/view_fit_to_width
+action/view_fit_to_height
+action/view_zoom_in
+action/view_zoom_out
+action/view_zoom
+action/view_redisplay
+action/go_up
+action/go_back
+action/go_forward
+action/go_home
+action/go_previous
+action/go_next
+action/go_goto
+action/go_goto_page
+action/go_goto_line
+action/go_first
+action/go_last
+action/bookmark_add
+action/bookmark_edit
+action/tools_spelling
+action/options_show_menubar
+action/options_show_toolbar
+action/options_show_statusbar
+action/options_save_options
+action/options_configure_keybinding
+action/options_configure
+action/options_configure_toolbars
+action/help
+action/help_contents
+action/help_whats_this
+action/help_report_bug
+action/help_about_app
+action/help_about_kde
+
+Applications may use additional actions that they defined themselves.
+You can get a list of the actions used by a certain applications by using the
+following dcop command:
+
+dcop <dcopid> qt objects | grep KActionCollection/ | cut -d '/' -f 3
+
+or with
+
+dcop <dcopid> <maindwindowid> actions
+
 
 The most important task is to define a managable number of actions that can be 
 disabled. Actions should be defined in a generic way, "open konsole" would be
@@ -147,3 +230,6 @@ The following applications currently have support for this:
 * kicker - By marking the kickerrc config file as immutable, the panel will be 
 "locked down" and it will not be possible to make any changes to it.
 
+* kdesktop - By marking the kdesktoprc config file as immutable, the desktop
+will be "locked down" and it will no longer be possible to select
+"Configure Desktop" from its menus.

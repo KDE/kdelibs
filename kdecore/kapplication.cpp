@@ -426,6 +426,7 @@ class KApplicationPrivate
 public:
   KApplicationPrivate()
   {
+    actionRestrictions = false;
     refCount = 1;
     oldIceIOErrorHandler = 0;
     checkAccelerators = 0;
@@ -437,6 +438,7 @@ public:
   ~KApplicationPrivate()
   {}
 
+  bool actionRestrictions : 1;
   /**
    * This counter indicates when to exit the application.
    * It starts at 1, is decremented by the "last window close" event, but
@@ -713,6 +715,9 @@ void KApplication::init(bool GUIenabled)
   // Trigger creation of locale.
   (void) KGlobal::locale();
 
+  KConfig* config = KGlobal::config();
+  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
+  
   if (GUIenabled)
   {
 #ifdef Q_WS_X11
@@ -747,7 +752,6 @@ void KApplication::init(bool GUIenabled)
     // Set default mime-source factory
     QMimeSourceFactory::setDefaultFactory (mimeSourceFactory());
 
-    KConfig* config = KGlobal::config();
     KConfigGroupSaver saver( config, "Development" );
     QString sKey = config->readEntry( "CheckAccelerators" ).stripWhiteSpace();
     if( !sKey.isEmpty() ) {
@@ -2319,6 +2323,26 @@ QString KApplication::randomString(int length)
       // so what if I work backwards?
    }
    return str;
+}
+
+bool KApplication::authorize(const QString &genericAction)
+{
+   if (!d->actionRestrictions)
+      return true;
+      
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Action Restrictions" );
+   return config->readBoolEntry(genericAction, true);
+}
+
+bool KApplication::authorizeKAction(const char *action)
+{
+   if (!d->actionRestrictions || !action)
+      return true;
+
+   static const QString &action_prefix = KGlobal::staticQString( "action/" );
+      
+   return authorize(action_prefix + action);
 }
 
 #include "kapplication.moc"

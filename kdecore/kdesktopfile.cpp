@@ -29,6 +29,7 @@
 
 #include "kurl.h"
 #include "kconfigbackend.h"
+#include "kapplication.h"
 
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
@@ -181,10 +182,8 @@ bool KDesktopFile::hasDeviceType() const
 
 bool KDesktopFile::tryExec() const
 {
-  // if there is no TryExec field, just return OK.
+  // Test for TryExec and "X-KDE-AuthorizeAction" 
   QString te = readEntry("TryExec");
-  if (te.isNull())
-    return true;
 
   if (!te.isEmpty()) {
     if (te[0] == '/') {
@@ -207,6 +206,18 @@ bool KDesktopFile::tryExec() const
       return false;
     }
   }
+  QStringList list = readListEntry("X-KDE-AuthorizeAction");
+  if (kapp && !list.isEmpty())
+  {
+     for(QStringList::ConstIterator it = list.begin();
+         it != list.end();
+         ++it)
+     {
+        if (!kapp->authorize((*it).stripWhiteSpace()))
+           return false;
+     }
+  }
+  
   return true;
 }
 

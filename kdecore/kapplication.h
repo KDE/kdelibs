@@ -667,6 +667,20 @@ public:
    */
   void installKDEPropertyMap();
 
+  /**
+   * Returns whether a certain action is authorized
+   * @param genericAction The name of a generic  action
+   */
+  bool authorize(const QString &genericAction);
+  
+  /**
+   * Returns whether a certain KAction is authorized. 
+   * 
+   * @param action The name of a KAction action. The name is prepended
+   * with "action/" before being passed to @ref authorize()
+   */
+  bool authorizeKAction(const char *action);
+   
 public slots:
   /**
    * Tells KApplication about one more operation that should be finished
