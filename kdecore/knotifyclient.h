@@ -72,7 +72,8 @@ public:
 	 *                will decide according to the config
 	 * @param client The DCOPClient to use.  Usually it pulls the one from
 	 *               your KApplication.
-	*/
+	 * @param sound The sound to play (KDEDIR/share/sounds/ if not absolute)
+     */
 	KNotifyClient(QObject *parent, const QString &message, const QString &text=0,
 	             int present=Default,
 	             const QString &sound=0, const QString &file=0,
