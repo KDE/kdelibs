@@ -12,6 +12,8 @@
 #include <kio/job.h>
 #include <ktoolbarbutton.h>
 #include <ktoolbar.h>
+#include <ktempfile.h>
+#include <ksavefile.h>
 
 #include <dom/dom_element.h>
 #include <misc/htmltags.h>
@@ -167,7 +169,7 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   d->m_khtml->openURL( d->m_khtml->url() );
 }
 
-void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter )
+void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter, long cacheId )
 {
   KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
 
@@ -180,8 +182,38 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
     KURL destURL( dlg->selectedURL() );
     if ( !destURL.isMalformed() )
     {
-      /*KIO::Job *job = */ KIO::copy( url, destURL );
-      // TODO connect job result, to display errors
+      bool saved = false;
+      if (KHTMLPageCache::self()->isValid(cacheId))
+      {
+        if (destURL.isLocalFile())
+        {
+          KSaveFile destFile(destURL.path());
+          if (destFile.status() == 0)
+          {
+            KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
+            saved = true;
+          }
+        }
+        else 
+        {
+          // save to temp file, then move to final destination.
+          KTempFile destFile;
+          if (destFile.status() == 0)
+          {
+            KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
+            destFile.close();
+            KURL url2 = KURL();
+            url2.setPath(destFile.name());
+            KIO::move(url2, destURL);
+            saved = true;
+          }
+        }
+      }
+      if(!saved)
+      {
+        /*KIO::Job *job = */ KIO::copy( url, destURL );
+        // TODO connect job result, to display errors
+      }
     }
   }
 

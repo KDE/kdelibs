@@ -453,7 +453,7 @@ bool KHTMLPart::openURL( const KURL &url )
     return false;
 
   d->m_bReloading = args.reload;
-  if ( (args.postData.size() > 0) && (url.protocol() == QString::fromLatin1( "http" )) )
+  if ( (args.postData.size() > 0) && (url.protocol().startsWith("http")) )
   {
       d->m_job = KIO::http_post( url, args.postData, false );
       // DA: Send the content-type as a meta-data instead...
@@ -491,6 +491,7 @@ bool KHTMLPart::closeURL()
 {
   if ( d->m_job )
   {
+    KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
     d->m_job->kill();
     d->m_job = 0;
   }
@@ -1583,7 +1584,7 @@ void KHTMLPart::slotSaveDocument()
   if ( srcURL.fileName(false).isEmpty() )
     srcURL.setFileName( "index.html" );
 
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm") );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm"), d->m_cacheId );
 }
 
 void KHTMLPart::slotSaveFrame()
