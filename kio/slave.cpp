@@ -81,7 +81,7 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
 
 Slave::~Slave()
 {
-    kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
+    //kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
     if (serv != 0) {
         delete serv;
         serv = 0;
