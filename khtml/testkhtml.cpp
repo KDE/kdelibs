@@ -35,13 +35,21 @@
 #include <html/html_imageimpl.h>
 #include <rendering/render_style.h>
 #include <kmainwindow.h>
+#include <kcmdlineargs.h>
 #include "domtreeview.h"
 
+static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , {0, 0, 0} };
 
 int main(int argc, char *argv[])
 {
+
+    KCmdLineArgs::init(argc, argv, "Testkhtml", "a basic web browser using the KHTML library", "1.0");
+    KCmdLineArgs::addCmdLineOptions(options);
+
+    KApplication a;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
+
     KHTMLFactory *fac = new KHTMLFactory();
-    KApplication a(argc, argv, "testkhtml");
 
     KMainWindow *toplevel = new KMainWindow();
     KHTMLPart *doc = new KHTMLPart( toplevel, 0,
@@ -58,12 +66,7 @@ int main(int argc, char *argv[])
 
     doc->enableJScript(true);
     doc->enableJava(true);
-    //doc->setCharset("unicode");
-    //doc->setFollowsLinks(false);
-    //a.setTopWidget(doc);
     doc->setURLCursor(QCursor(PointingHandCursor));
-    //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
-    //			      QColor(Qt::green));
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
 		     doc->widget(), SLOT(setCaption(const QString &)));
@@ -75,7 +78,7 @@ int main(int argc, char *argv[])
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
-    doc->openURL( KURL( argv[1] ) );
+    doc->openURL( args->url(0) );
 
     int ret = a.exec();
 
