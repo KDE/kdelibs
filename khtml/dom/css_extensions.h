@@ -433,7 +433,7 @@ public:
      *
      * @return
      */
-    void setInherit() (  );
+    void setInherit();
 };
 
 

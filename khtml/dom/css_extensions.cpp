@@ -224,10 +224,10 @@ void CSS2BorderSpacing::setVerticalSpacing( const unsigned short verticalType, c
         ((CSS2BorderSpacingImpl *)impl)->setVerticalSpacing( verticalType, value );
 }
 
-void CSS2BorderSpacing::setInherit()(  )
+void CSS2BorderSpacing::setInherit()
 {
     if(impl)
-        ((CSS2BorderSpacingImpl *)impl)->setInherit()(  );
+        ((CSS2BorderSpacingImpl *)impl)->setInherit();
 }
 
 
