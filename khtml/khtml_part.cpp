@@ -1197,6 +1197,9 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
   {
       //kdDebug( 6050 ) << "begin!" << endl;
 
+    // We must suspend KIO while we're inside begin() because it can cause
+    // crashes if a window (such as kjsdebugger) goes back into the event loop,
+    // more data arrives, and begin() gets called again (re-entered).
     d->m_job->suspend();
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
     d->m_job->resume();
