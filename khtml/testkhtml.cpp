@@ -48,26 +48,23 @@ int main(int argc, char *argv[])
     doc->view()->setURLCursor(QCursor(PointingHandCursor));
     //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
     //			      QColor(Qt::green));
-    //doc->openURL( KURL( argv[1] ) );
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
 		     doc->widget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
-   
+
 
     ((QScrollView *)doc->widget())->viewport()->show();
 
     Dummy *dummy = new Dummy( doc );
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
              dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
+    doc->openURL( KURL( argv[1] ) );
 
     QPushButton *p = new QPushButton("&Quit", 0);
     QWidget::connect(p, SIGNAL(pressed()), &a, SLOT(quit()));
     p->show();
-    for(int i =0 ; i <1000; i++)
-       printf("klopp");
-    printf("utput\n");
-    getc(stdin);
+
     a.exec();
 
 /*    Range r( doc->htmlDocument().createRange() );
