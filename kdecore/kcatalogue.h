@@ -32,6 +32,7 @@ class KCataloguePrivate;
  *
  * @see KLocale
  */
+//REVISED: hausmann
 class KCatalogue
 {
 public:
@@ -79,7 +80,7 @@ public:
    *
    * @param msgid The message id
    *
-   * @return The translated message, or 0 if not found
+   * @return The translated message, in utf8 encoding, or 0 if not found
    */
   const char * translate( const char * msgid ) const;
 

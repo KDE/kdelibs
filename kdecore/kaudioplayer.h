@@ -50,6 +50,7 @@
  * </pre>
  *
  */
+//REVISED: hausmann
 class KAudioPlayer : public QObject {
 Q_OBJECT
 private:
@@ -77,7 +78,7 @@ public:
 	 * @param filename Absolute path to the filename of the sound file to play.
 	 *                if not absolute, goes off KDEDIR/share/sounds/ (preferred)
 	 */
-	static void play(QString filename);
+	static void play(const QString &filename);
 
 public slots:
 	/**

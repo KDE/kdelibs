@@ -27,7 +27,7 @@ class KAudioPlayerPrivate {
 public:
 	QString filename;
 
-	KAudioPlayerPrivate(QString filename) : filename(filename) { };
+	KAudioPlayerPrivate(const QString &filename) : filename(filename) { };
 };
 
 KAudioPlayer::KAudioPlayer( const QString& filename,
@@ -41,7 +41,7 @@ KAudioPlayer::~KAudioPlayer()
 	delete d;
 }
 
-void KAudioPlayer::play(QString filename)
+void KAudioPlayer::play(const QString &filename)
 {
 	KAudioPlayer ap(filename);
 	ap.play();
