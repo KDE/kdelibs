@@ -70,6 +70,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   mAddresseeList->addColumn( i18n("Name") );
   mAddresseeList->addColumn( i18n("Email") );
   mAddresseeList->setAllColumnsShowFocus( true );
+  mAddresseeList->setFullWidth( true );
   listLayout->addWidget( mAddresseeList );
   connect( mAddresseeList, SIGNAL( doubleClicked( QListViewItem * ) ),
            SLOT( slotOk() ) );
@@ -84,11 +85,12 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   mAddresseeEdit->completionObject()->setIgnoreCase( true );
   listLayout->addWidget( mAddresseeEdit );
 
+  resize( 450, 300 );
+
   if ( mMultiple ) {
     QBoxLayout *selectedLayout = new QVBoxLayout;
     topLayout->addLayout( selectedLayout );
     topLayout->setSpacing( spacingHint() );
-//    selectedLayout->addSpacing( spacingHint() );
 
     QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected"),
                                               topWidget );
@@ -97,6 +99,8 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     mSelectedList = new KListView( selectedGroup );
     mSelectedList->addColumn( i18n("Name") );
     mSelectedList->addColumn( i18n("Email") );
+    mSelectedList->setAllColumnsShowFocus( true );
+    mSelectedList->setFullWidth( true );
     connect( mSelectedList, SIGNAL( doubleClicked( QListViewItem * ) ),
              SLOT( removeSelected() ) );
 
@@ -105,6 +109,8 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
 
     connect( mAddresseeList, SIGNAL( clicked( QListViewItem * ) ),
              SLOT( addSelected( QListViewItem * ) ) );
+
+    resize( 650, 350 );
   }
 
   mAddressBook = StdAddressBook::self( true );
@@ -150,6 +156,7 @@ void AddresseeDialog::selectItem( const QString &str )
   if ( item ) {
     mAddresseeList->blockSignals( true );
     mAddresseeList->setSelected( item, true );
+    mAddresseeList->ensureItemVisible( item );
     mAddresseeList->blockSignals( false );
   }
 }
