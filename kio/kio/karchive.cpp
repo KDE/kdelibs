@@ -418,6 +418,7 @@ const KArchiveEntry* KArchiveDirectory::entry( QString name ) const
 
 void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
+  Q_ASSERT( !entry->name().isEmpty() );
   m_entries.insert( entry->name(), entry );
 }
 
