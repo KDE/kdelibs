@@ -223,7 +223,7 @@ void DocWordCompletionPluginView::complete( bool fw )
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   // find the word we are typing
   uint cline, ccol;
-  viewCursorInterface( m_view )->cursorPosition( &cline, &ccol );
+  viewCursorInterface( m_view )->cursorPositionReal( &cline, &ccol );
   QString wrd = word();
   if ( wrd.isEmpty() ) return;
 
