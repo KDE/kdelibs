@@ -311,8 +311,8 @@ Exec=fooview %F
 Actions=Edit;Inverse
 Icon=fooview.png
 MimeType=image/x-foo
-X-KDE-RepoID=IDL:FooViewer/Application:1.0
-X-KDE-ActivationMode=shared
+X-KDE-Library=libfooview
+X-KDE-FactoryName=fooviewfactory
 X-KDE-ServiceType=FooService
 
 [Desktop Action Inverse]
