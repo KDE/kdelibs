@@ -1241,7 +1241,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
         bool domainPrinted = false;
 
         KHttpCookieList *cookieList = m_cookieDomains[domain];
-        KHttpCookiePtr cookie=cookieList->first();
+        KHttpCookiePtr cookie=cookieList->last();
 
         for (; cookie != 0;)
         {
@@ -1249,7 +1249,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
             {
                 // Delete expired cookies
                 KHttpCookiePtr old_cookie = cookie;
-                cookie = cookieList->next();
+                cookie = cookieList->prev();
                 cookieList->removeRef( old_cookie );
             }
             else if (cookie->expireDate() != 0 && !m_ignoreCookieExpirationDate)
@@ -1269,15 +1269,17 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 fprintf(fStream, "%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
                         cookie->host().latin1(), domain.latin1(),
                         path.latin1(), (unsigned long) cookie->expireDate(),
-                        cookie->protocolVersion(), cookie->name().latin1(),
-                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) + (cookie->hasExplicitPath() ? 4 : 0),
+                        cookie->protocolVersion(),
+                        cookie->name().isEmpty() ? cookie->value().latin1() : cookie->name().latin1(),
+                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) + 
+                        (cookie->hasExplicitPath() ? 4 : 0) + (cookie->name().isEmpty() ? 8 : 0),
                         cookie->value().latin1());
-                cookie = cookieList->next();
+                cookie = cookieList->prev();
             }
             else
             {
                 // Skip session-only cookies
-                cookie = cookieList->next();
+                cookie = cookieList->prev();
             }
         }
     }
@@ -1382,6 +1384,8 @@ bool KCookieJar::loadCookies(const QString &_filename)
                 secure = i & 1;
                 httpOnly = i & 2;
                 explicitPath = i & 4;
+                if (i & 8)
+                   name = "";
                 line[strlen(line)-1] = '\0'; // Strip LF.
                 value = line;
             }
