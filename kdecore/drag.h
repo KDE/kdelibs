@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.16  1998/06/16 06:03:14  kalle
+ * Implemented copy constructors and assignment operators or disabled them
+ *
  * Revision 1.15  1998/05/08 20:45:08  kulow
  * took out the #undef I added
  *
@@ -434,7 +437,7 @@ protected:
 /**
 * Finds the root window belonging to the global point p.
 */
-  virtual Window KDNDWidget::findRootWindow( QPoint & p );
+  virtual Window findRootWindow( QPoint & p );
   
 /** 
 * This function MUST be called by your implementation if you overload it.
@@ -561,8 +564,8 @@ protected:
 
 private:
   // Disallow assignment and copy-construction
-  KDNDWidget( const KDNDWidget& ) {};
-  KDNDWidget& operator= ( const KDNDWidget& ) { return *this; };
+  KDNDWidget( const KDNDWidget& );
+  KDNDWidget& operator= ( const KDNDWidget& );
 };
 
 #endif
