@@ -178,7 +178,7 @@ void KSocket::slotWrite( int )
 bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
 {
   if (
-#ifdef PF_INET6
+#ifdef INET6
      ( domain != PF_INET6 ) &&
 #endif
      ( domain != PF_INET ) )

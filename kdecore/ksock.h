@@ -45,13 +45,10 @@
 
 #include <sys/un.h>
 
-#ifdef HAVE_NETINET6_IN6_H
-#include <netinet6/in6.h> // This is wholly unnecesary for me, dunno about others
-#endif
 #include <netinet/in.h>
 class QSocketNotifier;
 
-#ifdef PF_INET6
+#ifdef INET6
 typedef sockaddr_in6 ksockaddr_in;
 #define KSOCK_DEFAULT_DOMAIN PF_INET6
 #else
@@ -295,7 +292,7 @@ private:
 // Here are a whole bunch of hackish macros that allow one to
 // get at the correct member of ksockaddr_in
 
-#ifdef PF_INET6
+#ifdef INET6
 #define get_sin_addr(x) x.sin6_addr
 #define get_sin_port(x) x.sin6_port
 #define get_sin_family(x) x.sin6_family
