@@ -278,6 +278,10 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             if(strncasecmp(str, "url=", 4) == 0)
             {
                 str = str.mid(4).simplifyWhiteSpace();
+		if ( str[0] == '\'' || str[0] == '"' )
+		    str.remove( 0, 1 );
+		if ( str[str.length()-1] == '\'' || str[str.length()-1] == '"' )
+		    str.remove( str.length() - 1, 1 );
                 kdDebug( 6030 ) << "====> got redirect to " << str << endl;
                 v->part()->scheduleRedirection(delay, str);
             }
