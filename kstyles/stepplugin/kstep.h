@@ -93,7 +93,7 @@ protected:
     void drawStepBarCircle(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g);
     void drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x, int y,
-                          const QColorGroup &g);
+                           int size, const QColorGroup &g);
     void drawStepBarGroove(QPainter *p, QRect r, const QWidget *w,
                            const QColorGroup &g);
 private:

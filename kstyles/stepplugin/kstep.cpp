@@ -9,22 +9,7 @@
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
-
-static unsigned char downarrow_bits[] = {
- 0xff,0x01,0xff,0x01,0xfe,0x00,0xfe,0x00,0x7c,0x00,0x7c,0x00,0x38,0x00,0x38,
- 0x00,0x10,0x00};
-
-static unsigned char leftarrow_bits[] = {
- 0x80,0x01,0xe0,0x01,0xf8,0x01,0xfe,0x01,0xff,0x01,0xfe,0x01,0xf8,0x01,0xe0,
- 0x01,0x80,0x01};
-
-static unsigned char rightarrow_bits[] = {
- 0x03,0x00,0x0f,0x00,0x3f,0x00,0xff,0x00,0xff,0x01,0xff,0x00,0x3f,0x00,0x0f,
- 0x00,0x03,0x00};
-
-static unsigned char uparrow_bits[] = {
-  0x10, 0x00, 0x38, 0x00, 0x38, 0x00, 0x7c, 0x00, 0x7c, 0x00, 0xfe, 0x00,
-  0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
+#include <qpointarray.h>
 
 static unsigned char arrow_dark_bits[] = {
  0x30,0x3c,0x08,0x84,0xc4,0x87,0x02,0x80,0x01,0x00,0x02,0x80,0x04,0x80,0x08,
@@ -64,15 +49,15 @@ void KStepStyle::polish(QPalette &)
     nextGrp.setColor(QColorGroup::Dark, Qt::black);
 }
 
-void KStepStyle::unPolish(QApplication *app)
+void KStepStyle::unPolish(QApplication *)
 {
 }
 
-void KStepStyle::polish(QWidget *w)
+void KStepStyle::polish(QWidget *)
 {
 }
 
-void KStepStyle::unPolish(QWidget *w)
+void KStepStyle::unPolish(QWidget *)
 {
 }
 
@@ -227,7 +212,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             add.height()-2, nextGrp, activeControl == AddLine, 1,
                             &nextGrp.brush(QColorGroup::Background));
             drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
-                             add.x()+4, add.y()+4, nextGrp);
+                             add.x()+4, add.y()+4, add.width()-8, nextGrp);
         }
     }
     if(controls & SubLine){
@@ -237,8 +222,8 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
                             sub.height()-2, nextGrp, activeControl == SubLine, 1,
                             &nextGrp.brush(QColorGroup::Background));
-            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+4,
-                             sub.y()+4, nextGrp);
+            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, 
+                            sub.x()+4, sub.y()+4, sub.width()-8, nextGrp);
         }
     }
     if((controls & SubPage)){
@@ -514,38 +499,44 @@ void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
     p->fillRect(x, y, w, h, Qt::color1);
 }
 
-
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
-                                  int y, const QColorGroup &g)
-{
-    static QBitmap upArrow(9, 9, uparrow_bits, true);
-    static QBitmap downArrow(9, 9, downarrow_bits, true);
-    static QBitmap leftArrow(9, 9, leftarrow_bits, true);
-    static QBitmap rightArrow(9, 9, rightarrow_bits, true);
-
-    if(!upArrow.mask()){
-        upArrow.setMask(upArrow);
-        downArrow.setMask(downArrow);
-        leftArrow.setMask(leftArrow);
-        rightArrow.setMask(rightArrow);
-    }
-    p->setPen(g.dark());
-    switch(type){
+                                  int y, int size, const QColorGroup &g)
+{        
+    QPointArray a;
+    int x2=x+size-1, y2=y+size-1;
+    switch (type){
     case Qt::UpArrow:
-        p->drawPixmap(x, y, upArrow);
+        if (size%2 == 1)
+          a.setPoints(4, x,y2, x2,y2, x+size/2,y, x,y2);
+        else
+          a.setPoints(5, x,y2, x2,y2, x+size/2,y, x+size/2-1,y, x,y2);
         break;
     case Qt::DownArrow:
-        p->drawPixmap(x, y, downArrow);
+        if (size%2 == 1)
+          a.setPoints(4, x,y, x2,y, x+size/2,y2, x,y);
+        else
+          a.setPoints(5, x,y, x2,y, x+size/2,y2, x+size/2-1,y2, x,y);
         break;
     case Qt::LeftArrow:
-        p->drawPixmap(x, y, leftArrow);
+        if (size%2 == 1)
+          a.setPoints(4, x2,y, x2,y2, x,y+size/2, x2,y);
+        else 
+          a.setPoints(5, x2,y, x2,y2, x,y+size/2, x,y+size/2-1, x2,y);
         break;
     default:
-        p->drawPixmap(x, y, rightArrow);
+        if (size%2 == 1)
+          a.setPoints(4, x,y, x,y2, x2,y+size/2, x,y);
+        else
+          a.setPoints(5, x,y, x,y2, x2,y+size/2, x2,y+size/2-1, x,y);
         break;
     }
-
-
+    QBrush oldBrush = p->brush();
+    QPen oldPen = p->pen();
+    p->setBrush(g.brush(QColorGroup::Dark));
+    p->setPen(g.dark());
+    p->drawPolygon(a);
+    p->setBrush(oldBrush);
+    p->setPen(oldPen);
 }
 
 void KStepStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
