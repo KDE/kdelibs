@@ -144,6 +144,10 @@ private:
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
  *
+ * The slider is created only when the user specifies a range
+ * for the control using the setRange function with the slider
+ * parameter set to "true".
+ *
  * A special feature of KIntNumInput, designed specifically for
  * the situation when there are several KIntNumInputs in a column,
  * is that you can specify what portion of the control is taken by the
@@ -333,6 +337,10 @@ class KDoubleLine;
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
  *
+ * The slider is created only when the user specifies a range
+ * for the control using the setRange function with the slider
+ * parameter set to "true".
+ *     
  * A special feature of KDoubleNumInput, designed specifically for
  * the situation when there are several KDoubleNumInputs in a column,
  * is that you can specify what portion of the control is taken by the
