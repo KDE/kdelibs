@@ -5,6 +5,7 @@
 750	kspell (kdelibs)
 125	kaccel (kdecore)
 1201	kfm (kdebase)
+1202    konqueror (kdebase)
 1300	kfm (kioslave)
 1501	khexedit (kdeutils)
 1901	kfind (kdebase)
@@ -22,6 +23,9 @@
 7009    kiolib (KMimeType)
 7010    kiolib (KRun)
 7011    kiolib (KRegistry)
+8000    corba
+8001    parts (corba)
+8002    partsui (corba)
 
 
 # 30001-65534 are for KOffice
