@@ -140,7 +140,7 @@ class CfgEntry
 // whatsthis
       kdDebug() << "  code: " << mCode << endl;
 //      kdDebug() << "  values: " << mValues.join(":") << endl;
-      
+
       if (!param().isEmpty())
       {
         kdDebug() << "  param name: "<< mParamName << endl;
@@ -232,7 +232,7 @@ static QString literalString( const QString &s )
   bool isAscii = true;
   for(int i = s.length(); i--;)
      if (s[i].unicode() > 127) isAscii = false;
-  
+
   if (isAscii)
      return "QString::fromLatin1( " + quoteString(s) + " )";
   else
@@ -671,8 +671,8 @@ static QString itemDeclaration(const CfgEntry *e)
      return QString::null;
 
   return "  KConfigSkeleton::Item"+itemType( e->type() ) +
-         "  *item" + e->name() + 
-         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString::null) + 
+         "  *item" + e->name() +
+         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString::null) +
          ";\n";
 }
 
@@ -753,7 +753,7 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QStri
     txt += "  " + itemVarStr + "->setLabel( i18n(";
     if ( !e->param().isEmpty() )
       txt += quoteString(e->label().replace("$("+e->param()+")", i));
-    else 
+    else
       txt+= quoteString(e->label());
     txt+= ") );\n";
   }
@@ -761,7 +761,7 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QStri
     txt += "  " + itemVarStr + "->setWhatsThis( i18n(";
     if ( !e->param().isEmpty() )
       txt += quoteString(e->whatsThis().replace("$("+e->param()+")", i));
-    else 
+    else
       txt+= quoteString(e->whatsThis());
     txt+=") );\n";
   }
@@ -775,7 +775,7 @@ int main( int argc, char **argv )
   aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
   aboutData.addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
   aboutData.addAuthor( "Zack Rusin", 0, "zack@kde.org" );
-  aboutData.addCredit( "Reinhold Kainhofer", "Fix for parametrized entries", 
+  aboutData.addCredit( "Reinhold Kainhofer", "Fix for parametrized entries",
       "reinhold@kainhofer.com", "http://reinhold.kainhofer.com" );
 
   KCmdLineArgs::init( argc, argv, &aboutData );
@@ -918,12 +918,6 @@ int main( int argc, char **argv )
     return 1;
   }
 
-  if ( singleton && cfgFileNameArg)
-  {
-    kdError() << "Singleton class can not use filename as argument." << endl;
-    return 1;
-  }
-
   if ( !cfgFileName.isEmpty() && cfgFileNameArg)
   {
     kdError() << "Having both a fixed filename and a filename as argument is not possible." << endl;
@@ -1036,6 +1030,8 @@ int main( int argc, char **argv )
     h << " );" << endl;
   } else {
     h << "    static " << className << " *self();" << endl;
+    if (cfgFileNameArg)
+      h << "    static void instance(const char * cfgfilename);" << endl;
   }
 
   // Destructor
@@ -1070,9 +1066,9 @@ int main( int argc, char **argv )
         h << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
         if ( e->paramType() == "Enum" ) {
           h << "QString::fromLatin1( ";
-          if (globalEnums) 
+          if (globalEnums)
             h << enumName(e->param()) << "ToString[i]";
-          else 
+          else
             h << enumName(e->param()) << "::enumToString[i]";
           h << " )";
         } else {
@@ -1141,7 +1137,10 @@ int main( int argc, char **argv )
 
   // Private constructor for singleton
   if ( singleton ) {
-    h << "    " << className << "();" << endl;
+    h << "    " << className << "(";
+    if ( cfgFileNameArg )
+      h << "const char *arg";
+    h << ");" << endl;
     h << "    static " << className << " *mSelf;" << endl << endl;
   }
 
@@ -1221,6 +1220,8 @@ int main( int argc, char **argv )
   // Header required by singleton implementation
   if ( singleton )
     cpp << "#include <kstaticdeleter.h>" << endl << endl;
+  if ( singleton && cfgFileNameArg )
+    cpp << "#include <kdebug.h>" << endl << endl;
 
   if ( !nameSpace.isEmpty() )
     cpp << "using namespace " << nameSpace << ";" << endl << endl;
@@ -1232,21 +1233,44 @@ int main( int argc, char **argv )
 
     cpp << className << " *" << className << "::self()" << endl;
     cpp << "{" << endl;
+    if ( cfgFileNameArg ) {
+      cpp << "  if (!mSelf)" << endl;
+      cpp << "     kdFatal() << \"you need to call " << className << "::instance before using\" << endl;" << endl;
+    } else {
     cpp << "  if ( !mSelf ) {" << endl;
     cpp << "    static" << className << "Deleter.setObject( mSelf, new " << className << "() );" << endl;
     cpp << "    mSelf->readConfig();" << endl;
     cpp << "  }" << endl << endl;
+    }
     cpp << "  return mSelf;" << endl;
     cpp << "}" << endl << endl;
+
+    if ( cfgFileNameArg ) {
+      cpp << "void " << className << "::instance(const char *cfgfilename)" << endl;
+      cpp << "{" << endl;
+      cpp << "  if (mSelf) {" << endl;
+      cpp << "     kdError() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
+      cpp << "     return;" << endl;
+      cpp << "  }" << endl;
+      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;
+      cpp << "  mSelf->readConfig();" << endl;
+      cpp << "}" << endl << endl;
+    }
   }
-  
+
   if ( !cppPreamble.isEmpty() )
     cpp << cppPreamble << endl;
 
   // Constructor
   cpp << className << "::" << className << "( ";
-  if (cfgFileNameArg)
-     cpp << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " " : ", ");
+  if (cfgFileNameArg ) {
+    if ( !singleton )
+      cpp << " KSharedConfig::Ptr config";
+    else
+      cpp << " const char *config";
+    cpp << (parameters.isEmpty() ? " " : ", ");
+  }
+
   for (QValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
@@ -1336,7 +1360,7 @@ int main( int argc, char **argv )
       {
         QString defaultStr;
         QString itemVarStr(itemVar(e)+QString("[%1]").arg(i));
-        
+
         if ( !e->paramDefaultValue(i).isEmpty() )
           defaultStr = e->paramDefaultValue(i);
         else if ( !e->defaultValue().isEmpty() )
@@ -1351,9 +1375,9 @@ int main( int argc, char **argv )
         if ( setUserTexts )
           cpp << userTextsFunctions( e, itemVarStr, e->paramName() );
 
-        // Make mutators for enum parameters work by adding them with $(..) replaced by the 
-        // param name. The check for isImmutable in the set* functions doesn't have the param 
-        // name available, just the corresponding enum value (int), so we need to store the 
+        // Make mutators for enum parameters work by adding them with $(..) replaced by the
+        // param name. The check for isImmutable in the set* functions doesn't have the param
+        // name available, just the corresponding enum value (int), so we need to store the
         // param names in a separate static list!.
         cpp << "  addItem( " << itemVarStr << ", QString::fromLatin1( \"";
         if ( e->paramType()=="Enum" )
