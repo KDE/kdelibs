@@ -71,6 +71,7 @@
 #include "khtmlview.h"
 #include "rendering/render_object.h"
 #include "xml/dom_docimpl.h"
+#include "html/html_baseimpl.h"
 #include "dom/dom_doc.h"
 #include "misc/loader.h"
 #include "ecma/kjs_binding.h"
@@ -579,10 +580,9 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, bool known_failur
     return true;
 }
 
-void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
+void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* part, uint indent )
 {
-    Node node = m_part->document();
-    uint indent = 0;
+    Node node = part->document();
     while (!node.isNull()) {
 	// process
 
@@ -605,6 +605,14 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
 		    QString name = *it;
 		    QString value = elem.getAttribute(*it).string();
 		    outputStream << " " << name << "=\"" << value << "\"";
+		}
+		if ( node.handle()->id() == ID_FRAME ) {
+			outputStream << endl;
+			QString frameName = static_cast<DOM::HTMLFrameElementImpl *>( node.handle() )->name.string();
+			KHTMLPart* frame = part->findFrame( frameName );
+			Q_ASSERT( frame );
+			if ( frame )
+			    getPartDOMOutput( outputStream, frame, indent );
 		}
 		break;
 	    }
@@ -672,7 +680,7 @@ QString RegressionTest::getPartOutput( OutputType type)
         static_cast<DocumentImpl*>( m_part->document().handle() )->renderer()->layer()->dump( outputStream );
     } else {
         assert( type == DOMTree );
-        getPartDOMOutput( outputStream );
+        getPartDOMOutput( outputStream, m_part, 0 );
     }
 
     dump.replace( m_baseDir + "/tests", QString::fromLatin1( "REGRESSION_SRCDIR" ) );
