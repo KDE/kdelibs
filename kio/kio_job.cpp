@@ -10,6 +10,8 @@
 #include <qlayout.h>
 #include <qtimer.h>
 
+#include <config.h>
+
 #include <kapp.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -29,10 +31,20 @@
 #include <time.h>
 #include <sys/wait.h>
 
-#ifdef __FreeBSD__
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
-#include <sys/ucred.h>
-#include <sys/mount.h>
+#endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
+#ifdef HAVE_SYS_MNTTAB_H
+#include <sys/mnttab.h>
+#endif
+#ifdef HAVE_MNTENT_H
+#include <mntent.h>
 #endif
 
 /**
@@ -1161,102 +1173,95 @@ KIOSlavePool* KIOSlavePool::self() {
  ***************************************************************/
 
 
-QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file ) {
-#ifdef __FreeBSD__
-  if( !strcmp( "/etc/mtab", _file ) ) {
-    struct statfs *buf;
-    long fsno;
-    int flags = MNT_WAIT;
+#ifndef MNTTAB
+#ifdef MTAB_FILE
+#define MNTTAB MTAB_FILE
+#else
+#define MNTTAB "/etc/mnttab"
+#endif
+#endif
+
+// hopefully there are only two kind of APIs. If not we need a configure test
+#ifdef HAVE_SETMNTENT
+#define SETMNTENT setmntent
+#define ENDMNTENT endmntent
+#define STRUCT_MNTENT struct mntent *
+#define GETMNTENT(file, var) ((var = getmntent(file)) != NULL)
+#define MOUNTPOINT(var) var->mnt_dir
+#define MOUNTTYPE(var) var->mnt_type
+#define FSNAME(var) var->mnt_fsname
+#else
+#ifdef BSD
+#define SETMNTENT(x, x) 1
+#define ENDMNTENT(x) /* nope */
+#define STRUCT_MNTENT struct fstab *
+#define GETMNTENT(file, var) ((var=getfsent()) != NULL)
+#define MOUNTPOINT(var) var->fs_file
+#define MOUNTTYPE(var) var->fs_vftype
+#define FSNAME(var) var->fs_spec
+#else /* no setmntent and no BSD */
+#define SETMNTENT fopen
+#define ENDMNTENT fclose
+#define STRUCT_MNTENT struct mnttab
+#define GETMNTENT(file, var) (getmntent(file, &var) == 0)
+#define MOUNTPOINT(var) var.mnt_mountp
+#define MOUNTTYPE(var) var.mnt_fstype
+#define FSNAME(var) var.mnt_special
+#endif
+#endif
+
+QString KIOJob::findDeviceMountPoint( const char *filename )
+{
+    FILE    *mtab;
+    char    realname[MAXPATHLEN];
+
+    /* If the path contains symlinks, get the real name */
+    if (realpath(filename, realname) == 0) {
+	if (strlen(filename) >= sizeof(realname))
+	    return QString::null;
+	strcpy(realname, filename);
+    }
+
+    /* Get the list of mounted file systems */
+
+    if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
+	perror("setmntent");
+	return QString::null;
+    }
+
+    /* Loop over all file systems and see if we can find our
+     * mount point.
+     * Note that this is the mount point with the longest match.
+     * XXX: Fails if me->mnt_dir is not a realpath but goes
+     * through a symlink, e.g. /foo/bar where /foo is a symlink
+     * pointing to /local/foo.
+     *
+     * How kinky can you get with a filesystem?
+     */
+
+    int max = 0;
+    STRUCT_MNTENT me;
+
+    QString result;
+
+    while (true) {
+      if (!GETMNTENT(mtab, me))
+	break;
+
+      int  length = strlen(MOUNTPOINT(me));
+
+      if (!strncmp(MOUNTPOINT(me), realname, length)
+	  && length > max) {
+	max = length;
+	if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
 	
-    fsno = getfsstat( NULL, 0, flags );
-    buf = (struct statfs *)malloc(fsno * sizeof( struct statfs ) );
-    if( getfsstat(buf, fsno*sizeof( struct statfs ), flags) == -1 ) {
-      free(buf);
-      return QString::null;
-    } else {
-      int i;
-      for( i = 0; i < fsno; i++ ) {
-	if( !strcmp(buf[i].f_mntfromname, _device ) ) {
-	  QString tmpstr((const char *)buf[i].f_mntonname);
-	  free(buf);
-	  return tmpstr;
-	}
-      }
-    }
-  }
-
-#endif /* __FreeBSD__ */
-
-  // Get the real device name, not some link.
-  char buffer[1024];
-  QString tmp;
-
-  struct stat lbuff;
-  lstat( _device, &lbuff );
-
-  // Perhaps '_device' is just a link ?
-  const char *device2 = _device;
-
-  if ( S_ISLNK( lbuff.st_mode ) ) {
-    int n = readlink( _device, buffer, 1022 );
-    if ( n > 0 ) {
-      buffer[ n ] = 0;
-      if ( buffer[0] == '/' ) {
-	device2 = buffer;
-      } else {
-	tmp = "/dev/";
-	tmp += buffer;
-	device2 = tmp.data();
-      }
-    }
-  }
-
-  int len = strlen( _device );
-  int len2 = strlen( device2 );
-
-  FILE *f;
-  f = fopen( _file, "rb" );
-  if ( f != 0L ) {
-    char buff[ 1024 ];
-
-    while ( !feof( f ) ) {
-      buff[ 0 ] = 0;
-      // Read a line
-      fgets( buff, 1023, f );
-      // Is it the device we are searching for ?
-      if ( strncmp( buff, _device, len ) == 0 &&
-	   ( buff[len] == ' ' || buff[len] == '\t' ) ) {
-	// Skip all spaces
-	while( buff[ len ] == ' ' || buff[ len ] == '\t' ) {
-	  len++;
-	}
-
-	char *p = strchr( buff + len, ' ' );
-	if ( p != 0L ) {
-	  *p = 0;
-	  fclose( f );
-	  return QString( buff + len );
-	}
-      } else if ( strncmp( buff, device2, len2 ) == 0 &&
-		  ( buff[len2] == ' ' || buff[len2] == '\t' ) ) {
-	// Skip all spaces
-	while( buff[ len2 ] == ' ' || buff[ len2 ] == '\t' ) {
-	  len2++;
-	}
-
-	char *p = strchr( buff + len2, ' ' );
-	if ( p != 0L ) {
-	  *p = 0;
-	  fclose( f );
-	  return QString( buff + len2 );
+	  result = MOUNTPOINT(me);
 	}
       }
     }
 
-    fclose( f );
-  }
-
-  return QString();
+    ENDMNTENT(mtab);
+    return result;
 }
 
 #include "kio_job.moc"
