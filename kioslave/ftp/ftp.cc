@@ -249,7 +249,7 @@ void Ftp::closeConnection()
 void Ftp::setHost( const QString& _host, int _port, const QString& _user,
                    const QString& _pass )
 {
-  kdDebug(7102) << "Ftp::setHost " << _host << endl;
+  kdDebug(7102) << "Ftp::setHost " << _host << " user=" << _user << endl;
   QString user = _user;
   QString pass = _pass;
   if ( !_user.isEmpty() )
@@ -418,6 +418,7 @@ bool Ftp::ftpLogin()
     info.url.setProtocol( QString::fromLatin1("ftp") );
     info.url.setHost( m_host );
     info.url.setPort( m_port );
+    info.url.setUser( user );
 
     do
     {
