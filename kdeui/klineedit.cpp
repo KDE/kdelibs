@@ -837,7 +837,8 @@ void KLineEdit::setUserSelection(bool userSelection)
     {
         QColor color=p.color(QPalette::Disabled, QColorGroup::Text);
         p.setColor(QColorGroup::HighlightedText, color);
-        p.setColor(QColorGroup::Highlight, Qt::white);
+        color=p.color(QPalette::Active, QColorGroup::Base);
+        p.setColor(QColorGroup::Highlight, color);
     }
     d->userSelection=userSelection;
     setPalette(p);
