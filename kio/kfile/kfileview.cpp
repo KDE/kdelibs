@@ -345,9 +345,9 @@ void KFileView::removeItem( const KFileItem *item )
 	return;
 
     if ( item->isDir() )
-        numDirs--;
+        dirsNumber--;
     else
-        numFiles--;
+        filesNumber--;
 
     if ( m_selectedList )
         m_selectedList->removeRef( item );
