@@ -118,7 +118,7 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 	return;
     }
-	
+
     str->remove(offset,count);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
@@ -133,7 +133,7 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 	return;
     }
-	
+
     unsigned long realCount;
     if (offset + count > str->l)
 	realCount = str->l-offset;
@@ -236,9 +236,9 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
     if (!_parent) // ### should	we still return the splitted text, and just not insert it into the tree?
 	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
 
-    if ( exceptioncode ) 
+    if ( exceptioncode )
 	return 0;
-	
+
     TextImpl *newText = static_cast<TextImpl*>(cloneNode(true));
     newText->deleteData(0,offset,exceptioncode);
     if ( exceptioncode )
@@ -297,9 +297,9 @@ void TextImpl::applyChanges(bool,bool force)
     setChanged(false);
 }
 
-bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
-			   int _tx, int _ty, DOMString &,
-                           NodeImpl *&innerNode, long &offset)
+bool TextImpl::mouseEvent( int _x, int _y,
+			   int _tx, int _ty,
+                           MouseEvent *ev)
 {
     //kdDebug( 6020 ) << "Text::mouseEvent" << endl;
 
@@ -315,8 +315,8 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
     int off = 0;
     if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty, off) )
     {
-	offset = off;
-	innerNode = this;
+	ev->offset = off;
+	ev->innerNode = this;
 	return true;
     }
     return false;

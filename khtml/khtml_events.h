@@ -33,13 +33,18 @@ public:
   MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
 		   const DOM::Node &innerNode, long offset );
   virtual ~MouseEvent();
-  
+
   QMouseEvent *qmouseEvent() const { return m_qmouseEvent; }
   int x() const { return m_x; }
   int y() const { return m_y; }
   DOM::DOMString url() const { return m_url; }
   DOM::Node innerNode() const { return m_innerNode; }
   long offset() const { return m_offset; }
+  // returns whether the receiving object should handle the provided url
+  // (like on mouse-release -> load url) or whether this should not be
+  // done (because for example some javascript onClick handler returned false)
+  bool isURLHandlingEnabled() const; // ### make inline KDE 3.0
+  void setURLHandlingEnabled( bool enable );
 
 private:
   QMouseEvent *m_qmouseEvent;
@@ -57,7 +62,7 @@ class MousePressEvent : public MouseEvent
 public:
   MousePressEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
 		   const DOM::Node &innerNode, long offset )
-  : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode, offset ) 
+  : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode, offset )
   {}
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMousePressEvent ); }
@@ -71,10 +76,10 @@ class MouseDoubleClickEvent : public MouseEvent
 public:
   MouseDoubleClickEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
 		         const DOM::Node &innerNode, long offset )
-  : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, innerNode, offset ) 
+  : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, innerNode, offset )
   {}
 
-  static bool test( const QEvent *event ) 
+  static bool test( const QEvent *event )
   { return KParts::Event::test( event, s_strMouseDoubleClickEvent ); }
 
 private:

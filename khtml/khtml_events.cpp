@@ -26,10 +26,13 @@ class MouseEvent::MouseEventPrivate
 public:
   MouseEventPrivate()
   {
+      urlHandling = true;
   }
   ~MouseEventPrivate()
   {
   }
+
+    bool urlHandling; // ### make member KDE 3.0
 };
 
 MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
@@ -37,12 +40,22 @@ MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y
 : KParts::Event( name ), m_qmouseEvent( qmouseEvent ), m_x( x ), m_y( y ),
   m_url( url ), m_innerNode( innerNode ), m_offset( offset )
 {
-  d = new MouseEventPrivate(); 
+  d = new MouseEventPrivate();
 }
 
 MouseEvent::~MouseEvent()
 {
-  delete d; 
+  delete d;
+}
+
+bool MouseEvent::isURLHandlingEnabled() const
+{
+    return d->urlHandling;
+}
+
+void MouseEvent::setURLHandlingEnabled( bool enable )
+{
+    d->urlHandling = enable;
 }
 
 const char *MousePressEvent::s_strMousePressEvent = "khtml/Events/MousePressEvent";
@@ -70,11 +83,11 @@ DrawContentsEvent::DrawContentsEvent( QPainter *painter, int clipx, int clipy, i
   : KParts::Event( s_strDrawContentsEvent ), m_painter( painter ), m_clipx( clipx ), m_clipy( clipy ),
     m_clipw( clipw ), m_cliph( cliph )
 {
-  d = new DrawContentsEventPrivate; 
+  d = new DrawContentsEventPrivate;
 }
 
 DrawContentsEvent::~DrawContentsEvent()
 {
-  delete d; 
+  delete d;
 }
 

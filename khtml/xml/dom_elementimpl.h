@@ -155,12 +155,11 @@ public:
     virtual void recalcStyle();
     virtual void setOwnerDocument(DocumentImpl *_document);
 
-    virtual bool mouseEvent( int x, int y, int button,
-			     MouseEventType type, int _tx, int _ty,
-			     DOMString &url,
-                             NodeImpl *&innerNode, long &offset);
+    virtual bool mouseEvent( int x, int y,
+			     int _tx, int _ty,
+			     MouseEvent *ev);
 
-    virtual void mouseEventHandler( int /*button*/, MouseEventType /*type*/, bool /*inside*/ ) {};
+    virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
 
 protected: // member variables
 

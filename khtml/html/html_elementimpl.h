@@ -43,7 +43,7 @@ public:
     // make it pure virtual...
     virtual ushort id() const = 0;
 
-    virtual void mouseEventHandler( int button, MouseEventType type, bool inside );
+    virtual void mouseEventHandler( MouseEvent *ev, bool inside );
 
     virtual void parseAttribute(AttrImpl *token);
 

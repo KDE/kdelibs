@@ -120,7 +120,8 @@ void RenderFormElement::slotSelected()
 
 void RenderFormElement::slotClicked()
 {
-    m_element->mouseEventHandler(0, DOM::NodeImpl::MouseClick, true);
+    DOM::NodeImpl::MouseEvent dummy( 0, DOM::NodeImpl::MouseClick );
+    m_element->mouseEventHandler( &dummy, true);
 }
 
 // -------------------------------------------------------------------------

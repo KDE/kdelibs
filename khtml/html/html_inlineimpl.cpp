@@ -67,22 +67,22 @@ void HTMLAnchorElementImpl::focus(  )
   setKeyboardFocus(DOM::ActivationPassive);
 }
 
-bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &_url,
-                                        NodeImpl *&innerNode, long &offset)
+bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y,
+                                        int _tx, int _ty,
+                                        MouseEvent *ev)
 {
-    bool inside = HTMLElementImpl::mouseEvent( _x, _y, button, type, _tx, _ty, _url, innerNode, offset);
+    bool inside = HTMLElementImpl::mouseEvent( _x, _y, _tx, _ty, ev);
 
-    if(inside && _url==0)
+    if(inside && ev->url==0)
     {
-	//kdDebug() << "HTMLAnchorElementImpl::mouseEvent" << _tx << "/" << _ty <<endl; 
+	//kdDebug() << "HTMLAnchorElementImpl::mouseEvent" << _tx << "/" << _ty <<endl;
 	// set the url
 	if(target && href) {
 	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
-	    _url = s;
+	    ev->url = s;
 	}
 	else
-	    _url = href;
+	    ev->url = href;
     }
 
     return inside;
@@ -205,7 +205,7 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
 			size = "xx-large";
 		    else if (num < 1)
 			size = "xx-small";
-		    
+
 		    break;
 	    }
 	    if( !size.isNull() )

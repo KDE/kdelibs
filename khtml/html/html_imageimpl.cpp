@@ -72,9 +72,9 @@ ushort HTMLImageElementImpl::id() const
     return ID_IMG;
 }
 
-bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-                                       int _tx, int _ty, DOMString &url,
-                                       NodeImpl *&innerNode, long &offset)
+bool HTMLImageElementImpl::mouseEvent( int _x, int _y,
+                                       int _tx, int _ty,
+                                       MouseEvent *ev )
 {
     //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
     if (usemap.length()>0)
@@ -96,10 +96,10 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
 	    //kdDebug( 6030 ) << "have map" << endl;
             return map->mapMouseEvent(_x-renderer()->xPos()-_tx,
                                       _y-renderer()->yPos()-_ty,
-                                      renderer()->width(), renderer()->height(), button, type, url);
+                                      renderer()->width(), renderer()->height(), ev);
 	}
     }
-    return HTMLElementImpl::mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset);
+    return HTMLElementImpl::mouseEvent(_x, _y, _tx, _ty, ev);
 }
 
 void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
@@ -252,7 +252,7 @@ ushort HTMLMapElementImpl::id() const
 
 bool
 HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
-    	int button_, MouseEventType type_, DOMString& url_)
+                                  MouseEvent *ev )
 {
     //cout << "map:mapMouseEvent " << endl;
     //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
@@ -274,7 +274,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	{
 	    //cout << "area found " << endl;
 	    HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
-	    if (area->mapMouseEvent(x_,y_,width_,height_,button_,type_,url_))
+	    if (area->mapMouseEvent(x_,y_,width_,height_,ev))
 			inside = true;
 	}
 	NodeImpl *child = current->firstChild();
@@ -402,7 +402,7 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 
 bool
 HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
-				   int button, MouseEventType type, DOMString& url_)
+				   MouseEvent *ev)
 {
     // Ignore it when it has no "NOHREF" attribute and no "HREF"
     if(!nohref && href == 0)
@@ -422,13 +422,13 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	if(target && href)
 	{
 	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
-	    url_ = s;
+	    ev->url = s;
 	}
 	else
-	    url_ = href;
+	    ev->url = href;
     }
     // dynamic HTML...
-    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
+    if(inside || mouseInside()) mouseEventHandler(ev, inside);
 
     return inside;
 }

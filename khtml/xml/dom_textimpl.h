@@ -105,9 +105,9 @@ public:
     virtual void detach();
     virtual void applyChanges(bool top=true, bool force=true);
 
-    virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
-			     int _tx, int _ty, DOMString &,
-                             NodeImpl *& innerNode, long &offset);
+    virtual bool mouseEvent( int _x, int _y,
+			     int _tx, int _ty,
+                             MouseEvent *ev);
     virtual NodeImpl *cloneNode(bool deep);
     virtual void recalcStyle();
 

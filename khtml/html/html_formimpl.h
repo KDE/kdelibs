@@ -194,7 +194,7 @@ public:
 
     virtual void attach(KHTMLView *w);
 
-    virtual void mouseEventHandler( int button, MouseEventType type, bool inside);
+    virtual void mouseEventHandler( MouseEvent *ev, bool inside);
 
 protected:
     DOMString m_value;
@@ -277,9 +277,9 @@ public:
     typeEnum inputType() { return m_type; }
     virtual void reset();
 
-    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
-                             int _tx, int _ty, DOMString &url,
-                             NodeImpl *&innerNode, long &offset );
+    virtual bool mouseEvent( int _x, int _y,
+                             int _tx, int _ty,
+                             MouseEvent *ev );
 
     virtual void setOwnerDocument(DocumentImpl *_document);
     // used in case input type=image was clicked.

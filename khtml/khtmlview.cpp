@@ -311,14 +311,12 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
         topView()->setFrameSelected(this);
     }*/
 
-    DOMString url;
-    NodeImpl *innerNode=0;
-    long offset=0;
-    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
+    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
-    d->underMouse = innerNode;
+    d->underMouse = mev.innerNode;
 
-    khtml::MousePressEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    khtml::MousePressEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode), mev.offset );
     QApplication::sendEvent( m_part, &event );
 }
 
@@ -331,12 +329,10 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
-    DOMString url;
-    NodeImpl *innerNode=0;
-    long offset=0;
-    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick, 0, 0, url, innerNode, offset );
+    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
-    khtml::MouseDoubleClickEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode), mev.offset );
     QApplication::sendEvent( m_part, &event );
 
     // ###
@@ -351,21 +347,19 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    DOMString url;
-    NodeImpl *innerNode=0;
-    long offset=0;
-    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
+    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
 
-    d->underMouse = innerNode;
+    d->underMouse = mev.innerNode;
 
     QCursor c = KCursor::arrowCursor();
-    if ( innerNode ) {
-        switch( innerNode->style()->cursor() ) {
+    if ( mev.innerNode ) {
+        switch( mev.innerNode->style()->cursor() ) {
         case CURSOR_AUTO:
-            if ( url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
+            if ( mev.url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
                 c = m_part->urlCursor();
             break;
         case CURSOR_CROSS:
@@ -407,7 +401,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     setCursor( c );
 
 
-    khtml::MouseMoveEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode), mev.offset );
     QApplication::sendEvent( m_part, &event );
 }
 
@@ -420,12 +414,11 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     //kdDebug( 6000 ) << "\nmouseReleaseEvent: x=" << xm << ", y=" << ym << endl;
 
-    DOMString url=0;
-    NodeImpl *innerNode=0;
-    long offset = 0;
-    m_part->xmlDocImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
+    DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
+    m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
-    khtml::MouseReleaseEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode), mev.offset );
+    event.setURLHandlingEnabled( mev.urlHandling );
     QApplication::sendEvent( m_part, &event );
 }
 
@@ -810,7 +803,7 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     if (more)
         *more = yOff + height < root->docHeight();
     p->restore();
-    
+
     root->setPrintingMode(false);
     m_part->xmlDocImpl()->setPaintDevice( this );
 }

@@ -120,9 +120,9 @@ public:
     virtual void parseAttribute(AttrImpl *);
     virtual void attach(KHTMLView *w);
 
-    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
-		     int _tx, int _ty, DOMString &url,
-                             NodeImpl *&innerNode, long &offset);
+    virtual bool mouseEvent( int _x, int _y,
+                             int _tx, int _ty,
+                             MouseEvent *ev );
 
     bool frameBorder() { return frameborder; }
     bool noResize() { return noresize; }

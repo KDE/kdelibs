@@ -50,9 +50,9 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
-                             int _tx, int _ty, DOMString &url,
-                             NodeImpl *&innerNode, long &offset );
+    virtual bool mouseEvent( int _x, int _y,
+                             int _tx, int _ty,
+                             MouseEvent *ev );
 
     virtual void attach(KHTMLView *w);
     virtual void applyChanges(bool top=true, bool force=true);
@@ -109,7 +109,7 @@ public:
     bool isDefault() { return shape==Default; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
-    	int button_, MouseEventType type_, DOMString& url_);
+                       MouseEvent *ev );
 
 protected:
 
@@ -148,7 +148,7 @@ public:
     virtual tagStatus endTag() { return MAPEndTag; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
-    	int button_, MouseEventType type_, DOMString& url_);
+                       MouseEvent *ev );
 
     static HTMLMapElementImpl* getMap(const DOMString& url_);
 

@@ -253,16 +253,16 @@ StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
 // not part of the DOM
 // --------------------------------------------------------------------------
 
-bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-                                  int, int, DOMString &url,
-                                   NodeImpl *&innerNode, long &offset)
+bool HTMLDocumentImpl::mouseEvent( int _x, int _y,
+                                   int, int,
+                                   MouseEvent *ev )
 {
     bool inside = false;
     NodeImpl *n = firstChild();
     while ( n && n->id() != ID_HTML )
         n = n->nextSibling();
     if ( n )
-        inside = n->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
+        inside = n->mouseEvent( _x, _y, 0, 0, ev );
     //kdDebug(0) << "documentImpl::mouseEvent " << n->id() << " " << inside << endl;
     return inside;
 }

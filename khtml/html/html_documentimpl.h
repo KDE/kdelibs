@@ -44,7 +44,7 @@ namespace DOM {
     class DOMString;
     class StyleSheetListImpl;
     class CSSStyleSheetImpl;
-    
+
 class HTMLDocumentImpl : public DocumentImpl, public khtml::CachedObjectClient
 {
     Q_OBJECT
@@ -77,10 +77,9 @@ public:
     int findHighestTabIndex();
 
     // oeverrides NodeImpl
-    virtual bool mouseEvent( int x, int y, int button,
-			     DOM::NodeImpl::MouseEventType,
-			     int _tx, int _ty, DOMString &url,
-                             NodeImpl *& innerNode, long &offset);
+    virtual bool mouseEvent( int x, int y,
+			     int _tx, int _ty,
+                             MouseEvent *ev );
 
     virtual void detach();
 

@@ -3263,7 +3263,8 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   // the mouse is pressed again.
   d->m_bMousePressed = false;
 
-  if ( !d->m_strSelectedURL.isEmpty() && _mouse->button() != RightButton )
+  if ( !d->m_strSelectedURL.isEmpty() && _mouse->button() != RightButton &&
+       event->isURLHandlingEnabled() )
   {
      QString target;
      QString url;

@@ -63,7 +63,7 @@ HTMLElementImpl::~HTMLElementImpl()
 }
 
 
-void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bool inside )
+void HTMLElementImpl::mouseEventHandler( MouseEvent *ev, bool inside )
 {
     if(!hasEvents()) return;
 
@@ -73,7 +73,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     int id = 0;
     bool click = false;
 
-    switch(type)
+    switch(ev->type)
     {
     case MousePress:
 	id = ATTR_ONMOUSEDOWN;
@@ -113,7 +113,9 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(script.length())
 	{
 	    //kdDebug( 6030 ) << "(click) emit executeScript( " << script.string() << " )" << endl;
-	    view->part()->executeScript( Node( this ), script.string() );
+	    QVariant res = view->part()->executeScript( Node( this ), script.string() );
+            if ( res.type() == QVariant::Bool )
+                ev->urlHandling = res.toBool();
 	}
     }
 

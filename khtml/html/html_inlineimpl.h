@@ -48,9 +48,9 @@ public:
     void focus (  );
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual bool mouseEvent( int x, int y, int button, MouseEventType,
-			     int _tx, int _ty, DOMString &url,
-                             NodeImpl *&innerNode, long &offset);
+    virtual bool mouseEvent( int x, int y,
+			     int _tx, int _ty,
+                             MouseEvent *ev);
 
     //virtual void attach(KHTMLView *);
 };

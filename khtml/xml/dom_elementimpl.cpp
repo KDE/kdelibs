@@ -548,9 +548,9 @@ void ElementImpl::setOwnerDocument(DocumentImpl *_document)
     NodeBaseImpl::setOwnerDocument(_document);
 }
 
-bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &url,
-                                  NodeImpl *&innerNode, long &offset)
+bool ElementImpl::mouseEvent( int _x, int _y,
+				  int _tx, int _ty,
+                              MouseEvent *ev)
 {
 #ifdef EVENT_DEBUG
     kdDebug( 6030 ) << nodeName().string() << "::mouseEvent" << endl;
@@ -577,12 +577,12 @@ bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
 	    inside = false;
 	else
-	    innerNode = this;
+	    ev->innerNode = this;
     }
 
     NodeImpl *child = firstChild();
     while(child != 0) {
-	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset))
+	if(child->mouseEvent(_x, _y, _tx, _ty, ev))
 	    inside = true;
 	child = child->nextSibling();
     }
@@ -594,7 +594,7 @@ bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
     if(inside || mouseInside())
     {
         // dynamic HTML...
-        mouseEventHandler(button, type, inside);
+        mouseEventHandler(ev, inside);
     }
 
     bool oldinside=mouseInside();

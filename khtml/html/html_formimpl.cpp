@@ -598,9 +598,9 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLButtonElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bool /*inside*/)
+void HTMLButtonElementImpl::mouseEventHandler( MouseEvent *ev, bool /*inside*/)
 {
-    if (m_type != BUTTON && (type == MouseClick) || (type == MouseRelease)) {
+    if (m_type != BUTTON && (ev->type == MouseClick) || (ev->type == MouseRelease)) {
         m_clicked = true;
 
         if(m_form && m_type == SUBMIT) m_form->prepareSubmit();
@@ -1088,13 +1088,13 @@ void HTMLInputElementImpl::setValue(DOMString val)
     }
 }
 
-bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-                                       int _tx, int _ty, DOMString &url,
-                                       NodeImpl *&innerNode, long &offset )
+bool HTMLInputElementImpl::mouseEvent( int _x, int _y,
+                                       int _tx, int _ty,
+                                       MouseEvent *ev )
 {
     bool wasPressed = pressed();
-    bool ret = HTMLGenericFormElementImpl::mouseEvent(_x,_y,button,type,_tx,_ty,url,innerNode,offset);
-    if (m_type == IMAGE && (type == MouseClick || ((type == MouseRelease) && wasPressed))) {
+    bool ret = HTMLGenericFormElementImpl::mouseEvent(_x,_y,_tx,_ty,ev);
+    if (m_type == IMAGE && (ev->type == MouseClick || ((ev->type == MouseRelease) && wasPressed))) {
         xPos = _x - _tx - m_render->xPos();
         yPos = _y - _ty - m_render->yPos();
         m_clicked = true;

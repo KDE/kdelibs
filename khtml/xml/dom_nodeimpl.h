@@ -131,20 +131,32 @@ public:
 	MouseDblClick,
 	MouseMove
     };
+
+    struct MouseEvent
+    {
+        MouseEvent( int _button, MouseEventType _type,
+                    const DOMString &_url = DOMString(),
+                    NodeImpl *_innerNode = 0, long _offset = 0, bool _urlHandling = true )
+            { button = _button; type = _type;
+            url = _url;
+            innerNode = _innerNode; offset = _offset; urlHandling = _urlHandling; }
+
+        int button;
+        MouseEventType type;
+        DOMString url; // url under mouse or empty
+        NodeImpl *innerNode;
+        long offset;
+        bool urlHandling; // specify whether the part should handle the url or not
+    };
+
     /*
      * generic handler for mouse events. goes through the doucment
      * tree and triggers the corresponding events for all elements
      * where the mouse is inside.
-     *
-     * @param x,y is the mouse position
-     * @param _tx, _ty are helper variables needed (set to 0 if you call
-     *  this in the body element
-     * @param url returns the url under the mouse, or an empty string otherwise
      */
-    virtual bool mouseEvent( int /*x*/, int /*y*/, int /*button*/,
-			     MouseEventType /*type*/, int /*_tx*/, int /*_ty*/,
-			     DOMString &/*url*/,
-                             NodeImpl *&/*innerNode*/, long &/*offset*/) { return false; }
+    virtual bool mouseEvent( int /*_x*/, int /*_y*/,
+                             int /*_tx*/, int /*_ty*/,
+                             MouseEvent */*ev*/ ) { return false; }
 
     virtual void setStyle(khtml::RenderStyle *) {}
     virtual khtml::RenderStyle *style() { return 0; }

@@ -379,9 +379,9 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach( w );
 }
 
-bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &url,
-                                          NodeImpl *&innerNode, long &offset)
+bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
+                                          int _tx, int _ty,
+                                          MouseEvent *ev )
 {
     _x-=_tx;
     _y-=_ty;
@@ -391,7 +391,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
     while(child)
     {
 	if(child->id() == ID_FRAMESET)
-	    if(child->mouseEvent( _x, _y, button, type, _tx, _ty, url, innerNode, offset)) return true;
+	    if(child->mouseEvent( _x, _y, _tx, _ty, ev )) return true;
 	child = child->nextSibling();
     }
 
@@ -405,7 +405,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
       return true;
     }
 
-    return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, type );
+    return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, ev->type );
 
     /*
     {
