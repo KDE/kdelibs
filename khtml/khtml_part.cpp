@@ -294,8 +294,15 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
   d->m_redirectionTimer.stop();
 
+  /*
+   * That's not a good idea as it will call closeURL() on all
+   * child frames, preventing them from further loading. This
+   * method gets called from restoreState() in case of a full frameset
+   * restoral, and restoreState() calls closeURL() before restoring
+   * anyway.
   kdDebug( 6050 ) << "closing old URL" << endl;
   closeURL();
+  */
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
