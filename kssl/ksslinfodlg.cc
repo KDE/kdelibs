@@ -51,12 +51,16 @@ private:
     QGridLayout *m_layout;
     QComboBox *_chain;
     KSSLCertificate *_cert;
+    bool inQuestion;
 
     QLabel *_serialNum;
     QLabel *_csl;
     QLabel *_validFrom;
     QLabel *_validUntil;
     QLabel *_digest;
+
+    QLabel *pixmap;
+    QLabel *info;
 
     KSSLCertBox *_subject, *_issuer;
 };
@@ -71,23 +75,23 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     d->m_layout->setColStretch(1, 1);
     d->m_layout->setColStretch(2, 1);
 
-    QLabel *pixmap = new QLabel(this);
-    d->m_layout->addWidget(pixmap, 0, 0);
+    d->pixmap = new QLabel(this);
+    d->m_layout->addWidget(d->pixmap, 0, 0);
 
-    QLabel *info = new QLabel(this);
-    d->m_layout->addWidget(info, 0, 1);
+    d->info = new QLabel(this);
+    d->m_layout->addWidget(d->info, 0, 1);
 
     if (KSSL::doesSSLWork()) {
         if (d->m_secCon) {
-            pixmap->setPixmap(BarIcon("lock"));
-            info->setText(i18n("Current connection is secured with SSL."));
+            d->pixmap->setPixmap(BarIcon("lock"));
+            d->info->setText(i18n("Current connection is secured with SSL."));
         } else {
-            pixmap->setPixmap(BarIcon("unlock"));
-            info->setText(i18n("Current connection is not secured with SSL."));
+            d->pixmap->setPixmap(BarIcon("unlock"));
+            d->info->setText(i18n("Current connection is not secured with SSL."));
         }
     } else {
-        pixmap->setPixmap(BarIcon("unlock"));
-        info->setText(i18n("SSL support is not available in this build of KDE."));
+        d->pixmap->setPixmap(BarIcon("unlock"));
+        d->info->setText(i18n("SSL support is not available in this build of KDE."));
     }
     d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
 
@@ -105,6 +109,7 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     }
 
     setCaption(i18n("KDE SSL Information"));
+    d->inQuestion = false;
 }
 
 
@@ -117,6 +122,29 @@ KShellProcess p;
   p << "kcmshell" << "crypto";
   p.start(KProcess::DontCare);
 }
+
+
+void KSSLInfoDlg::setSecurityInQuestion(bool isIt) {
+   d->inQuestion = isIt;
+   if (KSSL::doesSSLWork())
+   if (isIt) {
+      d->pixmap->setPixmap(BarIcon("halflock"));
+      if (d->m_secCon) {
+         d->info->setText(i18n("The main part of this document is secured with SSL, but some parts are not."));
+      } else {
+         d->info->setText(i18n("Some of this document is secured with SSL, but the main part is not."));
+      }
+   } else {
+      if (d->m_secCon) {
+         d->pixmap->setPixmap(BarIcon("lock"));
+         d->info->setText(i18n("Current connection is secured with SSL."));
+      } else {
+         d->pixmap->setPixmap(BarIcon("unlock"));
+         d->info->setText(i18n("Current connection is not secured with SSL."));
+      }
+   }
+}
+
 
 void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
 {

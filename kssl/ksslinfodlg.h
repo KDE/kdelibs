@@ -45,6 +45,7 @@ public:
   KSSLInfoDlg(bool secureConnection, QWidget *parent = 0, const char *name = 0, bool modal = false);
   virtual ~KSSLInfoDlg();
 
+  void setSecurityInQuestion(bool isIt);
   void setup(KSSLCertificate *cert,
              const QString& ip, const QString& url,
              const QString& cipher, const QString& cipherdesc,
