@@ -119,6 +119,15 @@ int main(int argc, char *argv[])
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
+  u1 = "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "no");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
+  check("KURL::htmlRef()", url1.htmlRef(), "");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
+  check("KURL::prettyURL()", url1.upURL().url(), "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#");
+
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README");
