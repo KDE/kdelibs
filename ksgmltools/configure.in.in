@@ -11,7 +11,7 @@ AC_ARG_WITH(sgml-cat,[  --with-sgml-cat=DIR     adds DIR to the search path for 
   IFS=$ac_save_IFS])
 
 dnl The order of the directories in this list matters
-dtd_paths="/usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-3.1 /usr/lib/sgml/docbook-dtd /usr/lib/sgml/jade /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml /usr/local/share/sgml /etc /usr/share/sgml /usr/share/sgml/docbk31 $USER_SGML_CAT_PATH"
+dtd_paths="/usr/share/sgml/iso-entities-8879.1986 /usr/share/sgml/docbook/dtd-3.1 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /usr/share/sgml /usr/share/sgml/docbk31 $USER_SGML_CAT_PATH"
 
 AC_DEFUN(KDE_FIND_CAT, 
 [

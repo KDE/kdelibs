@@ -183,9 +183,9 @@ idea is to control directly Jade. Here is a small script I use to convert
 from DocBook to HTML without the magic "centralized catalogs" used by the
 RPMs:
 
-	SGML_CATALOG_FILES=customization/kde.cat
+	SGML_CATALOG_FILES=customization/catalog
 	SGML_CATALOG_FILES=$SGML_CATALOG_FILES:dtd/docbook-3.1/docbook.cat
-	SGML_CATALOG_FILES=$SGML_CATALOG_FILES:stylesheets/stylesheets.cat
+	SGML_CATALOG_FILES=$SGML_CATALOG_FILES:stylesheets/catalog
 	SGML_CATALOG_FILES=$SGML_CATALOG_FILES:jade/dsssl/catalog
 	export SGML_CATALOG_FILES
 	echo Processing $1...
@@ -228,8 +228,7 @@ For example, you can try to convert the KDE template file for docbook
 documents:
 
 	jw	-o HTML \
-		-c /usr/share/sgml/kde/kde.cat \
-		-d /usr/share/sgml/kde/stylesheets/kde.dsl#html \
+		-d /usr/share/sgml/docbook/kde-customization-0.1/stylesheets/kde.dsl#html \
 		template.docbook
 
 This should produce a new directory named HTML/ that contains the
