@@ -130,7 +130,7 @@ HTMLElement HTMLDocument::body() const
 
 void HTMLDocument::setBody(const HTMLElement &_body)
 {
-    if (!impl) return 0;
+    if (!impl) return;
     return ((HTMLDocumentImpl *)impl)->setBody(_body);
 }
 
