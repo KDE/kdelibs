@@ -231,7 +231,7 @@ bool tryConnectLocal()
 {
   KExtendedSocket ks1("::", "0", KExtendedSocket::ipv6Socket | KExtendedSocket::passiveSocket),
     ks2;
-  KInetSocketAddress *ksin;
+  const KInetSocketAddress *ksin1, *ksin2;
 
   printf("Attempting a loop-back connection\n\tTrying to listen on socket...");
   if (ks1.listen() != 0)
@@ -242,12 +242,12 @@ bool tryConnectLocal()
     }
 
   ks1.setBlockingMode(false);
-  ksin = (KInetSocketAddress*)ks1.localAddress();
+  ksin1 = (KInetSocketAddress*)ks1.localAddress();
 
   printf("succeeded\n\tWe have socket %s listening\n",
-	 (const char*)ksin->pretty().local8Bit());
+	 (const char*)ksin1->pretty().local8Bit());
 
-  ks2.setAddress("::1", ksin->port());
+  ks2.setAddress("::1", ksin1->port());
   ks2.setSocketFlags(KExtendedSocket::ipv6Socket | KExtendedSocket::noResolve);
 
   printf("\tTrying to connect to that socket...");
@@ -259,8 +259,12 @@ bool tryConnectLocal()
     }
 
   printf("suceeded\n");
+
+  ksin2 = dynamic_cast<const KInetSocketAddress *>(ks2.localAddress());
   printf("\tIf you may flip to another terminal/xterm and run netstat to see\n"
-	 "\tthis connection. Press any key to continue\n");
+	 "\tthis connection. It should be a connection from %s to %s.\n"
+	 "\tPress any key to continue\n", 
+	 (const char*)ksin2->pretty().local8Bit(), (const char*)ksin1->pretty().local8Bit());
   getchar();
   return true;
 }
@@ -359,7 +363,6 @@ void go()
   printf("Trying simple lookups\n"
 	 "All of the following look ups should work\n\n");
   tryLookup(NULL, "/tmp/something");
-  tryLookup("/tmp/something", NULL);
   tryLookup("127.0.0.1", "80");
   tryLookup("localhost", "http");
 
@@ -402,7 +405,7 @@ void go()
   printf("\n\nTest finished\n");
 }
 
-int TestApp::newInstance(QValueList<QCString> params)
+int TestApp::newInstance(QValueList<QCString> /*params*/)
 {
   go();
 }
