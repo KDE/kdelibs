@@ -65,30 +65,30 @@ void khtml::setNamedColor(QColor &color, const QString &name)
     if( !htmlColors )
         htmlColors = hcsd.setObject( new HTMLColors );
 
-    if(name == "transparent" || name == "") {
-        //kdDebug( 6080 ) << "found transparent color" << endl;
+    int len = name.length();
+    char ch = name[0].latin1();
+
+    if(len == 0 || (len == 11 && name == "transparent"))
+    {
         color = QColor(); // invalid color == transparent
-        //kdDebug( 6080 ) << "colorvalid" << color.isValid() << endl;
         return;
     }
 
     // also recognize "color=ffffff"
-    if (name[0] != QChar('#') && name.length() == 6)
+    if (len == 6)
     {
         bool ok;
-        name.toInt(&ok, 16);
+        int val = name.toInt(&ok, 16);
         if(ok)
         {
-            QString col("#");
-            col += name;
-            color.setNamedColor(col);
+            color.setRgb((0xff << 24) | val);
             return;
         }
     }
 
-    if ( name.length() > 4 && name[0] == 'r'
-              && name[1] == 'g' && name[2] == 'b'
-              && name[3] == '(' && name[name.length()-1] == ')')
+    if ( len > 4 && ch == 'r' && name[1].latin1() == 'g' &&
+         name[2].latin1() == 'b' && name[3].latin1() == '(' &&
+         name[len-1].latin1() == ')')
     {
         // CSS like rgb(r, g, b) style
         DOMString rgb = name.mid(4, name.length()-5);
