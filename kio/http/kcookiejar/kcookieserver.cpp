@@ -293,7 +293,6 @@ bool KCookieServer::process(const QCString &fun, const QByteArray &data,
     }
     else if (fun == "reloadPolicy" )
     {
-        kdDebug(7104) << "got \"reload the cookie config policy file\"..." << endl;
         mCookieJar->loadConfig( kapp->config(), true );
         replyType = "void";
         return true;
@@ -378,8 +377,10 @@ void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
                 {
                     kdDebug(7104) << "Asking user for advice for cookie from " << cookie->host() << endl;
                     mPendingCookies->prepend(cookie);
-                    KCookieWin *kw = new KCookieWin( 0L, cookie, mCookieJar);
-                    userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
+                    KCookieWin *kw = new KCookieWin( 0L, cookie,
+                                                     mCookieJar->defaultRadioButton,
+                                                     mCookieJar->showCookieDetails );
+                    userAdvice = kw->advice(mCookieJar, cookie);
                     delete kw;
                     mPendingCookies->take(0);
                     // Save the cookie config if it has changed
@@ -422,7 +423,7 @@ void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
     }
 
     // Check if we can handle any request
-    for( CookieRequest *request = mRequestList->first(); request;)
+    for ( CookieRequest *request = mRequestList->first(); request;)
     {
         if (!cookiesPending( request->url ))
         {

@@ -1169,7 +1169,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
 	    // Expired or parse error
 	    if ((expDate == 0) || (expDate < curTime))
 	    	continue;
-	    	
+
 #if 0
             // Domain must be either hostname or domain of hostname
 	    if ( strlen(domain) && (strcmp(host,domain) != 0))
@@ -1204,14 +1204,15 @@ void KCookieJar::saveConfig(KConfig *_config)
 
     _config->setGroup(QString::null);
     _config->writeEntry("DefaultRadioButton", defaultRadioButton);
+    _config->writeEntry("ShowCookieDetails", showCookieDetails );
 
     QStringList domainSettings;
     _config->setGroup("Cookie Policy");
     _config->writeEntry("CookieGlobalAdvice", adviceToStr( globalAdvice));
 
     for ( QStringList::Iterator it=domainList.begin();
-    	  it != domainList.end();
-    	  it++)
+          it != domainList.end();
+          it++ )
     {
          const QString &domain = *it;
          KCookieAdvice advice = getDomainAdvice( domain);
@@ -1237,35 +1238,36 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     QString value;
     QStringList domainSettings;
 
-    if( reparse )
+    if ( reparse )
         _config->reparseConfiguration();
 
     _config->setGroup(QString::null);
-    defaultRadioButton = _config->readNumEntry("DefaultRadioButton", 0);
+    defaultRadioButton = _config->readNumEntry( "DefaultRadioButton", 0 );
+    showCookieDetails = _config->readBoolEntry( "ShowCookieDetails" );
 
     // Read the old group name if we did not yet save to
     // the new group name.
-    if( _config->hasGroup( "Browser Settings/HTTP" ) &&
-		!_config->hasGroup( "Cookie Policy" ) )
-		_config->setGroup( "Browser Settings/HTTP" );	
+    if ( _config->hasGroup( "Browser Settings/HTTP" ) &&
+         !_config->hasGroup( "Cookie Policy" ) )
+        _config->setGroup( "Browser Settings/HTTP" );
     else
-		_config->setGroup("Cookie Policy");
+        _config->setGroup("Cookie Policy");
     value = _config->readEntry("CookieGlobalAdvice", "Ask");
     globalAdvice = strToAdvice(value);
     domainSettings = _config->readListEntry("CookieDomainAdvice");
 
-    // Reset current domain settings first. 
-    for ( QStringList::Iterator it=domainList.begin(); it != domainList.end();)
+    // Reset current domain settings first.
+    for ( QStringList::Iterator it=domainList.begin(); it != domainList.end(); )
     {
          // Make sure to update iterator before calling setDomainAdvice()
          // setDomainAdvice() might delete the domain from domainList.
          QString domain = *it++;
-         setDomainAdvice(domain, KCookieDunno); 
+         setDomainAdvice(domain, KCookieDunno);
     }
 
     // Now apply the
     for ( QStringList::Iterator it=domainSettings.begin();
-    	  it != domainSettings.end();)
+          it != domainSettings.end(); )
     {
         const QString &value = *it++;
         int sepPos = value.find(':');

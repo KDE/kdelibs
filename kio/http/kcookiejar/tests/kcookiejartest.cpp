@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
    arg1 = "http://f22.w.x.y.foobar.com/config/login?8al4htk9mn3l9";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = ("Set-Cookie: set_by_6=\"f22.w.x.y.foobar.com\"; path=\"/\"; domain=\".foobar.com\"\n"
-           "Set-Cookie: set_by_7=\"f22.w.x.y.foobar.com\"; path=\"/\"; domain=\".foobar.com\"");
+           "Set-Cookie: set_by_7=\"f22.w.x.y.foobar.com\"; path=\"/acme/test\"; domain=\".foobar.com\"");
    addCookies(arg1, arg2);
 
    // Domain should be corrected to ".y.foobar.co.uk"
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
    // should result in the cookie being set for ".foo.com".
    arg1 = "http://y.foo.com/index.html";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_9=\"y.foo.com\" Domain=\"foo.com\"";
+   arg2 = "Set-Cookie: set_by_9=\"y.foo.com\"; Domain=\"foo.com\"";
    addCookies(arg1, arg2);
 
    // A little twist in the previous test. Increased the domain level
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
    // in a cookie being set for ".y.foo.com".
    arg1 = "http://x.y.foo.com/index.html";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_A=\"x.y.foo.com\" Domain=\"foo.com\"";
+   arg2 = "Set-Cookie: set_by_A=\"x.y.foo.com\"; Domain=\"foo.com\"";
    addCookies(arg1, arg2);
 
 

@@ -31,14 +31,15 @@
 #include <qlist.h>
 #include <time.h>
 
-class KCookieJar;
 class KConfig;
-
-class KHttpCookieList;
+class KCookieJar;
 class KHttpCookie;
+class KHttpCookieList;
+
 typedef KHttpCookie *KHttpCookiePtr;
 
-enum KCookieAdvice {
+enum KCookieAdvice
+{
     KCookieDunno=0,
     KCookieAccept,
     KCookieReject,
@@ -62,8 +63,8 @@ protected:
     bool    mSecure;
 
     KHttpCookiePtr nextCookie;
-
     QString cookieStr(bool useDOMFormat);
+
 public:
     KHttpCookie(const QString &_host=QString::null,
                 const QString &_domain=QString::null,
@@ -86,7 +87,6 @@ public:
     bool    isSecure(void) { return mSecure; }
     bool    isExpired(time_t currentDate);
     bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
-
     KHttpCookiePtr next() { return nextCookie; }
 };
 
@@ -98,7 +98,6 @@ public:
     virtual ~KHttpCookieList() { }
 
     virtual int compareItems( void * item1, void * item2);
-
     KCookieAdvice getAdvice(void) { return advice; }
     void setAdvice(KCookieAdvice _advice) { advice = _advice; }
 
@@ -269,7 +268,7 @@ public:
      * Remove & delete all cookies for @p domain.
      */
     void eatCookiesForDomain(const QString &domain);
-    
+
     /**
      * Remove & delete all cookies
      */
@@ -287,17 +286,16 @@ public:
      */
     static bool extractDomains(const QString &_fqdn,
                                QStringList &_domainList);
- 
+
     // Save this in the config file...
     int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies
+    bool showCookieDetails; // true, false
+
 protected:
     QDict<KHttpCookieList> cookieDomains;
-
     QStringList domainList;
-
     KCookieAdvice globalAdvice;
     bool configChanged;
     bool cookiesChanged;
 };
-
 #endif
