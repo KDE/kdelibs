@@ -23,6 +23,10 @@
  */
 #include "html_documentimpl.h"
 
+#include "khtmlview.h"
+#include "khtml_part.h"
+#include "misc/khtmldata.h"
+
 #include "htmlparser.h"
 #include "htmltokenizer.h"
 #include "htmlhashes.h"
@@ -56,7 +60,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     bodyElement = 0;
 
     m_loadingSheet = false;
-    
+
     m_elemSheet=0;
 }
 
@@ -72,7 +76,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     m_styleSelector = new CSSStyleSelector(this);
 
     m_loadingSheet = false;
-    
+
     m_elemSheet=0;
 }
 
@@ -293,7 +297,10 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     m_style = new RenderStyle();
     m_style->setDisplay(BLOCK);
     // ### make the font stuff _really_ work!!!!
-    m_style->setFont(KGlobal::generalFont());
+    const QString *families = w->part()->settings()->families();
+    QValueList<int> fs = w->part()->settings()->fontSizes();
+    QFont f(families[0], fs[3]);
+    m_style->setFont(families[0]);
 
     m_style->setHtmlHacks(true); // enable html specific rendering tricks
 
