@@ -16,5 +16,4 @@ messages: rc.cpp
 	: > rc.cpp
 	$(XGETTEXT) $(kcm_crypto_la_SOURCES) -o $(podir)/kcmcrypto.pot
 
-kcmcrypto_data_DATA = crypto.desktop
-kcmcrypto_datadir = $(kde_appsdir)/Settings/Security
+xdg_apps_DATA = crypto.desktop
