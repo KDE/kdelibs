@@ -630,10 +630,12 @@ void RenderObject::setStyle(RenderStyle *style)
     //m_inline = true;
     m_visible = true;
 
-    if (m_style)
-	m_style->deref();
+    RenderStyle *oldStyle = m_style;
     m_style = style;
-    m_style->ref();
+    if (m_style)
+	m_style->ref();
+    if (oldStyle)
+	oldStyle->deref();
 
     if( m_bgImage != m_style->backgroundImage() ) {
 	if(m_bgImage) m_bgImage->deref(this);

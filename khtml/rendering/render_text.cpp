@@ -294,8 +294,8 @@ RenderText::RenderText(DOMStringImpl *_str)
 
 void RenderText::setStyle(RenderStyle *_style)
 {
-    RenderObject::setStyle(_style);
     delete fm;
+    RenderObject::setStyle(_style);
     fm = new QFontMetrics(style()->font());
     m_contentHeight = style()->lineHeight().width(fm->height());
 }

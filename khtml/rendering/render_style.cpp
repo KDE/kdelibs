@@ -239,7 +239,7 @@ RenderStyle::~RenderStyle()
     while (ps) {        
         prev = ps;
         ps = ps->pseudoStyle;
-        delete prev;
+        prev->deref();
     }
 }
 
@@ -274,6 +274,7 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
     if (!ps)
     {            
         ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
+        ps->ref();
         ps->_styleType = pid;
         ps->pseudoStyle = pseudoStyle;
 
@@ -291,7 +292,7 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
     while (ps) {        
         if (ps->_styleType==pid) {
             prev->pseudoStyle = ps->pseudoStyle;
-            delete ps;
+            ps->deref();
             return;
         }
         prev = ps;

@@ -453,11 +453,12 @@ bool NodeWParentImpl::checkReadOnly()
 
 void NodeWParentImpl::setStyle(khtml::RenderStyle *style)
 {
-    if (m_style)
-	m_style->deref();
+    RenderStyle *oldStyle = m_style;
     m_style = style;
     if (m_style)
 	m_style->ref();
+    if (oldStyle)
+	oldStyle->deref();
 }
 
 //-------------------------------------------------------------------------

@@ -541,13 +541,12 @@ void ElementImpl::recalcStyle()
 
     setStyle(document->styleSelector()->styleForElement(this));
 
-    m_style->setFlowAroundFloats(faf);
-
     if (oldDisplay != m_style->display()) {
 	detach();
 	attach(document->view());
     }
 
+    m_style->setFlowAroundFloats(faf);
     m_render->setStyle(activeStyle());
 
     NodeImpl *n;
