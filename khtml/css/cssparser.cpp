@@ -382,16 +382,23 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
 #ifdef CSS_DEBUG
                 kdDebug( 6080 ) << "tag = " << tag << endl;
 #endif
-                const QChar *equal = parseToChar(curP, endP, '=', false);
+                const QChar *closebracket = parseToChar(curP, endP, ']', false);
+		if (!closebracket)
+		{
+		    kdWarning()<<"error in css: closing bracket not found!"<<endl;
+		    return 0;
+		}
                 QString attr;
+                const QChar *equal = parseToChar(curP, closebracket, '=', false);
                 if(!equal)
                 {
-                    attr = QString( curP, endP - curP - 1 );
+                    attr = QString( curP, closebracket - curP );
                     attr = attr.stripWhiteSpace();
 #ifdef CSS_DEBUG
                     kdDebug( 6080 ) << "attr = '" << attr << "'" << endl;
 #endif
                     cs->match = CSSSelector::Set;
+		    endVal = closebracket + 1;
                 }
                 else
                 {
