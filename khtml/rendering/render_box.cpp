@@ -217,11 +217,10 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 {
 
     if(c.isValid())
-        // workaround for Qt problem filling a rect of more than 32000 pixels height...
         p->fillRect(_tx, clipy, w, cliph, c);
 
     // no progressive loading of the background image
-    if(m_bgImage && m_bgImage->pixmap_size() == m_bgImage->valid_rect().size()) {
+    if(bg && bg->pixmap_size() == bg->valid_rect().size()) {
 //      kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
         // ### might need to add some correct offsets
         // ### use paddingX/Y
@@ -239,18 +238,18 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         switch(m_style->backgroundRepeat()) {
         case NO_REPEAT:
-            w = QMIN(m_bgImage->pixmap_size().width(), w);
+            w = QMIN(bg->pixmap_size().width(), w);
             /* nobreak */
         case REPEAT_X:
-            h = QMIN(m_bgImage->pixmap_size().height(), h);
+            h = QMIN(bg->pixmap_size().height(), h);
             break;
         case REPEAT_Y:
-            h = QMIN(m_bgImage->pixmap_size().width(), h);
+            h = QMIN(bg->pixmap_size().width(), h);
             break;
         case REPEAT:
             break;
         }
-        p->drawTiledPixmap(_tx, _ty, w, h, m_bgImage->pixmap(), sx, sy);
+        p->drawTiledPixmap(_tx, _ty, w, h, bg->pixmap(), sx, sy);
     }
 
 }

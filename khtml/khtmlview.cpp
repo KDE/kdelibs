@@ -174,12 +174,15 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
 
     QScrollView::resizeEvent(e);
 
-    if((d->useSlowRepaints && visibleHeight() != _height) ||
-       (visibleWidth() - _width) > 4 || (visibleWidth() - _width) < 0)
-    {
+    int w = visibleWidth();
+    int h = visibleHeight();
+
+    layout();
+
+    if(visibleHeight() != h || visibleWidth() != w)
         layout();
-        KApplication::sendPostedEvents(viewport(), QEvent::Paint);
-    }
+
+    KApplication::sendPostedEvents(viewport(), QEvent::Paint);
 }
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
