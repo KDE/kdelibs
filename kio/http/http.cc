@@ -1540,9 +1540,41 @@ void HTTPProtocol::stat(const QString& path, const QString& query)
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  // This is kio_http, but what we want to show the world
-  // is probably more "Konqueror".
-  QString user_agent("Konqueror ($Revision$)");
+  // try to load the user set UserAgents
+  if ( m_userAgentList.count() == 0 )
+  {
+    KConfig *config = new KConfig("kioslaverc");
+    KConfigGroupSaver saver(config, "Browser Settings/UserAgent");
+
+    int entries = config->readNumEntry( "EntriesCount", 0 );
+    m_userAgentList.clear();
+    for( int i = 0; i < entries; i++ )
+    {
+      QString key;
+      key.sprintf( "Entry%d", i );
+      QString entry = config->readEntry( key, "" );
+      m_userAgentList.append( entry );
+    }
+    delete config;
+  }
+
+
+  // make sure we have at least *one*, though
+  if ( m_userAgentList.count() == 0 )
+    m_userAgentList.append( "*:Konqueror ($Revision$)" );
+
+  // now, we need to do our pattern matching on the host name.
+  // for this commit, we'll just take the first one, though
+  QStringList split(QStringList::split( ':', m_userAgentList.first() ));
+  QString pattern(split[0]);
+  QString agent(split[1]);
+
+  // one tiny failsafe
+  if ( agent.isNull() )
+    agent = "Konqueror ($Revision$)";
+
+  QString user_agent(agent);
+
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif

@@ -291,6 +291,8 @@ protected: // Members
 
   short unsigned int mDefaultPort;
 
+  QStringList m_userAgentList;
+
 #ifdef DO_SSL
   // Stuff for OpenSSL/SSLeay
   bool m_bUseSSL2, m_bUseSSL3, m_bUseTLS1, m_bUseSSL;
