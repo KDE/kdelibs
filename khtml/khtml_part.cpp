@@ -678,7 +678,9 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 
     // reload document
     closeURL();
-    openURL(m_url);
+    KURL url = m_url;
+    m_url = 0;
+    openURL(url);
 }
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
