@@ -1371,6 +1371,7 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
       case CSS_VAL_REPEAT_X:
       case CSS_VAL_REPEAT_Y:
       case CSS_VAL_REPEAT_NONE:
+      case CSS_VAL_NO_REPEAT:
 	prop = CSS_PROP_BACKGROUND_REPEAT;
 	fnd[3] = true;
 	found = true;
