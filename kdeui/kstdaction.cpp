@@ -143,8 +143,16 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 	if( pInfo ) {
 		QString sLabel, iconName = pInfo->psIconName;
 		switch( id ) {
-		 case Back: sLabel = i18n("go back", "&Back"); break;
-		 case Forward: sLabel = i18n("go forward", "&Forward"); break;
+		 case Back: sLabel = i18n("go back", "&Back"); 
+			if (QApplication::reverseLayout() )
+			    iconName = "forward";
+			break; 
+
+		 case Forward: sLabel = i18n("go forward", "&Forward"); 
+			if (QApplication::reverseLayout() )
+			    iconName = "back";
+			break;  
+		
 		 case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
 		 case Help: sLabel = i18n("show help", "&Help"); break;
 		 case AboutApp: iconName = kapp->miniIconName();
@@ -158,7 +166,12 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			break;
 		 default: sLabel = i18n(pInfo->psLabel);
 		}
-
+		
+		if (QApplication::reverseLayout()){
+			if (id == Prior) iconName = "next";
+			if (id == Next ) iconName = "previous";
+		}
+				
 		KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
 		switch( id ) {
 		 case OpenRecent:
