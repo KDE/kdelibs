@@ -31,6 +31,7 @@
 
 class KCompTreeNode;
 class KCompletionPrivate;
+class KCompletionBasePrivate;
 class QPopupMenu;
 
 /**
@@ -280,7 +281,7 @@ public:
     //  bool ignoreCase() const { return myIgnoreCase; }
 
     /**
-     * @returns a list of all items matching the last completed string. 
+     * @returns a list of all items matching the last completed string.
      * Might take some time, when you have LOTS of items.
      */
     QStringList allMatches() { return findAllCompletions( myLastString ); }
@@ -289,9 +290,9 @@ public:
      * @returns a list of all items matching @p string.
      */
     QStringList allMatches( const QString& string ) {
-	return findAllCompletions( string ); 
+	return findAllCompletions( string );
     }
-    
+
     /**
      * Enables playing a sound when
      * @li @ref makeCompletion() can't find a match
@@ -797,7 +798,7 @@ private:
     KeyBindingMap m_keyMap;
 	
     // BCI
-    KCompletionPrivate *d;	
+    KCompletionBasePrivate *d;	
 };
 
 #endif // KCOMPLETION_H
