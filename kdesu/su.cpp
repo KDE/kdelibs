@@ -113,14 +113,17 @@ int SuProcess::ConverseSU(const char *password)
     int state = 0;
 
     QCString line;
-    while (state < 2) {
+    while (state < 2) 
+    {
 	line = readLine(); 
 	if (line.isNull())
 	    return -1;
-	switch (state) {
+	switch (state) 
+	{
 	case 0:
 	    // Write password
-	    if (line.contains(':')) {
+	    if (line.contains(':')) 
+	    {
 		WaitSlave();
 		write(m_Fd, password, strlen(password));
 		write(m_Fd, "\n", 1);
@@ -128,7 +131,8 @@ int SuProcess::ConverseSU(const char *password)
 	    } 
 	    break;
 	case 1:
-	    if (line.stripWhiteSpace().isEmpty()) {
+	    if (line.stripWhiteSpace().isEmpty()) 
+	    {
 		state++;
 		break;
 	    }

@@ -59,8 +59,6 @@ extern "C" int unlockpt(int fd);
 #define ID "PTY: "
 #endif
 
-#define ERR strerror(errno)
-
 PTY::PTY()
 {
     ptyfd = -1;
@@ -175,7 +173,7 @@ int PTY::grantpt()
     pid_t pid;
     if ((pid = fork()) == -1) 
     {
-	kdError(900) << ID << "fork(): " << ERR << "\n";
+	kdError(900) << ID << "fork(): " << perror << "\n";
 	return -1;
     }
 
@@ -195,7 +193,7 @@ int PTY::grantpt()
 	if (ptyfd != pty_fileno && dup2(ptyfd, pty_fileno) < 0) 
 	    _exit(1);
 	execlp("konsole_grantpty", "konsole_grantpty", "--grant", NULL);
-	kdError(900) << ID << "exec(): " << ERR << "\n";
+	kdError(900) << ID << "exec(): " << perror << "\n";
 	_exit(1);
     }
 

@@ -39,8 +39,6 @@
 #define ID "KDEsuClient: "
 #endif
 
-#define ERR strerror(errno)
-
 #ifndef SUN_LEN
 #define SUN_LEN(ptr) ((ksize_t) (((struct sockaddr_un *) 0)->sun_path) \
 	             + strlen ((ptr)->sun_path))   
@@ -79,7 +77,7 @@ int KDEsuClient::connect()
     sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (sockfd < 0) 
     {
-	kdWarning(900) << ID << "socket(): " << ERR << "\n";
+	kdWarning(900) << ID << "socket(): " << perror << "\n";
 	return -1;
     }
     struct sockaddr_un addr;
@@ -88,7 +86,7 @@ int KDEsuClient::connect()
 
     if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) 
     {
-	kdWarning(900) << ID << "connect():" << ERR << "\n";
+	kdWarning(900) << ID << "connect():" << perror << "\n";
 	close(sockfd); sockfd = -1;
 	return -1;
     }
@@ -260,7 +258,7 @@ bool KDEsuClient::isServerSGID()
     struct stat sbuf;
     if (stat(daemon.latin1(), &sbuf) < 0) 
     {
-	kdWarning(900) << ID << "stat(): " << ERR << "\n";
+	kdWarning(900) << ID << "stat(): " << perror << "\n";
 	return false;
     } 
     return (sbuf.st_mode & S_ISGID);
