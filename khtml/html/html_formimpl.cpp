@@ -225,8 +225,6 @@ QByteArray HTMLFormElementImpl::formData()
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
             //kdDebug(6030) << "adding name " << current->name().string() << endl;
-            ASSERT(!(lst.count()&1));
-
             khtml::encodingList::Iterator it;
             for( it = lst.begin(); it != lst.end(); ++it )
             {
@@ -1542,7 +1540,7 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
 
     QString state = _state;
     if(!state.isEmpty() && !state.contains('X') && !m_multiple) {
-        ASSERT("should not happen in restoreState!");
+        qWarning("should not happen in restoreState!");
         state[0] = 'X';
     }
 
