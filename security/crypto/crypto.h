@@ -228,7 +228,6 @@ public:
 
   int buttons();
   QString quickHelp() const;
-  const KAboutData* aboutData() const;
 
 #ifdef HAVE_SSL
   bool loadCiphers();

@@ -231,6 +231,14 @@ QString whatstr;
 
   _signers = new KSSLSigners;
 
+     KAboutData *about =
+     new KAboutData(I18N_NOOP("kcmcrypto"), I18N_NOOP("KDE Crypto Control Module"),
+                    0, 0, KAboutData::License_GPL,
+                    I18N_NOOP("(c) 2000 - 2001 George Staikos"));
+     about->addAuthor("George Staikos", 0, "staikos@kde.org");
+     about->addAuthor("Carsten Pfeiffer", 0, "pfeiffer@kde.org");
+     setAboutData( about );
+
   ///////////////////////////////////////////////////////////////////////////
   // Create the GUI here - there are currently a total of 6 tabs.
   // The first is SSL and cipher related
@@ -1251,17 +1259,6 @@ QString KCryptoConfig::quickHelp() const
   return i18n("<h1>Crypto</h1> This module allows you to configure SSL for"
      " use with most KDE applications, as well as manage your personal"
      " certificates and the known certificate authorities.");
-}
-
-
-const KAboutData* KCryptoConfig::aboutData() const {
-     KAboutData *about =
-     new KAboutData(I18N_NOOP("kcmcrypto"), I18N_NOOP("KDE Crypto Control Module"),
-                    0, 0, KAboutData::License_GPL,
-                    I18N_NOOP("(c) 2000 - 2001 George Staikos"));
-     about->addAuthor("George Staikos", 0, "staikos@kde.org");
-     about->addAuthor("Carsten Pfeiffer", 0, "pfeiffer@kde.org");
-     return about;
 }
 
 
