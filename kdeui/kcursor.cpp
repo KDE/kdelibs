@@ -155,12 +155,6 @@ void KCursor::setAutoHideCursor( QWidget *w, bool enable )
     if ( enable ) {
 	kp->start();
 	w->setMouseTracking( true );
-
-        // nice Qt "feature": installing an eventfilter twice, gives us...
-        // ... two eventfilters => two events arriving here
-        // so we better remove an existing eventFilter before installing one
-	// Arnt said it will be fixed, in 2.2.-- FIXME, remove then
-        w->removeEventFilter( kp );
 	w->installEventFilter( kp );
     }
 
@@ -235,8 +229,7 @@ void KCursorPrivate::hideCursor( QWidget *w )
 	return;
 
     isCursorHidden = true;
-    // FIXME (when Qt 2.2 is out, use QWidget::hasOwnCursor())
-    isOwnCursor = w->testWState( WState_OwnCursor );
+    isOwnCursor = w->ownCursor();
     if ( isOwnCursor )
 	oldCursor = w->cursor();
 
