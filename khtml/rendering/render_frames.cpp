@@ -65,11 +65,17 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *vi
 
 RenderFrameSet::~RenderFrameSet()
 {
-  if ( m_rowHeight ) delete [] m_rowHeight;
-  if ( m_colWidth ) delete [] m_colWidth;
+  if ( m_rowHeight ) {
+    delete [] m_rowHeight;
+    m_rowHeight = 0;
+  }
+  if ( m_colWidth ) {
+    delete [] m_colWidth;
+    m_colWidth = 0;
+  }
 
-  if ( m_hSplitVar ) delete m_hSplitVar;
-  if ( m_vSplitVar ) delete m_vSplitVar;
+  delete m_hSplitVar;
+  delete m_vSplitVar;
 }
 
 void RenderFrameSet::layout( bool deep )
@@ -111,7 +117,7 @@ void RenderFrameSet::layout( bool deep )
 	    kdDebug( 6031 ) << "setting row " << i << endl;
 	    if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
 	    {
-		m_rowHeight[i] = m_rows->at(i)->width(heightAvailable);
+		m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
 		kdDebug( 6031 ) << "setting row height to " << m_rowHeight[i] << endl;
 		remainingHeight -= m_rowHeight[i];
 	    }
@@ -166,7 +172,7 @@ void RenderFrameSet::layout( bool deep )
 	{
 	    if(m_cols->at(i)->type == Fixed || m_cols->at(i)->type == Percent)
 	    {
-		m_colWidth[i] = m_cols->at(i)->width(widthAvailable);
+		m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
 		remainingWidth -= m_colWidth[i];
 	    }
 	    else if(m_cols->at(i)->type == Relative)
@@ -507,10 +513,10 @@ void RenderPartObject::close()
      while ( child ) {
 	if ( child->id() == ID_EMBED )
 	   embed = static_cast<HTMLEmbedElementImpl *>( child );
-	     
+	
 	child = child->nextSibling();
      }
-      
+
      if ( !embed )
      {
 	url = o->url;
@@ -529,8 +535,8 @@ void RenderPartObject::close()
 	      if ( child->id() == ID_PARAM ) {
 		 HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-		 if ( p->name().lower()==QString::fromLatin1("src") || 
-		      p->name().lower()==QString::fromLatin1("movie") ) 
+		 if ( p->name().lower()==QString::fromLatin1("src") ||
+		      p->name().lower()==QString::fromLatin1("movie") )
 		 {
 		    url = p->value();
 		    break;
@@ -551,11 +557,11 @@ void RenderPartObject::close()
 	      aStr += p->value();
 	      aStr += QString::fromLatin1("\"");
 	      params.append(aStr);
-	   } 
-	     
+	   }
+	
 	   child = child->nextSibling();
 	}
-      
+
 	if ( url.isEmpty() && serviceType.isEmpty() )
 	   return; //ooops (-:
 
@@ -570,7 +576,7 @@ void RenderPartObject::close()
 	   return; //ooops (-:
 
 	kdDebug() << "<embed> - part()->requestObject( " << url << " )" << endl;
-	static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, 
+	static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType,
 								 embed->param );
      }
   } else if ( m_obj->id() == ID_EMBED ) {
