@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "hconv.h"
 #include "kcalendarsystemhijri.h"
 
 
@@ -65,6 +64,12 @@ static const double EveningPeriod = 6.0;
 static const long LeapYear[] = {
   2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29
 };
+
+typedef struct {
+  int day;
+  int mon;
+  int year;
+} SDATE;
 
 /**
  * @internal
