@@ -35,6 +35,7 @@
 #endif
 #include <sys/types.h>
 #include <dirent.h>
+#include <pwd.h>
 
 #include <qregexp.h>
 #include <qdict.h>
@@ -488,6 +489,23 @@ QString KStandardDirs::findExe( const QString& appname,
     // split path using : or \b as delimiters
     for( unsigned i = 0; i < tokens.count(); i++ ) {
 	p = tokens[ i ];
+
+        if ( p[ 0 ] == '~' )
+        {
+            int len = p.find( '/' );
+            if ( len == -1 )
+                len = p.length();
+            if ( len == 1 )
+                p.replace( 0, 1, QDir::homeDirPath() );
+            else
+            {
+                QString user = p.mid( 1, len - 1 );
+                struct passwd *dir = getpwnam( user.local8Bit().data() );
+                if ( dir && strlen( dir->pw_dir ) )
+                    p.replace( 0, len, QString::fromLocal8Bit( dir->pw_dir ) );
+            }
+        }
+
 	p += "/";
 	p += appname;
 	
