@@ -17,29 +17,29 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-#include "kdockwindow.h"
+#include "ksystemtray.h"
 #include "kpopupmenu.h"
 #include "kapp.h"
 #include "klocale.h"
 #include <kwin.h>
 
-KDockWindow::KDockWindow( QWidget* parent, const char* name )
+KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
-    KWin::setDockWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
+    KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
     hasQuit = 0;
     menu = new KPopupMenu( this );
     menu->setTitle( kapp->caption() );
     move( -1000, -1000 );
 }
 
-KDockWindow::~KDockWindow()
+KSystemTray::~KSystemTray()
 {
 
 }
 
 
-void KDockWindow::showEvent( QShowEvent * )
+void KSystemTray::showEvent( QShowEvent * )
 {
     if ( !hasQuit ) {
 	menu->insertSeparator();
@@ -55,19 +55,19 @@ void KDockWindow::showEvent( QShowEvent * )
     }
 }
 
-KPopupMenu* KDockWindow::contextMenu()
+KPopupMenu* KSystemTray::contextMenu()
 {
     return menu;
 }
 
 
-void KDockWindow::mousePressEvent( QMouseEvent * )
+void KSystemTray::mousePressEvent( QMouseEvent * )
 {
 }
 
 
 
-void KDockWindow::mouseReleaseEvent( QMouseEvent * e)
+void KSystemTray::mouseReleaseEvent( QMouseEvent * e)
 {
     if ( !rect().contains( e->pos() ) )
 	return;
@@ -103,12 +103,12 @@ void KDockWindow::mouseReleaseEvent( QMouseEvent * e)
 }
 
 
-void KDockWindow::contextMenuAboutToShow( KPopupMenu* )
+void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
 {
 }
 
 
-void KDockWindow::toggleMinimizeRestore()
+void KSystemTray::toggleMinimizeRestore()
 {
     if ( !parentWidget() )
 	return;

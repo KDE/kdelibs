@@ -40,7 +40,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
 		krestrictedline.h kcolorbutton.h kcolorbtn.h \
-		kdockwindow.h kbuttonbox.h \
+		ksystemtray.h kdockwindow.h kbuttonbox.h \
 		kcontainer.h keditcl.h ktoolboxmgr.h kled.h \
 		kdbtn.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
@@ -68,7 +68,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kstatusbar.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp \
 		kseparator.cpp krestrictedline.cpp  \
-		kcolorbtn.cpp kdockwindow.cpp \
+		kcolorbtn.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp \
 		kled.cpp kdbtn.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
