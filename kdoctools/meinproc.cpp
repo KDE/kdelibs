@@ -131,7 +131,6 @@ int main(int argc, char **argv) {
 
     if ( args->isSet( "srcdir" ) ) {
         *SRCDIR = args->getOption("srcdir") ;
-	kdError() << "Set srcdir " << SRCDIR << endl;
     }
     if ( args->isSet( "check" ) ) {
         char pwd_buffer[250];
