@@ -67,50 +67,50 @@ public:
   void  textClear();
 
 /**
-  * Read a line from the socket into m_szText. Only the first RESP_READ_LIMIT 
+  * Read a line from the socket into m_szText. Only the first RESP_READ_LIMIT
   * characters are copied. If the server response is longer all extra data up to
   * the new-line gets discarded. An ending CR gets stripped. The number of chars
   * in the buffer is returned. Use textToLong() to check for truncation!
   */
   int   textRead(FtpSocket *pSock);
-  
+
 /**
   * An accessor to the data read by textRead()
-  */  
+  */
   const char* textLine() const  {  return m_szText;  }
-  
+
 /**
   * Returns true if the last textRead() resulted in a truncated line
   */
   bool  textTooLong() const     {  return m_bTextTruncated;  }
-  
+
 /**
   * Returns true if the last textRead() got an EOF or an error
   */
   bool  textEOF() const         {  return m_bTextEOF;  }
 
   enum {
-  
+
   /**
   * This is the physical size of m_szText. Only up to textReadLimit
-  * characters are used to store a server reply. If the server reply 
+  * characters are used to store a server reply. If the server reply
   * is longer, the stored line gets truncated - see textTooLong()!
   */
     textReadBuffer = 2048,
-    
+
 /**
   * Max number of chars returned from textLine(). If the server
   * sends more all chars until the next new-line are discarded.
   */
     textReadLimit = 1024
   };
-  
-private:  
+
+private:
   /**
    * textRead() sets this true on trucation (e.g. line too long)
    */
   bool  m_bTextTruncated;
-  
+
   /**
    * textRead() sets this true if the read returns 0 bytes or error
    */
@@ -120,12 +120,12 @@ private:
    * textRead() fills this buffer with data
    */
   char m_szText[textReadBuffer];
-  
+
   /**
    * the number of bytes in the current response line
    */
   int m_iTextLine;
-  
+
   /**
    * the number of bytes in the response buffer (includes m_iRespLine)
    */
@@ -153,21 +153,21 @@ public:
             m_pszName = pszName;
             m_server = -1;
           }
-          
+
           ~FtpSocket()       {  closeSocket();  }
-          
+
 /**
   * Resets the status of the object, also called from xtor
   */
   void    closeSocket();
-  
+
 /**
   * We may have a server connection socket if not in passive mode. This
   * routine returns the server socket set by setServer. The sock()
   * function will return the server socket - if it is set.
   */
   int     server() const     {  return m_server;  }
-  
+
 /**
   * Set the server socket if arg >= 0, otherwise clear it.
   */
@@ -177,17 +177,17 @@ public:
   * returns the effective socket that user used for read/write. See server()
   */
   int     sock() const       {  return (m_server != -1) ? m_server : fd(); }
-  
+
 /**
   * output an debug message via kdDebug
   */
   void    debugMessage(const char* pszMsg) const;
-          
+
 /**
   * output an error message via kdError, returns iErrorCode
   */
   int     errorMessage(int iErrorCode, const char* pszMsg) const;
-          
+
 /**
   * connect socket and set some options (reuse, keepalive, linger)
   */
@@ -205,7 +205,7 @@ public:
           {
             return KSocks::self()->read(sock(), pData, iMaxlen);
           }
-  
+
 /**
   * utility to write data to the effective socket, see sock()
   */
@@ -213,7 +213,7 @@ public:
           {
             return KSocks::self()->write(sock(), pData, iMaxlen);
           }
-          
+
 /**
   * Use the inherited FtpTextReader to read a line from the socket
   */
@@ -221,7 +221,7 @@ public:
           {
             return FtpTextReader::textRead(this);
           }
-          
+
 private:
   const char*  m_pszName;  // set by the xtor, used for debug output
   int          m_server;   // socket override, see setSock()
@@ -255,7 +255,7 @@ public:
    * Closes the connection
    */
   virtual void closeConnection();
-  
+
   virtual void stat( const KURL &url );
 
   virtual void listDir( const KURL & url );
@@ -285,14 +285,14 @@ private:
 
   /**
    * Status Code returned from ftpPut() and ftpGet(), used to select
-   * source or destination url for error messages 
+   * source or destination url for error messages
    */
   typedef enum {
     statusSuccess,
     statusClientError,
     statusServerError
   } StatusCode;
-  
+
   /**
    * Login Mode for ftpOpenConnection
    */
@@ -301,7 +301,7 @@ private:
     loginExplicit,
     loginImplicit
   } LoginMode;
-  
+
   /**
    * Connect and login to the FTP server.
    *
@@ -346,7 +346,7 @@ private:
    * Gets the size into m_size.
    */
   bool ftpSize( const QString & path, char mode );
-  
+
   /**
    * Set the current working directory, but only if not yet current
    */
@@ -373,7 +373,7 @@ private:
    * @return false on error (line doesn't start with '2')
    */
   bool ftpCloseCommand();
-  
+
   /**
    * Send "TYPE I" or "TYPE A" only if required, see m_cDataMode.
    *
@@ -381,19 +381,19 @@ private:
    * cMode is '?' the m_bTextMode flag is used to choose a mode.
    */
   bool ftpDataMode(char cMode);
-  
+
   //void ftpAbortTransfer();
 
   /**
    * Used by ftpOpenCommand, return 0 on success or an error code
    */
   int ftpOpenDataConnection();
-  
+
   /**
    * closes a data connection, see ftpOpenDataConnection()
    */
   void ftpCloseDataConnection();
-  
+
   /**
    * Helper for ftpOpenDataConnection
    */
@@ -410,7 +410,7 @@ private:
    * Helper for ftpOpenDataConnection
    */
   int ftpOpenPortDataConnection();
-  
+
   /**
    * ftpAcceptConnect - wait for incoming connection
    *
@@ -427,14 +427,14 @@ private:
     * Called to parse directory listings, call this until it returns false
     */
   bool ftpReadDir(FtpEntry& ftpEnt);
-  
+
   /**
     * Helper to fill an UDSEntry
     */
   void ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, KIO::UDSEntry& entry, bool isDir );
-  
+
   void ftpShortStatAnswer( const QString& filename, bool isDir );
-  
+
   void ftpStatAnswerNotFound( const QString & path, const QString & filename );
 
   /**
@@ -449,12 +449,12 @@ private:
    *
    * @return true on success.
    */
-  bool ftpOpenContolConnection( const QString & host, unsigned short int port );
+  bool ftpOpenControlConnection( const QString & host, unsigned short int port );
 
   /**
-   * closes the socket holding the control connection (see ftpOpenContolConnection)
+   * closes the socket holding the control connection (see ftpOpenControlConnection)
    */
-  void ftpCloseContolConnection();
+  void ftpCloseControlConnection();
 
   /**
    * read a response from the server (a trailing CR gets stripped)
@@ -465,7 +465,7 @@ private:
    *         behind the available data)
    */
   const char* ftpResponse(int iOffset);
-  
+
   /**
    * This is the internal implementation of get() - see copy().
    *
@@ -478,7 +478,7 @@ private:
    * @return 0 for success, -1 for server error, -2 for client error
    */
   StatusCode ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fileoffset_t hCopyOffset);
-  
+
   /**
    * This is the internal implementation of put() - see copy().
    *
@@ -490,7 +490,7 @@ private:
    * @return 0 for success, -1 for server error, -2 for client error
    */
   StatusCode ftpPut(int& iError, int iCopyFile, const KURL& url, int permissions, bool overwrite, bool resume);
-  
+
   /**
    * helper called from copy() to implement FILE -> FTP transfers
    *
@@ -500,7 +500,7 @@ private:
    * @return 0 for success, -1 for server error, -2 for client error
    */
   StatusCode ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
-  
+
   /**
    * helper called from copy() to implement FTP -> FILE transfers
    *
@@ -512,7 +512,7 @@ private:
   StatusCode ftpCopyGet(int& iError, int& iCopyFile, QString sCopyFile, const KURL& url, int permissions, bool overwrite);
 
 private: // data members
-    
+
   QString m_host;
   unsigned short int m_port;
   QString m_user;
@@ -522,7 +522,7 @@ private: // data members
    */
   QString m_initialPath;
   KURL m_proxyURL;
-  
+
  /**
    * the current working directory - see ftpFolder
    */
@@ -532,7 +532,7 @@ private: // data members
    * the status returned by the FTP protocol, set in ftpResponse()
    */
   int  m_iRespCode;
-  
+
   /**
    * the status/100 returned by the FTP protocol, set in ftpResponse()
    */
@@ -554,7 +554,7 @@ private: // data members
    * switches the ftp data transfer mode from binary to ASCII.
    */
   bool m_bTextMode;
-  
+
   /**
    * true if a data stream is open, used in closeConnection().
    *
@@ -566,10 +566,10 @@ private: // data members
    * connection. The m_bBusy gets cleared by the ftpCloseCommand() routine.
    */
   bool m_bBusy;
-  
+
   bool m_bPasv;
   bool m_bUseProxy;
-  
+
   KIO::filesize_t m_size;
   static KIO::filesize_t UnknownSize;
 
@@ -583,7 +583,7 @@ private: // data members
     chmodUnknown = 0x100
   };
   int m_extControl;
-  
+
   /**
    * control connection socket, only set if openControl() succeeded
    */
