@@ -1372,16 +1372,20 @@ void KDirLister::addNewItem( const KFileItem *item )
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
   bool isMimeFilterMatch = !matchesMimeFilter( item );
 
-  if ( !d->lstNewItems )
-    d->lstNewItems = new KFileItemList;
-
-  if ( !d->lstMimeFilteredItems )
-    d->lstMimeFilteredItems = new KFileItemList;
-
   if ( !isNameFilterMatch && !isMimeFilterMatch )
+  {
+    if ( !d->lstNewItems )
+      d->lstNewItems = new KFileItemList;
+
     d->lstNewItems->append( item );            // items not filtered
+  }
   else if ( !isNameFilterMatch )
+  {
+    if ( !d->lstMimeFilteredItems )
+      d->lstMimeFilteredItems = new KFileItemList;
+
     d->lstMimeFilteredItems->append( item );   // only filtered by mime
+  }
 }
 
 void KDirLister::addNewItems( const KFileItemList& items )
@@ -1399,13 +1403,13 @@ void KDirLister::emitItems()
   KFileItemList *tmpMime = d->lstMimeFilteredItems;
   d->lstMimeFilteredItems = 0;
 
-  if ( tmpNew && !tmpNew->isEmpty() )
+  if ( tmpNew )
   {
     emit newItems( *tmpNew );
     delete tmpNew;
   }
 
-  if ( tmpMime && !tmpMime->isEmpty() )
+  if ( tmpMime )
   {
     emit itemsFilteredByMime( *tmpMime );
     delete tmpMime;
