@@ -32,8 +32,8 @@ void PreviewTest::slotGenerate()
     urls.append(m_url->text());
     KIO::PreviewJob *job = KIO::filePreview(urls, m_preview->width(), m_preview->height(), true, 48);
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
-    connect(job, SIGNAL(gotPreview(const KURL &, const QPixmap &)), SLOT(slotPreview(const KURL &, const QPixmap &)));
-    connect(job, SIGNAL(failed(const KURL &)), SLOT(slotFailed()));
+    connect(job, SIGNAL(gotPreview(const KFileItem *, const QPixmap &)), SLOT(slotPreview(const KFileItem *, const QPixmap &)));
+    connect(job, SIGNAL(failed(const KFileItem *)), SLOT(slotFailed()));
 }
 
 void PreviewTest::slotResult(KIO::Job*)
@@ -41,9 +41,9 @@ void PreviewTest::slotResult(KIO::Job*)
     kdDebug() << "PreviewTest::slotResult(...)" << endl;
 }
 
-void PreviewTest::slotPreview(const KURL &url, const QPixmap &pix)
+void PreviewTest::slotPreview(const KFileItem *, const QPixmap &pix)
 {
-    kdDebug() << "PreviewTest::slotPreview(" << url.url() << ", ...)" << endl;
+    kdDebug() << "PreviewTest::slotPreview()" << endl;
     m_preview->setPixmap(pix);
 }
 

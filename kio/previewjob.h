@@ -61,9 +61,7 @@ namespace KIO {
         static QStringList supportedMimeTypes();
 
     signals:
-        void gotPreview( const KURL &url, const QPixmap &preview );
         void gotPreview( const KFileItem *item, const QPixmap &preview );
-        void failed( const KURL &url );
         void failed( const KFileItem *item );
 
     protected:

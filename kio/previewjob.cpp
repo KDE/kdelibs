@@ -447,7 +447,6 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 void PreviewJob::emitPreview(const QPixmap &pix)
 {
     emit gotPreview(d->currentItem.item, pix);
-    emit gotPreview(d->currentItem.item->url(), pix);
 }
 
 void PreviewJob::emitFailed(const KFileItem *item)
@@ -455,7 +454,6 @@ void PreviewJob::emitFailed(const KFileItem *item)
     if (!item)
         item = d->currentItem.item;
     emit failed(item);
-    emit failed(item->url());
 }
 
 void PreviewJob::saveThumbnail(const QByteArray &imgData)
