@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.59  1999/06/24 21:03:15  kulow
+   register appname + "/icons/mini" to "mini" too
+
    Revision 1.58  1999/06/23 11:14:08  kulow
    my first approach with addCustomized was not general enough as it relied
    on config() and dirs(). Now I abuse the KConfig constructor to add himself
@@ -220,20 +223,22 @@ void KIconLoader::initPath()
   bool large = (setting == "Large" );
   
   if ( large )
-    KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
-  
-  KGlobal::dirs()->addResourceType("toolbar", 
-                                   KStandardDirs::kde_default("data") + 
-                                   appname + "/toolbar/");
-  
-  if ( large )
-    KGlobal::dirs()->addResourceType("toolbar", 
-                                     KStandardDirs::kde_default("data") +
-                                     appname + "/pics/large");
+    KGlobal::dirs()->addResourceType("icon", 
+                                   KStandardDirs::kde_default("data") +
+                                   "icons/large");
   
   KGlobal::dirs()->addResourceType("toolbar", 
                                    KStandardDirs::kde_default("data") +
                                    appname + "/pics/");
+
+  if ( large )
+    KGlobal::dirs()->addResourceType("toolbar", 
+                                     KStandardDirs::kde_default("data") +
+                                     appname + "/pics/large");
+
+  KGlobal::dirs()->addResourceType("toolbar", 
+                                   KStandardDirs::kde_default("data") + 
+                                   appname + "/toolbar/");
 
   KGlobal::dirs()->addResourceType("mini",
                                     KStandardDirs::kde_default("data") +

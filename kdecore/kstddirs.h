@@ -115,6 +115,8 @@ public:
 	 * all basic types (@see kde_default) are added by addKDEDefaults,
 	 * but for those you can add more relative paths as well.
 	 *
+	 * The later a suffix is added, the higher its priority.
+	 *
 	 * @param type specifies a short descriptive string to access
 	 * files of this type.
 	 * @param relativename specifies a directory relative to the root

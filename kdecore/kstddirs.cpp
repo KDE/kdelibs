@@ -76,7 +76,7 @@ bool KStandardDirs::addResourceType( const QString& type,
     if (copy.at(copy.length() - 1) != '/')
 	copy += '/';
     if (!rels->contains(copy)) {
-	rels->append(copy);
+	rels->prepend(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }

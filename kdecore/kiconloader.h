@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.35  1999/06/17 11:50:38  kulow
+   yet another addition to make KIconLoader flexible (some kcontrol apps tried
+   really hard to ruin all internals of KIconLoader ;(
+   You can now kiconLoader->setIconType("kpanel_pics") and add a standard resource
+   type into KGlobal::dirs() with this type name and then ICON will load from this
+   directories. Way more flexible than the old hacks
+
    Revision 1.34  1999/06/17 10:20:24  kulow
    some changes to make KIconloader flexible enough to let konqueror load
    kwm icons :)
@@ -134,28 +141,59 @@ class KConfig;
 
 	Multiples loads of the same icons using this class will be cached
 	using @ref QPixmapCache, saving memory and loading time. 
+
+        Within KDE there are three distinct groups of Icons:
+        
+        @li toolbar - Toolbar icons are small icons used on pushbuttons. 
+                      The size is 22x22 pixels.
+
+        @li icon - These are icons used to identify an application, 
+                   a file type or a directory. They are typically shown
+                   on the desktop and in directory listings. Their
+                   size is 32x32 pixels or, if KDE has been configured
+                   to use large icons, 64x64 pixels
+
+        @li mini - Like 'icon' but with a size of 16x16 pixels. 
 	
 	Icons are searched for according to the KDE file system standard.
-	The default search path is :
-  
-	@li $HOME/.kde/share/apps/<appName>/pics
-	@li $KDEDIR/share/apps/<appName>/pics
-	@li $HOME/.kde/share/apps/<appName>/toolbar
-	@li $KDEDIR/share/apps/<appName>/toolbar
 
-	@li $HOME/.kde/share/icons
+
+	The default search path for 'toolbar' icons is:
+  
+	@li $HOME/.kde/share/apps/<appName>/toolbar
+	@li $HOME/.kde/share/apps/<appName>/pics
 	@li $HOME/.kde/share/toolbar
 
-	@li $KDEDIR/share/icons
+	@li $KDEDIR/share/apps/<appName>/toolbar
+	@li $KDEDIR/share/apps/<appName>/pics
 	@li $KDEDIR/share/toolbar
 
-	@li list of directories given by config file (see the constructors)
-	
-	Some large/ directories are added to the search path for special
-	apps that support large icons (kpanel, kfm) or for all apps
-	depending on the settings in ~/.kde/share/config/kdeglobals
 
-	Extra directories can be added, see @ref insertDirectory.
+        The default search path for 'icon' icons is:
+        
+	@li $HOME/.kde/share/apps/<appName>/icons/large (*)
+	@li $HOME/.kde/share/apps/<appName>/icons
+	@li $HOME/.kde/share/icons/large (*)
+	@li $HOME/.kde/share/icons
+
+	@li $KDEDIR/share/apps/<appName>/icons/large (*)
+	@li $KDEDIR/share/apps/<appName>/icons
+	@li $KDEDIR/share/icons/large (*)
+	@li $KDEDIR/share/icons/
+
+        The paths marked with (*) are only searched if KDE
+        has been configured to use 'large' icons. 
+
+
+        The default search path for 'mini' icons is:
+        
+	@li $HOME/.kde/share/apps/<appName>/icons/mini
+	@li $HOME/.kde/share/icons/mini
+
+	@li $KDEDIR/share/apps/<appName>/icons/mini
+	@li $KDEDIR/share/icons/mini
+
+	Extra directories can be added, see @ref KStandardDirs.
 
 	All keys used in QPixmapCache by this class have the "$kico_.." prefix.
 
