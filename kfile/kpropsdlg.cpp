@@ -1780,7 +1780,7 @@ KBindingPropsPage::KBindingPropsPage( KPropertiesDialog *_props ) : KPropsPage( 
   QLabel* tmpQLabel;
 
   tmpQLabel = new QLabel( d->m_frame, "Label_1" );
-  tmpQLabel->setText(  i18n("Pattern ( example: *.html;*.HTML; )") );
+  tmpQLabel->setText(  i18n("Pattern ( example: *.html;*.htm )") );
   tmpQLabel->setMinimumSize(tmpQLabel->sizeHint());
   mainlayout->addWidget(tmpQLabel, 1);
 
@@ -1886,11 +1886,7 @@ void KBindingPropsPage::applyChanges()
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("MimeType") );
 
-  QString tmp = patternEdit->text();
-  if ( tmp.length() > 1 )
-    if ( tmp.at(tmp.length() - 1) != ';' )
-      tmp += ';';
-  config.writeEntry( QString::fromLatin1("Patterns"), tmp );
+  config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
   config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
