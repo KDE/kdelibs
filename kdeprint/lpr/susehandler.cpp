@@ -125,6 +125,8 @@ QString SuSEHandler::dataDir(const QString& prname)
 
 PrintcapEntry* SuSEHandler::createEntry(KMPrinter *prt)
 {
+	return NULL;
+	/*
 	QString	prot = prt->device().protocol();
 	if (prot != "parallel" && prot != "lpd" && prot != "smb" && prot != "socket")
 	{
@@ -134,6 +136,7 @@ PrintcapEntry* SuSEHandler::createEntry(KMPrinter *prt)
 	PrintcapEntry	*entry = new PrintcapEntry;
 
 	return entry;
+	*/
 }
 
 bool SuSEHandler::savePrinterDriver(KMPrinter*, PrintcapEntry *entry, DrMain *driver, bool *mustSave)
