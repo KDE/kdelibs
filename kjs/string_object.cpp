@@ -103,6 +103,8 @@ KJSO StringPrototype::get(const UString &p) const
     id = StringProtoFunc::IndexOf;
   else if (p == "lastIndexOf")
     id = StringProtoFunc::LastIndexOf;
+  else if (p == "replace")
+    id = StringProtoFunc::Replace;
   else if (p == "substr")
     id = StringProtoFunc::Substr;
   else if (p == "substring")
@@ -167,7 +169,7 @@ Completion StringProtoFunc::execute(const List &args)
 
   String s2;
   Number n, m;
-  UString u;
+  UString u, u2, u3;
   int pos, i;
   double d, d2;
   KJSO v = thisObj.internalValue();
@@ -218,6 +220,23 @@ Completion StringProtoFunc::execute(const List &args)
       pos = a1.toInteger().intValue();
     d = s.value().rfind(s2.value(), pos);
     result = Number(d);
+    break;
+  case Replace:
+    /* TODO: this is just a hack to get the most common cases going */
+    u = s.value();
+    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass)
+      s2 = a0.get("source").toString();
+    else
+      s2 = a0.toString();
+    u2 = s2.value();
+    pos = u.find(u2);
+    if (pos == -1)
+	result = s;
+    else {
+	u3 = u.substr(0, pos) + a1.toString().value() +
+	     u.substr(pos + u2.size());
+	result = String(u3);
+    }
     break;
   case Substr:
     n = a0.toInteger();
