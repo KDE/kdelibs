@@ -16,6 +16,7 @@
 
 #include <kapp.h>
 #include <kwm.h>
+#include <kdebug.h>
 
 #include "kspell.h"
  
