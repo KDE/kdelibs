@@ -169,7 +169,6 @@ int KWalletBackend::unlock(QByteArray& password) {
 	}
 
 	QFile db(path);
-	db.open(IO_ReadOnly);
 
 	if (!db.open(IO_ReadOnly))
 		return -2;
@@ -279,6 +278,12 @@ int KWalletBackend::lock(QByteArray& password) {
 		return -1;		// error opening file
 
 	qf.writeBlock(KWMAGIC, KWMAGIC_LEN);
+
+	// Write the version number
+	QByteArray version(1);
+	version[0] = 0;
+	qf.writeBlock(version, 1);
+	qf.writeBlock(version, 1);
 
 	QByteArray decrypted;
 
