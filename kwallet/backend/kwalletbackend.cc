@@ -19,6 +19,9 @@
  */
 
 #include "kwalletbackend.h"
+
+#include <stdlib.h>
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kmdcodec.h>
@@ -120,7 +123,20 @@ static int getRandomBlock(QByteArray& randBlock) {
 		}
 	}
 
-	// EGD method?
+	// EGD method
+	char *randFilename;
+	if ((randFilename = getenv("RANDFILE"))) {
+		if (QFile::exists(randFilename)) {
+			QFile devrand(randFilename);
+			if (devrand.open(IO_ReadOnly)) {
+				unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+				if (rc != randBlock.size()) {
+					return -3;      // not enough data read
+				}
+				return 0;
+			}
+		}
+	}
 
 	// Couldn't get any random data!!
 
