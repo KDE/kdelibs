@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.6
+ Port version 0.9.7
 
  Palette setup code is from KApplication,
 		Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
@@ -132,10 +132,11 @@ static const char * const widgetEntries[] =
         "SunkenArrowDown", "SunkenArrowLeft", "SunkenArrowRight",
         // everything else
         "HScrollGroove", "VScrollGroove", "Slider", "SliderGroove", "CheckBoxDown",
-        "CheckBox", "RadioDown", "Radio", "HBarHandle", "VBarHandle",
+        "CheckBox", "CheckBoxTri", "RadioDown", "Radio", "HBarHandle", "VBarHandle",
         "ToolBar", "Splitter", "CheckMark", "MenuBar", "DisableArrowUp",
         "DisableArrowDown", "DisableArrowLeft", "DisableArrowRight", "ProgressBar",
-        "ProgressBackground", "MenuBarItem", "Background", "RotSlider"
+        "ProgressBackground", "MenuBarItem", "Background", "RotSlider", 
+        "RotInactiveTab", "RotActiveTab",
     };
 
 #define INHERIT_ITEMS 16
@@ -460,6 +461,8 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
 
     //Handle the rotated background separately..
     d->props[ widgetEntries[ RotSliderGroove ] ] = d->props[ widgetEntries[ SliderGroove ] ];
+    d->props[ widgetEntries[ RotInactiveTab ] ]  = d->props[ widgetEntries[ InactiveTab ] ];
+    d->props[ widgetEntries[ RotActiveTab ] ]    = d->props[ widgetEntries[ ActiveTab ] ];
 
     // misc items
     readMiscResourceGroup();
@@ -473,7 +476,6 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
         QWMatrix r270; //TODO: 90 if reverse?
         r270.rotate( 270 );
         KThemePixmap* bf = new KThemePixmap( pixmaps[ RotSliderGroove ], pixmaps[ RotSliderGroove ] ->xForm( r270 ) ); //
-        //delete pixmaps[RotSliderGroove]; CHECKME: Why cna't I do this?
         pixmaps[ RotSliderGroove ] = bf;
         if ( images[ RotSliderGroove ] )
         {
@@ -482,7 +484,33 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
         }
     }
 
-
+    if ( pixmaps[ RotActiveTab ] )
+    {
+        QWMatrix r180; 
+        r180.rotate( 180 );
+        KThemePixmap* bf = new KThemePixmap( pixmaps[ RotActiveTab ], pixmaps[ RotActiveTab ] ->xForm( r180 ) );
+        
+        pixmaps[ RotActiveTab ] = bf;
+        if ( images[ RotActiveTab ] )
+        {
+            delete images[ RotActiveTab ];
+            images[ RotActiveTab ] = new QImage( bf->convertToImage() );
+        }
+    }
+    
+    if ( pixmaps[ RotInactiveTab ] )
+    {
+        QWMatrix r180; 
+        r180.rotate( 180 );
+        KThemePixmap* bf = new KThemePixmap( pixmaps[ RotInactiveTab ], pixmaps[ RotInactiveTab ] ->xForm( r180 ) );
+        
+        pixmaps[ RotInactiveTab ] = bf;
+        if ( images[ RotInactiveTab ] )
+        {
+            delete images[ RotInactiveTab ];
+            images[ RotInactiveTab ] = new QImage( bf->convertToImage() );
+        }
+    }
 
     // Handle preblend items
     for ( i = 0; i < PREBLEND_ITEMS; ++i )
@@ -1275,7 +1303,7 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
     {
         prop[ "PixmapBorder" ] = tmpStr;
         prop[ "PixmapBWidth" ] = QString::number(
-                                     config->readNumEntry( "PixmapBWidth", 0 ) );
+                                     config->readNumEntry( base + "PixmapBWidth", 0 ) );
     }
 
     // Various widget specific settings. This was more efficent when bunched
@@ -1308,12 +1336,12 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
             prop[ "YShift" ] = "5000";
         if ( keys.contains( "3DFocusRect" ) )
             prop[ "3DFRect" ] = QString::number( config->
-                                                 readBoolEntry( "3DFocusRect", false ) );
+                                                 readBoolEntry(  base + "3DFocusRect", false ) );
         else
             prop[ "3DFRect" ] = "5000";
         if ( keys.contains( "3DFocusOffset" ) )
             prop[ "3DFOffset" ] = QString::number( config->
-                                                   readBoolEntry( "3DFocusOffset", 0 ) );
+                                                   readBoolEntry(  base + "3DFocusOffset", 0 ) );
         else
             prop[ "3DFOffset" ] = "5000";
         if ( keys.contains( "Round" ) )

@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-Port version 0.9.6
+Port version 0.9.7
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -302,7 +302,7 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 
                 return QSize( w, h );
             }
-
+            
         default:
             return KThemeBase::sizeFromContents( contents, widget, contentSize, opt );
     }
@@ -315,7 +315,6 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
     {
         case PM_MenuBarFrameWidth:
             return 1;
-
         case PM_DefaultFrameWidth:
             return ( frameWidth() );
 
@@ -504,7 +503,7 @@ void KThemeStyle::polish( QWidget *w )
         return ;
     }
 
-    if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" ) || w->inherits ("QToolButton") )
+    if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) )
     {
         w->setBackgroundMode( QWidget::NoBackground );
     }
@@ -896,10 +895,10 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 break;
             }
         case PE_FocusRect:
-            {
-                p->setPen( g.dark() );
+            {                
                 if ( is3DFocus() )
                 {
+                    p->setPen( g.dark() );
                     int i = focusOffset();
                     p->drawLine( r.x() + i, r.y() + 1 + i, r.x() + i, r.bottom() - 1 - i );
                     p->drawLine( r.x() + 1 + i, r.y() + i, r.right() - 1 - i, r.y() + i );
@@ -907,6 +906,11 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                     p->drawLine( r.right() - i, r.y() + 1 + i, r.right() - i, r.bottom() - 1 - i );
                     p->drawLine( r.x() + 1 + i, r.bottom() - i, r.right() - 1 - i, r.bottom() - i );
                     handled = true;
+                }
+                else
+                {
+                    handled = true;
+                    p->drawWinFocusRect(r);
                 }
                 break;
             }
@@ -1164,6 +1168,19 @@ void KThemeStyle::drawControl( ControlElement element,
                 handled = true;
                 break;
             }
+            
+#if (QT_VERSION-0 >= 0x030100)
+        case CE_MenuBarBackground:
+            {
+                //Expand to cover entire region
+                drawPrimitive(PE_PanelMenuBar, p, 
+                             QRect(0,0,r.width()+r.x()*2, r.height()+r.y()*2),
+                             cg, Style_Default);
+                handled = true;
+                break;
+            }
+#endif
+        
 
         case CE_TabBarTab:
             {
@@ -1247,6 +1264,11 @@ void KThemeStyle::drawControl( ControlElement element,
                 else if ( tb->shape() == QTabBar::RoundedBelow ||
                         tb->shape() == QTabBar::TriangularBelow )
                 {
+                    if ( widget == ActiveTab )
+                        widget = RotActiveTab;
+                    else
+                        widget = RotInactiveTab;
+                        
                     if ( !selected )
                     {
                         p->fillRect( x, y2 - 2, x2 - x + 1, 2,
