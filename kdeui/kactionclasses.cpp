@@ -1811,15 +1811,21 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
 
     int id_ = KAction::getToolButtonID();
 
-    KInstance * instance;
-    if ( m_parentCollection )
-        instance = m_parentCollection->instance();
-    else
-        instance = KGlobal::instance();
+    if ( !iconSet().isNull() ) {
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
+                           SLOT( slotActivated() ), isEnabled(), plainText(),
+                           index );
+    } else {
+        KInstance * instance;
+        if ( m_parentCollection )
+            instance = m_parentCollection->instance();
+        else
+            instance = KGlobal::instance();
 
-    bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
-                       SLOT( slotActivated() ), isEnabled(), plainText(),
-                       index, instance );
+        bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
+                           SLOT( slotActivated() ), isEnabled(), plainText(),
+                           index, instance );
+    }
 
     addContainer( bar, id_ );
 
