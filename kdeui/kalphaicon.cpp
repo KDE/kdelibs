@@ -1,6 +1,6 @@
 /* vi: ts=4 sts=2 sw=2
  *
- * This file is part of the KDE project, module kdecore.
+ * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Antonio Larrosa <larrosa@kde.org>
  *
  * This is free software; it comes under the GNU Library General
@@ -16,9 +16,14 @@
 #include <qpixmap.h>
 #include <qimage.h>
 
-
 bool KAlphaIcon::draw(QPainter *p, const QImage &icon, const QImage &bg, int x, int y)
 {
+  if (!icon.hasAlphaBuffer() || icon.depth()!=32)
+  {
+    p->drawImage(x,y,icon);
+    return;
+  }
+
   QImage output;
 
   if (!KImageEffect::blend(x, y, icon, bg, output)) return false;
@@ -30,6 +35,12 @@ bool KAlphaIcon::draw(QPainter *p, const QImage &icon, const QImage &bg, int x, 
 
 bool KAlphaIcon::draw(QPainter *p, const QImage &icon, const QPixmap &bg, int x, int y)
 {
+  if (!icon.hasAlphaBuffer() || icon.depth()!=32)
+  {
+    p->drawImage(x,y,icon);
+    return;
+  }
+
   QImage bgImg(bg.convertToImage());
   return draw( p, icon, bgImg, x, y);
 }

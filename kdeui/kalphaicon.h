@@ -1,6 +1,6 @@
 /* vi: ts=4 sts=2 sw=2
  *
- * This file is part of the KDE project, module kdecore.
+ * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Antonio Larrosa <larrosa@kde.org>
  *
  * This is free software; it comes under the GNU Library General
