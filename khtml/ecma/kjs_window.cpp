@@ -514,9 +514,25 @@ void Location::put(const UString &p, const KJSO &v)
 
   QString str = v.toString().value().qstring();
 
-  if (p == "href")
-    part->scheduleRedirection(0, str);
-  /* TODO: remaining location properties */
+  KURL url = part->url();
+    
+  if (p == "href") url=str;
+  if (p == "hash") url.setRef(str);;
+  if (p == "host") {
+    // danimo: KURL doesn't have a way to
+    // set Hostname _and_ Port at once, right?
+    QString host = str.left(str.find(":"));
+    QString port = str.mid(str.find(":")+1);
+    url.setHost(host);
+    url.setPort(port.toUInt());
+  };
+  if (p == "hostname") url.setHost(str);
+  if (p == "port") url.setPort(str.toUInt());
+  if (p == "protocol")  url.setProtocol(str);
+  if (p == "search"){ /* TODO */}
+
+  part->scheduleRedirection(0, url.url());
+ 
 }
 
 KJSO Location::toPrimitive(Type) const
