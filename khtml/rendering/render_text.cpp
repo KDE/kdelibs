@@ -105,7 +105,7 @@ void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, 
     _tx += m_x;
     _ty += m_y;
 
-    int width = m_width;
+    int width = m_width - 1;
 
     if( begin )
  	width -= p->paddingLeft() + p->borderLeft();
@@ -612,9 +612,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             {
                 int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
                 QColor c2 = QColor("#0000ff");
-                drawBorder(p, tx, ty, tx, ty + h, 1,
+                drawBorder(p, tx, ty, tx+1, ty + h,
                               RenderObject::BSLeft, c2, c2, SOLID, false, false, 0, 0);
-                drawBorder(p, tx + s->m_width, ty, tx + s->m_width, ty + h, 1,
+                drawBorder(p, tx + s->m_width, ty, tx + s->m_width + 1, ty + h, 1,
                               RenderObject::BSRight, c2, c2, SOLID, false, false, 0, 0);
             }
 #endif
@@ -969,73 +969,77 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
   EBorderStyle os = style()->outlineStyle();
   QColor oc = style()->outlineColor();
 
+  int t = ty + thisline.top();
+  int l = tx + thisline.left();
+  int b = ty + thisline.bottom() + 1;
+  int r = tx + thisline.right() + 1;
+
   // left edge
   drawBorder(p,
-	     tx + thisline.left()   - ow,
-	     ty + thisline.top()    - (lastline.isEmpty() || thisline.left() <= lastline.left() || lastline.right() <= thisline.left() ? ow : 1),
-	     tx + thisline.left()   ,
-	     ty + thisline.bottom() + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : 1),
+	     l - ow,
+	     t - (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : 1),
+	     l,
+	     b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow -1 : 0),
 	     BSLeft,
 	     oc, style()->color(), os, false, false,
-	     (lastline.isEmpty() || thisline.left() <= lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
+	     (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
 	     (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : -ow),
 	     true);
 
   // right edge
   drawBorder(p,
-	     tx + thisline.right()  ,
-	     ty + thisline.top()    - (lastline.isEmpty() || lastline.right() <= thisline.right() || thisline.right() <= lastline.left() ? ow : 1),
-	     tx + thisline.right()  + ow,
-	     ty + thisline.bottom() + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : 1),
+	     r,
+	     t - (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : 1),
+	     r + ow,
+	     b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow - 1 : 0),
 	     BSRight,
 	     oc, style()->color(), os, false, false,
-	     (lastline.isEmpty() || lastline.right() <= thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
+	     (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
 	     (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : -ow),
 	     true);
   // upper edge
-  if ( thisline.left() < lastline.left() )
+  if ( thisline.left() < lastline.left())
       drawBorder(p,
-		 tx + thisline.left() - ow,
-		 ty + thisline.top()  - ow,
-		 tx + QMIN(thisline.right() + ow, lastline.isValid()?lastline.left():1000000),
-		 ty + thisline.top() ,
+		 l - ow,
+		 t - ow,
+		 QMIN(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
+		 t ,
 		 BSTop, oc, style()->color(), os, false, false,
 		 ow,
-		 (lastline.isValid() && lastline.left()<thisline.right()+ow?-ow:ow),
+		 (lastline.isValid() && tx+lastline.left()+1<r+ow ? -ow : ow),
 		 true);
 
   if (lastline.right() < thisline.right())
       drawBorder(p,
-		 tx + QMAX(lastline.isValid()?lastline.right():-1000000, thisline.left() - ow),
-		 ty + thisline.top() - ow,
-		 tx + thisline.right() + ow,
-		 ty + thisline.top() ,
+		 QMAX(lastline.isValid()?tx + lastline.right() + 1:-1000000, l - ow),
+		 t - ow,
+		 r + ow,
+		 t ,
 		 BSTop, oc, style()->color(), os, false, false,
-		 (lastline.isValid() && thisline.left()-ow < lastline.right()?-ow:ow),
+		 (lastline.isValid() && l-ow < tx+lastline.right()+1 ? -ow : ow),
 		 ow,
 		 true);
-
 
   // lower edge
   if ( thisline.left() < nextline.left())
       drawBorder(p,
-		 tx + thisline.left() - ow,
-		 ty + thisline.bottom(),
-		 tx + QMIN(thisline.right() + ow, nextline.isValid()?nextline.left():1000000),
-		 ty + thisline.bottom() + ow,
+		 l - ow,
+		 b,
+		 QMIN(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
+		 b + ow,
 		 BSBottom, oc, style()->color(), os, false, false,
 		 ow,
-		 (nextline.isValid() && nextline.left()<thisline.right()+ow?-ow:ow),
+		 (nextline.isValid() && tx+nextline.left()+1<r+ow? -ow : ow),
 		 true);
 
   if (nextline.right() < thisline.right())
       drawBorder(p,
-		 tx + QMAX(nextline.isValid()?nextline.right():-1000000, thisline.left() - ow),
-		 ty + thisline.bottom(),
-		 tx + thisline.right()  + ow,
-		 ty + thisline.bottom() + ow,
+		 QMAX(nextline.isValid()?tx+nextline.right()+2:-1000000 , l-ow-1),
+		 b,
+		 r + ow + 1,
+		 b + ow,
 		 BSBottom, oc, style()->color(), os, false, false,
-		 (nextline.isValid() && thisline.left()-ow < nextline.right()?-ow:ow),
+		 (nextline.isValid() && l-ow < tx+nextline.right()+1? -ow : ow),
 		 ow,
 		 true);
 }

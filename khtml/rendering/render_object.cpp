@@ -265,7 +265,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     {
         p->setPen(Qt::NoPen);
         p->setBrush(c);
-
+	// ### fix off-by-one-errors
         int third = (width+1)/3;
         switch(s)
         {
@@ -274,16 +274,16 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             p->drawRect(x1+QMAX( adjbw1,0), y2-third, x2-x1-QMAX( adjbw1,0)-QMAX( adjbw2,0), third);
             break;
         case BSBottom:
-            p->drawRect(x1+QMAX( adjbw1,0), y1      , x2-x1-QMAX( adjbw1,0)-QMAX( adjbw2,0), third);
-            p->drawRect(x1+QMAX(-adjbw1,0), y2-third, x2-x1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0), third);
+            p->drawRect(x1+QMAX( adjbw1,0)+1, y1      , x2-x1-QMAX( adjbw1,0)-QMAX( adjbw2,0)-1, third);
+            p->drawRect(x1+QMAX(-adjbw1,0)+1, y2-third, x2-x1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0)-1, third);
             break;
         case BSLeft:
-            p->drawRect(x1      , y1+QMAX(-adjbw1,0), third, y2-y1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0));
-            p->drawRect(x2-third, y1+QMAX( adjbw1,0), third, y2-y1-QMAX( adjbw1,0)-QMAX( adjbw2,0));
+            p->drawRect(x1      , y1+QMAX(-adjbw1,0)+1, third, y2-y1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0)-1);
+            p->drawRect(x2-third, y1+QMAX( adjbw1,0)+1, third, y2-y1-QMAX( adjbw1,0)-QMAX( adjbw2,0)-1);
             break;
         case BSRight:
-            p->drawRect(x1      , y1+QMAX( adjbw1,0), third, y2-y1-QMAX( adjbw1,0)-QMAX( adjbw2,0));
-            p->drawRect(x2-third, y1+QMAX(-adjbw1,0), third, y2-y1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0));
+            p->drawRect(x1      , y1+QMAX( adjbw1,0)+1, third, y2-y1-QMAX( adjbw1,0)-QMAX( adjbw2,0)-1);
+            p->drawRect(x2-third, y1+QMAX(-adjbw1,0)+1, third, y2-y1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0)-1);
             break;
         }
 
@@ -304,27 +304,34 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             s1 = OUTSET;
             s2 = INSET;
         }
-        // could be more efficient. but maybe current code is already faster than
-        // drawing two small rectangles?
-        // disadvantage is that current edges doesn't look right because of reverse
-        // drawing order
+
+	int adjbw1bighalf;
+	int adjbw2bighalf;
+	if (adjbw1>0) adjbw1bighalf=adjbw1+1;
+	else adjbw1bighalf=adjbw1-1;
+	adjbw1bighalf/=2;
+
+	if (adjbw2>0) adjbw2bighalf=adjbw2+1;
+	else adjbw2bighalf=adjbw2-1;
+	adjbw2bighalf/=2;
+
         switch (s)
 	{
 	case BSTop:
-	    drawBorder(p, x1+QMAX(-adjbw1,0)/2, y1       , x2-QMAX(-adjbw2,0)/2, (y1+y2)/2, s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
-	    drawBorder(p, x1+QMAX( adjbw1,0)/2, (y1+y2)/2, x2-QMAX( adjbw2,0)/2, y2       , s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
-	    break;
-	case BSBottom:
-	    drawBorder(p, x1+QMAX( adjbw1,0)/2, y1       , x2-QMAX( adjbw2,0)/2, (y1+y2)/2, s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
-	    drawBorder(p, x1+QMAX(-adjbw1,0)/2, (y1+y2)/2, x2-QMAX(-adjbw2,0)/2, y2       , s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
+	    drawBorder(p, x1+QMAX(-adjbw1  ,0)/2,  y1        , x2-QMAX(-adjbw2,0)/2, (y1+y2+1)/2, s, c, textcolor, s1, true, true, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, x1+QMAX( adjbw1+1,0)/2, (y1+y2+1)/2, x2-QMAX( adjbw2+1,0)/2,  y2        , s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
 	    break;
 	case BSLeft:
-            drawBorder(p, x1       , y1+QMAX(-adjbw1,0)/2, (x1+x2)/2, y2-QMAX(-adjbw2,0)/2, s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
-	    drawBorder(p, (x1+x2)/2, y1+QMAX( adjbw1,0)/2, x2       , y2-QMAX( adjbw2,0)/2, s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
+            drawBorder(p,  x1        , y1+QMAX(-adjbw1  ,0)/2, (x1+x2+1)/2, y2-QMAX(-adjbw2,0)/2, s, c, textcolor, s1, true, true, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, (x1+x2+1)/2, y1+QMAX( adjbw1+1,0)/2,  x2        , y2-QMAX( adjbw2+1,0)/2, s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
+	    break;
+	case BSBottom:
+	    drawBorder(p, x1+QMAX( adjbw1  ,0)/2,  y1        , x2-QMAX( adjbw2,0)/2, (y1+y2+1)/2, s, c, textcolor, s2, true, true, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, x1+QMAX(-adjbw1+1,0)/2, (y1+y2+1)/2, x2-QMAX(-adjbw2+1,0)/2,  y2        , s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
 	    break;
 	case BSRight:
-            drawBorder(p, x1       , y1+QMAX( adjbw1,0)/2, (x1+x2)/2, y2-QMAX( adjbw2,0)/2, s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
-	    drawBorder(p, (x1+x2)/2, y1+QMAX(-adjbw1,0)/2, x2       , y2-QMAX(-adjbw2,0)/2, s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
+            drawBorder(p,  x1        , y1+QMAX( adjbw1  ,0)/2, (x1+x2+1)/2, y2-QMAX( adjbw2,0)/2, s, c, textcolor, s2, true, true, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, (x1+x2+1)/2, y1+QMAX(-adjbw1+1,0)/2,  x2        , y2-QMAX(-adjbw2+1,0)/2, s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
 	    break;
 	}
         break;
@@ -344,7 +351,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             sb1 = true;
         /* nobreak; */
     case SOLID:
-        QPointArray quad(3);
+        QPointArray quad(4);
         p->setPen(Qt::NoPen);
         p->setBrush(c);
         switch(s) {
