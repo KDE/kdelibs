@@ -29,15 +29,23 @@
 
 /* @internal */
 template <class T>
-class KGenericFactoryBase 
+class KGenericFactoryBase
 {
 public:
     KGenericFactoryBase( const char *instanceName )
-        : m_instanceName( instanceName ) 
+        : m_instanceName( instanceName )
+    {
+        m_aboutData=0L;
+        s_self = this;
+        m_catalogueInitialized = false;
+    }
+    KGenericFactoryBase( const KAboutData *data )
+        : m_aboutData(data)
     {
         s_self = this;
         m_catalogueInitialized = false;
     }
+
     virtual ~KGenericFactoryBase()
     {
         if ( s_instance )
@@ -52,8 +60,10 @@ public:
 protected:
     virtual KInstance *createInstance()
     {
+        if ( m_aboutData )
+            return new KInstance( m_aboutData );
         if ( !m_instanceName ) {
-            kdWarning() << "KGenericFactory: instance requested but no instance name passed to the constructor!" << endl;
+            kdWarning() << "KGenericFactory: instance requested but no instance name or about data passed to the constructor!" << endl;
             return 0;
         }
         return new KInstance( m_instanceName );
@@ -76,6 +86,7 @@ protected:
 
 private:
     QCString m_instanceName;
+    const KAboutData *m_aboutData;
     bool m_catalogueInitialized;
 
     static KInstance *s_instance;
@@ -129,7 +140,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  * The args QStringList passed to the constructor is the args string list
  * that the caller passed to KLibFactory's create method.
  *
- * In addition upon instantiation this template provides a central 
+ * In addition upon instantiation this template provides a central
  * KInstance object for your component, accessible through the
  * static instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
@@ -163,13 +174,18 @@ class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
 {
 public:
     KGenericFactory( const char *instanceName = 0 )
-        : KGenericFactoryBase<Product>( instanceName ) 
+        : KGenericFactoryBase<Product>( instanceName )
     {}
+
+    KGenericFactory( const KAboutData *data )
+        : KGenericFactoryBase<Product>( data )
+    {}
+
 
 protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                   const char *className, const QStringList &args )
-    {   
+    {
         KGenericFactoryBase<Product>::initializeMessageCatalogue();
         return KDEPrivate::ConcreteFactory<Product, ParentType>
             ::create( 0, 0, parent, name, className, args );
@@ -180,11 +196,11 @@ protected:
  * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the
- * specified classes in the given typelist template argument when the class 
+ * specified classes in the given typelist template argument when the class
  * name argument of createObject matches a class names in the given hierarchy
  * of classes.
- * 
- * Note that each class in the specified in the typelist template argument 
+ *
+ * Note that each class in the specified in the typelist template argument
  * needs to provide a certain constructor:
  * <ul>
  *     <li>If the class is derived from QObject then it needs to have
@@ -204,7 +220,7 @@ protected:
  * The args QStringList passed to the constructor is the args string list
  * that the caller passed to KLibFactory's create method.
  *
- * In addition upon instantiation this template provides a central 
+ * In addition upon instantiation this template provides a central
  * KInstance object for your component, accessible through the
  * static instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
@@ -244,7 +260,7 @@ protected:
  * \endcode
  */
 template <class Product, class ProductListTail>
-class KGenericFactory< KTypeList<Product, ProductListTail>, QObject > 
+class KGenericFactory< KTypeList<Product, ProductListTail>, QObject >
     : public KLibFactory,
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
@@ -252,6 +268,11 @@ public:
     KGenericFactory( const char *instanceName  = 0 )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
+
+    KGenericFactory( const KAboutData *data )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
+    {}
+
 
 protected:
     virtual QObject *createObject( QObject *parent, const char *name,
@@ -267,11 +288,11 @@ protected:
  * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the
- * specified classes in the given typelist template argument when the class 
+ * specified classes in the given typelist template argument when the class
  * name argument of createObject matches a class names in the given hierarchy
  * of classes.
- * 
- * Note that each class in the specified in the typelist template argument 
+ *
+ * Note that each class in the specified in the typelist template argument
  * needs to provide a certain constructor:
  * <ul>
  *     <li>If the class is derived from QObject then it needs to have
@@ -291,7 +312,7 @@ protected:
  * The args QStringList passed to the constructor is the args string list
  * that the caller passed to KLibFactory's create method.
  *
- * In addition upon instantiation this template provides a central 
+ * In addition upon instantiation this template provides a central
  * KInstance object for your component, accessible through the
  * static instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
@@ -333,7 +354,7 @@ protected:
 template <class Product, class ProductListTail,
           class ParentType, class ParentTypeListTail>
 class KGenericFactory< KTypeList<Product, ProductListTail>,
-                       KTypeList<ParentType, ParentTypeListTail> > 
+                       KTypeList<ParentType, ParentTypeListTail> >
     : public KLibFactory,
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
@@ -341,6 +362,11 @@ public:
     KGenericFactory( const char *instanceName  = 0 )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
+
+    KGenericFactory( const KAboutData *data )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
+    {}
+
 
 protected:
     virtual QObject *createObject( QObject *parent, const char *name,
