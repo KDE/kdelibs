@@ -481,9 +481,11 @@ void KOpenWithDlg::slotOK()
       serviceName = keepExec;
   } else
     serviceName = m_pService->desktopEntryPath();
-  if (serviceName.right(8) != QString::fromLatin1(".desktop"))
-    serviceName += QString::fromLatin1(".desktop");
-  QString path(locateLocal("apps", serviceName));
+
+  QString pathName (serviceName);
+  if (pathName.right(8) != QString::fromLatin1(".desktop"))
+    pathName += QString::fromLatin1(".desktop");
+  QString path(locateLocal("apps", pathName));
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
@@ -492,7 +494,7 @@ void KOpenWithDlg::slotOK()
   if (remember)
     if (remember->isChecked()) {
       QStringList mimeList;
-      KDesktopFile oldDesktop(locate("apps", serviceName), true);
+      KDesktopFile oldDesktop(locate("apps", pathName), true);
       mimeList = oldDesktop.readEntry(QString::fromLatin1("MimeType"));
       if (!mimeList.contains(qServiceType))
 	mimeList.append(qServiceType);
@@ -515,7 +517,7 @@ void KOpenWithDlg::slotOK()
 	    retType, replyData);
 
   // get the new service pointer
-  m_pService = KService::service( serviceName );
+  m_pService = KService::service( path );
 
   haveApp = false;
   accept();
