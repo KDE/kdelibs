@@ -100,13 +100,13 @@ public:
      * @param canReturnNull Can return a null pixmap?
      */
     QPixmap loadIcon(QString name, int group_or_size = Default /* SCI */, 
-	    QString *path_store=0L, bool canReturnNull=true);
+	    QString *path_store=0L, bool canReturnNull=false);
 
     /**
      * Returns the path of an icon. See @ref #loadIcon.
      */
     QString iconPath(QString name, int group_or_size, 
-	    bool canReturnNull=true);
+	    bool canReturnNull=false);
 
     /**
      * Query all available icons for a specific group, having a specific
