@@ -114,6 +114,11 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     {
       QHBoxLayout *hbox = new QHBoxLayout( topLayout );
       mIconList = new IconListBox( this );
+
+      QFont listFont( mIconList->font() );
+      listFont.setBold( true );
+      mIconList->setFont( listFont );
+
       mIconList->verticalScrollBar()->installEventFilter( this );
       hbox->addWidget( mIconList );
       connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
@@ -435,32 +440,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
       //
       mIconListToPageStack.insert(item, page);
       mIconList->invalidateHeight();
-
-      //
-      // Make sure all list items have stored the same minimum width. The
-      // code is a bit hairy and will only work when the new item has been
-      // appended to the list.
-      //
-      int iw = item->width( mIconList );
-      QMap<QListBoxItem *, QWidget *>::Iterator it;
-      for (it = mIconListToPageStack.begin(); it != mIconListToPageStack.end(); ++it){
-        IconListItem *item = (IconListItem *) it.key();
-        iw = item->expandMinimumWidth( iw );
-      }
-
-      //
-      // 2000-02-26 Espen Sand
-      // Make sure the listbox is wide enough to avoid a horizontal scrollbar.
-      // Note that the listbox width is set in the eventfilter as well.
-      // I have yet not understood why I have to multiply by 4 instead of 2
-      // below.
-      //
-      iw  += (mIconList->frameWidth()*4);
-      int lw = mIconList->minimumWidth();
-      if( lw < iw )
-      {
-        mIconList->setFixedWidth( iw );
-      }
+      mIconList->invalidateWidth();
     }
 
     //
@@ -482,7 +462,7 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
   }
   else
   {
-    kdDebug() << "addlegal shape" << endl;
+    kdDebug() << "illlegal shape" << endl;
   }
 
 }
@@ -718,7 +698,11 @@ void KJanusWidget::slotFontChanged()
 
   if( mFace == IconList )
   {
+    QFont listFont( mIconList->font() );
+    listFont.setBold( true );
+    mIconList->setFont( listFont );
     mIconList->invalidateHeight();
+    mIconList->invalidateWidth();
   }
 }
 
@@ -765,6 +749,7 @@ QSize KJanusWidget::minimumSizeHint() const
     else
     {
       mIconList->updateMinimumHeight();
+      mIconList->updateWidth();
       s2 = mIconList->minimumSize();
     }
 
@@ -865,7 +850,7 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
     {
       int lw = item->width( mIconList );
       int sw = mIconList->verticalScrollBar()->sizeHint().width();
-      mIconList->setFixedWidth( lw+sw+mIconList->frameWidth()*4 );
+      mIconList->setFixedWidth( lw+sw+mIconList->frameWidth()*2 );
     }
   }
   else if( e->type() == QEvent::Hide )
@@ -874,7 +859,7 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
     if( item != 0 )
     {
       int lw = item->width( mIconList );
-      mIconList->setFixedWidth( lw+mIconList->frameWidth()*4 );
+      mIconList->setFixedWidth( lw+mIconList->frameWidth()*2 );
     }
   }
   return QWidget::eventFilter( o, e );
@@ -889,7 +874,8 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
 
 KJanusWidget::IconListBox::IconListBox( QWidget *parent, const char *name,
 					WFlags f )
-  :KListBox( parent, name, f ), mShowAll(false), mHeightValid(false)
+  :KListBox( parent, name, f ), mShowAll(false), mHeightValid(false),
+   mWidthValid(false)
 {
 }
 
@@ -909,9 +895,42 @@ void KJanusWidget::IconListBox::updateMinimumHeight()
 }
 
 
+void KJanusWidget::IconListBox::updateWidth()
+{
+  if( mWidthValid == false )
+  {
+    int maxWidth = 10;
+    for( QListBoxItem *i = item(0); i != 0; i = i->next() )
+    {
+      int w = ((IconListItem *)i)->width(this);
+      maxWidth = QMAX( w, maxWidth );
+    }
+
+    for( QListBoxItem *i = item(0); i != 0; i = i->next() )
+    {
+      ((IconListItem *)i)->expandMinimumWidth( maxWidth );
+    }
+
+    if( verticalScrollBar()->isVisible() )
+    {
+      maxWidth += verticalScrollBar()->sizeHint().width();
+    }
+
+    setFixedWidth( maxWidth + frameWidth()*2 );
+    mWidthValid = true;
+  }
+}  
+
+
 void KJanusWidget::IconListBox::invalidateHeight()
 {
   mHeightValid = false;
+}
+
+
+void KJanusWidget::IconListBox::invalidateWidth()
+{
+  mWidthValid = false;
 }
 
 
@@ -972,7 +991,7 @@ const QPixmap &IconListItem::defaultPixmap()
 void IconListItem::paint( QPainter *painter )
 {
   QFontMetrics fm = painter->fontMetrics();
-  int wt = fm.boundingRect(text()).width();
+  //int wt = fm.boundingRect(text()).width();
   int wp = mPixmap.width();
   int ht = fm.lineSpacing();
   int hp = mPixmap.height();
@@ -980,12 +999,7 @@ void IconListItem::paint( QPainter *painter )
   painter->drawPixmap( (mMinimumWidth-wp)/2, 5, mPixmap );
   if( text().isEmpty() == false )
   {
-    painter->save();
-    QFont f( painter->font() );
-    f.setBold( true );
-    painter->setFont(f);
-    painter->drawText( (mMinimumWidth-wt)/2, hp+ht+5, text() );
-    painter->restore();
+    painter->drawText( 0, hp+7, mMinimumWidth, ht, Qt::AlignCenter, text() );
   }
 }
 
