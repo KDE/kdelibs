@@ -659,9 +659,9 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
     int distmax, LengthType type)
 {
-//#ifdef TABLE_DEBUG
+#ifdef TABLE_DEBUG
     printf("HTMLTableElementImpl::spreadSpanMinMax() %d\n",distmin);
-//#endif
+#endif
 
     if (distmin<1 && distmax<1)
     	return;
@@ -1234,8 +1234,8 @@ int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divid
 int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
     	    LengthType toType, int start, int span )
 {
-    printf("MINDIST, %d pixels of type %d"
-    	"to type %d cols sp=%d \n", distrib, distType, toType,span);
+//    printf("MINDIST, %d pixels of type %d"
+//    	"to type %d cols sp=%d \n", distrib, distType, toType,span);
 
     int olddis=0;
     int c=start;
@@ -1244,7 +1244,7 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 
     while(tdis>0)
     {
-    	printf ("ct=%d\n",colType[c]);
+//    	printf ("ct=%d\n",colType[c]);
 	if (colType[c]==toType)
 	{
 	    int delta = distrib/span;
@@ -1261,7 +1261,7 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 	    olddis=tdis;
 	}
     }
-    printf("left %d \n", tdis);
+  
     return tdis;
 }
 
