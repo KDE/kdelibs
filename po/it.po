@@ -14,7 +14,7 @@ msgstr ""
 #
 #: kab/AssertDialog.cpp:29
 msgid "(unknown file)"
-msgstr "(files conosciuto)"
+msgstr "(files sconosciuto)"
 
 #: kab/AssertDialog.cpp:30
 msgid "(unknown line number)"
@@ -1289,39 +1289,37 @@ msgid "Consider run-together words as spelling errors"
 msgstr ""
 
 #: kspell/ksconfig.cpp:92
-#, fuzzy
+
 msgid "Dictionary"
-msgstr "directory"
+msgstr "Dizionario"
 
 #: kspell/ksconfig.cpp:140
 msgid "Encoding:"
-msgstr ""
+msgstr "Codifica:"
 
 #: kspell/ksconfig.cpp:147
-#, fuzzy
 msgid "Latin1"
-msgstr "&Locazione:"
+msgstr "Latin1"
 
 #: kspell/ksconfig.cpp:148
 msgid "7-Bit/ASCII"
-msgstr ""
+msgstr "7-Bit/ASCII"
 
 #: kspell/ksconfig.cpp:292
 msgid "English"
-msgstr ""
+msgstr "Inglese"
 
 #: kspell/ksconfig.cpp:298
 msgid "Spanish"
-msgstr ""
+msgstr "Spagnolo"
 
 #: kspell/ksconfig.cpp:304
-#, fuzzy
 msgid "German"
-msgstr "romano"
+msgstr "Tedesco"
 
 #: kspell/ksconfig.cpp:311
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Portoghese Brasiliano"
 
 #
 #: kspell/ksconfig.cpp:317
@@ -1329,32 +1327,28 @@ msgid "Unknown"
 msgstr "Sconosciuto"
 
 #: kspell/ksconfig.cpp:348
-#, fuzzy
 msgid "ISpell Default"
-msgstr "Predefinito"
+msgstr "Predefinito di ISpell"
 
 #: kspell/kspelldlg.cpp:58
 msgid "Misspelled Word:"
-msgstr ""
+msgstr "Parola non corretta:"
 
 #: kspell/kspelldlg.cpp:68
-#, fuzzy
 msgid "Replacement:"
-msgstr "Cambia"
+msgstr "Sostituzione:"
 
 #: kspell/kspelldlg.cpp:77
 msgid "Suggestions:"
-msgstr ""
+msgstr "Suggerimenti:"
 
 #: kspell/kspelldlg.cpp:88
-#, fuzzy
 msgid "Ignore"
-msgstr "&Ignora"
+msgstr "Ignora"
 
 #: kspell/kspelldlg.cpp:99
-#, fuzzy
 msgid "Ignore All"
-msgstr "&Ignora"
+msgstr "Ignora Tutti"
 
 #: kspell/kspelldlg.cpp:120 po/texts.cpp:86
 msgid "Add"
@@ -1751,8 +1745,8 @@ msgstr "impossibile inserire \""
 msgid "\" into configuration section (ignored)."
 msgstr "\" nella sezione di configurazione (ignorato)."
 
-# ,fuzzy
 #: kab/addressbook.cc:666
+#,fuzzy
 msgid "Unable to add a new entry with available key."
 msgstr "Impossibile aggiungere una nuova voce con un tasto disponibile."
 
@@ -1944,9 +1938,8 @@ msgid "Address:"
 msgstr "Indirizzo:"
 
 #: kab/editentry.cc:104
-#, fuzzy
 msgid "Town/City:"
-msgstr "Città:"
+msgstr "Paese/Città:"
 
 #
 #: kab/editentry.cc:105
@@ -1954,9 +1947,8 @@ msgid "State:"
 msgstr "Stato:"
 
 #: kab/editentry.cc:106
-#, fuzzy
 msgid "Zip/Postal Code:"
-msgstr "codice postale/Zip"
+msgstr "Codice postale/Zip:"
 
 #: kab/editentry.cc:107
 msgid "Country:"
@@ -1971,19 +1963,18 @@ msgid "Organization:"
 msgstr "Organizzazione"
 
 #: kab/editentry.cc:146
-#, fuzzy
+
 msgid "Department:"
-msgstr "Cambia"
+msgstr "Dipartimento:"
 
 #: kab/editentry.cc:147
 msgid "Sub-Department:"
-msgstr ""
+msgstr "Sotto-Dipartimento:"
 
 #
 #: kab/editentry.cc:148
-#, fuzzy
 msgid "Job/Role:"
-msgstr "Ruolo:"
+msgstr "Impiego/Ruolo:"
 
 #: kab/editentry.cc:169
 msgid "&Organization"
@@ -2020,9 +2011,8 @@ msgid "&Contact"
 msgstr "&Contatta"
 
 #: kab/editentry.cc:239
-#, fuzzy
 msgid "Additional Comment:"
-msgstr "Secondo Nome"
+msgstr "Commento Addizionale:"
 
 #: kab/editentry.cc:246
 msgid "Birthday:"
@@ -2745,15 +2735,15 @@ msgstr "Programma di posta avviato."
 #~ msgid "The file %s does already exist. Do you really want to overwrite it ?"
 #~ msgstr "Il file %s esiste già.Volete sovrascriverlo?"
 
-#, fuzzy
+
 #~ msgid "Bytes"
 #~ msgstr " Byte"
 
-#, fuzzy
+
 #~ msgid "Kb"
 #~ msgstr " Kb"
 
-#, fuzzy
+
 #~ msgid "Mb"
 #~ msgstr " Mb"
 
