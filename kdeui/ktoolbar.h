@@ -237,12 +237,12 @@ public:
                    const char *toolTipText = 0L, int size = 70, int index =-1);
 
   /**
-   * Inserts QComboBox with list. Can be writable, but cannot contain pixmaps. By
+   * Inserts KComboBox with list. Can be writable, but cannot contain pixmaps. By
    * default inserting policy is AtBottom, i.e. typed items are placed at the bottom
    * of the list. Can be autosized
    * @see #setFullWidth
    * @see #setItemAutoSized
-   * @see QComboBox
+   * @see KCombo
    * @return Returns item index
    */
   int insertCombo (QStrList *list, int id, bool writable,
@@ -250,12 +250,12 @@ public:
                    const char *slot, bool enabled=TRUE,
                    const char *tooltiptext=0L,
                    int size=70, int index=-1,
-                   QComboBox::Policy policy = QComboBox::AtBottom);
+                   KCombo::Policy policy = KCombo::AtBottom);
 
   /**
-   * Inserts ComboBox with text. The rest is the same as above.
+   * Inserts KCombo with text. The rest is the same as above.
    * @see #setItemAutoSized
-   * @see QComboBox
+   * @see KCombo
    * @return Returns item index
    */
   int insertCombo (const char *text, int id, bool writable,
@@ -263,7 +263,7 @@ public:
                    const char *slot, bool enabled=TRUE,
                    const char *tooltiptext=0L,
                    int size=70, int index=-1,
-                   QComboBox::Policy policy = QComboBox::AtBottom);
+                   KCombo::Policy policy = KCombo::AtBottom);
   /**
    * Insert separator
    */
