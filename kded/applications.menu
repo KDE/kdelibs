@@ -25,11 +25,15 @@
 		<Directory>kde-unknown.directory</Directory>
 		<OnlyUnallocated/>
 		<Include>
-			<!-- Don't list non-KDE core applications -->
-			<Not><And>
-			<Category>Core</Category>
-			<Not><Category>KDE</Category></Not>
-			</And></Not>
+			<Not>
+				<!-- Don't list non-KDE core applications -->
+				<And>
+					<Category>Core</Category>
+					<Not><Category>KDE</Category></Not>
+				</And>
+				<!-- Don't list SUSE's YaST in here -->
+				<Category>X-SuSE-YaST</Category>
+			</Not>
 		</Include>
 	</Menu>
 	<Menu>
