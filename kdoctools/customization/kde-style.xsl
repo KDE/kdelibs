@@ -5,16 +5,13 @@
 <xsl:param name="callout.graphics.path" select="'common/'" doc:type='string'/>
 
 <xsl:template match="guilabel|guimenu|guisubmenu|guimenuitem|interface|guibutton">
-  <span style="background-color: rgb(240,240,240); 
-	color: rgb(0,0,0);">  
+  <span class="guiitem">
      <xsl:call-template name="inline.charseq"/>
   </span>
 </xsl:template>
 
 <xsl:template match="accel">
-  <span style="background-color: rgb(240,240,240); 
-	color: rgb(0,0,0); 
-	text-decoration: underline;">  
+  <span class="accel">
      <xsl:call-template name="inline.charseq"/>
    </span>
 </xsl:template>
