@@ -14,11 +14,11 @@ lib_LTLIBRARIES = libspellcheck.la libnotepad.la
 
 libspellcheck_la_SOURCES = plugin_spellcheck.cpp
 libspellcheck_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
-libspellcheck_la_LDFLAGS = -avoid-version -module
+libspellcheck_la_LDFLAGS = -avoid-version -module -no-undefined
 
 libnotepad_la_SOURCES = notepad.cpp notepad_factory.cpp
 libnotepad_la_LIBADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDEUI)
-libnotepad_la_LDFLAGS = -avoid-version -module
+libnotepad_la_LDFLAGS = -avoid-version -module -no-undefined
 
 rcdir = $(kde_datadir)/kpartstest
 rc_DATA = kpartstest_shell.rc
