@@ -28,7 +28,7 @@
 #include <kapplication.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> 
+#include <kipc.h>
 #endif
 
 #include <kdebug.h>
@@ -45,7 +45,7 @@
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
 //#include <X11/X.h>
-#include <X11/Xlib.h> 
+#include <X11/Xlib.h>
 //#include <X11/Xutil.h>
 #endif
 
@@ -83,10 +83,12 @@ bool KGlobalSettings::singleClick()
 KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
 {
     int tearoff;
+    bool effectsenabled;
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
+    effectsenabled = c->readBoolEntry( "EffectsEnabled", false);
     tearoff =c->readNumEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
-    return (TearOffHandle) tearoff;
+    return effectsenabled ? (TearOffHandle) tearoff : Disable;
 }
 
 bool KGlobalSettings::changeCursorOverIcon()
@@ -389,7 +391,7 @@ QFont KGlobalSettings::largeFont(const QString &text)
 {
     QFontDatabase db;
     QStringList fam = db.families();
-        
+
     // Move a bunch of preferred fonts to the front.
     if (fam.remove("Arial"))
        fam.prepend("Arial");
