@@ -688,6 +688,19 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
 	result = pm;
     }  
   }
+  else {
+    XWMHints *hints = XGetWMHints(qt_xdisplay(),  w);
+    if (hints && 
+	(hints->flags & WindowGroupHint)
+	&& hints->window_group != None){
+      return icon(hints->window_group, width, height);
+    }
+    Window trans = None;
+    if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
+      if (trans != w)
+	return miniIcon(trans, width, height);
+    }
+  }  
   return result;
 }
 
@@ -737,6 +750,19 @@ QPixmap KWM::icon(Window w, int width, int height){
       else
 	result = pm;
     }  
+  }
+  else {
+    XWMHints *hints = XGetWMHints(qt_xdisplay(),  w);
+    if (hints && 
+	(hints->flags & WindowGroupHint)
+	&& hints->window_group != None){
+      return icon(hints->window_group, width, height);
+    }
+    Window trans = None;
+    if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
+      if (trans != w)
+	return icon(trans, width, height);
+    }
   }
   return result;
 }
