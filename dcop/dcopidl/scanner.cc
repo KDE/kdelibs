@@ -1028,7 +1028,7 @@ YY_MALLOC_DECL
 YY_DECL
 	{
 	register yy_state_type yy_current_state;
-	register char *yy_cp = NULL, *yy_bp = NULL;
+	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
 #line 147 "scanner.ll"
@@ -1533,7 +1533,7 @@ YY_RULE_SETUP
 			  if (function_mode)
 				return yylex(); // call once again
 
-			  fatal("could not parse %c(%d) at line %d" , yytext[0], yytext[0], idl_line_no);
+			  qFatal("could not parse %c(%d) at line %d" , yytext[0], yytext[0], idl_line_no);
 			  return T_UNKNOWN;
 			}
 	YY_BREAK

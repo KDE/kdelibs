@@ -84,7 +84,7 @@ void KStandardDirs::addPrefix( const QString& _dir )
     if (_dir.isNull())
 	return;
 
-    QString dir = _dir;   
+    QString dir = _dir;
     if (dir.at(dir.length() - 1) != '/')
 	dir += '/';
 
@@ -149,7 +149,7 @@ QString KStandardDirs::findResource( const char *type,
 #if 0
 fprintf(stderr, "Find resource: %s\n",type);
 for (QStringList::ConstIterator pit = prefixes.begin();
-     pit != prefixes.end(); 
+     pit != prefixes.end();
      pit++)
 {
   fprintf(stderr, "Prefix: %s\n", (*pit).ascii());
@@ -185,22 +185,22 @@ QString KStandardDirs::findResourceDir( const char *type,
 {
 #ifndef NDEBUG
     if (filename.isEmpty()) {
-      warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type);
+      qWarning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type);
       return QString::null;
     }
 #endif
 
     QStringList candidates = resourceDirs(type);
     QString fullPath;
-   
+
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++)
       if (exists(*it + filename))
 	return *it;
-    
+
 #ifndef NDEBUG
     if(false && type != "locale")
-      debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
+      qDebug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
             filename.ascii(), type);
 #endif
 
@@ -269,12 +269,12 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     closedir( dp );
   }
   else
-  {  
+  {
      // We look for a single file.
      QString fn = pattern;
      QString pathfn = path + fn;
      struct stat buff;
-     if ( stat( QFile::encodeName(pathfn), &buff ) != 0 ) 
+     if ( stat( QFile::encodeName(pathfn), &buff ) != 0 )
         return; // File not found
      if ( S_ISREG( buff.st_mode))
      {
@@ -295,7 +295,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 			 bool recursive, bool uniq)
 {
     if (relpath.isNull()) {
-       lookupDirectory(prefix, relPart, regexp, list, 
+       lookupDirectory(prefix, relPart, regexp, list,
 		       relList, recursive, uniq);
        return;
     }
@@ -314,7 +314,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
     }
 
     assert(prefix.at(prefix.length() - 1) == '/');
-    
+
     struct stat buff;
 
     if (path.contains('*') || path.contains('?')) {
@@ -350,8 +350,8 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
     } else {
         // Don't stat, if the dir doesn't exist we will find out
         // when we try to open it.
-        lookupPrefix(prefix + path + '/', rest, 
-                     relPart + path + '/', regexp, list, 
+        lookupPrefix(prefix + path + '/', rest,
+                     relPart + path + '/', regexp, list,
                      relList, recursive, uniq);
     }
 }
@@ -394,7 +394,7 @@ KStandardDirs::findAllResources( const char *type,
 	
 	for (QStringList::ConstIterator it = candidates.begin();
 	     it != candidates.end(); it++)
-	    lookupPrefix(*it, filterPath, "", regExp, list, 
+	    lookupPrefix(*it, filterPath, "", regExp, list,
 			 relList, recursive, uniq);
     } else  {
 	for (QStringList::ConstIterator it = candidates.begin();
@@ -421,7 +421,7 @@ KStandardDirs::findAllResources( const char *type,
 QStringList KStandardDirs::resourceDirs(const char *type) const
 {
   QStringList *candidates = dircache.find(type);
-  
+
   if (!candidates) { // filling cache
     QDir testdir;
     candidates = new QStringList();
@@ -437,7 +437,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
     if (dirs)
     {
       for (QStringList::ConstIterator pit = prefixes.begin();
-	   pit != prefixes.end(); 
+	   pit != prefixes.end();
            pit++)
       {
 	for (QStringList::ConstIterator it = dirs->begin();
@@ -455,7 +455,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 #if 0
     qDebug("found dirs for resource %s:",type);
     for (QStringList::ConstIterator pit = candidates->begin();
-	 pit != candidates->end(); 
+	 pit != candidates->end();
 	 pit++)
     {
 	fprintf(stderr, "%s\n", (*pit).latin1());
@@ -590,7 +590,7 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "bin/";
     if (!strcmp(type, "lib"))
 	return "lib/";
-    fatal("unknown resource type %s", type);
+    qFatal("unknown resource type %s", type);
     return QString::null;
 }
 

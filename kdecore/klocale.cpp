@@ -381,7 +381,7 @@ void KLocale::insertCatalogue( const QString& catalogue )
     .arg(catalogue);
   k_bindtextdomain ( catalogue.ascii() ,
 		     KGlobal::dirs()->findResourceDir("locale", str).ascii());
-  
+
   catalogues->append(catalogue.ascii());
 }
 
@@ -423,7 +423,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
   {
     kdDebug() << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
     return QString::null;
-  } 
+  }
 
   char *newstring = new char[strlen(index) + strlen(fallback) + 5];
   sprintf(newstring, "_: %s\n%s", index, fallback);
@@ -845,7 +845,7 @@ QTime KLocale::readTime(const QString &intstr) const
       hour = readInt(str, strpos);
       if (hour < 0 || hour > 23)
 	goto error;
-      
+
       break;
 			
     case 'l':
@@ -971,5 +971,5 @@ void KLocale::initInstance()
   if (app)
     KGlobal::_locale = new KLocale(app->instanceName());
   else
-    debug("no app name available using KLocale - nothing to do");
+      kdDebug() << "no app name available using KLocale - nothing to do\n";
 }

@@ -99,13 +99,13 @@ KProcess::KProcess()
   KProcessController::theKProcessController->processList->append(this);
 }
 
-void 
+void
 KProcess::setRunPrivileged(bool keepPrivileges)
 {
    keepPrivs = keepPrivileges;
 }
 
-bool 
+bool
 KProcess::runPrivileged()
 {
    return keepPrivs;
@@ -173,7 +173,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   arglist[n]= 0;
 
   if (!setupCommunication(comm))
-    debug("Could not setup Communication!");
+      kdDebug() << "Could not setup Communication!\n";
 
   runs = true;
 
@@ -192,7 +192,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
            initgroups(pw->pw_name, pw->pw_gid);
 #endif
            setuid(getuid());
-	   
+	
         }
 	// The child process
 	if(!commSetupDoneC())
@@ -375,7 +375,7 @@ bool KProcess::closeStderr()
 
 void KProcess::slotChildOutput(int fdno)
 {
-  if (!childOutput(fdno)) 
+  if (!childOutput(fdno))
      closeStdout();	
 }
 
@@ -590,14 +590,14 @@ void KProcess::commClose()
             delete errnot;
             errnot = 0;
           }
-           
+
 
 	  while (1) {
 	    FD_ZERO(&rfds);
-            if (b_out) 
+            if (b_out)
 	      FD_SET(out[0], &rfds);
 
-            if (b_err) 
+            if (b_err)
 	      FD_SET(err[0], &rfds);
 
 	    fds_ready = select(max_fd+1, &rfds, 0, 0, 0);
@@ -608,7 +608,7 @@ void KProcess::commClose()
 	      while (ret > 0) ret = childOutput(out[0]);
 	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
 	    }
-                               
+
 	    if (b_err && FD_ISSET(err[0], &rfds)) {
 	      int ret = 1;
 	      while (ret > 0) ret = childError(err[0]);
@@ -694,7 +694,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
            initgroups(pw->pw_name, pw->pw_gid);
 #endif
            setuid(getuid());
-	   
+	
         }
 	// The child process
         // CC: Changed the way the parameter was built up
@@ -766,7 +766,7 @@ QString KShellProcess::quote(const QString &arg)
 QCString KShellProcess::searchShell()
 {
   QCString tmpShell = QCString(getenv("SHELL")).stripWhiteSpace();
-  if (!isExecutable(tmpShell)) 
+  if (!isExecutable(tmpShell))
   {
      tmpShell = "/bin/sh";
   }

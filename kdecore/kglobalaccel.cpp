@@ -102,9 +102,8 @@ void KGlobalAccel::connectItem( const QString& action,
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
-		QString str = i18n("KGlobalAccel : Cannot connect action %1 "
-				   "which is not in the object dictionary").arg(action);
-		warning( str.ascii() );
+	    kdDebug() << QString::fromLatin1("KGlobalAccel : Cannot connect action %1 "
+					     "which is not in the object dictionary\n").arg(action);
 		return;
 	}
 	

@@ -56,8 +56,8 @@ void KConfigBase::setGroup( const QString& pGroup )
   if ( pGroup.isNull() )
     aGroup = "<default>";
   else if (pGroup.find(QString::fromLatin1("Desktop Entry")) != -1) {
-    debug("warning, setting Desktop Entry group through KConfig::setGroup() is deprecated.");
-    debug("please use KConfig::setDesktopGroup() instead.");
+    qDebug("warning, setting Desktop Entry group through KConfig::setGroup() is deprecated.");
+    qDebug("please use KConfig::setDesktopGroup() instead.");
     abort();
     setDesktopGroup();
   } else
@@ -938,7 +938,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
 				 bool bNLS )
 {
   QString aValue;
-  UINT8 nFontBits = 0;
+  Q_UINT8 nFontBits = 0;
   // this mimics get_font_bits() from qfont.cpp
   if( rFont.italic() )
     nFontBits = nFontBits | 0x01;

@@ -1030,7 +1030,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             styleHandle = lt_dlopen(QFile::encodeName(styleStr));
         }
         else {
-            warning("KApp: Unable to find style plugin %s.", styleStr.local8Bit().data());
+            qWarning("KApp: Unable to find style plugin %s.", styleStr.local8Bit().data());
             pKStyle = new KDEStyle;
             setStyle(pKStyle);
             styleHandle=0;
