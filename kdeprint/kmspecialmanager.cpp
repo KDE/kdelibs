@@ -73,7 +73,7 @@ bool KMSpecialManager::savePrinters()
 	QPtrListIterator<KMPrinter>	it(m_mgr->m_printers);
 	for (;it.current();++it)
 	{
-		if (!it.current()->isSpecial()) continue;
+		if (!it.current()->isSpecial() || it.current()->isVirtual()) continue;
 		conf.setGroup(QString::fromLatin1("Printer %1").arg(n));
 		conf.writeEntry("Name",it.current()->name());
 		conf.writeEntry("Description",it.current()->description());
