@@ -550,7 +550,7 @@ public:
   /**
    * Reads data from the socket.
    *
-   * Reimplemented from QIODevice. See @ref QIODevice::readBlock for
+   * Reimplemented from QIODevice. See QIODevice::readBlock for
    * more information.
    */
   virtual Q_LONG readBlock(char *data, Q_ULONG len) = 0;
@@ -598,7 +598,7 @@ public:
   /**
    * Writes the given data to the socket.
    *
-   * Reimplemented from QIODevice. See @ref QIODevice::writeBlock for
+   * Reimplemented from QIODevice. See QIODevice::writeBlock for
    * more information.
    */
   virtual Q_LONG writeBlock(const char *data, Q_ULONG len) = 0;
@@ -618,13 +618,13 @@ public:
 
   /**
    * Reads one character from the socket.
-   * Reimplementation from QIODevice. See @ref QIODevice::getch for more information.
+   * Reimplementation from QIODevice. See QIODevice::getch for more information.
    */
   virtual int getch();
 
   /**
    * Writes one character to the socket.
-   * Reimplementation from QIODevice. See @ref QIODevice::putch for more information.
+   * Reimplementation from QIODevice. See QIODevice::putch for more information.
    */
   virtual int putch(int ch);
 
