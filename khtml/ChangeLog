@@ -1,3 +1,8 @@
+2004-01-23  David Faure  <faure@kde.org>
+
+	* xml/dom_docimpl.cpp (hasFeature): Updated to current state.
+	(createEvent): Allow to create events with eventType="Events"
+
 2004-01-22  David Faure  <faure@kde.org>
 
 	* xml/dom_nodeimpl.cpp (GenericRONamedNodeMapImpl): Implementation of

@@ -97,10 +97,20 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
-        (version.isEmpty() || version == "1.0" || version == "null"))
+        (version.isEmpty() || version == "1.0" || version == "2.0" || version == "null"))
         return true;
-    else
-        return false;
+
+    // ## Do we support Core Level 3 ?
+    if ((lower == "core" ) &&
+        (version.isEmpty() || version == "2.0" || version == "null"))
+        return true;
+
+    if ((lower == "events" || lower == "uievents" ||
+         lower == "mouseevents" || lower == "mutationevents" ||
+         lower == "htmlevents" || lower == "textevents" ) &&
+        (version.isEmpty() || version == "2.0" || version == "3.0" || version == "null"))
+        return true;
+    return false;
 }
 
 DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
@@ -2072,7 +2082,7 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
         return new MouseEventImpl();
     else if (eventType == "MutationEvents")
         return new MutationEventImpl();
-    else if (eventType == "HTMLEvents")
+    else if (eventType == "HTMLEvents" || eventType == "Events")
         return new EventImpl();
     else {
         exceptioncode = DOMException::NOT_SUPPORTED_ERR;
