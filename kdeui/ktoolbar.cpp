@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.126  1999/07/25 11:53:48  kulow
+// taking out some headers from ktmainwindow.h, they just don't belong there
+//
 // Revision 1.125  1999/07/07 19:12:12  cschlaeg
 // removed horizontal/vertical flipping for floating bars during resize
 //
@@ -303,7 +306,6 @@
 
 #include "ktoolbar.h"
 #include "klined.h"
-#include "kcombo.h"
 #include "kseparator.h"
 #include <ktopwidget.h>
 #include <klocale.h>
@@ -2224,9 +2226,9 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
                            const char *slot, bool enabled,
                            const QString& tooltiptext,
                            int size, int index,
-                           KCombo::Policy policy)
+                           QComboBox::Policy policy)
 {
-  KCombo *combo = new KCombo (writable, this);
+  QComboBox *combo = new QComboBox (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
                                         true);
 
@@ -2254,9 +2256,9 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                            const char *slot, bool enabled,
                            const QString& tooltiptext,
                            int size, int index,
-                           KCombo::Policy policy)
+                           QComboBox::Policy policy)
 {
-  KCombo *combo = new KCombo (writable, this);
+  QComboBox *combo = new QComboBox (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
                                         true);
 
@@ -2284,9 +2286,9 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                            const char *signal, QObject *receiver,
                            const char *slot, bool enabled,
                            const QString& tooltiptext, int size, int index,
-                           KCombo::Policy policy)
+                           QComboBox::Policy policy)
 {
-  KCombo *combo = new KCombo (writable, this);
+  QComboBox *combo = new QComboBox (writable, this);
   KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
                                         true);
 
@@ -2457,7 +2459,6 @@ void KToolBar::setLinedText (int id, const QString& text)
     if (b->ID() == id )
     {
       ((KLineEdit *) b->getItem())->setText(text);
-      ((KLineEdit *) b->getItem())->cursorAtEnd();
     }
 }
 
@@ -2475,8 +2476,7 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
-      ((KCombo *) b->getItem())->insertItem(text, index);
-      ((KCombo *) b->getItem())->cursorAtEnd();
+      ((QComboBox *) b->getItem())->insertItem(text, index);
     }
 }
 
@@ -2484,14 +2484,14 @@ void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-	((KCombo *) b->getItem())->insertStrList(list, index);
+	((QComboBox *) b->getItem())->insertStrList(list, index);
 }
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-	((KCombo *) b->getItem())->insertStringList(list, index);
+	((QComboBox *) b->getItem())->insertStringList(list, index);
 }
 
 void KToolBar::setCurrentComboItem (int id, int index)
@@ -2499,8 +2499,7 @@ void KToolBar::setCurrentComboItem (int id, int index)
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
     {
-      ((KCombo *) b->getItem())->setCurrentItem(index);
-      ((KCombo *) b->getItem())->cursorAtEnd();
+      ((QComboBox *) b->getItem())->setCurrentItem(index);
     }
 }
 
@@ -2508,7 +2507,7 @@ void KToolBar::removeComboItem (int id, int index)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-      ((KCombo *) b->getItem())->removeItem(index);
+      ((QComboBox *) b->getItem())->removeItem(index);
 }
 
 void KToolBar::changeComboItem  (int id, const QString& text, int index)
@@ -2518,14 +2517,13 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
     {
       if (index == -1)
       {
-        index = ((KCombo *) b->getItem())->currentItem();
-        ((KCombo *) b->getItem())->changeItem(text, index);
+        index = ((QComboBox *) b->getItem())->currentItem();
+        ((QComboBox *) b->getItem())->changeItem(text, index);
       }
       else
       {
-        ((KCombo *) b->getItem())->changeItem(text, index);
+        ((QComboBox *) b->getItem())->changeItem(text, index);
       }
-      ((KCombo *) b->getItem())->cursorAtEnd();
     }
 }
 
@@ -2533,7 +2531,7 @@ void KToolBar::clearCombo (int id)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-	((KCombo *) b->getItem())->clear();
+	((QComboBox *) b->getItem())->clear();
 }
 
 QString KToolBar::getComboItem (int id, int index)
@@ -2542,17 +2540,17 @@ QString KToolBar::getComboItem (int id, int index)
     if (b->ID() == id )
     {
       if (index == -1)
-        index = ((KCombo *) b->getItem())->currentItem();
-      return ((KCombo *) b->getItem())->text(index);
+        index = ((QComboBox *) b->getItem())->currentItem();
+      return ((QComboBox *) b->getItem())->text(index);
     }
   return QString::null;
 }
 
-KCombo *KToolBar::getCombo (int id)
+QComboBox *KToolBar::getCombo (int id)
 {
   for (KToolBarItem *b = items.first(); b; b=items.next())
     if (b->ID() == id )
-      return ((KCombo *) b->getItem());
+      return ((QComboBox *) b->getItem());
   return 0;
 }
 

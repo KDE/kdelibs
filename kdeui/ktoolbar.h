@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.62  1999/06/15 20:36:34  cschlaeg
+// some more cleanup in ktmlayout; fixed random toolbar handle highlighting
+//
 // Revision 1.61  1999/06/10 21:47:50  cschlaeg
 // setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
 //
@@ -133,10 +136,9 @@
 #include <qsize.h>
 #include <qintdict.h>
 #include <qstringlist.h>
+#include <qcombobox.h>
 
 //#include <qiconset.h>
-
-#include "kcombo.h"
 
 class KLineEdit;
 class KToolBar;
@@ -386,14 +388,13 @@ public:
 		   int size = 70, int index =-1);
 
   /**
-   * Inserts KComboBox with list. Can be writable, but cannot contain
+   * Inserts QComboBox with list. Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
    * are placed at the bottom of the list. Can be autosized.
    *
-   * KCombo is almost the same thing as QComboBox.
    * @see #setFullWidth
    * @see #setItemAutoSized
-   * @see KCombo
+   * @see QComboBox
    * @return Returns item index
    */
   int insertCombo (QStrList *list, int id, bool writable,
@@ -401,16 +402,16 @@ public:
                    const char *slot, bool enabled=true,
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
-                   KCombo::Policy policy = KCombo::AtBottom);
+                   QComboBox::Policy policy = QComboBox::AtBottom);
 		   
   /**
-   * Inserts KComboBox with list. Can be writable, but cannot contain
+   * Inserts QComboBox with list. Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
    * are placed at the bottom of the list. Can be autosized.
-   * KCombo is almost the same thing as QComboBox.
+   *
    * @see #setFullWidth
    * @see #setItemAutoSized
-   * @see KCombo
+   * @see QComboBox
    * @return Returns item index
    */
   int insertCombo (const QStringList &list, int id, bool writable,
@@ -418,12 +419,13 @@ public:
                    const char *slot, bool enabled=true,
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
-                   KCombo::Policy policy = KCombo::AtBottom);
+                   QComboBox::Policy policy = QComboBox::AtBottom);
 
   /**
-   * Inserts KCombo with text. The rest is the same as above.
+   * Inserts QComboBox with text. The rest is the same as above.
    * @see #setItemAutoSized
-   * @see KCombo
+   *
+   * @see QComboBox
    * @return Returns item index
    */
   int insertCombo (const QString& text, int id, bool writable,
@@ -431,7 +433,7 @@ public:
                    const char *slot, bool enabled=true,
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
-                   KCombo::Policy policy = KCombo::AtBottom);
+                   QComboBox::Policy policy = QComboBox::AtBottom);
   /**
    * Insert separator
    */
@@ -603,14 +605,12 @@ public:
   /**
    * This returns pointer to Combo. Example:
    * <pre>
-   * KCombo *combo = toolbar->getCombo(combo_id);
+   * QComboBox *combo = toolbar->getCombo(combo_id);
    * </pre>
    * That way you can get access to other public methods
-   * that @ref KCombo provides. @ref KCombo is KDE enhancement
-   * of @ref QComboBox . KCombo inherits QComboBox, so you can
-   * use pointer to QComboBox too.
+   * that @ref QComboBox provides.
    */
-  KCombo * getCombo(int id);
+  QComboBox * getCombo(int id);
 
   /**
    * This returns pointer to KToolBarLined. Example:
