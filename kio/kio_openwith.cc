@@ -37,7 +37,6 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmimemagic.h>
-#include <kdebug.h>
 #include <kstddirs.h>
 
 #include "kio_openwith.h"
@@ -173,22 +172,22 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item )
         text_name         = kconfig.readEntry("Name", text_name);
         
         if( !mini_pixmap_name.isEmpty() )
-            pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon(mini_pixmap_name.ascii(), 16, 16);
+            pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon(mini_pixmap_name, 16, 16);
         if( pixmap.isNull() && !big_pixmap_name.isEmpty() )
-            pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon(big_pixmap_name.ascii(), 16, 16);
+            pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon(big_pixmap_name, 16, 16);
         if( pixmap.isNull() )
-            pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16);
+            pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("default.png", 16, 16);
     }
     else {
         command_name = text_name;
-        pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("mini-default.xpm", 16, 16);
+        pixmap = KGlobal::iconLoader()->loadApplicationMiniIcon("default.png", 16, 16);
     }
 
     if(item)
-        it2 = new KAppTreeListItem( item, text_name.ascii(), pixmap, false, fi->isDir(),
+        (void) new KAppTreeListItem( item, text_name.ascii(), pixmap, false, fi->isDir(),
                                     fi->absFilePath(), command_name );
     else
-        it2 = new KAppTreeListItem( this, text_name.ascii(), pixmap, false, fi->isDir(),
+        (void) new KAppTreeListItem( this, text_name.ascii(), pixmap, false, fi->isDir(),
                                     fi->absFilePath(), command_name );
 }
 
@@ -219,7 +218,7 @@ short KApplicationTree::parseDesktopDir( QDir d, KAppTreeListItem *item)
             parseDesktopFile( fi, item );
         }
         else {
-            if( !isDesktopFile( fi->absFilePath().ascii() ) ) {
+            if( !isDesktopFile( fi->absFilePath() ) ) {
                 ++it;
                 continue;
             }
@@ -374,7 +373,7 @@ void OpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
     else
         edit->setText( "" );
     
-    accept();
+//    accept(); // (David) I personnally prefer having to click ok...
 }
 
 
