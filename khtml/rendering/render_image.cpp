@@ -353,16 +353,18 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 void RenderImage::updateFromElement()
 {
-    CachedImage *new_image = element()->getDocument()->docLoader()->
-                             requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
+    if (!element()->getAttribute(ATTR_SRC).isEmpty()) {
+        CachedImage *new_image = element()->getDocument()->docLoader()->
+                                 requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
 
-    if(new_image && new_image != image && (!style() || !style()->contentObject())) {
-        loadEventSent = false;
-        CachedImage* oldimage = image;
-        image = new_image;
-        image->ref(this);
-        if(oldimage) oldimage->deref(this);
+        if(new_image && new_image != image && (!style() || !style()->contentObject())) {
+            loadEventSent = false;
+            CachedImage* oldimage = image;
+            image = new_image;
+            image->ref(this);
+            if(oldimage) oldimage->deref(this);
         berrorPic = image->isErrorImage();
+        }
     }
 
     if (element()->id() == ID_INPUT)
