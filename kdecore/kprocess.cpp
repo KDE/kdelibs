@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.30  1999/03/01 23:33:37  kulow
+   CVS_SILENT ported to Qt 2.0
+
    Revision 1.29.2.2  1999/02/15 15:53:39  kulow
    some char*s converted to QString and some QString converted to char* :)
 
@@ -91,7 +94,6 @@
 
 #include <qapplication.h>
 
-// to define kstrdup
 #include <config.h>
 
 #include <sys/time.h>
@@ -161,7 +163,7 @@ bool KProcess::setExecutable(const QString& proc)
 
   arguments.removeFirst();
   if (0 != proc) {
-    hlp = kstrdup(proc);
+    hlp = qstrdup(proc);
     CHECK_PTR(hlp);
     arguments.insert(0,hlp);
   }
@@ -176,7 +178,7 @@ bool KProcess::setExecutable(const QString& proc)
 
 KProcess &KProcess::operator<<(const QString& arg)
 {
-  char *new_arg= kstrdup(arg);
+  char *new_arg= qstrdup(arg);
 
   CHECK_PTR(new_arg);
   arguments.append(new_arg);
@@ -561,7 +563,7 @@ KShellProcess::KShellProcess(const QString& shellname):
   KProcess()
 {
   if (0 != shellname)
-    shell = kstrdup(shellname);
+    shell = qstrdup(shellname);
   else
     shell = 0;
 }
@@ -668,7 +670,7 @@ char *KShellProcess::searchShell()
   // CC: now get the name of the shell we have to use
   hlp = getenv("SHELL");
   if (isExecutable(hlp)) {
-    copy = kstrdup(hlp);
+    copy = qstrdup(hlp);
     CHECK_PTR(copy);
   }
 
@@ -677,7 +679,7 @@ char *KShellProcess::searchShell()
     QString stmp = QString(shell);
     QString shell_stripped = stmp.stripWhiteSpace();
     if (isExecutable(shell_stripped.data())) {
-      copy = kstrdup(shell_stripped.data());
+      copy = qstrdup(shell_stripped.data());
       CHECK_PTR(copy);
     }
   }
