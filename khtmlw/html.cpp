@@ -177,7 +177,6 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     bottomBorder  = BOTTOM_BORDER;
     x_offset      = 0;
     y_offset      = 0;
-    url           = 0;
     title         = "";    
     clue          = 0;
     italic        = false;
@@ -209,6 +208,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     charsetConverter = 0;
     blockStack = 0;
     memPoolMax = 0;
+    currentKeySeq = "";
 
     mapPendingFiles.setAutoDelete( true );
     framesetStack.setAutoDelete( false );
@@ -944,6 +944,14 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	    flushKeys();
 	  }
 	break;	
+        case Key_Backspace:
+          {
+            QString saved (currentKeySeq);
+            flushKeys();
+            currentKeySeq = saved.left( saved.length() - 1 );
+            cellSequenceChanged();
+          }
+        break;
       //-------------------------------------
       // End KFM Extension
       //-------------------------------------
@@ -1057,7 +1065,14 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	    break;
 
 	default:
-	    KDNDWidget::keyPressEvent( _ke );
+            // KFM Extension
+            if ( _ke->ascii() > 0 )
+            {
+                QString saved (currentKeySeq);
+                flushKeys();
+                currentKeySeq = saved.copy() + (char) _ke->ascii();
+                cellSequenceChanged();
+            } else KDNDWidget::keyPressEvent( _ke );
     }
 }
 
@@ -1068,6 +1083,7 @@ void KHTMLWidget::flushKeys()
     XEvent ev_return;
     Display *dpy = qt_xdisplay();
     while ( XCheckTypedEvent( dpy, KeyPress, &ev_return ) );
+    currentKeySeq = "";
 }
 
 void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
@@ -5732,6 +5748,86 @@ void KHTMLWidget::cellContextMenu()
   QPoint p( curr->tx, curr->ty );
   
   emit popupMenu( curr->pCell->getURL(), mapToGlobal( p ) );
+}
+
+void KHTMLWidget::cellSequenceChanged()
+{
+  if ( clue == 0 || parsing || currentKeySeq.isEmpty())
+    return ;
+  
+  printf( QString("Sequence is : '")+currentKeySeq+"'\n" );
+
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  if ( list.isEmpty() )
+    return ;
+  
+  HTMLCellInfo *curr = 0;
+  HTMLCellInfo *next = 0;
+  
+  // Find current marker, if any
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0; info = list.next() )
+  {
+      if ( info->pCell->isMarked() ) 
+      {
+          curr = info;
+          break;
+      }
+  }
+   
+  // Find cell beginning with currentKeySeq
+  for ( info = list.first(); info != 0; info = list.next() )
+  {
+      const char *u = info->pCell->getURL();
+ 
+      if ( u == 0 || *u == '\0' )
+          return;
+      
+      QString tmp = u;
+      if ( tmp.right(1) == "/" && tmp != "/" && tmp.right(2) != ":/" )
+          tmp.truncate( tmp.length() - 1 ); 
+      KURL ku( tmp );
+      QString filename = ku.filename();
+      if (strnicmp (filename, currentKeySeq, strlen(currentKeySeq)) == 0)
+      {
+          printf("Selecting : %s\n",filename.data());
+          next = info;
+          break;
+      }
+  }
+
+  if ( next == 0 )
+    return;
+  
+  bool new_painter = false;
+  if ( painter == 0 )
+  {
+    new_painter = true;
+    painter = new QPainter;
+    painter->begin( this );
+  }
+
+  if ( curr )
+    curr->pCell->setMarker( painter, next->tx, next->ty, false );
+  next->pCell->setMarker( painter, next->tx, next->ty, true );
+
+  if ( new_painter )
+  {
+    painter->end();
+    delete painter;
+    painter = 0;
+  }
+
+  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
+
+  emit onURL( next->pCell->getURL() );
+
+  return ;
 }
 
 //-----------------------------------------------------------

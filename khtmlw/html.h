@@ -612,6 +612,11 @@ public:
     void cellSelected();
     void cellActivated();
     void cellContextMenu();
+    void cellSequenceChanged(); // DF
+
+    // reset the current key sequence (for instance when changing directory). DF
+    void resetCurrentKeySeq() { currentKeySeq = ""; }
+
     //-----------------------------------------------------------
     // End KFM Extensions
     // -----------------------------------------------------------
@@ -767,7 +772,7 @@ signals:
      * used for url redirection
      */
     void redirect( int delay, const char * url );
-      
+
 public slots:
     /**
      * Scrolls the document to _y.
@@ -988,6 +993,11 @@ protected:
      * position form elements (widgets) on the page
      */
     void positionFormElements();
+
+    /*
+     * The current string formed by the sequence of key pressed
+     */
+    QString currentKeySeq;
 
     /*
      * The <title>...</title>.
