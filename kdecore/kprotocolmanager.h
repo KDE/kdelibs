@@ -185,6 +185,15 @@ public:
   static void setNoProxyFor( const QString& _noproxy );
   
   static void reparseConfiguration();
+
+  /**
+   * Returns the userAgent string configured for a particular
+   * host by the user.
+   *
+   * @param hostname name of the host
+   * @return specified userAgent string
+   */
+  static QString userAgentForHost( const QString& /*hostname*/ );
   
 private:
   static KConfig *config();  

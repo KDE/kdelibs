@@ -235,3 +235,57 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
   cfg->writeEntry( protocol.lower() + "Proxy", _proxy );
   cfg->sync();
 }
+
+QString KProtocolManager::userAgentForHost( const QString& hostname )
+{
+  KConfig *cfg = config();
+  // NOTE: Please, please DO NOT remove this check before
+  // this software is cycled into the next beta release!!!
+  // Otherwise, you will be breaking backwards compatability!!! (DA)
+  if( cfg->hasGroup("UserAgent") )
+    cfg->setGroup( "UserAgent" );
+  else
+    cfg->setGroup( "Browser Settings/UserAgent" );
+
+  int entries = cfg->readNumEntry( "EntriesCount", 0 );
+  QStringList list;
+  for( int i = 0; i < entries; i++ )
+  {
+      QString key = QString( "Entry%1" ).arg( i );
+      list.append( cfg->readEntry( key, "" ) );
+  }
+
+  QString user_agent = QString::null;
+  if ( list.count() == 0 )
+    return user_agent;
+
+  // Now, we need to do our pattern matching on the host name.
+  QStringList::ConstIterator it(list.begin());
+  for( ; it != list.end(); ++it)
+  {
+    QStringList split(QStringList::split( ':', (*it) ));
+
+    // if our user agent is null, we go to the next one
+    if ( split[1].isNull() )
+      continue;
+
+    QRegExp regexp(split[0], true, true);
+
+    // we also make sure our regexp is valid
+    if ( !regexp.isValid() )
+      continue;
+
+    // we look for a match
+    if ( regexp.match( hostname ) > -1 )
+    {
+      user_agent = split[1];
+
+      // if the match was for '*', we keep trying.. otherwise, we are
+      // done
+      if ( split[0] != "*" )
+        break;
+    }
+  }
+
+  return user_agent;
+}
