@@ -631,6 +631,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 	,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
+  ,prevSideDockPosBeforeDrag(DockNone)
 {
   d = new KDockWidgetPrivate();  // create private data
 
@@ -978,6 +979,7 @@ void KDockWidget::undock()
   }
 
   formerDockPos = currentDockPos;
+  currentDockPos = KDockWidget::DockDesktop;
 
   manager->blockSignals(true);
   manager->undockProcess = true;
@@ -1450,6 +1452,16 @@ void KDockManager::findChildDockWidget( const QWidget* p, WidgetList*& list )
 
 void KDockManager::startDrag( KDockWidget* w )
 {
+  if(( w->currentDockPos == KDockWidget::DockLeft) || ( w->currentDockPos == KDockWidget::DockRight)
+   || ( w->currentDockPos == KDockWidget::DockTop) || ( w->currentDockPos == KDockWidget::DockBottom)) {
+    w->prevSideDockPosBeforeDrag = w->currentDockPos;
+
+    if ( w->parentWidget()->inherits("KDockSplitter") ){
+      KDockSplitter* parentSplitterOfDockWidget = (KDockSplitter*)(w->parentWidget());
+      w->d->splitPosInPercent = parentSplitterOfDockWidget->separatorPos();
+    }
+  }
+
   currentMoveWidget = 0L;
   currentDragWidget = w;
   childDockWidgetList = new WidgetList();
@@ -1514,8 +1526,21 @@ void KDockManager::drop()
 
   if ( !currentMoveWidget && !currentDragWidget->parent() )
     currentDragWidget->move( mg->x(), mg->y() );
-  else
-    currentDragWidget->manualDock( currentMoveWidget, curPos , 50, QPoint(mg->x(), mg->y()) );
+  else {
+    int splitPos = currentDragWidget->d->splitPosInPercent;
+    // do we have to calculate 100%-splitPosInPercent?
+    if( (curPos != currentDragWidget->prevSideDockPosBeforeDrag) && (curPos != KDockWidget::DockCenter) && (curPos != KDockWidget::DockDesktop)) {
+      switch( currentDragWidget->prevSideDockPosBeforeDrag) {
+      case KDockWidget::DockLeft:   if(curPos != KDockWidget::DockTop)    splitPos = 100-splitPos; break;
+      case KDockWidget::DockRight:  if(curPos != KDockWidget::DockBottom) splitPos = 100-splitPos; break;
+      case KDockWidget::DockTop:    if(curPos != KDockWidget::DockLeft)   splitPos = 100-splitPos; break;
+      case KDockWidget::DockBottom: if(curPos != KDockWidget::DockRight)  splitPos = 100-splitPos; break;
+      default: break;
+      }
+    }
+    currentDragWidget->manualDock( currentMoveWidget, curPos , splitPos, QPoint(mg->x(), mg->y()) );
+    currentDragWidget->makeDockVisible();
+  }
 }
 
 void KDockManager::writeConfig( KConfig* c, QString group )
