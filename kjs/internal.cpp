@@ -859,13 +859,21 @@ KJSO KJS::hasInstance(const KJSO &F, const KJSO &V)
 #include <stdio.h>
 void KJS::printInfo( const char *s, const KJSO &o )
 {
-    if ( o.isNull() )
-      fprintf(stderr, "%s: null\n", s);
-    else
-      fprintf(stderr, "%s: %s : %s (%p)\n",
+    if (o.isNull())
+      fprintf(stderr, "%s: (null)\n", s);
+    else {
+      KJSO v = o;
+      if (o.isA(ReferenceType))
+	  v = o.getValue();
+      fprintf(stderr, "JS: %s: %s : %s (%p)\n",
 	      s,
-	      o.toString().value().ascii(),
-	      o.imp()->typeInfo()->name,
-	      (void*)o.imp());
+	      v.toString().value().ascii(),
+	      v.imp()->typeInfo()->name,
+	      (void*)v.imp());
+      if (o.isA(ReferenceType)) {
+	  fprintf(stderr, "JS: Was property '%s'\n", o.getPropertyName().ascii());
+	  printInfo("of", o.getBase());
+      }
+    }
 }
 #endif
