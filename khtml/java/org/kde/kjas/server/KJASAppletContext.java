@@ -404,7 +404,7 @@ public class KJASAppletContext implements AppletContext
         }
     }
     public void evaluateJavaScript(String script, String appletID, JSObject jso) {
-        if( active && (script != null) ) {
+        if( active && (jso != null) ) {
             synchronized (jsobjects) {
                 jsobjects.push(jso);
             }

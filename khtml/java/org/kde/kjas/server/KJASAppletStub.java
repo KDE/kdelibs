@@ -329,7 +329,10 @@ public final class KJASAppletStub
                     } catch (Exception e) {
                     }
                 }
-                app.destroy();
+                try {
+                    app.destroy();
+                } catch (Exception e) {
+                }
             }
             stateChange(DESTROYED);
         }
