@@ -109,6 +109,11 @@ khtmlw has been replaced with khtml.
   The methods tempSaveName() and checkRecoverFile() return QString
   now. The returned values must _not_ be free()d.
 
+  helpMenu(), aboutKDE(), aboutApp() and appHelpActivated()
+  have all been moved from kapp (KApplication) to ktmainwindow
+  (KTMainWindow) See section about ktmainwindow for more info.
+
+
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget, kdecore/drag.h
 
@@ -511,8 +516,22 @@ merged to the KLed class, but THE USER INTERFACE IS DIFFERENT, as both
 where more or less broken.
 Please adjust your code to it.
 
+////////////////////////////////////////////////////////////////////////
+// * KTMainWindow
 
+helpMenu(), aboutKDE(), aboutApp() and appHelpActivated()
+have all been moved from kapp (KApplication) to ktmainwindow
+(KTMainWindow)
 
+Both the "About KDE" and the "About <Application>" dialog boxes 
+are now modeless. "About KDE" is a completely new widget.
+
+If you in the toplevel window (that is based on KTMainWindow) have used 
+"kapp->helpMenu( bool, QString )" to get the help menu you must now 
+change to "helpMenu( QString )". The QString defaults to QString::null 
+so it is sufficient to write helpMenu()
+
+Espen Sand <espen@kde.org>
 
 
 
