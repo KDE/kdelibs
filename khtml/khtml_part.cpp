@@ -2385,6 +2385,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     else
       kdDebug( 6000 ) << "null pixmap" << endl;
  	
+    stopAutoScroll();
     drag->drag();
 
     // when we finish our drag, we need to undo our mouse press
