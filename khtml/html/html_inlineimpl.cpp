@@ -114,9 +114,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 {
                     int absx, absy, vx, vy;
                     r->absolutePosition(absx, absy);
-                    ownerDocument()->view()->contentsToViewport( absx, absy, vx, vy );
-
-                    int x(e->clientX() - vx), y(e->clientY() - vy);
+                    int x(e->clientX() - absx), y(e->clientY() - absy);
                     url += QString("?%1,%2").arg( x ).arg( y );
                 }
             }
