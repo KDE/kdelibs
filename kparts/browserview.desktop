@@ -12,6 +12,7 @@ Name[br]=Gwel Furchal
 Name[bs]=Pogled za pretragu
 Name[ca]=Vista del navegador
 Name[cs]=Prohlížeč
+Name[cy]=Golwg Porydd
 Name[da]=Netsøgningsvisning
 Name[de]=Browser-Ansicht
 Name[el]=Προβολή εξερευνητή
@@ -60,38 +61,67 @@ Name[zh_CN]=浏览器视图
 Name[zh_TW]=瀏覽器視圖
 Name[zu]=Umbonisi Womgcingi
 
+# Arguments passed to the factory (e.g. view sub-type)
 [PropertyDef::X-KDE-BrowserView-Args]
 Type=QString
 
+# If false, this component won't be used when clicking on a file,
+# the user will have to use "Embed in..." to use it (or the application
+# will have to explicitely embed this particular service, like for the sidebar)
 [PropertyDef::X-KDE-BrowserView-AllowAsDefault]
 Type=bool
 
+# If true, this component won't appear in the "Embed in..." popupmenu
 [PropertyDef::X-KDE-BrowserView-HideFromMenus]
 Type=bool
 
+# If true, the view will have its "linked" checkbox checked in Konqueror
+# (Was initially for the sidebar, but it's a FollowActive nowadays)
 [PropertyDef::X-KDE-BrowserView-LinkedView]
 Type=bool
 
+# If true, this view shows a hierarchical view, i.e. more than one dir at a time
+# This is used by KonqPopupMenu to know whether to offer "Create Directory" 
+# in the RMB menu on a directory (since it depends on whether the user would
+# see that new dir).
 [PropertyDef::X-KDE-BrowserView-HierarchicalView]
 Type=bool
 
+# If true, the view is passive (can't be made the current active view)
 [PropertyDef::X-KDE-BrowserView-PassiveMode]
 Type=bool
 
+# If true, the view can only be there 0 or 1 time in a given window,
+# and a toggle action for it will be created (examples: sidebar, konsolepart)
 [PropertyDef::X-KDE-BrowserView-Toggable]
 Type=bool
 
+# If the view is toggable, this defines its orientation (Horizontal or Vertical)
 [PropertyDef::X-KDE-BrowserView-ToggableView-Orientation]
 Type=QString
 
+# The name of the property in the view, which the application should set
+# in order to quickly switch the view mode (only meaningful in views that
+# support multiple modes in the same widget, like the iconview)
 [PropertyDef::X-KDE-BrowserView-ModeProperty]
 Type=QString
 
+# The value to set for the above property
 [PropertyDef::X-KDE-BrowserView-ModePropertyValue]
 Type=QString
 
-[PropertyDef::X-KDE-BrowserView-ToggableView-NoHeader]
-Type=bool
-
+# If true, this view will always "follow the active view" (and vice versa:
+# when the active view goes to another url, this view will follow).
+# Mostly used by the sidebar.
 [PropertyDef::X-KDE-BrowserView-FollowActive]
 Type=bool
+
+# If this property is set, this view is "builtin" to the application using it
+# The value of the property is the application in question (e.g. "konqueror").
+# This is used 1) to set the active instance to the app's (so the bugs
+# go to "konqueror" and not to "konqiconview") and 2) to let konq remember
+# that this view was used last. We don't want special-purpose views
+# (like Cervisia) to be reactivated (possibly on another directory) next time
+# (famous bug).
+[PropertyDef::X-KDE-BrowserView-Built-Into]
+Type=QString
