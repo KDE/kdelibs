@@ -45,6 +45,7 @@ class KSelectionOwner
 	virtual ~KSelectionOwner();
         bool claim( bool force, bool force_kill = true );
         void release();
+        Window ownerWindow() const; // None if not owning the selection
 	bool filterEvent( XEvent* ev_P ); // internal
     signals:
         void lostOwnership(); // it's NOT safe to delete the instance in a slot

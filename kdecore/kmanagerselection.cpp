@@ -188,6 +188,13 @@ void KSelectionOwner::release()
     timestamp = CurrentTime;
     }
 
+Window KSelectionOwner::ownerWindow() const
+    {
+    if( timestamp == CurrentTime )
+        return None;
+    return window;
+    }
+
 void KSelectionOwner::setData( long extra1_P, long extra2_P )
     {
     extra1 = extra1_P;
