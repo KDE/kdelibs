@@ -398,7 +398,8 @@ int RenderRoot::docHeight() const
 	else {
 	    while ( layer ) {
 		layer = layer->parent();
-		y -= layer->yPos();
+		if ( layer )
+		    y -= layer->yPos();
 		if ( layer && layer->nextSibling() ) {
 		    layer = layer->nextSibling();
 		    break;
@@ -442,7 +443,8 @@ int RenderRoot::docWidth() const
 	else {
 	    while ( layer ) {
 		layer = layer->parent();
-		x -= layer->xPos();
+		if ( layer )
+		    x -= layer->xPos();
 		if ( layer && layer->nextSibling() ) {
 		    layer = layer->nextSibling();
 		    break;
