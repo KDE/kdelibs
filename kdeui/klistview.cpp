@@ -1198,7 +1198,7 @@ QPtrList<QListViewItem> KListView::selectedItems() const
 {
   QPtrList<QListViewItem> list;
 
-  // Using selectiomMode() instead of selectionModeExt() since for the cases that
+  // Using selectionMode() instead of selectionModeExt() since for the cases that
   // we're interested in selectionMode() should work for either variety of the
   // setSelectionMode().
 
