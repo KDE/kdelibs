@@ -21,9 +21,11 @@
 #ifndef RESOURCELDAPCONFIG_H
 #define RESOURCELDAPCONFIG_H
 
-#include <klineedit.h>
 
 #include "resourceconfigwidget.h"
+
+class KLineEdit;
+class QSpinBox;
 
 namespace KABC {
 
@@ -37,7 +39,7 @@ public:
   KLineEdit* user;
   KLineEdit* password;
   KLineEdit* host;
-  KLineEdit* port;
+  QSpinBox * port;
   KLineEdit* dn;
   KLineEdit* filter;
 

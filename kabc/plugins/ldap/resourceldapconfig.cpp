@@ -20,8 +20,11 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qspinbox.h>
+#include <qvbox.h>
 
 #include <klocale.h>
+#include <klineedit.h>
 
 #include "resource.h"
 #include "resourceldapconfig.h"
@@ -54,10 +57,14 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   mainLayout->addWidget( host, 2, 1 );
 
   label = new QLabel( i18n( "Port:" ), this );
-  port = new KLineEdit( this );
+  QVBox *box = new QVBox(this);
+  port = new QSpinBox(0, 65535, 1, box );
+  port->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
+  port->setValue(389);
+  new QWidget(box, "dummy");
 
   mainLayout->addWidget( label, 3, 0 );
-  mainLayout->addWidget( port, 3, 1 );
+  mainLayout->addWidget( box, 3, 1 );
 
   label = new QLabel( i18n( "Dn:" ), this );
   dn = new KLineEdit( this );
@@ -77,7 +84,7 @@ void ResourceLDAPConfig::loadSettings( KConfig *config )
   user->setText( config->readEntry( "LdapUser" ) );
   password->setText( KABC::Resource::cryptStr( config->readEntry( "LdapPassword" ) ) );
   host->setText( config->readEntry( "LdapHost" ) );
-  port->setText( config->readEntry( "LdapPort" ) );
+  port->setValue(  config->readNumEntry( "LdapPort" ) );
   dn->setText( config->readEntry( "LdapDn" ) );
   filter->setText( config->readEntry( "LdapFilter" ) );
 }
@@ -87,7 +94,8 @@ void ResourceLDAPConfig::saveSettings( KConfig *config )
   config->writeEntry( "LdapUser", user->text() );
   config->writeEntry( "LdapPassword", KABC::Resource::cryptStr( password->text() ) );
   config->writeEntry( "LdapHost", host->text() );
-  config->writeEntry( "LdapPort", port->text() );
+  config->writeEntry( "LdapPort", port->value() );
   config->writeEntry( "LdapDn", dn->text() );
   config->writeEntry( "LdapFilter", filter->text() );
 }
+#include "resourceldapconfig.moc"
