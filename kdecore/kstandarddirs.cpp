@@ -343,7 +343,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).latin1() == '~')
 	continue;
 
-      if (!recursive && (regexp.search(fn) == -1))
+      if (!recursive && !regexp.exactMatch(fn))
 	continue; // No match
 
       QString pathfn = path + fn;
@@ -355,8 +355,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 	if ( S_ISDIR( buff.st_mode )) {
 	  lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, uniq);
 	}
-        if (regexp.search(fn) == -1)
-
+        if (!regexp.exactMatch(fn))
 	  continue; // No match
       }
       if ( S_ISREG( buff.st_mode))
