@@ -98,7 +98,7 @@ using namespace DOM;
 
 #include "khtmlpart_p.h"
 #include "kpopupmenu.h"
-#include <rendering/render_form.h>
+#include "rendering/render_form.h"
 
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
@@ -4992,13 +4992,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
       if ( uriType == KURIFilterData::LOCAL_FILE
            || uriType == KURIFilterData::LOCAL_DIR
            || uriType == KURIFilterData::NET_PROTOCOL )
-      {
-        KURL u = m_filterData.uri();
-        QString savedReferrer = d->m_referrer;
-        d->m_referrer = QString::null; // Disable referrer.
-        urlSelected(u.url(), 0,0, "_top");
-        d->m_referrer = savedReferrer; // Restore original referrer.
-      }
+        emit d->m_extension->openURLRequest( m_filterData.uri().url() );
     }
   }
 #endif
