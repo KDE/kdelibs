@@ -89,13 +89,20 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 KDialogBase::KDialogBase( const QString &caption, int buttonMask, 
 			  ButtonCode defaultButton, ButtonCode escapeButton, 
 			  QWidget *parent, const char *name, bool modal, 
-			  bool separator, const QString &yes,
-			  const QString &no, const QString &cancel )
+			  bool separator, QString yes,
+			  QString no, QString cancel )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
    mEscapeButton(escapeButton)
 {
+  if (yes.isEmpty())
+     yes = i18n("&Yes");
+  if (no.isEmpty())
+     no = i18n("&No");
+  if (cancel.isEmpty())
+     cancel = i18n("&Cancel");
+
   setCaption( caption );
 
   makeRelay();

@@ -30,7 +30,6 @@
 
 #include <kdialog.h>
 #include <kjanuswidget.h>
-#include <klocale.h>
 
 class KSeparator;
 class KURLLabel;
@@ -338,9 +337,10 @@ class KDialogBase : public KDialog
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel, 
 		 QWidget *parent=0, const char *name=0, bool modal=true, 
 		 bool separator=false,
-		 const QString &yes = i18n("&Yes"),
-		 const QString &no = i18n("&No"),
-		 const QString &cancel = i18n("&Cancel") );
+		 QString yes = QString::null, // i18n("&Yes")
+		 QString no = QString::null, // i18n("&No"),
+		 QString cancel = QString::null // i18n("&Cancel") 
+	       );
 
     /**
      * Destructor
