@@ -31,30 +31,14 @@ int main( int argc, char **argv )
     Client *shell = new Client;
     shell->setInstance( new KInstance( "konqueror" ) );
 
-    KStdAction::up( 0, 0, shell->actionCollection(), "up" );
-    KStdAction::back( 0, 0, shell->actionCollection(), "back" );
-    KStdAction::forward( 0, 0, shell->actionCollection(), "forward" );
-    KStdAction::home( 0, 0, shell->actionCollection(), "home" );
-    (void)new KAction( "Reload", "reload", 0, 0, 0, shell->actionCollection(), "reload" );
-    (void)new KAction( "Stop", "stop", 0, 0, 0, shell->actionCollection(), "stop" );
-    KStdAction::cut( 0, 0, shell->actionCollection(), "cut" );
-    KStdAction::copy( 0, 0, shell->actionCollection(), "copy" );
-    KStdAction::paste( 0, 0, shell->actionCollection(), "paste" );
-    KStdAction::print( 0, 0, shell->actionCollection(), "print" );
-
     (void)new KAction( "Split", "view_left_right", 0, 0, 0, shell->actionCollection(), "splitviewh" );
-    (void)new KAction( "Logo", "editdelete", 0, 0, 0, shell->actionCollection(), "animated_logo" );
 
-//    shell->setXMLFile( locate( "data", "config/ui_standards.rc" ) );
     shell->setXMLFile( "./kxmlguitest_shell.rc" );
 
     factory->addClient( shell );
 
     Client *part = new Client;
 
-    (void)new KAction( "Print Frame", "frameprint", 0, 0, 0, part->actionCollection(), "printFrame" );
-    KStdAction::find( 0, 0, part->actionCollection(), "find" );
-    (void)new KAction( "incfont", "viewmag+", 0, 0, 0, part->actionCollection(), "incFontSizes" );
     (void)new KAction( "decfont", "viewmag-", 0, 0, 0, part->actionCollection(), "decFontSizes" );
     (void)new KAction( "sec", "unlock", 0, 0, 0, part->actionCollection(), "security" );
 
