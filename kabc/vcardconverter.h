@@ -93,7 +93,10 @@ class VCardConverter
       @param list The list of contact objects
       @param version The version of the generated vCard format
      */
+    // FIXME: Add error handling
     QString createVCards( Addressee::List list, Version version = v3_0 );
+
+    // FIXME: Add "createVCards( AddressBook * )"
 
     /**
       Parses a string in vCard format and returns the first contact.
