@@ -692,13 +692,17 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
 #endif
     switch( entry->value ) {
     case Status: {
-      String s = value.toString(exec);
-      m_part->setJSStatusBarText(s.value().qstring());
+      if ( isSafeScript(exec) ) {
+        String s = value.toString(exec);
+        m_part->setJSStatusBarText(s.value().qstring());
+      }
       return;
     }
     case DefaultStatus: {
-      String s = value.toString(exec);
-      m_part->setJSDefaultStatusBarText(s.value().qstring());
+      if ( isSafeScript(exec) ) {
+        String s = value.toString(exec);
+        m_part->setJSDefaultStatusBarText(s.value().qstring());
+      }
       return;
     }
     case _Location:
@@ -1224,7 +1228,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   UString s = v.toString(exec);
   str = s.qstring();
 
-  switch (id) {
+  // functions that work everywhere
+  switch(id) {
   case Window::Alert:
     if (!widget->dialogsAllowed())
       return Undefined();
@@ -1254,6 +1259,22 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         return Null();
   case Window::Open:
     return window->openWindow(exec, args);
+  case Window::Focus: {
+    if(widget)
+      widget->setActiveWindow();
+    return Undefined();
+  }
+  case Window::Blur:
+    // TODO
+    return Undefined();
+  };
+
+
+  // now unsafe functions..
+  if (!window->isSafeScript(exec))
+    return Undefined();
+
+  switch (id) {
   case Window::Scroll:
   case Window::ScrollBy:
     if(args.size() == 2 && widget)
@@ -1354,12 +1375,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::ClearInterval:
     (const_cast<Window*>(window))->clearTimeout(v.toInt32(exec));
     return Undefined();
-  case Window::Focus: {
-    if(widget)
-      widget->setActiveWindow();
-    return Undefined();
-  }
-  case Window::Blur:
+ case Window::Blur:
     // TODO
     return Undefined();
   case Window::Close: {
@@ -1808,7 +1824,9 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   KJS_CHECK_THIS( Location, thisObj );
   Location *location = static_cast<Location *>(thisObj.imp());
   KHTMLPart *part = location->part();
+
   if (part) {
+    Window* window = Window::retrieveWindow(part);
     switch (id) {
     case Location::Assign:
     case Location::Replace:
@@ -1824,7 +1842,8 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
       break;
     case Location::ToString:
-      return String(location->toString(exec));
+      if (window->isSafeScript(exec))
+        return String(location->toString(exec));
     }
   } else
     kdDebug(6070) << "LocationFunc::tryExecute - no part!" << endl;
