@@ -21,6 +21,7 @@
 #define __klineeditdlg_h__
 
 #include <qlineedit.h>
+class KLineEdit;
 
 #include <kdialogbase.h>
 
@@ -48,7 +49,12 @@ public:
   /**
    * @return the value the user entered
    */
-  QString text() { return edit->text(); }
+  QString text() const;
+
+  /**
+   * @return the line edit widget
+   */
+  KLineEdit *lineEdit() const { return edit; }
 
   /**
    * Static convenience function to get a textual input from the user.
@@ -57,10 +63,22 @@ public:
    * @param _value     Initial value of the inputline
    * @param ok         this bool will be set to true if user pressed "Ok"
    */
-
   static QString getText(const QString &_text, const QString& _value,
                  bool *ok, QWidget *parent );
 
+  /**
+   * Static convenience function to get a textual input from the user.
+   * This method includes a caption, and has (almost) the same API as QInputDialog::getText
+   * (no echo mode, we have KPasswordDialog).
+   *
+   * @param _caption   Caption of the dialog
+   * @param _text      Text of the label
+   * @param _value     Initial value of the inputline
+   * @param ok         this bool will be set to true if user pressed "Ok"
+   */
+  static QString getText(const QString &_caption, const QString &_text,
+                         const QString& _value = QString::null,
+                         bool *ok = 0, QWidget *parent = 0 );
 public slots:
   /**
    * Clears the edit widget
@@ -71,7 +89,7 @@ protected:
   /**
    * The line edit widget
    */
-  QLineEdit *edit;
+  KLineEdit *edit;
 };
 
 #endif

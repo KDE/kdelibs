@@ -40,7 +40,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   QVBoxLayout *topLayout = new QVBoxLayout( plainPage(), 0, spacingHint() );
   QLabel *label = new QLabel(_text, plainPage() );
   topLayout->addWidget( label, 1 );
-  
+
   edit = new KLineEdit( plainPage(), 0L );
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
@@ -126,32 +126,37 @@ void KLineEditDlg::slotClear()
     edit->setText(QString::null);
 }
 
+QString KLineEditDlg::text() const
+{
+    return edit->text();
+}
+
 QString KLineEditDlg::getText(const QString &_text, const QString& _value,
                               bool *ok, QWidget *parent )
 {
+    KLineEditDlg dlg(_text, _value, parent );
 
-    KLineEditDlg* dlg = new KLineEditDlg(_text, _value, parent );
-#if 0
-    dlg->setCaption( caption );
-
-    if ( !_text.isEmpty() )
-        dlg->lineEdit()->selectAll();
-#endif
-
-    bool ok_ = FALSE;
-    QString result;
-    ok_ = dlg->exec() == QDialog::Accepted;
+    bool ok_ = dlg.exec() == QDialog::Accepted;
     if ( ok )
         *ok = ok_;
     if ( ok_ )
-        result = dlg->text();
-
-    delete dlg;
-    return result;
+        return dlg.text();
+    return QString::null;
 }
 
+QString KLineEditDlg::getText(const QString &_caption, const QString &_text,
+                              const QString& _value,
+                              bool *ok, QWidget *parent )
+{
+    KLineEditDlg dlg( _text, _value, parent );
+    dlg.setCaption( _caption );
 
+    bool ok_ = dlg.exec() == QDialog::Accepted;
+    if ( ok )
+        *ok = ok_;
+    if ( ok_ )
+        return dlg.text();
+    return QString::null;
+}
 
 #include "klineeditdlg.moc"
-
-
