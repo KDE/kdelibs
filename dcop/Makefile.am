@@ -37,4 +37,5 @@ METASOURCES = dcopclient.moc dcopserver.moc
 
 libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp
 
+dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
