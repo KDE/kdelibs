@@ -24,13 +24,7 @@
 #include <kapp.h>
 #include <klocale.h>
 
-// most of these sizes are standard X font sizes, so all of our fonts
-// display nicely.
-//
-static int fontSizes[7] = { 8, 10, 12, 14, 18, 24, 32 };
-
-
-HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic,
+HTMLFont::HTMLFont( const char *_family, int _size, const int *fontSizes, int _weight, bool _italic,
                     const char *_charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
@@ -38,11 +32,7 @@ HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic,
     fsize = _size;
     if (_charset) setCharset(_charset);
     else setCharset(klocale->charset());
-}
-
-int HTMLFont::pointSize( int _size )
-{
-    return fontSizes[ _size ];
+    pointsize = fontSizes[ _size ];
 }
 
 HTMLFontManager::HTMLFontManager()

@@ -1440,7 +1440,7 @@ void KHTMLWidget::selectFont( const char *_fontfamily, int _fontsize, int _weigh
     else if ( _fontsize >= MAXFONTSIZES )
 	_fontsize = MAXFONTSIZES - 1;
 
-    HTMLFont f( _fontfamily, _fontsize, _weight, _italic,
+    HTMLFont f( _fontfamily, _fontsize, settings->fontSizes, _weight, _italic,
             settings->charset);
     f.setTextColor( *(colorStack.top()) );
     const HTMLFont *fp = pFontManager->getFont( f );
@@ -1464,7 +1464,7 @@ void KHTMLWidget::selectFont( int _relative_font_size )
     else if ( fontsize >= MAXFONTSIZES )
 	fontsize = MAXFONTSIZES - 1;
 
-    HTMLFont f( font_stack.top()->family(), fontsize, weight,
+    HTMLFont f( font_stack.top()->family(), fontsize, settings->fontSizes, weight,
 	italic,  font_stack.top()->charset() );
 
     f.setUnderline( underline );
@@ -1490,7 +1490,7 @@ void KHTMLWidget::selectFont()
 	assert(0);
     }
 
-    HTMLFont f( font_stack.top()->family(), fontsize, weight,
+    HTMLFont f( font_stack.top()->family(), fontsize, settings->fontSizes, weight,
 	italic,  font_stack.top()->charset() );
 
     f.setUnderline( underline );
@@ -1508,7 +1508,7 @@ void KHTMLWidget::popFont()
     font_stack.pop();
     if ( font_stack.isEmpty() )
     {
-	HTMLFont f( settings->fontBaseFace, settings->fontBaseSize );
+	HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, settings->fontSizes );
 	f.setCharset(settings->charset);
 	const HTMLFont *fp = pFontManager->getFont( f );
 	font_stack.push( fp );
@@ -1706,7 +1706,7 @@ void KHTMLWidget::parse()
     colorStack.push( new QColor( settings->fontBaseColor ) );
     
     font_stack.clear();
-    HTMLFont f( settings->fontBaseFace, settings->fontBaseSize );
+    HTMLFont f( settings->fontBaseFace, settings->fontBaseSize, settings->fontSizes );
     f.setCharset(settings->charset);
     f.setTextColor( settings->fontBaseColor );
     const HTMLFont *fp = pFontManager->getFont( f );
@@ -1923,7 +1923,7 @@ bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
     {
 	HTMLClueFlow *f = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
 	_clue->append( f );
-	HTMLVSpace *t = new HTMLVSpace( HTMLFont::pointSize( settings->fontBaseSize ) );
+	HTMLVSpace *t = new HTMLVSpace( settings->fontSizes[settings->fontBaseSize] );
 	f->append( t );
 	flow = 0;
     }
@@ -2679,7 +2679,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	{
 		// Start of line, add vertical space based on current font.
 		flow->append( new HTMLVSpace( 
-				HTMLFont::pointSize( currentFont()->size() ),
+				currentFont()->pointSize(),
 				clear ));
 	}
 	else
@@ -5657,6 +5657,24 @@ HTMLPendingFile::HTMLPendingFile( const char *_url, HTMLObject *_obj )
 {
   m_strURL = _url;
   m_lstClients.append( _obj );
+}
+
+void
+KHTMLWidget::setFontSizes(const int *newFontSizes)
+{
+    defaultSettings->setFontSizes(newFontSizes);
+}
+
+void
+KHTMLWidget::getFontSizes(int *newFontSizes)
+{
+    defaultSettings->getFontSizes(newFontSizes);
+}
+
+void
+KHTMLWidget::resetFontSizes(void)
+{
+    defaultSettings->resetFontSizes();
 }
 
 #include "html.moc"

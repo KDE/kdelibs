@@ -35,7 +35,7 @@
 class HTMLFont
 {
 public:
-	HTMLFont( const char *_family, int _size, int _weight=QFont::Normal, bool _italic=FALSE, const char *charset=0 );
+	HTMLFont( const char *_family, int _size, const int *fontSizes, int _weight=QFont::Normal, bool _italic=FALSE, const char *charset=0 );
 	HTMLFont( const HTMLFont &f );
 
 	void setWeight( int w )
@@ -62,7 +62,7 @@ public:
 	const bool strikeOut() const
 		{	return font.strikeOut(); }
 	const int  pointSize() const
-		{	return font.pointSize(); }
+		{	return pointsize; }
 	const QColor &textColor() const
 		{	return textCol; }
 	int size() const
@@ -75,13 +75,12 @@ public:
 	operator QFont() const
 		{	return font; }
 
-	static int pointSize( int _size );
-
 private:
 	QFont  font;
 	QColor textCol;
 	KCharset chset;
 	int    fsize;
+	int    pointsize;
 };
 
 inline HTMLFont::HTMLFont( const HTMLFont &f ) : font( f.font )
@@ -89,6 +88,7 @@ inline HTMLFont::HTMLFont( const HTMLFont &f ) : font( f.font )
 	textCol = f.textCol;
 	fsize = f.fsize;
 	chset = f.chset;
+	pointsize = f.pointsize;
 }
 
 inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
@@ -97,6 +97,7 @@ inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
 	textCol = f.textCol;
 	fsize = f.fsize;
 	chset = f.chset;
+	pointsize = f.pointsize;
 
 	return *this;
 }
@@ -112,6 +113,7 @@ inline bool HTMLFont::operator==( const HTMLFont &f )
 		textCol.green() == f.textCol.green() &&
 		textCol.blue() == f.textCol.blue() &&
 		fsize == f.fsize &&
+		pointsize == f.pointsize &&
 		chset == f.chset );
 }
 

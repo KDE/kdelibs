@@ -446,6 +446,15 @@ public:
         defaultSettings->fontBaseSize = size - 1;
     }
 
+    //
+    // The new interface:
+    // use: 
+    //      int newFontSizes[7]; 
+    //
+    void setFontSizes(const int *newFontSizes);
+    void getFontSizes(int *newFontSizes);
+    void resetFontSizes( void );
+
     /**
      * Sets the standard font style.
      *

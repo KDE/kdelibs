@@ -25,8 +25,12 @@
 #include <config.h>
 #endif
 
+const int defaultFontSizes[7] = { 8, 10, 12, 14, 18, 24, 32 };
+
+
 HTMLSettings::HTMLSettings()
 {
+    memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     fontBaseSize  = 3;
     fontBaseColor = black;
     fontBaseFace  = "times";
@@ -45,6 +49,7 @@ HTMLSettings::HTMLSettings()
 
 HTMLSettings::HTMLSettings( const HTMLSettings &s )
 {
+    memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     fontBaseSize  = s.fontBaseSize;
     fontBaseColor = s.fontBaseColor;
     fontBaseFace  = s.fontBaseFace;
@@ -63,6 +68,7 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
 
 const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
 {
+    memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     fontBaseSize  = s.fontBaseSize;
     fontBaseColor = s.fontBaseColor;
     fontBaseFace  = s.fontBaseFace;
@@ -81,3 +87,17 @@ const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
     return *this;
 }
 
+void HTMLSettings::setFontSizes(const int *newFontSizes)
+{
+    memcpy( fontSizes, newFontSizes, sizeof(fontSizes) );
+}
+
+void HTMLSettings::getFontSizes(int *oldFontSizes)
+{
+    memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
+}
+
+void HTMLSettings::resetFontSizes(void)
+{
+    memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
+}
