@@ -117,12 +117,12 @@ void KAccelMenu::popMsg () {
   yp = 0;
   for (int i = 0;i < idx;i++)
     yp += itemHeight(i);
-  
+
   if (actions[cid]) {
     if (keys->configurable(actions[cid])) {
       msg = i18n("Change shortcut for: ");
       msg += keys->description(actions[cid]);
-      kq->popup(msg, pos().x() + itemWidth(idx)
+      kq->popup(msg, pos().x() + width()
 		,pos().y() + yp + itemHeight(idx));
     } else {
       msg = i18n("Global Key: cannot change shortcut");
