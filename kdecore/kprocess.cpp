@@ -746,6 +746,15 @@ int KProcess::commSetupDoneC()
     ok &= dup2( null_fd, STDERR_FILENO ) != -1;
     close( null_fd );
   }
+  
+  // close all fds
+  const int open_max = sysconf( _SC_OPEN_MAX );
+  for( int i = 0;
+       i < open_max;
+       ++i )
+      if( i != STDIN_FILENO && i != STDOUT_FILENO && i != STDERR_FILENO )
+          close( i );
+          
   return ok;
 }
 
