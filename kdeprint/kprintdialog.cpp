@@ -94,7 +94,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisLocationLabel = i18n(  " <qt> The <em>Location</em> may describe where the"
 						" selected printer is located. The Location description is created"
-						" by the admin of the print system (or may be"
+						" by the administrator of the print system (or may be"
 						" left empty)."
 						" </qt>" );
 	QString whatsThisPrinterType = i18n(    " <qt> The <em>Type</em> indicates your printer type."
@@ -104,39 +104,39 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" state may be 'Idle', 'Processing', 'Stopped', 'Paused' or similar."
 						" </qt>" );
 	QString whatsThisPrinterComment = i18n( " <qt> The <em>Comment</em> may describe the selected"
-						" printer. This comment is created by the admin of the"
-						" print system (or may be left empty)."
+						" printer. This comment is created by the administrator"
+						" of the print system (or may be left empty)."
 						" </qt>" );
 	QString whatsThisPrinterSelect = i18n(  " <qt>Use this combo box to select the printer to which you want to print."
 						" If you only find the <em>KDE special printers</em> -- which save"
 						" jobs to disk (as PostScript- or PDF-files), or deliver jobs via"
-						" e-Mail (as a PDF"
+						" email (as a PDF"
 						" attachment) -- but are missing a real printer, you need to..."
 						" <ul>"
-						" <li>...either create a local printer with the help of the <em>KDE"
-						" Add Printer Wizard</em> (available for the CUPS and RLPR printing"
+						" <li>...either create a local printer with the help of the <em>KDE Add"
+						" Printer Wizard</em> which is available for the CUPS and RLPR printing"
 						" systems (click button to the left of the 'Properties' button),</li>"
 						" <li>...or you can try to connect to a remote"
 						" CUPS print server by clicking the <em>System Options...</em> button"
 						" below. A new dialog opens: click on the <em>CUPS server</em>"
 						" icon and fill in the information required to use the remote"
-						"  server.</li>"
+						" server.</li>"
 						" </ul>"
 						" </qt>" );
-	QString whatsThisPrintJobProperties = i18n( " <qt> This button beams you to the place where you"
-						" can decide about all supported print job options."
+	QString whatsThisPrintJobProperties = i18n( " <qt> This button takes you to where you can make decisions"
+						" regarding all supported print job options."
 						" </qt>" );
 	QString whatsThisPrinterFilter = i18n(  " <qt> This button reduces the list of visible printers"
 						" to a shorter, more convenient, pre-defined list."
 						" It is particularly useful in enterprise environments"
-						" with lots of printers. The default is to show *all* printers."
+						" with many printers. The default is to show <b>all</b> printers."
 						" To create a personal filter list, click on the"
 						" <em>System Options...</em> button at the bottom of this dialog,"
 						" and in the new dialog select <em>Filter</em> (left column in the"
 						" <em>KDE Print Configuration</em> dialog)."
 						" </qt>" );
 	QString whatsThisAddPrinterWizard = i18n( "<qt> This button starts the KDE Add Printer Wizard."
-						" (<b>NOT</b> if you use <em>Generic LPD</em>"
+						" (<b>not</b> if you use <em>Generic LPD</em>"
 						" or <em>LPRng</em>, or <em>Print Through an External Program</em>.)"
 						" Use the Wizard (with <em>CUPS</em> or <em>RLPR</em>) to add locally"
 						" defined printers to your system."
@@ -162,7 +162,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" </ul> and many more.... "
 					        " </qt>" );
 
-	QString whatsThisHelpButton = i18n(     " <qt> This button leads you to the complete <em>KDEPrint"
+	QString whatsThisHelpButton = i18n(     " <qt> This button takes you to the complete <em>KDEPrint"
 						" Manual</em>."
 					        " </qt>" );
 
@@ -200,10 +200,10 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" job should be saved."
 					        " </qt>" );
 
-	QString whatsThisAddFileButton = i18n(  " <qt> This button calls the \"File Open\" dialog to let you"
-						" select a file for printing. Note, that "
+	QString whatsThisAddFileButton = i18n(  " <qt> This button calls the \"File Open\" dialog to allow you"
+						" to select a file for printing. Note, that "
 						" <ul><li>you can select ASCII or International Text, PDF,"
-						" PostScript, JPEG, TIFF, PNG, GIF and many other graphic"
+						" PostScript, JPEG, TIFF, PNG, GIF and many other graphical"
 						" formats."
 						" <li>you can select various files from different paths"
 						" and send them as one \"multi-file job\" to the printing"
@@ -212,7 +212,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 					        " </qt>" );
 
 	QString whatsThisRemoveFileButton = i18n(" <qt> This button removes the highlighted file from the"
-						" list of to-be-printed files."
+						" list of files to be printed."
 					        " </qt>" );
 
 	QString whatsThisOpenFileButton = i18n( " <qt> This button tries to open the highlighted file, so"
@@ -222,18 +222,18 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 
 	QString whatsThisMoveFileUpButton = i18n(" <qt> This button moves the highlighted file up in the list"
 						" of files to be printed. (In effect, this changes the order"
-						" of the files' printout."
+						" of the files' printout.)"
 					        " </qt>" );
 
 	QString whatsThisMoveFileDownButton = i18n(" <qt> This button moves the highlighted file down in the list"
 						" of files to be printed. (In effect, this changes the order"
-						" of the files' printout."
+						" of the files' printout.)"
 					        " </qt>" );
 
 	QString whatsThisPreviewCheckBox = i18n(" <qt> Enable this checkbox if you want to see a preview of"
 						" your printout. A preview lets you check if, for instance,"
  						" your intended \"poster\" or \"pamphlet\" layout"
-						" looks like you intended, without wasting paper first, and it"
+						" looks like you intended, without wasting paper first. It"
 						" also lets you cancel the job if something looks wrong. "
 					        " </qt>" );
 
