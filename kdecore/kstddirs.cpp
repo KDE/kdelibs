@@ -321,6 +321,7 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 {
     QString local = QDir::homeDirPath() + "/.kde/";
     int length = local.length();
+    struct stat st;
 
     QStringList candidates = getResourceDirs(type);
     for (QStringList::ConstIterator it = candidates.begin();
@@ -329,7 +330,7 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 	if ((*it).left(length) == local) {
 	    // Check for existance of typed directory + suffix
 	    QString fullPath = *it + suffix;
-	    if (access(fullPath.data(), F_OK) != 0) {
+	    if (stat(fullPath.data(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
                 if(!create) {
                     debug("save location %s doesn't exist", fullPath.ascii());
                     return local;
@@ -364,10 +365,12 @@ bool KStandardDirs::makeDir(const QString& dir)
 
     while( i < len )
     {
+        struct stat st;
         int pos = target.find('/', i);
         base += target.mid(i, pos - i + 1);
         // bail out if we encountered a problem
-        if (access(base.ascii(), F_OK) != 0 && mkdir(base.ascii(), 0777) != 0)
+        if (stat(base.ascii(), &st) != 0 && !(S_ISDIR(st.st_mode)) &&
+            mkdir(base.ascii(), 0777) != 0)
             return false;
         i = pos + 1;
     }
