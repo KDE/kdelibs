@@ -1,4 +1,4 @@
-mcopclassdir = $(libdir)/Arts
+mcopclassdir = $(libdir)/mcop/Arts
 mcopclass_DATA = Synth_ADD.mcopclass \
   Synth_FREQUENCY.mcopclass \
   Synth_MUL.mcopclass \

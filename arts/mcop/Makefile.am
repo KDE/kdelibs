@@ -1,6 +1,6 @@
 
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
-AM_CXXFLAGS = -DEXTENSION_DIR='"$(libdir)"'
+AM_CXXFLAGS = -DEXTENSION_DIR='"$(libdir)"' -DTRADER_DIR='"$(libdir)/mcop"'
 ##
 lib_LTLIBRARIES = libmcop.la
 #

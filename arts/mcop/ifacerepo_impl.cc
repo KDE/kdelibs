@@ -125,7 +125,7 @@ InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 				vector<string> *types = offer.getProperty("TypeFile");
 				if(types->size() == 1)
 				{
-					string filename = string(EXTENSION_DIR)
+					string filename = string(TRADER_DIR)
 					                + "/" + types->front();
 
 					arts_debug("InterfaceRepo: loading %s", filename.c_str());
