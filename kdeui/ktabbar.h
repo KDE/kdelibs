@@ -56,21 +56,23 @@ signals:
     void closeRequest( const int );
 
 protected:
-    virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
-
-protected slots:
     virtual void mouseDoubleClickEvent( QMouseEvent *e );
     virtual void mousePressEvent( QMouseEvent *e );
     virtual void mouseMoveEvent( QMouseEvent *e );
     virtual void mouseReleaseEvent( QMouseEvent *e );
+
     virtual void dragMoveEvent( QDragMoveEvent *e );
     virtual void dropEvent( QDropEvent *e );
+
+    virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
+
+protected slots:
     virtual void closeButtonClicked();
     virtual void onLayoutChange();
     
 private:
     QPoint mDragStart;
-    int    reorderStartTab, previousTabIndex;
+    int reorderStartTab, previousTabIndex;
     QMap<int, QColor> tabColors;
     bool mTabReordering;
     QTab *btab;

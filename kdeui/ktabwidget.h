@@ -61,6 +61,13 @@ public:
     void setHoverCloseButton( bool enable );
     bool hoverCloseButton() const;
 
+public slots:
+    /*!
+      Move a widget's tab from first to second specified index and emit
+      signal movedTab( const int, const int ) afterwards.
+    */
+    virtual void moveTab( const int, const int );
+
 signals:
     /*!
       Connect to this and set accept to TRUE if you can and want to decode the event.
@@ -101,7 +108,7 @@ signals:
     void movedTab( const int, const int );
 
     /*!
-      A double left mouse button click was performred over the widget.
+      A double left mouse button click was performed over the widget.
     */
     void mouseDoubleClick( QWidget * );
 
@@ -116,12 +123,12 @@ signals:
     */
     void closeRequest( QWidget * );
 
-protected slots:
+protected:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
-    virtual void moveTab( const int, const int );
 
+protected slots:
     virtual void receivedDropEvent( const int, QDropEvent * );
     virtual void initiateDrag( const int );
     virtual void contextMenu( const int, const QPoint & );
