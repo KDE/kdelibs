@@ -103,7 +103,7 @@ QString  KCardGsmImplementation::getResponse ()const {
 
 }
 
-int KCardGsmImplementation::readTransparentFile (QString & fileContent){
+int KCardGsmImplementation::readBinary (QString & fileContent){
   
   QString readBinaryCommand="A0B0";
   QString status=QString::null;
@@ -115,7 +115,7 @@ int KCardGsmImplementation::readTransparentFile (QString & fileContent){
   }
   //_fileHeader.mid(6,2) is the file length coded in the file header
   //see 11.11 paragraph 9.2.1
-  readBinaryCommand += QString("0000") + _fileHeader.mid(6,2);
+  readBinaryCommand += QString("00") + _fileHeader.mid(6,4);
   
   _errno = _kcardreader->doCommand(readBinaryCommand,fileContent,status);
   
@@ -137,54 +137,610 @@ int KCardGsmImplementation::readTransparentFile (QString & fileContent){
   return 0;
 }
 
-int KCardGsmImplementation::readTransparentFile (QString & fileContent, unsigned char offset, unsigned char length){
+int KCardGsmImplementation::readBinary   (QString & fileContent, unsigned short offset, unsigned char length){
 
-  return -1;
-
-}
-int KCardGsmImplementation::updateTransparentFile (QString & fileContent, unsigned char offset, unsigned char length){
-
-  return -1;
-}
-
-int KCardGsmImplementation::readLinearFixedFile    (QStringList& fileContent){
-
-  return -1;
-
-}
-int KCardGsmImplementation::readLinearFixedFileRecord    (QStringList& fileContent,
-							  unsigned char record){
-
-  return -1;
-}
-
-int KCardGsmImplementation::readCyclicFile (QStringList & fileContent){
-
-  return -1;
-}
+  QString readBinaryCommand="A0B0";
+  QString status=QString::null;
   
-int KCardGsmImplementation::verifyCHV1  (const QString & pin1){
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
 
-  return -1;
+  }
+  
+  readBinaryCommand += QString::number(offset,16) +QString::number(length,16);
+  
+  _errno = _kcardreader->doCommand(readBinaryCommand,fileContent,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when reading GSM card transparent file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
 }
-int KCardGsmImplementation::verifyCHV2  (const QString & pin2){
 
-  return -1;
+  
+
+int KCardGsmImplementation:: updateBinary (const QString & newContent, 
+					   unsigned short offset, 
+					   unsigned char length=0){
+
+  
+  QString updateBinaryCommand="A0DC";
+  QString status=QString::null;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+  
+  updateBinaryCommand += QString::number(offset,16) +QString::number(length,16) + newContent.left(length*2);
+  
+  _errno = _kcardreader->doCommand(updateBinaryCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when updating GSM card transparent file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
 }
-int KCardGsmImplementation::verifyUnblockCHV1 (const QString & puk1){
 
-  return -1;
+int KCardGsmImplementation::updateBinary (const QString & newContent){
+
+  
+  QString updateBinaryCommand="A0DC0000";
+  QString status=QString::null;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+  bool ok;
+  unsigned short length = _fileHeader.mid(6,4).toUShort(&ok,16);
+  updateBinaryCommand +=  _fileHeader.mid(8,2)+newContent.left(length);
+  
+  
+  _errno = _kcardreader->doCommand(updateBinaryCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when updating GSM card transparent file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
 }
-int KCardGsmImplementation::verifyUnblockCHV2 (const QString & puk2){
 
-  return -1;
+int KCardGsmImplementation::readRecord ( QString & recordContent, unsigned char recordNumber, accessMode mode=absolute){
+
+
+
+  QString readRecordCommand="A0B2";
+  QString status=QString::null;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+  
+  switch (mode){
+
+  case absolute:
+    readRecordCommand += QString::number(recordNumber,16) +"04";
+    break;
+  case previous:
+    readRecordCommand += "0003";
+    break;
+  case next:
+    readRecordCommand += "0002";
+    break;
+  }
+  //Record length is in byte 15 of select response
+  readRecordCommand += _fileHeader.mid(30,2);
+  _errno = _kcardreader->doCommand(readRecordCommand,recordContent,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when reading GSM card record file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
 }
 
-int KCardGsmImplementation::runGsmAlgorithm(const QString & random, QString & result){
 
-  return -1;
+int KCardGsmImplementation::updateRecord (const QString & recordContent, unsigned char recordNumber, accessMode mode=absolute){
+
+  QString updateRecordCommand="A0DC";
+  QString status=QString::null;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+  
+  switch (mode){
+
+  case absolute:
+    updateRecordCommand += QString::number(recordNumber,16) +"04";
+    break;
+  case previous:
+    updateRecordCommand += "0003";
+    break;
+  case next:
+    updateRecordCommand += "0002";
+    break;
+  }
+  //Record length is in byte 15 of select response
+    bool ok;
+  unsigned short recLength= _fileHeader.mid(30,2).toUShort(&ok, 16);
+  updateRecordCommand += _fileHeader.mid(30,2) + recordContent.left(recLength*2);
+  _errno = _kcardreader->doCommand(updateRecordCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when updating GSM card record file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
 }
 
+int KCardGsmImplementation::seek (const QString & pattern, const seekMode mode, char & recordNumber){
+
+  QString seekCommand="A0A200";
+  QString status=QString::null;
+  QString result=QString::null;
+  recordNumber=-1;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+
+		 
+		 
+		
+  switch (mode){
+    
+  case beginForward:
+    seekCommand+= "10";
+    break;
+
+  case endBackward:
+    seekCommand+= "11";
+    break;
+
+  case nextLocationForward:
+    seekCommand+= "12";
+    break;
+
+  case  prevLocationBackward:
+    seekCommand+= "13";
+    break;
+  }
+  
+  
+  seekCommand += QString::number(pattern.length()/2,16) + pattern;
+  _errno = _kcardreader->doCommand(seekCommand,result,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when seeking for pattern in GSM record file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  bool ok;
+  recordNumber=result.toUShort(&ok,16);
+  return 0;
+
+
+
+}
+
+int KCardGsmImplementation::verifyCHV1  (const QString & CHV1){
+
+
+  QString verifyCommand="A0200001";
+  QString status=QString::null;
+  
+  
+  
+  verifyCommand += CHV1.left(16);
+  
+  _errno = _kcardreader->doCommand(verifyCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when verifying CHV1 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+
+}
+
+int KCardGsmImplementation::verifyCHV2  (const QString & CHV2){
+  QString verifyCommand="A0200002";
+  QString status=QString::null;
+  
+  
+  
+  verifyCommand += CHV2.left(16);
+  
+  _errno = _kcardreader->doCommand(verifyCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when verifying CHV2 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+}
+
+int KCardGsmImplementation::unblockCHV1 (const QString & unblockCHV1, const QString & newCHV1){
+
+  QString unblockCommand="A02C0000";
+  QString status=QString::null;
+  
+  
+  
+  unblockCommand += unblockCHV1.left(16)+newCHV1.left(16);
+  
+  _errno = _kcardreader->doCommand(unblockCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when unblocking CHV1 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+}
+
+
+int KCardGsmImplementation::unblockCHV2 (const QString & unblockCHV2, const QString & newCHV2){
+
+  QString unblockCommand="A02C0002";
+  QString status=QString::null;
+  
+  
+  
+  unblockCommand += unblockCHV2.left(16)+newCHV2.left(16);
+  
+  _errno = _kcardreader->doCommand(unblockCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when unblocking CHV2 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+}
+
+
+int KCardGsmImplementation::disableCHV1  (const QString & CHV1){
+
+
+
+  QString disableCommand="A026000108";
+  QString status=QString::null;
+  
+  
+  
+  disableCommand += CHV1.left(16);
+  
+  _errno = _kcardreader->doCommand(disableCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when disabling CHV1 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+
+
+}
+
+int KCardGsmImplementation::enableCHV1  (const QString & CHV1){
+
+
+  QString enableCommand="A028000108";
+  QString status=QString::null;
+  
+  
+  
+  enableCommand += CHV1.left(16);
+  
+  _errno = _kcardreader->doCommand(enableCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when enabling CHV1 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+
+
+
+}
+
+
+int KCardGsmImplementation::changeCHV1 (const QString & currentCHV1, const QString & newCHV1){
+
+
+  QString changeCommand="A024000110";
+  QString status=QString::null;
+  
+  
+  
+  changeCommand += currentCHV1.left(16)+newCHV1.left(16);
+  
+  _errno = _kcardreader->doCommand(changeCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when changing CHV1 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+
+
+
+}
+
+
+int KCardGsmImplementation::changeCHV2 (const QString & currentCHV2, const QString & newCHV2){
+
+  QString changeCommand="A024000210";
+  QString status=QString::null;
+  
+  
+  
+  changeCommand += currentCHV2.left(16)+newCHV2.left(16);
+  
+  _errno = _kcardreader->doCommand(changeCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when changing CHV2 ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+}
+
+int KCardGsmImplementation::invalidate(){
+
+
+  QString invalidateCommand="A004000000";
+  QString status=QString::null;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+  
+  _errno = _kcardreader->doCommand(invalidateCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when invalidating GSM file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+}
+
+
+
+
+int KCardGsmImplementation::rehabilitate(){
+
+ QString rehabCommand="A044000000";
+  QString status=QString::null;
+  
+  if (_fileHeader==QString::null) {
+    _errorMessage= i18n("No GSM file selected ");
+    return -1;
+
+  }
+  
+  _errno = _kcardreader->doCommand(rehabCommand,status);
+  
+  if ( _errno )
+    
+    {
+      _errorMessage= i18n("Error sending APDU command: ")+KPCSC::translateError(_errno);
+      
+      return -1;
+    }
+
+  else if (status.left(2)!= "90" && status.left(2)!= "91") {
+    
+    _errorMessage= i18n("Error when rehabilitating GSM file ");
+    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    return -1;
+
+  }
+  return 0;
+
+
+
+}
 
 QString KCardGsmImplementation::getStatusString (const QString & status){
 
