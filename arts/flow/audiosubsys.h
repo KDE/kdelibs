@@ -88,6 +88,7 @@ class AudioSubSystem {
 	~AudioSubSystem();
 
 	void close();
+	void initAudioIO();
 
 public:
 	enum { ioRead=1, ioWrite=2, ioExcept=4 };

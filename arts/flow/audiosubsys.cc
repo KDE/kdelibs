@@ -76,6 +76,7 @@ class Arts::AudioSubSystemPrivate
 public:
 	AudioIO *audioIO;
 	string audioIOName;
+	bool audioIOInit;
 };
 
 //--- AudioSubSystem implementation
@@ -94,14 +95,13 @@ AudioSubSystem::AudioSubSystem()
 {
 	d = new AudioSubSystemPrivate;
 	d->audioIO = 0;
+	d->audioIOInit = false;
 	
 	_running = false;
 	usageCount = 0;
 	consumer = 0;
 	producer = 0;
 	fragment_buffer = 0;
-
-	audioIO("oss");		/* default to oss style audio I/O */
 }
 
 AudioSubSystem::~AudioSubSystem()
@@ -143,6 +143,14 @@ void AudioSubSystem::detachConsumer()
 	if(_running) close();
 }
 
+/* initially creates default AudioIO */
+void AudioSubSystem::initAudioIO()
+{
+	/* put some more auto detect magic here */
+	if(!d->audioIOInit)
+		audioIO("oss");		/* default to oss style audio I/O */
+}
+
 void AudioSubSystem::audioIO(const string& audioIO)
 {
 	if(d->audioIO)
@@ -150,15 +158,19 @@ void AudioSubSystem::audioIO(const string& audioIO)
 
 	d->audioIOName = audioIO;
 	d->audioIO = AudioIO::createAudioIO(audioIO.c_str());
+	d->audioIOInit = true;
 }
 
 string AudioSubSystem::audioIO()
 {
+	initAudioIO();
+
 	return d->audioIOName;
 }
 
 void AudioSubSystem::deviceName(const string& deviceName)
 {
+	initAudioIO();
 	if(!d->audioIO) return;
 
 	d->audioIO->setParamStr(AudioIO::deviceName, deviceName.c_str());
@@ -166,6 +178,7 @@ void AudioSubSystem::deviceName(const string& deviceName)
 
 string AudioSubSystem::deviceName()
 {
+	initAudioIO();
 	if(!d->audioIO) return "";
 
 	return d->audioIO->getParamStr(AudioIO::deviceName);
@@ -173,6 +186,7 @@ string AudioSubSystem::deviceName()
 
 void AudioSubSystem::fragmentCount(int fragmentCount)
 {
+	initAudioIO();
 	if(!d->audioIO) return;
 
 	d->audioIO->setParam(AudioIO::fragmentCount, fragmentCount);
@@ -180,6 +194,7 @@ void AudioSubSystem::fragmentCount(int fragmentCount)
 
 int AudioSubSystem::fragmentCount()
 {
+	initAudioIO();
 	if(!d->audioIO) return 0;
 
 	return d->audioIO->getParam(AudioIO::fragmentCount);
@@ -187,6 +202,7 @@ int AudioSubSystem::fragmentCount()
 
 void AudioSubSystem::fragmentSize(int fragmentSize)
 {
+	initAudioIO();
 	if(!d->audioIO) return;
 
 	d->audioIO->setParam(AudioIO::fragmentSize, fragmentSize);
@@ -194,6 +210,7 @@ void AudioSubSystem::fragmentSize(int fragmentSize)
 
 int AudioSubSystem::fragmentSize()
 {
+	initAudioIO();
 	if(!d->audioIO) return 0;
 
 	return d->audioIO->getParam(AudioIO::fragmentSize);
@@ -201,6 +218,7 @@ int AudioSubSystem::fragmentSize()
 
 void AudioSubSystem::samplingRate(int samplingRate)
 {
+	initAudioIO();
 	if(!d->audioIO) return;
 
 	d->audioIO->setParam(AudioIO::samplingRate, samplingRate);
@@ -208,6 +226,7 @@ void AudioSubSystem::samplingRate(int samplingRate)
 
 int AudioSubSystem::samplingRate()
 {
+	initAudioIO();
 	if(!d->audioIO) return 0;
 
 	return d->audioIO->getParam(AudioIO::samplingRate);
@@ -215,6 +234,7 @@ int AudioSubSystem::samplingRate()
 
 void AudioSubSystem::channels(int channels)
 {
+	initAudioIO();
 	if(!d->audioIO) return;
 
 	d->audioIO->setParam(AudioIO::channels, channels);
@@ -222,6 +242,7 @@ void AudioSubSystem::channels(int channels)
 
 int AudioSubSystem::channels()
 {
+	initAudioIO();
 	if(!d->audioIO) return 0;
 
 	return d->audioIO->getParam(AudioIO::channels);
@@ -229,6 +250,7 @@ int AudioSubSystem::channels()
 
 void AudioSubSystem::fullDuplex(bool fullDuplex)
 {
+	initAudioIO();
 	if(!d->audioIO) return;
 
 	int direction = fullDuplex?3:2;
@@ -237,6 +259,7 @@ void AudioSubSystem::fullDuplex(bool fullDuplex)
 
 bool AudioSubSystem::fullDuplex()
 {
+	initAudioIO();
 	if(!d->audioIO) return false;
 
 	return d->audioIO->getParam(AudioIO::direction) == 3;
@@ -256,6 +279,7 @@ bool AudioSubSystem::open(int& fd)
 {
 	assert(!_running);
 
+	initAudioIO();
 	if(!d->audioIO)
 	{
 		_error = "unable to select '" + d->audioIOName + "' style audio I/O";
