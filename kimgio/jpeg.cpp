@@ -339,4 +339,9 @@ void qimageio_term_source(j_decompress_ptr)
     return;
 }
 
+extern "C" void kimgio_init_jpeg() {
+    QImageIO::defineIOHandler( "JPEG", "^\377\330\377\340..JFIF", 0,
+			       kimgio_jpeg_read, kimgio_jpeg_write );
+}
+
 #endif

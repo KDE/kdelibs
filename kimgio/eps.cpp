@@ -134,3 +134,9 @@ void kimgio_epsf_write( QImageIO * )
 	// TODO: implement this
 	warning( "kimgio_epsf_write: not yet implemented" );
 }
+
+extern "C" void kimgio_init_eps() {
+    QImageIO::defineIOHandler("EPS", "^%!PS-Adobe-[^\n]+\n"
+			      "%%BoundingBox", "T", kimgio_epsf_read, 
+			      kimgio_epsf_write );
+}

@@ -80,4 +80,10 @@ void kimgio_tiff_write( QImageIO * )
 {
 	// TODO: stub
 }
+
+extern "C" void kimgio_init_tiff() {
+    QImageIO::defineIOHandler("TIFF","[MI][MI]", 0,
+			      kimgio_tiff_read, kimgio_tiff_write );
+}
+
 #endif

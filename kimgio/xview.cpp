@@ -148,3 +148,10 @@ void kimgio_xv_write( QImageIO *imageio )
 
 	imageio->setStatus( 0 );
 }
+
+extern "C" void kimgio_init_xview() {
+    // XV thumbnails
+    QImageIO::defineIOHandler( "XV", "^P7 332", "T", 
+			       kimgio_xv_read, kimgio_xv_write );
+}
+

@@ -349,5 +349,7 @@ void kimgio_png_write( QImageIO *iio )
 
 #endif
 
+extern "C" void kimgio_init_png() {
+}
 
 #endif /* HAVE_LIBPNG */

@@ -10,46 +10,53 @@
 
 static int registered = 0;
 
-#include"jpeg.h"
-#include"pngr.h"
-#include"xview.h"
-#include"eps.h"
-#include"tiffr.h"
-
 #ifdef HAVE_CONFIG_H
 #include"config.h"
 #endif
 
-#include<qimage.h>
+#include <qdir.h>
+#include <kapp.h>
+#include <qstring.h>
+#include <qregexp.h>
+
+#include "ltdl.h"
 
 void kimgioRegister(void)
 {
 	if( registered ) {
-		return;
+	    return;
 	}
 
 	registered = 1;
 
-#ifdef HAVE_LIBJPEG
-	// JPEG
-	QImageIO::defineIOHandler( "JPEG", "^\377\330\377\340..JFIF", 0,
-			kimgio_jpeg_read, kimgio_jpeg_write );
-#endif
+	lt_dlinit();
+	
+	QDir dir(KApplication::kde_bindir() + "/../lib", "kimg_*.la");
 
-	// XV thumbnails
-	QImageIO::defineIOHandler( "XV", "^P7 332", "T", 
-		kimgio_xv_read, kimgio_xv_write );
+	for (uint index = 0; index < dir.count(); index++) {
+	    
+	    QString libname = dir[index];
+	    if (libname.isNull())
+		break;
 
-	QImageIO::defineIOHandler("EPS", "^%!PS-Adobe-[^\n]+\n"
-		"%%BoundingBox", "T", kimgio_epsf_read, kimgio_epsf_write );
-
-#ifdef HAVE_LIBPNG
-	QImageIO::defineIOHandler( "PNG", "^.PNG", 0,
-		kimgio_png_read, kimgio_png_write );
-#endif
-
-#ifdef HAVE_LIBTIFF
-	QImageIO::defineIOHandler("TIFF","[MI][MI]", 0,
-                kimgio_tiff_read, kimgio_tiff_write );
-#endif
+	    lt_dlhandle libhandle = lt_dlopen(libname);
+	    if (libhandle == 0) {
+		warning("couldn't dlopen %s (%s)", 
+			libname.ascii(), lt_dlerror());
+	    }
+	    
+	    libname.replace(QRegExp("^.*kimg_"), "kimgio_init_");
+	    libname.replace(QRegExp("\.la$"), "");
+	    
+	    lt_ptr_t init_func = lt_dlsym(libhandle, libname );
+	
+	    if (init_func == NULL) {
+		warning("couldn't init module %s (%s)!", libname.ascii(), 
+			lt_dlerror());
+	    } else {
+		void (*func)();
+		func = (void (*)(void))init_func;
+		func();
+	    }
+	}
 }
