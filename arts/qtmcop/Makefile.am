@@ -5,6 +5,9 @@ libqtmcop_la_SOURCES = qiomanager.cc
 
 METASOURCES = qiomanager.moc
 
+artsincludedir = $(includedir)/arts
+artsinclude_HEADERS = qiomanager.h
+
 #
 # -frepo closure (experimental)
 #
