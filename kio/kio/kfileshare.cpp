@@ -39,6 +39,10 @@ static KStaticDeleter<QStringList> sdShareList;
 KFileShare::ShareMode KFileShare::s_shareMode;
 bool KFileShare::s_sambaEnabled;
 bool KFileShare::s_nfsEnabled;
+bool KFileShare::s_restricted;
+QString KFileShare::s_fileShareGroup;
+bool KFileShare::s_sharingEnabled;
+
 
 #define FILESHARECONF "/etc/security/fileshare.conf"
 
@@ -83,12 +87,11 @@ void KFileShare::readConfig() // static
 {
     KSimpleConfig config(QString::fromLatin1(FILESHARECONF),true);
     
-//    bool restrict = config.readEntry("RESTRICT", "yes") == "yes";
-//    m_ccgui->shareGrp->setChecked( ! restrict );
-
-    bool restrict = config.readEntry("RESTRICT", "yes") == "yes";
+    s_sharingEnabled = config.readEntry("FILESHARING", "yes") == "yes";
+    s_restricted = config.readEntry("RESTRICT", "yes") == "yes";
+    s_fileShareGroup = config.readEntry("FILESHAREGROUP", "fileshare");
     
-    if (restrict)
+    if (!s_sharingEnabled || s_restricted)
         s_authorization = UserNotAllowed;
     else
         s_authorization = Authorized;
@@ -142,6 +145,19 @@ KFileShare::ShareMode KFileShare::shareMode() {
   
   return s_shareMode;
 }
+
+bool KFileShare::sharingEnabled() {
+  return s_sharingEnabled;
+}
+   
+bool KFileShare::isRestricted() {
+  return s_restricted;
+}
+    
+QString KFileShare::fileShareGroup() {
+  return s_fileShareGroup;
+}
+
     
 bool KFileShare::sambaEnabled() {
   if ( s_authorization == NotInitialized )
@@ -227,6 +243,10 @@ QString KFileShare::findExe( const char* exeName )
 
 bool KFileShare::setShared( const QString& path, bool shared )
 {
+    if (! KFileShare::sharingEnabled() ||
+          KFileShare::shareMode() == Advanced)
+       return false;
+
     kdDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
     QString exe = KFileShare::findExe( "fileshareset" );
     if (exe.isEmpty())
@@ -267,7 +287,13 @@ bool KFileShare::setShared( const QString& path, bool shared )
           break;
         case 6:
           // There is no export method
-          break;                      
+          break;                    
+        case 7:
+          // file sharing is disabled
+          break;            
+        case 8:
+          // advanced sharing is enabled
+          break;          
         case 255:
           // Abitrary error
           break;                

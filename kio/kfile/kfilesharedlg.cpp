@@ -70,7 +70,7 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
         kdDebug() << "KFileSharePropsPlugin::supports: false because sharemode is advanced" << endl; 
         return false;
     }        
-        
+    
     KFileItemListIterator it( items );
     for ( ; it.current(); ++it )
     {
@@ -172,8 +172,13 @@ void KFileSharePropsPlugin::init()
     case KFileShare::UserNotAllowed:
     {
         vbox->setSpacing( 10 );
-        vbox->addWidget( new QLabel( i18n("You need to be authorized to share directories."),
+        if (KFileShare::sharingEnabled()) {
+          vbox->addWidget( new QLabel( i18n("You need to be authorized to share directories."),
                     m_widget ), 0 );
+        } else {
+          vbox->addWidget( new QLabel( i18n("File sharing is disabled."),
+                    m_widget ), 0 );
+        }                    
         QHBoxLayout* hBox = new QHBoxLayout( (QWidget *)0L );
         vbox->addLayout( hBox, 0 );
         m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );

@@ -37,11 +37,22 @@ my $username = getpwuid($uid);
 my $usage =
 "usage: fileshareset --add <dir>
        fileshareset --remove <dir>";
+my $not_enabled =
+qq(File sharing is not enabled.
+To enable file sharing put 
+"FILESHARING=yes" in $authorisation_file);
+       
+my $not_simple_enabled = 
+qq(Simple file sharing is not enabled.
+To enable simple file sharing put
+"SHARINGMODE=simple" in $authorisation_file);
+
 my $non_authorised =
-qq(You are not authorised to use fileshare'ing
+qq(You are not authorised to use file sharing
 To grant you the rights:
 - put "RESTRICT=no" in $authorisation_file
 - or put user "$username" in group "$authorisation_group");
+
 my $no_export_method = "can't export anything: no nfs, no smb";
 
 my %exit_codes = reverse (
@@ -56,6 +67,10 @@ my %exit_codes = reverse (
   5 => "not exported",
 
   6 => $no_export_method,
+  
+  7 => $not_enabled,
+  
+  8 => $not_simple_enabled,
 
   255 => "various",
 );
@@ -142,7 +157,18 @@ sub read_conf {
 sub check {
     my ($exclusive_lock) = @_;
     my $conf = read_conf($exclusive_lock);
-
+    if (lc($conf->{FILESHARING}) eq 'no') {
+      ::error($not_enabled);
+    }
+    
+    if (lc($conf->{SHARINGMODE}) eq 'advanced') {
+      ::error($not_simple_enabled);
+    }
+    
+    if (lc($conf->{FILESHAREGROUP} ne '')) {
+      $authorisation_group = lc($conf->{FILESHAREGROUP});
+    }      
+    
     if (lc($conf->{RESTRICT}) eq 'no') {
 	# ok, access granted for everybody
     } else {

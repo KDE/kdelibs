@@ -84,7 +84,36 @@ public:
      */
     static bool setShared( const QString& path, bool shared );
     
+    /**
+     * The used share mode.
+     * Simple means that the simple sharing dialog is used and
+     * users can share only folders from there HOME folder.
+     * Advanced means that the advanced sharing dialog is used and
+     * users can share any folder.
+     */
     enum ShareMode { Simple, Advanced };
+    
+    /**
+     * Returns wether sharing is enabled
+     * If this is false, file sharing is disabled and
+     * nobody can share files.
+     */
+    static bool sharingEnabled();
+    
+    /**
+     * Returns wether file sharing is restricted.
+     * If it is not restricted every user can shar files.
+     * If it is restricted only users in the configured
+     * file share group can share files.
+     */
+    static bool isRestricted();
+    
+    /**
+     * Returns the group that is used for file sharing.
+     * That is, all users in that group are allowed to
+     * share files if file sharing is restricted.
+     */
+    static QString fileShareGroup();
     
     /**
      * Returns the configured share mode
@@ -107,6 +136,9 @@ private:
     static ShareMode s_shareMode;
     static bool s_sambaEnabled;
     static bool s_nfsEnabled;
+    static bool s_restricted;
+    static QString s_fileShareGroup;
+    static bool s_sharingEnabled;
     
     static Authorization getAuthFromScript();
     
