@@ -382,10 +382,10 @@ int main(int argc, char *argv[])
 	}
 	else {
 	    printf("\nTests completed.\n");
+            printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors); 
 	    printf("Passes:   %d\n",regressionTest->m_passes);
 	    printf("Failures: %d\n",regressionTest->m_failures);
 	    printf("Errors:   %d\n",regressionTest->m_errors);
-	    printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors);
 	}
     }
 
