@@ -482,11 +482,12 @@ public:
           or from a pager or similar tool
        @param timestamp X server timestamp of the user action that
           caused the request
+       @param active_window active window of the requesting application, if any
           
        @since 3.2
     **/
     void setActiveWindow(Window window, NET::RequestSource src,
-        Time timestamp );
+        Time timestamp, Window active_window);
 
     /**
        Sets the active (focused) window the specified window. This should
@@ -750,9 +751,11 @@ protected:
        @param window the id of the window to activate
        @param src the source from which the request came
        @param timestamp the timestamp of the user action causing this request
+       @param active_window active window of the requesting application, if any
     **/
-    // virtual void changeActiveWindow(Window window,NET::RequestSource src, Time timestamp ) { }
-    virtual void changeActiveWindow(Window,NET::RequestSource,Time) { }
+    // virtual void changeActiveWindow(Window window,NET::RequestSource src,
+    //     Time timestamp, Window active_window ) { }
+    virtual void changeActiveWindow(Window,NET::RequestSource,Time,Window) { }
     /**
        A Window Manager should subclass NETRootInfo2 and reimplement this function
        when it wants to know when a Client made a request to restack a window.

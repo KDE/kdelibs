@@ -209,7 +209,8 @@ void KWin::activateWindow( WId win, long time )
     NETRootInfo info( qt_xdisplay(), 0 );
     if( time == 0 )
         time = qt_x_user_time;
-    info.setActiveWindow( win, NET::FromApplication, time );
+    info.setActiveWindow( win, NET::FromApplication, time,
+        kapp->activeWindow() ? kapp->activeWindow()->winId() : 0 );
 #endif // Q_WS_X11 ...
 }
 
@@ -219,7 +220,7 @@ void KWin::forceActiveWindow( WId win, long time )
     NETRootInfo info( qt_xdisplay(), 0 );
     if( time == 0 )
         time = qt_x_time;
-    info.setActiveWindow( win, NET::FromTool, time );
+    info.setActiveWindow( win, NET::FromTool, time, 0 );
 #endif // Q_WS_X11 ...
 }
 
@@ -227,7 +228,7 @@ void KWin::setActiveWindow( WId win )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     NETRootInfo info( qt_xdisplay(), 0 );
-    info.setActiveWindow( win, NET::FromUnknown, 0 );
+    info.setActiveWindow( win, NET::FromUnknown, 0, 0 );
 #endif
 }
 

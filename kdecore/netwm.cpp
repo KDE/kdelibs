@@ -1437,11 +1437,11 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
 extern Time qt_x_user_time;
 void NETRootInfo::setActiveWindow(Window window) {
-    setActiveWindow( window, FromUnknown, qt_x_user_time );
+    setActiveWindow( window, FromUnknown, qt_x_user_time, None );
 }
 
 void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
-    Time timestamp ) {
+    Time timestamp, Window active_window ) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setActiveWindow(0x%lx) (%s)\n",
@@ -1462,7 +1462,7 @@ void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
 	e.xclient.format = 32;
 	e.xclient.data.l[0] = src;
 	e.xclient.data.l[1] = timestamp;
-	e.xclient.data.l[2] = 0l;
+	e.xclient.data.l[2] = active_window;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
@@ -1742,12 +1742,17 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
             {
                 RequestSource src = FromUnknown;
+                Time timestamp = CurrentTime;
+                Window active_window = None;
                 // make sure there aren't unknown values
                 if( event->xclient.data.l[0] >= FromUnknown
                     && event->xclient.data.l[0] <= FromTool )
+                    {
                     src = static_cast< RequestSource >( event->xclient.data.l[0] );
-		this2->changeActiveWindow( event->xclient.window, src,
-                    event->xclient.data.l[1]);
+                    timestamp = event->xclient.data.l[1];
+                    active_window = event->xclient.data.l[2];
+                    }
+		this2->changeActiveWindow( event->xclient.window, src, timestamp, active_window );
             }
 	} else if (event->xclient.message_type == net_wm_moveresize) {
 
