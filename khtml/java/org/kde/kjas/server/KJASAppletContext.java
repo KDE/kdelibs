@@ -166,17 +166,22 @@ public class KJASAppletContext implements AppletContext
         }
         try
         {
-            KJASAppletClassLoader loader =
-                KJASAppletClassLoader.getLoader( docBase, codeBase );
+            String sorted_archives = "";
+            TreeSet archive_set = new TreeSet();
             if( archives != null )
             {
                 StringTokenizer parser = new StringTokenizer( archives, ",", false );
                 while( parser.hasMoreTokens() )
-                {
-                    String jar = parser.nextToken().trim();
-                    loader.addArchiveName( jar );
-                }
+                    archive_set.add ( parser.nextToken().trim() );
             }
+            Iterator it = archive_set.iterator();
+            while (it.hasNext())
+                sorted_archives += (String) it.next();
+            KJASAppletClassLoader loader =
+                KJASAppletClassLoader.getLoader( docBase, codeBase, sorted_archives );
+            it = archive_set.iterator();
+            while (it.hasNext())
+                loader.addArchiveName( (String) it.next() );
             loader.paramsDone();
 
             KJASAppletStub stub = new KJASAppletStub

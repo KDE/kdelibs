@@ -15,7 +15,7 @@ public final class KJASAppletClassLoader
     extends URLClassLoader
 {
     private static Hashtable loaders = new Hashtable();
-    public static synchronized KJASAppletClassLoader getLoader( String docBase, String codeBase )
+    public static synchronized KJASAppletClassLoader getLoader( String docBase, String codeBase, String archives )
     {
         SecurityManager security = System.getSecurityManager();
         if (security != null) {
@@ -28,14 +28,18 @@ public final class KJASAppletClassLoader
             docBaseURL = new URL( docBase );
         
             URL codeBaseURL = getCodeBaseURL( docBaseURL, codeBase );
-            Main.debug( "CL: getLoader: key = " + codeBaseURL );
+            String key = codeBaseURL.toString();
+            if (archives != null)
+                key += archives;
 
-            loader = (KJASAppletClassLoader) loaders.get( codeBaseURL.toString() );
+            Main.debug( "CL: getLoader: key = " + key );
+
+            loader = (KJASAppletClassLoader) loaders.get( key );
             if( loader == null )
             {
                 URL [] urlList = {};
                 loader = new KJASAppletClassLoader( urlList, docBaseURL, codeBaseURL);
-                loaders.put( codeBaseURL.toString(), loader );
+                loaders.put( key, loader );
             }
             else
             {
