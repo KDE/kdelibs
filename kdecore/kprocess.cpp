@@ -456,6 +456,69 @@ pid_t KProcess::pid() const
 
 
 
+bool KProcess::wait(int timeout)
+{
+  if (!runs)
+    return true;
+
+#ifndef __linux__
+  struct timeval etv;
+#endif
+  struct timeval tv, *tvp;
+  if (timeout < 0)
+    tvp = 0;
+  else
+  {
+#ifndef __linux__
+    gettimeofday(&etv, 0);
+    etv.tv_sec += timeout;
+#else
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+#endif
+    tvp = &tv;
+  }
+
+  int fd = KProcessController::theKProcessController->notifierFd();
+  for(;;)
+  {
+    fd_set fds;
+    FD_ZERO( &fds );
+    FD_SET( fd, &fds );
+
+#ifndef __linux__
+    if (tvp)
+    {
+      gettimeofday(&tv, 0);
+      timersub(&etv, &tv, &tv);
+      if (tv.tv_sec < 0)
+        tv.tv_sec = tv.tv_usec = 0;
+    }
+#endif
+
+    switch( select( fd+1, &fds, 0, 0, tvp ) )
+    {
+    case -1:
+      if( errno == EINTR )
+        break;
+      // fall through; should happen if tvp->tv_sec < 0
+    case 0:
+      KProcessController::theKProcessController->rescheduleCheck();
+      return false;
+    default:
+      KProcessController::theKProcessController->unscheduleCheck();
+      if (waitpid(pid_, &status, WNOHANG) != 0) // error finishes, too
+      {
+        processHasExited(status);
+        KProcessController::theKProcessController->rescheduleCheck();
+        return true;
+      }
+    }
+  }
+}
+
+
+
 bool KProcess::normalExit() const
 {
   return (pid_ != 0) && !runs && WIFEXITED(status);

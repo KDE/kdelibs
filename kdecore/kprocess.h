@@ -311,6 +311,16 @@ public:
   void resume();
 
   /**
+   * Suspend execution of the current thread until the child process dies
+   * or the timeout hits. This function is not recommended for programs
+   * with a GUI.
+   * @param timeout timeout in seconds. -1 means wait indefinitely.
+   * @return true if the process exited, false if the timeout hit.
+   * @since 3.2
+   */
+  bool wait(int timeout = -1);
+
+  /**
    * @return true if the process has already finished and has exited
    *  "voluntarily", ie: it has not been killed by a signal.
    *
