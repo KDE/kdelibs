@@ -35,9 +35,16 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
   MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
   virtual ~MainWindow();
 
-  //
-  virtual void setXMLFile( const QString &file );
-  //
+  /*
+   * Call this in the inherited class constructor
+   * to set the name of the rc file containing the XML for the mainwindow
+   *
+   * @param file Either an absolute path for the file, or simply the filename,
+   *             which will then be assumed to be installed in the "data" resource,
+   *             under a directory named like the application.
+   */
+  virtual void setXMLFile( QString file );
+  //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
   virtual void setXML( const QString &document );
 
   // Add your actions to this collection

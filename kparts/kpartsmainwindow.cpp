@@ -12,6 +12,9 @@
 #include <qobjectlist.h>
 
 #include <kaction.h>
+#include <kglobal.h>
+#include <kinstance.h>
+#include <kstddirs.h>
 #include <kdebug.h>
 
 using namespace KParts;
@@ -72,8 +75,11 @@ QDomDocument MainWindow::document()
   return d->m_doc;
 }
 
-void MainWindow::setXMLFile( const QString &file )
+void MainWindow::setXMLFile( QString file )
 {
+  if ( file[0] != '/' )
+    file = locate( "data", QString(KGlobal::instance()->instanceName())+"/"+file );
+
   QString xml = XMLGUIFactory::readConfigFile( file );
   setXML( xml );
 }

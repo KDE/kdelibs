@@ -20,7 +20,7 @@
 
 Shell::Shell()
 {
-  setXMLFile( "example_shell.rc" );
+  setXMLFile( "kpartstest_shell.rc" );
 
   m_manager = new KParts::PartManager( this );
 
@@ -116,10 +116,10 @@ void Shell::slotFileEdit()
 Part1::Part1( QWidget * parentWidget )
  : KParts::ReadOnlyPart( "Part1" )
 {
-  m_instance = new KInstance( "part1" );
+  m_instance = new KInstance( "kpartstestpart" );
   m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
-  setXMLFile( "part1.rc" );
+  setXMLFile( "kpartstest_part1.rc" );
 
   (void)new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
 }
@@ -188,7 +188,7 @@ KInstance *Part2::instance()
 
 int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "example" );
+  KApplication app( argc, argv, "kpartstest" );
 
   Shell *shell = new Shell;
 

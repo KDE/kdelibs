@@ -38,8 +38,8 @@ public:
      * Embed this part into a host widget.
      * You don't need to do this if you created the widget with the
      * correct parent widget - this is just a reparent().
-     * Note that the KPart is still the holder
-     * of the QWidget, meaning that if you delete the KPart,
+     * Note that the Part is still the holder
+     * of the QWidget, meaning that if you delete the Part,
      * then the widget gets destroyed as well, and vice-versa.
      */
     virtual void embed( QWidget * parentWidget );
@@ -71,7 +71,7 @@ public:
      */
     virtual XMLGUIServant *servant();
 
-    // Only called by KPartManager - should be protected and using friend ?
+    // Only called by PartManager - should be protected and using friend ?
     void setManager( PartManager * manager ) { m_manager = manager; }
     /**
      * @return the part manager handling this part
@@ -85,16 +85,20 @@ public:
 
 protected:
     /**
-     * Call this in the KPart-inherited class constructor
+     * Call this in the Part-inherited class constructor
      * to set the main widget
      */
     virtual void setWidget( QWidget * widget );
 
     /**
-     * Call this in the KPart-inherited class constructor
+     * Call this in the Part-inherited class constructor
      * to set the name of the rc file containing the XML for the part
+     *
+     * @param file Either an absolute path for the file, or simply the filename,
+     *             which will then be assumed to be installed in the "data" resource,
+     *             under a directory named like the instance.
      */
-    virtual void setXMLFile( const QString & file );
+    virtual void setXMLFile( QString file );
 
     //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
     virtual void setXML( const QString &document );

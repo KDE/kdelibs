@@ -162,8 +162,11 @@ void Part::setWidget( QWidget *widget )
 	   this, SLOT( slotWidgetDestroyed() ) );
 }
 
-void Part::setXMLFile( const QString & file )
+void Part::setXMLFile( QString file )
 {
+  if ( file[0] != '/' )
+    file = locate( "data", QString(instance()->instanceName())+"/"+file );
+
   QString xml = XMLGUIFactory::readConfigFile( file );
   setXML( xml );
 }

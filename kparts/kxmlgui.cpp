@@ -185,7 +185,10 @@ QString XMLGUIFactory::readConfigFile( const QString &filename )
 {
   QFile file( filename );
   if ( !file.open( IO_ReadOnly ) )
+  {
+    kDebugError( 1000, "No such XML file %s", filename.local8Bit().data() );
     return QString::null;
+  }
 
   uint size = file.size();
   char* buffer = new char[ size + 1 ];
