@@ -75,6 +75,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
   if ( !offer )
   {
     // Open-with dialog
+    // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog ! KDE 3.0
     return KOpenWithHandler::getOpenWithHandler()->displayOpenWithDialog( lst );
   }
 

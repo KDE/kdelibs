@@ -36,10 +36,24 @@ namespace KIO {
 };
 
 /**
- * Implements a generic runner, i.e. the 'exec' functionality of KDE
+ * To open files with their associated applications in KDE, use KRun.
  *
  * It can execute any desktop entry, as well as any file, using
- * default binding (service) or another bound service.
+ * the default application or another application "bound" to the file type.
+ *
+ * You need to create an instance of KFileOpenWithHandler before,
+ * so that in case the mime-type of the file is unknown, or if there is
+ * no application associated, KRun will bring up the "open with" dialog.
+ * Example:
+ * KFileOpenWithHandler fowh;
+ * new KRun( url );
+ *
+ * In that example, the mimetype of the file is not known by the application,
+ * so a KRun instance must be created. It will determine the mimetype by itself.
+ * If the mimetype is known, or if you even know the service (application) to
+ * use for this file, use one of the static methods.
+ * 
+ * @short Opens files with their associated applications in KDE
  */
 class KRun : public QObject
 {
@@ -135,7 +149,7 @@ public:
    * static methods, or @ref KRun's constructor.
    */
   static pid_t runCommand( QString cmd );
-  
+
   /**
    * Same as the other runCommand, but it also takes the name of the
    * binary, to display an error message in case it couldn't find it.
@@ -148,7 +162,7 @@ public:
    */
   static void shellQuote( QString &_str );
 
-  
+
 signals:
   void finished();
   void error();
@@ -267,7 +281,7 @@ protected:
 
   /**
    * Extracts binary name from Exec command line
-   * @param execLine the command line 
+   * @param execLine the command line
    * @param removePath if true, /usr/bin/konqueror will be returned as "konqueror"
    *                   if false, it will be returned with the path.
    */
@@ -315,6 +329,12 @@ private:
   static KOpenWithHandler * pOpenWithHandler;
 };
 
+/**
+ * @internal
+ * This class watches a process launched by KRun.
+ * It sends a notification when the process exits (for the taskbar)
+ * and it will show an error message if necessary (e.g. "program not found").
+ */
 class KProcessRunner : public QObject
 {
   Q_OBJECT
