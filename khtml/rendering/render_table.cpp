@@ -702,7 +702,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         return;
     }
 
-    if (beforeChild) 
+    if (beforeChild)
 	setNeedCellRecalc();
 
     cRow++;
@@ -986,6 +986,9 @@ int RenderTableSection::layoutRows( int toAdd )
 	    for ( int r = 0; r < totalRows; r++ ) {
 		if ( totalPercent > 0 && grid[r].height.isPercent() ) {
 		    int toAdd = QMIN( dh, (totalHeight * grid[r].height.value() / 100)-rh );
+                    // If toAdd is negative, then we don't want to shrink the row (this bug
+                    // affected Outlook Web Access).
+                    toAdd = QMAX(0, toAdd);
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value();
