@@ -45,8 +45,8 @@ class CSSStyleSheetImpl;
 class HTMLBaseElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBaseElementImpl(DocumentPtr *doc);
-    ~HTMLBaseElementImpl();
+    HTMLBaseElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     DOMString href() const { return m_href; }
     DOMString target() const { return m_target; }
@@ -70,7 +70,9 @@ protected:
 class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElementImpl
 {
 public:
-    HTMLLinkElementImpl(DocumentPtr *doc);
+    HTMLLinkElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc), m_cachedSheet(0), m_sheet(0), m_loading(false) {}
+
     ~HTMLLinkElementImpl();
 
     virtual Id id() const;
@@ -107,9 +109,8 @@ protected:
 class HTMLMetaElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMetaElementImpl(DocumentPtr *doc);
-
-    ~HTMLMetaElementImpl();
+    HTMLMetaElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
@@ -127,9 +128,8 @@ protected:
 class HTMLScriptElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLScriptElementImpl(DocumentPtr *doc);
-
-    ~HTMLScriptElementImpl();
+    HTMLScriptElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
 
@@ -142,7 +142,8 @@ public:
 class HTMLStyleElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLStyleElementImpl(DocumentPtr *doc);
+    HTMLStyleElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc), m_sheet(0) {}
     ~HTMLStyleElementImpl();
 
     virtual Id id() const;
@@ -167,9 +168,8 @@ protected:
 class HTMLTitleElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLTitleElementImpl(DocumentPtr *doc);
-
-    ~HTMLTitleElementImpl();
+    HTMLTitleElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     DOMString text();
     void setText( const DOMString& str );

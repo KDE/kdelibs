@@ -419,7 +419,7 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            scriptExecution( exScript, QString(), scriptStartLineno );
+            scriptExecution( exScript, QString(), tagStartLineno /*scriptStartLineno*/ );
         }
     }
 

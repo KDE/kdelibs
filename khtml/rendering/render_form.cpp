@@ -43,7 +43,7 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <kdebug.h>
+#include <qpopupmenu.h>
 
 using namespace khtml;
 
@@ -53,7 +53,6 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     // init RenderObject attributes
     setInline(true);   // our object is Inline
 
-    m_clickCount = 0;
     m_state = 0;
     m_button = 0;
     m_isDoubleClick = false;
@@ -117,7 +116,7 @@ void RenderFormElement::slotClicked()
     ref();
     QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
-    element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+    element()->dispatchMouseEvent(&e2, EventImpl::CLICK_EVENT, m_isDoubleClick + 1);
     m_isDoubleClick = false;
     deref();
 }
@@ -126,7 +125,7 @@ void RenderFormElement::slotPressed()
 {
     ref();
     QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, m_button, m_state);
-    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, m_clickCount);
+    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, 1);
     deref();
 }
 
@@ -134,7 +133,7 @@ void RenderFormElement::slotReleased()
 {
     ref();
     QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
-    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, m_clickCount);
+    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, 1);
     deref();
 }
 
@@ -347,6 +346,35 @@ LineEditWidget::LineEditWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
+QPopupMenu *LineEditWidget::createPopupMenu()
+{
+    QPopupMenu *popup = KLineEdit::createPopupMenu();
+    if ( !popup )
+        return 0L;
+    connect( popup, SIGNAL( activated( int ) ),
+             this, SLOT( extendedMenuActivated( int ) ) );
+
+    return popup;
+}
+
+void LineEditWidget::extendedMenuActivated( int id)
+{
+    switch ( id )
+    {
+    case ClearHistory:
+        clearMenuHistory();
+        break;
+    default:
+        break;
+    }
+}
+
+void LineEditWidget::clearMenuHistory()
+{
+    emit clearCompletionHistory();
+}
+
+
 bool LineEditWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
@@ -382,7 +410,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(edit,SIGNAL(pressed()), this, SLOT(slotPressed()));
     connect(edit,SIGNAL(released()), this, SLOT(slotReleased()));
-
+    connect(edit, SIGNAL(clearCompletionHistory()), this, SLOT( slotClearCompletionHistory()));
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
@@ -395,6 +423,10 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     }
 
     setQWidget(edit);
+}
+
+void RenderLineEdit::slotClearCompletionHistory()
+{
 }
 
 void RenderLineEdit::slotReturnPressed()

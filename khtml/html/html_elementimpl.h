@@ -34,7 +34,8 @@ class CSSStyleDeclarationImpl;
 class HTMLElementImpl : public ElementImpl
 {
 public:
-    HTMLElementImpl(DocumentPtr *doc);
+    HTMLElementImpl(DocumentPtr *doc)
+        : ElementImpl(doc) {}
 
     virtual ~HTMLElementImpl();
 

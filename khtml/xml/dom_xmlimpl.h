@@ -131,7 +131,7 @@ public:
     // DOM methods & attributes for Notation
 
     virtual DOMString target() const;
-    virtual DOMString data() const;
+    DOMString data() const { return m_data; }
     virtual void setData( const DOMString &_data, int &exceptioncode );
 
     // DOM methods overridden from  parent classes

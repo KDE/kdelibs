@@ -39,6 +39,7 @@
 #include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_ext.h"
 
@@ -106,13 +107,25 @@ static QCString encodeCString(const QCString& e)
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
-    QCString encoded(( e.length()+e.contains( '\n' ) )*3+1);
+    QCString encoded(( e.length()+e.contains( '\n' ) )*3
+                     +e.contains('\r') * 3 + 1);
     int enclen = 0;
+    bool crmissing = false;
+    unsigned char oldc;
+    unsigned char c ='\0';
 
     //QCString orig(e.data(), e.size());
 
     for(unsigned pos = 0; pos < e.length(); pos++) {
-        unsigned char c = e[pos];
+        oldc = c;
+        c = e[pos];
+
+        if (crmissing && c != '\n') {
+            encoded[enclen++] = '%';
+            encoded[enclen++] = '0';
+            encoded[enclen++] = 'D';
+            crmissing = false;
+        }
 
         if ( (( c >= 'A') && ( c <= 'Z')) ||
              (( c >= 'a') && ( c <= 'z')) ||
@@ -130,6 +143,10 @@ static QCString encodeCString(const QCString& e)
             encoded[enclen++] = '%';
             encoded[enclen++] = '0';
             encoded[enclen++] = 'A';
+            crmissing = false;
+        }
+        else if (c == '\r' && oldc != '\n') {
+            crmissing = true;
         }
         else if ( c != '\r' )
         {
@@ -155,24 +172,6 @@ inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& 
     str.truncate(str.length());
     return str;
 }
-
-void HTMLFormElementImpl::i18nData()
-{
-    QString foo1 = i18n( "You're about to send data to the Internet "
-                         "via an unencrypted connection. It might be possible "
-                         "for others to see this information.\n"
-                         "Do you want to continue?");
-    QString foo2 = i18n("KDE Web browser");
-    QString foo3 = i18n("When you send a password unencrypted to the Internet, "
-                        "it might be possible for others to capture it as plain text.\n"
-                        "Do you want to continue?");
-    QString foo5 = i18n("Your data submission is redirected to "
-                        "an insecure site. The data is sent unencrypted.\n"
-                        "Do you want to continue?");
-    QString foo6 = i18n("The page contents expired. You can repost the form"
-                        "data by using <a href=\"javascript:go(0);\">Reload</a>");
-}
-
 
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
@@ -1229,29 +1228,14 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             QString local;
             QCString dummy("");
 
+            KURL fileurl(value().string());
+            KIO::UDSEntry filestat;
+
             // can't submit file in www-url-form encoded
-            if (multipart) {
-                if (value().string().stripWhiteSpace().isEmpty())
-                {
-                    encoding += dummy;
-                    return false;
-                }
-            
-                KURL fileurl(value().string());
-                KIO::UDSEntry filestat;
-                
-                if (!KIO::NetAccess::stat(fileurl, filestat)) {
-                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                    return false;
-                }
-
+            if (multipart && KIO::NetAccess::stat(fileurl, filestat)) {
                 KFileItem fileitem(filestat, fileurl, true, false);
-                if(fileitem.isDir()) {
-                    encoding += dummy;
-                    return false;
-                }
 
-                if ( KIO::NetAccess::download(KURL(value().string()), local) ) {
+                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local) ) {
                     QFile file(local);
                     if (file.open(IO_ReadOnly)) {
                         QCString filearray(file.size()+1);
@@ -1265,14 +1249,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
                         return true;
                     }
-                    return false;
                 }
-                else {
-                    KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
-                    return false;
-                }
-
-                break;
             }
             // else fall through
         }
@@ -1340,9 +1317,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
     if ( !m_disabled )
     {
         if (evt->isMouseEvent() &&
-            ( evt->id() == EventImpl::KHTML_CLICK_EVENT || evt->id() == EventImpl::KHTML_DBLCLICK_EVENT ) &&
-            m_type == IMAGE
-            && m_render) {
+            evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
             // record the mouse position for when we get the DOMActivate event
             MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
             int offsetX, offsetY;
@@ -1886,7 +1861,7 @@ HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementIm
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         HTMLOptionElementImpl* o = new HTMLOptionElementImpl(doc, form());
         addChild(o);
-        o->addChild(new TextImpl(doc, DOMString(*i)));
+        o->addChild(doc->document()->createTextNode(DOMString(*i).implementation()));
     }
 }
 
@@ -1929,72 +1904,9 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 
 // -------------------------------------------------------------------------
 
-HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
-    : HTMLGenericFormElementImpl(doc, f)
-{
-}
-
-HTMLOptGroupElementImpl::~HTMLOptGroupElementImpl()
-{
-}
-
 NodeImpl::Id HTMLOptGroupElementImpl::id() const
 {
     return ID_OPTGROUP;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild, exceptioncode);
-    if ( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
-    if(!exceptioncode)
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
-    if( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild, exceptioncode);
-    if( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl* HTMLOptGroupElementImpl::addChild(NodeImpl* newChild)
-{
-    recalcSelectOptions();
-
-    return HTMLGenericFormElementImpl::addChild(newChild);
-}
-
-void HTMLOptGroupElementImpl::parseAttribute(AttributeImpl *attr)
-{
-    HTMLGenericFormElementImpl::parseAttribute(attr);
-    recalcSelectOptions();
-}
-
-void HTMLOptGroupElementImpl::recalcSelectOptions()
-{
-    NodeImpl *select = parentNode();
-    while (select && select->id() != ID_SELECT)
-        select = select->parentNode();
-    if (select)
-        static_cast<HTMLSelectElementImpl*>(select)->setRecalcListItems();
 }
 
 // -------------------------------------------------------------------------
@@ -2281,7 +2193,7 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     for (; it.current(); ++it) {
         removeChild(it.current(), exceptioncode);
     }
-    insertBefore(getDocument()->createTextNode(_defaultValue),firstChild(), exceptioncode);
+    insertBefore(getDocument()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);
 }
 

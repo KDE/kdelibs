@@ -34,7 +34,6 @@
 #include <qstyle.h>
 #include <qobjectlist.h>
 
-#include <kjs/collector.h>
 #include "kjs_proxy.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
@@ -46,6 +45,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtml_settings.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_documentimpl.h"
@@ -347,14 +347,34 @@ void Window::mark()
     loc->mark();
 }
 
-bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/) const
+bool Window::hasProperty(ExecState *exec, const UString &p) const
 {
-  //fprintf( stderr, "Window::hasProperty: always saying true\n" );
+  if (p == "closed")
+    return true;
 
-  // emulate IE behaviour: it doesn't throw exceptions when undeclared
-  // variables are used. Returning true here will lead to get() returning
-  // 'undefined' in those cases.
-  return true;
+  // we don't want any operations on a closed window
+  if (m_part.isNull())
+    return false;
+
+  if (ObjectImp::hasProperty(exec, p))
+    return true;
+
+  if (Lookup::findEntry(&WindowTable, p))
+    return true;
+
+  QString q = p.qstring();
+  if (m_part->findFrame(p.qstring()))
+    return true;
+
+  // allow shortcuts like 'Image1' instead of document.images.Image1
+  if (m_part->document().isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = m_part->htmlDocument().all();
+    DOM::HTMLElement element = coll.namedItem(q);
+    if (!element.isNull())
+      return true;
+  }
+
+  return false;
 }
 
 UString Window::toString(ExecState *) const
@@ -539,12 +559,12 @@ Value Window::get(ExecState *exec, const UString &p) const
         return Undefined();
     case Onclick:
       if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT);
+        return getListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT);
       else
         return Undefined();
     case Ondblclick:
       if (isSafeScript(exec))
-        return getListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+        return getListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT);
       else
         return Undefined();
     case Ondragdrop:
@@ -708,22 +728,9 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       m_part->setJSDefaultStatusBarText(s.value().qstring());
       return;
     }
-    case _Location: {
-      // No isSafeScript here, it's not a security problem to redirect another window
-      // (tested in other browsers)
-      // Complete the URL using the "active part" (running interpreter)
-      KHTMLPart* p = Window::retrieveActive(exec)->m_part;
-      if (p) {
-        QString dstUrl = p->htmlDocument().completeURL(value.toString(exec).string()).string();
-        kdDebug() << "Window::put dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
-        // Check if the URL is the current one. No [infinite] redirect in that case.
-        if ( !m_part->url().cmp( KURL(dstUrl), true ) )
-          m_part->scheduleRedirection(-1,
-                                      dstUrl,
-                                      false /*don't lock history*/);
-      }
+    case _Location:
+      goURL(Window::retrieveActive(exec), value.toString(exec).qstring());
       return;
-    }
     case Onabort:
       if (isSafeScript(exec))
         setListener(exec, DOM::EventImpl::ABORT_EVENT,value);
@@ -738,11 +745,11 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     case Onclick:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,value);
+        setListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT,value);
       return;
     case Ondblclick:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,value);
+        setListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT,value);
       return;
     case Ondragdrop:
       if (isSafeScript(exec))
@@ -916,11 +923,11 @@ bool Window::isSafeScript(ExecState *exec) const
   DOM::DOMString thisDomain = thisDocument.domain();
 
   if ( actDomain == thisDomain ) {
-    //kdDebug(6070) << "Javascript: access granted, domain is '" << actDomain.string() << "'" << endl;
+    //kdDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'" << endl;
     return true;
   }
 
-  kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
+  kdWarning(6070) << "JavaScript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
   // TODO after 3.1: throw security exception (exec->setException())
   return false;
 }
@@ -976,7 +983,7 @@ void Window::clear( ExecState *exec )
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
   // Really delete those properties, so that the DOM nodes get deref'ed
-  while(KJS::Collector::collect())
+  while(KJS::Interpreter::collect())
       ;
   if (!m_part.isNull()) {
     KJSProxy* proxy = KJSProxy::proxy( m_part );
@@ -994,6 +1001,22 @@ void Window::setCurrentEvent( DOM::Event *evt )
 {
   m_evt = evt;
   //kdDebug(6070) << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
+}
+
+void Window::goURL(Window* active, const QString& url)
+{
+  // No isSafeScript here, it's not a security problem to redirect another window
+  // (tested in other browsers)
+  // Complete the URL using the "active part" (running interpreter)
+  if (active->part()) {
+    QString dstUrl = active->part()->htmlDocument().completeURL(url).string();
+    kdDebug() << "Window::goURL dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
+    // Check if the URL is the current one. No [infinite] redirect in that case.
+    if ( !m_part->url().cmp( KURL(dstUrl), true ) )
+      m_part->scheduleRedirection(-1,
+                                dstUrl,
+                                  false /*don't lock history*/);
+  }
 }
 
 void Window::delayedGoHistory( int steps )
@@ -1058,18 +1081,18 @@ Value Window::openWindow(ExecState *exec, const List& args)
   UString s = v.toString(exec);
   QString str = s.qstring();
 
-  KConfig *config = new KConfig("konquerorrc");
-  config->setGroup("Java/JavaScript Settings");
-  int policy = config->readUnsignedNumEntry( "WindowOpenPolicy", 0 ); // 0=allow, 1=ask, 2=deny, 3=smart
+  KConfig *config = new KConfig( "konquerorrc" );
+  config->setGroup( "Java/JavaScript Settings" );
+  int policy = config->readUnsignedNumEntry(  "WindowOpenPolicy", 0 ); // 0=allow, 1=ask, 2=deny, 3=smart
   delete config;
-  if ( policy == 1 ) {
+  if (  policy == 1 ) {
     if ( KMessageBox::questionYesNo(widget,
                                     i18n( "This site is trying to open up a new browser "
-                                          "window using Javascript.\n"
+                                          "window using JavaScript.\n"
                                           "Do you want to allow this?" ),
-                                    i18n( "Confirmation: Javascript Popup" ) ) == KMessageBox::Yes )
+                                    i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
       policy = 0;
-  } else if ( policy == 3 ) // smart
+  } else if ( policy == 3 )
   {
     // window.open disabled unless from a key/mouse event
     if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
@@ -1259,7 +1282,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(args.size() == 2 && widget)
       widget->setContentsPos(args[0].toInt32(exec), args[1].toInt32(exec));
     return Undefined();
-  case Window::MoveBy:
+  case Window::MoveBy: {
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
@@ -1272,7 +1295,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         tl->move( dest );
     }
     return Undefined();
-  case Window::MoveTo:
+  }
+  case Window::MoveTo: {
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
@@ -1285,20 +1309,23 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         tl->move( dest );
     }
     return Undefined();
-  case Window::ResizeBy:
+  }
+  case Window::ResizeBy: {
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
       window->resizeTo( tl, tl->width() + args[0].toInt32(exec), tl->height() + args[1].toInt32(exec) );
     }
     return Undefined();
-  case Window::ResizeTo:
+  }
+  case Window::ResizeTo: {
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
       window->resizeTo( tl, args[0].toInt32(exec), args[1].toInt32(exec) );
     }
     return Undefined();
+  }
   case Window::SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
@@ -1315,7 +1342,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       funcArgs->removeFirst();
 #endif
       if ( args.size() > 2 )
-          kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
+        kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
       int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
       return Number(r);
     }
@@ -1346,10 +1373,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::ClearInterval:
     (const_cast<Window*>(window))->clearTimeout(v.toInt32(exec));
     return Undefined();
-  case Window::Focus:
-    if (widget)
+  case Window::Focus: {
+    if(widget)
       widget->setActiveWindow();
     return Undefined();
+  }
   case Window::Blur:
     // TODO
     return Undefined();
@@ -1497,7 +1525,7 @@ void WindowQObject::parentDestroyed()
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
   //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << " milliseconds=" << t << endl;
-  if (t < 16) t = 16;
+  if (t < 10) t = 10;
   int id = startTimer(t);
   ScheduledAction *action = new ScheduledAction(handler.qstring(),singleShot);
   scheduledActions.insert(id, action);
@@ -1508,7 +1536,7 @@ int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot
 int WindowQObject::installTimeout(const Value &func, List args, int t, bool singleShot)
 {
   Object objFunc = Object::dynamicCast( func );
-  if (t < 16) t = 16;
+  if (t < 10) t = 10;
   int id = startTimer(t);
   scheduledActions.insert(id, new ScheduledAction(objFunc,args,singleShot));
   return id;

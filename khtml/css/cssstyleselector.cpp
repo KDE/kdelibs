@@ -69,8 +69,6 @@ CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
 
-static CSSStyleSelector::Encodedurl *encodedurl = 0;
-
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
 
@@ -272,7 +270,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     // set some variables we will need
     dynamicState = state;
     usedDynamicStates = StyleSelector::None;
-    ::encodedurl = &encodedurl;
     pseudoState = PseudoUnknown;
 
     element = e;
@@ -288,7 +285,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // try to sort out most style rules as early as possible.
     // ### implement CSS3 namespace support
-    int cssTagId = (e->id() & NodeImpl::IdLocalMask);
+    int cssTagId = (e->id() & NodeImpl_IdLocalMask);
     int smatch = 0;
     int schecked = 0;
 
@@ -595,7 +592,7 @@ static void cleanpath(QString &path)
     //kdDebug() << "checkPseudoState " << path << endl;
 }
 
-static void checkPseudoState( DOM::ElementImpl *e )
+static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
 {
     DOMString attr;
     if( e->id() != ID_A || (attr = e->getAttribute(ATTR_HREF)).isNull() ) {
@@ -605,11 +602,11 @@ static void checkPseudoState( DOM::ElementImpl *e )
     QString u = attr.string();
     if ( u.find("://") == -1 ) {
 	if ( u[0] == '/' )
-	    u = encodedurl->host + u;
+	    u = encodedurl.host + u;
 	else if ( u[0] == '#' )
-	    u = encodedurl->file + u;
+	    u = encodedurl.file + u;
 	else
-	    u = encodedurl->path + u;
+	    u = encodedurl.path + u;
 	cleanpath( u );
     }
     //completeURL( attr.string() );
@@ -625,7 +622,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 //     sel->print();
 
 
-    if((e->id() & NodeImpl::IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
+    if((e->id() & NodeImpl_IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
 
     if(sel->attr)
     {
@@ -741,7 +738,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case 'l':
 	    if( value == "link") {
 		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( e );
+		    checkPseudoState( encodedurl, e );
 		if ( pseudoState == PseudoLink ) {
 		    return true;
 		}
@@ -750,7 +747,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case 'v':
 	    if ( value == "visited" ) {
 		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( e );
+		    checkPseudoState( encodedurl, e );
 		if ( pseudoState == PseudoVisited )
 		    return true;
 	    }
@@ -765,7 +762,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case 'a':
 	    if ( value == "active" ) {
 		if ( pseudoState == PseudoUnknown )
-		    checkPseudoState( e );
+		    checkPseudoState( encodedurl, e );
 		if ( pseudoState != PseudoNone ) {
 		    selectorDynamicState |= StyleSelector::Active;
 		    return true;

@@ -42,16 +42,6 @@
 using namespace khtml;
 using namespace DOM;
 
-HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    m_hasTarget = false;
-}
-
-HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
-{
-}
-
 NodeImpl::Id HTMLAnchorElementImpl::id() const
 {
     return ID_A;
@@ -65,10 +55,11 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
     // React on clicks and on keypresses.
     // Don't make this KEYUP_EVENT again, it makes khtml follow links
     // it shouldn't, when pressing Enter in the combo.
-    if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
+    if ( ( (evt->id() == EventImpl::CLICK_EVENT && static_cast<MouseEventImpl*>(evt)->detail() == 1) ||
          ( keydown && m_focused)) && m_hasAnchor) {
+
         MouseEventImpl *e = 0;
-        if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
+        if ( evt->id() == EventImpl::CLICK_EVENT )
             e = static_cast<MouseEventImpl*>( evt );
 
         TextEventImpl *k = 0;
@@ -77,7 +68,6 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 
         QString utarget;
         QString url;
-
         if ( e && e->button() == 2 ) {
 	    HTMLElementImpl::defaultEventHandler(evt);
 	    return;
@@ -178,14 +168,6 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLBRElementImpl::HTMLBRElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
-{
-}
-
-HTMLBRElementImpl::~HTMLBRElementImpl()
-{
-}
-
 NodeImpl::Id HTMLBRElementImpl::id() const
 {
     return ID_BR;
@@ -222,15 +204,6 @@ void HTMLBRElementImpl::attach()
 }
 
 // -------------------------------------------------------------------------
-
-HTMLFontElementImpl::HTMLFontElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLFontElementImpl::~HTMLFontElementImpl()
-{
-}
 
 NodeImpl::Id HTMLFontElementImpl::id() const
 {

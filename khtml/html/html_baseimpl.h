@@ -156,9 +156,8 @@ protected:
 class HTMLHeadElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHeadElementImpl(DocumentPtr *doc);
-
-    ~HTMLHeadElementImpl();
+    HTMLHeadElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
 };
@@ -168,8 +167,8 @@ public:
 class HTMLHtmlElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHtmlElementImpl(DocumentPtr *doc);
-    ~HTMLHtmlElementImpl();
+    HTMLHtmlElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
     virtual void attach();

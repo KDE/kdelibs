@@ -213,7 +213,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
 
-
     bool clipped = false;
     // overflow: hidden
     if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
@@ -226,13 +225,9 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. print contents
-    RenderObject *child = firstChild();
-    while(child != 0)
-    {
-        if(!child->isFloating() && !child->isPositioned())
+    for ( RenderObject* child = firstChild(); child; child = child->nextSibling() )
+        if(!child->isSpecial())
             child->print(p, _x, _y, _w, _h, _tx, _ty);
-        child = child->nextSibling();
-    }
 
     // 3. print floats and other non-flow objects
     if(specialObjects)
@@ -424,7 +419,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 
         // make sure we relayout children if we need it,
         // like inherited floats or percentage based widths.
-        if ( relayoutChildren || floatBottom() > m_height ||
+        if ( relayoutChildren || 1|| floatBottom() > m_height ||
              ( ( child->isReplaced() || child->isFloating() ) &&
 	       ( child->style()->width().isPercent() || child->style()->height().isPercent() ) )
 	    )
@@ -493,11 +488,12 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                 prevFlow=0;
         }
 
-        child->setPos(child->xPos(), m_height);
-	if ( !child->layouted() )
-	    child->layout();
-
+	// #### ugly and hacky, as we calculate width twice, but works for now.
+	// really need to fix this after 3.1
+	int owidth = child->width();
+	child->calcWidth();
         int chPos = xPos + child->marginLeft();
+	child->setWidth( owidth );
 
         if(style()->direction() == LTR) {
             // html blocks flow around floats
@@ -508,7 +504,10 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
                 chPos = rightOffset(m_height) - child->marginRight() - child->width();
         }
-        child->setPos(chPos, child->yPos());
+        child->setPos(chPos, m_height);
+
+	if ( !child->layouted() )
+	    child->layout();
 
         m_height += child->height();
 

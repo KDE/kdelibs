@@ -198,9 +198,9 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case OnChange:
     return getListener(DOM::EventImpl::CHANGE_EVENT);
   case OnClick:
-    return getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
+    return getListener(DOM::EventImpl::KHTML_ECMA_CLICK_EVENT);
   case OnDblClick:
-    return getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+    return getListener(DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT);
   case OnDragDrop:
     return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
   case OnError:
@@ -255,13 +255,17 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     KHTMLView* v = 0;
     if ( docimpl ) {
       v = docimpl->view();
-      docimpl->updateRendering();
-      if ( v )
+      if ( v ) {
+        docimpl->updateRendering();
         docimpl->view()->layout();
+      }
 
       // refetch in case the renderer changed
       rend = node.handle() ? node.handle()->renderer() : 0L;
     }
+
+    if (rend && rend->isBody())
+      rend = rend->root();
 
     switch (token) {
     case OffsetLeft: {
@@ -288,15 +292,13 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     case ClientWidth:
       if (!rend)
         return Undefined();
-      else
-        // "Width of the object including padding, but not including margin, border, or scroll bar."
-        return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
+      // "Width of the object including padding, but not including margin, border, or scroll bar."
+      return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
     case ClientHeight:
       if (!rend)
         return Undefined();
-      else
-        // "Height of the object including padding, but not including margin, border, or scroll bar."
-        return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
+      // "Height of the object including padding, but not including margin, border, or scroll bar."
+      return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
     case ScrollLeft: {
       int x, y;
       if ( rend && v && rend->absolutePosition( x, y ) )
@@ -364,10 +366,10 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     setListener(exec,DOM::EventImpl::CHANGE_EVENT,value);
     break;
   case OnClick:
-    setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,value);
+    setListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT,value);
     break;
   case OnDblClick:
-    setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,value);
+    setListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT,value);
     break;
   case OnDragDrop:
     setListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT,value);

@@ -97,7 +97,6 @@ protected:
     QPoint m_mousePos;
     int m_state;
     int m_button;
-    int m_clickCount;
     bool m_isDoubleClick;
 };
 
@@ -231,7 +230,7 @@ public:
 public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
-
+    void slotClearCompletionHistory();
 protected:
     virtual void handleFocusOut();
 
@@ -249,9 +248,18 @@ public:
 
 protected:
     virtual bool event( QEvent *e );
+    void clearMenuHistory();
+    virtual QPopupMenu *createPopupMenu();
 signals:
     void pressed();
     void released();
+    void clearCompletionHistory();
+private slots:
+    void extendedMenuActivated( int id);
+private:
+    enum LineEditMenuID {
+        ClearHistory
+    };
 };
 
 // -------------------------------------------------------------------------

@@ -30,15 +30,18 @@ using namespace DOM;
 
 #include "misc/htmlhashes.h"
 
-HTMLBlockquoteElement::HTMLBlockquoteElement() : HTMLElement()
+HTMLBlockquoteElement::HTMLBlockquoteElement()
+    : HTMLElement()
 {
 }
 
-HTMLBlockquoteElement::HTMLBlockquoteElement(const HTMLBlockquoteElement &other) : HTMLElement(other)
+HTMLBlockquoteElement::HTMLBlockquoteElement(const HTMLBlockquoteElement &other)
+    : HTMLElement(other)
 {
 }
 
-HTMLBlockquoteElement::HTMLBlockquoteElement(HTMLBlockquoteElementImpl *impl) : HTMLElement(impl)
+HTMLBlockquoteElement::HTMLBlockquoteElement(HTMLElementImpl *impl)
+    : HTMLElement(impl)
 {
 }
 
@@ -200,7 +203,7 @@ HTMLHeadingElement::HTMLHeadingElement(const HTMLHeadingElement &other) : HTMLEl
 {
 }
 
-HTMLHeadingElement::HTMLHeadingElement(HTMLHeadingElementImpl *impl) : HTMLElement(impl)
+HTMLHeadingElement::HTMLHeadingElement(HTMLElementImpl *impl) : HTMLElement(impl)
 {
 }
 
@@ -252,7 +255,7 @@ HTMLParagraphElement::HTMLParagraphElement(const HTMLParagraphElement &other) : 
 {
 }
 
-HTMLParagraphElement::HTMLParagraphElement(HTMLParagraphElementImpl *impl) : HTMLElement(impl)
+HTMLParagraphElement::HTMLParagraphElement(HTMLElementImpl *impl) : HTMLElement(impl)
 {
 }
 

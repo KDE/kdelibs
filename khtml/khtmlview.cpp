@@ -1508,35 +1508,14 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 						button,0);
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode,true);
-	bool defaultHandled = me->defaultHandled();
         if (me->defaultHandled() || me->defaultPrevented())
             swallowEvent = true;
 	me->deref();
-
-	// Special case: If it's a click event, we also send the KHTML_CLICK or KHTML_DBLCLICK event. This is not part
-	// of the DOM specs, but is used for compatibility with the traditional onclick="" and ondblclick="" attributes,
-	// as there is no way to tell the difference between single & double clicks using DOM (only the click count is
-	// stored, which is not necessarily the same)
-	if (eventId == EventImpl::CLICK_EVENT) {
-	    me = new MouseEventImpl(d->isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,
-				    true,cancelable,m_part->xmlDocImpl()->defaultView(),
-				    detail,screenX,screenY,clientX,clientY,
-				    ctrlKey,altKey,shiftKey,metaKey,
-				    button,0);
-
-	    me->ref();
-	    if (defaultHandled)
-		me->setDefaultHandled();
-	    targetNode->dispatchEvent(me,exceptioncode,true);
-            if (me->defaultHandled() || me->defaultPrevented())
-                swallowEvent = true;
-	    me->deref();
 
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
                 m_part->xmlDocImpl()->setFocusNode(0);
-	}
     }
 
     return swallowEvent;
