@@ -40,7 +40,7 @@ KLineEditDlg::KLineEditDlg( const char *_text, const char* _value, QWidget *pare
   QPushButton *ok;
   QPushButton *clear;
   QPushButton *cancel;
-  ok = new QPushButton( klocale->translate("Ok"), this );
+  ok = new QPushButton( klocale->translate("OK"), this );
   ok->setGeometry( 10,70, 80,25 );
   connect( ok, SIGNAL(clicked()), SLOT(accept()) );
 

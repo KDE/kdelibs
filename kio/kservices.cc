@@ -119,7 +119,7 @@ KService* KService::parseService( const char *_file, KSimpleConfig &config, bool
   {
     QString tmp;
     tmp.sprintf( i18n( "The application config file\n%s\ndoes not contain a Name=... entry"), _file );
-    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "Ok" ) );
+    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
     return 0L;
   }
 

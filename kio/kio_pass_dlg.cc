@@ -66,13 +66,13 @@ KIOPassDlg::KIOPassDlg( QWidget* parent, const char* name, bool modal, WFlags wf
    connect( m_pPass, SIGNAL(returnPressed()), SLOT(accept()) );
    
    //
-   // Die Buttons "Ok" & "Cancel" erzeugen
+   // Die Buttons "OK" & "Cancel" erzeugen
    //
    QHBoxLayout *hlayout = new QHBoxLayout;
    layout->addLayout( hlayout );
 
    QPushButton *b1, *b2;
-   b1 = new QPushButton( i18n("Ok"), this);
+   b1 = new QPushButton( i18n("OK"), this);
    b1->setFixedSize( b1->sizeHint() );
    hlayout->addWidget( b1 );
    b2 = new QPushButton( i18n("Cancel"), this);

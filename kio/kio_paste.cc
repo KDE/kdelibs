@@ -45,7 +45,7 @@ void pasteClipboard( const char *_dest_url )
   {
     if ( urls.count() == 0 )
     {
-      QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("Ok") );
+      QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
       return;
     }
 
@@ -57,7 +57,7 @@ void pasteClipboard( const char *_dest_url )
   
   if ( KClipboard::self()->size() == 0 )
   {
-    QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("Ok") );
+    QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
     return;
   }
   
@@ -73,7 +73,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
   {
     // TODO: Use KIO put command here for writing the data.
     QMessageBox::critical( 0L, i18n("Error"), i18n("Pasting clipboard data is only supported on the local hard disk currently"),
-			   i18n("Ok") );
+			   i18n("OK") );
     return;
   }
 
@@ -84,7 +84,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
     QString url = l.text();
     if ( url.isEmpty() )
     {
-      QMessageBox::critical( 0L, i18n("Error"), i18n("You did not enter a filename"), i18n("Ok") );
+      QMessageBox::critical( 0L, i18n("Error"), i18n("You did not enter a filename"), i18n("OK") );
       return;
     }
 	

@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     w->setCaption("Example 1");
     QVBoxLayout *tl = new QVBoxLayout(w, 5);
     QLabel *l = new QLabel("A very common dialog\n\n"\
-			   "Ok and Cancel are left aligned, Help\n"\
+			   "OK and Cancel are left aligned, Help\n"\
 			   "is right aligned. Try resizing\n"\
 			   "the window!\n"
 			   "Press OK or Cancel when done"
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     w->setCaption("Example 2");
     QVBoxLayout *tl = new QVBoxLayout(w, 5);
     QLabel *l = new QLabel("Another common dialog\n\n"\
-			   "Ok and Cancel are right aligned\n"\
+			   "OK and Cancel are right aligned\n"\
 			   "Try resizing the window!", w);
     l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
     l->setMinimumSize(l->sizeHint());
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     w->setCaption("Example 3");
     QVBoxLayout *tl = new QVBoxLayout(w, 5);
     QLabel *l = new QLabel("Another common dialog\n\n"\
-			   "Ok and Cancel are middle aligned\n"\
+			   "OK and Cancel are middle aligned\n"\
 			   "Try resizing the window!", w);
     l->setAlignment(AlignVCenter|AlignLeft|WordBreak);
     l->setMinimumSize(l->sizeHint());

@@ -36,7 +36,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   {
     QString tmp;
     ksprintf( &tmp, i18n("Can not enter\n%s\nAccess denied"), _url );
-    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("Ok") );
+    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK") );
     return false;
   }
   else if ( strcmp( _mimetype, "application/x-kdelnk" ) == 0 )
@@ -101,7 +101,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
       string tmp = i18n( "Malformed URL" );
       tmp += "\n";
       tmp += it;
-      QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "Ok" ) );
+      QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "OK" ) );
       return false;
     }
 
@@ -508,7 +508,7 @@ void KRun::foundMimeType( const char *_type )
       string tmp = i18n( "Malformed URL" );
       tmp += "\n";
       tmp += m_strURL;
-      QMessageBox::critical( 0L, i18n( "Error" ), tmp.c_str(), i18n( "Ok" ) );
+      QMessageBox::critical( 0L, i18n( "Error" ), tmp.c_str(), i18n( "OK" ) );
       return;
     }
 

@@ -64,7 +64,7 @@ void KMimeType::check()
   // No Mime-Types installed ?
   // Lets do some rescue here.
   if ( s_mapTypes->count() <= 1 )
-    QMessageBox::critical( 0, i18n( "KFM Error" ), i18n( "No mime types installed!" ), i18n( "Ok" ) );
+    QMessageBox::critical( 0, i18n( "KFM Error" ), i18n( "No mime types installed!" ), i18n( "OK" ) );
 	
   if ( KMimeType::find( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
@@ -93,7 +93,7 @@ void KMimeType::errorMissingMimeType( const char *_type )
   string tmp = i18n( "Could not find mime type\n" );
   tmp += _type;
     
-  QMessageBox::critical( 0, i18n( "KFM Error" ), tmp.c_str(), i18n("Ok" ) );
+  QMessageBox::critical( 0, i18n( "KFM Error" ), tmp.c_str(), i18n("OK" ) );
 
   QString mime = _type;
   QStrList dummy;
@@ -153,7 +153,7 @@ void KMimeType::scanMimeTypes( const char* _path )
 	{
           QString tmp;
           tmp.sprintf( i18n( "The mime type config file\n%s\ndoes not contain a MimeType=... entry"), file.c_str() );
-	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "Ok" ) );
+	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
 	  continue;
 	}
       
@@ -512,7 +512,7 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
   {
     QString tmp;
     ksprintf( &tmp, i18n("The kdelnk file\n%s\nhas no Type=... entry"), _url );
-    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "Ok" ) );
+    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
 
@@ -530,7 +530,7 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
   
   QString tmp;
   ksprintf( &tmp, i18n("The kdelnk type\n%s\nis unknown"), type.data() );
-  QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "Ok" ) );
+  QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
   
   return false;    
 }
@@ -544,7 +544,7 @@ bool KDELnkMimeType::runFSDevice( const char *_url, KSimpleConfig &cfg )
   {
     QString tmp;
     ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type FSDevice but has no Dev=... entry"), _url );
-    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "Ok" ) );
+    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
 
@@ -591,7 +591,7 @@ bool KDELnkMimeType::runLink( const char *_url, KSimpleConfig &cfg )
   {
     QString tmp;
     ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type Link but has no URL=... entry"), _url );
-    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "Ok" ) );
+    QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
 
@@ -624,7 +624,7 @@ void KDELnkMimeType::builtinServices( K2URL& _url, list<Service>& _lst )
     {
       QString tmp;
       ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type FSDevice but has no Dev=... entry"), _url.path() );
-      QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "Ok" ) );
+      QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     }
     else
     {
@@ -684,7 +684,7 @@ void KDELnkMimeType::userDefinedServices( K2URL& _url, list<KDELnkMimeType::Serv
     {
       QString tmp;
       ksprintf( &tmp, i18n("The kdelnk file\n%s\n has an invalid menu entry\n%s"), _url.path(), k );
-      QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("Ok" ) );
+      QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK" ) );
     }
   }
 }
@@ -716,7 +716,7 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
     {
       QString tmp;
       ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type FSDevice but has no Dev=... entry"), u.path() );
-      QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "Ok" ) );
+      QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
       return;
     }
     QString mp = KIOJob::findDeviceMountPoint( dev );

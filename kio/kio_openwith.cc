@@ -257,7 +257,7 @@ OpenWithDlg::OpenWithDlg( const char *_text, const char* _value, QWidget *parent
   edit->setGeometry( 10, 35, 350, 25 );
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   
-  ok = new QPushButton( klocale->translate("Ok"), this );
+  ok = new QPushButton( klocale->translate("OK"), this );
   ok->setGeometry( 10,70, 80,25 );
   connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
   

@@ -211,14 +211,14 @@ void KIORenameDlg::b1Pressed()
   {
     string str = i18n( "Malformed URL\n" );
     str += m_pLineEdit->text();
-    QMessageBox::critical( this, i18n( "Error" ), str.c_str(), i18n( "Ok" ) );
+    QMessageBox::critical( this, i18n( "Error" ), str.c_str(), i18n( "OK" ) );
     return;
   }
 
   K2URL d( dest.c_str() );
   if ( strcmp( u.protocol(), d.protocol() ) != 0 )
   {
-    QMessageBox::critical( this, i18n( "Error" ), i18n( "You must not change the protocol" ), i18n( "Ok" ) );
+    QMessageBox::critical( this, i18n( "Error" ), i18n( "You must not change the protocol" ), i18n( "OK" ) );
     return;
   }
   

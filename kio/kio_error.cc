@@ -121,5 +121,5 @@ void kioErrorDialog( int _errid, const char *_errortext )
 {
   QString tmp = kioErrorString( _errid, _errortext );
   
-  QMessageBox::critical( (QWidget*)0L, i18n( "Error" ), tmp, i18n( "Ok" ) );
+  QMessageBox::critical( (QWidget*)0L, i18n( "Error" ), tmp, i18n( "OK" ) );
 }
