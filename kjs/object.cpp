@@ -958,7 +958,7 @@ Object Error::createObject(ErrorType e, const char *m, int l)
   }
 
 #ifndef NDEBUG
-  char *msg = err.get("message").toString().value().ascii();
+  const char *msg = err.get("message").toString().value().ascii();
   if (l >= 0)
       fprintf(stderr, "JS: %s at line %d. %s\n", estr, l, msg);
   else
