@@ -169,16 +169,17 @@ void KPImagePage::setOptions(const QMap<QString,QString>& opts)
 		m_gamma->setValue(value.toInt());
 
 	int	type = 0;
-	if (!(value=opts["ppi"]).isEmpty())
+	int	ival(0);
+	if ((ival = opts["ppi"].toInt()) != 0)
 		type = 1;
-	else if (!(value=opts["scaling"]).isEmpty())
+	else if ((ival = opts["scaling"].toInt()) != 0)
 		type = 2;
-	else if (!(value=opts["natural-scaling"]).isEmpty())
+	else if (!opts["natural-scaling"].isEmpty() && (ival = opts["natural-scaling"].toInt()) != 1)
 		type = 3;
 	m_sizetype->setCurrentItem(type);
 	slotSizeTypeChanged(type);
-	if (!value.isEmpty())
-		m_size->setValue(value.toInt());
+	if (type != 0)
+		m_size->setValue(ival);
 
 	if (!(value=opts["position"]).isEmpty())
 	{
@@ -204,6 +205,12 @@ void KPImagePage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		opts["gamma"] = QString::number(m_gamma->value());
 
 	QString	name;
+	if (incldef)
+	{
+		opts["ppi"] = "0";
+		opts["scaling"] = "0";
+		opts["natural-scaling"] = "1";
+	}
 	switch (m_sizetype->currentItem())
 	{
 		case 0: break;

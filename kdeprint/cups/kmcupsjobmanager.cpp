@@ -345,6 +345,8 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		opts["kde-pageorder"] = opts["OutputOrder"];
 	if (opts.contains("multiple-document-handling"))
 		opts["kde-collate"] = (opts["multiple-document-handling"] == "separate-documents-collated-copies" ? "Collate" : "Uncollate");
+	if (opts.contains("page-ranges"))
+		opts["kde-range"] = opts["page-ranges"];
 
 	// find printer and construct dialog
 	KMPrinter	*prt = KMManager::self()->findPrinter(j->printer());
@@ -375,6 +377,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		opts["OutputOrder"] = opts["kde-pageorder"];
 		opts["multiple-document-handling"] = (opts["kde-collate"] == "Collate" ? "separate-documents-collated-copies" : "separate-documents-uncollated-copies");
 		opts["page-set"] = (opts["kde-pageset"] == "1" ? "odd" : (opts["kde-pageset"] == "2" ? "even" : "all"));
+		opts["page-ranges"] = opts["kde-range"];
 
 		req.init();
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);

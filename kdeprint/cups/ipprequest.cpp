@@ -375,8 +375,8 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 					       << ", " << attr->values[i].resolution.yres << " )";
 					break;
 				case IPP_TAG_RANGE:
-					output << "[ " << attr->values[i].range.lower
-					       << ", " << attr->values[i].range.upper << " ]";
+					output << "[ " << (attr->values[i].range.lower > 0 ? attr->values[i].range.lower : 1)
+					       << ", " << (attr->values[i].range.upper > 0 ? attr->values[i].range.upper : 65535) << " ]";
 					break;
 				case IPP_TAG_DATE:
 					d = attr->values[i].date;
@@ -426,6 +426,17 @@ QMap<QString,QString> IppRequest::toMap(int group)
 					case IPP_TAG_BOOLEAN:
 						value.append((attr->values[i].boolean ? "true" : "false")).append(",");
 						break;
+					case IPP_TAG_RANGE:
+						if (attr->values[i].range.lower > 0)
+							value.append(QString::number(attr->values[i].range.lower));
+						if (attr->values[i].range.lower != attr->values[i].range.upper)
+						{
+							value.append("-");
+							if (attr->values[i].range.upper > 0)
+								value.append(QString::number(attr->values[i].range.upper));
+						}
+						value.append(",");
+						break;
 					case IPP_TAG_STRING:
 					case IPP_TAG_TEXT:
 					case IPP_TAG_NAME:
@@ -455,29 +466,42 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 		return;
 
 	QRegExp	re("^\"|\"$");
+	cups_option_t	*options = NULL;
+	int	n = 0;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
 		if (it.key().startsWith("kde-") || it.key().startsWith("app-"))
 			continue;
-		QString	value = it.data().stripWhiteSpace();
+		QString	value = it.data().stripWhiteSpace(), lovalue;
 		value.replace(re, "");
+		lovalue = value.lower();
 
-		// currently supported:
-		//	- single boolean
-		//	- single integer
-		//	- single/multiple strings
+		// handles specific cases: boolean, empty strings, or option that has that boolean
+		// keyword as value (to prevent them from conversion to real boolean)
 		if (value == "true" || value == "false")
 			addBoolean(IPP_TAG_JOB, it.key(), (value == "true"));
+		else if (value.isEmpty() || lovalue == "off" || lovalue == "on"
+		         || lovalue == "yes" || lovalue == "no"
+			 || lovalue == "true" || lovalue == "false")
+			addName(IPP_TAG_JOB, it.key(), value);
 		else
+			n = cupsAddOption(it.key().local8Bit(), value.local8Bit(), n, &options);
+	}
+	if (n > 0)
+		cupsEncodeOptions(request_, n, options);
+	cupsFreeOptions(n, options);
+
+	// find an remove that annoying "document-format" attribute
+	ipp_attribute_t	*attr = request_->attrs;
+	while (attr)
+	{
+		if (attr->next && strcmp(attr->next->name, "document-format") == 0)
 		{
-			bool	ok(false);
-			int	p = value.toInt(&ok);
-			if (ok)
-				addInteger(IPP_TAG_JOB, it.key(), p);
-			else if (value.find(',') != -1)
-				addName(IPP_TAG_JOB, it.key(), QStringList::split(',', value, false));
-			else
-				addName(IPP_TAG_JOB, it.key(), value);
+			ipp_attribute_t	*attr2 = attr->next;
+			attr->next = attr2->next;
+			_ipp_free_attr(attr2);
+			break;
 		}
+		attr = attr->next;
 	}
 }

@@ -168,7 +168,7 @@ void KPCopiesPage::setOptions(const QMap<QString,QString>& options)
 	slotCollateClicked();
 	// page ranges
 	value = options["kde-range"];
-	if (!value.isEmpty() && m_range->isEnabled())
+	if (!value.isEmpty() && m_range->isEnabled() && value != "1-")
 	{
 		m_rangeedit->setText(value);
 		m_range->setChecked(true);
@@ -185,7 +185,7 @@ void KPCopiesPage::setOptions(const QMap<QString,QString>& options)
 		m_pageset->setCurrentItem(0);
 }
 
-void KPCopiesPage::getOptions(QMap<QString,QString>& options, bool)
+void KPCopiesPage::getOptions(QMap<QString,QString>& options, bool incldef)
 {
 	// copies
 	options["kde-copies"] = m_copies->text();
@@ -195,7 +195,7 @@ void KPCopiesPage::getOptions(QMap<QString,QString>& options, bool)
 	options["kde-collate"] = (m_collate->isChecked() ? "Collate" : "Uncollate");
 	// ranges
 	options["kde-current"] = (m_current->isChecked() ? "1" : "0");
-	options["kde-range"] = (m_range->isChecked() ? m_rangeedit->text() : QString::fromLatin1(""));
+	options["kde-range"] = (m_range->isChecked() ? m_rangeedit->text() : (incldef ? QString::fromLatin1("1-") : QString::fromLatin1("")));
 	// page set
 	options["kde-pageset"] = QString::number(m_pageset->currentItem());
 }

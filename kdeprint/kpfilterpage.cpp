@@ -88,7 +88,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	l2->addWidget(m_configure);
 	l2->addStretch(1);
 	l1->addMultiCellWidget(m_info, 1, 1, 0, 1);
-        updateButton();
+	slotItemSelected(0);
 
 	resize(100,50);
 }
@@ -99,12 +99,12 @@ KPFilterPage::~KPFilterPage()
 
 void KPFilterPage::updateButton()
 {
-  QListViewItem	*item = m_view->currentItem();
+/*  QListViewItem	*item = m_view->currentItem();
   bool state=(item!=0);
   m_remove->setEnabled(state);
   m_up->setEnabled((state && item->itemAbove() != 0));
   m_down->setEnabled((state && item->itemBelow() != 0));
-  m_configure->setEnabled(state);
+  m_configure->setEnabled(state);*/
 }
 
 void KPFilterPage::slotAddClicked()
@@ -142,7 +142,6 @@ void KPFilterPage::slotAddClicked()
 		item->setPixmap(0, SmallIcon("filter"));
 		checkFilterChain();
 	}
-	updateButton();
 }
 
 void KPFilterPage::slotRemoveClicked()
@@ -153,33 +152,34 @@ void KPFilterPage::slotRemoveClicked()
 		delete m_view->selectedItem();
 		m_activefilters.remove(idname);
 		checkFilterChain();
+		if (m_view->currentItem())
+			m_view->setSelected(m_view->currentItem(), true);
 		slotItemSelected(m_view->currentItem());
-                updateButton();
 	}
 }
 
 void KPFilterPage::slotUpClicked()
 {
-	QListViewItem	*item = m_view->currentItem();
+	QListViewItem	*item = m_view->selectedItem();
 	if (item && item->itemAbove())
 	{
 		QListViewItem	*clone = new QListViewItem(m_view,item->itemAbove()->itemAbove(),item->text(0),item->text(1));
 		clone->setPixmap(0, SmallIcon("filter"));
 		delete item;
-		m_view->setCurrentItem(clone);
+		m_view->setSelected(clone, true);
 		checkFilterChain();
 	}
 }
 
 void KPFilterPage::slotDownClicked()
 {
-	QListViewItem	*item = m_view->currentItem();
+	QListViewItem	*item = m_view->selectedItem();
 	if (item && item->itemBelow())
 	{
 		QListViewItem	*clone = new QListViewItem(m_view,item->itemBelow(),item->text(0),item->text(1));
 		clone->setPixmap(0, SmallIcon("filter"));
 		delete item;
-		m_view->setCurrentItem(clone);
+		m_view->setSelected(clone, true);
 		checkFilterChain();
 	}
 }
@@ -266,8 +266,8 @@ QStringList KPFilterPage::activeList()
 KXmlCommand* KPFilterPage::currentFilter()
 {
 	KXmlCommand	*filter(0);
-	if (m_view->currentItem())
-		filter = m_activefilters.find(m_view->currentItem()->text(1));
+	if (m_view->selectedItem())
+		filter = m_activefilters.find(m_view->selectedItem()->text(1));
 	return filter;
 }
 

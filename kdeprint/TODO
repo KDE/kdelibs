@@ -18,8 +18,7 @@ WISHES
 
 - possibility of a generic "tiling" feature (coreldraw)
 
-- job option edition through graphical dialog (extract print options
-  from request and rebuild a printer properties dialog)
+- fix the problem of page range in job edition dialog (CUPS)
 
 - restarting server: use of "ps" in a subshell to get the pid, possibility
   of authentification (put this into separate program that would restart

@@ -382,3 +382,8 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS: added job priority selection in the Advanced tab of the print
     dialog
   * general: allow multi selection in the file list of print dialog
+
+14/02/2002 Michael Goffioul <goffioul@imec.be>
+  * CUPS: added the possibility to edit job attributes on-the-fly using
+    a dialog similar to the printer properties dialog. Still the be fixed:
+    page ranges (problem with option encoding in CUPS).
