@@ -299,6 +299,9 @@ The following applications currently have support for this:
 will be "locked down" and it will no longer be possible to select
 "Configure Desktop" from its menus.
 
+* kcalc - By marking the kcalcrc config file as immutable, the "Configure" button
+will not be shown
+
 
 IMPORTANT NOTE:
 Changing restrictions may influence the data that is cached in the ksycoca
