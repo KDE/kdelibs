@@ -1049,8 +1049,13 @@ void RenderFlow::layoutInlineChildren()
             newLine();
             firstLine = false;
         }
-        startEmbed->deref();
-        //embed->deref();
+
+	// clean up
+	while ( context ) {
+	    BidiContext *parent = context->parent;
+	    delete context;
+	    context = parent;
+	}
     }
     m_height += toAdd;
 
