@@ -132,7 +132,11 @@ namespace DOM {
             PseudoNot,
             PseudoContains,
             PseudoRoot,
-            PseudoSelection
+            PseudoSelection,
+            PseudoEnabled,
+            PseudoDisabled,
+            PseudoChecked,
+            PseudoIndeterminate
 	};
 
 	PseudoType pseudoType() const {

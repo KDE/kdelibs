@@ -178,12 +178,20 @@ void CSSSelector::extractPseudoType() const
                     _pseudoType = PseudoBefore;
                 break;
             case 'c':
-                if (value == "contains")
+                if (value == "checked")
+                    _pseudoType = PseudoChecked;
+                else if (value == "contains")
                     _pseudoType = PseudoContains;
+                break;
+            case 'd':
+                if (value == "disabled")
+                    _pseudoType = PseudoDisabled;
                 break;
             case 'e':
                 if (value == "empty")
                     _pseudoType = PseudoEmpty;
+                else if (value == "enabled")
+                    _pseudoType = PseudoEnabled;
                 break;
             case 'f':
                 if (value == "first-child")
@@ -200,6 +208,10 @@ void CSSSelector::extractPseudoType() const
             case 'h':
                 if (value == "hover")
                     _pseudoType = PseudoHover;
+                break;
+            case 'i':
+                if (value == "indeterminate")
+                    _pseudoType = PseudoIndeterminate;
                 break;
             case 'l':
                 if (value == "link")

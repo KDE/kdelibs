@@ -1,3 +1,10 @@
+2004-12-29  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Add :enabled and :disabled pseudo-classes
+
+        * css/css_base.{h,cpp}: Parse new pseudoclases
+        * css/cssstyleselector.cpp: Implement new selectors
+
 2004-12-08  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge encoding detection from WebCore

@@ -1095,6 +1095,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
+        // FIXME: LastChild, OnlyChild and NthLastChild only works reliably on tables,
+        // on other containers, the children are added and checked one at a time,
+        // so the current element is always the last.
         case CSSSelector::PseudoLastChild: {
             // last-child matches the last child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
@@ -1323,10 +1326,30 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoAfter:
 	    dynamicPseudo = RenderStyle::AFTER;
 	    return true;
+        case CSSSelector::PseudoEnabled: {
+            if (e->isGenericFormElement()) {
+                HTMLGenericFormElementImpl *form;
+                form = static_cast<HTMLGenericFormElementImpl*>(e);
+                return !form->disabled();
+            }
+            else
+	       return false;
+        }
+        case CSSSelector::PseudoDisabled: {
+            if (e->isGenericFormElement()) {
+                HTMLGenericFormElementImpl *form;
+                form = static_cast<HTMLGenericFormElementImpl*>(e);
+                return form->disabled();
+            }
+            else
+                return false;
+        }
 
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
+	case CSSSelector::PseudoChecked:
+	case CSSSelector::PseudoIndeterminate:
         case CSSSelector::PseudoContains:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
