@@ -1540,7 +1540,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     if (ret == 0)
       m_bEOF = true;
 
-  } while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
+  } while ((ret == -1) && (m_bIsSSL || errno == EAGAIN || errno == EINTR));
 
   return ret;
 }
@@ -3174,7 +3174,7 @@ void HTTPProtocol::httpClose()
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
-  if (m_bKeepAlive && m_request.method == HTTP_GET)
+  if (m_bKeepAlive && !m_bIsSSL && m_request.method == HTTP_GET)
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
     return;
