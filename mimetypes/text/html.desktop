@@ -64,5 +64,5 @@ Comment[zu]=Ikhasi le-HTML
 Icon=html
 Type=MimeType
 MimeType=text/html
-Patterns=*.html;*.HTML;*.htm;*.HTM;*.shtml;*.xhtml;
+Patterns=*.html;*.HTML;*.htm;*.HTM;*.shtml;
 X-KDE-AutoEmbed=true
