@@ -76,6 +76,16 @@ QString expandvars(const char *_input)
         result = result.replace(index, 9, "@libdir@");
         changed = true;
     }
+    index = result.find("${includedir}");
+    if (index >= 0) {
+        result = result.replace(index, 20, "@includedir@");
+        changed = true;
+    }
+    index = result.find("$(includedir)");
+    if (index >= 0) {
+        result = result.replace(index, 20, "@includedir@");
+        changed = true;
+    }
     index = result.find("${sysconfdir}");
     if (index >= 0) {
         result = result.replace(index, 13, "@sysconfdir@");
@@ -155,6 +165,7 @@ int main(int argc, char **argv)
             "icon", I18N_NOOP("Icons"),
             "kcfg", I18N_NOOP("Configuration description files"),
             "lib", I18N_NOOP("Libraries"),
+            "include", I18N_NOOP("Includes/Headers"),
             "locale", I18N_NOOP("Translation files for KLocale"),
             "mime", I18N_NOOP("Mime types"),
             "module", I18N_NOOP("Loadable modules"),
@@ -233,6 +244,7 @@ int main(int argc, char **argv)
             "xdgconf-menu", "@xdg_menudir@",
             "xdgdata-apps", "@xdg_appsdir@",
             "xdgdata-dirs", "@xdg_directorydir@",
+            "include", "@includedir@",
             0, 0
         };
         int index = 0;
