@@ -29,7 +29,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/ioctl.h>
-#include <sys/filio.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -127,10 +126,13 @@ void UnixServer::notifyIO(int fd, int types)
 		clientfd = accept(theSocket, (struct sockaddr*) &incoming, &size_in );
 		if(clientfd > 0)
 		{
-			int nbl = 1;		// non blocking IO
-			int nbl_result = ioctl(clientfd, FIONBIO, &nbl);
+			// non blocking I/O
+			int flags = fcntl (fd, F_GETFL, 0);
+			assert (flags != -1);
 
+			int nbl_result = fcntl (fd, F_SETFL, flags | O_NONBLOCK);
 			assert(nbl_result >= 0);                   
+	
 			Dispatcher::the()->initiateConnection(
 				new SocketConnection(clientfd));
 		}
