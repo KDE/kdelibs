@@ -1,8 +1,8 @@
 CUPSSUBDIR = @CUPSSUBDIR@
 
-SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpd pics tests
+SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpd rlpr pics tests
 
-INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes) 
+INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint.la
 
@@ -37,7 +37,7 @@ testpage_DATA = testprint.ps
 testpagedir = $(kde_datadir)/kdeprint
 
 # parser and scanner
-parser: 
+parser:
 	bison -d -p matic $(srcdir)/maticparser.yy -o $(srcdir)/maticparser.cpp
 	flex -omaticscanner.cpp -Pmatic $(srcdir)/maticscanner.ll
 

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,8 +24,7 @@
 
 #include <kdialog.h>
 
-class QLineEdit;
-class QCheckBox;
+class KMCupsConfigWidget;
 
 class KMCupsConfig : public KDialog
 {
@@ -35,11 +34,7 @@ public:
 	static bool configure(QWidget *parent = 0);
 
 protected:
-	void initialize();
-
-protected:
-	QLineEdit	*m_host, *m_port, *m_login, *m_password;
-	QCheckBox	*m_anonymous;
+	KMCupsConfigWidget	*m_widget;
 };
 
 #endif

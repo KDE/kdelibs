@@ -118,6 +118,8 @@ protected:
 	void setHasManagement(bool on)		{ m_hasmanagement = on; }
 	void setPrinterOperationMask(int m)	{ m_printeroperationmask = m; }
 	void setServerOperationMask(int m)	{ m_serveroperationmask = m; }
+	QString testPage();
+	void discardAllPrinters(bool);
 
 protected:
 	QString			m_errormsg;

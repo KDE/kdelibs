@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -97,18 +97,21 @@ void KMWEnd::initPrinter(KMPrinter *p)
 		}
 		txt.append("</ul><br>");
 
-		// driver informations
-		txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("Driver")));
-		if (p->option("kde-driver") == "raw")
-			txt.append(s.arg(i18n("Type")).arg(i18n("Raw printer")));
-		else
+		if (p->option("kde-driver") == "raw" || p->driver())
 		{
-			txt.append(s.arg(i18n("Type")).arg((p->dbEntry() ? i18n("DB driver") : i18n("External driver"))));
-			txt.append(s.arg(i18n("Manufacturer")).arg(p->manufacturer()));
-			txt.append(s.arg(i18n("Model")).arg(p->model()));
-			txt.append(s.arg(i18n("Description")).arg(p->driverInfo()));
+			// driver informations
+			txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("Driver")));
+			if (p->option("kde-driver") == "raw")
+				txt.append(s.arg(i18n("Type")).arg(i18n("Raw printer")));
+			else
+			{
+				txt.append(s.arg(i18n("Type")).arg((p->dbEntry() ? i18n("DB driver") : i18n("External driver"))));
+				txt.append(s.arg(i18n("Manufacturer")).arg(p->manufacturer()));
+				txt.append(s.arg(i18n("Model")).arg(p->model()));
+				txt.append(s.arg(i18n("Description")).arg(p->driverInfo()));
+			}
+			txt.append("</ul><br>");
 		}
-		txt.append("</ul><br>");
 	}
 
 	m_view->setText(txt);

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,12 +22,18 @@
 #include "kmcupsuimanager.h"
 #include "kmpropertypage.h"
 #include "kmwizard.h"
+#include "kmconfigdialog.h"
 #include "kmwbackend.h"
 
 #include "kmpropbanners.h"
+#include "kmpropmembers.h"
+#include "kmpropbackend.h"
+#include "kmpropdriver.h"
 #include "kmwbanners.h"
 #include "kmwipp.h"
 #include "kmwippselect.h"
+#include "kmconfigcups.h"
+#include "kmconfigcupsdir.h"
 
 #include "kprinterpropertydialog.h"
 #include "kpgeneralpage.h"
@@ -48,8 +54,11 @@ KMCupsUiManager::~KMCupsUiManager()
 {
 }
 
-void KMCupsUiManager::addPropertyPages(KMPropertyPage *p)
+void KMCupsUiManager::setupPropertyPages(KMPropertyPage *p)
 {
+	p->addPropPage(new KMPropMembers(p, "Members"));
+	p->addPropPage(new KMPropBackend(p, "Backend"));
+	p->addPropPage(new KMPropDriver(p, "Driver"));
 	p->addPropPage(new KMPropBanners(p, "Banners"));
 }
 
@@ -106,4 +115,10 @@ void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	// add general page
 	dlg->addPage(new KPGeneralPage(dlg->printer(),dlg->driver(),dlg,"GeneralPage"));
+}
+
+void KMCupsUiManager::setupConfigDialog(KMConfigDialog *dlg)
+{
+	dlg->addConfigPage(new KMConfigCups(dlg));
+	dlg->addConfigPage(new KMConfigCupsDir(dlg));
 }

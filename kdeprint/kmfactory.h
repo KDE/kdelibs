@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -28,6 +28,7 @@ class KMUiManager;
 class KMVirtualManager;
 class KPrinterImpl;
 class KLibFactory;
+class KConfig;
 
 class KMFactory
 {
@@ -43,6 +44,7 @@ public:
 	KMUiManager* uiManager();
 	KMVirtualManager* virtualManager();
 	KPrinterImpl* printerImplementation();
+	KConfig* printConfig();
 
 private:
 	void createManager();
@@ -60,6 +62,8 @@ private:
 	KMVirtualManager	*m_virtualmanager;
 	KPrinterImpl		*m_implementation;
 	KLibFactory		*m_factory;
+
+	KConfig			*m_printconfig;
 };
 
 #endif

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,6 +32,7 @@ class KMWizard;
 class KPrintDialogPage;
 class KPrintDialog;
 class KPrinterPropertyDialog;
+class KMConfigDialog;
 
 class KMUiManager : public QObject
 {
@@ -59,8 +60,9 @@ public:
 	virtual ~KMUiManager();
 
 	// print management
-	virtual void addPropertyPages(KMPropertyPage*);
+	virtual void setupPropertyPages(KMPropertyPage*);
 	virtual void setupWizard(KMWizard*);
+	virtual void setupConfigDialog(KMConfigDialog*);
 
 	// print dialog
 	void addPrintDialogPage(KPrintDialogPage *page)		{ m_printdialogpages.append(page); }

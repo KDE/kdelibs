@@ -26,12 +26,15 @@
 #include "driver.h"
 #include "matic.h"
 #include "kmcupsconfig.h"
+#include "kmfactory.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kdebug.h>
 #include <kapp.h>
+#include <kconfig.h>
 #include <kstddirs.h>
+#include <klibloader.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
 
@@ -43,6 +46,8 @@ QString printerURI(KMPrinter *p, bool useExistingURI = true);
 KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
+	m_cupsdconf = 0;
+
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterAll);
 	setServerOperationMask(KMManager::ServerAll);
@@ -59,7 +64,19 @@ QString KMCupsManager::driverDbCreationProgram()
 
 QString KMCupsManager::driverDirectory()
 {
-	return QString::fromLatin1("/tmp/opt/share/cups/model");
+	QString	d = cupsInstallDir();
+	if (d.isEmpty())
+		d = "/usr";
+	d.append("/share/cups/model");
+	return d;
+}
+
+QString KMCupsManager::cupsInstallDir()
+{
+	KConfig	*conf=  KMFactory::self()->printConfig();
+	conf->setGroup("CUPS");
+	QString	dir = conf->readEntry("InstallDir",QString::null);
+	return dir;
 }
 
 void KMCupsManager::reportIppError(IppRequest *req)
@@ -235,7 +252,7 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 
 bool KMCupsManager::testPrinter(KMPrinter *p)
 {
-	QString	testpage = locate("data","kdeprint/testprint.ps");
+	QString	testpage = testPage();
 	if (testpage.isEmpty())
 	{
 		setErrorMsg(QString::fromLatin1("Unable to locate test page."));
@@ -579,6 +596,58 @@ bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
 bool KMCupsManager::configure(QWidget *parent)
 {
 	return KMCupsConfig::configure(parent);
+}
+
+void* KMCupsManager::loadCupsdConfFunction(const char *name)
+{
+	if (!m_cupsdconf)
+	{
+		m_cupsdconf = KLibLoader::self()->library("libcupsdconf");
+		if (!m_cupsdconf)
+		{
+			setErrorMsg(QString::fromLatin1("Library <b>libcupsdconf</b> not found. Check your installation."));
+			return NULL;
+		}
+	}
+	void*	func = m_cupsdconf->symbol(name);
+	if (!func)
+		setErrorMsg(QString::fromLatin1("Symbol <b>%1</b> not found in libcupsdconf library.").arg(name));
+	return func;
+}
+
+void KMCupsManager::unloadCupsdConf()
+{
+	if (m_cupsdconf)
+	{
+		KLibLoader::self()->unloadLibrary("libcupsdconf");
+		m_cupsdconf = 0;
+	}
+}
+
+bool KMCupsManager::restartServer()
+{
+	QString	msg;
+	bool (*f1)(QString&) = (bool(*)(QString&))loadCupsdConfFunction("restartServer");
+	bool 	result(false);
+	if (f1)
+	{
+		result = f1(msg);
+		if (!result) setErrorMsg(msg);
+	}
+	unloadCupsdConf();
+	return result;
+}
+
+bool KMCupsManager::configureServer(QWidget *parent)
+{
+	QString	configfile = cupsInstallDir();
+	configfile.append("/etc/cups/cupsd.conf");
+	bool (*f2)(const QString&,QWidget*) = (bool(*)(const QString&,QWidget*))loadCupsdConfFunction("configureServer");
+	bool 	result(false);
+	if (f2)
+		result = f2(configfile,parent);
+	unloadCupsdConf();
+	return result;
 }
 
 //*****************************************************************************************************

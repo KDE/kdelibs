@@ -28,6 +28,7 @@
 #include <zlib.h>
 #include <qfile.h>
 #include <kstddirs.h>
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kapp.h>
 #include <unistd.h>
@@ -150,9 +151,7 @@ QList<KMPrinter>* KMManager::printerList(bool reload)
 	if (reload || m_printers.count() == 0)
 	{
 		// first discard all printers
-		QListIterator<KMPrinter>	it(m_printers);
-		for (;it.current();++it)
-			it.current()->setDiscarded(true);
+		discardAllPrinters(true);
 
 		// make sure virtual printers will be reloaded if we don't have
 		// any printer (for example if settings are wrong)
@@ -304,4 +303,21 @@ bool KMManager::restartServer()
 bool KMManager::configureServer(QWidget*)
 {
 	return notImplemented();
+}
+
+QString KMManager::testPage()
+{
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("General");
+	QString	tpage = conf->readEntry("TestPage",QString::null);
+	if (tpage.isEmpty())
+		tpage = locate("data","kdeprint/testprint.ps");
+	return tpage;
+}
+
+void KMManager::discardAllPrinters(bool on)
+{
+	QListIterator<KMPrinter>	it(m_printers);
+	for (;it.current();++it)
+		it.current()->setDiscarded(on);
 }

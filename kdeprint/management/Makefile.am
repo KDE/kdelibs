@@ -12,9 +12,9 @@ libkdeprint_management_la_SOURCES = \
 	kmwizard.cpp kmwizardpage.cpp kmwinfopage.cpp kmwpassword.cpp kmwsocketutil.cpp \
 	kmwbackend.cpp kmwsocket.cpp kmwdriver.cpp kmwdriverselect.cpp kmwdrivertest.cpp \
 	kmwinfobase.cpp kmwname.cpp kmwend.cpp kmwclass.cpp kmwlpd.cpp kmwfile.cpp kmdriverdialog.cpp \
-	kmwsmb.cpp smbview.cpp
+	kmwsmb.cpp smbview.cpp kmconfigdialog.cpp kmconfigpage.cpp kmconfiggeneral.cpp
 libkdeprint_management_la_LDFLAGS = $(all_libraries) -version 0:1
-libkdeprint_management_la_LIBADD = $(top_builddir)/kdeprint/libkdeprint.la
+libkdeprint_management_la_LIBADD = $(top_builddir)/kdeprint/libkdeprint.la $(LIB_KIO)
 libkdeprint_management_la_METASOURCES = AUTO
 
 kdeprint_HEADERS = kmmainview.h kmjobviewer.h kmprinterpage.h
@@ -26,7 +26,8 @@ noinst_HEADERS = kmdbcreator.h kmdriverdb.h kmdriverdbwidget.h kmiconview.h \
 		 kmpropertypage.h kmpropgeneral.h cjanuswidget.h kmpropmembers.h kmpropbackend.h kmpropdriver.h \
 		 kmlistview.h kminstancepage.h kmwizard.h kmwizardpage.h kmwinfopage.h kmwpassword.h kmwsocketutil.h \
 		 kmwbackend.h kmwsocket.h kmwdriver.h kmwdriverselect.h kmwdrivertest.h kmwinfobase.h kmwname.h kmwend.h \
-		 kmwclass.h kmwlpd.h kmwfile.h kmdriverdialog.h kmwsmb.h smbview.h
+		 kmwclass.h kmwlpd.h kmwfile.h kmdriverdialog.h kmwsmb.h smbview.h kmconfigdialog.h kmconfigpage.h \
+		 kmconfiggeneral.h
 
 #messages:
 #        $(XGETTEXT) $(libkdeprint_management_la_SOURCES) -o $(podir)/kdeprint.pot

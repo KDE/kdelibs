@@ -277,9 +277,5 @@ void KMLpdUnixManager::listPrinters()
 		parseSpoolInterface();
 	}
 	else
-	{
-		QListIterator<KMPrinter>	it(m_printers);
-		for (;it.current();++it)
-			it.current()->setDiscarded(false);
-	}
+		discardAllPrinters(false);
 }

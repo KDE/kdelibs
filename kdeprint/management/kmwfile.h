@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,22 +24,18 @@
 
 #include "kmwizardpage.h"
 
-class QLineEdit;
+class KURLRequester;
 
 class KMWFile : public KMWizardPage
 {
-	Q_OBJECT
 public:
 	KMWFile(QWidget *parent = 0, const char *name = 0);
 
 	bool isValid(QString&);
 	void updatePrinter(KMPrinter*);
 
-protected slots:
-	void slotBrowse();
-
 private:
-	QLineEdit	*m_edit;
+	KURLRequester	*m_url;
 };
 
 #endif

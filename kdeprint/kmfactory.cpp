@@ -58,6 +58,7 @@ KMFactory::KMFactory()
 	m_virtualmanager = 0;
 	m_implementation = 0;
 	m_factory = 0;
+	m_printconfig = 0;
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 }
@@ -69,6 +70,7 @@ KMFactory::~KMFactory()
 	if (m_uimanager) delete m_uimanager;
 	if (m_virtualmanager) delete m_virtualmanager;
 	if (m_implementation) delete m_implementation;
+	if (m_printconfig) delete m_printconfig;
 }
 
 KMManager* KMFactory::manager()
@@ -143,12 +145,22 @@ void KMFactory::loadFactory()
 {
 	if (!m_factory)
 	{
-		KConfig	conf("kdeprintrc");
-		conf.setGroup("General");
-		QString	sys = conf.readEntry("PrintSystem","lpdunix");
+		KConfig	*conf = printConfig();
+		conf->setGroup("General");
+		QString	sys = conf->readEntry("PrintSystem","lpdunix");
 		QString	libname = QString::fromLatin1("libkdeprint_%1").arg(sys);
 		m_factory = KLibLoader::self()->factory(libname.latin1());
 		if (!m_factory)
 			kdWarning() << QString::fromLatin1("Unable to locate library '%1'.").arg(libname) << endl;
 	}
+}
+
+KConfig* KMFactory::printConfig()
+{
+	if (!m_printconfig)
+	{
+		m_printconfig = new KConfig("kdeprintrc");
+		CHECK_PTR(m_printconfig);
+	}
+	return m_printconfig;
 }

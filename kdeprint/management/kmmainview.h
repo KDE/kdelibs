@@ -67,12 +67,14 @@ protected slots:
 	void slotServerRestart();
 	void slotServerConfigure();
 	void slotToggleToolBar(bool);
+	void slotManagerConfigure();
 
 protected:
 	void initActions();
 	void showErrorMsg(const QString& msg, bool usemgr = true);
 	void restoreSettings();
 	void saveSettings();
+	void loadParameters();
 
 private:
 	KMPrinterView	*m_printerview;
@@ -84,6 +86,7 @@ private:
 	KMPrinter	*m_current;
 	QSplitter	*m_splitter;
 	KToolBar	*m_toolbar;
+	uint 		m_timerdelay;
 };
 
 #endif

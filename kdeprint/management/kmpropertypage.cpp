@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,9 +27,6 @@
 #include "kmuimanager.h"
 
 #include "kmpropgeneral.h"
-#include "kmpropmembers.h"
-#include "kmpropbackend.h"
-#include "kmpropdriver.h"
 
 #include <qvbox.h>
 #include <kiconloader.h>
@@ -40,12 +37,9 @@ KMPropertyPage::KMPropertyPage(QWidget *parent, const char *name)
 	m_widgets.setAutoDelete(false);
 
 	addPropPage(new KMPropGeneral(this, "General"));
-	addPropPage(new KMPropMembers(this, "Members"));
-	addPropPage(new KMPropBackend(this, "Backend"));
-	addPropPage(new KMPropDriver(this, "Driver"));
 
 	// add specific pages
-	KMFactory::self()->uiManager()->addPropertyPages(this);
+	KMFactory::self()->uiManager()->setupPropertyPages(this);
 }
 
 KMPropertyPage::~KMPropertyPage()

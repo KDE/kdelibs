@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
  **/
 
 #include "cupsinfos.h"
+#include "kmfactory.h"
 
 #include <kio/passdlg.h>
 #include <klocale.h>
@@ -62,21 +63,18 @@ void CupsInfos::setHost(const QString& s)
 {
 	host_ = s;
 	cupsSetServer(s.latin1());
-	save();
 }
 
 void CupsInfos::setPort(int p)
 {
 	port_ = p;
 	ippSetPort(p);
-	save();
 }
 
 void CupsInfos::setLogin(const QString& s)
 {
 	login_ = s;
 	cupsSetUser(s.latin1());
-	save();
 }
 
 void CupsInfos::setPassword(const QString& s)
@@ -106,11 +104,11 @@ const char* CupsInfos::getPasswordCB()
 
 void CupsInfos::load()
 {
-	KConfig	conf_("kdeprintrc");
-	conf_.setGroup("CUPS");
-	host_ = conf_.readEntry("Host",QString::fromLatin1(cupsServer()));
-	port_ = conf_.readNumEntry("Port",ippPort());
-	login_ = conf_.readEntry("Login",QString::fromLatin1(cupsUser()));
+	KConfig	*conf_ = KMFactory::self()->printConfig();
+	conf_->setGroup("CUPS");
+	host_ = conf_->readEntry("Host",QString::fromLatin1(cupsServer()));
+	port_ = conf_->readNumEntry("Port",ippPort());
+	login_ = conf_->readEntry("Login",QString::fromLatin1(cupsUser()));
 	password_ = QString::null;
 	if (login_.isEmpty()) login_ = QString::null;
 
@@ -122,10 +120,11 @@ void CupsInfos::load()
 
 void CupsInfos::save()
 {
-	KConfig	conf_("kdeprintrc");
-	conf_.setGroup("CUPS");
-	conf_.writeEntry("Host",host_);
-	conf_.writeEntry("Port",port_);
-	conf_.writeEntry("Login",login_);
+	KConfig	*conf_ = KMFactory::self()->printConfig();
+	conf_->setGroup("CUPS");
+	conf_->writeEntry("Host",host_);
+	conf_->writeEntry("Port",port_);
+	conf_->writeEntry("Login",login_);
 	// don't write password for obvious security...
+	conf_->sync();
 }

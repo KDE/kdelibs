@@ -31,6 +31,7 @@
 #include "kmdriverdialog.h"
 #include "kmwizard.h"
 #include "kmvirtualmanager.h"
+#include "kmconfigdialog.h"
 
 #include <qtimer.h>
 #include <qsplitter.h>
@@ -82,6 +83,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 
 	// first update
 	restoreSettings();
+	loadParameters();
 	slotTimer();
 }
 
@@ -92,28 +94,36 @@ KMMainView::~KMMainView()
 	KMFactory::release();
 }
 
+void KMMainView::loadParameters()
+{
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("General");
+	m_timerdelay = conf->readNumEntry("TimerDelay",5);
+}
+
 void KMMainView::restoreSettings()
 {
-	KConfig	conf("kdeprintrc");
-	conf.setGroup("General");
-	setViewType((KMPrinterView::ViewType)conf.readNumEntry("ViewType",KMPrinterView::Icons));
-	setOrientation(conf.readNumEntry("Orientation",Qt::Vertical));
-	QValueList<int>	sz = conf.readIntListEntry("Sizes");
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("General");
+	setViewType((KMPrinterView::ViewType)conf->readNumEntry("ViewType",KMPrinterView::Icons));
+	setOrientation(conf->readNumEntry("Orientation",Qt::Vertical));
+	QValueList<int>	sz = conf->readIntListEntry("Sizes");
 	while (sz.count() < 2) sz.append(100);
 	m_splitter->setSizes(sz);
-	bool 	view = conf.readBoolEntry("ViewToolBar",true);
+	bool 	view = conf->readBoolEntry("ViewToolBar",true);
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
 }
 
 void KMMainView::saveSettings()
 {
-	KConfig	conf("kdeprintrc");
-	conf.setGroup("General");
-	conf.writeEntry("ViewType",(int)m_printerview->viewType());
-	conf.writeEntry("Orientation",(int)m_splitter->orientation());
-	conf.writeEntry("Sizes",m_splitter->sizes());
-	conf.writeEntry("ViewToolBar",m_toolbar->isVisible());
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("General");
+	conf->writeEntry("ViewType",(int)m_printerview->viewType());
+	conf->writeEntry("Orientation",(int)m_splitter->orientation());
+	conf->writeEntry("Sizes",m_splitter->sizes());
+	conf->writeEntry("ViewToolBar",m_toolbar->isVisible());
+	conf->sync();
 }
 
 void KMMainView::initActions()
@@ -131,6 +141,8 @@ void KMMainView::initActions()
 	new KAction(i18n("Set as local default"),"kdeprint_printer",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
 	new KAction(i18n("Set as user default"),"exec",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
 	new KAction(i18n("Test printer"),"fileprint",0,this,SLOT(slotTest()),m_actions,"printer_test");
+	new KAction(i18n("Configure manager"),"configure",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
+	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotTimer()),m_actions,"view_refresh");
 	m_actions->action("printer_add")->setEnabled((m_manager->printerOperationMask() & KMManager::PrinterCreation));
 
 	KSelectAction	*dact = new KSelectAction(i18n("Orientation..."),0,m_actions,"orientation_change");
@@ -162,13 +174,17 @@ void KMMainView::initActions()
 	m_toolbar->insertLineSeparator();
 	m_actions->action("server_restart")->plug(m_toolbar);
 	m_actions->action("server_configure")->plug(m_toolbar);
+	m_toolbar->insertLineSeparator();
+	m_actions->action("manager_configure")->plug(m_toolbar);
+	m_actions->action("view_refresh")->plug(m_toolbar);
 
 	slotPrinterSelected(0);
 }
 
 void KMMainView::startTimer()
 {
-	m_timer->start(5000,true);
+	if (m_timerdelay > 0)
+		m_timer->start(m_timerdelay*1000,true);
 }
 
 void KMMainView::stopTimer()
@@ -264,6 +280,9 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 			m_pop->insertSeparator();
 			m_actions->action("server_restart")->plug(m_pop);
 			m_actions->action("server_configure")->plug(m_pop);
+			m_pop->insertSeparator();
+			m_actions->action("manager_configure")->plug(m_pop);
+			m_actions->action("view_refresh")->plug(m_pop);
 			m_pop->insertSeparator();
 		}
 	m_actions->action("view_change")->plug(m_pop);
@@ -425,5 +444,17 @@ void KMMainView::slotToggleToolBar(bool on)
 {
 	if (on) m_toolbar->show();
 	else m_toolbar->hide();
+}
+
+void KMMainView::slotManagerConfigure()
+{
+	KMTimer::blockTimer();
+	KMConfigDialog	dlg(this,"ConfigDialog");
+	bool 	refresh(false);
+	if ((refresh=dlg.exec()))
+	{
+		loadParameters();
+	}
+	KMTimer::releaseTimer(refresh);
 }
 #include "kmmainview.moc"

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 #include "kmmanager.h"
 
 class IppRequest;
+class KLibrary;
 
 class KMCupsManager : public KMManager
 {
@@ -53,6 +54,9 @@ public:
 
 	bool configure(QWidget *parent = 0);
 
+	bool restartServer();
+	bool configureServer(QWidget *parent = 0);
+
 protected:
 	// the real printer listing job is done here
 	void listPrinters();
@@ -62,6 +66,12 @@ protected:
 	DrMain* loadDriverFile(const QString& filename);
 	void saveDriverFile(DrMain *driver, const QString& filename);
 	void reportIppError(IppRequest*);
+	void* loadCupsdConfFunction(const char*);
+	void unloadCupsdConf();
+	QString cupsInstallDir();
+
+private:
+	KLibrary	*m_cupsdconf;
 };
 
 #endif

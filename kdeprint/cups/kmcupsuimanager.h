@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -30,9 +30,10 @@ public:
 	KMCupsUiManager(QObject *parent = 0, const char *name = 0);
 	~KMCupsUiManager();
 
-	void addPropertyPages(KMPropertyPage*);
+	void setupPropertyPages(KMPropertyPage*);
 	void setupWizard(KMWizard*);
 	void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
+	void setupConfigDialog(KMConfigDialog*);
 };
 
 #endif
