@@ -61,6 +61,11 @@ class KDirOperator : public QWidget {
     void setNameFilter(const QString& filter);
 
     /**
+     * @returns the current namefilter.
+     */
+    const QString& nameFilter() const { return dir->nameFilter(); }
+    
+    /**
      * local URLs (i.e. directories) always have file: prepended.
      */
     KURL url() const;
