@@ -28,13 +28,13 @@ KDE_CATALOG=$prefix
 AC_SUBST(KDE_CATALOG)
 AC_SUBST(KDE_STYLESHEET)
 
-catdir=$(kde_datadir)/ksgmltools
+catdir=$kde_datadir/ksgmltools
 AC_SUBST(catdir)
 
 dtddir=$catdir
 AC_SUBST(dtddir)
 
-dsldir='$(kde_datadir)/ksgmltools/stylesheets'
+dsldir=$kde_datadir/ksgmltools/stylesheets
 AC_SUBST(dsldir)
 
 dnl Don't remove !
