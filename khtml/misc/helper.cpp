@@ -198,6 +198,12 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
 	}
     }
 
+    // #fffffff as found on msdn.microsoft.com
+    if ( name[0] == '#' && len > 7)
+    {
+        name = name.left(7);
+    }
+	      
     if ( len > 4 && name[0].lower() == 'r' && name[1].lower() == 'g' &&
          name[2].lower() == 'b' && name[3] == '(' &&
          name[len-1] == ')')
