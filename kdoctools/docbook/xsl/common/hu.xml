@@ -12,8 +12,8 @@
    <gentext key="Appendix" text="F&#x00FC;ggel&#x00E9;k"/>
    <gentext key="Article" text="Cikk"/>
    <gentext key="article" text="cikk"/>
-   <gentext key="Bibliography" text="Irodalomjegyz&#00E9;k"/>
-   <gentext key="bibliography" text="Irodalomjegyz&#x00E9;k"/>
+   <gentext key="Bibliography" text="Irodalomjegyz&#x00E9;k"/>
+   <gentext key="bibliography" text="irodalomjegyz&#x00E9;k"/>
    <gentext key="Book" text="K&#x00F6;nyv"/>
    <gentext key="book" text="k&#x00F6;nyv"/>
    <gentext key="CAUTION" text="FIGYELEM"/>
@@ -295,7 +295,7 @@
       <template name="reference" text="%t"/>
       <template name="set" text="%t"/>
       <template name="setindex" text="%t"/>
-      <template name="table" text="%n. t&#00E1;bl&#x00E1;zat - %t"/>
+      <template name="table" text="%n. t&#x00E1;bl&#x00E1;zat - %t"/>
    </context>
 
    <context name="section-xref">
