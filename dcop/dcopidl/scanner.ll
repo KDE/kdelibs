@@ -214,6 +214,7 @@ virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
 inline			return T_INLINE;
 static			return T_STATIC;
+mutable 		return T_MUTABLE;
 signed			return T_SIGNED;
 unsigned		return T_UNSIGNED;
 short			return T_SHORT;

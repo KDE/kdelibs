@@ -108,6 +108,7 @@ void yyerror( const char *s )
 %token T_TRUE
 %token T_FALSE
 %token T_STATIC
+%token T_MUTABLE
 %token T_EQUAL
 %token T_SCOPE
 %token T_NULL
@@ -767,8 +768,9 @@ Identifier_list : Identifier_list_entry Identifier_list_rest {}
 
 member
 	: type Identifier_list T_SEMICOLON {}
-    | type Identifier T_COLON T_INTEGER_LITERAL T_SEMICOLON {}
+	| type Identifier T_COLON T_INTEGER_LITERAL T_SEMICOLON {}
 	| T_STATIC type T_IDENTIFIER default T_SEMICOLON {}
+	| T_MUTABLE type T_IDENTIFIER default T_SEMICOLON {}
 	| type T_IDENTIFIER T_ARRAY_OPEN int_expression T_ARRAY_CLOSE T_SEMICOLON {}
 
 %%
