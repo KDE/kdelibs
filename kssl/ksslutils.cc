@@ -24,6 +24,7 @@
 #include <qstring.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <qdatetime.h>
 
 #ifdef HAVE_SSL
 // This code is mostly taken from OpenSSL v0.9.5a
@@ -35,6 +36,9 @@ int gmt=0;
 int i;
 int y=0,M=0,d=0,h=0,m=0,s=0;
 KLocale kl;
+QDate qdate;
+QTime qtime;
+QDateTime qdt;
  
   i = tm->length;
   v = (char *)tm->data;
@@ -54,12 +58,18 @@ KLocale kl;
           (v[11] >= '0') && (v[11] <= '9'))
           s = (v[10]-'0')*10+(v[11]-'0');
  
-  // did I just defeat the purpose of klocale by calling ascii()?  No time to
-  // check this right now.
-  qstr.sprintf("%s %2d %02d:%02d:%02d %d%s", kl.monthName(M,true).ascii(),d,h,m,s,y+1900,(gmt)?" GMT":""); 
+  // localize the date and display it.
+  qdate.setYMD(y+1900, M, d);
+  qtime.setHMS(h,m,s);
+  qdt.setDate(qdate); qdt.setTime(qtime);
+  qstr = kl.formatDateTime(qdt, false, true);
+  if (gmt) { 
+    qstr += " ";
+    qstr += /*TODO? i18n*/ ("GMT");
+  }
   return qstr;
 auq_err:
-  qstr = "(Bad time value)";
+  qstr = /*TODO i18n*/ ("(Bad time value)");
   return qstr;
 }
 #endif
