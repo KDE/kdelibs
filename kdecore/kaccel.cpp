@@ -17,21 +17,12 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kaccel.h"
+
 #include <qaccel.h>
 #include <qpopupmenu.h>
 #include <qstring.h>
 #include <qtimer.h>
-
-#ifdef Q_WS_X11
-#	include <X11/Xlib.h>
-#	include <X11/keysymdef.h>
-
-	// defined by X11 headers
-	const int XKeyPress = KeyPress;
-#	undef KeyPress
-#endif
-
-#include "kaccel.h"
 
 #include <kaccelbase.h>
 #include <kapplication.h>
@@ -41,10 +32,21 @@
 
 #include "kaccelprivate.h"
 
+#ifdef Q_WS_X11
+#	include <X11/Xlib.h>
+#	ifdef KeyPress // needed for --enable-final
+		// defined by X11 headers
+		const int XKeyPress = KeyPress;
+#		undef KeyPress
+#	endif
+#endif
+
 // TODO: Put in kaccelbase.cpp
 //---------------------------------------------------------------------
 // KAccelEventHandler
 //---------------------------------------------------------------------
+
+bool g_bKillAccelOverride = false;
 
 class KAccelEventHandler : public QWidget
 {
@@ -100,12 +102,19 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 		
 		QKeyEvent ke( QEvent::AccelOverride, keyCodeQt, 0,  state );
 		ke.ignore();
+		
 		g_bActive = true;
+		g_bAccelActivated = false;
 		kapp->sendEvent( kapp->focusWidget(), &ke );
 		g_bActive = false;
-		bool bHandled = g_bAccelActivated;
-		g_bAccelActivated = false;
-		return bHandled;
+		
+		// If the Override event was accepted from a non-KAccel widget,
+		//  then kill the next AccelOverride in KApplication::notify.
+		if( ke.isAccepted() && !g_bAccelActivated )
+			g_bKillAccelOverride = true;
+		
+		// Stop event processing if a KDE accelerator was activated.
+		return g_bAccelActivated;
 	}
 	
 	return false;
@@ -124,8 +133,9 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 	m_pWatch = pWatch;
 	m_bAutoUpdate = true;
 	connect( (QAccel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
-	
-	m_pWatch->installEventFilter( this );
+
+	if( m_pWatch )
+		m_pWatch->installEventFilter( this );
 	KAccelEventHandler::self();
 }
 
@@ -289,7 +299,7 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 
 bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 {
-	if( KAccelEventHandler::active() && pEvent->type() == QEvent::AccelOverride ) {
+	if( KAccelEventHandler::active() && pEvent->type() == QEvent::AccelOverride && m_bEnabled ) {
 		QKeyEvent* pKeyEvent = (QKeyEvent*) pEvent;
 		KKey key( pKeyEvent );
 		kdDebug(125) << "KAccelPrivate::eventFilter( AccelOverride ): this = " << this << ", key = " << key.toStringInternal() << endl;
@@ -302,6 +312,8 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 				if( m_mapIDToAction.contains( nID ) ) {
 					// TODO: reduce duplication between here and slotMenuActivated
 					KAccelAction* pAction = m_mapIDToAction[nID];
+					if( !pAction->isEnabled() ) 
+						continue;
 					connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 					emit menuItemActivated();
 					disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );

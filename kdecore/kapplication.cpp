@@ -355,9 +355,28 @@ void KApplication::x11FilterDestroyed()
     }
 }
 
+// FIXME: remove this when we've get a better method of 
+// customizing accelerator handling -- hopefully in Qt.
+// For now, this is set whenever an accelerator is overriden
+// in KAccelEventHandler so that the AccelOverride isn't sent twice. -- ellis, 19/10/02
+extern bool g_bKillAccelOverride;
+
 bool KApplication::notify(QObject *receiver, QEvent *event)
 {
     QEvent::Type t = event->type();
+    if (g_bKillAccelOverride)
+    {
+       g_bKillAccelOverride = false;
+       // Indicate that the accelerator has been overridden.
+       if (t == QEvent::AccelOverride)
+       {
+          static_cast<QKeyEvent *>(event)->accept();
+          return true;
+       }
+       else
+          kdWarning(125) << "g_bKillAccelOverride set, but received an event other than AccelOverride." << endl;
+    }
+    
     if ((t == QEvent::AccelOverride) || (t == QEvent::KeyPress))
     {
        static const KShortcut& _selectAll = KStdAccel::selectAll();
