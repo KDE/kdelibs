@@ -38,7 +38,7 @@
 #include <qregexp.h>
 #include <qkeycode.h>
 #include <qlineedit.h>
-#include <qmultilineedit.h>
+#include <qtextedit.h>
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qsessionmanager.h>
@@ -524,9 +524,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
           }
        }
-       if (receiver && receiver->inherits("QMultiLineEdit"))
+       if (receiver && receiver->inherits("QTextEdit"))
        {
-          QMultiLineEdit *medit = static_cast<QMultiLineEdit *>(receiver);
+          QTextEdit *medit = static_cast<QTextEdit *>(receiver);
           // We have a keypress for a multilineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           if (_selectAll.contains(KKey(kevent)))
