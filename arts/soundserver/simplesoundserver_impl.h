@@ -51,7 +51,7 @@ protected:
 	bool terminated;
 
 public:
-	PlayWavJob(const string& filename);
+	PlayWavJob(const std::string& filename);
 
 	void terminate();
 	bool done();

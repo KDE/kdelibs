@@ -884,7 +884,7 @@ void StdFlowSystem::setFloatValue(Object node, const std::string& port,
 	StdScheduleNode *sn =
 		(StdScheduleNode *)node._node()->cast("StdScheduleNode");
 	assert(sn);
-	return sn->setFloatValue(port,value);
+	sn->setFloatValue(port,value);
 }
 
 FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
