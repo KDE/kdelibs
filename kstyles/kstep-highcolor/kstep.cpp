@@ -1079,9 +1079,9 @@ static const int windowsRightBorder     = 12;
 }
 
 void KStepStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
-                                    const QColorGroup &g, QBrush *)
+                                    const QColorGroup &g, QBrush *fill)
 {
-    qDrawShadePanel(p, x, y, w, h, nextGrp, false, 1, &g.brush(QColorGroup::Dark));
+    qDrawShadePanel(p, x, y, w, h, nextGrp, false, 1, fill ? fill : &g.brush(QColorGroup::Dark));
 }
 
 void KStepStyle::drawFocusRect(QPainter *p, const QRect &r,
