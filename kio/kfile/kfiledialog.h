@@ -791,6 +791,12 @@ protected slots:
     void enterURL( const KURL& url );
     void enterURL( const QString& url );
     void locationActivated( const QString& url );
+
+    /**
+     * @deprecated
+     */
+    void toolbarCallback(int);
+
     void slotFilterChanged();
     void pathComboChanged( const QString& );
     void fileHighlighted(const KFileItem *i);
@@ -802,22 +808,17 @@ protected slots:
     void fileCompletion( const QString& );
     void toggleSpeedbar( bool );
 
+    /**
+     * @deprecated
+     */
+    virtual void updateStatusLine(int dirs, int files);
+
     virtual void slotOk();
     virtual void accept();
     virtual void slotCancel();
 
     void addToRecentDocuments();
     
-    /**
-     * @deprecated
-     */
-    void toolbarCallback(int);
-    
-    /**
-     * @deprecated
-     */
-    virtual void updateStatusLine(int dirs, int files);
-
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
