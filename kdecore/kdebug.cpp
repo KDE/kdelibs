@@ -408,12 +408,12 @@ kdbgstream &perror( kdbgstream &s) { return s << " " << strerror(errno); }
 kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
 kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
 
-kdbgstream kdError(int area) { return kdbgstream(area, KDEBUG_ERROR); }
-kdbgstream kdError(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_ERROR); else return kdbgstream(0,0,false); }
-kdbgstream kdWarning(int area) { return kdbgstream(area, KDEBUG_WARN); }
-kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_WARN); else return kdbgstream(0,0,false); }
-kdbgstream kdFatal(int area) { return kdbgstream(area, KDEBUG_FATAL); }
-kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_FATAL); else return kdbgstream(0,0,false); }
+kdbgstream kdError(int area) { return kdbgstream("ERROR: ", area, KDEBUG_ERROR); }
+kdbgstream kdError(bool cond, int area) { if (cond) return kdbgstream("ERROR: ", area, KDEBUG_ERROR); else return kdbgstream(0,0,false); }
+kdbgstream kdWarning(int area) { return kdbgstream("WARNING: ", area, KDEBUG_WARN); }
+kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream("WARNING: ", area, KDEBUG_WARN); else return kdbgstream(0,0,false); }
+kdbgstream kdFatal(int area) { return kdbgstream("FATAL: ", area, KDEBUG_FATAL); }
+kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream("FATAL: ", area, KDEBUG_FATAL); else return kdbgstream(0,0,false); }
 
 void kdbgstream::flush() {
     if (output.isEmpty() || !print)

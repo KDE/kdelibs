@@ -119,7 +119,10 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 
 class kdbgstream {
  public:
-    kdbgstream(unsigned int _area, unsigned int _level, bool _print = true) :area(_area), level(_level),  print(_print) {}
+    kdbgstream(unsigned int _area, unsigned int _level, bool _print = true) :
+      area(_area), level(_level),  print(_print) { }
+    kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true) :
+      output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
     ~kdbgstream();
     kdbgstream &operator<<(int i)  {
 	if (!print) return *this;
