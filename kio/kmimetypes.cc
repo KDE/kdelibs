@@ -540,7 +540,8 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
       if ( readonly == "1" )
 	ro = true;
 		
-    (void) new KAutoMount( ro, 0L, dev.ascii(), 0L );
+    KURL u( _url );
+    (void) new KAutoMount( ro, 0L, dev.ascii(), 0L, u.directory() );
   }
 
   return true;
@@ -732,7 +733,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
 	if ( readonly == "1" )
 	  ro = true;
 
-      (void)new KAutoMount( ro, 0L, dev.ascii(), 0L, false );
+      (void)new KAutoMount( ro, 0L, dev.ascii(), 0L, u.directory(), false );
     }
     else if ( _service.m_type == ST_UNMOUNT )
     {
@@ -740,7 +741,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       if ( mp.isEmpty() )
 	return;
 
-      (void)new KAutoUnmount( mp.ascii() );
+      (void)new KAutoUnmount( mp, u.directory() );
     }
   }
   else

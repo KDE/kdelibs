@@ -105,6 +105,9 @@ class KDirWatch : public QObject
   
    bool contains( const QString& path ) const;
   
+   /** @see signal veryDirty */
+   void setVeryDirty( const QString & dir );
+
    static KDirWatch* self();
     
  signals:
@@ -115,6 +118,14 @@ class KDirWatch : public QObject
     */
    void dirty (const QString& dir);
    
+   /**
+    * This signal is emmited when KDirWatch learns that the directory
+    * needs to be completely reloaded. This happens for instance a
+    * .desktop file gets a new icon - but this isn't automatic.
+    * Call setVeryDirty().
+    */
+   void veryDirty (const QString& dir);
+
    /**
     * This signal is emmited when directory is deleted. When you receive
     * this signal, directory is not yet deleted from the list. You will

@@ -8,8 +8,8 @@ class KAutoMount : public QObject
 {
   Q_OBJECT
 public:
-  KAutoMount( bool _readonly, const char *_format, const char *_device, const char *_mountpoint,
-	      bool _show_filemanager_window = true );
+  KAutoMount( bool _readonly, const char *_format, const char *_device, const char * _mountpoint,
+              const QString & _desktopFileDir, bool _show_filemanager_window = true );
     
 public slots:
   void slotFinished( int );
@@ -18,17 +18,20 @@ public slots:
 protected:
   QString m_strDevice;
   bool m_bShowFilemanagerWindow;
+  QString m_desktopFileDir;
 };
 
 class KAutoUnmount : public QObject
 {
   Q_OBJECT
 public:
-  KAutoUnmount( const char *_mountpoint );
+  KAutoUnmount( const QString & _mountpoint, const QString & _desktopFileDir );
     
 public slots:
   void slotFinished( int );
   void slotError( int, int _id, const char *_text );
+private:
+  QString m_desktopFileDir;
 };
 
 #endif

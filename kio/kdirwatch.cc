@@ -203,6 +203,11 @@ bool KDirWatch::contains( const QString& _path ) const
   return m_mapDirs.contains( path );
 }
 
+void KDirWatch::setVeryDirty( const QString & dir )
+{
+  emit veryDirty( dir );
+}
+
 /*******************************************************************/
 /*
 int main (int argc, char **argv)
