@@ -160,6 +160,7 @@ DOMString ElementImpl::getAttribute( const DOMString &name )
     int index = attributeMap.find(name);
     if (index != -1) return attributeMap.value(index);
 
+    if(!defaultMap()) return 0;
     // then search in default attr in case it is not yet set
     index = defaultMap()->find(name);
     if (index != -1) return defaultMap()->value(index);
@@ -173,6 +174,7 @@ DOMString ElementImpl::getAttribute( int id )
     int index = attributeMap.find(id);
     if (index != -1) return attributeMap.value(index);
 
+    if(!defaultMap()) return 0;
     // then search in default attr in case it is not yet set
     index = defaultMap()->find(id);
     if (index != -1) return defaultMap()->value(index);

@@ -29,6 +29,7 @@
 #include "khtmldata.h"
 #include "khtmlio.h"
 #include "khtml.h"
+#include "khtmlattrs.h"
 
 #include "html_misc.h"
 #include "dom_node.h"
@@ -170,11 +171,10 @@ ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 	}
 	else
 	{
-	    // ### use int fr getAttribute... add method in dom_elementimpl
 	    if(current->isElementNode())
 	    {
 		ElementImpl *e = static_cast<ElementImpl *>(current);
-		if(e->getAttribute("id") == elementId)
+		if(e->getAttribute(ATTR_ID) == elementId)
 		    return e;
 	    }
 	
