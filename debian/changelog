@@ -1,3 +1,11 @@
+kdelibs (4:2.2.1-7) unstable; urgency=low
+
+  * Not sure what happened but let's chmod 755 configure just to make
+    sure it's got the proper perms before we execute it (Closes: #114552)
+  * Various other upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 05 Sep 2001 09:48:00 -0700
+
 kdelibs (4:2.2.1-6) unstable; urgency=low
 
   * let this puppy build with automake 1.5
