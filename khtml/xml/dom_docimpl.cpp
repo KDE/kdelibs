@@ -481,8 +481,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
                  delete e;
                  return 0;
             }
-            if(_namespaceURI.isNull())
-                e->setHTMLCompat( htmlMode() != XHtml );
+            e->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
         }
     }
     if (!e) {
@@ -1596,10 +1595,12 @@ typedef int (*IdLookupFunction)(const char *tagStr, int len);
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
                                   DOMStringImpl *_name, bool readonly, bool lookupHTML, int *pExceptioncode)
 {
-    //kdDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
-    //          << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
-    //          << ", readonly: " << readonly << ", exceptions: " << (pExceptioncode ? "yes" : "no")
-    //          << " )" << endl;
+    /*kdDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
+              << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
+              << ", readonly: " << readonly
+              << ", lookupHTML: " << lookupHTML
+              << ", exceptions: " << (pExceptioncode ? "yes" : "no")
+              << " )" << endl;*/
 
     if(!_name || !_name->l) return 0;
     IdNameMapping *map;

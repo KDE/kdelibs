@@ -1,5 +1,10 @@
 2003-10-27  David Faure  <faure@kde.org>
 
+	* html/html_elementimpl.cpp (HTMLElementImpl): Fixed wrong m_htmlCompat
+	value when parsing HTML in HTML-compat mode, get it from the doc's setting.
+	* xml/dom_docimpl.cpp (createElementNS): Always set m_htmlCompat, now that
+	the HTMLElementImpl constructor sets it too.
+
 	* xml/dom_nodeimpl.cpp (handleLocalEvents): fixed crash when a mouse event
 	is dispatched via the DOM API, with initMouseEvent, dispatchEvent.
 

@@ -59,6 +59,7 @@ using namespace khtml;
 HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
     : ElementImpl( doc )
 {
+    m_htmlCompat = doc && doc->document() ? doc->document()->htmlMode() != DocumentImpl::XHtml : false;
 }
 
 HTMLElementImpl::~HTMLElementImpl()
