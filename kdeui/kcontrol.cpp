@@ -36,7 +36,7 @@ KControlDialog::KControlDialog()
   helpBtn->resize(helpBtn->sizeHint());
   helpBtn->move(7, height() - helpBtn->height() - 6);
 
-  
+
   // Create default button
   defaultBtn = new QPushButton(klocale->translate("Default"), this);
   defaultBtn->resize(defaultBtn->sizeHint());
@@ -46,7 +46,7 @@ KControlDialog::KControlDialog()
   setOKButton(klocale->translate("OK"));
   setApplyButton(klocale->translate("Apply"));
   setCancelButton(klocale->translate("Cancel"));
-  
+
   //geometry hack.
   defaultBtn->setText(klocale->translate("OK"));
   int w = defaultBtn->sizeHint().width();
@@ -56,7 +56,7 @@ KControlDialog::KControlDialog()
   w  = QMAX(w, defaultBtn->sizeHint().width());
 
   defaultBtn->setText(klocale->translate("Default"));
-  
+
 
   minimum_width_ = w*3+20+ defaultBtn->width() + 30 + helpBtn->width();
 }
@@ -120,6 +120,8 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
       start = 3;
     }
 
+  dialog->setCaption( swallowCaption );
+  
   // parse the command line parameters, if any
   if (argc > start)
     {
@@ -136,11 +138,8 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
 
 void KControlApplication::setTitle(const char *title)
 {
-  if (dialog)
-    if (swallowCaption.isEmpty())
+  if (dialog && swallowCaption.isEmpty())
       dialog->setCaption(title);
-    else
-      dialog->setCaption(swallowCaption);
 }
 
 KControlApplication::~KControlApplication()
