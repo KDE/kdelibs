@@ -609,7 +609,7 @@ void FuncDeclNode::streamTo(SourceStream &s) const {
   s << "function " << ident << "(";
   if (param)
     s << param;
-  s << ")" << body << "\n";
+  s << ")" << body << SourceStream::Endl;
 }
 
 void FuncExprNode::streamTo(SourceStream &s) const
