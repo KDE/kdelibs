@@ -1057,9 +1057,6 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
     partURL.setRef( QString::null );
     kdDebug(6070) << "Window::goURL dstUrl=" << dst.prettyURL() << " partURL=" << partURL.prettyURL()
                    << " identical: " << partURL.equals( dst, true ) << endl;
-    // Check if the URL is the current one. No [infinite] redirect in that case.
-    if ( partURL.equals( dst, true ) )
-        return;
 
     // check if we're allowed to inject javascript
     // SYNC check with khtml_part.cpp::slotRedirect!
