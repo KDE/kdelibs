@@ -87,7 +87,7 @@ void KCModule::init()
 KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* widget )
 {
     KConfigDialogManager* manager = new KConfigDialogManager( widget, config, name() );
-    connect( manager, SIGNAL( widgetModified() ), SLOT( changed() ));
+    connect( manager, SIGNAL( widgetModified() ), SLOT( widgetChanged() ));
     d->managers.append( manager );
     return manager;
 }
@@ -120,6 +120,15 @@ void KCModule::defaults()
     KConfigDialogManager* manager;
     for( manager = d->managers.first(); manager; manager = d->managers.next() )
         manager->updateWidgetsDefault();
+}
+
+void KCModule::widgetChanged()
+{
+    bool bChanged = false;
+    KConfigDialogManager* manager;
+    for( manager = d->managers.first(); manager; manager = d->managers.next() )
+        bChanged |= manager->hasChanged();
+    emit( changed( bChanged ));
 }
 
 const KAboutData *KCModule::aboutData() const

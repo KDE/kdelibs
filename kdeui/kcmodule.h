@@ -285,6 +285,13 @@ protected slots:
    */
   void changed();
 
+  /**
+   * A managed widget was changed, the widget settings and the current
+   * settings are compared and a corresponding changed() signal is emitted
+   * @since 3.4
+   */
+   void widgetChanged();
+
 protected:
 
   /**
