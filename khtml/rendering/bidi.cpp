@@ -842,8 +842,10 @@ void RenderFlow::layoutInlineChildren()
 	    } else
 		embed = bidiReorderLine(status, start, end, embed);
 
+	    if( end == start )
+		++end;
+	    
 	    newLine();
-	    //++end;
 	    firstLine = false;
 	}
 	startEmbed->deref();
@@ -1036,6 +1038,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     // make sure we consume at least one char/object.
     if( lBreak == start )
 	++lBreak;
+
 #ifdef DEBUG_LINEBREAKS
     kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 #endif
