@@ -98,6 +98,7 @@ HTTPFilterGZip::HTTPFilterGZip()
   bHasHeader = false;
   bHasFinished = false;
   bPlainText = false;
+  bEatTrailer = false;
   bEof = false;
   zstr.next_in = (Bytef *) Z_NULL;
   zstr.avail_in = 0;
@@ -105,6 +106,7 @@ HTTPFilterGZip::HTTPFilterGZip()
   zstr.zfree = Z_NULL;
   zstr.opaque = Z_NULL;
   inflateInit2(&zstr, -MAX_WBITS);
+  iTrailer = 8;
 #endif
 }
 
@@ -251,6 +253,8 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
   }
   if (d.size() == 0)
   {
+     if (bEatTrailer)
+        bHasFinished = true;
      if (!bHasFinished)
      {
         // Make sure we get the last bytes still in the pipe.
@@ -273,6 +277,18 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
   }
   if (bHasFinished)
      return;
+
+  if (bEatTrailer)
+  {
+     iTrailer -= d.size();
+     if (iTrailer <= 0)
+     {
+        bHasFinished = true;
+        // End of data
+        emit output(QByteArray());
+     }
+     return;
+  }
 
   if (!bHasHeader)
   {
@@ -326,9 +342,16 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
      }
      if (result == Z_STREAM_END)
      {
-        bHasFinished = true;
-        // End of data
-        emit output(QByteArray());
+        if (iTrailer)
+        {
+           bEatTrailer = true;
+        }
+        else
+        {
+           bHasFinished = true;
+           // End of data
+           emit output(QByteArray());
+        }
         return;
      }
   }  
@@ -339,6 +362,7 @@ HTTPFilterDeflate::HTTPFilterDeflate()
 {
 #ifdef DO_GZIP
   bHasHeader = true;
+  iTrailer = 0;
 #endif
 }
 

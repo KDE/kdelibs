@@ -30,7 +30,6 @@
 #include <zlib.h>
 #endif
 
-
 #include <qobject.h>
 #include <kmdcodec.h>
 
@@ -100,11 +99,13 @@ protected:
     int checkHeader();
 #ifdef DO_GZIP
     z_stream zstr;
-    bool bEof;
-    bool bHasHeader;
-    bool bHasFinished;
-    bool bPlainText;
+    bool bEof : 1;
+    bool bHasHeader : 1;
+    bool bHasFinished : 1;
+    bool bPlainText : 1;
+    bool bEatTrailer : 1;
     QByteArray headerData;
+    int iTrailer;
 #endif
 };
 
