@@ -421,7 +421,7 @@ void RenderRoot::clearSelection()
 
     if (m_selectionEnd)
         m_selectionEnd->setIsSelectionEnd(false);
-    m_selectionEnd = false;
+    m_selectionEnd = 0;
     m_selectionEndPos = -1;
 }
 
