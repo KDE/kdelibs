@@ -56,6 +56,59 @@
 #include "kdesu_pty.h"
 #include "kcookie.h"
 
+/*
+** Wait @p ms miliseconds (ie. 1/10th of a second is 100ms),
+** using @p fd as a filedescriptor to wait on. Returns
+** select(2)'s result, which is -1 on error, 0 on timeout,
+** or positive if there is data on one of the selected fd's
+** (which shouldn't happen at all).
+*/
+int PtyProcess::waitMS(int fd,int ms)
+{
+	struct timeval tv;
+	// sleep 1/10 sec
+	tv.tv_sec = 0; tv.tv_usec = 1000*ms;
+	// not actually a select on only fd, but hey
+	return select(fd, 0L, 0L, 0L, &tv);
+}
+
+/*
+** Basic check for the existence of @p pid.
+** Returns true iff @p pid is an extant process.
+*/
+bool PtyProcess::checkPid(pid_t pid)
+{
+	return kill(pid,0) == 0;
+}
+
+/*
+** Check process exit status for process @p pid.
+** On error (no child, no exit), return Error (-1).
+** If child @p pid has exited, return its exit status,
+** (which may be zero).
+** If child @p has not exited, return NotExited (-2).
+*/
+
+int PtyProcess::checkPidExited(pid_t pid)
+{
+	int state, ret;
+	ret = waitpid(pid, &state, WNOHANG);
+
+	if (ret < 0) 
+	{
+		kdError(900) << k_lineinfo << "waitpid(): " << perror << "\n";
+		return Error;
+	}
+	if (ret == pid) 
+	{
+		if (WIFEXITED(state))
+			return WEXITSTATUS(state);
+	}
+
+	return NotExited;
+}
+
+
 class PtyProcess::PtyProcessPrivate
 {
 public:
@@ -296,9 +349,13 @@ int PtyProcess::WaitSlave()
     }
 
     struct termios tio;
-    struct timeval tv;
     while (1) 
     {
+	if (!checkPid(m_Pid))
+	{
+		close(slave);
+		return -1;
+	}
         if (tcgetattr(slave, &tio) < 0) 
         {
             kdError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
@@ -308,9 +365,7 @@ int PtyProcess::WaitSlave()
         if (tio.c_lflag & ECHO) 
         {
             kdDebug(900) << k_lineinfo << "Echo mode still on.\n";
-            // sleep 1/10 sec
-            tv.tv_sec = 0; tv.tv_usec = 100000;
-            select(slave, 0L, 0L, 0L, &tv);
+	    waitMS(slave,100);
             continue;
         }
         break;
@@ -393,23 +448,22 @@ int PtyProcess::waitForChild()
             }
         }
 
-        // Check if the process is still alive
-        int state;
-        ret = waitpid(m_Pid, &state, WNOHANG);
-        if (ret < 0) 
-        {
-            if (errno == ECHILD)
-                retval = 0;
-            else
-                kdError(900) << k_lineinfo << "waitpid(): " << perror << "\n";
-            break;
-        }
-        if (ret == m_Pid) 
-        {
-            if (WIFEXITED(state))
-                retval = WEXITSTATUS(state);
-            break;
-        }
+	ret = checkPidExited(m_Pid);
+	if (ret == -1)
+	{
+		if (errno == ECHILD) retval = 0;
+		else retval = 1;
+		break;
+	}
+	else if (ret == -2)
+	{
+		// keep checking
+	}
+	else
+	{
+		retval = ret;
+		break;
+	}
     }
     return retval;
 }

@@ -13,6 +13,8 @@
 #ifndef __Process_h_Included__
 #define __Process_h_Included__
 
+#include <sys/types.h>
+
 #include <qcstring.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -115,6 +117,42 @@ public:
      */
     int pid() {return m_Pid;};
 
+public /* static */:
+    /*
+    ** This is a collection of static functions that can be
+    ** used for process control inside kdesu. I'd suggest 
+    ** against using this publicly. There are probably 
+    ** nicer Qt based ways to do what you want.
+    */
+
+    /*
+    ** Wait @p ms miliseconds (ie. 1/10th of a second is 100ms),
+    ** using @p fd as a filedescriptor to wait on. Returns
+    ** select(2)'s result, which is -1 on error, 0 on timeout,
+    ** or positive if there is data on one of the selected fd's
+    ** (which shouldn't happen at all).
+    */
+    static int waitMS(int fd,int ms);
+
+
+    /*
+    ** Basic check for the existence of @p pid.
+    ** Returns true iff @p pid is an extant process,
+    ** (one you could kill - see man kill(2) for signal 0).
+    */
+    static bool checkPid(pid_t pid);
+
+    /*
+    ** Check process exit status for process @p pid.
+    ** On error (no child, no exit), return -1.
+    ** If child @p pid has exited, return its exit status,
+    ** (which may be zero).
+    ** If child @p has not exited, return -2.
+    */
+    enum checkPidStatus { Error=-1, NotExited=-2 } ;
+    static int checkPidExited(pid_t pid);
+
+
 protected:
     const QCStringList& environment() const;
 
@@ -135,5 +173,6 @@ private:
     class PtyProcessPrivate;
     PtyProcessPrivate *d;
 };
+
 
 #endif

@@ -56,19 +56,19 @@ SuProcess::~SuProcess()
 
 int SuProcess::checkInstall(const char *password)
 {
-    return exec(password, 1);
+    return exec(password, Install);
 }
 
 int SuProcess::checkNeedPassword()
 {
-    return exec(0L, 2);
+    return exec(0L, NeedPassword);
 }
 
 /*
  * Execute a command with su(1).
  */
 
-int SuProcess::exec(const char *password, int check)
+int SuProcess::exec(const char *password, checkMode check)
 {
     if (check)
 	setTerminal(true);
@@ -89,24 +89,34 @@ int SuProcess::exec(const char *password, int check)
           return check ? SuNotFound : -1;
     }
 
+    kdDebug(900) << k_lineinfo << "Call StubProcess::exec()" << endl;
     if (StubProcess::exec(command, args) < 0)
     {
 	return check ? SuNotFound : -1;
     }
+    kdDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
     
-    int ret = ConverseSU(password);
-    if (ret < 0) 
+    SuErrors ret = ConverseSU(password);
+    kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
+
+    if (ret == error) 
     {
 	if (!check)
 	    kdError(900) << k_lineinfo << "Conversation with su failed\n";
 	return ret;
     } 
-    if (check == 2)
+    if (check == NeedPassword)
     {
-	if (ret == 1)
+	if (ret == killme)
 	{
-	    kill(m_Pid, SIGTERM);
-	    waitForChild();
+	    if (kill(m_Pid, SIGTERM) < 0) ret=error;
+	    else 
+	    {
+		waitForChild();
+		int iret = checkPidExited(m_Pid) ;
+		if (iret < 0) ret=error;
+		else /* nothing */ {} ;
+	    }
 	}
 	return ret;
     }
@@ -118,34 +128,34 @@ int SuProcess::exec(const char *password, int check)
 	    ptr[i] = '\000';
     }
 
-    if (ret == 2)
+    if (ret == notauthorized)
     {
 	kill(m_Pid, SIGTERM);
 	waitForChild();
 	return SuIncorrectPassword;
     }
 
-    ret = ConverseStub(check);
-    if (ret < 0)
+    int iret = ConverseStub(check);
+    if (iret < 0)
     {
 	if (!check)
 	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
-	return ret;
-    } else if (ret == 1)
+	return iret;
+    } else if (iret == 1)
     {
 	kill(m_Pid, SIGTERM);
 	waitForChild();
 	return SuIncorrectPassword;
     }
 
-    if (check == 1)
+    if (check == Install)
     {
 	waitForChild();
 	return 0;
     }
 	
-    ret = waitForChild();
-    return ret;
+    iret = waitForChild();
+    return iret;
 }
 
 /*
@@ -153,26 +163,30 @@ int SuProcess::exec(const char *password, int check)
  * Return values: -1 = error, 0 = ok, 1 = kill me, 2 not authorized
  */
 
-int SuProcess::ConverseSU(const char *password)
+SuProcess::SuErrors SuProcess::ConverseSU(const char *password)
 {	
-    int colon, state = 0;
+    enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
+    int colon;
     unsigned i, j;
+    
+    kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
 
     QCString line;
     while (true)
     {
 	line = readLine(); 
 	if (line.isNull())
-	    return ( state == 2 ? 2 : -1);
-	
+	    return ( state == HandleStub ? notauthorized : error);
+	kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
+
 	switch (state) 
 	{
-	case 0:
+	case WaitForPrompt:
 	    // In case no password is needed.
 	    if (line == "kdesu_stub")
 	    {
 		unreadLine(line);
-		return 0;
+		return ok;
 	    }
 
 	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
@@ -189,42 +203,54 @@ int SuProcess::ConverseSU(const char *password)
 	    if ((colon == 1) && (line[j] == ':')) 
 	    {
 		if (password == 0L)
-		    return 1;
-		WaitSlave();
-		write(m_Fd, password, strlen(password));
-		write(m_Fd, "\n", 1);
-		state++;
+		    return killme;
+		waitMS(m_Fd,100);
+		if (!checkPid(m_Pid))
+		{
+		    kdError(900) << "su has exited while waiting for pwd." << endl;
+		    return error;
+		}
+		if ((WaitSlave() == 0) && checkPid(m_Pid))
+		{
+			write(m_Fd, password, strlen(password));
+			write(m_Fd, "\n", 1);
+			state=CheckStar;
+		}
+		else
+		{
+			return error;
+		}
 	    }
 	    break;
 
-	case 1: 
+	case CheckStar: 
 	{
 	    QCString s = line.stripWhiteSpace();
 	    if (s.isEmpty()) 
 	    {
-		state++;
+		state=HandleStub;
 		break;
 	    }
 	    for (i=0; i<s.length(); i++)
             {
 		if (s[i] != '*')
-		    return -1;
+		    return error;
 	    }
-	    state++;
+	    state=HandleStub;
 	    break;
 	}
 
-	case 2:
+	case HandleStub:
 	    // Read till we get "kdesu_stub"
 	    if (line == "kdesu_stub")
 	    {
 		unreadLine(line);
-		return 0;
+		return ok;
 	    }
 	    break;
 	}
     }
-    return 0;
+    return ok;
 }
 
 void SuProcess::virtual_hook( int id, void* data )
