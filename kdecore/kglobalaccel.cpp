@@ -6,7 +6,7 @@
 #endif
 
 #include <qstring.h>
-#include <kaccelbase.h>
+#include "kaccelbase.h"
 #include <kdebug.h>
 #include <kshortcut.h>
 #include <klocale.h>
@@ -60,7 +60,7 @@ bool KGlobalAccel::updateConnections()
 
 bool KGlobalAccel::remove( const QString& sAction )
         { return d->remove( sAction ); }
-        
+
 const KShortcut& KGlobalAccel::shortcut( const QString& sAction ) const
 {
 	const KAccelAction* pAction = d->actions().actionPtr( sAction );
@@ -84,9 +84,9 @@ bool KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
 	{ d->writeSettings( pConfig ); return true; }
 bool KGlobalAccel::writeSettings( KConfigBase* pConfig, bool bGlobal ) const
 {
-	d->setConfigGlobal( bGlobal ); 
-	d->writeSettings( pConfig ); 
-	return true; 
+	d->setConfigGlobal( bGlobal );
+	d->writeSettings( pConfig );
+	return true;
 }
 
 bool KGlobalAccel::useFourModifierKeys()
@@ -95,4 +95,4 @@ bool KGlobalAccel::useFourModifierKeys()
 void KGlobalAccel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include <kglobalaccel.moc>
+#include "kglobalaccel.moc"

@@ -21,8 +21,8 @@
 
 #include "kstdaccel.h"
 
-#include <kaccelaction.h>
-#include <kaccelbase.h>
+#include "kaccelaction.h"
+#include "kaccelbase.h"
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>

@@ -2,7 +2,7 @@
 #include <qvariant.h>
 
 #include <kaccel.h>
-#include <kaccelaction.h>
+#include "kaccelaction.h"
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>

@@ -27,13 +27,13 @@
 #include <qpopupmenu.h>
 
 #include <kconfig.h>
-#include <kckey.h>
+#include "kckey.h"
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kkeynative.h>
-#include <kkeyserver_x11.h>
+#include "kkeyserver_x11.h"
 #include <klocale.h>
-#include <kshortcutmenu.h>
+#include "kshortcutmenu.h"
 
 //---------------------------------------------------------------------
 // class KAccelBase::ActionInfo
@@ -337,9 +337,9 @@ bool KAccelBase::updateConnections()
 
 			kdDebug(125) << "key conflict = " << key.key().toStringInternal()
 				<< " action1 = " << info.pAction->name()
-				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name() 
+				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name()
 				<< " non-unique = " << bNonUnique << endl;
-			
+
 			// Skip over the other records with this same key.
 			while( i < rgKeys.size() - 1 && key == rgKeys[i+1].key )
 				i++;
@@ -481,7 +481,7 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 					// TODO: make this more efficient where possible.
 					if( m_mapKeyToAction[key].pAction != pAction
 					    && m_mapKeyToAction[key].pAction != 0 ) {
-						kdDebug(125) << "Key conflict: call updateConnections():" 
+						kdDebug(125) << "Key conflict: call updateConnections():"
 							<< " key = " << key.key().toStringInternal() << endl;
 						return updateConnections();
 					}
@@ -568,7 +568,7 @@ void KAccelBase::writeSettings( KConfigBase* pConfig ) const
 QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 {
 	KShortcutMenu* pMenu = new KShortcutMenu( pParent, &actions(), seq );
-	
+
 	bool bActionInserted = false;
 	bool bInsertSeparator = false;
 	for( uint i = 0; i < actionCount(); i++ ) {

@@ -26,7 +26,7 @@
 #include <qkeycode.h>
 
 #include <kconfig.h>
-#include <kckey.h>
+#include "kckey.h"
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kkeynative.h>

@@ -27,7 +27,7 @@
 
 #include <qmap.h>
 #include <qstringlist.h>
-#include <kckey.h>
+#include "kckey.h"
 #include <kdebug.h>
 #include <klocale.h>
 

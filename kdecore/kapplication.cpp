@@ -68,7 +68,7 @@
 #include <kmimesourcefactory.h>
 #include <kstdaccel.h>
 #include <kaccel.h>
-#include <kcheckaccelerators.h>
+#include "kcheckaccelerators.h"
 #include <qptrdict.h>
 
 #include <kstartupinfo.h>

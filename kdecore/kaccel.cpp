@@ -24,7 +24,7 @@
 #include <qstring.h>
 #include <qtimer.h>
 
-#include <kaccelbase.h>
+#include "kaccelbase.h"
 #include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -57,10 +57,10 @@ class KAccelEventHandler : public QWidget
 			g_pSelf = new KAccelEventHandler;
 		return g_pSelf;
 	}
-	
+
 	static bool active() { return g_bActive; }
 	static void accelActivated( bool b ) { g_bAccelActivated = b; }
-	
+
  private:
 	KAccelEventHandler();
 
@@ -89,7 +89,7 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 {
 	if( QWidget::keyboardGrabber() || !kapp->focusWidget() )
 		return false;
-	
+
 	if( pEvent->type == XKeyPress ) {
 		KKeyNative keyNative( pEvent );
 		KKey key( keyNative );
@@ -99,24 +99,24 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 		if( key.modFlags() & KKey::SHIFT ) state |= Qt::ShiftButton;
 		if( key.modFlags() & KKey::CTRL )  state |= Qt::ControlButton;
 		if( key.modFlags() & KKey::ALT )   state |= Qt::AltButton;
-		
+
 		QKeyEvent ke( QEvent::AccelOverride, keyCodeQt, 0,  state );
 		ke.ignore();
-		
+
 		g_bActive = true;
 		g_bAccelActivated = false;
 		kapp->sendEvent( kapp->focusWidget(), &ke );
 		g_bActive = false;
-		
+
 		// If the Override event was accepted from a non-KAccel widget,
 		//  then kill the next AccelOverride in KApplication::notify.
 		if( ke.isAccepted() && !g_bAccelActivated )
 			g_bKillAccelOverride = true;
-		
+
 		// Stop event processing if a KDE accelerator was activated.
 		return g_bAccelActivated;
 	}
-	
+
 	return false;
 }
 #endif // Q_WS_X11
@@ -166,7 +166,7 @@ bool KAccelPrivate::setEnabled( const QString& sAction, bool bEnable )
 
 bool KAccelPrivate::removeAction( const QString& sAction )
 {
-	// FIXME: getID() doesn't contains any useful 
+	// FIXME: getID() doesn't contains any useful
 	//  information!  Use mapIDToAction. --ellis, 2/May/2002
 	//  Or maybe KAccelBase::remove() takes care of QAccel indirectly...
 	KAccelAction* pAction = actions().actionPtr( sAction );
@@ -258,7 +258,7 @@ bool KAccelPrivate::disconnectKey( const KKeyServer::Key& key )
 void KAccelPrivate::slotKeyPressed( int id )
 {
 	kdDebug(125) << "KAccelPrivate::slotKeyPressed( " << id << " )" << endl;
-	
+
 	if( m_mapIDToKey.contains( id ) ) {
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
@@ -312,14 +312,14 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 				if( m_mapIDToAction.contains( nID ) ) {
 					// TODO: reduce duplication between here and slotMenuActivated
 					KAccelAction* pAction = m_mapIDToAction[nID];
-					if( !pAction->isEnabled() ) 
+					if( !pAction->isEnabled() )
 						continue;
 					connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 					emit menuItemActivated();
 					disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 				} else
 					slotKeyPressed( nID );
-				
+
 				pKeyEvent->accept();
 				KAccelEventHandler::accelActivated( true );
 				return true;
@@ -578,5 +578,5 @@ QString KAccel::findKey( int key ) const
 void KAccel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include <kaccel.moc>
-#include <kaccelprivate.moc>
+#include "kaccel.moc"
+#include "kaccelprivate.moc"
