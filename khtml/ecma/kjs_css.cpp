@@ -129,16 +129,16 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &property
   if (ok)
     return getString(DOM::CSSStyleDeclaration(styleDecl).item(u));
 
-#ifdef KJS_VERBOSE
-  bool needPxSuffix;
-  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << cssPropertyName(propertyName, needPxSuffix) << ( needPxSuffix ? "px" : "" ) << endl;
-#endif
   // pixelTop returns "CSS Top" as number value in unit pixels
   // posTop returns "CSS top" as number value in unit pixels _if_ its a
   // positioned element. if it is not a positioned element, return 0
   // from MSIE documentation ### IMPLEMENT THAT (Dirk)
   bool asNumber;
   QString p = cssPropertyName(propertyName, asNumber);
+
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << p << ( asNumber ? "px" : "" ) << endl;
+#endif
 
   if (asNumber) {
     DOM::CSSValue v = styleDecl.getPropertyCSSValue(p);
