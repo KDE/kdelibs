@@ -34,25 +34,25 @@
 		       | %bibliocomponent.mix; | keywordset)*)>
 
 <!-- ID made compulsory -->
-<!ATTLIST section
+<!--ATTLIST section
 		%label.attrib;
 		%status.attrib;
 		%idreq.common.attrib;
 		%section.role.attrib;
 		%local.section.attrib;
->
+-->
 
 <!-- ID made compulsory -->
-<!ATTLIST chapter
+<!--ATTLIST chapter
 		%label.attrib;
 		%status.attrib;
 		%idreq.common.attrib;
 		%chapter.role.attrib;
 		%local.chapter.attrib;
->
+-->
 
 <!-- ID made compulsory -->
-<!ATTLIST sect1
+<!--ATTLIST sect1
 		renderas	(sect2
 				|sect3
 				|sect4
@@ -62,7 +62,7 @@
 		%idreq.common.attrib;
 		%sect1.role.attrib;
 		%local.sect1.attrib;
->
+-->
 
 <!-- value of Type changed from IMPLIED CDATA
      default value of LinkMode set from #IMPLIED to kdems-default -->
@@ -77,9 +77,9 @@
 >
 
 <!-- ID made compulsory -->
-<!ATTLIST glossentry
+<!--ATTLIST glossentry
 		sortas		CDATA		#IMPLIED
 		%idreq.common.attrib;
 		%glossentry.role.attrib;
 		%local.glossentry.attrib;
->
+-->
