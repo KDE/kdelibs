@@ -54,7 +54,6 @@ class KCalendarSystem;
  *  If the string is too ambiguous to be translated well to a non-english
  *  language, use this instead of I18N_NOOP to separate lookup string and english.
  *  Warning: you need to call i18n( comment, stringVar ) later on, not just i18n( stringVar ).
- * \bug: this cannot be used, as it is not extracted
  */
 #define I18N_NOOP2(comment,x) x
 #endif
