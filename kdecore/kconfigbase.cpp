@@ -903,11 +903,11 @@ void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
 			      bool bNLS )
 {
   QStrList list;
-  QString tempstr;
-  list.insert( 0, tempstr.setNum( rRect.left() ).ascii() );
-  list.insert( 1, tempstr.setNum( rRect.top() ).ascii() );
-  list.insert( 2, tempstr.setNum( rRect.width() ).ascii() );
-  list.insert( 3, tempstr.setNum( rRect.height() ).ascii() );
+  QCString tempstr;
+  list.insert( 0, tempstr.setNum( rRect.left() ) );
+  list.insert( 1, tempstr.setNum( rRect.top() ) );
+  list.insert( 2, tempstr.setNum( rRect.width() ) );
+  list.insert( 3, tempstr.setNum( rRect.height() ) );
 
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
@@ -918,9 +918,9 @@ void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint,
 			      bool bNLS )
 {
   QStrList list;
-  QString tempstr;
-  list.insert( 0, tempstr.setNum( rPoint.x() ).ascii() );
-  list.insert( 1, tempstr.setNum( rPoint.y() ).ascii() );
+  QCString tempstr;
+  list.insert( 0, tempstr.setNum( rPoint.x() ) );
+  list.insert( 1, tempstr.setNum( rPoint.y() ) );
 
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
@@ -931,9 +931,9 @@ void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize,
 			      bool bNLS )
 {
   QStrList list;
-  QString tempstr;
-  list.insert( 0, tempstr.setNum( rSize.width() ).ascii() );
-  list.insert( 1, tempstr.setNum( rSize.height() ).ascii() );
+  QCString tempstr;
+  list.insert( 0, tempstr.setNum( rSize.width() ) );
+  list.insert( 1, tempstr.setNum( rSize.height() ) );
 
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
