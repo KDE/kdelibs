@@ -1,6 +1,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.3  1997/08/31 15:56:12  kdecvs
+// Kalle:
+// - Internationalized Config Entries
+// - Default-String in readEntry changed to const char*
+//
 // Revision 1.2  1997/07/18 05:49:14  ssk
 // Taj: All kdecore doc now in javadoc format (hopefully).
 //
@@ -80,7 +85,7 @@ friend class KConfig;
 private:
   QTextStream* pAppStream;
   QString aGroup;
-  QString aLocaleString; // two-letter locale code
+  QString aLocaleString; // locale code
   bool bDirty; // is there any entry that has to be written back to disk?
 
   QDict<KEntryDict> aGroupDict;
