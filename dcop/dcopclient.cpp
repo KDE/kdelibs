@@ -482,7 +482,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 						      DCOPAuthCount,
 						      const_cast<char **>(DCOPAuthNames),
 						      DCOPClientAuthProcs, 0L)) < 0) {
-	emit attachFailed("Communications could not be established.");
+	emit attachFailed(QString::fromLatin1( "Communications could not be established." ));
 	return false;
     }
 
@@ -497,7 +497,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	    QString fName = dcopServerFile();
 	    QFile f(fName);
 	    if (!f.open(IO_ReadOnly)) {
-		emit attachFailed("Could not read network connection list.\n"+fName);
+		emit attachFailed(QString::fromLatin1( "Could not read network connection list.\n" )+fName);
 		return false;
 	    }
 	    QTextStream t(&f);
@@ -514,7 +514,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
            delete [] d->serverAddr;
            d->serverAddr = 0;
         }
-	emit attachFailed(errBuf);
+	emit attachFailed(QString::fromLatin1( errBuf ));
 	d->iceConn = 0;
 	return false;
     }
@@ -536,7 +536,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
            delete [] d->serverAddr;
            d->serverAddr = 0;
         }
-	emit attachFailed(errBuf);
+	emit attachFailed(QString::fromLatin1( errBuf ));
 	return false;
     } else if (setupstat == IceProtocolAlreadyActive) {
         if (bClearServerAddr) {
@@ -544,7 +544,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
            d->serverAddr = 0;
         }
 	/* should not happen because 3rd arg to IceOpenConnection was 0. */
-	emit attachFailed("internal error in IceOpenConnection");
+	emit attachFailed(QString::fromLatin1( "internal error in IceOpenConnection" ));
 	return false;
     }
 
@@ -554,7 +554,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
            delete [] d->serverAddr;
            d->serverAddr = 0;
         }
-	emit attachFailed("DCOP server did not accept the connection.");
+	emit attachFailed(QString::fromLatin1( "DCOP server did not accept the connection." ));
 	return false;
     }
 
@@ -1264,7 +1264,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
         {
             if (objId.isEmpty() || DCOPObject::hasObject(objId))
                return findSuccess(app, objId, replyType, replyData);
-            return false;	
+            return false;
         }
         // Message to application or single object...
         if (receive(app, objId, fun, data, replyType, replyData))
