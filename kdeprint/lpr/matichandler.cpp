@@ -101,7 +101,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 			QString	postpipe = loader.data()[ "POSTPIPE" ].toString();
 			if (!postpipe.isEmpty())
 			{
-				KURL	url = parsePostpipe(postpipe);
+				KURL	url ( parsePostpipe(postpipe) );
 				if (!url.isEmpty())
 				{
 					QString	ds = QString::fromLatin1("%1 (%2)").arg(prt->location()).arg(url.protocol());
@@ -405,7 +405,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
 	                            "Either that driver does not exist, or you don't have "
 	                            "the required permissions to perform that operation.").arg(mdriver).arg(mprinter));
-	
+
 	return false;
 }
 

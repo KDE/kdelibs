@@ -85,7 +85,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 	}
 	else if (!(val = entry->field("rp")).isEmpty())
 	{
-		QString rm = entry->has("rm") ? 
+		QString rm = entry->has("rm") ?
 				entry->field("rm") :
 				LprSettings::self()->defaultRemoteHost();
 		prt->setLocation(i18n("Remote queue (%1) on %2").arg(val).arg(rm));
@@ -120,7 +120,7 @@ DrMain* LprHandler::loadDbDriver(const QString&)
 PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 {
 	// this default handler only supports local parallel and remote lpd URIs
-	KURL	uri = prt->device();
+	KURL	uri ( prt->device() );
 	QString	prot = uri.protocol();
 	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd" && prot != "socket")
 	{

@@ -76,7 +76,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	lay0->addWidget(m_testpagebox);
 	lay0->addWidget(m_statusbox);
 	lay0->addStretch(1);
-	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(), 
+	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(),
 		KDialog::spacingHint());
 	lay1->addWidget(m_timer);
 	QVBoxLayout	*lay2 = new QVBoxLayout(m_testpagebox->layout(),
@@ -136,7 +136,7 @@ void KMConfigGeneral::slotTestPagePreview()
 	if (tpage.isEmpty())
 		KMessageBox::error(this, i18n("Empty file name."));
 	else
-		KRun::runURL(tpage, KMimeMagic::self()->findFileType(tpage)->mimeType());
+		KRun::runURL(KURL( tpage ), KMimeMagic::self()->findFileType(tpage)->mimeType());
 }
 
 #include "kmconfiggeneral.moc"
