@@ -38,8 +38,8 @@ class KPluginSelector;
  * MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
  *     : KCDPluginPage( MyAppPluginConfigFactory::instance(), parent, args )
  * {
- *     pluginSelector()->addPlugins( KGlobal::instance(), i18n( "General Plugins" ), "General" );
- *     pluginSelector()->addPlugins( KGlobal::instance(), i18n( "Effects" ), "Effects" );
+ *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "General Plugins" ), "General" );
+ *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "Effects" ), "Effects" );
  * }
  * \endcode
  *

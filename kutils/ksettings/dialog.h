@@ -39,7 +39,7 @@ class KCMultiDialog;
  *
  * You initialize \p m_cfgdlg with
  * \code
- * m_cfgdlg = new KConfigureDialog( this );
+ * m_cfgdlg = new KConfigureDialog( KConfigureDialog::Static, this );
  * \endcode
  * If you use a KPart that was not especially designed for your app you can use
  * the second constructor:
