@@ -88,8 +88,8 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
        return ret;
 }
 
-static void sendNotification( QString message, 
-                              const QStringList& strlist, 
+static void sendNotification( QString message,
+                              const QStringList& strlist,
                               QMessageBox::Icon icon,
                               WId parent_id )
 {
@@ -272,13 +272,13 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
 
     if ( (options & KMessageBox::Notify) != 0 )
         sendNotification( text, strlist, icon, dialog->topLevelWidget()->winId());
-    
+
     if (KMessageBox_queue)
     {
        KDialogQueue::queueDialog(dialog);
        return KMessageBox::Cancel; // We have to return something.
     }
-    
+
     // We use a QGuardedPtr because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
     // In that case the guarded ptr will reset to 0.
@@ -319,8 +319,8 @@ bool
 KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
                                 ButtonCode &result)
 {
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return true;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     QString dontAsk = config->readEntry(dontShowAgainName).lower();
@@ -338,8 +338,8 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
 bool
 KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
 {
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return true;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     return config->readBoolEntry(dontShowAgainName,  true);
@@ -349,8 +349,8 @@ void
 KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                     ButtonCode result)
 {
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     config->writeEntry( dontShowAgainName, result==Yes ? "yes" : "no");
@@ -360,8 +360,8 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
 void
 KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
 {
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     if ( dontShowAgainName.isEmpty() ) return;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     config->writeEntry( dontShowAgainName, false);
@@ -516,7 +516,7 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
                               const KGuiItem &buttonNo,
                               const QString &dontAskAgainName,
                               int options)
-{ 
+{
     // warningYesNo and warningYesNoList are always "dangerous"
     // ### Remove this line for KDE 4, when the 'options' default parameter
     // takes effects.
