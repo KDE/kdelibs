@@ -123,7 +123,9 @@ int kdemain(int argc, char **argv)
     // abort this.
 
     KConfigGroup config( KGlobal::config(), "StartProgress" );
-    bool useArts = config.readBoolEntry( "Use Arts", true );
+    KConfig artsKCMConfig( "kcmartsrc" );
+    artsKCMConfig.setGroup( "Arts" );
+    bool useArts = config.readBoolEntry( "Use Arts", artsKCMConfig.readBoolEntry("StartServer",true) );
     bool ok = config.readBoolEntry( "Arts Init", true );
 
     if ( useArts && !ok )
