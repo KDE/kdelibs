@@ -2676,9 +2676,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
 void KHTMLPart::popupMenu( const QString &url )
 {
-  KURL u( m_url );
-  if ( !url.isEmpty() )
-    u = KURL( m_url, url );
+  KURL u( completeURL( url ) );
   /*
   mode_t mode = 0;
   if ( !u.isLocalFile() )
@@ -2693,7 +2691,7 @@ void KHTMLPart::popupMenu( const QString &url )
   mode_t mode = S_IFDIR; // treat all html documents as "DIR" in order to have the back/fwd/reload
                          // buttons in the popupmenu
 
-  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, url.isEmpty() ? KURL() : u );
+  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, u );
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
 
@@ -3401,10 +3399,9 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     }
   }
 
-  QString currentUrl = splitUrlTarget(d->m_strSelectedURL);
   if ( _mouse->button() == RightButton )
   {
-    popupMenu( currentUrl );
+    popupMenu( splitUrlTarget(d->m_strSelectedURL) );
     d->m_strSelectedURL = QString::null;
   }
 }
