@@ -351,6 +351,18 @@ class KJanusWidget : public QWidget
 			const QPixmap &pixmap=QPixmap() );
 
     /**
+     * @short Removes a page created with @ref addPage, @ref addVBoxPage,
+     * @ref addHBoxPage or @ref addGridPage. If the page has already
+     * been deleted or has already been removed, nothing happens. The widget
+     * itself is not deleted.
+     *
+     * @param page The widget returned by @ref addPage , @ref addVBoxPage ,
+     *        @ref addHBoxPage or @ref addGridPage .
+     */
+    void removePage( QWidget *page );
+
+
+    /**
      * Returns the index of a page created with @ref addPage ,
      * @ref addVBoxPage , @ref addHBoxPage or @ref addGridPage .
      * You can can compare this index with the value returned from
@@ -466,7 +478,7 @@ class KJanusWidget : public QWidget
     bool slotShowPage();
     void slotFontChanged();
     void slotItemClicked(QListViewItem *it);
-    void pageGone(); // signal from the added page's "destroyed" signal
+    void pageGone(QObject *obj); // signal from the added page's "destroyed" signal
 
   protected:
     bool showPage( QWidget *w );

@@ -225,47 +225,9 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
   return page;
 }
 
-void KJanusWidget::pageGone()
+void KJanusWidget::pageGone( QObject *obj )
 {
-  const QWidget *page=static_cast<const QWidget*>(QObject::sender());
-
-  if (!mPageList || !mPageList->containsRef(page))
-    return;
-
-  int index = mPageList->findRef( page );
-  if ( mTitleList )
-    mTitleList->remove(mTitleList->at(index));
-
-  mPageList->removeRef(page);
-
-  if ( mFace == TreeList )
-  {
-    QMap<QListViewItem*, QWidget *>::Iterator i;
-    for( i = mTreeListToPageStack.begin(); i != mTreeListToPageStack.end(); ++i )
-      if (i.data()==page)
-	  {
-        delete i.key();
-        mTreeListToPageStack.remove(i);
-		break;
-      }
-  }
-  else if ( mFace == IconList )
-  {
-    QMap<QListBoxItem*, QWidget *>::Iterator i;
-    for( i = mIconListToPageStack.begin(); i != mIconListToPageStack.end(); ++i )
-      if (i.data()==page)
-	  {
-        delete i.key();
-        mIconListToPageStack.remove(i);
-		break;
-      }
-  }
-  else // Tabbed
-  {
-
-  }
-
-
+  removePage(static_cast<QWidget*>obj);
 }
 
 QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
@@ -435,7 +397,7 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
 void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 				  const QString &header,const QPixmap &pixmap )
 {
-  connect(page, SIGNAL(destroyed()), SLOT(pageGone()));
+  connect(page, SIGNAL(destroyed(QObject*)), SLOT(pageGone(QObject*)));
   
   if( mFace == Tabbed )
   {
@@ -1069,5 +1031,50 @@ int KJanusWidget::IconListItem::width( const QListBox *lb ) const
 
 void KJanusWidget::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+// Just remove the page from our stack of widgets. Do not modify the given widget in
+// any way. No memory leak occurs as parent is not changed.
+// Make this virtual in KDE 4.0.
+// Ravikiran Rajagopal <ravi@ee.eng.ohio-state.edu>
+void KJanusWidget::removePage( QWidget *page )
+{
+  if (!mPageList || !mPageList->containsRef(page))
+    return;
+
+  int index = mPageList->findRef( page );
+  if ( mTitleList )
+    mTitleList->remove(mTitleList->at(index));
+
+  mPageList->removeRef(page);
+
+  if ( mFace == TreeList )
+  {
+    QMap<QListViewItem*, QWidget *>::Iterator i;
+    for( i = mTreeListToPageStack.begin(); i != mTreeListToPageStack.end(); ++i )
+      if (i.data()==page)
+      {
+        delete i.key();
+        mPageStack->removeWidget(page);
+        mTreeListToPageStack.remove(i);
+                break;
+      }
+  }
+  else if ( mFace == IconList )
+  {
+    QMap<QListBoxItem*, QWidget *>::Iterator i;
+    for( i = mIconListToPageStack.begin(); i != mIconListToPageStack.end(); ++i )
+      if (i.data()==page)
+      {
+        delete i.key();
+        mPageStack->removeWidget(page);
+        mIconListToPageStack.remove(i);
+                break;
+      }
+  }
+  else // Tabbed
+  {
+    mTabControl->removePage(page);
+  }
+}
 
 #include "kjanuswidget.moc"
