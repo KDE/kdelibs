@@ -166,6 +166,11 @@ Connection *Object_base::_getConnection() const
 	return 0;
 }
 
+bool Object_base::_isEqual(Object_base *object) const;
+{
+	return (_internalObjectID == object->_internalObjectID);
+}
+
 void *Object_base::_cast(unsigned long iid)
 {
 	if(iid == Object_base::_IID) return (Object *)this;
