@@ -645,14 +645,6 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if (active_list.contains(action->name()))
       continue;
 
-    // insert this into the inactive list
-    // for now, only deal with buttons with icons.. later, we'll need
-    // to look into actions a LOT more carefully
-    // Hmm, we also accept non-basic-KActions that have no icon
-    // (e.g. konqueror's location bar)
-    if ( action->icon().isEmpty() && action->isA("KAction") )
-      continue;
-
     ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->name(), action->toolTip());
     act->setText(1, action->plainText());
     if (!action->icon().isEmpty())
