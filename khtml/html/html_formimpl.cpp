@@ -983,10 +983,10 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         m_maxLen = -1;
         if (!attr->val()) break;
         bool ok;
-        m_maxLen = attr->val()->toInt(&ok);
-        if (!ok)
-            m_maxLen = -1;
-        else if (m_maxLen < 0)
+        int ml = attr->val()->toInt(&ok);
+        if (ml > 0 && ml < 1024)
+            m_maxLen = ml;
+        else if (ok && ml <= 0)
             m_maxLen = 0;
         setChanged();
     }
