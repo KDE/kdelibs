@@ -51,11 +51,6 @@ public:
    * what arguments it accepts.
    */
   KDESasl(const QString &aUser, const QString &aPass, const QString &aProtocol);
-  /**
-   * This function leaves next Friday.
-   */
-  KDESasl(const QString &aUser, const QString &aPass)
-  { KDESasl(aUser, aPass, QString::null); }
   /*
    * You need to have a virtual destructor!
    */
