@@ -22,7 +22,6 @@
 #include <qlayout.h>
 #include <kaction.h>
 
-#include <qlistview.h>
 #include <qheader.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
@@ -36,6 +35,7 @@
 #include <kxmlgui.h>
 #include <kseparator.h>
 #include <kconfig.h>
+#include <klistview.h>
 
 #include <qtextstream.h>
 #include <qfile.h>
@@ -72,13 +72,13 @@ typedef QValueList<XmlData> XmlDataList;
 class ToolbarItem : public QListViewItem
 {
 public:
-  ToolbarItem(QListView *parent, const QString& name)
+  ToolbarItem(KListView *parent, const QString& name)
     : QListViewItem(parent),
       m_name(name)
   {
   }
 
-  ToolbarItem(QListView *parent, QListViewItem *item, const QString& name)
+  ToolbarItem(KListView *parent, QListViewItem *item, const QString& name)
     : QListViewItem(parent, item),
       m_name(name)
   {
@@ -374,7 +374,7 @@ void KEditToolbarWidget::setupLayout()
 
   // our list of inactive actions
   QLabel *inactive_label = new QLabel(i18n("Available actions:"), this);
-  m_inactiveList = new QListView(this);
+  m_inactiveList = new KListView(this);
   m_inactiveList->setAllColumnsShowFocus(true);
   m_inactiveList->header()->hide();
   m_inactiveList->addColumn("");
@@ -384,7 +384,7 @@ void KEditToolbarWidget::setupLayout()
 
   // our list of active actions
   QLabel *active_label = new QLabel(i18n("Current actions:"), this);
-  m_activeList = new QListView(this);
+  m_activeList = new KListView(this);
   m_activeList->setAllColumnsShowFocus(true);
   m_activeList->header()->hide();
   m_activeList->addColumn("");

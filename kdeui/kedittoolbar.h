@@ -25,7 +25,7 @@
 class QActionCollection;
 class QComboBox;
 class QPushButton;
-class QListView;;
+class KListView;;
 class QListViewItem;
 
 class KEditToolbarWidget;
@@ -287,8 +287,8 @@ protected:
   bool save(QDomDocument& doc, const QString& xmlfile);
 
 private:
-  QListView *m_inactiveList;
-  QListView *m_activeList;
+  KListView *m_inactiveList;
+  KListView *m_activeList;
   QComboBox *m_toolbarCombo;
 
   QPushButton *m_upAction;
