@@ -230,6 +230,9 @@ public:
 
     /**
      * @internal method, called by the KApplication destructor
+     * This is what makes it possible to rely on ~KLibFactory
+     * being called in all cases, whether the library is unloaded
+     * while the application is running or when exiting.
      */
     static void cleanUp();
 
