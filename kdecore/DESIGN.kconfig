@@ -100,3 +100,61 @@ KDE3.0 Changes
 
 *) writeEntry now returns void instead of QString.
 *) deleteEntry functions added
+
+
+------------------------------------------------------------------------------
+
+KConfig XT
+==========
+
+My buzzword picker offered KConfig XT ("eXtended Technology") and KConfig NG 
+("Next Generation").  Since the planned changes are ment to be evolutionary 
+rather than revolutionary, KConfig NG was dropped.
+
+Goals
+=====
+
+* Have the default value for config entries defined in 1 place. Currently it is
+not uncommon to have them defined in three places:
+  1) In the application that reads the setting in order to use it
+  2) In the settings dialog when reading the setting
+  3) In the settings dialog when selecting "Use defaults".
+
+* Provide type-information about config entries to facilate "KConfEdit" like 
+tools. Ideally type-information also includes range-information.
+
+* Facilitate the documentation of config entries.
+
+
+Plan A
+======
+
+Instead of relying on the defaults that are hard-coded in the application, 
+rely on default configuration files being installed in $KDEDIR. The technical
+changes required for this are very minimal, it is mostly a change in policy.
+
+Type information can be provide by preceding every entry with a formalized 
+comment.
+
+Work to be done:
+* KConfig needs to be extended to provide access to the default values provided 
+by the default config files. KConfig already stores this information internally.
+* A formal comment structure needs to be designed that can convey type-information.
+Preferably in such a way that it is easily parsable by both machine and user.
+* KConfig needs to be extended, or another class created, that is able to parse
+the formalized comments.
+* A tool needs to be developed that can assist developers with the generation
+and verification of default configuration files including type-information.
+
+Drawbacks:
+* We rely on default configuration files being properly installed. 
+* The user can break applications by making improper modifications to these 
+files.
+
+
+Plan B
+======
+
+There is no plan B.
+
+
