@@ -202,7 +202,8 @@ QIconViewItemLineEdit::QIconViewItemLineEdit( const QString &text, QWidget *pare
 					      QIconViewItem *theItem, const char *name )
     : QMultiLineEdit( parent, name ), item( theItem ), startText( text )
 {
-    setWordWrap( QMultiLineEdit::FixedWidthWrap | QMultiLineEdit::BreakWithinWords );
+    setWordWrap( QMultiLineEdit::FixedPixelWidth );
+    setWrapPolicy( QMultiLineEdit::Anywhere );
     setWrapColumnOrWidth( item->iconView()->maxItemWidth() -
 			  ( item->iconView()->itemTextPos() == QIconView::Bottom ?
 			    0 : item->iconRect().width() ) );
