@@ -473,7 +473,7 @@ void KMCupsManager::processRequest(IppRequest* req)
 
 DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
 {
-	if (p->isClass(true))
+	if (!p || p->isClass(true))
 		return NULL;
 
 	QString	fname = downloadDriver(p);
