@@ -57,8 +57,16 @@ public:
 		mys=c;
 		strMode=true;
 	}
-	inline Reference& operator=(const std::string& s) {mys=s; return *this;}
-	inline Reference& operator=(const char*c) {mys=c; return *this;}
+	inline Reference& operator=(const std::string& s) {
+		mys=s;
+		strMode=true;
+		return *this;
+	}
+	inline Reference& operator=(const char*c) {
+		mys=c;
+		strMode=true;
+		return *this;
+	}
 	inline bool isString() const {return strMode;}
 //	inline operator const std::string() const {return mys;}
 	inline const std::string& string() const {return mys;}
