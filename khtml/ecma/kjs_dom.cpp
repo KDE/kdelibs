@@ -147,7 +147,7 @@ void DOMNode::tryPut(const UString &p, const KJSO& v)
     Imp::put(p, v);
 }
 
-KJSO DOMNode::toPrimitive(Type preferred) const
+KJSO DOMNode::toPrimitive(Type /*preferred*/) const
 {
   if (node.isNull())
     return Null();
