@@ -21,6 +21,7 @@
  */
 
 #include "ecma/kjs_proxy.h"
+#define QT_NO_XRANDR 1
 #define QT_NO_XFTFREETYPE 1
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
@@ -185,7 +186,7 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
 	qFatal("we need some fonts. So make sure you have %s installed.", xlfd.latin1());
-        
+
 
     if ( !xfs )
         return 0;
@@ -308,7 +309,7 @@ bool KParts::HistoryProvider::contains( const QString&  ) const
 }
 
 
-bool KJSCPUGuard::confirmTerminate() 
+bool KJSCPUGuard::confirmTerminate()
 {
     return false;
 }
