@@ -808,7 +808,7 @@ private:
       if( QString::fromLatin1( type::staticMetaObject()->className())\
           != KMainWindow::classNameOfToplevel( n ))\
       {\
-        kdWarning() << "RESTORE() - unknown window class "\
+        kdDebug(200) << "RESTORE() - unknown window class "\
           << KMainWindow::classNameOfTopLevel( n ) << " in session saved data!";\
       }\
       else\
@@ -838,7 +838,7 @@ inline void kRestoreMainWindows() {
     if ( className == QString::fromLatin1( T::staticMetaObject()->className() ) )
       (new T)->restore( n );
     else
-      kdWarning() << "kRestoreMainWindows() - unknown window class "
+      kdDebug(200) << "kRestoreMainWindows() - unknown window class "
         << className << " in session saved data!";
   }
 }
@@ -863,7 +863,7 @@ inline void kRestoreMainWindows() {
     else if ( className == QString::fromLatin1( classNames[1] ) )
       (new T1)->restore( n );
     else
-      kdWarning() << "kRestoreMainWindows() - unknown window class "
+      kdDebug(200) << "kRestoreMainWindows() - unknown window class "
         << className << " in session saved data!";
   }
 }
@@ -891,7 +891,7 @@ inline void kRestoreMainWindows() {
     else if ( className == QString::fromLatin1( classNames[2] ) )
       (new T2)->restore( n );
     else
-      kdWarning() << "kRestoreMainWindows() - unknown window class "
+      kdDebug(200) << "kRestoreMainWindows() - unknown window class "
         << className << " in session saved data!";
   }
 }
