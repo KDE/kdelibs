@@ -2,7 +2,7 @@
 # Made with the aid of debmake, by Christoph Lameter,
 # based on the sample debian/rules file for GNU hello by Ian Jackson.
 
-SHELL=/bin/bash
+SHELL=/bin/sh
 
 build:
 	$(checkdir)
@@ -81,9 +81,12 @@ binary-arch:  build
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
-	dh_builddeb
+	dh_builddeb -v
 
 # Below here is fairly generic really
+
+test:
+	touch $$( ls -1 debian/kdelibs0g/usr/X11R6/lib/lib* | grep -E lib.*\.so\.[^\.]*$$ )
 
 binary:		binary-indep binary-arch
 

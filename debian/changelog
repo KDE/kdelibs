@@ -1,5 +1,6 @@
 kdelibs (2:980312-4) frozen; urgency=low
 
+  * touch the .so.0 files to satisfy lintian
   * moved all unnecessary files out of -dev
   * moved the symbolic link default->en to kdelibs, where it belongs
   * fixed the shlibs format
