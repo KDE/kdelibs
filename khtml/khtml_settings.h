@@ -23,6 +23,8 @@
 class KConfig;
 #include <qcolor.h>
 #include <qstring.h>
+#include <qvaluelist.h>
+#include <qfont.h>
 
 /**
  * Settings for the HTML view.
@@ -50,10 +52,29 @@ public:
   bool underlineLink() { return m_underlineLink; }
 
   // Font settings
-  const QString& stdFontName() { return m_strStdFontName; }
-  const QString& fixedFontName() { return m_strFixedFontName; }
-  int fontSize() { return m_iFontSize; }
+  const QString& stdFontName() const { return m_strStdFontName; }
+  const QString& fixedFontName() const { return m_strFixedFontName; }
+  const QString& serifFontName() const { return m_strSerifFontName; }
+    const QString& sansSerifFontName() const { return m_strSansSerifFontName; }
+    const QString& cursiveFontName() const { return m_strCursiveFontName; }
+    const QString& fantasyFontName() const { return m_strFantasyFontName; }
 
+    // these two can be set. Mainly for historical reasons (the method in KHTMLPart exists...)
+  void setStdFontName(const QString &n) { m_strStdFontName = n; }
+  void setFixedFontName(const QString &n) { m_strFixedFontName = n; }
+
+    const QValueList<int> &fontSizes() const { return m_fontSizes; }
+    void setFontSizes(const QValueList<int> &newFontSizes );
+    void resetFontSizes();
+    
+    int minFontSize() const { return m_minFontSize; }
+
+    // the charset used to display the current document.
+    QFont::CharSet charset() const { return m_charset; }
+    void setCharset( QFont::CharSet c) { if(!enforceCharset) m_charset = c; }
+
+    const QString &encoding() const { return m_encoding; }
+    
   // Color settings
   const QColor& bgColor() { return m_bgColor; }
   const QColor& textColor() { return m_textColor; }
@@ -73,8 +94,18 @@ private:
 
   QString m_strStdFontName;
   QString m_strFixedFontName;
-  int m_iFontSize;
+  QString m_strSerifFontName;
+    QString m_strSansSerifFontName;
+    QString m_strCursiveFontName;
+    QString m_strFantasyFontName;
 
+    QValueList<int>     m_fontSizes;
+    int m_minFontSize;
+
+    QFont::CharSet m_charset;
+    bool enforceCharset;
+    QString m_encoding;
+    
   QColor m_bgColor;
   QColor m_textColor;
   QColor m_linkColor;
@@ -85,9 +116,6 @@ private:
   bool m_bEnableJavaScript;
 
   //  static KonqHTMLSettings * s_HTMLSettings;
-private:
-  // There is no copy constructors. Use the static method
-  KHTMLSettings( const KHTMLSettings &);
 };
 
 #endif

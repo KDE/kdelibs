@@ -31,7 +31,6 @@
 #include "dom/dom_node.h"
 #include "dom/dom_element.h"
 #include "html/html_documentimpl.h"
-#include "misc/khtmldata.h"
 #include "html/html_miscimpl.h"
 #include "html/html_inlineimpl.h"
 #include "html/html_formimpl.h"
@@ -120,7 +119,7 @@ public:
     m_bParsing = false;
     m_bReloading = false;
     m_manager = 0L;
-    m_settings = new khtml::Settings();
+    m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
     m_bClearing = false;
     m_bCleared = false;
     m_userSheet = QString::null;
@@ -141,6 +140,7 @@ public:
       delete m_extension;
     delete m_settings;
     delete m_jscript;
+    delete m_settings;
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;
@@ -156,7 +156,7 @@ public:
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
 
-  khtml::Settings *m_settings;
+  KHTMLSettings *m_settings;
 
   KIO::TransferJob * m_job;
 
@@ -760,8 +760,9 @@ void KHTMLPart::write( const char *str, int len )
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
       const QTextCodec *c = d->m_decoder->codec();
-      kdDebug(6005) << "setting up charset to " << KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
-      d->m_settings->charset = KGlobal::charsets()->charsetForEncoding(c->name());
+      kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+      d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
+      kdDebug(6005) << "charset is " << d->m_settings->charset() << endl;
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
   }
@@ -881,7 +882,7 @@ void KHTMLPart::checkCompleted()
   emit completed();
 }
 
-const khtml::Settings *KHTMLPart::settings() const
+const KHTMLSettings *KHTMLPart::settings() const
 {
   return d->m_settings;
 }
@@ -992,13 +993,13 @@ bool KHTMLPart::setCharset( const QString &name, bool /*override*/ )
     return false;
   }
 
-  QFont f(settings()->families()[0]);
+  QFont f(settings()->stdFontName());
   c->setQFont(f, name);
 
   QFontInfo fi(f);
-  kdDebug(6005) << "setting to charset " << f.charSet() << endl;
+  kdDebug(6005) << "setting to charset " << (int)f.charSet() << endl;
 
-  d->m_settings->charset = f.charSet();
+  d->m_settings->setCharset( f.charSet() );
   return true;
 }
 
@@ -1007,8 +1008,8 @@ bool KHTMLPart::setEncoding( const QString &name, bool /*override*/ )
     d->m_encoding = name;
 
     // ### hack!!!!
-    if(!d->m_settings->charset == QFont::Unicode)
-	d->m_settings->charset = KGlobal::charsets()->nameToID(name);
+    if(!d->m_settings->charset() == QFont::Unicode)
+	d->m_settings->setCharset( KGlobal::charsets()->nameToID(name) );
 
     // reload document
     closeURL();
@@ -1072,12 +1073,12 @@ void KHTMLPart::resetFontSizes()
 
 void KHTMLPart::setStandardFont( const QString &name )
 {
-    d->m_settings->setDefaultFamily(name);
+    d->m_settings->setStdFontName(name);
 }
 
 void KHTMLPart::setFixedFont( const QString &name )
 {
-    d->m_settings->setMonoSpaceFamily(name);
+    d->m_settings->setFixedFontName(name);
 }
 
 void KHTMLPart::setURLCursor( const QCursor &c )

@@ -37,7 +37,7 @@ using namespace DOM;
 #include "cssvalues.h"
 
 #include "misc/khtmllayout.h"
-#include "misc/khtmldata.h"
+#include "khtml_settings.h"
 #include "misc/htmlhashes.h"
 
 #include "html/html_headimpl.h"
@@ -1651,8 +1651,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	int len = list->length();
 	for(int i = 0; i < len; i++)
 	{
-	    // yuck, what an ugly construct...
-	    const QString *families = e->ownerDocument()->view()->part()->settings()->families();
 	    QFont f = style->font();
 	    CSSValueImpl *item = list->item(i);
 	    if(!item->isPrimitiveValue()) continue;
@@ -1660,17 +1658,17 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
 	    DOMStringImpl *str = val->getStringValue();
 	    QString face(str->s, str->l);
-	    // ### use the fonts in settings!!!!
+	    const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 	    if(face == "serif")
-		face = families[0];
+		face = s->serifFontName();
 	    else if(face == "sans-serif")
-		face = families[2];
+		face = s->sansSerifFontName();
 	    else if( face == "cursive")
-		face = families[3];
+		face = s->cursiveFontName();
 	    else if( face == "fantasy")
-		face = families[4];
+		face = s->fantasyFontName();
 	    else if( face == "monospace")
-		face = families[5];
+		face = s->fixedFontName();
 	    f.setFamily(face);
 	    QFontInfo fi(f);
 	    if(!strcasecmp(fi.family().ascii(), face.ascii()))

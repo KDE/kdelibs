@@ -25,7 +25,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "misc/khtmldata.h"
+#include "khtml_settings.h"
 #include "misc/htmlattrs.h"
 
 #include "htmlparser.h"
@@ -313,12 +313,12 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     m_style = new RenderStyle();
     m_style->setDisplay(BLOCK);
     // ### make the font stuff _really_ work!!!!
-    const QString *families = w->part()->settings()->families();
-    QValueList<int> fs = w->part()->settings()->fontSizes();
+    const KHTMLSettings *settings = w->part()->settings();
+    QValueList<int> fs = settings->fontSizes();
     QFont f = KGlobalSettings::generalFont();
-    f.setFamily(families[0]);
+    f.setFamily(settings->stdFontName());
     f.setPointSize(fs[3]);
-    f.setCharSet(w->part()->settings()->charset);
+    f.setCharSet(settings->charset());
     m_style->setFont(f);
 
     m_style->setHtmlHacks(true); // enable html specific rendering tricks
@@ -371,12 +371,12 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
     if(!m_render) return;
 
     if (force || changed()) {
-	const QString *families = m_view->part()->settings()->families();
-	QValueList<int> fs = m_view->part()->settings()->fontSizes();
+	const KHTMLSettings *settings = m_view->part()->settings();
+	QValueList<int> fs = settings->fontSizes();
 	QFont f = KGlobalSettings::generalFont();
-	f.setFamily(families[0]);
+	f.setFamily(settings->stdFontName());
 	f.setPointSize(fs[3]);
-	f.setCharSet(m_view->part()->settings()->charset);
+	f.setCharSet(settings->charset());
 	m_style->setFont(f);
     }
 

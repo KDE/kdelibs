@@ -28,4 +28,10 @@
 // lets be modern .. -- Bernd
 #define HTML_DEFAULT_VIEW_FONT "helvetica"
 #define HTML_DEFAULT_VIEW_FIXED_FONT "courier"
-#define HTML_DEFAULT_VIEW_FONT_SIZE 12
+// generic CSS fonts. Since usual X distributions don't have a good set of fonts, this
+// is quite conservative...
+#define HTML_DEFAULT_VIEW_SERIF_FONT "times"
+#define HTML_DEFAULT_VIEW_SANSSERIF_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_CURSIVE_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_FANTASY_FONT "helvetica"
+#define HTML_DEFAULT_MIN_FONT_SIZE 7 // everything smaller is usually unreadable.

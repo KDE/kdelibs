@@ -35,6 +35,7 @@ class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
 class KJSProxy;
 class KHTMLView;
+class KHTMLSettings;
 
 namespace DOM
 {
@@ -49,7 +50,6 @@ namespace DOM
 
 namespace khtml
 {
-  class Settings;
   class RenderPart;
   class RenderPartObject;
   struct ChildFrame;
@@ -466,7 +466,7 @@ public:
   /**
    * @internal
    */
-  const khtml::Settings *settings() const;
+  const KHTMLSettings *settings() const;
 
   /**
    * Returns a pointer to the parent KHTMLPart if the part is a frame in a html frameset.
