@@ -160,7 +160,9 @@ public:
 
     /**
      * Returns the path of an icon.
-     * @param name The name of the icon, without extension.
+     * @param name The name of the icon, without extension. If an absolute 
+     * path is supplied for this parameter, iconPath will return it 
+     * directly.
      * @param group_or_size If positive, search icons whose size is
      * specified by the icon group @p group_or_size. If negative, search
      * icons whose size is - @p group_or_size.
