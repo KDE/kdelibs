@@ -24,7 +24,6 @@
 
 #include "dom_stringimpl.h"
 
-#include <qregexp.h>
 #include <qstring.h>
 #include <qlist.h>
 #include <kdebug.h>
@@ -208,11 +207,16 @@ QList<Length> *DOMStringImpl::toLengthList() const
     QString str(s, l);
     int pos = 0;
     int pos2;
-    str.replace(QRegExp(" "),"");
+
+    // web authors are so stupid. This is a workaround
+    // to fix lists like "1,2 3,4"
+    QChar space(' ');
+    for(int i=0; i < l; i++) if(str[i].latin1() == ',') str[i] = space;
+    str.simplifyWhiteSpace();
 
     QList<Length> *list = new QList<Length>;
     list->setAutoDelete(true);
-    while((pos2 = str.find(',', pos)) != -1)
+    while((pos2 = str.find(' ', pos)) != -1)
     {
         Length *l = new Length(parseLength((QChar *) str.unicode()+pos, pos2-pos));
         list->append(l);
