@@ -525,7 +525,8 @@ bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 			s = action.toStringInternal();
 			bSameAsDefault = (action.m_cut == action.shortcutDefault());
 
-			if( bWriteAll && s.isEmpty() )
+			//if( bWriteAll && s.isEmpty() )
+			if( s.isEmpty() )
 				s = "none";
 
 			// If we're using a global config or this setting
