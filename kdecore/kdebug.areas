@@ -145,6 +145,7 @@
 7114        kio_nntp
 7115        kio_thumbnail
 7116        kio_imap
+7117	    kio_audiocd
 
 # kdevelop
 9000        kdevelop (core)
