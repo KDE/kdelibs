@@ -284,8 +284,8 @@ UString &UString::operator=(const char *c)
 
 UString &UString::operator=(const UString &str)
 {
-  attach(str.rep);
   release();
+  attach(str.rep);
 
   return *this;
 }
