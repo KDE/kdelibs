@@ -22,7 +22,62 @@
 
 class QString;
 class QImage;
-
+/**
+ * This is the baseclass for "thumbnail-plugins" in KDE. Using the class 
+ * @ref KIO::PreviewJob allows you to generate small images (thumbnails)
+ * for any kind of file, where a "ThumbCreator" is available. Have a look
+ * at kdebase/kioslave/thumbnail/ for existing ThumbCreators.
+ *
+ * What you need to do to create and register a ThumbCreator:
+ * @li Inherit from this class and reimplement the @ref create() method to
+ *     generate a thumbnail for the given file-path.
+ * @li Provide a factory method in your implementation file to instantiate
+ * your plugin, e.g.:
+ * <pre>
+ * extern "C"
+ * {
+ *   ThumbCreator *new_creator()
+ *   {
+ *     return new YourThumbCreator();
+ *   }
+ * };
+ * </pre>
+ *
+ * Compile your ThumbCreator as a module. The contents of Makefile.am
+ * need to look like this:
+ * <pre>
+ * INCLUDES = $(all_includes)
+ * LDFLAGS = $(all_libraries) $(KDE_RPATH)
+ * kde_module_LTLIBRARIES = yourthumbcreator.la
+ * yourthumbcreator_la_SOURCES = yourthumbcreator.cpp
+ * yourthumbcreator_la_LIBADD = $(LIB_KIO)
+ * yourthumbcreator_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+ * servicedir = $(kde_servicesdir)
+ * service_DATA = yourthumbcreator.desktop
+ * </pre>
+ *
+ * @li Create a file yourthumbcreator.desktop with the following contents:
+ * <pre>
+ * [Desktop Entry]
+ * Encoding=UTF-8
+ * Type=Service
+ * Name=Name of the type of files your ThumbCreator supports
+ * ServiceTypes=ThumbCreator
+ * MimeTypes=application/x-somemimetype
+ * CacheThumbnail=true
+ * X-KDE-Library=yourthumbcreator
+ * </pre>
+ *
+ * You can supply a comma-separated list of mimetypes to the MimeTypes entry,
+ * naming all mimetypes your ThumbCreator supports. You can also use simple
+ * wildcards, like text/* or image/*.
+ *
+ * If your plugin is rather inexpensive (e.g. like the text preview ThumbCreator),
+ * you can set CacheThumbnail=false to prevent your thumbnails from being cached
+ * on disk.
+ *
+ * @short Baseclass for thumbnail-generating plugins.
+ */
 class ThumbCreator
 {
 public:
