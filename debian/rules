@@ -33,8 +33,8 @@ $(BUILDDIR)/build:
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	$$pwd/configure --prefix=/usr --enable-debug \
 	--disable-rpath \
-	--includedir="\$$(prefix)/include/kde" \
-	--libdir="\$$(prefix)/X11R6/lib"  && make
+	--includedir=/usr/include/kde \
+	--libdir=/usr/X11R6/lib  && make
 
 	touch $(BUILDDIR)/build
 
@@ -67,7 +67,9 @@ binary-arch2: build
 	   kde_wallpaperdir="`pwd`/debian/tmp/usr/share/wallpaper" \
 	   kde_bindir="`pwd`/debian/tmp/usr/X11R6/bin" \
 	   kde_partsdir="`pwd`/debian/tmp/usr/lib/parts" \
-	   kde_confdir="`pwd`/debian/tmp/etc/kde" install 
+	   kde_confdir="`pwd`/debian/tmp/etc/kde" \
+	   includedir=`pwd`/debian/tmp/usr/include/kde \
+	   libdir=`pwd`/debian/tmp/usr/X11R6/lib install 
 
 	perl -w debian/kderules 
 	dh_movefiles 
