@@ -20,7 +20,7 @@ inline QDataStream & operator >> (QDataStream & str, bool & b)
 #if QT_VERSION < 0x030200
 inline QDataStream & operator << (QDataStream & str, long long int ll)
 {
-  Q_INT32 l1,l2;
+  Q_UINT32 l1,l2;
   l1 = ll & 0xffffffffLL;
   l2 = ll >> 32;
   str << l1 << l2;
@@ -29,9 +29,9 @@ inline QDataStream & operator << (QDataStream & str, long long int ll)
 
 inline QDataStream & operator >> (QDataStream & str, long long int&ll)
 {
-  Q_INT32 l1,l2;
+  Q_UINT32 l1,l2;
   str >> l1 >> l2;
-  ll = ((long long int)(l2) << 32) + (long long int) l1;
+  ll = ((unsigned long long int)(l2) << 32) + (long long int) l1;
   return str;
 }
 
