@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 YACC = bison
-INCLUDES = $(all_includes)
+INCLUDES = -I$(top_srcdir)/khtml $(all_includes)
 
 lib_LTLIBRARIES = libkjs.la
 
