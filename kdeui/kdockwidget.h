@@ -68,6 +68,7 @@
 #include "kdocktabctl.h"
 
 class KDockSplitter;
+class KDockManager;
 class KDockMoveManager;
 class KDockWidget;
 class KDockButton_Private;

@@ -30,6 +30,8 @@
 
 class DrMain;
 class KMDBEntry;
+class KMVirtualManager;
+class KMSpecialManager;
 class QWidget;
 
 class KMManager : public QObject
