@@ -98,15 +98,6 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
     }
 }
 
-#if 0 // not needed anymore
-static int getActualTime( void )
-{
-    timeval value;
-    gettimeofday( &value, NULL );
-    return value.tv_sec;
-}
-#endif
-
 // == parsing routines for zip headers
 
 /** all relevant information about parsing file information */
