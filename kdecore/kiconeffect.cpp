@@ -1,5 +1,5 @@
 /* vi: ts=8 sts=4 sw=4
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -33,42 +33,58 @@ KIconEffect::~KIconEffect()
 void KIconEffect::init()
 {
     KConfig *config = KGlobal::config();
-    config->setGroup("Icons");
 
-    int i;
+    int i, j, effect;
+    QStringList groups;
+    groups += "Desktop";
+    groups += "Toolbar";
+    groups += "MainToolbar";
+    groups += "Small";
+
     QStringList states;
-    QStringList::ConstIterator it;
-    states += "DefaultState";
-    states += "ActiveState";
-    states += "DisabledState";
-    for (it=states.begin(), i=0; it!=states.end(); it++, i++)
+    states += "Default";
+    states += "Active";
+    states += "Disabled";
+
+    QStringList::ConstIterator it, it2;
+    for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
-	QString tmp = config->readEntry(*it + "Effect");
-	if (tmp == "togray")
-	    mEffect[i] = ToGray;
-	else if (tmp == "desaturate")
-	    mEffect[i] = DeSaturate;
-	else if (tmp == "emboss")
-	    mEffect[i] = Emboss;
-	else
-	    mEffect[i] = NoEffect;
-	mValue[i] = config->readDoubleNumEntry(*it + "Value");
+	config->setGroup(*it + "Icons");
+	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
+	{
+	    QString tmp = config->readEntry(*it2 + "Effect");
+	    if (tmp == "togray")
+		effect = ToGray;
+	    else if (tmp == "desaturate")
+		effect = DeSaturate;
+	    else if (tmp == "emboss")
+		effect = Emboss;
+	    else
+		effect = NoEffect;
+	    mEffect[i][j] = effect;
+	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
+	}
     }
 }
 
-QImage KIconEffect::apply(QImage image, int state)
+QImage KIconEffect::apply(QImage image, int group, int state)
 {
     if (state >= KIcon::LastState)
     {
-	kdDebug(265) << "Illegal icon state: " << state << "\n";
+	kdDebug(264) << "Illegal icon state: " << state << "\n";
 	return image;
     }
-    return apply(image, mEffect[state], mValue[state]);
+    if (group >= KIcon::LastGroup)
+    {
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	return image;
+    }
+    return apply(image, mEffect[group][state], mValue[group][state]);
 }
 
 QImage KIconEffect::apply(QImage image, int effect, float value)
 {
-    if (effect > NoEffect)
+    if (effect >= LastEffect )
     {
 	kdDebug(265) << "Illegal icon effect: " << effect << "\n";
 	return image;
@@ -92,10 +108,10 @@ QImage KIconEffect::apply(QImage image, int effect, float value)
     return image;
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int state)
+QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 {
     QImage img = pixmap.convertToImage();
-    img = apply(img, state);
+    img = apply(img, group, state);
     QPixmap result;
     result.convertFromImage(img);
     return result;

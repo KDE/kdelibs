@@ -96,8 +96,9 @@ KIconLoader::KIconLoader(QString appname)
     QStringList::ConstIterator it;
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
-	mpGroups[i].size = config->readNumEntry(*it + "Size");
-	mpGroups[i].dblPixels = config->readBoolEntry(*it + "DoublePixels");
+	config->setGroup(*it + "Icons");
+	mpGroups[i].size = config->readNumEntry("Size");
+	mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels");
     }
 
     mThemeList = KIconTheme::list();
@@ -443,6 +444,8 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
     QImage img(icon.path);
     if (img.isNull())
 	return pix;
+
+    // Scale the icon if necessary
     int newsize = img.width();
     if (icon.type == KIcon::Scalable)
 	newsize = size;
@@ -454,14 +457,18 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
     if (newsize != img.width())
 	img = img.smoothScale(newsize, newsize);
 
-    img = mpEffect->apply(img, state);
+    // Apply effects
+    if ((group_or_size >= 0) && (state >= 0))
+    {
+	img = mpEffect->apply(img, group_or_size, state);
+    }
 
     pix.convertFromImage(img);
     QPixmapCache::insert(key, pix);
     return pix;
 }
 
-const KIconTheme *KIconLoader::theme()
+KIconTheme *KIconLoader::theme()
 {
     if (mpThemeRoot == 0L)
 	return 0L;

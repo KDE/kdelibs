@@ -107,7 +107,8 @@ public:
      * -@em group_or_size.
      * @param state The icon state: @em DefaultState, @em ActiveState or 
      * @em DisabledState. Depending on the user's preferences, the iconloader 
-     * may apply a visual effect to hint about its state.
+     * may apply a visual effect to hint about its state. If you pass a
+     * negative number, no effects are applied at all.
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
@@ -142,7 +143,7 @@ public:
      * Returns a pointer to the current theme. Can be used to query
      * available and default sizes for groups.
      */
-    const KIconTheme *theme();
+    KIconTheme *theme();
 
 
 private:
