@@ -536,6 +536,7 @@ Completion WindowFunc::tryExecute(const List &args)
         } else
             result = Undefined();
      }
+  delete config;
   break;
   }
   case ScrollBy:
