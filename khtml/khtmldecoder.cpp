@@ -27,6 +27,7 @@
 #include <khtmltags.h>
 
 #include <ctype.h>
+#include <stdio.h> // for the printf debug messages
 
 int getTagID(const char *tagStr, int len);
 
