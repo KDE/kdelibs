@@ -31,6 +31,8 @@
 
 class QWidget;
 class KSSLCertBox;
+class KSSLCertChain;
+
 
 //  NO GUARANTEES THAT KSSLInfoDlg:: will remain BC
 //  Contact staikos@kde.org for details if needed
@@ -43,13 +45,11 @@ public:
   KSSLInfoDlg(bool secureConnection, QWidget *parent = 0, const char *name = 0, bool modal = false);
   virtual ~KSSLInfoDlg();
 
-  void setup(const QString& peername, const QString& issuer,
+  void setup(KSSLCertificate *cert,
              const QString& ip, const QString& url,
              const QString& cipher, const QString& cipherdesc,
              const QString& sslversion, int usedbits, int bits,
-             KSSLCertificate::KSSLValidation certState,
-             const QString& goodFrom, const QString& goodUntil,
-	     const QString& serialNum);
+             KSSLCertificate::KSSLValidation certState);
 
 public:
   void setup( KSSL & ssl, const QString & ip, const QString & url );
@@ -65,7 +65,7 @@ private slots:
   void launchConfig();
   void urlClicked(const QString &url);
   void mailClicked(const QString &url);
-
+  void slotChain(int x);
 };
 
 

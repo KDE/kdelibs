@@ -39,13 +39,21 @@
 #include <kurllabel.h>
 //#include <kstandarddirs.h>
 //#include <krun.h>
+#include <qcombobox.h>
+#include "ksslcertificate.h"
+#include "ksslcertchain.h"
+
 
 class KSSLInfoDlg::KSSLInfoDlgPrivate {
 private:
     friend class KSSLInfoDlg;
     bool m_secCon;
     QGridLayout *m_layout;
+    QComboBox *_chain;
+    KSSLCertificate *_cert;
 };
+
+
 
 KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *name, bool modal)
  : KDialog(parent, name, modal, Qt::WDestructiveClose), d(new KSSLInfoDlgPrivate) {
@@ -54,10 +62,13 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     d->m_layout = new QGridLayout(topLayout, 3, 3, KDialog::spacingHint());
     d->m_layout->setColStretch(1, 1);
     d->m_layout->setColStretch(2, 1);
+
     QLabel *pixmap = new QLabel(this);
     d->m_layout->addWidget(pixmap, 0, 0);
+
     QLabel *info = new QLabel(this);
     d->m_layout->addWidget(info, 0, 1);
+
     if (KSSL::doesSSLWork()) {
         if (d->m_secCon) {
             pixmap->setPixmap(BarIcon("lock"));
@@ -102,8 +113,7 @@ KShellProcess p;
 void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
 {
     setup(
-        ssl.peerInfo().getPeerCertificate().getSubject(),
-        ssl.peerInfo().getPeerCertificate().getIssuer(),
+        &ssl.peerInfo().getPeerCertificate(),
         ip,
         url,
         ssl.connectionInfo().getCipher(),
@@ -111,26 +121,30 @@ void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
         ssl.connectionInfo().getCipherVersion(),
         ssl.connectionInfo().getCipherUsedBits(),
         ssl.connectionInfo().getCipherBits(),
-        ssl.peerInfo().getPeerCertificate().validate(),
-        ssl.peerInfo().getPeerCertificate().getNotBefore(),
-        ssl.peerInfo().getPeerCertificate().getNotAfter(),
-        ssl.peerInfo().getPeerCertificate().getSerialNumber()
+        ssl.peerInfo().getPeerCertificate().validate()
         );
 }
 
-void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
+void KSSLInfoDlg::setup(KSSLCertificate *cert,
                         const QString& ip, const QString& url,
                         const QString& cipher, const QString& cipherdesc,
                         const QString& sslversion, int usedbits, int bits,
-                        KSSLCertificate::KSSLValidation certState,
-                        const QString& goodFrom, const QString& goodUntil,
-			const QString& serialNum) {
+                        KSSLCertificate::KSSLValidation certState) {
 // Needed to put the GUI stuff here to get the layouting right
-    QGridLayout *layout = new QGridLayout(2, 2, KDialog::spacingHint());
+
+    d->_cert = cert;
+
+    QGridLayout *layout = new QGridLayout(4, 2, KDialog::spacingHint());
+
+    layout->addWidget(new QLabel(i18n("Chain:"), this), 0, 0);
+    d->_chain = new QComboBox(this);
+    layout->addMultiCellWidget(d->_chain, 1, 0, 1, 2);
+    connect(d->_chain, SIGNAL(activate(int)), SLOT(slotChain(int)));
+
     layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 0, 0);
-    layout->addWidget(buildCertInfo(peername), 1, 0);
+    layout->addWidget(buildCertInfo(cert->getSubject()), 1, 0);
     layout->addWidget(new QLabel(i18n("Issuer:"), this), 0, 1);
-    layout->addWidget(buildCertInfo(issuer), 1, 1);
+    layout->addWidget(buildCertInfo(cert->getIssuer()), 1, 1);
     d->m_layout->addMultiCell(layout, 1, 1, 0, 2);
 
     layout = new QGridLayout(8, 2, KDialog::spacingHint());
@@ -152,7 +166,7 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     QPalette cspl;
     switch(certState) {
     case KSSLCertificate::Ok:
-      layout->addWidget(csl = new QLabel(i18n("Certificate is valid from %1 until %2.").arg(goodFrom).arg(goodUntil), this), 2, 1);
+      layout->addWidget(csl = new QLabel(i18n("Certificate is valid from %1 until %2.").arg(cert->getNotBefore()).arg(cert->getNotAfter()), this), 2, 1);
       cspl = csl->palette();
       cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
       csl->setPalette(cspl);
@@ -167,7 +181,7 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     update();
 
     layout->addWidget(new QLabel(i18n("Serial Number:"), this), 3, 0);
-    layout->addWidget(new QLabel(serialNum, this), 3, 1);
+    layout->addWidget(new QLabel(cert->getSerialNumber(), this), 3, 1);
     layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 4, 0);
     layout->addWidget(new QLabel(cipher, this), 4, 1);
     layout->addWidget(new QLabel(i18n("Details:"), this), 5, 0);
@@ -178,6 +192,17 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 7, 1);
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 }
+
+
+void KSSLInfoDlg::slotChain(int x) {
+  if (x == 0) {
+//     displayCert(_p12->getCertificate());
+//     _certState->setText(KSSLCertificate::verifyText(_p12->validate()));
+  } else {
+//     displayCert(_p12->getCertificate()->chain().getChain().at(c-1));
+  }
+}
+
 
 KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher) {
     KSSLCertBox *result = new KSSLCertBox(parent);
