@@ -711,7 +711,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         QWhatsThis::add( m_appLocal,
                          i18n("Select this setting if you want the "
                               "entry only for the current application.\n"
-                              "Otherwise it will be available in all"
+                              "Otherwise it will be available in all "
                               "applications."));
     }
     else
