@@ -50,7 +50,7 @@ class KHTMLView;
     const RenderObject *o = this; while( o->parent() ) o = o->parent(); \
     o->printTree(); \
     qDebug(" this object = %p, %s", (void*) this, kdBacktrace().latin1() ); \
-    assert( false ); \
+    assert( x ); \
 }
 #else
 #define KHTMLAssert( x )
