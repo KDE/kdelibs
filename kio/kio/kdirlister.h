@@ -242,6 +242,9 @@ public:
   virtual void setMimeFilter( const QStringList& );
 
   /**
+   * Filtering should be done with KFileFilter. This will be implemented in a later
+   * revision of KDirLister. This method may be removed then.
+   *
    * Set mime-based exclude filter to only list items not matching the given mimetypes
    *
    * NOTE: setting the filter does not automatically reload direcory.
@@ -252,6 +255,7 @@ public:
    *
    * @param a list of mime-types.
    * @since 3.1
+   * @internal
    */
   void setMimeExcludeFilter(const QStringList &);
 
