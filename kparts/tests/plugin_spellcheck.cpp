@@ -9,7 +9,7 @@
 PluginSpellCheck::PluginSpellCheck( QObject* parent, const char* name )
     : Plugin( parent, name )
 {
-    (void) new KAction( i18n( "&Select current line (plugin)" ), 0, this, SLOT(slotSpellCheck()),
+    (void) new KAction( "&Select current line (plugin)", 0, this, SLOT(slotSpellCheck()),
                         actionCollection(), "spellcheck" );
 }
 

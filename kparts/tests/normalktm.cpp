@@ -27,23 +27,23 @@ Shell::Shell()
   m_part2 = new Part2(this, m_splitter);
 
   QPopupMenu * pFile = new QPopupMenu( this );
-  menuBar()->insertItem( i18n("File"), pFile );
+  menuBar()->insertItem( "File", pFile );
   QObject * coll = this;
-  KAction * paLocal = new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
+  KAction * paLocal = new KAction( "&View local file", 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   // No XML : we need to plug our actions ourselves
   paLocal->plug( pFile );
 
-  KAction * paRemote = new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+  KAction * paRemote = new KAction( "&View remote file", 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
   paRemote->plug( pFile );
 
-  m_paEditFile = new KAction( i18n( "&Edit file" ), 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
+  m_paEditFile = new KAction( "&Edit file", 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
   m_paEditFile->plug( pFile );
 
-  m_paCloseEditor = new KAction( i18n( "&Close file editor" ), 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
+  m_paCloseEditor = new KAction( "&Close file editor", 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
   m_paCloseEditor->setEnabled(false);
   m_paCloseEditor->plug( pFile );
 
-  KAction * paQuit = new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
+  KAction * paQuit = new KAction( "&Quit", 0, this, SLOT( close() ), coll, "shell_quit" );
   paQuit->setIconSet(QIconSet(BarIcon("exit")));
   paQuit->plug( pFile );
 

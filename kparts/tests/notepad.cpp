@@ -23,7 +23,7 @@ NotepadPart::NotepadPart( QWidget * parent, const char * name )
   m_edit = new QMultiLineEdit( parent, "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
-  (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
+  (void)new KAction( "Search and replace", 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   setXMLFile( "notepadpart.rc" );
   setReadWrite( true );
 }

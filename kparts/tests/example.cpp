@@ -34,17 +34,17 @@ Shell::Shell()
 
   KActionCollection *coll = actionCollection();
 
-  (void)new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
-  (void)new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+  (void)new KAction( "&View local file", 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
+  (void)new KAction( "&View remote file", 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
 
-  m_paEditFile = new KAction( i18n( "&Edit file" ), 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
-  m_paCloseEditor = new KAction( i18n( "&Close file editor" ), 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
+  m_paEditFile = new KAction( "&Edit file", 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
+  m_paCloseEditor = new KAction( "&Close file editor", 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
   m_paCloseEditor->setEnabled(false);
-  KAction * paQuit = new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
+  KAction * paQuit = new KAction( "&Quit", 0, this, SLOT( close() ), coll, "shell_quit" );
   paQuit->setIconSet(QIconSet(BarIcon("exit")));
 
-  (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
-  (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
+  (void)new KAction( "Yet another menu item", 0, coll, "shell_yami" );
+  (void)new KAction( "Yet another submenu item", 0, coll, "shell_yasmi" );
 
   setView( m_splitter );
   m_splitter->setMinimumSize( 400, 300 );
