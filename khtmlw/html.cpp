@@ -3455,7 +3455,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			{
 				if ( strchr( token+6, '%' ) )
 					percent = atoi( token+6 );
-				else
+                                else if ( isdigit( *(token + 6)))
 				{
 					length = atoi( token+6 );
 					percent = 0;
@@ -3511,7 +3511,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    {
 		if ( strchr( token + 6, '%' ) )
 		    percent = atoi( token + 6 );
-		else
+		else if ( isdigit( *(token + 6)))
 		    width = atoi( token + 6 );
 	    }
 	    else if (strncasecmp( token, "height=", 7 ) == 0)
@@ -4337,9 +4337,9 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 	if ( strncasecmp( token, "width=", 6 ) == 0 )
 	{
 	    if ( strchr( token+6, '%' ) )
-            percent = atoi( token + 6 );
-        else
-            cell_width = atoi( token + 6 );
+               percent = atoi( token + 6 );
+            else if ( isdigit( *(token + 6)))
+               cell_width = atoi( token + 6 );
 	}
 	else if ( strncasecmp( token, "align=", 6 ) == 0 )
 	{
@@ -4435,8 +4435,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	    if ( strchr( token+6, '%' ) )
 		percent = atoi( token + 6 );
 	    else if ( strchr( token+6, '*' ) )
-	    { /* ignore */ }
-	    else
+                { /* ignore */ }
+            else if ( isdigit( *(token + 6)))
 		width = atoi( token + 6 );
 	}
 	else if (strncasecmp( token, "align=", 6 ) == 0)
@@ -4651,8 +4651,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			    if ( strchr( token + 6, '%' ) )
 				percent = atoi( token + 6 );
 			    else if ( strchr( token + 6, '*' ) )
-			    { /* ignore */ }
-			    else
+			        { /* ignore */ }
+			    else if (isdigit( *(token+6)))
 			    {
 				width = atoi( token + 6 );
 				percent = 0;
