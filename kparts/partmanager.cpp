@@ -79,6 +79,18 @@ PartManager::PartManager( QWidget * parent, const char * name )
   addManagedTopLevelWidget( parent );
 }
 
+PartManager::PartManager( QWidget *topLevel, QObject *parent, const char *name )
+ : QObject( parent, name )
+{
+  d = new PartManagerPrivate;
+
+  qApp->installEventFilter( this );
+
+  d->m_policy = Direct;
+
+  addManagedTopLevelWidget( topLevel );
+}
+
 PartManager::~PartManager()
 {
   QListIterator<QWidget> it( d->m_managedTopLevelWidgets );
