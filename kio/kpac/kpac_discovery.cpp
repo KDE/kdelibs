@@ -43,7 +43,6 @@ bool KPACDiscovery::tryDiscovery()
         case DHCP:
         {
             m_stage = DNSAlias;
-#if 0
             KProcess proc;
             proc << "kpac_dhcp_helper";
             connect(&proc, SIGNAL(receivedStdout(KProcess *, char *, int)),
@@ -62,7 +61,6 @@ bool KPACDiscovery::tryDiscovery()
                     return true;
                 }
             }
-#endif
         } // Fallthrough
         case DNSAlias:
         {

@@ -57,7 +57,7 @@ QString KPACImpl::proxyForURL(const KURL &url)
     kdDebug(7025) << "KPACImpl::proxyForURL(), url=" << url.prettyURL() << endl;
     if (!m_configRead)
     {
-        kdDebug(7025) << "KPACImpl::proxyForURL(): config not read, not using a proxy" << endl;
+        kdDebug(7025) << "KPACImpl::proxyForURL(): config not (yet) read, not using a proxy" << endl;
         return QString::null;
     }
 

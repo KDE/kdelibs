@@ -36,10 +36,32 @@
 #define INADDR_NONE -1
 #endif
 
+int set_gid(gid_t);
+int set_uid(uid_t);
 int get_port(const char *);
 int init_socket(void);
 uint32_t send_request(int);
 void get_reply(int, uint32_t);
+
+int set_gid(gid_t gid)
+{
+#ifdef HAVE_SHORTSETGROUPS
+	short x[2];
+	x[0] = gid;
+	x[1] = 73; /* catch errors */
+	if (setgroups(1, x) == -1)
+		return -1;
+#else
+	if (setgroups(1, &gid) == -1)
+		return -1;
+#endif
+	return setgid(gid); /* _should_ be redundant, but on some systems it isn't */
+}
+
+int set_uid(uid_t uid)
+{
+	return setuid(uid);
+}
 
 /* All functions below do an exit(1) on the slightest error */
 
@@ -74,12 +96,8 @@ int init_socket()
 		bind(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		exit(1);
 
-	if (
-#ifdef HAVE_SETGROUPS
-		setgroups(0, 0) != 0 ||
-#endif
-	    setuid(getuid()) != 0 || /* we don't need it anymore */
-		setgid(getgid()) != 0)
+	if (set_gid(getgid()) != 0 || /* we don't need it anymore */
+		set_uid(getuid()) != 0)
 		exit(1);
 	return sock;
 }
