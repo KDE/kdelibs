@@ -62,7 +62,6 @@
 
 #include "ktoolbarbutton.h"
 
-
 enum {
     CONTEXT_TOP = 0,
     CONTEXT_LEFT = 1,
@@ -126,6 +125,16 @@ public:
     ToolBarInfo toolBarInfo;
     QValueList<int> iconSizes;
     QTimer repaintTimer;
+
+  // Default Values.
+  bool HiddenDefault;
+  int IconSizeDefault;
+  QString IconTextDefault;
+  QString IndexDefault;
+  QString NewLineDefault;
+  QString OffsetDefault;
+  QString PositionDefault;
+
 };
 
 KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
@@ -1045,16 +1054,20 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     KConfigGroupSaver saver(config, configGroup);
 
-    config->writeEntry("Position", position);
-    config->writeEntry("IconText", icontext);
-    config->writeEntry("IconSize", iconSize());
-    config->writeEntry("Hidden", isHidden());
+    if(position != d->PositionDefault)
+      config->writeEntry("Position", position);
+    if(icontext != d->IconTextDefault)
+      config->writeEntry("IconText", icontext);
+    if(iconSize() != d->IconSizeDefault)
+      config->writeEntry("IconSize", iconSize());
+    if(isHidden() != d->HiddenDefault)
+      config->writeEntry("Hidden", isHidden());
 
-    if ( !index.isEmpty() )
+    if ( !index.isEmpty() && index != d->IndexDefault )
         config->writeEntry( "Index", index );
-    if ( !offset.isEmpty() )
+    if ( !offset.isEmpty() && offset != d->OffsetDefault )
         config->writeEntry( "Offset", offset );
-    if ( !newLine.isEmpty() )
+    if ( !newLine.isEmpty() && newLine != d->NewLineDefault )
         config->writeEntry( "NewLine", newLine );
 }
 
@@ -1509,6 +1522,10 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         emit modechange(); // tell buttons what happened
     if (isVisible ())
         updateGeometry();
+
+    // Store as the default values.
+    d->IconSizeDefault = iconSize();
+    d->IconTextDefault = iconText();
 }
 
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
@@ -1588,6 +1605,11 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         }
         if (isVisible ())
             updateGeometry();
+
+	// Store default values.
+	getAttributes(d->PositionDefault, d->IconTextDefault, d->IndexDefault,
+		   d->OffsetDefault,  d->NewLineDefault);
+	d->HiddenDefault = hidden;
     }
 }
 
@@ -1655,7 +1677,9 @@ void KToolBar::loadState( const QDomElement &element )
     QString attrOffset = element.attribute( "offset" ).lower();
     QString attrNewLine = element.attribute( "newline" ).lower();
     QString attrHidden = element.attribute( "hidden" ).lower();
-
+    
+    d->HiddenDefault =  attrHidden == "true" ? TRUE : FALSE;
+    
     if ( !attrFullWidth.isEmpty() ) {
         if ( attrFullWidth == "true" )
             setFullSize( TRUE );
@@ -1714,7 +1738,8 @@ void KToolBar::loadState( const QDomElement &element )
 
     if ( !attrIconSize.isEmpty() )
         setIconSize( attrIconSize.toInt() );
-
+    d->IconSizeDefault = iconSize();
+	
     // Apply the highlight button setting
     d->m_highlight = highlightSetting();
 
@@ -1727,6 +1752,9 @@ void KToolBar::loadState( const QDomElement &element )
         hide();
     else
         show();
+    
+    getAttributes(d->PositionDefault, d->IconTextDefault, d->IndexDefault,
+		   d->OffsetDefault,  d->NewLineDefault);
 }
 
 void KToolBar::getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine )
