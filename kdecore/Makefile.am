@@ -1,4 +1,7 @@
-#	This file is part of the KDE libraries
+#    This file is part of the KDE libraries
+#
+#    $Id$
+#
 #    Copyright (C) 1996-1997 Matthias Kalle Dalheimer (kalle@kde.org)
 #			  (C) 1997 Stephan Kulow (coolo@kde.org)
 
@@ -41,7 +44,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
-libkdefakes_la_LDFLAGS = -version-info 3:0
+libkdefakes_la_LDFLAGS = -version-info 3:0 -static
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 	ksycocafactory.h ksycocadict.h
