@@ -37,12 +37,12 @@ public:
         m_enabled = true;
         m_hasIcon = false;
     }
-    
+
     KGuiItemPrivate( const KGuiItemPrivate &rhs )
     {
-        (*this ) = rhs;
+        ( *this ) = rhs;
     }
-    
+
     KGuiItemPrivate &operator=( const KGuiItemPrivate &rhs )
     {
         m_text = rhs.m_text;
@@ -77,7 +77,7 @@ KGuiItem::KGuiItem( const QString &text,    const QString &iconName,
 {
     d = new KGuiItemPrivate;
     d->m_text = text;
-    d->m_toolTip =  toolTip;
+    d->m_toolTip = toolTip;
     d->m_whatsThis = whatsThis;
     setIconName( iconName );
 }
@@ -87,7 +87,7 @@ KGuiItem::KGuiItem( const QString &text,    const QIconSet &iconSet,
 {
     d = new KGuiItemPrivate;
     d->m_text = text;
-    d->m_toolTip =  toolTip;
+    d->m_toolTip = toolTip;
     d->m_whatsThis = whatsThis;
     setIconSet( iconSet );
 }
@@ -95,10 +95,11 @@ KGuiItem::KGuiItem( const QString &text,    const QIconSet &iconSet,
 KGuiItem::KGuiItem( const KGuiItem &rhs )
     : d( 0 )
 {
-    (*this) = rhs;
+    ( *this ) = rhs;
 }
 
-KGuiItem &KGuiItem::operator=( const KGuiItem &rhs ) {
+KGuiItem &KGuiItem::operator=( const KGuiItem &rhs )
+{
     if ( d == rhs.d )
         return *this;
 
@@ -110,16 +111,19 @@ KGuiItem &KGuiItem::operator=( const KGuiItem &rhs ) {
     return *this;
 }
 
-KGuiItem::~KGuiItem() {
+KGuiItem::~KGuiItem()
+{
     delete d;
 }
 
-QString KGuiItem::text() const {
+QString KGuiItem::text() const
+{
     return d->m_text;
 }
 
 
-QString KGuiItem::plainText() const {
+QString KGuiItem::plainText() const
+{
     int len = d->m_text.length();
 
     if (len == 0)
@@ -132,19 +136,12 @@ QString KGuiItem::plainText() const {
     stripped.setLength(len);
 
     const QChar* data    = d->m_text.unicode();
-    for (int pos = 0; pos < len; pos++)
+    for ( int pos = 0; pos < len; pos++ )
     {
-#if QT_VERSION >= 0x030200
-        if (data[pos] != '&')
-            stripped[resultLength++] = data[pos];
-        else if (pos+1<len && data[pos+1]=='&')
-            stripped[resultLength++] = data[pos++];
-#else
-        //We pass through any non-ampersand character,
-        //and any ampersand that's preceded by an ampersand
-        if (data[pos] != '&' || (pos >= 1 && data[pos-1] == '&') )
-            stripped[resultLength++] = data[pos];
-#endif
+        if ( data[ pos ] != '&' )
+            stripped[ resultLength++ ] = data[ pos ];
+        else if ( pos + 1 < len && data[ pos + 1 ] == '&' )
+            stripped[ resultLength++ ] = data[ pos++ ];
     }
 
     stripped.truncate(resultLength);
@@ -183,10 +180,13 @@ QString KGuiItem::iconName() const
     return d->m_iconName;
 }
 
-QString KGuiItem::toolTip() const {
+QString KGuiItem::toolTip() const
+{
     return d->m_toolTip;
 }
-QString KGuiItem::whatsThis() const {
+
+QString KGuiItem::whatsThis() const
+{
     return d->m_whatsThis;
 }
 
@@ -218,15 +218,20 @@ void KGuiItem::setIconName( const QString &iconName )
     d->m_hasIcon = !iconName.isEmpty();
 }
 
-void KGuiItem::setToolTip( const QString &toolTip) {
+void KGuiItem::setToolTip( const QString &toolTip )
+{
     d->m_toolTip = toolTip;
 }
-void KGuiItem::setWhatsThis( const QString &whatsThis ) {
+
+void KGuiItem::setWhatsThis( const QString &whatsThis )
+{
     d->m_whatsThis = whatsThis;
 }
-void KGuiItem::setEnabled( bool enabled ){
+
+void KGuiItem::setEnabled( bool enabled )
+{
     d->m_enabled = enabled;
 }
 
-/* vim: et sw=4
- */
+// vim: set et sw=4:
+
