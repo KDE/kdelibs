@@ -95,7 +95,7 @@ class KMDI_EXPORT KMdiDockContainer: public QWidget, public KDockContainer
      * \param group_or_prefix the prefix to append to the parent dockwidget's name
      */
     virtual void save(KConfig *,const QString& group_or_prefix);
-    
+
     /**
      * Load the config using a KConfig object
      * 
@@ -109,7 +109,7 @@ class KMDI_EXPORT KMdiDockContainer: public QWidget, public KDockContainer
      * Save the config to a QDomElement
      */
     virtual void save(QDomElement&);
-    
+
     /**
      * Load the config from a QDomElement
      */

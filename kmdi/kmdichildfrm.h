@@ -191,7 +191,7 @@ class KMDI_EXPORT KMdiChildFrm : public QFrame
   // methods
   public:
      /**
-     * Creates a new KMdiChildFrm class.<br>
+     * Creates a new KMdiChildFrm class.
      */
      KMdiChildFrm(KMdiChildArea *parent);
      /**
@@ -291,9 +291,6 @@ class KMDI_EXPORT KMdiChildFrm : public QFrame
      virtual void setMinimumSize ( int minw, int minh );
 
   public slots:
-     /**
-     *
-     */
      void slot_resizeViaSystemMenu();
 
   protected:
