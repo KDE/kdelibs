@@ -104,9 +104,9 @@ struct KCompletionPrivate;
  * Note: KCompletion does not work with strings that contain 0x0 characters
  *       (unicode nul), as this is used internally as a delimiter.
  *
- * You may inherit from KCompletion and override @ref makeCompletion() in 
- * special cases (like reading directories/urls and then supplying the 
- * contents to KCompletion, as KURLCompletion does), but generally, this is 
+ * You may inherit from KCompletion and override @ref makeCompletion() in
+ * special cases (like reading directories/urls and then supplying the
+ * contents to KCompletion, as KURLCompletion does), but generally, this is
  * not necessary.
  *
  *
@@ -300,11 +300,6 @@ public slots:
    * @see #items
    */
   void setItems( const QStringList& );
-  inline void setItemList( const QStringList& list ) {
-    warning("KCompletion::setItemList() is deprecated, use setItems() instead");
-    setItems( list );
-  }
-
 
   /**
    * Adds an item to the list of available completions.
