@@ -23,6 +23,10 @@
 #include <dom_string.h>
 #include <dom_exception.h>
 
+#ifdef KJS_VERBOSE
+#include <kdebug.h>
+#endif
+
 #include "kjs_dom.h"
 #include "kjs_text.h"
 
@@ -33,6 +37,9 @@ const TypeInfo DOMCharacterData::info = { "CharacterImp", HostType,
 
 KJSO DOMCharacterData::tryGet(const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070)<<"DOMCharacterDataFunction::tryGet "<<p.string().string()<<endl;
+#endif
   DOM::CharacterData data = static_cast<DOM::CharacterData>(node);
   if (p == "data")
     return String(data.data());
