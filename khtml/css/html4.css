@@ -378,6 +378,8 @@ BUTTON:active {
 }
 
 INPUT { color: windowtext; 
+        font-family: sans-serif;
+        font-size: medium;
         margin: 0__qem;
 }
 
@@ -392,7 +394,6 @@ INPUT[type="radio"], INPUT[type="checkbox"] {
 
 INPUT[type="text"], INPUT[type="password"] {
 	cursor: text;
-        font-family: monospace;
         text-align: left;
 }
 
@@ -415,13 +416,14 @@ PARAM  {
 }
 
 SELECT { 
-        font-size: medium; 
+        font-size: sans-serif;
         color: windowtext; 
         margin: 0__qem;
 }
 
 TEXTAREA { 
         color: windowtext; 
+        font-size: normal;
         font-family: monospace; 
         margin: 0__qem;
 }

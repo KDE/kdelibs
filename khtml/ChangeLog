@@ -1,5 +1,12 @@
 2004-01-10  Dirk Mueller  <mueller@kde.org>
 
+	* css/html4.css: fix default font/fontsize of input,select and textarea
+	(#67851).
+
+	* misc/loader_jpeg.cpp (decode): try hard not to shoot
+	down the machine with large images 
+	(try http://www.parisc-linux.org/~willy/kde/graph.jpg)
+
 	* rendering/render_image.cpp (layout): ugh, major stupidity. don't rescale large
 	images if nobody explicitely asked for it. makes loading of very large images 
 	quite a bit faster.
