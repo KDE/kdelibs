@@ -1294,7 +1294,9 @@ void KeramikStyle::drawControl( ControlElement element,
 				if ( enabled )
 					Keramik::RowPainter( keramik_menuitem ).draw( p, main, cg.highlight(), cg.background() );
 				else {
-					p->fillRect( main, cg.background().light( 105 ) );
+					if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
+						p->drawPixmap( main.topLeft(), *widget->erasePixmap(), main );
+					else p->fillRect( main, cg.background().light( 105 ) );
 					p->drawWinFocusRect( r );
 				}
 			}
@@ -1922,7 +1924,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 13;
 
 		case PM_TabBarTabVSpace:
-			return 14;
+			return 12;
 			
 		case PM_TitleBarHeight:
 			return 22;
