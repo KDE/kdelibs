@@ -30,21 +30,21 @@
 
 class KZipFileEntry;
 /**
- *   This class implements a kioslave to acces ZIP files from KDE.
+ *   This class implements a kioslave to access zip files from KDE.
  *   You can use it in IO_ReadOnly or in IO_WriteOnly mode, and it
  *   behaves just as expected.
  *   It can also be used in IO_ReadWrite mode, in this case one can
- *   append files to an existing zip archive. when you append new files, which
- *   are not yet in the zip, it works as expected, they are appended at the end.
- *   when you append a file, which is already in the file, the reference to the
- *   old file is dropped and the new one is added to the zip. but the
+ *   append files to an existing zip archive. When you append new files, which
+ *   are not yet in the zip, it works as expected, i.e. the files are appended at the end.
+ *   When you append a file, which is already in the file, the reference to the
+ *   old file is dropped and the new one is added to the zip - but the
  *   old data from the file itself is not deleted, it is still in the
- *   zipfile. so when you want to have a small and garbagefree zipfile,
- *   just read the contents of the appended zipfile and write it to a new one
- *   in IO_WriteOnly mode. exspecially take care of this, when you don´t want
+ *   zipfile. so when you want to have a small and garbage-free zipfile,
+ *   just read the contents of the appended zip file and write it to a new one
+ *   in IO_WriteOnly mode. This is especially important when you don't want
  *   to leak information of how intermediate versions of files in the zip
  *   were looking.
- *   for more information on the zip fileformat go to
+ *   For more information on the zip fileformat go to
  *   http://www.pkware.com/support/appnote.html .
  * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
@@ -77,7 +77,7 @@ public:
     virtual ~KZip();
 
     /**
-     * The name of the zip file, as passed to the constructor
+     * The name of the zip file, as passed to the constructor.
      * Null if you used the QIODevice constructor.
      * @return the zip's file name, or null if a QIODevice is used
      */
