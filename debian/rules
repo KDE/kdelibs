@@ -83,15 +83,12 @@ binary-arch:  build
 	fi
 
 # libraries not starting with lib are modules
-	dh_movefiles -pkdelibs3-dev $(kde_includedir) $(kde_libdir)/lib*.a
-	#-mv `find debian/kdelibs3-dev/$(kde_libdir) -type f -name "*.so"` debian/tmp/$(kde_libdir)/
+	dh_movefiles -pkdelibs3-dev $(kde_includedir) $(kde_libdir)/lib*.a $(kde_libdir)/lib*.la $(kde_libdir)/lib*.so
 	dh_installchangelogs
 	dh_undocumented
 	dh_strip
-	-rm debian/tmp/usr/share/doc/kde/HTML/en/kdebug/common/ \
-	    debian/tmp/usr/share/doc/kde/HTML/en/kspell/common/
+	-rm debian/tmp/usr/share/doc/kde/HTML/en/kspell/common/ 
 	cd debian/tmp/usr/share/doc/kde/HTML/en/kspell && ln -s ../common common
-	cd debian/tmp/usr/share/doc/kde/HTML/en/kdebug && ln -s ../common common
 	dh_perl
 	dh_link
 	dh_compress 
