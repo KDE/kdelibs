@@ -500,7 +500,7 @@ Comment[uk]=Шось особливе сталось у програмі
 Comment[zh_CN.GB2312]=程序中发生了特殊的事情
 Comment[zh_TW.Big5]=有一些奇特的事在程式中發生
 default_presentation=1
-default_sound=KDE_Notification.wav
+default_sound=KDE_Beep_Beep.wav
 level=1
 
 [warning]
