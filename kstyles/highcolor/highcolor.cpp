@@ -82,6 +82,11 @@ QBitmap maskBmp;
 QBitmap xBmp;
 QIntDict<GradientSet> gDict;
 
+static const int motifItemFrame         = 2;
+static const int motifItemHMargin       = 3;
+static const int motifItemVMargin       = 2;
+static const int motifArrowHMargin      = 6;
+static const int windowsRightBorder     = 12;
 
 // ---------------------------------------------------------------------------
 
@@ -299,8 +304,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 		// BEVELS
 		// -------------------------------------------------------------------
-		case PE_ButtonBevel:
-		case PE_HeaderSection: {
+		case PE_ButtonBevel: {
 			int x,y,w,h;
 			r.rect(&x, &y, &w, &h);
 			bool sunken = on || down;
@@ -323,6 +327,35 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->fillRect(x+2, y+2, w-4, h-4, cg.background());
 			else
 				renderGradient( p, QRect(x+2, y+2, w-4, h-4),
+							    cg.background(), flags & Style_Horizontal );
+			break;
+		}
+
+
+		// HEADER SECTION
+		// -------------------------------------------------------------------
+		case PE_HeaderSection: {
+			int x,y,w,h;
+			r.rect(&x, &y, &w, &h);
+			bool sunken = on || down;
+			int x2 = x+w-1;
+			int y2 = y+h-1;
+
+			// Bevel
+			p->setPen(sunken ? cg.mid() : cg.light());
+			p->drawLine(x, y, x2-1, y);
+			p->drawLine(x, y, x, y2-1);
+			p->setPen(sunken ? cg.light() : cg.mid());
+			p->drawLine(x+1, y2-1, x2-1, y2-1);
+			p->drawLine(x2-1, y+1, x2-1, y2-1);
+			p->setPen(cg.shadow());
+			p->drawLine(x, y2, x2, y2);
+			p->drawLine(x2, y, x2, y2);
+
+			if (sunken)
+				p->fillRect(x+1, y+1, w-3, h-3, cg.background());
+			else
+				renderGradient( p, QRect(x+1, y+1, w-3, h-3),
 							    cg.background(), flags & Style_Horizontal );
 			break;
 		}
@@ -798,13 +831,188 @@ void HighColorStyle::drawControl( ControlElement element,
 			break;
 		}
 
-// ###### TODO
-/*		case CE_PopupMenuItem: {
+		// POPUP MENU ITEM
+		// -------------------------------------------------------------------
+		case CE_PopupMenuItem: {
+			int x, y, w, h;
+			r.rect( &x, &y, &w, &h );
+
+			const QPopupMenu *popupmenu = (const QPopupMenu *) widget;
+			QMenuItem *mi = opt.menuItem();
+			if ( !mi )
+				break;
+
+			int  tab        = opt.tabWidth();
+			int  checkcol   = QMAX( opt.maxIconWidth(), 20 );
+			bool enabled    = mi->isEnabled();
+			bool checkable  = popupmenu->isCheckable();
+			bool active     = flags & Style_Active;
+
+			// Are we a menu item separator?
+			if ( mi->isSeparator() ) {
+				p->setPen( cg.dark() );
+				p->drawLine( x, y, x+w, y );
+				p->setPen( cg.light() );
+				p->drawLine( x, y+1, x+w, y+1 );
+				break;
+	    	}
+
+			// Draw the menu item background
+       		if ( active )
+				qDrawShadePanel( p, x, y, w, h, cg, true, 1,
+						         &cg.brush(QColorGroup::Midlight) );
+			else
+				p->fillRect( r, cg.button() );
+
+			// Do we have an icon?
+			if ( mi->iconSet() ) {
+				QIconSet::Mode mode;
+
+				// Select the corrent icon from the iconset
+				if ( active )
+					mode = enabled ? QIconSet::Active : QIconSet::Disabled;
+				else
+					mode = enabled ? QIconSet::Normal : QIconSet::Disabled;
+
+				// Do we have an icon and are checked at the same time?
+				// Then draw a "pressed" background behind the icon
+				if ( checkable && !active && mi->isChecked() )
+					qDrawShadePanel( p, x, y, checkcol, h, cg, true, 1, 
+					                 &cg.brush(QColorGroup::Midlight) );
+					
+				// Draw the icon
+				QPixmap pixmap = mi->iconSet()->pixmap( QIconSet::Small, mode );
+				int pixw = pixmap.width();
+				int pixh = pixmap.height();
+				QRect cr( x, y, checkcol, h );
+				QRect pmr( 0, 0, pixw, pixh );
+				pmr.moveCenter( cr.center() );
+				p->setPen( cg.highlightedText() );
+				p->drawPixmap( pmr.topLeft(), pixmap );
+       		}
+
+			// Are we checked? (This time without an icon)
+			else if ( checkable && mi->isChecked() ) {
+				// We only have to draw the background if the menu item is inactive -
+				// if it's active the "pressed" background is already drawn
+				if ( ! active )
+					qDrawShadePanel( p, x, y, checkcol, h, cg, true, 1,
+					                 &cg.brush(QColorGroup::Midlight) );
+					
+				// Draw the checkmark
+				SFlags cflags = Style_Default;
+				cflags |= active ? Style_Enabled : Style_On;
+
+				drawPrimitive( PE_CheckMark, p, QRect( x + motifItemFrame, y + motifItemFrame,
+								checkcol - motifItemFrame*2, h - motifItemFrame*2), cg, cflags );
+			}
+
+			// Time to draw the menu item label...
+			int xm = motifItemFrame + checkcol + motifItemHMargin;
+
+			// Set the color for enabled and disabled text (used for both active and inactive menu items)
+			p->setPen( enabled ? cg.buttonText() : cg.mid() );
+			
+			// This color will be used instead of the above if the menu item
+			// is active and disabled at the same time. (etched text)
+			QColor discol = cg.mid();
+
+			// Does the menu item draw it's own label?
+			if ( mi->custom() ) {
+				int m = motifItemVMargin;
+				// Save the painter state in case the custom
+				// paint method changes it in some way
+				p->save();
+
+				// Draw etched text if we're inactive and the menu item is disabled
+				if ( !enabled && !active ) {
+		   			p->setPen( cg.light() );
+		   			mi->custom()->paint( p, cg, active, enabled, x+xm+1, y+m+1, w-xm-tab+1, h-2*m );
+		   			p->setPen( discol );
+				}
+				mi->custom()->paint( p, cg, active, enabled, x+xm, y+m, w-xm-tab+1, h-2*m );
+				p->restore();
+			}
+			else {
+				// The menu item doesn't draw it's own label 
+				QString s = mi->text();
+
+				// Does the menu item have a text label?
+				if ( !s.isNull() ) {
+					int t = s.find( '\t' );
+					int m = motifItemVMargin;
+					const int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
+
+					// Does the menu item have a tabstop? (for the accelerator text)
+					if ( t >= 0 ) {
+						int xp = x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame;
+
+						// Draw the right part of the label (accelerator text)
+						if ( !enabled && !active ) {
+							// Draw etched text if we're inactive and the menu item is disabled
+							p->setPen( cg.light() );
+							p->drawText( xp, y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ) );
+							p->setPen( discol );
+						}
+						p->drawText( xp, y+m, tab, h-2*m, text_flags, s.mid( t+1 ) );
+					    s = s.left( t );
+					}
+
+					// Draw the left part of the label (or the whole label if there's no accelerator)
+					if ( !enabled && !active ) {
+						// Etched text again for inactive disabled menu items...
+						p->setPen( cg.light() );
+						p->drawText( x+xm+1, y+m+1, w-xm-tab+1, h-2*m, text_flags, s, t );
+						p->setPen( discol );
+					}
+
+					p->drawText( x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t );
+
+				}
+				
+				// The menu item doesn't have a text label
+				// Check if it has a pixmap instead
+				else if ( mi->pixmap() ) {
+           			QPixmap *pixmap = mi->pixmap();
+
+					// Draw the pixmap
+					if ( pixmap->depth() == 1 ) {
+						p->setBackgroundMode( OpaqueMode );
+						p->drawPixmap( x+xm, y+motifItemFrame, *pixmap );
+						p->setBackgroundMode( TransparentMode );
+					}
+				}
+			}
+
+			// Does the menu item have a popup menu?
+			if ( mi->popup() ) {
+				int dim = (h-2*motifItemFrame) / 2; // Vertical position
+
+				// Draw a right arrow at the far end of the menu item
+				if ( active ) {
+		    		if ( enabled )
+						discol = cg.buttonText();
+
+					QColorGroup g2( discol, cg.highlight(), white, white,
+									enabled ? white : discol, discol, white );
+
+		    		drawPrimitive( PE_ArrowRight, p, QRect(x+w - motifArrowHMargin - motifItemFrame - dim,
+									y + h / 2 - dim / 2, dim, dim), g2, Style_Enabled );
+				} else
+		    		drawPrimitive( PE_ArrowRight, p, QRect(x+w - motifArrowHMargin - motifItemFrame - dim,
+									y + h / 2 - dim / 2, dim, dim), cg,
+									enabled ? Style_Enabled : Style_Default );
+			}
+ 			break;
+		}
+
+		case CE_RadioButton: {
+			winstyle->drawControl(element, p, widget, r, cg, flags, opt);
 			break;
-		} */
+		}
 
 		default:
-			winstyle->drawControl(element, p, widget, r, cg, flags, opt);
+			QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
 	}
 }
 
@@ -1286,7 +1494,7 @@ QPixmap HighColorStyle::stylePixmap(StylePixmap stylepixmap,
 }
 
 
-int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, QStyleHintReturn *shr) const
+int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOption &opt, QStyleHintReturn *shr) const
 {
 	switch (sh)
 	{
@@ -1294,8 +1502,20 @@ int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, QStyleHintReturn 
 		case SH_MainWindow_SpaceBelowMenuBar:
 			return 0;
 
+		case SH_EtchDisabledText:
+		case SH_Slider_SnapToValue:
+		case SH_PrintDialog_RightAlignButtons:
+		case SH_FontDialog_SelectAssociatedText:
+		case SH_PopupMenu_AllowActiveAndDisabled:
+		case SH_MenuBar_AltKeyNavigation:
+		case SH_MenuBar_MouseTracking:
+		case SH_PopupMenu_MouseTracking:
+		case SH_ComboBox_ListMouseTracking:
+		case SH_ItemView_ChangeHighlightOnFocus:
+			return 1;
+	
 		default:
-			return winstyle->styleHint(sh, w, QStyleOption::Default, shr);
+			return QCommonStyle::styleHint(sh, w, opt, shr);
 	}
 }
 

@@ -112,6 +112,7 @@ class HighColorStyle : public QCommonStyle
 
 		int styleHint( StyleHint sh, 
 					const QWidget *w = 0,
+					const QStyleOption &opt = QStyleOption::Default,
 					QStyleHintReturn* shr = 0 ) const;
 
 		// Pass virtual functions on to QWindowsStyle, since we can't inherit
