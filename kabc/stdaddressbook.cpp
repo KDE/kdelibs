@@ -21,8 +21,9 @@
 #include <kapplication.h>
 #include <kcrash.h>
 #include <kdebug.h>
-#include <kstandarddirs.h>
+#include <klocale.h>
 #include <ksimpleconfig.h>
+#include <kstandarddirs.h>
 
 #include <signal.h>
 
@@ -104,9 +105,30 @@ bool StdAddressBook::save()
 {
   kdDebug(5700) << "StdAddressBook::save()" << endl;
 
-  return self()->saveAll();
-}
+  bool ok = true;
+  Resource *resource = 0;
 
+  AddressBook *ab = self();
+
+  ab->deleteRemovedAddressees();
+
+  QPtrList<Resource> list = ab->resources();
+  for ( uint i = 0; i < list.count(); ++i ) {
+    resource = list.at( i );
+    if ( !resource->readOnly() ) {
+      Ticket *ticket = ab->requestSaveTicket( resource );
+      if ( !ticket ) {
+        ab->error( i18n( "Unable to save to standard addressbook. It is locked." ) );
+        return false;
+      }
+
+      if ( !ab->save( ticket ) )
+        ok = false;
+    }
+  }
+
+  return ok;
+}
 
 StdAddressBook::StdAddressBook()
 {

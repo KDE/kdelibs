@@ -329,7 +329,7 @@ void AddressBook::insertAddressee( const Addressee &a )
     }
   }
   d->mAddressees.append( a );
-  Addressee& addr = lastAddressee();
+  Addressee& addr = d->mAddressees.last();
   if ( addr.resource() == 0 )
     addr.setResource( standardResource() );
   addr.setChanged( true );
@@ -515,43 +515,6 @@ bool AddressBook::removeResource( Resource *resource )
   return d->mResources.remove( resource );
 }
 
-bool AddressBook::saveAll()
-{
-  kdDebug(5700) << "AddressBook::saveAll()" << endl;
-
-  bool ok = true;
-  Resource *resource = 0;
-
-  deleteRemovedAddressees();
-
-  for ( uint i = 0; i < d->mResources.count(); ++i ) {
-    resource = d->mResources.at( i );
-    if ( !resource->readOnly() ) {
-      Ticket *ticket = requestSaveTicket( resource );
-      if ( !ticket ) {
-        error( i18n( "Unable to save to standard addressbook. It is locked." ) );
-        return false;
-      }
-
-      if ( !save( ticket ) )
-        ok = false;
-    }
-  }
-
-  return ok;
-}
-
-void AddressBook::resourceAddressee( Addressee& addr, Resource *resource )
-{
-  Resource *res = addr.resource();
-    
-  // remove addressee from old resource before adding to the new one
-  if ( res )
-    res->removeAddressee( addr );
-
-  addr.setResource( resource );
-}
-
 QPtrList<Resource> AddressBook::resources()
 {
     return d->mResources;
@@ -584,11 +547,6 @@ void AddressBook::deleteRemovedAddressees()
   }
 
   d->mRemovedAddressees.clear();
-}
-
-Addressee &AddressBook::lastAddressee()
-{
-  return d->mAddressees.last();
 }
 
 void AddressBook::setStandardResource( Resource *resource )

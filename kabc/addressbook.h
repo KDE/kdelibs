@@ -44,6 +44,7 @@ class AddressBook : public QObject
 
     friend QDataStream &operator<<( QDataStream &, const AddressBook & );
     friend QDataStream &operator>>( QDataStream &, AddressBook & );
+    friend class StdAddressBook;
 
   public:
     /**
@@ -129,11 +130,6 @@ class AddressBook : public QObject
       @param ticket a ticket object returned by @ref requestSaveTicket()
     */
     bool save( Ticket *ticket );
-
-    /**
-      Save address book. Query all resources to save their addressees
-    */
-    bool saveAll();
 
     /**
       Returns a iterator for first entry of address book.
@@ -252,19 +248,9 @@ class AddressBook : public QObject
     bool removeResource( Resource * );
 
     /**
-      Move addressee to an other resource.
-    */
-    void resourceAddressee( Addressee&, Resource * );
-
-    /**
       Return pointer list of all resources.
     */
     QPtrList<Resource> resources();
-
-    /**
-      Return reference to last addressee added to addressbook.
-    */
-    Addressee &lastAddressee();
 
     /**
       Set the @p ErrorHandler, that is used by @ref error() to
