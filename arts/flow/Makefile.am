@@ -39,7 +39,7 @@ artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
 DISTCLEANFILES = artsflow.cc artsflow.h artsflow.mcoptype artsflow.mcopclass
 
 ######## Build rules
-
+synthschedule.cc: artsflow.h
 artsflow.cc: artsflow.h
 artsflow.mcoptype: artsflow.h
 artsflow.mcopclass: artsflow.h
