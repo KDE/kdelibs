@@ -80,7 +80,7 @@ void KSharedPixmap::init()
 {
     d->pixmap = XInternAtom(qt_xdisplay(), "PIXMAP", false);
     QCString atom;
-    atom.sprintf("target prop for window %x", winId());
+    atom.sprintf("target prop for window %lx", static_cast<unsigned long int>(winId()));
     d->target = XInternAtom(qt_xdisplay(), atom.data(), false);
     d->selection = None;
 }
@@ -109,7 +109,7 @@ bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
     d->selection = XInternAtom(qt_xdisplay(), str.latin1(), true);
     if (d->selection == None)
 	return false;
-    if (XGetSelectionOwner(qt_xdisplay(), d->selection) == None) 
+    if (XGetSelectionOwner(qt_xdisplay(), d->selection) == None)
     {
 	d->selection = None;
 	return false;
@@ -125,12 +125,12 @@ bool KSharedPixmap::x11Event(XEvent *event)
 {
     if (event->type != SelectionNotify)
 	return false;
-	
+
     XSelectionEvent *ev = &event->xselection;
     if (ev->selection != d->selection)
 	return false;
 
-    if ((ev->target != d->pixmap) || (ev->property == None)) 
+    if ((ev->target != d->pixmap) || (ev->property == None))
     {
 	kdWarning(270) << k_funcinfo << "illegal selection notify event.\n";
 	d->selection = None;
@@ -149,7 +149,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 	    d->pixmap, &type, &format, &nitems, &ldummy,
 	    (unsigned char **) &pixmap_id);
 
-    if (nitems != 1) 
+    if (nitems != 1)
     {
 	kdWarning(270) << k_funcinfo << "could not read property, nitems = " << nitems << "\n";
 	emit done(false);
@@ -161,7 +161,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
     XGetGeometry(qt_xdisplay(), *pixmap_id, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
-    if (d->rect.isEmpty()) 
+    if (d->rect.isEmpty())
     {
 	QPixmap::resize(width, height);
 #if QT_VERSION < 300
@@ -180,7 +180,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     // Do some more processing here: Generate a tile that can be used as a
     // background tile for the rectangle "rect".
-	
+
     //Check for origin off screen
     QPoint origin(0, 0);
     if(  d->rect.topLeft().x() < 0 ||  d->rect.topLeft().y() < 0 ) {
