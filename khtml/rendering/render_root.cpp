@@ -61,6 +61,7 @@ RenderRoot::~RenderRoot()
 {
 }
 
+
 void RenderRoot::calcWidth()
 {
     // the width gets set by KHTMLView::print when printing to a printer.
@@ -73,8 +74,6 @@ void RenderRoot::calcWidth()
     m_width = m_view ?
                 m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
                 : m_minWidth;
-
-    if(m_width < m_minWidth) m_width = m_minWidth;
 
     if (style()->marginLeft().type==Fixed)
         m_marginLeft = style()->marginLeft().value;
@@ -230,7 +229,6 @@ void RenderRoot::updateSize()
     //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
     setMinMaxKnown(false);
     calcMinMaxWidth();
-    if(m_width < m_minWidth) m_width = m_minWidth;
 
     updateHeight();
 }

@@ -75,11 +75,19 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     int w = width();
     int h = height();
 
-    //kdDebug(0) << "width = " << w <<endl;
+//    kdDebug(0) << "width = " << w <<endl;
+    
+    int rw;
+    if (root()->view())
+        rw=root()->view()->contentsWidth();
+    else
+        rw=root()->width();
+    
+//    kdDebug(0) << "rw = " << rw <<endl;
 
     int bx = _tx - marginLeft();
     int by = _ty - marginTop();
-    int bw = QMAX(w + marginLeft() + marginRight() + borderLeft() + borderRight(), parent()->width());
+    int bw = QMAX(w + marginLeft() + marginRight() + borderLeft() + borderRight(), rw);
     int bh = QMAX(h + marginTop() + marginBottom() + borderTop() + borderBottom(), parent()->height());
 
     // CSS2 14.2:
