@@ -89,7 +89,7 @@ public:
     /**
      * @returns whether the Clipboard buffer will be copied to the Selection buffer
      * upon changes.
-     * @ee #setImplicitSelection
+     * @see #setImplicitSelection
      */
     static bool implicitSelection()
     {
