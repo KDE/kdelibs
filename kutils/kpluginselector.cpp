@@ -139,8 +139,8 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
             SLOT( executed( QListViewItem * ) ) );
     connect( listview, SIGNAL( returnPressed( QListViewItem * ) ), this,
             SLOT( executed( QListViewItem * ) ) );
-    //connect( listview, SIGNAL( selectionChanged( QListViewItem * ) ), this,
-    //SLOT( executed( QListViewItem * ) ) );
+    connect( listview, SIGNAL( selectionChanged( QListViewItem * ) ), this,
+            SLOT( executed( QListViewItem * ) ) );
     listview->setAcceptDrops( false );
     listview->setSelectionModeExt( KListView::Single );
     listview->addColumn( i18n( "Name" ) );
@@ -156,6 +156,8 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
         {
             QCheckListItem * item = new QCheckListItem( listview,
                     ( *it )->name(), QCheckListItem::CheckBox );
+            if( ! ( *it )->icon().isEmpty() )
+                item->setPixmap( 0, KGlobal::iconLoader()->loadIcon( ( *it )->icon(), KIcon::Small ) );
             item->setText( 1, ( *it )->comment() );
             item->setText( 2, ( *it )->author()  );
             item->setText( 3, ( *it )->version() );
