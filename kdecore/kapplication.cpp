@@ -1812,6 +1812,7 @@ void KApplication::installKDEPropertyMap()
 #ifndef QT_NO_SQL
     // QSqlPropertyMap takes ownership of the new default map.
     QSqlPropertyMap *kdeMap = new QSqlPropertyMap;
+    kdeMap->insert( "KColorButton", "color" );
     kdeMap->insert( "KComboBox", "currentItem" );
     kdeMap->insert( "KDatePicker", "getDate" );
     kdeMap->insert( "KEditListBox", "currentItem" );
