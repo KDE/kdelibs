@@ -50,10 +50,10 @@ KFilePreview::~KFilePreview() {
     }
 }
 
-void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) 
+void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u)
 {
     left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
-    
+
     if(w!=0L) {
         previewMode=true;
         connect(this, SIGNAL(showPreview(const KURL &)),
@@ -134,7 +134,6 @@ void KFilePreview::highlightFile(const KFileViewItem* item) {
     sig->highlightFile(item);
     // the preview widget appears and takes some space of the left view,
     // so we may have to scroll to make the current item visible
-    qApp->processEvents(); // the resizing and showing might be delayed
     left->ensureItemVisible(item);
 }
 
