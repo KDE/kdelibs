@@ -46,7 +46,7 @@ Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 
 class GlobalImp : public ObjectImp {
 public:
-  virtual UString getClass() const { return "global"; }
+  virtual UString className() const { return "global"; }
 };
 
 int main(int argc, char **argv)

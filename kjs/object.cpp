@@ -88,9 +88,9 @@ Value Object::prototype() const
   return static_cast<ObjectImp*>(rep)->prototype();
 }
 
-UString Object::getClass() const
+UString Object::className() const
 {
-  return static_cast<ObjectImp*>(rep)->getClass();
+  return static_cast<ObjectImp*>(rep)->className();
 }
 
 Value Object::get(ExecState *exec, const UString &propertyName) const
@@ -266,7 +266,7 @@ void ObjectImp::setPrototype(const Value &proto)
   _proto = proto.imp();
 }
 
-UString ObjectImp::getClass() const
+UString ObjectImp::className() const
 {
   const ClassInfo *ci = classInfo();
   if ( ci )

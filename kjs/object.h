@@ -114,7 +114,7 @@ namespace KJS {
      *
      * @return The object's class name
      */
-    UString getClass() const;
+    UString className() const;
 
     /**
      * Retrieves the specified property from the object. If neither the object
@@ -413,7 +413,7 @@ namespace KJS {
      * For example, for two ObjectImp pointers obj1 and obj2, you can check
      * if obj1's class inherits from obj2's class using the following:
      *
-     *   if (obj1->inherits(obj2->typeInfo())) {
+     *   if (obj1->inherits(obj2->classInfo())) {
      *     // ...
      *   }
      *
@@ -449,12 +449,12 @@ namespace KJS {
      *
      * The default implementation uses classInfo().
      * You should either implement @ref classInfo(), or
-     * if you simply need a classname, you can reimplement @ref getClass()
+     * if you simply need a classname, you can reimplement @ref className()
      * instead.
      *
-     * @see Object::getClass()
+     * @see Object::className()
      */
-    virtual UString getClass() const;
+    virtual UString className() const;
 
     /**
      * Implementation of the [[Get]] internal property (implemented by all

@@ -384,7 +384,7 @@ String DOMNode::toString(ExecState *) const
   if ( !e.isNull() ) {
     s = e.nodeName().string();
   } else
-    s = getClass(); // fallback
+    s = className(); // fallback
 
   return String("[object " + s + "]");
 }

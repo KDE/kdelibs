@@ -1128,7 +1128,7 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
       name = "Number";
       break;
     case ObjectType:
-      name = Object::dynamicCast(v).getClass();
+      name = Object::dynamicCast(v).className();
       if (name.isNull())
         name = "(unknown class)";
       break;

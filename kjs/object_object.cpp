@@ -68,7 +68,7 @@ Value ObjectProtoFuncImp::call(ExecState */*exec*/, Object &thisObj, const List 
   if (id == ValueOf)
     return thisObj;
   else /* ToString */
-    return String("[object "+thisObj.getClass()+"]");
+    return String("[object "+thisObj.className()+"]");
 }
 
 // ------------------------------ ObjectObjectImp --------------------------------

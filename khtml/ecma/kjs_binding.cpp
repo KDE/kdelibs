@@ -76,7 +76,7 @@ void DOMObject::put(ExecState *exec, const UString &propertyName,
 
 String DOMObject::toString(ExecState *) const
 {
-  return String("[object " + getClass() + "]");
+  return String("[object " + className() + "]");
 }
 
 Value DOMFunction::get(ExecState *exec, const UString &propertyName) const
