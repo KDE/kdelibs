@@ -228,7 +228,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 	resize(550, 230);
         QSize sh = size();
 
-        QRect rect = KGlobalSettings::desktopGeometry(parent ? parent : this);
+        QRect rect = KGlobalSettings::splashScreenDesktopGeometry();
 
         move(rect.x() + (rect.width() - sh.width())/2,
 	rect.y() + (rect.height() - sh.height())/2);
