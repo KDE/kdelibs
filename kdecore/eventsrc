@@ -1351,6 +1351,7 @@ level=8
 
 [messageInformation]
 Name=Information message
+Name[be]=Інфармацыйнае паведамленьне
 Name[pt_BR]=Mensagem de informações
 Comment=An information message is being shown
 Comment[pt_BR]=Uma mensagem de informação está sendo mostrada
@@ -1360,6 +1361,7 @@ nopresentation=18
 
 [messageWarning]
 Name=Warning message
+Name[be]=Папярэджаньне
 Name[pt_BR]=Mensagem de Aviso
 Comment=A warning message is being shown
 Comment[pt_BR]=Uma mensagem de aviso está sendo mostrada
@@ -1380,6 +1382,7 @@ level=4
 
 [messageboxQuestion]
 Name=Question
+Name[be]=Пытаньне
 Name[pt_BR]=Questão
 Comment=A question is being asked
 Comment[pt_BR]=Uma pergunta está sendo feita
