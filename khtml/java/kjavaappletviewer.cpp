@@ -228,7 +228,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     if (width > 0 && height > 0)
         applet->setSize (QSize(width, height));
     applet->setBaseURL (baseurl);
-    applet->setCodeBase (codebase);
+    // check codebase first
+    KURL newURL(baseurl, codebase);
+    if (kapp->authorizeURLAction("redirect", KURL(baseurl), newURL))
+        applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
     KJavaAppletContext * cxt = serverMaintainer->getContext (parent, baseurl);
     applet->setAppletContext (cxt);
