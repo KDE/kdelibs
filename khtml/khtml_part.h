@@ -351,6 +351,8 @@ public:
   virtual void saveState( QDataStream &stream );
   virtual void restoreState( QDataStream &stream );
 
+    DOM::Node nodeUnderMouse() const;
+
 signals:
   void onURL( const QString &url );
     void popupMenu(const QString &url, const QPoint &point);

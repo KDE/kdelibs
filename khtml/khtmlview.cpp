@@ -72,12 +72,14 @@ public:
 	startOffset = 0;
 	endOffset = 0;
 	startBeforeEnd = true;
+	underMouse = 0;
     }
     NodeImpl *selectionStart;
     int startOffset;
     NodeImpl *selectionEnd;
     int endOffset;
     bool startBeforeEnd;
+    NodeImpl *underMouse;
 };
 
 
@@ -431,6 +433,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
 
+    d->underMouse = innerNode;
     if(m_part->mouseMoveHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
 
     // drag of URL
@@ -701,4 +704,11 @@ void KHTMLView::drawContents ( QPainter * p, int clipx, int clipy, int clipw, in
 {
     m_part->drawContentsHook(p);
 }
+
+
+DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
+{
+    return d->underMouse;
+}
+
 

@@ -212,7 +212,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
 	   this, SLOT( updateActions() ) );
-  
+
   d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
 }
 
@@ -1557,6 +1557,12 @@ void KHTMLPart::hide()
     d->m_view->hide();
 }
 
+DOM::Node KHTMLPart::nodeUnderMouse() const
+{
+    return d->m_view->nodeUnderMouse();
+}
+
+
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {
@@ -1635,5 +1641,6 @@ void KHTMLPopupGUIClient::slotSaveLinkAs()
 
   delete dlg;
 }
+
 
 #include "khtml_part.moc"

@@ -37,6 +37,7 @@ namespace DOM {
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
     class Range;
+    class NodeImpl;
 };
 
 namespace khtml {
@@ -157,7 +158,7 @@ protected:
     virtual void viewportPaintEvent ( QPaintEvent* pe  );
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
-    
+
 public:
     void layout(bool force = false);
 protected:
@@ -200,6 +201,7 @@ protected:
    QString m_strSelectedURL;
 
 private:
+    DOM::NodeImpl *nodeUnderMouse() const;
 
     QCursor linkCursor;
 
