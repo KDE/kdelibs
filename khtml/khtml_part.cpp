@@ -1336,7 +1336,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     KURL title( baseurl );
     title.setRef( QString::null );
     title.setQuery( QString::null );
-    emit setWindowCaption( title.url() );
+    emit setWindowCaption( title.prettyURL() );
   }
   else
     emit setWindowCaption( i18n( "no title", "* Unknown *" ) );
