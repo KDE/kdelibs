@@ -116,3 +116,5 @@
 <!ENTITY khc     "<application>KDE Helpcentrum</application>">
 <!ENTITY kic     "<application>KDE Informatiecentrum</application>">
 
+<!-- Entities om het leven makkelijk te maken -->
+<!ENTITY palm     "PalmOS(tm)-apparaat">
