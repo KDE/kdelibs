@@ -293,7 +293,7 @@ void KCookieServer::slotSave()
 {
    delete mTimer;
    mTimer = 0;
-   QString filename = locateLocal("appdata", "cookies");
+   QString filename = locateLocal("data", "kcookiejar/cookies");
    mCookieJar->saveCookies(filename);
 }
 
