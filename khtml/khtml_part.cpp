@@ -1009,7 +1009,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !target.isEmpty() )
   {
     // unknown frame names should open in a new window.
-    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false, parentPart() ? false : true );
+    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false );
     if ( frame )
     {
       requestObject( frame, cURL, args );
@@ -1475,7 +1475,8 @@ KHTMLPart *KHTMLPart::parentPart()
   return (KHTMLPart *)parent();
 }
 
-khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent, bool newWin )
+khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args,
+						     bool callParent )
 {
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( args.frameName );
 
@@ -1507,13 +1508,6 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
     return 0L;
   }
 
-  if ( newWin )
-  {
-    KParts::URLArgs newArgs( args );
-    // actually bad, since the page might want to reference the target. Lars
-    //newArgs.frameName = QString::null; //not really necessary, but safer ;-)
-    emit d->m_extension->createNewWindow( url, newArgs );
-  }
   return 0L;
 }
 
