@@ -60,4 +60,7 @@ EXPORTS
  _IceRead
  _IceReadSkip
  _IceWrite
-/* $XConsortium: ICE-def.cpp /main/6 1996/05/07 13:15:11 kaleb $ */
+ IceListenForWellKnownConnections
+ _IceTransGetHostname
+/* $Xorg: ICE-def.cpp,v 1.3 2000/08/21 16:42:31 coskrey Exp $ */
+/* $XFree86: xc/lib/ICE/ICE-def.cpp,v 1.4 2001/01/17 19:41:29 dawes Exp $ */
