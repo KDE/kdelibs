@@ -1,6 +1,5 @@
-diff -Nru kdelibs.old/Doxyfile kdelibs.new/Doxyfile
---- kdelibs.old/Doxyfile	Wed Jan  9 09:53:13 2002
-+++ kdelibs.new/Doxyfile	Tue Mar 12 16:16:03 2002
+--- kdelibs-3.0.0-0rc2/Doxyfile	Wed Jan  9 09:53:13 2002
++++ Doxyfile	Mon Mar 11 02:39:38 2002
 @@ -120,7 +120,7 @@
  #---------------------------------------------------------------------------
  # configuration options related to the LaTeX output

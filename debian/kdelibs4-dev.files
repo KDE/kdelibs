@@ -8,7 +8,6 @@ usr/lib/libartskde.la
 usr/lib/libartskde.so
 usr/lib/libkabc.la
 usr/lib/libkabc.so
-usr/lib/libkatepartinterfaces.la
 usr/lib/libkatepartinterfaces.so
 usr/lib/libkdecore.la
 usr/lib/libkdecore.so
@@ -16,9 +15,7 @@ usr/lib/libkdefakes.la
 usr/lib/libkdefakes.so
 usr/lib/libkdefx.la
 usr/lib/libkdefx.so
-usr/lib/libkdeprint.la
 usr/lib/libkdeprint.so
-usr/lib/libkdeprint_management.la
 usr/lib/libkdeprint_management.so
 usr/lib/libkdesasl.la
 usr/lib/libkdesasl.so
@@ -26,7 +23,6 @@ usr/lib/libkdesu.la
 usr/lib/libkdesu.so
 usr/lib/libkdeui.la
 usr/lib/libkdeui.so
-usr/lib/libkhtml.la
 usr/lib/libkhtml.so
 usr/lib/libkio.la
 usr/lib/libkio.so
@@ -44,7 +40,6 @@ usr/lib/libkscript.la
 usr/lib/libkscript.so
 usr/lib/libkspell.la
 usr/lib/libkspell.so
-usr/lib/libktexteditor.la
 usr/lib/libktexteditor.so
 usr/lib/libshellscript.la
 usr/lib/libshellscript.so
