@@ -48,12 +48,12 @@ Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name )
 {
   qDebug( className() );
-  d = new PluginPrivate();
+  //  d = new PluginPrivate();
 }
 
 Plugin::~Plugin()
 {
-  delete d; 
+//  delete d; 
 }
 
 //static
