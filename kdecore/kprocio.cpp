@@ -224,7 +224,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  kdDebug(174) << "KPIO::readln" << endl;
+  //kdDebug(174) << "KPIO::readln" << endl;
 
   //in case there's no '\n' at the end of the buffer
   if ((len<0) && 
