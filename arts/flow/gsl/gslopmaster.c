@@ -30,6 +30,9 @@
 
 
 /* --- time stamping --- */
+#define TOYPROF_ABORT g_error
+#define TOYPROF_ASSERT g_assert
+
 #if	defined (__GNUC__) && defined (__i586__)
 #define ToyprofStamp 		unsigned long long int
 #define	toyprof_clock_name()	("Pentium(R) RDTSC - CPU clock cycle counter")
