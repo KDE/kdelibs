@@ -593,7 +593,7 @@ void KProcess::setUsePty(Communication usePty, bool addUtmp)
   }
 }
 
-KPty *KProcess::pty()
+KPty *KProcess::pty() const
 {
   return d->pty;
 }
@@ -672,7 +672,7 @@ int KProcess::setupCommunication(Communication comm)
   {
     // cannot communicate on both stderr and stdout if they are both on the pty
     if (!(~(comm & d->usePty) & (Stdout | Stderr))) {
-       kdWarning(175) << "Invalid usePty/communication combination" << endl;
+       kdWarning(175) << "Invalid usePty/communication combination (" << d->usePty << "/" << comm << ")" << endl;
        return 0;
     }
     if (!d->pty->open())

@@ -50,7 +50,9 @@ class KPty;
  *
  *Starting a  DontCare child process means that the application is
  *not interested in any notification to determine whether the
- *child process has already exited or not.
+ *child process has already exited or not. No communication between the
+ *processes is possible. The KProcess object can be "recycled" immediately
+ *after starting the process.
  *
  *@li  KProcess::NotifyOnExit -- The child process is invoked and both the
  *child and the parent process run concurrently.
@@ -61,7 +63,7 @@ class KPty;
  *Since this signal is @em not emitted from within a UN*X
  *signal handler, arbitrary function calls can be made.
  *
- *Be aware: When the KProcess objects gets destructed, the child
+ *Be aware: When the KProcess object gets destructed, the child
  *process will be killed if it is still running!
  *This means in particular, that you cannot use a KProcess on the stack
  *with KProcess::NotifyOnExit.
@@ -69,12 +71,14 @@ class KPty;
  *@li  KProcess::Block -- The child process starts and the parent process
  *is suspended until the child process exits. (@em Really not recommended
  *for programs with a GUI.)
+ *In this mode the parent can read the child's output, but can't send it any
+ *input.
  *
  *KProcess also provides several functions for determining the exit status
  *and the pid of the child process it represents.
  *
  *Furthermore it is possible to supply command-line arguments to the process
- *in a clean fashion (no null -- terminated stringlists and such...)
+ *in a clean fashion (no null-terminated stringlists and such...)
  *
  *A small usage example:
  *<pre>
@@ -89,7 +93,7 @@ class KPty;
  *
  *This will start "my_executable" with the commandline arguments "These"...
  *
- *When the child process exits, the respective Qt signal will be emitted.
+ *When the child process exits, the slot will be invoked.
  *
  *@sect Communication with the child process
  *
@@ -100,39 +104,17 @@ class KPty;
  *process or sending data to the child's stdin (For more information,
  *have a look at the documentation of each function):
  *
- *@li bool @ref writeStdin(char  *buffer, int  buflen);
- *@li  -- Transmit data to the child process' stdin.
+ *@li bool @ref writeStdin()
+ * -- Transmit data to the child process' stdin. When all data was sent, the
+ *signal @ref wroteStdin() is emitted.
  *
- *@li bool @ref closeStdin();
- *@li -- Closes the child process' stdin (which causes it to see an  feof(stdin)).
- *Returns false if you try to close stdin for a process that has been started
- *without a communication channel to stdin.
+ *@li When data arrives at stdout or stderr, the signal @ref receivedStdout()
+ *resp. @ref receivedStderr() is emitted.
  *
- *@li bool @ref closeStdout();
- *@li -- Closes the child process' stdout.
- *Returns false if you try to close stdout for a process that has been started
- *without a communication channel to stdout.
- *
- *@li bool @ref closeStderr();
- *@li -- Closes the child process' stderr.
- *Returns false if you try to close stderr for a process that has been started
- *without a communication channel to stderr.
- *
- *
- *@sect QT signals:
- *
- *@li void @ref receivedStdout(KProcess  *proc, char  *buffer, int  buflen);
- *@li  void @ref receivedStderr(KProcess  *proc, char  *buffer, int  buflen);
- *@li  -- Indicates that new data has arrived from either the
- *child process' stdout or stderr.
- *
- *@li  void @ref wroteStdin(KProcess  *proc);
- *@li  -- Indicates that all data that has been sent to the child process
- *by a prior call to @ref writeStdin() has actually been transmitted to the
- *client .
+ *@li You can shut down individual communication channels with
+ *@ref closeStdin(), @ref closeStdout(), and @ref closeStderr(), resp.
  *
  *@author Christian Czezatke e9025461@student.tuwien.ac.at
- *
  *
  **/
 class KProcess : public QObject
@@ -151,11 +133,14 @@ public:
    *
    * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
-   * the signal @ref childOutput(int fd) is emitted.
+   * the signal @ref receivedStdout(int fd, int &len) is emitted.
    */
-  enum Communication { NoCommunication = 0, Stdin = 1, Stdout = 2, Stderr = 4,
-					   AllOutput = 6, All = 7,
-					   NoRead };
+  enum Communication {
+       NoCommunication = 0,
+       Stdin = 1, Stdout = 2, Stderr = 4,
+       AllOutput = 6, All = 7,
+       NoRead
+  };
 
   /**
    * Run-modes for a child process.
@@ -173,7 +158,8 @@ public:
        /**
         * The application is suspended until the started process is finished.
         */
-       Block };
+       Block
+  };
 
   /**
    * Constructor
@@ -183,7 +169,6 @@ public:
 
   /**
    * Constructor
-   * @obsolete
    */ // KDE4 merge with the above
   KProcess();
 
@@ -300,6 +285,8 @@ public:
    * If it is called after
    * the process has exited, it returns the process id of the last
    *  child process that was created by this instance of KProcess.
+   *  Note that KProcess "forgets" detached and DontCare processes, so no pid
+   *  is returned for them.
    *
    *  Calling it before any child process has been started by this
    *  KProcess instance causes pid() to return 0.
@@ -327,20 +314,16 @@ public:
    * @return true if the process has already finished and has exited
    *  "voluntarily", ie: it has not been killed by a signal.
    *
-   * Note that you should check @ref KProcess::exitStatus() to determine
-   * whether the process completed its task successful or not.
+   * After calling this function you can use @ref KProcess::exitStatus()
+   * to determine whether the process completed its task successfully or not.
    */
   bool normalExit() const;
 
   /**
    * Returns the exit status of the process.
    *
-   * Please use
-   * @ref KProcess::normalExit() to check whether the process has exited
-   * cleanly (i.e., @ref KProcess::normalExit() returns true) before calling
-   * this function because if the process did not exit normally,
-   * it does not have a valid exit status.
-   * @return the exit status of the process
+   * @return the exit status of the process. Note that this value
+   * is not valid if @ref KProcess::normalExit() returns false.
   */
   int  exitStatus() const;
 
@@ -408,7 +391,7 @@ public:
    * Lets you see what your arguments are for debugging.
    * @return the list of arguments
    */
-  const QValueList<QCString> &args() { return arguments; }
+  const QValueList<QCString> &args() /* const */ { return arguments; }
 
   /**
    * Controls whether the started process should drop any
@@ -491,18 +474,19 @@ public:
    *  allowed to specify Stdout and Stderr at the same time both here and to
    *  @ref start (there is only one pty, so they cannot be distinguished).
    * @param addUtmp true if a utmp entry should be created for the pty
-   *
+   * @since 3.2
    */
   void setUsePty(Communication comm, bool addUtmp);
 
   /*
    * Obtains the pty object used by this process. The return value is
-   * valid only after @ref setUsePty was used to associate at least one
+   * valid only after @ref setUsePty() was used to associate at least one
    * standard I/O stream to a pty. The pty is open only while the process
    * is running.
    * @return a pointer to the pty object
+   * @since 3.2
    */
-  KPty *pty();
+  KPty *pty() const;
 
 signals:
   /**
@@ -652,19 +636,6 @@ protected:
    */
   bool keepPrivs;
 
-  /*
-	Functions for setting up the sockets for communication.
-	setupCommunication
-	-- is called from "start" before "fork"ing.
-	commSetupDoneP
-	-- completes communication socket setup in the parent
-	commSetupDoneC
-	-- completes communication setup in the child process
-	commClose
-	-- frees all allocated communication resources in the parent
-	after the process has exited
-  */
-
   /**
    * This function is called from "KProcess::start" right before a "fork" takes
    * place. According to
@@ -689,7 +660,7 @@ protected:
    * "errnot" and connect their Qt slots to the respective KProcess member functions.
    *
    * For a more detailed explanation, it is best to have a look at the default
-   * implementation of "setupCommunication" in kprocess.cpp.
+   * implementation in kprocess.cpp.
    */
   virtual int commSetupDoneP();
 
