@@ -55,7 +55,7 @@ class KToolBarButtonPrivate
 public:
   KToolBarButtonPrivate()
   {
-    m_buttonDown  = 0;
+    m_buttonDown  = false;
 
     m_noStyle     = false;
     m_isSeparator = false;
@@ -76,7 +76,7 @@ public:
   }
 
   int     m_id;
-  int     m_buttonDown : 1;
+  bool    m_buttonDown : 1;
   bool    m_noStyle: 1;
   bool    m_isSeparator: 1;
   bool    m_isRadio: 1;
@@ -448,8 +448,8 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 
 void KToolBarButton::mousePressEvent( QMouseEvent * e )
 {
-  d->m_buttonDown |= e->button();
-    
+  d->m_buttonDown = true;
+
   if ( e->button() == MidButton )
   {
     // Get QToolButton to show the button being down while pressed
@@ -471,9 +471,9 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
   else
     QToolButton::mouseReleaseEvent(e);
 
-  if ( (d->m_buttonDown & e->button()) == 0 )
-      return;
-  d->m_buttonDown = 0;
+  if ( !d->m_buttonDown )
+    return;
+  d->m_buttonDown = false;
 
   if ( hitButton( e->pos() ) )
     emit buttonClicked( d->m_id, state );
