@@ -182,29 +182,29 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       QString fn( QFile::decodeName(ep->d_name));
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
 	continue;
-
+      
       if (!recursive && regexp.match(fn))
 	continue; // No match
 
-      QString rfn = relPart + fn;
-      fn = path + fn;
-      if ( stat( fn.ascii(), &buff ) != 0 ) {
-	QString tmp = QString("Error statting %1:").arg( fn );
+      QString pathfn = path + fn;
+      if ( stat( pathfn.ascii(), &buff ) != 0 ) {
+	QString tmp = QString("Error stat'ing %1").arg( pathfn );
 	perror(tmp.ascii());
 	continue; // Couldn't stat (Why not?)
       }
       if ( recursive ) {
-	if ( S_ISDIR( buff.st_mode ))
-	  lookupDirectory(fn + '/', rfn + '/', regexp, list, relList, recursive, uniq);
+	if ( S_ISDIR( buff.st_mode )) {
+	  lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, uniq);
+	}
 	if (regexp.match(fn))
 	  continue; // No match
       }
       if ( S_ISREG( buff.st_mode))
       {
-        if (!uniq || !relList.contains(rfn))
+        if (!uniq || !relList.contains(relPart + fn))
         {
-	    list.append( fn );
-	    relList.append( rfn );
+	    list.append( pathfn );
+	    relList.append( relPart + fn );
         }
       }	
     }
@@ -282,7 +282,6 @@ debug("findAllResources( %s, %s )", type.ascii(), filter.ascii());
     if (filter.at(0) == '/') // absolute paths we return
     {
         list.append( filter);
-        relList.append( "" );
 	return list;
     }
 
@@ -301,6 +300,7 @@ debug("findAllResources( %s, %s )", type.ascii(), filter.ascii());
     }
     
     QStringList candidates = getResourceDirs(type);
+
     if (filterFile.isEmpty())
 	filterFile = "*";
     QRegExp regExp(filterFile, true, true);
