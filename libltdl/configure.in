@@ -3,7 +3,6 @@ dnl Process this file with autoconf to create configure.
 AC_INIT(ltdl.c)
 
 AC_CONFIG_AUX_DIR(../admin)
-AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
 
 if test -z "$enable_ltdl_install$enable_ltdl_convenience"; then
   if test -f ${srcdir}/ltconfig && test -f ${srcdir}/ltmain.sh; then
