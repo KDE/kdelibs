@@ -400,7 +400,17 @@ void GetShmAdrByRef(int shm_talkid, char **shm_adr)
       return;
     }
   /* Mark SHM for automatic deletion on last detach */
+  /* OK. I re-read the manpage on Linux and SunOS. It seems,
+     that the SHM Segement never gets destroyed directly,
+     when there is some segment attached ... fine, this is
+     what I expected.
+     Buttttt! There is no hint, if one can connect to the
+     SHM Segment after marking it for deletion. Well, there
+     is no hint, either, that you cant. So I will do the IPC_RMID
+     shmctl() only on Linux, where it works by chance. */
+#ifdef linux
   shmctl(shm_talkid, IPC_RMID, &InfoBuf);
+#endif
 }
 
 
