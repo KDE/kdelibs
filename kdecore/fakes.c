@@ -161,6 +161,13 @@ void srandom(unsigned int seed)
 }
 #endif
 
+#ifndef HAVE_SETEUID
+int seteuid(uid_t euid)
+{
+    setreuid(-1, euid); /* Well, if you have neither you are in trouble :) */
+}
+#endif
+
 #ifndef HAVE_MKSTEMPS
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -235,5 +242,12 @@ int mkstemps (char* _template, int suffix_len)
   return -1;
 }
 
+#endif
+
+#ifndef HAVE_MKSTEMP
+int mkstemp (char* _template)
+{
+  return mkstemps( _template, 0 );
+}
 #endif
 
