@@ -39,7 +39,9 @@ KPluginFactory::KPluginFactory( QObject* parent, const char* name )
 
 QObject* KPluginFactory::create( QObject* parent, const char* name, const char*, const QStringList & )
 {
-    return new PluginSpellCheck( parent, name );
+    QObject *obj = new PluginSpellCheck( parent, name );
+    emit objectCreated( obj );
+    return obj;
 }
 
 extern "C"
