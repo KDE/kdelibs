@@ -32,8 +32,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class KPanelMenuPrivate;
 
 /**
- * Base class to build dynamically loaded menu entries for the K-menu, or the panel.
- *
  * This class allows to build menu entries that will be dynamically added either to
  * the K-menu, or to the panel as a normal button. These dynamic menus are located
  * in shared libraries that will be loaded at runtime by Kicker (the KDE panel).
