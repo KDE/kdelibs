@@ -1758,11 +1758,13 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
   QColorGroup _cg = cg;
   const QPixmap *pm = listView()->viewport()->backgroundPixmap();
   if (pm && !pm->isNull())
+  {
         _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
+        p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
+  }
   else
         _cg.setColor(QColorGroup::Base, backgroundColor());
   
-  p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
   QListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 
