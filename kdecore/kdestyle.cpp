@@ -177,6 +177,7 @@ KDEStyle::~KDEStyle()
 
 void KDEStyle::polish(QPalette &pal)
 {
+    warning("In palette polish");
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("KDEStyle");
@@ -195,19 +196,21 @@ void KDEStyle::polish(QPalette &pal)
         radioOnGrp.setColor(QColorGroup::Light, QColor(0, 0, 255));
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
-/*
-    QColorGroup aGrp = pal.active();
-    QColorGroup dGrp = pal.disabled();
-    QColorGroup iGrp = aGrp;
+    config->setGroup("KStyle"); // all kstyle global flags will go here
+    if(config->readBoolEntry("inactiveShading", true)){
+        QColorGroup aGrp = pal.active();
+        QColorGroup dGrp = pal.disabled();
+        QColorGroup iGrp = aGrp;
     
-    iGrp.setColor(QColorGroup::Mid, aGrp.button());
-    iGrp.setColor(QColorGroup::Dark, aGrp.mid());
-    dGrp.setColor(QColorGroup::Mid, aGrp.button());
-    dGrp.setColor(QColorGroup::Dark, aGrp.mid());
+        iGrp.setColor(QColorGroup::Mid, aGrp.button());
+        iGrp.setColor(QColorGroup::Dark, aGrp.mid());
+        dGrp.setColor(QColorGroup::Mid, aGrp.button());
+        dGrp.setColor(QColorGroup::Dark, aGrp.mid());
 
-    pal.setInactive(iGrp);
-    pal.setDisabled(dGrp);
-*/
+        pal.setInactive(iGrp);
+        pal.setDisabled(dGrp);
+    }
+    
     config->setGroup(oldGrp);
 }
 
