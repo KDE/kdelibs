@@ -117,14 +117,25 @@ public:
     static bool upload(const QString& src, const KURL& target,
                        KIO::Job *job = 0L);
 
+    /**
+     * Test whether a url exists
+     * This is a convenience function for KIO::stat
+     * (it saves creating a slot and testing for the job result)
+     *
+     * @param url the url we are testing
+     *
+     */
+    static bool exists(const KURL& url);
+
 protected:
     /** Private constructor */
     NetAccess() {}
     /** Private destructor */
     ~NetAccess() {}
-    /** Internal method */
+    /** Internal methods */
     bool downloadInternal(const KURL& src, KURL& target,
                           KIO::Job *job = 0L);
+    bool existsInternal(const KURL & url);
     /** List of temporary files */
     static QStringList* tmpfiles;
     /** Whether the download succeeded or not */

@@ -64,6 +64,12 @@ bool NetAccess::upload(const QString& src, const KURL& target, Job *job)
   return kioNet.downloadInternal( KURL(src), path, job);
 }
 
+bool NetAccess::exists( const KURL & url )
+{
+  NetAccess kioNet;
+  return kioNet.existsInternal( url );
+}
+
 QStringList* NetAccess::tmpfiles = 0L;
 
 void NetAccess::removeTempFile(const QString& name)
@@ -95,6 +101,15 @@ bool NetAccess::downloadInternal(const KURL& src, KURL& target, Job *job)
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
+  qApp->enter_loop();
+  return bDownloadOk;
+}
+
+bool NetAccess::existsInternal( const KURL & url )
+{
+  KIO::Job * job = KIO::stat( url );
+  connect( job, SIGNAL( result (KIO::Job *) ),
+           this, SLOT( slotResult (KIO::Job *) ) );
   qApp->enter_loop();
   return bDownloadOk;
 }
