@@ -34,7 +34,7 @@
 
 #include <qdrawutil.h>
 #include <qevent.h>
-#include <qfile.h> 
+#include <qfile.h>
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -127,7 +127,7 @@ void KColorCombo::setColor( const QColor &col )
 /**
    Returns the currently selected color
  */
-QColor KColorCombo::color() {
+QColor KColorCombo::color() const {
   return internalcolor;
 }
 

@@ -19,7 +19,7 @@
 //-----------------------------------------------------------------------------
 // KDE color selection combo box
 
-// layout managment added Oct 1997 by Mario Weilguni 
+// layout managment added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 
 
@@ -42,10 +42,7 @@ public:
 	KColorCombo( QWidget *parent, const char *name = 0L );
 
 	void setColor( const QColor &col );
-	/** 
-	 * Retrieve the currently selected color. 
-	 **/
-	QColor color();
+	QColor color() const;
 public slots:
 	void slotActivated( int index );
 	void slotHighlighted( int index );
