@@ -1845,8 +1845,8 @@ fi
 if test "$qt_libraries" = "$x_libraries"; then
  QT_LDFLAGS=""
 else
- QT_LDLFLAGS="-L$qt_libraries"
- all_libraries="$all_libraries $QT_LDLFLAGS"
+ QT_LDFLAGS="-L$qt_libraries"
+ all_libraries="$all_libraries $QT_LDFLAGS"
 fi
 
 
@@ -2827,7 +2827,7 @@ s%@X_LDFLAGS@%$X_LDFLAGS%g
 s%@qt_libraries@%$qt_libraries%g
 s%@qt_includes@%$qt_includes%g
 s%@QT_INCLUDES@%$QT_INCLUDES%g
-s%@QT_LDLFLAGS@%$QT_LDLFLAGS%g
+s%@QT_LDFLAGS@%$QT_LDFLAGS%g
 s%@MOC@%$MOC%g
 s%@kde_libraries@%$kde_libraries%g
 s%@kde_includes@%$kde_includes%g

@@ -65,7 +65,7 @@ LIBTOOL = @LIBTOOL@
 MISCOBJS = @MISCOBJS@
 PACKAGE = @PACKAGE@
 QT_INCLUDES = @QT_INCLUDES@
-QT_LDLFLAGS = @QT_LDLFLAGS@
+QT_LDFLAGS = @QT_LDFLAGS@
 RANLIB = @RANLIB@
 X_INCLUDES = @X_INCLUDES@
 X_LDFLAGS = @X_LDFLAGS@
@@ -121,7 +121,7 @@ DIST_COMMON =  README AUTHORS Makefile.am Makefile.in NEWS TODO
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/Kconfig.P .deps/drag.P .deps/kapp.P \
 .deps/kcolorgroup.P .deps/kkeyconf.P .deps/kpixmap.P .deps/ksock.P \

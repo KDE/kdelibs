@@ -65,7 +65,7 @@ LIBTOOL = @LIBTOOL@
 MISCOBJS = @MISCOBJS@
 PACKAGE = @PACKAGE@
 QT_INCLUDES = @QT_INCLUDES@
-QT_LDLFLAGS = @QT_LDLFLAGS@
+QT_LDFLAGS = @QT_LDFLAGS@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 X_INCLUDES = @X_INCLUDES@
@@ -185,7 +185,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/kcolordlgtest.P .deps/kconfigtest.P \
 .deps/kdatepicktest.P .deps/kdatepicktestdlg.P .deps/kfontdialogtest.P \

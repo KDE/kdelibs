@@ -149,12 +149,12 @@ fi
 if test "$qt_libraries" = "$x_libraries"; then
  QT_LDFLAGS=""
 else
- QT_LDLFLAGS="-L$qt_libraries"
- all_libraries="$all_libraries $QT_LDLFLAGS"
+ QT_LDFLAGS="-L$qt_libraries"
+ all_libraries="$all_libraries $QT_LDFLAGS"
 fi
 
 AC_SUBST(QT_INCLUDES)
-AC_SUBST(QT_LDLFLAGS)
+AC_SUBST(QT_LDFLAGS)
 AC_PATH_QT_MOC
 ])
 
