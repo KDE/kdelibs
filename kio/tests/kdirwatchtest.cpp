@@ -18,30 +18,28 @@ int main (int argc, char **argv)
 
   myTest testObject;
 
-  printf( "You must create directory test in your home\n");
-  printf( "Directory test will be watched, but skipped\n");
-  printf( "When test is changed, you will be notified on console\n");
-  printf( "Open kfms on home and test and move/copy files between them and root\n");
-  printf( "Note that there will allways be output for test\n");
-
   KDirWatch *dirwatch = new KDirWatch();
 
-  QString home = getenv ("HOME");
-  QString desk = getenv ("HOME");
-  desk.append("/Desktop/");
-  home.append("/");
-  kdDebug() << "Watching: " << home << " " << desk << endl;
-  dirwatch->addDir(home);
-  home.append("test/");
+  QString home = QString(getenv ("HOME")) + "/";
+  QString desk = home + "Desktop/";
+  kdDebug() << "Watching: " << home << endl;
+  kdDebug() << "Watching: " << desk << endl;
   dirwatch->addDir(home);
   dirwatch->addDir(desk);
-  kdDebug() << "Watching: (but skipped) " << home << endl;
+  QString test = home + "test/";
+  dirwatch->addDir(test);
+  kdDebug() << "Watching: (but skipped) " << test << endl;
 
-  testObject.connect(dirwatch, SIGNAL( dirty( const QString &)),
-        SLOT( dirty( const QString &)) );
+  testObject.connect(dirwatch, SIGNAL( dirty( const QString &)), SLOT( dirty( const QString &)) );
+  testObject.connect(dirwatch, SIGNAL( fileDirty( const QString &)), SLOT( fileDirty( const QString &)) );
+  testObject.connect(dirwatch, SIGNAL( deleted( const QString &)), SLOT( deleted( const QString &)) );
 
   dirwatch->startScan();
-  if (!dirwatch->stopDirScan(home))
+  if(!dirwatch->stopDirScan(home))
+      kdDebug() << "stopDirscan: " << home << " error!" << endl;
+  if(!dirwatch->restartDirScan(home))
+      kdDebug() << "restartDirScan: " << home << "error!" << endl;
+  if (!dirwatch->stopDirScan(test))
     kdDebug() << "stopDirScan: error" << endl;
 
   return a.exec();
