@@ -82,6 +82,7 @@
 #include <qwhatsthis.h>
 #include <qwidgetstack.h>
 #include <katefactory.h>
+#include <kprocess.h>
 
 
 #include "hlparamedit.h"
@@ -1299,7 +1300,7 @@ void KMimeTypeChooser::editMimeType()
   QString mt = (lvMimeTypes->currentItem()->parent())->text( 0 ) + "/" + (lvMimeTypes->currentItem())->text( 0 );
   // thanks to libkonq/konq_operations.cc
   QString keditfiletype = QString::fromLatin1("keditfiletype");
-  KRun::runCommand( keditfiletype + " " + mt,
+  KRun::runCommand( keditfiletype + " " + KProcess::quote(mt),
                     keditfiletype, keditfiletype /*unused*/);
 }
 
