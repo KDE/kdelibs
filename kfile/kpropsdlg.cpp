@@ -212,8 +212,7 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
   if (!modal)
     XSetTransientForHint(qt_xdisplay(), winId(), winId());
 
-  kdDebug() << "KPropertiesDialog::init x()=" << x() << " y=" << y() << endl;
-  setGeometry( x(), y(), 400, 400 );
+  resize( 400, 400 ); // not sure what that's for
 
   insertPages();
 
