@@ -20,6 +20,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qvalidator.h>
+#include <qwhatsthis.h>
 
 #include <klineedit.h>
 #include <knuminput.h>
@@ -262,8 +263,19 @@ QString KInputDialog::getText( const QString &caption, const QString &label,
     const QString &value, bool *ok, QWidget *parent, const char *name,
     QValidator *validator, const QString &mask )
 {
-  KInputDialog dlg( caption, label, value, parent, name,
-    validator, mask );
+  return text( caption, label, value, ok, parent, name, validator, mask,
+               QString::null );
+}
+    
+QString KInputDialog::text( const QString &caption,
+    const QString &label, const QString &value, bool *ok, QWidget *parent,
+    const char *name, QValidator *validator, const QString &mask,
+    const QString &whatsThis )
+{
+  KInputDialog dlg( caption, label, value, parent, name, validator, mask );
+    
+  if( !whatsThis.isNull() )
+    QWhatsThis::add( dlg.lineEdit(), whatsThis );
 
   bool _ok = ( dlg.exec() == Accepted );
 

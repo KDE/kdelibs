@@ -118,7 +118,21 @@ class KInputDialog : public KDialogBase
         const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
         const char *name=0, QValidator *validator=0,
         const QString &mask=QString::null );
-
+    
+    /** 
+     * Same as @ref getText except it provides an extra parameter to specify 
+     * a QWhatsThis text for the input widget.
+     *
+     * ### KDE4: Merge with or deprecate getText.
+     *
+     * @since KDE 3.3
+     **/
+    static QString text( const QString &caption, const QString &label, 
+        const QString &value=QString::null, bool *ok=0, QWidget *parent=0, 
+        const char *name=0, QValidator *validator=0,
+        const QString &mask=QString::null,
+        const QString& whatsThis=QString::null );
+    
     /**
      * Static convenience function to get a multiline string from the user.
      *
