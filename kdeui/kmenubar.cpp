@@ -38,6 +38,10 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.28  1998/06/18 08:58:14  radej
+// sven: removed debug output
+//
 // Revision 1.27  1998/05/28 21:49:39  kulow
 // I thought, a little sync between my different acinclude.m4.ins. I've done much
 // to much to know, which version is where ;)
@@ -337,7 +341,7 @@ void KMenuBar::leaveEvent (QEvent *e){
         }
         delete mgr;
         mgr=0;
-        debug ("KMenuBar: moving done");
+        //debug ("KMenuBar: moving done");
       }
       return TRUE;
 		//debug ("KMenuBar: moving done");
