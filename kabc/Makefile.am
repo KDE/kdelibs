@@ -81,11 +81,11 @@ testaddresslineedit_LDADD = libkabc.la
 testaddresslineedit_SOURCES = testaddresslineedit.cpp
 
 bigread_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-bigread_LDADD = libkabc.la plugins/file/kabc_file.la
+bigread_LDADD = libkabc.la # FIXME! plugins/file/kabc_file.la
 bigread_SOURCES = bigread.cpp
 
 bigwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-bigwrite_LDADD = libkabc.la plugins/file/kabc_file.la
+bigwrite_LDADD = libkabc.la # FIXME! plugins/file/kabc_file.la
 bigwrite_SOURCES = bigwrite.cpp
 
 testdb_LDFLAGS = $(all_libraries) $(KDE_RPATH)
