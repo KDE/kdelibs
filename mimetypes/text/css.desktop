@@ -2,6 +2,9 @@
 MimeType=text/css
 Comment=Context Style Sheet
 Comment[ca]=Fulla de càlcul Context
-Icon=txt
+Comment[de]=Kontext-Stilvorlage
+Comment[fi]=Tyylisivu
+Comment[hu]=Stíluslap
+Icon=mimetypes/txt
 Type=MimeType
 Patterns=*.css;*.CSSL;

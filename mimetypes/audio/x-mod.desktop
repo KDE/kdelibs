@@ -1,8 +1,12 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=audio/x-mod
-Icon=sound
+Icon=mimetypes/sound
 Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*.m15;*.M15;*.mtm;*.MTM;*.669;
 Comment=Amiga soundtracker audio
 Comment[ca]=Àudio Amiga soundtracker
+Comment[de]=Amiga Soundtracker-Audio
+Comment[fi]=Amigan tracker ohjelmien musiikki
+Comment[hu]=Amiga soundtracker audió
+Comment[ja]=Amiga soundtracker ¥ª¡¼¥Ç¥£¥ª
 Comemnt[es]=Archivo de sonido MOD

@@ -1,7 +1,12 @@
 [Desktop Entry]
 Type=MimeType
-Icon=core
+Icon=mimetypes/core
 Patterns=core;core.*;*.core;
 MimeType=application/x-core
 Comment=Program crash data
 Comment[ca]=Dades d'un programa petat
+Comment[de]=Crashdaten für die Programmierung
+Comment[fi]=Ohjelman kaatumistiedot
+Comment[fr]=Données de crash de programme
+Comment[hu]=Összeomlott-program adatai
+Comment[ja]=¥×¥í¥°¥é¥à¥¯¥é¥Ã¥·¥å¥Ç¡¼¥¿

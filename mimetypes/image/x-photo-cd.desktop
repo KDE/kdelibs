@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-photo-cd
-Icon=image
+Icon=mimetypes/image
 Patterns=*.pcd;*.PCD;
 Comment=PhotoCD image
 Comment[ca]=Imatge PhotoCD
+Comment[de]=Photo-CD-Bilder
+Comment[fi]=PhotoCD -kuva
+Comment[hu]=FotóCD kép
+Comment[ja]=PNG¥¤¥á¡¼¥¸

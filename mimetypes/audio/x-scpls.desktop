@@ -3,6 +3,9 @@ Type=MimeType
 MimeType=audio/x-scpls
 Comment=MP3 ShoutCast Playlist
 Comment[ca]=Llista de cançons MP3 ShoutCast
+Comment[de]=MP3-ShoutCast Abspielliste
+Comment[fi]=MP3 ShoutCat soittolista
+Comment[hu]=MP3 ShoutCast Számlista
 Patterns=*.pls;*.PLS;
-Icon=sound
+Icon=mimetypes/sound
 

@@ -1,13 +1,14 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=video/mpeg
-Icon=video
+Icon=mimetypes/video
 Patterns=*.mpeg;*.mpg;*.MPEG;*.MPG;
 DefaultApp=aktion
 Comment=MPEG Video
 Comment[ca]=Vídeo MPEG
 Comment[cs]=Filmy ve formátu MPEG
 Comment[da]=MPEG-video
+Comment[de]=MPEG-Video
 Comment[eo]=MPEG-video
 Comment[es]=Video MPEG
 Comment[fi]=MPEG -elokuva

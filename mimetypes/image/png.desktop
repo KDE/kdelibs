@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/png
-Icon=image
+Icon=mimetypes/image
 Patterns=*.png;*.PNG;
 Comment=PNG image
 Comment[ca]=Imatge PNG
+Comment[de]=PNG-Bilder
+Comment[fi]=PNG -kuva
+Comment[hu]=PNG kép
+Comment[ja]=PNG¥¤¥á¡¼¥¸

@@ -1,13 +1,14 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=video/quicktime
-Icon=video
+Icon=mimetypes/video
 Patterns=*.qt;*.mov;*.moov;*.hqx;*.qtvr;*.QT;*.MOV;*.MOOV;*.MooV;*.HQX;*.QTVR;
 DefaultApp=aktion
 Comment=Quicktime Video
 Comment[ca]=Vídeo Quicktime
 Comment[cs]=Filmy ve formátu Quicktime
 Comment[da]=Quicktime video
+Comment[de]=Quicktime-Video
 Comment[eo]=Quicktime-video
 Comment[es]=Video Quicktime
 Comment[fi]=Quicktime -elokuva

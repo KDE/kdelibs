@@ -6,6 +6,6 @@ Comment[ro]=Fi∫ier SGML
 Comment[ru]=‰œÀ’Õ≈Œ‘ SGML
 Comment[sv]=Dokument i SGML-format
 DefaultApp=kwrite
-Icon=txt
+Icon=mimetypes/txt
 Type=MimeType
 Patterns=*.sgml;*.SGML;

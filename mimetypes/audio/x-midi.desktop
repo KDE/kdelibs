@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=audio/x-midi
-Icon=sound
+Icon=mimetypes/sound
 Patterns=*.mid;*.MID;
 Comment=MIDI audio
 Comment[ca]=Àudio MIDI
+Comment[de]=MIDI-Audio
+Comment[fi]=MIDI -musiikki
+Comment[hu]=MIDI audió
+Comment[ja]=MIDI ¥ª¡¼¥Ç¥£¥ª

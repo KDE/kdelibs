@@ -1,13 +1,14 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/pdf
-Icon=pdf
+Icon=mimetypes/pdf
 Patterns=*.pdf;*.PDF;
 DefaultApp=acroread
 Comment=Pdf Document
 Comment[ca]=Document pdf
 Comment[cs]=PDF dokument
 Comment[da]=Pdf dokument
+Comment[de]=PDF-Dokument
 Comment[eo]=PDF-dokumento
 Comment[es]=Documento PDF
 Comment[fi]=PDF -asiakirja

@@ -1,9 +1,13 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=audio/x-wav
-Icon=sound
+Icon=mimetypes/sound
 Patterns=*.wav;*.WAV;
 Comment=WAV audio
 Comment[ca]=Àudio WAV
+Comment[de]=WAV-Audio
+Comment[fi]=WAV -ääni
+Comment[hu]=WAV audió
+Comment[ja]=WAV ¥ª¡¼¥Ç¥£¥ª
 Commnet[cs]=Zvukový soubor ve formátu Wav
 Commend[fr]=Fichier son au format WAV

@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-xpm
-Icon=image
+Icon=mimetypes/image
 Patterns=*.xpm;*.XPM;
 Comment=X PixMap image
 Comment[ca]=Imatge de pixmap X
+Comment[de]=X-Bitmaps
+Comment[fi]=X bittikarttakuva
+Comment[hu]=X színes-bittérkép kép
+Comment[ja]=X¥Ó¥Ã¥È¥Þ¥Ã¥×¥¤¥á¡¼¥¸

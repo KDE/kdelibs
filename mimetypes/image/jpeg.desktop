@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/jpeg
-Icon=image
+Icon=mimetypes/image
 Patterns=*.jpeg;*.jpg;*.JPG;
 Comment=JPEG image
 Comment[ca]=Imatge JPEG
+Comment[de]=JPEG-Bilder
+Comment[fi]=JPEG -kuva
+Comment[hu]=JPEG kép
+Comment[ja]=JPEG¥¤¥á¡¼¥¸

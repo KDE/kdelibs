@@ -1,12 +1,13 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-tar
-Icon=tgz
+Icon=mimetypes/tgz
 Patterns=*.tar;
 Comment=Tar archive
 Comment[ca]=Arxiu tar
 Comment[cs]=Tar archív
 Comment[da]=Tar arkiv
+Comment[de]=Tar-Archiv
 Comment[eo]=Tar-ar¶ivo
 Comment[es]=Archivo TAR
 Comment[fi]=Tar -paketti

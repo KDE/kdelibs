@@ -2,6 +2,10 @@
 Type=MimeType
 Comment=ULAW (Sun) audio
 Comment[ca]=Àudio ULAW (Sun)
+Comment[de]=ULAW (Sun) Audio
+Comment[fi]=ULAW (Sun) ääni
+Comment[hu]=ULAW (Sun) audió
+Comment[ja]=ULAW (Sun) ¥ª¡¼¥Ç¥£¥ª
 MimeType=audio/basic
-Icon=sound
+Icon=mimetypes/sound
 Patterns=*.au;*.AU;*.snd;*.SND

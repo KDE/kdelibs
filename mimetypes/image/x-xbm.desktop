@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-xbm
-Icon=image
+Icon=mimetypes/image
 Patterns=*.xbm;*.XBM;
 Comment=X BitMap image
 Comment[ca]=Imatge de bitmap X
+Comment[de]=X Bitmaps
+Comment[fi]=X bittikarttakuva
+Comment[hu]=X bittérkép kép
+Comment[ja]=X¥Ó¥Ã¥È¥Þ¥Ã¥×¥¤¥á¡¼¥¸

@@ -1,7 +1,11 @@
 [Desktop Entry]
 Comment=eXtended Markup Language document
 Comment[ca]=Document XML
-Icon=html
+Comment[de]=XML-Dokument
+Comment[fi]=XML -dokumentti
+Comment[hu]=Kiterjesztett jelölõ nyelvû dokumentum
+Comment[ja]=eXtended Markup Language ¥É¥­¥å¥á¥ó¥È
+Icon=mimetypes/html
 Type=MimeType
 MimeType=text/xml
 Patterns=*.xml;*.XML;

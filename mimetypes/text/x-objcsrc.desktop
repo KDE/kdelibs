@@ -2,7 +2,10 @@
 [KDE Desktop Entry]
 Comment=Objective-C sources
 Comment[ca]=Fonts Objective-C
-Icon=c_src
+Comment[de]=Objective-C-Quellcode
+Comment[fi]=Objective-C -lähdekoodi
+Comment[ja]=Objective-C¥½¡¼¥¹¥Õ¥¡¥¤¥ë
+Icon=mimetypes/c_src
 Type=MimeType
 MimeType=text/x-objcsrc
 Patterns=*.m;

@@ -1,13 +1,14 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=video/x-msvideo
-Icon=video
+Icon=mimetypes/video
 Patterns=*.avi;*.AVI;
 DefaultApp=aktion
 Comment=Microsoft AVI Video
 Comment[ca]=Vídeo Microsoft AVI
 Comment[cs]=Filmy ve formátu Microsoft AVI
 Comment[da]=Microsoft AVI video
+Comment[de]=AVI-Video (Microsoft)
 Comment[eo]=Mikrosoft-AVI-video
 Comment[es]=Video AVI de Microsoft
 Comment[fi]=Microsoft AVI -elokuva
