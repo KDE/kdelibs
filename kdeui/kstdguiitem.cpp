@@ -240,6 +240,11 @@ KGuiItem KStdGuiItem::insert()
   return KGuiItem( i18n( "&Insert"));
 }
 
+KGuiItem KStdGuiItem::configure()
+{
+  return KGuiItem( i18n( "Confi&gure..." ), "configure" );
+}
+
 KGuiItem KStdGuiItem::find()
 {
   return KGuiItem(i18n("&Find"), "find");

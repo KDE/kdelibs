@@ -48,8 +48,8 @@ public:
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit, AdminMode, Reset, Delete, Insert, 
-	Find, Stop, Add, Remove, Test
+        Continue, Open, Quit, AdminMode, Reset, Delete, Insert, Configure,
+        Find, Stop, Add, Remove, Test
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -113,6 +113,12 @@ public:
      * in the separate backAndForward() method.
      */
     static KGuiItem forward( BidiMode useBidi = IgnoreRTL );
+
+    /**
+     * Returns a "configure" item.
+     * @since 3.4
+     */
+    static KGuiItem configure();
 
     /**
      * Return both a back and a forward item. This function always returns
