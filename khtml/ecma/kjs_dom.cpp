@@ -526,7 +526,7 @@ KJSO DOMNamedNodeMap::tryGet(const UString &p) const
   // array index ?
   long unsigned int idx;
   if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
-    result = getDOMNode(const_cast<DOM::NamedNodeMap&>(map).item(idx));
+    result = getDOMNode(map.item(idx));
 
   return result;
 }
