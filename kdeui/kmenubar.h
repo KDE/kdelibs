@@ -2,7 +2,7 @@
     Copyright (C) 1997, 1998, 1999, 2000  Sven Radej (radej@kde.org)
     Copyright (C) 1997, 1998, 1999, 2000 Matthias Ettrich (ettrich@kde.org)
     Copyright (C) 1999, 2000 Daniel "Mosfet" Duley (mosfet@kde.org)
-
+    Copyright (C) 2002 Holger "zecke" Freyther (freyther@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,7 +36,9 @@
  * @author Daniel "Mosfet" Duley.
  * @version $Id$
 */
-
+class QPopupMenu;
+class QPixmap;
+class QIconSet;
 class KMenuBar : public QMenuBar
 {
     Q_OBJECT
@@ -72,6 +74,28 @@ public:
      */
     bool isTopLevelMenu() const;
 
+    /**
+     * This is reimplemented for internal reasons
+     */
+    int	insertItem( const QPixmap &pixmap, 
+		    QPopupMenu *popup,
+		    int id=-1, int index=-1 );
+    /** 
+     * This is reimplemented for internal reasons
+     */
+    int	insertItem( const QIconSet& icon,
+		    const QPixmap &pixmap,
+		    QPopupMenu *popup,
+		    int id=-1, int index=-1 );
+
+    int insertItem ( const QString & text, 
+		     QPopupMenu * popup,
+		     int id = -1, int index = -1 );
+    int insertItem ( const QIconSet & icon, 
+		     const QString & text, 
+		     QPopupMenu * popup, 
+		     int id = -1, int index = -1 );
+
     virtual void show();
 protected slots:
     void slotReadConfig();
@@ -79,6 +103,7 @@ protected slots:
 protected:
     void showEvent( QShowEvent* );
     bool eventFilter(QObject *, QEvent *);
+    void addHandle(QPopupMenu * );
 
 private:
     class KMenuBarPrivate;
@@ -86,3 +111,5 @@ private:
 };
 
 #endif
+
+

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
+   Copyright (C) 2002 Holger Freyther <freyther@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,6 +18,8 @@
 */
 #include <qpainter.h>
 #include <qdrawutil.h>
+#include <qpixmap.h>
+#include <qiconset.h>
 
 #include "kpopupmenu.h"
 
@@ -171,9 +174,26 @@ QSize KPopupTitle::sizeHint() const
     return(minimumSize());
 }
 
+class KPopupMenu::KPopupMenuPrivate{
+  public:
+  KPopupMenuPrivate(){
+    m_tearOff = false;
+    m_tearOffId = -1;
+  }
+  bool m_tearOff:1;
+  int m_tearOffId;
+};
+
+
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
+  d = new KPopupMenuPrivate();
+}
+
+KPopupMenu::~KPopupMenu()
+{
+  delete d;
 }
 
 int KPopupMenu::insertTitle(const QString &text, int id, int index)
@@ -248,17 +268,182 @@ QPixmap KPopupMenu::titlePixmap(int id) const
     return(tmp);
 }
 
-int KPopupMenu::insertTearOffHandle ( int id, int index )
+int KPopupMenu::insertTearOffHandle ( int id, int )
 {
-  if (KGlobalSettings::insertTearOffHandle())
-    return QPopupMenu::insertTearOffHandle( id, index );
+  if( d->m_tearOff && d->m_tearOffId != -1 ){ // ok remove current Handle
+    removeItem(d->m_tearOffId );
+  }
+  if (KGlobalSettings::insertTearOffHandle()) {
+    d->m_tearOffId = QPopupMenu::insertTearOffHandle( id, -1 ); // we want them at the bottom
+    d->m_tearOff = true;
+    return d->m_tearOffId;
+  }
   return 0;
+}
+// reimplementation of insertItem
+int KPopupMenu::insertItem ( const QString & text,
+			     const QObject * receiver,
+			     const char * member,
+			     const QKeySequence & accel ,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(text, receiver, member, accel, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     const QString & text,
+			     const QObject * receiver,
+			     const char * member,
+			     const QKeySequence & accel,
+			     int id , int index )
+{
+  id = QPopupMenu::insertItem(icon, text, receiver, member, accel, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QPixmap & pixmap,
+			     const QObject * receiver,
+			     const char * member,
+			     const QKeySequence & accel,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(pixmap, receiver, member, accel, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     const QPixmap & pixmap,
+			     const QObject * receiver,
+			     const char * member,
+			     const QKeySequence & accel,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(icon, pixmap, receiver, member, accel, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QString & text,
+			     int id , int index  )
+{
+  id = QPopupMenu::insertItem(text, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     const QString & text,
+			     int id , int index )
+{
+  id = QPopupMenu::insertItem(icon, text, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QString & text,
+			     QPopupMenu * popup,
+			     int id , int index )
+{
+  id = QPopupMenu::insertItem(text, popup, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     const QString & text,
+			     QPopupMenu * popup,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(icon, text, popup, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QPixmap & pixmap,
+			     int id , int index )
+{
+  id = QPopupMenu::insertItem(pixmap, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     const QPixmap & pixmap,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(icon, pixmap, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QPixmap & pixmap,
+			     QPopupMenu * popup,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(pixmap, popup, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     const QPixmap & pixmap,
+			     QPopupMenu * popup,
+			     int id , int index  )
+{
+  id = QPopupMenu::insertItem(icon, pixmap, popup, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( QWidget * widget,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(widget, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( const QIconSet & icon,
+			     QCustomMenuItem * custom,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(icon, custom, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
+}
+
+int KPopupMenu::insertItem ( QCustomMenuItem * custom,
+			     int id, int index )
+{
+  id = QPopupMenu::insertItem(custom, id, index);
+  if(d->m_tearOff )
+    insertTearOffHandle();
+  return id;
 }
 
 // Obselete
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
+    d = new KPopupMenuPrivate();
     setTitle(title);
 }
 
@@ -272,3 +457,4 @@ void KPopupMenu::setTitle(const QString &title)
 }
 
 #include "kpopupmenu.moc"
+

@@ -64,7 +64,7 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
 }
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
-  : QPopupMenu(parent, name)
+  : KPopupMenu(parent, name)
 {
 #ifndef Q_WS_QWS //FIXME
     kwin_module = new KWinModule(this);

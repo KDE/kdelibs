@@ -25,13 +25,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __kwindowlistmenu_h__
 #define __kwindowlistmenu_h__
 
-#include <qpopupmenu.h>
+#include <kpopupmenu.h>
 #include <qmap.h>
 
 class KWinModule;
 class KWindowListMenuPrivate;
 
-class KWindowListMenu : public QPopupMenu
+class KWindowListMenu : public KPopupMenu
 {
     Q_OBJECT
 

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
+   Copyright (C) 2002 Holger Freyther <freyther@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -103,6 +104,10 @@ public:
      */
     KPopupMenu(QWidget *parent=0, const char *name=0);
     /**
+     *
+     */
+    ~KPopupMenu();
+    /**
      * Inserts a title item with no icon.
      */
     int insertTitle(const QString &text, int id=-1, int index=-1);
@@ -134,6 +139,77 @@ public:
      * Inserts a tear-off handle into the menu.
      */
     int insertTearOffHandle ( int id=-1, int index=-1 );
+
+    int insertItem ( const QString & text,
+		     const QObject * receiver, 
+		     const char * member,
+		     const QKeySequence & accel = 0,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     const QString & text,
+		     const QObject * receiver,
+		     const char * member,
+		     const QKeySequence & accel = 0,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QPixmap & pixmap,
+		     const QObject * receiver,
+		     const char * member,
+		     const QKeySequence & accel = 0,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     const QPixmap & pixmap,
+		     const QObject * receiver,
+		     const char * member,
+		     const QKeySequence & accel = 0,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QString & text,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     const QString & text,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QString & text,
+		     QPopupMenu * popup,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     const QString & text,
+		     QPopupMenu * popup,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QPixmap & pixmap,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     const QPixmap & pixmap,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QPixmap & pixmap,
+		     QPopupMenu * popup,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     const QPixmap & pixmap,
+		     QPopupMenu * popup,
+		     int id = -1, int index = -1 );
+
+    int insertItem ( QWidget * widget,
+		     int id = -1,
+		     int index = -1 );
+
+    int insertItem ( const QIconSet & icon,
+		     QCustomMenuItem * custom,
+		     int id = -1,
+		     int index = -1 );
+
+    int insertItem ( QCustomMenuItem * custom,
+		     int id = -1,
+		     int index = -1 );
     /**
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
@@ -154,3 +230,12 @@ private:
 };
 
 #endif
+
+
+
+
+
+
+
+
+
