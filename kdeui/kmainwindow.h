@@ -479,8 +479,8 @@ public slots:
      * can "reverse" the state (disable the actions which should be
      * enabled, and vice-versa) if specified.
      */
-    virtual void slotStateChanged(const QString &newstate,
-                                  KXMLGUIClient::ReverseStateChange);
+    void slotStateChanged(const QString &newstate,
+                          KXMLGUIClient::ReverseStateChange); // KDE 4.0: make virtual
 
     /**
      * @internal. Used for the auto-save-settings feature.
