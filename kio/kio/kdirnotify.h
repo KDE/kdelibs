@@ -69,6 +69,11 @@ k_dcop:
    */
   virtual ASYNC FileRenamed( const KURL &src, const KURL &dst );
 
+  // WARNING: When adding new methods, make sure to update 
+  // kdirnotify_stub.cpp and kdirnotify_stub.h manually. 
+  // They are not automatically generated since they contain
+  // handcoded changes.
+
 private:
   // @internal
   static int s_serial;

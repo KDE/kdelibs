@@ -71,7 +71,7 @@ libkiocore_la_SOURCES = \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
-	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
+	kdirnotify.cpp kdirnotify.skel kdirnotify_stub.cpp \
 	observer.cpp uiserver.stub observer.skel \
 	kemailsettings.cpp authinfo.cpp \
 	kprotocolinfo.cpp \
