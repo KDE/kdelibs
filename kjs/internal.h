@@ -287,7 +287,7 @@ namespace KJS {
     Context *con;
     Global glob;
     int errType;
-    const char *errMsg;
+    UString errMsg;
     Imp *exVal;
     Imp *retVal;
     int recursion;

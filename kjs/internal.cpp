@@ -551,9 +551,10 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
   recursion--;
 
   if (context->hadError()) {
-    /* TODO */
-    errType = 99;
-    errMsg = "Error";
+    KJSO err = context->error();
+    errType = 99; /* TODO */
+    errMsg = err.get("name").toString().value() + ". ";
+    errMsg += err.get("message").toString().value();
     context->clearError();
   } else {
     errType = 0;
