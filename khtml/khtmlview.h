@@ -157,9 +157,6 @@ public:
 
     static const QList<KHTMLView> *viewList() { return lstViews; }
 
-private:
-    void setLinkCursor(DOM::ElementImpl *);
-
 signals:
     void cleared();
 
@@ -211,8 +208,6 @@ private:
      * or the last node from this one.
      */
     bool gotoLink(bool);
-
-    DOM::ElementImpl *focusNode();
 
     void useSlowRepaints();
 
