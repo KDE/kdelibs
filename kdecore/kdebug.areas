@@ -66,7 +66,6 @@
 1501        khexedit (kdeutils)
 1511        kdessh (kdeutils)
 1512        kdepasswd (kdeutils)
-1520        knotes (kdeutils)
 1601        ark (kdeutils)
 1901        kfind
 1902        kfind (KfindWindow::updateResults)
@@ -95,6 +94,7 @@
 5100        libkdenetwork
 
 # kdepim
+5500        knotes
 5510        kpilot
 5511        kpilotdaemon
 5512        kpilotconduit
