@@ -319,6 +319,9 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   connect( d->pList, SIGNAL(currentChanged(QListViewItem*)),
            SLOT(slotListItemSelected(QListViewItem*)) );
+  // handle double clicking an item
+  connect ( d->pList, SIGNAL ( doubleClicked ( QListViewItem *, const QPoint &, int ) ),
+                       SLOT ( slotListItemDoubleClicked ( QListViewItem *, const QPoint &, int ) ) );
 
   //
   // CREATE CHOOSE KEY GROUP
@@ -571,6 +574,16 @@ void KKeyChooser::slotListItemSelected( QListViewItem* )
 	updateButtons();
 }
 
+
+void KKeyChooser::slotListItemDoubleClicked ( QListViewItem *, const QPoint & , int )
+{
+
+  KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
+  if( pItem != NULL && pItem->isConfigurable())
+      d->pbtnShortcut->captureShortcut ( );
+
+}
+
 void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
 {
 	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
@@ -706,7 +719,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 			}
 		}
 	}
-        
+
         if( isKeyPresentLocally( cut, pItem, bWarnUser ? i18n("Key Conflict") : QString::null ))
             return true;
 
@@ -738,7 +751,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 			}
 		}
 	}
-        return false;            
+        return false;
 }
 
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
