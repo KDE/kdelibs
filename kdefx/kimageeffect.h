@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
- Copyright (C) 1998, 1999, 2001 Daniel M. Duley <mosfet@interaccess.com>
+ Copyright (C) 1998, 1999, 2001, 2002 Daniel M. Duley <mosfet@interaccess.com>
  (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
  (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
 
@@ -324,7 +324,7 @@ public:
      * @param img The QImage to process.
      * @param value The threshold value.
      */
-    static void threshold(QImage &img, int value=128);
+    static void threshold(QImage &img, unsigned int value=128);
 
     /**
      * Produces a 'solarization' effect seen when exposing a photographic
@@ -516,7 +516,7 @@ private:
     static int nearestColor( int r, int g, int b, const QColor *pal, int size );
 
     static void hull(const int x_offset, const int y_offset, const int polarity,
-                     const unsigned int width, const unsigned int height,
+                     const int width, const int height,
                      unsigned int *f, unsigned int *g);
     static unsigned int generateNoise(unsigned int pixel, NoiseType type);
     static unsigned int interpolateColor(QImage *image, double x, double y,

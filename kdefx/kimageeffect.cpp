@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1998, 1999, 2001 Daniel M. Duley <mosfet@kde.org>
+    Copyright (C) 1998, 1999, 2001, 2002 Daniel M. Duley <mosfet@kde.org>
     (C) 1998, 1999 Christian Tibirna <ctibirna@total.net>
     (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
     (C) 2000 Josef Weidendorfer <weidendo@in.tum.de>
@@ -2235,7 +2235,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
     return(dest);
 }
 
-void KImageEffect::threshold(QImage &img, int threshold)
+void KImageEffect::threshold(QImage &img, unsigned int threshold)
 {
     int i, count;
     unsigned int *data;
@@ -2264,8 +2264,8 @@ QImage KImageEffect::charcoal(QImage &src, double factor)
 }
 
 void KImageEffect::hull(const int x_offset, const int y_offset,
-                        const int polarity, const unsigned int columns,
-                        const unsigned int rows,
+                        const int polarity, const int columns,
+                        const int rows,
                         unsigned int *f, unsigned int *g)
 {
     int x, y;
@@ -2347,7 +2347,8 @@ QImage KImageEffect::despeckle(QImage &src)
 {
     int i, j, x, y;
     unsigned int *blue_channel, *red_channel, *green_channel, *buffer,
-        *alpha_channel, packets;
+        *alpha_channel;
+    int packets;
     static const int
     X[4]= {0, 1, 1,-1},
     Y[4]= {1, 0, 1, 1};
@@ -2859,11 +2860,11 @@ QImage KImageEffect::rotate(QImage &img, RotateDirection r)
 
 void KImageEffect::solarize(QImage &img, double factor)
 {
-    int x, y, i, count;
-    unsigned int threshold;
+    int i, count;
+    int threshold;
     unsigned int *data;
 
-    threshold = (unsigned int)(factor*(MaxRGB+1)/100.0);
+    threshold = (int)(factor*(MaxRGB+1)/100.0);
     if(img.depth() < 32){
         data = (unsigned int *)img.colorTable();
         count = img.numColors();
@@ -3042,9 +3043,10 @@ QImage KImageEffect::oilPaint(QImage &src, int radius)
         qWarning("Oil Paint source image < 32bpp. Convert before using!");
         return(src);
     }
-    int count, j, k, i, x, y;
+    int j, k, i, x, y;
     unsigned int *histogram;
     unsigned int *s;
+    unsigned int count;
 
     unsigned int *srcData, *destData;
 
@@ -3694,7 +3696,7 @@ QImage KImageEffect::blur(QImage &src, double factor)
 // better results. (mosfet 12/28/01)
 void KImageEffect::contrastHSV(QImage &img, bool sharpen)
 {
-    int i, sign, r, g, b;
+    int i, sign;
     unsigned int *data;
     int count;
     double brightness, scale, theta;
@@ -3727,6 +3729,7 @@ void KImageEffect::contrastHSV(QImage &img, bool sharpen)
         data[i] = qRgba(c.red(), c.green(), c.blue(), qAlpha(data[i]));
     }
 }
+
 
 
 
