@@ -1852,19 +1852,25 @@ public:
    * Returns whether a default is specified for an entry in either the
    * system wide configuration file or the global KDE config file.
    *
-   * If an application uses a dynamically determined default value for
-   * a certain entry, it may wish to make the following check before
+   * If an application computes a default value at runtime for
+   * a certain entry, e.g. like:
+   * \code
+   * QColor computedDefault = kapp->palette().color(QPalette::Active, QColorGroup::Text)
+   * QColor color = config->readEntry(key, computedDefault);
+   * \encode
+   *
+   * Then it may wish to make the following check before
    * writing back changes:
    * \code
-   * if ( (value == dynamicDefault) && !config->hasDefault(key) )
-   *    revertToDefault(key)
+   * if ( (value == computedDefault) && !config->hasDefault(key) )
+   *    config->revertToDefault(key)
    * else
-   *    writeEntry(key, value)
+   *    config->writeEntry(key, value)
    * \endcode
    *
-   * This ensures that as long as the entry is not modified to differ
-   * from the dynamically determined default, the application will
-   * follow changes of the default.
+   * This ensures that as long as the entry is not modified to differ from 
+   * the computed default, the application will keep using the computed default
+   * and will follow changes the computed default makes over time.
    * @param key The key of the entry to check.
    * @since 3.2
    */
