@@ -357,6 +357,11 @@ void KThemeBase::applyConfigFile(const QString &file)
     globalConfig->writeEntry("widgetStyle",
                              inConfig.readEntry("widgetStyle", " "), true,
                              true);
+
+    // Keep track of the current theme so that we can select the right one
+    // in the KControl module.
+    globalConfig->writeEntry("currentTheme", file, true, true);
+
     inConfig.setGroup("Misc");
     globalConfig->writeEntry("widgetStyleName",
                              inConfig.readEntry("Name", " "), true,
