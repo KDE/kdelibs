@@ -257,6 +257,9 @@ void KHTMLParser::reset()
 
     form = 0;
     end = false;
+
+    discard_until = 0;
+    nested_html = 0;
 }
 
 void KHTMLParser::parseToken(Token *t)
@@ -269,12 +272,20 @@ void KHTMLParser::parseToken(Token *t)
       printf("Unknown tag!! tagID = %d\n", t->id);
       return;
     }
+    if(discard_until)
+    {
+	if(t->id == discard_until)
+	    discard_until = 0;
+	return;
+    }	
+	
     if(t->id > ID_CLOSE_TAG)
     {
 	processCloseTag(t);
 	return;
     }
 
+    
     // ignore spaces, if we're not inside a paragraph or other inline code
     if(t->id == ID_TEXT && !_inline)
     {
@@ -371,9 +382,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	switch(id)
 	{
 	    // head elements in the body should be ignored.
+	case ID_HEAD:
+	    if(inBody)
+	    {
+		discard_until = ID_HEAD + ID_CLOSE_TAG;
+		throw exception;
+	    }
+	    break;
+	case ID_TITLE:
+	    if(inBody) discard_until = ID_TITLE + ID_CLOSE_TAG;
 	case ID_HTML:
 	case ID_BODY:
-	case ID_TITLE:
 	case ID_BASE:
 	case ID_STYLE:
 	case ID_META:
@@ -489,7 +508,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    // we can get here only if the element is not allowed in head.
 	    // This means the body starts here...
 	    popBlock(ID_HEAD);
-	    ignore = true;
+	    e = new HTMLBodyElementImpl(document, HTMLWidget);
+	    inBody = true;
+	    insertNode(e);
 	    break;
 	case ID_BODY:
 	    ignore = true;
@@ -590,12 +611,16 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     switch(t->id)
     {
     case ID_HTML:
+	// ugly hack for _really_ broken html
+	nested_html++;
 	n = new HTMLHtmlElementImpl(document);
 	break;
     case ID_HEAD:
 	n = new HTMLHeadElementImpl(document);
 	break;
     case ID_BODY:
+	// ugly hack for _really_ broken html
+	nested_html++;
 	popBlock(ID_HEAD);
 	n = new HTMLBodyElementImpl(document, HTMLWidget);
 	inBody = true;
@@ -860,11 +885,11 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	// %special
     case ID_SUB:
     case ID_SUP:
+    case ID_SPAN:
 	n = new HTMLInlineElementImpl(document, t->id);
 	break;
 
     case ID_BDO:
-    case ID_SPAN:
 	break;
 
 	// these are special, and normally not rendered
@@ -887,6 +912,14 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 
 void KHTMLParser::processCloseTag(Token *t)
 {
+    // support for really broken html. Can't believe I'm supporting such crap (lars)
+    if(t->id == ID_HTML+ID_CLOSE_TAG || t->id == ID_BODY+ID_CLOSE_TAG )
+    {
+	nested_html--;
+	if(nested_html <= 0)
+	    end = true;
+	return;
+    }
 #ifdef PARSER_DEBUG
     printf("added the following childs to %s\n", current->nodeName().string().ascii());
     NodeImpl *child = current->firstChild();
@@ -900,9 +933,6 @@ void KHTMLParser::processCloseTag(Token *t)
 #ifdef PARSER_DEBUG
     printf("closeTag --> current = %s\n", current->nodeName().string().ascii());
 #endif
-    // trigger self distruction...
-    if(t->id == ID_HTML+ID_CLOSE_TAG)
-        end = true;
 }
 
 
