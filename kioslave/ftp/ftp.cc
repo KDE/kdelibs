@@ -16,6 +16,8 @@
 #include <kdebug.h>
 #include <ksock.h>
 #include <kurl.h>
+#include <config.h>
+#include <sys/types.h>
 
 #define FTP_LOGIN "anonymous"
 #define FTP_PASSWD "kfm-user@kde.org"
@@ -42,6 +44,21 @@ Ftp::~Ftp()
   ftpDisconnect();
 }
 
+#ifndef HAVE_MEMCCPY
+extern "C" {
+void *memccpy(void *dest, const void *src, int c, size_t n)
+{
+    char *d = (char*)dest;
+    const char *s = (const char*)src;
+
+    while (n-- > 0)
+    if ((*d++ = *s++) == c)
+      return d;
+ 
+  return NULL;      
+}
+}
+#endif
 
 /*
  * read a line of text
