@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ *   calculation of the size of Motif default buttons. This
+ *   calculation depends on the undocumented behaviour of
+ *   QButton::sizeHint so I suppose it could change from version to
  *   version of Qt. The fix is clearly marked should it need to
  *   be revoked.
  *
@@ -42,10 +45,13 @@
  * Revision 1.3  1997/01/10 19:44:33  alex
  * Revision 1.1.1.1  1997/01/10 13:05:21  alex
  * imported
-KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int type,
-                 const char *b1text, const char *b2text, const char *b3text,
-                 const char *b4text) : QDialog (parent, caption, TRUE, 0)
-
+#include <qpixmap.h>
+#include <stdlib.h>
+#include <kapp.h>
+ *
+				 msg(NULL), picture(NULL),
+				 b1(NULL), b2(NULL), b3(NULL), b4(NULL),
+				 f1(NULL)
 				 QDialog (parent, caption, TRUE, 0),
 				 msg(0L), picture(0L),
 				 b1(0L), b2(0L), b3(0L), b4(0L),
@@ -142,7 +148,20 @@ void KMsgBox::initMe(const char *caption, const char *message,
     setMinimumSize(w + 20, h);
     f1 = new QFrame(this);
     f1->setLineWidth(1);
-KMsgBox::~KMsgBox() {}
+    f1->setFrameStyle(QFrame::HLine | QFrame::Sunken);
+	}
+	
+	if ( b4 ) {
+		b4->setSize( widget_width, b4->sizeHint().height() );
+		buttons->addWidget( b4, 0, AlignBottom );
+  delete f1;
+  delete picture;
+  delete msg;
+  if( b1 )
+	delete b1;
+  if( b2 )
+	delete b2;
+  if( b3 )
 	delete b3;
   if( b4 )
 	delete b4;
