@@ -22,7 +22,7 @@
 
 using namespace khtml;
 
-class MouseEvent::MouseEventPrivate
+class khtml::MouseEvent::MouseEventPrivate
 {
 public:
   MouseEventPrivate()
@@ -37,7 +37,7 @@ public:
     int nodeAbsX, nodeAbsY;
 };
 
-MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
+khtml::MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
 	                const DOM::Node &innerNode, long )
 : KParts::Event( name ), m_qmouseEvent( qmouseEvent ), m_x( x ), m_y( y ),
   m_url( url ), m_innerNode( innerNode )
@@ -45,38 +45,38 @@ MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y
   d = new MouseEventPrivate();
 }
 
-MouseEvent::~MouseEvent()
+khtml::MouseEvent::~MouseEvent()
 {
   delete d;
 }
 
-int MouseEvent::nodeAbsX() const
+int khtml::MouseEvent::nodeAbsX() const
 {
     return d->nodeAbsX;
 }
 
-int MouseEvent::nodeAbsY() const
+int khtml::MouseEvent::nodeAbsY() const
 {
     return d->nodeAbsY;
 }
 
-void MouseEvent::setNodePos( int x, int y)
+void khtml::MouseEvent::setNodePos( int x, int y)
 {
     d->nodeAbsX = x;
     d->nodeAbsY = y;
 }
 
-bool MouseEvent::isURLHandlingEnabled() const
+bool khtml::MouseEvent::isURLHandlingEnabled() const
 {
     return d->urlHandling;
 }
 
-void MouseEvent::setURLHandlingEnabled( bool enable )
+void khtml::MouseEvent::setURLHandlingEnabled( bool enable )
 {
     d->urlHandling = enable;
 }
 
-long MouseEvent::offset() const
+long khtml::MouseEvent::offset() const
 {
     int offset = 0;
     DOM::Node tempNode = 0;
@@ -84,17 +84,17 @@ long MouseEvent::offset() const
     return offset;
 }
 
-const char *MousePressEvent::s_strMousePressEvent = "khtml/Events/MousePressEvent";
+const char *khtml::MousePressEvent::s_strMousePressEvent = "khtml/Events/MousePressEvent";
 
-const char *MouseDoubleClickEvent::s_strMouseDoubleClickEvent = "khtml/Events/MouseDoubleClickEvent";
+const char *khtml::MouseDoubleClickEvent::s_strMouseDoubleClickEvent = "khtml/Events/MouseDoubleClickEvent";
 
-const char *MouseMoveEvent::s_strMouseMoveEvent = "khtml/Events/MouseMoveEvent";
+const char *khtml::MouseMoveEvent::s_strMouseMoveEvent = "khtml/Events/MouseMoveEvent";
 
-const char *MouseReleaseEvent::s_strMouseReleaseEvent = "khtml/Events/MouseReleaseEvent";
+const char *khtml::MouseReleaseEvent::s_strMouseReleaseEvent = "khtml/Events/MouseReleaseEvent";
 
-const char *DrawContentsEvent::s_strDrawContentsEvent = "khtml/Events/DrawContentsEvent";
+const char *khtml::DrawContentsEvent::s_strDrawContentsEvent = "khtml/Events/DrawContentsEvent";
 
-class DrawContentsEvent::DrawContentsEventPrivate
+class khtml::DrawContentsEvent::DrawContentsEventPrivate
 {
 public:
   DrawContentsEventPrivate()
@@ -105,14 +105,14 @@ public:
   }
 };
 
-DrawContentsEvent::DrawContentsEvent( QPainter *painter, int clipx, int clipy, int clipw, int cliph )
+khtml::DrawContentsEvent::DrawContentsEvent( QPainter *painter, int clipx, int clipy, int clipw, int cliph )
   : KParts::Event( s_strDrawContentsEvent ), m_painter( painter ), m_clipx( clipx ), m_clipy( clipy ),
     m_clipw( clipw ), m_cliph( cliph )
 {
   d = new DrawContentsEventPrivate;
 }
 
-DrawContentsEvent::~DrawContentsEvent()
+khtml::DrawContentsEvent::~DrawContentsEvent()
 {
   delete d;
 }
