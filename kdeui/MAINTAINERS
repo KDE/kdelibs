@@ -21,7 +21,7 @@ kcolorbutton.cpp
 kcolorcombo.cpp
 kcolordialog.cpp	Waldo Bastian <bastian@kde.org>
 kcolordrag.cpp
-kcombobox.cpp
+kcombobox.cpp   Dawit Alemayehu <adawit@kde.org>
 kcommand.cpp
 kcompletionbox.cpp
 kcursor.cpp
@@ -47,7 +47,7 @@ kjanuswidget.cpp
 kkeybutton.cpp
 kkeydialog.cpp
 kled.cpp
-klineedit.cpp
+klineedit.cpp   Dawit Alemayehu <adawit@kde.org>
 klineeditdlg.cpp
 klistbox.cpp
 klistview.cpp
