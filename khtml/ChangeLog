@@ -1,5 +1,8 @@
 2004-10-15  Stephan Kulow  <coolo@kde.org>
 
+        * rendering/render_form.cpp (updateFromElement): don't set assume <select>
+        got items when we calculate a height for items (#87466)
+
         * css/html4.css: changing default horizontal margins for H1-H6 from 
         auto to 0 (#91327)
 
