@@ -92,7 +92,7 @@ CATALOG it/catalog
 CATALOG ja/catalog
 CATALOG ko/catalog
 CATALOG nl/catalog
-CATALOG no/catalog
+CATALOG no/catalog -- is considered to be the same as nn, incorrectly known as no_NY --
 CATALOG pl/catalog
 CATALOG pt-BR/catalog
 CATALOG pt/catalog

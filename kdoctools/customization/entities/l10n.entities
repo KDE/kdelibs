@@ -179,14 +179,8 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
-<!ENTITY % Norwegian-Nynorsk "IGNORE">
-<![%Norwegian-Nynorsk;[
-<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian (Nynorsk) Documentation V1.0//NONY"
-           "../no-NY/lang.entities">
-%kde.l10n.ents;
-<!ENTITY % kde.i-default "IGNORE">
-]]>
-
+<!-- Kept for compatibility with the docbook style sheets; the code
+     no exists, but so do nn and nb, which new Norwegian, and book-Norwegian -->
 <!ENTITY % Norwegian "IGNORE">
 <![%Norwegian;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Norwegian Documentation V1.0//NO"
