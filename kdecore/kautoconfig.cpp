@@ -142,7 +142,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     config->setGroup(d->groups[widget]);
     usingDefaultValues |= parseChildren(widget, d->autoWidgets[widget], trackChanges);
   }
-  if(usingDefaultValues && trackChanges) emit void widgetModified();
+  if(usingDefaultValues && trackChanges) emit widgetModified();
   return usingDefaultValues;
 }
 
