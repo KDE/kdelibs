@@ -20,7 +20,7 @@ INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes)
 SUBDIRS = . tests
 
 bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper klauncher kioslave
-lib_LTLIBRARIES = klauncher.la
+lib_LTLIBRARIES = kdeinit_klauncher.la
 
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
@@ -49,12 +49,12 @@ lnusertemp_LDFLAGS = $(KDE_RPATH)
 kwrapper_SOURCES = kwrapper.c
 kwrapper_LDADD = $(LIBSOCKET)
 
-klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
-klauncher_la_LIBADD = $(LIB_KIO)
-klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
+kdeinit_klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
+kdeinit_klauncher_la_LIBADD = $(LIB_KIO)
+kdeinit_klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
 
 klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)
-klauncher_LDADD = klauncher.la
+klauncher_LDADD = kdeinit_klauncher.la
 klauncher_SOURCES = dummy.cpp
 
 METASOURCES = AUTO

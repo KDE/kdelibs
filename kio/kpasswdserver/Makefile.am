@@ -5,7 +5,7 @@ INCLUDES=	$(all_includes)
 
 ####### Files
 
-lib_LTLIBRARIES = kded_kpasswdserver.la
+kde_module_LTLIBRARIES = kded_kpasswdserver.la
 
 kded_kpasswdserver_la_SOURCES = kpasswdserver.cpp kpasswdserver.skel 
 kded_kpasswdserver_la_METASOURCES = AUTO

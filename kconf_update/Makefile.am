@@ -18,16 +18,16 @@
 
 INCLUDES= $(all_includes)
 
-lib_LTLIBRARIES = kconf_update.la
+lib_LTLIBRARIES = kdeinit_kconf_update.la
 
 bin_PROGRAMS = kconf_update
 kconf_update_SOURCES = dummy.cpp
-kconf_update_LDADD = kconf_update.la
+kconf_update_LDADD = kdeinit_kconf_update.la
 kconf_update_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kconf_update_la_SOURCES = kconf_update.cpp
-kconf_update_la_LIBADD = ../kdecore/libkdecore.la
-kconf_update_la_LDFLAGS = $(all_libraries) -module -avoid-version
+kdeinit_kconf_update_la_SOURCES = kconf_update.cpp
+kdeinit_kconf_update_la_LIBADD = ../kdecore/libkdecore.la
+kdeinit_kconf_update_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
 METASOURCES = AUTO
 
