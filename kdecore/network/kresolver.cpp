@@ -839,7 +839,7 @@ QStrList KResolver::serviceName(const char* servname, const char *protoname)
 QStrList KResolver::serviceName(int port, const char *protoname)
 {
   struct servent *se;
-#ifndef HAVE_GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYPORT_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyport(port, protoname);
