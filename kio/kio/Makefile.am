@@ -98,15 +98,16 @@ kioinclude_HEADERS = connection.h \
 	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h \
 	metainfojob.h
 
-# Internal
+# Internal - kprotocolinfofactory.h is old stuff
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
 	kimageiofactory.h kdirwatch_p.h kdirlister_p.h \
 	kimageiofactory.h kdirwatch_p.h \
-	kprotocolinfofactory.h # old stuff \
+	kprotocolinfofactory.h \
 	renamedlg.h skipdlg.h
-        
+
+
 parserfiles = yacc.y lex.l
 
 EXTRA_DIST = $(parserfiles)
