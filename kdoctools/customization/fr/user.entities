@@ -23,6 +23,9 @@
 <!ENTITY traducteurPatrickChavas      '<othercredit role="translator"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPatrickChavas       '<othercredit role="reviewer"> <firstname>Patrick</firstname> <surname>Chavas</surname> <affiliation><address><email>pachavas@sun.cpe.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurJoelleCornavin      '<othercredit role="translator"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcornavi@club-internet.fr</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurJoelleCornavin       '<othercredit role="reviewer"> <firstname>Joëlle</firstname> <surname>Cornavin</surname> <affiliation><address><email>jcornavi@club-internet.fr</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurBenoitCosandier      '<othercredit role="translator"> <firstname>Benoit</firstname> <surname>Cosandier</surname> <affiliation><address><email>cosandier.benoit@bluewin.ch</email></address></affiliation> <contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurBenoitCosandier       '<othercredit role="reviewer"> <firstname>Benoit</firstname> <surname>Cosandier</surname> <affiliation><address><email>cosandier.benoit@bluewin.ch</email></address></affiliation> <contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -102,6 +105,7 @@
 <!ENTITY YvesBrenner       'Yves Brenner <email>ybrenner@chez.com</email>'>
 <!ENTITY DanielCartron     'Daniel Cartron <email>d.cartron@senat.fr</email>'>
 <!ENTITY PatrickChavas     'Patrick Chavas <email>pachavas@sun.cpe.fr</email>'>
+<!ENTITY JoelleCornavin    'Joëlle Cornavin <email>jcornavi@club-internet.fr</email>'>
 <!ENTITY BenoitCosandier   'Benoit Cosandier <email>cosandier.benoit@bluewin.ch</email>'>
 <!ENTITY ThibautCousin     'Thibaut Cousin <email>cousin@in2p3.fr</email>'> 
 <!ENTITY GerardDelafond    'Gérard Delafond <email>gerard@delafond.org</email>'>
@@ -119,7 +123,7 @@
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
 <!ENTITY EquipeKDE         'l&quot;équipe française &kde;<email>doc@kde-france.org</email>'>
 <!ENTITY GoneriLeBouder    'Gonéri Le Bouder <email>goneri@gnuart.org</email>'>
-<!ENTITY ChristopheLefevre 'Christophe Lefebvre <email>clefebvre@netcourrier.com</email>'>
+<!ENTITY ChristopheLefebvre 'Christophe Lefebvre <email>clefebvre@netcourrier.com</email>'>
 <!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>a-m.mahfouf@lineone.net</email>'>
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
