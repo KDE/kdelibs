@@ -30,7 +30,7 @@
 #include <qwidgetstack.h>
 #include <kpushbutton.h>
 #include <qtooltip.h>
-#include <qtextedit.h>
+#include <ktextedit.h>
 #include <qheader.h>
 #include <qregexp.h>
 #include <klistview.h>
@@ -165,7 +165,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_outputfile = new QLineEdit(gb_output);
 	m_outputpipe = new QLineEdit(gb_output);
 
-	m_comment = new QTextEdit( this );
+	m_comment = new KTextEdit( this );
 	m_comment->setTextFormat( Qt::PlainText );
 	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
 
