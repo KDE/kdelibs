@@ -125,7 +125,7 @@ public:
    * @param replyType write the reply type in this string
    * @param replyData write the reply data in this array
    * @return true if successful, false otherwise. The default implementation
-   *         returns false for all @fun except "functions()" and
+   *         returns false for all @p fun except "functions()" and
    *         "interfaces()".
    *
    * @see DCOPClient::normalizeFunctionSignature()
