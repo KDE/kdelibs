@@ -42,7 +42,7 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   setLineWidth  (0);
   setFrameStyle (QFrame::NoFrame);
 
-  setAlignment( AlignHCenter | AlignVCenter );
+  setAlignment( AlignHCenter | AlignVCenter | SingleLine );
 
   connect (this, SIGNAL(itemPressed(int)), parent, SIGNAL(pressed(int)));
   connect (this, SIGNAL(itemReleased(int)), parent, SIGNAL(released(int)));
