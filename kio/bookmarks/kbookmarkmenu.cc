@@ -209,6 +209,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
   if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
   {
     s_highlightedAddress = action->property("address").toString();
+    //kdDebug() << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
   }
   else if (action->isA("KImportedBookmarksActionMenu"))
   {
