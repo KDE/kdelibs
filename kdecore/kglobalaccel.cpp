@@ -365,7 +365,7 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
-	    QString str = i18n("KGlobalAccel : cannont enable action %1 "
+	    QString str = i18n("KGlobalAccel : cannot enable action %1 "
 			       "which is not in the object dictionary").arg(action);
 	    warning( str.ascii() );
 	    return;
