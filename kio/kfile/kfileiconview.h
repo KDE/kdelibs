@@ -123,6 +123,9 @@ public:
 
     virtual void setSorting(QDir::SortSpec sort);
 
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+
 public slots:
     /**
      * Starts loading previews for all files shown and shows them. Switches
@@ -170,9 +173,6 @@ private:
     virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
     bool canPreview( const KFileItem * ) const;
-
-    virtual void readConfig( KConfig *, const QString& group = QString::null );
-    virtual void writeConfig( KConfig *, const QString& group = QString::null);
 
     void updateIcons();
 
