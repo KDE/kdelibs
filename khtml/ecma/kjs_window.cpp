@@ -697,13 +697,19 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location: {
+      // Complete the URL using the "active part" (running interpreter)
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if (p) {
         QString dstUrl = p->htmlDocument().completeURL(value.toString(exec).string()).string();
+        //kdDebug() << "Window::put dstUrl=" << dstUrl << " m_part->url()=" << m_part->url().url() << endl;
         if (dstUrl.find("javascript:", 0, false) || isSafeScript(exec))
-          m_part->scheduleRedirection(0,
-                                      dstUrl,
-                                      false /*don't lock history*/);
+        {
+          // Check if the URL is the current one. No [infinite] redirect in that case.
+          if ( !m_part->url().cmp( KURL(dstUrl), true ) )
+            m_part->scheduleRedirection(0,
+                                        dstUrl,
+                                        false /*don't lock history*/);
+        }
       }
       return;
     }
