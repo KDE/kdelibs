@@ -266,6 +266,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
     KHttpCookiePtr cookie;
     int protVersion = 1;
     int cookieCount = 0;
+    KCookieAdvice advice = globalAdvice;
 
     if (!parseURL(_url, fqdn, path))
     {
@@ -280,9 +281,15 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
     {
        QString key = (*it).isNull() ? "" : (*it);
        KHttpCookieList *cookieList = cookieDomains[key];
-
+       
        if (!cookieList)
           continue; // No cookies for this domain
+
+       if (cookieList->getAdvice() != KCookieDunno)
+          advice = cookieList->getAdvice();
+       
+       if (advice == KCookieReject)
+          continue; // Do not send cookies for this domain
 
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
