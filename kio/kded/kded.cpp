@@ -511,7 +511,7 @@ int main(int argc, char *argv[])
      bool bCheckHostname = config->readBoolEntry("CheckHostname", true);
      checkStamps = config->readBoolEntry("CheckFileStamps", true);
 
-     Kded *kded = new Kded(bCheckUpdates, PollInterval, NFSPollInterval); // Build data base
+     Kded *kded = new Kded(bCheckSycoca, PollInterval, NFSPollInterval); // Build data base
 
      kded->recreate();
 
