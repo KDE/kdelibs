@@ -489,6 +489,11 @@ public:
    * @param  check Only for internal use;
    * @param  tabIndex The position index of the tab widget (when in tab page mode), -1 (default) means append
    * @return result The group dockwidget that replaces the target dockwidget and will be grandparent of target and @p this.
+   *
+   * @note Since KDE 3.5 the splitter position @p spliPos is always a value between [0..100]. If
+   *       the value is > 100, it will be treated like the old code and normalized to a value between
+   *       0 and 100. Example: If the value was 4000, it will be fixed to 40. In short: The old and
+   *       the new behavior both work, so it is compatible with older KDE-versions.
    */
   KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false, int tabIndex = -1);
 
@@ -1048,6 +1053,8 @@ public:
    * Call this method before you create any dock widgets!
    * If high resolution is used all splitter position parameters
    * are percent*100 instead of percent.
+   * @note Since KDE 3.5 this is ignored. Internally the splitter always
+   *       calcualtes in high resolution values. For KDE 4, this will be removed.
    */
   void setSplitterHighResolution(bool b=true);
 

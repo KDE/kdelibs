@@ -958,6 +958,13 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 //  kdDebug(282)<<"KDockWidget::manualDock(): success = false (1)"<<endl;
   }
 
+  // fix for apps which use a value > 100%. The splitter position must be between 0..100
+  // The old behavior on high resolution was 0..10000. So likely the value is >100.
+  if (spliPos > 100) {
+      spliPos = spliPos / 100;
+      kdDebug(282) << "KDockWidget::manualDock(): fix splitter position: " << spliPos << endl;
+  }
+
   KDockWidget *tmpTarget;
   switch (dockPos) {
 	case DockLeft:tmpTarget=dockManager()->d->leftContainer;
@@ -1143,8 +1150,8 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     // if to dock not to the center of the target dockwidget,
     // dock to newDock
     KDockSplitter* panner = 0L;
-    if ( dockPos == KDockWidget::DockTop  || dockPos == KDockWidget::DockBottom ) panner = new KDockSplitter( newDock, "_dock_split_", Horizontal, spliPos, manager->splitterHighResolution() );
-    if ( dockPos == KDockWidget::DockLeft || dockPos == KDockWidget::DockRight  ) panner = new KDockSplitter( newDock, "_dock_split_", Vertical , spliPos, manager->splitterHighResolution() );
+    if ( dockPos == KDockWidget::DockTop  || dockPos == KDockWidget::DockBottom ) panner = new KDockSplitter( newDock, "_dock_split_", Horizontal, spliPos );
+    if ( dockPos == KDockWidget::DockLeft || dockPos == KDockWidget::DockRight  ) panner = new KDockSplitter( newDock, "_dock_split_", Vertical , spliPos );
     newDock->setWidget( panner );
 
     panner->setOpaqueResize(manager->splitterOpaqueResize());
@@ -1374,7 +1381,7 @@ void KDockWidget::undock()
 /*********************************************************************************************/
     if ( parentW->inherits("KDockSplitter") ){
       KDockSplitter* parentSplitterOfDockWidget = (KDockSplitter*)parentW;
-      d->splitPosInPercent = parentSplitterOfDockWidget->separatorPos();
+      d->splitPosInPercent = parentSplitterOfDockWidget->separatorPosInPercent();
 
       KDockWidget* secondWidget = (KDockWidget*)parentSplitterOfDockWidget->getAnother( this );
       KDockWidget* group        = (KDockWidget*)parentSplitterOfDockWidget->parentWidget();
@@ -1931,7 +1938,7 @@ void KDockManager::startDrag( KDockWidget* w )
 
     if ( w->parentWidget()->inherits("KDockSplitter") ){
       KDockSplitter* parentSplitterOfDockWidget = (KDockSplitter*)(w->parentWidget());
-      w->d->splitPosInPercent = parentSplitterOfDockWidget->separatorPos();
+      w->d->splitPosInPercent = parentSplitterOfDockWidget->separatorPosInPercent();
     }
   }
 
@@ -2235,7 +2242,7 @@ void KDockManager::writeConfig(QDomElement &base)
             groupEl.appendChild(createStringEntry(doc, "firstName", obj->firstName));
             groupEl.appendChild(createStringEntry(doc, "secondName", obj->lastName));
             groupEl.appendChild(createNumberEntry(doc, "orientation", (int)obj->splitterOrientation));
-            groupEl.appendChild(createNumberEntry(doc, "separatorPos", ((KDockSplitter*)obj->widget)->separatorPos()));
+            groupEl.appendChild(createNumberEntry(doc, "separatorPos", ((KDockSplitter*)obj->widget)->separatorPosInPercent()));
         } else if (obj->isTabGroup) {
             //// Save a tab group
             groupEl = doc.createElement("tabGroup");
@@ -2572,7 +2579,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         c->writeEntry( cname+":first_name", obj->firstName );
         c->writeEntry( cname+":last_name", obj->lastName );
         c->writeEntry( cname+":orientation", (int)obj->splitterOrientation );
-        c->writeEntry( cname+":sepPos", ((KDockSplitter*)obj->widget)->separatorPos() );
+        c->writeEntry( cname+":sepPos", ((KDockSplitter*)obj->widget)->separatorPosInPercent() );
 
         nameList.append( obj->name() );
         findList.append( obj->name() );

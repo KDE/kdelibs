@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
    Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2005 Dominik Haumann <dhdev@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,7 +27,9 @@
 #include <qtimer.h>
 #include <qapplication.h>
 
-KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos, bool highResolution)
+#include <math.h> // need ceil
+
+KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos)
 : QWidget(parent, name)
 {
   m_dontRecalc=false;
@@ -41,8 +44,7 @@ KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orie
   m_orientation = orient;
   mOpaqueResize = false;
   mKeepSize = false;
-  mHighResolution = highResolution;
-  setSeparatorPos( pos, false );
+  setSeparatorPosInPercent( pos );
   initialised = false;
 }
 
@@ -71,33 +73,61 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
   updateName();
   divider->show();
   resizeEvent(0);
+
+  // dominik: the following is still something I don't understand 100%
+  // I even think that this includes some bugs!
   if (fixedWidth0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
   if (fixedWidth1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
   if (((KDockWidget*)child0)->forcedFixedWidth()!=-1)
   {
-  	setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
-	//QTimer::singleShot(100,this,SLOT(delayedResize()));
+    setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
+    //QTimer::singleShot(100,this,SLOT(delayedResize()));
   }
   else
   if (((KDockWidget*)child1)->forcedFixedWidth()!=-1)
   {
-  	setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
-	//QTimer::singleShot(100,this,SLOT(delayedResize()));
+    setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
+    //QTimer::singleShot(100,this,SLOT(delayedResize()));
   }
 
   if (((KDockWidget*)child0)->forcedFixedHeight()!=-1)
   {
-        setForcedFixedHeight(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedHeight());
-        //QTimer::singleShot(100,this,SLOT(delayedResize()));
+    setForcedFixedHeight(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedHeight());
+    //QTimer::singleShot(100,this,SLOT(delayedResize()));
   }
   else
   if (((KDockWidget*)child1)->forcedFixedHeight()!=-1)
   {
-        setForcedFixedHeight(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedHeight());
-        //QTimer::singleShot(100,this,SLOT(delayedResize()));
+    setForcedFixedHeight(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedHeight());
+    //QTimer::singleShot(100,this,SLOT(delayedResize()));
+  }
+  /*
+  if (m_orientation == Horizontal) {
+    if (fixedHeight0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
+    if (fixedHeight1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
+
+  } else {
+    if (fixedWidth0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
+    if (fixedWidth1!=-1) restoreFromForcedFixedSize((KDockWidget*)child1);
   }
 
+//   if (m_orientation == Vertical) {
 
+    if (((KDockWidget*)child0)->forcedFixedWidth()!=-1) {
+      setForcedFixedWidth(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedWidth());
+    }
+    else if (((KDockWidget*)child1)->forcedFixedWidth()!=-1) {
+      setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
+    }
+//    } else {
+    if (((KDockWidget*)child0)->forcedFixedHeight()!=-1) {
+      setForcedFixedHeight(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedHeight());
+    }
+    else if (((KDockWidget*)child1)->forcedFixedHeight()!=-1) {
+      setForcedFixedHeight(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedHeight());
+    }
+//   }
+  */
 }
 
 /*
@@ -109,15 +139,12 @@ void KDockSplitter::delayedResize()
 
 void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 {
-	int factor = (mHighResolution)? 10000:100;
 	if (dw==child0)
 	{
 		if (fixedWidth0==-1) savedXPos=xpos;
 		if (w==fixedWidth0) return;
                 fixedWidth0=w;
 		setSeparatorPos(w*factor/width(),true);
-
-//		setupMinMaxSize();
 //		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<w<<endl;
 	}
         else
@@ -127,23 +154,20 @@ void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
                 fixedWidth1=w;
 		setSeparatorPos((width()-w)*factor/width(),true);
 //		kdDebug(282)<<"Set forced fixed width for widget 1 :"<<w<<endl;
-//		kdDebug(282)<<"Width() :"<<width()<<endl;
 	}
-	divider->hide();
 	setupMinMaxSize();
+    if (divider) divider->hide();
 }
 
 void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
 {
-	int factor = (mHighResolution)? 10000:100;
 	if (dw==child0)
 	{
 		if (fixedHeight0==-1) savedXPos=xpos;
 		if (h==fixedHeight0) return;
                 fixedHeight0=h;
-//		setupMinMaxSize();
 		setSeparatorPos(h*factor/height(),true);
-//		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<h<<endl;
+// //		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<h<<endl;
 	}
         else
 	{
@@ -153,12 +177,13 @@ void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
 		setSeparatorPos((height()-h)*factor/height(),true);
 //		kdDebug(282)<<"Set forced fixed height for widget 1 :"<<h<<endl;
 	}
-	divider->hide();
 	setupMinMaxSize();
+    if (divider) divider->hide();
 }
 
 void KDockSplitter::restoreFromForcedFixedSize(KDockWidget *dw)
 {
+    if (divider) divider->show();
 	if (dw==child0)
 	{
 		fixedWidth0=-1;
@@ -171,7 +196,6 @@ void KDockSplitter::restoreFromForcedFixedSize(KDockWidget *dw)
 		fixedHeight1=-1;
 		setSeparatorPos(savedXPos,true);
 	}
-	divider->show();
 }
 
 
@@ -207,9 +231,19 @@ void KDockSplitter::setupMinMaxSize()
 
 void KDockSplitter::deactivate()
 {
-  delete divider;
+  if (divider) delete divider;
   divider = 0L;
   initialised= false;
+}
+
+int KDockSplitter::separatorPosInPercent()
+{
+    return xpos / (factor/100);
+}
+
+void KDockSplitter::setSeparatorPosInPercent(int percent)
+{
+    xpos = percent * (factor/100);
 }
 
 void KDockSplitter::setSeparatorPos(int pos, bool do_resize)
@@ -219,7 +253,7 @@ void KDockSplitter::setSeparatorPos(int pos, bool do_resize)
     resizeEvent(0);
 }
 
-void KDockSplitter::setSeparatorPosX( int pos, bool do_resize )
+void KDockSplitter::setSeparatorPosX(int pos, bool do_resize)
 {
   savedXPos = pos;
   setSeparatorPos( pos, do_resize );
@@ -232,161 +266,244 @@ int KDockSplitter::separatorPos() const
 
 void KDockSplitter::resizeEvent(QResizeEvent *ev)
 {
-//  kdDebug(282)<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<
-//	", "<<(isVisible() ?"visible":"")<<endl;
-  if (initialised){
-    double factor = (mHighResolution)? 10000.0:100.0;
-    // real resize event, recalculate xpos
-    if (ev && mKeepSize && isVisible()) {
-//	kdDebug(282)<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+  //
+  // As already stated in the .h file we always have to differentiate
+  // between 6 modes.
+  // If we can cast child0->getWidget() or child1.getWidget() to
+  // KDockContainer* we *do* have a dockwidget around. For dockwidgets
+  // we have to take special care in the resizing routines, for example
+  // if mKeepSize is true and the dockcontainer is on the bottom or right,
+  // we always have to move the xpos splitter position. If there are no
+  // dockcontainers around, resizing is handeled like if child0 would
+  // be a dockcontainer.
+  //
 
-      if (ev->oldSize().width() != ev->size().width())
-      {
-          if (m_orientation == Horizontal) {
-          xpos = qRound(factor * checkValue( child0->height()+1 ) / height());
-          } else {
-          xpos = qRound(factor * checkValue( child0->width()+1 ) / width());
-	  }
+//  kdDebug(282)<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<", "<<(isVisible() ?"visible":"")<<endl;
 
-          }
-      }
-          else
-          {
-//	kdDebug(282)<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
-	if (/*ev &&*/ isVisible()) {
-		if (m_orientation == Horizontal) {
-		/*	if (ev->oldSize().height() != ev->size().height())*/
-			{
-			  if (fixedHeight0!=-1)
-// 				xpos=floor(fixedHeight0*factor/height());
-                                xpos=qRound(fixedHeight0*factor/height());
-			  else
-			  if (fixedHeight1!=-1)
-// 				xpos=ceil((height()-fixedHeight1)*factor/height());
-                                xpos=qRound((height()-fixedHeight1)*factor/height());
-			}
-		}
-		else
-		{
-/*	        	if (ev->oldSize().width() != ev->size().width()) */
-			{
-			  if (fixedWidth0!=-1)
-// 				xpos=floor(fixedWidth0*factor/width());
-                                xpos=qRound(fixedWidth0*factor/width());
-			  else
-			  if (fixedWidth1!=-1)
-// 				xpos=ceil((width()-fixedWidth1)*factor/width());
-                              xpos=qRound((width()-fixedWidth1)*factor/width());
-			}
-		}
-	}
-//	else kdDebug(282)<<"Something else happened"<<endl;
-   }
+  if (initialised) {
+    KDockContainer *dc = 0L;
+    KDockWidget *c0 = (KDockWidget*)child0;
+    KDockWidget *c1 = (KDockWidget*)child1;
+    bool stdHandling=false; // true: if closed or nonoverlap mode. false: overlap mode
 
-    KDockContainer *dc;
-    KDockWidget *c0=(KDockWidget*)child0;
-    KDockWidget *c1=(KDockWidget*)child1;
-    bool stdHandling=false;
-    if ( ( (m_orientation==Vertical) &&((fixedWidth0==-1) && (fixedWidth1==-1)) ) ||
-    	( (m_orientation==Horizontal)  &&((fixedHeight0==-1) && (fixedHeight1==-1)) ) ) {
-	    if ((c0->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c0->getWidget()))
-		 && (dc->m_overlapMode)) {
-			int position= qRound((m_orientation == Vertical ? width() : height()) * xpos/factor);
-			position=checkValueOverlapped(position,child0);
-			child0->raise();
-			divider->raise();
-	        	      if (m_orientation == Horizontal){
-        	        	child0->setGeometry(0, 0, width(), position);
-	                	child1->setGeometry(0, dc->m_nonOverlapSize+4, width(),
-						height()-dc->m_nonOverlapSize-4);
-	        	        divider->setGeometry(0, position, width(), 4);
-	        	      } else {
-        	        	child0->setGeometry(0, 0, position, height());
-		                child1->setGeometry(dc->m_nonOverlapSize+4, 0,
-						width()-dc->m_nonOverlapSize-4, height());
-        		        divider->setGeometry(position, 0, 4, height());
-		              }
-	    } else {
-		 if ((c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))
-        	 && (dc->m_overlapMode)) {
-                	int position= qRound((m_orientation == Vertical ? width() : height()) * xpos/factor);
-			position=checkValueOverlapped(position,child1);
-	                child1->raise();
-        	        divider->raise();
-	                      if (m_orientation == Horizontal){
-        	                child0->setGeometry(0, 0, width(), height()-dc->m_nonOverlapSize-4);
-                	        child1->setGeometry(0, position+4, width(),
-	                                        height()-position-4);
-        	                divider->setGeometry(0, position, width(), 4);
-                	      } else {
-                        	child0->setGeometry(0, 0, width()-dc->m_nonOverlapSize-4, height());
-	                        child1->setGeometry(position+4, 0,
-        	                                width()-position-4, height());
-                	        divider->setGeometry(position, 0, 4, height());
-	                      }
-		}
-		else stdHandling=true;
-	      }
+    //
+    // Check whether this is a real resize event or a pseudo resize event
+    // Real resize events occure if the width() or height() changes. ev != 0L.
+    // Pseudo resize events occure if the dockwidget mode changes (overlaped,
+    // sticky or closed). ev == 0L.
+    //
+    if (ev && isVisible() && divider->isVisible()) {
+      // real resize event.
+//       kdDebug(282)<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+
+      if (mKeepSize) {
+        // keep the splitter on a fixed position. This may be a bit inaccurate, because
+        // xpos saves a proportional value, which means there might occur rounding errors.
+        // However, this works surprising well!
+        if (m_orientation == Horizontal) {
+          if (ev->oldSize().height() != ev->size().height()) {
+            if( (c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))) {
+              // dockwidget is on the bottom. move xpos so that the size from child1 stays
+              xpos = (int)ceil(((double)factor) * checkValue(height() - child1->height() - 4) / height());
+            } else {
+              // xpos should not change, the docking is on the top
+              // checkValue is *fuzzy* here, it leads to ugly rounding bugs
+              // In truth, it is not needed, because it is called when calculating the "position".
+              xpos = qRound(((double)xpos) * ev->oldSize().height() / height());
             }
-	 else stdHandling=true;
+          }
+        } else {
+          if (ev->oldSize().width() != width()) {
+            if( (c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))) {
+              xpos = (int)ceil(((double)factor) * checkValue(width() - child1->width() - 4) / width());
+            } else {
+              // xpos should not change
+              // checkValue is *fuzzy* here, it leads to ugly rounding bugs
+              xpos = qRound(((double)xpos) * ev->oldSize().width() / width());
+            }
+          }
+        }
+      } else {
+        // dockwidget size proportional!
+        // Which means, xpos is always right (ratio value). Do nothing! :)
+      }
+    }
+    else
+    {
+      //
+      // Maybe a multitabbartab was clicked, so force an update of the fixed
+      // values.
+      //
+      if ( isVisible()) {
+        if (m_orientation == Horizontal) {
+          if (fixedHeight0!=-1)
+            xpos = checkValue(fixedHeight0) * factor / height();
+          else if (fixedHeight1!=-1)
+            xpos = checkValue(height()-fixedHeight1) * factor / height();
+        }
+        else
+        {
+          if (fixedWidth0!=-1)
+            xpos = checkValue(fixedWidth0) * factor / width();
+          else if (fixedWidth1!=-1)
+            xpos = checkValue(width()-fixedWidth1) * factor / width();
+        }
+      }
+//      else kdDebug(282)<<"Something else happened"<<endl;
+    }
 
-	if (stdHandling) {
-		      int position = checkValue( qRound((m_orientation == Vertical ? width() : height()) * xpos/factor) );
-		      if (m_orientation == Horizontal){
-        		child0->setGeometry(0, 0, width(), position);
-		        child1->setGeometry(0, position+4, width(), height()-position-4);
-        		divider->setGeometry(0, position, width(), 4);
-		      } else {
-        		child0->setGeometry(0, 0, position, height());
-	        	child1->setGeometry(position+4, 0, width()-position-4, height());
-	        	divider->setGeometry(position, 0, 4, height());
-	}
+/*
+    // --- debugging information ---
+    kdDebug(282) << "isVisible() is         : " << isVisible() << endl;
+    kdDebug(282) << "Orientation            : " << (m_orientation==Horizontal?"Horizontal":"Vertical")
+                                                << endl;
+    kdDebug(282) << "Splitter visibility    : " << divider->isVisible() << endl;;
+    kdDebug(282) << "Splitter procentual pos: " << xpos << endl;
+    if (c0->getWidget()) {
+        dc=dynamic_cast<KDockContainer*>(c0->getWidget());
+        kdDebug(282) << "Child 0 KDockContainer?: " << dc << endl;
+    }
+    if (c1->getWidget()) {
+        dc=dynamic_cast<KDockContainer*>(c1->getWidget());
+        kdDebug(282) << "Child 1 KDockContainer?: " << dc << endl;
+    }
+    kdDebug(282) << "Child0                 : " << child0 << endl;
+    kdDebug(282) << "child1                 : " << child1 << endl;
+*/
 
-	}
+    //
+    // handle overlapped widgets only.
+    //
+    if( ( (m_orientation==Vertical) &&((fixedWidth0==-1) && (fixedWidth1==-1)) ) ||
+        ( (m_orientation==Horizontal)  &&((fixedHeight0==-1) && (fixedHeight1==-1)) ) ) {
+      if ((c0->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c0->getWidget()))
+           && (dc->isOverlapMode())) {
+        // child0 ist a KDockContainer
+        int position;
+        child0->show();
+        child0->raise();
+        divider->raise();
+        if (m_orientation == Horizontal) {
+          position = checkValueOverlapped( height() * xpos / factor, child0 );
+          child0->setGeometry(0, 0, width(), position);
+          child1->setGeometry(0, dc->m_nonOverlapSize, width(), height()-dc->m_nonOverlapSize);
+          divider->setGeometry(0, position, width(), 4);
+        } else {
+          position = checkValueOverlapped( width() * xpos / factor, child0 );
+          child0->setGeometry(0, 0, position, height());
+          child1->setGeometry(dc->m_nonOverlapSize, 0, width()-dc->m_nonOverlapSize, height());
+          divider->setGeometry(position, 0, 4, height());
+        }
+      } else {
+        if ((c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))
+             && (dc->isOverlapMode())) {
+          // child1 ist a KDockContainer
+          int position;
+          child1->show();
+          child1->raise();
+          divider->raise();
+          if (m_orientation == Horizontal) {
+            position = checkValueOverlapped( height() * xpos / factor, child1 );
+            child0->setGeometry(0, 0, width(), height()-dc->m_nonOverlapSize);
+            child1->setGeometry(0, position+4, width(), height()-position-4);
+            divider->setGeometry(0, position, width(), 4);
+          } else {
+            position = checkValueOverlapped( width() * xpos / factor, child1 );
+            child0->setGeometry(0, 0, width()-dc->m_nonOverlapSize, height());
+            child1->setGeometry(position+4, 0, width()-position-4, height());
+            divider->setGeometry(position, 0, 4, height());
+          }
+        }
+        else // no KDockContainer available, this means the mode cannot be overlapped
+          stdHandling=true;
+      }
+    }
+    else // no KDockContainer available
+      stdHandling=true;
 
+    //
+    // stdHandling == true means either sticky mode (=nonoverlap mode) or
+    // closed mode. In both modes the widgets do *not* overlap, so we know
+    // the child0 and child1 adjoin.
+    //
+    if (stdHandling) {
+      int position = checkValue( (m_orientation == Vertical ? width() : height()) * xpos / factor );
+      int diff = 0;
+
+      if (m_orientation == Horizontal) {
+        if ((c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))) {
+          // bottom is dockcontainer
+          if( divider->isVisible() ) {
+            child0->setGeometry(0, 0, width(), position);
+            child1->setGeometry(0, position+4, width(), height()-position-4);
+          } else {
+            child0->setGeometry(0, 0, width(), height()-dc->m_nonOverlapSize);
+            child1->setGeometry(0, height()-dc->m_nonOverlapSize, width(), height());
+          }
+        } else {
+          if( divider->isVisible() ) diff = 4;
+          child0->setGeometry(0, 0, width(), position);
+          child1->setGeometry(0, position+diff, width(), height()-position-diff);
+        }
+      divider->setGeometry(0, position, width(), 4);
+      } else {
+        if ((c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))) {
+          // right is dockcontainer
+          if( divider->isVisible() ) {
+            child0->setGeometry(0, 0, position, height());
+            child1->setGeometry(position+4, 0, width()-position-4, height());
+          } else {
+            child0->setGeometry(0, 0, width()-dc->m_nonOverlapSize, height());
+            child1->setGeometry(width()-dc->m_nonOverlapSize, 0, width(), height());
+          }
+        } else {
+          if( divider->isVisible() ) diff = 4;
+          child0->setGeometry(0, 0, position, height());
+          child1->setGeometry(position+diff, 0, width()-position-diff, height());
+        }
+        divider->setGeometry(position, 0, 4, height());
+      }
+    }
   }
 }
 
-int KDockSplitter::checkValueOverlapped(int position, QWidget *overlappingWidget) const {
-	if (initialised) {
-		if (m_orientation == Vertical) {
-			if (child0==overlappingWidget) {
-				if (position<(child0->minimumSize().width()))
-					position=child0->minimumSize().width();
-				if (position>width()) position=width()-4;
-			} else if (position>(width()-(child1->minimumSize().width())-4)){
-				position=width()-(child1->minimumSize().width())-4;
-				if (position<0) position=0;
-			}
-		} else {// orientation  == Horizontal
-			if (child0==overlappingWidget) {
-				if (position<(child0->minimumSize().height()))
-					position=child0->minimumSize().height();
-				if (position>height()) position=height()-4;
-			} else if (position>(height()-(child1->minimumSize().height())-4)){
-				position=height()-(child1->minimumSize().height())-4;
-				if (position<0) position=0;
-
-			}
-		}
-
-	}
-	return position;
+int KDockSplitter::checkValueOverlapped(int position, QWidget *overlappingWidget) const
+{
+  if (initialised) {
+    if (m_orientation == Vertical) {
+      if (child0==overlappingWidget) {
+        if (position < child0->minimumSize().width() || position > width())
+          position = child0->minimumSize().width();
+      } else {
+        if (position > (width()-child1->minimumSize().width()-4) || position < 0)
+          position = width()-child1->minimumSize().width()-4;
+      }
+    } else {// orientation  == Horizontal
+      if (child0==overlappingWidget) {
+        if (position < (child0->minimumSize().height()) || position > height())
+          position = child0->minimumSize().height();
+      } else {
+        if (position>(height()-child1->minimumSize().height()-4) || position < 0)
+          position = height()-child1->minimumSize().height()-4;
+      }
+    }
+  }
+  return position;
 }
 
 int KDockSplitter::checkValue( int position ) const
 {
-  if (initialised){
-    if (m_orientation == Vertical){
-      if (position < (child0->minimumSize().width()))
+  if (initialised) {
+    if (m_orientation == Vertical) {
+      if (position < child0->minimumSize().width())
         position = child0->minimumSize().width();
       if ((width()-4-position) < (child1->minimumSize().width()))
-        position = width() - (child1->minimumSize().width()) -4;
+        position = width() - (child1->minimumSize().width()) - 4;
     } else {
       if (position < (child0->minimumSize().height()))
-        position = (child0->minimumSize().height());
-      if ((height()-4-position) < (child1->minimumSize().height()))
-        position = height() - (child1->minimumSize().height()) -4;
+        position = child0->minimumSize().height();
+      if ((height()-4-position) < child1->minimumSize().height())
+        position = height() - (child1->minimumSize().height()) - 4;
     }
   }
 
@@ -404,7 +521,6 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
 {
   QMouseEvent *mev;
   bool handled = false;
-  int factor = (mHighResolution)? 10000:100;
 
   switch (e->type()) {
     case QEvent::MouseMove:
@@ -414,29 +530,35 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       if (m_orientation == Horizontal) {
         if ((fixedHeight0!=-1) || (fixedHeight1!=-1))
         {
-                handled=true; break;
+          handled=true; break;
         }
 
-	if (!mOpaqueResize) {
+        if (!mOpaqueResize) {
           int position = checkValue( mapFromGlobal(mev->globalPos()).y() );
           divider->move( 0, position );
         } else {
-          xpos = factor * checkValue( mapFromGlobal(mev->globalPos()).y() ) / height();
-          resizeEvent(0);
-          divider->repaint(true);
+          int tmp_xpos = factor * checkValue( mapFromGlobal(mev->globalPos()).y() ) / height();
+          if (tmp_xpos != xpos) {
+            xpos = tmp_xpos;
+            resizeEvent(0);
+            divider->repaint(true);
+          }
         }
       } else {
         if ((fixedWidth0!=-1) || (fixedWidth1!=-1))
         {
-                handled=true; break;
+          handled=true; break;
         }
         if (!mOpaqueResize) {
           int position = checkValue( mapFromGlobal(QCursor::pos()).x() );
           divider->move( position, 0 );
         } else {
-          xpos = factor * checkValue( mapFromGlobal( mev->globalPos()).x() ) / width();
-          resizeEvent(0);
-          divider->repaint(true);
+          int tmp_xpos = factor * checkValue( mapFromGlobal( mev->globalPos()).x() ) / width();
+          if (tmp_xpos != xpos) {
+            xpos = tmp_xpos;
+            resizeEvent(0);
+            divider->repaint(true);
+          }
         }
       }
       handled= true;
@@ -448,7 +570,7 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       if (m_orientation == Horizontal){
         if ((fixedHeight0!=-1) || (fixedHeight1!=-1))
         {
-                handled=true; break;
+          handled=true; break;
         }
         xpos = factor* checkValue( mapFromGlobal(mev->globalPos()).y() ) / height();
         resizeEvent(0);
@@ -456,7 +578,7 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       } else {
         if ((fixedWidth0!=-1) || (fixedWidth1!=-1))
         {
-                handled=true; break;
+          handled=true; break;
         }
         xpos = factor* checkValue( mapFromGlobal(mev->globalPos()).x() ) / width();
         resizeEvent(0);
@@ -475,7 +597,7 @@ bool KDockSplitter::event( QEvent* e )
   if ( e->type() == QEvent::LayoutHint ){
     // change children min/max size
     setupMinMaxSize();
-    setSeparatorPos(xpos);
+    resizeEvent(0);
   }
   return QWidget::event(e);
 }
@@ -523,20 +645,6 @@ bool KDockSplitter::keepSize() const
   return mKeepSize;
 }
 
-void KDockSplitter::setHighResolution(bool b)
-{
-  if (mHighResolution) {
-    if (!b) xpos = xpos/100;
-  } else {
-    if (b) xpos = xpos*100;
-  }
-  mHighResolution = b;
-}
-
-bool KDockSplitter::highResolution() const
-{
-  return mHighResolution;
-}
 
 
 /*************************************************************************/

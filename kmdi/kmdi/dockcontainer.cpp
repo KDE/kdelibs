@@ -63,7 +63,7 @@ DockContainer::DockContainer(QWidget *parent, QWidget *win, int position, int fl
   mTabCnt=0;
   m_position = position;
   m_previousTab=-1;
-  m_separatorPos = 17;
+  m_separatorPos = 18000;
   m_movingState=NotMoving;
   m_startEvent=0;
   kdDebug(760)<<"DockContainer created"<<endl;
@@ -346,6 +346,7 @@ void DockContainer::removeWidget(KDockWidget* dwdg)
     //why do we hide the tab if we're just going
     //to remove it? - mattr 2004-10-26
           m_tb->setTab(id,false);
+          m_tabSwitching = false;
           tabClicked(id);
   }
   m_tb->removeTab(id);
@@ -386,7 +387,6 @@ void DockContainer::tabClicked(int t)
   m_tabSwitching=true;
   if ((t!=-1) && m_tb->isTabRaised(t))
   {
-
     if (m_ws->isHidden())
     {
        m_ws->show ();
@@ -475,7 +475,7 @@ void DockContainer::save(KConfig* cfg,const QString& group_or_prefix)
     KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
                 parent()->qt_cast("KDockSplitter"));
     if ( sp )
-      cfg->writeEntry( "separatorPos", m_separatorPos );
+      cfg->writeEntry( "separatorPosition", m_separatorPos );
   }
 
   QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
@@ -513,7 +513,7 @@ void DockContainer::load(KConfig* cfg,const QString& group_or_prefix)
   else
     deactivateOverlapMode();
 
-  m_separatorPos = cfg->readNumEntry( "separatorPos", 18 );
+  m_separatorPos = cfg->readNumEntry( "separatorPosition", 18000 ); // = 18%
 
   int i=0;
   QString raise;
