@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <signal.h>
 
 #include <qfile.h>
 
@@ -181,6 +182,9 @@ KLauncher::~KLauncher()
 void
 KLauncher::destruct(int exit_code)
 {
+   ::signal( SIGHUP, SIG_IGN);
+   ::signal( SIGPIPE, SIG_IGN);
+   ::signal( SIGTERM, SIG_IGN);
    if (kapp)
    {
       delete kapp;
@@ -460,6 +464,9 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
       {
          if (request->dcop_service_type == KService::DCOP_Wait)
             request->status = KLaunchRequest::Done;
+         else if ((request->dcop_service_type == KService::DCOP_Unique) &&
+		(dcopClient()->isApplicationRegistered(request->dcop_name)))
+            request->status = KLaunchRequest::Running;
          else
             request->status = KLaunchRequest::Error;
          requestDone(request);
@@ -874,18 +881,6 @@ KLauncher::slotDequeue()
    do {
       KLaunchRequest *request = requestQueue.take(0);
       // process request
-      if (request->dcop_service_type == KService::DCOP_Unique)
-      {
-         if (dcopClient()->isApplicationRegistered(request->dcop_name))
-         {
-            // Yes, service is already running.
-            request->status = KLaunchRequest::Running;
-            // Request handled.
-            requestDone( request );
-            continue;
-         }
-      }
-
       request->status = KLaunchRequest::Launching;
       requestStart(request);
       if (request->status != KLaunchRequest::Launching)
