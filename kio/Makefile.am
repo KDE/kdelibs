@@ -36,7 +36,7 @@ libkio_la_METASOURCES = kautomount.moc kdirwatch.moc kio_cache.moc \
 	kio_job.moc kio_openwith.moc kio_pass_dlg.moc \
 	kio_simpleprogress_dlg.moc kio_littleprogress_dlg.moc kio_listprogress_dlg.moc \
 	kio_rename_dlg.moc kio_skip_dlg.moc kio_netaccess.moc \
-	kregistry.moc krun.moc
+	kregistry.moc krun.moc kregfactories.moc
 
 include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \

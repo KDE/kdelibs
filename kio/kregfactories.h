@@ -29,6 +29,8 @@
 
 class KServiceType;
 class KService;
+class KServiceTypeFactory;
+class KServiceFactory;
 
 /**
  * A registry entry containing a service type
@@ -37,13 +39,16 @@ class KService;
 class KServiceTypeEntry : public KRegEntry
 {
 public:
-  KServiceTypeEntry( KRegistry* _reg, const QString& _file, KServiceType *_mime );
+  KServiceTypeEntry( KRegistry* _reg, const QString& _file, KServiceType *_mime, KServiceTypeFactory *factory );
   virtual ~KServiceTypeEntry();
   
   void save( QDataStream& _str ) const;
 
+  KServiceType *serviceType() { return m_pServiceType; }
+
 protected:
   KSharedPtr<KServiceType> m_pServiceType;
+  KServiceTypeFactory *m_pFactory;
 };
 
 /**
@@ -51,10 +56,10 @@ protected:
  * It loads the service types from parsing directories (e.g. mimelnk/)
  * but can also create service types from data streams or single config files
  */
-class KServiceTypeFactory : public KRegFactory
+class KServiceTypeFactory : public QObject, public KRegFactory
 {
+  Q_OBJECT
   friend KServiceTypeEntry;
-  
 public:
   /**
    * Uses the default user- and system-paths
@@ -75,6 +80,13 @@ public:
    */
   virtual const QStringList & pathList() const { return m_pathList; }
 
+  void addEntryNotify( KRegEntry *entry ) { emit entryAdded( (KServiceTypeEntry *)entry ); } 
+  void removeEntryNotify( KRegEntry *entry ) { emit entryRemoved( (KServiceTypeEntry *)entry ); }
+  
+signals:
+  void entryAdded( KServiceTypeEntry *entry );
+  void entryRemoved( KServiceTypeEntry *entry );
+  
 private:
   QStringList m_pathList;
 };
@@ -85,13 +97,16 @@ private:
 class KServiceEntry : public KRegEntry
 {
 public:
-  KServiceEntry( KRegistry* _reg, const QString& _file, KService *_service );
+  KServiceEntry( KRegistry* _reg, const QString& _file, KService *_service, KServiceFactory *factory );
   virtual ~KServiceEntry();
 
   void save( QDataStream& _str ) const;
+
+  KService *service() { return m_pService; }
   
 protected:
   KSharedPtr<KService> m_pService;
+  KServiceFactory *m_pFactory;
 };
 
 
@@ -100,10 +115,10 @@ protected:
  * It loads the services from parsing directories (e.g. applnk/)
  * but can also create service from data streams or single config files
  */
-class KServiceFactory : public KRegFactory
+class KServiceFactory : public QObject, public KRegFactory
 {
+  Q_OBJECT
   friend KServiceEntry;
-  
 public:
   /**
    * Uses the default user- and system-paths
@@ -124,6 +139,13 @@ public:
    */
   virtual const QStringList & pathList() const { return m_pathList; }
 
+  void addEntryNotify( KRegEntry *entry ) { emit entryAdded( (KServiceEntry *)entry ); } 
+  void removeEntryNotify( KRegEntry *entry ) { emit entryRemoved( (KServiceEntry *)entry ); }
+  
+signals:
+  void entryAdded( KServiceEntry *entry );
+  void entryRemoved( KServiceEntry *entry );
+  
 private:
   QStringList m_pathList;
 };

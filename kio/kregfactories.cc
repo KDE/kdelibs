@@ -45,14 +45,17 @@ QString userShareDir()
  *
  **************************************************/
 
-KServiceTypeEntry::KServiceTypeEntry( KRegistry* _reg, const QString& _file, KServiceType *_mime )
+KServiceTypeEntry::KServiceTypeEntry( KRegistry* _reg, const QString& _file, KServiceType *_mime, KServiceTypeFactory *factory )
   : KRegEntry( _reg, _file )
 {
   m_pServiceType = _mime;
+  m_pFactory = factory;
+  m_pFactory->addEntryNotify( this );
 }
 
 KServiceTypeEntry::~KServiceTypeEntry()
 {
+  m_pFactory->removeEntryNotify( this );
 }
 
 void KServiceTypeEntry::save( QDataStream& _str ) const
@@ -131,7 +134,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
     return 0;
   }
 
-  KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e );
+  KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e, this );
   e->deref();
   res->load( _str );
 
@@ -171,7 +174,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
     return 0;
   }
 
-  KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e );
+  KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e, this );
   e->deref();
 
   return res;
@@ -183,14 +186,17 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
  *
  **************************************************/
 
-KServiceEntry::KServiceEntry( KRegistry* _reg, const QString& _file, KService *_service )
+KServiceEntry::KServiceEntry( KRegistry* _reg, const QString& _file, KService *_service, KServiceFactory *factory )
   : KRegEntry( _reg, _file )
 {
   m_pService = _service;
+  m_pFactory = factory;
+  m_pFactory->addEntryNotify( this );
 }
 
 KServiceEntry::~KServiceEntry()
 {
+  m_pFactory->removeEntryNotify( this );
 }
 
 void KServiceEntry::save( QDataStream& _str ) const
@@ -249,7 +255,7 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QData
     return 0;
   }
 
-  KServiceEntry* e = new KServiceEntry( _reg, _file, s );
+  KServiceEntry* e = new KServiceEntry( _reg, _file, s, this );
   s->deref();
 
   e->load( _str );
@@ -267,9 +273,10 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimp
     return 0;
   }
 
-  KServiceEntry* e = new KServiceEntry( _reg, _file, service );
+  KServiceEntry* e = new KServiceEntry( _reg, _file, service, this );
   service->deref();
 
   return e;
 }
 
+#include "kregfactories.moc"
