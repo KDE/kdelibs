@@ -182,7 +182,7 @@ public:
      * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, etc.
      * Patterns with two asterisks like "*.*pk" are not supported.
      */
-    static bool matchFilename( const QString& filename, const QString& pattern );
+    static bool matchFileName( const QString& filename, const QString& pattern );
       
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -234,5 +234,18 @@ public:
      */
     static QStringList perlSplit
       (const QRegExp & sep, const QString & s, uint max = 0);
+
+
+#ifdef KDE_NO_COMPAT
+private:
+#endif
+    /**
+     * @deprecated Use @see matchFileName () instead.
+     */
+    static bool matchFilename( const QString& filename, const QString& pattern )
+    {
+        return matchFileName (filename, pattern);
+    };
+
 };
 #endif

@@ -399,7 +399,7 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
 
 ///// File name patterns (like *.txt)
 
-bool KStringHandler::matchFilename( const QString& filename, const QString& pattern  )
+bool KStringHandler::matchFileName( const QString& filename, const QString& pattern  )
 {
    int len = filename.length();
    int pattern_len = pattern.length();
