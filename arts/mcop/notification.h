@@ -77,9 +77,9 @@ public:
 
 		while(!todo.empty())
 		{
-			Notification& wm = todo.front();
-			todo.pop();
+			const Notification& wm = todo.front();
 			wm.receiver->notify(wm);
+			todo.pop();
 		}
 		return true;
 	}
