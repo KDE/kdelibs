@@ -93,15 +93,14 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 			present=eventsfile.readNumEntry("default_presentation", 0);
 		sound=eventsfile.readEntry("sound", 0);
 		if (sound.isNull())
-			sound=eventsfile.readEntry("default_logfile", "");
-		file=eventsfile.readEntry("sound", 0);
+			sound=eventsfile.readEntry("default_sound", "");
+		file=eventsfile.readEntry("logfile", 0);
 		if (file.isNull())
-			sound=eventsfile.readEntry("default_logfile", "");
-		
+			file=eventsfile.readEntry("default_logfile", "");
 	}
 	
 	eventRunning=true;
-	if ((present & KNotifyClient::Sound) && (QFile(sound).isReadable()))
+	if ((present & KNotifyClient::Sound) /* && (QFile(sound).isReadable())*/)
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
