@@ -1437,7 +1437,11 @@ void KApplication::kdisplaySetPalette()
     KConfigGroupSaver saver( config, "General" );
 
     QColor kde2Gray(220, 220, 220);
-    QColor kde2Blue(0, 128, 128);
+    QColor kde2Blue;
+    if (QPixmap::defaultDepth() > 8)
+      kde2Blue.setRgb(84, 112, 152);
+    else
+      kde2Blue.setRgb(0, 0, 192);
 
     QColor background = config->readColorEntry( "background", &kde2Gray );
     QColor foreground = config->readColorEntry( "foreground", &black );
