@@ -63,8 +63,8 @@
    <gentext key="note" text="megjegyz&#233;s"/>
    <gentext key="Part" text="R&#233;sz"/>
    <gentext key="part" text="r&#233;sz"/>
-   <gentext key="Preface" text="El&#336;sz&#243;"/>
-   <gentext key="preface" text="el&#336;sz&#243;"/>
+   <gentext key="Preface" text="El&#337;sz&#243;"/>
+   <gentext key="preface" text="el&#337;sz&#243;"/>
    <gentext key="Procedure" text="Elj&#225;r&#225;s"/>
    <gentext key="procedure" text="elj&#225;r&#225;s"/>
    <gentext key="Published" text="Megjelent"/>
@@ -128,7 +128,7 @@
    <gentext key="notes" text="megjegyz&#233;sek"/>
    <gentext key="TableNotes" text="Megjegyz&#233;sek"/>
    <gentext key="tablenotes" text="megjegyz&#233;sek"/>
-   <gentext key="nonexistantelement" text="nem l&#233;tez&#336; elem"/>
+   <gentext key="nonexistantelement" text="nem l&#233;tez&#337; elem"/>
    <gentext key="Pgs" text="Lsz."/>
    <gentext key="pgs" text="lsz."/>
    <gentext key="unsupported" text="nem t&#225;mogatott"/>
@@ -146,10 +146,10 @@
    <gentext key="listofequations" text="az egyenletek list&#225;ja"/>
    <gentext key="ListofUnknown" text="Az egy&#233;b elemek list&#225;ja"/>
    <gentext key="listofunknown" text="az egy&#233;b elemek list&#225;ja"/>
-   <gentext key="nav-prev" text="El&#336;z&#336;"/>
+   <gentext key="nav-prev" text="El&#337;z&#337;"/>
    <gentext key="nav-prev-sibling" text="Gyors vissza"/>
-   <gentext key="nav-next-sibling" text="Gyors el&#336;re"/>
-   <gentext key="nav-next" text="K&#246;vetkez&#336;"/>
+   <gentext key="nav-next-sibling" text="Gyors el&#337;re"/>
+   <gentext key="nav-next" text="K&#246;vetkez&#337;"/>
    <gentext key="nav-up" text="Fel"/>
    <gentext key="nav-home" text="Tartalom"/>
    <dingbat key="startquote" text="&#8220;"/>
@@ -160,7 +160,7 @@
 
    <context name="title">
       <template name="abstract" text="%t"/>
-      <template name="appendix" text="F&#252;ggel&#233;k %n. %t"/>
+      <template name="appendix" text="%n. f&#252;ggel&#233;k - %t"/>
       <template name="article" text="%t"/>
       <template name="authorblurb" text="%t"/>
       <template name="bibliodiv" text="%t"/>
@@ -173,12 +173,12 @@
       <template name="book" text="%t"/>
       <template name="calloutlist" text="%t"/>
       <template name="caution" text="%t"/>
-      <template name="chapter" text="Fejezet %n. %t"/>
+      <template name="chapter" text="%n. fejezet - %t"/>
       <template name="colophon" text="%t"/>
       <template name="dedication" text="%t"/>
-      <template name="equation" text="Egyenlet %n. %t"/>
-      <template name="example" text="P&#233;lda %n. %t"/>
-      <template name="figure" text="&#193;bra %n. %t"/>
+      <template name="equation" text="%n. egyenlet - %t"/>
+      <template name="example" text="%n. p&#233;lda - %t"/>
+      <template name="figure" text="%n. &#225;bra - %t"/>
       <template name="formalpara" text="%t"/>
       <template name="glossary" text="%t"/>
       <template name="glossdiv" text="%t"/>
@@ -196,7 +196,7 @@
       <template name="msgsub" text="%t"/>
       <template name="note" text="%t"/>
       <template name="orderedlist" text="%t"/>
-      <template name="part" text="R&#233;sz %n. %t"/>
+      <template name="part" text="%n. r&#233;sz - %t"/>
       <template name="partintro" text="%t"/>
       <template name="preface" text="%t"/>
       <template name="procedure" text="%t"/>
@@ -213,7 +213,7 @@
       <template name="setindex" text="%t"/>
       <template name="sidebar" text="%t"/>
       <template name="step" text="%t"/>
-      <template name="table" text="T&#225;bl&#225;zat %n. %t"/>
+      <template name="table" text="%n. t&#225;bl&#225;zat - %t"/>
       <template name="tip" text="%t"/>
       <template name="toc" text="%t"/>
       <template name="variablelist" text="%t"/>
