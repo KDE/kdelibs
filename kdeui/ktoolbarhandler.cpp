@@ -73,7 +73,7 @@ namespace
                 return QPtrList<KAction>();
 
             QPtrListIterator<KToolBar> toolBarIt( m_toolBars );
-            for ( ; toolBarIt.current(); ++toolBarIt ) 
+            for ( ; toolBarIt.current(); ++toolBarIt )
                 handleToolBar( toolBarIt.current() );
 
             QPtrList<KAction> actions;
@@ -82,7 +82,9 @@ namespace
                 return actions;
 
             if ( m_toolBarActions.count() == 1 ) {
-                m_toolBarActions.getFirst()->setText( i18n( "Show Toolbar" ) );
+                KToggleToolBarAction* action = static_cast<KToggleToolBarAction *>( m_toolBarActions.getFirst() );
+                action->setText( i18n( "Show Toolbar" ) );
+                action->setCheckedState( i18n( "Hide Toolbar" ) );
                 return m_toolBarActions;
             }
 
@@ -101,18 +103,20 @@ namespace
     private:
         void handleToolBar( KToolBar *toolBar )
         {
-            KAction *action = new KToggleToolBarAction( toolBar,
-                                                        i18n( "Show %1" ).arg( toolBar->label() ),
-                                                        m_actionCollection, 
-                                                        toolBar->name() );
-
+            KToggleToolBarAction *action = new KToggleToolBarAction(
+                toolBar,
+                i18n( "Show %1" ).arg( toolBar->label() ),
+                m_actionCollection,
+                toolBar->name() );
+            action->setCheckedState( i18n( "Hide %1" ).arg( toolBar->label() ) );
+            // ## tooltips, whatsthis?
             m_toolBarActions.append( action );
         }
 
         KActionCollection *m_actionCollection;
         KMainWindow *m_mainWindow;
 
-        QPtrList<KToolBar> m_toolBars; 
+        QPtrList<KToolBar> m_toolBars;
         QPtrList<KAction> m_toolBarActions;
 
         bool m_needsRebuild : 1;
@@ -127,10 +131,10 @@ ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, const char *name )
     init( mainWindow );
 }
 
-ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, QObject *parent, const char *name ) 
-    : QObject( parent, name ), KXMLGUIClient( mainWindow )  
-{ 
-    init( mainWindow ); 
+ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, QObject *parent, const char *name )
+    : QObject( parent, name ), KXMLGUIClient( mainWindow )
+{
+    init( mainWindow );
 }
 
 ToolBarHandler::~ToolBarHandler()
@@ -152,7 +156,7 @@ void ToolBarHandler::setupActions()
 
     BarActionBuilder builder( actionCollection(), m_mainWindow, m_toolBars );
 
-    if ( !builder.needsRebuild() ) 
+    if ( !builder.needsRebuild() )
         return;
 
     unplugActionList( actionListName );
@@ -216,7 +220,7 @@ void ToolBarHandler::init( KMainWindow *mainWindow )
 void ToolBarHandler::connectToActionContainers()
 {
     QPtrListIterator<KAction> actionIt( m_actions );
-    for ( ; actionIt.current(); ++actionIt ) 
+    for ( ; actionIt.current(); ++actionIt )
         connectToActionContainer( actionIt.current() );
 }
 

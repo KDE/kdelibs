@@ -1137,6 +1137,11 @@ void KAction::unplugAll()
     unplug( container( 0 ) );
 }
 
+const KGuiItem& KAction::guiItem() const
+{
+    return *d;
+}
+
 void KAction::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 

@@ -112,7 +112,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 					recvr, slot,
 					parent, (name) ? name : pInfo->psName );
             pAction = ret;
-            break;        
+            break;
          }
 		 default:
 			pAction = new KAction( sLabel, iconName, cut,
@@ -228,10 +228,17 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Menubar"), "showmenu", KStdAccel::shortcut(KStdAccel::ShowMenubar), recvr, slot,
                             parent, _name ? _name : name(ShowMenubar));
+    ret->setWhatsThis( i18n( "Show Menubar<p>"
+                             "Shows the menubar again after it has been hidden" ) );
+    KGuiItem guiItem( i18n("Hide &Menubar"), 0 /*same icon*/, QString::null,
+                      i18n( "Hide Menubar<p>"
+                            "Hide the menubar. You can usually get it back using the right mouse button inside the window itself." ) );
+    ret->setCheckedState( guiItem );
     ret->setChecked(true);
     return ret;
 }
 
+// obsolete
 KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
 {
     KToggleAction *ret;
@@ -242,6 +249,7 @@ KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionColle
 
 }
 
+// obsolete
 KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *_name )
 {
     KToggleToolBarAction *ret;
@@ -256,6 +264,13 @@ KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
                             _name ? _name : name(ShowStatusbar));
+    ret->setWhatsThis( i18n( "Show Statusbar<p>"
+                             "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
+    KGuiItem guiItem( i18n("Hide St&atusbar"), QString::null, QString::null,
+                      i18n( "Hide Statusbar<p>"
+                            "Hides the statusbar, which is the bar at the bottom of the window used for status information." ) );
+    ret->setCheckedState( guiItem );
+
     ret->setChecked(true);
     return ret;
 }

@@ -182,6 +182,22 @@ public:
      */
     virtual void setExclusiveGroup( const QString& name );
 
+    /**
+     * Defines the text (and icon, tooltip, whatsthis) that should be displayed
+     * instead of the normal text, when the action is checked.
+     * This feature replaces the checkmark that usually appears in front of the text, in menus.
+     * It is useful when the text is mainly a verb: e.g. "Show <foo>"
+     * should turn into "Hide <foo>" when activated.
+     *
+     * If hasIcon(), the icon is kept for the 'checked state', unless
+     * @p checkedItem defines an icon explicitely. Same thing for tooltip and whatsthis.
+     * @since 3.3
+     */
+    void setCheckedState( const KGuiItem& checkedItem );
+
+    /// Reimplemented for internal reasons
+    virtual QString toolTip() const;
+
 public slots:
     /**
      *  Sets the state of the action.
@@ -764,7 +780,7 @@ public:
   virtual ~KRecentFilesAction();
 
   virtual int plug( QWidget *widget, int index = -1 );
-  
+
   /**
    *  Returns the maximum of items in the recent files list.
    */
@@ -841,7 +857,7 @@ protected:
 
 private:
   void init();
-  
+
   class KRecentFilesActionPrivate;
   KRecentFilesActionPrivate *d;
 };
@@ -1320,9 +1336,9 @@ public:
     KPasteTextAction( const QString& text, const QString& icon, const KShortcut& cut,
                   const QObject* receiver, const char* slot,
                   QObject* parent = 0, const char* name = 0 );
-    
+
     virtual ~KPasteTextAction();
-    
+
     /**
     * Controls the behavior of the clipboard history menu popup.
     *
@@ -1334,9 +1350,9 @@ public:
     *             Default value is true.
     */
     void setMixedMode(bool mode);
-    
+
     virtual int plug( QWidget *widget, int index = -1 );
-    
+
 protected slots:
     void menuAboutToShow();
     void menuItemActivated( int id);

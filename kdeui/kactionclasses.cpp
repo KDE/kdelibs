@@ -94,10 +94,12 @@ public:
   KToggleActionPrivate()
   {
     m_checked = false;
+    m_checkedGuiItem = 0;
   }
 
   bool m_checked;
   QString m_exclusiveGroup;
+  KGuiItem* m_checkedGuiItem;
 };
 
 KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
@@ -160,7 +162,8 @@ KToggleAction::KToggleAction( QObject* parent, const char* name )
 
 KToggleAction::~KToggleAction()
 {
-    delete d;
+  delete d->m_checkedGuiItem;
+  delete d;
 }
 
 int KToggleAction::plug( QWidget* widget, int index )
@@ -179,9 +182,9 @@ int KToggleAction::plug( QWidget* widget, int index )
 
   if ( widget->inherits("QPopupMenu") )
   {
-    int id = itemId( _index );
+    if ( d->m_checked )
+      updateChecked( _index );
 
-    static_cast<QPopupMenu*>(widget)->setItemChecked( id, d->m_checked );
   } else if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
@@ -227,9 +230,23 @@ void KToggleAction::updateChecked( int id )
 {
   QWidget *w = container( id );
 
-  if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->setItemChecked( itemId( id ), d->m_checked );
-  else if ( w->inherits( "QMenuBar" ) )
+  if ( w->inherits( "QPopupMenu" ) ) {
+    QPopupMenu* pm = static_cast<QPopupMenu*>(w);
+    int itemId_ = itemId( id );
+    if ( !d->m_checkedGuiItem )
+      pm->setItemChecked( itemId_, d->m_checked );
+    else {
+      const KGuiItem* gui = d->m_checked ? d->m_checkedGuiItem : &guiItem();
+      if ( d->m_checkedGuiItem->hasIcon() )
+          pm->changeItem( itemId_, gui->iconSet( KIcon::Small ), gui->text() );
+      else
+          pm->changeItem( itemId_, gui->text() );
+      if ( !d->m_checkedGuiItem->whatsThis().isEmpty() ) // if empty, we keep the initial one
+          pm->setWhatsThis( itemId_, gui->whatsThis() );
+      updateShortcut( pm, itemId_ );
+    }
+  }
+  else if ( w->inherits( "QMenuBar" ) ) // not handled in plug...
     static_cast<QMenuBar*>(w)->setItemChecked( itemId( id ), d->m_checked );
   else if ( w->inherits( "KToolBar" ) )
   {
@@ -261,6 +278,19 @@ QString KToggleAction::exclusiveGroup() const
   return d->m_exclusiveGroup;
 }
 
+void KToggleAction::setCheckedState( const KGuiItem& checkedItem )
+{
+  delete d->m_checkedGuiItem;
+  d->m_checkedGuiItem = new KGuiItem( checkedItem );
+}
+
+QString KToggleAction::toolTip() const
+{
+  if ( d->m_checkedGuiItem && d->m_checked )
+      return d->m_checkedGuiItem->toolTip();
+  else
+      return KAction::toolTip();
+}
 
 KRadioAction::KRadioAction( const QString& text, const KShortcut& cut,
                             QObject* parent, const char* name )
@@ -1184,7 +1214,7 @@ void KRecentFilesAction::menuAboutToShow()
     KPopupMenu *menu = d->m_popup;
     menu->clear();
     QStringList list = items();
-    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) 
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
         menu->insertItem(*it);
 }
 
@@ -1213,7 +1243,7 @@ int KRecentFilesAction::plug( QWidget *widget, int index )
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-    
+
     bar->setDelayedPopup( id_, d->m_popup, true);
 
     if ( !whatsThis().isEmpty() )
@@ -1924,7 +1954,7 @@ void KToggleToolBarAction::setChecked( bool c )
 
 ////////
 
-KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut, 
+KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
                              const QObject* receiver, const char* slot,
                              QObject* parent, QWidget* window,
                              const char* name )
@@ -2121,18 +2151,18 @@ KPasteTextAction::KPasteTextAction( const QString& text,
                             const char* slot, QObject* parent,
                             const char* name)
   : KAction( text, icon, cut, receiver, slot, parent, name )
-{  
+{
   m_popup = new KPopupMenu;
   connect(m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
-  connect(m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));  
+  connect(m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));
   m_popup->setCheckable(true);
   m_mixedMode = true;
-}            
+}
 
 KPasteTextAction::~KPasteTextAction()
 {
   delete m_popup;
-}    
+}
 
 void KPasteTextAction::setMixedMode(bool mode)
 {
@@ -2173,7 +2203,7 @@ int KPasteTextAction::plug( QWidget *widget, int index )
 
   return KAction::plug( widget, index );
 }
-     
+
 void KPasteTextAction::menuAboutToShow()
 {
     m_popup->clear();
@@ -2183,15 +2213,15 @@ void KPasteTextAction::menuAboutToShow()
       DCOPRef klipper("klipper","klipper");
       DCOPReply reply = klipper.call("getClipboardHistoryMenu");
       if (reply.isValid())
-        list = reply;          
+        list = reply;
     }
     QString clipboardText = qApp->clipboard()->text(QClipboard::Clipboard);
     clipboardText.replace("&", "&&");
     clipboardText = KStringHandler::csqueeze(clipboardText, 45);
     if (list.isEmpty())
         list << clipboardText;
-    bool found = false;        
-    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) 
+    bool found = false;
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {
       int id = m_popup->insertItem(*it);
       if (!found && *it == clipboardText)
@@ -2205,7 +2235,7 @@ void KPasteTextAction::menuAboutToShow()
 void KPasteTextAction::menuItemActivated( int id)
 {
     DCOPClient *client = kapp->dcopClient();
-    if (client->isAttached() && client->isApplicationRegistered("klipper")) { 
+    if (client->isAttached() && client->isApplicationRegistered("klipper")) {
       DCOPRef klipper("klipper","klipper");
       DCOPReply reply = klipper.call("getClipboardHistoryItem(int)", m_popup->indexOf(id));
       if (!reply.isValid())
@@ -2213,9 +2243,9 @@ void KPasteTextAction::menuItemActivated( int id)
       QString clipboardText = reply;
       reply = klipper.call("setClipboardContents(QString)", clipboardText);
       if (reply.isValid())
-        kdDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;    
+        kdDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;
     }
-    QTimer::singleShot(20, this, SLOT(slotActivated())); 
+    QTimer::singleShot(20, this, SLOT(slotActivated()));
 }
 
 void KPasteTextAction::slotActivated()
@@ -2226,7 +2256,7 @@ void KPasteTextAction::slotActivated()
     if (!data->provides("text/plain") && w) {
       m_popup->popup(w->mapToGlobal(QPoint(0, w->height())));
     } else
-      KAction::slotActivated();     
+      KAction::slotActivated();
   } else
     KAction::slotActivated();
 }

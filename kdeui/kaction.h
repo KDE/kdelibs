@@ -568,6 +568,11 @@ protected:
 
     KActionCollection *m_parentCollection;
     QString whatsThisWithIcon() const;
+    /**
+     * Return the underlying KGuiItem
+     * @since 3.3
+     */
+    const KGuiItem& guiItem() const;
 
 signals:
     void activated();
