@@ -178,6 +178,8 @@ class KDirWatch : public QObject
      
  protected:
    void resetList (bool reallyall);
+   void addDir(const QString& path, void *_entry);
+   void removeDir(const QString& path, void *_entry);
    
  protected slots:
    void slotRescan();
