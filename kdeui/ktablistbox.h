@@ -367,6 +367,7 @@ protected:
   KTabListBox* parent;
 };
 
+typedef KTabListBoxColumn* KTabListBoxColumnPtr;
 
 
 inline KTabListBoxItem* KTabListBox :: getItem (int idx)
