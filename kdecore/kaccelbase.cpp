@@ -565,11 +565,16 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 {
 	QPopupMenu* pMenu = new QPopupMenu( pParent, "KAccelBase-QPopupMenu" );
 	pMenu->setFont( KGlobalSettings::menuFont() );
+	//pMenu->insertTitle( "Key: " + seq.toString() );
 
 	bool bActionInserted = false;
 	bool bInsertSeparator = false;
 	for( uint i = 0; i < actionCount(); i++ ) {
 		const KAccelAction* pAction = actions().actionPtr( i );
+		
+		if( !pAction->isEnabled() )
+			continue;
+
 		// If an action has already been inserted into the menu
 		//  and we have a label instead of an action here,
 		//  then indicate that we should insert a separator before the next menu entry.
@@ -594,6 +599,7 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 					}
 				}
 
+				kdDebug(125) << "sLabel = " << sLabel << ", i = " << i << endl;
 				pMenu->insertItem( sLabel, i );
 				bActionInserted = true;
 				break;
@@ -601,6 +607,8 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 		}
 	}
 
+	// Try to highlight the first item.  Unfortunately, it doesn't work!
+	pMenu->setActiveItem( 0 );
 	return pMenu;
 }
 
