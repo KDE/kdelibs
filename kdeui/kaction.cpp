@@ -2229,6 +2229,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
 
     if (groupname.isEmpty())
       groupname = "RecentFiles";
+    config->deleteGroup( groupname, true );
     config->setGroup( groupname );
 
     // write file list
