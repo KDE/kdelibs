@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
 
     khtml::Cache::clear();
     khtml::CSSStyleSelector::clear();
-    DOM::HTMLMapElementImpl::clear();
     khtml::RenderStyle::cleanup();
 
     delete fac;
