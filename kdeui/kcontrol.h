@@ -91,7 +91,7 @@ public:
    *  @param _parent Pointer to the parent widget.
    *  @param _name   Name of the widget.
    */
-  KConfigWidget( QWidget* _parent, const char* name = 0 )
+  KConfigWidget( QWidget* _parent, const char* _name = 0 )
   : QWidget( _parent, _name ) {};
 
   /**
