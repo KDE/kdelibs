@@ -27,17 +27,19 @@ namespace KNS
 
 class DownloadDialog;
 
-/*
+/**
  * KHotNewStuff push button that makes using KHNS in an application
  * more convenient by encapsulating most of the details involved in
  * using KHotNewStuff in the button itself.
+ *
+ * @since 3.4
  */
 class Button : public KPushButton
 {
     Q_OBJECT
 
     public:
-        /*
+        /**
          * Constructor used when the details of the KHotNewStuff
          * download is known when the button is created.
          *
@@ -56,7 +58,7 @@ class Button : public KPushButton
                const QString& resourceType,
                QWidget* parent, const char* name);
 
-        /*
+        /**
          * Constructor used when the details of the KHotNewStuff
          * download is not known in advance of the button being created.
          *
@@ -65,31 +67,31 @@ class Button : public KPushButton
          */
         Button(QWidget* parent, const char* name);
 
-        /*
+        /**
          * set the URL to the list of providers for this button to use
          */
         void setProviderList(const QString& providerList);
 
-        /*
+        /**
          * the Hotstuff data type for this downlaod such as
          * "korganizer/calendar"
          */
         void setResourceType(const QString& resourceType);
 
-        /*
+        /**
          * set the text that should appear on the button. will be prefaced
          * with i18n("Download New")
          */
         void setButtonText(const QString& what);
 
     signals:
-        /*
+        /**
          * emitted when the Hot New Stuff dialog is about to be shown, usually
          * as a result of the user having click on the button
          */
         void aboutToShowDialog();
 
-        /*
+        /**
          * emitted when the Hot New Stuff dialog has been closed
          */
         void dialogFinished();
