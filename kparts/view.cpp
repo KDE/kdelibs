@@ -1,7 +1,8 @@
 #include "view.h"
 #include "part.h"
 #include "frame.h"
-#include "loader.h"
+
+#include <klibloader.h>
 
 ViewChild::ViewChild( PartChild* child, Frame* frame )
 {
@@ -148,29 +149,26 @@ QWidget* View::canvas()
     return this;
 }
 
-Plugin* View::plugin( const char* name, int major, int minor )
+Plugin* View::plugin( const char* libname )
 {
-    QCString libname;
-    libname.sprintf( "lib%s.so.%i.%i", name, major, minor );
-
     QObject* ch = child( libname, "Plugin" );
     if ( ch )
 	return (Plugin*)ch;
 
-    Loader* loader = Loader::self();
+    KLibLoader* loader = KLibLoader::self();
     if ( !loader )
     {
 	qDebug("View: No library loader installed");
 	return 0;
     }
-    // ######### Torben: What about lib dependencies of plugins ?
-    Factory* f = loader->factory( name, major, minor, QStringList() );
+    
+    KLibFactory* f = loader->factory( libname );
     if ( !f )
     {
 	qDebug("View: Could not initialize library");
 	return 0;
     }
-    QObject* obj = f->create( this, libname );
+    QObject* obj = f->create( this, libname, "Plugin" );
     if ( !obj->inherits("Plugin" ) )
     {
 	qDebug("The library does not feature an object of class Plugin");

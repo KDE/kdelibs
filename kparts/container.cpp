@@ -10,7 +10,7 @@
 #include <qiconset.h>
 #include <qregion.h>
 
-ContainerPart::ContainerPart( Part* parent, const char* name )
+ContainerPart::ContainerPart( QObject* parent, const char* name )
     : Part( parent, name )
 {
     m_children.setAutoDelete( TRUE );

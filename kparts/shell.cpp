@@ -191,7 +191,7 @@ void Shell::setActiveView( View* view, Part* part )
 	qApp->sendEvent( old_view, &event );
         m_toolbars.clear();
     }
-    
+
     const QObjectList *children = menuBar()->children();
     if ( children )
     {
@@ -200,7 +200,7 @@ void Shell::setActiveView( View* view, Part* part )
         if ( it.current()->inherits( "QAction" ) )
 	  ((QAction *)it.current())->unplug( menuBar() );
     }
-    
+
     menuBar()->clear();
 
     if ( m_statusBar )
@@ -301,9 +301,7 @@ void Shell::createToolBars( const QDomElement& element )
 		}
 		else if ( f.tagName() == "PluginAction" )
                 {
-		    Plugin* plugin = m_activeView->plugin( f.attribute("plugin"),
-							   f.attribute("major").toInt(),
-							   f.attribute("minor").toInt() );
+		    Plugin* plugin = m_activeView->plugin( f.attribute("plugin") );
 		    if ( plugin )
 		    {
 			QAction* a = plugin->action( f.attribute("name") );
@@ -429,9 +427,7 @@ QPopupMenu* Shell::createMenu( const QDomElement& shell, const QDomElement& part
 	else if ( e.tagName() == "PluginAction" )
         {
 	    first = FALSE;
-	    Plugin* plugin = m_activeView->plugin( e.attribute("plugin"),
-						   e.attribute("major").toInt(),
-						   e.attribute("minor").toInt() );
+	    Plugin* plugin = m_activeView->plugin( e.attribute("plugin") );
 	    if ( plugin )
 	    {
 		QAction* a = plugin->action( e.attribute("name") );
@@ -488,9 +484,7 @@ QPopupMenu* Shell::createMenu( const QDomElement& shell, const QDomElement& part
 			menu->insertSeparator();
 		    empty = FALSE;
 
-		    Plugin* plugin = m_activeView->plugin( e.attribute("plugin"),
-							   e.attribute("major").toInt(),
-							   e.attribute("minor").toInt() );
+		    Plugin* plugin = m_activeView->plugin( e.attribute("plugin") );
 		    if ( plugin )
 	            {
 			QAction* a = plugin->action( e.attribute("name") );

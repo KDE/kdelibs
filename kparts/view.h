@@ -58,6 +58,9 @@ public:
 
     virtual Part* hitTest( const QPoint& pos );
 
+    /**
+     * Reimplemented to catch some events about activation.
+     */
     virtual void customEvent( QCustomEvent* );
 
     /**
@@ -83,11 +86,18 @@ public:
      * By default this function returns 0.
      */
     virtual int canvasYOffset() const;
-    
-    virtual Plugin* plugin( const char* name, int major, int minor );
+
+    /**
+     * Loads a plugin for this view.
+     *
+     * @param libname is the library in which the plugin is
+     *        implemented. This is usually something like
+     *        "libkspreadcalc".
+     */
+    virtual Plugin* plugin( const char* libname );
 
     virtual bool doubleClickActivation() const;
-    
+
 signals:
     void selected( bool );
     void activated( bool );

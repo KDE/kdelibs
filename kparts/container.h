@@ -19,7 +19,7 @@ class ContainerPart : public Part
 {
     Q_OBJECT
 public:
-    ContainerPart( Part* parent = 0, const char* name = 0 );
+    ContainerPart( QObject* parent = 0, const char* name = 0 );
     ~ContainerPart();
 
     /**
@@ -53,7 +53,7 @@ signals:
     /**
      * This signal is emitted, if a direct or indirect child part changes
      * and needs to be updated in all views.
-     * 
+     *
      * If one of your child parts emits the childChanged signal, then you may
      * usually just want to redraw this child. In this case you can ignore the parameter
      * passes by the signal.
