@@ -369,7 +369,7 @@ UString &UString::append(const UString &t)
   }
 
   int newCapacity = (newLen * 3 + 1) / 2;
-  UChar *n = allocateChars(l+t.size());
+  UChar *n = allocateChars(newCapacity);
   memcpy(n, data(), l * sizeof(UChar));
   memcpy(n+l, t.data(), tLen * sizeof(UChar));
   release();
