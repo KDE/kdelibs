@@ -49,7 +49,7 @@
 
 #define EIFFEL_CHECK CHECK_ALL
 #include <nana.h>
-#include <eiffel.h>
+// #include <eiffel.h> // currently, we use only Nanas logging support
 #include <Qstl.h>
 
 #endif
@@ -60,5 +60,35 @@
 #ifndef i18n
 #define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
 #endif
+
+#ifdef assert
+#undef assert
+#endif
+#ifdef CHECK
+#undef CHECK
+#endif
+#ifdef REQUIRE
+#undef REQUIRE
+#endif
+#ifdef ENSURE
+#undef ENSURE
+#endif
+
+// we use our own kind of assertions here: colorful, cute and impressive bugs!
+#if ! defined NDEBUG || defined DEBUG
+// #include "AssertDialog.h"
+#define assert(x) evaluate_assertion(x, __FILE__, __LINE__, #x)
+#define CHECK(x)  evaluate_assertion(x, __FILE__, __LINE__, #x)
+#define REQUIRE(x) evaluate_assertion(x, __FILE__, __LINE__, #x)
+#define ENSURE(x) evaluate_assertion(x, __FILE__, __LINE__, #x)
+#else
+#define assert(x)
+#define CHECK(x)
+#define REQUIRE(x)
+#define ENSURE(x)
+#endif
+
+// the function that pops up a dialog when an assertion failes (in libkab):
+void evaluate_assertion(bool condition, const char* file, int line, const char* cond_text);
 
 #endif // KAB_DEBUG_H

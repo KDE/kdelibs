@@ -1,0 +1,93 @@
+DlgEdit:v1.2:Dialog:
+Dialog {
+	ClassHeader {AssertDialog.h}
+	ClassSource {AssertDialog.cpp}
+	ClassName {AssertDialog}
+	DataHeader {AssertDialogData.h}
+	DataSource {AssertDialogData.cpp}
+	DataName {AssertDialogData}
+	WindowBaseClass {QDialog}
+	IsModal {TRUE}
+	WindowFlags {0}
+}
+WidgetLayout {
+InitialPos {-1 -1}
+Size {400 270}
+MinSize {0 0}
+MaxSize {32767 32767}
+Grid {10}
+
+Frame {
+		Style {34}
+		Rect {10 10 380 250}
+		Name {FrameBase}
+		Variable {frameBase}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+ButtonGroup {
+		Title {Select action to raise:}
+		Alignment {Left}
+		Style {50}
+		Rect {20 90 360 120}
+		Name {ButtonGroup}
+		Variable {bgActions}
+		Signal {[Protected]  clicked --> setAction  (int)}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Label {
+		Text {(Bug pixmap)}
+		Alignment {1316}
+		AutoResize {TRUE}
+		Margin {-1}
+		Rect {310 20 74 15}
+		Name {LabelImage}
+		Variable {labelImage}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Label {
+		Text {You found a bug in this application.}
+		AutoResize {TRUE}
+		Margin {-1}
+		Rect {20 20 231 17}
+		Name {LabelHeadline}
+		Variable {labelHeadline}
+		Font {"helvetica" 14 50 1 0 0 0 0 0}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Label {
+		Text {In the file blablabla.cc, line 163:}
+		Alignment {1289}
+		AutoResize {TRUE}
+		Margin {-1}
+		Rect {20 50 180 15}
+		Name {LabelError}
+		Variable {labelError}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+PushButton {
+		ToggleButton {FALSE}
+		Default {FALSE}
+		AutoDefault {TRUE}
+		Text {OK}
+		AutoRepeat {FALSE}
+		AutoResize {TRUE}
+		Rect {20 220 51 26}
+		Name {PushButtonOK}
+		Variable {buttonOK}
+		Signal {[Protected]  clicked --> accept  ()}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+Layout {None}
+}

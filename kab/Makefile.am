@@ -31,6 +31,8 @@ KABPATCH=	0
 # Which sources should be compiled for khexdit.
 libkab_la_SOURCES	= \
 	kabapi.cc \
+	AssertDialog.cpp \
+	AssertDialogData.cpp \
 	PrintDialog.cpp \
 	PrintDialogData.cpp \
 	SearchDialog.cpp \
@@ -95,6 +97,7 @@ libkab_la_LIBADD   = -lkfm -lkdeui -lkdecore -lqt \
 # noinst_HEADERS = 
 # just to make sure, automake makes them 
 BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
+		AssertDialog.moc AssertDialogData.moc \
 		SearchDialog.moc searchresults.moc \
 		editentry.moc datepickerdialog.moc businesscard.moc \
 		StringListDialog.moc StringListDialogData.moc \
@@ -185,3 +188,7 @@ StringListSelectAndReorderSet.cpp:StringListSelectAndReorderSet.moc \
 				StringListSelectAndReorderSetData.moc
 StringListSelectAndReorderSet.moc:StringListSelectAndReorderSet.h
 StringListSelectAndReorderSetData.moc:StringListSelectAndReorderSetData.h
+
+AssertDialog.cpp:AssertDialog.moc AssertDialogData.moc
+AssertDialog.moc:AssertDialog.h
+AssertDialogData.moc:AssertDialogData.h
