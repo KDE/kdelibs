@@ -76,9 +76,9 @@ kde_wallpaperdir="\$(prefix)/share/wallpapers"
 AC_SUBST(kde_wallpaperdir)
 kde_kccmodules="\$(prefix)/lib/kcc/modules"
 AC_SUBST(kde_kccmodules)
-kde_bindir=\"$(exec_prefix)/bin"
+kde_bindir="\$(exec_prefix)/bin"
 AC_SUBST(kde_bindir)
-kde_partsdir=\"$(exec_prefix)/parts"
+kde_partsdir="\$(exec_prefix)/parts"
 AC_SUBST(kde_partsdir)
 ])
 
