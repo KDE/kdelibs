@@ -198,3 +198,27 @@ const struct HashEntry DOMElementTableEntries[] = {
 const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
 
 }; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
+   { "hasFeature", DOMDOMImplementation::HasFeature, DontDelete|Function, 2, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "createCSSStyleSheet", DOMDOMImplementation::CreateCSSStyleSheet, DontDelete|Function, 2, 0 }
+};
+
+const struct HashTable DOMDOMImplementationProtoTable = { 2, 3, DOMDOMImplementationProtoTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMDocumentTypeTableEntries[] = {
+   { "name", DOMDocumentType::Name, DontDelete|ReadOnly, 0, 0 },
+   { "notations", DOMDocumentType::Notations, DontDelete|ReadOnly, 0, 0 },
+   { "entities", DOMDocumentType::Entities, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMDocumentTypeTable = { 2, 3, DOMDocumentTypeTableEntries, 3 };
+
+}; // namespace

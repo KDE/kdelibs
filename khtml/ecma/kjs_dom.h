@@ -146,35 +146,30 @@ namespace KJS {
 
   class DOMDOMImplementation : public DOMObject {
   public:
-    DOMDOMImplementation(ExecState *,DOM::DOMImplementation i) : implementation(i) { }
+    // Build a DOMDOMImplementation
+    DOMDOMImplementation(ExecState *,DOM::DOMImplementation i);
     ~DOMDOMImplementation();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all functions
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual Boolean toBoolean(ExecState *) const { return Boolean(true); }
     static const ClassInfo info;
-  private:
-    DOM::DOMImplementation implementation;
-  };
-
-  class DOMDOMImplementationFunction : public DOMFunction {
-  public:
-    DOMDOMImplementationFunction(DOM::DOMImplementation impl, int i)
-      : DOMFunction(), implementation(impl), id(i) {}
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
     enum { HasFeature, CreateDocumentType, CreateDocument, CreateCSSStyleSheet };
+    DOM::DOMImplementation toImplementation() const { return implementation; }
   private:
     DOM::DOMImplementation implementation;
-    int id;
   };
 
   class DOMDocumentType : public DOMNode {
   public:
-    DOMDocumentType(ExecState *exec, DOM::DocumentType dt) : DOMNode(exec, dt) { }
+    // Build a DOMDocumentType
+    DOMDocumentType(ExecState *exec, DOM::DocumentType dt);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Name, Entities, Notations, PublicId, SystemId, InternalSubset };
   };
 
   class DOMNamedNodeMap : public DOMObject {

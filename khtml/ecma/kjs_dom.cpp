@@ -264,7 +264,7 @@ Value DOMNode::getValue(ExecState *exec, int token) const
     case ScrollTop:
       return rend ? static_cast<Value>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : Value(Undefined());
     default:
-      fprintf(stderr, "Unhandled token in DOMNode::getValue : %d\n", token);
+      kdWarning() << "Unhandled token in DOMNode::getValue : " << token << endl;
       break;
     }
   }
@@ -812,7 +812,7 @@ Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
     case Style:
       return getDOMCSSStyleDeclaration(element.style());
     default:
-      fprintf(stderr, "Unhandled token in DOMElement::tryGet : %d\n", entry->value);
+      kdWarning() << "Unhandled token in DOMElement::tryGet : " << entry->value << endl;
       break;
     }
   }
@@ -878,38 +878,40 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
 // -------------------------------------------------------------------------
 
+/*
+@begin DOMDOMImplementationProtoTable 3
+  hasFeature		DOMDOMImplementation::HasFeature		DontDelete|Function 2
+  createCSSStyleSheet	DOMDOMImplementation::CreateCSSStyleSheet	DontDelete|Function 2
+###new for DOM2 - not yet in khtml
+#  createDocumentType	DOMDOMImplementation::CreateDocumentType	DontDelete|Function ?
+#  createDocument	DOMDOMImplementation::CreateDocument		DontDelete|Function ?
+@end
+*/
+IMPLEMENT_PROTOFUNC(DOMDOMImplementationProtoFunc)
+IMPLEMENT_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto,DOMDOMImplementationProtoFunc,DOMObjectProto)
+
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
+
+DOMDOMImplementation::DOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
+  : DOMObject(DOMDOMImplementationProto::self(exec)), implementation(i) { }
 
 DOMDOMImplementation::~DOMDOMImplementation()
 {
   domImplementations.remove(implementation.handle());
 }
 
-Value DOMDOMImplementation::tryGet(ExecState *exec, const UString &p) const
+Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (p == "hasFeature")
-    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::HasFeature);
-//  else if (p == "createDocumentType") // new for DOM2 - not yet in khtml
-//    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateDocumentType);
-//  else if (p == "createDocument") // new for DOM2 - not yet in khtml
-//    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateDocument);
-  else if (p == "createCSSStyleSheet")
-    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateCSSStyleSheet);
-  else
-    return ObjectImp::get(exec, p);
-}
-
-Value DOMDOMImplementationFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
-{
+  DOM::DOMImplementation implementation = static_cast<DOMDOMImplementation *>( thisObj.imp() )->toImplementation();
   Value result;
 
   switch(id) {
-    case HasFeature:
+    case DOMDOMImplementation::HasFeature:
       result = Boolean(implementation.hasFeature(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
       break;
-/*    case CreateDocumentType: // new for DOM2 - not yet in khtml
-    case CreateDocument: // new for DOM2 - not yet in khtml*/
-    case CreateCSSStyleSheet:
+/*    case DOMDOMImplementation::CreateDocumentType: // new for DOM2 - not yet in khtml
+    case DOMDOMImplementation::CreateDocument: // new for DOM2 - not yet in khtml*/
+    case DOMDOMImplementation::CreateCSSStyleSheet:
       result = getDOMStyleSheet(implementation.createCSSStyleSheet(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
       break;
     default:
@@ -921,26 +923,47 @@ Value DOMDOMImplementationFunction::tryCall(ExecState *exec, Object &/*thisObj*/
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, 0, 0 };
+const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, &DOMDocumentTypeTable, 0 };
 
-Value DOMDocumentType::tryGet(ExecState *exec, const UString &p) const
+/*
+@begin DOMDocumentTypeTable 3
+  name			DOMDocumentType::Name		DontDelete|ReadOnly
+  entities		DOMDocumentType::Entities	DontDelete|ReadOnly
+  notations		DOMDocumentType::Notations	DontDelete|ReadOnly
+###new for DOM2 - not yet in khtml
+#  publicId		DOMDocumentType::PublicId	DontDelete|ReadOnly
+#  systemId		DOMDocumentType::SystemId	DontDelete|ReadOnly
+#  internalSubset	DOMDocumentType::InternalSubset	DontDelete|ReadOnly
+@end
+*/
+DOMDocumentType::DOMDocumentType(ExecState *exec, DOM::DocumentType dt)
+  : DOMNode( /*### no proto yet*/exec, dt ) { }
+
+Value DOMDocumentType::tryGet(ExecState *exec, const UString &propertyName) const
+{
+  return DOMObjectLookupGetValue<DOMDocumentType, DOMNode>(exec, propertyName, &DOMDocumentTypeTable, this);
+}
+
+Value DOMDocumentType::getValue(ExecState *exec, int token) const
 {
   DOM::DocumentType type = static_cast<DOM::DocumentType>(node);
-
-  if (p == "name")
+  switch (token) {
+  case Name:
     return getString(type.name());
-  else if (p == "entities")
+  case Entities:
     return getDOMNamedNodeMap(exec,type.entities());
-  else if (p == "notations")
+  case Notations:
     return getDOMNamedNodeMap(exec,type.notations());
-//  else if (p == "publicId") // new for DOM2 - not yet in khtml
+//  case PublicId: // new for DOM2 - not yet in khtml
 //    return getString(type.publicId());
-//  else if (p == "systemId") // new for DOM2 - not yet in khtml
+//  case SystemId: // new for DOM2 - not yet in khtml
 //    return getString(type.systemId());
-//  else if (p == "internalSubset") // new for DOM2 - not yet in khtml
+//  case InternalSubset: // new for DOM2 - not yet in khtml
 //    return getString(type.internalSubset());
-  else
-    return DOMNode::tryGet(exec, p);
+  default:
+    kdWarning() << "DOMDocumentType::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -1106,7 +1129,6 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
         ret = new HTMLDocument(exec, static_cast<DOM::HTMLDocument>(n));
       else
         ret = new DOMDocument(exec, static_cast<DOM::Document>(n));
-      fprintf(stderr, "created new html/dom document\n");
       break;
     case DOM::Node::DOCUMENT_TYPE_NODE:
       ret = new DOMDocumentType(exec, static_cast<DOM::DocumentType>(n));
