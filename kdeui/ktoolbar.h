@@ -36,13 +36,15 @@ class QDomDocument;
 
 class KLineEdit;
 class KToolBar;
-class KToolBarItemList;
+class KToolBarItem;
 class KToolBoxManager;
 class KAnimWidget;
 class KPopupMenu;
 class KInstance;
 
 class KToolBarPrivate;
+
+typedef QValueList<KToolBarItem*> KToolBarItemList;
 
  /**
   * A KDE-style toolbar.

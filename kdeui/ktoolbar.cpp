@@ -52,8 +52,6 @@
 #include "ktoolbarbutton.h"
 #include "ktoolbaritem.h"
 
-template class QList<KToolBarItem>;
-
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
     CONTEXT_TOP = 0,
@@ -83,7 +81,6 @@ public:
     m_isHorizontal = true;
 
     m_items = new KToolBarItemList;
-    m_items->setAutoDelete(true);
 
     m_maxItemWidth  = 0;
     m_maxItemHeight = 0;
@@ -410,8 +407,8 @@ void KToolBar::layoutHorizontal(int w)
   /* For the horizontal layout we have to iterate three times through
    * the toolbar items.  During the first iteration, we find out the
    * size of the largest (non-autosized and non-right-aligned) button */
-  QListIterator<KToolBarItem> qli(*d->m_items);
-  for (; *qli; ++qli)
+  KToolBarItemList::Iterator qli(d->m_items->begin());
+  for (; qli != d->m_items->end(); ++qli)
   {
     /* make sure this is a button */
     if ((*qli)->itemType() != KToolBarItem::Button)
@@ -432,7 +429,7 @@ void KToolBar::layoutHorizontal(int w)
   int totalRightItemWidth = 0;
 
   /* Second iteration */
-  for (qli.toFirst(); *qli; ++qli)
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     /* check for the line */
     Item *item = (*qli)->getItem();
@@ -534,7 +531,7 @@ void KToolBar::layoutHorizontal(int w)
   xOffset = newXOffset;
 
   /* During the last iteration we position the right aligned items. */
-  for (qli.toFirst(); *qli; ++qli)
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     if ((*qli)->isRight())
     {
@@ -591,8 +588,8 @@ KToolBar::heightForWidth(int w) const
    * left aligned items need. This includes the 3 pixel space
    * between the items. */
   int totalRightItemWidth = 0;
-  QListIterator<KToolBarItem> qli(*d->m_items);
-  for (; *qli; ++qli)
+  KToolBarItemList::Iterator qli;
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     if (!(*qli)->isRight())
     {
@@ -624,7 +621,7 @@ KToolBar::heightForWidth(int w) const
     xOffset = newXOffset;
 
   /* During the second iteration we position the left aligned items. */
-  for (qli.toFirst(); (*qli); ++qli)
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     if ((*qli)->isRight())
     {
@@ -659,8 +656,8 @@ KToolBar::layoutVertical(int h)
 
   /* For vertical toolbars, we have to iterate twice.. once to get the
    * sizes and another time to resize and position things */
-  QListIterator<KToolBarItem> qli(*d->m_items);
-  for (; *qli; ++qli)
+  KToolBarItemList::Iterator qli;
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     /* make sure this is a button */
     if ((*qli)->itemType() != KToolBarItem::Button)
@@ -674,7 +671,7 @@ KToolBar::layoutVertical(int h)
   }
 
   /* Second iteration */
-  for (qli.toFirst(); *qli; ++qli)
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     /* check for the line */
     Item *item = (*qli)->getItem();
@@ -777,8 +774,8 @@ KToolBar::widthForHeight(int h) const
   int widest = 0;
   int tallest = 0;
 
-  QListIterator<KToolBarItem> qli(*d->m_items);
-  for (; *qli; ++qli)
+  KToolBarItemList::Iterator qli;
+  for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
   {
     if (yOffset + (*qli)->height() + 3 > h)
     {
@@ -915,7 +912,7 @@ KToolBar::maximumSizeHint() const
   int prefWidth = -1;
   int prefHeight = -1;
 
-  QListIterator<KToolBarItem> qli(*d->m_items);
+  KToolBarItemList::Iterator qli;
 
   switch (d->m_position)
   {
@@ -930,7 +927,7 @@ KToolBar::maximumSizeHint() const
     prefWidth = 4 + 9 + 3;
     prefHeight = 0;
 
-    for (; *qli; ++qli)
+    for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
     {
       int itemWidth = (*qli)->width();
       if ((*qli)->isAuto())
@@ -949,7 +946,7 @@ KToolBar::maximumSizeHint() const
     prefWidth = 0;
     prefHeight = 4 + 9 + 3;
 
-    for (; *qli; ++qli)
+    for (qli = d->m_items->begin(); qli != d->m_items->end(); ++qli)
     {
       prefHeight += (*qli)->height() + 3;
       /* keep track of the maximum with of the column */
@@ -1437,7 +1434,7 @@ int KToolBar::insertButton( const QString& icon, int id, bool enabled,
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1450,7 +1447,7 @@ int KToolBar::insertButton( const QString& icon, int id, bool enabled,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 /// Inserts a button.
@@ -1463,7 +1460,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1476,7 +1473,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 /// Inserts a button with popup.
@@ -1491,7 +1488,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   item->setEnabled( enabled );
 
@@ -1505,7 +1502,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 
@@ -1521,7 +1518,7 @@ int KToolBar::insertButton( const QString& icon, int id, const char *signal,
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1535,7 +1532,7 @@ int KToolBar::insertButton( const QString& icon, int id, const char *signal,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
@@ -1549,7 +1546,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1563,7 +1560,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 /********* SEPARATOR *********/
@@ -1578,12 +1575,12 @@ int KToolBar::insertSeparator( int index )
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   if (d->m_position == Flat)
     item->hide();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 
@@ -1600,13 +1597,13 @@ int KToolBar::insertLineSeparator( int index )
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   item->resize( 5, 20 );
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 
@@ -1620,12 +1617,12 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
   if (_index == -1)
     d->m_items->append (item);
   else
-    d->m_items->insert(_index, item);
+    d->m_items->insert( d->m_items->at(_index), item);
   item->resize(_size, 20);
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (_index > -1) ? _index : d->m_items->count();
 }
 
 int KToolBar::insertAnimatedWidget( int id, QObject *receiver,
@@ -1644,12 +1641,12 @@ int KToolBar::insertAnimatedWidget( int id, QObject *receiver,
   if ( index == -1 )
     d->m_items->append( item );
   else
-    d->m_items->insert( index, item );
+    d->m_items->insert( d->m_items->at(index), item );
 
   if ( d->m_position != Flat )
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 /************** LINE EDITOR **************/
@@ -1668,7 +1665,7 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
   if (index == -1)
     d->m_items->append (item);
   else
-    d->m_items->insert(index, item);
+    d->m_items->insert( d->m_items->at(index), item);
   if (!tooltiptext.isNull())
     QToolTip::add( lined, tooltiptext );
   connect( lined, signal, receiver, slot );
@@ -1678,7 +1675,7 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 /************** COMBO BOX **************/
@@ -1698,7 +1695,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   if (index == -1)
     d->m_items->append (item);
   else
-    d->m_items->insert (index, item);
+    d->m_items->insert ( d->m_items->at(index), item);
   combo->insertStrList (list);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -1728,7 +1725,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 /// Inserts comboBox with QStringList
@@ -1747,7 +1744,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   if (index == -1)
     d->m_items->append (item);
   else
-    d->m_items->insert (index, item);
+    d->m_items->insert ( d->m_items->at(index), item);
   combo->insertStringList (list);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -1774,7 +1771,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 
@@ -1793,7 +1790,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   if (index == -1)
     d->m_items->append (item);
   else
-    d->m_items->insert (index, item);
+    d->m_items->insert ( d->m_items->at(index), item);
   combo->insertItem (text);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -1805,17 +1802,12 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return d->m_items->at();
+  return (index > -1) ? index : d->m_items->count();
 }
 
 void KToolBar::clear ()
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
-  {
-      if(b->isAuto())
-        haveAutoSized=false;
-      d->m_items->remove();
-  }
+  d->m_items->clear();
   updateRects(true);
 }
 
@@ -1823,37 +1815,52 @@ void KToolBar::clear ()
 
 void KToolBar::removeItem (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
     if (b->ID() == id )
     {
       if(b->isAuto())
         haveAutoSized=false;
-      d->m_items->remove();
+      d->m_items->remove(it);
+      break;
     }
+  }
   updateRects(true);
 }
 
 void KToolBar::showItem (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if(b->isAuto())
         haveAutoSized=false;
       b->show();
     }
+  }
   updateRects(true);
 }
 
 void KToolBar::hideItem (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if(b->isAuto())
         haveAutoSized=false;
       b->hide();
     }
+  }
   updateRects(true);
 }
 /// ******** Tools
@@ -1862,43 +1869,67 @@ void KToolBar::hideItem (int id)
 void KToolBar::addConnection (int id, const char *signal,
                               const QObject *receiver, const char *slot)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
            connect (b->getItem(), signal, receiver, slot);
+  }
 }
 
 /// Common
 void KToolBar::setItemEnabled( int id, bool enabled )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
       b->setEnabled(enabled);
+  }
 }
 
 void KToolBar::setItemAutoSized ( int id, bool enabled )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       b->autoSize(enabled);
       haveAutoSized = true;
       updateRects(true);
     }
+  }
 }
 
 void KToolBar::alignItemRight(int id, bool yes)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       b->alignRight (yes);
       updateRects();
     }
+  }
 }
 
 void KToolBar::setItemNoStyle(int id, bool no_style)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -1907,12 +1938,17 @@ void KToolBar::setItemNoStyle(int id, bool no_style)
         kdWarning(220) << "setItemNoStyle : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 /// Butoons
 void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -1921,22 +1957,32 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
         kdWarning(220) << "setButtonPixmap : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::setButtonIcon( int id, const QString& _icon )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
         ((KToolBarButton *) b->getItem())->setIcon( _icon );
       break;
     }
+  }
 }
 
 void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -1945,13 +1991,18 @@ void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
         kdWarning(220) << "setDelayedPopup : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 
 /// Toggle buttons
 void KToolBar::setToggle ( int id, bool yes )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -1964,11 +2015,16 @@ void KToolBar::setToggle ( int id, bool yes )
         kdWarning(220) << "setToggle : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::toggleButton (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -1982,11 +2038,16 @@ void KToolBar::toggleButton (int id)
         kdWarning(220) << "toggleButton : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::setButton (int id, bool on)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -1995,12 +2056,17 @@ void KToolBar::setButton (int id, bool on)
         kdWarning(220) << "setButton : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 //Autorepeat buttons
 void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -2009,12 +2075,17 @@ void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
         kdWarning(220) << "setAutoRepeat : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
 }
 
 
 bool KToolBar::isButtonOn (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -2026,13 +2097,18 @@ bool KToolBar::isButtonOn (int id)
         kdWarning(220) << "isButtonOn : item " << id << " is not a KToolBarButton." << endl;
       break;
     }
+  }
   return false;
 }
 
 /// Lined
 void KToolBar::setLinedText (int id, const QString& text)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KLineEdit") )
@@ -2041,11 +2117,16 @@ void KToolBar::setLinedText (int id, const QString& text)
         kdWarning(220) << "setLinedText : item " << id << " is not a KLineEdit." << endl;
       break;
     }
+  }
 }
 
 QString KToolBar::getLinedText (int id )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KLineEdit") )
@@ -2054,13 +2135,18 @@ QString KToolBar::getLinedText (int id )
         kdWarning(220) << "getLinedText : item " << id << " is not a KLineEdit." << endl;
       break;
     }
+  }
   return QString::null;
 }
 
 /// Combos
 void KToolBar::insertComboItem (int id, const QString& text, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2069,11 +2155,16 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
         kdWarning(220) << "insertComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2082,11 +2173,16 @@ void KToolBar::insertComboList (int id, QStrList *list, int index)
         kdWarning(220) << "insertComboList : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2095,11 +2191,16 @@ void KToolBar::insertComboList (int id, const QStringList &list, int index)
         kdWarning(220) << "insertComboList : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::setCurrentComboItem (int id, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2108,11 +2209,16 @@ void KToolBar::setCurrentComboItem (int id, int index)
         kdWarning(220) << "setCurrentComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::removeComboItem (int id, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2121,11 +2227,16 @@ void KToolBar::removeComboItem (int id, int index)
         kdWarning(220) << "setCurrentComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::changeComboItem  (int id, const QString& text, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2142,11 +2253,16 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
         kdWarning(220) << "changeComboItem : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 void KToolBar::clearCombo (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2155,11 +2271,16 @@ void KToolBar::clearCombo (int id)
         kdWarning(220) << "clearCombo : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
 }
 
 QString KToolBar::getComboItem (int id, int index)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2172,12 +2293,17 @@ QString KToolBar::getComboItem (int id, int index)
         kdWarning(220) << "clearCombo : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
   return QString::null;
 }
 
 KComboBox *KToolBar::getCombo (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KComboBox") )
@@ -2186,12 +2312,17 @@ KComboBox *KToolBar::getCombo (int id)
         kdWarning(220) << "getCombo : item " << id << " is not a KComboBox." << endl;
       break;
     }
+  }
   return 0;
 }
 
 KLineEdit *KToolBar::getLined (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b!=NULL; b=d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
     {
       if ( b->getItem()->inherits("KLineEdit") )
@@ -2200,13 +2331,18 @@ KLineEdit *KToolBar::getLined (int id)
         kdWarning(220) << "getLined : item " << id << " is not a KLineEdit." << endl;
       break;
     }
+  }
   return 0;
 }
 
 
 KToolBarButton* KToolBar::getButton( int id )
 {
-  for( KToolBarItem* b = d->m_items->first(); b != NULL; b = d->m_items->next() )
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if(b->ID() == id )
     {
       if ( b->getItem()->inherits("KToolBarButton") )
@@ -2215,21 +2351,30 @@ KToolBarButton* KToolBar::getButton( int id )
         kdWarning(220) << "getButton : item " << id << " is not a ToolBarButton." << endl;
       break;
     }
+  }
   return 0;
 }
 
 QWidget *KToolBar::getWidget (int id)
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
+  {
+    KToolBarItem *b = (*it);
+
     if (b->ID() == id )
       return (b->getItem());
+  }
   return 0;
 }
 
 KAnimWidget *KToolBar::animatedWidget( int id )
 {
-  for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+  KToolBarItemList::Iterator it;
+  for (it = d->m_items->begin(); it != d->m_items->end(); ++it)
   {
+    KToolBarItem *b = (*it);
+
     if (b->ID() != id )
       continue;
 
@@ -2501,8 +2646,9 @@ void KToolBar::setFlat (bool flag)
     lastPosition = d->m_position; // test float. I did and it works by miracle!?
     d->m_position = Flat;
     d->m_isHorizontal = false;
-    for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
-      b->hide();       // move items out of sight
+    KToolBarItemList::Iterator it(d->m_items->begin());
+    for (; it != d->m_items->end(); ++it)
+      (*it)->hide();       // move items out of sight
     enableFloating(false);
   }
   else //unflat
@@ -2512,10 +2658,11 @@ void KToolBar::setFlat (bool flag)
       context->setItemEnabled(i, true);
 
     setBarPos(lastPosition);
-    for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+    KToolBarItemList::Iterator it(d->m_items->begin());
+    for (; it != d->m_items->end(); ++it)
     {
-      if (b->itemType() != KToolBarItem::Separator)
-        b->show();
+      if ((*it)->itemType() != KToolBarItem::Separator)
+        (*it)->show();
     }
     enableFloating(true);
   }

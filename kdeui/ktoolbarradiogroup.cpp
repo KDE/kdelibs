@@ -50,11 +50,12 @@ KToolBarRadioGroup::~KToolBarRadioGroup()
 
 void KToolBarRadioGroup::addButton (int id)
 {
-  for (KToolBarItem *b = tb->items()->first(); b; b=tb->items()->next())
-    if (b->ID() == id )
+  KToolBarItemList::Iterator it(tb->items()->begin());
+  for ( ; it != tb->items()->end(); ++it)
+    if ((*it)->ID() == id )
     {
-      buttons->insert(id, (KToolBarButton *) b->getItem());
-      ((KToolBarButton *) b->getItem())->setRadio(true);
+      buttons->insert(id, (KToolBarButton *) (*it)->getItem());
+      ((KToolBarButton *) (*it)->getItem())->setRadio(true);
     }
 }
 

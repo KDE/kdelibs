@@ -81,15 +81,4 @@ private:
   KToolBarItemPrivate *d;
 };
 
-/** 
-* List of @ref KToolBarItem.
-* @internal
-*/
-class KToolBarItemList : public QList<KToolBarItem>
-{
-public:
-   KToolBarItemList() { setAutoDelete(true); }
-   ~KToolBarItemList() { }
-};  
-
 #endif
