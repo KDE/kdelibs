@@ -63,6 +63,7 @@
     <Action name="edit_copy"/>
     <Action name="edit_paste"/>
     <MergeLocal name="edit_paste_merge"/>
+    <Action name="edit_clear"/>
     <Separator/>
     <Action name="edit_select_all"/>
     <Action name="edit_deselect"/>
