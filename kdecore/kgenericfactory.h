@@ -23,11 +23,64 @@
 #include <ktypelist.h>
 #include <kgenericfactory.tcc>
 
+/* @internal */
 template <class T>
-class KGenericFactory : public KLibFactory
+class KGenericFactoryBase 
 {
 public:
-    KGenericFactory() {}
+    KGenericFactoryBase( const char *instanceName )
+        : m_instanceName( instanceName ) 
+    {
+        s_self = this;
+    }
+    virtual ~KGenericFactoryBase()
+    {
+        delete s_instance;
+        s_instance = 0;
+        s_self = 0;
+    }
+
+    static KInstance *instance();
+
+protected:
+    virtual KInstance *createInstance()
+    {
+        if ( !m_instanceName )
+            return 0; // ### assert
+        return new KInstance( m_instanceName );
+    }
+
+private:
+    QCString m_instanceName;
+
+    static KInstance *s_instance;
+    static KGenericFactoryBase<T> *s_self;
+};
+
+/* @internal */
+template <class T>
+KInstance *KGenericFactoryBase<T>::s_instance = 0;
+
+/* @internal */
+template <class T>
+KGenericFactoryBase<T> *KGenericFactoryBase<T>::s_self = 0;
+
+/* @internal */
+template <class T>
+KInstance *KGenericFactoryBase<T>::instance()
+{
+    if ( !s_instance && s_self )
+        s_instance = s_self->createInstance();
+    return s_instance;
+}
+
+template <class T>
+class KGenericFactory : public KLibFactory, public KGenericFactoryBase<T>
+{
+public:
+    KGenericFactory( const char *instanceName = 0 )
+        : KGenericFactoryBase<T>( instanceName ) 
+    {}
 
 protected:
     virtual QObject *createObject( QObject *parent, const char *name,
@@ -38,10 +91,13 @@ protected:
 };
 
 template <class T1, class T2>
-class KGenericFactory< KTypeList<T1, T2> > : public KLibFactory
+class KGenericFactory< KTypeList<T1, T2> > : public KLibFactory,
+                                             public KGenericFactoryBase< KTypeList<T1, T2> >
 {
 public:
-    KGenericFactory() {}
+    KGenericFactory( const char *instanceName  = 0 )
+        : KGenericFactoryBase< KTypeList<T1, T2> >( instanceName )
+    {}
 
 protected:
     virtual QObject *createObject( QObject *parent, const char *name,
