@@ -230,7 +230,8 @@ void HTMLFormElementImpl::submit(  )
 
     DOMString script = getAttribute(ATTR_ONSUBMIT);
     if (!script.isNull())
-        view->part()->executeScript(Node(this), script.string());
+        if(!view->part()->executeScript(Node(this), script.string()))
+            return; // don't submit if script returns false
 
     QByteArray form_data = formData();
 
@@ -255,7 +256,8 @@ void HTMLFormElementImpl::reset(  )
 
     DOMString script = getAttribute(ATTR_ONRESET);
     if (!script.isNull())
-        view->part()->executeScript(Node(this), script.string());
+        if(!view->part()->executeScript(Node(this), script.string()))
+            return;
 
     HTMLGenericFormElementImpl *current = formElements.first();
     while(current)
