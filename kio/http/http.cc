@@ -801,7 +801,8 @@ bool HTTPProtocol::http_open()
 
   // Let's also clear out some things, so bogus values aren't used.
   // m_HTTPrev = HTTP_Unknown;
-  m_sContentMD5 = "";
+  m_sContentMD5 = QString::null;
+  m_strMimeType = QString::null;
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_bChunked = false;
@@ -1185,6 +1186,7 @@ bool HTTPProtocol::readHeader()
   bool cont = false;
   bool cacheValidated = false; // Revalidation was successfull
   bool mayCache = true;
+  bool hasCacheDirective = false;
 
   if (!waitForHeader(m_sock, m_remoteRespTimeout))
   {
@@ -1271,6 +1273,7 @@ bool HTTPProtocol::readHeader()
             maxAge = atol(cacheControl.mid(8).stripWhiteSpace().latin1());
          }
       }
+      hasCacheDirective = true;
     }
 
     // get the size of our data
@@ -1280,26 +1283,22 @@ bool HTTPProtocol::readHeader()
 
     // what type of data do we have?
     else if (strncasecmp(buffer, "Content-type:", 13) == 0) {
-      // Jacek: We can't send mimeType signal now,
-      // because there may be another Content-Type. Or even
-      // worse the entity-body is encoded and there is a
-      // Content-Encoding specified which would then contain
-      // the true mime-type for the requested URI i.e. the content
-      // type is only applicable to the actual message-body!!
-       m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).lower();
-       kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
-       // This header can be something like "text/html; charset foo-blah"
+       m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).stripWhiteSpace().lower();
        int semicolonPos = m_strMimeType.find( ';' );
        if ( semicolonPos != -1 )
        {
-         int equalPos = m_strMimeType.find( '=' );
-         if ( equalPos != -1 )
+         int pos = semicolonPos;
+         while ( m_strMimeType[++pos] == ' ' );
+         if ( m_strMimeType.find("charset", pos, false) == pos )
          {
-           m_strCharset = m_strMimeType.mid( equalPos+1 );
-           kdDebug(7103) << "Found charset : " << m_strCharset << endl;
+           pos+=7;
+           while( m_strMimeType[pos] == ' ' || m_strMimeType[pos] == '=' ) pos++;
+           m_strCharset = m_strMimeType.mid( pos );
+           kdDebug(7103) << "Found charset: " << m_strCharset << endl;
          }
          m_strMimeType = m_strMimeType.left( semicolonPos );
        }
+       kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
     }
     //
     else if (strncasecmp(buffer, "Date:", 5) == 0) {
@@ -1338,6 +1337,7 @@ bool HTTPProtocol::readHeader()
          m_bCachedWrite = false; // Don't put in cache
          mayCache = false;
       }
+      hasCacheDirective = true;
     }
     // The deprecated Refresh Response
     else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
@@ -1496,7 +1496,7 @@ bool HTTPProtocol::readHeader()
       if ( proxyAuthCount++ > 1 )
         configAuth(trimLead(buffer + 19), true, false);
       else
-      configAuth(trimLead(buffer + 19), true);
+        configAuth(trimLead(buffer + 19), true);
     }
 
     // content?
@@ -1551,33 +1551,30 @@ bool HTTPProtocol::readHeader()
       else if(strncasecmp(buffer, "Content-Disposition:", 20) == 0) {
         disposition = trimLead(buffer + 20);
         int pos = disposition.find( ';' );
-        // For those servers that do things the "Right way" by
-        // following the spec, we check if the dispostion response
-        // beigns with "attachment" and go past it.
-        if ( pos > 1 ) {
+        if ( pos != -1 )
+        {
           if( disposition.find( QString::fromLatin1("attachment"), 0, false ) == 0 )
             disposition = disposition.mid(pos+1).stripWhiteSpace();
         }
-        // Extract the "filename=" part taking into consideration a number
-        // of spaces that might be present! If not found we will ignore the
-        // deposition string...
-        if ( disposition.find( QString::fromLatin1("filename"), 0, false) == 0 ) {
-          pos = disposition.find('=');
-          if( pos > 1 )
-            disposition = disposition.mid(pos+1).stripWhiteSpace();
+        if ( disposition.find( QString::fromLatin1("filename"), 0, false) == 0 )
+        {
+          pos = 8;
+          int len = disposition.length();
+          while( disposition[ pos ] == ' ' || disposition[ pos ] == '=' ) pos++;
+          if( pos < len )
+            disposition = disposition.mid(pos);
           else
             disposition = QString::null;
         }
-        else {
+        else
           disposition = QString::null;
-        }
 
-        // Content-Dispostion is not allowed to dictate
-        // directory path, thus we extract the filename
-        // only.
+        // Content-Dispostion is not allowed to dictate directory
+        // path, thus we extract the filename only.
         pos = disposition.findRev( '/' );
         if( pos > -1 )
           disposition = disposition.mid(pos+1);
+        kdDebug(7113) << "Content-Disposition: " << disposition << endl;
       }
     }
 
@@ -1704,7 +1701,7 @@ bool HTTPProtocol::readHeader()
 
   // Do not cache pages originating from password
   // protected sites.
-  if ( Authentication != AUTH_None )
+  if ( !hasCacheDirective && Authentication != AUTH_None )
   {
     m_bCachedWrite = false;
     mayCache = false;
@@ -1780,6 +1777,20 @@ bool HTTPProtocol::readHeader()
   }
 #endif
 
+  // Set charset. Maybe charSet should be a class member, since
+  // this method is somewhat recursive....
+  if ( !m_strCharset.isEmpty() )
+  {
+     kdDebug(7103) << "Setting charset metadata to: " << m_strCharset << endl;
+     setMetaData("charset", m_strCharset);
+  }
+
+  if( !disposition.isEmpty() )
+  {
+     kdDebug(7103) << "Setting Content-Disposition metadata to: " << disposition << endl;
+     setMetaData("content-disposition", disposition);
+  }
+
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
   if( locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
@@ -1789,20 +1800,6 @@ bool HTTPProtocol::readHeader()
         m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
      kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
      mimeType( m_strMimeType );
-  }
-
-  // Set charset. Maybe charSet should be a class member, since
-  // this method is somewhat recursive....
-  if ( !m_strCharset.isEmpty() )
-  {
-     kdDebug(7103) << "Setting charset metadata to " << m_strCharset << endl;
-     setMetaData("charset", m_strCharset);
-  }
-
-  if( !disposition.isEmpty() )
-  {
-     kdDebug(7103) << "Setting Content-Disposition: " << disposition << endl;
-     setMetaData("content-disposition", disposition);
   }
 
   if (m_request.method == HTTP_HEAD)
