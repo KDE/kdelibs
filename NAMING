@@ -24,3 +24,8 @@ KWin plugin
 Name: libkwin<clientname>.la
 LDFLAGS: $(KDE_PLUGIN)
 
+
+All of those should be defined with 
+kde_module_LTLIBRARIES = <Name>
+so that they are installed under $(kde_moduledir), which is usually $prefix/lib/kde2/
+
