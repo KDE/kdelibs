@@ -33,20 +33,15 @@ print BDL "##\n";
 foreach $cert (sort(keys(%CERT))) {
     $file = $CERT{$cert};
 	print STDERR "Bundling: $cert ($file)\n";
-    $text = `openssl x509 -in $file -inform DER -noout -text`;
-    $text =~ s|\n$||;
-    $text =~ s|^Certificate:|Certificate Ingredients:|;
-    $md5 = `openssl x509 -in $file -inform DER -fingerprint -noout`;
-    $md5 =~ s|^MD5 Fingerprint=(\S+)\n$|$1|;
     $pem = `openssl x509 -in $file -inform DER -outform PEM`;
     $pem =~ s|\n$||;
-    print BDL "\n";
-    print BDL "$cert\n";
-    print BDL "=" x length($cert) . "\n";
-    print BDL "MD5 Fingerprint: $md5\n";
-    print BDL "PEM Data:\n";
-    print BDL "$pem\n";
-    print BDL "$text\n";
+    $purpose = `openssl x509 -in $file -inform DER -noout -purpose`;
+    #
+    $_ = $purpose;
+    if ( /server CA : Yes\n/ || /client CA : Yes\n/ || (/Any Purpose CA : Yes\n/ && (/client : Yes\n/ || /server : Yes\n/ ))) {
+       print BDL "\n";
+       print BDL "$pem\n";
+    }
 }
 close(BDL);
 
