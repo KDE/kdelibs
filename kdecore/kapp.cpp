@@ -47,6 +47,7 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kcmdlineargs.h>
+#include <kaboutdata.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -185,15 +186,15 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     parseCommandLine( argc, argv );
 }
 
-KApplication::KApplication( const KAboutData * aboutData, bool allowStyles, bool GUIenabled ) :
+KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
-  KInstance(KCmdLineArgs::appname, aboutData)
+  KInstance( KCmdLineArgs::about)
 {
     if (!GUIenabled)
        allowStyles = false;
     useStyles = allowStyles;
-    setName(KCmdLineArgs::appname);
+    setName( instanceName() );
     pAppData = new KApplicationPrivate;
 
     init(GUIenabled);

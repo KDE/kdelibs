@@ -100,7 +100,7 @@ public:
               const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
 
   /**
-   * This constructor takes appname and command line 
+   * This constructor takes aboutData and command line 
    *  arguments from @ref KCmdLineArgs.
    *
    * @param allowStyles Set to false to disable the loading on plugin based
@@ -112,8 +112,8 @@ public:
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
    */
-  KApplication( const KAboutData * aboutData = 0L, bool allowStyles=true,
-		bool GUIenabled=true);        
+  KApplication( bool allowStyles=true, bool GUIenabled=true);        
+
   /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
@@ -571,6 +571,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.131  2000/01/09 19:18:30  dsweet
+// Spiffed up documentation.
+//
 // Revision 1.129  2000/01/07 21:50:29  waba
 // WABA: KApplication can now make use of KCmdLineArgs. (Optional)
 //
