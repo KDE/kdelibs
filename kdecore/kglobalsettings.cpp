@@ -130,3 +130,10 @@ void KGlobalSettings::initStatic()
     if ( s_trashPath->right(1) != "/")
 	*s_trashPath += "/";
 }
+
+QColor KGlobalSettings::toolBarHighlightColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("Toolbar style") );
+    return c->readColorEntry("HighlightColor", &Qt::blue);
+}
