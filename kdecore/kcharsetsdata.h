@@ -125,7 +125,7 @@ struct KCharTags{
   unsigned code;
 };
 
-#define CHAR_TAGS_COUNT 247
+#define CHAR_TAGS_COUNT (nrOfTags) 
 
 class KSimpleConfig;
 
@@ -151,6 +151,7 @@ class KCharsetsData{
   KCharsetConversionResult *tempResult;
 public:
   static const KCharTags tags[];
+  static const unsigned int nrOfTags;
   KCharsetsData();
   ~KCharsetsData();
   const char *faceForCharset(const KCharsetEntry *charset);

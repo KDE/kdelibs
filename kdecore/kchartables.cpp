@@ -695,3 +695,5 @@ const KCharTags KCharsetsData::tags[]={
 	{"zeta",0x03b6},
 	{"zwj",0x200d},
 	{"zwnj",0x200c}};
+
+const unsigned int KCharsetsData::nrOfTags = sizeof(tags) / sizeof(KCharTags);

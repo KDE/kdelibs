@@ -821,7 +821,7 @@ unsigned chr;
 }
 
 unsigned KCharsetsData::decodeAmp(const char *seq,int &len){
-int i;
+  unsigned int i;
 
   kchdebug("Sequence: '%0.20s'\n",seq);
 
