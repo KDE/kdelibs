@@ -84,7 +84,12 @@ KDECORE_EXPORT QString i18n(const char *comment, const char *text);
 /**
  * \relates KLocale
  *  If you want to handle plural forms, use this form of i18n.
- *  The plural has to contain a %n where n fits into.
+ *  @param singular the singular form of the word, for example "file".
+  * @param plural the plural form of the word. Must contain a "%n" that will
+ *                be replaced by the number @p n, for example "%n files"
+ *  @param n the number
+ *  @return the correct singular or plural for the selected language,
+ *          depending on n
  *  @see translate
  **/
 KDECORE_EXPORT QString i18n(const char *singular, const char *plural, unsigned long n);
@@ -200,7 +205,7 @@ public:
    * word.
    * @param singular the singular form of the word, for example "file".
    * @param plural the plural form of the word. Must contain a "%n" that will
-   *               be replaced by the number @n, for example "%n files"
+   *               be replaced by the number @p n, for example "%n files"
    * @param n the number
    * @return the correct singular or plural for the selected language,
    *         depending on n
