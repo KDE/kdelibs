@@ -2304,10 +2304,11 @@ bool HTTPProtocol::readBody()
 
         if ( cpMimeBuffer )
         {
+          bytesReceived = mimeTypeBuffer.size();
           m_bufReceive.resize(0);
-          m_bufReceive.resize(mimeTypeBuffer.size());
+          m_bufReceive.resize(bytesReceived);
           memcpy( m_bufReceive.data(), mimeTypeBuffer.data(),
-                  mimeTypeBuffer.size() );
+                  bytesReceived );
         }
         mimeType(m_strMimeType);
         mimeTypeBuffer.resize(0);
