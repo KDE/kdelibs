@@ -21,10 +21,19 @@ class Plugin;
 class PartPrivate;
 
 /**
- * A "part" is a GUI component, featuring a widget embeddedable
- * in any application but which also provides elements that will be merged in
- * the "host" user interface (menubars, toolbars... )
+ * A "part" is a GUI component, featuring 
+ * - a widget embeddedable in any application 
+ * - GUI elements that will be merged in the "host" user interface 
+ * (menubars, toolbars... )
  *
+ * About the widget : 
+ * Note that KParts::Part does not inherit QWidget. 
+ * This is due to the fact that the "visual representation"
+ * will probably not be a mere QWidget, but an elaborate one.
+ * That's why when implementing your KParts::Part (or derived)
+ * you should call @ref KParts::Part::setWidget() in your constructor.
+ *
+ * About the GUI elements :
  * Those elements trigger actions, defined by the part (@see action).
  * The layout of the actions in the GUI is defined by an XML file (@see setXMLFile).
  *
