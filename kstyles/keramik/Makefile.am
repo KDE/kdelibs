@@ -88,5 +88,3 @@ pixmaps.keramik keramikrc.h: genembed
 
 pixmaploader.lo: pixmaps.keramik
 
-.PHONY: make-embed
-
