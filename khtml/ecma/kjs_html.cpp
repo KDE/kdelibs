@@ -244,6 +244,15 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return Value(Window::retrieve(kp));
   }
 
+  // Check for applets with name==propertyName, return item or list if found
+  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_APPLET, propertyName.string() );
+  len = list.length();
+  if ( len == 1 )
+    return getDOMNode( exec, list.item( 0 ) );
+  else if ( len > 1 )
+    return getDOMNodeList( exec, list );
+
+
   const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
   if (entry) {
     switch (entry->value) {
