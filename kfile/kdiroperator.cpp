@@ -29,15 +29,19 @@
 #include <qpushbutton.h>
 #include <qpopupmenu.h>
 #include <qtimer.h>
+#include <qvbox.h>
 
 #include <kaction.h>
 #include <kapp.h>
 #include <kdebug.h>
+#include <kdialog.h>
+#include <kdialogbase.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kprogress.h>
 #include <kstdaction.h>
 #include <kio/jobclasses.h>
+#include <kio/netaccess.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -265,89 +269,60 @@ void KDirOperator::slotToggleIgnoreCase()
 
 void KDirOperator::mkdir()
 {
-    if (!dir->url().isLocalFile())
-        return;
-
     // Modal widget asking the user the name of a new directory
     //
-    QDialog *lMakeDir;
+    KDialogBase *lMakeDir;
     QLabel *label;
     QLineEdit *ed;
-    QVBoxLayout *lLayout;
-    QPushButton *okButton, *cancelButton;
-    QHBoxLayout *lLayout2;
+    QVBox *vbox;
 
     // Create widgets, and display using geometry management
     //
-    lMakeDir = new QDialog(0,"MakeDir Dialog",true);
-    lLayout = new QVBoxLayout( lMakeDir, 5 );
-    label = new QLabel(lMakeDir);
+    lMakeDir = new KDialogBase( fileView ? fileView->widget() : 0L,
+				"MakeDir Dialog", true, i18n("New Directory"),
+				KDialogBase::Ok | KDialogBase::Cancel );
+    vbox = new QVBox( lMakeDir );
+    vbox->setSpacing( KDialog::spacingHint() );
+    lMakeDir->setMainWidget( vbox );
+    label = new QLabel( vbox );
     label->setAlignment( AlignLeft | AlignVCenter );
-    label->setText(i18n("Create new directory in: ") + url().prettyURL() );
-    label->setMinimumSize( label->sizeHint() );
-    ed= new QLineEdit(lMakeDir);
+    label->setText(i18n("Create new directory in: ") +
+		   QString::fromLatin1( "\n" ) + /* don't break i18n now*/
+		   url().prettyURL() );
+    ed= new QLineEdit( vbox );
     ed->setText( i18n("New Directory") );
-    ed->adjustSize();
-    ed->setFixedHeight( ed->height());
     ed->selectAll();
     connect(ed, SIGNAL(returnPressed()), lMakeDir, SLOT(accept()) );
 
-    lLayout->addWidget( label, 0);
-    lLayout->addSpacing( 5 );
-    lLayout->addWidget( ed, 0);
+    connect( lMakeDir->actionButton( KDialogBase::Ok ), SIGNAL(clicked()),
+	     lMakeDir, SLOT(accept()) );
+    connect( lMakeDir->actionButton( KDialogBase::Cancel ), SIGNAL(clicked()),
+	     lMakeDir, SLOT(reject()) );
 
-    okButton = new QPushButton( lMakeDir, "okButton" );
-    okButton->adjustSize();
-    okButton->setText( i18n("&OK") );
-    okButton->setFixedHeight( okButton->height() );
-    okButton-> setMinimumWidth( okButton->width() );
-
-    cancelButton = new QPushButton( lMakeDir, "cancelButton" );
-    cancelButton->setText( i18n("&Cancel") );
-    cancelButton->adjustSize();
-    cancelButton->setFixedHeight( cancelButton->height() );
-    cancelButton->setMinimumWidth( cancelButton->width() );
-
-    connect( okButton, SIGNAL(clicked()), lMakeDir, SLOT(accept()) );
-    connect( cancelButton, SIGNAL(clicked()), lMakeDir, SLOT(reject()) );
-
-    lLayout2 = new QHBoxLayout( 5 );
-    lLayout->addSpacing( 10 );
-    lLayout->addLayout( lLayout2 , 0);
-    lLayout2->addWidget( okButton, 3);
-    lLayout2->addWidget( cancelButton, 3);
-    lLayout->activate();
 
     // If the users presses enter (not escape) then create the dir
     // and insert it into the ListBox
-    lMakeDir->resize( 10, 10);
+    lMakeDir->setMinimumSize( 300, 120); // default size
     ed->grabKeyboard();
-    if ( lMakeDir->exec() == QDialog::Accepted ) {
-
-        // check if we are allowed to create directories
+    if ( lMakeDir->exec() == QDialog::Accepted && !ed->text().isEmpty() ) {
         bool writeOk = false;
-        QString tmp = ed->text();
-        int idx = tmp.findRev(QString::fromLatin1("/"));
-        if ( idx != -1 ) {
-            QDir dir( url().path() );
-            if ( dir.cd( tmp.left( idx )) )
-                writeOk = checkAccess( dir.absPath(), W_OK );
+	KURL url( dir->url(), ed->text() );
+	if ( url.isLocalFile() ) {
+	    // check if we are allowed to create local directories
+	    writeOk = checkAccess( url.path(), W_OK );
+	    if ( writeOk )
+		writeOk = QDir().mkdir( url.path() );
         }
         else
-            writeOk = checkAccess( url().path(), W_OK );
+	    writeOk = KIO::NetAccess::mkdir( url );
 
-
-        if ( !writeOk ) {
-            KMessageBox::sorry(0,
-                               i18n("You don't have permissions to create "
-                                    "that directory." ));
-            return;
-        }
-        if ( QDir(url().path()).mkdir(ed->text()) == true ) {  // !! don't like this move it into KFileReader ??
-            setURL( KURL(url(), ed->text()), true );
-        }
+        if ( !writeOk )
+            KMessageBox::sorry(0, i18n("You don't have permissions to create "
+				       "that directory." ));
+	else
+	    setURL( url, true );
     }
-
+	
     delete lMakeDir;
 }
 
