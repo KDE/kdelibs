@@ -16,12 +16,13 @@ int main( int argc, char **argv )
     QTimer t_toggle, t_color, t_look;
     //KLed l(KLed::red, &qw);				// create lamp
     //KLed l(KLed::blue, &qw);				// create lamp
-    KLed l(KLed::green, &qw);				// create lamp
+    KLed l(Qt::green, &qw);				        // create lamp
     //KLed l(KLed::yellow, &qw);				// create lamp
     //KLed l(KLed::orange, &qw);				// create lamp
     l.resize(16,30);
     //l.setLook(KLed::flat);
     l.setLook(KLed::round);
+    l.setShape(KLed::Circular);
     //l.setLook(KLed::sunken);
     //    l.flat = TRUE;
     ktmp tmpobj(&l);
