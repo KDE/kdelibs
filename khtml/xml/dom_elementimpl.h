@@ -101,7 +101,7 @@ class AttrImpl : public NodeBaseImpl
     friend class NamedAttrMapImpl;
 
 public:
-    AttrImpl(ElementImpl* element, AttributeImpl* a);
+    AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a);
     ~AttrImpl();
 
 private:
