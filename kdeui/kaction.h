@@ -97,6 +97,26 @@ class KMainWindow;
  * one-to-one relationship between the "real" action and @p all
  * GUI representations of it.
  *
+ * KAction emits the activated() signal if the user activated the 
+ * corresponding GUI element ( menu item, toolbar button, etc. )
+ *
+ * If you are in the situation of wanting to map the activated() 
+ * signal of multiple action objects to one slot, with a special 
+ * argument bound to each action, then you might consider using 
+ * @ref QSignalMapper . A tiny example:
+ *
+ * <PRE>
+ * QSignalMapper *desktopNumberMapper = new QSignalMapper( this );
+ * connect( desktopNumberMapper, SIGNAL( mapped( int ) ),
+ *          this, SLOT( moveWindowToDesktop( int ) ) );
+ *
+ * for ( uint i = 0; i < numberOfDesktops; ++i ) {
+ *     KAction *desktopAction = new KAction( i18n( "Move Window To Desktop %i" ).arg( i ), ... );
+ *     connect( desktopAction, SIGNAL( activated() ), desktopNumberMapper, SLOT( map() ) );
+ *     desktopNumberMapper->setMapping( desktopAction, i );
+ * }
+ * </PRE>
+ *
  * @sect General Usage:
  *
  * The steps to using actions are roughly as follows
