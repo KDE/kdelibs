@@ -1,4 +1,4 @@
-/* Keramik Style for KDE3, gradient routines..
+/* Keramik Style for KDE3, color utility routines...
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
                   (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
 
@@ -19,19 +19,18 @@
 */
 // $Id$
 
-#ifndef KERAMIK_GRADIENTS_H
-#define KERAMIK_GRADIENTS_H
+#ifndef KERAMIK_COLORUTIL_H
+#define KERAMIK_COLORUTIL_H
 
 class QPainter;
 
 
 namespace Keramik
 {
-	class GradientPainter
+	class ColorUtil
 	{
 	public:
-		static void renderGradient( QPainter* p, const QRect& r, QColor cr, bool horizontal, bool menu = false,
-													int px = 0, int py = 0, int pwidth = -1, int pheight = -1 );
+		static QColor lighten(QColor in, int factor);
 	};
 };
 

@@ -56,6 +56,7 @@
 #include "keramik.moc"
 
 #include "gradients.h"
+#include "colorutil.h"
 #include "keramikrc.h"
 #include "keramikimage.h"
 
@@ -234,7 +235,7 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 
 KeramikStyle::KeramikStyle() 
 	:KStyle( AllowMenuTransparency | FilledFrameWorkaround /*| DisableMenuBlend*/, ThreeButtonScrollBar ), maskMode(false),
-		toolbarBlendMode(false), toolbarBlendHorizontal(true), kickerMode(false)
+		toolbarBlendWidget(0), kickerMode(false)
 {
 	hoverWidget = 0;
 }
@@ -454,9 +455,35 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				
 				
 			//p->fillRect( r, cg.background() );
-			if (toolbarBlendMode)
+			if (toolbarBlendWidget)
 			{
-				Keramik::GradientPainter::renderGradient( p, r, cg.button(), toolbarBlendHorizontal ); 
+				// Draw a gradient background for custom widgets in the toolbar
+				// that have specified a "kde toolbar widget" name.
+
+				// Find the top-level toolbar of this widget, since it may be nested in other
+				// widgets that are on the toolbar.
+				QWidget *parent = static_cast<QWidget*>(toolbarBlendWidget->parent());
+				int x_offset = toolbarBlendWidget->x(), y_offset = toolbarBlendWidget->y();
+				while (parent && parent->parent() && !qstrcmp( parent->name(), kdeToolbarWidget ) )
+				{
+					x_offset += parent->x();
+					y_offset += parent->y();
+					parent = static_cast<QWidget*>(parent->parent());
+				}
+
+		//		QRect r  = widget->rect();
+				QRect pr = parent->rect();
+				bool horiz_grad = pr.width() > pr.height();
+
+				// Check if the parent is a QToolbar, and use its orientation, else guess.
+				QToolBar* tb = dynamic_cast<QToolBar*>(parent);
+				if (tb) horiz_grad = tb->orientation() == Qt::Horizontal;
+				
+				Keramik::GradientPainter::renderGradient( p,
+						QRect(0, 0, pr.width(), pr.height()),
+						parent->colorGroup().button(), horiz_grad, false , x_offset, y_offset);
+
+				//Draw and blend the actual bevel..
 				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), 
 					disabled, Keramik::TilePainter::PaintFullBlend  );
 			}
@@ -529,7 +556,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ScrollBarSlider:
 		{
 			bool horizontal = flags & Style_Horizontal;
-			//bool active = ( flags & Style_Active ) || ( flags & Style_Down );
+			bool active = ( flags & Style_Active ) || ( flags & Style_Down );
 			int name = KeramikSlider1;
 			unsigned int count = 3;
 
@@ -559,10 +586,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			                loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
 					count = 5;
 
-			//if (!active)
+			if (!active)
 				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight(), cg.background(), false, pmode() );
-			//else
-			//	Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight().light(110), cg.background(), false, pmode() );
+			else
+				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, Keramik::ColorUtil::lighten(cg.highlight(),110) , cg.background(), false, pmode() );
 			break;
 		}
 
@@ -1030,14 +1057,11 @@ void KeramikStyle::drawControl( ControlElement element,
 			else
 			{
 				if (widget->parent() && widget->parent()->inherits("QToolBar"))
-				{
-					toolbarBlendMode = true;
-					toolbarBlendHorizontal = static_cast<QToolBar*>(widget->parent())->orientation() == Horizontal;
-				}
+					toolbarBlendWidget = widget;
 				
 				drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
 				
-				toolbarBlendMode = false;
+				toolbarBlendWidget = 0;
 			}
 			
 			break;
@@ -1440,13 +1464,14 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			if ( br.width() >= 28 && br.height() > 20 ) br.addCoords( 0, -2, 0, 0 );
 			if ( controls & SC_ComboBoxFrame )
 			{
-				if (widget->parent() && widget->parent()->inherits("QToolBar"))
+				if (widget->parent() && 
+						( widget->parent()->inherits("QToolBar")|| !qstrcmp(widget->parent()->name(), kdeToolbarWidget) ) )
 				{
-					toolbarBlendMode = true;
-					toolbarBlendHorizontal = static_cast<QToolBar*>(widget->parent())->orientation() == Horizontal;
+					toolbarBlendWidget = widget;
 				}
 				drawPrimitive( PE_ButtonCommand, p, br, cg, flags );
-				toolbarBlendMode = false;
+				
+				toolbarBlendWidget = 0;
 			}
 				
 			// don't draw the focus rect etc. on the mask
@@ -1635,10 +1660,11 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				else if (onToolbar)
 				{
 					QToolBar* parent = (QToolBar*)widget->parent();
-					//QRect pr = parent->rect();
+					QRect pr = parent->rect();
 
-					//TODO: Subrect, px, etc.?
-					Keramik::GradientPainter::renderGradient( p, QRect(r.x(), 0, r.width(), r.height()), cg.button(), parent->orientation() == Qt::Horizontal );
+					Keramik::GradientPainter::renderGradient( p, r, cg.button(), 
+												parent->orientation() == Qt::Horizontal, false /*Not a menubar*/,  
+												r.x(), r.y(), pr.width()-2, pr.height()-2);
 				}
 				else if (onExtender)
 				{
@@ -2128,10 +2154,9 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		if (tb) horiz_grad = tb->orientation() == Qt::Horizontal;
 		QPainter p( widget );
 
-		// ###### FIXME - this renderGradient has been watered down, so you can't do offsets anymore!
 		Keramik::GradientPainter::renderGradient( &p,
 				QRect(0, 0, pr.width(), pr.height()),
-			   	parent->colorGroup().button(), horiz_grad/*, false , x_offset, y_offset */);
+			   	parent->colorGroup().button(), horiz_grad, false , x_offset, y_offset);
 
 		return false;	// Now draw the contents
 	}

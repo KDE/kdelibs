@@ -121,8 +121,7 @@ public:
 
 protected:
 	mutable bool maskMode; //Ugly round trip flag to permit masking with little code;
-	mutable bool toolbarBlendMode; //Ditto for blending with toolbars..
-	mutable bool toolbarBlendHorizontal; //The orientation
+	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
 	bool eventFilter( QObject* object, QEvent* event );
 	
 	Keramik::TilePainter::PaintMode pmode() const

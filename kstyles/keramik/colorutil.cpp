@@ -1,4 +1,4 @@
-/* Keramik Style for KDE3, gradient routines..
+/* Keramik Style for KDE3, color utility routines..
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
                   (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
 
@@ -17,22 +17,49 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-// $Id$
+// $Id:$
 
-#ifndef KERAMIK_GRADIENTS_H
-#define KERAMIK_GRADIENTS_H
+#include <qcolor.h>
 
-class QPainter;
-
+#include "colorutil.h"
 
 namespace Keramik
 {
-	class GradientPainter
+	QColor ColorUtil::lighten(QColor in, int factor)
 	{
-	public:
-		static void renderGradient( QPainter* p, const QRect& r, QColor cr, bool horizontal, bool menu = false,
-													int px = 0, int py = 0, int pwidth = -1, int pheight = -1 );
-	};
+		if (factor > 100)
+		{
+			int h, s, v;
+			in.hsv(&h, &s, &v);
+			
+			float mShare = v/230.0;
+			if (mShare > 1) mShare = 1;
+			
+			mShare *= mShare;
+			
+			int diff = factor - 100;
+			int hd  = int(mShare*diff);
+			int delta  =  int((diff - hd)*7.55);
+			
+			QColor wrk = in.light(100+hd);
+			
+			int r = wrk.red();
+			int g = wrk.green();
+			int b = wrk.blue();
+
+			r+=delta;
+			g+=delta;
+			b+=delta;
+			
+			if (r>255) r=255;
+			if (g>255) g=255;
+			if (b>255) b=255;
+			
+			return QColor(r,g,b);
+		}
+		
+		return in;
+	}
 };
 
-#endif
+// vim: ts=4 sw=4 noet
