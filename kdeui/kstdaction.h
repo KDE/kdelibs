@@ -206,12 +206,13 @@ namespace KStdAction
 	KAction *open(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
 	/**
-	 * Open a recently used document.
+	 * Open a recently used document. The signature of the slot being called 
+	 * is of the form slotURLSelected( const KURL & ).
 	 * @param recvr object to receive slot
-	 * @param slot The SLOT to invoke when a URL is selected.
+	 * @param slot The SLOT to invoke when a URL is selected. The slot's 
+	 * signature is slotURLSelected( const KURL & ).
 	 * @param parent parent widget
 	 * @param name name of widget
-	 * Its signature is of the form slotURLSelected( const KURL & ).
 	 */
 	KRecentFilesAction *openRecent(const QObject *recvr, const char *slot, KActionCollection* parent, const char *name = 0 );
 
