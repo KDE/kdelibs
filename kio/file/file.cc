@@ -274,7 +274,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 
   // Start a server for the destination protocol
   KIOSlave slave( exec );
-  if ( slave.pid() == -1 ) {
+  if ( !slave.isRunning() ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     m_cmd = CMD_NONE;
     return;
