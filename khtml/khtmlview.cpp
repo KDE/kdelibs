@@ -161,7 +161,7 @@ void KHTMLView::clear()
     if(d->useSlowRepaints) {
 	delete paintBuffer;
 	paintBuffer = 0;
-	setStaticBackground(false);
+// ###	setStaticBackground(false);
     }
 	
     delete d;
@@ -207,7 +207,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
     if(d->useSlowRepaints) {
-	kdDebug(0) << "using slow repaints" << endl;
+//	kdDebug(0) << "using slow repaints" << endl;
 	// used in case some element defines a fixed background or we have fixed positioning
 	// #### flickers terribly, but that will need some support in Qt to work.
 	//ex = contentsX();
@@ -251,7 +251,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 		
 	py += PAINT_BUFFER_HEIGHT;
     }
-    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
+//    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
 }
 
 void KHTMLView::layout(bool force)
@@ -833,7 +833,7 @@ void KHTMLView::useSlowRepaints()
 {
     kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
-    setStaticBackground(true);
+// ###    setStaticBackground(true);
 }
 
 

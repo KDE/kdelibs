@@ -76,6 +76,20 @@ void RenderFormElement::calcMinMaxWidth()
     m_maxWidth = m_width;
 }
 
+void RenderFormElement::blur()
+{
+    disconnect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    m_widget->clearFocus();
+    connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+}
+
+void RenderFormElement::focus()
+{
+    disconnect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
+    m_widget->setFocus();
+    connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
+}
+
 void RenderFormElement::slotBlurred()
 {
     m_element->onBlur();
@@ -348,6 +362,11 @@ void RenderLineEdit::slotTextChanged(const QString &string)
     static_cast<HTMLInputElementImpl*>(m_element)->setAttribute(ATTR_VALUE,DOMString(string));
 }
 
+void RenderLineEdit::select()
+{
+    static_cast<LineEditWidget*>(m_widget)->selectAll();
+}
+
 
 // ---------------------------------------------------------------------------
 
@@ -472,6 +491,12 @@ void RenderFileButton::slotFocused()
 	RenderFormElement::slotFocused();
     m_haveFocus = true;
 }
+
+void RenderFileButton::select()
+{
+    m_edit->selectAll();
+}
+
 
 // -------------------------------------------------------------------------
 
@@ -1025,30 +1050,6 @@ QString RenderTextArea::text()
 void RenderTextArea::slotTextChanged()
 {
     static_cast<HTMLTextAreaElementImpl*>(m_element)->setValue(static_cast<TextAreaWidget *>(m_widget)->text());
-}
-
-void RenderTextArea::blur()
-{
-    disconnect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
-    static_cast<TextAreaWidget *>(m_widget)->clearFocus();
-    connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
-}
-
-void RenderTextArea::focus()
-{
-    disconnect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
-    static_cast<TextAreaWidget *>(m_widget)->setFocus();
-    connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
-}
-
-void RenderTextArea::slotBlurred()
-{
-    m_element->onBlur();
-}
-
-void RenderTextArea::slotFocused()
-{
-    m_element->onFocus();
 }
 
 void RenderTextArea::select()

@@ -448,6 +448,18 @@ void HTMLGenericFormElementImpl::onChange()
 	view->part()->executeScript(script.string());
 }
 
+void HTMLGenericFormElementImpl::blur()
+{
+    static_cast<RenderFormElement*>(m_render)->blur();
+//    onBlur(); // ### enable this - but kjs needs to support re-entry
+}
+
+void HTMLGenericFormElementImpl::focus()
+{
+    static_cast<RenderFormElement*>(m_render)->focus();
+//    onFocus(); // ### enable this - but kjs needs to support re-entry
+}
+
 // -------------------------------------------------------------------------
 
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -666,26 +678,22 @@ void HTMLInputElementImpl::restoreState(const QString &state)
 
 void HTMLInputElementImpl::blur(  )
 {
-    // ###
-    kdDebug( 6030 ) << "HTMLInputElementImpl::blur(  )" << endl;
-
-    if (m_render)
-	static_cast<RenderTextArea*>(m_render)->blur();
-//    onBlur(); // ### enable this - but kjs needs to support re-entry
-
-
+    if (_type != IMAGE)
+	HTMLGenericFormElementImpl::blur();
 }
 
 void HTMLInputElementImpl::focus(  )
 {
-    // ###
-    kdDebug( 6030 ) << " HTMLInputElementImpl::focus(  )" << endl;
+    if (_type != IMAGE)
+	HTMLGenericFormElementImpl::focus();
 }
 
 void HTMLInputElementImpl::select(  )
 {
-    // ###
-    kdDebug( 6030 ) << " HTMLInputElementImpl::select(  )" << endl;
+    if (_type == TEXT || _type == PASSWORD)
+	static_cast<RenderLineEdit*>(m_render)->select();
+    else if (_type == FILE)
+	static_cast<RenderFileButton*>(m_render)->select();
 }
 
 void HTMLInputElementImpl::click(  )
@@ -1107,16 +1115,6 @@ void HTMLSelectElementImpl::restoreState(const QString &state)
     setChanged(true);
 }
 
-void HTMLSelectElementImpl::blur(  )
-{
-    // ###
-}
-
-void HTMLSelectElementImpl::focus(  )
-{
-    // ###
-}
-
 NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 {
     NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild);
@@ -1376,21 +1374,6 @@ void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
     m_value = DOMString(state.left(state.length()-1));
     setChanged(true);
-}
-
-void HTMLTextAreaElementImpl::blur(  )
-{
-    if (m_render)
-	static_cast<RenderTextArea*>(m_render)->blur();
-//    onBlur(); // ### enable this - but kjs needs to support re-entry
-}
-
-void HTMLTextAreaElementImpl::focus(  )
-{
-    // ### make sure this can't cause an infinite loop when called from onFocus/onBlur
-    if (m_render)
-	static_cast<RenderTextArea*>(m_render)->focus();
-//    onFocus(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLTextAreaElementImpl::select(  )

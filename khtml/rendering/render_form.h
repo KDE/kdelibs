@@ -82,6 +82,9 @@ public:
 
     HTMLGenericFormElementImpl *element() { return m_element; }
 
+    void blur();
+    void focus();
+
 public slots:
     virtual void slotBlurred();
     virtual void slotFocused();
@@ -283,6 +286,7 @@ public:
     virtual void layout();
 
     virtual const char *renderName() const { return "RenderLineEdit"; }
+    void select();
 
 public slots:	
     void slotReturnPressed();
@@ -328,8 +332,8 @@ public:
     virtual ~RenderFileButton();
 
     virtual const char *renderName() const { return "RenderFileButton"; }
-
-    virtual void layout( );
+    virtual void layout();
+    void select();
 
 public slots:	
     virtual void slotClicked();
@@ -483,14 +487,10 @@ public:
 
     QString text(); // ### remove
 
-    void blur();
-    void focus();
     void select();
 
 protected slots:
     void slotTextChanged();
-    void slotBlurred();
-    void slotFocused();
 };
 
 // -------------------------------------------------------------------------

@@ -150,6 +150,9 @@ public:
      */
     virtual bool encoding(khtml::encodingList&) { return false; }
 
+    virtual void blur();
+    virtual void focus();
+
 protected:
     HTMLFormElementImpl *getForm() const;
 
@@ -261,8 +264,8 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
-    void blur();
-    void focus();
+    virtual void blur();
+    virtual void focus();
     void select();
     void click();
 
@@ -356,9 +359,6 @@ public:
 
     virtual QString state();
     virtual void restoreState(const QString &);
-
-    void blur (  );
-    void focus (  );
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
@@ -464,8 +464,6 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
-    void blur (  );
-    void focus (  );
     void select (  );
 
     virtual void parseAttribute(AttrImpl *attr);
