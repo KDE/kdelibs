@@ -49,7 +49,15 @@ void Decoder::setEncoding(const char *_encoding)
 {
     enc = _encoding;
     m_codec = QTextCodec::codecForName(enc);
-    if(m_codec->mibEnum() == 11) // iso8859-8 (visually ordered)
+    if(!m_codec) {
+	if(!strcmp(_encoding, "windows-1252"))
+	    m_codec = QTextCodec::codecForName("iso8859-1");
+	else if(!strcmp(_encoding, "windows-1255"))
+	    m_codec = QTextCodec::codecForName("iso8859-8-i");
+	else // unknown code, default to latin1
+	    m_codec = QTextCodec::codecForName("iso8859-1");
+    }
+    else if(m_codec->mibEnum() == 11) // iso8859-8 (visually ordered)
     {
 	m_codec = QTextCodec::codecForName("iso8859-8-i");
 	visualRTL = true;
