@@ -844,14 +844,14 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int fb = floatBottom();
         if ( child->flowAroundFloats() && !style()->width().isVariable()) {
             bool doClear = false;
-            if (child->minWidth() > lineWidth( m_height ))
-                doClear = true;
-            else if (child->style()->width().isPercent()) {
+            if (child->style()->width().isPercent()) {
                 int oldw = child->width();
                 child->calcWidth();
                 doClear = (child->width() > lineWidth( m_height ));
                 child->setWidth( oldw );
-            }
+            } else if (child->minWidth() > lineWidth( m_height ))
+                doClear = true;
+
             if (doClear && fb > m_height) {
                 m_height = fb;
                 shouldCollapseChild = false;
@@ -861,7 +861,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         // take care in case we inherited floats
-        if (fb > m_height && !child->flowAroundFloats())
+        if (fb > m_height)
             child->setChildNeedsLayout(true);
 
         child->calcVerticalMargins();
