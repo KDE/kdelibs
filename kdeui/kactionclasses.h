@@ -422,10 +422,20 @@ public:
      */
     virtual QStringList items() const;
 
+    /**
+     * Changes the text of item @param index to @param text.
+     */
     virtual void changeItem( int index, const QString& text );
 
+    /**
+     * Returns the text of the currently selected item.
+     */
     virtual QString currentText() const;
 
+    /**
+     * Returns the index of the current item.
+     * @see setCurrentItem
+     */
     virtual int currentItem() const;
 
     /**
@@ -434,6 +444,9 @@ public:
      */
     virtual int comboWidth() const;
 
+    /**
+     * Returns a pointer to the popup menu used by this action.
+     */
     QPopupMenu* popupMenu() const;
 
     /**
@@ -503,7 +516,15 @@ protected slots:
     virtual void slotActivated();
 
 signals:
+    /**
+     * This signal is emitted when an item is selected; @param index indicated
+     * the item selected.
+     */
     void activated( int index );
+    /**
+     * This signal is emitted when an item is selected; @param text indicates
+     * the item selected.
+     */
     void activated( const QString& text );
 
 protected:
