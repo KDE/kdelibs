@@ -106,7 +106,6 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     while ( ( pos = name.find( ' ' ) ) != -1 )  name.remove( pos, 1 );
 
     int len = name.length();
-    char ch = name[0].latin1();
 
     if(len == 0 || (len == 11 && name.find("transparent", 0, false) == 0) )
     {
@@ -139,9 +138,9 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
 	}
     }
 
-    if ( len > 4 && ch == 'r' && name[1].lower() == 'g' &&
-         name[2].lower() == 'b' && name[3].cell() == '(' &&
-         name[len-1].cell() == ')')
+    if ( len > 4 && name[0].lower() == 'r' && name[1].lower() == 'g' &&
+         name[2].lower() == 'b' && name[3] == '(' &&
+         name[len-1] == ')')
     {
         // CSS like rgb(r, g, b) style
         DOMString rgb = name.mid(4, name.length()-5);
