@@ -239,18 +239,17 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	f = fc;
     }
 
-    if ( (int) types.count() != argc ) {
-	qWarning( "arguments do not match" );
-	exit(1);
-    }
-
     QByteArray data, replyData;
     QCString replyType;
     QDataStream arg(data, IO_WriteOnly);
 
     int i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-        marshall(arg, args[i++], *it);
+        marshall(arg, argc, args, i, *it);
+    }
+    if ( i != argc ) {
+	qWarning( "arguments do not match" );
+	exit(1);
     }
 
     if ( !dcop->call( app, obj, f.latin1(),  data, replyType, replyData) ) {

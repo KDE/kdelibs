@@ -128,7 +128,11 @@ bool findObject( const char* app, const char* obj, const char* func, int argc, c
 
     int i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-        marshall(arg, args[i++], *it);
+        marshall(arg, argc, args, i, *it);
+    }
+    if ( (int) i != argc ) {
+	qWarning( "arguments do not match" );
+	exit(1);
     }
 
     QCString foundApp;
