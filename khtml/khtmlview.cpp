@@ -203,7 +203,7 @@ KHTMLView::~KHTMLView()
         lstViews = 0;
     }
 
-    delete d;
+    delete d; d = 0;
 }
 
 void KHTMLView::init()
@@ -1146,7 +1146,9 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
-    if ( !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
+    if ( d->vmode == QScrollView::AlwaysOff )
+        e->accept();
+    else if ( !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
 
