@@ -59,7 +59,11 @@ KProcessController::KProcessController()
   QObject::connect(notifier, SIGNAL(activated(int)),
 				   this, SLOT(slotDoHousekeeping(int)));
  		 
+#ifdef __sgi__
+  act.sa_handler=(void(*)())theSigCHLDHandler;
+#else
   act.sa_handler=theSigCHLDHandler;
+#endif
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
   act.sa_flags = SA_NOCLDSTOP;
