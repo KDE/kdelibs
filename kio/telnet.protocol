@@ -1,5 +1,5 @@
 [Protocol]
-exec=konsole -e telnet `echo %u | sed -e 's,telnet:/*,,' | sed -e 's,:\([0-9]*\), \1,'`
+exec=ktelnetservice %u
 protocol=telnet
 input=none
 output=none

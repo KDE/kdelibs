@@ -24,7 +24,7 @@ SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail kpac \
 	kdesasl gzip $(BZIP2DIR)
 
 lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
-bin_PROGRAMS = kio_uiserver kmailservice
+bin_PROGRAMS = kio_uiserver kmailservice ktelnetservice
 
 #libkioslave_la_LDFLAGS = -version-info 4:0
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
@@ -131,8 +131,12 @@ kmailservice_SOURCES = kmailservice.cpp
 kmailservice_LDADD = $(LIB_KDECORE)
 kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kmailprotocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
-kmailprotocoldir = $(kde_servicesdir)
+ktelnetservice_SOURCES = ktelnetservice.cpp
+ktelnetservice_LDADD = $(LIB_KDECORE)
+ktelnetservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+
+protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
+protocoldir = $(kde_servicesdir)
 
 update_DATA = kioslave.upd useragent.pl proxytype.pl
 updatedir = $(kde_datadir)/kconf_update
