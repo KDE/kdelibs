@@ -615,11 +615,21 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
       dp = opendir( QFile::encodeName(_url.path()) );
       if ( dp )
       {
-        ep=readdir( dp );
-        ep=readdir( dp );      // ignore '.' and '..' dirent
+        QValueList<QCString> entries;
+        // Note that readdir isn't guaranteed to return "." and ".." first (#79826)
+        ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
+        ep=readdir( dp ); if ( ep ) entries.append( ep->d_name );
         if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
           isempty = true;
-        // if third file is .directory and no fourth file -> empty directory
+        else {
+          entries.append( ep->d_name );
+          if ( readdir( dp ) == 0 ) { // only three
+            // check if we got "." ".." and ".directory"
+            isempty = entries.find( "." ) != entries.end() &&
+                      entries.find( ".." ) != entries.end() &&
+                      entries.find( ".directory" ) != entries.end();
+          }
+        }
         if (!isempty && !strcmp(ep->d_name, ".directory"))
           isempty = (readdir(dp) == 0L);
         closedir( dp );
