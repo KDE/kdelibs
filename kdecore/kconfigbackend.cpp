@@ -708,30 +708,21 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
   } // for loop
 }
 
-/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
-bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
-					bool bMerge)
+bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
+                                    QFile *mergeFile)
 {
-  KEntryMap aTempMap;
   bool bEntriesLeft = false;
-
-  // is the config object read-only?
-  if (pConfig->isReadOnly())
-    return true; // pretend we wrote it
-
   bFileImmutable = false;
-  if (bMerge)
+  if (mergeFile)
   {
     // Read entries from disk
-    QFile rConfigFile( filename );
-    if (rConfigFile.open(IO_ReadOnly))
+    if (mergeFile->open(IO_ReadOnly))
     {
        // fill the temporary structure with entries from the file
-       parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal, false );
-       rConfigFile.close();
+       parseSingleConfigFile(*mergeFile, &aTempMap, bGlobal, false );
 
        if (bFileImmutable) // File has become immutable on disk
-          return true; // pretend we wrote it
+          return bEntriesLeft;
     }
 
     KEntryMap aMap = pConfig->internalEntryMap();
@@ -774,6 +765,24 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
     aTempMap = pConfig->internalEntryMap();
     bEntriesLeft = true; // maybe not true, but we aren't sure
   }
+
+  return bEntriesLeft;
+}
+
+/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
+bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
+					bool bMerge)
+{
+  // is the config object read-only?
+  if (pConfig->isReadOnly())
+    return true; // pretend we wrote it
+
+  KEntryMap aTempMap;
+  QFile *mergeFile = (bMerge ? new QFile(filename) : 0);
+  bool bEntriesLeft = getEntryMap(aTempMap, bGlobal, mergeFile);
+  delete mergeFile;
+  if (bFileImmutable) return true; // pretend we wrote it
+
 
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
@@ -845,13 +854,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
      }
   }
 
-  bool firstEntry = true;
-
-  // Write default group
-  writeEntries(pStream, aTempMap, true, firstEntry, localeString);
-
-  // Write all other groups
-  writeEntries(pStream, aTempMap, false, firstEntry, localeString);
+  writeEntries(pStream, aTempMap);
 
   if (pConfigFile)
   {
@@ -866,6 +869,16 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   return bEntriesLeft;
 }
 
+void KConfigINIBackEnd::writeEntries(FILE *pStream, const KEntryMap &aTempMap)
+{
+  bool firstEntry = true;
+
+  // Write default group
+  ::writeEntries(pStream, aTempMap, true, firstEntry, localeString);
+
+  // Write all other groups
+  ::writeEntries(pStream, aTempMap, false, firstEntry, localeString);
+}
 
 void KConfigBackEnd::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -51,6 +51,10 @@ KSimpleConfig::KSimpleConfig(const QString &fileName, bool bReadOnly)
   reparseConfiguration();
 }
 
+KSimpleConfig::KSimpleConfig(KConfigBackEnd *backEnd, bool bReadOnly)
+  : KConfig(backEnd, bReadOnly)
+{}
+
 KSimpleConfig::~KSimpleConfig()
 {
   // we need to call the KSimpleConfig version of sync.  Relying on the

@@ -258,6 +258,10 @@ protected:
    */
   bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
 
+  bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
+
+  void writeEntries(FILE *pStream, const KEntryMap &aTempMap);
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

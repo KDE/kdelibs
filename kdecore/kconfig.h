@@ -61,6 +61,8 @@ public:
   KConfig( const QString& fileName = QString::null,
           bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
 
+  KConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
+
   /**
    * Destructs the KConfig object.
    *
@@ -133,8 +135,8 @@ public:
   bool forceGlobal() const { return bForceGlobal; }
 
   /**
-   * Forces all following read- and write-operations being 
-   * performed on the default values instead of the actual 
+   * Forces all following read- and write-operations being
+   * performed on the default values instead of the actual
    * values.
    * @param force true to force usage of default values
    * @see #forceDefault
@@ -166,16 +168,16 @@ public:
   void checkUpdate(const QString &id, const QString &updateFile);
 
   /**
-   * Copies all entries from this config object to a new config 
+   * Copies all entries from this config object to a new config
    * object that will save itself to @p file.
-   * 
-   * Actual saving to @p file happens when the returned object is 
+   *
+   * Actual saving to @p file happens when the returned object is
    * destructed or when sync() is called upon it.
    *
    * @param file the new config object will save itself to.
    */
   KConfig* copyTo(const QString &file);
-    
+
 protected:
 
   /**

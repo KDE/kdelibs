@@ -73,6 +73,15 @@ KConfig::KConfig( const QString& fileName,
       reparseConfiguration();
 }
 
+KConfig::KConfig(KConfigBackEnd *aBackEnd, bool bReadOnly)
+    : bGroupImmutable(false), bFileImmutable(false),
+    bForceGlobal(false), bForceDefault(false)
+{
+  setReadOnly(bReadOnly);
+  backEnd = aBackEnd;
+  reparseConfiguration();
+}
+
 KConfig::~KConfig()
 {
   sync();
@@ -211,14 +220,14 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
      entry = _data;
      entry.bGlobal |= bForceGlobal; // force to kdeglobals
   }
-  
+
   if (_key.bDefault || bForceDefault)
   {
      // Either:
      // * We have added the data as default value
      //   and now add it as normal value as well.
      // Or:
-     // * We haven't added it at all 
+     // * We haven't added it at all
      //   and now force it as default.
 
      KEntryKey key(_key);
@@ -226,7 +235,7 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
      KEntry &entry = aEntryMap[key];
      if (entry.bImmutable)
         return;
-     
+
      entry = _data;
      entry.bGlobal |= bForceGlobal; // force to kdeglobals
   }
@@ -246,7 +255,7 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
     key.bDefault = true;
     aIt = aEntryMap.find(key);
   }
-  
+
   if (aIt != aEntryMap.end())
   {
     const KEntry &entry = *aIt;
@@ -309,9 +318,9 @@ KConfig* KConfig::copyTo(const QString &file)
   config->setReadOnly(false);
   config->bFileImmutable = false;
   config->backEnd->mConfigState = ReadWrite;
-  
+
   QStringList groups = groupList();
-  for(QStringList::ConstIterator it = groups.begin(); 
+  for(QStringList::ConstIterator it = groups.begin();
       it != groups.end(); ++it)
   {
      QMap<QString, QString> map = entryMap(*it);
