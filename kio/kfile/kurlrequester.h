@@ -31,6 +31,7 @@ class KComboBox;
 class KFileDialog;
 class KLineEdit;
 class KURLCompletion;
+class KURLDragPushButton;
 
 class QString;
 class QTimer;
@@ -100,7 +101,7 @@ public:
      * @see KFileDialog::setMode()
      */
     void setMode( unsigned int m );
-    
+
     /**
      * Sets the filter for the file dialog.
      * @see KFileDialog::setFilter()
@@ -140,7 +141,7 @@ public:
      * @returns a pointer to the pushbutton. It is provided so that you can
      * specify an own pixmap or a text, if you really need to.
      */
-    QPushButton * button() const { return myButton; }
+    KPushButton * button() const;
 
     /**
      * @returns the KURLCompletion object used in the lineedit/combobox.
@@ -200,11 +201,11 @@ signals:
 protected:
     void		init();
 
-    QPushButton *	myButton; // FIXME: make it private KURLDragPushButton
     KURLCompletion *    myCompletion;
 
 
 private:
+    KURLDragPushButton * myButton;
     bool 		myShowLocalProt;
     mutable KFileDialog * myFileDialog;
 

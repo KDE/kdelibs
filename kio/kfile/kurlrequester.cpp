@@ -191,21 +191,20 @@ void KURLRequester::init()
     if ( !d->combo && !d->edit )
 	d->edit = new KLineEdit( this, "line edit" );
 
-    KURLDragPushButton *button = new KURLDragPushButton( this, "kfile button");
-    myButton = button; // small hack for bin compat (myButton is a QPushButton)
+    myButton = new KURLDragPushButton( this, "kfile button");
     myButton->setPixmap(SmallIcon(QString::fromLatin1("fileopen")));
     QToolTip::add(myButton, i18n("Open File Dialog"));
 
-    connect( button, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
+    connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
 
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
     			    myButton->sizeHint().width() );
 
-    if ( d->combo )
- 	setFocusProxy( d->combo );
-    else
-	setFocusProxy( d->edit );
+    QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
+    setFocusProxy( widget );
+    widget->setMinimumHeight( QMAX( widget->minimumHeight(), 
+                                    myButton->height() ));
 
     d->connectSignals( this );
     connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
@@ -315,6 +314,11 @@ void KURLRequester::slotUpdateURL()
     // bin compat, myButton is declared as QPushButton
     KURL u( QDir::currentDirPath() + '/', url() );
     (static_cast<KURLDragPushButton *>( myButton))->setURL( u );
+}
+
+KPushButton * KURLRequester::button() const
+{
+    return myButton;
 }
 
 #include "kurlrequester.moc"
