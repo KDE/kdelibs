@@ -144,8 +144,8 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
             return;
         }
     }
-        
-    printObject(p, _x, _y, _w, _h, _tx, _ty);    
+
+    printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 void RenderFlow::printObject(QPainter *p, int _x, int _y,
@@ -158,24 +158,24 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     // add offset for relative positioning
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
-   
-    
+
+
     // 1. print background, borders etc
     if(hasSpecialObjects() && !isInline() && isVisible())
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
 
-    // overflow: hidden    
+    // overflow: hidden
     // save old clip region, set a new one
     QRegion oldClip;
     if (style()->overflow()==OHIDDEN)
     {
         if (p->hasClipping())
-            oldClip = p->clipRegion();        
-        calcClip(p, _tx, _ty, oldClip);   
+            oldClip = p->clipRegion();
+        calcClip(p, _tx, _ty, oldClip);
     }
-    
-    
+
+
 
     // 2. print contents
     RenderObject *child = firstChild();
@@ -197,9 +197,9 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         if (oldClip.isNull())
             p->setClipping(false);
         else
-            p->setClipRegion(oldClip);        
-    }    
-    
+            p->setClipRegion(oldClip);
+    }
+
     if(!isInline() && style()->outlineWidth())
         printOutline(p, _tx, _ty, width(), height(), style());
 
@@ -274,8 +274,9 @@ void RenderFlow::layout()
 
     calcHeight();
 
-    if ( lastChild() && lastChild()->hasOverhangingFloats() && isTableCell() ) {
-	m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
+    int lp = 0;
+    if ( firstChild() && isTableCell() && ( lp = lowestPosition() ) > m_height ) {
+	m_height = lp;
 	m_height += borderBottom() + paddingBottom();
     }
     if( hasOverhangingFloats() && (isFloating() || isTableCell()) ) {
@@ -353,13 +354,13 @@ void RenderFlow::layoutBlockChildren()
 	if ( prevMargin != TABLECELLMARGIN )
 	    m_height = -prevMargin;
     }
-    //kdDebug() << "RenderFlow::layoutBlockChildren " << prevMargin << endl; 
+    //kdDebug() << "RenderFlow::layoutBlockChildren " << prevMargin << endl;
 
     // take care in case we inherited floats
     if (child && floatBottom() > m_height)
 	child->setLayouted(false);
 
-    
+
     //QTime t;
     //t.start();
 
@@ -383,7 +384,7 @@ void RenderFlow::layoutBlockChildren()
 	    m_height += prevMargin;
 	    insertFloat( child );
 	    positionNewFloats();
-	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl; 
+	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
 	    m_height -= prevMargin;
 	    child = child->nextSibling();
 	    continue;
@@ -624,11 +625,11 @@ void RenderFlow::positionNewFloats()
                 y += QMIN(heightRemainingLeft, heightRemainingRight);
                 fx = rightRelOffset(y,ro, &heightRemainingRight);
             }
-            if (fx<f->width) fx=f->width;                    
+            if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
-        }        
+        }
         f->startY = y;
         f->endY = f->startY + _height;
 
@@ -783,7 +784,7 @@ RenderFlow::lowestPosition() const
         while( last && (last->isPositioned() || last->isFloating()) )
             last = last->previousSibling();
         if( last )
-            lp = yPos() + last->lowestPosition();
+            lp = last->yPos() + last->lowestPosition();
     }
 
     if(  lp > bottom )
@@ -832,7 +833,7 @@ int RenderFlow::rightmostPosition() const
                 specialRight = r->left + r->node->rightmostPosition();
             } else if ( r->type == SpecialObject::Positioned ) {
                 specialRight = r->node->xPos() + r->node->rightmostPosition();
-            }            
+            }
             if (specialRight > right)
 		        right = specialRight;
         }
@@ -907,13 +908,13 @@ RenderFlow::clearFloats()
 	} else
 	    break;
     }
-    
+
     int offset = m_y;
 
     if ( parentHasFloats ) {
 	addOverHangingFloats( static_cast<RenderFlow *>( parent() ), 0, offset, false );
     }
-    
+
     if(prev ) {
         if(prev->isTableCell()) return;
 
@@ -993,10 +994,10 @@ void RenderFlow::calcMinMaxWidth()
 #endif
 
     m_minWidth = 0;
-    m_maxWidth = 0;   
+    m_maxWidth = 0;
 
     if (isInline())
-        return;    
+        return;
 
 //    if(minMaxKnown())
 //        return;
@@ -1155,9 +1156,9 @@ void RenderFlow::calcMinMaxWidth()
         }
     }
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
-    
+
     if (style()->width().isFixed())
-        m_maxWidth = KMAX(m_minWidth,short(style()->width().value)); 
+        m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
 
     int toAdd = 0;
     if(style()->hasBorder())
@@ -1236,7 +1237,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 	    if(oldText->l >= 1) {
 		unsigned int length = 0;
-		while ( length < oldText->l && 
+		while ( length < oldText->l &&
 			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
 		    length++;
 		length++;
@@ -1253,10 +1254,10 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 	}
     }
-    
-    
-    insertPseudoChild(RenderStyle::BEFORE, newChild, beforeChild);  
-    
+
+
+    insertPseudoChild(RenderStyle::BEFORE, newChild, beforeChild);
+
     bool nonInlineInChild = false;
 
     if (beforeChild && beforeChild->parent() != this) {
@@ -1424,8 +1425,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     setLayouted(false);
     RenderBox::addChild(newChild,beforeChild);
     // ### care about aligned stuff
-    
-    insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);  
+
+    insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);
 }
 
 void RenderFlow::makeChildrenNonInline()
@@ -1496,14 +1497,6 @@ void RenderFlow::specialHandler(RenderObject *o)
     else if(o->isPositioned())
         static_cast<RenderFlow*>(o->containingBlock())->insertPositioned(o);
 
-}
-
-bool RenderFlow::containsPoint(int _x, int _y, int _tx, int _ty)
-{
-    if (!RenderBox::containsPoint(_x,_y,_tx,_ty))
-	return false;
-
-    return ((_x >= _tx+leftOffset(_y-_ty)) && (_x <= _tx+rightOffset(_y-_ty)));
 }
 
 void RenderFlow::printTree(int indent) const
