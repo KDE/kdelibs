@@ -1251,7 +1251,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!primitiveValue) return;
         CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
         style->setBackgroundImage(image->image());
-        kdDebug( 6080 ) << "setting image in style to " << image->image() << endl;
+        //kdDebug( 6080 ) << "setting image in style to " << image->image() << endl;
         break;
     }
     case CSS_PROP_CUE_AFTER:
