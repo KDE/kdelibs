@@ -39,7 +39,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-               :KListBox( parent, name, WType_Popup )
+    :KListBox( parent, name, WType_Popup )
 {
     d = new KCompletionBoxPrivate;
     d->m_parent        = parent;
@@ -216,7 +216,7 @@ void KCompletionBox::show()
 
     // ### we shouldn't need to call this, but without this, the scrollbars
     // are pretty b0rked.
-    triggerUpdate( true );
+    //triggerUpdate( true );
 
     KListBox::show();
 }
@@ -318,6 +318,7 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
     bool block = signalsBlocked();
     blockSignals( true );
     insertStringList( items, index );
+    clearSelection();
     blockSignals( block );
     d->down_workaround = true;
 }
