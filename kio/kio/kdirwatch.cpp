@@ -1435,6 +1435,20 @@ void KDirWatch::setDeleted( const QString & _file )
   emit deleted( _file );
 }
 
+KDirWatch::Method KDirWatch::internalMethod()
+{
+#ifdef HAVE_FAM
+  if (d->use_fam)
+     return KDirWatch::FAM;
+#endif
+#ifdef HAVE_DNOTIFY
+  if (d->supports_dnotify)
+     return KDirWatch::DNotify;
+#endif      
+  return KDirWatch::Stat;
+}
+
+
 #include "kdirwatch.moc"
 #include "kdirwatch_p.moc"
 

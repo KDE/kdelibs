@@ -216,6 +216,14 @@ class KDirWatch : public QObject
     */
    void setDeleted( const QString &path );
 
+   enum Method { FAM, DNotify, Stat };
+   /**
+    * Returns the preferred internal method to
+    * watch for changes.
+    * @since 3.2
+    */
+   Method internalMethod();
+
    /**
     * The KDirWatch instance usually globally used in an application.
     * It is automatically deleted when the application exits.

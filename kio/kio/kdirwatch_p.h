@@ -105,7 +105,6 @@ public:
   QTimer *timer;
   EntryMap m_mapEntries;
 
-private:
   int freq;
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;
