@@ -388,11 +388,22 @@ namespace KIO {
          */
         virtual void start( Slave *slave );
 
+    signals:
+        /**
+         * Signals a redirection
+         * Use to update the URL shown to the user
+         * The redirection itself is handled internally
+         */
+        void redirection( KIO::Job *, const KURL &url );
+    
     protected slots:
         void slotStatEntry( const KIO::UDSEntry & entry );
+        void slotRedirection( const KURL &url);
+        virtual void slotFinished();
 
     protected:
         UDSEntry m_statResult;
+        KURL m_redirectionURL;
     };
 
     /**

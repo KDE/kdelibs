@@ -497,12 +497,44 @@ void StatJob::start(Slave *slave)
 
     connect( m_slave, SIGNAL( statEntry( const KIO::UDSEntry& ) ),
              SLOT( slotStatEntry( const KIO::UDSEntry & ) ) );
+    connect( slave, SIGNAL( redirection(const KURL &) ),
+             SLOT( slotRedirection(const KURL &) ) );
 }
 
 void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 {
     kdDebug(7007) << "StatJob::slotStatEntry" << endl;
     m_statResult = entry;
+}
+
+// Slave got a redirection request
+void StatJob::slotRedirection( const KURL &url)
+{
+     kdDebug(7007) << "StatJob::slotRedirection(" << url.prettyURL() << ")" << endl;
+
+     m_redirectionURL = url; // We'll remember that when the job finishes
+     // Tell the user that we haven't finished yet
+     emit redirection(this, m_redirectionURL);
+}
+
+void StatJob::slotFinished()
+{
+    if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
+    {
+        // Return slave to the scheduler
+        SimpleJob::slotFinished();
+    } else {
+        kdDebug(7007) << "StatJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        m_url = m_redirectionURL;
+        m_redirectionURL = KURL();
+        m_packedArgs.truncate(0);
+        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        stream << m_url;
+
+        // Return slave to the scheduler
+        slaveDone();
+        Scheduler::doJob(this);
+    }
 }
 
 StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
