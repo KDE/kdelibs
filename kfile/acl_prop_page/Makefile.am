@@ -1,8 +1,5 @@
 # $Id$
 
-
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_builddir)/kio $(srcdir)/.. $(all_includes)
-
 EXTRA_LTLIBRARIES = libkacl_prop_page.la
 
 lib_LTLIBRARIES = $(KFILE_ACL_MODULE)
