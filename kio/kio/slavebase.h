@@ -766,6 +766,15 @@ public:
     MetaData mOutgoingMetaData;
     MetaData mIncomingMetaData;
 
+    /** If your ioslave was killed by a signal, wasKilled() returns true.
+     Check it regularly in lengthy functions (e.g. in get();) and return
+     as fast as possible from this function if wasKilled() returns true.
+     This will ensure that your slave destructor will be called correctly.
+     */
+    bool wasKilled() const;
+    /** Internally used.
+     */
+    void setKillFlag();
 private:
     bool storeAuthInfo( const QCString&, const QCString&, const AuthInfo& );
 

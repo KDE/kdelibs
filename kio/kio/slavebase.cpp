@@ -105,12 +105,12 @@ public:
     bool needSendCanResume:1;
     bool multipleAuthCaching:1;
     bool onHold:1;
+    bool wasKilled:1;
     MetaData configData;
     SlaveBaseConfig *config;
     KURL onHoldUrl;
 
     struct timeval last_tv;
-//    KIO::filesize_t processed_size;
     KIO::filesize_t totalSize;
     KIO::filesize_t sentListEntries;
 };
@@ -119,15 +119,25 @@ public:
 
 SlaveBase *globalSlave=0;
 
+void sigalarm_handler(int sigNumber)
+{
+   signal(sigNumber,SIG_IGN);
+   //I don't think we can have the same problem here as in the sigsegv handler
+   kdDebug()<<"kioslave : exiting due to alarm signal "<<endl;
+   exit(2);
+};
+
 void genericsig_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
    //I don't think we can have the same problem here as in the sigsegv handler
    kdDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
-   //call the dtor of the slave and exit
+   //set the flag which will be checked in dispatchLoop() and which *should* be checked
+   //in lengthy operations in the various slaves
    if (globalSlave!=0)
-      globalSlave->~SlaveBase();
-   exit(2);
+      globalSlave->setKillFlag();
+   signal(SIGALRM,&sigalarm_handler);
+   alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
 };
 
 //////////////
@@ -186,6 +196,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->multipleAuthCaching = false;
     d->config = new SlaveBaseConfig(this);
     d->onHold = false;
+    d->wasKilled=false;
     d->last_tv.tv_sec = 0;
     d->last_tv.tv_usec = 0;
 //    d->processed_size = 0;
@@ -210,9 +221,11 @@ void SlaveBase::dispatchLoop()
     assert(appconn->inited());
     FD_SET(appconn->fd_from(), &rfds);
 
-    retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, 0);
-    //kdDebug(7019) << "dispatchLoop(): select returned " << retval << endl;
-    if (retval && FD_ISSET(appconn->fd_from(), &rfds))
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0; // 1 second timeout
+    retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
+    if ((retval>0) && FD_ISSET(appconn->fd_from(), &rfds))
     { // dispatch application messages
         int cmd;
         QByteArray data;
@@ -236,11 +249,17 @@ void SlaveBase::dispatchLoop()
           }
         }
     }
-    else
+    else if (retval<0)
     {
        kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
-                     << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
-                     << " (" << errno << ")" << endl;
+          << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
+          << " (" << errno << ")" << endl;
+       return;
+    };
+    //I think we get here when we were killed in dispatch() and not in select()
+    if (wasKilled())
+    {
+       kdDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
        return;
     }
   }
@@ -1287,6 +1306,16 @@ int SlaveBase::readTimeout()
        return result;
     return DEFAULT_READ_TIMEOUT;
 }
+
+bool SlaveBase::wasKilled() const
+{
+   return d->wasKilled;
+};
+
+void SlaveBase::setKillFlag()
+{
+   d->wasKilled=true;
+};
 
 void SlaveBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
