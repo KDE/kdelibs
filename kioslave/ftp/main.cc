@@ -463,7 +463,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    // Change the name of all subdirectories
 	    dit2++;
 	    for( ; dit2 != dirs.end(); dit2++ )
-	      if ( strncmp( dit2->m_strRelDest.c_str(), old_path, old_path.length() ) == 0 )
+	      if ( strncmp(dit2->m_strRelDest.c_str(), old_path, old_path.length())==0 )
 		dit2->m_strRelDest.replace( 0, old_path.length(), tmp3 );
 	    // Change all filenames
 	    list<Copy>::iterator fit2 = files.begin();
@@ -824,11 +824,11 @@ void FtpProtocol::slotGet( const char *_url )
     return;
   }
   
-  if ( S_ISDIR( e->type ) ) {
+/*  if ( S_ISDIR( e->type ) ) {
     error( ERR_IS_DIRECTORY, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
-  }
+  }*/
 
   m_cmd = CMD_GET;
   
@@ -1349,18 +1349,18 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
   
   FtpEntry *e;
   while ( ( e = ftp.readdir() ) != 0L ) {
-    qDebug( "kio_ftp : #%s", e->name.c_str() );
+    qDebug( "kio_ftp : #%s", e->name.ascii() );
     
     if ( e->name == "." || e->name == ".." )
       continue;
     
     QString p2 = p;
     p2 += "/";
-    p2 += e->name.c_str();
+    p2 += e->name;
   
     QString tmp = _rel_path;
     tmp += "/";
-    tmp += e->name.c_str();
+    tmp += e->name;
 
     if ( !S_ISDIR( e->type ) ) {
       qDebug( "kio_ftp : Appending '%s' '%s'", p2.ascii(), tmp.ascii() );
@@ -1448,7 +1448,7 @@ void FtpProtocol::slotListDir( const char *_url )
     if ( e->name == "." || e->name == ".." )
       continue;
 
-    debug( "kio_ftp : Listing %s", e->name.c_str() );
+    debug( "kio_ftp : Listing %s", e->name.ascii() );
 
     UDSEntry entry;
     UDSAtom atom;

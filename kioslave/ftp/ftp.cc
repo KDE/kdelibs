@@ -1,3 +1,7 @@
+// $Id$
+
+#define NDEBUG
+
 #include "ftp.h"
 
 #include <errno.h>
@@ -6,10 +10,9 @@
 #include <kio_interface.h>
 #include <kprotocolmanager.h>
 
-#include <kurl.h>
+#include <kdebug.h>
 #include <ksock.h>
-
-#include <iostream.h>
+#include <kurl.h>
 
 #define FTP_LOGIN "anonymous"
 #define FTP_PASSWD "kfm-user@kde.org"
@@ -122,15 +125,12 @@ bool Ftp::readresp(char c)
   }
   if ( ftplib_debug > 1)
     fprintf(stderr,"resp> %s",rspbuf);
-  if ( rspbuf[3] == '-' )
-  {
+  if ( rspbuf[3] == '-' )  {
     strncpy( match, rspbuf, 3 );
     match[3] = ' ';
     match[4] = '\0';
-    do
-    {
-      if ( readline( rspbuf, 256, nControl ) == -1 )
-      {
+    do {
+      if ( readline( rspbuf, 256, nControl ) == -1 ) {
 	m_error = ERR_COULD_NOT_READ;
 	m_errorText = "";
 	return false;
@@ -174,7 +174,7 @@ void Ftp::ftpDisconnect( bool really )
 
 bool Ftp::ftpConnect( KURL& _url )
 {
-  string dummy;
+  QString dummy;
   return ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), dummy );
 }  
 
@@ -182,7 +182,7 @@ bool Ftp::ftpConnect( KURL& _url )
 /**
  * login on remote host
  */
-bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, string& _path )
+bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, QString& _path )
 {
   m_bPersistent = KProtocolManager::self().persistentConnections();
 
@@ -203,29 +203,24 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
   
   m_bFtpStarted = ftpConnect2( _host, _port );
 
-  if ( !m_bFtpStarted )
-  {
-    if ( !m_error )
-    {
+  if ( !m_bFtpStarted ) {
+    if ( !m_error ) {
       m_error = ERR_COULD_NOT_CONNECT;
       m_errorText = _host;
     }
     return false;
   }
 
-  string user;
-  string passwd;
-  
-  if( _user && strlen( _user ) > 0 )
-  {
+  QString user;
+  QString passwd;
+
+  if( _user && strlen( _user ) > 0 ) {
     user = _user;
     if ( _pass && strlen( _pass ) > 0 )
       passwd = _pass;
     else
       passwd = "";
-  }
-  else
-  {
+  } else {
     user = FTP_LOGIN;
     passwd = FTP_PASSWD;
   }
@@ -233,10 +228,9 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
   if ( ftplib_debug > 2 )
     fprintf( stderr, "Connected ....\n" );
 
-  string redirect = "";
-  m_bLoggedOn = ftpLogin( user.c_str(), passwd.c_str(), &redirect );
-  if ( !m_bLoggedOn )
-  {    
+  QString redirect = "";
+  m_bLoggedOn = ftpLogin( user, passwd, redirect );
+  if ( !m_bLoggedOn ) {
     if ( ftplib_debug > 2 )
       fprintf( stderr, "Could not login\n" );
 
@@ -246,14 +240,13 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
   }
 
   // We could login and got a redirect ?
-  if ( !redirect.empty() )
-  {
-    if ( redirect[ redirect.size() - 1 ] != '/' )
+  if ( !redirect.isEmpty() ) {
+    if ( redirect.right(1) != "/" )
       redirect += "/";
     _path = redirect;
     
     if ( ftplib_debug > 2 )
-      fprintf( stderr, "REDIRECTION '%s'\n",redirect.c_str());
+      fprintf( stderr, "REDIRECTION '%s'\n", redirect.ascii());
   }
   
   m_bLoggedOn = true;
@@ -335,22 +328,20 @@ bool Ftp::ftpConnect2( const char *host, int _port )
  *
  * return 1 if logged in, 0 otherwise
  */
-bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
+bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 {
   assert( !m_bLoggedOn );
-  
+
   QString user = _user;
   QString pass = _pass;
 
-  if ( !user.isEmpty() )
-  {    
-    QString tempbuf = "user ";
+  if ( !user.isEmpty() ) {    
+    QCString tempbuf = "user ";
     tempbuf += user;
 
     rspbuf[0] = '\0';
 
-    if ( !ftpSendCmd( tempbuf, '3' ) )
-    {
+    if ( !ftpSendCmd( tempbuf, '3' ) ) {
       if ( ftplib_debug > 2 )
 	fprintf( stderr, "1> %s\n", rspbuf );
       
@@ -359,8 +350,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
       return false;
     }     
 
-    if ( pass.isEmpty() )
-    {
+    if ( pass.isEmpty() ) {
       QString tmp;
       tmp = user;
       tmp += "@";
@@ -369,35 +359,36 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
       if ( !open_PassDlg( tmp, user, pass ) )
 	return false;
     }
-    cerr << "New pass is '" << pass << "'" << endl;
+    kdebug(0, KDEBUG_INFO, "New pass is '%s'", pass.ascii());
     
     tempbuf = "pass ";
     tempbuf += pass;
     
-    if ( !ftpSendCmd( tempbuf, '2' ) )
-    {
-      cerr << "Wrong password" << endl;
+    if ( !ftpSendCmd( tempbuf, '2' ) ) {
+      kdebug(0, KDEBUG_INFO, "Wrong password");
       return false;
     }
   }
   
-  cerr << "Login ok" << endl;
-  
+  kdebug(0, KDEBUG_INFO, "Login ok");
+
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
   if( ftpSendCmd( "syst", '2' ) )
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
       ftpSendCmd( "site dirstyle", '2' );                                                 
+  else 
+fprintf(stderr,"syst failed\n");
 
   // Not interested in the current working directory ? => return with success
-  if ( _redirect == 0L )
+  if ( _redirect.isEmpty() )
     return true;
 
-  cerr << "Searching for pwd" << endl;
-  
+fprintf(stderr,"Searching for pwd");
+  kdebug(0, KDEBUG_INFO, "Searching for pwd");
+
   // Get the current working directory
-  string tempbuf = "pwd";
-  if ( !ftpSendCmd( tempbuf.c_str(), '2' ) )
+  if ( !ftpSendCmd( "pwd", '2' ) )
     return false;
 
   if ( ftplib_debug > 2 )
@@ -412,7 +403,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
   if ( p2 == 0L )
     return true;
   *p2 = 0;
-  *_redirect = p + 1;
+  _redirect = p + 1;
   return true;
 }
 
@@ -422,18 +413,17 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
  *
  * return 1 if proper response received, 0 otherwise
  */
-bool Ftp::ftpSendCmd( const char *cmd, char expresp )
+bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
 {
   assert( sControl > 0 );
   
-  string buf = cmd;
+  QCString buf = cmd;
   buf += "\r\n";
-  
-  if ( ftplib_debug > 2 )
-    fprintf( stderr, "%s\n", cmd );
 
-  if ( ::write( sControl, buf.c_str(), buf.size() ) <= 0 )
-  {
+  if ( ftplib_debug > 2 )
+    fprintf( stderr, "%s\n", cmd.data() );
+
+  if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
     m_error = ERR_COULD_NOT_WRITE;
     m_errorText = "";
     return false;
@@ -707,8 +697,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
   // only add path if it's not a list command
   // we are changing into this directory anyway, so it's enough just to send "list"
   // and this also works for symlinks
-  if ( _path != 0L && strcmp( _command, "list" ))
-  {      
+  if ( _path != 0L && strcmp( _command, "list" )) {
     tmp += " ";
     tmp += _path;
   }
@@ -802,14 +791,14 @@ bool Ftp::ftpRename( const char *src, const char *dst)
 {
   assert( m_bLoggedOn );
 
-  string cmd;
+  QCString cmd;
   cmd = "RNFR ";
   cmd += src;
-  if ( !ftpSendCmd( cmd.c_str(), '3') )
+  if ( !ftpSendCmd( cmd, '3') )
     return false;
   cmd = "RNTO ";
   cmd += dst;
-  if ( !ftpSendCmd( cmd.c_str() ,'2' ) )
+  if ( !ftpSendCmd( cmd, '2' ) )
     return false;
   return true;
 }
@@ -824,9 +813,9 @@ bool Ftp::ftpDelete( const char *fnm )
 {
   assert( m_bLoggedOn );
 
-  string cmd = "DELE ";
+  QCString cmd = "DELE ";
   cmd += fnm;
-  return ftpSendCmd( cmd.c_str(), '2' );
+  return ftpSendCmd( cmd, '2' );
 }
 
 
@@ -839,7 +828,7 @@ bool Ftp::ftpChmod( const char *src, int mode )
 {
   assert( m_bLoggedOn );
 
-  string cmd;
+  QCString cmd;
   cmd = "SITE CHMOD ";
 
   char buf[10];
@@ -850,7 +839,7 @@ bool Ftp::ftpChmod( const char *src, int mode )
   cmd += buf;
   cmd += src;
 
-  if ( !ftpSendCmd( cmd.c_str() ,'2' ) )
+  if ( !ftpSendCmd( cmd, '2' ) )
     return false;
   return true;
 }
@@ -858,22 +847,21 @@ bool Ftp::ftpChmod( const char *src, int mode )
 
 FtpEntry* Ftp::stat( KURL& _url )
 { 
-  string redirect;
+  QString redirect;
   
   if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
     // The error is already set => we just return
     return 0L;
 
   KURL url( _url );
-  if ( !redirect.empty() && !_url.hasPath() )
-  {    
-    url.setPath( redirect.c_str() );
+  if ( !redirect.isEmpty() && !_url.hasPath() ) { 
+    url.setPath( redirect );
   }
-  
+
   FtpEntry* e = ftpStat( _url );
 
   ftpDisconnect();
-  
+
   return e;
 }
 
@@ -883,12 +871,11 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   static FtpEntry fe;
   m_error = 0;
 
-  cerr << "ftpStat : " << _url.url() << endl;
+  kdebug(0, KDEBUG_INFO, "ftpStat : %s", _url.url().ascii());
 
   QString path = _url.directory();
 
-  if ( path == "" || path == "/" )
-  {
+  if ( path == "" || path == "/" ) {
     fe.access = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     fe.type = S_IFDIR;
     fe.link = "";
@@ -899,44 +886,40 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
     fe.size = 0;
     return &fe;
   }
-  
-  if( !ftpOpenCommand( "list", path, 'A' ) )
-  {
-    cerr << "COULD NOT LIST" << endl;
+
+  if( !ftpOpenCommand( "list", path, 'A' ) ) {
+    kdebug(0, KDEBUG_ERROR, "COULD NOT LIST");
     return 0L;
   }
-  
+
   dirfile = fdopen( sData, "r" );
   if( !dirfile )
     return 0L;
 
-  cerr << "Starting of list was ok" << endl;
+  kdebug(0, KDEBUG_INFO, "Starting of list was ok");
 
-  string search = _url.filename().data();
+  QString search = _url.filename();
   assert( search != "" && search != "/" );
   
   bool found = false;
   FtpEntry *e;
-  while( ( e = readdir() ) && !found )
-  {
-    if ( m_error )
-    {
-      cerr << "FAILED: Read " << error() << " " << errorText() << endl;
+  while( ( e = readdir() ) && !found ) {
+    if ( m_error ) {
+      kdebug(0, KDEBUG_ERROR, "FAILED: Read %s %s", error(), errorText().ascii());
       return 0L;
     }
 
-    if ( search == e->name )
-    {
+    if ( search == e->name ) {
       found = true;
       fe = *e;
     }
     
-    cerr << "$#" << e->name << endl;
+    kdebug(0, KDEBUG_INFO, "$#", e->name.ascii());
   }
 
   if ( !ftpCloseDir() )
     return 0L;
-  
+
   if ( !found )
     return 0L;
 
@@ -946,10 +929,10 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
 
 bool Ftp::opendir( KURL& _url )
 {
-  string path( _url.path(-1) );
+  QString path( _url.path(-1) );
   bool haspath = _url.hasPath();
-  string redirect;
-  
+  QString redirect;
+
   if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
     // The error is already set => we just return
     return false;
@@ -960,10 +943,10 @@ bool Ftp::opendir( KURL& _url )
   else
     redirect = path;
 
-  cerr << "hunting for path '" << redirect << "' now" << endl;
+  kdebug(0, KDEBUG_INFO, "hunting for path '%s'", redirect.ascii());
 
   KURL url( _url );
-  url.setPath( redirect.c_str() );
+  url.setPath( redirect );
 
   return ftpOpenDir( url );
 }
@@ -971,11 +954,10 @@ bool Ftp::opendir( KURL& _url )
 
 bool Ftp::ftpOpenDir( KURL& _url )
 {
-  string path( _url.path(-1) );
+  QString path( _url.path(-1) );
 
-  if( !ftpOpenCommand( "list", path.c_str(), 'A' ) )
-  {
-    cerr << "COULD NOT LIST " << error() << " " << errorText() << endl;
+  if( !ftpOpenCommand( "list", path, 'A' ) ) {
+    kdebug(0, KDEBUG_ERROR, "COULD NOT LIST %s %s", error(), errorText().ascii() );
     return false;
   }
   
@@ -983,8 +965,8 @@ bool Ftp::ftpOpenDir( KURL& _url )
   if( !dirfile )
     return false;
 
-  cerr << "Starting of list was ok" << endl;
-  
+  kdebug(0, KDEBUG_INFO, "Starting of list was ok");
+
   return true;
 }
 
@@ -993,8 +975,7 @@ FtpEntry *Ftp::readdir()
 {
   char buffer[1024];
     
-  while( fgets( buffer, 1024, dirfile ) != 0 )
-  {
+  while( fgets( buffer, sizeof(buffer), dirfile ) != 0 ) {
     FtpEntry* e = ftpParseDir( buffer );
     if ( e )
       return e;
@@ -1006,8 +987,8 @@ FtpEntry *Ftp::readdir()
 
 FtpEntry* Ftp::ftpParseDir( char* buffer )
 {
-  string tmp;
-  
+  QString tmp;
+
   static FtpEntry de;
   const char *p_access, *p_junk, *p_owner, *p_group;
   const char *p_size, *p_date_1, *p_date_2, *p_date_3, *p_name;
@@ -1031,12 +1012,11 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		    if ( p_access[0] == 'l' )
 		    {
 		      tmp = p_name;
-		      int i = tmp.rfind( " -> " );
-		      if ( i != -1 )
-		      {
-			de.link = p_name + i + 4;  
-			tmp.erase( i );
-			p_name = tmp.c_str();
+		      int i = tmp.findRev( " -> " );
+		      if ( i != -1 ) {
+			de.link = p_name + i + 3;  
+			tmp.truncate( i-1 );
+			p_name = tmp;
 		      }
 		      else
 			de.link = "";
@@ -1107,21 +1087,20 @@ bool Ftp::closedir()
 
 bool Ftp::ftpCloseDir()
 {
-  cerr << "... closing" << endl;
-  
-  if ( !readresp( '2' ) )
-  {
-    cerr << "Did not get transfer complete message" << endl;
+  kdebug(0, KDEBUG_INFO, "... closing");
+
+  if ( !readresp( '2' ) ) {
+    kdebug(0, KDEBUG_INFO, "Did not get transfer complete message");
     return false;
   }
-  
+
   return ftpCloseCommand();
 }
 
 
 bool Ftp::open( KURL& _url, Ftp::Mode mode )
 {
-  string redirect;
+  QString redirect;
 
   if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
     // The error is already set => just quit
@@ -1139,7 +1118,7 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
     if ( !ftpOpenCommand( "retr", _url.path(), 'I', offset ) ) {
       if ( ! m_error )
 	{
-	  cerr << "Can't open for reading\n";
+	  kdebug(0, KDEBUG_WARN, "Can't open for reading");
 	  m_error = ERR_CANNOT_OPEN_FOR_READING;
 	  m_errorText = _url.url();
 	}
@@ -1185,15 +1164,14 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  cerr << "... closing" << endl;
-  
+  kdebug(0, KDEBUG_INFO, "... closing");
+
   // first close, then read response ( should be 226 )
 
   bool tmp = ftpCloseCommand();
 
-  if ( !readresp( '2' ) )
-    {
-      cerr << "Did not get transfer complete message" << endl;
+  if ( !readresp( '2' ) ) {
+      kdebug(0, KDEBUG_INFO, "Did not get transfer complete message");
       return false;
     }
   
@@ -1203,7 +1181,7 @@ bool Ftp::ftpClose()
 
 bool Ftp::ftpResume( unsigned long offset )
 {
-  char buf[100];
+  char buf[64];
   sprintf(buf, "rest %ld", offset);
   if ( !ftpSendCmd( buf, '3' ) ) {
     m_error = ERR_CANNOT_RESUME;
@@ -1218,23 +1196,23 @@ bool Ftp::ftpResume( unsigned long offset )
     Warning : the size depends on the transfer mode, hence the second arg. */
 bool Ftp::ftpSize( const char *path, char mode)
 {
-  char buf[100];
-  sprintf( buf, "type %c", mode );
-  if ( !ftpSendCmd( buf, '2' ) )
-    {
+  QCString buf;
+  buf.sprintf("type %c", mode);
+  if ( !ftpSendCmd( buf, '2' ) ) {
       m_error = ERR_COULD_NOT_CONNECT;
       m_errorText = "";
       return false;
-    }
+  }
 
-  sprintf( buf, "SIZE %s", path );
+  buf="SIZE ";
+  buf+=path;
   if (!ftpSendCmd(buf,'2')) {
     m_size = 0;
     return false;
   }
-  
+
   m_size = atol(rspbuf+4); // skip leading "213 " (response code)
-  
+
   return true;
 }
 
@@ -1277,7 +1255,7 @@ size_t Ftp::write(void *buffer, long len)
 
 bool Ftp::mkdir( KURL& _url )
 {
-  string redirect;
+  QString redirect;
 
   if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
     return false;
@@ -1286,16 +1264,14 @@ bool Ftp::mkdir( KURL& _url )
 
   ftpDisconnect();
 
-  if ( !res )
-  {
-    if ( !m_error )
-    {
+  if ( !res ) {
+    if ( !m_error ) {
       m_error = ERR_COULD_NOT_MKDIR;
       m_errorText = _url.url();
     }
     return false;
   }
-  
+
   return true;
 }
 
@@ -1304,8 +1280,7 @@ bool Ftp::mkdir( KURL& _url )
 // Little helper function
 const char* strnextchr( const char * p , char c )
 {
-  while( *p != c && *p != 0L )
-  {
+  while( *p != c && *p != 0L ) {
     p++;
   }
   return p;

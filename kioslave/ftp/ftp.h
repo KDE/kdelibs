@@ -26,16 +26,17 @@
 #define ACCEPT_TIMEOUT 30
 
 #include <string>
+#include <qcstring.h>
 #include <qstring.h>
 
 class KURL;
 
 struct FtpEntry
 {
-  string name;
-  string owner;
-  string group;
-  string link;
+  QString name;
+  QString owner;
+  QString group;
+  QString link;
   
   long size;
   mode_t type;
@@ -105,7 +106,7 @@ private:
    *
    * @return true on success.
    */
-  bool ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, string& _path );
+  bool ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, QString& _path );
   /**
    * Called by @ref #ftpConnect. It opens the control connection to the ftp server.
    *
@@ -119,9 +120,9 @@ private:
    *
    * @return true on success.
    */
-  bool ftpLogin( const char *user, const char *pass, string *redirect = 0L );
+  bool ftpLogin( const char *user, const char *pass, QString& redirect = QString::null );
 
-  bool ftpSendCmd( const char *cmd, char expresp );
+  bool ftpSendCmd( const QCString& cmd, char expresp );
 
   bool ftpChdir( const char *path );
   bool ftpSize( const char *path, char mode );
