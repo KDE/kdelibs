@@ -338,12 +338,12 @@ QString KFileDialog::currentFilter() const
     return filterWidget->currentFilter();
 }
 
-void KFileDialog::setFilterMimeType(const QString &label, 
-	const KMimeType::List &types, const KMimeType::Ptr &defaultType)
+void KFileDialog::setFilterMimeType(const QString &label,
+        const KMimeType::List &types, const KMimeType::Ptr &defaultType)
 {
     d->mimetypes = types;
     d->defaultType = defaultType;
-    d->filterLabel->setText(label); 
+    d->filterLabel->setText(label);
 
     QString filter = i18n("*|Default (%1)").arg(defaultType->comment());
 
@@ -355,12 +355,12 @@ void KFileDialog::setFilterMimeType(const QString &label,
         filter = filter + '\n' + type->patterns().join(QString::fromLatin1(" "))+'|'+type->comment();
     }
 
-    setFilter(filter);    
+    setFilter(filter);
 }
 
 KMimeType::Ptr KFileDialog::currentFilterMimeType()
 {
-    int i = d->filterWidget->currentItem()-1;
+    int i = filterWidget->currentItem()-1;
 
     if ((i >= 0) && (i < d->mimetypes.count()))
        return d->mimetypes[i];
@@ -417,12 +417,12 @@ void KFileDialog::slotOk()
             accept();
         }
         else // FIXME: !exists() -> create dir
-	if ( (mode() & KFile::File) != KFile::File ) {
+        if ( (mode() & KFile::File) != KFile::File ) {
             KMessageBox::error( d->mainWidget,
                                 i18n("You have to select a directory!"),
                                 i18n("Not a directory") );
         return;
-	}
+        }
     }
 
     KIO::StatJob *job = 0L;
