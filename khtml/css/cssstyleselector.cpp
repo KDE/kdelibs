@@ -930,7 +930,34 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_PAGE_BREAK_INSIDE:
     case CSS_PROP_PAUSE_AFTER:
     case CSS_PROP_PAUSE_BEFORE:
+	break;
+
     case CSS_PROP_POSITION:
+    {
+	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    style->setPosition(e->parentNode()->style()->position());
+	    return;
+	}
+	if(!primitiveValue) return;
+	EPosition p;
+	switch(primitiveValue->getIdent())
+	{
+	case CSS_VAL_STATIC:
+	    p = STATIC; break;
+	case CSS_VAL_RELATIVE:
+	    p = RELATIVE; break;
+	case CSS_VAL_ABSOLUTE:
+	    p = ABSOLUTE; break;
+	case CSS_VAL_FIXED:
+	    p = FIXED; break;
+	default:
+	    return;
+	}
+	style->setPosition(p);
+	return;
+    }
+
     case CSS_PROP_SPEAK:
     case CSS_PROP_SPEAK_HEADER:
     case CSS_PROP_SPEAK_NUMERAL:
@@ -941,6 +968,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_VISIBILITY:
     case CSS_PROP_WHITE_SPACE:
 	break;
+
 
 // special properties (css_extensions)
     case CSS_PROP_AZIMUTH:

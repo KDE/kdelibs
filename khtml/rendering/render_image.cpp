@@ -73,6 +73,10 @@ void RenderImage::setPixmap( const QPixmap &p )
 
 void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 {
+    // add offset for relative positioning
+    if(isRelPositioned()) 
+	relativePositionOffset(_tx, _ty);
+
     //kdDebug(300) << "Image::printObject (" << width() << "/" << height() << ")" << endl;
 
     int contentWidth = m_width;

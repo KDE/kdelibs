@@ -83,7 +83,7 @@ public:
 
     // some helper functions...
     /**
-     * is a Element that should be floated in the textstream
+     * is an Element that should be floated in the textstream
      */
     virtual bool isInline() const = 0;
     virtual bool childrenInline() const { return false; }
@@ -91,7 +91,7 @@ public:
     virtual bool isText() const { return false; }
     virtual bool isFlow() const { return false; }
     /**
-     * is a Element that contains a QWidget
+     * is a "replaced" element (see CSS specs for details)
      */
     virtual bool isReplaced() const { return false; }
     virtual bool isListItem() const { return false; }
@@ -127,6 +127,7 @@ public:
 
     /**
      * assumes (_tx/_ty) point to the upper left corner of the object
+     * prints only this object without calling print for the children.
      */
     virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
 			int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
@@ -315,6 +316,8 @@ public:
     virtual void styleChanged(RenderStyle *newStyle=0);
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}
 
+    void relativePositionOffset(int &tx, int &ty);
+    
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 

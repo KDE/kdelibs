@@ -57,8 +57,12 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 {
     if(!(m_widget && m_view)) return;
 
+    // add offset for relative positioning
+    if(isRelPositioned()) 
+	relativePositionOffset(_tx, _ty);
+
     m_view->addChild(m_widget, _tx, _ty);
-    	    
+    	
     if(!m_widget->isVisible())
         m_widget->show();
 }

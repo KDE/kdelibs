@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart;
     doc->widget()->resize(800,500);
 //    doc->widget()->resize(500,300);
+#if 0
     QValueList<int> fontSizes = doc->fontSizes();
     fontSizes[0] = 14;
     fontSizes[1] = 18;
@@ -49,7 +50,8 @@ int main(int argc, char *argv[])
     fontSizes[6] = 38;
     fontSizes[7] = 44;
     doc->setFontSizes(fontSizes);
-
+#endif
+    
     doc->enableJScript(true);
     doc->enableJava(true);
     doc->setCharset("unicode");

@@ -78,10 +78,11 @@ RenderBox::RenderBox(RenderStyle* style)
 	m_positioned = true;
 	break;
     default:
-	if(style->isFloating())
-	{
-	    //kdDebug(300) << "floating element" << endl;
+	if(style->isFloating()) {
 	    m_floating = true;
+	} else {
+	    if(style->position() == RELATIVE)
+		m_relPositioned = true;
 	}
     }
 }

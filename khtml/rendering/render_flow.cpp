@@ -101,7 +101,7 @@ RenderFlow::RenderFlow(RenderStyle* style)
 	setBasicDirection(QChar::DirL);
     else
 	setBasicDirection(QChar::DirR);
-    
+
     m_isAnonymous = false;
 
 }
@@ -139,7 +139,10 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 #ifdef DEBUG_LAYOUT
     kdDebug(300) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
-
+    // add offset for relative positioning
+    if(isRelPositioned()) 
+	relativePositionOffset(_tx, _ty);
+    
 
     // 1. print background, borders etc
     if(m_printSpecial && !isInline())

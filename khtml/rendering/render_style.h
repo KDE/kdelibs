@@ -129,10 +129,10 @@ struct LengthBox
 {
     LengthBox()
     {
-	left = Length(0, Fixed);
-	right = Length(0, Fixed);
-	top = Length(0, Fixed);
-	bottom = Length(0, Fixed);
+	left = Length(0, Undefined);
+	right = Length(0, Undefined);
+	top = Length(0, Undefined);
+	bottom = Length(0, Undefined);
     }
 
     Length left;
@@ -537,8 +537,8 @@ protected:
     EWhiteSpace _white_space : 2;
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
-    
-    bool _htmlHacks :1;    
+
+    bool _htmlHacks :1;
 
 // don't inherit
 
@@ -550,8 +550,8 @@ protected:
     bool _bg_attachment : 1;
     EPosition _position : 2;
     EFloat _floating : 2;
-    
-    bool _flowAroundFloats :1;    
+
+    bool _flowAroundFloats :1;
 
     static RenderStyle* _default;
 
@@ -803,12 +803,12 @@ public:
     void setPaddingBottom(Length v) {  surround.set()->padding.bottom = v; }
     void setPaddingLeft(Length v) {  surround.set()->padding.left = v; }
     void setPaddingRight(Length v) {  surround.set()->padding.right = v; }
-    
+
     bool htmlHacks() const { return _htmlHacks; }
     void setHtmlHacks(bool b=true) { _htmlHacks = b; }
-    
+
     bool flowAroundFloats() const { return _flowAroundFloats; }
-    void setFlowAroundFloats(bool b=true) { _flowAroundFloats = b; }    
+    void setFlowAroundFloats(bool b=true) { _flowAroundFloats = b; }
 };
 
 } // namespace

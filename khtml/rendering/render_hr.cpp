@@ -51,17 +51,21 @@ RenderHR::~RenderHR()
 
 void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
 {
-  
+    // add offset for relative positioning
+    if(isRelPositioned()) 
+	relativePositionOffset(_tx, _ty);
+
+
     QColorGroup colorGrp( Qt::black, Qt::black, QColor(220,220,220), QColor(100,100,100),
     Qt::gray, Qt::black, Qt::black );
- 
+
     int l = m_width;
     int xp = _tx;
- 
+
     int yp = _ty ;
- 
+
     int lw = size/2;
- 
+
     if ( shade )
     {
         if(size < 2) size = 2, lw = 1;
@@ -72,16 +76,16 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
     {
         if(size < 1) size = 1;
         p->fillRect( xp, yp, l, size, Qt::black );
-    } 
+    }
 }
 
 void RenderHR::layout(bool)
 {
     calcMinMaxWidth();
-    m_height = size+2; 
+    m_height = size+2;
     if (m_width==0)
-    	m_width = containingBlockWidth();    
-    setLayouted(true);  
+    	m_width = containingBlockWidth();
+    setLayouted(true);
 }
 
 void RenderHR::calcMinMaxWidth()
