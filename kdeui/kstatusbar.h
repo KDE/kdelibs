@@ -192,6 +192,16 @@ public:
   /**
    *  Sets the alignment of a field. By default all fields are aligned left.
    *  Usefull only for labels.
+   *
+   *  Valid values for align are:
+   *
+   *  @li AlignLeft aligns to the left border. 
+   *  @li AlignRight aligns to the right border. 
+   *  @li AlignHCenter aligns horizontally centered. 
+   *  @li AlignTop aligns to the top border. 
+   *  @li AlignBottom aligns to the bottom border. 
+   *  @li AlignVCenter aligns vertically centered 
+   *  @li AlignCenter (= AlignHCenter | AlignVCenter)
    */
   void setAlignment( int id, int align );
 
