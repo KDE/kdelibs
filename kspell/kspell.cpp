@@ -38,7 +38,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include "kspell.h"
-#include <kwm.h>
+#include <kwin.h>
 
 #define MAXLINELENGTH 150
 
@@ -289,8 +289,7 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
 		SLOT (slotStopCancel (int)) );
   connect (this, SIGNAL ( progress (unsigned int) ),
 	   ksdlg, SLOT ( slotProgress (unsigned int) ));
-  KWM kwm;
-  kwm.setMiniIcon (ksdlg->winId(), kapp->miniIcon());
+  KWin::setIcons (ksdlg->winId(), kapp->icon(), kapp->miniIcon());
 
   dialogsetup = TRUE;
 }
