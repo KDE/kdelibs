@@ -736,7 +736,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     {
         checkBuffer();
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
-        int l = 0;
+        uint l = 0;
         while(l < src.length() && (*(src.current()+l)).latin1() != '>')
             l++;
         qDebug("src is now: *%s*, tquote: %d",
@@ -813,8 +813,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 else
                     // Start Tag
                     beginTag = true;
-                // limited xhtml support. Accept empty xml tags like <br/>
-                if(len > 1 && ptr[len-1] == '/' ) ptr[--len] = '\0';
+                // Accept empty xml tags like <br/>
+                if(len > 1 && ptr[len-1] == '/' ) {
+                    ptr[--len] = '\0';
+                    // if its like <br/> and not like <input/ value=foo>, take it as flat
+                    if (*src == '>')
+                        currToken.flat = true;
+                }
 
                 uint tagID = khtml::getTagID(ptr, len);
                 if (!tagID) {
@@ -848,7 +853,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             while(src.length()) {
                 curchar = *src;
                 if(curchar > ' ') {
-                    if(curchar == '>' || curchar == '/')
+                    if(curchar == '>')
                         tag = SearchEnd;
                     else if(atespace && (curchar == '\'' || curchar == '"'))
                     {
@@ -893,6 +898,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         else
                             kdDebug( 6036 ) << "Known attribute: " << QCString(cBuffer, cBufferPos+1).data() << endl;
 #endif
+                        // did we just get />
+                        if (!a && cBufferPos == 1 && *cBuffer == '/' && curchar == '>')
+                            currToken.flat = true;
+
                         tag = SearchEqual;
                         break;
                     }
@@ -1045,6 +1054,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             while(src.length()) {
                 if(*src == '>')
                     break;
+
+                if (*src == '/')
+                    currToken.flat = true;
 
                 ++src;
             }
@@ -1510,20 +1522,8 @@ void HTMLTokenizer::processToken()
         }
 
 #endif
-#if QT_VERSION < 300
-        if ( currToken.complexText ) {
-            // ### we do too much QString copying here, but better here than in RenderText...
-            // anyway have to find a better solution in the long run (lars)
-            QString s(buffer, dest-buffer);
-            s.compose();
-            currToken.text = new DOMStringImpl( s.unicode(), s.length() );
-            currToken.text->ref();
-        } else
-#endif
-	{
-            currToken.text = new DOMStringImpl( buffer, dest - buffer );
-            currToken.text->ref();
-        }
+        currToken.text = new DOMStringImpl( buffer, dest - buffer );
+        currToken.text->ref();
         if (currToken.id != ID_COMMENT)
             currToken.id = ID_TEXT;
     }
@@ -1545,7 +1545,7 @@ void HTMLTokenizer::processToken()
     kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.id << endl;
     if(!text.isNull())
         kdDebug( 6036 ) << "text: \"" << text << "\"" << endl;
-    int l = currToken.attrs ? currToken.attrs->length() : 0;
+    unsigned long l = currToken.attrs ? currToken.attrs->length() : 0;
     if(l) {
         kdDebug( 6036 ) << "Attributes: " << l << endl;
         for (unsigned long i = 0; i < l; ++i) {

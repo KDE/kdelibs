@@ -211,6 +211,9 @@ void KHTMLParser::parseToken(Token *t)
     if(t->id == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
         t->id -= ID_CLOSE_TAG;
 
+    if (t->flat)
+        flat = true;
+
     if(t->id > ID_CLOSE_TAG)
     {
         processCloseTag(t);
@@ -1058,7 +1061,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_MARQUEE:
         n = new HTMLGenericElementImpl(document, t->id);
-        break;        
+        break;
 // text
     case ID_TEXT:
         n = new TextImpl(document, t->text);
