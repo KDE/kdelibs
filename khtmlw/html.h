@@ -1525,4 +1525,6 @@ protected:
     QDict<HTMLPendingFile> mapPendingFiles;
 };
 
+extern QCursor handCursor;
+
 #endif // HTML
