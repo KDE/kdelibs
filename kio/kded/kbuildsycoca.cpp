@@ -201,20 +201,20 @@ void KBuildSycoca::saveOfferList( KSycocaFactory * serviceFactory,
    (*str) << (Q_INT32) 0;               // End of list marker (0)
 }
 
-
-/**
- * Saves the mimetype patterns index
- * @return the index of the start of the index
- */
-void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory )
+void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory, 
+                                        Q_INT32 & entrySize,
+                                        Q_INT32 & otherIndexOffset )
 {
    if (!servicetypeFactory)
    {
      kdebug(KDEBUG_WARN, 7011, "No service type factory. Can't save mimetype patterns index.");
+     entrySize = 0;
+     otherIndexOffset = 0;
      return;
    }
-   // Store each pattern in a string list(for sorting)
-   QStringList patterns;
+   // Store each patterns in one of the 2 string lists (for sorting)
+   QStringList fastPatterns;  // for *a to *abcde (a can be '.' of course)
+   QStringList otherPatterns; // for the rest (core.*, *.tar.bz2) ...
    QDict<KMimeType> dict;
    // For each mimetype in servicetypeFactory
    for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
@@ -226,20 +226,45 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory )
         QStringList pat = ( (KMimeType *) it.current())->patterns();
         QStringList::ConstIterator patit = pat.begin();
         for ( ; patit != pat.end() ; ++patit )
-          if (!(*patit).isEmpty()) // some stupid mimetype files have "Patterns=;"
-          {
-            patterns.append( (*patit) );
-            dict.insert( (*patit), (KMimeType *) it.current() );
-          }
+        {
+          if ( (*patit)[0] == '*' && (*patit).length() <= 6 ) // *a to *abcde patterns
+            fastPatterns.append( (*patit) );
+          else if (!(*patit).isEmpty()) // some stupid mimetype files have "Patterns=;"
+            otherPatterns.append( (*patit) );
+          // Assumption : there is only one mimetype for that pattern
+          // It doesn't really make sense otherwise, anyway.
+          dict.replace( (*patit), (KMimeType *) it.current() );
+        }
       }
    }
-   // Sort the list
-   patterns.sort();
-   // Now for each pattern
-   QStringList::ConstIterator it = patterns.begin();
-   for ( ; it != patterns.end() ; ++it )
+   // Sort the list - the fast one, useless for the other one
+   fastPatterns.sort();
+
+   entrySize = 0;
+
+   // For each fast pattern
+   QStringList::ConstIterator it = fastPatterns.begin();
+   for ( ; it != fastPatterns.end() ; ++it )
    {
-     debug("SORTED : '%s' '%s'",(*it).ascii(), dict[(*it)]->name().ascii());
+     int start = str->device()->at();
+     // Justify to 6 chars with spaces, so that the size remains constant
+     // in the database file.
+     QString paddedPattern = (*it).leftJustify(6);
+     kdebug(KDEBUG_INFO, 7011, QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()));
+     (*str) << paddedPattern;
+     (*str) << dict[(*it)]->offset();
+     // Check size remains constant
+     assert( !entrySize || ( entrySize == str->device()->at() - start ) );
+     entrySize = str->device()->at() - start;
+   }
+   // For the other patterns
+   otherIndexOffset = str->device()->at();
+   it = otherPatterns.begin();
+   for ( ; it != otherPatterns.end() ; ++it )
+   {
+     kdebug(KDEBUG_INFO, 7011, QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()));
+     (*str) << (*it);
+     (*str) << dict[(*it)]->offset();
    }
    
    (*str) << (Q_INT32) 0;               // End of list marker (0)
@@ -270,6 +295,8 @@ void KBuildSycoca::save()
    (*str) << (Q_INT32) 0; // No more factories.
    (*str) << (Q_INT32) 0; // Offer list offset
    (*str) << (Q_INT32) 0; // Mimetype patterns index offset
+   (*str) << (Q_INT32) 0; // 'Other' patterns index offset
+   (*str) << (Q_INT32) 0; // Entry size in the mimetype-patterns index ("fast" part)
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -283,7 +310,9 @@ void KBuildSycoca::save()
    saveOfferList( serviceFactory, servicetypeFactory );
 
    Q_INT32 mimeTypesPatternsOffset = str->device()->at();
-   saveMimeTypePattern( servicetypeFactory );
+   Q_INT32 entrySize;
+   Q_INT32 otherIndexOffset;
+   saveMimeTypePattern( servicetypeFactory, entrySize, otherIndexOffset );
    
    int endOfData = str->device()->at();
 
@@ -308,6 +337,10 @@ void KBuildSycoca::save()
    kdebug(KDEBUG_INFO, 7011, QString("mimeTypesPatternsOffset : %1").
           arg(mimeTypesPatternsOffset,8,16));
    (*str) << mimeTypesPatternsOffset;;
+   kdebug(KDEBUG_INFO, 7011, QString("otherIndexOffset : %1").
+          arg(otherIndexOffset,8,16));
+   (*str) << otherIndexOffset;;
+   (*str) << entrySize;
 
    kdebug(KDEBUG_INFO, 7011, QString("endOfData : %1").
           arg(endOfData,8,16));

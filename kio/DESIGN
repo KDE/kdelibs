@@ -8,6 +8,9 @@ List of factories
  | * ...
  | * 0
  | * Offer-list offset
+ | * Mimetype-patterns index offset (fast patterns)
+ | * Mimetype-patterns index offset (other)
+ | * Entry size in the mimetype-patterns index ("fast" part)
 
 For each factory
  | * offset of the dict
@@ -40,5 +43,16 @@ This allows to quickly find services associated with a servicetype.
 It does NOT reflect the user profile, which is stored in profilerc and
 implemented in KServiceTypeProfile.
 
-TODO : allow matchFilename on each mimetype without creating them
-Another index, with (mask, mimetype offset) ? Difficult since mask is a string.
+Mimetype patterns
+| Fast patterns (fixed size)
+| * Pattern (padded to 6 chars), mimetype offset
+| * Pattern (padded to 6 chars), mimetype offset
+| * Pattern (padded to 6 chars), mimetype offset
+| Other patterns (variable size)
+| * Pattern, mimetype offset
+| * Pattern, mimetype offset
+| * 0
+
+The first one is designed for a binary search, since entries have a fixed size
+and are sorted by extension.
+The second one (10% of the mimetypes usually) is for a linear search.
