@@ -88,19 +88,13 @@ QActionSeparator::~QActionSeparator()
 {
 }
 
-int QActionSeparator::plug( QWidget* widget )
+int QActionSeparator::plug( QWidget* widget, int index )
 {
     if ( widget->inherits("QPopupMenu") )
     {
 	QPopupMenu* menu = (QPopupMenu*)widget;
 
-#ifndef QT_BUILDER	
-	menu->insertSeparator();
-	
-	int id = menu->idAt( menu->count() - 1 );
-#else
-	int id = menu->insertSeparator();
-#endif
+	int id = menu->insertSeparator( index );
 	
 	addContainer( menu, id );
 	connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -364,7 +358,7 @@ void QAction::setEnabled( int i, bool e )
 	((QMenuBar*)c)->setItemEnabled( menuId( i ), e );
 }
 
-int QAction::plug( QWidget* widget )
+int QAction::plug( QWidget* widget, int index )
 {
     if ( widget->inherits("QPopupMenu") )
     {
@@ -372,14 +366,14 @@ int QAction::plug( QWidget* widget )
 	int id;
 	if ( !m_pixmap.isNull() )
         {
-	    id = menu->insertItem( m_pixmap, this, SLOT( slotActivated() ), accel() );	
+	    id = menu->insertItem( m_pixmap, this, SLOT( slotActivated() ), accel(), -1, index );	
 	}
 	else
         {
 	    if ( m_bIconSet )
-		id = menu->insertItem( m_iconSet, m_text, this, SLOT( slotActivated() ), accel() );
+		id = menu->insertItem( m_iconSet, m_text, this, SLOT( slotActivated() ), accel(), -1, index );
 	    else
-		id = menu->insertItem( m_text, this, SLOT( slotActivated() ), accel() );
+		id = menu->insertItem( m_text, this, SLOT( slotActivated() ), accel(), -1, index );
 	}
 
 	menu->setItemEnabled( id, m_enabled );
@@ -756,11 +750,11 @@ QPopupMenu* QActionMenu::popupMenu()
     return m_popup;
 }
 
-void QActionMenu::insert( QAction* cmd )
+void QActionMenu::insert( QAction* cmd, int index )
 {
     // m_children.append( cmd );
     if ( cmd )
-	cmd->plug( m_popup );
+	cmd->plug( m_popup, index );
 }
 
 void QActionMenu::remove( QAction* cmd )
@@ -769,13 +763,13 @@ void QActionMenu::remove( QAction* cmd )
 	cmd->unplug( m_popup );
 }
 
-int QActionMenu::plug( QWidget* widget )
+int QActionMenu::plug( QWidget* widget, int index )
 {
     if ( widget->inherits("QMenuBar") )
     {
 	QMenuBar* bar = (QMenuBar*)widget;
 	int id;
-	id = bar->insertItem( text(), m_popup );
+	id = bar->insertItem( text(), m_popup, -1, index );
 
 	addContainer( bar, id );
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -787,13 +781,13 @@ int QActionMenu::plug( QWidget* widget )
 	QPopupMenu* menu = (QPopupMenu*)widget;
 	int id;
 	if ( !pixmap().isNull() )
-	    id = menu->insertItem( pixmap(), m_popup );	
+	    id = menu->insertItem( pixmap(), m_popup, -1, index );	
 	else
         {
 	    if ( hasIconSet() )
-		id = menu->insertItem( iconSet(), text(), m_popup );
+		id = menu->insertItem( iconSet(), text(), m_popup, -1, index );
 	    else
-		id = menu->insertItem( text(), m_popup );
+		id = menu->insertItem( text(), m_popup, -1, index );
 	}
 
 	menu->setItemEnabled( id, isEnabled() );
@@ -1449,7 +1443,7 @@ QToggleAction::QToggleAction( QObject* parent, const char* name )
     m_lock = FALSE;
 }
 
-int QToggleAction::plug( QWidget* widget )
+int QToggleAction::plug( QWidget* widget, int index )
 {
     if ( !widget->inherits("QPopupMenu") && !widget->inherits("QActionWidget" ) &&
 	 !widget->inherits("QToolBar") )
@@ -1458,27 +1452,27 @@ int QToggleAction::plug( QWidget* widget )
 	return -1;	
     }
 
-    int index = QAction::plug( widget );
-    if ( index == -1 )
-	return index;
+    int _index = QAction::plug( widget, index );
+    if ( _index == -1 )
+	return _index;
 
     if ( widget->inherits("QPopupMenu") )
     {
-	int id = menuId( index );
+	int id = menuId( _index );
 
-	popupMenu( index )->setItemChecked( id, m_checked );
+	popupMenu( _index )->setItemChecked( id, m_checked );
     }
     else if ( widget->inherits("QActionWidget" ) )
     {
     }
     else if ( widget->inherits("QToolBar") )
     {
-	QToolButton* b = (QToolButton*)representative( index );
+	QToolButton* b = (QToolButton*)representative( _index );
 	b->setToggleButton( TRUE );
 	b->setOn( m_checked );
     }
 
-    return index;
+    return _index;
 }
 
 void QToggleAction::setChecked( bool checked )
@@ -1771,7 +1765,7 @@ int QSelectAction::currentItem()
     return m_current;
 }
 
-int QSelectAction::plug( QWidget* widget )
+int QSelectAction::plug( QWidget* widget, int index )
 {
     if ( widget->inherits("QPopupMenu") )
     {
@@ -1782,14 +1776,14 @@ int QSelectAction::plug( QWidget* widget )
 	int id;
 	if ( !pixmap().isNull() )
         {
-	    id = menu->insertItem( pixmap(), m_menu );
+	    id = menu->insertItem( pixmap(), m_menu, -1, index );
 	}
 	else
         {
 	    if ( hasIconSet() )
-		id = menu->insertItem( iconSet(), text(), m_menu );
+		id = menu->insertItem( iconSet(), text(), m_menu, -1, index );
 	    else
-		id = menu->insertItem( text(), m_menu );
+		id = menu->insertItem( text(), m_menu, -1, index );
 	}
 
 	menu->setItemEnabled( id, isEnabled() );
@@ -2037,7 +2031,7 @@ void QFontSizeAction::slotActivated( const QString& size )
     m_lock = FALSE;
 }
 
-int QFontSizeAction::plug( QWidget* widget )
+int QFontSizeAction::plug( QWidget* widget, int index )
 {
     if ( widget->inherits("QToolBar") )
     {
@@ -2060,7 +2054,7 @@ int QFontSizeAction::plug( QWidget* widget )
 	return containerCount() - 1;
     }
 
-    return QSelectAction::plug( widget );
+    return QSelectAction::plug( widget, index );
 }
 
 template class QList<QAction>;

@@ -38,7 +38,7 @@ public:
 
     virtual void update();
 
-    virtual int plug( QWidget* );
+    virtual int plug( QWidget*, int index = -1 );
     virtual void unplug( QWidget* );
 
     virtual bool isPlugged() const;
@@ -139,7 +139,7 @@ public:
     QActionSeparator( QObject* parent = 0, const char* name = 0 );
     virtual ~QActionSeparator();
 
-    virtual int plug( QWidget* );
+    virtual int plug( QWidget*, int index = -1 );
     virtual void unplug( QWidget* );
 };
 
@@ -152,10 +152,10 @@ public:
     QActionMenu( QObject* parent = 0, const char* name = 0 );
     virtual ~QActionMenu();
 
-    virtual int plug( QWidget* );
+    virtual int plug( QWidget*, int index = -1 );
     virtual void unplug( QWidget* );
 
-    virtual void insert( QAction* );
+    virtual void insert( QAction*, int index = -1 );
     virtual void remove( QAction* );
 
     QPopupMenu* popupMenu();
@@ -180,7 +180,7 @@ public:
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     QToggleAction( QObject* parent = 0, const char* name = 0 );
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
 
     virtual void setChecked( bool );
     bool isChecked();
@@ -219,7 +219,7 @@ public:
     void setEditable( bool );
     bool isEditable() const;
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
 
     virtual void setItems( const QStringList& items );
     QStringList items();
@@ -282,7 +282,7 @@ public:
 		     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     QFontSizeAction( QObject* parent = 0, const char* name = 0 );
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
 
     void setFontSize( int size );
     int fontSize();

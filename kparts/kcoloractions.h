@@ -91,7 +91,7 @@ public:
 		     QObject *receiver, const char *leftClickSlot, const char *rightClickSlot,
 		     const QValueList<QColor> &cols, QObject *parent, const char *name );
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
     
 signals:
     void leftClicked( const QColor &c );

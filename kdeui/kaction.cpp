@@ -121,7 +121,7 @@ KAction::KAction( QObject* parent, const char* name )
 {
 }
 
-int KAction::plug( QWidget *w )
+int KAction::plug( QWidget *w, int index )
 {
   if ( w->inherits( "KToolBar" ) )
   {
@@ -129,7 +129,7 @@ int KAction::plug( QWidget *w )
 
     int id_ = get_toolbutton_id();
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-		       isEnabled(), plainText() );
+		       isEnabled(), plainText(), index );
 
     addContainer( bar, id_ );
 
@@ -138,7 +138,7 @@ int KAction::plug( QWidget *w )
     return containerCount() - 1;
   }
 
-  return QAction::plug( w );
+  return QAction::plug( w, index );
 }
 
 
@@ -244,7 +244,7 @@ KToggleAction::KToggleAction( QObject* parent, const char* name )
     locked2 = FALSE;
 }
 
-int KToggleAction::plug( QWidget* widget )
+int KToggleAction::plug( QWidget* widget, int index )
 {
     if ( !widget->inherits("QPopupMenu") && !widget->inherits("QActionWidget" ) &&
          !widget->inherits("KToolBar") ) {
@@ -252,29 +252,29 @@ int KToggleAction::plug( QWidget* widget )
         return -1;	
     }
 
-    int index = -1;
+    int _index = -1;
     if ( widget->inherits( "KToolBar" ) ) {
         KToolBar *bar = (KToolBar *)widget;
 
         int id_ = get_toolbutton_id();
         bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-                           isEnabled(), plainText() );
+                           isEnabled(), plainText(), index );
 
         addContainer( bar, id_ );
 
         connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-        index =  containerCount() - 1;
+        _index =  containerCount() - 1;
     } else
-        index = QToggleAction::plug( widget );
+        _index = QToggleAction::plug( widget, index );
 
-    if ( index == -1 )
-        return index;
+    if ( _index == -1 )
+        return _index;
 
     if ( widget->inherits("QPopupMenu") ) {
-        int id = menuId( index );
+        int id = menuId( _index );
 
-        popupMenu( index )->setItemChecked( id, isChecked() );
+        popupMenu( _index )->setItemChecked( id, isChecked() );
     }
     else if ( widget->inherits("QActionWidget" ) )
     {
@@ -282,11 +282,11 @@ int KToggleAction::plug( QWidget* widget )
     else if ( widget->inherits("KToolBar") )
     {
         KToolBar *bar = (KToolBar*)container( index );
-        bar->setToggle( menuId( index ), TRUE );
-        bar->setButton( menuId( index ), isChecked() );
+        bar->setToggle( menuId( _index ), TRUE );
+        bar->setButton( menuId( _index ), isChecked() );
     }
 
-    return index;
+    return _index;
 }
 
 void KToggleAction::setChecked( bool c )
@@ -428,7 +428,7 @@ void KSelectAction::setItems( const QStringList& lst )
     }
 }
 
-int KSelectAction::plug( QWidget *widget )
+int KSelectAction::plug( QWidget *widget, int index )
 {
     if ( widget->inherits("QPopupMenu") )
     {
@@ -439,14 +439,14 @@ int KSelectAction::plug( QWidget *widget )
 	int id;
 	if ( !pixmap().isNull() )
         {
-	    id = menu->insertItem( pixmap(), popupMenu() );
+	    id = menu->insertItem( pixmap(), popupMenu(), -1, index );
 	}
 	else
         {
 	    if ( hasIconSet() )
-		id = menu->insertItem( iconSet(), text(), popupMenu() );
+		id = menu->insertItem( iconSet(), text(), popupMenu(), -1, index );
 	    else
-		id = menu->insertItem( text(), popupMenu() );
+		id = menu->insertItem( text(), popupMenu(), -1, index );
 	}
 
 	menu->setItemEnabled( id, isEnabled() );
@@ -469,7 +469,7 @@ int KSelectAction::plug( QWidget *widget )
 	KToolBar* bar = (KToolBar*)widget;
 	int id_ = get_toolbutton_id();
 	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( const QString & ) ),
-			  this, SLOT( slotActivated( const QString & ) ) );
+			  this, SLOT( slotActivated( const QString & ) ), true, QString::null, 70, index );
 	QComboBox *cb = bar->getCombo( id_ );
 	if ( cb ) {
 	    cb->setMinimumWidth( cb->sizeHint().width() );
@@ -573,9 +573,9 @@ void KFontAction::setFont( const QString &family )
 	setCurrentItem( i );
 }
 
-int KFontAction::plug( QWidget *w )
+int KFontAction::plug( QWidget *w, int index )
 {
-    int container = KSelectAction::plug( w );
+    int container = KSelectAction::plug( w, index );
 
     if ( container != -1 && w->inherits( "KToolBar" ) )
 	((KToolBar *)w)->getCombo( menuId( container ) )->setAutoCompletion( TRUE );
@@ -708,7 +708,7 @@ KActionMenu::KActionMenu( const QString& text, const QIconSet& icon, QObject* pa
 {
 }
 
-int KActionMenu::plug( QWidget* widget )
+int KActionMenu::plug( QWidget* widget, int index )
 {
 
   if ( widget->inherits( "KToolBar" ) )
@@ -717,7 +717,7 @@ int KActionMenu::plug( QWidget* widget )
 
     int id_ = get_toolbutton_id();
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-		       isEnabled(), plainText() );
+		       isEnabled(), plainText(), index );
 
     addContainer( bar, id_ );
 
@@ -728,7 +728,7 @@ int KActionMenu::plug( QWidget* widget )
     return containerCount() - 1;
   }
 
-  return QActionMenu::plug( widget );
+  return QActionMenu::plug( widget, index );
 }
 
 void KActionMenu::unplug( QWidget* widget )
@@ -796,35 +796,35 @@ KActionSeparator::KActionSeparator( QObject *parent, const char *name )
 {
 }
 
-int KActionSeparator::plug( QWidget *widget )
+int KActionSeparator::plug( QWidget *widget, int index )
 {
   if ( widget->inherits( "KMenuBar" ) )
   {
     KMenuBar *menuBar = (KMenuBar *)widget;
-    
-    int id = menuBar->insertSeparator();
-    
+
+    int id = menuBar->insertSeparator( index );
+
     addContainer( menuBar, id );
-    
+
     connect( menuBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-    
+
     return containerCount() - 1;
   }
   else if ( widget->inherits( "KToolBar" ) )
   {
     KToolBar *toolBar = (KToolBar *)widget;
-    
-    int id = toolBar->insertSeparator( id );
-    
+
+    int id = toolBar->insertSeparator( index );
+
     addContainer( toolBar, id );
-    
+
     connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-    
+
     return containerCount() - 1;
   }
-  
-  return QActionSeparator::plug( widget );
-} 
+
+  return QActionSeparator::plug( widget, index );
+}
 
 void KActionSeparator::unplug( QWidget *widget )
 {
@@ -841,12 +841,12 @@ void KActionSeparator::unplug( QWidget *widget )
     }
     return;
   }
-  else if ( widget->inherits( "KToolBar" ) ) 
+  else if ( widget->inherits( "KToolBar" ) )
   {
     KToolBar *toolBar = (KToolBar *)widget;
-    
+
     int i = findContainer( toolBar );
-    
+
     if ( i != -1 )
     {
       toolBar->removeItem( menuId( i ) );
@@ -856,8 +856,8 @@ void KActionSeparator::unplug( QWidget *widget )
   }
 
   QActionSeparator::unplug( widget );
-  return;    
-}  
-  
+  return;
+}
+
 #include "kaction.moc"
 

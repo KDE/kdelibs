@@ -37,7 +37,7 @@ public:
 	     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KAction( QObject* parent = 0, const char* name = 0 );
 
-    virtual int plug( QWidget *w );
+    virtual int plug( QWidget *w, int index = -1 );
     virtual void unplug( QWidget *w );
 
     virtual void setEnabled( bool b );
@@ -61,7 +61,7 @@ public:
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KToggleAction( QObject* parent = 0, const char* name = 0 );
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
 
     virtual void setChecked( bool );
     bool isChecked() const;
@@ -89,7 +89,7 @@ public:
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KSelectAction( QObject* parent = 0, const char* name = 0 );
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
 
     virtual void setCurrentItem( int i );	
     void setItems( const QStringList& lst );
@@ -124,7 +124,7 @@ public:
 	return currentText();
     }
 
-    int plug( QWidget* );
+    int plug( QWidget*, int index = -1 );
 
 private:
     QStringList fonts;
@@ -170,7 +170,7 @@ public:
     KActionMenu( const QString& text, const QIconSet& icon, QObject* parent = 0, const char* name = 0 );
     KActionMenu( QObject* parent = 0, const char* name = 0 );
 
-    virtual int plug( QWidget* widget );
+    virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
     virtual void setEnabled( bool b );
@@ -183,10 +183,10 @@ public:
 class KActionSeparator : public QActionSeparator
 {
     Q_OBJECT
-public: 
+public:
     KActionSeparator( QObject* parent = 0, const char* name = 0 );
 
-    virtual int plug( QWidget* );
+    virtual int plug( QWidget*, int index = -1 );
     virtual void unplug( QWidget* );
 };
 

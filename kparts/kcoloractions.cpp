@@ -247,7 +247,7 @@ KColorBarAction::KColorBarAction( const QString &text, int accel,
     rightClickSlot = qstrdup( rightClickSlot_ );
 }
 
-int KColorBarAction::plug( QWidget *widget )
+int KColorBarAction::plug( QWidget *widget, int index )
 {
     if ( widget && widget->inherits( "QToolBar" ) ) {
 	QToolBar* bar = (QToolBar*)widget;
@@ -272,7 +272,7 @@ int KColorBarAction::plug( QWidget *widget )
 	KToolBar* bar = (KToolBar*)widget;
 	KColorBar *b;
 	b = new KColorBar( colors, widget, "" );
-	bar->insertWidget( -1, b->width(), b );
+	bar->insertWidget( -1, b->width(), b, index );
 	b->resize( 100, 25 );
 	b->show();
 	connect( b, SIGNAL( leftClicked( const QColor & ) ),
