@@ -831,7 +831,7 @@ private:
    * @internal
    */
   bool requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
-                     const QStringList &args = QStringList() );
+                     const QStringList &args = QStringList(), bool isIFrame = false );
 
   /**
    * @internal returns a name for a frame without a name.

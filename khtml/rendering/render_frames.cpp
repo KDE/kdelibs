@@ -655,7 +655,7 @@ void RenderPartObject::close()
       url = o->url.string();
       if( url.isEmpty()) return;
       KHTMLView *v = static_cast<KHTMLView *>(m_view);
-      v->part()->requestFrame( this, url, o->name.string() );
+      v->part()->requestFrame( this, url, o->name.string(), QStringList(), true );
   }
 
   layout();

@@ -94,7 +94,9 @@ namespace khtml
 {
   struct ChildFrame
   {
-    ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_bFrame = true; m_bNotify = false; }
+      enum Type { Frame, IFrame, Object };
+
+      ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
 
     RenderPart *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -108,7 +110,7 @@ namespace khtml
     QGuardedPtr<KHTMLRun> m_run;
     bool m_bPreloaded;
     KURL m_workingURL;
-    bool m_bFrame;
+      Type m_type;
     QStringList m_params;
     bool m_bNotify;
   };
@@ -2262,7 +2264,17 @@ void KHTMLPart::slotSetEncoding()
 
 void KHTMLPart::updateActions()
 {
-  bool frames = d->m_frames.count() > 0;
+  bool frames = false;
+
+  QValueList<khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
+  QValueList<khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+  for (; it != end; ++it )
+      if ( (*it).m_type == khtml::ChildFrame::Frame )
+      {
+          frames = true;
+          break;
+      }
+
   d->m_paViewFrame->setEnabled( frames );
   d->m_paSaveFrame->setEnabled( frames );
 
@@ -2310,7 +2322,7 @@ void KHTMLPart::updateActions()
 }
 
 bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
-                              const QStringList &params )
+                              const QStringList &params, bool isIFrame )
 {
 //  kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
   if (url.isEmpty())
@@ -2324,6 +2336,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
     it = d->m_frames.append( child );
   }
 
+  (*it).m_type = isIFrame ? khtml::ChildFrame::IFrame : khtml::ChildFrame::Frame;
   (*it).m_frame = frame;
   (*it).m_params = params;
 
@@ -2343,7 +2356,7 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
   (*it).m_frame = frame;
-  (*it).m_bFrame = false;
+  (*it).m_type = khtml::ChildFrame::Object;
   (*it).m_params = params;
 
   KParts::URLArgs args;
@@ -2423,14 +2436,14 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     if ( child->m_frame )
       child->m_frame->setWidget( part->widget() );
 
-    if ( child->m_bFrame )
+    if ( child->m_type != khtml::ChildFrame::Object )
       partManager()->addPart( part, false );
 //     else
 //         kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
 
-    if ( child->m_bFrame )
+    if ( child->m_type != khtml::ChildFrame::Object )
     {
       connect( part, SIGNAL( started( KIO::Job *) ),
                this, SLOT( slotChildStarted( KIO::Job *) ) );
