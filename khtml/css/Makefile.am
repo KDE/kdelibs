@@ -22,7 +22,7 @@ libkhtmlcss_la_SOURCES = \
 	css_stylesheetimpl.cpp  css_ruleimpl.cpp        css_valueimpl.cpp \
 	cssparser.cpp cssstyleselector.cpp csshelper.cpp
 
-libkhtmlcss_la_LDFLAGS = -no-undefined 
+#libkhtmlcss_la_LDFLAGS = -no-undefined 
 libkhtmlcss_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
