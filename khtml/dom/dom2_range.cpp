@@ -83,7 +83,7 @@ Range::~Range()
 Node Range::startContainer() const
 {
     checkCommon();
-    impl->getStartContainer();
+    return impl->getStartContainer();
     return 0;
 }
 

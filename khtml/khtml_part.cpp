@@ -1880,8 +1880,8 @@ void KHTMLPart::setSelection( const DOM::Range &r )
     d->m_startOffset = r.startOffset();
     d->m_selectionEnd = r.endContainer();
     d->m_endOffset = r.endOffset();
-    d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
-			   d->m_selectionEnd.handle(),d->m_startOffset);
+    d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+			   d->m_selectionEnd.handle(),d->m_endOffset);
 }
 
 void KHTMLPart::overURL( const QString &url, const QString &target )
