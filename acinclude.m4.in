@@ -1178,3 +1178,75 @@ AC_DEFUN(AC_PATH_PAM,
 
 ]) 
 
+
+AC_DEFUN(KDE_CHECK_DLOPEN,
+[
+AC_CHECK_LIB(dl, dlopen, [
+LIBDL="-ldl"
+ac_cv_have_dlfcn=yes
+])
+
+AC_CHECK_LIB(dld, shl_unload, [
+LIBDL="-ldld"
+ac_cv_have_shload=yes
+])
+
+AC_SUBST(LIBDL)
+AC_CHECK_HEADERS(dlfcn.h dl.h)
+if test "$ac_cv_header_dlfcn_h" = "no"; then
+  ac_cv_have_dlfcn=no
+fi
+
+if test "$ac_cv_header_dl_h" = "no"; then
+  ac_cv_have_shload=no
+fi
+
+AC_ARG_ENABLE(dlopen,
+[  --disable-dlopen        link kcontrol staticly [default=no]] ,
+[if test "$enableval" = yes; then
+  enable_dlopen=yes
+else
+  enable_dlopen=no
+fi],
+enable_dlopen=yes)
+
+# override the user's opinion, if we know it better ;)
+if test "$ac_cv_have_dlfcn" = "no" && test "$ac_cv_have_shload" = "no"; then
+  enable_dlopen=no
+fi
+
+if test "$ac_cv_have_dlfcn" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_DLFCN)
+fi
+
+if test "$ac_cv_have_shload" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_SHLOAD)
+fi
+
+if test "$enable_dlopen" = no ; then
+  $1
+else
+  $2
+fi
+
+])
+
+AC_DEFUN(KDE_CHECK_DYNAMIC_LOADING,
+[
+KDE_CHECK_DLOPEN(libtool_enable_shared=no, libtool_enable_static=no)
+KDE_PROG_LIBTOOL
+AC_MSG_CHECKING([dynamic loading])
+eval "`egrep '^build_libtool_libs=' libtool`"
+if test "$build_libtool_libs" = "yes" && test "$enable_dlopen" = "yes"; then
+  dynamic_loading=yes
+  AC_DEFINE_UNQUOTED(HAVE_DYNAMIC_LOADING)
+else
+  dynamic_loading=no
+fi
+AC_MSG_RESULT($dynamic_loading)
+if test "$dynamic_loading" = "yes"; then
+  $1
+else
+  $2
+fi
+])
