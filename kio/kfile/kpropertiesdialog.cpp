@@ -110,6 +110,17 @@ extern "C" {
 
 #include "kpropertiesdialog.h"
 
+static QString nameFromFileName(QString nameStr)
+{
+   if ( nameStr.endsWith(".desktop") )
+      nameStr.truncate( nameStr.length() - 8 );
+   if ( nameStr.endsWith(".kdelnk") )
+      nameStr.truncate( nameStr.length() - 7 );
+   // Make it human-readable (%2F => '/', ...)
+   nameStr = KIO::decodeFileName( nameStr );
+   return nameStr;
+}
+
 mode_t KFilePermissionsPropsPlugin::fperm[3][4] = {
         {S_IRUSR, S_IWUSR, S_IXUSR, S_ISUID},
         {S_IRGRP, S_IWGRP, S_IXGRP, S_ISGID},
@@ -682,15 +693,15 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
     d->oldFileName = filename;
 
+    // Make it human-readable
+    filename = nameFromFileName( filename );
+
     if ( d->bKDesktopMode && d->bDesktopFile ) {
         KDesktopFile config( properties->kurl().path(), true /* readonly */ );
         if ( config.hasKey( "Name" ) ) {
             filename = config.readName();
         }
     }
-
-    // Make it human-readable (%2F => '/', ...)
-    filename = KIO::decodeFileName( filename );
 
     oldName = filename;
 
@@ -1258,11 +1269,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
       // Renamed? Update Name field
       if ( d->oldFileName != properties->kurl().fileName() || m_bFromTemplate ) {
           KDesktopFile config( properties->kurl().path() );
-          QString nameStr = properties->kurl().fileName();
-          if ( nameStr.endsWith(".desktop") )
-              nameStr.truncate( nameStr.length() - 8 );
-          if ( nameStr.endsWith(".kdelnk") )
-              nameStr.truncate( nameStr.length() - 7 );
+          QString nameStr = nameFromFileName(properties->kurl().fileName());
           config.writeEntry( "Name", nameStr );
           config.writeEntry( "Name", nameStr, true, false, true );
       }
@@ -2375,12 +2382,7 @@ void KURLPropsPlugin::applyChanges()
   // but distributions can. Update the Name field in that case.
   if ( config.hasKey("Name") )
   {
-    // ### duplicated from KApplicationPropsPlugin
-    QString nameStr = properties->kurl().fileName();
-    if ( nameStr.endsWith(".desktop") )
-      nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.endsWith(".kdelnk") )
-      nameStr.truncate( nameStr.length() - 7 );
+    QString nameStr = nameFromFileName(properties->kurl().fileName());
     config.writeEntry( "Name", nameStr );
     config.writeEntry( "Name", nameStr, true, false, true );
 
@@ -3749,13 +3751,8 @@ void KApplicationPropsPlugin::applyChanges()
 
   QString nameStr = nameEdit ? nameEdit->text() : QString::null;
   if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
-  {
-    nameStr = properties->kurl().fileName();
-    if ( nameStr.endsWith(".desktop") )
-      nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.endsWith(".kdelnk") )
-      nameStr.truncate( nameStr.length() - 7 );
-  }
+    nameStr = nameFromFileName(properties->kurl().fileName());
+
   config.writeEntry( "Name", nameStr );
   config.writeEntry( "Name", nameStr, true, false, true );
 
