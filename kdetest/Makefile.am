@@ -15,17 +15,17 @@ noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
-		ktoolbartest klinetest kstatusbartest kspinboxtest	\
+		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
-		ktoolbartest.h klinetest.h kstatusbartest.h kspinboxtest.h	\
+		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h	\
 		kprocesstest.h
 
 BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
 		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
-		kconfigtest.moc kpannertest.moc ktoolbartest.moc klinetest.moc \
+		kconfigtest.moc kpannertest.moc kwindowtest.moc klinetest.moc \
 		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc
 
 ktabctltest.cpp: ktabctltest.moc
@@ -36,7 +36,7 @@ ktreelisttest.cpp: ktreelisttest.moc
 kkeyconfigtest.cpp: kkeyconfigtest.moc
 kconfigtest.cpp: kconfigtest.moc
 kpannertest.cpp: kpannertest.moc
-ktoolbartest.cpp: ktoolbartest.moc
+kwindowtest.cpp: kwindowtest.moc
 klinetest.cpp: klinetest.moc
 kstatusbartest.cpp: kstatusbartest.moc
 kspinboxtest.cpp: kspinboxtest.moc
@@ -57,7 +57,7 @@ ktreelisttest_SOURCES = ktreelisttest.cpp
 kkeyconfigtest_SOURCES = kkeyconfigtest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
-ktoolbartest_SOURCES = ktoolbartest.cpp
+kwindowtest_SOURCES = kwindowtest.cpp
 klinetest_SOURCES = klinetest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 kspinboxtest_SOURCES = kspinboxtest.cpp
@@ -81,8 +81,8 @@ kdatepicktestdlg.moc: kdatepicktestdlg.h
 ktreelisttest.moc: ktreelisttest.h
 	$(MOC) ktreelisttest.h -o ktreelisttest.moc
 
-ktoolbartest.moc: ktoolbartest.h
-	$(MOC) ktoolbartest.h -o ktoolbartest.moc
+kwindowtest.moc: kwindowtest.h
+	$(MOC) kwindowtest.h -o kwindowtest.moc
 
 kpannertest.moc: kpannertest.h
 	$(MOC) kpannertest.h -o kpannertest.moc
