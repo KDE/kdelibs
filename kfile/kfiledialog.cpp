@@ -1250,11 +1250,11 @@ void KFileComboBox::setCompletion(const QString& completion)
 
     if (KGlobalSettings::completionMode() == KGlobalSettings::CompletionAuto ||
 	KGlobalSettings::completionMode() == KGlobalSettings::CompletionMan ) {
-	setSelection( pos, currentText().length() );
-	setCursorPosition( pos );
+	lineEdit()->setSelection( pos, currentText().length() );
+	lineEdit()->setCursorPosition( pos );
     }
     else
-      	setCursorPosition( completion.length() );
+      	lineEdit()->setCursorPosition( completion.length() );
 }
 
 
