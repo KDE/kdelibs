@@ -332,6 +332,9 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 
 bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 {
+    if (index == -1) // -1 = append to the end
+        index = pixmaps.count();
+
     if (numCols() * rowsVisible < static_cast<int>(count()))
         setNumCols(numCols() + 1);
 
