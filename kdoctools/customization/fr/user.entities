@@ -186,6 +186,8 @@
 <!ENTITY pex            	"par exemple">                                            <!-- English: &eg; -->
 <!ENTITY Maj            	'<keycap>Maj</keycap>'>                                   <!-- English: &Shift; -->
 <!ENTITY SE             	"système d'exploitation">                                <!-- English: &OS; -->
+<!ENTITY Tab                     "<keycap>Tab</keycap>">                                  <!-- English: Tab -->
+
 
 <!ENTITY iconek	"icône <guiicon>
 <inlinemediaobject>
