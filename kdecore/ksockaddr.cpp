@@ -22,9 +22,12 @@
 
 #include <config.h>
 
+#include <sys/types.h>
+
 #include <arpa/inet.h>
-#include <limits.h>
 #include <netinet/in.h>
+
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/un.h>
@@ -229,7 +232,7 @@ public:
     sin6.sin6_scope_id = 0;	// FIXME! Check RFC for default value. Should be 0, but...
 # endif
 # ifdef HAVE_SOCKADDR_SA_LEN
-    sin6.sin6_len = sizeof(sin6)
+    sin6.sin6_len = sizeof(sin6);
 # endif
 #endif
   }
