@@ -89,6 +89,7 @@ extern "C" {
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kparts/componentfactory.h>
+#include <kmetaprops.h>
 
 #include "kpropsdlg.h"
 
@@ -277,7 +278,8 @@ bool KPropertiesDialog::canDisplay( KFileItemList _items )
          KApplicationPropsPlugin::supports( _items ) ||
          KBindingPropsPlugin::supports( _items ) ||
          KURLPropsPlugin::supports( _items ) ||
-         KDevicePropsPlugin::supports( _items );
+         KDevicePropsPlugin::supports( _items ) ||
+         KFileMetaPropsPlugin::supports( _items );
 }
 
 void KPropertiesDialog::slotOk()
@@ -378,6 +380,12 @@ void KPropertiesDialog::insertPages()
   if ( KDevicePropsPlugin::supports( m_items ) )
   {
     KPropsDlgPlugin *p = new KDevicePropsPlugin( this );
+    insertPlugin (p);
+  }
+
+  if ( KFileMetaPropsPlugin::supports( m_items ) )
+  {
+    KPropsDlgPlugin *p = new KFileMetaPropsPlugin( this );
     insertPlugin (p);
   }
 
