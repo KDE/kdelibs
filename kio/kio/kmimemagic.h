@@ -51,15 +51,15 @@ public:
   /**
    * Retrieve the mimetype (e.g. "text/html") of the file or buffer parsed.
    */
-  QString mimeType() { return m_strMimeType; }
+  QString mimeType() const { return m_strMimeType; }
   /**
    * Retrieve the accuracy of the matching.
    */
-  int accuracy() { return m_iAccuracy; }
+  int accuracy() const { return m_iAccuracy; }
   /**
    * Returns whether the result is valid (i.e. mimetype not empty).
    */
-  bool isValid() { return !m_strMimeType.isEmpty(); }
+  bool isValid() const { return !m_strMimeType.isEmpty(); }
 
   /////////////////
   // Internal functions only
