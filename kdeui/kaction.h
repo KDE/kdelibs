@@ -48,6 +48,7 @@ private:
 	QString _whatsThis;
 	QString _toolTip;
 
+	QString	 _iconPath;
 	QIconSet *_icon;
 	int _accel;
 	int _accelId;
@@ -71,7 +72,12 @@ public:
 	*/
 	virtual ~KAction();
 
-	void setIcon( const QIconSet& icon );
+	/**
+	 * Load the icon using the global @ref KIconLoader.
+	 */
+	void setIcon( const QString& iconpath );
+	QString iconPath() const		{ return _iconPath; }
+
 	const QIconSet& icon() const;
 
 	void setWhatsThis( const QString& whatsthis )
