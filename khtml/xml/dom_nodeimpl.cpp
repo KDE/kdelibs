@@ -917,6 +917,20 @@ void NodeBaseImpl::setStyle(khtml::RenderStyle *style)
 	oldStyle->deref();
 }
 
+void NodeBaseImpl::setFocus(bool received)
+{
+    NodeImpl::setFocus(received);
+    for(NodeImpl *it=_first;it;it=it->nextSibling())
+        it->setFocus(received);
+}
+
+void NodeBaseImpl::setActive(bool down)
+{
+    NodeImpl::setActive(down);
+    for(NodeImpl *it=_first;it;it=it->nextSibling())
+        it->setActive(down);
+}
+
 // ---------------------------------------------------------------------------
 
 NodeImpl *NodeListImpl::item( unsigned long /*index*/ ) const

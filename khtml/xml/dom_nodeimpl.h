@@ -51,12 +51,6 @@ class NamedNodeMapImpl;
 class DocumentImpl;
 class CSSStyleDeclarationImpl;
 
-//enumerator for the keyboardfocus-state of an object.
-enum ActivationState { ActivationOff,
-		       ActivationOffbutVisited,
-		       ActivationPassive,
-		       ActivationActive };
-
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementation, and derive all other
 // Node classes from it. This is done to reduce memory overhead.
@@ -329,6 +323,9 @@ public:
     virtual QRect getRect();
     bool getUpperLeftCorner(int &xPos, int &yPos);
     bool getLowerRightCorner(int &xPos, int &yPos);
+
+    virtual void setFocus(bool=true);
+    virtual void setActive(bool=true);
 
 protected:
     NodeImpl *_first;
