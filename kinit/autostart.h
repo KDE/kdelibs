@@ -33,12 +33,15 @@ public:
   void loadAutoStartList();
   QString startService();
   void    setPhase(int phase);
+  void	  setPhaseDone();
   int     phase() const { return m_phase; }
+  bool    phaseDone() const { return m_phasedone; }
 
 private:
   AutoStartList *m_startList;  
   QStringList m_started;
   int m_phase;
+  bool m_phasedone;
 };
 
 #endif

@@ -43,7 +43,7 @@ public:
 };
 
 AutoStart::AutoStart()
-  : m_phase(1)
+  : m_phase(1), m_phasedone(false)
 {
   m_startList = new AutoStartList;
   m_startList->setAutoDelete(true);
@@ -59,7 +59,15 @@ void
 AutoStart::setPhase(int phase)
 {
    if (phase > m_phase)
+   {
       m_phase = phase;
+      m_phasedone = false;
+   }
+}
+
+void AutoStart::setPhaseDone()
+{
+   m_phasedone = true;
 }
 
 static QString extractName(QString path)
