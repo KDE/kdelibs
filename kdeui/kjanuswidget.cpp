@@ -66,6 +66,10 @@ class KJanusWidget::IconListItem : public QListBoxItem
 class KJanusWidget::KJanusWidgetPrivate
 {
 public:
+  KJanusWidgetPrivate() : mNextPageIndex(0) { }
+
+  int mNextPageIndex; // The next page index.
+
   // Dictionary for multipage modes.
   QMap<int,QWidget*> mIntToPage;
   // Reverse dictionary. Used because showPage() may be performance critical.
@@ -410,20 +414,19 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
 void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 				  const QString &header,const QPixmap &pixmap )
 {
-  static int nextPageIndex = 0; // The next page index.
   connect(page, SIGNAL(destroyed(QObject*)), SLOT(pageGone(QObject*)));
 
   if( mFace == Tabbed )
   {
     mTabControl->addTab (page, items.last());
-    d->mIntToPage[nextPageIndex] = static_cast<QWidget*>(page);
-    d->mPageToInt[static_cast<QWidget*>(page)] = nextPageIndex;
-    nextPageIndex++;
+    d->mIntToPage[d->mNextPageIndex] = static_cast<QWidget*>(page);
+    d->mPageToInt[static_cast<QWidget*>(page)] = d->mNextPageIndex;
+    d->mNextPageIndex++;
   }
   else if( mFace == TreeList || mFace == IconList )
   {
-    d->mIntToPage[nextPageIndex] = static_cast<QWidget*>(page);
-    d->mPageToInt[static_cast<QWidget*>(page)] = nextPageIndex;
+    d->mIntToPage[d->mNextPageIndex] = static_cast<QWidget*>(page);
+    d->mPageToInt[static_cast<QWidget*>(page)] = d->mNextPageIndex;
     mPageStack->addWidget( page, 0 );
 
     if (items.count() == 0) {
@@ -464,12 +467,12 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     {
       mTitleLabel->setMinimumWidth( r.width() );
     }
-    d->mIntToTitle[nextPageIndex] = title;
+    d->mIntToTitle[d->mNextPageIndex] = title;
     if( d->mIntToTitle.count() == 1 )
     {
       showPage(0);
     }
-    nextPageIndex++;
+    d->mNextPageIndex++;
   }
   else
   {
