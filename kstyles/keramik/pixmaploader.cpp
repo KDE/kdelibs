@@ -67,6 +67,7 @@ void PixmapLoader::colorize( QImage &img, const QColor& color )
 		*data = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
 		data++;
 	}
+	img.setAlphaBuffer( true );
 }
 
 void PixmapLoader::makeDisabled( QImage &img, const QColor& color )
@@ -90,6 +91,7 @@ void PixmapLoader::makeDisabled( QImage &img, const QColor& color )
 		*data = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
 		data++;
 	}
+	img.setAlphaBuffer( true );
 }
 
 QPixmap PixmapLoader::pixmap( const QCString& name, const QColor& color, bool disabled )

@@ -601,12 +601,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// CHECKBOX (indicator)
 		// -------------------------------------------------------------------
 		case PE_Indicator:
+		case PE_IndicatorMask:
 			Keramik::ScaledPainter( on ? "checkbox-on" : "checkbox-off" ).draw( p, r, cg.button(), disabled );
 			break;
 
 			// RADIOBUTTON (exclusive indicator)
 			// -------------------------------------------------------------------
 		case PE_ExclusiveIndicator:
+		case PE_ExclusiveIndicatorMask:
 		{
 
 			Keramik::ScaledPainter( on ? "radiobutton-on" : "radiobutton-off" ).draw( p, r, cg.button(), disabled );
@@ -1305,6 +1307,15 @@ void KeramikStyle::drawControl( ControlElement element,
 	}
 }
 
+void KeramikStyle::drawControlMask( ControlElement element,
+								    QPainter *p,
+								    const QWidget *widget,
+								    const QRect &r,
+								    const QStyleOption& opt ) const
+{
+	QColorGroup cg( color1, color1, color1, color1, color1, color1, color1, color1, color0 );
+	drawControl( element, p, widget, r, cg, Style_Default, opt );
+}
 
 void KeramikStyle::drawComplexControl( ComplexControl control,
                                          QPainter *p,
@@ -1528,6 +1539,15 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 	}
 }
 
+void KeramikStyle::drawComplexControlMask( ComplexControl control,
+                                         QPainter *p,
+                                         const QWidget *widget,
+                                         const QRect &r,
+                                         const QStyleOption& opt ) const
+{
+	QColorGroup cg( color1, color1, color1, color1, color1, color1, color1, color1, color0 );
+	drawComplexControl( control, p, widget, r, cg, Style_Default, SC_All, SC_None, opt );
+}
 
 int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 {

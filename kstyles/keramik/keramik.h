@@ -73,6 +73,12 @@ public:
 	                  SFlags flags = Style_Default,
 	                  const QStyleOption& opt = QStyleOption::Default ) const;
 
+	void drawControlMask( ControlElement element,
+	                      QPainter* p,
+	                      const QWidget* widget,
+	                      const QRect& r,
+	                      const QStyleOption& opt = QStyleOption::Default ) const;
+
 	void drawComplexControl( ComplexControl control,
 	                         QPainter* p,
 	                         const QWidget* widget,
@@ -82,6 +88,12 @@ public:
 	                         SCFlags controls = SC_All,
 	                         SCFlags active = SC_None,
 	                         const QStyleOption& = QStyleOption::Default ) const;
+
+	void drawComplexControlMask( ComplexControl control,
+	                             QPainter* p,
+	                             const QWidget* widget,
+	                             const QRect& r,
+	                             const QStyleOption& = QStyleOption::Default ) const;
 
 	int pixelMetric( PixelMetric m, const QWidget* widget = 0 ) const;
 		
