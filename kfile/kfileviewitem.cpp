@@ -47,7 +47,6 @@ public:
     QString access;
     QString date;
     int pixmapSize;
-    bool isReadable;
     // if you add more, be sure to update KFileViewItem::operator= !
 };
 
@@ -55,7 +54,6 @@ KFileViewItem::KFileViewItem(const KURL& baseURL, const KIO::UDSEntry &e)
     : KFileItem( e, baseURL, true, true )
 {
     d = new KFileViewItemPrivate();
-    d->isReadable = true;
 
     init();
 }
@@ -66,7 +64,6 @@ KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions,
     : KFileItem( _mode, _permissions, _url, _determineMimeTypeOnDemand )
 {
     d = new KFileViewItemPrivate();
-    d->isReadable = true;
 
     init();
 }
@@ -86,7 +83,6 @@ KFileViewItem&  KFileViewItem::operator=( const KFileViewItem& item )
     d->access = item.d->access;
     d->date = item.d->date;
     d->pixmapSize = item.d->pixmapSize;
-    d->isReadable = item.d->isReadable;
 
     myURLString = item.myURLString;
     myNext = 0L; // we can't guarantee that this one is being copied as well
@@ -192,13 +188,6 @@ QPixmap KFileViewItem::pixmap() const
 {
     return pixmap( d->pixmapSize );
 }
-
-/*
-bool KFileViewItem::isReadable() const
-{
-    return d->isReadable;
-}
-*/
 
 #if 0
 // Tests if a file is readable. We don't just call ::access(), because we

@@ -112,11 +112,6 @@ public:
       */
     QString access() const;
 
-    /**
-     * Return true if the file is readable
-     */
-    bool isReadable() const;
-
     void setViewItem( const KFileView *view, const void *item );
     const void *viewItem( const KFileView *view ) const;
 
