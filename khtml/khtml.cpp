@@ -1598,8 +1598,11 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    }
 	    default:
 		printf("error while restoring frameset!!!!\n");
+		return;
 	    }
 	}
+	current->close();
+
     }
     else
 	printf("error in KHTMLWidget::restoreState()\n");

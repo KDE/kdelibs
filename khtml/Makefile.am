@@ -63,7 +63,7 @@ include_HEADERS = khtml.h khtmlio.h \
 	html_inline.h html_list.h html_misc.h html_table.h html_object.h
 
 noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
-	khtmldata.h khtmlsavedpage.h khtmlstyle.h khtmldecoder.cpp khtmlstring.h \
+	khtmldata.h khtmlstyle.h khtmldecoder.cpp khtmlstring.h \
 	dom_docimpl.h dom_elementimpl.h dom_nodeimpl.h dom_stringimpl.h \
 	dom_textimpl.h html_baseimpl.h \
 	html_blockimpl.h html_documentimpl.h html_elementimpl.h \
