@@ -1,6 +1,6 @@
 # $Id$
 
-INCLUDES = $(all_includes)
+INCLUDES = $(all_includes) -I$(top_srcdir)
 
 KDE_CXXFLAGS = -frtti
 
