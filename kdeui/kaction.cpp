@@ -278,8 +278,12 @@ KAction::~KAction()
     if (d->m_kaccel)
       unplugAccel();
 
-    // Unplug from menus and toolbars.
-    unplugAll();
+    // Do not call unplugAll from here, as tempting as it sounds.
+    // KAction is designed around the idea that you need to plug
+    // _and_ to unplug it "manually". Unplugging leads to an important
+    // slowdown when e.g. closing the window, in which case we simply
+    // want to destroy everything asap, not to remove actions one by one
+    // from the GUI.
 
     if ( m_parentCollection )
       m_parentCollection->take( this );
@@ -1533,11 +1537,12 @@ int KSelectAction::plug( QWidget *widget, int index )
     bar->insertCombo( items(), id_, isEditable(),
                       SIGNAL( activated( const QString & ) ), this,
                       SLOT( slotActivated( const QString & ) ), isEnabled(),
-                      QString::null, -1, index );
+                      toolTip(), -1, index );
 
     QComboBox *cb = bar->getCombo( id_ );
     if ( cb )
     {
+      if (!isEditable()) cb->setFocusPolicy(QWidget::NoFocus);
       cb->setMinimumWidth( cb->sizeHint().width() );
       if ( d->m_comboWidth > 0 )
         cb->setMaximumWidth( d->m_comboWidth );
