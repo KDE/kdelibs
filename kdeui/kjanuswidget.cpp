@@ -78,6 +78,7 @@ public:
   QMap<int, QString> mIntToTitle;
 
   QWidget * mListFrame;
+  QSplitter * mSplitter;
 };
 
 template class QPtrList<QListViewItem>;
@@ -94,15 +95,16 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   if( mFace == TreeList || mFace == IconList )
   {
     d = new KJanusWidgetPrivate;
+    d->mSplitter = 0;
 
     QFrame *page;
     if( mFace == TreeList )
     {
-      QSplitter *splitter = new QSplitter( this );
-      topLayout->addWidget( splitter, 10 );
+      d->mSplitter = new QSplitter( this );
+      topLayout->addWidget( d->mSplitter, 10 );
       mTreeListResizeMode = QSplitter::KeepSize;
 
-      d->mListFrame = new QWidget( splitter );
+      d->mListFrame = new QWidget( d->mSplitter );
       QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, 0 );
       dummy->setAutoAdd( true );
       mTreeList = new KListView( d->mListFrame );
@@ -117,7 +119,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       // Page area. Title at top with a separator below and a pagestack using
       // all available space at bottom.
       //
-      QFrame *p = new QFrame( splitter );
+      QFrame *p = new QFrame( d->mSplitter );
 
       QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
       hbox->addSpacing( KDialog::marginHint() );
@@ -813,8 +815,8 @@ void KJanusWidget::setTreeListAutoResize( bool state )
   {
     mTreeListResizeMode = state == false ?
       QSplitter::KeepSize : QSplitter::Stretch;
-    QSplitter *splitter = (QSplitter*)(mTreeList->parentWidget());
-    splitter->setResizeMode( mTreeList, mTreeListResizeMode );
+    if( d->mSplitter )
+      d->mSplitter->setResizeMode( mTreeList, mTreeListResizeMode );
   }
 }
 
@@ -883,8 +885,8 @@ void KJanusWidget::showEvent( QShowEvent * )
 {
   if( mFace == TreeList )
   {
-      QSplitter* splitter = dynamic_cast<QSplitter*>( mTreeList->parent() );
-      if (splitter) splitter->setResizeMode( mTreeList, mTreeListResizeMode );
+    if( d->mSplitter )
+      d->mSplitter->setResizeMode( mTreeList, mTreeListResizeMode );
   }
 }
 
