@@ -1020,7 +1020,7 @@ void HTMLTokenizer::addPending()
 	{
 	case SpacePending:
 	    // Insert a non-breaking space
-	    *dest++ = QChar(0xa0);
+	    *dest++ = QChar(' ');
 	    prePos++;
 	    break;
 
