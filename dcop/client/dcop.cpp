@@ -290,7 +290,10 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
         if ( replyType != "void" && replyType != "ASYNC" )
         {
             QCString replyString = demarshal( reply, replyType );
+            if ( !replyString.isEmpty() )
             printf( "%s\n", replyString.data() );
+            else
+                printf("\n");
         }
     }
     return 0;
