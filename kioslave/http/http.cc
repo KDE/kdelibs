@@ -3977,14 +3977,6 @@ void HTTPProtocol::slotData(const QByteArray &_d)
       m_bEOD = true;
       return;
    }
-   
-   if (m_iContentLeft != NO_SIZE)
-   {
-      if (m_iContentLeft >= _d.size())
-         m_iContentLeft -= _d.size();
-      else
-         m_iContentLeft = NO_SIZE;
-   }
 
    QByteArray d = _d;
    if ( !m_dataInternal )
@@ -4144,8 +4136,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   else
     m_iBytesLeft = NO_SIZE;
 
-  m_iContentLeft = m_iBytesLeft;
-
   if (m_bChunked)
     m_iBytesLeft = NO_SIZE;
 
@@ -4218,18 +4208,12 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        bytesReceived = readUnlimited();
 
     // make sure that this wasn't an error, first
-    // kdDebug(7113) << "(" << (int) m_pid << ") readBody: bytesReceived: "
-    //              << (int) bytesReceived << " m_iSize: " << (int) m_iSize << " Chunked: "
-    //              << (int) m_bChunked << " BytesLeft: "<< (int) m_iBytesLeft << endl;
+//    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: "
+//                  << bytesReceived << " m_iSize: " << m_iSize << " Chunked: "
+//                  << m_bChunked << " BytesLeft: "<<m_iBytesLeft<<endl;
+
     if (bytesReceived == -1)
     {
-      if (m_iContentLeft == 0)
-      {
-         // gzip'ed data sometimes reports a too long content-length.
-         // (The length of the unzipped data)
-         m_iBytesLeft = 0;
-         break;
-      }
       // Oh well... log an error and bug out
       kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1 sz=" << (int)sz
                     << " Connnection broken !" << endl;
