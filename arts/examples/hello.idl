@@ -24,10 +24,18 @@ interface HelloBase {
 };
 
 interface Hello : HelloBase {
+	/*
+	 * counter like functionality (init, adding, getting total value)
+	 */
 	attribute long myValue;
 	void constructor(long i);
+	void add(long l);
+	void printTotal();
+
+	/*
+	 * some hello world like stuff, string and number addition
+	 */
 	void hello(string s);
+	long sum(long a,long b);
 	string concat(string s1, string s2);
-	long total();
-	long sum(long a);
 };

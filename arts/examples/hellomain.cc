@@ -61,8 +61,8 @@ int main()
 
 	// Can copy (or here copy constructor) the objects
 	Hello hcopy = hint;
-	hcopy.sum(5);
-	hcopy.total();
+	hcopy.add(5);
+	hcopy.printTotal();
 
 	// dynamic creation is OK
 	Hello* dyn = new Hello;

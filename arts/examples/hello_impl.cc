@@ -26,6 +26,8 @@
 #include "hello_impl.h"
 #include <stdio.h>
 
+using namespace std;
+
 void Hello_impl::hellobase(const string& s)
 {
 	printf("Hellobase '%s'!\n",s.c_str());
@@ -36,24 +38,9 @@ void Hello_impl::hello(const string& s)
 	printf("Hello '%s'!\n",s.c_str());
 }
 
-string Hello_impl::concat(const string& s1, const string& s2)
-{
-	return s1+s2;
-}
-
 void Hello_impl::constructor(long i)
 {
 	myvalue=i;
-}
-
-long Hello_impl::sum(long a)
-{
-	myvalue+=a;
-}
-
-long Hello_impl::total()
-{
-	printf("Total=%d\n",myvalue);
 }
 
 long Hello_impl::myValue()
@@ -64,6 +51,26 @@ long Hello_impl::myValue()
 void Hello_impl::myValue(long newValue)
 {
 	myvalue=newValue;
+}
+
+void Hello_impl::add(long a)
+{
+	myvalue += a;
+}
+
+void Hello_impl::printTotal()
+{
+	printf("Total=%ld\n",myvalue);
+}
+
+long Hello_impl::sum(long a, long b)
+{
+	return a+b;
+}
+
+string Hello_impl::concat(const string& s1, const string& s2)
+{
+	return s1+s2;
 }
 
 REGISTER_IMPLEMENTATION(Hello_impl);

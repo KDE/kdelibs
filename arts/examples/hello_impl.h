@@ -36,10 +36,13 @@ public:
 	long myValue();
 	void myValue(long newValue);
 	void constructor(long i);
+	void add(long increment);
+	void printTotal();
+
 	void hello(const string& s);
+	long sum(long a, long b);
 	string concat(const string& s1, const string& s2);
-	long sum(long a);
-	long total();
+
 	void hellobase(const string& s);
 };
 
