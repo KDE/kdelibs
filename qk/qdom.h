@@ -234,7 +234,6 @@ public:
     QDomMimeSourceFactory* mimeSourceFactory();
     const QDomMimeSourceFactory* mimeSourceFactory() const;
     void setMimeSourceFactory( QDomMimeSourceFactory* );
-    void setName(const QString &name);
 
     // QDomAttributes
     QDomDocumentType doctype() const;
