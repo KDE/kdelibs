@@ -118,8 +118,8 @@ w=423;h=279;
 
 	int samples = (int)(w*h);
 
-	debug( "kimgio_krl_read: image w: %d, h: %d samples: %d", 
-			(int)w, (int)h, samples );
+	//debug( "kimgio_krl_read: image w: %d, h: %d samples: %d", 
+	//		(int)w, (int)h, samples );
 
 	QImage image( w, h, 32 );
 	rbytes = 0;
