@@ -58,7 +58,7 @@ extern "C" {
 int main( int argc, char **argv )
 {
   signal(SIGCHLD, sigchld_handler);
-  //signal(SIGSEGV, sigsegv_handler);
+  signal(SIGSEGV, sigsegv_handler);
 
   Connection parent( 0, 1 );
 
@@ -308,8 +308,7 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
     fflush(stderr);
   }
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
-  hand=SSL_new(ctx);
-  
+  hand=SSL_new(ctx);  
 #endif
 
   m_sContentMD5 = "";
