@@ -28,8 +28,8 @@
 
 void MD5_timeTrial ();
 void MD5_testSuite ();
-void MD5_string ( const char *, const char *expected = 0);
-void MD5_file ( const char * );
+void MD5_string ( const char *, const char *expected = 0, bool rawOutput = false);
+void MD5_file ( const char * , bool rawOutput = false );
 void MD5_verify( const char*, const char*, bool );
 void Base64Encode( const char*, bool );
 void Base64Decode( const char*, bool );
@@ -249,7 +249,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
               << endl << endl;
 }
 
-void MD5_file (const char *filename)
+void MD5_file (const char *filename, bool rawOutput )
 {
     FILE* f = fopen( filename, "r" );
 
@@ -259,19 +259,25 @@ void MD5_file (const char *filename)
     }
     else
     {
-        KMD5 context( f );
-        kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.hexDigest() << endl;
+       KMD5 context( f );
+       if ( rawOutput )
+	 kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.rawDigest() << endl;
+       else
+	 kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.hexDigest() << endl;	 
     }
 }
 
-void MD5_string (const char *input, const char* expected )
+void MD5_string (const char *input, const char* expected, bool rawOutput )
 {
   KMD5 context;
   Q_UINT32 len = strlen (input);
 
   context.update ( reinterpret_cast<Q_UINT8*>(const_cast<char*>(input)), len );
   context.finalize ();
-  kdDebug() << endl << "Result: MD5 (\"" << input << "\") = " << context.hexDigest() << endl;
+  if ( rawOutput )
+    kdDebug() << endl << "Result: MD5 (\"" << input << "\") = " << context.rawDigest() << endl;
+  else
+    kdDebug() << endl << "Result: MD5 (\"" << input << "\") = " << context.hexDigest() << endl;
   if ( expected )
     kdDebug() << "Expected: MD5 (\"" << input << "\") = " << expected << endl
               << "Result is a match: " << context.verify( expected ) << endl << endl;
@@ -288,6 +294,7 @@ int main (int argc, char *argv[])
         { "d", "decode the given string or file using base64", 0 },
         { "e", "encode the given string or file using base64", 0 },
         { "f", "the filename to be used as input", "default" },
+        { "r", "calculate the raw md5 for the given string or file", 0 },
         { "s", "the string to be used as input", 0 },
         { "t", "perform a timed message-digest test", 0 },
         { "u", "uuencode the given string or file", 0 },
@@ -314,44 +321,43 @@ int main (int argc, char *argv[])
     }
     else
     {
-	    bool isVerify = args->isSet("c");
-		bool isString = args->isSet("s");
-	    bool isBase64Encode = args->isSet("e");
-	    bool isBase64Decode = args->isSet("d");
-		bool isUUEncode = args->isSet("u");
-	    bool isUUDecode = args->isSet("x");        
-		if ( isVerify )
-        {
-            if ( (args->isSet("f") && isString) ||
-			     isUUEncode || isUUDecode ||
-				 isBase64Encode || isBase64Decode )
+       bool isVerify = args->isSet("c");
+       bool isString = args->isSet("s");
+       bool isBase64Encode = args->isSet("e");
+       bool isBase64Decode = args->isSet("d");
+       bool isUUEncode = args->isSet("u");
+       bool isUUDecode = args->isSet("x");
+       if ( isVerify )
+       {
+	  if ( (args->isSet("f") && isString) ||
+	        isUUEncode || isUUDecode ||
+	        isBase64Encode || isBase64Decode )
                 args->usage();
-
-            const char* opt = args->getOption( "c" ).data();
-            for ( int i=0 ; i < count; i++ )
-                MD5_verify ( QCString(args->arg(i)), opt, !isString );
+	  const char* opt = args->getOption( "c" ).data();
+	  for ( int i=0 ; i < count; i++ )
+	    MD5_verify ( QCString(args->arg(i)), opt, !isString );
         }    
         else if ( isString )
         {
-            if ( args->isSet("f") ||
-                 (isUUEncode && isBase64Encode) ||
-                 (isUUDecode && isBase64Decode) ||
-                 (isUUEncode && isUUDecode) ||
-                 (isBase64Decode && isBase64Encode) )
-                args->usage();
-            
+	   if ( args->isSet("f") ||
+	       (isUUEncode && isBase64Encode) ||
+	       (isUUDecode && isBase64Decode) ||
+	       (isUUEncode && isUUDecode) ||
+	       (isBase64Decode && isBase64Encode) )
+	     args->usage();
+	   
             for ( int i=0 ; i < count; i++ )
             {
-                if ( isBase64Decode )
-                    Base64Decode( args->arg( i ), false );
-                else if ( isBase64Encode )
-                    Base64Encode( args->arg( i ), false );
-                else if ( isUUEncode )
-                    UUEncode( args->arg( i ), false );
-                else if ( isUUDecode )
-                    UUDecode( args->arg( i ), false );
-                else
-                    MD5_string( args->arg( i ) );
+	       if ( isBase64Decode )
+		 Base64Decode( args->arg( i ), false );
+	       else if ( isBase64Encode )
+		 Base64Encode( args->arg( i ), false );
+	       else if ( isUUEncode )
+		 UUEncode( args->arg( i ), false );
+	       else if ( isUUDecode )
+		 UUDecode( args->arg( i ), false );
+	       else
+		 MD5_string( args->arg( i ), args->isSet("r") );
              }
         }
         else
@@ -373,7 +379,7 @@ int main (int argc, char *argv[])
                 else if ( isUUDecode )
                     UUDecode( args->arg( i ), true );
                 else
-                    MD5_file( args->arg( i ) );
+                    MD5_file( args->arg( i ), args->isSet("r") );
              }
         }
     }

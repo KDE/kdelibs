@@ -123,10 +123,15 @@ int main(int argc, char **argv) {
     filter( "ya:foo bar was here" );
     filter( "gg:www.kde.org" );
     filter( "av:+rock +sample" );
+   
+    filter( "about:" );
 
     // Absolute Path tests for kshorturifilter
     filter( "../../index.html", "http://www.kde.org/index.html", "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
     filter( "./", QCString("file:")+home+"/.kde/share/", "kshorturifilter", QCString("file:")+home+"/.kde/share/" );
+    
+    // User defined entries...
+    filter( "localhost" );
     return 0;
 }
 
