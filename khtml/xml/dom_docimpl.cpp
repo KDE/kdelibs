@@ -226,7 +226,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
-
+    m_decoderMibEnum = 0;
     m_paintDeviceMetrics = 0;
     m_decoderMibEnum = 0;
 
@@ -1064,7 +1064,7 @@ void DocumentImpl::write( const QString &text )
 {
     if (!m_tokenizer) {
         open();
-        write(QString::fromLatin1("<html>"));
+        write(QString::fromLatin1("<html><title></title><body>"));
     }
     m_tokenizer->write(text, false);
 
@@ -1412,6 +1412,8 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
             str = str.stripWhiteSpace();
             if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
+            if ( (pos = str.findRev(';')) > 0) str.setLength(pos);
+            if ( (pos = str.findRev(',')) > 0) str.setLength(pos);
             str = parseURL( DOMString(str) ).string();
             if ( ok )
                 v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
@@ -1796,9 +1798,17 @@ void DocumentImpl::recalcStyleSelector()
                 HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
                 // awful hack to ensure that we ignore the title attribute for non-stylesheets
                 // ### make that nicer!
-                if (!l->sheet() || l->isLoading())
+                if (!(l->sheet() || l->isLoading()))
                     title = QString::null;
             }
+            else {
+                HTMLStyleElementImpl* s = static_cast<HTMLStyleElementImpl*>(n);
+                // awful hack to ensure that we ignore the title attribute for non-stylesheets
+                // ### make that nicer!
+                if (!(s->sheet() || s->isLoading()))
+                    title = QString::null;
+            }
+
             QString sheetUsed = view()->part()->d->m_sheetUsed;
             if ( n->id() == ID_LINK )
                 sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
