@@ -172,11 +172,12 @@ QString KDesktopFile::readURL() const
 {
     if (hasDeviceType()) {
         QString device = readDevice();
-        QPtrList<KMountPoint> mountPoints = KMountPoint::possibleMountPoints();
+        KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
 	
-        for(KMountPoint *mp = mountPoints.first();
-            mp; mp = mountPoints.next())
+        for(KMountPoint::List::ConstIterator it = mountPoints.begin();
+            it != mountPoints.end(); ++it)
         {
+            KMountPoint *mp = *it;
             if (mp->mountedFrom() == device)
             {
                 KURL u;

@@ -23,6 +23,8 @@
 #include <qptrlist.h>
 #include <qstringlist.h>
 
+#include <ksharedptr.h>
+
 /**
  * The KMountPoint class provides information about mounted and unmounted disks.
  * It provides a system independant interface to fstab.
@@ -30,9 +32,12 @@
  * @author Waldo Bastian <bastian@kde.org>
  * @since 3.2
  */
-class KMountPoint
+class KMountPoint : public KShared
 {
    typedef signed long long int filesize_t;
+public:
+  typedef KSharedPtr<KMountPoint> Ptr;
+  typedef QValueList<Ptr> List;
 public:
    enum { NeedMountOptions = 1, NeedRealDeviceName = 2 };
 
@@ -41,14 +46,14 @@ public:
     * @param infoNeeded Flags that specify which additional information 
     * should be fetched.
     */
-   static QPtrList<KMountPoint> possibleMountPoints(int infoNeeded=0);
+   static KMountPoint::List possibleMountPoints(int infoNeeded=0);
 
    /**
     * This function gives a list of all currently used mountpoints. (mtab)
     * @param infoNeeded Flags that specify which additional information 
     * should be fetched.
     */
-   static QPtrList<KMountPoint> currentMountPoints(int infoNeeded=0);
+   static KMountPoint::List currentMountPoints(int infoNeeded=0);
 
    /**
     * Where this filesystem gets mounted from.
@@ -95,6 +100,9 @@ private:
    QString m_mountPoint;
    QString m_mountType;
    QStringList m_mountOptions;
+
+   class KMountPointPrivate;
+   KMountPointPrivate *d;
 };
 
 #endif

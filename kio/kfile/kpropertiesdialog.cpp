@@ -3038,11 +3038,12 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   d->m_frame = properties->dialog()->addPage(i18n("De&vice"));
 
   QStringList devices;
-  QPtrList<KMountPoint> mountPoints = KMountPoint::possibleMountPoints();
+  KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
 
-  for(KMountPoint *mp = mountPoints.first();
-      mp; mp = mountPoints.next())
+  for(KMountPoint::List::ConstIterator it = mountPoints.begin();
+      it != mountPoints.end(); ++it)
   {
+     KMountPoint *mp = *it;
      QString mountPoint = mp->mountPoint();
      QString device = mp->mountedFrom();
      if (device.startsWith("/") && (mountPoint != "-") &&

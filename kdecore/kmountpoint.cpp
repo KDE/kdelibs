@@ -123,9 +123,9 @@ KMountPoint::~KMountPoint()
 #define FSNAME(var) var.mnt_special
 #endif
 
-QPtrList<KMountPoint> KMountPoint::possibleMountPoints(int infoNeeded)
+KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
 {
-  QPtrList<KMountPoint> result;
+  KMountPoint::List result;
   
 #ifdef HAVE_SETMNTENT
    STRUCT_SETMNTENT fstab;
@@ -210,9 +210,9 @@ QPtrList<KMountPoint> KMountPoint::possibleMountPoints(int infoNeeded)
    return result;
 }
 
-QPtrList<KMountPoint> KMountPoint::currentMountPoints(int infoNeeded)
+KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
 {
-  QPtrList<KMountPoint> result;
+  KMountPoint::List result;
 
 #ifdef HAVE_GETMNTINFO
 
