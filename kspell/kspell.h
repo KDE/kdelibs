@@ -113,7 +113,7 @@ public:
    *  sent when @ref check() is finished and the argument will be a 
    *  spell-corrected version of @p _buffer.  
    *
-   * The spel check may be stopped by the user before the entire buffer
+   * The spell check may be stopped by the user before the entire buffer
    *  has been checked.  You can check @ref lastPosition() to see how far
    *  in @p _buffer @ref check() reached before stopping.
    */
@@ -151,10 +151,10 @@ public:
    *  Use this method for implementing  "online" spellchecking (i.e.,
    *  spellcheck as-you-type).
    *
-   * checkWord () returns @p false if @p buffer is not a word, otherwise it
-   *  returns @p true;
+   * checkWord() returns @p false if @p buffer is not a single word (e.g.
+   *  if it contains white space), otherwise it returns @p true;
    *
-   * If @p usedialog is set to @p true, KSpell will put up the standard
+   * If @p usedialog is set to @p true, KSpell will open the standard
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using  @ref dlgResult() and @ref replacement(). 
    *
