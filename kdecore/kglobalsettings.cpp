@@ -240,13 +240,13 @@ QFont KGlobalSettings::generalFont()
     if (_generalFont)
         return *_generalFont;
 
-    _generalFont = new QFont("helvetica", 12, QFont::Normal);
-    KCharsets *charsets = KGlobal::charsets();
-    charsets->setQFont(*_generalFont, charsets->charsetForLocale());
+    _generalFont = new QFont("helvetica", 12, QFont::SansSerif);
+    _generalFont->setPixelSize(12);
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_generalFont = c->readFontEntry("font", _generalFont);
+
     return *_generalFont;
 }
 
@@ -255,18 +255,13 @@ QFont KGlobalSettings::fixedFont()
     if (_fixedFont)
         return *_fixedFont;
 
+    _fixedFont = new QFont("courier", 12, QFont::TypeWriter);
+    _fixedFont->setPixelSize(12);
+
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    _fixedFont = new QFont(c->readFontEntry("fixed"));
+    *_fixedFont = c->readFontEntry("fixed", _menuFont);
 
-    if(!QFontInfo(*_fixedFont).fixedPitch() ) {
-        *_fixedFont = QFont("fixed",
-                            _fixedFont->pointSize(), QFont::Normal);
-        _fixedFont->setStyleHint(QFont::Courier);
-        _fixedFont->setFixedPitch(true);
-        KCharsets *charsets = KGlobal::charsets();
-        charsets->setQFont(*_fixedFont, charsets->charsetForLocale());
-    }
     return *_fixedFont;
 }
 
@@ -275,13 +270,13 @@ QFont KGlobalSettings::toolBarFont()
     if(_toolBarFont)
         return *_toolBarFont;
 
-    _toolBarFont = new QFont("helvetica", 10, QFont::Normal);
-    KCharsets *charsets = KGlobal::charsets();
-    charsets->setQFont(*_toolBarFont, charsets->charsetForLocale());
+    _toolBarFont = new QFont("helvetica", 10, QFont::SansSerif);
+    _toolBarFont->setPixelSize(10);
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    *_toolBarFont = c->readFontEntry(QString::fromLatin1("toolBarFont"), _toolBarFont);
+    *_toolBarFont = c->readFontEntry("toolBarFont", _toolBarFont);
+
     return *_toolBarFont;
 }
 
@@ -290,13 +285,13 @@ QFont KGlobalSettings::menuFont()
     if(_menuFont)
         return *_menuFont;
 
-    _menuFont = new QFont("helvetica", 12);
-    KCharsets *charsets = KGlobal::charsets();
-    charsets->setQFont(*_menuFont, charsets->charsetForLocale());
+    _menuFont = new QFont("helvetica", 12, QFont::SansSerif);
+    _menuFont->setPixelSize(12);
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    *_menuFont = c->readFontEntry(QString::fromLatin1("menuFont"), _menuFont);
+    *_menuFont = c->readFontEntry("menuFont", _menuFont);
+
     return *_menuFont;
 }
 
@@ -374,3 +369,4 @@ void KGlobalSettings::rereadPathSettings()
     delete s_desktopPath;
     s_desktopPath = 0L;
 }
+
