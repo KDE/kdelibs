@@ -449,6 +449,7 @@ namespace KJS {
      *
      * @return The interpreter executing the script
      */
+    // ### make non-const or provide an overload pair
     Interpreter *interpreter() const { return _interpreter; }
 
     /**
