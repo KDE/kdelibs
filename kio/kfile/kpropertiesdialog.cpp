@@ -1109,9 +1109,13 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 void KFilePropsPlugin::slotDirSizeUpdate()
 {
     KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
-    m_sizeLabel->setText( i18n("Calculating... %1 (%2)")
+    KIO::filesize_t totalFiles = d->dirSizeJob->totalFiles();
+         KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
+    m_sizeLabel->setText( i18n("Calculating... %1 (%2) %3, %4")
 			  .arg(KIO::convertSize(totalSize))
-			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
+                         .arg(KGlobal::locale()->formatNumber(totalSize, 0))
+        .arg(i18n("1 file","%n files",totalFiles)) 
+        .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
 }
 
 void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
