@@ -1,0 +1,11 @@
+October 10, 1998:
+	I started writing a dialog base class that in future all dialogs 
+	will be derived from. It is suited with already-connected standard
+	buttons (OK, Apply, Cancel) and some nice visual features (outer
+	and inner frame, a common background pixmap for the frames) and
+	with ready-to-use geometry management. Hopefully providing cute
+	dialogs will became easier now.
+	The new dialogs that use this common base class have a main widget
+	they manage inside their inner frame. I usually create this widgets 
+	with qtarch. 
+	And I started to write the NEWS file :-)

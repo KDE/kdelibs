@@ -1,0 +1,40 @@
+October 10, 1998:
+	The files
+		AssertDialog.h
+		AssertDialog.cpp
+		AssertDialogData.h
+		AssertDialogData.cpp
+	are new. The AssertDialog pops up when an assertion is caught. The user
+	may ignore the error, kill the application or mail a note to the app
+	maintainer.
+	The files
+		SearchDialogData.h
+		SearchDialogData.cpp
+	have been removed. The new SearchDialog uses the DialogBase class.
+	The files
+		SearchDialog.h
+		SearchDialog.cpp
+	contain completely different code than before (the new dialog).
+	The files
+		SearchDialogMainWidget.h
+		SearchDialogMainWidget.cpp
+		SearchDialogMainWidgetData.h
+		SearchDialogMainWidgetData.cpp
+	contain the new widget (created with qtarch).
+October 16, 1998:
+	The files
+		StringListSelectAndReorderSet.h
+		StringListSelectAndReorderSet.cpp
+		StringListSelectSetDialog.h
+		StringListSelectSetDialog.cpp
+	have been changed to use the new dialog base class.
+	The files
+		StringListSelectAndReorderSetData.h
+		StringListSelectAndReorderSetData.cpp
+		StringListSelectSetDialogData.h
+		StringListSelectSetDialogData.cpp
+	are obsolete and have been removed.		
+	The files
+		dialog_background.jpg
+	has been added. 
+
