@@ -37,6 +37,10 @@
 #include <limits.h>
 #endif
 
+int check_tmp_dir(const char *tmp_dir);
+int create_link(const char *file, const char *tmp_dir);
+int build_link(const char *tmp_prefix, const char *kde_prefix);
+
 int check_tmp_dir(const char *tmp_dir)
 {
   int result;
@@ -85,15 +89,14 @@ int create_link(const char *file, const char *tmp_dir)
 }
 
 
-build_link(const char *tmp_prefix, const char *kde_prefix)
+int build_link(const char *tmp_prefix, const char *kde_prefix)
 {
   struct passwd *pw_ent;
   char kde_tmp_dir[PATH_MAX+1];
   char user_tmp_dir[PATH_MAX+1];
   char tmp_buf[PATH_MAX+1];
   char *home_dir = getenv("HOME");
-  char *kde_home = getenv("KDEHOME");
-  char *display;
+  const char *kde_home = getenv("KDEHOME");
   int result;
   struct stat stat_buf;
 
