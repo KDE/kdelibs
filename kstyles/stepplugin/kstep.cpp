@@ -55,7 +55,7 @@ KStepStyle::~KStepStyle()
 
 void KStepStyle::polish(QApplication *)
 {
-    setScrollBarExtent(18);
+    setScrollBarExtent(19, 19);
 }
 
 void KStepStyle::polish(QPalette &p)
@@ -66,7 +66,7 @@ void KStepStyle::polish(QPalette &p)
 
 void KStepStyle::unPolish(QApplication *)
 {
-    setScrollBarExtent(16);
+    setScrollBarExtent(16, 16);
 }
 
 void KStepStyle::polish(QWidget *w)
@@ -234,7 +234,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                             add.height()-2, nextGrp, activeControl == AddLine, 1,
                             &nextGrp.brush(QColorGroup::Background));
             drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
-                             add.x()+3, add.y()+3, nextGrp);
+                             add.x()+4, add.y()+4, nextGrp);
         }
     }
     if(controls & SubLine){
@@ -244,8 +244,8 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
                             sub.height()-2, nextGrp, activeControl == SubLine, 1,
                             &nextGrp.brush(QColorGroup::Background));
-            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+3,
-                             sub.y()+3, nextGrp);
+            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+4,
+                             sub.y()+4, nextGrp);
         }
     }
     if((controls & SubPage)){
@@ -508,6 +508,19 @@ void KStepStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
         p->setPen(oldPen);
     }
 }
+
+void KStepStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
+                                   int)
+{
+    p->fillRect(x, y, w, h, Qt::color1);
+}
+
+void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                            int h, bool)
+{
+    p->fillRect(x, y, w, h, Qt::color1);
+}
+
 
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
                                   int y, const QColorGroup &g)

@@ -38,6 +38,9 @@ public:
     void drawExclusiveIndicator(QPainter* p,  int x, int y, int w, int h,
                                 const QColorGroup &g, bool on,
                                 bool down = FALSE, bool enabled =  TRUE );
+    void drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int);
+    void drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                    int h, bool);
     void drawComboButton(QPainter *p, int x, int y, int w, int h,
                          const QColorGroup &g, bool sunken = FALSE,
                          bool editable = FALSE, bool enabled = TRUE,
