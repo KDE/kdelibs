@@ -25,6 +25,7 @@
 #include <dom_element.h>
 
 #include <kjs/object.h>
+#include <kjs/function.h>
 
 namespace KJS {
 
@@ -52,9 +53,24 @@ namespace KJS {
     DOM::Document doc;
   };
 
+  class DOMDocFunction : public InternalFunction {
+  public:
+    DOMDocFunction(DOM::Document d, int i);
+    //    virtual KJSO *get(const UString &p);
+    KJSO *execute(const List &);
+    enum { CreateElement, CreateDocumentFragment, CreateTextNode,
+	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
+	   CreateAttribute, CreateEntityReference, GetElementsByTagName };
+  private:
+    DOM::Document doc;
+    int id;
+  };
+
   class DOMAttr : public HostObject {
   public:
     DOMAttr(DOM::Attr a) : attr(a) { }
+    virtual KJSO *get(const UString &p);
+    virtual void put(const UString &p, KJSO *v);
   private:
     DOM::Attr attr;
   };

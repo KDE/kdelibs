@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 
+#include <kjs/operations.h>
 #include <dom_string.h>
 
 #include "kjs_dom.h"
@@ -69,15 +70,96 @@ KJSO *DOMNodeList::get(const UString &p)
   return result;
 }
 
+KJSO *DOMAttr::get(const UString &p)
+{
+  KJSO *result;
+  if (p == "name") {
+    result = newString(attr.name()); }
+  else if (p == "specified")
+    result = newBoolean(attr.specified());
+  else if (p == "value")
+    result = newString(attr.value());
+  else {
+    Ptr tmp = new DOMNode(attr);
+    result = tmp->get(p);
+  }
+  return result;
+}
+
+void DOMAttr::put(const UString &p, KJSO *v)
+{
+  if (p == "value") {
+    Ptr s = toString(v);
+    attr.setValue(s->stringVal().string());
+  } else {
+    Ptr tmp = new DOMNode(attr);
+    tmp->put(p, v);
+  }
+}
+
 KJSO *DOMDocument::get(const UString &p)
 {
   KJSO *result;
+
+  if (p == "doctype")
+    return newUndefined(); /* TODO */
+  else if (p == "implementation")
+    return newUndefined(); /* TODO */
+  else if (p == "documentElement")
+    return new DOMElement(doc.documentElement());
+  else if (p == "createElement")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateElement);
+  else if (p == "createDocumentFragment")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateDocumentFragment);
+  else if (p == "createTextNode")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateTextNode);
+  else if (p == "createComment")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateComment);
+  else if (p == "createCDATASection")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateCDATASection);
+  else if (p == "createProcessingInstruction")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateProcessingInstruction);
+  else if (p == "createAttribute")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateAttribute);
+  else if (p == "createEntityReference")
+    return new DOMDocFunction(doc, DOMDocFunction::CreateEntityReference);
+  else if (p == "getElementsByTagName")
+    return new DOMDocFunction(doc, DOMDocFunction::GetElementsByTagName);
 
   // look in base class (Document)
   Ptr tmp = new DOMNode(doc);
   result = tmp->get(p);
 
   return result;
+}
+
+DOMDocFunction::DOMDocFunction(DOM::Document d, int i)
+  : doc(d), id(i)
+{
+}
+
+KJSO *DOMDocFunction::execute(const List &args)
+{
+  KJSO *result;
+  Ptr arg = args[0];
+  Ptr str = toString(arg);
+  DOM::DOMString s = str->stringVal().string();
+  switch(id) {
+  case CreateElement:
+    result = new DOMElement(doc.createElement(s));
+    break;
+  case CreateAttribute:
+    result = new DOMAttr(doc.createAttribute(s));
+    break;
+  case GetElementsByTagName:
+    result = new DOMNodeList(doc.getElementsByTagName(s));
+    break;
+    /* TODO */
+  default:
+    result = newUndefined();
+  }
+
+  return newCompletion(Normal, result);
 }
 
 KJSO *DOMElement::get(const UString &p)
