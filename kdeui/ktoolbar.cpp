@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.62  1998/05/04 16:38:19  radej
+// Revision 1.64  1998/05/07 23:12:30  radej
+// Fix for optional highlighting of handle
 // Revision 1.60  1998/05/02 18:31:01  radej
 // Improved docking
 //
@@ -757,7 +760,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
         oh = rr.height();
         if (Parent->inherits("KTopLevelWidget"))
         {
-          ox += ((KTopLevelWidget *) Parent)->view_left;;
+          ox += ((KTopLevelWidget *) Parent)->view_left;
           oy += ((KTopLevelWidget *) Parent)->view_top;
           ow = ((KTopLevelWidget *) Parent)->view_right -
             ((KTopLevelWidget *) Parent)->view_left;
@@ -779,8 +782,20 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
         if (transparent)
           mgr->doMove(true, false, true);
         else
+        {
+          QList<KToolBarItem> ons;
+          for (KToolBarItem *b = items.first(); b; b=items.next())
+          {
+            if (b->isEnabled())
+              ons.append(b);
+            b->setEnabled(false);
+          }
+              
           mgr->doMove(true, false, false);
-        
+
+          for (KToolBarItem *b = ons.first(); b; b=ons.next())
+            b->setEnabled(true);
+        }
         if (transparent)
         {
           setBarPos (movePos);
@@ -825,10 +840,11 @@ void KToolBar::slotHotSpot(int hs)
         setBarPos(Floating);
         break;
     }
-    if (position == Floating)
-      ;//mgr->setGeometry(QCursor::pos().x(), QCursor::pos().y(), width(), height());
-    else
-      mgr->setGeometry(x(), y(), width(), height());
+    if (position != Floating)
+    {
+      QPoint p(Parent->mapToGlobal(pos())); // OH GOOOOODDDD!!!!!
+      mgr->setGeometry(p.x(), p.y(), width(), height());
+    }
     if (!isVisible())
       show();
   }
