@@ -165,20 +165,20 @@ bool NodeImpl::isInline()
     return (m_style->display() == INLINE);
 }
 
-DOMString *NodeImpl::toHTML(DOMString *_string)
+DOMString NodeImpl::toHTML(DOMString _string)
 {
     _string = innerHTML(_string);
     return _string;
 }
 
-DOMString *NodeImpl::innerHTML(DOMString *_string)
+DOMString NodeImpl::innerHTML(DOMString _string)
 {
-  NodeImpl *_current;
-  for(_current = firstChild(); _current != 0; _current = _current->nextSibling() )
-      {
-         *_string = *_string +  *_current->toHTML(_string);
-      }
-  return _string;
+    NodeImpl *_current;
+    for(_current = firstChild(); _current != 0; _current = _current->nextSibling() )
+    {
+        _string = _current->toHTML(_string);
+    }
+    return _string;
 }
 
 //--------------------------------------------------------------------

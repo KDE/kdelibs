@@ -576,7 +576,7 @@ public:
      * @internal returns the index of a node
      */
     unsigned long index() const;
-    DOMString* toHTML(DOMString *_string);
+    DOMString toHTML(DOMString _string);
 
 
 protected:

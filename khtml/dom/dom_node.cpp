@@ -280,7 +280,7 @@ unsigned long Node::index() const
     return count;
 }
 
-DOMString* Node::toHTML(DOMString *_string)
+DOMString Node::toHTML(DOMString _string)
 {
     if(impl) return impl->toHTML(_string);
       return 0;

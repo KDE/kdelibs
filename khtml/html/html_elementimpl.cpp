@@ -251,14 +251,11 @@ void HTMLElementImpl::addCSSProperty(const DOMString &property)
     m_styleDecls->setProperty(property);
 }
 
-DOMString *HTMLElementImpl::toHTML(DOMString *_string)
+DOMString HTMLElementImpl::toHTML(DOMString _string)
 {
-   *_string = *_string + "<" + nodeName() + ">";
-   /*_string =*/(void) innerHTML(_string);
-   *_string = *_string +  "</" + nodeName() + ">";
-
-   //printf("%s %s\n",  nodeName().string().ascii(), _string->string().ascii());
-    
+    _string = _string + "<" + nodeName() + ">";
+    _string = innerHTML(_string);
+    _string = _string +  "</" + nodeName() + ">";
     return _string;
 }
 // -------------------------------------------------------------------------

@@ -161,8 +161,8 @@ ushort TextImpl::id() const
     return ID_TEXT;
 }
 
-DOMString *TextImpl::toHTML(DOMString *_string)
+DOMString TextImpl::toHTML(DOMString _string)
 {
-    *_string = *_string + string();
+    _string = _string + string();
     return _string;
 }
