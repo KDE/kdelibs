@@ -474,8 +474,11 @@ void RenderLineEdit::updateFromElement()
     int ml = element()->maxLength();
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
-    if ( widget()->maxLength() != ml )
+    if ( widget()->maxLength() != ml ) {
+        widget()->blockSignals( true );
         widget()->setMaxLength( ml );
+        widget()->blockSignals( false );
+    }
 
     if (element()->value().string() != widget()->text()) {
         widget()->blockSignals(true);
