@@ -96,15 +96,19 @@ KService::init( KDesktopFile *config )
   bool absPath = (entryPath()[0] == '/');
 
   config->setDesktopGroup();
-  if(absPath && access(QFile::encodeName(entryPath()), R_OK))
-  {
-    m_bValid = false;
-    return;
-  }
+
   QMap<QString, QString> entryMap = config->entryMap(config->group());
 
   entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
   entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
+
+  m_strName = config->readEntry( "Name" );
+  entryMap.remove("Name");
+  if ( m_strName.isEmpty() )
+  {
+    m_bValid = false;
+    return;
+  }
 
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   entryMap.remove("Hidden");
@@ -175,14 +179,6 @@ KService::init( KDesktopFile *config )
 
   m_strExec = config->readPathEntry( "Exec" );
   entryMap.remove("Exec");
-  m_strName = config->readEntry( "Name" );
-  //kdDebug() << "parsing " << entryPath() << " Name=" << m_strName << endl;
-  entryMap.remove("Name");
-  if ( m_strName.isEmpty() )
-  {
-    m_bValid = false;
-    return;
-  }
 
   m_strIcon = config->readEntry( "Icon", "unknown" );
   entryMap.remove("Icon");
