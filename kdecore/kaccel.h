@@ -38,7 +38,7 @@ class KAccelPrivate;
  * through application configuration files or through the
  * @ref KKeyChooser GUI. 
  *
- * A KAccel contains a list of @ref KAccelAction objects.
+ * A KAccel contains a list of accelerator actions.
  *
  * For example, CTRL+Key_P could be a shortcut for printing a document. The key
  * codes are listed in qnamespace.h. "Print" could be the action name for printing.
@@ -114,12 +114,14 @@ class KAccel : public QAccel
 	virtual ~KAccel();
 
 	/**
+	 * @internal
 	 * Returns the KAccel's @p KAccelActions, a list of @p KAccepAction.
 	 * @return the KAccelActions of the KAccel
 	 */
 	KAccelActions& actions();
 
 	/**
+	 * @internal
 	 * Returns the KAccel's @p KAccelActions, a list of @p KAccepAction.
 	 * @return the KAccelActions of the KAccel
 	 */
