@@ -245,7 +245,11 @@ public:
     /**
      * Force shutdown. Kill any possibly active sessions.
      */
-    ShutdownModeForceNow = 2
+    ShutdownModeForceNow = 2,
+    /**
+     * Pop up a dialog asking the user what to do if sessions are still active.
+     */
+    ShutdownModeInteractive = 3
   };
 
   /**
