@@ -980,6 +980,8 @@ void Ftp::stat( const KURL &url)
     // It is a file or it doesn't exist, use the name in the list command
     listarg = path;
     search = path;
+    // LIST doesn't support spaces. Using a '?' wildcard instead.
+    listarg.replace(QRegExp(" "),"?");
   }
   else
   {
