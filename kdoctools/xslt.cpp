@@ -79,9 +79,10 @@ int writeToQString(void * context, const char * buffer, int len)
     return len;
 }
 
-void closeQString(void * context) {
+int closeQString(void * context) {
     QString *t = (QString*)context;
     *t += QString::fromLatin1("\n");
+    return 0;
 }
 
 QString transform( const QString &pat, const QString& tss)
@@ -286,15 +287,7 @@ static KFilterBase *findFilterByFileName( const QString &filename )
     if ( filter )
         return filter;
 
-    if ( filename.right( 4 ) == ".bz2" ) {
-#if defined( HAVE_BZIP2_SUPPORT )
-        filter = new KBzip2Filter;
-#endif
-    }
-
-    if ( !filter )
-        filter = new KGzipFilter;
-
+    filter = new KBzip2Filter;
     return filter;
 }
 
@@ -345,7 +338,8 @@ static bool readCache( const QString &filename,
     char buffer[32000];
     int n;
     QCString text;
-    while ( ( n = fd->readBlock(buffer, 31900) ) )
+    // Also end loop in case of error, when -1 is returned
+    while ( ( n = fd->readBlock(buffer, 31900) ) > 0)
     {
         buffer[n] = 0;
         text += buffer;
@@ -355,6 +349,10 @@ static bool readCache( const QString &filename,
 
     output = QString::fromUtf8( text );
     delete fd;
+
+    if (n == -1)
+        return false;
+
     kdDebug( 7119 ) << "finished " << endl;
 
     return true;
