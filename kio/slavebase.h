@@ -83,6 +83,7 @@ public:
 
     /**
      * Emit in openConnection, if you reimplement it, when you're done.
+     * Currently unused.
      */
     void connected();
 
@@ -224,11 +225,13 @@ public:
 
     /**
      * Opens the connection (forced)
+     * Currently unused.
      */
     virtual void openConnection();
 
     /**
      * Closes the connection (forced)
+     * Currently unused.
      */
     virtual void closeConnection();
 

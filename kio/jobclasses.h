@@ -154,9 +154,8 @@ namespace KIO {
 
         /**
          * Emitted when the slave successfully connected to the host.
-         * There is no guarantee the slave will send this. For instance,
-         * kio_file will never. This is especially useful for kio_http,
-         * to know when the metadata is available.
+         * There is no guarantee the slave will send this, and this is
+         * currently unused (in the applications).
          */
         void connected( KIO::Job * );
 

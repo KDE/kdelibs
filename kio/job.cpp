@@ -707,6 +707,10 @@ void TransferJob::start(Slave *slave)
 
     if (!m_outgoingMetaData.isEmpty())
     {
+       kdDebug(7007) << "TransferJob::start : Sending metadata :" << endl;
+       MetaData::Iterator mapit;
+       for ( mapit = m_outgoingMetaData.begin() ; mapit != m_outgoingMetaData.end() ; ++mapit )
+           kdDebug(7007) << "   " << mapit.key() << "=" << mapit.data() << endl;
        KIO_ARGS << m_outgoingMetaData;
        slave->connection()->send( CMD_META_DATA, packedArgs );
     }
