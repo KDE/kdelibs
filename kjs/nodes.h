@@ -19,7 +19,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #ifndef _NODES_H_
@@ -75,7 +74,14 @@ namespace KJS {
   public:
     Node();
     virtual ~Node();
-    virtual Value evaluate(ExecState *exec) const = 0;
+    /**
+     * Evaluate this node and return the result, possibly a reference.
+     */
+    virtual Value evaluate(ExecState *exec) const;
+    /**
+     * Returns the value represented by this node. Always dereferenced.
+     */
+    virtual Value value(ExecState *exec) const;
     UString toString() const;
     virtual void streamTo(SourceStream &s) const = 0;
     virtual void processVarDecls(ExecState */*exec*/) {}
@@ -135,35 +141,35 @@ namespace KJS {
   class NullNode : public Node {
   public:
     NullNode() {}
-    Value evaluate(ExecState *exec) const;
+    Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   };
 
   class BooleanNode : public Node {
   public:
-    BooleanNode(bool v) : value(v) {}
-    Value evaluate(ExecState *exec) const;
+    BooleanNode(bool v) : val(v) {}
+    Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    bool value;
+    bool val;
   };
 
   class NumberNode : public Node {
   public:
-    NumberNode(double v) : value(v) { }
-    Value evaluate(ExecState *exec) const;
+    NumberNode(double v) : val(v) { }
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    double value;
+    double val;
   };
 
   class StringNode : public Node {
   public:
-    StringNode(const UString *v) { value = *v; }
-    Value evaluate(ExecState *exec) const;
+    StringNode(const UString *v) : val(*v) { }
+    Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    UString value;
+    UString val;
   };
 
   class RegExpNode : public Node {
@@ -187,6 +193,7 @@ namespace KJS {
   public:
     ResolveNode(const UString *s) : ident(*s) { }
     Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     UString ident;
@@ -373,7 +380,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~PostfixNode();
-    Value evaluate(ExecState *exec) const;
+    Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -524,7 +531,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~RelationalNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1, *expr2;
@@ -598,7 +605,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AssignNode();
-    Value evaluate(ExecState *exec) const;
+    Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *left;
@@ -639,7 +646,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AssignExprNode();
-    Value evaluate(ExecState *exec) const;
+    Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
