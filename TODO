@@ -164,3 +164,7 @@ that we would like to make for the next binary incompatible release.
 
 - Get rid of libkdesu dependency in libkio, get rid of SessionData::AuthData*,
   get rid of SlaveInterface::authorizationKey and SlaveInterface::delAuthorization
+
+- Make functions in KHelpMenu virtual so they can be overridden (ex: to provide
+an alternative help->contents action)
+
