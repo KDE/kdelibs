@@ -144,7 +144,8 @@ public:
     class WindowInfo;
     class WindowInfoPrivate;
     /**
-     * Returns information about window @p win.
+     * Returns information about window @p win. It is recommended to check
+     * whether the returned info is valid by calling the valid() method.
      * @param win the id of the window
      * @param properties all properties that should be retrieved (see NET::Property
      *    enum for details) - passing 0 means all properties. Unlisted properties
@@ -402,6 +403,13 @@ public:
     WindowInfo( WId window, unsigned long properties, unsigned long properties2 );
     WindowInfo(); // to make QValueList and others happy
     ~WindowInfo();
+    /**
+     * Returns false if this window info is not valid (most probably the given
+     * window doesn't exist).
+     * @param withdrawn_is_valid if true, windows in the withdrawn state
+     *        (i.e. not managed) are also considered. This is usually not the case.
+     */
+    bool valid( bool withdrawn_is_valid = false ) const;
     /**
      * Returns the window identifier.
      */ 

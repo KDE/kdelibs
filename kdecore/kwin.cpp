@@ -44,6 +44,7 @@
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kstartupinfo.h>
+#include <kxerrorhandler.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -240,13 +241,17 @@ KWin::WindowInfo KWin::windowInfo( WId win, unsigned long properties, unsigned l
 
 WId KWin::transientFor( WId win )
 {
+    KXErrorHandler handler; // ignore badwindow
     Window transient_for = None;
-    XGetTransientForHint( qt_xdisplay(), win, &transient_for );
-    return transient_for;
+    if( XGetTransientForHint( qt_xdisplay(), win, &transient_for ))
+        return transient_for;
+    // XGetTransientForHint() did sync
+    return None;
 }
 
 WId KWin::groupLeader( WId win )
 {
+    KXErrorHandler handler; // ignore badwindow
     XWMHints *hints = XGetWMHints( qt_xdisplay(), win );
     Window window_group = None;
     if ( hints )
@@ -255,6 +260,7 @@ WId KWin::groupLeader( WId win )
             window_group = hints->window_group;
         XFree( reinterpret_cast< char* >( hints ));
     }
+    // XGetWMHints() did sync
     return window_group;
 }
 
@@ -311,6 +317,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 
 QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 {
+    KXErrorHandler handler; // ignore badwindow
     QPixmap result;
     if( flags & NETWM ) {
         NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMIcon );
@@ -546,6 +553,7 @@ class KWin::WindowInfoPrivate
         QString iconic_name_;
 	QRect geometry_;
 	int ref;
+        bool valid;
     private:
 	WindowInfoPrivate( const WindowInfoPrivate& );
 	void operator=( const WindowInfoPrivate& );
@@ -554,6 +562,7 @@ class KWin::WindowInfoPrivate
 // KWin::info() should be updated too if something has to be changed here
 KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long properties2 )
 {
+    KXErrorHandler handler;
     d = new WindowInfoPrivate;
     d->ref = 1;
     if( properties == 0 )
@@ -573,9 +582,35 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
 	properties |= NET::WMIconName | NET::WMVisibleName; // force, in case it will be used as a fallback
     if( properties & NET::WMVisibleName )
 	properties |= NET::WMName; // force, in case it will be used as a fallback
+    properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
     d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), props, 2 );
     d->win_ = win;
+    if( properties & NET::WMName ) {
+        if( d->info->name()) {
+	    d->name_ = QString::fromUtf8( d->info->name() );
+        } else {
+	    char* c = 0;
+	    if ( XFetchName( qt_xdisplay(), win, &c ) != 0 ) {
+	        d->name_ = QString::fromLocal8Bit( c );
+	        XFree( c );
+	    }
+        }
+    }
+    if( properties & NET::WMGeometry ) {
+        NETRect frame, geom;
+        d->info->kdeGeometry( frame, geom );
+        d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    }
+    if( properties & NET::WMIconName ) {
+	char* c = 0;
+	if ( XGetIconName( qt_xdisplay(), win, &c ) != 0 ) {
+    	    d->iconic_name_ = QString::fromLocal8Bit( c );
+	    XFree( c );
+        } else
+            d->iconic_name_ = "";
+    }
+    d->valid = !handler.error( false ); // no sync - NETWinInfo did roundtrips
 }
 
 // this one is only to make QValueList<> or similar happy
@@ -611,6 +646,15 @@ KWin::WindowInfo& KWin::WindowInfo::operator=( const WindowInfo& wininfo )
 	    ++d->ref;
     }
     return *this;
+}
+
+bool KWin::WindowInfo::valid( bool withdrawn_is_valid ) const
+{
+    if( !d->valid )
+        return false;
+    if( !withdrawn_is_valid && mappingState() == NET::Withdrawn )
+        return false;
+    return true;
 }
 
 WId KWin::WindowInfo::win() const
@@ -687,16 +731,6 @@ QString KWin::WindowInfo::name() const
 {
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
         << "Pass NET::WMName to KWin::windowInfo()" << endl;
-    if( d->info->name())
-        return QString::fromUtf8( d->info->name());
-    if( d->name_.isNull()) {
-	char* c = 0;
-	if ( XFetchName( qt_xdisplay(), d->win_, &c ) != 0 ) {
-    	    d->name_ = QString::fromLocal8Bit( c );
-	    XFree( c );
-        } else
-            d->name_ = "";
-    }
     return d->name_;
 }
 
@@ -708,14 +742,6 @@ QString KWin::WindowInfo::visibleIconName() const
         return QString::fromUtf8( d->info->visibleIconName());
     if( d->info->iconName())
         return QString::fromUtf8( d->info->iconName());
-    if( d->iconic_name_.isNull()) {
-	char* c = 0;
-	if ( XGetIconName( qt_xdisplay(), d->win_, &c ) != 0 ) {
-    	    d->iconic_name_ = QString::fromLocal8Bit( c );
-	    XFree( c );
-        } else
-            d->iconic_name_ = "";
-    }
     if( !d->iconic_name_.isEmpty())
         return d->iconic_name_;
     return visibleName();
@@ -727,14 +753,6 @@ QString KWin::WindowInfo::iconName() const
         << "Pass NET::WMIconName to KWin::windowInfo()" << endl;
     if( d->info->iconName())
         return QString::fromUtf8( d->info->iconName());
-    if( d->iconic_name_.isNull()) {
-	char* c = 0;
-	if ( XGetIconName( qt_xdisplay(), d->win_, &c ) != 0 ) {
-    	    d->iconic_name_ = QString::fromLocal8Bit( c );
-	    XFree( c );
-        } else
-            d->iconic_name_ = "";
-    }
     if( !d->iconic_name_.isEmpty())
         return d->iconic_name_;
     return name();
@@ -770,11 +788,6 @@ QRect KWin::WindowInfo::geometry() const
 {
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
         << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
-    if( d->geometry_.isNull()) {
-        NETRect frame, geom;
-        d->info->kdeGeometry( frame, geom );
-        d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
-    }
     return d->geometry_;
 }
 
