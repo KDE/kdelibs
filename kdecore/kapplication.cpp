@@ -206,7 +206,7 @@ public:
   bool actionRestrictions : 1;
   /**
    * This counter indicates when to exit the application.
-   * It starts at 1, is decremented by the "last window close" event, but
+   * It starts at 1, is decremented in KMainWindow when the last window is closed, but
    * is incremented by operations that should outlive the last window closed
    * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
    */
