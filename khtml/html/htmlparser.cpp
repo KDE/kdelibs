@@ -427,6 +427,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		return;
 	    }
         case ID_HTML:
+            if (!current->isDocumentNode())
+		throw exception;
+	    break;
         case ID_META:
         case ID_LINK:
             // SCRIPT and OBJECT are allowd in the body.
@@ -559,10 +562,12 @@ void KHTMLParser::insertNode(NodeImpl *n)
             case ID_ISINDEX:
             case ID_BASE:
                 // ### what about <script> tags between head and body????
-                head = new HTMLHeadElementImpl(document);
-		e = head;
-                insertNode(e);
-                handled = true;
+		if(!head) {
+		    head = new HTMLHeadElementImpl(document);
+		    e = head;
+		    insertNode(e);
+		    handled = true;
+		}
                 break;
 		case ID_FRAME:
 		    if( haveFrameSet ) break;
@@ -761,8 +766,10 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLHtmlElementImpl(document);
         break;
     case ID_HEAD:
-        head = new HTMLHeadElementImpl(document);
-	n = head;
+	if(!head && current->id() == ID_HTML) {
+	    head = new HTMLHeadElementImpl(document);
+	    n = head;
+	}
         break;
     case ID_BODY:
         popBlock(ID_HEAD);
