@@ -155,16 +155,19 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   {
     QPoint pos;
 
-    if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
-      pos = static_cast<QMouseEvent *>( ev )->globalPos();
-
     if ( !d->m_managedTopLevelWidgets.containsRef( w->topLevelWidget() ) )
       return false;
 
     if ( d->m_bIgnoreScrollBars && w->inherits( "QScrollBar" ) )
       return false;
 
-    part = findPartFromWidget( w, pos );
+    if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
+    {
+      pos = static_cast<QMouseEvent *>( ev )->globalPos();
+      part = findPartFromWidget( w, pos );
+    } else
+      part = findPartFromWidget( w );
+
     if ( part ) // We found a part whose widget is w
     {
       if ( d->m_policy == PartManager::TriState )
@@ -233,6 +236,17 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
     Part *part = it.current()->hitTest( widget, pos );
     if ( part && d->m_parts.findRef( part ) != -1 )
       return part;
+  }
+  return 0L;
+}
+
+Part * PartManager::findPartFromWidget( QWidget * widget )
+{
+  QListIterator<Part> it ( d->m_parts );
+  for ( ; it.current() ; ++it )
+  {
+    if ( widget == it.current()->widget() )
+      return it.current();
   }
   return 0L;
 }

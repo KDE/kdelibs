@@ -242,6 +242,7 @@ protected slots:
   void slotManagedTopLevelWidgetDestroyed();
 private:
   Part * findPartFromWidget( QWidget * widget, const QPoint &pos );
+  Part * findPartFromWidget( QWidget * widget );
 
   PartManagerPrivate *d;
 };
