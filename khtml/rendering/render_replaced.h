@@ -73,7 +73,7 @@ public:
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 
-    virtual void absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
     virtual bool isWidget() const { return true; };
 

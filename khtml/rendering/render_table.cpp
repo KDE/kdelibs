@@ -1790,11 +1790,12 @@ void RenderTableCell::repaintObject(RenderObject *o, int x, int y)
     RenderFlow::repaintObject(o, x, y);
 }
 
-void RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    RenderFlow::absolutePosition(xPos, yPos, f);
+    bool ret=RenderFlow::absolutePosition(xPos, yPos, f);
     if (yPos != -1)
       yPos += _topExtra;
+    return ret;
 }
 
 void RenderTableCell::setStyle( RenderStyle *style )

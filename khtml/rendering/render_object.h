@@ -298,8 +298,8 @@ public:
      * Get Y-Position of this object relative to its parent
      */
     virtual int yPos() const { return 0; }
-
-    virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
+   
+    virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
 
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
@@ -389,6 +389,9 @@ private:
     RenderObject *m_next;
     RenderObject *m_first;
     RenderObject *m_last;
+    
+    friend class RenderRoot;
+    RenderObject *m_root;
 
     CachedImage *m_bgImage;
 

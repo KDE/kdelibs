@@ -302,21 +302,25 @@ short RenderBox::containingBlockWidth() const
         return containingBlock()->contentWidth();
 }
 
-void RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
 {
     if ( style()->position() == FIXED )
 	f = true;
     RenderObject *o = container();
-    if( o ) {
-        o->absolutePosition(xPos, yPos, f);
-        if((!isInline() || isReplaced()) && xPos != -1)
+    if( o && o->absolutePosition(xPos, yPos, f)) 
+    {
+        if(!isInline() || isReplaced())
             xPos += m_x, yPos += m_y;
 
         if(isRelPositioned())
             relativePositionOffset(xPos, yPos);
+        return true;
     }
     else
-        xPos = yPos = -1;
+    {
+        xPos = yPos = 0;
+        return false;
+    }
 }
 
 void RenderBox::updateSize()
@@ -360,8 +364,13 @@ void RenderBox::updateHeight()
     RenderObject* cb = containingBlock();
     if (parsing())
     {
-        setLayouted(false);
-        if(cb != this) cb->updateHeight();
+        if (layouted())
+        {
+            setLayouted(false);
+            if(cb != this) cb->updateHeight();
+        } else
+            root()->updateHeight();            
+
         return;
     }
 

@@ -443,19 +443,19 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
       _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
 
   int absx, absy;
-  absolutePosition(absx,absy);
-  if (absx == -1) {
+  
+  if (absolutePosition(absx,absy)) 
+  {
+    _x += absx;
+    _y += absy;
+  } else {
     // we don't know out absolute position, and there is not point returning
     // just a relative one
     _x = _y = -1;
   }
-  else {
-    _x += absx;
-    _y += absy;
-  }
 }
 
-void RenderText::absolutePosition(int &xPos, int &yPos, bool)
+bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
     if(parent()) {
         parent()->absolutePosition(xPos, yPos, false);
@@ -463,10 +463,11 @@ void RenderText::absolutePosition(int &xPos, int &yPos, bool)
             TextSlave* s = m_lines[0];
             xPos += s->m_x;
             yPos += s->m_y;
-            return;
+            return true;
         }
     }
-    xPos = yPos = -1;
+    xPos = yPos = 0;
+    return false;
 }
 
 void RenderText::posOfChar(int chr, int &x, int &y)

@@ -375,7 +375,7 @@ public:
 
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
-    virtual void absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
 protected:
     RenderTable *m_table;

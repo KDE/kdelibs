@@ -314,11 +314,8 @@ void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
 QRect NodeImpl::getRect()
 {
     int _x, _y;
-    if(m_render)
-        {
-            m_render->absolutePosition(_x, _y);
-            return QRect( _x, _y, m_render->width(), m_render->height() );
-        }
+    if(m_render && m_render->absolutePosition(_x, _y))        
+        return QRect( _x, _y, m_render->width(), m_render->height() );
     return QRect();
 }
 

@@ -29,6 +29,8 @@ using namespace khtml;
 RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
 {
+    m_root = this;
+    
     // init RenderObject attributes
     setInline(false);
 
@@ -113,13 +115,14 @@ QScrollView *RenderRoot::view()
     return m_view;
 }
 
-void RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
 {
     xPos = yPos = 0;
     if ( f ) {
 	xPos += m_view->contentsX();
 	yPos += m_view->contentsY();
     }
+    return true;
 }
 
 void RenderRoot::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)

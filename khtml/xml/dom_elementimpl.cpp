@@ -583,11 +583,11 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     }
 
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
-    {
-        m_render->absolutePosition(_tx, _ty);
-
+    {       
+        bool known = m_render->absolutePosition(_tx, _ty);
+         
 	inside = true;
-	if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
+	if( !known || (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
 	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
 	    inside = false;
 	else

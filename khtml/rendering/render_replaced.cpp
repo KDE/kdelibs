@@ -188,13 +188,14 @@ void RenderWidget::blur()
 	m_widget->clearFocus();
 }
 
-void RenderWidget::absolutePosition(int &xPos, int &yPos, bool)
+bool RenderWidget::absolutePosition(int &xPos, int &yPos, bool)
 {
     if (m_widget)
     {
 	xPos = m_widget->x();
 	yPos = m_widget->y();
     }
+    return true;
 }
 
 

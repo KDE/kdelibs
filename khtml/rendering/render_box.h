@@ -63,7 +63,7 @@ public:
     virtual short contentWidth() const;
     virtual int contentHeight() const;
 
-    virtual void absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
     virtual void setPos( int xPos, int yPos ) { m_x = xPos; m_y = yPos; }
 

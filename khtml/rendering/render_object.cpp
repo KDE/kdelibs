@@ -107,6 +107,7 @@ RenderObject::RenderObject()
     m_next = 0;
     m_first = 0;
     m_last = 0;
+    m_root=0;
 
     m_floating = false;
     m_positioned = false;
@@ -120,7 +121,7 @@ RenderObject::RenderObject()
     m_visible = true;
     m_containsOverhangingFloats = false;
 
-    m_bgImage = 0;
+    m_bgImage = 0;    
 }
 
 RenderObject::~RenderObject()
@@ -149,6 +150,8 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
+    
+    newChild->m_root = m_root;
 
     if(parsing())
         newChild->setParsing();
@@ -690,12 +693,15 @@ QRect RenderObject::viewRect() const
     return containingBlock()->viewRect();
 }
 
-void RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
 {
     if(parent())
-        parent()->absolutePosition(xPos, yPos, f);
+        return parent()->absolutePosition(xPos, yPos, f);
     else
-        xPos = yPos = -1;
+    {
+        xPos = yPos = 0;
+        return false;
+    }
 }
 
 void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
@@ -750,8 +756,5 @@ RenderObject *RenderObject::container() const
 
 RenderObject *RenderObject::root() const
 {
-    RenderObject *o = parent();
-    while( o && !o->isRoot() )
-	o = o->parent();
-    return o;
+    return m_root;
 }
