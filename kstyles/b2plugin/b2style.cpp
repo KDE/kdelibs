@@ -26,6 +26,8 @@
  * SUCH DAMAGE.
  *
  */
+
+
 #ifndef INCLUDE_MENUITEM_DEF
 #define INCLUDE_MENUITEM_DEF
 #endif
@@ -123,7 +125,6 @@ B2Style::B2Style()
     QString oldGrp = config->group();
     QPalette p = kapp->palette();
     setButtonDefaultIndicatorWidth(0);
-    beScrollArrow = false;
 }
 
 B2Style::~B2Style()
@@ -180,11 +181,6 @@ void B2Style::polish(QPalette &)
         sliderGrooveGrp.setColor(QColorGroup::Light, QColor(192, 255, 192));
         sliderGrooveGrp.setColor(QColorGroup::Dark, QColor(0, 128, 0));
     }
-    if(config->hasKey("ScrollArrowStyle")){
-        QString arrow = config->readEntry("ScrollArrowStyle", "Be");
-        beScrollArrow = (arrow == "Be");
-    }
-
     config->setGroup(oldGrp);
 }
 
@@ -308,14 +304,14 @@ QRect B2Style::buttonRect(int x, int y, int w, int h)
 
 void B2Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken,
-                                 bool, bool, const QBrush *)
+                                 bool, bool, const QBrush *fill)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
-
     p->setPen(g.dark());
     p->drawRect(x, y, w, h);
+    if(fill)
+        p->fillRect(x+2, y+2, w-4, h-4, *fill);
 
     p->setPen(sunken? g.light() : g.mid());
     p->drawLine(x2-1, y+2, x2-1, y2-1);
@@ -332,8 +328,7 @@ void B2Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
     int arrow_w = arrow_h;
     int arrow_x = w - arrow_w - 6;
     int arrow_y = (h - arrow_h) / 2;
-    drawArrow(p, DownArrow, false, arrow_x, arrow_y, arrow_w, arrow_h, g, true,
-              &g.brush(QColorGroup::Button));
+    drawArrow(p, DownArrow, false, arrow_x, arrow_y, arrow_w, arrow_h, g, true);
 }
 
 void B2Style::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
@@ -551,12 +546,11 @@ void B2Style::drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
 }
 
 
-
-
 void B2Style::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
                                   int &sliderMax, int &sliderLength,
                                   int &buttonDim)
 {
+
     int maxLength;
     int b = 0;
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
@@ -744,15 +738,12 @@ void B2Style::drawSliderMask(QPainter *p, int x, int y, int, int h,
 
 void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
                             int y, int w, int h, const QColorGroup &g,
-                            bool enabled, const QBrush *fill)
+                            bool enabled, const QBrush *)
 {
     static QBitmap up(8, 8, up_bits, true);
     static QBitmap down(8, 8, down_bits, true);
     static QBitmap left(8, 8, left_bits, true);
     static QBitmap right(8, 8, right_bits, true);
-
-    if (fill)
-      p->fillRect(x, y, w, h, *fill);
 
     if(!up.mask()){
         up.setMask(up);
@@ -786,46 +777,26 @@ void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
 void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool, QBrush *)
 {
-    p->setPen(g.mid());
-    p->drawLine(w, y, w, h-1);
-
-    p->setPen(g.light());
-    p->drawLine(w+1, y, w+1, h-2);
-
+    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
     if(h > w)
-        qDrawArrow(p, RightArrow, WindowsStyle, false, x+3, y+4, w-4, w-4, g,
+        qDrawArrow(p, RightArrow, WindowsStyle, false, x+1, y+4, w-4, w-4, g,
                    true);
     else
         qDrawArrow(p, DownArrow, WindowsStyle, false, x+4, y+1, h-4, h-4, g,
                    true);
+        
 }
 
 void B2Style::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, QBrush *)
 {
-    drawKToolBar(p, x, y, w, h, g, false);
+    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
 }
 
 void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool)
 {
-    int x2 = x+w-1;
-    int y2 = y+h;
-
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
-
-    p->setPen(g.dark());
-    p->drawLine(x, y, x, y2);
-    p->drawLine(x2, y, x2, y2);
-
-    p->setPen(g.light());
-    p->drawLine(x+1,  y,  x2-1, y);
-    p->drawLine(x+2, y+1, x+2,  y2-1);
-
-    p->setPen(g.mid());
-    p->drawLine(x+1,  y, x+1,  y2);
-    p->drawLine(x2-1, y, x2-1, y2);
-    p->drawLine(x+1, y2-1, x2-1, y2-1);
+    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
 }
 
 void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -991,12 +962,12 @@ static const int motifItemHMargin       = 3;
 static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
-    maxpmw = QMAX( maxpmw, 20 );
-
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
         
+        if (checkable)
+            maxpmw = QMAX( maxpmw, 12 );
         int checkcol = maxpmw;
 
         qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
@@ -1088,7 +1059,7 @@ void B2Style::drawFocusRect(QPainter *p, const QRect &r,
 void B2Style::polishPopupMenu(QPopupMenu *mnu)
 {
     KStyle::polishPopupMenu(mnu);
-    // disabled for now because it breaks submenus
+    // disabled for now because it breaks kicker
     // (void)new B2AniMenu(mnu); 
 }
 
@@ -1175,165 +1146,6 @@ void B2Style::tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
         KStyle::tabbarMetrics(t, hFrame, vFrame, overlap);
 }
 */
-
-void B2Style::drawSBDecoButton(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, bool, bool)
-{
-    int x2 = w+x;
-    int y2 = h+y;
-
-    p->setPen(g.mid());
-    p->drawLine(x+1, y,   x2-1, y);
-    p->drawLine(x,   y+1, x,    y2-1);
-
-    p->setPen(g.light());
-    p->drawLine(x+1, y+1, x2-1, y+1);
-    p->drawLine(x+1, y+1, x+1,  y2-1);
-
-    p->setPen(g.dark());
-    p->drawLine(x+1, y2,  x2-1, y2);
-    p->drawLine(x2,  y+1, x2,   y2-1);
-}
-
-void B2Style::drawSBArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
-                          int y, int w, int h, const QColorGroup &g,
-                          bool enabled, const QBrush *fill)
-{
-    if (beScrollArrow == false)
-        drawArrow(p, type, down, x, y, w, h, g, enabled, fill);
-    else
-    {
-        int x2 = x+w;
-        int y2 = y+h;
-
-        switch (type)
-        {
-            case UpArrow:
-                p->setPen(enabled ? g.dark() : g.mid());
-                p->drawLine(x+3,  y,  x+3, y+1);
-
-                p->drawLine(x+2,  y+2,  x+2, y+3);
-                p->drawLine(x2-2, y+2, x2-2, y+3);
-
-                p->drawLine(x+1,  y+4, x+1,  y+6);
-                p->drawLine(x2-1, y+4, x2-1, y+6);
-
-                p->drawLine(x,  y+7, x,  y2);
-                p->drawLine(x2, y+7, x2, y2);
-
-                p->drawLine(x, y2, x2, y2);
-
-                p->setPen(enabled ? g.light() : g.mid());
-                p->drawLine(x+3, y+2, x+3, y+3);
-                p->drawLine(x+2, y+4, x+2, y+6);
-                p->drawLine(x+1, y+7, x+1, y2-1);
-
-                p->setPen(g.mid());
-                p->drawLine(x2-2, y+4, x2-2, y+6);
-                p->drawLine(x2-1, y+7, x2-1, y2-1);
-                p->drawLine(x+2, y2-1, x2-1, y2-1);
-                break;
-            case DownArrow:
-            default:
-                p->setPen(enabled ? g.dark() : g.mid());
-                p->drawLine(x+3,  y2,  x+3, y2-1);
-
-                p->drawLine(x+2,  y2-2,  x+2, y2-3);
-                p->drawLine(x2-2, y2-2, x2-2, y2-3);
-
-                p->drawLine(x+1,  y2-4, x+1,  y2-6);
-                p->drawLine(x2-1, y2-4, x2-1, y2-6);
-
-                p->drawLine(x,  y2-7, x,  y);
-                p->drawLine(x2, y2-7, x2, y);
-
-                p->drawLine(x, y, x2, y);
-
-                p->setPen(enabled ? g.light() : g.mid());
-                p->drawLine(x+3, y2-2, x+3, y2-3);
-                p->drawLine(x+2, y2-4, x+2, y2-6);
-                p->drawLine(x+1, y2-7, x+1, y+1);
-
-                p->setPen(g.mid());
-                p->drawLine(x2-2, y2-4, x2-2, y2-6);
-                p->drawLine(x2-1, y2-7, x2-1, y+1);
-                p->drawLine(x+2, y+1, x2-1, y+1);
-                break;
-            case LeftArrow:
-                p->setPen(enabled ? g.dark() : g.mid());
-                p->drawLine(x,  y+3,  x+1, y+3);
-
-                p->drawLine(x+2, y+2, x+3, y+2);
-                p->drawLine(x+2, y+4, x+3, y+4);
-
-                p->drawLine(x+4, y+1, x+6, y+1);
-                p->drawLine(x+4, y+5, x+6, y+5);
-
-                p->drawLine(x+7, y,   x2, y);
-                p->drawLine(x+7, y+6, x2, y+6);
-
-                p->drawLine(x2, y, x2, y+6);
-
-                p->setPen(enabled ? g.light() : g.mid());
-                p->drawLine(x+2, y+3,  x+3, y+3);
-                p->drawLine(x+4, y+2,  x+6, y+2);
-                p->drawLine(x+7, y+1, x2-1, y+1);
-
-                p->setPen(g.mid());
-                p->drawLine(x+4,  y+4, x+6,  y+4);
-                p->drawLine(x+7,  y+5, x2-1, y+5);
-                p->drawLine(x2-1, y+2, x2-1, y+5);
-                break;
-            case RightArrow:
-                p->setPen(enabled ? g.dark() : g.mid());
-                p->drawLine(x2,  y+3,  x2-1, y+3);
-
-                p->drawLine(x2-2, y+2, x2-3, y+2);
-                p->drawLine(x2-2, y+4, x2-3, y+4);
-
-                p->drawLine(x2-4, y+1, x2-6, y+1);
-                p->drawLine(x2-4, y+5, x2-6, y+5);
-
-                p->drawLine(x2-7, y,   x, y);
-                p->drawLine(x2-7, y+6, x, y+6);
-
-                p->drawLine(x, y, x, y+6);
-
-                p->setPen(enabled ? g.light() : g.mid());
-                p->drawLine(x2-7, y+1, x+1, y+1);
-                p->drawLine(x+1,  y+1, x+1, y+5);
-
-                p->setPen(g.mid());
-                p->drawLine(x2-2, y+3, x2-3, y+3);
-                p->drawLine(x2-4, y+2, x2-6, y+2);
-                p->drawLine(x2-4, y+4, x2-6, y+4);
-                p->drawLine(x2-7, y+5, x+2,  y+5);
-                break;
-        }
-    }
-}
-
-int B2Style::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
-                                 const QFontMetrics &fm)
-{
-    if (mi->isSeparator())
-        return 2;
-
-    int h = 0;
-    if (mi->pixmap())
-        h = mi->pixmap()->height();
-
-    if (mi->iconSet())
-        h = QMAX(mi->iconSet()->
-                 pixmap(QIconSet::Small, QIconSet::Normal).height(), h);
-
-    h = QMAX(fm.height() + 4, h);
-
-    // we want a minimum size of 18
-    h = QMAX(h, 18);
-
-    return h;
-}
 #include "b2style.moc"
 
 
