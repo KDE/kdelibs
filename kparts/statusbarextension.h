@@ -39,9 +39,12 @@ namespace KParts
 
   /**
    * @short an extension for KParts that allows more sophisticated statusbar handling
-   *`
+   *
    * Every part can use this class to customize the statusbar as long as it is active.
-   * add items via @p addStatusBarItem and remove it with @p removeStatusBarItem.
+   * Add items via addStatusBarItem and remove an item with removeStatusBarItem.
+   *
+   * IMPORTANT: do you add any items immediately after constructing the extension.
+   * Give the application time to set the statusbar in the extension if necessary.
    *
    * @since 3.2
    */
@@ -70,6 +73,9 @@ namespace KParts
        * Note that the item isn't really permanent though, it goes away when
        * the part is unactivated. This simply controls where temporary messages
        * hide the @p widget, and whether it's added to the left or to the right side.
+       *
+       * IMPORTANT: do you add any items immediately after constructing the extension.
+       * Give the application time to set the statusbar in the extension if necessary.
        */
       void addStatusBarItem( QWidget * widget, int stretch, bool permanent );
 
