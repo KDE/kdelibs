@@ -688,10 +688,14 @@ void KTabListBox::resizeEvent(QResizeEvent* e)
   for (i=numCols()-2, w=0; i>=0; i--)
     w += cellWidth(i);
 
+#ifdef RESIZE_RIGHTMOST_COLUMN
   if (w + cellWidth(numCols()-1) < e->size().width())
   {
-    setColumnWidth(numCols()-1, e->size().width() - w);
+    setColumnWidth(numCols()-1, e->size().width() - w
+		   // - (lbox.width()-lbox.viewWidth())
+		   );
   }
+#endif
 
   lbox.setGeometry(0, labelHeight, e->size().width(), 
 		    e->size().height()-labelHeight);
@@ -758,7 +762,7 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
   register int i, x, ex, ey;
   bool mayResize = FALSE;
 
-  ex = e->pos().x();
+  ex = e->pos().x() + lbox.xOffset();
   ey = e->pos().y();
 
   if ((e->state() & LeftButton))
