@@ -799,12 +799,20 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 
   // LOCK BUFFER MUTEX
 
+  // The input socket notifier is always enabled
+  // That happens because we want to be notified of when the socket gets
+  // closed
+  if (d->qsnIn == NULL)
+    {
+      d->qsnIn = new QSocketNotifier(sockfd, QSocketNotifier::Read);
+      QObject::connect(d->qsnIn, SIGNAL(activated(int)), this, SLOT(socketActivityRead()));
+      d->qsnIn->setEnabled(true);
+    }
+
   if (rsize == 0 && d->flags & inputBufferedSocket)
     {
       // user wants to disable input buffering
       d->flags &= ~inputBufferedSocket;
-      if (d->qsnIn && !d->emitRead)
-	d->qsnIn->setEnabled(false);
 
       consumeReadBuffer(readBufferSize(), NULL, true);
       d->inMaxSize = 0;
@@ -820,11 +828,6 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 	// input buffer has more data than the new size; discard
 	consumeReadBuffer(readBufferSize() - rsize, NULL, true);
 
-      if (d->qsnIn == NULL)
-	{
-	  d->qsnIn = new QSocketNotifier(sockfd, QSocketNotifier::Read);
-	  QObject::connect(d->qsnIn, SIGNAL(activated(int)), this, SLOT(socketActivityRead()));
-	}
     }
 
   if (wsize == 0 && d->flags & outputBufferedSocket)
@@ -862,11 +865,6 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
   setFlags((mode() & ~IO_Raw) | ((d->flags & bufferedSocket) ? 0 : IO_Raw));
 
   // check we didn't turn something off we shouldn't
-  if (d->emitRead && d->qsnIn == NULL)
-    {
-      d->qsnIn = new QSocketNotifier(sockfd, QSocketNotifier::Read);
-      QObject::connect(d->qsnIn, SIGNAL(activated(int)), this, SLOT(socketActivityRead()));
-    }
   if (d->emitWrite && d->qsnOut == NULL)
     {
       d->qsnOut = new QSocketNotifier(sockfd, QSocketNotifier::Write);
@@ -1928,6 +1926,27 @@ void KExtendedSocket::socketActivityRead()
 	}
 
       // UNLOCK MUTEX
+    }
+  else
+    {
+      // No input buffering, but the notifier fired
+      // That means that either there is data to be read or that the 
+      // socket closed.
+
+      // try to read one byte. If we can't, then the socket got closed
+
+      char c;
+      int len = KSocks::self()->recv(sockfd, &c, sizeof(c), MSG_PEEK);
+      if (len == 0)
+	{
+	  // yes, it's an EOF condition
+	  d->qsnIn->setEnabled(false);
+	  emit closed(involuntary);
+	  ::close(sockfd);
+	  sockfd = -1;
+	  d->status = done;
+	  return;
+	}
     }
 
   if (d->emitRead)
