@@ -122,6 +122,8 @@ Kded::~Kded()
   delete m_pTimer;
   delete m_pDirWatch;
   delete m_pDirWatchNfs;
+
+  m_modules.setAutoDelete(true);
 }
 
 bool Kded::process(const QCString &obj, const QCString &fun, 
@@ -668,7 +670,12 @@ int main(int argc, char *argv[])
      client->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
      client->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
 
-     return k.exec(); // keep running
+     int result = k.exec(); // keep running
+       
+     delete instance; // Deletes config as well
+     delete kded;
+       
+     return result;
 }
 
 #include "kded.moc"
