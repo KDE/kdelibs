@@ -41,7 +41,7 @@ AC_CHECK_FUNCS(openpty initgroups setgroups getgroups grantpt setpriority getpt 
 AH_VERBATIM(_OPENPTY,
 [
 /*
- * Steven Schultz <sms@to.gd-es.com> tells us :
+ * Steven Schultz <sms at to.gd-es.com> tells us :
  * BSD/OS 4.2 doesn't have a prototype for openpty in its system header files
  */
 #ifdef __bsdi__
