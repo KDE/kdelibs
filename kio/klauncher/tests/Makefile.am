@@ -1,6 +1,6 @@
 # $Id$
 
-INCLUDES=	-I../.. $(all_includes) 
+INCLUDES=	-I$(srcdir)/../.. $(all_includes) 
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
 LDADD = $(LIB_KIO)
 ####### Files
