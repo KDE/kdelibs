@@ -498,7 +498,9 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     if (!evt->propagationStopped()) {
         evt->setEventPhase(Event::AT_TARGET);
         evt->setCurrentTarget(it.current());
-        it.current()->handleLocalEvents(evt,false);
+        it.current()->handleLocalEvents(evt, true);
+        if (!evt->propagationStopped())
+            it.current()->handleLocalEvents(evt,false);
     }
     --it;
 
