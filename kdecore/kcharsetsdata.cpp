@@ -28,7 +28,8 @@
 #include <qtextstream.h>
 #include <qfontinfo.h>
 #include <qintdict.h>
-#include <kapp.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 #include <ksimpleconfig.h>
 #include <qregexp.h>
 #include <qstrlist.h>
@@ -519,7 +520,7 @@ KCharsetsData::KCharsetsData(){
   displayableCharsDict=0;
   tempResult=new KCharsetConversionResult;
 
-  QString fileName=KApplication::kde_configdir() + "/charsets";
+  QString fileName = locate("config", "charsets");
   kchdebug("Reading config from %s...\n",fileName.ascii());
   config=new KSimpleConfig(fileName, TRUE);
   config->setGroup("general");

@@ -850,12 +850,12 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             dlregistered = true;
             lt_dlinit();
             lt_dladdsearchdir((localkdedir() + "/share/apps/kstyle/modules").ascii());
-            lt_dladdsearchdir((kde_bindir() + "/../lib").ascii());
+            lt_dladdsearchdir(locate("bin", "../lib").ascii());
         }
 
         QDir dir(localkdedir() + "/share/apps/kstyle/modules/", styleStr);
         if(!dir.count()){
-            dir.setPath(kde_bindir() + "/../lib/");
+            dir.setPath(locate("bin", "../lib/"));
             if(!dir.count()){
                 warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
                 pKStyle = 0;

@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include <kstddirs.h>
+#include <kglobal.h>
 #include <kapp.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
@@ -43,7 +45,7 @@ void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
     if ( _islocal )
       p.executable = KApplication::localkdedir() + "/" + exec;
     else
-      p.executable = KApplication::kde_bindir() + "/" + exec;
+      p.executable = locate("bin", exec);
     p.isSourceProtocol = config.readBoolEntry( "source", TRUE );
     p.supportsReading = config.readBoolEntry( "reading", FALSE );
     p.supportsWriting = config.readBoolEntry( "writing", FALSE );
