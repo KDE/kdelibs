@@ -33,7 +33,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h \
 		kseparator.h klined.h kcombo.h krestrictedline.h \
-		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
+		kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h kcontainer.h \
 		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
 		kdbtn.h ktabbar.h kwizard.h kkeydialog.h \
@@ -53,7 +53,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp kbutton.cpp kslider.cpp \
 		kseparator.cpp kcombo.cpp krestrictedline.cpp \
-		kspinbox.cpp kcontrol.cpp kcolorbtn.cpp kwmmapp.cpp kbuttonbox.cpp\
+		kcontrol.cpp kcolorbtn.cpp kwmmapp.cpp kbuttonbox.cpp\
 		knewpanner.cpp keditcl1.cpp keditcl2.cpp \
 		ktoolboxmgr.cpp kled.cpp kdbtn.cpp \
 		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
@@ -70,7 +70,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kledlamp.moc klined.moc kmenubar.moc kmsgbox.moc knewpanner.moc \
 	kpanner.moc kpopmenu.moc kprogress.moc \
 	kquickhelp.moc krestrictedline.moc kruler.moc kselect.moc \
-	kslider.moc kspinbox.moc kstatusbar.moc ktabbar.moc ktabctl.moc \
+	kslider.moc kstatusbar.moc ktabbar.moc ktabctl.moc \
 	ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
 	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \

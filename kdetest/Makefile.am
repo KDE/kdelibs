@@ -30,7 +30,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kseparatortest kiconloadertest		\
-		kwindowtest klinetest kstatusbartest kspinboxtest	\
+		kwindowtest klinetest kstatusbartest 	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kledtest kcontainertest klocaletest krulertest \
 		kwizardtest kquickhelptest kurltest kformulatest \
@@ -38,7 +38,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
-		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h \
+		kwindowtest.h klinetest.h kstatusbartest.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
 		klocaletest.h krulertest.h kconfigtest.h kpannertest.h 
 
@@ -47,7 +47,7 @@ METASOURCES = kconfigtest.moc \
 	kiconloadertestmain.moc kledtest.moc \
 	klinetest.moc klocaletest.moc kmsgboxtest.moc \
 	kpannertest.moc kprocesstest.moc krulertest.moc \
-	kspinboxtest.moc kstatusbartest.moc ktabctltest.moc \
+	kstatusbartest.moc ktabctltest.moc \
 	ktreelisttest.moc kwindowtest.moc
 
 LDADD =  $(LIB_KDEUI)
@@ -76,7 +76,6 @@ kquickhelptest_SOURCES = kquickhelptest.cpp
 krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
-kspinboxtest_SOURCES = kspinboxtest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
 ktreelisttest_SOURCES = ktreelisttest.cpp

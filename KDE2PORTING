@@ -228,3 +228,11 @@ documentation and kdelibs/kdetest/kwizardtest.cpp for an example use.
 KNoteBook (deeply entwined with the former KWizard) has been removed until
 someone is willing to port it to work with the new wizard. If you want to
 use it you'll find the necessary files in kdegraphics/kiconedit.
+
+////////////////////////////////////////////////////////////////////////
+// * KSpinBox, KNumericSpinBox
+
+These classes have been replaced by QSpinBox. API is almost the same
+HINTS:
+  - valueincreased()/valuedecreased -> valueChanged()
+  - getValue() -> value()
