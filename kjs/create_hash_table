@@ -35,10 +35,14 @@ while (<IN>) {
   s/^\s*//g;
   if (/^\#|^$/) {
       # comment. do nothing
-    } elsif (/^\@begin\s*(\w+)\s*(\d+)\s*$/ && !$inside) {
-      $inside = 1;
-      $name = $1;
-      $hashsize = $2;
+    } elsif (/^\@begin/ && !$inside) {
+      if (/^\@begin\s*(\w+)\s*(\d+)\s*$/) {
+        $inside = 1;
+        $name = $1;
+        $hashsize = $2;
+      } else {
+         printf STDERR "WARNING: \@begin without table name and hashsize, skipping $_\n";
+      }
     } elsif (/^\@end\s*$/ && $inside) {
 
       if($findSize) {
