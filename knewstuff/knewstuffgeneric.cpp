@@ -44,7 +44,6 @@ KNewStuffGeneric::KNewStuffGeneric( const QString &type, QWidget *parent )
 
 KNewStuffGeneric::~KNewStuffGeneric()
 {
-  delete mConfig;
 }
 
 bool KNewStuffGeneric::install( const QString &fileName )
