@@ -1244,7 +1244,7 @@ void HTMLTokenizer::write( const QString &str )
             case '/':
             {
                 // Start of an End-Tag
-                if(pending == LFPending)
+                if(!(pre || textarea) && pending == LFPending)
                     pending = NonePending; // Ignore leading Spaces/LFs
 
                 break;
@@ -1433,7 +1433,8 @@ void HTMLTokenizer::finish()
         QString food;
         food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
         QT_DELETE_QCHAR_VEC(scriptCode);
-        scriptCode = scriptCodeMaxSize = 0;
+        scriptCode = 0;
+        scriptCodeSize = scriptCodeMaxSize = 0;
         script = style = listing = comment = textarea = false;
         scriptCodeSize = 0;
         write(food);
