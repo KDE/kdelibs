@@ -217,7 +217,7 @@ void KXmlCommandSelector::slotEditCommand()
 		slotCommandSelected(m_cmd->currentItem());
 	}
 	else
-		KMessageBox::error(this, i18n("Internal Error. The XML driver for the command %1 could not be found.").arg(xmlId));
+		KMessageBox::error(this, i18n("Internal error. The XML driver for the command %1 could not be found.").arg(xmlId));
 }
 
 void KXmlCommandSelector::slotBrowse()
