@@ -1,0 +1,271 @@
+/* vi: ts=8 sts=4 sw=4
+ *
+ * $Id$
+ *
+ * This file is part of the KDE project, module kdesu.
+ * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ * 
+ * ssh.cpp: Execute a program on a remote machine using ssh.
+ */
+
+#include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <errno.h>
+#include <string.h>
+#include <ctype.h>
+#include <signal.h>
+#include <time.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <qglobal.h>
+#include <qcstring.h>
+
+#include <kdebug.h>
+#include <kstddirs.h>
+
+#include "ssh.h"
+#include "kcookie.h"
+
+
+#ifdef __GNUC__
+#define ID __PRETTY_FUNCTION__
+#else
+#define ID "SshProcess"
+#endif
+
+
+SshProcess::SshProcess(QCString host, QCString user, QCString command)
+{
+    m_Host = host;
+    m_User = user;
+    m_Command = command;
+    srand(time(0L));
+}
+
+
+SshProcess::~SshProcess()
+{
+}
+
+
+QCString SshProcess::checkNeedPassword()
+{
+    if (exec(0L, 2) == 1)
+	return m_Prompt;
+    return 0;
+}
+
+
+int SshProcess::checkInstall(const char *password)
+{
+    return exec(password, 1);
+}
+
+
+int SshProcess::exec(const char *password, int check)
+{    
+    if (check)
+	setTerminal(true);
+
+    QCStringList args;
+    if (!m_bXOnly) {
+	// Install DCOP forward
+	QCString fwd = dcopForward();
+	if (fwd.isEmpty()) {
+	    kDebugError("%s: Could not get DCOP forward", ID);
+	    return -1;
+	}
+	args += "-R"; args += fwd;
+    }
+    args += "-l"; args += m_User;
+    args += "-o"; args += "StrictHostKeyChecking no";
+    args += m_Host; args += "kdesu_stub";
+
+    if (StubProcess::exec("ssh", args) < 0)
+	return -1;
+
+    int ret = ConverseSsh(password, check);
+    if (ret < 0) {
+	kDebugError("%s: Conversation with ssh failed", ID);
+	return -1;
+    } 
+    if (m_bErase) {
+	char *ptr = const_cast<char *>(password);
+	for (unsigned i=0; i<strlen(password); i++)
+	    ptr[i] = '\000';
+    }
+    setExitString("Waiting for forwarded connections to terminate");
+    if (ret == 0) {
+	if (ConverseStub(check) < 0) {
+	    kDebugError("%s: Converstation with kdesu_stub failed", ID);
+	    kill(m_Pid, SIGTERM);
+	}
+	ret = waitForChild();
+    } else {
+	kill(m_Pid, SIGTERM);
+	waitForChild();
+    }
+    return ret;
+}
+
+/*
+ * Create a port forwarding for DCOP. For the remote port, we take a pseudo
+ * random number between 10k and 50k. This is not ok, of course, but I see
+ * no other way. If the port happens to be occupied, we'll have no security 
+ * concern because ssh will not start.
+ */
+
+QCString SshProcess::dcopForward()
+{
+    bool ok;
+    int i, j, port=0;
+    QCString result, host;
+    QCStringList srv = StubProcess::dcopServer();
+    QCStringList::Iterator it;
+    kDebugInfo("%s: count: %d", ID, srv.count());
+    for (m_dcopSrv=0,it=srv.begin(); it!=srv.end(); m_dcopSrv++, it++) {
+	i = (*it).find('/');
+	if (i == -1)
+	    continue;
+	if ((*it).left(i) != "tcp")
+	    continue;
+	j = (*it).find(':', ++i);
+	if (j == -1)
+	    continue;
+	host = (*it).mid(i, j-i);
+	port = (*it).mid(++j).toInt(&ok);
+	if (ok)
+	    break;
+    }
+    if (it == srv.end())
+	return result;
+
+    m_dcopPort = 10000 + (int) ((40000.0 * rand()) / (1.0 + RAND_MAX));
+    result.sprintf("%d:%s:%d", m_dcopPort, host.data(), port);
+    return result;
+}
+
+	
+/*
+ * Conversation with ssh. 
+ * If check is 0, this waits for either a "Password: " prompt, 
+ * or the header of the stub. If a prompt is received, the password is
+ * written back. Used for running a command.
+ * If check is 1, operation is the same as 0 except that if a stub header is
+ * received, the stub is stopped with the "stop" command. This is used for
+ * checking a password.
+ * If check is 2, operation is the same as 1, except that no password is
+ * written. The prompt is saved to m_Prompt. Used for checking the need for 
+ * a password.
+ */
+
+int SshProcess::ConverseSsh(const char *password, int check)
+{
+    unsigned i, j, colon;
+
+    QCString line;
+    int state = 0;
+
+    while (state < 2) {
+	line = readLine();
+	if (line.isNull())
+	    return -1;
+	switch (state) {
+	case 0:
+	    // Check for "kdesu_stub" header.
+	    if (line == "kdesu_stub") {
+		// We don't want this echoed back.
+		enableLocalEcho(false);
+		if (check > 0)
+		    write(m_Fd, "stop\n", 5);
+		else
+		    write(m_Fd, "ok\n", 3);
+		state += 2;
+		break;
+	    }
+
+	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
+	    for (i=0,j=0,colon=0; i<line.length(); i++) {
+		if (line[i] == ':') {
+		    j = i; colon++;
+		    continue;
+		}
+		if (!isspace(line[i]))
+		    j++;
+	    }
+	    if ((colon == 1) && (line[j] == ':')) {
+		if ((check > 1) || (password == 0L)) {
+		    m_Prompt = line;
+		    return 1;
+		}
+		WaitSlave();
+		write(m_Fd, password, strlen(password));
+		write(m_Fd, "\n", 1);
+		state++; 
+		break;
+	    }
+	    if (m_bTerminal)
+		fputs(line, stdout);
+	    break;
+
+	case 1:
+	    if (line.isEmpty()) {
+		state++;
+		break;
+	    }
+	    return -1;
+	}
+    }
+
+    return 0;
+}
+
+
+// Display redirection is handled by ssh natively.
+QCString SshProcess::display()
+{
+    return "no";
+}
+
+
+QCString SshProcess::displayAuth()
+{
+    return "no";
+}
+
+
+// Return the remote end of the forwarded connection.
+QCStringList SshProcess::dcopServer()
+{
+    QCStringList lst;
+    if (m_bXOnly)
+	lst += "no";
+    else
+	lst += QCString().sprintf("tcp/localhost:%d", m_dcopPort);
+    return lst;
+}
+
+
+// Return the right cookie.
+QCStringList SshProcess::dcopAuth()
+{
+    QCStringList lst;
+    lst += StubProcess::dcopAuth()[m_dcopSrv];
+    return lst;
+}
+
+
+QCStringList SshProcess::iceAuth()
+{
+    QCStringList lst;
+    lst += StubProcess::iceAuth()[m_dcopSrv];
+    return lst;
+}
+
