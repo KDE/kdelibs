@@ -69,6 +69,12 @@ public:
 	      WFlags f); // ### KDE 4.0: Merge
 
   /**
+   * Standard qt widget constructor. The initial date will be the
+   * current date.
+   */
+  KDatePicker( QWidget *parent, const char *name );
+
+  /**
    * The destructor.
    **/
   virtual ~KDatePicker();

@@ -59,6 +59,12 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, WFlags f)
   init( dt );
 }
 
+KDatePicker::KDatePicker( QWidget *parent, const char *name )
+  : QFrame(parent,name)
+{
+  init( QDate::currentDate() );
+}
+
 void KDatePicker::init( const QDate &dt )
 {
   yearForward = new QToolButton(this);
