@@ -62,7 +62,7 @@ namespace KHE
  *
  * <li> as an editor for a new to be created array of chars, max. with MaxDataSize
  * \code
- * BytesEdit->setMaxDataSize( MaxDataSize ); 
+ * BytesEdit->setMaxDataSize( MaxDataSize );
  * ...
  * QByteArray BA;
  * BA.setRawData( BytesEdit->data(), BytesEdit->dataSize() );
@@ -104,8 +104,8 @@ class BytesEditInterface
     virtual void setAutoDelete( bool AD = true ) = 0;
     /** switches the array */
 //    virtual void resetData( char *D, int S, bool Repaint ) = 0;
-    /** sets whether the actual memory used to store the data 
-      * (as given by setData or in the constructor, or allocated by the class) 
+    /** sets whether the actual memory used to store the data
+      * (as given by setData or in the constructor, or allocated by the class)
       * should be kept on resize.
       * If MaxDataSize is set and greater than the raw size of the memory
       * it is limited to the raw size.
@@ -148,7 +148,7 @@ class BytesEditInterface
 };
 
 
-/** tries to get the bytesedit interface of t   
+/** tries to get the bytesedit interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
   * @since 3.2
@@ -221,7 +221,7 @@ inline BytesEditInterface *bytesEditInterface( T *t )
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
 {
   return KParts::ComponentFactory::createInstanceFromQuery<QWidget>
-    ( "KHexEdit/KBytesEdit", QString::null, Parent, Name );
+      ( QString::fromLatin1("KHexEdit/KBytesEdit"), QString::null, Parent, Name );
 }
 
 }
