@@ -2458,7 +2458,7 @@ bool KateDocument::openURL( const KURL &url )
            SLOT( slotFinishedKate( KIO::Job* ) ) );
 
     // set text mode
-//     m_job->addMetaData ("textmode", "true");
+    m_job->addMetaData ("textmode", "true");
 
     QWidget *w = widget ();
     if (!w && !m_views.isEmpty ())
