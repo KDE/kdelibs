@@ -45,6 +45,8 @@ class DCOPObject;
 
 
 /**
+ * @short %KDE top level main window
+ *
  * Top level widget that provides toolbars, a status line and a frame.
  *
  * It should be used as a top level (parent-less) widget.
@@ -89,8 +91,7 @@ class DCOPObject;
  *  widget flag in the constructor.
  *
  * @see KApplication
- * @short KDE top level main window
-   @author Reginald Stadlbauer (reggie@kde.org) Stephan Kulow (coolo@kde.org), Matthias Ettrich (ettrich@kde.org), Chris Schlaeger (cs@kde.org), Sven Radej (radej@kde.org). Maintained by Sven Radej (radej@kde.org)
+ * @author Reginald Stadlbauer (reggie@kde.org) Stephan Kulow (coolo@kde.org), Matthias Ettrich (ettrich@kde.org), Chris Schlaeger (cs@kde.org), Sven Radej (radej@kde.org). Maintained by Sven Radej (radej@kde.org)
 
  */
 
