@@ -20,9 +20,11 @@
  */
 
 
-#include <iostream.h>
 #include <kaboutdata.h>
 #include <klocale.h>
+#include <kstddirs.h>
+#include <qfile.h>
+#include <qtextstream.h>
 
 QString
 KAboutPerson::name() const
@@ -99,7 +101,16 @@ void
 KAboutData::setLicenseText( const char *licenseText )
 {
   mLicenseText = licenseText;
+  mLicenseKey = License_Custom;
 }
+
+void 
+KAboutData::setLicenseTextFile( const QString &file )
+{
+  mLicenseText = qstrdup(QFile::encodeName(file));
+  mLicenseKey = License_File;
+}
+
 
 const char *
 KAboutData::appName() const
@@ -168,22 +179,57 @@ KAboutData::otherText() const
 QString
 KAboutData::license() const
 {
-  if( mLicenseKey != 0 )
+  QString l;
+  QString f;
+  switch ( mLicenseKey ) 
   {
-      QString l;
-      switch ( mLicenseKey ) {
-      case License_GPL:  l = "GPL"; break;
-      case License_LGPL:  l = "LGPL"; break;
-      case License_BSD:  l = "BSD"; break;
-      case License_Artistic:  l = "Artistic"; break;
-      case License_QPL:  l = "QPL"; break;
-      default: l = "Please check the sources"; break;
+    case License_File:
+       f = QFile::decodeName(mLicenseText);
+       break;
+    case License_Custom:
+       return( i18n(mLicenseText) );
+    case License_GPL_V2:  
+       l = "GPL v2";
+       f = locate("data", "LICENSES/GPL_V2");
+       break;
+    case License_LGPL_V2:  
+       l = "LGPL v2";
+       f = locate("data", "LICENSES/LGPL_V2"); 
+       break;
+    case License_BSD:  
+       l = "BSD License"; 
+       f = locate("data", "LICENSES/BSD");
+       break;
+    case License_Artistic:  
+       l = "Artistic License"; 
+       f = locate("data", "LICENSES/ARTISTIC");
+       break;
+    case License_QPL_V1_0:  
+       l = "QPL v1.0"; 
+       f = locate("data", "LICENSES/QPL_V1.0");
+       break;
+    default: 
+       return i18n("No licensing terms for this program have been specified.\n"
+                   "Please check the documentation or the source for any\n"
+                   "licensing terms.\n");
       }
-      return i18n("This program is distributed under the terms of the %1.").arg( l );
-  }
-  else
+ 
+  QString result;
+  if (!l.isEmpty())
+     result = i18n("This program is distributed under the terms of the %1.").arg( l );
+
+  if (!f.isEmpty())
   {
-    return( QString::fromLatin1(mLicenseText) );
+     QFile file(f);
+     if (file.open(IO_ReadOnly))
+     {
+        result += '\n';
+        result += '\n';
+        QTextStream str(&file);
+        result += str.read();
+     }
   }
+
+  return result;
 }
 

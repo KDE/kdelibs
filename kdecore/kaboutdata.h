@@ -113,11 +113,17 @@ class KAboutData
   public:
     enum LicenseKey
     {
+      License_Custom = -2,
+      License_File = -1,
+      License_Unknown = 0,
       License_GPL  = 1,
+      License_GPL_V2 = 1,
       License_LGPL = 2,
+      License_LGPL_V2 = 2,
       License_BSD  = 3,
       License_Artistic = 4,
-      License_QPL = 5
+      License_QPL = 5,
+      License_QPL_V1_0 = 5
     };
 
   public:
@@ -158,7 +164,7 @@ class KAboutData
                 const char *programName,
 		const char *version,
 		const char *shortDescription = 0,
-		int licenseType = 0,
+		int licenseType = License_Unknown,
 		const char *copyrightStatement = 0,
 		const char *text = 0,
 		const char *homePageAddress = 0,
@@ -211,13 +217,26 @@ class KAboutData
 		    const char *webAddress=0 );
 
     /**
-     * Defines a licence text. Normally you should set a
-     * value in the constructor which provides a set of standard licenses.
-     * If you do so, any text defined with this function is ignored.
+     * Defines a licence text.
      *
-     * @param license The license text.
+     * @param license The license text in utf8 encoding.
+     *
+     * The text will be translated if it got marked for
+     * tranlations with the I18N_NOOP() macro.
+     *
+     * Example:
+     * setLicenseText( I18N_NOOP("This is my license"));
+     *
+     * NOTE: No copy of the text is made.
      */
     void setLicenseText( const char *license );
+
+    /**
+     * Defines a licence text. 
+     *
+     * @param file File containing the license text.
+     */
+    void setLicenseTextFile( const QString &file );
 
     /**
      * @return the internal program name.
