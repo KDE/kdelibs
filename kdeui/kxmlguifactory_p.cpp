@@ -308,13 +308,6 @@ void BuildHelper::processElement( const QDomElement &e )
     if ( ( isActionTag = ( tag == tagAction ) ) ||
            customTags.findIndex( tag ) != -1 )
         processActionOrCustomElement( e, isActionTag );
-    /*
-     * The "Merge" tag specifies that all containers and actions from *other* clients should be
-     * inserted/plugged in at the current index, and not appended.
-     * Same semantics apply for <DefineGroup> and <ActionList> . We simply want to save the
-     * index of where the tags appear, in order to "substitute" them with other clients actions,
-     * actionlists, containers, custom elements or even merging indices.
-     */
     else if ( tag == tagMerge || tag == tagDefineGroup || tag == tagActionList )
         processMergeElement( tag, currName );
     else if ( tag == tagState )
