@@ -195,7 +195,7 @@ KLocale::KLocale( const char *catalogue )
 
 void KLocale::insertCatalogue( const char *catalogue )
 {
-    const char *ret = k_bindtextdomain ( catalogue , KApplication::kde_localedir() );
+    k_bindtextdomain ( catalogue , KApplication::kde_localedir() );
     catalogues->append(catalogue);
 }
 
