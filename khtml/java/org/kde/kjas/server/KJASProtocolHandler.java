@@ -10,7 +10,8 @@ import java.awt.*;
  */
 public class KJASProtocolHandler
 {
-    //Command codes
+    // Command codes- always need to be synced up with
+    // what's in kjavaappletserver.cpp
     private static final int CreateContextCode   = 1;
     private static final int DestroyContextCode  = 2;
     private static final int CreateAppletCode    = 3;
@@ -18,11 +19,13 @@ public class KJASProtocolHandler
     private static final int StartAppletCode     = 5;
     private static final int StopAppletCode      = 6;
     private static final int InitAppletCode      = 7;
-    private static final int ShutdownServerCode  = 9;
-    private static final int ShowDocumentCode    = 12;
-    private static final int ShowURLInFrameCode  = 13;
-    private static final int ShowStatusCode      = 14;
-    private static final int ResizeAppletCode    = 15;
+    private static final int ShowDocumentCode    = 8;
+    private static final int ShowURLInFrameCode  = 9;
+    private static final int ShowStatusCode      = 10;
+    private static final int ResizeAppletCode    = 11;
+    private static final int GetURLDataCode      = 12;
+    private static final int URLDataCode         = 13;
+    private static final int ShutdownServerCode  = 14;
 
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
@@ -37,7 +40,7 @@ public class KJASProtocolHandler
                                 OutputStream _signals )
     {
         commands = new PushbackInputStream( _commands );
-        signals = new PrintStream( _signals );
+        signals  = new PrintStream( _signals );
         contexts = new Hashtable();
     }
 
@@ -50,15 +53,14 @@ public class KJASProtocolHandler
                 try
                 {
                     int cmd_length = readPaddedLength( 8 );
+                    Main.debug( "cmd_length = " + cmd_length );
 
-                    char[] cmd = new char[cmd_length];
-                    for( int i = 0; i < cmd_length; i++ )
-                    {
-                        cmd[i] = (char) commands.read();
-                    }
+                    byte[] cmd_data = new byte[cmd_length];
+                    commands.read( cmd_data, 0, cmd_length );
 
                     //parse the rest of the command and execute it
-                    processCommand( cmd );
+                    Main.debug( "processing command" );
+                    processCommand( cmd_data );
                 }
                 catch( NumberFormatException e )
                 {
@@ -77,15 +79,15 @@ public class KJASProtocolHandler
         }
     }
 
-    public void processCommand( char[] command )
-        throws IllegalArgumentException
+    public void processCommand( byte[] command )
     {
         // Sanity checks
         if ( command == null )
-           throw new IllegalArgumentException( "processCommand() received null" );
+            return;
 
         //do all the parsing here and pass arguments as individual variables to the
         //handler functions
+        int cmd_length = command.length;
         cmd_index = 0;
 
         int cmd_code_value = (int) command[cmd_index++];
@@ -93,7 +95,7 @@ public class KJASProtocolHandler
         {
             //parse out contextID- 1 argument
             String contextID = getArg( command );
-            Main.kjas_debug( "createContext, id = " + contextID );
+            Main.debug( "createContext, id = " + contextID );
 
             KJASAppletContext context = new KJASAppletContext( contextID );
             contexts.put( contextID, context );
@@ -102,7 +104,7 @@ public class KJASProtocolHandler
         {
             //parse out contextID- 1 argument
             String contextID = getArg( command );
-            Main.kjas_debug( "destroyContext, id = " + contextID );
+            Main.debug( "destroyContext, id = " + contextID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if( contexts != null )
@@ -139,13 +141,13 @@ public class KJASProtocolHandler
                 if( value == null )
                     value = new String();
                 params.put( name.toUpperCase(), value );
-                //Main.kjas_debug( "parameter, name = " + name + ", value = " + value );
+                //Main.debug( "parameter, name = " + name + ", value = " + value );
             }
 
-            Main.kjas_debug( "createApplet, context = " + contextID + ", applet = " + appletID );
-            Main.kjas_debug( "              name = " + appletName + ", classname = " + className );
-            Main.kjas_debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
-            Main.kjas_debug( "              archives = " + archives + ", width = " + width + ", height = " + height );
+            Main.debug( "createApplet, context = " + contextID + ", applet = " + appletID );
+            Main.debug( "              name = " + appletName + ", classname = " + className );
+            Main.debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
+            Main.debug( "              archives = " + archives + ", width = " + width + ", height = " + height );
 
             final KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if( context != null )
@@ -173,7 +175,7 @@ public class KJASProtocolHandler
             //2 arguments
             String contextID = getArg( command );
             String appletID  = getArg( command );
-            Main.kjas_debug( "destroyApplet, context = " + contextID + ", applet = " + appletID );
+            Main.debug( "destroyApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
@@ -184,7 +186,7 @@ public class KJASProtocolHandler
             //2 arguments
             String contextID = getArg( command );
             String appletID  = getArg( command );
-            Main.kjas_debug( "startApplet, context = " + contextID + ", applet = " + appletID );
+            Main.debug( "startApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
@@ -195,7 +197,7 @@ public class KJASProtocolHandler
             //2 arguments
             String contextID = getArg( command );
             String appletID  = getArg( command );
-            Main.kjas_debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
+            Main.debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
@@ -205,7 +207,7 @@ public class KJASProtocolHandler
         {
             String contextID = getArg( command );
             String appletID  = getArg( command );
-            Main.kjas_debug( "InitApplet, context = " + contextID + ", applet = " + appletID );
+            Main.debug( "InitApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
@@ -214,8 +216,23 @@ public class KJASProtocolHandler
         else
         if( cmd_code_value == ShutdownServerCode )
         {
-            Main.kjas_debug( "shutDownServer recieved" );
+            Main.debug( "shutDownServer recieved" );
             System.exit( 1 );
+        }
+        else
+        if( cmd_code_value == URLDataCode )
+        {
+            String loaderID = getArg( command );
+            String requestedURL = getArg( command );
+
+            //rest of the command should be the data...
+            byte[] data = new byte[ cmd_length - cmd_index ];
+
+            KJASAppletClassLoader loader = KJASAppletClassLoader.getLoader( loaderID );
+            if( loader != null )
+            {
+                loader.addResource( requestedURL, data );
+            }
         }
         else
         {
@@ -228,7 +245,7 @@ public class KJASProtocolHandler
      **************************************************************/
     public void sendShowDocumentCmd( String contextID, String url )
     {
-        Main.kjas_debug( "sendShowDocumentCmd from context#" + contextID + " url = " + url );
+        Main.debug( "sendShowDocumentCmd from context#" + contextID + " url = " + url );
 
         //figure out how long this will be, 4 extra for 2 seps, end, and code
         int length = contextID.length() + url.length() + 4;
@@ -262,7 +279,7 @@ public class KJASProtocolHandler
 
     public void sendShowDocumentCmd( String contextID, String url, String frame)
     {
-        Main.kjas_debug( "sendShowDocumentCmd from context#" + contextID +
+        Main.debug( "sendShowDocumentCmd from context#" + contextID +
                          " url = " + url + ", frame = " + frame );
 
         //length = length of args plus code, 3 seps, end
@@ -302,7 +319,7 @@ public class KJASProtocolHandler
 
     public void sendShowStatusCmd( String contextID, String msg )
     {
-        Main.kjas_debug( "sendShowStatusCmd, msg = " + msg );
+        Main.debug( "sendShowStatusCmd, msg = " + msg );
 
         int length = contextID.length() + msg.length() + 4;
         char[] chars = new char[ length + 8 ]; //for length of message
@@ -336,7 +353,7 @@ public class KJASProtocolHandler
     public void sendResizeAppletCmd( String contextID, String appletID,
                                      int width, int height )
     {
-        Main.kjas_debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " + appletID + ", width = " + width + ", height = " + height );
+        Main.debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " + appletID + ", width = " + width + ", height = " + height );
 
         String width_str = String.valueOf( width );
         String height_str = String.valueOf( height );
@@ -385,33 +402,20 @@ public class KJASProtocolHandler
     /**************************************************************
      *****  Utility functions for parsing commands ****************
      **************************************************************/
-    private String getArg( char[] command )
+    private String getArg( byte[] command )
     {
-        Vector arg_chars = new Vector();
+        int begin = cmd_index;
+        while( 0 != ((int) command[cmd_index++]) );
 
-        char curr = command[cmd_index++];
-        while( 0 != (int) curr )
+        if( cmd_index > (begin + 1) )
         {
-            arg_chars.add( new Character(curr) );
-            curr = command[cmd_index++];
+            String rval = new String( command, begin, (cmd_index - begin - 1) );
+            Main.debug( "getArg returning: >" + rval + "<" );
+            return rval;
         }
 
-        if( arg_chars.size() > 0 )
-        {
-            char[] char_bytes = new char[arg_chars.size()];
-
-            for( int i = 0; i < arg_chars.size(); i++ )
-            {
-                Character ch = (Character) arg_chars.elementAt( i );
-
-                char_bytes[i] = ch.charValue();
-            }
-            return new String( char_bytes );
-        }
-        else
-        {
-            return null;
-        }
+        Main.debug( "getArg returning null" );
+        return null;
     }
 
     private char[] getPaddedLength( int length )
@@ -438,13 +442,10 @@ public class KJASProtocolHandler
         throws IOException
     {
             //read in 8 bytes for command length- length will be sent as a padded string
-            char[] length = new char[string_size];
-            for( int i = 0; i < string_size; i++ )
-            {
-                length[i] = (char) commands.read();
-            }
-            String length_str = new String( length );
+            byte[] length = new byte[string_size];
+            commands.read( length, 0, string_size );
 
+            String length_str = new String( length );
             return Integer.parseInt( length_str.trim() );
     }
 

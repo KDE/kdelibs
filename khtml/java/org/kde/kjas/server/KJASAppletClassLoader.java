@@ -18,7 +18,7 @@ public class KJASAppletClassLoader
     public static KJASAppletClassLoader getLoader( String docBase, String codeBase )
     {
         String key = docBase + codeBase;
-        Main.kjas_debug( "getLoader: key = " + key );
+        Main.debug( "getLoader: key = " + key );
         KJASAppletClassLoader loader = (KJASAppletClassLoader) loaders.get( key );
         if( loader == null )
         {
@@ -27,10 +27,22 @@ public class KJASAppletClassLoader
         }
         else
         {
-            Main.kjas_debug( "reusing classloader" );
+            Main.debug( "reusing classloader" );
         }
 
         return loader;
+    }
+
+    public static KJASAppletClassLoader getLoader( String key )
+    {
+        if( loaders.containsKey( key ) )
+        {
+            return (KJASAppletClassLoader) loaders.get( key );
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public static void removeLoader( KJASAppletClassLoader loader )
@@ -48,7 +60,7 @@ public class KJASAppletClassLoader
         super( new URL[0] );
         key = docBase + codeBase;
         archives = new Vector();
-        Main.kjas_debug( "Creating classloader with docBase = " + docBase +
+        Main.debug( "Creating classloader with docBase = " + docBase +
                          " and codeBase = " + codeBase );
 
         try
@@ -64,13 +76,13 @@ public class KJASAppletClassLoader
             }
             catch ( MalformedURLException mue )
             {
-                Main.kjas_debug( "Could not create URL from docBase, not creating applet" );
+                Main.debug( "Could not create URL from docBase, not creating applet" );
                 return;
             }
 
             if(codeBase != null)
             {
-                Main.kjas_debug( "codeBase not null, trying to create URL from it" );
+                Main.debug( "codeBase not null, trying to create URL from it" );
                 //we need to do this since codeBase should be a directory
                 //and URLclassLoader assumes anything without a / on the end
                 //is a jar file
@@ -84,11 +96,11 @@ public class KJASAppletClassLoader
                 {
                     try
                     {
-                        Main.kjas_debug( "could not create URL from codeBase alone" );
+                        Main.debug( "could not create URL from codeBase alone" );
                         codeBaseURL = new URL( docBaseURL, codeBase );
                     } catch( MalformedURLException mue2 )
                     {
-                        Main.kjas_debug( "could not create URL from docBaseURL and codeBase" );
+                        Main.debug( "could not create URL from docBaseURL and codeBase" );
                     }
                 }
             }
@@ -100,7 +112,7 @@ public class KJASAppletClassLoader
                 // we do need to make sure that the docBaseURL is fixed if
                 // it is something like http://www.foo.com/foo.asp
                 // It's got to be a directory.....
-                Main.kjas_debug( "codeBaseURL still null, defaulting to docBase" );
+                Main.debug( "codeBaseURL still null, defaulting to docBase" );
                 String file = docBaseURL.getFile();
                 if( file == null )
                     codeBaseURL = docBaseURL;
@@ -118,7 +130,7 @@ public class KJASAppletClassLoader
                 }
             }
 
-            Main.kjas_debug( "codeBaseURL = " + codeBaseURL );
+            Main.debug( "codeBaseURL = " + codeBaseURL );
             super.addURL( codeBaseURL );
         }catch( Exception e )
         {
@@ -146,6 +158,11 @@ public class KJASAppletClassLoader
         {
             Main.kjas_err( "bad url creation: " + e, e );
         }
+    }
+
+    public void addResource( String url, byte[] data )
+    {
+        Main.debug( "addResource for url: " + url );
     }
 
     public URL getDocBase()
@@ -177,12 +194,12 @@ public class KJASAppletClassLoader
         }
         catch( ClassNotFoundException e )
         {
-            Main.kjas_debug( "super couldn't load class: " + name + ", exception = " + e );
+            Main.debug( "super couldn't load class: " + name + ", exception = " + e );
             throw e;
         }
         catch( ClassFormatError e )
         {
-            Main.kjas_debug( "Class format error: " + e );
+            Main.debug( "Class format error: " + e );
             return null;
         }
     }
@@ -201,7 +218,7 @@ public class KJASAppletClassLoader
         }
         catch( ClassNotFoundException e )
         {
-            Main.kjas_debug( "could not find the class: " + name + ", exception = " + e );
+            Main.debug( "could not find the class: " + name + ", exception = " + e );
             throw e;
         }
     }

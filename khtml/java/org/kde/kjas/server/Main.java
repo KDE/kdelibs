@@ -46,9 +46,9 @@ public class Main
         console         = new KJASConsole();
         protocol        = new KJASProtocolHandler( System.in, protocol_stdout );
 
-        Main.kjas_debug( "JVM version = " + System.getProperty( "java.version" ) );
+        Main.debug( "JVM version = " + System.getProperty( "java.version" ) );
         String version = System.getProperty("java.version").substring( 0, 3 );
-        Main.kjas_debug( "JVM numerical version = " + version );
+        Main.debug( "JVM numerical version = " + version );
         try
         {
             float java_version = Float.parseFloat( version );
@@ -63,7 +63,7 @@ public class Main
     /**************************************************************************
      * Public Utility functions available to the KJAS framework
      **************************************************************************/
-    public static void kjas_debug( String msg )
+    public static void debug( String msg )
     {
         if( debug )
         {
@@ -74,6 +74,7 @@ public class Main
     public static void kjas_err( String msg, Exception e )
     {
         System.err.println( msg );
+        System.err.println( "Backtrace: " );
         e.printStackTrace();
     }
 

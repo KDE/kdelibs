@@ -37,7 +37,7 @@ public class KJASAppletContext implements AppletContext
                               String width, String height,
                               String windowName, Hashtable params )
     {
-        Main.kjas_debug( "KJASAppletContext.createApplet begin" );
+        Main.debug( "KJASAppletContext.createApplet begin" );
 
         //do kludges to support mess with parameter table and
         //the applet variables
@@ -99,7 +99,7 @@ public class KJASAppletContext implements AppletContext
             Main.kjas_err( "Something bad happened in createApplet: " + e, e );
         }
 
-        Main.kjas_debug( "KJASAppletContext.createApplet end" );
+        Main.debug( "KJASAppletContext.createApplet end" );
     }
 
     public void initApplet( String appletID )
@@ -107,7 +107,7 @@ public class KJASAppletContext implements AppletContext
         KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
         if( stub == null )
         {
-            Main.kjas_debug( "could not init and show applet: " + appletID );
+            Main.debug( "could not init and show applet: " + appletID );
         }
         else
         {
@@ -121,11 +121,11 @@ public class KJASAppletContext implements AppletContext
 
         if( stub == null )
         {
-            Main.kjas_debug( "could not destroy applet: " + appletID );
+            Main.debug( "could not destroy applet: " + appletID );
         }
         else
         {
-            Main.kjas_debug( "stopping applet: " + appletID );
+            Main.debug( "stopping applet: " + appletID );
 
             stub.setVisible( false );
             stub.stopApplet();
@@ -140,7 +140,7 @@ public class KJASAppletContext implements AppletContext
         KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
         if( stub == null )
         {
-            Main.kjas_debug( "could not start applet: " + appletID );
+            Main.debug( "could not start applet: " + appletID );
         }
         else
         {
@@ -153,7 +153,7 @@ public class KJASAppletContext implements AppletContext
         KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
         if( stub == null )
         {
-            Main.kjas_debug( "could not stop applet: " + appletID );
+            Main.debug( "could not stop applet: " + appletID );
         }
         else
         {
