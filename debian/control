@@ -6,7 +6,7 @@ Standards-Version: 2.1.2.2
 
 Package: kdelibs3g-dev
 Architecture: any
-Depends: kdelibs3g (= ${Source-Version}), qt1g-dev, libjpegg-dev (>= 6a), xlib6g-dev kdesupport0g-dev
+Depends: kdelibs3g (= ${Source-Version}), qt1g-dev, libjpegg-dev (>= 6a), xlib6g-dev, kdesupport0g-dev
 Conflicts: kdelibs0-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
