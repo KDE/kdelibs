@@ -264,9 +264,61 @@ public:
 };
 
 /**
+ * On The Usage Of 'locate' and 'locateLocal'
+ *
+ * Typical KDE applications use resource files in one out of
+ * three ways:
+ *
+ * 1) A resource file is read but is never written. A system
+ *    default is supplied but the user can override this
+ *    default in his local .kde directory:
+ *   
+ *    // Code example
+ *    myFile = locate("appdata", "groups.lst")
+ *    myData =  myReadGroups(myFile);
+ *
+ * 2) A resource file is read and written. If the user has no
+ *    local version of the file the system default is used.
+ *    The resource file is always written to the users local
+ *    .kde directory.
+ *
+ *    // Code example
+ *    myFile = locate("appdata", "groups.lst")
+ *    myData =  myReadGroups(myFile);
+ *    ...
+ *    doSomething(myData);
+ *    ...
+ *    myFile = locateLocal("appdata", "groups.lst")
+ *    myWriteGroups(myFile, myData);
+ *
+ * 3) A resource file is read and written. No system default
+ *    is used if the user has no local version of the file.
+ *    The resource file is always written to the users local
+ *    .kde directory.
+ *
+ *    // Code example
+ *    myFile = locateLocal("appdata", "groups.lst")
+ *    myData =  myReadGroups(myFile);
+ *    ...
+ *    doSomething(myData);
+ *    ...
+ *    myFile = locateLocal("appdata", "groups.lst")
+ *    myWriteGroups(myFile, myData);
+ **/
+ 
+/**
  * This function is just for convience. It simply calls 
  * KGlobal::dirs()->findResource(type, filename)
  **/
 QString locate( const QString& type, const QString& filename );
 
+/**
+ * This function is much like locate. However it returns a
+ * filename suitable for writing to. No check is made if the
+ * specified filename actually exists. Missing directories
+ * are created. If filename is only a directory, without a
+ * specific file, filename must have a trailing slash. 
+ *
+ **/
+QString locateLocal( const QString& type, QString filename );
 #endif // SSK_KSTDDIRS_H

@@ -411,3 +411,17 @@ QString locate( const QString& type,
 		const QString& filename ) {
   return KGlobal::dirs()->findResource(type, filename);
 }
+
+QString locateLocal( const QString& type,
+	             QString filename ) {
+  QString dir, file;
+  int slash = filename.findRev('/')+1;
+  if (!slash)
+  { 
+     return KGlobal::dirs()->getSaveLocation(type)+filename;
+  }
+  dir = filename.left(slash);
+  file = filename.mid(slash);
+  return KGlobal::dirs()->getSaveLocation(type, dir)+file;
+}
+
