@@ -79,8 +79,8 @@ public:
      * @li HELP         - A man or info page
      * @li SHELL        - A shell executable (ex: echo "Test..." >> ~/testfile)
      * @li BLOCKED      - A URI that should be blocked/filtered (ex: ad filtering)
-     * @li ERROR        - An incorrect URI (ex: "~johndoe" when the user johndoe
-     *                    does not exit)
+     * @li ERROR        - An incorrect URI (ex: "~johndoe" when user johndoe
+     *                    does not exist in that system )
      * @li UNKNOWN      - A URI that is not identified. Default value when
      *                    a KURIFilterData is first created.
      */
@@ -187,6 +187,7 @@ public:
     KURIFilterData& operator=( const QString& url ) { init( url ); return *this; }
 
 protected:
+
     /**
      * Initializes the KURIFilterData on construction.
      */
@@ -197,7 +198,6 @@ private:
     URITypes m_iType;
     KURL m_pURI;
     QString m_strErrMsg;
-
     KURIFilterPrivate *d; // BCI
 };
 
@@ -265,7 +265,7 @@ public:
      *
      * @return A configuration module, @p null if the filter isn't configurable.
      */
-    virtual KCModule *configModule( QWidget*, const char* ) { return 0; }
+    virtual KCModule *configModule( QWidget*, const char* ) const { return 0; }
 
     /**
      * Returns the name of the configuration module for the filter.
@@ -318,6 +318,11 @@ private:
 
 /**
  * Manages the filtering of a URI.
+ *
+ * The intention of this plugin class is to allow people extend
+ * the functionality of KURL w/o modifying it directly.  This
+ * way KURL will remain a generic parser capable of parsing any
+ * generic URL that adheres to specifications.
  *
  * The KURIFilter class applies a number of filters to a URI,
  * and returns the filtered version if successful. The filters
@@ -483,7 +488,10 @@ protected:
     KURIFilter();
 
     /**
-     * Loads all the plugins it can find through @ref KTrader.
+     * Loads all allowed plugins.
+     *
+     * This function loads all filters that have not
+     * been dis
      */
     void loadPlugins();
 
