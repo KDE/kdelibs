@@ -35,51 +35,58 @@ LDIF::~LDIF()
 }
 
 QCString LDIF::assembleLine( const QString &fieldname, const QByteArray &value, 
-  uint linelen )
+  uint linelen, bool url )
 {
   bool safe = false;
+  bool isDn;
   QCString result;
   uint i;
+
+  if ( url ) {    
+    result = fieldname.utf8() + ":< " + QCString( value.data(), value.size()+1 );
+  } else {
+    isDn = fieldname.lower() == "dn";
+    //SAFE-INIT-CHAR
+    if ( value.size() > 0 && value[0] > 0 && value[0] != '\n' &&
+      value[0] != '\r' && value[0] != ':' && value[0] != '<' ) safe = true;
   
-  //SAFE-INIT-CHAR
-  if ( value.size() > 0 && value[0] > 0 && value[0] != '\n' &&
-    value[0] != '\r' && value[0] != ':' && value[0] != '<' ) safe = true;
-  
-  //SAFE-CHAR
-  if ( safe ) {
-    for ( i=1; i < value.size(); i++ ) {
-      if ( value[i] <= 0 || value[i] == '\r' || value[i] == '\n' ) {
-        safe = false;
-        break;
+    //SAFE-CHAR
+    if ( safe ) {
+      for ( i=1; i < value.size(); i++ ) {
+      //allow utf-8 in Distinguished Names
+        if ( ( isDn && value[i] == 0 ) || 
+             ( !isDn && value[i] <= 0 ) || 
+             value[i] == '\r' || value[i] == '\n' ) {
+          safe = false;
+          break;
+        }
       }
     }
-  }
     
-  if( safe ) {
-    result = fieldname.utf8() + ": " + QCString( value.data(), value.size()+1 );
-  } else {
-    result = fieldname.utf8() + ":: " + KCodecs::base64Encode( value, false );
-  }
-  
-  if ( linelen > 0 ) {
-    kdDebug(7125) << "line length: " << linelen << endl;
-    i = (fieldname.length()+2) > linelen ? fieldname.length()+2 : linelen;
-    while ( i < result.length() ) {
-      result.insert( i, "\n " );
-      i += linelen+2;
+    if( safe ) {
+      result = fieldname.utf8() + ": " + QCString( value.data(), value.size()+1 );
+    } else {
+      result = fieldname.utf8() + ":: " + KCodecs::base64Encode( value, false );
     }
-    
+  
+    if ( linelen > 0 ) {
+      i = (fieldname.length()+2) > linelen ? fieldname.length()+2 : linelen;
+      while ( i < result.length() ) {
+        result.insert( i, "\n " );
+        i += linelen+2;
+      }
+    }
   }
   return result;
 }
 
 QCString LDIF::assembleLine( const QString &fieldname, const QCString &value, 
-  uint linelen )
+  uint linelen, bool url )
 {
   QCString ret;
   QByteArray tmp;
   tmp.setRawData( value, value.length() );
-  ret = assembleLine( fieldname, tmp, linelen );
+  ret = assembleLine( fieldname, tmp, linelen, url );
   tmp.resetRawData( value, value.length() );
   return ret;
   
@@ -102,7 +109,7 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     value = tmp.copy();
     tmp.resetRawData( str.data(), str.length() );
 //    kdDebug(7125) << "value : " << value[0] << endl;
-    return true;
+    return false;
   }
   
   if ( line.length() > ( position + 1 ) && line[ position + 1 ] == ':' ) {
@@ -111,15 +118,23 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
     tmp.setRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
     KCodecs::base64Decode( tmp, value );
     tmp.resetRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
+    return false;
+  }
+  
+  if ( line.length() > ( position + 1 ) && line[ position + 1 ] == '<' ) {
+    // String is an URL.
+    fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
+    tmp.setRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
+    value = tmp.copy();
+    tmp.resetRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
     return true;
   }
 
   fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
   tmp.setRawData( &line.data()[ position + 2 ], line.length() - position - 2 );
-//  value = line.mid( position + 2, line.length() - position - 2 );
   value = tmp.copy();
   tmp.resetRawData( &line.data()[ position + 2 ], line.length() - position - 2 );
-  return true;
+  return false;
 
 }
 

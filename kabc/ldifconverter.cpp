@@ -45,6 +45,7 @@
 #include "addressee.h"
 #include "address.h"
 
+#include "ldif.h"
 #include "ldifconverter.h"
 #include "vcardconverter.h"
 
@@ -61,68 +62,18 @@ bool LDIFConverter::addresseeToLDIF( const AddresseeList &addrList, QString &str
   return true;
 }
 
-QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bool allowEncode )
-{
-  if ( value.isEmpty() )
-    return QString();
-
-  // append format if not given
-  if (formatStr.find(':') == -1)
-    formatStr.append(": %1\n");
-
-  // check if base64-encoding is needed 
-  bool printable = true;
-  unsigned int i, len;
-  len = value.length();
-  for (i = 0; i<len; ++i ) {
-     if (!value[i].isPrint()) {
-        printable = false;
-        break;
-     }
-  }
-
-  if (printable) // always encode if we find special chars...
-    printable = (value.find('\n') == -1);
-
-  if (!printable && allowEncode) { 
-    // encode to base64
-    value = KCodecs::base64Encode( value.utf8() );
-    int p = formatStr.find(':');
-    if (p>=0)
-      formatStr.insert(p, ':');
-  }
-
-  // generate the new string and split it to 72 chars/line
-  QCString txt = (formatStr.arg(value)).utf8();
-
-  if (allowEncode) {
-    len = txt.length();
-    if (len && txt[len-1] == '\n')
-      --len;
-    i = 72;
-    while (i < len) {
-      txt.insert(i, "\n ");
-      i += 72+1;
-      len += 2;
-    }
-  }
-
-  return QString::fromUtf8(txt);
-}
 
 
-
-static void ldif_out( QTextStream &t, QString formatStr, QString value, bool allowEncode = true )
+static void ldif_out( QTextStream &t, QString formatStr, QString value )
 {
   if ( value.isEmpty() )
     return;
 
-  QString txt = LDIFConverter::makeLDIFfieldString( formatStr, value, allowEncode );
+  QCString txt = LDIF::assembleLine( formatStr, value.utf8(), 72 );
 
   // write the string
-  t << txt;
+  t << QString::fromUtf8(txt) << "\n";
 }
-
 
 bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
 {
@@ -135,67 +86,67 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   const Address homeAddr = addr.address( Address::Home );
   const Address workAddr = addr.address( Address::Work );
 
-  ldif_out( t, "dn: %1", QString( "cn=%1,mail=%2\n" )
+  ldif_out( t, "dn", QString( "cn=%1,mail=%2" )
             .arg( addr.formattedName().simplifyWhiteSpace() )
-            .arg( addr.preferredEmail() ), false /*never encode!*/ );
-  ldif_out( t, "givenname: %1\n", addr.givenName() );
-  ldif_out( t, "sn: %1\n", addr.familyName() );
-  ldif_out( t, "cn: %1\n", addr.formattedName().simplifyWhiteSpace() );
-  ldif_out( t, "uid: %1\n", addr.uid() );
-  ldif_out( t, "nickname: %1\n", addr.nickName() );
-  ldif_out( t, "xmozillanickname: %1\n", addr.nickName() );
+            .arg( addr.preferredEmail() ) );
+  ldif_out( t, "givenname", addr.givenName() );
+  ldif_out( t, "sn", addr.familyName() );
+  ldif_out( t, "cn", addr.formattedName().simplifyWhiteSpace() );
+  ldif_out( t, "uid", addr.uid() );
+  ldif_out( t, "nickname", addr.nickName() );
+  ldif_out( t, "xmozillanickname", addr.nickName() );
 
-  ldif_out( t, "mail: %1\n", addr.preferredEmail() );
+  ldif_out( t, "mail", addr.preferredEmail() );
   if ( addr.emails().count() > 1 )
-    ldif_out( t, "mozillasecondemail: %1\n", addr.emails()[ 1 ] );
+    ldif_out( t, "mozillasecondemail", addr.emails()[ 1 ] );
 //ldif_out( t, "mozilla_AIMScreenName: %1\n", "screen_name" );
 
-  ldif_out( t, "telephonenumber: %1\n", addr.phoneNumber( PhoneNumber::Work ).number() );
-  ldif_out( t, "facsimiletelephonenumber: %1\n", addr.phoneNumber( PhoneNumber::Fax ).number() );
-  ldif_out( t, "homephone: %1\n", addr.phoneNumber( PhoneNumber::Home ).number() );
-  ldif_out( t, "mobile: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() ); // Netscape 7
-  ldif_out( t, "cellphone: %1\n", addr.phoneNumber( PhoneNumber::Cell ).number() ); // Netscape 4.x
-  ldif_out( t, "pager: %1\n", addr.phoneNumber( PhoneNumber::Pager ).number() );
-  ldif_out( t, "pagerphone: %1\n", addr.phoneNumber( PhoneNumber::Pager ).number() );
+  ldif_out( t, "telephonenumber", addr.phoneNumber( PhoneNumber::Work ).number() );
+  ldif_out( t, "facsimiletelephonenumber", addr.phoneNumber( PhoneNumber::Fax ).number() );
+  ldif_out( t, "homephone", addr.phoneNumber( PhoneNumber::Home ).number() );
+  ldif_out( t, "mobile", addr.phoneNumber( PhoneNumber::Cell ).number() ); // Netscape 7
+  ldif_out( t, "cellphone", addr.phoneNumber( PhoneNumber::Cell ).number() ); // Netscape 4.x
+  ldif_out( t, "pager", addr.phoneNumber( PhoneNumber::Pager ).number() );
+  ldif_out( t, "pagerphone", addr.phoneNumber( PhoneNumber::Pager ).number() );
 
-  ldif_out( t, "streethomeaddress: %1\n", homeAddr.street() );
-  ldif_out( t, "postalcode: %1\n", workAddr.postalCode() );
-  ldif_out( t, "postofficebox: %1\n", workAddr.postOfficeBox() );
+  ldif_out( t, "streethomeaddress", homeAddr.street() );
+  ldif_out( t, "postalcode", workAddr.postalCode() );
+  ldif_out( t, "postofficebox", workAddr.postOfficeBox() );
 
   QStringList streets = QStringList::split( '\n', homeAddr.street() );
   if ( streets.count() > 0 )
-    ldif_out( t, "homepostaladdress: %1\n", streets[ 0 ] ); // Netscape 7
+    ldif_out( t, "homepostaladdress", streets[ 0 ] ); // Netscape 7
   if ( streets.count() > 1 )
-    ldif_out( t, "mozillahomepostaladdress2: %1\n", streets[ 1 ] ); // Netscape 7
-  ldif_out( t, "mozillahomelocalityname: %1\n", homeAddr.locality() ); // Netscape 7
-  ldif_out( t, "mozillahomestate: %1\n", homeAddr.region() );
-  ldif_out( t, "mozillahomepostalcode: %1\n", homeAddr.postalCode() );
-  ldif_out( t, "mozillahomecountryname: %1\n", Address::ISOtoCountry(homeAddr.country()) );
-  ldif_out( t, "locality: %1\n", workAddr.locality() );
-  ldif_out( t, "streetaddress: %1\n", workAddr.street() ); // Netscape 4.x
+    ldif_out( t, "mozillahomepostaladdress2", streets[ 1 ] ); // Netscape 7
+  ldif_out( t, "mozillahomelocalityname", homeAddr.locality() ); // Netscape 7
+  ldif_out( t, "mozillahomestate", homeAddr.region() );
+  ldif_out( t, "mozillahomepostalcode", homeAddr.postalCode() );
+  ldif_out( t, "mozillahomecountryname", Address::ISOtoCountry(homeAddr.country()) );
+  ldif_out( t, "locality", workAddr.locality() );
+  ldif_out( t, "streetaddress", workAddr.street() ); // Netscape 4.x
 
   streets = QStringList::split( '\n', workAddr.street() );
   if ( streets.count() > 0 )
-    ldif_out( t, "postaladdress: %1\n", streets[ 0 ] );
+    ldif_out( t, "postaladdress", streets[ 0 ] );
   if ( streets.count() > 1 )
-    ldif_out( t, "mozillapostaladdress2: %1\n", streets[ 1 ] );
-  ldif_out( t, "countryname: %1\n", Address::ISOtoCountry(workAddr.country()) );
-  ldif_out( t, "l: %1\n", workAddr.locality() );
-  ldif_out( t, "c: %1\n", Address::ISOtoCountry(workAddr.country()) );
-  ldif_out( t, "st: %1\n", workAddr.region() );
+    ldif_out( t, "mozillapostaladdress2", streets[ 1 ] );
+  ldif_out( t, "countryname", Address::ISOtoCountry(workAddr.country()) );
+  ldif_out( t, "l", workAddr.locality() );
+  ldif_out( t, "c", Address::ISOtoCountry(workAddr.country()) );
+  ldif_out( t, "st", workAddr.region() );
 
-  ldif_out( t, "title: %1\n", addr.title() );
-  ldif_out( t, "vocation: %1\n", addr.prefix() );
-  ldif_out( t, "ou: %1\n", addr.role() );
-  ldif_out( t, "o: %1\n", addr.organization() );
-  ldif_out( t, "organization: %1\n", addr.organization() );
-  ldif_out( t, "organizationname: %1\n", addr.organization() );
-  ldif_out( t, "department: %1\n", addr.custom("KADDRESSBOOK", "X-Department") );
-  ldif_out( t, "workurl: %1\n", addr.url().prettyURL() );
-  ldif_out( t, "homeurl: %1\n", addr.url().prettyURL() );
-  ldif_out( t, "description: %1\n", addr.note() );
+  ldif_out( t, "title", addr.title() );
+  ldif_out( t, "vocation", addr.prefix() );
+  ldif_out( t, "ou", addr.role() );
+  ldif_out( t, "o", addr.organization() );
+  ldif_out( t, "organization", addr.organization() );
+  ldif_out( t, "organizationname", addr.organization() );
+  ldif_out( t, "department", addr.custom("KADDRESSBOOK", "X-Department") );
+  ldif_out( t, "workurl", addr.url().prettyURL() );
+  ldif_out( t, "homeurl", addr.url().prettyURL() );
+  ldif_out( t, "description", addr.note() );
   if (addr.revision().isValid())
-    ldif_out(t, "modifytimestamp: %1\n", dateToVCardString( addr.revision()) );
+    ldif_out(t, "modifytimestamp", dateToVCardString( addr.revision()) );
 
   t << "objectclass: top\n";
   t << "objectclass: person\n";
@@ -211,140 +162,68 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
 
 bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList, QDateTime dt )
 {
-  QStringList lines;
-
-  if (!dt.isValid())
-    dt = QDateTime::currentDateTime();
-
-  lines = QStringList::split( QRegExp("[\x0d\x0a]"), str, false );
-
-  // clean up comments and prepare folded entries and multi-line BASE64 encoded lines
-  QStringList::Iterator last = lines.end();
-  for ( QStringList::Iterator it = lines.begin(); it != lines.end(); ++it ) {
-    if ( (*it).startsWith("#") ) { // comment ?
-      it = lines.remove(it);
-      it--;
-      continue;
-    }
-    if ( last == lines.end() ) {
-      last = it;
-      continue;
-    }
-    if ((*last).find("::")!=-1 && (*it).find(":")==-1) { // this is a multi-line BASE64
-      *last += (*it);
-      lines.remove(it);
-      it = last;
-      continue;
-    }
-    if ((*last).find(":")!=-1 && (*it).startsWith(" ")) { // this is a folded item
-      *last += (*it).mid(1);
-      lines.remove(it);
-      it = last;
-      continue;
-    }
-    last = it;
-  }
-
-  // variables
-  addrList = AddresseeList();
-
+  bool endldif = false, end = false;
+  LDIF ldif;
+  LDIF::ParseVal ret;
+  const char *latinstr = str.latin1();
+  QByteArray data;
   Addressee a;
   Address homeAddr, workAddr;
-  bool cont;
-  QStringList dnList;
-  QString dnEntry;
-
-  // do the loop...
-  for ( QStringList::Iterator it = lines.begin(); it != lines.end(); ++it ) {
-
-    // create a new (empty) address entry
-    a = Addressee();
-    a.setRevision(dt);
-    homeAddr = Address( Address::Home );
-    workAddr = Address( Address::Work );
-
-    // evaluate previous "dn: *" header values
-    if (dnList.count()) {
-      for ( QStringList::Iterator dne = dnList.begin(); dne != dnList.end(); ++dne ) {
-         parseSingleLine( a, homeAddr, workAddr, *dne );
+  
+  data.setRawData( latinstr, qstrlen( latinstr ) );
+  ldif.setLDIF( data );
+  if (!dt.isValid())
+    dt = QDateTime::currentDateTime();
+  a.setRevision(dt);
+  homeAddr = Address( Address::Home );
+  workAddr = Address( Address::Work );
+  
+  do {
+    ret = ldif.nextItem();
+    switch ( ret ) {
+      case LDIF::Item: {
+        QString fieldname = ldif.attr().lower();
+        QString value = QString::fromUtf8( ldif.val(), ldif.val().size() );
+        evaluatePair( a, homeAddr, workAddr, fieldname, value );
+        break;
       }
-    }
-
-    // evaluate until we find another "dn: *" entry or until end of list
-    do {
-      cont = parseSingleLine( a, homeAddr, workAddr, *it );
-      if (cont && it!=lines.end()) {
-        ++it;
+      case LDIF::EndEntry:
+      // if the new address is not empty, append it
+        if ( !a.formattedName().isEmpty() || !a.name().isEmpty() || 
+          !a.familyName().isEmpty() ) {
+          if ( !homeAddr.isEmpty() )
+            a.insertAddress( homeAddr );
+          if ( !workAddr.isEmpty() )
+            a.insertAddress( workAddr );
+          addrList.append( a );
+        }
+        a = Addressee();
+        a.setRevision(dt);
+        homeAddr = Address( Address::Home );
+        workAddr = Address( Address::Work );
+        break;
+      case LDIF::MoreData: {
+        if ( endldif ) 
+          end = true;
+        else {
+          QByteArray dummy( 3 );
+          dummy[ 0 ] = '\n';
+          dummy[ 1 ] = '\n';
+          dummy[ 2 ] = '\n';
+          ldif.setLDIF( dummy );
+          endldif = true;
+          break;
+        }
       }
-    } while (cont && it!=lines.end());
-
-    // if the new address is not empty, append it
-    if ( !a.formattedName().isEmpty() || !a.name().isEmpty() || 
-         !a.familyName().isEmpty() ) {
-      if ( !homeAddr.isEmpty() )
-        a.insertAddress( homeAddr );
-      if ( !workAddr.isEmpty() )
-        a.insertAddress( workAddr );
-      addrList.append( a );
+      default:
+        break;
     }
+  } while ( !end );
 
-    // did we reached the end of the list
-    if ( it == lines.end() )
-      break;
-
-    // we found the "dn: cn=.." entry (e.g. "n: cn=Engelhardt Gerald,l=Frankfurt,ou=BKG,o=Bund,c=DE").
-    // Split it now and parse it later.
-    dnEntry = (*it).replace( '=', ": " );
-    dnList = QStringList::split( ',', dnEntry, false );
-    dnList.pop_front();
-
-  } // for()...
-
+  data.resetRawData( latinstr, qstrlen( latinstr ) );
+  
   return true;
 }
-
-bool LDIFConverter::parseSingleLine( Addressee &a, Address &homeAddr,
-                                     Address &workAddr, QString &line )
-{
-  if ( line.isEmpty() )
-    return true;
-
-  QString fieldname, value;
-  splitLine( line, fieldname, value);
-  return evaluatePair( a, homeAddr, workAddr, fieldname, value);
-}
-
-
-bool LDIFConverter::splitLine( QString &line, QString &fieldname, QString &value)
-{
-  int position;
-
-  position = line.find( "::" );
-  if ( position != -1 ) {
-    // String is BASE64 encoded -> decode it now.
-    fieldname = line.left( position ).lower();
-    value = QString::fromUtf8( KCodecs::base64Decode(
-              line.mid( position + 3, line.length() - position - 2 ).latin1() ) )
-              .simplifyWhiteSpace();
-    return true;
-  }
-
-  position = line.find( ":" );
-  if ( position != -1 ) {
-    fieldname = line.left( position ).lower();
-    // Convert Utf8 string to unicode so special characters are preserved
-    // We need this since we are reading normal strings from the file
-    // which are not converted automatically
-    value = QString::fromUtf8( line.mid( position + 2, line.length() - position - 2 ).latin1() );
-    return true;
-  }
-
-  // strange: we did not find a fieldname
-  fieldname = "";
-  value = line;
-  return true;
-}
-
 
 bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
                                   Address &workAddr,
@@ -608,5 +487,81 @@ addComment:
                              .arg(a.formattedName()).arg(fieldname).arg(value);
 
   return true;
+}
+
+/* The following functions are obsoleted. Similar functionality can be found
+ * in the LDIF class */
+
+bool LDIFConverter::parseSingleLine( Addressee &a, Address &homeAddr,
+                                     Address &workAddr, QString &line )
+{
+  if ( line.isEmpty() )
+    return true;
+
+  QString fieldname, value;
+  QByteArray val;
+
+  LDIF::splitLine( line.latin1(), fieldname, val );
+  value = QString::fromUtf8( val.data(), val.size() );
+  return evaluatePair( a, homeAddr, workAddr, fieldname, value);
+}
+
+
+bool LDIFConverter::splitLine( QString &line, QString &fieldname, QString &value)
+{
+  QByteArray val;
+  bool ret = LDIF::splitLine( line.latin1(), fieldname, val );
+  value = QString::fromUtf8( val.data(), val.size() );
+  return ret;
+}
+
+
+QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bool allowEncode )
+{
+  if ( value.isEmpty() )
+    return QString();
+
+  // append format if not given
+  if (formatStr.find(':') == -1)
+    formatStr.append(": %1\n");
+
+  // check if base64-encoding is needed 
+  bool printable = true;
+  unsigned int i, len;
+  len = value.length();
+  for (i = 0; i<len; ++i ) {
+     if (!value[i].isPrint()) {
+        printable = false;
+        break;
+     }
+  }
+
+  if (printable) // always encode if we find special chars...
+    printable = (value.find('\n') == -1);
+
+  if (!printable && allowEncode) { 
+    // encode to base64
+    value = KCodecs::base64Encode( value.utf8() );
+    int p = formatStr.find(':');
+    if (p>=0)
+      formatStr.insert(p, ':');
+  }
+
+  // generate the new string and split it to 72 chars/line
+  QCString txt = (formatStr.arg(value)).utf8();
+
+  if (allowEncode) {
+    len = txt.length();
+    if (len && txt[len-1] == '\n')
+      --len;
+    i = 72;
+    while (i < len) {
+      txt.insert(i, "\n ");
+      i += 72+1;
+      len += 2;
+    }
+  }
+
+  return QString::fromUtf8(txt);
 }
 

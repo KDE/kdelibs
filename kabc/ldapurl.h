@@ -57,7 +57,7 @@ namespace KABC {
   
     /**
      * Returns the dn part of the LDAP Url (same as path(), but slash removed
-     * from the beginning.
+     * from the beginning).
      */
     QString dn() const { return m_dn; };
     /** Sets the the dn part of the LDAP Url. */ 
@@ -91,10 +91,10 @@ namespace KABC {
     void setExtension( const QString &key, const QString &value, bool critical = false );
     /** Removes the specified extension */
     void removeExtension( const QString &key );
+    /** Updates the query component from the attributes, scope, filter and extensions */
+    void updateQuery();
     
   protected:
-
-    void updateQuery();
     void parseQuery();
 
   private:

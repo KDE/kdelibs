@@ -35,6 +35,8 @@ class ResourceLDAPKIO : public Resource
   Q_OBJECT
 
   public:
+    enum CachePolicy{ Cache_No, Cache_NoConnection, Cache_Always };
+
     ResourceLDAPKIO( const KConfig* );
     virtual ~ResourceLDAPKIO();
     /**
@@ -64,6 +66,12 @@ class ResourceLDAPKIO : public Resource
 
     void setPassword( const QString &password );
     QString password() const;
+    
+    void setRealm( const QString &realm );
+    QString realm() const;
+    
+    void setBindDN( const QString &binddn );
+    QString bindDN() const;
 
     void setDn( const QString &dn );
     QString dn() const;
@@ -74,6 +82,9 @@ class ResourceLDAPKIO : public Resource
     void setPort( int port );
     int port() const;
 
+    void setVer( int ver );
+    int ver() const;
+
     void setFilter( const QString &filter );
     QString filter() const;
 
@@ -83,6 +94,9 @@ class ResourceLDAPKIO : public Resource
     void setAttributes( const QMap<QString, QString> &attributes );
     QMap<QString, QString> attributes() const;
     
+    void setRDNPrefix( int value );
+    int RDNPrefix() const;
+
     void setIsTLS( bool value );
     bool isTLS() const ;
     
@@ -97,13 +111,18 @@ class ResourceLDAPKIO : public Resource
 
     void setMech( const QString &mech );
     QString mech() const;
+
+    void setCachePolicy( int pol );
+    int cachePolicy() const;
+    
+    QString cacheDst() const;
     
 protected slots:
     void entries( KIO::Job*, const KIO::UDSEntryList& );
     void data( KIO::Job*, const QByteArray& );
     void result( KIO::Job* );
     void listResult( KIO::Job* );
-    void syncSaveResult( KIO::Job* );
+    void syncLoadSaveResult( KIO::Job* );
     void saveResult( KIO::Job* );
     void saveData( KIO::Job*, QByteArray& );
   
@@ -123,7 +142,9 @@ protected slots:
     QString mErrorMsg;
     QMap<KIO::Job*, QByteArray> mJobMap;
 
+    KIO::Job *loadFromCache();
     void enter_loop();
+    QCString addEntry( const QString &attr, const QString &value, bool mod );
     QString findUid( const QString &uid );
     bool AddresseeToLDIF( QByteArray &ldif, const Addressee &addr, 
       const QString &olddn );

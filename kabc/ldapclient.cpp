@@ -36,6 +36,8 @@
 #include <kprotocolinfo.h>
 
 #include "ldapclient.h"
+#include "ldif.h"
+#include "ldapurl.h"
 
 using namespace KABC;
 
@@ -43,6 +45,7 @@ class LdapClient::LdapClientPrivate{
 public:
   QString bindDN;
   QString pwdBindDN;
+  LDIF ldif;
 };
 
 QString LdapObject::toString() const
@@ -67,7 +70,7 @@ QString LdapObject::toString() const
         //l->show();
 #endif
       } else {
-        result += QString("%1: %2\n").arg(attr).arg(QString::fromUtf8(*it2));
+        result += QString("%1: %2\n").arg(attr).arg(QString::fromUtf8( *it2, (*it2).size() ));
       }
     }
   }
@@ -134,39 +137,23 @@ void LdapClient::setAttrs( const QStringList& attrs )
 void LdapClient::startQuery( const QString& filter )
 {
   cancelQuery();
-  QString query;
-  if ( mScope.isEmpty() )
-    mScope = "sub";
-
-  QString auth;
-  QString encodedPassword;
-  if ( !d->bindDN.isEmpty() ) {
-    auth = d->bindDN;
-    QUrl::encode( auth );
-    if ( !d->pwdBindDN.isEmpty() ) {
-      encodedPassword = d->pwdBindDN;
-      QUrl::encode( encodedPassword );
-      auth += ":" + encodedPassword;
-    }
-    auth += "@";
-  }
-
-  QString host = mHost;
-  if ( !mPort.isEmpty() ) {
-    host += ':';
-    host += mPort;
-  }
-
-  if ( mAttrs.empty() ) {
-    QTextOStream(&query) << "ldap://" << auth << host << "/" << mBase << "?*?" << mScope << "?(" << filter << ")";
-  } else {
-    QTextOStream(&query) << "ldap://" << auth << host << "/" << mBase << "?" << mAttrs.join(",") << "?" << mScope << "?(" << filter << ")";
-  }
-  kdDebug(5700) << "Doing query " << query << endl;
+  LDAPUrl url;
+  
+  url.setProtocol( "ldap" );
+  url.setUser( d->bindDN );
+  url.setPass( d->pwdBindDN );
+  url.setHost( mHost );
+  url.setPort( mPort.toUInt() );
+  url.setDn( mBase );
+  url.setAttributes( mAttrs );
+  url.setScope( mScope == "one" ? LDAPUrl::One : LDAPUrl::Sub );
+  url.setFilter( "("+filter+")" );
+  
+  kdDebug(5700) << "Doing query: " << url.prettyURL() << endl;
 
   startParseLDIF();
   mActive = true;
-  mJob = KIO::get( KURL( query ), false, false );
+  mJob = KIO::get( url, false, false );
   connect( mJob, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
            this, SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
   connect( mJob, SIGNAL( infoMessage( KIO::Job*, const QString& ) ),
@@ -221,92 +208,45 @@ void LdapClient::startParseLDIF()
   mLastAttrName  = 0;
   mLastAttrValue = 0;
   mIsBase64 = false;
+  d->ldif.startParsing();
 }
 
 void LdapClient::endParseLDIF()
 {
-  if ( !mCurrentObject.dn.isEmpty() ) {
-    if ( !mLastAttrName.isNull() && !mLastAttrValue.isNull() ) {
-      if ( mIsBase64 ) {
-        QByteArray out;
-        KCodecs::base64Decode( mLastAttrValue, out );
-        //qDebug("_lastAttrValue=\"%s\", output length %d", _lastAttrValue.data(), out.size());
-        mCurrentObject.attrs[ mLastAttrName ].append( out );
-      } else {
-        mCurrentObject.attrs[ mLastAttrName ].append( mLastAttrValue );
-      }
-    }
-    emit result( mCurrentObject );
-  }
 }
 
 void LdapClient::parseLDIF( const QByteArray& data )
 {
-  // qDebug("%s: %s", __FUNCTION__, data.data());
-  if ( data.isEmpty() )
-    return;
-  mBuf += QCString( data, data.size() + 1 ); // collect data in buffer
-  int nl;
-  while ( (nl = mBuf.find('\n')) != -1 ) {
-    // Run through it line by line
-    /* FIXME(steffen): This could be a problem
-    * with "no newline at end of file" input
-    */
-    QCString line = mBuf.left( nl );
-    if ( mBuf.length() > (unsigned int)(nl+1) )
-      mBuf = mBuf.mid( nl+1 );
-    else
-      mBuf = "";
-
-    if ( line.length() > 0 ) {
-      if ( line[ 0 ] == '#' ) { // comment
-        continue;
-      } else if ( line[ 0 ] == ' ' || line[ 0 ] == '\t' ) { // continuation of last line
-        line = line.stripWhiteSpace();
-        //qDebug("Adding \"%s\"", line.data() );
-        mLastAttrValue += line;
-        continue;
-      }
-    } else
-      continue;
-
-    int colon = line.find(':');
-    if ( colon != -1 ) { // Found new attribute
-      if ( mLastAttrName == "dn" ) { // New object, store the current
-        if ( !mCurrentObject.dn.isNull() ) {
-          emit result( mCurrentObject );
-          mCurrentObject.clear();
-        }
-        mCurrentObject.dn = mLastAttrValue;
-        mLastAttrValue = 0;
-        mLastAttrName  = 0;
-      } else if ( !mLastAttrName.isEmpty() ) {
-        // Store current value, take care of decoding
-        if ( mIsBase64 ) {
-          QByteArray out;
-          KCodecs::base64Decode( mLastAttrValue, out );
-          //qDebug("_lastAttrValue=\"%s\", output length %d", _lastAttrValue.data(), out.size());
-          mCurrentObject.attrs[ mLastAttrName ].append( out );
-        } else {
-          mCurrentObject.attrs[ mLastAttrName ].append( mLastAttrValue );
-        }
-      }
-
-      mLastAttrName  = line.left( colon ).stripWhiteSpace();
-      //qDebug("Found attr %s", _lastAttrName.data() );
-      ++colon;
-      if ( line[colon] == ':' ) {
-        mIsBase64 = true;
-        //qDebug("BASE64");
-        ++colon;
-      } else {
-        //qDebug("UTF8");
-        mIsBase64 = false;
-      }
-
-      mLastAttrValue = line.mid( colon ).stripWhiteSpace();
-    }
+  if ( data.size() ) {
+    d->ldif.setLDIF( data );
+  } else {
+    QByteArray dummy( 3 );
+    dummy[ 0 ] = '\n';
+    dummy[ 1 ] = '\n';
+    dummy[ 2 ] = '\n';
+    d->ldif.setLDIF( dummy );
   }
+
+  LDIF::ParseVal ret;
+  QString name;
+  QByteArray value;
+  do {
+    ret = d->ldif.nextItem();
+    switch ( ret ) {
+      case LDIF::Item:
+        name = d->ldif.attr().lower();
+        value = d->ldif.val();
+        mCurrentObject.attrs[ name ].append( value );
+        break;
+     case LDIF::EndEntry:
+        mCurrentObject.dn = d->ldif.Dn();
+        emit result( mCurrentObject );
+        mCurrentObject.clear();
+        break;
+      default:
+        break;
+    }
+  } while ( ret != LDIF::MoreData );
 }
 
 QString LdapClient::bindDN() const
@@ -459,7 +399,7 @@ QStringList LdapSearch::makeSearchData()
 
     LdapAttrMap::ConstIterator it2;
     for ( it2 = (*it1).attrs.begin(); it2 != (*it1).attrs.end(); ++it2 ) {
-      QString tmp = QString::fromUtf8((*it2).first());
+      QString tmp = QString::fromUtf8( (*it2).first(), (*it2).first().size() );
       if ( it2.key() == "cn" )
         name = tmp; // TODO loop?
       else if( it2.key() == "mail" )

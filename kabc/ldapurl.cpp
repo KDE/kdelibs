@@ -122,7 +122,7 @@ void LDAPUrl::updateQuery()
   // set the filter
   q += "?";
   if ( m_filter != "(objectClass=*)" && !m_filter.isEmpty() ) 
-    q += encode_string( m_filter );
+    q += m_filter;
   
   // set the extensions
   q += "?";
@@ -167,7 +167,7 @@ void LDAPUrl::parseQuery()
         if ( (*it) == "one") m_scope = One;
         break;
       case 2:
-        m_filter = decode_string((*it));
+        m_filter = *it;
         break;
       case 3:    
         extensions = QStringList::split(",", (*it), false);

@@ -28,11 +28,11 @@
 
 namespace KABC {
 
-    /**
-     * A set of functions to convert a string with LDIF information to addressees and vice versa.
-     * ble for searches on LDAP servers, for addressbook
-     * import- and exportfilters and might be used to read and write Mozilla and Netscape addresssbooks.
-     */
+  /**
+   * A set of functions to convert a string with LDIF information to addressees 
+   * and vice versa. It is useful for addressbook import- and exportfilters 
+   * and might be used to read and write Mozilla and Netscape addresssbooks.
+   */
 
   namespace LDIFConverter {
 
@@ -65,15 +65,7 @@ namespace KABC {
   bool addresseeToLDIF( const Addressee &addr, QString &str );
 
   /**
-   * Returns a LDAP search string based on the contents of an addressee.
-   *
-   * @param addr    The addressee.
-   * @param str     The LDAP search string.
-   * @since 3.2
-   */
-  // bool createLDAPSearchString( const Addressee &addr, QString &str );
-
-  /**
+   * Obsoleted - please use LDIF::assembleLine()
    * Returns a LDIF compatible string representing a given field/value pair.
    * If necessary, the value parameter will be base64encoded and split into multiple.
    * This function will return an empty string if the given value is empty.
@@ -88,11 +80,12 @@ namespace KABC {
 
 
   /* internal functions - do not use !! */
-
+  
+  /** No need for this function anymore - use LDIF::splitLine() + evaluatePair() */
   bool parseSingleLine( Addressee &a,
 		Address &homeAddr, Address &workAddr, QString &line );
 
-
+  /** No need for this function anymore - use LDIF::splitLine() */
   bool splitLine( QString &line, QString &fieldname, QString &value);
 
 

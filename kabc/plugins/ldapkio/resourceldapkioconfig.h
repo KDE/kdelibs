@@ -55,12 +55,14 @@ class ResourceLDAPKIOConfig : public KRES::ConfigWidget
 
   private slots:
     void editAttributes();
+    void editCache();
   private:
-    QPushButton *mEditButton;
+    QPushButton *mEditButton, *mCacheButton;
     LdapConfigWidget *cfg;
     QCheckBox *mSubTree;
     QMap<QString, QString> mAttributes;
-    
+    int mRDNPrefix, mCachePolicy;
+    QString mCacheDst;
 };
 
 class AttributesDialog : public KDialogBase
@@ -68,11 +70,12 @@ class AttributesDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    AttributesDialog( const QMap<QString, QString> &attributes, QWidget *parent,
-                      const char *name = 0 );
+    AttributesDialog( const QMap<QString, QString> &attributes, int rdnprefix,
+                      QWidget *parent, const char *name = 0 );
     ~AttributesDialog();
 
     QMap<QString, QString> attributes() const;
+    int rdnprefix() const;
 
   private slots:
     void mapChanged( int pos );
@@ -80,11 +83,31 @@ class AttributesDialog : public KDialogBase
   private:
     enum { UserMap, KolabMap, NetscapeMap, EvolutionMap, OutlookMap };
 
-    KComboBox *mMapCombo;
+    KComboBox *mMapCombo, *mRDNCombo;
     QValueList< QMap<QString, QString> > mMapList;
 
     QDict<KLineEdit> mLineEditDict;
     QDict<QString> mNameDict;
+};
+
+class OfflineDialog : public KDialogBase
+{
+  Q_OBJECT
+
+  public:
+    OfflineDialog( int cachePolicy, const KURL &src, const QString &dst,
+      QWidget *parent, const char *name = 0 );
+    ~OfflineDialog();
+
+    int cachePolicy() const;
+
+  private slots:
+    void loadCache();
+
+  private:
+    KURL mSrc;
+    QString mDst;
+    QButtonGroup *mCacheGroup;
 };
 
 }
