@@ -109,7 +109,7 @@ void KComboBox::setEnableContextMenu( bool showMenu )
 
 void KComboBox::makeCompletion( const QString& text )
 {
-    if( m_pEdit != 0 && completionObject() != 0 )
+    if( m_pEdit != 0 )
     {
         QString match = completionObject()->makeCompletion( text );
 
@@ -144,41 +144,38 @@ void KComboBox::rotateText( const QString& input, int dir )
     if( m_pEdit != 0 )
     {
         KCompletion* comp = completionObject();
-        if( comp != 0 )
+        QString str;
+        int len = m_pEdit->text().length();
+        if( m_pEdit->hasMarkedText() && !input.isNull() )
         {
-            QString str;
-            int len = m_pEdit->text().length();
-            if( m_pEdit->hasMarkedText() && !input.isNull() )
+            str = m_pEdit->text();
+            if( input == str ) return; // Skip rotation if same text
+            int pos = str.find( m_pEdit->markedText() );
+            int index = input.find( str.remove( pos , m_pEdit->markedText().length() ) );
+            if( index == -1 ) return;
+            else if( index == 0 ) str = input;
+            m_pEdit->validateAndSet( str, cursorPosition(), pos, str.length() );
+        }
+        else
+        {
+            QStringList list = comp->items();
+            int index = list.findIndex( m_pEdit->text() );
+            if( index == -1 )
             {
-                str = m_pEdit->text();
-                if( input == str ) return; // Skip rotation if same text
-                int pos = str.find( m_pEdit->markedText() );
-                int index = input.find( str.remove( pos , m_pEdit->markedText().length() ) );
-                if( index == -1 ) return;
-                else if( index == 0 ) str = input;
-                m_pEdit->validateAndSet( str, cursorPosition(), pos, str.length() );
+                index = ( dir == 1 ) ? 0 : list.count()-1;
+                str = ( len == 0 ) ? list[index] : input;
             }
             else
             {
-                QStringList list = comp->items();
-                int index = list.findIndex( m_pEdit->text() );
-                if( index == -1 )
-                {
-                    index = ( dir == 1 ) ? 0 : list.count()-1;
-                    str = ( len == 0 ) ? list[index] : input;
-                }
-                else
-                {
-                    index += dir;
-                    if( index >= (int)list.count() ) index = 0; // rotate back to beginning
-                    else if( index < 0  ) index = list.count() - 1; // rotate back to the end
-                    str = list[index];
-                }
-                m_pEdit->setText( str );
+                index += dir;
+                if( index >= (int)list.count() ) index = 0; // rotate back to beginning
+                else if( index < 0  ) index = list.count() - 1; // rotate back to the end
+                str = list[index];
             }
+            m_pEdit->setText( str );
         }
     }
-    else if( m_pEdit == 0 )
+    else // non-editable
     {
         int index = listBox()->index( listBox()->findItem( input ) );
         if( index >= 0 )
