@@ -48,7 +48,7 @@ HTMLButtonElement::HTMLButtonElement(HTMLButtonElementImpl *impl) : HTMLElement(
 
 HTMLButtonElement &HTMLButtonElement::operator = (const Node &other)
 {
-    assignOther( other, ID_BUTTON );	
+    assignOther( other, ID_BUTTON );
     return *this;
 }
 
@@ -64,8 +64,7 @@ HTMLButtonElement::~HTMLButtonElement()
 
 HTMLFormElement HTMLButtonElement::form() const
 {
-    if(!impl) return 0;
-    return static_cast<HTMLButtonElementImpl*>(impl)->form();
+    return Element::form();
 }
 
 DOMString HTMLButtonElement::accessKey() const
@@ -162,8 +161,7 @@ HTMLFieldSetElement::~HTMLFieldSetElement()
 
 HTMLFormElement HTMLFieldSetElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLFieldSetElementImpl *)impl)->form();
+    return Element::form();
 }
 
 // --------------------------------------------------------------------------
@@ -339,8 +337,7 @@ void HTMLInputElement::setDefaultChecked( bool _defaultChecked )
 
 HTMLFormElement HTMLInputElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->form();
+    return Element::form();
 }
 
 DOMString HTMLInputElement::accept() const
@@ -579,16 +576,6 @@ HTMLLabelElement::~HTMLLabelElement()
 {
 }
 
-
-HTMLFormElement HTMLLabelElement::form() const
-{
-    if(!impl) return 0;
-    ElementImpl *formElement = ((HTMLLabelElementImpl *)impl)->formElement();
-    if (!formElement)
-	return 0;
-    return ((HTMLGenericFormElementImpl *)formElement)->form();
-}
-
 DOMString HTMLLabelElement::accessKey() const
 {
     if(!impl) return DOMString();
@@ -643,8 +630,7 @@ HTMLLegendElement::~HTMLLegendElement()
 
 HTMLFormElement HTMLLegendElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLLegendElementImpl *)impl)->form();
+    return Element::form();
 }
 
 DOMString HTMLLegendElement::accessKey() const
@@ -790,8 +776,7 @@ long HTMLSelectElement::length() const
 
 HTMLFormElement HTMLSelectElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLSelectElementImpl *)impl)->form();
+    return Element::form();
 }
 
 HTMLCollection HTMLSelectElement::options() const
@@ -926,8 +911,7 @@ void HTMLTextAreaElement::setDefaultValue( const DOMString &value )
 
 HTMLFormElement HTMLTextAreaElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->form();
+    return Element::form();
 }
 
 DOMString HTMLTextAreaElement::accessKey() const
@@ -1083,8 +1067,7 @@ HTMLOptionElement::~HTMLOptionElement()
 
 HTMLFormElement HTMLOptionElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLOptionElementImpl *)impl)->form();
+    return Element::form();
 }
 
 bool HTMLOptionElement::defaultSelected() const
@@ -1191,8 +1174,7 @@ HTMLIsIndexElement::~HTMLIsIndexElement()
 
 HTMLFormElement HTMLIsIndexElement::form() const
 {
-    if(!impl) return 0;
-    return ((HTMLIsIndexElementImpl *)impl)->form();
+    return Element::form();
 }
 
 DOMString HTMLIsIndexElement::prompt() const

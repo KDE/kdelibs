@@ -296,6 +296,12 @@ bool Element::isHTMLElement() const
     return ((ElementImpl *)impl)->isHTMLElement();
 }
 
+HTMLFormElement Element::form() const
+{
+    if (!impl || !impl->isGenericFormElement()) return 0;
+    return static_cast<HTMLGenericFormElementImpl*>(impl)->form();
+}
+
 CSSStyleDeclaration Element::style()
 {
     if (impl) return ((ElementImpl *)impl)->styleRules();

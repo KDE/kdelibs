@@ -543,6 +543,14 @@ public:
      */
     bool isHTMLElement() const;
 
+    /**
+     * KHTML extension to DOM
+     * This method returns the associated form element.
+     * returns null if this element is not a form-like element
+     * or if this elment is not in the scope of a form element.
+     */
+    HTMLFormElement form() const;
+
     static bool khtmlValidAttrName(const DOMString &name);
     static bool khtmlValidPrefix(const DOMString &name);
     static bool khtmlValidQualifiedName(const DOMString &name);

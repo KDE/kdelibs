@@ -173,10 +173,7 @@ public:
     ~HTMLFieldSetElement();
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated. ### KDE 4.0: remove.
      */
     HTMLFormElement form() const;
 };
@@ -378,10 +375,7 @@ public:
     void setDefaultChecked( bool );
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated. ### KDE 4.0: remove.
      */
     HTMLFormElement form() const;
 
@@ -649,15 +643,6 @@ public:
 
     ~HTMLLabelElement();
 
-    // not part of the DOM.
-    /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     * deprecated - don't use. Provided for KDE2 compatibility only.
-     */
-    HTMLFormElement form() const;
-
     /**
      * A single character access key to give access to the form
      * control. See the <a
@@ -714,10 +699,7 @@ public:
     ~HTMLLegendElement();
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated. ### KDE 4.0: remove
      */
     HTMLFormElement form() const;
 
@@ -866,10 +848,7 @@ public:
     long length() const;
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated. ### KDE 4.0: remove.
      */
     HTMLFormElement form() const;
 
@@ -1021,10 +1000,7 @@ public:
     void setDefaultValue( const DOMString & );
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated. ### KDE 4.0: remove.
      */
     HTMLFormElement form() const;
 
@@ -1183,10 +1159,7 @@ public:
     ~HTMLOptionElement();
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated. ### KDE 4.0: remove
      */
     HTMLFormElement form() const;
 
@@ -1306,10 +1279,7 @@ public:
     ~HTMLIsIndexElement();
 
     /**
-     * Returns the <code> FORM </code> element containing this
-     * control. Returns null if this control is not within the context
-     * of a form.
-     *
+     * @deprecated: ### KDE 4.0: remove
      */
     HTMLFormElement form() const;
 
