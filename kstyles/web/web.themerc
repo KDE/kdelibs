@@ -22,7 +22,7 @@ Name[pt]=Estilo Web
 Name[sk]=Web štýl
 Name[sl]=Spletni slog
 Name[sv]=Webbstil
-Name[tr]=A� stili
+Name[tr]=Ağ stili
 Name[uk]=Стиль а ля 'Web'
 Comment=Web widget style
 Comment[az]=Veb pəncərəcik tərzi
@@ -46,7 +46,7 @@ Comment[pt]=Estilo gráfico Web
 Comment[sk]=Štýl prvku Web
 Comment[sl]=Slog spletnega gradnika
 Comment[sv]=Webbskärmdels-stil
-Comment[tr]=A� aleti benzeri stil
+Comment[tr]=Ağ aleti benzeri stil
 Comment[uk]=Стиль а ля 'Віджет Тенет'
 [KDE]
 widgetStyle=webstyle.la
