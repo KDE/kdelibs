@@ -46,8 +46,8 @@ messages:
 	$(XGETTEXT) common_texts.cpp -o kde.pot
 	rm -f rc.cpp
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot kde-config.in \
-	kde-config COMPILING COMPILING.html COPYING.BSD DEBUG \
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot configure.in.bot \
+	COMPILING COMPILING.html COPYING.BSD DEBUG \
 	KDE2PORTING.html NAMING common_texts.cpp kdelibs.lsm kdoc.rules \
 	qt-messages.pot configure.in.in configure.in.mid configure.in.bot
 
@@ -69,8 +69,6 @@ cvs-local:
 
 cvs-dist-local:
 	cd libltdl && automake --gnits --add-missing -i &&  autoconf
-
-kde_conf_DATA = kde-config
 
 kdedoc:
 	makekdedoc -p'--skip-internal'

@@ -98,3 +98,5 @@ bin_PROGRAMS = kde-config
 kde_config_SOURCES = kde-config.cpp
 kde_config_LDADD = ./libkdecore.la
 kde_config_LDFLAGS = $(KDE_RPATH)
+
+DISTCLEANFILES = kde-config.cpp
