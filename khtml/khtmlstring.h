@@ -31,13 +31,15 @@ using namespace DOM;
 
 typedef DOMString HTMLString;
 
+#include <qstring.h>
+
 namespace khtml
 {
 
 class DOMStringIt
 {
 public:
-    DOMStringIt(QChar *str, uint len) 
+    DOMStringIt(QChar *str, uint len)
 	{ s = str, l = len; }
     DOMStringIt(const QString &str)
 	{ s = str.unicode(); l = str.length(); }
@@ -46,7 +48,7 @@ public:
 
     DOMStringIt *operator++()
     {
-	if(l > 0 ) 
+	if(l > 0 )
 	    s++, l--;
 	return this;
     }

@@ -28,6 +28,7 @@
 #include "dom_nodeimpl.h"
 #include "dom_exception.h"
 #include "dom_node.h"
+#include "dom_textimpl.h"
 
 using namespace DOM;
 
@@ -221,7 +222,7 @@ void ElementImpl::removeAttribute( const DOMString &name )
     parseAttribute(&a);
 }
 
-// ### pay attention to memory leaks here!
+// pay attention to memory leaks here!
 AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
 {
     // search in already set attributes first
@@ -281,23 +282,28 @@ NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &/*name*/ )
     return 0;
 }
 
-void ElementImpl::normalize(  )
+void ElementImpl::normalize()
 {
-// ####
-/*    NodeImpl *child = _first;
-    while (child != _last)
+    NodeImpl *child = _first;
+    while(1)
     {
-	NodeImpl *nextChild= child->nextSibling();
+	NodeImpl *nextChild = child->nextSibling();
+	if(!nextChild) return;
 	if ( (child->nodeType() == Node::TEXT_NODE)
 	     && (nextChild->nodeType() == Node::TEXT_NODE))
 	{
-	    (TextImpl *)child->appendData((TextImpl *)nextChild->data());
+	    (static_cast<TextImpl *>(child))->appendData( (static_cast<TextImpl *>(nextChild))->data() );
 	    removeChild(nextChild);
 	}
 	else
-	    child= nextChild;
+	{	
+	    child = nextChild;
+	    if(child->isElementNode())
+	    {
+		(static_cast<ElementImpl *>(child))->normalize();
+	    }
+	}
     }
-*/
 }
 
 AttributeList *ElementImpl::defaultMap() const

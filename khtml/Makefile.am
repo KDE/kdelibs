@@ -29,7 +29,7 @@
 # for profiling.
 # command line for line by line profiling (into seperate files):
 # gprof -l -y
-#AM_CXXFLAGS += -pg
+# AM_CXXFLAGS += -pg
 
 SUBDIRS = java kjs
 

@@ -107,7 +107,7 @@ public:
     /**
      * override this in subclasses if you need to parse
      * attributes. This is always called, whenever an attribute changed
-     */
+      */
     virtual void parseAttribute(Attribute *) {}
 
     virtual tagStatus startTag() { return DOM::REQUIRED; }

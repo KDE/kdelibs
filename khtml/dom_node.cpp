@@ -74,8 +74,11 @@ Node NamedNodeMap::setNamedItem( const Node &arg )
     if(map->nodeType() != Node::ELEMENT_NODE)
 	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 
-    // ### check it's really an attribute
+    if(!arg.impl->isAttributeNode())
+	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
+    // ### check the attribute is not already used somewhere
+    
     return (NodeImpl *)((ElementImpl *)map)->setAttributeNode( (AttrImpl *)arg.impl );
 }
 
@@ -92,6 +95,9 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 
 Node NamedNodeMap::item( unsigned long /*index*/ )
 {
+    if(map->nodeType() != Node::ELEMENT_NODE)
+	return 0;
+
     // ####
     return 0;
 }
@@ -203,8 +209,8 @@ NamedNodeMap Node::attributes() const
 Document Node::ownerDocument() const
 {
     if(impl) return impl->ownerDocument();
-    // ### FIXME: this creates and returns a new Document, not 0
-    return Document();
+    // create an nonexistant Document (document == 0 should return true)
+    return Document(false);
 }
 
 Node Node::insertBefore( const Node &newChild, const Node &refChild )
@@ -275,13 +281,14 @@ NodeList::~NodeList()
     if(impl) impl->deref();
 }
 
-Node NodeList::item( unsigned long /*index*/ )
+Node NodeList::item( unsigned long index )
 {
-    // ###
+    if(!impl) return 0;
+    return impl->item(index);
 }
 
 unsigned long NodeList::length() const
 {
-    // ###
-    return 0;
+    if(!impl) return 0;
+    return impl->length();
 }

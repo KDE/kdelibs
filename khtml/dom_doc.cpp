@@ -71,23 +71,24 @@ Document::Document() : Node()
 
 Document::Document(bool create) : Node()
 {
-    // we always wan't an implementation
     if(create)
     {
 	impl = new DocumentImpl();
 	impl->ref();
     }
+    else
+	impl = 0;
 }
 
 Document::Document(const Document &other) : Node(other)
-{    
+{
 }
 
 Document::Document(DocumentImpl *i) : Node(i)
-{    
+{
 }
 
-Document &Document::operator = (const Document &other) 
+Document &Document::operator = (const Document &other)
 {
     Node::operator =(other);
     return *this;
@@ -104,7 +105,7 @@ DocumentType Document::doctype() const
 
 DOMImplementation Document::implementation() const
 {
-   return DOMImplementation(); 
+   return DOMImplementation();
 }
 
 Element Document::documentElement() const

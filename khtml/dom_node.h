@@ -174,6 +174,7 @@ class NodeImpl;
 class Node
 {
     friend class NamedNodeMap;
+    friend class NodeList;
     friend class HTMLCollection;
 
 public:
@@ -186,7 +187,7 @@ public:
     /**
      * An integer indicating which type of node this is.
      *
-     * 
+     *
      * <p>The values of <code>nodeName</code>, <code>nodeValue</code>,
      *  and <code>attributes</code> vary according to the node type as follows:
      *   <table  border="1">

@@ -163,7 +163,7 @@ NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)
 
 NodeWParentImpl::~NodeWParentImpl()
 {
-    // ### previous and next node may still reference this!!!
+    // previous and next node may still reference this!!!
     // hope this fix is fine...
     if(_previous) _previous->setNextSibling(0);
     if(_next) _next->setPreviousSibling(0);
@@ -467,13 +467,11 @@ void NodeBaseImpl::detach()
 
 NodeImpl *NodeListImpl::item( unsigned long /*index*/ )
 {
-    // ###
     return 0;
 }
 
 unsigned long NodeListImpl::length() const
 {
-    // ###
     return 0;
 }
 
