@@ -20,31 +20,11 @@
     Boston, MA 02111-1307, USA.
 */
 
-// CHANGES:
-// Solved one-button problem and added handle-highlighting - sven 5.1.1998
-// Some fixes of yesterday fixes - sven 6.1. 1998
-// Fixing of fixes - one button, three buttons + separator,
-// Improved engine, no handles if not movable. - sven 22. 1. 1998.
-// Matthias - setting size of toolbar (bin incompat) 22.1.98
-// Merged sven's & Matthias' changes 23-25. 1.98
-// Fixed small KWM-close bug (reported by Coolo)  sven 8.2.1998
-// boolett proofing by Marcin Dalecki 06.03.1998
-// BINARY INCOMPATIBLE CHANGES sven 19.3. 1998:
-//  - optional icons+text, variable size  with reading options from
-//    from ~/.kderc
-//  - Fixing of bug reported by Antonio Larrosa (Thanks!)
-//  - Optional highlighting of buttons
-//  - added sizeHint()
-//  - sample (default) ~./kderc group for toolbar:
-//      [Toolbar style]
-//      IconText=0        0=icons, 1=icons+text
-//      Highlighting=1    0=No, 1=yes
-//      Size=26           height of one row in toolbar
-// Fixed white bg on disabled buttons in icontext mode and
-// positioning on signal appearanceChanged - sven 24.3.1998
-//-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.65  1998/05/12 10:47:31  radej
+// Fixed sizehint - returns more real width
+//
 // Revision 1.64  1998/05/07 23:12:30  radej
 // Fix for optional highlighting of handle
 //
@@ -80,6 +60,33 @@
 // Revision 1.53  1998/04/16 18:47:19  radej
 // Removed some debug text before beta4
 //
+//
+//-------------------------------------------------------------------------
+// OLD CHANGES:
+// Solved one-button problem and added handle-highlighting - sven 5.1.1998
+// Some fixes of yesterday fixes - sven 6.1. 1998
+// Fixing of fixes - one button, three buttons + separator,
+// Improved engine, no handles if not movable. - sven 22. 1. 1998.
+// Matthias - setting size of toolbar (bin incompat) 22.1.98
+// Merged sven's & Matthias' changes 23-25. 1.98
+// Fixed small KWM-close bug (reported by Coolo)  sven 8.2.1998
+// boolett proofing by Marcin Dalecki 06.03.1998
+// BINARY INCOMPATIBLE CHANGES sven 19.3. 1998:
+//  - optional icons+text, variable size  with reading options from
+//    from ~/.kderc
+//  - Fixing of bug reported by Antonio Larrosa (Thanks!)
+//  - Optional highlighting of buttons
+//  - added sizeHint()
+//  - sample (default) ~./kderc group for toolbar:
+//      [Toolbar style]
+//      IconText=0        0=icons, 1=icons+text
+//      Highlighting=1    0=No, 1=yes
+//      Size=26           height of one row in toolbar
+// Fixed white bg on disabled buttons in icontext mode and
+// positioning on signal appearanceChanged - sven 24.3.1998
+//-------------------------------------------------------------------------
+
+
 #include <qpainter.h>
 #include <qtooltip.h> 
 #include <qdrawutl.h>
