@@ -286,6 +286,9 @@
 			</Include>
 		</Menu>
 	</Menu>
+	<Include>
+		<Category>X-KDE-MenuRoot</Category>
+	</Include>
 	<DefaultMergeDirs/>
 	<MergeFile>applications-kmenuedit.menu</MergeFile>
 </Menu>
