@@ -43,7 +43,7 @@ class QToolButton;
  * the current working directory, or the last directory where a file has been
  * selected.
  *
- * You can change this behavior by obtaining a pointer to the dialog 
+ * You can change this behavior by obtaining a pointer to the dialog
  * (@ref fileDialog()) and calling the appropriate methods.
  *
  * @short A widget to request a filename/url from the user
@@ -60,15 +60,15 @@ public:
      * or not.
      */
     KURLRequester( QWidget *parent=0, const char *name=0, bool modal = true );
-    
+
     /**
      * Constructs a KURLRequester widget with the default URL @param url
      * @param modal specifies whether the filedialog should be opened as modal
      * or not.
      */
-    KURLRequester( const KURL& url, QWidget *parent=0, const char *name=0,
+    KURLRequester( const QString& url, QWidget *parent=0, const char *name=0,
 		   bool modal = true );
-    
+
     /**
      * Destructs the KURLRequester
      */
@@ -78,13 +78,13 @@ public:
      * Sets the url in the lineedit to @param url. Depending on the state of
      * @ref showLocalProtocol(), file:/ on local files will be shown or not.
      */
-    void 		setURL(const KURL& url);
-    
+    void setURL(const QString& url);
+
     /**
      * @returns the current url in the lineedit. May be malformed, if the user
      * entered something weird.
      */
-    KURL 		url() const;
+    QString url() const;
 
     /**
      * Enables/disables showing file:/ in the lineedit, when a local file has
@@ -92,41 +92,52 @@ public:
      * Default is false, not showing file:/
      * @see #showLocalProtocol
      */
-    void 		setShowLocalProtocol( bool b );
-    
+    void setShowLocalProtocol( bool b );
+
     /**
-     * @returns whether local files will be prefixed with file:/ in the 
+     * @returns whether local files will be prefixed with file:/ in the
      * lineedit
      * @see #setShowLocalProtocol
      */
-    bool 		showLocalProtocol() const { return myShowLocalProt; }
+    bool showLocalProtocol() const { return myShowLocalProt; }
 
     /**
      * @returns a pointer to the filedialog
      * You can use this to customize the dialog, e.g. to specify a filter.
      * Never returns 0L.
      */
-    KFileDialog *	fileDialog() const;
+    KFileDialog * fileDialog() const;
 
+    /**
+     * @returns a pointer to the lineedit. It is provided so that you can e.g. 
+     * set an own completion object (e.g. @ref KShellCompletion) into it.
+     */
+    KLineEdit * lineEdit() const { return myEdit; }
 
+    /**
+     * @returns a pointer to the pushbutton. It is provided so that you can
+     * specify an own pixmap or a text, if you really need to.
+     */
+    QToolButton * button() const { return myButton; }
+    
 signals:
     // forwards from LineEdit
     /**
      * Emitted when the text in the lineedit changes.
      * The parameter contains the contents of the lineedit.
      */
-    void 		textChanged(const QString&);
-    
+    void textChanged(const QString&);
+
     /**
      * Emitted when return or enter was pressed in the lineedit.
      */
-    void 		returnPressed();
+    void returnPressed();
 
     /**
      * Emitted when return or enter was pressed in the lineedit.
      * The parameter contains the contents of the lineedit.
      */
-    void 		returnPressed( const QString& );
+    void returnPressed( const QString& );
 
 
 protected:
@@ -149,12 +160,12 @@ protected slots:
      * Called when the button is pressed to open the filedialog.
      * Also called when @ref KStdAccel::Open (default is Ctrl-O) is pressed.
      */
-    void 		slotOpenDialog();
+    void slotOpenDialog();
 
 private:
     class KURLRequesterPrivate;
     KURLRequesterPrivate *d;
-    
+
 };
 
 #endif // KURLREQUESTER_H

@@ -43,7 +43,7 @@ KURLRequester::KURLRequester( QWidget *parent, const char *name, bool modal )
 }
 
 
-KURLRequester::KURLRequester( const KURL& url, QWidget *parent,
+KURLRequester::KURLRequester( const QString& url, QWidget *parent,
 			      const char *name, bool modal )
   : QHBox( parent, name )
 {
@@ -85,8 +85,8 @@ void KURLRequester::init()
 	     this, SIGNAL( returnPressed( const QString& ) ));
 
     myCompletion = new KURLCompletion();
-    
-	myEdit->setCompletionObject( myCompletion );
+
+    myEdit->setCompletionObject( myCompletion );
 
     KAccel *accel = new KAccel( this );
     accel->connectItem( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
@@ -94,17 +94,19 @@ void KURLRequester::init()
 }
 
 
-void KURLRequester::setURL( const KURL& url )
+void KURLRequester::setURL( const QString& url )
 {
-    if ( !myShowLocalProt && !url.isLocalFile() )
-	myEdit->setText( url.path() );
+    bool hasLocalPrefix = (url.left(5) == QString::fromLatin1("file:"));
+    
+    if ( !myShowLocalProt && hasLocalPrefix )
+	myEdit->setText( url.mid( 5, url.length()-5 ));
     else
-	myEdit->setText( url.url() );
+	myEdit->setText( url );
     myEdit->setSelection( 0, myEdit->text().length() );
 }
 
 
-KURL KURLRequester::url() const
+QString KURLRequester::url() const
 {
     return myEdit->text();
 };
@@ -114,16 +116,16 @@ void KURLRequester::slotOpenDialog()
 {
     KFileDialog *dlg = fileDialog();
     if ( !myEdit->text().isEmpty() ) {
-	const KURL& u = url();
+	const KURL u( url() );
 	dlg->setURL( u );
     }
-    
+
     if ( dlg->exec() == QDialog::Accepted )
-	setURL( dlg->selectedURL() );
+	setURL( dlg->selectedURL().url() );
 }
 
 
-KFileDialog * KURLRequester::fileDialog() const 
+KFileDialog * KURLRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
 	QWidget *p = static_cast<QWidget *>( parent() );
@@ -134,7 +136,7 @@ KFileDialog * KURLRequester::fileDialog() const
 						     KFile::LocalOnly );
 	myFileDialog->setMode( mode );
     }
-    
+
     return myFileDialog;
 }
 
@@ -143,7 +145,7 @@ void KURLRequester::setShowLocalProtocol( bool b )
 {
     if ( myShowLocalProt == b )
 	return;
-    
+
     myShowLocalProt = b;
     setURL( url() );
 }

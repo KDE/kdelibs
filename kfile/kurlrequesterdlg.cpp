@@ -39,25 +39,25 @@
 #include "kurlrequesterdlg.h"
 
 
-KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent, 
+KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
         const char *name, bool modal )
-    :   KDialogBase( Plain, QString::null, Ok|Cancel, Ok, parent, name, 
+    :   KDialogBase( Plain, QString::null, Ok|Cancel, Ok, parent, name,
                 modal, true )
 {
-    QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0, 
+    QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
             spacingHint() );
-    
+
     QLabel * label = new QLabel( i18n( "Location:" ), plainPage() );
     topLayout->addWidget( label );
-    
-    urlRequester_ = new KURLRequester( KURL( urlName ), plainPage(), 
+
+    urlRequester_ = new KURLRequester( urlName, plainPage(),
             "urlRequester", modal );
     urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
     topLayout->addWidget( urlRequester_ );
     urlRequester_->setFocus();
-   
+
     /*
-    KFile::Mode mode = static_cast<KFile::Mode>( KFile::File | 
+    KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
             KFile::ExistingOnly );
 	urlRequester_->fileDialog()->setMode( mode );
     */
@@ -78,7 +78,7 @@ KURL KURLRequesterDlg::selectedURL() const
 }
 
 
-KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent, 
+KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
         const QString& caption)
 {
     KURLRequesterDlg dlg(dir, parent, "filedialog", true);
