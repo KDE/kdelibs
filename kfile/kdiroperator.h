@@ -53,11 +53,9 @@ class KDirOperator : public QWidget {
 
     void setNameFilter(const QString& filter);
 
-    QString url() const;
+    KURL url() const;
 
-    QString path() const;
-
-    void setURL(const QString& url, bool clearforward);
+    void setURL(const KURL& url, bool clearforward);
 
     void rereadDir();
 
@@ -88,12 +86,12 @@ class KDirOperator : public QWidget {
     /**
      * Contains all URLs you can reach with the back button.
      */
-    QStack<QString> backStack;
+    QStack<KURL> backStack;
 
     /**
      * Contains all URLs you can reach with the forward button.
      */
-    QStack<QString> forwardStack;
+    QStack<KURL> forwardStack;
 
     static QString *lastDirectory;
 

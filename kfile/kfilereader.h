@@ -41,7 +41,7 @@
 class QStrList;
 class KDirWatch;
 class KIOJob;
-
+class KURL;
 
 class KFileReader : public QObject, public KURL
 {
@@ -49,7 +49,7 @@ class KFileReader : public QObject, public KURL
 
 public:
     KFileReader();
-    KFileReader(const QString& path,
+    KFileReader(const KURL& url,
 		const QString& nameFilter= QString::null);
     ~KFileReader();
 
@@ -60,7 +60,7 @@ public:
      * An url without a protocol (file:/, ftp://) will be treated as a
      * local directory and file:/ will be prepended.
      */
-    virtual void setURL(const QString&);
+    virtual void setURL(const KURL&);
 
     /**
      * Set the current name filter.

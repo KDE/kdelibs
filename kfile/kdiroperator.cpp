@@ -201,7 +201,7 @@ void KDirOperator::mkdir()
     lLayout = new QVBoxLayout( lMakeDir, 5 );
     label = new QLabel(lMakeDir);
     label->setAlignment( AlignLeft | AlignVCenter );
-    label->setText(i18n("Create new directory in: ") + url() );
+    label->setText(i18n("Create new directory in: ") + url().url() );
     label->setMinimumSize( label->sizeHint() );
     ed= new QLineEdit(lMakeDir);
     ed->setText( i18n("New Directory") );
@@ -241,8 +241,8 @@ void KDirOperator::mkdir()
     lMakeDir->resize( 10, 10);
     ed->grabKeyboard();
     if ( lMakeDir->exec() == QDialog::Accepted ) {
-	if ( QDir(path()).mkdir(ed->text()) == true ) {  // !! don't like this move it into KFileReader ??
-	    setURL( QString(url()+ed->text()), true );
+	if ( QDir(url().path()).mkdir(ed->text()) == true ) {  // !! don't like this move it into KFileReader ??
+	    setURL( KURL(url(), ed->text()), true );
 	}
     }
 
@@ -312,17 +312,17 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     debug("TODO checkPath");
 }
 
-void KDirOperator::setURL(const QString& _pathstr, bool clearforward)
+void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 {
-    QString pathstr = _pathstr;
+    KURL newurl = _newurl;
+    
+    QString pathstr = newurl.path(+1);
 
     if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
 	pathstr += '/';
+    newurl.setPath(pathstr);
 
-    if (pathstr.at(0) == '/')
-	pathstr.insert(0, QString::fromLatin1("file:"));
-
-    debugC("setURL %s %ld (%s)", debugString(pathstr), time(0), debugString(dir->url()));
+    debugC("setURL %s %ld (%s)", debugString(newurl.url()), time(0), debugString(dir->url()));
 
     /*
        what is the sense of this? If it's set, it's set, not?
@@ -338,7 +338,7 @@ void KDirOperator::setURL(const QString& _pathstr, bool clearforward)
 
     if (clearforward) {
 	// autodelete should remove this one
-	backStack.push(new QString(dir->url()));
+	backStack.push(new KURL(*dir));
 	forwardStack.clear();
     }
     /* // FIXME: (pfeiffer) we should have a flag "onlyLocal", I guess
@@ -353,8 +353,8 @@ void KDirOperator::setURL(const QString& _pathstr, bool clearforward)
     }
     */
 
-    QString backup = dir->url();
-    dir->setURL(pathstr);
+    KURL backup(*dir);
+    dir->setURL(newurl);
 
     if (!dir->isReadable()) {
 	KMessageBox::error(0,
@@ -419,10 +419,9 @@ void KDirOperator::back()
     if ( backStack.isEmpty() )
 	return;
 
-    QString *tmp= new QString(dir->path());
-    forwardStack.push( tmp );
+    forwardStack.push( new KURL(*dir) );
 
-    QString *s = backStack.pop();
+    KURL *s = backStack.pop();
 
     setURL(*s, false);
     delete s;
@@ -434,22 +433,16 @@ void KDirOperator::forward()
     if ( forwardStack.isEmpty() )
 	return;
 
-    QString *tmp= new QString(dir->path());
-    backStack.push(tmp);
+    backStack.push(new KURL(*dir));
 
-    QString *s = forwardStack.pop();
+    KURL *s = forwardStack.pop();
     setURL(*s, false);
     delete s;
 }
 
-QString KDirOperator::url() const
+KURL KDirOperator::url() const
 {
-  return dir->url();
-}
-
-QString KDirOperator::path() const
-{
-  return dir->path();
+    return *dir;
 }
 
 void KDirOperator::cdUp()

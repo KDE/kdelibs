@@ -43,8 +43,8 @@ public:
    * An url without a protocol (file:/, ftp://) will be treated as a
    * local directory and file:/ will be prepended.
    */
-  virtual void setURL( const QString& );
-  QString url() const;
+  virtual void setURL( const KURL & );
+  KURL url() const;
 
   /**
    * Set the current name filter.

@@ -116,14 +116,14 @@ void KFileWidget::slotError( int id, const QString& e )
 // now all the forwarders to KDirOperator
 
 
-void KFileWidget::setURL( const QString& url )
+void KFileWidget::setURL( const KURL& url )
 {
   myDirOperator->setURL( url, true );
 }
 
-QString KFileWidget::url() const
+KURL KFileWidget::url() const
 {
-  return myDirOperator->url();
+    return myDirOperator->url();
 }
 
 

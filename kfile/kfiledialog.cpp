@@ -375,9 +375,9 @@ void KFileDialog::locationChanged(const QString& txt)
 	while (!text.isEmpty() && text[l] != '/')
 	    l--;
 
-	QString newLocation = text.left(l+1);
+	KURL newLocation(text.left(l+1));
 
-	if ( newLocation != ops->url() ) {
+	if ( !newLocation.isMalformed() && newLocation != ops->url() ) {
 	    setURL(text.left(l), true);
 	    locationEdit->setEditText(text);
 	}
@@ -409,7 +409,7 @@ void KFileDialog::checkPath(const QString&_txt, bool takeFiles) // SLOT
     // no absolute path, we add the current directory to get a correct
     // url
     if (text.find(':') < 0 && text[0] != '/')
-	text.insert(0, ops->url());
+	text.insert(0, ops->url().url());
 
     // in case we have a selection defined and someone patched the file-
     // name, we check, if the end of the new name is changed.
@@ -520,7 +520,7 @@ void KFileDialog::comboActivated(int)
 void KFileDialog::addToBookmarks() // SLOT
 {
     debugC("Add to bookmarks called");
-    bookmarks->add(ops->url(), ops->url());
+    bookmarks->add(ops->url().url(), ops->url().url());
     bookmarks->write();
 }
 
@@ -639,7 +639,8 @@ void KFileDialog::setSelection(const QString& name)
 
     KURL u(name);
     if (u.isMalformed()) // perhaps we have a relative path!?
-	u = ops->url() + name;
+	u = KURL(ops->url(),  name);
+
     if (u.isMalformed()) { // if it still is
 	warning("%s is not a correct argument for setSelection!", debugString(name));
 	return;
@@ -666,7 +667,7 @@ void KFileDialog::setSelection(const QString& name)
 	    debugC("filename %s", debugString(filename));
 	    d->selection = filename;
 	}
-	d->filename_ = ops->url() + filename;
+	d->filename_ = KURL(ops->url(), filename).url(); // TODO make filename_ an url
 	locationEdit->setEditText(d->filename_);
     }
 }
@@ -674,7 +675,7 @@ void KFileDialog::setSelection(const QString& name)
 
 void KFileDialog::completion() // SLOT
 {
-    QString base = ops->url();
+    QString base = ops->url().url();
 
     // if someone uses completion, he doesn't like the current
     // selection

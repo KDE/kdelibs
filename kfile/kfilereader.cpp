@@ -72,7 +72,7 @@ KFileReader::KFileReader()
     setURL(QDir::currentDirPath());
 }
 
-KFileReader::KFileReader(const QString& url, const QString& nameFilter)
+KFileReader::KFileReader(const KURL& url, const QString& nameFilter)
     : QObject(0, "KFileReader")
 {
     init();
@@ -114,11 +114,11 @@ KFileReader &KFileReader::operator= (const QString& url)
     return *this;
 }
 
-void KFileReader::setURL(const QString& url)
+void KFileReader::setURL(const KURL& url)
 {
-    QString oldDir = path();
+    KURL oldurl = *this;
     KURL::operator=(url);
-    debug("%s is %sslowly mounted", debugString(url),
+    debug("%s is %sslowly mounted", debugString(url.url()),
 	  (probably_slow_mounted(path(+1).local8Bit()) ? "" : "not "));
 
     if (isLocalFile()) { // we can check, if the file is there
@@ -133,7 +133,7 @@ void KFileReader::setURL(const QString& url)
 	    if (test) {
 		closedir(test);
 		if ( myAutoUpdate ) {
-		    dirWatch->removeDir( oldDir );
+		    dirWatch->removeDir( oldurl.url() );
 		    dirWatch->addDir( path() );
 		}
 	    }
@@ -142,7 +142,7 @@ void KFileReader::setURL(const QString& url)
 	readable = true; // what else can we say?
 
         if ( myAutoUpdate ) {
-	    dirWatch->removeDir( oldDir );
+	    dirWatch->removeDir( oldurl.url() );
 	    setAutoUpdate( false );
 	}
     }

@@ -97,6 +97,11 @@ public:
     KURL selectedURL() const;
 
     /**
+     * Returns the current directory
+     */
+    KURL baseURL() const;
+
+    /**
       * @return full path in local filesystem. (Local files only)
       */
     QString selectedFile() const;
