@@ -28,11 +28,12 @@ using namespace Arts;
 class Synth_MUL_impl :public Synth_MUL_skel, StdSynthModule
 {
 public:
-	void calculateBlock(unsigned long cycles)
+	void calculateBlock(unsigned long samples)
 	{
-		float *end = outvalue + cycles;
+		unsigned long i;
 
-		while(outvalue != end) *outvalue++ = *invalue1++ * *invalue2++;
+		for(i = 0;i < samples; i++) 
+			outvalue[i] = invalue1[i] * invalue2[i];
 	}
 };
 
