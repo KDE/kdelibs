@@ -8,17 +8,24 @@
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 2.0
- * $Revision$
+ * $Id$
  */
 
 #include "kabapi.h"
-// #include "editentry.h"
 #include <qlistbox.h>
 #include <kmessagebox.h>
-#include "debug.h"
 #include <klocale.h>
+#include <kdebug.h>
+#include <knana.h>
+
 
 #include "kabapi.moc"
+
+#ifdef KAB_KDEBUG_AREA
+#undef KAB_KDEBUG_AREA
+#endif 
+
+#define KAB_KDEBUG_AREA 800
 
 using namespace std;
 
@@ -128,20 +135,20 @@ AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
   {
   REQUIRE(widget!=0);
   register bool GUARD; GUARD=true;
-  LG(GUARD, "KabAPI::edit[foreign entry]: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit[foreign entry]: called.\n");
   // ############################################################################  
   EditEntryDialog dialog(this);
   // -----
   dialog.setEntry(entry);
   if(dialog.exec())
   {
-  LG(GUARD, "KabAPI::add: dialog finished with accept().\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::add: dialog finished with accept().\n");
   entry=dialog.getEntry();
   } else {
-  LG(GUARD, "KabAPI::add: dialog finished with reject().\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::add: dialog finished with reject().\n");
   return Rejected;
   }  
-  LG(GUARD, "KabAPI::edit[foreign entry]: finished.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit[foreign entry]: finished.\n");
   return NoError;
   // ############################################################################  
   }
@@ -150,13 +157,13 @@ AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
   {
   REQUIRE(widget!=0);
   register bool GUARD; GUARD=true;
-  LG(GUARD, "KabAPI::edit: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit: called.\n");
   // ############################################################################  
   AddressBook::Entry entry;
   // -----
   if(widget->isRO())
   {
-  LG(GUARD, "KabAPI::edit: database is readonly.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit: database is readonly.\n");
   return PermDenied;
   }
   if(widget->getEntry(key, entry))
@@ -165,18 +172,18 @@ AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
   {
   if(!widget->change(key, entry))
   {
-  L("KabAPI::edit: Changing the entry failed!");
+  kDebugInfo("KabAPI::edit: Changing the entry failed!");
   CHECK(false);
   }
   } else {
-  LG(GUARD, "KabAPI::edit: rejected.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit: rejected.\n");
   return Rejected;
   }
   } else {
-  LG(GUARD, "KabAPI::edit: no such entry.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit: no such entry.\n");
   return NoEntry;
   }
-  LG(GUARD, "KabAPI::edit: finished.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit: finished.\n");
   return NoError;
   // ############################################################################  
   }
@@ -187,7 +194,7 @@ AddressBook::ErrorCode KabAPI::remove(const KabKey& key)
 {
   REQUIRE(book!=0);
   register bool GUARD; GUARD=true;
-  LG(GUARD, "KabAPI::remove: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::remove: called.\n");
   // ############################################################################  
   if(book->AddressBook::remove(key)==AddressBook::NoError)
     {
@@ -219,19 +226,19 @@ AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
   register bool GUARD; GUARD=true;
   REQUIRE(entries.empty());
   REQUIRE(book!=0);
-  LG(GUARD, "KabAPI::getEntries: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: called.\n");
   // ############################################################################  
   if(book->noOfEntries()==0)
     { // ----- database is valid, but empty:
-      LG(GUARD, "KabAPI::getEntries: no entries.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: no entries.\n");
       return AddressBook::NoEntry;
     }
   if(!book->getEntries(entries))
     {
-      L("KabAPI::getEntries: intern error.\n");
+      kDebugInfo("KabAPI::getEntries: intern error.\n");
       return AddressBook::InternError;
     } else {
-      LG(GUARD, "KabAPI::getEntries: done.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: done.\n");
       return AddressBook::NoError;
     }
   // ############################################################################  

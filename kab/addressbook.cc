@@ -7,7 +7,7 @@
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 2.0
- * $Revision$
+ * $Id$
  */
 
 #include "addressbook.h"
@@ -15,11 +15,12 @@
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 #include <qstringlist.h>
-#include "debug.h"
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <klocale.h>
+#include <kdebug.h>
+#include <knana.h>
 
 extern "C" {
 #include <sys/stat.h>
@@ -29,6 +30,12 @@ extern "C" {
 }
 
 // ----- some defines:
+#ifdef KAB_KDEBUG_AREA
+#undef KAB_KDEBUG_AREA
+#endif 
+
+#define KAB_KDEBUG_AREA 800
+
 #ifdef STD_USERFILENAME
 #undef STD_USERFILENAME
 #endif
@@ -407,7 +414,7 @@ AddressBook::getListOfNames(QStringList* strings, bool reverse, bool initials)
 {
   register bool GUARD; GUARD=true;
   // ###########################################################################
-  LG(GUARD, "AddressBook::getListOfNames: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getListOfNames: called.\n");
   StringKabKeyMap::iterator pos;
   QString desc;
   ErrorCode rc=NoError;
@@ -427,12 +434,12 @@ AddressBook::getListOfNames(QStringList* strings, bool reverse, bool initials)
 	{
 	  desc=i18n("(empty entry)");
 	}
-      LG(GUARD, "AddressBook::getListOfNames: adding %s.\n", desc.data());
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getListOfNames: adding %s.\n", desc.data());
       strings->append(desc);
     }
   // ----- any problems?
   ENSURE((unsigned)strings->count()==entries->size());
-  LG(GUARD, "AddressBook::getListOfNames: done, %i entries.\n",
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getListOfNames: done, %i entries.\n",
      strings->count());
   return rc;
   // ###########################################################################
@@ -460,13 +467,13 @@ AddressBook::literalName(const Entry& entry, QString& text, bool rev, bool init)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "AddressBook::literalName: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::literalName: called.\n");
   QString firstname, middlename, lastname, nameprefix;
   // ----- is the formatted name set?
   if(!entry.fn.isEmpty())
     {
       text=entry.fn;
-      LG(GUARD, "AddressBook::literalName: done (fn).\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::literalName: done (fn).\n");
       return NoError;
     }
   // ----- prepare the strings:
@@ -546,7 +553,7 @@ AddressBook::literalName(const Entry& entry, QString& text, bool rev, bool init)
 	}
     }
   // -----
-  LG(GUARD, "AddressBook::literalName: done: %s.\n", text.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::literalName: done: %s.\n", text.data());
   return NoError;
   // ###########################################################################
 }
@@ -578,7 +585,7 @@ AddressBook::configFileChanged()
 	(this, i18n("kab: File error"),
 	 i18n("Cannot reload configuration file!"));
     } else {
-      LG(GUARD, "AddressBook::configFileChanged: config file reloaded.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::configFileChanged: config file reloaded.\n");
       emit(setStatus(i18n("Configuration file reloaded.")));
     }
   // ###########################################################################
@@ -591,7 +598,7 @@ AddressBook::reloaded(QConfigDB* db)
   // ###########################################################################
   if(db==data)
     {
-      LG(GUARD, "AddressBook::reloaded: file has been reloaded.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::reloaded: file has been reloaded.\n");
       updateMirrorMap(); // WORK_TO_DO: what's up with the return value?
       changed();
     }
@@ -729,7 +736,7 @@ AddressBook::getEntry(const KabKey& key, Section*& section)
 {
   register bool GUARD; GUARD=true;
   // ###########################################################################
-  LG(GUARD, "AddressBook::getEntry: searching entry with key %s.\n",
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getEntry: searching entry with key %s.\n",
      key.getKey().data());
   StringKabKeyMap::iterator pos;
   // -----
@@ -737,18 +744,18 @@ AddressBook::getEntry(const KabKey& key, Section*& section)
     {
       if((*pos).second==key)
 	{
-	  LG(GUARD, "AddressBook::getEntry: key exists.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getEntry: key exists.\n");
 	  break;
 	}
     }
   if(pos==entries->end())
     {
-      LG(GUARD, "AddressBook::getEntry: no such entry.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getEntry: no such entry.\n");
       return NoSuchEntry;
     } else {
       if(data->get((QCString)ENTRY_SECTION+'/'+key.getKey(), section))
 	{
-	  LG(GUARD, "AddressBook::getEntry: done.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::getEntry: done.\n");
 	  return NoError;
 	} else {
 	  CHECK(false); // Inconsistency between mirror map and database!
@@ -819,7 +826,7 @@ AddressBook::ErrorCode
 AddressBook::add(const Entry& entry, KabKey& key, bool update)
 {
   bool GUARD; GUARD=true;
-  LG(GUARD, "AddressBook::add: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: called.\n");
   // ###########################################################################
   Section* theEntries=entrySection();
   Section* newEntry;
@@ -829,7 +836,7 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
   // -----
   if(theEntries==0)
     {
-      L("AddressBook::add: no entries section.\n");
+      kDebugInfo("AddressBook::add: no entries section.\n");
       return NoFile;
     }
   newEntry=new Section;
@@ -846,16 +853,16 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
   switch(locked)
     {
     case PermDenied:
-      LG(GUARD, "AddressBook::add: permission denied.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: permission denied.\n");
       return PermDenied; // cannot get r/w mode
     case Locked:
-      LG(GUARD, "AddressBook::add: db is already in r/w mode.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: db is already in r/w mode.\n");
       break;
     case NoError:
-      LG(GUARD, "AddressBook::add: got writing permissions.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: got writing permissions.\n");
       break;
     default:
-      LG(GUARD, "AddressBook::add: unknown response, exiting.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: unknown response, exiting.\n");
       return InternError;
     }
   // -----
@@ -864,7 +871,7 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
       nextKey=nextAvailEntryKey();
       if(!theEntries->add(nextKey.getKey(), newEntry))
 	{
-	  L("AddressBook::add: Cannot insert section.\n");
+	  kDebugInfo("AddressBook::add: Cannot insert section.\n");
 	  rc=InternError;
 	} else {
 	  key=nextKey;
@@ -876,11 +883,11 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
     }
   if(locked!=Locked)
     { // ----- unlock the file here:
-      LG(GUARD, "AddressBook::add: dropped writing permissions.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: dropped writing permissions.\n");
       locked=unlock();
     }
   // -----
-  LG(GUARD, "AddressBook::add: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::add: done.\n");
   if(locked!=NoError)
     {
       return locked;
@@ -1064,7 +1071,7 @@ AddressBook::unlock()
   }
   if(current.getAddress(currentAddress, address)!=NoError)
   {
-  // L("AddressBook::paintEvent: address index out of range!\n");
+  // kDebugInfo("AddressBook::paintEvent: address index out of range!\n");
   }
   // ----- draw the background:
   if(useBackground)
@@ -1095,7 +1102,7 @@ AddressBook::unlock()
   >addressCombo->sizeHint().height()+4*QFontMetrics(original).height();
 showBottom=height()-nameHeight>=bottomHeight;
 showName=height()>=nameHeight;
-//   L("AddressBook::paintEvent: %sshow name,\n"
+//   kDebugInfo("AddressBook::paintEvent: %sshow name,\n"
 //     "                         %sshow address,\n"
 //     "                         %sshow bottom.\n",
 //     showName ? "" : "do not ",
@@ -1297,7 +1304,7 @@ AddressBook::nextAvailEntryKey()
 	  temp=(*pos).first.toInt(&good);
 	  if(!good)
 	    {
-	      L("AddressBook::nextAvailEntryKey: non-integer entry key.\n");
+	      kDebugInfo("AddressBook::nextAvailEntryKey: non-integer entry key.\n");
 	      CHECK(false);
 	    }
 	  if(temp>max)
@@ -1319,7 +1326,7 @@ AddressBook::updateMirrorMap()
 {
   register bool GUARD; GUARD=true;
   // ###########################################################################
-  LG(GUARD, "AddressBook::updateMirrorMap: updating mirror map.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::updateMirrorMap: updating mirror map.\n");
   QString key;
   Entry entry;
   ErrorCode ec;
@@ -1331,7 +1338,7 @@ AddressBook::updateMirrorMap()
   CHECK(entries->empty());
   if(section==0)
     {
-      LG(GUARD, "AddressBook::updateMirrorMap: done, no file loaded.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::updateMirrorMap: done, no file loaded.\n");
       return NoError;
     }
   for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); ++pos)
@@ -1353,7 +1360,7 @@ AddressBook::updateMirrorMap()
     }
   // -----
   ENSURE(entries->size()==section->noOfSections());
-  LG(GUARD, "AddressBook::updateMirrorMap: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::updateMirrorMap: done.\n");
   return NoError;
   // ###########################################################################
 }
@@ -1544,14 +1551,14 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
   // ----- first create "addresses" subsection:
   if(!section.add(ADDRESS_SUBSECTION))
     {
-      L("AddressBook::makeSectionFromEntry: cannot create %s subsection.\n",
+      kDebugInfo("AddressBook::makeSectionFromEntry: cannot create %s subsection.\n",
 	ADDRESS_SUBSECTION);
       CHECK(false); // currently we are very critical here in the debug version
       return InternError;
     }
   if(!section.find(ADDRESS_SUBSECTION, addresses))
     {
-      L("AddressBook::makeSectionFromEntry: cannot get new section.\n");
+      kDebugInfo("AddressBook::makeSectionFromEntry: cannot get new section.\n");
       CHECK(false); // currently we are very critical here in the debug version
       return InternError;
     }      
@@ -1563,14 +1570,14 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
       CHECK(key.toInt(0)==count);
       if(!addresses->add(key))
 	{
-	  L("AddressBook::makeSectionFromEntry: cannot create address "
+	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot create address "
 	    "subsection %s.\n", (const char*)key);
 	  CHECK(false); // currently we are very critical...
 	  return InternError;
 	}
       if(!addresses->find(key, address))
 	{
-	  L("AddressBook::makeSectionFromEntry: cannot get new subsection.\n");
+	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot get new subsection.\n");
 	  CHECK(false); // currently we are very critical...
 	  return InternError;
 	}
@@ -1591,7 +1598,7 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
 	 !keys->insert("country", (*addPos).country) ||
 	 !keys->insert("state", (*addPos).state))
 	{
-	  L("AddressBook::makeSectionFromEntry: cannot completely create "
+	  kDebugInfo("AddressBook::makeSectionFromEntry: cannot completely create "
 	    "address subsection.\n");
 	  CHECK(false); // meanwhile, not in release
 	  return InternError;
@@ -1618,7 +1625,7 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
      !keys->insert("user3", entry.user3) ||
      !keys->insert("user4", entry.user4))     
     {
-      L("AddressBook::makeEntryFromSection: cannot insert all fields of the "
+      kDebugInfo("AddressBook::makeEntryFromSection: cannot insert all fields of the "
 	"entry into its section!");
       CHECK(false); // currently we are very critical here in the debug version
       return InternError;

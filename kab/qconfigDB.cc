@@ -9,7 +9,7 @@
  */
 
 #include "qconfigDB.h"
-#include "debug.h"
+// #include "debug.h"
 
 extern "C" {
 #include <sys/types.h>
@@ -28,6 +28,14 @@ extern "C" {
 #include <qfileinfo.h>
 
 #include "qconfigDB.moc"
+#include <kdebug.h>
+#include <knana.h>
+
+#ifdef KAB_KDEBUG_AREA
+#undef KAB_KDEBUG_AREA
+#endif 
+
+#define KAB_KDEBUG_AREA 800
 
 // the global functions:
 void evaluate_assertion(bool cond, const char* file, int line, const char* text)
@@ -44,7 +52,7 @@ QCString ReadLineFromStream(QTextStream& stream)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "ReadLineFromStream:: reading line.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "ReadLineFromStream:: reading line.\n");
   QCString line;
   // -----
   while(!stream.eof())
@@ -61,7 +69,7 @@ QCString ReadLineFromStream(QTextStream& stream)
       break;
     }
   // -----
-  LG(GUARD, "ReadLineFromStream:: line \"%s\" read.\n", line.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "ReadLineFromStream:: line \"%s\" read.\n", line.data());
   return line;
   // ############################################################################
 }
@@ -82,7 +90,7 @@ bool isComment(QCString line)
 bool htmlizeString(const QCString& orig, QCString& target)
 {
   register bool GUARD; GUARD=false;
-  LG(GUARD, "htmlizeString: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "htmlizeString: called.\n");
   // ############################################################################
   QCString temp;
   char current;
@@ -102,7 +110,7 @@ bool htmlizeString(const QCString& orig, QCString& target)
     }
   target=temp;
   // -----
-  LG(GUARD, "htmlizeString: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "htmlizeString: done.\n");
   return false; // not implemented
   // ############################################################################
 }
@@ -111,16 +119,16 @@ void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "tokenize: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "tokenize: called.\n");
   int eins=0, zwei=0;
   QCString teil;
   // -----
-  LG(GUARD, "tokenize: partening -->%s<--.\n", text.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "tokenize: partening -->%s<--.\n", text.data());
   res.erase(res.begin(), res.end());
   // -----
   if(text.isEmpty())
     {
-      LG(GUARD, "tokenize: test is an empty string, done.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "tokenize: test is an empty string, done.\n");
       return;
     }
   while(zwei!=-1)
@@ -143,9 +151,9 @@ void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict)
       eins=zwei+1;
       // if((unsigned)eins>=text.length()) break;
     }
-  LG(GUARD, "tokenize: partened in %i parts.\n", res.size());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "tokenize: partened in %i parts.\n", res.size());
   // -----
-  LG(GUARD, "tokenize: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "tokenize: done.\n");
   // ############################################################################
 }
 
@@ -193,14 +201,14 @@ KeyValueMap::clear()
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::clear: erasing map contents ... ");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::clear: erasing map contents ... ");
   // -----
   if(!data->empty()) // erase fails on empty containers!
     {
       data->erase(data->begin(), data->end());
     }
   // -----
-  LG(GUARD, "done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "done.\n");
   ENSURE(data->empty());
   // ###########################################################################
 }
@@ -225,7 +233,7 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
 	    {
 	      if(!insertLine(line, force, relax, false))
 		{
-		  LG(GUARD, "KeyValueMap::fill: could not insert line %s.\n", 
+		  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::fill: could not insert line %s.\n", 
 		     (const char*)line); // ignore this case further
 		}
 	    }
@@ -234,7 +242,7 @@ KeyValueMap::fill(const QString& filename, bool force, bool relax)
       // -----
       return true;
     } else {
-      LG(GUARD, "KeyValueMap::fill: cannot open file %s.\n",
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::fill: cannot open file %s.\n",
 	 (const char*)filename.utf8());
       return false;
     }
@@ -247,7 +255,7 @@ KeyValueMap::save(const QString& filename, bool force)
   register bool GUARD; GUARD=false;
   REQUIRE(!filename.isEmpty());
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::save: saving data to -->%s<--.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::save: saving data to -->%s<--.\n", 
      (const char*)filename.utf8());
   StringStringMap::iterator pos;
   QFile file(filename);
@@ -256,7 +264,7 @@ KeyValueMap::save(const QString& filename, bool force)
     {
       if(file.exists())
 	{
-	  LG(GUARD, "KeyValueMap::save: file exists but may not.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::save: file exists but may not.\n");
 	  return false;
 	}
     }
@@ -270,7 +278,7 @@ KeyValueMap::save(const QString& filename, bool force)
 	}
       file.close();
     } else {
-      LG(GUARD, "KeyValueMap::save: could not open file -->%s<-- for saving.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::save: could not open file -->%s<-- for saving.\n", 
 	 (const char*)filename.utf8());
       return false;
     }
@@ -284,7 +292,7 @@ KeyValueMap::save(QTextStream& file, int count)
   register bool GUARD; GUARD=false;
   CHECK(count>=0);
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::save: saving data to given output stream.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::save: saving data to given output stream.\n");
   StringStringMap::iterator pos;
   bool ret=true;
   char* prefix=new char[count+1]; 
@@ -337,12 +345,12 @@ KeyValueMap::parseComplexString
   QCString temp;
   QCString mod;
   int count=1;
-  LG(GUARD, "KeyValueMap::parseComplexString: parsing the string -->%s<--.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: parsing the string -->%s<--.\n", 
      (const char*)orig);
   // -----
   if(orig.isEmpty())
     {
-      LG(GUARD, "KeyValueMap::parseComplexString: string is empty.\n"
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: string is empty.\n"
 	 "                                 "
 	 "This is no valid complex string.\n");
       return false;
@@ -353,13 +361,13 @@ KeyValueMap::parseComplexString
   // ----- test some conditions:
   if(mod.length()<2)
     {
-      L("KeyValueMap::parseComplexString: no pair of brackets around the "
+      kDebugInfo("KeyValueMap::parseComplexString: no pair of brackets around the "
 	"string.\n");
       return false;
     }
   if(mod[0]!='"')
     {
-      L("KeyValueMap::parseComplexString: no opening bracket.\n");
+      kDebugInfo("KeyValueMap::parseComplexString: no opening bracket.\n");
       return false;
     }
   // ----- now parse it:
@@ -370,11 +378,11 @@ KeyValueMap::parseComplexString
       if(mod[first]=='\\')
 	{ // handle special characters
 	  ++first;
-	  LG(GUARD, "KeyValueMap::parseComplexString: found "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: found "
 	     "a special character \"%c\".\n", mod[first]);
 	  if((unsigned)first==mod.length())
 	    {
-	      LG(GUARD, "KeyValueMap::parseComplexString: "
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: "
 		 "string lacks the closing \".\n          "
 		 "                       This is no valid "
 		 "complex string.\n");
@@ -389,7 +397,7 @@ KeyValueMap::parseComplexString
 	    case '\\': temp+='\\'; break;
 	    default:
 	      // WORK_TO_DO: implement octal coding here!
-	      LG(GUARD, "KeyValueMap::parseComplexString: "
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: "
 		 "invalid control character.\n            "
 		 "                     This is no valid complex string.\n");
 	      return false;	      
@@ -407,14 +415,14 @@ KeyValueMap::parseComplexString
 	}
       if((unsigned)first>=mod.length())
 	{
-	  LG(GUARD, "KeyValueMap::parseComplexString: "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: "
 	     "string lacks the closing \".\n              "
 	     "                   This is no valid complex string.\n");
 	  return false;
 	}
     }
   // -----
-  LG(GUARD, "KeyValueMap::parseComplexString: finished parsing, no errors, "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::parseComplexString: finished parsing, no errors, "
      "%i characters, %i in string.\n", count, temp.length());
   noOfChars=count;
   result=temp;
@@ -427,7 +435,7 @@ KeyValueMap::makeComplexString(const QCString& orig)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::makeComplexString: coding the string\n           -->"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::makeComplexString: coding the string\n           -->"
      "%s<--\n                                into a complex string.\n", 
      (const char*)orig);
   QCString temp;
@@ -439,25 +447,25 @@ KeyValueMap::makeComplexString(const QCString& orig)
       switch(orig[count])
 	{ // catch all special characters:
 	case '"':
-	  LG(GUARD, "KeyValueMap::makeComplexString: found the special char "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::makeComplexString: found the special char "
 	     "\"%c\".\n", orig[count]);
 	  temp+='\\';
 	  temp+='"';
 	  break;
 	case '\n':
-	  LG(GUARD, "KeyValueMap::makeComplexString: found the special char "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::makeComplexString: found the special char "
 	     "\"%c\".\n", orig[count]);
 	  temp+='\\';
 	  temp+='n';
 	  break;
 	case '\t':
-	  LG(GUARD, "KeyValueMap::makeComplexString: found the special char "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::makeComplexString: found the special char "
 	     "\"%c\".\n", orig[count]);
 	  temp+='\\';
 	  temp+='t';
 	  break;
 	case '\\':
-	  LG(GUARD, "KeyValueMap::makeComplexString: found the special char "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::makeComplexString: found the special char "
 	     "\"%c\".\n", orig[count]);
 	  temp+='\\';
 	  temp+='\\';
@@ -467,7 +475,7 @@ KeyValueMap::makeComplexString(const QCString& orig)
     }
   temp+='"'; // closing bracket
   // -----
-  LG(GUARD, "KeyValueMap::makeComplexString: result is\n           -->%s<--.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::makeComplexString: result is\n           -->%s<--.\n", 
      (const char*)temp);
   return temp;
   // ###########################################################################
@@ -478,17 +486,17 @@ KeyValueMap::getRaw(const QCString& key, QCString& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::getRaw: trying to get raw value for key \"%s\" ... ", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::getRaw: trying to get raw value for key \"%s\" ... ", 
      (const char*)key);
   StringStringMap::iterator pos=data->find(key);
   // -----
   if(pos==data->end())
     {
-      LG(GUARD, "not in KeyValueMap.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "not in KeyValueMap.\n");
       return false;
     } else {
       value=(*pos).second;
-      LG(GUARD, "in KeyValueMap, value is %s.\n", (const char*)value);
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "in KeyValueMap, value is %s.\n", (const char*)value);
       return true;
     }
   // ###########################################################################
@@ -499,13 +507,13 @@ KeyValueMap::insertRaw(const QCString& key, const QCString& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insertRaw: inserting uncoded value %s for key %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insertRaw: inserting uncoded value %s for key %s.\n", 
      (const char*)value, (const char*)key);
   int n=0;
   // -----
   if(key.isEmpty()) // empty KEYS are errors:
     {
-      L("KeyValueMap::insertRaw: tried to insert empty key.\n");
+      kDebugInfo("KeyValueMap::insertRaw: tried to insert empty key.\n");
       return false;
     }
   if(force) // entry will be replaced
@@ -515,11 +523,11 @@ KeyValueMap::insertRaw(const QCString& key, const QCString& value, bool force)
     }
   if(data->insert(StringStringMap::value_type(key, value)).second)
     {
-      LG(GUARD, "KeyValueMap::insertRaw: success%s.\n",
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insertRaw: success%s.\n",
 	 (n==0 ? "" : " (forced)"));
       return true;
     } else {
-      LG(GUARD, "KeyValueMap::insertRaw: failed, "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insertRaw: failed, "
 	 "key already in KeyValueMap.\n");
       return false;
     }  
@@ -543,7 +551,7 @@ KeyValueMap::insert(const QCString& key, const QCString& value, bool force)
 {
   register bool GUARD; GUARD=false; 
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert: inserting value\n           -->%s<-- \n"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert: inserting value\n           -->%s<-- \n"
      "                     for key\n           -->%s<--.\n",
      (const char*)value, (const char*)key);
   return insertRaw(key, makeComplexString(value), force);
@@ -560,7 +568,7 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insertLine: inserting line -->%s<--.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insertLine: inserting line -->%s<--.\n", 
      (const char*)line);
   int index;
   QCString key;
@@ -570,14 +578,14 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
   CHECK((unsigned)index<=line.length());
   if(line.isEmpty() || (unsigned)index==line.length())
     { 
-      LG(GUARD, "KeyValueMap::insertLine: line is empty.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insertLine: line is empty.\n");
       return false;
     }
   // -----
   index=line.find('=');
   if(index==-1)  // not found
     {
-      L("KeyValueMap::insertLine: no \"=\" found in \"%s\".\n", 
+      kDebugInfo("KeyValueMap::insertLine: no \"=\" found in \"%s\".\n", 
 	(const char*)line);
       return false;
     }
@@ -596,7 +604,7 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
   // ----- now insert it if key is still valid:
   if(!key.isEmpty() && (relax==true ? 1 : !value.isEmpty() ) )
     {
-      LG(GUARD, "KeyValueMap::insertLine: done.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insertLine: done.\n");
       if(encode)
 	{ // the usual way:
 	  return insert(key, value, force);
@@ -604,7 +612,7 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
 	  return insertRaw(key, value, force);
 	}
     } else {
-      L("KeyValueMap::insertLine: key %s is empty.\n", relax ? "" : "or value ");
+      kDebugInfo("KeyValueMap::insertLine: key %s is empty.\n", relax ? "" : "or value ");
       return false;
     }
   // ###########################################################################
@@ -615,7 +623,7 @@ KeyValueMap::get(const QCString& key, QCString& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[string]: trying to get value for key \"%s\" ... ", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[string]: trying to get value for key \"%s\" ... ", 
      (const char*)key);
   QCString raw;
   QCString temp;
@@ -624,16 +632,16 @@ KeyValueMap::get(const QCString& key, QCString& value) const
     {
       return false; // key does not exist
     } else {
-      LG(GUARD, "KeyValueMap::get[string]: checking wether this is a complex "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[string]: checking wether this is a complex "
 	 "string.\n");
       {
 	int count;
 	if(parseComplexString(raw, 0, temp, count))
 	  {
-	    LG(GUARD, "KeyValueMap::get[string]: complex string found.\n");
+	    kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[string]: complex string found.\n");
 	    value=temp;
 	  } else {
-	    LG(GUARD, "KeyValueMap::get[string]: this is no complex string.\n");
+	    kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[string]: this is no complex string.\n");
 	    // disabled this strong check:
 	    // CHECK(false); // kill debug version
 	    return false;
@@ -656,7 +664,7 @@ KeyValueMap::insert(const QCString& key, const QString& value, bool force)
   QCString v;
   // -----
   v=value.utf8();
-  LG(GUARD, "KeyValueMap::insert[QString]: trying to insert \"%s\" for key\n       "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QString]: trying to insert \"%s\" for key\n       "
      "    -->%s<--.\n", !value.isNull() ? "TRUe" : "false", (const char*)v);
   return insert(key, v, force);
   // ###########################################################################
@@ -667,19 +675,19 @@ KeyValueMap::get(const QCString& key, QString& value)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[QString]: trying to get a QString value for key "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QString]: trying to get a QString value for key "
      "%s.\n", (const char*)key);
   QCString v;
   // ----- get string representation:
   if(!get(key, v)) 
     {
-      LG(GUARD, "KeyValueMap::get[QString]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QString]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
   // ----- find its state:
   value=QString::fromUtf8(v); // is there a better way?
-  LG(GUARD, "KeyValueMap::get[QString]: success, value (in UTF8) is %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QString]: success, value (in UTF8) is %s.\n", 
      (const char*)v);
   return true;
   // ###########################################################################
@@ -693,7 +701,7 @@ KeyValueMap::insert(const QCString& key, const bool& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[bool]: trying to insert \"%s\" for key\n       "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[bool]: trying to insert \"%s\" for key\n       "
      "    -->%s<--.\n", value==true ? "true" : "false", (const char*)key);
   return insert(key, value==true ? "true" : "false", force);
   // ###########################################################################
@@ -705,13 +713,13 @@ KeyValueMap::get(const QCString& key, bool& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[bool]: trying to get BOOL value for key %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[bool]: trying to get BOOL value for key %s.\n", 
      (const char*)key);
   QCString v;
   // ----- get string representation:
   if(!get(key, v)) 
     {
-      LG(GUARD, "KeyValueMap::get[bool]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[bool]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
@@ -719,17 +727,17 @@ KeyValueMap::get(const QCString& key, bool& value) const
   v=v.stripWhiteSpace();
   if(v=="true")
     {
-      LG(GUARD, "KeyValueMap::get[bool]: success, value is TRUE.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[bool]: success, value is TRUE.\n");
       value=true;
       return true;
     }
   if(v=="false")
     {
-      LG(GUARD, "KeyValueMap::get[bool]: success, value is FALSE.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[bool]: success, value is FALSE.\n");
       value=false;
       return true;
     }
-  LG(GUARD, "KeyValueMap::get[bool]: failure, unknown value.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[bool]: failure, unknown value.\n");
   // -----
   return false;
   // ###########################################################################
@@ -743,7 +751,7 @@ KeyValueMap::insert(const QCString& key, const long& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[int]: trying to insert value \"%i\" for key\n  "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[int]: trying to insert value \"%i\" for key\n  "
      "         -->%s<--.\n", (int)value, (const char*)key);
   QCString temp;
   // -----
@@ -757,7 +765,7 @@ KeyValueMap::get(const QCString& key, long& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[int]: trying to get INTEGER value for key %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int]: trying to get INTEGER value for key %s.\n", 
      (const char*)key);
   QCString v;
   bool ok;
@@ -765,7 +773,7 @@ KeyValueMap::get(const QCString& key, long& value) const
   // -----
   if(!get(key, v)) 
     {
-      LG(GUARD, "KeyValueMap::get[int]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
@@ -789,7 +797,7 @@ KeyValueMap::insert(const QCString& key, const list<long>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[long int list]: trying to insert"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[long int list]: trying to insert"
      " long int list into map.\n");
   QCString temp;
   QCString value;
@@ -805,7 +813,7 @@ KeyValueMap::insert(const QCString& key, const list<long>& values, bool force)
       value.remove(value.length()-2, 2); 
     }
   // -----
-  LG(GUARD, "KeyValueMap::insert[long int list]: constructed string value is "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[long int list]: constructed string value is "
      "%s.\n", (const char*)value);
   return insert(key, value, force);
   // ###########################################################################
@@ -816,9 +824,9 @@ KeyValueMap::get(const QCString& key, list<long>& values) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[long int list]: trying to decode int list for key "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[long int list]: trying to decode int list for key "
      "%s.\n", (const char*)key);
-  LG(!values.empty(), "KeyValueMap::get[long int list]: attention - list should "
+  kDebugInfo(!values.empty(), KAB_KDEBUG_AREA, "KeyValueMap::get[long int list]: attention - list should "
      "be empty but is not.\n");
   QCString value;
   list<QCString> tokens;
@@ -828,13 +836,13 @@ KeyValueMap::get(const QCString& key, list<long>& values) const
   // -----
   if(!get(key, value)) 
   {
-    LG(GUARD, "KeyValueMap::get[long int list]: no such key.\n");
+    kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[long int list]: no such key.\n");
     return false;
   }
   tokenize(tokens, value, ',');
   if(tokens.empty())
     {
-      LG(GUARD, "KeyValueMap::get[long int list]: no tokens.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[long int list]: no tokens.\n");
       return false;
     }
   // -----
@@ -845,12 +853,12 @@ KeyValueMap::get(const QCString& key, list<long>& values) const
 	{
 	  values.push_back(temp);
 	} else {
-	  L("KeyValueMap::get[long int list]: conversion error for %s.\n", 
+	  kDebugInfo("KeyValueMap::get[long int list]: conversion error for %s.\n", 
 	    (const char*)(*pos));
 	}
     }
   // -----
-  LG(GUARD, "KeyValueMap::get[long int list]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[long int list]: done.\n");
   // ###########################################################################
   return true;
 }
@@ -863,7 +871,7 @@ KeyValueMap::insert(const QCString& key, const list<int>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[int list]: trying to insert"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[int list]: trying to insert"
      " int list into map.\n");
   QCString temp;
   QCString value;
@@ -879,7 +887,7 @@ KeyValueMap::insert(const QCString& key, const list<int>& values, bool force)
       value.remove(value.length()-2, 2); 
     }
   // -----
-  LG(GUARD, "KeyValueMap::insert[int list]: constructed string value is %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[int list]: constructed string value is %s.\n", 
      (const char*)value);
   return insert(key, value, force);
   // ###########################################################################
@@ -890,9 +898,9 @@ KeyValueMap::get(const QCString& key, list<int>& values) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[int list]: trying to decode int list for key "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int list]: trying to decode int list for key "
      "%s.\n", (const char*)key);
-  LG(!values.empty(), "KeyValueMap::get[int list]: attention - list should "
+  kDebugInfo(!values.empty(), KAB_KDEBUG_AREA, "KeyValueMap::get[int list]: attention - list should "
      "be empty but is not.\n");
   QCString value;
   list<QCString> tokens;
@@ -902,13 +910,13 @@ KeyValueMap::get(const QCString& key, list<int>& values) const
   // -----
   if(!get(key, value)) 
   {
-    LG(GUARD, "KeyValueMap::get[int list]: no such key.\n");
+    kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int list]: no such key.\n");
     return false;
   }
   tokenize(tokens, value, ',');
   if(tokens.empty())
     {
-      LG(GUARD, "KeyValueMap::get[int list]: no tokens.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int list]: no tokens.\n");
       return false;
     }
   // -----
@@ -919,12 +927,12 @@ KeyValueMap::get(const QCString& key, list<int>& values) const
 	{
 	  values.push_back(temp);
 	} else {
-	  L("KeyValueMap::get[int list]: conversion error for %s.\n", 
+	  kDebugInfo("KeyValueMap::get[int list]: conversion error for %s.\n", 
 	    (const char*)(*pos));
 	}
     }
   // -----
-  LG(GUARD, "KeyValueMap::get[long int list]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[long int list]: done.\n");
   // ###########################################################################
   return true;
 }
@@ -937,7 +945,7 @@ KeyValueMap::insert(const QCString& key, const double& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[double]: trying to insert value \"%f\" for key"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[double]: trying to insert value \"%f\" for key"
      "\n           -->%s<--.\n", value, (const char*)key);
   QCString temp;
   // -----
@@ -951,7 +959,7 @@ KeyValueMap::get(const QCString& key, double& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[double]: trying to get FLOAT value for key %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[double]: trying to get FLOAT value for key %s.\n", 
      (const char*)key);
   QCString v;
   bool ok;
@@ -959,7 +967,7 @@ KeyValueMap::get(const QCString& key, double& value) const
   // -----
   if(!get(key, v)) 
     {
-      LG(GUARD, "KeyValueMap::get[int]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
@@ -982,17 +990,17 @@ bool
 KeyValueMap::get(const QCString& key, list<QCString>& values) const
 {
   register bool GUARD; GUARD=false;
-  LG(!values.empty(), "KeyValueMap::get[string list]: attention!\n             "
+  kDebugInfo(!values.empty(), KAB_KDEBUG_AREA, "KeyValueMap::get[string list]: attention!\n             "
      "\"values\" list reference is not empty!\n"); 
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[string list]: trying to decode string list for key"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[string list]: trying to decode string list for key"
      " %s.\n", (const char*)key);
   QCString raw, part, value;
   int first=1, second=1, i;
   // ----- get the string value as a whole:
   if(!getRaw(key, raw))
     {
-      LG(GUARD, "KeyValueMap::get[list<string>]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[list<string>]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
@@ -1012,7 +1020,7 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
 	      if(raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
 		{ 
-		  LG(GUARD, "KeyValueMap::get[list<string>]: found string "
+		  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[list<string>]: found string "
 		     "end at pos %i.\n", second);
 		  break;
 		} else {
@@ -1029,18 +1037,18 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
 	  // ----- insert decoded value into the list:
 	  if(parseComplexString(part, 0, value, i))
 	    {
-	      LG(GUARD, "KeyValueMap::get[list<string>]: found item %s.\n", 
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[list<string>]: found item %s.\n", 
 		 value.data());
 	      values.push_back(value);
 	    } else {
-	      L("KeyValueMap::get[list<string>]: parse error.\n");
+	      kDebugInfo("KeyValueMap::get[list<string>]: parse error.\n");
 	      return false;
 	    }
 	  if((unsigned)second<raw.length()-3) 
 	    { // ----- there may be another string
 	      first=second+2;
 	    } else { // ----- we are completely finished
-	      LG(GUARD, "KeyValueMap::get[list<string>]: list end found.\n");
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[list<string>]: list end found.\n");
 	      break;
 	    }
 	} else { // ----- finished:
@@ -1048,7 +1056,7 @@ KeyValueMap::get(const QCString& key, list<QCString>& values) const
 	}
     }
   // -----
-  LG(GUARD, "KeyValueMap::get[list<string>]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[list<string>]: done.\n");
   return true;
   // ###########################################################################
 }
@@ -1058,7 +1066,7 @@ KeyValueMap::insert(const QCString& key, const list<QCString>& values, bool forc
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[string list]: coding string list.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[string list]: coding string list.\n");
   QCString value="\""; 
   QCString temp;
   list<QCString>::const_iterator pos;
@@ -1075,7 +1083,7 @@ KeyValueMap::insert(const QCString& key, const list<QCString>& values, bool forc
       value+="\\e";
     }
   value+="\""; // finish the string
-  LG(GUARD, "KeyValueMap::insert[string list]: result of coding is %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[string list]: result of coding is %s.\n", 
      (const char*)value);
   // ----- insert it without coding:
   return insertRaw(key, value, force);
@@ -1089,17 +1097,17 @@ bool
 KeyValueMap::get(const QCString& key, QStrList& values) const
 {
   register bool GUARD; GUARD=false;
-  LG(!values.isEmpty(), "KeyValueMap::get[QStrList]: attention!\n             "
+  kDebugInfo(!values.isEmpty(), KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: attention!\n             "
      "\"values\" list reference is not empty!\n"); 
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[QStrList]: trying to decode string list for key"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: trying to decode string list for key"
      " %s.\n", (const char*)key);
   QCString raw, part, value;
   int first=1, second=1, i;
   // ----- get the string value as a whole:
   if(!getRaw(key, raw))
     {
-      LG(GUARD, "KeyValueMap::get[QStrList]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
@@ -1119,7 +1127,7 @@ KeyValueMap::get(const QCString& key, QStrList& values) const
 	      if(raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
 		{ 
-		  LG(GUARD, "KeyValueMap::get[QStrList]: found string "
+		  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: found string "
 		     "end at pos %i.\n", second);
 		  break;
 		} else {
@@ -1136,18 +1144,18 @@ KeyValueMap::get(const QCString& key, QStrList& values) const
 	  // ----- insert decoded value into the list:
 	  if(parseComplexString(part, 0, value, i))
 	    {
-	      LG(GUARD, "KeyValueMap::get[QStrList]: found item %s.\n", 
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: found item %s.\n", 
 		 value.data());
 	      values.append(value);
 	    } else {
-	      L("KeyValueMap::get[QStrList]: parse error.\n");
+	      kDebugInfo("KeyValueMap::get[QStrList]: parse error.\n");
 	      return false;
 	    }
 	  if((unsigned)second<raw.length()-3) 
 	    { // ----- there may be another string
 	      first=second+2;
 	    } else { // ----- we are completely finished
-	      LG(GUARD, "KeyValueMap::get[QStrList]: list end found.\n");
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: list end found.\n");
 	      break;
 	    }
 	} else { // ----- finished:
@@ -1155,7 +1163,7 @@ KeyValueMap::get(const QCString& key, QStrList& values) const
 	}
     }
   // -----
-  LG(GUARD, "KeyValueMap::get[QStrList]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStrList]: done.\n");
   return true;
   // ###########################################################################
 }
@@ -1165,7 +1173,7 @@ KeyValueMap::insert(const QCString& key, const QStrList& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[QStrList]: coding string list.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QStrList]: coding string list.\n");
   QCString value="\""; 
   QCString temp;
   unsigned int count;
@@ -1180,7 +1188,7 @@ KeyValueMap::insert(const QCString& key, const QStrList& values, bool force)
       value+="\\e";
     }
   value+="\""; // finish the string
-  LG(GUARD, "KeyValueMap::insert[QStrList]: result of coding is %s.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QStrList]: result of coding is %s.\n", 
      (const char*)value);
   // ----- insert it without coding:
   return insertRaw(key, value, force);
@@ -1194,19 +1202,19 @@ bool
 KeyValueMap::get(const QCString& key, QStringList& values) const
 {
   register bool GUARD; GUARD=false;
-  LG(!values.isEmpty(), "KeyValueMap::get[QStringList]: attention!\n          "
+  kDebugInfo(!values.isEmpty(), KAB_KDEBUG_AREA, "KeyValueMap::get[QStringList]: attention!\n          "
      "   \"values\" list reference is not empty!\n"); 
   // ###########################################################################
   /* The values are stored in a utf8-coded set of QCStrings.
      This list is retrieved and converted back to Unicode strings. */
-  LG(GUARD, "KeyValueMap::get[QStringList]: trying to decode QStringList for"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStringList]: trying to decode QStringList for"
      " key %s.\n", (const char*)key);
   QStrList temp;
   unsigned int count;
   // ----- get the plain C strings:
   if(!get(key, temp))
     {
-      LG(GUARD, "KeyValueMap::get[QStringList]: key %s not in KeyValueMap.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStringList]: key %s not in KeyValueMap.\n", 
 	 (const char*)key);
       return false;
     }
@@ -1216,7 +1224,7 @@ KeyValueMap::get(const QCString& key, QStringList& values) const
       values.append(QString::fromUtf8(temp.at(count)));
     }
   // -----
-  LG(GUARD, "KeyValueMap::get[QStringList]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QStringList]: done.\n");
   return true;
   // ###########################################################################
 }
@@ -1226,7 +1234,7 @@ KeyValueMap::insert(const QCString& key, const QStringList& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[QStringList]: coding QStringList.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QStringList]: coding QStringList.\n");
   // The method simply creates a list of utf8-coded strings and inserts it.
   QStrList utf8strings;
   unsigned int count;
@@ -1235,7 +1243,7 @@ KeyValueMap::insert(const QCString& key, const QStringList& values, bool force)
     {
       utf8strings.append((*values.at(count)).utf8());
     }
-  LG(GUARD, "KeyValueMap::insert[QStringList]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QStringList]: done.\n");
   return insert(key, utf8strings, force);
   // ###########################################################################
 }
@@ -1248,7 +1256,7 @@ KeyValueMap::insert(const QCString& key, const list<double>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[double list]: trying to insert double list into"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[double list]: trying to insert double list into"
      " map.\n");  
   QCString buffer;
   // QCString value(30*values.size()); // not usable with Qt 2
@@ -1265,7 +1273,7 @@ KeyValueMap::insert(const QCString& key, const list<double>& values, bool force)
       value.remove(value.length()-2, 2); 
     }
   // -----
-  LG(GUARD, "KeyValueMap::insert[double list]: constructed string value is "
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[double list]: constructed string value is "
      "%s.\n", (const char*)value);
   return insert(key, value, force);  
   // ###########################################################################
@@ -1276,9 +1284,9 @@ KeyValueMap::get(const QCString& key, list<double>& values) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[double list]: trying to decode double list for key"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[double list]: trying to decode double list for key"
      " %s.\n", (const char*)key);  
-  LG(!values.empty(), "KeyValueMap::get[double list]: attention - list should be"
+  kDebugInfo(!values.empty(), KAB_KDEBUG_AREA, "KeyValueMap::get[double list]: attention - list should be"
      " empty but is not.\n");
   QCString value;
   list<QCString> tokens;
@@ -1288,7 +1296,7 @@ KeyValueMap::get(const QCString& key, list<double>& values) const
   // -----
   if(!get(key, value)) 
     {
-      LG(GUARD, "KeyValueMap::get[double list]: no such key.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[double list]: no such key.\n");
       return false;
     }
   // -----
@@ -1300,12 +1308,12 @@ KeyValueMap::get(const QCString& key, list<double>& values) const
 	{
 	  values.push_back(temp);
 	} else {
-	  L("KeyValueMap::get[double list]: conversion error for %s.\n", 
+	  kDebugInfo("KeyValueMap::get[double list]: conversion error for %s.\n", 
 	    (const char*)(*pos));
 	}
     }
   // -----
-  LG(GUARD, "KeyValueMap::get[int list]: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[int list]: done.\n");
   // ###########################################################################  
   return true;
 }
@@ -1318,13 +1326,13 @@ KeyValueMap::insert(const QCString& key, const QDate& value, bool force)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::insert[QDate]: trying to insert QDate into"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QDate]: trying to insert QDate into"
      " map.\n");  
   list<long> values;
   // -----
   if(!value.isValid())
     {
-      LG(GUARD, "KeyValueMap::insert[QDate]: invalid date, inserting a null "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::insert[QDate]: invalid date, inserting a null "
 	 "date.\n");
       for(int i=0; i<3; ++i) values.push_back(0);
     } else {
@@ -1343,7 +1351,7 @@ KeyValueMap::get(const QCString& key, QDate& date) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "KeyValueMap::get[QDate]: trying to decode QDate for key"
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QDate]: trying to decode QDate for key"
      " %s.\n", key.data());  
   list<long> values;
   long y, m, d;
@@ -1351,12 +1359,12 @@ KeyValueMap::get(const QCString& key, QDate& date) const
   // -----
   if(!get(key, values))
     {
-      LG(GUARD, "KeyValueMap::get[QDate]: no such key.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QDate]: no such key.\n");
       return false;
     }
   if(values.size()!=3)
     {
-      LG(GUARD, "KeyValueMap::get[QDate]: more or less than 3 values.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QDate]: more or less than 3 values.\n");
       return false;
     }
   y=values.front(); values.pop_front();
@@ -1366,10 +1374,10 @@ KeyValueMap::get(const QCString& key, QDate& date) const
   if(y!=0 || m!=0 || d!=0) temp.setYMD(y, m, d); // avoid QDate messages
   if(!temp.isValid() && !temp.isNull())
     {
-      LG(GUARD, "KeyValueMap::get[QDate]: no valid date.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QDate]: no valid date.\n");
       return false;
     } else {
-      LG(GUARD, "KeyValueMap::get[QDate]: done.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KeyValueMap::get[QDate]: done.\n");
       date=temp;
       return true;
     }  
@@ -1400,30 +1408,30 @@ Section::add(const QCString& name)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################  
-  LG(GUARD, "Section::add: adding section \"%s\" to this section ... ",
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::add: adding section \"%s\" to this section ... ",
      name.data());
   Section* section;
   bool rc;
   // -----
   if(name.isEmpty())
     {
-      LG(GUARD, "Section::add: empty key.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::add: empty key.\n");
       return false;
     }
   section=new Section; // create an empty section
   if(section==0)
     {
-      L("Section::add: out of memory.\n");
+      kDebugInfo("Section::add: out of memory.\n");
       return false;
     }
   rc=add(name, section);
   if(!rc)
     {
-      LG(GUARD && !rc, " failed.\n");
+      kDebugInfo(GUARD && !rc, KAB_KDEBUG_AREA, " failed.\n");
       delete section;
       return false;
     } else {
-      LG(GUARD && rc, " success.\n"); 
+      kDebugInfo(GUARD && rc, KAB_KDEBUG_AREA, " success.\n"); 
       return true;
     }
   // ###########################################################################  
@@ -1436,10 +1444,10 @@ Section::add(const QCString& name, Section* section)
   // ###########################################################################  
   if(sections.insert(StringSectionMap::value_type(name, section)).second)
     {
-      LG(GUARD, "Section::add: added section %s successfully.\n", name.data());
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::add: added section %s successfully.\n", name.data());
       return true;
     } else {
-      LG(GUARD, "Section::add: failed to add section %s, section already "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::add: failed to add section %s, section already "
 	 "exists.\n", name.data());
       return false;
     }
@@ -1451,16 +1459,16 @@ Section::find(const QCString& name, StringSectionMap::iterator& result)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################  
-  LG(GUARD, "Section::find: trying to get section \"%s\" ... ", name.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::find: trying to get section \"%s\" ... ", name.data());
   StringSectionMap::iterator pos;
   // -----
   pos=sections.find(name);
   if(pos==sections.end())
     {
-      LG(GUARD, "failed, no such section.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "failed, no such section.\n");
       return false;
     } else {
-      LG(GUARD, "success.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "success.\n");
       result=pos;
       return true;
     }
@@ -1542,11 +1550,11 @@ Section::save(QTextStream& stream, int level)
       stream << '[' << (*pos).first << ']' << endl;
       if(!(*pos).second->save(stream, level+1))
 	{
-	  L("Section::save: error saving child section \"%s\".\n",
+	  kDebugInfo("Section::save: error saving child section \"%s\".\n",
 	    (*pos).first.data());
 	  return false;
 	} else {
-	  LG(GUARD, "Section::save: saved section \"%s\".\n", 
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::save: saved section \"%s\".\n", 
 	     (*pos).first.data());
 	}
       insertIndentSpace(stream, level);
@@ -1558,7 +1566,7 @@ Section::save(QTextStream& stream, int level)
       stream << "# key-value-pairs:" << endl;
       if(!keys.save(stream, level*indent_width))
 	{
-	  L("Section::save: error saving key-value-pairs.\n");
+	  kDebugInfo("Section::save: error saving key-value-pairs.\n");
 	  return false;
 	}
     }
@@ -1572,7 +1580,7 @@ Section::readSection(QTextStream& file, bool finish)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################  
-  LG(GUARD, "Section::readSection: reading section.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::readSection: reading section.\n");
   QCString line;
   QCString name;
   Section* temp;
@@ -1587,7 +1595,7 @@ Section::readSection(QTextStream& file, bool finish)
 	} else { // ----- verify it:
 	  if(file.eof())
 	    {
-	      LG(GUARD, "Section::readSection: EOF, line is \"%s\".\n",
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::readSection: EOF, line is \"%s\".\n",
 		 line.data());
 	      if(!line.isEmpty())
 		{
@@ -1602,10 +1610,10 @@ Section::readSection(QTextStream& file, bool finish)
 		}
 	      if(finish==true) 
 		{
-		  L("Section::readSection: missing end of section.\n");
+		  kDebugInfo("Section::readSection: missing end of section.\n");
 		  return false;
 		} else {
-		  LG(GUARD, "Section::readSection: EOF (no error).\n");
+		  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::readSection: EOF (no error).\n");
 		  return true;
 		}
 	    }
@@ -1619,7 +1627,7 @@ Section::readSection(QTextStream& file, bool finish)
 	  CHECK(find(name, temp)); 
 	  if(!temp->readSection(file))
 	    {
-	      L("Section::readSection: unable to read subsection \"%s\".\n",
+	      kDebugInfo("Section::readSection: unable to read subsection \"%s\".\n",
 		name.data());
 	      return false;
 	    }
@@ -1647,7 +1655,7 @@ Section::isBeginOfSection(QCString line)
   line=line.simplifyWhiteSpace();
   if(line.isEmpty() || line.length()<2)
     {
-      LG(GUARD, "Section::isBeginOfSection: too short or empty line.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isBeginOfSection: too short or empty line.\n");
       return false;
     }
   if(line[0]!='[' || line[line.length()-1]!=']')
@@ -1669,7 +1677,7 @@ Section::isEndOfSection(QCString line)
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
-  LG(GUARD, "Section::isEndOfSection: is %s the end of a section?\n",
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isEndOfSection: is %s the end of a section?\n",
      line.data());
   int first=1, second;
   QCString temp;
@@ -1677,12 +1685,12 @@ Section::isEndOfSection(QCString line)
   line=line.simplifyWhiteSpace();
   if(line.isEmpty() || line.length()<2)
     {
-      LG(GUARD, "Section::isBeginOfSection: too short or empty line.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isBeginOfSection: too short or empty line.\n");
       return false;
     }
   if(line[0]!='[' || line[line.length()-1]!=']')
     {
-      LG(GUARD, "Section::isBeginOfSection: does not match.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isBeginOfSection: does not match.\n");
       return false;
     }
   // ----- find the word inside the brackets:
@@ -1692,10 +1700,10 @@ Section::isEndOfSection(QCString line)
   temp=line.mid(first, second-first);
   if(temp=="END")
     {
-      LG(GUARD, "Section::isBeginOfSection: yes, it is.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isBeginOfSection: yes, it is.\n");
       return true;
     } else {
-      LG(GUARD, "Section::isBeginOfSection: no, it is not.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isBeginOfSection: no, it is not.\n");
       return false;
     }
   // ###########################################################################  
@@ -1712,7 +1720,7 @@ Section::nameOfSection(const QCString& line)
   temp=line.simplifyWhiteSpace();
   if(temp.isEmpty() || temp.length()<=2)
     { // empty section names are not allowed
-      LG(GUARD, "Section::isBeginOfSection: too short or empty line.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "Section::isBeginOfSection: too short or empty line.\n");
       return "";
     }
   if(temp[0]!='[' || temp[temp.length()-1]!=']')
@@ -1810,7 +1818,7 @@ QConfigDB::~QConfigDB()
     }
   if(!clear()) // this will emit changed() a last time
     {
-      L("QConfigDB destructor: cannot remove me.\n");
+      kDebugInfo("QConfigDB destructor: cannot remove me.\n");
     }
   CHECK(empty());
   if(locked) 
@@ -1825,13 +1833,13 @@ QConfigDB::get(const list<QCString>& key, KeyValueMap*& map)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "QConfigDB::get: trying to get keys ... ");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::get: trying to get keys ... ");
   Section* section=&top;
   list<QCString>::const_iterator pos;
   // -----
   if(key.empty()) 
     {
-      LG(GUARD, "\nConfigDB::get: path is empty, returning toplevel section.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "\nConfigDB::get: path is empty, returning toplevel section.\n");
       map=top.getKeys();
       return true;
     }
@@ -1839,14 +1847,14 @@ QConfigDB::get(const list<QCString>& key, KeyValueMap*& map)
     {
       if(!section->find(*pos, section))
 	{
-	  LG(GUARD, "failed,\n               at least the element \"%s\" of "
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "failed,\n               at least the element \"%s\" of "
 	     "the key-list is not declared.\n", (*pos).data());
 	  return false;
 	}
     }
   // -----
   map=section->getKeys();
-  LG(GUARD, "success.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "success.\n");
   return true;
   // ############################################################################
 }
@@ -1934,7 +1942,7 @@ list<QCString>
 QConfigDB::stringToKeylist(const QCString& desc)
 {
   register bool GUARD; GUARD=false;
-  LG(GUARD, "QConfigDB::stringToKeylist: parsing path %s.\n", desc.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::stringToKeylist: parsing path %s.\n", desc.data());
   // ############################################################################
   list<QCString> key;
   int first=0, second;
@@ -1942,7 +1950,7 @@ QConfigDB::stringToKeylist(const QCString& desc)
   // -----
   if(desc.isEmpty())
     {
-      LG(GUARD, "QConfigDB::stringToKeylist: path is empty.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::stringToKeylist: path is empty.\n");
       return key;
     }
   for(;;) 
@@ -1953,19 +1961,19 @@ QConfigDB::stringToKeylist(const QCString& desc)
 	  if((unsigned)first<desc.length()+1)
 	    {
 	      temp=desc.mid(first, desc.length()-first);
-	      LG(GUARD, "QConfigDB::stringToKeylist: found last part %s.\n", 
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::stringToKeylist: found last part %s.\n", 
 		 temp.data());
 	      key.push_back(temp);
 	    }
 	  break;
 	}
       temp=desc.mid(first, second-first);
-      LG(GUARD, "QConfigDB::stringToKeylist: found part %s.\n", temp.data());
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::stringToKeylist: found part %s.\n", temp.data());
       key.push_back(temp);
       first=second+1;
     }
   // -----
-  LG(GUARD, "QConfigDB::stringToKeylist: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::stringToKeylist: done.\n");
   return key;
   // ############################################################################
 }
@@ -1984,7 +1992,7 @@ QConfigDB::get(const list<QCString>& key, Section*& section)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "QConfigDB::get: searching section ... ");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::get: searching section ... ");
   Section* temp=&top;
   list<QCString>::const_iterator pos;
   // -----
@@ -1992,13 +2000,13 @@ QConfigDB::get(const list<QCString>& key, Section*& section)
     {
       if(!temp->find(*pos, temp))
 	{
-	  LG(GUARD, "failure, no such section.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "failure, no such section.\n");
 	  return false;
 	}
     }
   // -----
   section=temp; 
-  LG(GUARD, "success, section found.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "success, section found.\n");
   return true;
   // ############################################################################
 }
@@ -2023,7 +2031,7 @@ QConfigDB::IsLocked(const QString& file)
     {
       QFile f(lockfile);
       // -----
-      LG(GUARD, "QConfigDB::IsLocked: the file\n        %s\n"
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::IsLocked: the file\n        %s\n"
 	 "                    has a lockfile.\n", file.data());
       if(f.open(IO_ReadOnly))
 	{
@@ -2032,18 +2040,18 @@ QConfigDB::IsLocked(const QString& file)
 	  stream >> pid;
 	  if(pid==-1)
 	    {
-	      LG(GUARD, "QConfigDB::IsLocked: the file does not contain the ID\n"
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::IsLocked: the file does not contain the ID\n"
 		 "        of the process that created it.\n");
 	      return -1;
 	    }
 	  f.close();
 	} else {
-	  LG(GUARD, "QConfigDB::IsLocked: cannot open the lockfile.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::IsLocked: cannot open the lockfile.\n");
 	  return -1;
 	}
       return pid;      
     } else {
-      LG(GUARD, "QConfigDB::IsLocked: the file\n        %s has no lockfile.\n", 
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::IsLocked: the file\n        %s has no lockfile.\n", 
 	 file.data());
       return 0;
     }
@@ -2058,7 +2066,7 @@ QConfigDB::lock()
   // ############################################################################
   if(locked)
     {
-      LG(GUARD, "QConfigDB::lock (current file): file is already locked by this "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::lock (current file): file is already locked by this "
 	 "object.\n");
       return false;
     }
@@ -2077,13 +2085,13 @@ QConfigDB::lock(const QString& file)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "QConfigDB::lock: locking the file %s.\n", file.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::lock: locking the file %s.\n", file.data());
   QString lockfile=file+".lock";
   QFile f(lockfile);
   // -----
   if(access(lockfile, F_OK)==0)
     {
-      LG(GUARD, "QConfigDB::lock: the file is locked by another process.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::lock: the file is locked by another process.\n");
       return false;
     } else {
       if(f.open(IO_WriteOnly))
@@ -2093,7 +2101,7 @@ QConfigDB::lock(const QString& file)
 	  stream << getpid() << endl;
 	  f.close();
 	} else {
-	  LG(GUARD, "QConfigDB::lock: unable to create lockfile.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::lock: unable to create lockfile.\n");
 	  return false;
 	}
     }
@@ -2109,20 +2117,20 @@ QConfigDB::unlock()
   register bool GUARD; GUARD=false;
   REQUIRE(!filename.isEmpty());
   // ############################################################################
-  LG(GUARD, "QConfigDB::unlock: unlocking the file %s.\n", filename.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::unlock: unlocking the file %s.\n", filename.data());
   QString lockfile=filename+".lock";
   list<QString>::iterator pos;
   // -----
   if(!locked)
     {
-      LG(GUARD, "QConfigDB::unlock: this app did not lock the file!\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::unlock: this app did not lock the file!\n");
       return false;
     }
   if(access(lockfile, F_OK | W_OK)==0)
     {
       if(::remove(lockfile)==0)
 	{
-	  LG(GUARD, "QConfigDB::unlock: lockfile deleted.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::unlock: lockfile deleted.\n");
 	  for(pos=LockFiles.begin(); pos!=LockFiles.end(); ++pos)
 	    {
 	      if((*pos)==lockfile) break;
@@ -2131,16 +2139,16 @@ QConfigDB::unlock()
 	    {
 	      LockFiles.erase(pos); --pos;
 	    } else {
-	      L("QConfigDB::unlock: file not mentioned in lockfile list.\n");
+	      kDebugInfo("QConfigDB::unlock: file not mentioned in lockfile list.\n");
 	    }
 	  locked=false;
 	  return true;
 	} else {
-	  LG(GUARD, "QConfigDB::unlock: unable to delete lockfile.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::unlock: unable to delete lockfile.\n");
 	  return false;
 	}
     } else {
-      LG(GUARD, "QConfigDB::unlock: the file is not locked or permission has "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::unlock: the file is not locked or permission has "
 	 "been denied.\n");
       return false;
     }
@@ -2154,20 +2162,20 @@ QConfigDB::CleanLockFiles(int)
   // ############################################################################
   list<QString>::iterator pos;
   // -----
-  LG(GUARD, "QConfigDB::CleanLockFiles: removing %i remaining lockfiles.\n", 
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::CleanLockFiles: removing %i remaining lockfiles.\n", 
      LockFiles.size());
   for(pos=LockFiles.begin(); pos!=LockFiles.end(); pos++)
     {
       if(::remove(*pos)==0)
 	{
-	  LG(GUARD, "                          %s removed.\n", (*pos).data());
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "                          %s removed.\n", (*pos).data());
 	  LockFiles.erase(pos); --pos;
 	} else {
-	  L("                          could not remove  %s.\n", (*pos).data());
+	  kDebugInfo("                          could not remove  %s.\n", (*pos).data());
 	}
     }
   // -----
-  LG(GUARD, "QConfigDB::CleanLockFiles: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::CleanLockFiles: done.\n");
   // ############################################################################
 }
 
@@ -2198,13 +2206,13 @@ QConfigDB::CheckLockFile(const QString& file)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "QConfigDB::CheckLockFile: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::CheckLockFile: called.\n");
   int pid;
   // -----
   pid=IsLocked(file);
   if(pid==0)
     {
-      LG(GUARD, "QConfigDB::CheckLockFile: the file is not locked.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::CheckLockFile: the file is not locked.\n");
       return false;
     }
   if(pid>0)
@@ -2216,12 +2224,12 @@ QConfigDB::CheckLockFile(const QString& file)
     }
   if(pid<0)
     {
-      LG(GUARD, "QConfigDB::CheckLockFile: the file has not been created by "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::CheckLockFile: the file has not been created by "
 	 "QConfigDB::lock.\n");
     }
   // ----- check system time and creation time of lockfile:
   // WORK_TO_DO: not implemented
-  LG(GUARD, "QConfigDB::CheckLockFile: done.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::CheckLockFile: done.\n");
   return true;
   // ############################################################################
 }
@@ -2231,10 +2239,10 @@ QConfigDB::checkFileChanged()
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  // LG(GUARD, "QConfigDB::checkFileChanged: called.\n");
+  // kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::checkFileChanged: called.\n");
   if(filename.isEmpty()) 
     { // ----- false, as file does not exist and thus may be stored anyway
-      LG(GUARD, "QConfigDB::checkFileChanged: no filename.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::checkFileChanged: no filename.\n");
       return false;
     }
   QFileInfo file(filename);
@@ -2243,14 +2251,14 @@ QConfigDB::checkFileChanged()
     {
       if(file.lastModified() > *mtime)
 	{
-	  LG(GUARD, "QConfigDB::checkFileChanged: file has been changed.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::checkFileChanged: file has been changed.\n");
 	  emit(fileChanged());
 	  return true;
 	} else {
 	  return false;
 	}
     } else {
-      LG(GUARD, "QConfigDB::checkFileChanged: could not stat file, "
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::checkFileChanged: could not stat file, "
 	 "file does not exist.\n");
       if(!mtime->isValid())
 	{ // the file did never exist for us:
@@ -2269,7 +2277,7 @@ QConfigDB::storeFileAge()
   register bool GUARD; GUARD=false;
   REQUIRE(!filename.isEmpty());
   // ############################################################################
-  LG(GUARD, "QConfigDB::storeFileAge: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::storeFileAge: called.\n");
   QFileInfo file(filename);
   // -----
   if(file.exists())
@@ -2277,7 +2285,7 @@ QConfigDB::storeFileAge()
       *mtime=file.lastModified();
       return true;
     } else {
-      LG(GUARD, "QConfigDB::save: could not stat file.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: could not stat file.\n");
       *mtime=QDateTime(); // a null date
       return false;
     }  
@@ -2290,14 +2298,14 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "QConfigDB::setFileName: setting filename to \"%s\"%s.\n",
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: setting filename to \"%s\"%s.\n",
      filename_.data(), readonly_ ? " (read only)" : "");
   // ----- remove previous lock:
   if(locked)
     {
       if(!unlock())
 	{
-	  LG(GUARD, "QConfigDB::setFileName: cannot release previous lock.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: cannot release previous lock.\n");
 	  return false;
 	}
     }
@@ -2306,9 +2314,9 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
     { // ----- it is stale:
       if(::remove(filename_+".lock")==0)
 	{
-	  LG(GUARD, "QConfigDB::setFileName: removed stale lockfile.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: removed stale lockfile.\n");
 	} else {
-	  LG(GUARD, "QConfigDB::setFileName: cannot remove stale lockfile.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: cannot remove stale lockfile.\n");
 	  return false;
 	}
     }
@@ -2317,14 +2325,14 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
     {
       if(access(filename_, readonly_==true ? R_OK : W_OK | R_OK)==0)
 	{ 
-	  LG(GUARD, "QConfigDB::setFileName: permission granted.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: permission granted.\n");
 	  if(!readonly_)
 	    { //       we need r/w access:
 	      if(lock(filename_))
 		{
 		  locked=true;
 		} else {
-		  LG(GUARD, "QConfigDB::setFileName: "
+		  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: "
 		     "could not lock the file.\n");
 		  return false;
 		}
@@ -2334,7 +2342,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	  storeFileAge(); CHECK(storeFileAge());
 	  return true;
 	} else {
-	  L("QConfigDB::setFileName: permission denied, "
+	  kDebugInfo("QConfigDB::setFileName: permission denied, "
 	    "filename not set.\n                       "
 	    "(hint: file must exist, but it does not)\n");
 	  return false;
@@ -2342,17 +2350,17 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
     } else {
       if(access(filename_, F_OK)==0)
 	{
-	  LG(GUARD, "QConfigDB::setFileName: file exists.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: file exists.\n");
 	  if(access(filename_, W_OK | R_OK)==0)
 	    {
-	      LG(GUARD, "QConfigDB::setFileName: permission granted.\n");
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: permission granted.\n");
 	      if(!readonly_)
 		{ //       we need r/w access:
 		  if(lock(filename_))
 		    {
 		      locked=true;
 		    } else {
-		      LG(GUARD, "QConfigDB::setFileName: "
+		      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: "
 			 "could not lock the file.\n");
 		      return false;
 		    }
@@ -2362,19 +2370,19 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	      storeFileAge(); CHECK(storeFileAge());	      
 	      return true;
 	    } else {
-	      LG(GUARD, "QConfigDB::setFileName: "
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: "
 		 "permission denied, filename not set.\n");
 	      return false;	      
 	    }
 	} else {
-	  LG(GUARD, "QConfigDB::setFileName: permission granted, new file.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: permission granted, new file.\n");
 	  readonly=readonly_;
 	  filename=filename_;
 	  if(!readonly)
 	    {
 	      if(!lock())
 		{
-		  LG(GUARD, "QConfigDB::setFileName: could not lock the file.\n");
+		  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::setFileName: could not lock the file.\n");
 		  return false;
 		}
 	    }
@@ -2399,13 +2407,13 @@ QConfigDB::save(const char* header, bool force)
   register bool GUARD; GUARD=true;
   REQUIRE(!filename.isEmpty());
   // ############################################################################
-  LG(GUARD, "QConfigDB::save: saving database -->%s<--.\n", filename.data());
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: saving database -->%s<--.\n", filename.data());
   bool wasRO=false;
   bool rc;
   // -----
   if(checkFileChanged())
     {
-      LG(GUARD, "QConfigDB::save: file is newer, not saving.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: file is newer, not saving.\n");
       return false;
     }
   if(force && isRO())
@@ -2414,9 +2422,9 @@ QConfigDB::save(const char* header, bool force)
 	{
 	  wasRO=true;
 	  CHECK(!isRO());
-	  LG(GUARD, "QConfigDB::save: switched to (forced) r/w mode.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: switched to (forced) r/w mode.\n");
 	} else {
-	  LG(GUARD, "QConfigDB::save: cannot switch to (forced) r/w mode.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: cannot switch to (forced) r/w mode.\n");
 	  return false; 
 	}
     }
@@ -2436,13 +2444,13 @@ QConfigDB::save(const char* header, bool force)
 		 << version() << "]" << endl;
 	  if(!top.save(stream)) // traverse tree
 	    {
-	      LG(GUARD, "QConfigDB::save: error saving subsections.\n");
+	      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: error saving subsections.\n");
 	    }
 	  storeFileAge(); CHECK(storeFileAge());
 	  file.close();
 	  rc=true;
 	} else {
-	  L("QConfigDB::save: error opening file \"%s\" for writing.\n",
+	  kDebugInfo("QConfigDB::save: error opening file \"%s\" for writing.\n",
 	    filename.data());
 	  rc=false;
 	}
@@ -2454,9 +2462,9 @@ QConfigDB::save(const char* header, bool force)
     {
       if(setFileName(fileName(), false, true))
 	{
-	  LG(GUARD, "QConfigDB::save: reset (forced) r/w mode.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: reset (forced) r/w mode.\n");
 	} else {
-	  LG(GUARD, "QConfigDB::save: cannot reset (forced) r/w mode.\n");
+	  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::save: cannot reset (forced) r/w mode.\n");
 	  rc=false; 
 	}
     }
@@ -2476,7 +2484,7 @@ QConfigDB::load()
   // -----
   if(file.open(IO_ReadOnly))
     {
-      LG(GUARD, "QConfigDB::load: file access OK.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::load: file access OK.\n");
       QTextStream stream(&file);
       // -----
       clear();
@@ -2485,10 +2493,10 @@ QConfigDB::load()
       storeFileAge(); CHECK(storeFileAge());
       file.close();
       emit(changed(this));
-      LG(GUARD, "QConfigDB::load: done.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "QConfigDB::load: done.\n");
       return rc;
     } else {
-      L("QConfigDB::load: error opening file \"%s\" for reading.\n",
+      kDebugInfo("QConfigDB::load: error opening file \"%s\" for reading.\n",
 	filename.data());
       return false;
     }
