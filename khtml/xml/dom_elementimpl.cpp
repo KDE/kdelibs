@@ -363,7 +363,7 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
         if(a)
             a->setValue(value);
         else
-	oldAttr = namedAttrMap->setIdItem(new AttrImpl(id,value,document), exceptioncode );
+            oldAttr = namedAttrMap->setIdItem(new AttrImpl(id,value,document), exceptioncode );
     }
     if (oldAttr && oldAttr->deleteMe())
 	delete oldAttr;
@@ -378,6 +378,7 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 
     if(namedAttrMap) {
         namedAttrMap->ref();
+        namedAttrMap->element = this;
         unsigned int len = namedAttrMap->length();
 
         for(unsigned int i = 0; i < len; i++) {
@@ -420,7 +421,6 @@ NamedNodeMapImpl *ElementImpl::attributes()
     if(!namedAttrMap) {
         namedAttrMap = new NamedAttrMapImpl(this);
         namedAttrMap->ref();
-        qDebug("attributes() created map!!!");
     }
     return namedAttrMap;
 }
