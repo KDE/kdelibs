@@ -134,7 +134,8 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 
 KMainWindow::~KMainWindow()
 {
-    delete layout();
+    QMenuBar* mb = internalMenuBar();	
+    delete mb;
     delete d;
     memberList->remove( this );
 }

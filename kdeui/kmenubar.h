@@ -72,6 +72,10 @@ public:
      */
     bool isTopLevelMenu() const;
 
+    
+    // reimplemented show
+    void show();				
+
 protected slots:
     void slotReadConfig();
 

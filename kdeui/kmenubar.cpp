@@ -77,7 +77,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
         return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
-      bool wasVisible = isVisible();
+      bool wasVisible = isVisibleTo(0);
       d->frameStyle = frameStyle();
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
@@ -185,12 +185,12 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 	    return FALSE; // hinder QMenubar to adjust its size
 	
 	if ( parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
-	    
+	
 	    if ( ev->type() == QEvent::Accel || ev->type() == QEvent::AccelAvailable ) {
-		if ( QApplication::sendEvent( topLevelWidget(), ev ) ) 
+		if ( QApplication::sendEvent( topLevelWidget(), ev ) )
 		    return TRUE;
-	    }		   
-	    
+	    }		
+	
 	    if ( ev->type() == QEvent::Show && isHidden() )
 		show();
 	    else if ( ev->type() == QEvent::WindowActivate )
@@ -198,6 +198,14 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 	}
     }
     return QMenuBar::eventFilter( obj, ev );
+}
+
+
+void KMenuBar::show()
+{
+    // work around a Qt bug
+    if ( !isVisible() )
+	QMenuBar::show();
 }
 
 void KMenuBar::showEvent( QShowEvent* )
