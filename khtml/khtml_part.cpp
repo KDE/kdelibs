@@ -141,6 +141,7 @@ public:
     m_doc = 0L;
     m_decoder = 0L;
     m_jscript = 0L;
+    m_runningScripts = 0;
     m_kjs_lib = 0;
     m_job = 0L;
     m_bComplete = true;
@@ -231,6 +232,7 @@ public:
 
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
+  int m_runningScripts;
   bool m_bJScriptEnabled :1;
   bool m_bJavaEnabled :1;
   bool m_bPluginsEnabled :1;
@@ -846,7 +848,11 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy)
     return QVariant();
+  d->m_runningScripts++;
   QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
+  d->m_runningScripts--;
+  if ( d->m_submitForm )
+      submitFormAgain();
   if ( d->m_doc )
     d->m_doc->updateRendering();
 
@@ -2884,7 +2890,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
   }
 
-  if ( d->m_bParsing ) {
+  if ( d->m_bParsing || d->m_runningScripts > 0 ) {
     if( d->m_submitForm ) {
         return;
     }
@@ -4242,7 +4248,14 @@ QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &funct
     if (!proxy)
         return QVariant();
 
-    return proxy->executeFunctionCall(thisVal,functionObj,args,extraScope);
+    d->m_runningScripts++;
+    QVariant v = proxy->executeFunctionCall( thisVal, functionObj,
+					     args, extraScope );
+    d->m_runningScripts--;
+    if ( d->m_submitForm )
+      submitFormAgain();
+
+    return v;
 }
 
 
