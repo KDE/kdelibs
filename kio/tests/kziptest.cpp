@@ -13,11 +13,12 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
   for( ; it != l.end(); ++it )
   {
     const KArchiveEntry* entry = dir->entry( (*it) );
-    printf("mode=%07o %s %s size: %d pos: %d %s%s isdir=%d", entry->permissions(),
+    printf("mode=%07o %s %s size: %d pos: %d %s%s isdir=%d%s", entry->permissions(),
 	entry->user().latin1(), entry->group().latin1(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
-	path.latin1(), (*it).latin1(), entry->isDirectory());
+	path.latin1(), (*it).latin1(), entry->isDirectory(),
+	!entry->symlink() ? "" : QString(" symlink: %1").arg(entry->symlink()).latin1() );
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");
@@ -48,9 +49,13 @@ void recursive_transfer(const KArchiveDirectory * dir,
     	    QString str( arr );
     	    printf("DATA=%s\n", str.latin1());
 
-	    zip->writeFile( path+e->name().latin1(),
+	    if (e->symlink().isEmpty()) {
+	        zip->writeFile( path+e->name().latin1(),
 			    "holgi", "holgrp",
 			    arr.size() , f->data() );
+	    } else
+	        zip->writeSymLink(path+e->name(), e->symlink(), "leo", "leo",
+				0120777, 1000000000l, 1000000000l, 1000000000l);
 	}
 	else if (e->isDirectory())
 	{
@@ -116,6 +121,8 @@ int main( int argc, char** argv )
     zip.writeFile( "test2", "weis", "users", 8, "Hallo Du" );
     zip.writeFile( "mydir/test3", "weis", "users", 13, "Noch so einer" );
     zip.writeFile( "my/dir/test3", "dfaure", "hackers", 29, "I don't speak German (David)" );
+    zip.writeSymLink( "a_link", "mydir/test3", "leo", "leo", 0120777,
+    		1000000000l, 1000000000l, 1000000000l);
 
 #define SIZE1 100
     // Now a medium file : 100 null bytes
