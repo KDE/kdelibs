@@ -244,7 +244,7 @@ and the element's attributes modify the element. For example, the Chapter elemen
 starting and closing tags should be treated as a chapter, while the ID attribute labels the Chapter so it can be linked to
 or used as a file name when DocBook is translated to another format.</para>
 <para>Most DocBook tags contain a common set of attributes. The common
-attributes that you will be using most often are Lang, which specifies the
+attributes that you will be using most often are <markup>lang</markup>, which specifies the
 language of the data inside the tag, and ID, which labels the tag.</para>
 <important><para>
 All DocBook tags must have a start and an end tag. If you
@@ -274,11 +274,14 @@ The tags covered in this section are listed below.
 <screen>
 <![ CDATA [
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
- <!ENTITY kapp "<application>Kapp</application>">
- <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
- %FDLNotice;
- <!ENTITY % addindex "IGNORE">
- <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>]]&gt;<![CDATA [
+  <!ENTITY kapp "<application>Kapp</application>">
+  <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
+  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
+  %ents;
+  <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
+  %FDLNotice;
+  <!ENTITY % addindex "IGNORE">
+  <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>]]&gt;<![CDATA [
 ]>
 
 <book lang="en">
@@ -304,13 +307,13 @@ graphics-related DocBook tags. Here you also find other definitions like
 application, and the inclusion of a legal notice.
 </para>
 <para>
-Next comes the content model, which is
-<markup>&lt;book&gt;</markup> for all KDE documentation. Note the use of the Lang and ID
-attributes in the Book tag. The language attribute should always be used to make
-it easy to determine what language in which the document is written.
-Human-readable (not numerical) ID attributes for <markup>&lt;book&gt;</markup>,
-<markup>&lt;chapter&gt;</markup>, and <markup>&lt;sect&gt;</markup> tags are
-required for two reasons:
+Next comes the content model, which is <markup>&lt;book&gt;</markup>
+for all KDE documentation. Note the use of the <markup>lang</markup>
+attribute in the <markup>&lt;book&gt;</markup> tag. The language attribute
+should always be used to make it easy to determine what language in which
+the document is written.  Human-readable (not numerical) ID attributes
+for <markup>&lt;chapter&gt;</markup> and <markup>&lt;sect&gt;</markup>
+tags are required for two reasons:
 <itemizedlist>
 <listitem><para>Labelling all of the sections of your document allows you to
 easily cross-reference your document with hyperlinks.</para></listitem>
