@@ -48,12 +48,7 @@ KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 bool KRun::runURL( const KURL& u, const QString& _mimetype )
 {
 
-  if ( _mimetype == "text/html" )
-  {
-    KFileManager::getFileManager()->openFileManagerWindow( u );
-    return true;
-  }
-  else if ( _mimetype == "inode/directory" )
+  if ( _mimetype == "inode/directory" )
   {
     KFileManager::getFileManager()->openFileManagerWindow( u );
     return true;
@@ -309,17 +304,17 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
-  
+
   KShellProcess proc;
 
   QString lib = libmapnotify();
 
   // If we have the notify lib somewhere, use it.
- 
+
   if (!lib.isEmpty()) {
 
     // Hack to work around csh being non-sh-compatible.
-  
+
     QString prefix =
       (QString(getenv("SHELL")).right(3) == "csh") ?
       "setenv LD_PRELOAD %1 ;" :
@@ -772,7 +767,7 @@ bool KFileManager::openFileManagerWindow( const KURL& _url )
 {
   QString cmd = "kfmclient openURL ";
   QString urlStr = _url.url();
-  
+
   urlStr.replace(QRegExp("'"), "'\"'\"'");
   urlStr.prepend("'");
   urlStr.append("'");
