@@ -169,6 +169,8 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
 {
     Plugin* plugin = ComponentFactory::createInstanceFromLibrary<Plugin>( libname, parent, libname );
+    if ( !plugin )
+        return 0L;
     plugin->d->m_library = libname;
     return plugin;
 }
