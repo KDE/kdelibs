@@ -53,7 +53,7 @@ struct KFileDialogPrivate;
  * QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the two static methods
- * KFileDialog::getOpenFileName or KFileDialog::getSaveFileName.
+ * @ref getOpenFileName or @ref getSaveFileName.
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
@@ -131,7 +131,7 @@ public:
 
     /**
      * Sets the filter to be used to filter. You can set more
-     * filters for the user to select seperated by \n. Every
+     * filters for the user to select seperated by '\n'. Every
      * filter entry is defined through namefilter|text to diplay.
      * If no | is found in the expression, just the namefilter is
      * shown. Examples:
@@ -139,7 +139,7 @@ public:
      * <pre>
      * kfile->setFilter("*.cpp|C++ Source Files\n*.h|Header files");
      * kfile->setFilter("*.cpp");
-     * kfile->setFilter("*.cpp|Sources (*.cpp");
+     * kfile->setFilter("*.cpp|Sources (*.cpp)");
      * </pre>
      *
      * Note: the text to display is not parsed in any way. So, if you
