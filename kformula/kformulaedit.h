@@ -95,6 +95,8 @@ signals:
   void formulaChanged( const QString & );
 
 private:
+  class KFormulaEditPrivate;
+  KFormulaEditPrivate *d;
   QArray<_cursorInfo> cursorCache;
   bool restricted;  //whether for typesetting or evaluation
   QRect oldBound; // previous rectangle of formula

@@ -91,6 +91,8 @@ public:
  */
 class KFormula {
 private:
+    class KFormulaPrivate;
+    KFormulaPrivate *d;
 
     static QString *SPECIAL; //all the special characters
     static QString *INTEXT;  //plus minus slash times relationals
