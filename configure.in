@@ -70,6 +70,11 @@ ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
 AC_CHECK_HEADERS(X11/extensions/shape.h)
 ac_cpp=$ac_cpp_safe
 
+ac_cpp_safe=$ac_cpp
+ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
+AC_CHECK_HEADERS(X11/ICE/ICElib.h)
+ac_cpp=$ac_cpp_safe
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_TIME
 
@@ -110,6 +115,7 @@ AC_SUBST(x_libraries)
 AC_SUBST(topdir)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
+AC_SUBST(LIBICE)
 
 KOM_INCLUDES='-I$(top_srcdir)/corba/kom -I$(top_builddir)/corba/kom'
 AC_SUBST(KOM_INCLUDES)
@@ -144,6 +150,8 @@ LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
 AC_SUBST(LIB_KHTML)
 LIB_KIMGIO='$(top_builddir)/kimgio/libkimgio.la'
 AC_SUBST(LIB_KIMGIO)
+LIB_DCOP='$(top_builddir)/dcop/libdcop.la'
+AC_SUBST(LIB_DCOP)
 
 AC_LANG_C
 kde_save_cc=$CC
@@ -241,5 +249,6 @@ AC_OUTPUT(Makefile \
 	kstyles/utils/mktheme/Makefile \
 	kstyles/utils/settheme/Makefile \
 	kstyles/themes/Makefile \
-	kstyles/pics/Makefile )          
+	kstyles/pics/Makefile \
+	dcop/Makefile )
 
