@@ -14,6 +14,7 @@ KPartManager::KPartManager( KXMLGUIBuilder * builder )
 
   // Oh oh, found a nice trick :-) Now I know why it's (new part, old part)
   // and not the other way round :)  (David)
+  // :-) ..and I was waiting for the day someone discovering that one :-) (Simon)
   connect( this, SIGNAL( activePartChanged( KPart *, KPart * ) ),
            builder, SLOT( createGUI( KPart * ) ) );
 
