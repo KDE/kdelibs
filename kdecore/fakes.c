@@ -1,6 +1,9 @@
 /* This file is part of the KDE libraries
    Copyright (c) 2000 The KDE Project
 
+   unsetenv() taken from the GNU C Library.
+   Copyright (C) 1992,1995-1999,2000-2002 Free Software Foundation, Inc.
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -54,19 +57,40 @@ int setenv(const char *name, const char *value, int overwrite) {
 
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>
 
-int unsetenv(const char * name) {
-    int i;
-    char * a;
+int
+unsetenv (name)
+     const char *name;
+{
+  size_t len;
+  char **ep;
 
-    i = strlen(name) + 2;
-    a = (char*)malloc(i);
-    if (!a) return 1;
+  if (name == NULL || *name == '\0' || strchr (name, '=') != NULL)
+    {
+      errno = EINVAL;
+      return -1;
+    }
 
-    strcpy(a, name);
-    strcat(a, "=");
+  len = strlen (name);
 
-    return putenv(a);
+  ep = environ;
+  while (*ep != NULL)
+    if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
+      {
+	/* Found it.  Remove this pointer by moving later ones back.  */
+	char **dp = ep;
+
+	do
+	  dp[0] = dp[1];
+	while (*dp++);
+	/* Continue the loop in case NAME appears again.  */
+      }
+    else
+      ++ep;
+
+  return 0;
 }
 
 #endif
