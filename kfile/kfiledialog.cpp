@@ -1075,23 +1075,55 @@ KURL::List& KFileDialog::parseSelectedURLs() const
 				i18n("The chosen filename(s) don't\nappear to be valid."), i18n("Invalid filename(s)") );
     }
 
-    else {
-	QString name;
-	QString url = ops->url().url( +1 );
-	static QRegExp r( QString::fromLatin1( "\"" ) );
-	static QString empty = QString::fromLatin1("");
+    else
+	d->urlList = tokenize( d->filenames );
 
-	QTextStream t( &(d->filenames), IO_ReadOnly );
-	while ( !t.eof() ) {
-	    t >> name;
-	    name.replace( r, empty );
-	    name.prepend( url );
-	    d->urlList.append( KURL( name ) );
-	}
-    }
     d->filenames = QString::null; // indicate that we parsed that one
 
     return d->urlList;
+}
+
+
+// FIXME: current implementation drawback: a filename can't contain quotes
+KURL::List KFileDialog::tokenize( const QString& line ) const
+{
+    KURL::List urls;
+    KURL u( ops->url() );
+    QString name;
+    
+    int count = line.contains( '"' );
+    if ( count == 0 ) { // no " " -> assume one single file
+	u.setFileName( line );
+	if ( !u.isMalformed() )
+	    urls.append( u );
+
+	return urls;
+    }
+
+    if ( (count % 2) == 1 ) { // odd number of " -> error (FIXME: Messagebox?)
+	QWidget *that = const_cast<KFileDialog *>(this);
+	KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in doublequotes").arg(line), i18n("Filename error"));
+	return urls;
+    }
+    
+    int start = 0;
+    int index1 = -1, index2 = -1;
+    while ( true ) {
+	index1 = line.find( '"', start );
+	index2 = line.find( '"', index1 + 1 );
+	
+	if ( index1 < 0 )
+	    break;
+	
+	// get everything between the " "
+	name = line.mid( index1 + 1, index2 - index1 - 1 );
+	u.setFileName( name );
+	if ( !u.isMalformed() )
+	    urls.append( u );
+	
+	start = index2 + 1;
+    }
+    return urls;
 }
 
 

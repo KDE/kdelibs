@@ -453,6 +453,13 @@ protected:
      */
     virtual void saveRecentFiles( KConfig * );
 
+    /**
+     * Parses the string "line" for files. If line doesn't contain any ", the
+     * whole line will be interpreted as one file. If the number of " is odd,
+     * an empty list will be returned. Otherwise, all items enclosed in " "
+     * will be returned as correct urls.
+     */
+    KURL::List tokenize(const QString& line) const;
 
 protected slots:
     void urlEntered( const KURL& );
