@@ -3,19 +3,19 @@ all:
 	@echo "I will delete it before making the distribution"
 	@echo ""
 	cat acinclude.m4.in libtool.m4.in > acinclude.m4
-	aclocal 
+	aclocal
 	autoheader
 	automake
 	autoconf
 
 dist:
-	@cat acinclude.m4.in libtool.m4.in > acinclude.m4 ;\
-	aclocal ;\
-	autoheader ;\
-	automake --foreign --include-deps ;\
-	autoconf ;\
+	cat acinclude.m4.in libtool.m4.in > acinclude.m4; \
+	aclocal; \
+	autoheader; \
+	automake --foreign --include-deps; \
+	autoconf; \
 	LIST=`find ./po -name "*.po"`; \
 	for i in $$LIST; do \
 	 file2=`echo $$i | sed -e "s#\.po#\.gmo#"`; \
-	 msgfmt -o $$file2 $$i || touch $$file2 ; \
+	 msgfmt -o $$file2 $$i || touch $$file2; \
 	done
