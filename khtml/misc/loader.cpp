@@ -492,7 +492,7 @@ const QPixmap &CachedImage::pixmap( ) const
 {
     if(m)
     {
-        if(m->framePixmap().size() != m->getValidRect().size())
+        if(m->framePixmap().size() != m->getValidRect().size() && m->getValidRect().size().isValid())
         {
             // pixmap is not yet completely loaded, so we
             // return a clipped version. asserting here
