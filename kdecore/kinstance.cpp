@@ -29,6 +29,21 @@
 
 #include <qfont.h>
 
+#include "config.h"
+#ifndef NDEBUG
+  #include <assert.h>
+  #include <qptrdict.h>
+  static QPtrList<KInstance> *allInstances = 0;
+  static QPtrDict<QCString> *allOldInstances = 0;
+  #define DEBUG_ADD do { qWarning("#### KInstance(%s, %p)", _name.data(), this); if (!allInstances) { allInstances = new QPtrList<KInstance>(); allOldInstances = new QPtrDict<QCString>(); } allInstances->append(this); allOldInstances->insert( this, new QCString( _name)); } while (false);
+  #define DEBUG_REMOVE do { qWarning("#### ~KInstance(%s, %p)", _name.data(), this); allInstances->removeRef(this); } while (false);
+  #define DEBUG_CHECK_ALIVE do { if (!allInstances->contains((KInstance*)this)) { QCString *old = allOldInstances->find((KInstance*)this); qWarning("ACCESSING DELETED KINSTANCE! (%s)", old ? old->data() : "<unknown>"); assert(false); } } while (false);
+#else
+  #define DEBUG_ADD
+  #define DEBUG_REMOVE
+  #define DEBUG_CHECK_ALIVE
+#endif
+
 class KInstancePrivate
 {
 public:
@@ -54,6 +69,7 @@ KInstance::KInstance( const QCString& name)
     _iconLoader (0L),
     _name( name ), _aboutData( new KAboutData( name, "", 0 ) )
 {
+    DEBUG_ADD
     Q_ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
     {
@@ -71,6 +87,7 @@ KInstance::KInstance( const KAboutData * aboutData )
     _iconLoader (0L),
     _name( aboutData->appName() ), _aboutData( aboutData )
 {
+    DEBUG_ADD
     Q_ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance)
@@ -89,6 +106,7 @@ KInstance::KInstance( KInstance* src )
     _iconLoader ( src->_iconLoader ),
     _name( src->_name ), _aboutData( src->_aboutData )
 {
+    DEBUG_ADD
     Q_ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance || KGlobal::_instance == src )
@@ -110,6 +128,9 @@ KInstance::KInstance( KInstance* src )
 
 KInstance::~KInstance()
 {
+    DEBUG_CHECK_ALIVE
+    DEBUG_REMOVE
+    
     if (d->ownAboutdata)
         delete _aboutData;
     _aboutData = 0;
@@ -134,6 +155,7 @@ KInstance::~KInstance()
 
 KStandardDirs *KInstance::dirs() const
 {
+    DEBUG_CHECK_ALIVE
     if( _dirs == 0 ) {
 	_dirs = new KStandardDirs( );
         if (_config)
@@ -146,6 +168,7 @@ KStandardDirs *KInstance::dirs() const
 
 KConfig	*KInstance::config() const
 {
+    DEBUG_CHECK_ALIVE
     if( _config == 0 ) {
         if ( !d->configName.isEmpty() )
         {
@@ -182,6 +205,7 @@ KConfig	*KInstance::config() const
 
 KSharedConfig *KInstance::sharedConfig() const
 {
+    DEBUG_CHECK_ALIVE
     if (_config == 0)
        (void) config(); // Initialize config
 
@@ -190,11 +214,13 @@ KSharedConfig *KInstance::sharedConfig() const
 
 void KInstance::setConfigName(const QString &configName)
 {
+    DEBUG_CHECK_ALIVE
     d->configName = configName;
 }
 
 KIconLoader *KInstance::iconLoader() const
 {
+    DEBUG_CHECK_ALIVE
     if( _iconLoader == 0 ) {
 	_iconLoader = new KIconLoader( _name, dirs() );
     _iconLoader->enableDelayedIconSetLoading( true );
@@ -205,22 +231,26 @@ KIconLoader *KInstance::iconLoader() const
 
 void KInstance::newIconLoader() const
 {
+    DEBUG_CHECK_ALIVE
     KIconTheme::reconfigure();
     _iconLoader->reconfigure( _name, dirs() );
 }
 
 const KAboutData * KInstance::aboutData() const
 {
+    DEBUG_CHECK_ALIVE
     return _aboutData;
 }
 
 QCString KInstance::instanceName() const
 {
+    DEBUG_CHECK_ALIVE
     return _name;
 }
 
 KMimeSourceFactory* KInstance::mimeSourceFactory () const
 {
+  DEBUG_CHECK_ALIVE
   if (!d->mimeSourceFactory)
   {
     d->mimeSourceFactory = new KMimeSourceFactory(iconLoader());
