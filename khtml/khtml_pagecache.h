@@ -27,6 +27,11 @@
 
 class KHTMLPageCachePrivate;
 
+/**
+ * Singleton Object that handles a binary cache on top of
+ * the http cache management of kio.
+ * introduced because: <please complete>
+ */
 class KHTMLPageCache : public QObject
 {
   Q_OBJECT
