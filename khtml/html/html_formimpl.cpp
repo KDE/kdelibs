@@ -889,9 +889,9 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (m_type != BUTTON && !m_disabled) {
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	if (!act && evt->id()==EventImpl::KHTML_KEYDOWN_EVENT) {
+	if (!act && evt->id()==EventImpl::KHTML_KEYUP_EVENT) {
 	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
-	    if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter))
+	    if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}
 	if (act)
@@ -1084,14 +1084,8 @@ void HTMLInputElementImpl::select(  )
 
 void HTMLInputElementImpl::click()
 {
-    QMouseEvent me1(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, 0);
-    dispatchMouseEvent(&me1,EventImpl::MOUSEDOWN_EVENT, 1);
-
-    QMouseEvent me2(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
-    dispatchMouseEvent(&me2,EventImpl::MOUSEUP_EVENT, 1);
-
-    QMouseEvent me3(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
-    dispatchMouseEvent(&me3,EventImpl::CLICK_EVENT, 1);
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
 }
 
 void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
@@ -1438,25 +1432,34 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
     if ( !m_disabled )
     {
 
-        if (evt->isMouseEvent() &&
-            evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
-            // record the mouse position for when we get the DOMActivate event
-            MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
-            int offsetX, offsetY;
-            m_render->absolutePosition(offsetX,offsetY);
-            xPos = me->clientX()-offsetX;
-            yPos = me->clientY()-offsetY;
-        }
+        if (evt->isMouseEvent()) {
+	    MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
+            if ((m_type == RADIO || m_type == CHECKBOX)
+		&& me->id() == EventImpl::MOUSEUP_EVENT && me->detail() == 1) {
+		// click will follow
+		setChecked(m_type == RADIO ? true : !checked());
+	    }
+            if (evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
+		// record the mouse position for when we get the DOMActivate event
+		int offsetX, offsetY;
+		m_render->absolutePosition(offsetX,offsetY);
+		xPos = me->clientX()-offsetX;
+		yPos = me->clientY()-offsetY;
+	    }
+	}
 
-        if (m_type == RADIO || m_type == CHECKBOX) {
-	    bool check = evt->id() == EventImpl::DOMACTIVATE_EVENT;
-	    if (!check && evt->id() == EventImpl::KHTML_KEYDOWN_EVENT) {
+        if (m_type == RADIO || m_type == CHECKBOX || m_type == SUBMIT || m_type == RESET || m_type == BUTTON ) {
+	    bool check = false;
+	    if (evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
 		TextEventImpl *te = static_cast<TextEventImpl *>(evt);
 		if (te->keyVal() == ' ')
 		    check = true;
 	    }
-	    if (check)
-		setChecked(m_type == RADIO ? true : !checked());
+	    if (check) {
+		if (m_type == RADIO || m_type == CHECKBOX)
+		    setChecked(m_type == RADIO ? true : !checked());
+		click();
+	    }
         }
 
 
@@ -1466,7 +1469,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // must dispatch a DOMActivate event - a click event will not do the job.
         if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	    if (!act && evt->id() == EventImpl::KHTML_KEYDOWN_EVENT) {
+	    if (!act && evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
 		QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
 		if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter))
 		    act = true;

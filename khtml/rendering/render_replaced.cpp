@@ -571,8 +571,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         break;
     }
     case EventImpl::KHTML_KEYDOWN_EVENT:
-    case EventImpl::KHTML_KEYUP_EVENT:
-    case EventImpl::KHTML_KEYPRESS_EVENT: {
+    case EventImpl::KHTML_KEYUP_EVENT: {
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
