@@ -19,6 +19,7 @@
 
 #include "kfileshare.h"
 #include <qdir.h>
+#include <qfile.h>
 #include <kprocess.h>
 #include <kprocio.h>
 #include <klocale.h>
@@ -49,19 +50,16 @@ bool KFileShare::s_sharingEnabled;
 
 KFileSharePrivate::KFileSharePrivate()
 {
-  if (KStandardDirs::exists(FILESHARECONF)) {
-        m_watchFile=new KDirWatch();
-        m_watchFile->addFile(FILESHARECONF);
-        m_watchFile->startScan();
-        connect(m_watchFile, SIGNAL(dirty (const QString&)),this,
+  if (QFile::exists(FILESHARECONF)) {
+        KDirWatch::self()->addFile(FILESHARECONF);
+        connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
    	        SLOT(slotFileChange(const QString &)));
-  } else 
-	m_watchFile = 0;
+  } 
 }
 
 KFileSharePrivate::~KFileSharePrivate()
 {
-  delete m_watchFile;
+  
 }
 
 KFileSharePrivate *KFileSharePrivate::_self=0L;
@@ -85,7 +83,9 @@ void KFileSharePrivate::slotFileChange(const QString &file)
 
 
 void KFileShare::readConfig() // static
-{
+{    
+    // Create KFileSharePrivate instance
+    KFileSharePrivate::self();
     KSimpleConfig config(QString::fromLatin1(FILESHARECONF),true);
     
     s_sharingEnabled = config.readEntry("FILESHARING", "yes") == "yes";
@@ -125,14 +125,23 @@ KFileShare::ShareMode KFileShare::shareMode() {
 }
 
 bool KFileShare::sharingEnabled() {
+  if ( s_authorization == NotInitialized )
+      readConfig();
+  
   return s_sharingEnabled;
 }
    
 bool KFileShare::isRestricted() {
+  if ( s_authorization == NotInitialized )
+      readConfig();
+  
   return s_restricted;
 }
     
 QString KFileShare::fileShareGroup() {
+  if ( s_authorization == NotInitialized )
+      readConfig();
+  
   return s_fileShareGroup;
 }
 
