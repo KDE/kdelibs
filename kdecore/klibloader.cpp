@@ -124,6 +124,7 @@ KLibrary::~KLibrary()
     if ( m_factory ) {
 //	kdDebug(150) << " ... deleting the factory " << m_factory << endl;
 	delete m_factory;
+        m_factory = 0L;
     }
 }
 
@@ -299,7 +300,7 @@ void KLibLoader::cleanUp()
     return;
 
   delete s_self;
-  s_self = 0;
+  s_self = 0L;
 }
 
 KLibLoader::KLibLoader( QObject* parent, const char* name )
@@ -331,6 +332,7 @@ KLibLoader::~KLibLoader()
     close_pending(0);
 
     delete d;
+    d = 0L;
 }
 
 //static
@@ -512,7 +514,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
       disconnect( wrap->lib, SIGNAL( destroyed() ),
                   this, SLOT( slotLibraryDestroyed() ) );
       delete wrap->lib;
-      wrap->lib = 0;
+      wrap->lib = 0L;
     }
   }
 
