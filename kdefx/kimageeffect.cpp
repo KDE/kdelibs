@@ -36,13 +36,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 
 #include "kimageeffect.h"
+#include "kcpuinfo.h"
 
 #include <config.h>
 
+#if defined(__i386__) && ( defined(__GNUC__) || defined(__INTEL_COMPILER) )
+#  if defined( HAVE_X86_MMX )
+#    define USE_MMX_INLINE_ASM
+#  endif
+#endif
+
 #define MaxRGB 255L
 #define DegreesToRadians(x) ((x)*M_PI/180.0)
-
-using namespace std;
 
 static inline unsigned int intensityValue(unsigned int color)
 {
@@ -67,7 +72,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
 
     if (size.width() == 0 || size.height() == 0) {
 #ifndef NDEBUG
-      cerr << "WARNING: KImageEffect::gradient: invalid image" << endl;
+      std::cerr << "WARNING: KImageEffect::gradient: invalid image" << std::endl;
 #endif
       return image;
     }
@@ -355,7 +360,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
     if (size.width() == 0 || size.height() == 0) {
 #ifndef NDEBUG
-      cerr << "WARNING: KImageEffect::unbalancedGradient : invalid image\n";
+      std::cerr << "WARNING: KImageEffect::unbalancedGradient : invalid image\n";
 #endif
       return image;
     }
@@ -576,7 +581,7 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
 {
     if (image.width() == 0 || image.height() == 0) {
 #ifndef NDEBUG
-      cerr << "WARNING: KImageEffect::intensity : invalid image\n";
+      std::cerr << "WARNING: KImageEffect::intensity : invalid image\n";
 #endif
       return image;
     }
@@ -592,48 +597,174 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
     if(percent < 0)
         percent = -percent;
 
-    if(brighten){ // keep overflow check out of loops
-        for(int i=0; i < segColors; ++i){
-            int tmp = (int)(i*percent);
-            if(tmp > 255)
-                tmp = 255;
-            segTbl[i] = tmp;
-        }
-    }
-    else{
-        for(int i=0; i < segColors; ++i){
-            int tmp = (int)(i*percent);
-            if(tmp < 0)
-                tmp = 0;
-            segTbl[i] = tmp;
-        }
-    }
+#ifdef USE_MMX_INLINE_ASM
+    bool haveMMX = KCPUInfo::haveExtension( KCPUInfo::IntelMMX );
 
-    if(brighten){ // same here
-        for(int i=0; i < pixels; ++i){
-            int r = qRed(data[i]);
-            int g = qGreen(data[i]);
-            int b = qBlue(data[i]);
-            int a = qAlpha(data[i]);
-            r = r + segTbl[r] > 255 ? 255 : r + segTbl[r];
-            g = g + segTbl[g] > 255 ? 255 : g + segTbl[g];
-            b = b + segTbl[b] > 255 ? 255 : b + segTbl[b];
-            data[i] = qRgba(r, g, b,a);
+    if(haveMMX)
+    {
+        Q_UINT16 p = Q_UINT16(256.0f*(percent));
+        Q_UINT16 mult[4]={p,p,p,0};
+
+        __asm__ __volatile__(
+        "pxor %%mm7, %%mm7\n\t"                // zero mm7 for unpacking
+        "movq  (%0), %%mm6\n\t"                // copy intensity change to mm6
+        : : "r"(mult) );
+
+        unsigned int rem = pixels % 4;
+        pixels -= rem;
+        Q_UINT32 *end = ( data + pixels );
+
+        if (brighten)
+        {
+            while ( data != end ) {
+                __asm__ __volatile__(
+                "movq       (%0), %%mm0\n\t"
+                "movq      8(%0), %%mm4\n\t"   // copy 4 pixels of data to mm0 and mm4
+                "movq      %%mm0, %%mm1\n\t"
+                "movq      %%mm0, %%mm3\n\t"
+                "movq      %%mm4, %%mm5\n\t"   // copy to registers for unpacking
+                "punpcklbw %%mm7, %%mm0\n\t"
+                "punpckhbw %%mm7, %%mm1\n\t"   // unpack the two pixels from mm0
+                "pmullw    %%mm6, %%mm0\n\t"
+                "punpcklbw %%mm7, %%mm4\n\t"
+                "pmullw    %%mm6, %%mm1\n\t"   // multiply by intensity*256
+                "psrlw        $8, %%mm0\n\t"   // divide by 256
+                "pmullw    %%mm6, %%mm4\n\t"
+                "psrlw        $8, %%mm1\n\t"
+                "psrlw        $8, %%mm4\n\t"
+                "packuswb  %%mm1, %%mm0\n\t"   // pack solution into mm0. saturates at 255
+                "movq      %%mm5, %%mm1\n\t"
+
+                "punpckhbw %%mm7, %%mm1\n\t"   // unpack 4th pixel in mm1
+
+                "pmullw    %%mm6, %%mm1\n\t"
+                "paddusb   %%mm3, %%mm0\n\t"   // add intesity result to original of mm0
+                "psrlw        $8, %%mm1\n\t"
+                "packuswb  %%mm1, %%mm4\n\t"   // pack upper two pixels into mm4
+
+                "movq      %%mm0, (%0)\n\t"    // rewrite to memory lower two pixels
+                "paddusb   %%mm5, %%mm4\n\t"
+                "movq      %%mm4, 8(%0)\n\t"   // rewrite upper two pixels
+                : : "r"(data) );
+                data += 4;
+            }
+
+            end += rem;
+            while ( data != end ) {
+                __asm__ __volatile__(
+                "movd       (%0), %%mm0\n\t"   // repeat above but for
+                "punpcklbw %%mm7, %%mm0\n\t"   // one pixel at a time
+                "movq      %%mm0, %%mm3\n\t"
+                "pmullw    %%mm6, %%mm0\n\t"
+                "psrlw        $8, %%mm0\n\t"
+                "paddw     %%mm3, %%mm0\n\t"
+                "packuswb  %%mm0, %%mm0\n\t"
+                "movd      %%mm0, (%0)\n\t"
+                : : "r"(data) );
+		data++;
+            }
         }
-    }
-    else{
-        for(int i=0; i < pixels; ++i){
-            int r = qRed(data[i]);
-            int g = qGreen(data[i]);
-            int b = qBlue(data[i]);
-            int a = qAlpha(data[i]);
-            r = r - segTbl[r] < 0 ? 0 : r - segTbl[r];
-            g = g - segTbl[g] < 0 ? 0 : g - segTbl[g];
-            b = b - segTbl[b] < 0 ? 0 : b - segTbl[b];
-            data[i] = qRgba(r, g, b, a);
+        else
+        {
+            while ( data != end ) {
+                __asm__ __volatile__(
+                "movq       (%0), %%mm0\n\t"
+                "movq      8(%0), %%mm4\n\t"
+                "movq      %%mm0, %%mm1\n\t"
+                "movq      %%mm0, %%mm3\n\t"
+
+                "movq      %%mm4, %%mm5\n\t"
+
+                "punpcklbw %%mm7, %%mm0\n\t"
+                "punpckhbw %%mm7, %%mm1\n\t"
+                "pmullw    %%mm6, %%mm0\n\t"
+                "punpcklbw %%mm7, %%mm4\n\t"
+                "pmullw    %%mm6, %%mm1\n\t"
+                "psrlw        $8, %%mm0\n\t"
+                "pmullw    %%mm6, %%mm4\n\t"
+                "psrlw        $8, %%mm1\n\t"
+                "psrlw        $8, %%mm4\n\t"
+                "packuswb  %%mm1, %%mm0\n\t"
+                "movq      %%mm5, %%mm1\n\t"
+
+                "punpckhbw %%mm7, %%mm1\n\t"
+
+                "pmullw    %%mm6, %%mm1\n\t"
+                "psubusb   %%mm0, %%mm3\n\t"   // subtract darkening amount
+                "psrlw        $8, %%mm1\n\t"
+                "packuswb  %%mm1, %%mm4\n\t"
+
+                "movq      %%mm3, (%0)\n\t"
+                "psubusb   %%mm4, %%mm5\n\t"   // only change for this version is
+                "movq      %%mm5, 8(%0)\n\t"   // subtraction here as we are darkening image
+                : : "r"(data) );
+                data += 4;
+            }
+
+            end += rem;
+            while ( data != end ) {
+                __asm__ __volatile__(
+                "movd       (%0), %%mm0\n\t"
+                "punpcklbw %%mm7, %%mm0\n\t"
+                "movq      %%mm0, %%mm3\n\t"
+                "pmullw    %%mm6, %%mm0\n\t"
+                "psrlw        $8, %%mm0\n\t"
+                "psubusw   %%mm0, %%mm3\n\t"
+                "packuswb  %%mm3, %%mm3\n\t"
+                "movd      %%mm3, (%0)\n\t"
+                : : "r"(data) );
+                data++;
+            }
         }
+        __asm__ __volatile__("emms");          // clear mmx state
     }
-    delete [] segTbl;
+    else
+#endif // USE_MMX_INLINE_ASM
+    {
+        int tmp;
+        if(brighten){ // keep overflow check out of loops
+            for(int i=0; i < segColors; ++i){
+                tmp = (int)(i*percent);
+                if(tmp > 255)
+                    tmp = 255;
+                segTbl[i] = tmp;
+            }
+        }
+        else{
+            for(int i=0; i < segColors; ++i){
+                tmp = (int)(i*percent);
+                if(tmp < 0)
+                    tmp = 0;
+                 segTbl[i] = tmp;
+            }
+        }
+
+        if(brighten){ // same here
+            for(int i=0; i < pixels; ++i){
+                int r = qRed(data[i]);
+                int g = qGreen(data[i]);
+                int b = qBlue(data[i]);
+                int a = qAlpha(data[i]);
+                r = r + segTbl[r] > 255 ? 255 : r + segTbl[r];
+                g = g + segTbl[g] > 255 ? 255 : g + segTbl[g];
+                b = b + segTbl[b] > 255 ? 255 : b + segTbl[b];
+                data[i] = qRgba(r, g, b,a);
+            }
+        }
+        else{
+            for(int i=0; i < pixels; ++i){
+                int r = qRed(data[i]);
+                int g = qGreen(data[i]);
+                int b = qBlue(data[i]);
+                int a = qAlpha(data[i]);
+                r = r - segTbl[r] < 0 ? 0 : r - segTbl[r];
+                g = g - segTbl[g] < 0 ? 0 : g - segTbl[g];
+                b = b - segTbl[b] < 0 ? 0 : b - segTbl[b];
+                data[i] = qRgba(r, g, b, a);
+            }
+        }
+        delete [] segTbl;
+    }
 
     return image;
 }
@@ -643,7 +774,7 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
 {
     if (image.width() == 0 || image.height() == 0) {
 #ifndef NDEBUG
-      cerr << "WARNING: KImageEffect::channelIntensity : invalid image\n";
+      std::cerr << "WARNING: KImageEffect::channelIntensity : invalid image\n";
 #endif
       return image;
     }
@@ -735,7 +866,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
     if (image.width() == 0 || image.height() == 0 ||
         modImage.width() == 0 || modImage.height() == 0) {
 #ifndef NDEBUG
-      cerr << "WARNING: KImageEffect::modulate : invalid image\n";
+      std::cerr << "WARNING: KImageEffect::modulate : invalid image\n";
 #endif
       return image;
     }
@@ -866,7 +997,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 
     if (opacity < 0.0 || opacity > 1.0) {
 #ifndef NDEBUG
-	cerr << "WARNING: KImageEffect::blend : invalid opacity. Range [0, 1]\n";
+        std::cerr << "WARNING: KImageEffect::blend : invalid opacity. Range [0, 1]\n";
 #endif
 	return dst;
     }
@@ -876,28 +1007,108 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 	dst = dst.convertDepth(32);
 
     int pixels = dst.width() * dst.height();
-    int rcol, gcol, bcol;
-    clr.rgb(&rcol, &gcol, &bcol);
+
+#ifdef USE_MMX_INLINE_ASM 
+    // Do we have MMX support?
+    bool haveMMX = KCPUInfo::haveExtension( KCPUInfo::IntelMMX );
+
+    if ( haveMMX && pixels > 1 ) {
+        Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
+        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, alpha };
+        QRgb color = clr.rgb();
+
+        __asm__ __volatile__(
+        "pxor        %%mm7,    %%mm7\n\t"       // Zero out the MM7 register
+        "movq         (%0),    %%mm6\n\t"       // Copy the alpha value to MM6
+        "movd           %1,    %%mm5\n\t"       // Copy the color to MM5
+        "punpcklbw   %%mm7,    %%mm5\n\t"       // Unpack the color
+        : : "r"(packedalpha), "r"(color) );
+
+        Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
+
+        // Check if the pixel count is an odd number
+        // (We process two pixels / iteration in the loop)
+        int remainder = pixels % 2;
+        pixels -= remainder;
+
+        // If so, process the odd pixel first
+        if ( remainder ) {
+            __asm__ __volatile__(
+            "movd         (%0),   %%mm1\n\t"    // Copy the pixel to MM1
+            "punpcklbw   %%mm7,   %%mm1\n\t"    // Unpack the pixel
+            "movq        %%mm5,   %%mm0\n\t"    // Copy the color to MM0
+            "psubw       %%mm1,   %%mm0\n\t"    // Subtract the pixel from the color
+            "pmullw      %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
+            "psllw          $8,   %%mm1\n\t"    // Multiply the pixel with 256
+            "paddw       %%mm1,   %%mm0\n\t"    // Add the pixel to the result
+            "psrlw          $8,   %%mm0\n\t"    // Divide by 256
+            "packuswb    %%mm0,   %%mm0\n\t"    // Pack the pixel to a dword
+            "movd        %%mm0,   (%0)\n\t"     // Write the pixel to the image
+            : : "r"(data) );
+
+            data++;
+        }
+
+        while ( pixels ) {
+            __asm__ __volatile__(
+            // Blend the first pixel
+            "movd         (%0),   %%mm1\n\t"    // Copy the pixel to MM1
+            "punpcklbw   %%mm7,   %%mm1\n\t"    // Unpack the pixel
+            "movq        %%mm5,   %%mm0\n\t"    // Copy the color to MM0
+            "psubw       %%mm1,   %%mm0\n\t"    // Subtract the pixel from the color
+            "pmullw      %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
+            "psllw          $8,   %%mm1\n\t"    // Multiply the pixel with 256
+            "paddw       %%mm1,   %%mm0\n\t"    // Add the pixel to the result 
+            "psrlw          $8,   %%mm0\n\t"    // Divide by 256
+
+            // Blend the second pixel
+            "movd        4(%0),   %%mm3\n\t"    // Copy the pixel to MM3
+            "punpcklbw   %%mm7,   %%mm3\n\t"    // Unpack the pixel
+            "movq        %%mm5,   %%mm2\n\t"    // Copy the color to MM2
+            "psubw       %%mm3,   %%mm2\n\t"    // Subtract the pixel from the color
+            "pmullw      %%mm6,   %%mm2\n\t"    // Multiply the result with alpha
+            "psllw          $8,   %%mm3\n\t"    // Multiply the pixel with 256
+            "paddw       %%mm3,   %%mm2\n\t"    // Add the pixel to the result
+            "psrlw          $8,   %%mm2\n\t"    // Divide by 256
+
+            // Pack the pixels into a quadword and write them away
+            "packuswb    %%mm2,   %%mm0\n\t"    // Pack the pixels to a qword
+            "movq        %%mm0,   (%0)\n\t"     // Write the pixels to the image
+            : : "r"(data) ); 
+
+            data   += 2;
+	    pixels -= 2;
+        }
+
+        // Empty the MMX state
+        __asm__ __volatile__("emms");	
+    } else	
+#endif // USE_MMX_INLINE_ASM
+    {
+        int rcol, gcol, bcol;
+        clr.rgb(&rcol, &gcol, &bcol);
 
 #ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
-    register unsigned char *data = (unsigned char *)dst.bits() + 1;
+        register unsigned char *data = (unsigned char *)dst.bits() + 1;
 #else                    // BGRA
-    register unsigned char *data = (unsigned char *)dst.bits();
+        register unsigned char *data = (unsigned char *)dst.bits();
 #endif
 
-    for (register int i=0; i<pixels; i++)
-    {
+        for (register int i=0; i<pixels; i++)
+        {
 #ifdef WORDS_BIGENDIAN
-	*(data++) += (unsigned char)((rcol - *data) * opacity);
-	*(data++) += (unsigned char)((gcol - *data) * opacity);
-	*(data++) += (unsigned char)((bcol - *data) * opacity);
+            *(data++) += (unsigned char)((rcol - *data) * opacity);
+            *(data++) += (unsigned char)((gcol - *data) * opacity);
+            *(data++) += (unsigned char)((bcol - *data) * opacity);
 #else
-	*(data++) += (unsigned char)((bcol - *data) * opacity);
-	*(data++) += (unsigned char)((gcol - *data) * opacity);
-	*(data++) += (unsigned char)((rcol - *data) * opacity);
+            *(data++) += (unsigned char)((bcol - *data) * opacity);
+            *(data++) += (unsigned char)((gcol - *data) * opacity);
+            *(data++) += (unsigned char)((rcol - *data) * opacity);
 #endif
-	data++; // skip alpha
+            data++; // skip alpha
+        }
     }
+
     return dst;
 }
 
@@ -911,14 +1122,14 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 
     if (src.width() != dst.width() || src.height() != dst.height()) {
 #ifndef NDEBUG
-	cerr << "WARNING: KImageEffect::blend : src and destination images are not the same size\n";
+        std::cerr << "WARNING: KImageEffect::blend : src and destination images are not the same size\n";
 #endif
 	return dst;
     }
 
     if (opacity < 0.0 || opacity > 1.0) {
 #ifndef NDEBUG
-	cerr << "WARNING: KImageEffect::blend : invalid opacity. Range [0, 1]\n";
+        std::cerr << "WARNING: KImageEffect::blend : invalid opacity. Range [0, 1]\n";
 #endif
 	return dst;
     }
@@ -927,27 +1138,113 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
     if (dst.depth() != 32) dst = dst.convertDepth(32);
 
     int pixels = src.width() * src.height();
+
+#ifdef USE_MMX_INLINE_ASM
+    // Do we have MMX support?
+    bool haveMMX = KCPUInfo::haveExtension( KCPUInfo::IntelMMX );
+
+    if ( haveMMX && pixels > 1 ) {
+        Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
+        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, alpha };
+
+        // Prepare the MM6 and MM7 registers for blending and unpacking
+        __asm__ __volatile__(
+        "pxor       %%mm7,   %%mm7\n\t"      // Zero out the MM7 register
+        "movq        (%0),   %%mm6\n\t"      // Copy the alpha value to MM6
+        : : "r"(packedalpha) );
+
+        Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
+        Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );
+
+        // Check if the pixel count is an odd number
+        // (We process two pixels / iteration in the loop)
+        int remainder = pixels % 2;
+        pixels -= remainder;
+
+        // If so, process the odd pixel first
+        if ( remainder ) {
+        __asm__ __volatile__(
+            "movd          (%0),   %%mm0\n\t"    // Copy the src pixel to MM0
+            "punpcklbw    %%mm7,   %%mm0\n\t"    // Unpack the src pixel
+            "movd          (%1),   %%mm1\n\t"    // Move the dst pixel to MM1
+            "punpcklbw    %%mm7,   %%mm1\n\t"    // Unpack the dst pixel
+            "psubw        %%mm1,   %%mm0\n\t"    // Subtract dst from src
+            "pmullw       %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
+            "psllw           $8,   %%mm1\n\t"    // Multiply dst with 256 
+            "paddw        %%mm1,   %%mm0\n\t"    // Add dst to result
+            "psrlw           $8,   %%mm0\n\t"    // Divide by 256
+            "packuswb     %%mm0,   %%mm0\n\t"    // Pack the pixel to a dword
+            "movd         %%mm0,   (%1)\n\t"     // Write the pixel back to the image
+            : : "r"(data1), "r"(data2) );
+
+            data1++;
+            data2++;
+        }
+
+        // Begin the main loop
+        while ( pixels ) {
+            __asm__ __volatile__(
+            // Blend the first pixel
+            "movd          (%0),   %%mm0\n\t"    // Copy the src pixel to MM0
+            "punpcklbw    %%mm7,   %%mm0\n\t"    // Unpack the src pixel
+            "movd          (%1),   %%mm1\n\t"    // Move the dst pixel to MM1
+            "punpcklbw    %%mm7,   %%mm1\n\t"    // Unpack the dst pixel
+            "psubw        %%mm1,   %%mm0\n\t"    // Subtract dst from src
+            "pmullw       %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
+            "psllw           $8,   %%mm1\n\t"    // Multiply dst with 256 
+            "paddw        %%mm1,   %%mm0\n\t"    // Add dst to the result
+            "psrlw           $8,   %%mm0\n\t"    // Divide by 256
+
+            // Blend the second pixel
+            "movd         4(%0),   %%mm2\n\t"    // Move the src pixel to MM2
+            "punpcklbw    %%mm7,   %%mm2\n\t"    // Unpack the src pixel
+            "movd         4(%1),   %%mm3\n\t"    // Move the dst pixel to MM3
+            "punpcklbw    %%mm7,   %%mm3\n\t"    // Unpack the dst pixel
+            "psubw        %%mm3,   %%mm2\n\t"    // Subtract dst from src
+            "pmullw       %%mm6,   %%mm2\n\t"    // Multiply the result with alpha
+            "psllw           $8,   %%mm3\n\t"    // Multiply dst with 256 
+            "paddw        %%mm3,   %%mm2\n\t"    // Add bg to the result
+            "psrlw           $8,   %%mm2\n\t"    // Divide by 256
+
+            // Pack the pixels into a quadword and write them away 
+            "packuswb     %%mm2,   %%mm0\n\t"    // Pack the pixels to a qword
+            "movq         %%mm0,   (%1)\n\t"     // Write the pixels back into the image
+            : : "r"(data1), "r"(data2) );
+
+            data1  += 2;
+            data2  += 2;
+	    pixels -= 2;
+        }
+
+        // Empty the MMX state
+        __asm__ __volatile__("emms");
+
+    } else
+#endif // USE_MMX_INLINE_ASM
+
+    {
 #ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
-    register unsigned char *data1 = (unsigned char *)dst.bits() + 1;
-    register unsigned char *data2 = (unsigned char *)src.bits() + 1;
+        register unsigned char *data1 = (unsigned char *)dst.bits() + 1;
+        register unsigned char *data2 = (unsigned char *)src.bits() + 1;
 #else                    // BGRA
-    register unsigned char *data1 = (unsigned char *)dst.bits();
-    register unsigned char *data2 = (unsigned char *)src.bits();
+        register unsigned char *data1 = (unsigned char *)dst.bits();
+        register unsigned char *data2 = (unsigned char *)src.bits();
 #endif
 
-    for (register int i=0; i<pixels; i++)
-    {
+        for (register int i=0; i<pixels; i++)
+        {
 #ifdef WORDS_BIGENDIAN
-	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
 #else
-	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
-	*(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
+            *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
 #endif
-	data1++; // skip alpha
-	data2++;
+            data1++; // skip alpha
+            data2++;
+        }
     }
 
     return dst;
@@ -960,7 +1257,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
 {
     if (image.width() == 0 || image.height() == 0 || image.depth()!=32 ) {
 #ifndef NDEBUG
-      cerr << "WARNING: KImageEffect::blend : invalid image\n";
+      std::cerr << "WARNING: KImageEffect::blend : invalid image\n";
 #endif
       return image;
     }
@@ -1155,7 +1452,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         }
     }
 #ifndef NDEBUG
-    else cerr << "KImageEffect::blend effect not implemented" << endl;
+    else std::cerr << "KImageEffect::blend effect not implemented" << std::endl;
 #endif
     return image;
 }
@@ -1187,7 +1484,7 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
         image2.width() == 0 || image2.height() == 0 ||
         blendImage.width() == 0 || blendImage.height() == 0) {
 #ifndef NDEBUG
-      cerr << "KImageEffect::blend effect invalid image" << endl;
+        std::cerr << "KImageEffect::blend effect invalid image" << std::endl;
 #endif
       return image1;
     }
@@ -1287,7 +1584,7 @@ QImage& KImageEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
 {
     if (image.width() == 0 || image.height() == 0) {
 #ifndef NDEBUG
-      cerr << "KImageEffect::hash effect invalid image" << endl;
+        std::cerr << "KImageEffect::hash effect invalid image" << std::endl;
 #endif
       return image;
     }
@@ -1797,7 +2094,7 @@ bool KImageEffect::blend(
   )
   {
 #ifndef NDEBUG
-    cerr << "KImageEffect::blend : Sizes not correct\n" ;
+    std::cerr << "KImageEffect::blend : Sizes not correct\n" ;
 #endif
     return false;
   }

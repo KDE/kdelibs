@@ -100,7 +100,11 @@ public:
      * value for blending one into another. Very fast direct pixel
      * manipulation is used.
      *
+     * This function uses MMX instructions to blend the image on
+     * processors that support it.
+     *
      * @author Karol Szwed (gallium@kde.org)
+     * @author Fredrik H&ouml;glund (fredrik@kde.org)
      * @param clr source color to be blended into the destination image.
      * @param dst destination image in which the source will be blended into.
      * @param opacity opacity (in percent) which determines how much the source
@@ -114,7 +118,11 @@ public:
      * value for blending one into another. Very fast direct pixel
      * manipulation is used.
      *
+     * This function uses MMX instructions to blend the images on
+     * processors that support it.
+     *
      * @author Karol Szwed (gallium@kde.org)
+     * @author Fredrik H&ouml;glund (fredrik@kde.org)
      * @param src source image to be blended into the destination image.
      * @param dst destination image in which the source will be blended into.
      * @param opacity opacity (in percent) which determines how much the source
@@ -247,7 +255,11 @@ public:
      * Either brighten or dim the image by a specified percent.
      * For example, .50 will modify the colors by 50%.
      *
+     * This function uses MMX instructions to process the image
+     * on processors that support it.
+     *
      * @author Daniel M. Duley (mosfet)
+     * @author Benjamin Roe (ben@benroe.com)
      * @param image The QImage to process.
      * @param percent The percent value. Use a negative value to dim.
      * @return Returns The @ref image(), provided for convenience.
