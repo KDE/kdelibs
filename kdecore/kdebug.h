@@ -129,6 +129,11 @@ class kdbgstream {
 	QString tmp; tmp.setNum(i); output += tmp;
 	return *this;
     }
+    kdbgstream &operator<<(unsigned int i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum(i); output += tmp;
+        return *this;
+    }                                                                             
     void flush();
     kdbgstream &operator<<(const QString& string) {
 	if (!print) return *this;
@@ -156,6 +161,10 @@ class kdbgstream {
 	if (!print) return *this;
 	return (*f)(*this);
     }
+    kdbgstream& operator<<(double d) {
+      form("%f", d);
+      return *this;
+    }
     kdbgstream &form(const char *format, ...);
     /** Operator to print out basic information about a QWidget.
      *  Output of class names only works if the class is moc'ified
@@ -181,6 +190,7 @@ class kndbgstream {
     kndbgstream &operator<<(const QCString& ) { return *this; }
     kndbgstream &operator<<(const char *) { return *this; }
     kndbgstream& operator<<(void *) { return *this; }
+    kndbgstream& operator<<(double) { return *this; }
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
     kndbgstream& operator << (QWidget*) { return *this; }
     kndbgstream &form(const char *, ...) { return *this; }
