@@ -309,7 +309,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     if(state == startDecompress)
     {
         cinfo.buffered_image = TRUE;
-        cinfo.do_fancy_upsampling = FALSE;
+        cinfo.do_fancy_upsampling = TRUE;
         cinfo.do_block_smoothing = FALSE;
         cinfo.dct_method = JDCT_FASTEST;
 
