@@ -1359,7 +1359,7 @@ void KHTMLWidget::parse()
     settings = new HTMLSettings( *defaultSettings);
 
 
-    clue = new HTMLClueV( 0, 0, width() - leftBorder - rightBorder );
+    clue = new HTMLClueV(); 
     clue->setVAlign( HTMLClue::Top );
     clue->setHAlign( HTMLClue::Left );
 

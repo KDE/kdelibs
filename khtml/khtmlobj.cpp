@@ -63,12 +63,9 @@ int HTMLObject::objCount = 0;
 HTMLObject::HTMLObject()
 {
     flags = 0;
-    setFixedWidth( true );
-    max_width = 0;
     width = 0;
     ascent = 0;
     descent = 0;
-    percent = 0;
     objCount++;
     nextObj = 0;
     x = 0;
@@ -1137,42 +1134,56 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-HTMLRule::HTMLRule( int _max_width, int _percent, int _size, bool _shade )
+HTMLRule::HTMLRule( int _length, int _percent, int _size, bool _shade )
 	: HTMLObject()
 {
+    // Width is set in setMaxWidth()
     if ( _size < 1 )
 	_size = 1;
     ascent = 6 + _size;
     descent = 6;
-    max_width = _max_width;
-    width = _max_width;
+    length = _length;
     percent = _percent;
     shade = _shade;
-
-    if ( percent > 0 )
+    if ((length == UNDEFINED) && (percent == UNDEFINED))
     {
-	width = max_width * percent / 100;
-	setFixedWidth( false );
+        percent = 100; // Default: full width
     }
 }
 
 int HTMLRule::calcMinWidth()
 {
-    if ( isFixedWidth() )
-	return width;
-    
-    return 1;
+    if ( percent == UNDEFINED )
+    {
+        // Fixed width, lenght is minimum width
+	return length;
+    }
+    else
+    {   
+        // Percent width, we scale into whatever size is required
+        return 1;
+    }
 }
 
 void HTMLRule::setMaxWidth( int _max_width )
 {
-    if ( !isFixedWidth() )
+    if ( percent == UNDEFINED )
     {
-	max_width = _max_width;
-	if ( percent > 0 )
-	    width = _max_width * percent / 100;
-	else
-	    width = max_width;
+        // Fixed width, our width is length, if allowed by _max_width
+        if (length < _max_width)
+            width = length;
+        else
+            width = _max_width;
+    
+    }
+    else
+    {
+         // Percent width, we scale according to _max_width.
+	 width = (percent * _max_width) / 100;
+	 if (width < 0)
+	     width = 1;
+	 if (width > _max_width)
+	     width = _max_width;
     }
 }
 
@@ -1272,10 +1283,13 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 //-----------------------------------------------------------------------------
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
-	const char *_url, const char *_target,
-	int _max_width, int _width, int _height, int _percent, int bdr )
+	const char *_url, const char *_target, int _width, int _height, 
+	int _percent, int bdr )
     : QObject(), HTMLObject()
 {
+    // Width is set in setMaxWidth()
+    lastWidth = UNDEFINED;
+    lastHeight = UNDEFINED;
     pixmap = 0;
     overlay = 0;
     bComplete = true;
@@ -1287,23 +1301,21 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     
     imageURL = _filename;
 
-    predefinedWidth = ( _width < 0 && !_percent ) ? false : true;
-    predefinedHeight = _height < 0 ? false : true;
+    predefinedWidth = _width;
+    if (predefinedWidth == UNDEFINED)
+        predefinedWidth = 0;
+
+    predefinedHeight = _height;
+    if (predefinedHeight == UNDEFINED)
+        predefinedHeight = 0;
 
     border = bdr;
     percent = _percent;
-    max_width = _max_width;
-    ascent = _height + border;
-    descent = border;
-    if ( percent > 0 )
-    {
-	width = (int)max_width * (int)percent / 100;
-	width += border * 2;
-    }
+    if (_height == UNDEFINED)
+        ascent = 32 + border;
     else
-    {
-        width = _width + border * 2;
-    }
+	ascent = _height + border;
+    descent = border;
 
     absX = -1;
     absY = -1;
@@ -1313,90 +1325,54 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     {
       // Do not load an image yet
       imageURL = "";
-      synchron = false;
       bComplete = false;
       return;
     }
 
     //printf("********* IMAGE %s ******\n",_filename );
     
-    synchron = TRUE;
     htmlWidget->requestImage( this, imageURL.data() );
-    synchron = FALSE;
-
-    // Is the image available ?
-    if ( pixmap == 0 || pixmap->isNull() )
-    {
-	if ( !predefinedWidth && !percent)
-	    width = 32;
-	if ( !predefinedHeight )
-	    ascent = 32;
-    }
-    else
-	init();
-}
-
-void HTMLImage::init()
-{
-    if ( percent > 0 )
-    {
-	width = (int)max_width * (int)percent / 100;
-	if ( !predefinedHeight )
-	    ascent = pixmap->height() * width / pixmap->width();
-	setFixedWidth( false );
-    }
-    else
-    {
-	if ( !predefinedWidth )
-	    width = pixmap->width();
-
-	if ( !predefinedHeight )
-	    ascent = pixmap->height();
-
-	if ( predefinedWidth && !predefinedHeight )
-	    ascent = pixmap->height() * width / pixmap->width();
-    }
-
-    if ( !predefinedWidth )
-	width += border*2;
-    if ( !predefinedHeight )
-	ascent += border;
 }
 
 void HTMLImage::changeImage( const char *_url )
 { 
   htmlWidget->imageCache()->free( imageURL, this);
   imageURL = _url;
+  pixmap = 0;
 
-  synchron = TRUE;
   bComplete = false;
   htmlWidget->requestImage( this, imageURL.data() );
-  synchron = FALSE;
-  
-  // Is the image available ?
-  if ( pixmap == 0 || pixmap->isNull() )
-  {
-    if ( !predefinedWidth && !percent)
-      width = 32;
-    if ( !predefinedHeight )
-      ascent = 32;
-  }
-  else
-    init();
-
-  if ( bComplete && !isA( "HTMLJSImage" ) )
-    htmlWidget->paintSingleObject( this );
 }
 
 void HTMLImage::setPixmap( QPixmap *p )
 {
     pixmap = p;
-    init();
 
-    if ( predefinedWidth && predefinedHeight && !synchron )
+    if (!predefinedHeight)
+        ascent = pixmap->height() + border;
+
+    if (width == 0)
+    	return; // setMaxSize has not yet been called. Do nothing.
+
+    if (  (
+           (predefinedWidth) || 
+           (percent != UNDEFINED) ||
+           (pixmap->width() == lastWidth)
+          )
+          && 
+    	  (
+    	   (predefinedHeight) ||
+    	   (pixmap->height() == lastHeight)
+          )
+       )
+    {   
+	// Image dimension are predefined or have not changed:
+	// draw ourselves.
 	htmlWidget->paintSingleObject( this );
-    else if ( !synchron )
+    }
+    else
     {
+        // Image dimensions have been changed, recalculate layout
 	htmlWidget->calcSize();
 	htmlWidget->calcAbsolutePos();
 	htmlWidget->scheduleUpdate( true );
@@ -1406,8 +1382,7 @@ void HTMLImage::setPixmap( QPixmap *p )
 void HTMLImage::pixmapChanged(QPixmap *p)
 {
     if( p )
-	pixmap = p;
-    htmlWidget->paintSingleObject(this);
+	setPixmap( p);
 }
 
 void HTMLImage::setOverlay( const char *_ol )
@@ -1418,31 +1393,78 @@ void HTMLImage::setOverlay( const char *_ol )
 
 int HTMLImage::calcMinWidth()
 {
-    if ( percent > 0 )
-	return 1;
-
-    return width;
+    if ( percent == UNDEFINED )
+    {
+        if (predefinedWidth)
+            return predefinedWidth; // Image with predefined.
+        else if (!pixmap || pixmap->isNull())
+            return 32+2*border; // Image width not yet known.
+        else
+            return pixmap->width()+2*border;
+    }
+    // Percent width, we scale according to _max_width.
+    return 1;
 }
 
 int HTMLImage::calcPreferredWidth()
 {
-    return width;
+    int pref_width;
+    if ( percent == UNDEFINED )
+    {
+        if (predefinedWidth)
+            pref_width = predefinedWidth; // Image with predefined.
+        else if (!pixmap || pixmap->isNull())
+            pref_width = 32+2*border; // Image width not yet known.
+        else
+            pref_width = pixmap->width()+2*border;
+    }
+    else
+    {
+        // Preferred is the image width, if we know it.
+        if (!pixmap || pixmap->isNull())
+            pref_width = 32+2*border; // Image width not yet known.
+        else
+            pref_width = pixmap->width()+2*border;
+    }
+    return pref_width;
 }
 
 void HTMLImage::setMaxWidth( int _max_width )
 {
-    if ( percent > 0 )
-	max_width = _max_width;
-
-    if ( pixmap == 0 || pixmap->isNull() )
-	return;
-
-    if ( percent > 0 )
+    if ( percent == UNDEFINED )
     {
-	width = (int)max_width * (int)percent / 100;
-	if ( !predefinedHeight )
-	    ascent = pixmap->height() * width / pixmap->width() + border;
-	width += border * 2;
+        if (predefinedWidth)
+            width = predefinedWidth; // Image with predefined.
+        else if (!pixmap || pixmap->isNull())
+            width = 32+2*border; // Image width not yet known.
+        else
+            width = pixmap->width()+2*border;
+        
+        if (width > _max_width)
+            width = _max_width;
+    }
+    else
+    {
+         // Percent width, we scale according to _max_width.
+	 width = (percent*_max_width) / 100;
+	 if (width > _max_width)
+	     width = _max_width;
+
+         // If the height has not been defined, it scales as well
+         if (!predefinedHeight && pixmap && !pixmap->isNull())
+         {
+             ascent = pixmap->height() * width / pixmap->width();
+         }
+    }
+    if (pixmap && !pixmap->isNull())
+    {
+        lastWidth = pixmap->width();
+        lastHeight = pixmap->height();
+    }
+    else
+    {
+        lastWidth = UNDEFINED;
+        lastHeight = UNDEFINED;
     }
 }
 
@@ -1784,10 +1806,11 @@ const HTMLArea *HTMLMap::containsPoint( int _x, int _y )
 //----------------------------------------------------------------------------
 
 HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
-	    const char *_url, const char *_target,
-	    int _max_width, int _width, int _height, int _percent, int bdr )
-    : HTMLImage( widget, _filename, _url, _target, _max_width, _width,
-	    _height, _percent, bdr )
+	                    const char *_url, const char *_target, 
+	                    int _width, int _height, int _percent, int bdr )
+    : HTMLImage( widget, _filename, 
+                 _url, _target, 
+                 _width, _height, _percent, bdr )
 {
     type = ClientSide;
     serverurl = _url;

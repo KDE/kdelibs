@@ -628,9 +628,9 @@ void HTMLTextInput::slotReturnPressed()
 
 //----------------------------------------------------------------------------
 
-HTMLImageInput::HTMLImageInput( KHTMLWidget *widget, const char *f, int mw,
+HTMLImageInput::HTMLImageInput( KHTMLWidget *widget, const char *f,
 	const char *n )
-    : HTMLImage( widget, f, 0, 0, mw ), HTMLElement( n )
+    : HTMLImage( widget, f, 0, 0), HTMLElement( n )
 {
     _xp = _yp = 0;
     pressed = false;

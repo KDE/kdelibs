@@ -54,11 +54,14 @@ class KHTMLWidget;
 //-----------------------------------------------------------------------------
 // really only useful for tables.
 //
+// This is a HTMLClueV with as extra features:
+// * rowspan & colspan property
+// * a background color can be set 
+//
 class HTMLTableCell : public HTMLClueV
 {
 public:
-    HTMLTableCell( int _x, int _y, int _max_width, int _percent,
-	    int rs, int cs, int pad );
+    HTMLTableCell( int _percent, int _width, int rs, int cs, int pad );
     virtual ~HTMLTableCell() { }
 
     int rowSpan() const
@@ -71,8 +74,9 @@ public:
     void setBGColor( const QColor &c )
 	    {	bg = c; }
 
-    virtual void setMaxWidth( int );
-    virtual int  calcMinWidth();
+    int getPercent()
+        {   return percent; }
+
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *_painter, HTMLChain *_chain, int _x,
@@ -95,7 +99,7 @@ protected:
 class HTMLTable : public HTMLObject
 {
 public:
-    HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
+    HTMLTable( int _percent, int _width,
 		int _padding = 1, int _spacing = 2, int _border = 0 );
     virtual ~HTMLTable();
 
@@ -108,9 +112,10 @@ public:
 	    {	caption = cap; capAlign = al; }
 
     virtual void reset();
-    virtual void calcSize( HTMLClue *parent = 0L );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
+
+    virtual void calcSize( HTMLClue *parent = 0L );
     virtual void setMaxWidth( int _max_width );
     virtual void setMaxAscent( int );
     virtual HTMLObject *checkPoint( int, int );
@@ -166,8 +171,7 @@ protected:
     enum ColType { Fixed, Percent, Variable };
 
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
-    void calcColumnWidths();
-    void calcColInfo();
+    void calcColInfo(int pass);
     int  addColInfo(int _startCol, int _colSpan, int _minSize,
                     int _prefSize, int _maxSize, ColType _colType);
     void addRowInfo(int _row, int _colInfoIndex);
@@ -235,8 +239,15 @@ protected:
     HTMLTableCell ***cells;
     QArray<ColInfo_t> colInfo;
     RowInfo_t   *rowInfo;
-    int          _minWidth;
-    int          _prefWidth;
+
+    int         percent;
+    int         fixed_width;
+    int         min_width;
+    int         pref_width;
+    int         max_width;
+
+//    int          _minWidth;
+//    int          _prefWidth;
 
     QArray<int> columnPos;
     QArray<int> columnPrefPos;

@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- HTML Parser
-// $Id:  $
+// $Id$
 
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
@@ -191,7 +191,7 @@ protected:
     /*
      * parse table
      */
-    const char* parseTable( HTMLClue *_clue, int _max_width, const char * );
+    const char* parseTable( HTMLClue *_clue, const char * );
 
     /*
      * parse input

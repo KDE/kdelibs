@@ -333,7 +333,7 @@ class HTMLImageInput : public HTMLImage, public HTMLElement
 {
     Q_OBJECT
 public:
-    HTMLImageInput( KHTMLWidget *widget, const char *, int mw, const char *n );
+    HTMLImageInput( KHTMLWidget *widget, const char *, const char *n );
     virtual ~HTMLImageInput() {}
 
     virtual QString encoding();

@@ -75,6 +75,8 @@ class HTMLAnchor;
 
 typedef enum { HTMLNoFit, HTMLPartialFit, HTMLCompleteFit } HTMLFitType;
 
+const int UNDEFINED = -1;
+
 //-----------------------------------------------------------------------------
 // HTMLObject is the base class for all HTML objects.
 //
@@ -126,7 +128,7 @@ public:
 
     virtual void setMaxAscent( int ) { }
     virtual void setMaxDescent( int ) { }
-    virtual void setMaxWidth( int _w ) { max_width = _w; }
+    virtual void setMaxWidth( int _w ) { }
     virtual int  findPageBreak( int _y );
 
     /**
@@ -241,8 +243,6 @@ public:
     int getHeight() const { return ascent+descent; }
     int getAscent() const { return ascent; }
     int getDescent() const { return descent; }
-    int getMaxWidth() const { return max_width; }
-    int getPercent() const { return percent; }
 
     /**
      * return the URL associated with this object if available, else 0.
@@ -254,15 +254,15 @@ public:
     void setXPos( int _x ) { x=_x; }
     void setYPos( int _y ) { y=_y; }
 
-    enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
-			AllSelected = 0x08, FixedWidth = 0x10, Aligned = 0x20,
-			Printed = 0x40, Hidden = 0x80};
+    enum ObjectFlags { Separator = 0x01, NewLine = 0x02, 
+                       Selected = 0x04, AllSelected = 0x08, 
+                       Aligned = 0x10, Printed = 0x20, 
+                       Hidden = 0x40};
 
     bool isSeparator() const { return flags & Separator; }
     bool isNewline() const { return flags & NewLine; }
     bool isSelected() const { return flags & Selected; }
     bool isAllSelected() const { return flags & AllSelected; }
-    bool isFixedWidth() const { return flags & FixedWidth; }
     bool isAligned() const { return flags & Aligned; }
     bool isPrinted() const { return flags & Printed; }
     bool isHidden() const { return flags & Hidden; }
@@ -272,7 +272,6 @@ public:
     void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
     void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
     void setAllSelected( bool s ) { s ? flags|=AllSelected : flags&=~AllSelected; }
-    void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
     void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
     void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
     void setHidden( bool p ) { p ? flags|=Hidden : flags&=~Hidden; }
@@ -331,10 +330,7 @@ protected:
     int y;
     int ascent;
     int descent;
-    short width;
-    short max_width;
-    // percent stuff added for table support
-    short percent;	// width = max_width * percent / 100
+    short width;	// Actual width of object
     unsigned char flags;
     HTMLObject *nextObj;
     static int objCount;
@@ -539,11 +535,13 @@ protected:
 class HTMLRule : public HTMLObject
 {
 public:
-    HTMLRule( int _max_width, int _percent, int _size=1, bool _shade=TRUE );
+    HTMLRule( int _length=UNDEFINED, int _percent=UNDEFINED, int _size=1, bool _shade=TRUE );
 
+	// This object supports HTMLFixedWidth and HTMLPercentWidth
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth() { return calcMinWidth(); }
     virtual void setMaxWidth( int );
+
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
@@ -551,6 +549,8 @@ public:
     virtual const char * objectName() const { return "HTMLRule"; };
 
 protected:
+	int  length;
+	int  percent;
     bool shade;
 };
 
@@ -622,13 +622,16 @@ class HTMLImage : public QObject, public HTMLObject
     Q_OBJECT
 public:
     HTMLImage( KHTMLWidget *widget, const char *, const char *_url,
-		const char *_target, int _max_width, int _width = -1,
-		int _height = -1, int _percent = 0, int bdr = 0 );
+		const char *_target, 
+		int _width = UNDEFINED, int _height = UNDEFINED, 
+		int _percent = UNDEFINED, int bdr = 0 );
     virtual ~HTMLImage();
 
+    // This object supports HTMLFixedWidth and HTMLPercentWidth
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
+
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
@@ -655,13 +658,30 @@ public:
 
 protected:
 
-    /*
-     * Calculates the size of the loaded image.
-     * This function is usually called from the constructor or from
-     * 'imageLoaded'.
+    int percent;
+	/*
+	 * The desired dimensions of the image. If -1, the actual image will
+	 * determine this value when it is loaded.
      */
-    void init();
-    
+    int predefinedWidth;
+    int predefinedHeight;
+
+    /*
+     * border width
+     */
+    int border;
+
+    QColor borderColor;
+
+	/*
+	 * The dimensions of the image during the last 'setMaxWidth'.
+	 * If a new image is set with different dimensions, we need to 
+	 * recalculate the layout.
+	 */
+	int lastWidth;
+	int lastHeight;
+
+	
     /*
      * Pointer to the image
      * If this pointer is 0L, that means that the picture could not be loaded
@@ -681,41 +701,6 @@ protected:
     
     KHTMLWidget *htmlWidget;
     
-    /*
-     * If we knew the size of the image from the <img width=...> tag then this
-     * flag is TRUE.
-     * We need this flag if the image has to be loaded from the web. In this
-     * case we may have to reparse the HTML code if we did not know the size
-     * during the first parsing.
-     */
-    bool predefinedWidth;
-
-    /*
-     * If we knew the size of the image from the <img height=...> tag then
-     * this flag is TRUE.
-     * We need this flag if the image has to be loaded from the web. In this
-     * case we may have to reparse the HTML code if we did not know the size
-     * during the first parsing.
-     */
-    bool predefinedHeight;
-
-    /*
-     * Tells the function 'imageLoaded' wether it runs synchronized with the
-     * constructor
-     * If an image has to be loaded from the net, it may happen that the image
-     * is cached.  This means the the function 'imageLoaded' is called before
-     * the control returns to the constructor, since the constructor requested
-     * the image and this caused in turn 'imageLoaded' to be called. In this
-     * case the images arrived just in time and no repaint or recalculate
-     * action must take place. If 'imageLoaded' works synchron with
-     * the constructor then this flag is set to TRUE.
-     */
-    bool synchron;
-
-    // border width
-    int border;
-
-    QColor borderColor;
 
     const char *url;
     const char *target;
@@ -797,9 +782,10 @@ protected:
 class HTMLImageMap : public HTMLImage
 {
 public:
-    HTMLImageMap( KHTMLWidget *widget, const char*, const char *_url,
-	    const char *_target, int _max_width, int _width = -1,
-	    int _height = -1, int _percent = 0, int brd = 0 );
+    HTMLImageMap( KHTMLWidget *widget, const char*, 
+                  const char *_url, const char *_target, 
+                  int _width = UNDEFINED, int _height = UNDEFINED, 
+                  int _percent = UNDEFINED, int brd = 0 );
     virtual ~HTMLImageMap() {}
 
     virtual HTMLObject* checkPoint( int, int );

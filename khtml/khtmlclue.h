@@ -74,18 +74,14 @@ class HTMLClue : public HTMLObject
 {
 public:
     /************************************************************
-     * This class is abstract. Do not instantiate it. The _y argument
-     * is always 0 yet. _max_width defines the width you allow this Box
-     * to have. If you do not use HCenter or Right and if this Box
-     * becomes a child of a VBox you may set _x to give this Box
-     * a shift to the right.
+     * This class is abstract. Do not instantiate it. 
      *
      * if:
-     *     _percent == -ve     width = best fit
-     *     _percent == 0       width = _max_width (fixed)
-     *     _percent == +ve     width = _percent * 100 / _max_width
+     *     _percent == -1      width = best fit
+     *     _percent == 0       width = _width (fixed)
+     *     _percent == +ve     width = _percent * 100 / max_width
      */
-    HTMLClue( int _x, int _y, int _max_width, int _percent = 100);
+    HTMLClue( int _percent = -1, int _width = 0);
     virtual ~HTMLClue();
 
     virtual int  findPageBreak( int _y );
@@ -108,6 +104,7 @@ public:
     virtual void recalcBaseSize( QPainter * );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
+    virtual void setMaxWidth( int );
     virtual void setMaxAscent( int );
     virtual void setMaxDescent( int );
     virtual HTMLObject *checkPoint( int, int );
@@ -195,6 +192,11 @@ public:
 			     bool printObjects = false );
   
 protected:
+    int percent;
+    int fixed_width;
+    int min_width;
+    int max_width;
+    
     HTMLObject *head;
     HTMLObject *tail;
     HTMLObject *curr;
@@ -204,75 +206,16 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-// Used for aligning images etc. to the left or right of the page.
-//
-class HTMLClueAligned : public HTMLClue
-{
-public:
-    HTMLClueAligned( HTMLClue *_parent, int _x, int _y, int _max_width,
-		     int _percent = 100 )
-	: HTMLClue( _x, _y, _max_width, _percent )
-    { prnt = _parent; nextAligned = 0; setAligned( true ); }
-    virtual ~HTMLClueAligned() { }
-    
-    virtual void setMaxWidth( int );
-    virtual void setMaxAscent( int ) { }
-    virtual void calcSize( HTMLClue *_parent = 0L );
-    
-    HTMLClue *parent()
-	{ return prnt; }
-    HTMLClueAligned *nextClue() const
-	{ return nextAligned; }
-    void setNextClue( HTMLClueAligned *n )
-	{ nextAligned = n; }
-
-    virtual const char * objectName() const { return "HTMLClueAligned"; };
-
-private:
-    HTMLClue *prnt;
-    HTMLClueAligned *nextAligned;
-};
-
-//-----------------------------------------------------------------------------
-// Align objects across the page, wrapping at the end of a line
-//
-class HTMLClueFlow : public HTMLClue
-{
-public:
-    HTMLClueFlow( int _x, int _y, int _max_width, int _percent=100)
-		: HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
-    virtual ~HTMLClueFlow() { }
-    
-    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
-	int _y1, int _x2, int _y2, int _tx, int _ty );
-    virtual void getSelectedText( QString & );
-    virtual void calcSize( HTMLClue *parent = 0L );
-	virtual int  findPageBreak( int _y );
-    virtual int  calcMinWidth();
-    virtual int  calcPreferredWidth();
-    virtual void setMaxWidth( int );
-
-    virtual void setIndent( int i )
-	    {	indent = i; }
-
-    virtual const char * objectName() const { return "HTMLClueFlow"; };
-
-protected:
-    short indent;
-};
-
-//-----------------------------------------------------------------------------
 // Align objects vertically
 //
 class HTMLClueV : public HTMLClue
 {
 public:
-    HTMLClueV( int _x, int _y, int _max_width, int _percent = 100 );
+    HTMLClueV( int _percent = -1, int _width = 0);
     virtual ~HTMLClueV() { }
 
     virtual void reset();
 
-    virtual void setMaxWidth( int );
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int );
     virtual void calcSize( HTMLClue *parent = 0L );
@@ -282,6 +225,8 @@ public:
 		int _width, int _height, int _tx, int _ty )
 	{ HTMLClue::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
+    virtual void print( QPainter *, int _tx, int _ty );
+    
     virtual void findFreeArea( int _y, int _width, int _height, int _indent,
                                int *_y_pos, int *_lmargin, int *_rmargin);
     // This method tries to find a free rectangular area of _width x _height
@@ -310,13 +255,69 @@ protected:
     HTMLClueAligned *alignRightList;
 };
 
+//-----------------------------------------------------------------------------
+// Used for aligning images etc. to the left or right of the page.
+//
+class HTMLClueAligned : public HTMLClueV
+{
+public:
+    HTMLClueAligned( HTMLClue *_parent, int _percent = -1, int _width = 0 )
+	: HTMLClueV( _percent, _width )
+    { prnt = _parent; nextAligned = 0; setAligned( true ); }
+    virtual ~HTMLClueAligned() { }
+    
+    virtual void setMaxAscent( int ) { }
+    virtual void calcSize( HTMLClue *_parent = 0L );
+    
+    HTMLClue *parent()
+	{ return prnt; }
+    HTMLClueAligned *nextClue() const
+	{ return nextAligned; }
+    void setNextClue( HTMLClueAligned *n )
+	{ nextAligned = n; }
+
+    virtual const char * objectName() const { return "HTMLClueAligned"; };
+
+private:
+    HTMLClue *prnt;
+    HTMLClueAligned *nextAligned;
+};
+
+//-----------------------------------------------------------------------------
+// Align objects across the page, wrapping at the end of a line
+//
+class HTMLClueFlow : public HTMLClue
+{
+public:
+    HTMLClueFlow( int _percent=-1, int _width = 0)
+		: HTMLClue( _percent, _width) { indent = 0; }
+    virtual ~HTMLClueFlow() { }
+    
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
+    virtual void getSelectedText( QString & );
+    virtual void calcSize( HTMLClue *parent = 0L );
+	virtual int  findPageBreak( int _y );
+    virtual int  calcMinWidth();
+    virtual int  calcPreferredWidth();
+
+    virtual void setIndent( int i )
+	    {	indent = i; }
+
+    virtual const char * objectName() const { return "HTMLClueFlow"; };
+
+protected:
+    short indent;
+};
+
+
 /**
  * Used for KFMs HTML extension
  */
 class HTMLCell : public HTMLClueV
 {
 public:
-  HTMLCell( int _x, int _y, int _max_width, int _percent = 100, const char *_url = 0L, const char *_target = 0L );
+  HTMLCell( int _percent = -1, int _width = 0, const char *_url = 0L, const char *_target = 0L );
   virtual ~HTMLCell() { }
   
   virtual const char* getURL() const { return url; }
@@ -349,13 +350,12 @@ protected:
 class HTMLClueH : public HTMLClue
 {
 public:
-    HTMLClueH( int _x, int _y, int _max_width, int _percent = 100 )
-	    : HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
+    HTMLClueH( int _percent = -1, int _width = 0 )
+	    : HTMLClue( _percent, _width ) { indent = 0; }
     virtual ~HTMLClueH() { }
 	
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
-    virtual void setMaxWidth( int );
     virtual void calcSize( HTMLClue *parent = 0L );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();

@@ -487,7 +487,7 @@ bool KHTMLParser::insertVSpace( HTMLClue *_clue, bool _vspace_inserted )
 {
     if ( !_vspace_inserted )
     {
-	HTMLClueFlow *f = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	HTMLClueFlow *f = new HTMLClueFlow();
 	_clue->append( f );
 	HTMLVSpace *t = new HTMLVSpace( settings->fontSizes[settings->fontBaseSize] );
 	f->append( t );
@@ -500,9 +500,9 @@ bool KHTMLParser::insertVSpace( HTMLClue *_clue, bool _vspace_inserted )
 void KHTMLParser::newFlow(HTMLClue * _clue)
 {
     if (inPre)
-         flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
+         flow = new HTMLClueH();
 	    else
-         flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+         flow = new HTMLClueFlow();
 
     flow->setIndent( indent );
     flow->setHAlign( divAlign );
@@ -1638,8 +1638,8 @@ void KHTMLParser::parseH( HTMLClue *_clue, const char *str )
 	else if ( strncmp(str, "hr", 2 ) == 0 )
 	{
 		int size = 1;
-		int length = _clue->getMaxWidth();
-		int percent = 100;
+		int length = UNDEFINED;
+		int percent = UNDEFINED;
 		HTMLClue::HAlign align = divAlign;
 		HTMLClue::HAlign oldAlign = divAlign;
 		bool shade = TRUE;
@@ -1671,7 +1671,7 @@ void KHTMLParser::parseH( HTMLClue *_clue, const char *str )
 				else
 				{
 					length = atoi( token+6 );
-					percent = 0;
+					percent = 0; // fixed width
 				}
 			}
 			else if ( strncasecmp( token, "noshade", 6 ) == 0 )
@@ -1705,9 +1705,9 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	QString fullfilename;
 	QString usemap;
 	bool    ismap = false;
-	int width = -1;
-	int height = -1;
-	int percent = 0;
+	int width = UNDEFINED;
+	int height = UNDEFINED;
+	int percent = UNDEFINED;
 	int border = url == 0 ? 0 : 2;
 	HTMLClue::HAlign align = HTMLClue::HNone;
 	HTMLClue::VAlign valign = HTMLClue::VNone;
@@ -1724,8 +1724,10 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	    {
 		if ( strchr( token + 6, '%' ) )
 		    percent = atoi( token + 6 );
-		else
+		else {
 		    width = atoi( token + 6 );
+		    percent = UNDEFINED;
+		}
 	    }
 	    else if (strncasecmp( token, "height=", 7 ) == 0)
 		height = atoi( token + 7 );
@@ -1773,12 +1775,12 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	    if ( usemap.isEmpty() && !ismap )
 	    {
 		image =  new HTMLImage( HTMLWidget, kurl.url(), url, target,
-			 _clue->getMaxWidth(), width, height, percent, border );
+			                width, height, percent, border );
 	    }
 	    else
 	    {
 		image =  new HTMLImageMap( HTMLWidget, kurl.url(), url, target,
-			 _clue->getMaxWidth(), width, height, percent, border );
+			                   width, height, percent, border );
 		if ( !usemap.isEmpty() )
 		    ((HTMLImageMap *)image)->setMapURL( usemap );
 		else
@@ -1799,7 +1801,7 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 		}
                 else
 	    	{
-		    HTMLClueH *valigned = new HTMLClueH (0, 0, _clue->getMaxWidth() );
+		    HTMLClueH *valigned = new HTMLClueH ();
 		    valigned->setVAlign( valign );
 		    valigned->append( image );
 		    flow->append( valigned );
@@ -1808,7 +1810,7 @@ void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 	    // we need to put the image in a HTMLClueAligned
 	    else
 	    {
-		HTMLClueAligned *aligned = new HTMLClueAligned (flow, 0, 0, _clue->getMaxWidth() );
+		HTMLClueAligned *aligned = new HTMLClueAligned (flow);
 		aligned->setHAlign( align );
 		aligned->append( image );
 		flow->append( aligned );
@@ -1884,21 +1886,24 @@ void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 	    listLevel = listStack.count();
 	    indentSize = indent;
 	}
-	HTMLClueFlow *f = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	HTMLClueFlow *f = new HTMLClueFlow();
 	_clue->append( f );
-	HTMLClueH *c = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
+	HTMLClueH *c = new HTMLClueH();
 	c->setVAlign( HTMLClue::Top );
 	f->append( c );
 
+//@@WABA: This should be handled differently
+
 	// fixed width spacer
-	HTMLClueV *vc = new HTMLClueV( 0, 0, indentSize, 0 );
+//	HTMLClueV *vc = new HTMLClueV( 0, 0, indentSize, 0 );
+	HTMLClueV *vc = new HTMLClueV( 0, indentSize); // Fixed width clue
 	vc->setVAlign( HTMLClue::Top );
 	c->append( vc );
 
 	switch ( listType )
 	{
 	    case Unordered:
-		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
+		flow = new HTMLClueFlow();
 		flow->setHAlign( HTMLClue::Right );
 		vc->append( flow );
 		flow->append( new HTMLBullet( font_stack.top()->pointSize(),
@@ -1906,7 +1911,7 @@ void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 		break;
 
 	    case Ordered:
-		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth(), 0 );
+		flow = new HTMLClueFlow();
 		flow->setHAlign( HTMLClue::Right );
 		vc->append( flow );
 		switch ( listNumType )
@@ -1943,9 +1948,9 @@ void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 		break;
 	}
 
-	vc = new HTMLClueV( 0, 0, _clue->getMaxWidth() - indentSize );
+	vc = new HTMLClueV();
 	c->append( vc );
-	flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
+	flow = new HTMLClueFlow();
 	vc->append( flow );
 	if ( listStack.count() > 0 )
 		listStack.top()->itemNumber++;
@@ -2299,7 +2304,7 @@ void KHTMLParser::parseT( HTMLClue *_clue, const char *str )
 		if ( !vspace_inserted || !flow )
 		    newFlow(_clue);
 
-		parseTable( flow, _clue->getMaxWidth(), str + 6 );
+		parseTable( flow, str + 6 );
 
 		flow = 0;
 	}
@@ -2489,7 +2494,7 @@ const char* KHTMLParser::parseCell( HTMLClue *_clue, const char *str )
     HTMLClue::VAlign valign = HTMLClue::Top;
     HTMLClue::HAlign halign = gridHAlign;
     
-    HTMLClueV *vc = new HTMLCell( 0, 0, cell_width, 0, url, target ); // fixed width
+    HTMLClueV *vc = new HTMLCell( 0, cell_width, url, target ); // fixed width
     
     _clue->append( vc );
     vc->setVAlign( valign );
@@ -2502,7 +2507,7 @@ const char* KHTMLParser::parseCell( HTMLClue *_clue, const char *str )
     str = parseBody( vc, end );
     popBlock( ID_CELL, vc );
 
-    vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
+    vc = new HTMLClueV( 0, 0 ); // fixed width
     _clue->append( vc );
 
     indent = oldindent;
@@ -2512,8 +2517,7 @@ const char* KHTMLParser::parseCell( HTMLClue *_clue, const char *str )
     return str;
 }
 
-const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
-	const char *attr )
+const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 {
     static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", 0 };
     static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
@@ -2523,7 +2527,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
     int padding = 1;
     int spacing = 2;
     int width = 0;
-    int percent = 0;
+    int percent = UNDEFINED;
     int border = 0;
     char has_cell = 0;
     HTMLClue::VAlign rowvalign = HTMLClue::VNone;
@@ -2561,8 +2565,10 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 	{
 	    if ( strchr( token+6, '%' ) )
 		percent = atoi( token + 6 );
-	    else
+	    else {
 		width = atoi( token + 6 );
+		percent = 0; // fixed width
+	    }
 	}
 	else if (strncasecmp( token, "align=", 6 ) == 0)
 	{
@@ -2585,8 +2591,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 	}
     }
 
-    HTMLTable *table = new HTMLTable( 0, 0, _max_width, width, percent,
-	 padding, spacing, border );
+    HTMLTable *table = new HTMLTable( percent, width, padding, spacing, border );
     //       _clue->append( table ); 
     // CC: Moved at the end since we might decide to discard the table while parsing...
 
@@ -2619,7 +2624,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 				capAlign = HTMLClue::Top;
 			}
 		    }
-		    caption = new HTMLClueV( 0, 0, _clue->getMaxWidth() );
+		    caption = new HTMLClueV( 0, 0 );
 		    divAlign = HTMLClue::HCenter;
 		    flow = 0;
 		    pushBlock(ID_CAPTION, 3 );
@@ -2721,8 +2726,8 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 		    }
 
 		    int rowSpan = 1, colSpan = 1;
-		    int width = _clue->getMaxWidth();
-		    int percent = -1;
+		    int cellWidth = UNDEFINED;
+		    int percent = UNDEFINED;
 		    QColor bgcolor = rowColor;
 		    HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
 					    HTMLClue::VCenter : rowvalign);
@@ -2774,8 +2779,8 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 				percent = atoi( token + 6 );
 			    else
 			    {
-				width = atoi( token + 6 );
-				percent = 0;
+				cellWidth = atoi( token + 6 );
+				percent = 0; // Fixed with
 			    }
 			}
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
@@ -2791,7 +2796,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 			}
 		    } // while (hasMoreTokens)
 
-		    HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
+		    HTMLTableCell *cell = new HTMLTableCell( percent, cellWidth,
 			rowSpan, colSpan, padding );
 		    if ( bgcolor.isValid() )
 			cell->setBGColor( bgcolor );
@@ -2866,8 +2871,8 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 			flow = 0;
 			if ( !tmpCell )
 			{
-			    tmpCell = new HTMLTableCell( 0, 0,
-				_clue->getMaxWidth(), -1, 1, 1, padding );
+			    // Variable width cell
+			    tmpCell = new HTMLTableCell( UNDEFINED, UNDEFINED, 1, 1, padding );
 			    if ( tableColor.isValid() )
 				tmpCell->setBGColor( tableColor );
 			}
@@ -2916,8 +2921,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, int _max_width,
 	}
 	else
 	{
-	    HTMLClueAligned *aligned = new HTMLClueAligned (_clue, 0, 0,
-		    _clue->getMaxWidth() );
+	    HTMLClueAligned *aligned = new HTMLClueAligned (_clue);
 	    aligned->setHAlign( align );
 	    aligned->append( table );
 	    _clue->append( aligned );
@@ -3106,8 +3110,7 @@ const char *KHTMLParser::parseInput( const char *attr )
 	    if ( !imgSrc.isEmpty() )
 	    {
 		KURL kurl( HTMLWidget->getBaseURL(), imgSrc );
-		HTMLImageInput *ii = new HTMLImageInput( HTMLWidget, kurl.url(),
-			100, name );
+		HTMLImageInput *ii = new HTMLImageInput( HTMLWidget, kurl.url(), name );
 		ii->setForm( form );
 		form->addElement( ii );
 		flow->append( ii );

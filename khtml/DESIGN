@@ -62,7 +62,7 @@ right-margin it moves down and continues from the left-margin.
 The HTML-Layout
 ===============
 
-When the ccomplete structure of HTML-clues and HTML-objects is build. The
+When the complete structure of HTML-clues and HTML-objects is build. The
 HTML-layout starts: each HTML-object is positioned. The positioning depends
 on the available screen-width.
 
@@ -231,3 +231,29 @@ a new page is being loaded.
 By deleting the HTMLObjects before deleting the tokenizer, we ensure that the
 strings will not be used after they have been deleted.
 
+
+----------------------------------------------------------------------------
+Clue nesting
+----------------------------------------------------------------------------
+
+The following parent-child relations can exist:
+
+   Parent      |   Child
+---------------+----------------
+  HTMLClueV    |  HTMLClueH
+     ,,        |  HTMLClueFlow
+               |
+  HTMLClueH    |  HTMLClueV
+               |
+ HTMLClueFlow  |  HTMLClueAligned
+     ,,        |  (objects)
+               |
+HTMLClueAligned|  (objects)
+               |
+
+
+All but HTMLClueH's last children should have a fixed width, 
+it's last child may have any kind of width.
+
+
+  
