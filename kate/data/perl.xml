@@ -639,7 +639,8 @@
         <DetectChar attribute="Normal Text" context="#pop" char="}" />
       </context>
       <context name="sub_arg_definition" attribute="Normal Text" lineEndContext="#stay" fallthrough="true" fallthroughContext="#pop#pop">
-        <RegExpr attribute="Data Type" context="#stay" String="[\$@%]" />
+        <AnyChar attribute="Data Type" context="#stay" String="*$@%" />
+        <AnyChar attribute="Normal Text" context="#stay" String="&amp;\[];" />
         <DetectChar attribute="Normal Text" context="slash_safe_escape" char=")" />
       </context>
       <context name="pat_ext" attribute="Pattern Internal Operator" lineEndContext="#stay">
