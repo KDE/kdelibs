@@ -1232,21 +1232,21 @@ KCmdLineArgs::url(int n) const
    return makeURL( arg(n) );
 }
 
-KURL KCmdLineArgs::makeURL( const char *urlArg )
+KURL KCmdLineArgs::makeURL(const char *_urlArg)
 {
-   QString _urlArg = QFile::decodeName( urlArg );
-   if (!QDir::isRelativePath(_urlArg))
+   QString urlArg = QFile::decodeName(_urlArg);
+   if (!QDir::isRelativePath(urlArg))
    {
       KURL result;
-      result.setPath(_urlArg);
+      result.setPath(urlArg);
       return result; // Absolute path.
    }
 
-   if ( !KURL::isRelativeURL( QString::fromLocal8Bit(urlArg) ) )
-     return KURL(QString::fromLocal8Bit(urlArg)); // Argument is a URL
+   if ( !KURL::isRelativeURL(urlArg) )
+     return KURL(urlArg); // Argument is a URL
 
    KURL result;
-   result.setPath( cwd()+"/"+_urlArg );
+   result.setPath( cwd()+"/"+urlArg );
    result.cleanPath();
    return result;  // Relative path
 }
