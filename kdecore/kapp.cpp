@@ -602,7 +602,7 @@ void KApplication::dcopFailure(const QString &msg)
 
   QMessageBox::critical(kapp->mainWidget(),
 			i18n("DCOP communications error (%1)").arg(kapp->caption()),
-			msgStr, i18n("Ok"));
+			msgStr, i18n("OK"));
 }
 
 void KApplication::parseCommandLine( int& argc, char** argv )
