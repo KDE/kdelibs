@@ -19,7 +19,22 @@
 
 // $Id$
 
+// Include our header without NDEBUG defined to avoid having the kDebugInfo
+// functions inlined to noops (which would then conflict with their definition
+// here).
+
+#ifdef NDEBUG
+#define NODEBUG
+#undef NDEBUG
+#endif
 #include "kdebug.h"
+#ifdef NODEBUG
+#define NDEBUG
+#undef NODEBUG
+#endif
+
+// Other includes needed by kDebug* functions.
+
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstddirs.h"
@@ -272,7 +287,6 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
 #endif
 }
 
-#ifndef NDEBUG
 void kDebugInfo( const char* fmt, ... )
 {
     va_list arguments;
@@ -299,7 +313,6 @@ void kDebugInfo( bool cond, unsigned short area, const char* fmt, ... )
       va_end( arguments );
     }
 }
-#endif
 
 void kDebugWarning( const char* fmt, ... )
 {
