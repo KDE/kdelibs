@@ -216,14 +216,12 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
             SLOT( executed( QListViewItem * ) ) );
     connect( listview, SIGNAL( selectionChanged( QListViewItem * ) ), this,
             SLOT( executed( QListViewItem * ) ) );
+    listview->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Preferred );
     listview->setAcceptDrops( false );
+    listview->setFullWidth( true );
     listview->setSelectionModeExt( KListView::Single );
     listview->setAllColumnsShowFocus( true );
     listview->addColumn( i18n( "Name" ) );
-    listview->addColumn( i18n( "Description" ) );
-    listview->addColumn( i18n( "Author" ) );
-    listview->addColumn( i18n( "Version" ) );
-    listview->addColumn( i18n( "License" ) );
     for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it )
     {
@@ -234,10 +232,6 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
             QCheckListItem * item = new KPluginInfoLVI( *it, listview );
             if( ! ( *it )->icon().isEmpty() )
                 item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
-            item->setText( 1, ( *it )->comment() );
-            item->setText( 2, ( *it )->author()  );
-            item->setText( 3, ( *it )->version() );
-            item->setText( 4, ( *it )->license() );
             item->setOn( ( *it )->isPluginEnabled() );
             d->pluginInfoMap.insert( item, *it );
         }
@@ -548,21 +542,16 @@ KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
 : QWidget( parent, name )
 , d( new KPluginSelectorPrivate )
 {
-    QBoxLayout * vbox = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+    QBoxLayout * vbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
     vbox->setAutoAdd( true );
-    QSplitter * splitter = new QSplitter( Qt::Vertical, this, "PluginSelectionWidget splitter" );
-    d->frame = new QFrame( splitter, "KPluginSelector top frame" );
+    d->frame = new QFrame( this, "KPluginSelector left frame" );
     d->frame->setFrameStyle( QFrame::NoFrame );
     ( new QVBoxLayout( d->frame, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
 
     // widgetstack
-    d->widgetstack = new QWidgetStack( splitter,
-            "KPluginSelector Config Pages" );
+    d->widgetstack = new QWidgetStack( this, "KPluginSelector Config Pages" );
     d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     d->widgetstack->setMinimumSize( 200, 200 );
-
-    splitter->setOpaqueResize( KGlobalSettings::opaqueResize() );
-    splitter->setResizeMode( d->widgetstack, QSplitter::FollowSizeHint );
 
     QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),
             d->widgetstack );
