@@ -22,6 +22,8 @@
 #include <ctype.h>
 #include <string.h>
 
+#include <config.h>
+
 #define BUFFER_SIZE	1024
 
 int parseRhsPrinterDb(const char *filename, FILE *out);
@@ -92,13 +94,13 @@ int parseRhsPrinterDb(const char *filename, FILE *out)
 				{
 					*c3 = 0;
 					c3++;
-					strcpy(manuf,c1);
-					strcpy(model,c3);
+					strlcpy(manuf,c1, sizeof(manuf));
+					strlcpy(model,c3, sizeof(model));
 				}
 				else
 				{
-					strcpy(model,c1);
-					strcpy(manuf,"PrintTool (RH)");
+					strlcpy(model,c1, sizeof(model));
+					strlcpy(manuf,"PrintTool (RH)", sizeof(manuf));
 				}
 				fprintf(out,"MANUFACTURER=%s\n",manuf);
 				fprintf(out,"MODEL=%s\n",model);

@@ -55,7 +55,7 @@ MidiMapper::MidiMapper(const char *name)
 
 MidiMapper::~MidiMapper()
 {
-  delete _filename;
+  if (_filename) free(_filename);
   deallocateMaps();
 }
 
@@ -147,9 +147,8 @@ void MidiMapper::loadFile(const char *name)
   if ( fh == NULL ) { _ok = -1; return; };
   char s[101];
   s[0] = 0;
-  if ( _filename != NULL ) delete _filename;
-  _filename = new char[ strlen(name)+1 ];
-  strcpy(_filename,name);
+  if ( _filename != NULL ) free(_filename);
+  _filename = strdup(name);
 #ifdef MIDIMAPPERDEBUG
   printf("Loading mapper ...\n");
 #endif
