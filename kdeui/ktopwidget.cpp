@@ -2,34 +2,35 @@
 #include <ktopwidget.moc>
 
 
-KTopLevelWidget::KTopLevelWidget( const char *name )
+KTopLevelWidget::KTopLevelWidget(
+                                  const char *name = NULL )
   : QWidget( 0L, name )
-{
-  kmenubar = NULL;
-  kmainwidget = NULL;
-  kstatusbar = NULL;
-  borderwidth = 1;
+ {
+   kmenubar = NULL;
+   kmainwidget = NULL;
+   kstatusbar = NULL;
+   borderwidth = 1;
 
-  kmainwidgetframe = new QFrame( this );
-  CHECK_PTR( kmainwidgetframe );
-  kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
-  kmainwidgetframe ->setLineWidth(2);
-  kmainwidgetframe ->hide();
-}
+   kmainwidgetframe = new QFrame( this );
+   CHECK_PTR( kmainwidgetframe );
+   kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
+   kmainwidgetframe ->setLineWidth(2);
+   kmainwidgetframe ->hide();
+ }
 
 KTopLevelWidget::~KTopLevelWidget()
-{
-}
+ {
+ }
 
 int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )
 {
   if ( index == -1 )
     toolbars.append( toolbar );
   else
-	toolbars.insert( index, toolbar );
+    toolbars.insert( index, toolbar );
   index = toolbars.at();
   connect ( toolbar, SIGNAL( moved (BarPosition) ),
-			this, SLOT( updateRects() ) );  
+            this, SLOT( updateRects() ) );
   updateRects();
   return index;
 }
@@ -39,13 +40,13 @@ void KTopLevelWidget::setView( QWidget *view, bool show_frame )
   kmainwidget = view;
   if( show_frame ){
 
-	// Set a default frame borderwidth, for a toplevelwidget with 
-	// frame. 
+    // Set a default frame borderwidth, for a toplevelwidget with
+    // frame.
 
-	if(borderwidth == 0 )
-	  setFrameBorderWidth(1);
-	  
-	kmainwidgetframe->show();
+    if(borderwidth == 0 )
+      setFrameBorderWidth(1);
+
+    kmainwidgetframe->show();
   }
 
   // In the case setView(...,TRUE),
@@ -53,12 +54,15 @@ void KTopLevelWidget::setView( QWidget *view, bool show_frame )
   // an unwanted border -- after all we didn't request a frame. If you
   // still want a border ( though no frame, call setFrameBorderWidth()
   // before setView(...,FALSE).
-	  
+
 }
 
 void KTopLevelWidget::setMenu( KMenuBar *menu )
 {
   kmenubar = menu;
+  connect ( kmenubar, SIGNAL( moved (menuPosition) ),
+            this, SLOT( updateRects() ) );
+  
 }
 
 void KTopLevelWidget::setStatusBar( KStatusBar *statusbar )
@@ -81,38 +85,60 @@ void KTopLevelWidget::updateRects()
   int t=0, b=0, l=0, r=0;
   int to=-1, bo=-1, lo=-1, ro=-1;
   int h = height();
-  KToolBar* toolbar;
 
+  switch (kmenubar->menuBarPos())
+   {
+    case KMenuBar::Top:
+      if (kmenubar->isVisible())
+       {
+         kmenubar->resize(width(), kmenubar->height());
+         t+=kmenubar->height();
+         kmenubar->move(0, 0);
+       }
+      break;
+    case KMenuBar::Bottom:
+      if (kmenubar->isVisible())
+       {
+         kmenubar->resize(width(), kmenubar->height());
+         b+=kmenubar->height();
+         kmenubar->move(0, height()-b);
+       }
+      break;
+    case KMenuBar::Floating:
+      break;
+   }
+  /*
   if ( kmenubar && kmenubar->isVisible() )
-    t += kmenubar->height(); // the menu is always on top
-
+    t += kmenubar->height(); // the menu is always on top. Oh, yeah?
+  */
+      
   if ( kstatusbar && kstatusbar->isVisible() )
-	{
-	  kstatusbar->setGeometry(0, height() - kstatusbar->height(),
-							  width(), kstatusbar->height());
-	  b += kstatusbar->height();
-	}
+   {
+     kstatusbar->setGeometry(0, height() - b - kstatusbar->height(),
+                             width(), kstatusbar->height());
+     b += kstatusbar->height();
+   }
 
-  for ( toolbar = toolbars.first() ;
+  for ( KToolBar *toolbar = toolbars.first() ;
         toolbar != NULL ; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
-	  {
-		toolbar->updateRects (TRUE);     // Sven: You have to do this
-		if ( to < 0 )
-		  {
-			to = 0;
-			t += toolbar->height();
-		  }
-		if (to + toolbar->width() > width())
-		  {
-			to = 0;
-			t += toolbar->height();
-		  }
-		toolbar->move( to, t-toolbar->height() );
-		to += toolbar->width();
-	  }
+     {
+       toolbar->updateRects (TRUE);     // Sven: You have to do this
+       if ( to < 0 )
+        {
+          to = 0;
+          t += toolbar->height();
+        }
+       if (to + toolbar->width() > width())
+        {
+          to = 0;
+          t += toolbar->height();
+        }
+       toolbar->move( to, t-toolbar->height() );
+       to += toolbar->width();
+     }
 
-  for ( toolbar = toolbars.first();
+  for ( KToolBar *toolbar = toolbars.first();
         toolbar != NULL; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() ) {
       toolbar->updateRects (TRUE);   // Sven: You have to this
@@ -129,7 +155,7 @@ void KTopLevelWidget::updateRects()
     }
 
   h = height() - t - b;
-  for ( toolbar = toolbars.first();
+  for ( KToolBar *toolbar = toolbars.first();
         toolbar != NULL; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() ) {
       toolbar->setMaxHeight(h);   // Sven: You have to do this here
@@ -146,7 +172,7 @@ void KTopLevelWidget::updateRects()
       lo += toolbar->height();
     }
 
-  for ( toolbar = toolbars.first();
+  for ( KToolBar *toolbar = toolbars.first();
         toolbar != NULL; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() ) {
       toolbar->setMaxHeight(h);   // Sven: You have to do this here
@@ -167,13 +193,14 @@ void KTopLevelWidget::updateRects()
   view_right=width();
   view_top=0;
   view_bottom=height();
-	
-  for (toolbar = toolbars.first();
+
+  for (KToolBar *toolbar = toolbars.first();
        toolbar != NULL; toolbar = toolbars.next()) {
 
     if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
       view_top = toolbar->y() + toolbar->height();// - 2;
-    else if ( kmenubar && kmenubar->isVisible() ) {
+    else if ( kmenubar && kmenubar->isVisible() &&
+              kmenubar->menuBarPos() == KMenuBar::Top) {
       if( view_top < kmenubar->height()/* - 2*/ )
         view_top = kmenubar->height();// - 2;
     } else if ( view_top < 0 )
@@ -204,27 +231,35 @@ void KTopLevelWidget::updateRects()
   //view_bottom);
 
   if (kstatusbar && kstatusbar->isVisible())
-	{
-	  if ( view_bottom > kstatusbar->y() )
-		view_bottom = kstatusbar->y();
-	}
+   {
+     if ( view_bottom > kstatusbar->y() )
+       view_bottom = kstatusbar->y();
+   }
+  else
+   {
+     if (kmenubar && kmenubar->isVisible())
+       if (kmenubar->menuBarPos() == KMenuBar::Bottom)
+         if ( view_bottom > kmenubar->y() )
+           view_bottom = kmenubar->y();
+   }
 
   if (kmenubar && kmenubar->isVisible())
-	{
-	  if (view_top < kmenubar->height())
-		view_top = kmenubar->height();
-	}
+   {
+     if (kmenubar->menuBarPos() == KMenuBar::Top)
+       if (view_top < kmenubar->height())
+         view_top = kmenubar->height();
+   }
   
   if (kmainwidget)
-	{
-	  kmainwidgetframe->setGeometry( view_left, view_top,
-									 view_right - view_left,
-									 view_bottom - view_top );
+   {
+     kmainwidgetframe->setGeometry( view_left, view_top,
+                                    view_right - view_left,
+                                    view_bottom - view_top );
 
-	  kmainwidget->setGeometry( view_left + borderwidth, view_top + borderwidth,
-								view_right - view_left - 2 * borderwidth,
-								view_bottom - view_top - 2 * borderwidth );
-	}
+     kmainwidget->setGeometry( view_left + borderwidth, view_top + borderwidth,
+                               view_right - view_left - 2 * borderwidth,
+                               view_bottom - view_top - 2 * borderwidth );
+   }
 }
 
 void KTopLevelWidget::setFrameBorderWidth(int size){
