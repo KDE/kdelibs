@@ -24,6 +24,8 @@
 #include <kconfig.h>
 #include <dcopclient.h>
 
+static const char *daemonName="knotify";
+
 static bool sendNotifyEvent(const QString &message, const QString &text, 
                  int present, int level, const QString &sound, 
                  const QString &file)
@@ -41,16 +43,8 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   QString appname = kapp->name();
   ds << message << appname << text << sound << file << present << level;
 
-  bool result = client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
-  if (!result)
-  {
-    if (!kapp->dcopClient()->isApplicationRegistered("knotify"))
-    {
-      KNotifyClient::startDaemon();
-      result = client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
-    }
-  }
-  return result;
+  KNotifyClient::startDaemon();
+  return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
@@ -128,7 +122,9 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 
 bool KNotifyClient::startDaemon()
 {
-   return KApplication::startServiceByDesktopName("knotify");
+  if (!kapp->dcopClient()->isApplicationRegistered(daemonName))
+    return KApplication::startServiceByDesktopName(daemonName);
+  return true;
 }
 
 

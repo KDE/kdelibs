@@ -24,7 +24,7 @@
 #undef None // X11 headers...
 
 /**
- * This class provides a method for issuing events to a KNotifyServer
+ * This namespace provides a method for issuing events to a KNotifyServer
  * call KNotifyClient::event("eventname"); to issue it.
  * On installation, there should be a file called 
  * $KDEDIR/share/apps/appname/eventsrc which contains the events.
@@ -55,7 +55,13 @@
  * You can also use the following events, which are system controlled
  * and do not need to be placed in your eventsrc:
  *
- * cannotopenfile (more to come)
+ *<ul>
+ * <li>cannotopenfile
+ * <li>notification
+ * <li>warning
+ * <li>fatalerror
+ * <li>catastrophe
+ *</ul>
  *
  * @author Charles Samuels <charles@kde.org>
  */
@@ -84,7 +90,7 @@ namespace KNotifyClient
 	 * This will be useful for games that use sound effects. Run this
 	 * at the start of the program, and there won't be a pause when it is
 	 * first triggered.
-	 * @return true if daemon is running
+	 * @return true if daemon is running (always true at the moment)
 	 **/
 	bool startDaemon();
 
