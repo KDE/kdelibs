@@ -144,6 +144,9 @@ QStringList KStandardDirs::findAllResources( const QString& type,
 					     bool recursive) const
 {
     assert(!recursive);
+    
+    if (filter.at(0) == '/') // absolute paths we return
+      return filter;
 
     QStringList list;
 
