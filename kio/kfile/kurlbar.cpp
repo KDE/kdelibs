@@ -480,17 +480,12 @@ static KURL kurlbar_readURLEntry( KConfig *config, const QString& key )
     // file, so readEntry() may return e.g. either file:/foo, /foo or $HOME
 
     QString urlEntry = config->readEntry( key );
-    bool isPath = !urlEntry.isEmpty() && (urlEntry[0] == '/' || urlEntry[0] == '$');
     // if it's local, try dollar expansion
-    if ( !urlEntry.isEmpty() && (isPath || urlEntry.startsWith("file:/") ))
+    if ( !urlEntry.isEmpty() && 
+         (urlEntry[0] == '/' || urlEntry[0] == '$' || urlEntry.startsWith("file:/")) )
         urlEntry = config->readPathEntry( key );
-    KURL url;
-    if ( isPath )
-        url.setPath( urlEntry );
-    else
-        url = urlEntry;
 
-    return url;
+    return KURL::fromPathOrURL( urlEntry );
 }
 
 void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
