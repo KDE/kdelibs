@@ -264,7 +264,7 @@ public:
      * If you override this method, you have to call @ref setFirstItem()
      * afterwards, to set the first item of your newly sorted items.
      */
-    virtual void insertSorted(KFileViewItem *first, uint counter);
+    virtual void insertSorted(KFileViewItem *tfirst, uint counter);
 
     /**
      * @returns the first (depending on sort order) item. It forms sort of a
@@ -272,7 +272,7 @@ public:
      * This is only public for internal reasons, DON'T call it unless you
      * implement a View yourself and really need to.
      */
-    KFileViewItem *firstItem() const { return first; }
+    KFileViewItem *firstItem() const { return myFirstItem; }
 
 protected:
 
@@ -320,7 +320,7 @@ protected:
      * insertSorted(). You only need to call it when you override
      * insertSorted().
      */
-    void setFirstItem( KFileViewItem * item ) { first = item; }
+    void setFirstItem( KFileViewItem * item ) { myFirstItem = item; }
 
 private:
 
@@ -339,7 +339,7 @@ private:
     ViewMode view_mode;
     KFile::SelectionMode selection_mode;
 
-    KFileViewItem *first;
+    KFileViewItem *myFirstItem;
     mutable KFileViewItemList *itemList, *selectedList;
     mutable  bool itemListDirty;
 };

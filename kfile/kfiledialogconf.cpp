@@ -152,11 +152,11 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent, const char *name)
     c = KGlobal::config();
     KConfigGroupSaver kgs(c, ConfigGroup);
 
-    myShowStatusLine->setChecked(c->readBoolEntry(QString::fromLatin1("ShowStatusLine"),
+    myShowStatusLine->setChecked(c->readBoolEntry(ConfigShowStatusLine,
 						  DefaultShowStatusLine));
 }
 
-void KFileDialogConfigure::saveConfiguration( void )
+void KFileDialogConfigure::saveConfiguration()
 {
   // Now read the current settings
   KConfig *c;
@@ -166,7 +166,8 @@ void KFileDialogConfigure::saveConfiguration( void )
   c= KGlobal::config();
   KConfigGroupSaver sa(c, ConfigGroup);
 
-  c->writeEntry(QString::fromLatin1("ShowStatusLine"), myShowStatusLine->isChecked(), true, true);
+  c->writeEntry(ConfigShowStatusLine, myShowStatusLine->isChecked(), 
+		true, true);
   c->sync();
 }
 

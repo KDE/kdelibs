@@ -129,11 +129,23 @@ class KDirOperator : public QWidget {
      */
     QActionCollection * actionCollection() const { return myActionCollection; }
 
+    /**
+     * Reads the default settings for a view, i.e. the default KFile::FileView.
+     * Also reads the sorting and whether hidden files should be shown.
+     * Note: the default view will not be set - you have to call
+     * <pre>@ref setView( KFile::Default )</pre> to apply it.
+     */
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+
+    virtual void saveConfig( KConfig *, const QString& group = QString::null );
+
 
  protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );
     void setupActions();
+    void updateSortActions();
+    void updateViewActions();
     void setupMenu();
 
 
@@ -174,6 +186,7 @@ class KDirOperator : public QWidget {
 
     // the enum KFile::FileView as an int
     int viewKind;
+    int defaultView;
 
     KFile::Mode myMode;
     KProgress *progress;
@@ -227,6 +240,7 @@ class KDirOperator : public QWidget {
 
     void selectDir(const KFileViewItem*);
     void selectFile(const KFileViewItem*);
+    void highlightFile(const KFileViewItem* i) { emit fileHighlighted( i ); }
     void activatedMenu( const KFileViewItem * );
 
     void sortByName() 		{ byNameAction->setChecked( true ); }

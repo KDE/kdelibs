@@ -67,14 +67,14 @@ void KCombiView::setRight(KFileView *view)
     right->setOperator(this);
 }
 
-void KCombiView::insertSorted(KFileViewItem *first, uint )
+void KCombiView::insertSorted(KFileViewItem *tfirst, uint )
 {
     KFileViewItem *f_first = 0, *d_first = 0;
     uint dirs = 0, files = 0;
 
     KFileViewItem *tmp;
 
-    for (KFileViewItem *it = first; it;) {
+    for (KFileViewItem *it = tfirst; it;) {
 	tmp = it->next();
 
 	if (it->isDir()) {
@@ -110,6 +110,18 @@ void KCombiView::insertSorted(KFileViewItem *first, uint )
 void KCombiView::insertItem( KFileViewItem * )
 {
     debug("KCombiView::insertItem not implemented (as not needed :)");
+}
+
+void KCombiView::setSorting( QDir::SortSpec sort )
+{
+    KFileView::setSorting( sort );
+    right->setSorting( sort );
+}
+
+void KCombiView::sortReversed()
+{
+    KFileView::sortReversed();
+    right->sortReversed();
 }
 
 void KCombiView::clearView()

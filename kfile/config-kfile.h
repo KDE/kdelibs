@@ -5,9 +5,18 @@ const int kfile_area = 250;
 
 #define DefaultViewStyle QString::fromLatin1("SimpleView")
 #define DefaultPannerPosition 40
-#define DefaultMixDirsAndFiles true
+#define DefaultMixDirsAndFiles false
 #define DefaultShowStatusLine false
 #define DefaultShowHidden false
-#define DefaultFindCommand QString::fromLatin1("kfind")
+#define DefaultCaseInsensitive true
+#define DefaultDirsFirst true
+#define DefaultSortReversed false
+#define DefaultRecentURLsNumber 10
 #define ConfigGroup QString::fromLatin1("KFileDialog Settings")
+#define RecentURLs QString::fromLatin1("Recent URLs")
+#define RecentURLsNumber QString::fromLatin1("Maximum of recent URLs")
+#define DialogWidth QString::fromLatin1("Width (%1)")
+#define DialogHeight QString::fromLatin1("Height (%1)")
+#define ConfigShowStatusLine QString::fromLatin1("ShowStatusLine")
+
 #endif

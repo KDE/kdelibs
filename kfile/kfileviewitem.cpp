@@ -38,13 +38,12 @@
 #include <qregexp.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kmimetype.h>
-#include <kdebug.h>
 #include <kurl.h>
 #include "config-kfile.h"
-#include <kdebug.h>
 
 template class QList<KFileViewItem>;
 
@@ -447,11 +446,12 @@ QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 	QString icon = myMimeType->icon( url(), true );
 	if ( icon != defaultIcon() || (size != myPixmapSize) || !myPixmap ) {
 	
-	    if ( icon.isEmpty() )
+	    if ( icon.isEmpty() || !myIsReadable )
 		icon = defaultIcon();
 	
 	    delete myPixmap;
-	    myPixmap = new QPixmap(KGlobal::iconLoader()->loadIcon(icon,size));
+	    KIconLoader *loader = KGlobal::iconLoader();
+	    myPixmap = new QPixmap( loader->loadIcon(icon,size) );
 	
 	    // we either have found the correct pixmap, or there is none,
 	    // anyway, we won't ever search for one again
@@ -490,8 +490,7 @@ void KFileViewItem::setDeleted()
 {
     myIsReadable = false;
     myAccess = "**********";
-    delete myPixmap; // next pixmap() call will load the "locked" icon
-    myPixmap = 0L;
+    myPixmapDirty = true; // next pixmap() call will load the "locked" icon
 }
 
 

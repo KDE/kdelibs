@@ -49,8 +49,7 @@ KFileView::KFileView()
     selectedList = 0L;
     filesNumber = 0;
     dirsNumber = 0;
-    first = 0;
-    // last = 0;
+    myFirstItem = 0;
 
     view_mode = All;
     selection_mode = KFile::Single;
@@ -78,10 +77,11 @@ void KFileView::setOperator(QObject *ops)
 	QObject::connect(sig,
 			 SIGNAL( fileSelected(const KFileViewItem *) ),
 			 ops, SLOT( selectFile(const KFileViewItem*) ) );
-	
+
 	QObject::connect(sig,
 			 SIGNAL( fileHighlighted(const KFileViewItem *) ),
-			 ops, SIGNAL( fileHighlighted(const KFileViewItem*) ));
+			 ops, SLOT( highlightFile(const KFileViewItem*) ));
+
     } else
 	sig->disconnect((QObject*)0);
 }
@@ -169,18 +169,14 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 
     delete [] sortedArray;
 
-    kDebugInfo(kfile_area, "inserting %ld %p", time(0), first);
-
-#if 0
-    for (it = first; it; it = it->next())
-      removeItem(it);
-#else
+    kDebugInfo(kfile_area, "inserting %ld %p", time(0), tfirst);
     clearView();
-#endif
+    if ( myFirstItem == tfirst ) // we're probably just resorting, not adding atims
+	myFirstItem = 0L;
+    
+    myFirstItem = mergeLists(myFirstItem, tfirst);
 
-    first = mergeLists(first, tfirst);
-
-    for (it = first; it; it = it->next())
+    for (it = myFirstItem; it; it = it->next())
 	insertItem(it);
 
 #ifdef Q2HELPER
@@ -247,29 +243,21 @@ void KFileView::setSorting(QDir::SortSpec new_sort)
 
     mySorting = new_sort;
 
-    if ( count() > 1 ) {
-	KFileViewItem *firstItem = first;
-	first = 0L; // sideeffect - insertSorted would merge
-	            // firstItem and first, which are actually the same
-	insertSorted(firstItem, count());
-    }
+    if ( count() > 1 )
+	insertSorted(myFirstItem, count());
 }
 
 void KFileView::sortReversed()
 {
     reversed = !reversed;
 
-    if ( count() > 1 ) {
-	KFileViewItem *firstItem = first;
-	first = 0L; // sideeffect - insertSorted would merge
-	            // firstItem and first, which are actually the same
-	insertSorted(firstItem, count());
-    }
+    if ( count() > 1 )
+	insertSorted(myFirstItem, count());
 }
 
 void KFileView::clear()
 {
-    first = 0;
+    myFirstItem = 0;
     filesNumber = 0;
     dirsNumber = 0;
     clearView();
@@ -411,7 +399,7 @@ void KFileView::setCurrentItem(const QString &item,
 			       const KFileViewItem *entry)
 {
     if (!item.isNull()) {
-	KFileViewItem *it = first;
+	KFileViewItem *it = myFirstItem;
 	while (it) {
 	    if (it->name() == item) {
 		setSelected(it, true);
@@ -436,9 +424,9 @@ const KFileViewItemList * KFileView::items() const
 
 	itemListDirty = false;
 	itemList->clear();
-	if ( first ) {
+	if ( myFirstItem ) {
 	    KFileViewItem *item = 0L;
-	    for (item = first; item; item = item->next())
+	    for (item = myFirstItem; item; item = item->next())
 		itemList->append( item );
 	}
     }
@@ -453,9 +441,9 @@ const KFileViewItemList * KFileView::selectedItems() const
 
     selectedList->clear();
 
-    if ( first ) {
+    if ( myFirstItem ) {
 	KFileViewItem *item = 0L;
-	for (item = first; item; item = item->next()) {
+	for (item = myFirstItem; item; item = item->next()) {
 	    if ( isSelected( item ) )
 		selectedList->append( item );
 	}
@@ -470,7 +458,7 @@ void KFileView::selectAll()
 	return;
 
     KFileViewItem *item = 0L;
-    for (item = first; item; item = item->next())
+    for (item = myFirstItem; item; item = item->next())
 	setSelected( item, true );
 }
 

@@ -1,6 +1,7 @@
 #ifndef KFILE_H
 #define KFILE_H
 
+#include <qdir.h>
 
 /**
  * Just a namespace for some enums
@@ -50,6 +51,55 @@ public:
 	Increasing,
 	Decreasing
     };
+
+
+    //
+    // some bittests
+    //
+
+
+    // sorting specific
+
+    // grr, who had the idea to set QDir::Name to 0x0?
+    static bool isSortByName( const QDir::SortSpec& sort ) {
+	return (sort & QDir::Time) != QDir::Time &&
+	       (sort & QDir::Size) != QDir::Size;
+    }
+
+    static bool isSortBySize( const QDir::SortSpec& sort ) {
+	return (sort & QDir::Size) == QDir::Size;
+    }
+
+    static bool isSortByDate( const QDir::SortSpec& sort ) {
+	return (sort & QDir::Time) == QDir::Time;
+    }
+
+    static bool isSortDirsFirst( const QDir::SortSpec& sort ) {
+	return (sort & QDir::DirsFirst) == QDir::DirsFirst;
+    }
+
+    static bool isSortCaseInsensitive( const QDir::SortSpec& sort ) {
+	return (sort & QDir::IgnoreCase) == QDir::IgnoreCase;
+    }
+
+
+    // view specific
+    static bool isDefaultView( const FileView& view ) {
+	return (view & Default) == Default;
+    }
+
+    static bool isSimpleView( const FileView& view ) {
+	return (view & Simple) == Simple;
+    }
+
+    static bool isDetailView( const FileView& view ) {
+	return (view & Detail) == Detail;
+    }
+
+    static bool isSeparateDirs( const FileView& view ) {
+	return (view & SeparateDirs) == SeparateDirs;
+    }
+
 
 };
 

@@ -378,6 +378,16 @@ protected:
      */
     void multiSelectionChanged(const KFileViewItem *);
 
+    /**
+     * Reads configuration and applies it (size, recent directories, ...)
+     */
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+
+    /**
+     * Saves the current configuration
+     */
+    virtual void saveConfig( KConfig *, const QString& group = QString::null );
+
 protected slots:
     void urlEntered(const KURL&);
     void comboActivated(const QString& url);
@@ -385,13 +395,14 @@ protected slots:
     void toolbarPressedCallback(int);
     void filterChanged();
     void locationChanged(const QString&);
-    void fileHightlighted(const KFileViewItem *i);
+    void fileHighlighted(const KFileViewItem *i);
     void fileSelected(const KFileViewItem *i);
     void slotStatResult(KIO::Job* job);
 
     virtual void updateStatusLine(int dirs, int files);
     virtual void slotOk();
     virtual void returnPressed();
+    virtual void accept();
 
     void completion();
 
@@ -445,50 +456,6 @@ private:
 
   QLineEdit *edit;
 
-};
-
-
-class KDirComboBox : public QComboBox
-{
-    Q_OBJECT
-
-public:
-    KDirComboBox( QWidget *parent=0, const char *name=0 );
-    ~KDirComboBox();
-
-    /**
-     * sets the current url -> it will be shown in the combo, as well as all
-     * parent directories of it.
-     */
-    void setCurrentURL( const KURL& url );
-
-signals:
-    /**
-     * emitted when an item was clicked at
-     * @param url is the url of the now current item. If it is a local url,
-     * it won't have a protocol (file:/), otherwise it will.
-     */
-    void urlActivated( const QString& url );
-
-protected slots:
-    void slotActivated( int );
-
-protected:
-    struct _KDirComboItem {
-	QString text;
-	QString url;
-	QPixmap icon;
-    };
-    typedef _KDirComboItem KDirComboItem;
-    QList<KDirComboItem> itemList;
-    QMap<int,KDirComboItem*> itemMapper;
-
-    KDirComboItem *rootItem;
-    KDirComboItem *homeItem;
-    KDirComboItem *desktopItem;
-
-    QPixmap opendirPix;
-    QString desktopDir;
 };
 
 #endif

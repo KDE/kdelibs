@@ -38,7 +38,7 @@
 #include <kdiroperator.h>
 #include <kfilewidget.h>
 #include <kfile.h>
-#include <kdebug2.h>
+#include <kdebug.h>
 
 int main(int argc, char **argv)
 {

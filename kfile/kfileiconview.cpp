@@ -33,8 +33,10 @@
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    const_cast<KFileViewItem*>(fileInfo())->
-	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
+    if ( iconView() ) { // FIXME - this always returns 0L since Qt 2.1beta
+	const_cast<KFileViewItem*>(fileInfo())->
+	    setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
+    }
 }
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
@@ -50,6 +52,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     setGridX( 120 );
     setWordWrapIconText( FALSE );
     setAutoArrange( TRUE );
+    setItemsMovable( false );
 
     connect( this, SIGNAL( doubleClicked(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );

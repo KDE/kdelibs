@@ -61,9 +61,12 @@ public:
     virtual bool isSelected( const KFileViewItem * ) const;
     virtual void clearSelection();
 
-    virtual void insertSorted(KFileViewItem *first, uint counter);
+    virtual void insertSorted(KFileViewItem *tfirst, uint counter);
     virtual void insertItem( KFileViewItem *i );
     virtual void clear();
+
+    virtual void setSorting( QDir::SortSpec sort );
+    virtual void sortReversed();
 
 private:
     KFileIconView *left;

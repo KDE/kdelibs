@@ -1,3 +1,30 @@
+Sat Feb 26 00:26:55 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kdiroperator.cpp:
+	lottsa changes, e.g. action handling more clear now.
+	fixed completed item not clearning the previous selection
+
+	* kfileviewitem.cpp:
+	fixed unreadable pixmap not shown, when files were deleted
+
+	* kfiledialog.cpp (selectedURLs): 
+	re-enabled the hack to support multi-selection, until we have something
+	better
+
+	* kcombiview.*:
+	forward the sorting to the right view (or should it apply to the dir-
+	view as well?) Sort of broken tho.
+
+Sun Feb 20 01:50:44 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kdiroperator.*, kfiledialog.* (saveConfig): 
+	implemented loading, saving and applying configuration
+
+	* kfiledialog.cpp (setURL): 
+	KDirComboBox is now a combo for recent directories as well as the
+	root-dir, home-dir and Desktop-dir.
+	Recent dirs will be saved in kdeglobals.
+
 Fri Feb 18 23:35:04 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfilefilter.cpp (eventFilter): 

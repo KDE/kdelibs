@@ -50,6 +50,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kiconloader.h>
+#include <kio/job.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
@@ -61,6 +62,7 @@
 
 #include "config-kfile.h"
 
+#include <kdircombobox.h>
 #include <kfileview.h>
 #include <krecentdocument.h>
 #include <kfiledialogconf.h>
@@ -71,7 +73,6 @@
 #include <kfilefilter.h>
 #include <kfilebookmark.h>
 #include <kdiroperator.h>
-#include <kio/job.h>
 
 enum Buttons { HOTLIST_BUTTON,
 	       PATH_COMBO, CONFIGURE_BUTTON };
@@ -80,8 +81,12 @@ const int idStart = 1;
 
 struct KFileDialogPrivate
 {
-    // the last selected filename
+    // the last selected url
     KURL url;
+
+    // the selected filenames in multiselection mode -- FIXME
+    QString filenames;
+
     // the name of the filename set by setSelection
     QString selection;
 
@@ -131,17 +136,17 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     KDirComboBox *combo = new KDirComboBox( this, "path combo" );
     connect( combo, SIGNAL( urlActivated( const QString&  )),
 	     this,  SLOT( comboActivated( const QString& )));
-    QToolTip::add( combo, i18n("Quick directories") );
+    QToolTip::add( combo, i18n("Often used directories") );
     d->pathCombo = combo;
 
     // I hard code this for now
     d->acceptOnlyExisting = false;
-    bookmarksMenu= 0;
+    bookmarksMenu = 0L;
 
     if (!lastDirectory)
     {
 	qAddPostRoutine( cleanup );
-        lastDirectory = new KURL();
+	lastDirectory = new KURL();
     }
 
     if (!dirName.isEmpty())
@@ -158,27 +163,11 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(ops, SIGNAL(urlEntered(const KURL&)),
 	    SLOT(urlEntered(const KURL&)));
     connect(ops, SIGNAL(fileHighlighted(const KFileViewItem *)),
-	    SLOT(fileHightlighted(const KFileViewItem *)));
+	    SLOT(fileHighlighted(const KFileViewItem *)));
     connect(ops, SIGNAL(fileSelected(const KFileViewItem *)),
 	    SLOT(fileSelected(const KFileViewItem *)));
 
     visitedDirs = new QStringList();
-
-    // Get the config object
-    KConfig *c= KGlobal::config();
-    KConfigGroupSaver tmp(c, ConfigGroup);
-
-    //
-    // Read configuration from the config file
-    //
-    int w, h;
-    QWidget *desk = QApplication::desktop();
-    w = QMIN( 530, desk->width() * 5 / 10 ); // maximum default width = 530
-    h = desk->height() * 2 / 6;
-    w = c->readNumEntry(QString::fromLatin1("Width%1").arg( desk->width()), w);
-    h = c->readNumEntry(QString::fromLatin1("Height%1").arg( desk->height()), h);
-
-    d->showStatusLine = c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
 
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar");
     QActionCollection *coll = ops->actionCollection();
@@ -212,7 +201,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(toolbar, SIGNAL(pressed(int)),
     	    this, SLOT(toolbarPressedCallback(int)));
 
-    toolbar->insertWidget(PATH_COMBO, 70, d->pathCombo);
+    toolbar->insertWidget(PATH_COMBO, 30, d->pathCombo);
 
     toolbar->setItemAutoSized (PATH_COMBO);
     toolbar->setBarPos(KToolBar::Top);
@@ -242,7 +231,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
     d->filterLabel->adjustSize();
     d->filterLabel->setMinimumWidth(d->filterLabel->width());
-    d->filterLabel->resize(d->locationLabel->width(), d->filterLabel->height());
 
     filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
     filterWidget->setFilter(filter);
@@ -257,30 +245,32 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect( locationEdit, SIGNAL( returnPressed() ),
     	     SLOT( slotOk()));
 
-    if (d->url.isEmpty())
-	d->url = QDir::currentDirPath();
-
-    // filename is remembered as the dirName argument for the constructor
-
-    // FIXME:
-    // set the view _after_ calling setSelection(), otherwise we would read
-    // the startdirectory twice. This must be fixed somehow else, tho.
-    setSelection(d->url.url());
-    ops->setView( KFile::Default);
+    // Get the config object
+    KConfig *kc= KGlobal::config();
+    QString oldGroup = kc->group();
+    kc->setGroup( ConfigGroup );
+    d->showStatusLine = kc->readBoolEntry(ConfigShowStatusLine,
+					  DefaultShowStatusLine);
 
     initGUI(); // activate GM
 
     if (!d->url.isEmpty()) {
-	kDebugInfo(kfile_area, "edit %s", debugString(locationEdit->text(0)));
+	kdDebug(kfile_area) << "edit " << locationEdit->text(0) << endl;
 	checkPath(d->url.url());
 	locationEdit->setEditText(d->url.url());
     }
     adjustSize();
-    int w1 = minimumSize().width();
-    int w2 = toolbar->sizeHint().width() + 10;
-    if (w1 < w2)
-	setMinimumWidth(w2);
-    resize(w, h);
+    readConfig( kc, ConfigGroup );
+
+    if (d->url.isEmpty())
+	d->url = QDir::currentDirPath();
+
+    // filename is remembered as the dirName argument for the constructor
+    // FIXME:
+    // set the view _after_ calling setSelection(), otherwise we would read
+    // the startdirectory twice. This must be fixed somehow else, tho.
+    setSelection(d->url.url());
+    ops->setView(KFile::Default);
 }
 
 void KFileDialog::setLocationLabel(const QString& text)
@@ -316,6 +306,7 @@ void KFileDialog::slotOk()
 
     if ( (mode() & KFile::Files) == KFile::Files ) {
 	kdDebug(kfile_area) << "Files\n";
+	d->filenames = locationEdit->currentText(); // FIXME
 	accept();
 	return;
     }
@@ -336,33 +327,44 @@ void KFileDialog::slotStatResult(KIO::Job* job) {
     kdDebug(kfile_area) << "slotStatResult" << endl;
 
     if (d->statjob != job)
-	return; // something is really weired here
+       return; // something is really weird here
 
     // errors mean in general, the location is no directory ;/
     if (job->error())
-	accept();
+       accept();
 
     KIO::UDSEntry t = d->statjob->statResult();
     bool dir = false;
     for (KIO::UDSEntry::ConstIterator it = t.begin();
-	 it != t.end(); ++it) {
-	if ((*it).m_uds == KIO::UDS_FILE_TYPE ) {
-	    dir = S_ISDIR( (mode_t)((*it).m_long));
-	    break;
-	}
+        it != t.end(); ++it) {
+       if ((*it).m_uds == KIO::UDS_FILE_TYPE ) {
+           dir = S_ISDIR( (mode_t)((*it).m_long));
+           break;
+       }
     }
     if (dir) {
-	setURL( d->statjob->url() );
-	d->statjob = 0;
-	return;
+       setURL( d->statjob->url() );
+       d->statjob = 0;
+        return;
     }
+
     d->statjob = 0;
     kdDebug(kfile_area) << "filename " << d->url.url() << endl;
 
     accept();
 }
 
-void KFileDialog::fileHightlighted(const KFileViewItem *i)
+	
+void KFileDialog::accept()
+{
+    *lastDirectory = ops->url();
+    saveConfig( KGlobal::config(), ConfigGroup );
+
+    KDialogBase::accept();
+}
+
+
+void KFileDialog::fileHighlighted(const KFileViewItem *i)
 {
   debug("fileHighlighted");
     if (i->isDir())
@@ -391,7 +393,7 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
 }
 
 
-// I know it's slot to always iterate thru the whole filelist
+// I know it's slow to always iterate thru the whole filelist
 // (ops->selectedItems()), but what can we do?
 void KFileDialog::multiSelectionChanged(const KFileViewItem *)
 {
@@ -448,7 +450,6 @@ void KFileDialog::initGUI()
 
     // Add the status line
     if ( d->showStatusLine ) {
-
 	d->myStatusLine = new QLabel( d->mainWidget, "StatusBar" );
 	updateStatusLine(ops->numDirs(), ops->numFiles());
         d->myStatusLine->adjustSize();
@@ -464,17 +465,10 @@ void KFileDialog::initGUI()
 
 KFileDialog::~KFileDialog()
 {
-    KFileViewItem::cleanup();
     delete bookmarks;
     delete visitedDirs;
     delete ops;
     delete d;
-    KConfig *c = KGlobal::config();
-    KConfigGroupSaver(c, ConfigGroup);
-    QWidget *desk = KApplication::desktop();
-    c->writeEntry(QString::fromLatin1("Width%1").arg(desk->width()), width(), true, true);
-    c->writeEntry(QString::fromLatin1("Height%1").arg(desk->height()), height(), true, true);
-    c->sync();
 }
 
 void KFileDialog::filterChanged() // SLOT
@@ -600,7 +594,8 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 // Protected
 void KFileDialog::urlEntered(const KURL& url)
 {
-    d->pathCombo->setCurrentURL( url );
+    if ( d->pathCombo->count() != 0 ) // little hack
+	d->pathCombo->setURL( url );
     const QString urlstr = url.url(1);
 
     // add item to visitedDirs.
@@ -690,7 +685,8 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	
 	    d->showStatusLine =
 		c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
-	    kDebugInfo(kfile_area, "showStatusLine %d", d->showStatusLine);
+	    kdDebug(kfile_area) << "showStatusLine " << d->showStatusLine
+				<< endl;
 
 	    initGUI(); // add them back to the layout managment
 	}
@@ -767,7 +763,7 @@ void KFileDialog::setSelection(const QString& url)
 	u = KURL(ops->url(),  url);
 
     if (u.isMalformed()) { // if it still is
-	warning("%s is not a correct argument for setSelection!", debugString(url));
+        warning("%s is not a correct argument for setSelection!", debugString(url));
 	return;
     }
 
@@ -789,7 +785,7 @@ void KFileDialog::setSelection(const QString& url)
 	if (sep >= 0) { // there is a / in it
 	    setURL(filename.left(sep), true);
 	    filename = filename.mid(sep+1, filename.length() - sep);
-	    kDebugInfo(kfile_area, "filename %s", debugString(filename));
+	    kdDebug(kfile_area) << "filename " << filename << endl;
 	    d->selection = filename;
 	}
 	d->url = KURL(ops->url(), filename); // FIXME make filename an url
@@ -816,7 +812,7 @@ void KFileDialog::completion() // SLOT
 	      ops->makeCompletion( text.right(text.length() - base.length()));
 
 	if (!complete.isNull()) {
-	    kDebugInfo(kfile_area, "Complete %s", debugString(complete));
+	    kdDebug(kfile_area) << "Complete " << complete << endl;
 	    disconnect( locationEdit, SIGNAL(textChanged(const QString&)),
 			this, SLOT( locationChanged(const QString&) ));
 	
@@ -966,16 +962,13 @@ KURL::List KFileDialog::selectedURLs() const
 
 	static QRegExp r( QString::fromLatin1( "\"" ) );
 	static QString empty = QString::fromLatin1("");
-#warning multiple selection is horrible broken!
-	/* TODO I had to leave that in, but it doesn't make _any_ sense
-	QTextStream t( &(d->filename), IO_ReadOnly );
+	QTextStream t( &(d->filenames), IO_ReadOnly );
 	while ( !t.eof() ) {
 	    t >> name;
 	    name.replace( r, empty );
 	    name.prepend( url );
 	    list.append( KURL( name ) );
 	}
-	*/
     }
     return list;
 }
@@ -1070,155 +1063,66 @@ KFile::Mode KFileDialog::mode() const
     return ops->mode();
 }
 
-///////////////////
 
-KDirComboBox::KDirComboBox( QWidget *parent, const char *name )
-    : QComboBox( parent, name )
+void KFileDialog::readConfig( KConfig *kc, const QString& group )
 {
-    itemList.setAutoDelete( true );
-
-    desktopDir = QDir::homeDirPath() + QString::fromLocal8Bit("/Desktop");
-
-    rootItem = new KDirComboItem;
-    homeItem = new KDirComboItem;
-    desktopItem = new KDirComboItem;
-
-    rootItem->url = QDir::rootDirPath();
-    rootItem->text = i18n("Root Directory: %1").arg(rootItem->url);
-    rootItem->icon = KMimeType::pixmapForURL( rootItem->url, 0,
-					      KIconLoader::Small );
-
-    homeItem->url = QDir::homeDirPath();
-    homeItem->text = i18n("Home Directory: %1").arg(homeItem->url);
-    homeItem->icon = KMimeType::pixmapForURL( homeItem->url, 0,
-					      KIconLoader::Small );
-
-    desktopItem->url= desktopDir;
-    desktopItem->text = i18n("Desktop: %1").arg(desktopDir);
-    desktopItem->icon = KMimeType::pixmapForURL( desktopItem->url, 0,
-						 KIconLoader::Small );
-
-    connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
-    opendirPix = KGlobal::iconLoader()->loadIcon( QString::fromLocal8Bit("folder_open"), KIconLoader::Small );
-}
-
-KDirComboBox::~KDirComboBox()
-{
-    delete rootItem;
-    delete homeItem;
-    delete desktopItem;
-}
-
-
-void KDirComboBox::setCurrentURL( const KURL& url )
-{
-    if ( url.isEmpty() )
+    if ( !kc )
 	return;
 
-    itemList.clear();
-    QString urlstr = url.path( +1 ); // we want a / at the end
-    bool isLocal = url.isLocalFile();
-    bool underDesktop = isLocal && urlstr.find( desktopDir ) == 0;
-    int startpos = 0;
-    int protopos = url.url().find( '/', 0 );
-    KDirComboItem *item = 0L;
-    // QBitmap b;
+    QString oldGroup = kc->group();
+    if ( !group.isEmpty() )
+	kc->setGroup( group );
 
-    if ( underDesktop )
-	startpos = desktopDir.length();
+    ops->readConfig( kc, group );
 
-    int pos = startpos;
-    int w = opendirPix.width();
-    int h = opendirPix.height();
-    if ( w == 0 ) { // empty pixmap
-	w = 20;
-	h = 15;
-    }
+    KDirComboBox *combo = d->pathCombo;
+    combo->setMaxItems( kc->readNumEntry( RecentURLsNumber, 
+					  DefaultRecentURLsNumber ) );
+    combo->setURLs( kc->readListEntry( RecentURLs ) );
+    combo->setURL( ops->url() );
+    
 
-    // split the URL into directories and create KDirComboItems out of them
-    while( pos >= 0 ) {
-	int newpos = urlstr.find('/', pos + 1);
-	if (newpos < 0) {
-	    if ( item )
-		item->text = item->url; // the current item shows the full path
-	    break;
-	}
+    int w, h;
+    QWidget *desk = QApplication::desktop();
+    w = QMIN( 530, (int) (desk->width() * 0.5)); // maximum default width = 530
+    h = (int) (desk->height() * 0.4);
 
-	item = new KDirComboItem;
-	item->url = urlstr.left( newpos );
-	if ( !isLocal ) // prepend the protocol // FIXME (user, pass)
-	    item->url.prepend( url.url().left( protopos ) );
+    w = kc->readNumEntry( DialogWidth.arg( desk->width()), w );
+    h = kc->readNumEntry( DialogHeight.arg( desk->height()), h );
 
-	// item->icon = KMimeType::pixmapForURL(item->url, 0, KIconLoader::Small);
-	
-	item->icon = opendirPix;	
-	/*
-	  const int indent = 2;
-	int pixw = (indent -1) * w;
-	QPixmap indentPix( indent * w, h );
-	indentPix.fill( Qt::white );
-	bitBlt( &indentPix, pixw, 0, &opendirPix, 0, 0, w,h, CopyROP );
-	b = indentPix;
-	indentPix.setMask( b );
-	item->icon = indentPix;
-	// indent++;
-	*/
-	item->text = urlstr.mid(pos + 1, newpos - pos -1);
+    int w1 = minimumSize().width();
+    int w2 = toolbar->sizeHint().width() + 10;
+    if (w1 < w2)
+	setMinimumWidth(w2);
 
-	itemList.append( item );
-	pos = newpos;
-	
-	// debug("url: %s, text: %s", item->url.ascii(), item->text.ascii());
-    }
+    resize(w, h);
 
-    clear();
-
-    int id = 0;
-    // Desktop
-    insertItem( desktopItem->icon, desktopItem->text, id );
-    itemMapper.insert( id, desktopItem );
-
-    // Root
-    if ( !underDesktop ) {
-	id = count();
-	//	if ( url.path( -1 ) == QDir::rootDirPath() )
-	if ( isLocal )
-	    insertItem( opendirPix, rootItem->text, id );
-	else
-	    insertItem( rootItem->icon, rootItem->text, id );
-	itemMapper.insert( id, rootItem );
-    }
-
-    // Dirs
-    QListIterator<KDirComboItem> it( itemList );
-    for ( ; (item = it.current()); ++it ) {
-	id = count();
-	insertItem( item->icon, item->text, id );
-	itemMapper.insert( id, item );
-    }
-
-    int current = count() -1;
-
-    // Root below Dirs
-    if ( underDesktop ) {
-	id = count();
-	insertItem( rootItem->icon, rootItem->text, id );
-	itemMapper.insert( id, rootItem );
-    }
-
-    setCurrentItem( current );
+    kc->setGroup( oldGroup );
 }
 
-void KDirComboBox::slotActivated( int index )
+void KFileDialog::saveConfig( KConfig *kc, const QString& group )
 {
-    KDirComboItem *item = itemMapper[ index ];
+    if ( !kc )
+	return;
 
-    if ( item )
-	emit urlActivated( item->url );
+    QString oldGroup = kc->group();
+    if ( !group.isEmpty() )
+	kc->setGroup( group );
+
+    QWidget *desk = kapp->desktop();
+    kc->writeEntry( RecentURLs, d->pathCombo->urls() );
+    kc->writeEntry( RecentURLsNumber, d->pathCombo->maxItems() );
+    kc->writeEntry( DialogWidth.arg( desk->width() ), width() );
+    kc->writeEntry( DialogHeight.arg( desk->height() ), height() );
+
+    ops->saveConfig( kc, group );
+    kc->setGroup( group );
+    kc->sync();
 }
 
 
 ///////////////////
+
 
 void KFileComboBox::setCompletion(const QString& completion)
 {
