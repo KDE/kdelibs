@@ -113,6 +113,9 @@ void KIconEffect::init()
 
 QString KIconEffect::fingerprint(int group, int state) const
 {
+    if ( mEffect[group][state] == NoEffect )
+        return QString::null;
+    
     QString s, tmp;
     s += tmp.setNum(mEffect[group][state]);
     s += ":";
@@ -327,9 +330,9 @@ void KIconEffect::toGamma(QImage &img, float value)
 void KIconEffect::semiTransparent(QImage &img)
 {
     img.setAlphaBuffer(true);
-    
+
     int x, y;
-    if (img.depth() == 32) 
+    if (img.depth() == 32)
     {
 	if (qt_use_xrender)
 	  for (y=0; y<img.height(); y++)
@@ -397,7 +400,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 	pix.convertFromImage(img);
 	return;
     }
-      
+
     QImage img;
     if (pix.mask() != 0L)
 	img = pix.mask()->convertToImage();
@@ -468,7 +471,7 @@ QImage KIconEffect::doublePixels(QImage src) const
     return dst;
 }
 
-void KIconEffect::overlay(QImage &src, QImage &overlay) 
+void KIconEffect::overlay(QImage &src, QImage &overlay)
 {
     if (src.depth() != overlay.depth())
     {
