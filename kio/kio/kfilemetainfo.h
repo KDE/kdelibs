@@ -799,8 +799,6 @@ public:
 
     uint attributes() const;
 
-
-
 protected:
       void setAdded();
       KFileMetaInfoItem appendItem( const QString& key, const QVariant& value);
