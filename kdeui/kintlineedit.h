@@ -83,7 +83,7 @@ public:
    * Same as @ref value, for compatibility with old KIntLineEdit.
    * @deprecated
    */
-  int getValue( void );
+  int getValue( void ) { return value(); }
   
   /** Set the current value in the lined */
   void setValue( int value );

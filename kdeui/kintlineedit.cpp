@@ -30,8 +30,7 @@
 
 
 KIntLineEdit::KIntLineEdit( QWidget *parent, 
-							const char *name,
-							KEditLineType t)
+		const char *name, KEditLineType t)
   : KRestrictedLine( parent, name, "0123456789" )
 {
   switch (lineType = t)
@@ -55,12 +54,10 @@ KIntLineEdit::KIntLineEdit( QWidget *parent,
 KIntLineEdit::KIntLineEdit()
   : KRestrictedLine()
 {
-  ;
 }
 
 KIntLineEdit::~KIntLineEdit()
 {
-  ;
 }
 
 KEditLineType KIntLineEdit::getType()
@@ -184,5 +181,6 @@ void KIntLineEdit::internalValueChanged()
 {
   emit valueChanged( value() );
 }
+
 #include "kintlineedit.moc"
 
