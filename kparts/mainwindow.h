@@ -41,8 +41,9 @@ class MainWindowPrivate;
  * Inherit your main window from this class
  * and don't forget to call @ref setXMLFile() in the inherited constructor.
  *
- * It implements all internal interfaces in the case of a @ref KTMainWindow as host:
- * the builder and servant interface (for menu merging).
+ * It implements all internal interfaces in the case of a 
+ * @ref KTMainWindow as host: the builder and servant interface (for menu
+ * merging).
  */
 class MainWindow : public KTMainWindow, virtual public PartBase
 {
@@ -65,6 +66,7 @@ protected slots:
    * Called on startup and whenever the active part changes
    * For this you need to connect this slot to the
    * @ref KPartManager::activePartChanged() signal
+   *
    * @param part The active part (set to 0L if no part).
    */
   virtual void createGUI( KParts::Part * part );

@@ -34,32 +34,32 @@ namespace KParts
  * A plugin is the way to add actions to an existing @ref KParts application,
  * or to a @ref Part.
  *
- * The XML of those plugins looks exactly like of the shell or parts, with
- * one small difference: The document tag, named kpartplugin should have an additional
- * attribute, named "library", and contain the name of the library implementing
- * the plugin.
+ * The XML of those plugins looks exactly like of the shell or parts,
+ * with one small difference: The document tag, named kpartplugin
+ * should have an additional attribute, named "library", and contain
+ * the name of the library implementing the plugin.
  *
  * If you want this plugin to be used by a part, you need to
  * install the rc file under the directory
  * "data" (KDEDIR/share/apps usually)+"/instancename/kpartplugins/"
- * where instancename is the name of the part's instance.
- */
+ * where instancename is the name of the part's instance.  
+ **/
 class Plugin : public QObject, public KXMLGUIClient
 {
     Q_OBJECT
 public:
     /**
-     * Constructs a new KParts plugin.
+     * Construct a new KParts plugin.
      */
     Plugin( QObject* parent = 0, const char* name = 0 );
     /**
-     * Destructor
+     * Destructor.
      */
     virtual ~Plugin();
 
     /**
      * Load the plugin libraries from the directories appropriate
-     * to @p instance and make the Plugin objects children of @p parent .
+     * to @p instance and make the @ref Plugin objects children of @p parent .
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
 
@@ -70,15 +70,17 @@ public:
     static void loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs );
 
     /**
-     * Returns a list of plugin objects loaded for @p parent . This functions basically
-     * calls the @ref queryList method of @ref QObject to retrieve the list of child objects
-     * inheritting @ref KParts::Plugin .
-     */
+     * Returns a list of plugin objects loaded for @p parent. This
+     * functions basically calls the @ref queryList method of @ref
+     * QObject to retrieve the list of child objects inheritting @ref
+     * KParts::Plugin .  
+     **/
     static QValueList<KXMLGUIClient *> pluginClients( QObject *parent );
 
 protected:
     /**
      * Look for plugins in the @p instance's "data" directory (+"/kpartplugins")
+     *
      * @return A list of @ref QDomDocument s, containing the parsed xml documents returned by plugins.
      */
     static const QValueList<QDomDocument> pluginDocuments( const KInstance * instance );

@@ -69,13 +69,16 @@ public:
   SelectionPolicy selectionPolicy() const;
 
   /**
-   * Specify whether the partmanager should handle/allow nested parts or not.
-   * This is a property the shell has to set/specify. Per default we assume that the
-   * shell cannot handle nested parts. However in case of a KOffice shell for example
-   * we allow nested parts.
-   * A Part is nested (a child part) if its parent object inherits KParts::Part.
-   * If a child part is activated and nested parts are not allowed/handled, then the top parent
-   * part in the tree is activated.
+   * Specify whether the partmanager should handle/allow nested parts
+   * or not.
+   *
+   *  This is a property the shell has to set/specify. Per
+   * default we assume that the shell cannot handle nested
+   * parts. However in case of a KOffice shell for example we allow
+   * nested parts.  A Part is nested (a child part) if its parent
+   * object inherits @ref KParts::Part.  If a child part is activated and
+   * nested parts are not allowed/handled, then the top parent part in
+   * the tree is activated.
    */
   void setAllowNestedParts( bool allow );
   bool allowNestedParts() const;

@@ -69,6 +69,8 @@ public:
 
   /**
    *  Internal method. Called by @ref KParts::Part to specify the parent object for plugin objects.
+   *
+   * @internal
    */
   void setPartObject( QObject *object );
   QObject *partObject() const;
@@ -98,19 +100,19 @@ private:
 /**
  * Base class for parts.
  *
- * A "part" is a GUI component, featuring
- * @li a widget embeddedable in any application
+ * A "part" is a GUI component, featuring:
+ * @li A widget embeddedable in any application.
  * @li GUI elements that will be merged in the "host" user interface
- * (menubars, toolbars... )
+ * (menubars, toolbars... ).
  *
- * About the widget :
+ * @sect About the widget
  * Note that @ref KParts::Part does not inherit @ref QWidget.
  * This is due to the fact that the "visual representation"
  * will probably not be a mere @ref QWidget, but an elaborate one.
  * That's why when implementing your @ref KParts::Part (or derived)
  * you should call @ref KParts::Part::setWidget() in your constructor.
  *
- * About the GUI elements :
+ * @sect About the GUI elements
  * Those elements trigger actions, defined by the part (@ref action()).
  * The layout of the actions in the GUI is defined by an XML file (@ref setXMLFile()).
  *
@@ -162,7 +164,7 @@ public:
     virtual void setManager( PartManager * manager );
 
     /**
-     * @return The part manager handling this part, if any (0L otherwise).
+     * Returns the part manager handling this part, if any (0L otherwise).
      */
     PartManager * manager();
 
@@ -172,12 +174,12 @@ public:
     virtual Part *hitTest( QWidget *widget, const QPoint &globalPos );
 
     /**
-     *  @param seleetable Indicates whether the part is selectable or not.
+     *  @param selectable Indicates whether the part is selectable or not.
      */
     virtual void setSelectable( bool selectable );
 
     /**
-     *  Retrieves whether the part is selectable or not.
+     *  Returns whether the part is selectable or not.
      */
     virtual bool isSelectable() const;
 
