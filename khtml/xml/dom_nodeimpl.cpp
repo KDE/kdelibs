@@ -395,15 +395,12 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
-    bool found = false;
-    for (; it.current() && !found; ++it)
+    for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_regdListeners->removeRef(it.current());
             listener->deref();
             return;
         }
-
-    return;
 }
 
 void NodeImpl::removeEventListener(const DOMString &type, EventListener *listener,
@@ -430,7 +427,7 @@ void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
 {
     removeHTMLEventListener(id);
     if (listener)
-	addEventListener(id,listener,false);    
+	addEventListener(id,listener,false);
 }
 
 EventListener *NodeImpl::getHTMLEventListener(int id)
@@ -651,9 +648,8 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
         return;
 
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
-    bool found = false;
     Event ev = evt;
-    for (; it.current() && !found; ++it) {
+    for (; it.current(); ++it) {
         if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
             it.current()->listener->handleEvent(ev);
     }
