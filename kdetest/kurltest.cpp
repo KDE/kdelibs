@@ -25,7 +25,6 @@ main( int argc, char** argv)
 	  cout << argv[1] << " is not a valid URL\n";
 	  return 1;
      }
-     url.cleanURL();
      url_info( url);
      cout << "cd to bleb, then .. 3 times\n";
      url.cd( "bleb");
@@ -35,16 +34,16 @@ main( int argc, char** argv)
 	  url_info( url);
      }
      cout << "add blabla to reference then .. 3 times\n";
-     url.cd( "blabla", 1, 1);
+     url.cd( "blabla");
      url_info( url);
      for( i = 0; i < 3; ++i) {
-	  url.cdRef("..");
+	  url.cd("..");
 	  url_info( url);
      }
      cout << "change protocol to tar\n";
      url.setProtocol( "tar");
      cout << "add blabla to reference\n";
-     url.cd( "blabla", 1, 1);
+     url.cd( "blabla");
      url_info( url);
      cout << "remove reference\n";
      url.setReference( "");
