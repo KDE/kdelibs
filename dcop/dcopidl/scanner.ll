@@ -173,6 +173,8 @@ Q_OBJECT		;
 "private:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
 "public:"{KDCOP}"k_dcop"	return T_DCOP_AREA;
 "public:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
+"protected:"{KDCOP}"}"		return T_RIGHT_CURLY_BRACKET;
+"public slots:"{KDCOP}"}"	return T_RIGHT_CURLY_BRACKET;
 
 {Kidl_Identifier}	{
 			  yylval._str = new QString( yytext );
