@@ -23,11 +23,12 @@
 
 #include <qdatastream.h>
 #include <qlist.h>
+#include <ksharedptr.h>
 
 /**
  * Base class for all entries.
  */
-class KSycocaEntry
+class KSycocaEntry : public KShared
 {
  
 public:

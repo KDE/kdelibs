@@ -31,7 +31,6 @@
 #include <qdatastream.h>
 #include <qvariant.h>
 
-#include <ksharedptr.h>
 #include <ksimpleconfig.h>
 
 
@@ -42,7 +41,7 @@
  * It is associated to services according to the user profile (kuserprofile.h)
  * and there are factories and registry entry classes for it (kservicetypefactories.h)
  */
-class KServiceType : public KShared, public KSycocaEntry
+class KServiceType : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KServiceType, KSycocaEntry );
   

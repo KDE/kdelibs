@@ -32,5 +32,7 @@ For each factory
 And then, TODO :
 
 UserProfile
-| will be a hash table for
-| * servicetype -> service offset
+| * servicetype offset, service offset [ , preference ? ]
+| * servicetype offset, service offset
+| * servicetype offset, service offset
+| * servicetype offset, service offset

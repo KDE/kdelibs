@@ -118,10 +118,8 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry)
    // This is because local dirs are parsed BEFORE global dirs.
    if ( oldEntry )
    {
-     kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one %1").arg(name) );
-#warning FIXME this delete coredumps if uncommented ?
-     // HACK this coredumps !!!
-     //delete newEntry;
+     kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
+     delete newEntry;
    }
    else
    {

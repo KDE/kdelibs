@@ -29,7 +29,6 @@
 #include <qvariant.h>
 
 #include <ksimpleconfig.h>
-#include <ksharedptr.h>
 
 #include "ksycocaentry.h"
 #include "ksycocatype.h"
@@ -40,7 +39,7 @@
  *
  * @author Torben Weis <weis@kde.org>
  */
-class KService : public KShared, public KSycocaEntry
+class KService : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KService, KSycocaEntry );
 
