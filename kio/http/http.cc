@@ -51,7 +51,7 @@
 #include <kcharsets.h>
 #include <kprotocolmanager.h>
 #include <kdatastream.h>
-#include <ksock.h>
+#include <kextsock.h>
 #include <kurl.h>
 #include <kinstance.h>
 #include <kglobal.h>
@@ -472,6 +472,8 @@ void HTTPProtocol::http_checkConnection()
   m_state.do_proxy = m_request.do_proxy;
 }
 
+#if 0
+// This is unused if KExtendedSocket is in use
 static bool waitForConnect( int sock, int maxTimeout )
 {
   fd_set wr;
@@ -501,6 +503,7 @@ static bool waitForConnect( int sock, int maxTimeout )
   }
   return false; // Timeout
 }
+#endif
 
 static bool waitForHeader( int sock, int maxTimeout )
 {
@@ -530,6 +533,7 @@ bool
 HTTPProtocol::http_openConnection()
 {
     m_bKeepAlive = false;
+#if 0
     m_sock = ::socket(PF_INET,SOCK_STREAM,0);
     if (m_sock < 0) {
       m_sock = 0;
@@ -539,6 +543,9 @@ HTTPProtocol::http_openConnection()
 
     // Set socket non-blocking.
     fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL)|O_NDELAY));
+#else
+    KExtendedSocket ks;
+#endif
 
     // do we still want a proxy after all that?
     if ( m_state.do_proxy ) {
@@ -546,6 +553,7 @@ HTTPProtocol::http_openConnection()
       int proxy_port = m_proxyURL.port();
       kdDebug(7113) << "http_openConnection " << proxy_host << " " << proxy_port << endl;
       // yep... open up a connection to the proxy instead of our host
+#if 0
       if (!KSocket::initSockaddr(&m_proxySockaddr, proxy_host.latin1(), proxy_port)) {
         error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
         return false;
@@ -568,6 +576,22 @@ HTTPProtocol::http_openConnection()
           return false;
         }
       }
+#else
+      ks.setAddress(proxy_host, proxy_port);
+      ks.setTimeout(m_proxyConnTimeout);
+
+      infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
+
+      if (ks.connect() < 0)
+	{
+	  if (ks.status() == IO_LookupError)
+	    error(ERR_UNKNOWN_PROXY_HOST, proxy_host);
+	  else
+	    error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
+	  return false;
+	}
+      m_sock = ks.fd();
+#endif
 
       // SSL proxying requires setting up a tunnel through the proxy server
       // with the CONNECT directive.
@@ -620,10 +644,21 @@ HTTPProtocol::http_openConnection()
 
       m_bUseSSL = useSSLSaved;
       }  // if m_bUseSSL
+#if 0
       m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
+#else
+      KSocketAddress *sa = ks.peerAddress();
+      m_ssl_ip = i18n("Proxied by %1.").arg(sa->pretty());
+#endif
+
+#endif // DO_SSL
+
+#if 1
+      ks.release();
 #endif
     } else {
       // apparently we don't want a proxy.  let's just connect directly
+#if 0
       ksockaddr_in server_name;
 
       if(!KSocket::initSockaddr(&server_name, m_state.hostname.latin1(), m_state.port)) {
@@ -652,8 +687,40 @@ HTTPProtocol::http_openConnection()
           return false;
         }
       }
+#else
+
+      ks.setAddress(m_state.hostname, m_state.port);
+      ks.setTimeout(m_remoteConnTimeout);
+      if (ks.connect() < 0)
+	{
+	  if (ks.status() == IO_LookupError)
+	    error(ERR_UNKNOWN_HOST, m_state.hostname);
+	  else
+	    {
+	      if (m_state.port != m_DefaultPort)
+		error(ERR_COULD_NOT_CONNECT, i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port) );
+	      else
+		error(ERR_COULD_NOT_CONNECT, m_state.hostname );
+	    }
+	  return false;
+	}
+      m_sock = ks.fd();
+#endif
+
 #ifdef DO_SSL
+#if 0
         m_ssl_ip = inet_ntoa(server_name.sin_addr);
+#else
+	KSocketAddress *sa = ks.peerAddress();
+	if (sa->isA("KInetSocketAddress"))
+	  m_ssl_ip = ((KInetSocketAddress*)sa)->prettyHost();
+	else
+	  m_ssl_ip = sa->pretty();
+#endif
+#endif
+
+#if 1
+	ks.release();
 #endif
 
     }
@@ -960,7 +1027,15 @@ bool HTTPProtocol::http_open()
     header += "Accept-Language: " + m_strLanguages + "\r\n";
 
   header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
-  header += m_state.hostname;
+  if (m_state.hostname.find(':') != -1)
+    {
+      // This is an IPv6 (not hostname)
+      header += '[';
+      header += m_state.hostname;
+      header += ']';
+    }
+  else
+    header += m_state.hostname;
   if (m_state.port != m_DefaultPort)
   {
     memset(c_buffer, 0, 64);
