@@ -256,7 +256,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintPhase)
                 QSize s(scaledrect.size());
                 if(image->valid_rect().size() == QSize( intrinsicWidth(), intrinsicHeight() )) // fully loaded
                     s = QSize(cWidth, cHeight);
-                if(QABS(s.width() - cWidth) < 2) // rounding errors
+                if(kAbs(s.width() - cWidth) < 2) // rounding errors
                     s.setWidth(cWidth);
                 if(resizeCache.size() != s)
                     resizeCache.resize(s);

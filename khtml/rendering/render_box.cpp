@@ -433,7 +433,7 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 void RenderBox::repaint(bool immediate)
 {
     int ow = style() ? style()->outlineWidth() : 0;
-    int olw = QMAX(m_overlapWidth, ow);
+    int olw = kMax(m_overlapWidth, (short)ow);
     if( isInline() && !isReplaced() )
     {
 	RenderObject* p = parent();
