@@ -68,7 +68,7 @@ QString i18n(const char *text);
  *  text.
  *  @see translate
  **/
-QString i18n(const char *index, const char *text);
+QString i18n(const char *comment, const char *text);
 
 /**
  * \relates KLocale
@@ -178,11 +178,11 @@ public:
    * The english user will see "Open" in both cases, but the translated
    * version may vary. Of course you can also use i18n()
    *
-   * @param index The lookup text
+   * @param comment the comment. The lookup text is made out of comment + @p fallback
    * @param fallback the default text, if not found
    * @return translation
    */
-  QString translate( const char *index, const char *fallback) const;
+  QString translate( const char *comment, const char *fallback) const;
 
   /**
    * Used to get the correct, translated singular or plural of a
