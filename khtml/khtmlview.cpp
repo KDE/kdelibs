@@ -69,6 +69,7 @@
 
 #include <qtooltip.h>
 #include <qpainter.h>
+#include <qlabel.h>
 #include <qpaintdevicemetrics.h>
 #include <qstylesheet.h>
 #include <kapplication.h>
@@ -80,6 +81,7 @@
 #include <qtimer.h>
 #include <kdialogbase.h>
 #include <qptrdict.h>
+
 
 //#define DEBUG_NO_PAINT_BUFFER
 
@@ -341,7 +343,6 @@ public:
 #endif // KHTML_NO_TYPE_AHEAD_FIND
     bool accessKeysActivated;
     bool accessKeysPreActivate;
-    QTimer accessKeysTimer;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -446,7 +447,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
 #endif // KHTML_NO_TYPE_AHEAD_FIND
-    connect(&d->accessKeysTimer, SIGNAL(timeout()), this, SLOT(accessKeysTimeout()));
 
     init();
 
@@ -681,6 +681,7 @@ void KHTMLView::layout()
         d->layoutSchedulingEnabled=false;
 
         if (document->isHTMLDocument()) {
+	     if (d->accessKeysActivated) accessKeysTimeout();
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
                  QScrollView::setVScrollBarMode(AlwaysOff);
@@ -1123,16 +1124,23 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (_ke->key() == Key_Control && _ke->state()==0)
-	    d->accessKeysPreActivate=true;
+    if (_ke->key() == Key_Control && _ke->state()==0 && !d->accessKeysActivated) d->accessKeysPreActivate=true;
+
     if (_ke->key() == Key_Shift && _ke->state()==0)
 	    d->scrollSuspendPreActivate=true;
 
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
     // may eat the event
-    if( handleAccessKey( _ke )) {
+
+    if (d->accessKeysActivated)
+    {
+        if (_ke->state()==0 || _ke->state()==ShiftButton) {
+	if (_ke->key() != Key_Shift) accessKeysTimeout();
+        handleAccessKey( _ke );
         _ke->accept();
         return;
+    	}
+	accessKeysTimeout();
     }
 
     if ( dispatchKeyEvent( _ke )) {
@@ -1411,17 +1419,14 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	d->m_caretViewContext->keyReleasePending = false;
 	return;
     }
+
     if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
-    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && KApplication::keyboardModifiers()==0)
+    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardModifiers() & KApplication::ControlModifier))
 	{
-	    QString accessMsg=i18n("Access Keys activated");    
-	    #if 0 // added i18n string in case the feature makes it in KDE 3.3
-	    accessMsg+=i18n(" -- press Ctrl to display all available access keys");
-	    #endif
-	    m_part->setStatusBarText(accessMsg,KHTMLPart::BarHoverText);
+	    displayAccessKeys();
+	    m_part->setStatusBarText(i18n("Access Keys activated"),KHTMLPart::BarOverrideText);
 	    d->accessKeysActivated = true;
 	    d->accessKeysPreActivate = false;
-	    d->accessKeysTimer.start(5000, true);
 	}
 	else if (d->accessKeysActivated) accessKeysTimeout();
 	
@@ -1897,19 +1902,40 @@ bool KHTMLView::focusNextPrevNode(bool next)
     }
 }
 
+void KHTMLView::displayAccessKeys()
+{
+    for( NodeImpl* n = m_part->xmlDocImpl(); n != NULL; n = n->traverseNextNode()) {
+        if( n->isElementNode()) {
+            ElementImpl* en = static_cast< ElementImpl* >( n );
+            DOMString s = en->getAttribute( ATTR_ACCESSKEY );
+            if( s.length() == 1) {	    
+	        QRect rec=en->getRect();
+	        QLabel *lab=new QLabel(s.string(),viewport(),0,Qt::WDestructiveClose);
+	        connect( this, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
+	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
+	        lab->setPalette(QToolTip::palette());
+	        lab->setLineWidth(2);
+	        lab->setFrameStyle(QFrame::Box | QFrame::Plain);
+	        lab->setMargin(3);
+	        lab->adjustSize();
+	        addChild(lab,rec.left()+rec.width()/2,rec.top()+rec.height()/2);
+	        showChild(lab);
+	    }
+        }
+    }
+}
 
 void KHTMLView::accessKeysTimeout()
 {
 d->accessKeysActivated=false;
 d->accessKeysPreActivate = false;
-m_part->setStatusBarText(QString::null, KHTMLPart::BarHoverText);
+m_part->setStatusBarText(QString::null, KHTMLPart::BarOverrideText);
+emit hideAccessKeys();
 }
 
 // Handling of the HTML accesskey attribute.
 bool KHTMLView::handleAccessKey( const QKeyEvent* ev )
 {
-if (!d->accessKeysActivated || ev->state()!=0) return false;
-
 // Qt interprets the keyevent also with the modifiers, and ev->text() matches that,
 // but this code must act as if the modifiers weren't pressed
     QChar c;
@@ -1925,7 +1951,6 @@ if (!d->accessKeysActivated || ev->state()!=0) return false;
     }
     if( c.isNull())
         return false;
-    accessKeysTimeout();
     return focusNodeWithAccessKey( c );
 }
 
@@ -2717,6 +2742,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);
     }
+    if (d->accessKeysActivated) emit repaintAccessKeys();
 }
 
 void KHTMLView::scheduleRelayout(khtml::RenderObject * /*clippedObj*/)

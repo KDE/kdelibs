@@ -160,11 +160,19 @@ public:
      * ensure the display is up to date
      */
     void layout(); // KDE 4.0: make private
+    /**
+     * Display all accesskeys in small tooltips
+     */
+    void displayAccessKeys();
+    
+    
 
 signals:
     void finishedLayout();
     void cleared();
     void zoomView( int );
+    void hideAccessKeys();
+    void repaintAccessKeys();
 
 protected:
     void clear();
