@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurl.h>
-#include <kprotocolmanager.h>
+#include <kmimetype.h>
 
 using namespace KIO;
 
@@ -99,43 +99,81 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   m_pLayout->addStrut( 360 );	// makes dlg at least that wide
 
   // User tries to overwrite a file with itself ?
-  QLabel *lb;
-
   if ( _mode & M_OVERWRITE_ITSELF ) {
-    lb = new QLabel( i18n("This action would overwrite '%1' with itself.\n"
-			  "Do you want to rename it instead?").arg(src), this );
+      QLabel *lb = new QLabel( i18n("This action would overwrite '%1' with itself.\n"
+                                    "Do you want to rename it instead?").arg(src), this );
+      m_pLayout->addWidget(lb);
   }  else if ( _mode & M_OVERWRITE ) {
-      QString sentence1;
+      QGridLayout * gridLayout = new QGridLayout( 0L, 9, 2, KDialog::marginHint(),
+                                                  KDialog::spacingHint() );
+      m_pLayout->addLayout(gridLayout);
+      gridLayout->setColStretch(0,0);
+      gridLayout->setColStretch(1,10);
 
-      // TODO rewrite this with a GridLayout and even icons, a la kpropsdlg
-      if (mtimeDest < mtimeSrc)
-          // The url is last since it may contain '%'
-	  sentence1 = i18n("An older item named '%4' already exists\n"
-                           "    size %1\n    created on %2\n    modified on %3\n");
-      else
-	  sentence1 = i18n("A newer item named '%4' already exists\n"
-                           "    size %1\n    created on %2\n    modified on %3\n");
+      QString sentence1 = (mtimeDest < mtimeSrc)
+                         ? i18n("An older item named '%1' already exists")
+                         : i18n("A newer item named '%1' already exists");
+      QLabel * lb1 = new QLabel( sentence1.arg(dest), this );
+      gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 
-      QDateTime dctime; dctime.setTime_t( ctimeDest );
-      QDateTime dmtime; dmtime.setTime_t( mtimeDest );
+      lb1 = new QLabel( this );
+      lb1->setPixmap( KMimeType::pixmapForURL( dest ) );
+      gridLayout->addMultiCellWidget( lb1, 1, 3, 0, 0 ); // takes the first column on rows 1-3
 
-      sentence1 = sentence1.
-        arg(sizeDest == (unsigned long)-1 ? i18n("unknown") : KIO::convertSize(sizeDest)).
-        arg(ctimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dctime)).
-        arg(mtimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime)).
-        arg(dest);
+      int row = 1;
+      if ( sizeDest != (unsigned long)-1 )
+      {
+          QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeDest) ), this );
+          gridLayout->addWidget( lb, row, 1 );
+          row++;
+      }
+      if ( ctimeDest != (time_t)-1 )
+      {
+          QDateTime dctime; dctime.setTime_t( ctimeDest );
+          QLabel * lb = new QLabel( i18n("created on %1").arg( KGlobal::locale()->formatDateTime(dctime) ), this );
+          gridLayout->addWidget( lb, row, 1 );
+          row++;
+      }
+      if ( mtimeDest != (time_t)-1 )
+      {
+          QDateTime dmtime; dmtime.setTime_t( mtimeDest );
+          QLabel * lb = new QLabel( i18n("modified on %1").arg( KGlobal::locale()->formatDateTime(dmtime) ), this );
+          gridLayout->addWidget( lb, row, 1 );
+          row++;
+      }
 
-      QString sentence2 = i18n("The original file is '%4'\n"
-                               "    size %1\n    created on %2\n    modified on %3\n");
-      dctime.setTime_t( ctimeSrc );
-      dmtime.setTime_t( mtimeSrc );
-      sentence2 = sentence2.
-        arg(sizeSrc == (unsigned long)-1 ? i18n("unknown") : KIO::convertSize(sizeSrc)).
-        arg(ctimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dctime)).
-        arg(mtimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime)).
-        arg(src);
+      // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
+      gridLayout->addRowSpacing( 4, 20 );
 
-      lb = new QLabel( sentence1 + "\n" + sentence2, this );
+      QLabel * lb2 = new QLabel( i18n("The original file is '%1'").arg(src), this );
+      gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
+
+      lb2 = new QLabel( this );
+      lb2->setPixmap( KMimeType::pixmapForURL( src ) );
+      gridLayout->addMultiCellWidget( lb2, 6, 8, 0, 0 ); // takes the first column on rows 6-8
+
+      row = 6;
+
+      if ( sizeSrc != (unsigned long)-1 )
+      {
+          QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeSrc) ), this );
+          gridLayout->addWidget( lb, row, 1 );
+          row++;
+      }
+      if ( ctimeSrc != (time_t)-1 )
+      {
+          QDateTime dctime; dctime.setTime_t( ctimeSrc );
+          QLabel * lb = new QLabel( i18n("created on %1").arg( KGlobal::locale()->formatDateTime(dctime) ), this );
+          gridLayout->addWidget( lb, row, 1 );
+          row++;
+      }
+      if ( mtimeSrc != (time_t)-1 )
+      {
+          QDateTime dmtime; dmtime.setTime_t( mtimeSrc );
+          QLabel * lb = new QLabel( i18n("modified on %1").arg( KGlobal::locale()->formatDateTime(dmtime) ), this );
+          gridLayout->addWidget( lb, row, 1 );
+          row++;
+      }
   } else
   {
       // I wonder when this happens (David). And 'dest' isn't shown at all here...
@@ -145,10 +183,10 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       else
 	  sentence1 = i18n("A newer item than '%1' already exists.\n").arg(src);
 
-      lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
+      QLabel *lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
+      m_pLayout->addWidget(lb);
   }
 
-  m_pLayout->addWidget(lb);
   m_pLineEdit = new QLineEdit( this );
   m_pLayout->addWidget( m_pLineEdit );
   m_pLineEdit->setText( KURL(dest).fileName() );
@@ -278,19 +316,5 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
 
   return (RenameDlg_Result)i;
 }
-
-/*
-unsigned long KIO::getOffset( QString dest ) {
-
-  if ( KProtocolManager::self().markPartial() )
-    dest += ".part";
-
-  KURL d( dest );
-  QFileInfo info;
-  info.setFile( d.path() );
-
-  return info.size();
-}
-*/
 
 #include "renamedlg.moc"

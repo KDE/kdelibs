@@ -87,7 +87,7 @@ protected:
   QPushButton *b6;
   QPushButton *b7;
   QLineEdit* m_pLineEdit;
-  QVBoxLayout* m_pLayout;
+  QVBoxLayout* m_pLayout; // ### doesn't need to be here
 
   QString src;
   QString dest;
