@@ -1009,7 +1009,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    break;
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
-                if (e->parentNode()) {
+                if (e->parentNode() && e->parentNode()->isElementNode()) {
                     DOM::NodeImpl* n = e->previousSibling();
                     while ( n && !n->isElementNode() )
                         n = n->previousSibling();
@@ -1020,7 +1020,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             case CSSSelector::PseudoLastChild: {
                 // last-child matches the last child that is an element!
-                if (e->parentNode()) {
+                if (e->parentNode() && e->parentNode()->isElementNode()) {
                     DOM::NodeImpl* n = e->nextSibling();
                     while ( n && !n->isElementNode() )
 		n = n->nextSibling();
