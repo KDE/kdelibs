@@ -283,6 +283,18 @@ public:
     static const QString classNameOfToplevel( int number );
 
     /**
+     * Reimplementation of QMainWindow::show()
+     */
+    // KDE4 remove this method if this has been fixed in Qt
+    virtual void show();
+
+    /**
+     * Reimplementation of QMainWindow::hide()
+     */
+    // KDE4 remove this method if this has been fixed in Qt
+    virtual void hide();
+
+    /**
      * Restore the session specified by @p number.
      *
      * Returns @p false if this

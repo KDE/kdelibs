@@ -67,6 +67,7 @@ public:
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
+    QPtrList<QDockWindow> hiddenDockWindows;
 };
 
 QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -102,7 +103,7 @@ public:
         }
         config->setGroup(QString::fromLatin1("Number"));
         config->writeEntry(QString::fromLatin1("NumberOfWindows"), n );
-        return TRUE;
+        return true;
     }
 
     bool commitData( QSessionManager& sm )
@@ -153,7 +154,7 @@ public:
         }
 
         // the user wants it, the user gets it
-        return TRUE;
+        return true;
     }
 };
 
@@ -173,7 +174,7 @@ KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, WFlags 
 
 void KMainWindow::initKMainWindow(const char *name, int cflags)
 {
-    setDockMenuEnabled( FALSE );
+    setDockMenuEnabled( false );
     mHelpMenu = 0;
     kapp->setTopWidget( this );
     actionCollection()->setWidget( this );
@@ -339,10 +340,10 @@ KPopupMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 bool KMainWindow::canBeRestored( int number )
 {
     if ( !kapp->isRestored() )
-        return FALSE;
+        return false;
     KConfig *config = kapp->sessionConfig();
     if ( !config )
-        return FALSE;
+        return false;
     config->setGroup( QString::fromLatin1("Number") );
     int n = config->readNumEntry( QString::fromLatin1("NumberOfWindows") , 1 );
     return number >= 1 && number <= n;
@@ -365,17 +366,47 @@ const QString KMainWindow::classNameOfToplevel( int number )
         return config->readEntry( QString::fromLatin1("ClassName") );
 }
 
+void KMainWindow::show()
+{
+    QMainWindow::show();
+
+    for ( QPtrListIterator<QDockWindow> it( d->hiddenDockWindows ); it.current(); ++it )
+	it.current()->show();
+
+    d->hiddenDockWindows.clear();
+}
+
+void KMainWindow::hide()
+{
+    if ( isVisible() ) {
+
+        d->hiddenDockWindows.clear();
+
+        QObjectList *list = queryList( "QDockWindow" );
+        for( QObjectListIt it( *list ); it.current(); ++it ) {
+            QDockWindow *dw = (QDockWindow*)it.current();
+            if ( dw->isTopLevel() && dw->isVisible() ) {
+                d->hiddenDockWindows.append( dw );
+                dw->hide();
+            }
+        }
+        delete list;
+    }
+
+    QWidget::hide();
+}
+
 bool KMainWindow::restore( int number, bool show )
 {
     if ( !canBeRestored( number ) )
-        return FALSE;
+        return false;
     KConfig *config = kapp->sessionConfig();
     if ( readPropertiesInternal( config, number ) ){
         if ( show )
             KMainWindow::show();
-        return FALSE;
+        return false;
     }
-    return FALSE;
+    return false;
 }
 
 KXMLGUIFactory *KMainWindow::guiFactory()
@@ -556,12 +587,12 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
 
 bool KMainWindow::queryExit()
 {
-    return TRUE;
+    return true;
 }
 
 bool KMainWindow::queryClose()
 {
-    return TRUE;
+    return true;
 }
 
 void KMainWindow::saveGlobalProperties( KConfig*  )
