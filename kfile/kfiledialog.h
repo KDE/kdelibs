@@ -230,6 +230,9 @@ public:
      *
      * @param types a list of mimetypes that can be used as output format
      * @param defaultType the default mimetype to use as output format, if any.
+     * If @p defaultType is set, it will be set as the current item.
+     * Otherwise, a first item showing all the mimetypes will be created.
+     * Typically, @p defaultType should be empty for loading and set for saving.
      *
      * Do not use in conjunction with @ref setFilter()
      */

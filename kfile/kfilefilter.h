@@ -42,10 +42,21 @@ class KFileFilter : public KComboBox
      */
     QString currentFilter() const;
 
-    void setMimeFilter( const QStringList& types );
+    /**
+     * Set a list of mimetypes.
+     * If @p defaultType is set, it will be set as the current item.
+     * Otherwise, a first item showing all the mimetypes will be created.
+     */
+    void setMimeFilter( const QStringList& types, const QString& defaultType );
+
+    /**
+     * @return true if the filter's first item is the list of all mimetypes
+     */
+    bool showsAllTypes() const { return m_allTypes; }
 
  protected:
     QStringList filters;
+    bool m_allTypes;
 
  signals:
     void filterChanged();

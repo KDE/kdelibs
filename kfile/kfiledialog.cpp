@@ -131,7 +131,6 @@ struct KFileDialogPrivate
 
     KURL::List urlList; //the list of selected urls
 
-    QString defaultType; // the default mimetype to save as
     QStringList mimetypes; //the list of possible mimetypes to save as
 
     // indicates if the location edit should be kept or cleared when changing
@@ -404,9 +403,8 @@ void KFileDialog::setFilterMimeType(const QString &label,
 void KFileDialog::setMimeFilter( const QStringList& mimeTypes, 
                                  const QString& defaultType )
 {
-    d->defaultType = defaultType;
     d->mimetypes = mimeTypes;
-    filterWidget->setMimeFilter( mimeTypes );
+    filterWidget->setMimeFilter( mimeTypes, defaultType );
     
     QStringList types = mimeTypes;
     types.append( QString::fromLatin1( "inode/directory" ));
@@ -425,10 +423,12 @@ void KFileDialog::clearFilter()
 QString KFileDialog::currentMimeFilter() const
 {
     int i = filterWidget->currentItem()-1;
+    if (filterWidget->showsAllTypes())
+        i--;
 
     if ((i >= 0) && (i < (int) d->mimetypes.count()))
         return d->mimetypes[i];
-    return d->defaultType;
+    return QString::null; // The "all types" item has no mimetype
 }
 
 KMimeType::Ptr KFileDialog::currentFilterMimeType()

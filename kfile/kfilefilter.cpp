@@ -28,6 +28,7 @@ KFileFilter::KFileFilter( QWidget *parent, const char *name)
     setInsertionPolicy(NoInsertion);
     connect( this, SIGNAL( activated( int )), this, SIGNAL( filterChanged() ));
     connect( this, SIGNAL( returnPressed() ), this, SIGNAL( filterChanged() ));
+    m_allTypes = false;
 }
 
 KFileFilter::~KFileFilter()
@@ -76,29 +77,40 @@ QString KFileFilter::currentFilter() const
 	return f.left(tab);
 }
 
-void KFileFilter::setMimeFilter( const QStringList& types )
+void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaultType )
 {
     clear();
     filters.clear();
     QString delim = QString::fromLatin1(", ");
 
+    m_allTypes = defaultType.isEmpty();
+
     QString allComments, allTypes;
-    for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
+    int i = 0;
+    for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it,  ++i)
     {
-        if ( it != types.begin() ) {
+        if ( m_allTypes && it != types.begin() ) {
             allComments += delim;
             allTypes += ' ';
         }
 
         KMimeType::Ptr type = KMimeType::mimeType( *it );
         filters.append( type->name() );
-        allTypes += type->name();
-        allComments += type->comment();
+        if ( m_allTypes )
+        {
+            allTypes += type->name();
+            allComments += type->comment();
+        }
         insertItem( type->comment() );
+        if ( type->name() == defaultType )
+            setCurrentItem( i );
     }
 
-    insertItem( allComments, 0 );
-    filters.prepend( allTypes );
+    if ( m_allTypes )
+    {
+        insertItem( allComments, 0 );
+        filters.prepend( allTypes );
+    }
 }
 
 #include "kfilefilter.moc"
