@@ -213,7 +213,7 @@ void KLocale::setEncodingLang(const QString &_lang)
   if (!_codec)
     _codec = QTextCodec::codecForName( "UTF-8" );
 
-  qt_set_locale_encoding(_codec);
+  qt_set_locale_codec(_codec);
 }
 
 void KLocale::initLanguage(KConfig *config, const QString& catalogue)
