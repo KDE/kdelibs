@@ -625,7 +625,7 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
   callingCon = _callingContext;
 
   // create and initialize activation object (ECMA 10.1.6)
-  if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
+  if (type == FunctionCode || type == AnonymousCode ) {
     activation = new ActivationImp(exec,func,args);
     variable = activation;
   } else {
@@ -659,16 +659,6 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType ty
       }
       variable = activation; // TODO: DontDelete ? (ECMA 10.2.3)
       thisVal = thisV;
-      break;
-    case HostCode:
-      if (thisV.type() >= ObjectType)
-	thisVal = static_cast<ObjectImp*>(thisV.imp());
-      else
-	thisVal = glob;
-      variable = activation; // TODO: DontDelete (ECMA 10.2.4)
-      scope = List();
-      scope.append(activation);
-      scope.append(glob);
       break;
     }
 

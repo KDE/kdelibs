@@ -1748,7 +1748,9 @@ Value VarDeclNode::evaluate(ExecState *exec)
 #ifdef KJS_VERBOSE
   printInfo(exec,(UString("new variable ")+ident).cstring().c_str(),val);
 #endif
-  variable.put(exec,ident, val, DontDelete);
+  // We use Internal to bypass all checks in derived objects, e.g. so that
+  // "var location" creates a dynamic property instead of activating window.location.
+  variable.put(exec, ident, val, DontDelete | Internal);
 
   return String(ident);
 }

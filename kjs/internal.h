@@ -286,8 +286,7 @@ namespace KJS {
   enum CodeType { GlobalCode,
 		  EvalCode,
 		  FunctionCode,
-		  AnonymousCode,
-		  HostCode };
+		  AnonymousCode };
 
   /**
    * @short Execution context.

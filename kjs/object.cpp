@@ -380,6 +380,7 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
     if ((node->attr & DontDelete))
       return false;
     _prop->remove(propertyName);
+    return true;
   }
 
   // Look in the static hashtable of properties
