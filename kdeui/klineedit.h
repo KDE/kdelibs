@@ -211,28 +211,19 @@ signals:
     * NOT normal.
     */
     void completion( const QString& );
-
+  
     /**
-    * Signal emitted when the key-binding set for
-    * the next text match is pressed.
+    * Emitted when the text rotation key-bindings are pressed.
     *
-    * See @ref KCompletionBase::setKeyBinding().
+    * The argument indicates which key-binding was pressed.
+    * In KLineEdit's case this can be either one of two values:
+    * PrevCompletionMatch or NextCompletionMatch. See
+    * @ref KCompletionBase::setKeyBinding for details.
     *
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
-    */
-    void previousMatch( KCompletionBase::KeyBindingType /*type*/ );
-
-    /**
-    * Signal emitted when the key-binding set for
-    * the previous text match is pressed.
-    *
-    * See @ref KCompletionBase::setKeyBinding().
-    *
-    * Note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone or EchoMode is NOT normal.
-    */
-    void nextMatch( KCompletionBase::KeyBindingType /*type*/ );
+    */    
+    void textRotation( KCompletionBase::KeyBindingType );
 
 public slots:
 

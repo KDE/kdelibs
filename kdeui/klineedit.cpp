@@ -135,18 +135,14 @@ void KLineEdit::connectSignals( bool handle ) const
     {
         connect( this, SIGNAL( completion( const QString& ) ),
                  this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( previousMatch( KCompletionBase::KeyBindingType ) ),
-                 this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-        connect( this, SIGNAL( nextMatch( KCompletionBase::KeyBindingType ) ), 
+        connect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ),
                  this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
     }
     else if( !handle && handleSignals() )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ),
                     this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( previousMatch( KCompletionBase::KeyBindingType ) ), 
-                    this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-        disconnect( this, SIGNAL( nextMatch( KCompletionBase::KeyBindingType ) ),
+        disconnect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ), 
                     this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
     }
 }
@@ -198,14 +194,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     	key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
         if( KStdAccel::isEqual( e, key ) && fireSignals )
         {
-            emit previousMatch( PrevCompletionMatch );
+            emit textRotation( KCompletionBase::PrevCompletionMatch );
             return;
         }
         // Handles next match
 	    key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
         if( KStdAccel::isEqual( e, key ) && fireSignals)
         {
-            emit nextMatch( NextCompletionMatch );
+            emit textRotation( KCompletionBase::NextCompletionMatch );
             return;
         }
     }

@@ -242,47 +242,20 @@ signals:
     * set to KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
-
+    
     /**
-    * Signal emitted when the key-binding set for
-    * the next text match is pressed.
+    * Emitted when the text rotation key-bindings are pressed.
     *
-    * This signal is emitted when the key-binding used for
-    * iterating through all possible matches is invoked.
-    * It is usually used in the manual completion modes to
-    * iterate through the multiple matches
+    * The argument indicates which key-binding was pressed.
+    * In this case this can be either one of four values:
+    * PrevCompletionMatch, NextCompletionMatch, RotateUp or
+    * rotateDown. See @ref KCompletionBase::setKeyBinding for
+    * details.
     *
     * Note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone or EchoMode is NOT normal.
-    */
-    void previousMatch( KCompletionBase::KeyBindingType /* type */ );
-
-    /**
-    * Signal emitted when the key-binding set for
-    * the previous text match is pressed.
-    *
-    * See @ref KCompletionBase::setKeyBinding.
-    *
-    * Note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone or EchoMode is NOT normal.
-    */
-    void nextMatch( KCompletionBase::KeyBindingType /* type */ );
-
-    /**
-    * This signal is emitted when the rotate up key is pressed.
-    *
-    * Note that this signal is NOT available if this widget is non-editable
-    * or the completion mode is set to KGlobalSettings::CompletionNone.
-    */
-    void rotateUp( KCompletionBase::KeyBindingType /* type */ );
-
-    /**
-    * Signal emitted when the rotate down key is pressed.
-    *
-    * Note that this signal is NOT available if this widget is non-editable
-    * or the completion mode is set to KGlobalSettings::CompletionNone.
-    */
-    void rotateDown( KCompletionBase::KeyBindingType /* type */ );
+    * mode is set to CompletionNone.
+    */    
+    void textRotation( KCompletionBase::KeyBindingType );
 
 public slots:
 
