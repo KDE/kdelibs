@@ -576,7 +576,8 @@ void KTMainWindow::saveYourself(){
     n++;
     it.current()->savePropertiesInternal(config, n); 
   }
-  config->sync();
+  // According to Jochen, config is synced in kapp already
+  // config->sync();
 }
 
 
