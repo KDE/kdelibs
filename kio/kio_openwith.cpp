@@ -361,7 +361,7 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
   
   if (!qServiceType.isNull()) {
     remember = new QCheckBox(i18n("Remember application association for this file"), this);
-    remember->setChecked(true);
+    //    remember->setChecked(true); 
     topLayout->addWidget(remember);
   } else 
     remember = 0L;
