@@ -89,6 +89,36 @@ QString KStandardDirs::findResource( const QString& type,
 QString KStandardDirs::findResourceDir( const QString& type,
 					const QString& filename) const
 {
+    QStringList *candidates = getCandidates(type);
+    QDir testdir;
+    for (QStringList::ConstIterator it = candidates->begin(); 
+	 it != candidates->end(); it++) {
+	testdir.setPath(*it);
+	debug("looking for filename " + *it + filename);
+	if (testdir.exists(filename, false))
+	    return *it;
+    }
+    return QString::null;
+}
+
+QStringList KStandardDirs::findAllResources( const QString& type, bool recursive) const
+{
+    assert(!recursive);
+
+    QStringList list;
+
+    QStringList *candidates = getCandidates(type);
+    QDir testdir;
+    for (QStringList::ConstIterator it = candidates->begin(); 
+	 it != candidates->end(); it++) {
+	testdir.setPath(*it);
+	list += testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
+    }
+    return list;
+}
+
+QStringList *KStandardDirs::getCandidates(const QString& type) const
+{
     QStringList *candidates = dircache.find(type);
     if (!candidates) { // filling cache
         QDir testdir;
@@ -119,24 +149,7 @@ QString KStandardDirs::findResourceDir( const QString& type,
 		}
 	dircache.insert(type, candidates);
     }
-    QDir testdir;
-    for (QStringList::ConstIterator it = candidates->begin(); 
-	 it != candidates->end(); it++) {
-	testdir.setPath(*it);
-	debug("looking for filename " + *it + filename);
-	if (testdir.exists(filename, false))
-	    return *it;
-    }
-    return QString::null;
-}
-
-QStringList KStandardDirs::findAllResources( const QString&, bool recursive) const
-{
-    assert(!recursive);
-
-    QStringList list;
-    debug("findAllResources not yet implemented. Forgive me");
-    return list;
+    return candidates;
 }
 
 QString KStandardDirs::findExe( const QString& appname, 

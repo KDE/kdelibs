@@ -191,14 +191,23 @@ public:
 			       bool ignoreExecBit=false );
 
 	/**
-	* This function adds the defaults that are used by the current
-	* KDE version. It's a serie of addResourceTypes and addPrefix calls.
-	* You normally wouldn't call this function, it's called for you from
-	* KGlobal.
-	*/
+	 * This function adds the defaults that are used by the current
+	 * KDE version. It's a serie of addResourceTypes and addPrefix calls.
+	 * You normally wouldn't call this function, it's called for you from
+	 * KGlobal.
+	 */
 	void addKDEDefaults();
 
-private:
+
+ protected:
+	
+	/**
+	 * returns the list of possible directories for the type 
+	 * The functions updates the cache if possible
+	 */
+	QStringList *getCandidates(const QString& type) const;
+
+ private:
 
 	QStringList prefixes;
 
