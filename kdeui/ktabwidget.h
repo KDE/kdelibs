@@ -80,7 +80,7 @@ public:
     bool tabCloseActivatePrevious() const;
 
     /*!
-      Returns true if calling setTitle() will resize tabs 
+      Returns true if calling setTitle() will resize tabs
       to the width of the tab bar.
       @since 3.4
     */
@@ -107,7 +107,7 @@ public slots:
     virtual void moveTab( int, int );
 
     /*!
-      Removes the widget, reimplemented for 
+      Removes the widget, reimplemented for
       internal reasons (keeping labels in sync).
     */
     virtual void removePage ( QWidget * w );
@@ -145,10 +145,10 @@ public slots:
 
     /*!
       sets the title of the tab holding widget sender then
-      resizes tabs to fit to tab bar width if automaticResizeTabs 
+      resizes tabs to fit to tab bar width if automaticResizeTabs
       is enabled.
     */
-    virtual void setTabLabel( QWidget* sender, const QString &title );
+    void setTabLabel( QWidget* sender, const QString &title );
 
     /*!
       If \a enable is true, a call to setTitle() will also resize the
