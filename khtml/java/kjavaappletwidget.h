@@ -111,13 +111,6 @@ protected:
     //The counter to generate ID's for the applets
     static int appletCount;
 
-    /**
-     * reimplement of QXEmbed for detecting mouse clicks
-     **/
-    void focusOutEvent( QFocusEvent * );
-    void focusInEvent( QFocusEvent * );
-    bool x11Event( XEvent* e);
-
 private:
     KJavaAppletWidgetPrivate* d;
 
