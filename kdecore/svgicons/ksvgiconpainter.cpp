@@ -1521,7 +1521,10 @@ void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 
 	temp = d->helper->allocBPath(6);
 
-	double x0, y0, x1, y1, x2, y2, x3, y3, len, s, e;
+	double x1, y1, x2, y2, x3, y3;
+	double len = 0.55228474983079356;
+	double cos4[] = {1.0, 0.0, -1.0, 0.0, 1.0};
+	double sin4[] = {0.0, 1.0, 0.0, -1.0, 0.0};
 	int i = 0;
 
 	temp[i].code = ART_MOVETO;
@@ -1530,21 +1533,14 @@ void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 
 	i++;
 
-	for(s = 0; s < 2 * M_PI; s += M_PI_2)
+	while(i < 5)
 	{
-		e = s + M_PI_2;
-		if(e > 2 * M_PI)
-			e = 2 * M_PI;
-
-		len = 0.552 * (e - s) / M_PI_2;
-		x0 = cos(s);
-		y0 = sin(s);
-		x1 = x0 + len * cos(s + M_PI_2);
-		y1 = y0 + len * sin(s + M_PI_2);
-		x3 = cos(e);
-		y3 = sin(e);
-		x2 = x3 + len * cos(e - M_PI_2);
-		y2 = y3 + len * sin(e - M_PI_2);
+		x1 = cos4[i-1] + len * cos4[i];
+		y1 = sin4[i-1] + len * sin4[i];
+		x2 = cos4[i] + len * cos4[i-1];
+		y2 = sin4[i] + len * sin4[i-1];
+		x3 = cos4[i];
+		y3 = sin4[i];
 
 		temp[i].code = ART_CURVETO;
 		temp[i].x1 = cx + x1 * rx;
