@@ -15,7 +15,7 @@ lib_LTLIBRARIES =  libktts.la
 
 # The source, library search path, and link libraries.
 libktts_la_SOURCES =  ktts.cpp kspeech.skel kspeech.stub kspeechsink.skel
-libktts_la_LDFLAGS = -avoid-version -module $(all_libraries)
+libktts_la_LDFLAGS = -avoid-version $(all_libraries)
 
 # Header files that should not be installed.
 noinst_HEADERS = ktts.h
