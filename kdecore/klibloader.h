@@ -7,7 +7,7 @@
 
 #include "ltdl.h"
 
-class KLibGlobal;
+class KInstance;
 
 /**
  * If you develop a library that is to be loaded dynamically at runtime, then
@@ -24,12 +24,12 @@ class KLibGlobal;
  * You should especially see that the function must follow the naming pattern
  * "init_libname".
  *
- * In the constructor of your factory you should create an instance of @ref KLibGlobal
+ * In the constructor of your factory you should create an instance of @ref KInstance
  * like this:
  * <pre>
- *     s_global = new KLibGlobal( "kspread" );
+ *     s_global = new KInstance( "kspread" );
  * <pre>
- * This KLibGlobal is compareable to @ref KGlobal used by normal applications.
+ * This KInstance is compareable to @ref KGlobal used by normal applications.
  * It allows you to find ressource files (images, XML, sound etc.) belonging
  * to the library.
  *
