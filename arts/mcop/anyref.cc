@@ -280,8 +280,8 @@ void AnyRefHelper::skipType(Buffer& buffer, const string& type)
 
 			case tiInterface:
 				{
-					ObjectReference or;
-					or.readType(buffer);
+					ObjectReference oref;
+					oref.readType(buffer);
 				}
 				break;
 
