@@ -16,7 +16,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-   This KMD5 class is based on a C++ implementation of
+   The KMD5 class is based on a C++ implementation of
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" by
    Mordechai T. Abzug,	Copyright (c) 1995.  This implementation
    passes the test-suite as defined by RFC 1321.
@@ -35,7 +35,6 @@
 
 #define KBase64 KCodecs
 
-#include <stdio.h> // for FILE
 #include <qglobal.h>
 #include <qstring.h>
 #include <qiodevice.h>
@@ -48,17 +47,21 @@
  *
  * @sect Usage:
  *
- * The convenience functions are well suited for encoding
- * and decoding a relatively small input.
- *
  * <PRE>
  * QCString input = "Aladdin:open sesame";
  * QCString result = KCodecs::base64Encode(input);
- * printf ("Result: %c", result.data());
+ * cout << "Result: " << result.data() << endl;
  *
  * Output should be
  * Result: QWxhZGRpbjpvcGVuIHNlc2FtZQ==
  * </PRE>
+ *
+ * The above example makes use of the convenience functions
+ * (ones that accept/return null-terminated strings) to encode/decode
+ * a string.  If what you need is to encode or decode binary data, then
+ * it is highly recommended that you use the functions that take an input
+ * and output QByteArray as arguments.  These functions are specifically
+ * tailored for encoding and decoding binary data.
  *
  * @short A collection of commonly used encoding and decoding algorithms.
  * @author Dawit Alemayehu <adawit@kde.org>
@@ -70,31 +73,95 @@ public:
 
   /**
    * Encodes the given data using the quoted-printable algorithm.
-   * Equivalent to quotedPrintableEncode(in, true).
    *
-   * @param in  data to be encoded.
-   * @return    quoted-printable encoded data.
+   * @param in      data to be encoded.
+   * @param useCRLF if true the input data is expected to have
+   *                CRLF line breaks and the output will have CRLF line
+   *                breaks, too.
+   * @return        quoted-printable encoded data.
    */
-  static QCString quotedPrintableEncode(const QByteArray & in);
+  static QCString quotedPrintableEncode(const QByteArray & in,
+                                        bool useCRLF = true);
+
+  /**
+   * @overload
+   *
+   * Same as above except it accepts a null terminated
+   * string instead an array.
+   *
+   * @param in      data to be encoded.
+   * @param useCRLF if true the input data is expected to have
+   *                CRLF line breaks and the output will have CRLF line
+   *                breaks, too.
+   * @return        quoted-printable encoded data.
+   */
+  static QCString quotedPrintableEncode(const QCString & str,
+                                        bool useCRLF = true);
 
   /**
    * Encodes the given data using the quoted-printable algorithm.
    *
-   * @param in   data to be encoded.
-   * @param useCRLF  if true the input data is expected to have
-   *                 CRLF line breaks and the output will have CRLF line breaks, too.
-   * @return     quoted-printable encoded data.
+   * Use this function if you want the result of the encoding
+   * to be placed in another array which cuts down the number
+   * of copy operation that have to be performed in the process.
+   * This is also the preferred method for encoding binary data.
+   *
+   * NOTE: the output array is first reset and then resized
+   * appropriately before use, hence, all data stored in the
+   * output array will be lost.
+   *
+   * @param in      data to be encoded.
+   * @param out     decoded data.
+   * @param useCRLF if true the input data is expected to have
+   *                CRLF line breaks and the output will have CRLF line
+   *                breaks, too.
+   * @return        quoted-printable encoded data.
    */
-  static QCString quotedPrintableEncode(const QByteArray & in, bool useCRLF);
+  static void quotedPrintableEncode(const QByteArray & in, QByteArray& out,
+                                    bool useCRLF);
 
   /**
    * Decodes a quoted-printable encoded string.
-   * Accepts data with CRLF or standard unix line breaks
+   *
+   * Accepts data with CRLF or standard unix line breaks.
    *
    * @param in  the data to be decoded.
    * @return    decoded data.
    */
-  static QByteArray quotedPrintableDecode(const QCString & in);
+  static QCString quotedPrintableDecode(const QByteArray & in);
+
+  /**
+   * @overload
+   *
+   * Same as above except it accepts a null terminated
+   * string instead an array.
+   *
+   * @param str  the data to be decoded.
+   * @return     decoded data.
+   */
+  static QCString quotedPrintableDecode(const QCString & str);
+
+  /**
+   * Decodes a quoted-printable encoded data.
+   *
+   * Accepts data with CRLF or standard unix line breaks.
+   * Use this function if you want the result of the decoding
+   * to be placed in another array which cuts down the number
+   * of copy operation that have to be performed in the process.
+   * This is also the preferred method for decoding an encoded
+   * binary data.
+   *
+   * NOTE: the output array is first reset and then resized
+   * appropriately before use, hence, all data stored in the
+   * output array will be lost.
+   *
+   * @param in   data to be encoded.
+   * @param out  decoded data.
+   *
+   * @return     quoted-printable encoded data.
+   */
+  static void quotedPrintableDecode(const QByteArray & in, QByteArray& out);
+
 
   /**
    * Encodes the given data using the uuencode algorithm.
@@ -110,15 +177,27 @@ public:
   static QCString uuencode( const QByteArray& in );
 
   /**
+   * @overload
+   *
+   * Same as the above functions except it accepts
+   * a null terminated string instead an array.
+   *
+   * @param str   the string to be uuencoded.
+   * @return      the encoded string.
+   */
+  static QCString uuencode( const QCString& str );
+
+  /**
    * Encodes the given data using the uuencode algorithm.
    *
    * Use this function if you want the result of the encoding
    * to be placed in another array and cut down the number of
    * copy operation that have to be performed in the process.
+   * This is the preffered method for encoding binary data.
    *
-   * <u>NOTE:</u> the output array is always first reset for
-   * sanity and then resized appropriately.  Hence, any data
-   * that is present in the output array will be lost.
+   * NOTE: the output array is first reset and then resized
+   * appropriately before use, hence, all data stored in the
+   * output array will be lost.
    *
    * @param in   the data to be uuencoded.
    * @param out  the container for the uudecoded data.
@@ -126,50 +205,49 @@ public:
   static void uuencode( const QByteArray& in, QByteArray& out );
 
   /**
-   * Encodes the given string using the uuencode algorithm.
-   *
-   * @param str   the string to be uuencoded.
-   * @return      a uuencoded string.
-   */
-  static QCString uuencode( const QCString& str );
-
-  /**
    * Decodes the given data using the uuencode algorithm.
    *
    * Any 'begin' and 'end' lines like those generated by
-   * *nix utilities will automatically be ignored.
+   * the utilities in unix and unix-like OS will be
+   * automatically ignored.
    *
    * @param in   the data uuencoded data to be decoded.
-   * @return     the decoded data.
+   * @return     a decoded string.
    */
   static QCString uudecode( const QByteArray& in );
+
+  /**
+   * @overload
+   *
+   * Same as the above functions except it accepts
+   * a null terminated string instead an array.
+   *
+   * @param str   the string to be decoded.
+   * @return      a uudecoded string.
+   */
+  static QCString uudecode( const QCString& str );
 
   /**
    * Decodes the given data using the uudecode algorithm.
    *
    * Use this function if you want the result of the decoding
-   * to be placed in another array and cut down the number of
-   * copy operation that have to be performed in the process.
+   * to be placed in another array which cuts down the number
+   * of copy operation that have to be performed in the process.
+   * This is the preferred method for decoding binary data.
    *
    * Any 'begin' and 'end' lines like those generated by
-   * *nix utilities will automatically be ignored.
+   * the utilities in unix and unix-like OS will be
+   * automatically ignored.
    *
-   * <u>IMPORTANT:</u> the output array is first reset and then
-   * resized appropriately.  Hence, any data that is present in
-   * the output array will be lost.
+   * NOTE: the output array is first reset and then resized
+   * appropriately before use, hence, all data stored in the
+   * output array will be lost.
    *
    * @param in   the uuencoded-data to be decoded.
    * @param out  the container for the uudecoded data.
    */
   static void uudecode( const QByteArray& in, QByteArray& out );
 
-  /**
-   * Decodes a uuencoded string.
-   *
-   * @param str   the string to be decoded.
-   * @return      a uudecoded string.
-   */
-  static QCString uudecode( const QCString& str );
 
   /**
    * Encodes the given data using the base64 algorithm.
@@ -181,23 +259,39 @@ public:
    *
    * @param in         the data to be encoded.
    * @param insertLFs  limit the number of characters per line.
-   * @return           a base64 encoded data.
+   *
+   * @return           a base64 encoded string.
    */
   static QCString base64Encode( const QByteArray& in, bool insertLFs = false);
 
   /**
+   * @overload
+   *
+   * Same as the above functions except it accepts
+   * a null terminated string instead an array.
+   *
+   * @param str       the string to be encoded.
+   * @param insertLFs limit the number of characters per line.
+   * @return          the decoded string.
+   */
+  static QCString base64Encode( const QCString& str, bool insertLFs = false );
+
+  /**
    * Encodes the given data using the base64 algorithm.
    *
-   * Use this function whenever you are dealing with very
-   * large data or a stream of data.  The boolean argument
-   * determines if the encoded data is going to be restricted
-   * to 76 characters or less per line as specified by RFC 2045.
-   * If @p insertLFs is true, then there will be 76 characters or
-   * less per line.
+   * Use this function if you want the result of the encoding
+   * to be placed in another array which cuts down the number
+   * of copy operation that have to be performed in the process.
+   * This is also the preferred method for encoding binary data.
    *
-   * <u>NOTE:</u> the output array is always first reset for
-   * sanity and then resized appropriately.  Hence, any data
-   * that is present in the output array will be lost.
+   * The boolean argument determines if the encoded data is going
+   * to be restricted to 76 characters or less per line as specified
+   * by RFC 2045.  If @p insertLFs is true, then there will be 76
+   * characters or less per line.
+   *
+   * NOTE: the output array is first reset and then resized
+   * appropriately before use, hence, all data stored in the
+   * output array will be lost.
    *
    * @param in        the data to be encoded using base64.
    * @param insertLFs limit the number of characters per line.
@@ -205,20 +299,6 @@ public:
    */
   static void base64Encode( const QByteArray& in, QByteArray& out,
                             bool insertLFs = false );
-
-  /**
-   * Encodes the given string using the base64 algorithm.
-   *
-   * The boolean argument determines if the encoded data is
-   * going to be restricted to 76 characters or less per line
-   * as specified by RFC 2045.  If @p insertLFs is true, then
-   * there will be 76 characters or less per line.
-   *
-   * @param str       the string to be encoded.
-   * @param insertLFs limit the number of characters per line.
-   * @return          the decoded string.
-   */
-  static QCString base64Encode( const QCString& str, bool insertLFs = false );
 
   /**
    * Decodes the given data that was encoded using the
@@ -230,24 +310,10 @@ public:
   static QCString base64Decode( const QByteArray& in );
 
   /**
-   * Decodes the given data that was encoded with the base64
-   * algorithm.
+   * @overload
    *
-   * Use this function if you want the result of the decoding
-   * to be placed in another array and cut down the number of
-   * copy operation that have to be performed in the process.
-   *
-   * <u>IMPORTANT:</u> the output array is first reset and then
-   * resized appropriately.  Hence, any data that is present in
-   * the output array will be lost.
-   *
-   * @param in   the encoded data to be decoded.
-   * @param out  the container for the decoded data.
-   */
-  static void base64Decode( const QByteArray& in, QByteArray& out );
-
-  /**
-   * Decodes a string encoded with the base64 algorithm.
+   * Same as the above functions except it accepts
+   * a null terminated string instead an array.
    *
    * @param str  the base64-encoded string.
    * @return     the decoded string.
@@ -255,66 +321,24 @@ public:
   static QCString base64Decode( const QCString& str );
 
   /**
-   * Encodes the QString data using the base64 algorithm.
+   * Decodes the given data that was encoded with the base64
+   * algorithm.
    *
-   * <u>NOTE:</u> This function is ONLY provided for convenience
-   * and backward compatibility!  Using it can result in an incorrectly
-   * encoded data since the conversion of the QString input to latin-1
-   * can and will result in data loss if the input data contains non-
-   * latin1 characters.  As such it is highly recommended that you avoid
-   * this function unless you are absolutely certain that your input
-   * does not contain any non-latin1 character!!
-   */
-  static QString base64Encode( const QString& str );
-
-  /**
-   * Decodes the encoded QString data using the base64 algorithm.
+   * Use this function if you want the result of the decoding
+   * to be placed in another array which cuts down the number
+   * of copy operation that have to be performed in the process.
+   * This is also the preferred method for decoding an encoded
+   * binary data.
    *
-   * <u>NOTE:</u> This function is ONLY provided for convenience
-   * and backward compatibility!  Using it can result in an incorrectly
-   * decoded data since the conversion of the QString input to latin-1
-   * can and will result in data loss if the input data contains non-
-   * latin1 characters.  As such it is highly recommended that you avoid
-   * this function unless you are absolutely certain that your input
-   * does not contain any non-latin1 character!!
-   */
-  static QString base64Decode( const QString& str );
-
-  /**
-   * Encodes the QString data using the uuencode algorithm.
+   * NOTE: the output array is first reset and then resized
+   * appropriately before use, hence, all data stored in the
+   * output array will be lost.
    *
-   * <u>NOTE:</u> This function is ONLY provided for convenience
-   * and backward compatibility!  Using it can result in an incorrectly
-   * encoded data since the conversion of the QString input to latin-1
-   * can and will result in data loss if the input data contains non-
-   * latin1 characters.  As such it is highly recommended that you avoid
-   * this function unless you are absolutely certain that your input
-   * does not contain any non-latin1 character!!
+   * @param in   the encoded data to be decoded.
+   * @param out  the container for the decoded data.
    */
-  static QString uuencode( const QString& str );
+  static void base64Decode( const QByteArray& in, QByteArray& out );
 
-  /**
-   * Decodes the QString data using the uuencode algorithm.
-   *
-   * <u>NOTE:</u> This function is ONLY provided for convenience
-   * and backward compatibility!  Using it can result in an incorrectly
-   * decoded data since the conversion of the QString input to latin-1
-   * can and will result in data loss if the input data contains non-
-   * latin1 characters.  As such it is highly recommended that you avoid
-   * this function unless you are absolutely certain that your input
-   * does not contain any non-latin1 character!!
-   */
-  static QString uudecode( const QString& str );
-
-  /**
-   * @deprecated. Use @ref base64Encode(const QString&) instead.
-   */
-  static QString encodeString( const QString& data );
-
-  /**
-   * @deprecated. Use @ref base64Decode(const QString&) instead.
-   */
-  static QString decodeString( const QString& data );
 
 private:
   KCodecs();

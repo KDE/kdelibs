@@ -16,7 +16,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-   This KMD5 class is based upon a C++ implementation of "RSA
+   The KMD5 class is based upon a C++ implementation of "RSA
    Data Security, Inc. MD5 Message-Digest Algorithm" by Mordechai
    T. Abzug,	Copyright (c) 1995.  This implementation passes the
    test-suite supplied with RFC 1321.
@@ -32,6 +32,7 @@
 
 #include <config.h>
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -55,71 +56,75 @@
 #define KMD5_S43 15
 #define KMD5_S44 21
 
-// static constants for base64
-const char KCodecs::Base64EncMap[64] = {
-                                   0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-                                   0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,
-                                   0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-                                   0x59, 0x5A, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66,
-                                   0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E,
-                                   0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
-                                   0x77, 0x78, 0x79, 0x7A, 0x30, 0x31, 0x32, 0x33,
-                                   0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2B, 0x2F
-                                 };
+const char KCodecs::Base64EncMap[64] =
+{
+  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,
+  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+  0x59, 0x5A, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66,
+  0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E,
+  0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
+  0x77, 0x78, 0x79, 0x7A, 0x30, 0x31, 0x32, 0x33,
+  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2B, 0x2F
+};
 
-const char KCodecs::Base64DecMap[128] = {
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x3E, 0x00, 0x00, 0x00, 0x3F,
-                                    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
-                                    0x3C, 0x3D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
-                                    0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
-                                    0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
-                                    0x17, 0x18, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
-                                    0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-                                    0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,
-                                    0x31, 0x32, 0x33, 0x00, 0x00, 0x00, 0x00, 0x00
-                                  };
+const char KCodecs::Base64DecMap[128] =
+{
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x3E, 0x00, 0x00, 0x00, 0x3F,
+  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
+  0x3C, 0x3D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+  0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
+  0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
+  0x17, 0x18, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
+  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+  0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,
+  0x31, 0x32, 0x33, 0x00, 0x00, 0x00, 0x00, 0x00
+};
 
-// static constants for uuencode
-const char KCodecs::UUEncMap[64] = {
-                               0x60, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-                               0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
-                               0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-                               0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
-                               0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-                               0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-                               0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
-                               0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F
-                             };
+const char KCodecs::UUEncMap[64] =
+{
+  0x60, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+  0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+  0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+  0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+  0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
+  0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
+  0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F
+};
 
-const char KCodecs::UUDecMap[128] = {
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-                                0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-                                0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-                                0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
-                                0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-                                0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
-                                0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-                                0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                              };
+const char KCodecs::UUDecMap[128] =
+{
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+  0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+  0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+  0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+  0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+  0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+  0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
 
-// static constants for quoted-printable
-const char KCodecs::hexChars[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
-                               '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+const char KCodecs::hexChars[16] =
+{
+  '0', '1', '2', '3', '4', '5', '6', '7',
+  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+};
 
 const unsigned int KCodecs::maxQPLineLength = 70;
 
@@ -141,36 +146,58 @@ static int rikFindChar(register const char * _s, const char c)
   return s - _s;
 }
 
-QCString KCodecs::quotedPrintableEncode(const QByteArray & in)
+QCString KCodecs::quotedPrintableEncode(const QByteArray& in, bool useCRLF)
 {
-  return quotedPrintableEncode(in, true);
+  QByteArray out;
+  quotedPrintableEncode (in, out, useCRLF);
+  return QCString (out.data(), out.size()+1);
 }
 
-QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
+QCString KCodecs::quotedPrintableEncode(const QCString& str, bool useCRLF)
 {
-  const char *data = in.data();
+  if (str.isEmpty())
+    return "";
+
+  QByteArray in (str.length());
+  memcpy (in.data(), str.data(), str.length());
+  return quotedPrintableEncode(in, useCRLF);
+}
+
+void KCodecs::quotedPrintableEncode(const QByteArray& in, QByteArray& out, bool useCRLF)
+{
+  out.resize (0);
+  if (in.isEmpty())
+    return;
+
+  char *cursor;
+  const char *data;
+  unsigned int lineLength;
+  unsigned int pos;
+
   const unsigned int length = in.size();
+  const unsigned int end = length - 1;
+
 
   // Reasonable guess for output size when we're encoding
   // mostly-ASCII data. It doesn't really matter, because
   // the underlying allocation routines are quite efficient,
   // but it's nice to have 0 allocations in many cases.
-
-  QCString output( (length*12)/10 );
-
-  const unsigned int end = length - 1;
-  unsigned int lineLength = 0;
+  out.resize ((length*12)/10);
+  cursor = out.data();
+  data = in.data();
+  lineLength = 0;
+  pos = 0;
 
   for (unsigned int i = 0; i < length; i++)
   {
-    unsigned char c(data[i]);
+    unsigned char c (data[i]);
 
     // Plain ASCII chars just go straight out.
+    kdDebug() << "Input: " << c << endl;
 
     if ((c >= 33) && (c <= 126) && ('=' != c))
     {
-      output += c;
-
+      *cursor++ = c;
       ++lineLength;
     }
 
@@ -187,12 +214,15 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
                         (!useCRLF && ('\n' == data[i + 1]))))
         )
       {
-        output += "=20";
+        *cursor++ = '=';
+        *cursor++ = '2';
+        *cursor++ = '0';
+
         lineLength += 3;
       }
       else
       {
-        output += ' ';
+        *cursor++ = ' ';
         ++lineLength;
       }
     }
@@ -203,10 +233,11 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
       lineLength = 0;
 
       if (useCRLF) {
-        output += "\r\n";
+        *cursor++ = '\r';
+        *cursor++ = '\n';
         ++i;
       } else {
-        output += "\n";
+        *cursor++ = '\n';
       }
     }
 
@@ -214,9 +245,9 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
 
     else
     {
-      output += '=';
-      output += hexChars[c / 16];
-      output += hexChars[c % 16];
+      *cursor++ = '=';
+      *cursor++ = hexChars[c / 16];
+      *cursor++ = hexChars[c % 16];
 
       lineLength += 3;
     }
@@ -225,36 +256,60 @@ QCString KCodecs::quotedPrintableEncode(const QByteArray & in, bool useCRLF)
 
     if ((lineLength > maxQPLineLength) && (i < end))
     {
-      output += "=\r\n";
+      *cursor++ = '=';
+      *cursor++ = '\r';
+      *cursor++ = '\n';
 
       lineLength = 0;
     }
-
   }
 
-  return output;
+  out.truncate(cursor - out.data());
+  kdDebug () << "Encoded data: " << out.data () << endl;
 }
 
-QByteArray KCodecs::quotedPrintableDecode(const QCString & in)
+QCString KCodecs::quotedPrintableDecode(const QByteArray & in)
 {
-  const char *data = in.data();
+  QByteArray out;
+  quotedPrintableDecode (in, out);
+  return QCString (out.data(), out.size()+1);
+}
+
+QCString KCodecs::quotedPrintableDecode(const QCString & str)
+{
+  if (str.isEmpty())
+    return "";
+
+  QByteArray in (str.length());
+  memcpy (in.data(), str.data(), str.length());
+  return quotedPrintableDecode (in);
+}
+
+void KCodecs::quotedPrintableDecode(const QByteArray& in, QByteArray& out)
+{
+  // clear out the output buffer
+  out.resize (0);
+  if (in.isEmpty())
+      return;
+
+  char *cursor;
+  const char *data;
   const unsigned int length = in.size();
 
-  // Maximum output size is equal to input size.
-
-  QByteArray output(length);
-  char *cursor = output.data();
+  data = in.data();
+  out.resize (length);
+  cursor = out.data();
 
   for (unsigned int i = 0; i < length; i++)
   {
-    char c(data[i]);
+    char c(in[i]);
 
     if ('=' == c)
     {
       if (i < length - 2)
       {
-        char c1 = data[i + 1];
-        char c2 = data[i + 2];
+        char c1 = in[i + 1];
+        char c2 = in[i + 2];
 
         if (('\n' == c1) || ('\r' == c1 && '\n' == c2))
         {
@@ -285,9 +340,7 @@ QByteArray KCodecs::quotedPrintableDecode(const QCString & in)
     }
   }
 
-  output.truncate(cursor - output.data());
-
-  return output;
+  out.truncate(cursor - out.data());
 }
 
 QCString KCodecs::base64Encode( const QCString& str, bool insertLFs )
@@ -295,8 +348,7 @@ QCString KCodecs::base64Encode( const QCString& str, bool insertLFs )
     if ( str.isEmpty() )
         return "";
 
-    QByteArray in;
-    in.resize( str.length() );
+    QByteArray in (str.length());
     memcpy( in.data(), str.data(), str.length() );
     return base64Encode( in, insertLFs );
 }
@@ -312,12 +364,13 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
                             bool insertLFs )
 {
     // clear out the output buffer
-    out.resize( 0 );
+    out.resize (0);
     if ( in.isEmpty() )
         return;
 
-    unsigned int sidx = 0, didx = 0;
-    const char* buf = in.data();
+    unsigned int sidx = 0;
+    unsigned int didx = 0;
+    const char* data = in.data();
     const unsigned int len = in.size();
 
     unsigned int out_len = ((len+2)/3)*4;
@@ -343,12 +396,12 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
                     out[didx++] = '\n';
                 count += 4;
             }
-            out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
-            out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
-                                       (buf[sidx] << 4) & 077];
-            out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
-                                       (buf[sidx+1] << 2) & 077];
-            out[didx++] = Base64EncMap[buf[sidx+2] & 077];
+            out[didx++] = Base64EncMap[(data[sidx] >> 2) & 077];
+            out[didx++] = Base64EncMap[(data[sidx+1] >> 4) & 017 |
+                                       (data[sidx] << 4) & 077];
+            out[didx++] = Base64EncMap[(data[sidx+2] >> 6) & 003 |
+                                       (data[sidx+1] << 2) & 077];
+            out[didx++] = Base64EncMap[data[sidx+2] & 077];
             sidx += 3;
         }
     }
@@ -358,16 +411,16 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
         if ( insertLFs && (count > 0) && (count%76) == 0 )
            out[didx++] = '\n';
 
-        out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
+        out[didx++] = Base64EncMap[(data[sidx] >> 2) & 077];
         if (sidx < len-1)
         {
-            out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
-                                       (buf[sidx] << 4) & 077];
-            out[didx++] = Base64EncMap[(buf[sidx+1] << 2) & 077];
+            out[didx++] = Base64EncMap[(data[sidx+1] >> 4) & 017 |
+                                       (data[sidx] << 4) & 077];
+            out[didx++] = Base64EncMap[(data[sidx+1] << 2) & 077];
         }
         else
         {
-            out[didx++] = Base64EncMap[(buf[sidx] << 4) & 077];
+            out[didx++] = Base64EncMap[(data[sidx] << 4) & 077];
         }
     }
 
@@ -384,8 +437,7 @@ QCString KBase64::base64Decode( const QCString& str )
     if ( str.isEmpty() )
         return "";
 
-    QByteArray in;
-    in.resize( str.length() );
+    QByteArray in( str.length() );
     memcpy( in.data(), str.data(), str.length() );
     return base64Decode( in );
 }
@@ -405,31 +457,31 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 
     unsigned int count = 0;
     unsigned int len = in.size(), tail = len;
-    const char* in_buf = in.data();
+    const char* data = in.data();
 
     // Deal with possible *nix "BEGIN" marker!!
-    while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r' ||
-            in_buf[count] == '\t' || in_buf[count] == ' ') )
+    while ( count < len && (data[count] == '\n' || data[count] == '\r' ||
+            data[count] == '\t' || data[count] == ' ') )
         count++;
 
-    if ( strncasecmp(in_buf+count, "begin", 5) == 0 )
+    if ( strncasecmp(data+count, "begin", 5) == 0 )
     {
         count += 5;
-        while ( count < len && in_buf[count] != '\n' && in_buf[count] != '\r' )
+        while ( count < len && data[count] != '\n' && data[count] != '\r' )
             count++;
 
-        while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r') )
+        while ( count < len && (data[count] == '\n' || data[count] == '\r') )
             count ++;
 
-        in_buf += count;
+        data += count;
         tail = (len -= count);
     }
 
     // Find the tail end of the actual encoded data even if
     // there is/are trailing CR and/or LF.
-    while ( in_buf[tail-1] == '=' || in_buf[tail-1] == '\n' ||
-            in_buf[tail-1] == '\r' )
-        if ( in_buf[--tail] != '=' ) len = tail;
+    while ( data[tail-1] == '=' || data[tail-1] == '\n' ||
+            data[tail-1] == '\r' )
+        if ( data[--tail] != '=' ) len = tail;
 
     unsigned int outIdx = 0;
     out.resize( (count=len) );
@@ -437,7 +489,7 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
     {
         // Adhere to RFC 2045 and ignore characters
         // that are not part of the encoding table.
-        char ch = in_buf[idx];
+        char ch = data[idx];
         if ((ch > 47 && ch < 58) || (ch > 64 && ch < 91) ||
             (ch > 96 && ch < 123) || ch == '+' || ch == '/' || ch == '=')
         {
@@ -507,7 +559,7 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
     unsigned int line_len = 45;
 
     const char nl[] = "\n";
-    const char* buf = in.data();
+    const char* data = in.data();
     const unsigned int nl_len = strlen(nl);
     const unsigned int len = in.size();
 
@@ -521,12 +573,12 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
         // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
         for (unsigned int end = sidx+line_len; sidx < end; sidx += 3)
         {
-            out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-            out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
-                                   (buf[sidx] << 4) & 077];
-            out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
-                                (buf[sidx+1] << 2) & 077];
-            out[didx++] = UUEncMap[buf[sidx+2] & 077];
+            out[didx++] = UUEncMap[(data[sidx] >> 2) & 077];
+            out[didx++] = UUEncMap[(data[sidx+1] >> 4) & 017 |
+                                   (data[sidx] << 4) & 077];
+            out[didx++] = UUEncMap[(data[sidx+2] >> 6) & 003 |
+                                (data[sidx+1] << 2) & 077];
+            out[didx++] = UUEncMap[data[sidx+2] & 077];
         }
 
         // line terminator
@@ -541,27 +593,27 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
     while (sidx+2 < len)
     {
-        out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-        out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
-                               (buf[sidx] << 4) & 077];
-        out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
-                               (buf[sidx+1] << 2) & 077];
-        out[didx++] = UUEncMap[buf[sidx+2] & 077];
+        out[didx++] = UUEncMap[(data[sidx] >> 2) & 077];
+        out[didx++] = UUEncMap[(data[sidx+1] >> 4) & 017 |
+                               (data[sidx] << 4) & 077];
+        out[didx++] = UUEncMap[(data[sidx+2] >> 6) & 003 |
+                               (data[sidx+1] << 2) & 077];
+        out[didx++] = UUEncMap[data[sidx+2] & 077];
         sidx += 3;
     }
 
     if (sidx < len-1)
     {
-        out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-        out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
-                               (buf[sidx] << 4) & 077];
-        out[didx++] = UUEncMap[(buf[sidx+1] << 2) & 077];
+        out[didx++] = UUEncMap[(data[sidx] >> 2) & 077];
+        out[didx++] = UUEncMap[(data[sidx+1] >> 4) & 017 |
+                               (data[sidx] << 4) & 077];
+        out[didx++] = UUEncMap[(data[sidx+1] << 2) & 077];
         out[didx++] = UUEncMap[0];
     }
     else if (sidx < len)
     {
-        out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-        out[didx++] = UUEncMap[(buf[sidx] << 4) & 077];
+        out[didx++] = UUEncMap[(data[sidx] >> 2) & 077];
+        out[didx++] = UUEncMap[(data[sidx] << 4) & 077];
         out[didx++] = UUEncMap[0];
         out[didx++] = UUEncMap[0];
     }
@@ -603,25 +655,25 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     unsigned int didx = 0;
     unsigned int len = in.size();
     unsigned int line_len, end;
-    const char* in_buf = in.data();
+    const char* data = in.data();
 
     // Deal with *nix "BEGIN"/"END" separators!!
     unsigned int count = 0;
-    while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r' ||
-            in_buf[count] == '\t' || in_buf[count] == ' ') )
+    while ( count < len && (data[count] == '\n' || data[count] == '\r' ||
+            data[count] == '\t' || data[count] == ' ') )
         count ++;
 
     bool hasLF = false;
-    if ( strncasecmp( in_buf+count, "begin", 5) == 0 )
+    if ( strncasecmp( data+count, "begin", 5) == 0 )
     {
         count += 5;
-        while ( count < len && in_buf[count] != '\n' && in_buf[count] != '\r' )
+        while ( count < len && data[count] != '\n' && data[count] != '\r' )
             count ++;
 
-        while ( count < len && (in_buf[count] == '\n' || in_buf[count] == '\r') )
+        while ( count < len && (data[count] == '\n' || data[count] == '\r') )
             count ++;
 
-        in_buf += count;
+        data += count;
         len -= count;
         hasLF = true;
     }
@@ -630,17 +682,17 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     while ( sidx < len )
     {
         // get line length (in number of encoded octets)
-        line_len = UUDecMap[in_buf[sidx++]];
+        line_len = UUDecMap[data[sidx++]];
         // ascii printable to 0-63 and 4-byte to 3-byte conversion
         end = didx+line_len;
         char A, B, C, D;
         if (end > 2) {
           while (didx < end-2)
           {
-             A = UUDecMap[in_buf[sidx]];
-             B = UUDecMap[in_buf[sidx+1]];
-             C = UUDecMap[in_buf[sidx+2]];
-             D = UUDecMap[in_buf[sidx+3]];
+             A = UUDecMap[data[sidx]];
+             B = UUDecMap[data[sidx+1]];
+             C = UUDecMap[data[sidx+2]];
+             D = UUDecMap[data[sidx+3]];
              out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
              out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
              out[didx++] = ( ((C << 6) & 255) | (D & 077) );
@@ -650,95 +702,33 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 
         if (didx < end)
         {
-            A = UUDecMap[in_buf[sidx]];
-            B = UUDecMap[in_buf[sidx+1]];
+            A = UUDecMap[data[sidx]];
+            B = UUDecMap[data[sidx+1]];
             out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
         }
 
         if (didx < end)
         {
-            B = UUDecMap[in_buf[sidx+1]];
-            C = UUDecMap[in_buf[sidx+2]];
+            B = UUDecMap[data[sidx+1]];
+            C = UUDecMap[data[sidx+2]];
             out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
         }
 
         // skip padding
-        while (sidx < len  && in_buf[sidx] != '\n' && in_buf[sidx] != '\r')
+        while (sidx < len  && data[sidx] != '\n' && data[sidx] != '\r')
             sidx++;
 
         // skip end of line
-        while (sidx < len  && (in_buf[sidx] == '\n' || in_buf[sidx] == '\r'))
+        while (sidx < len  && (data[sidx] == '\n' || data[sidx] == '\r'))
             sidx++;
 
         // skip the "END" separator when present.
-        if ( hasLF && strncasecmp( in_buf+sidx, "end", 3) == 0 )
+        if ( hasLF && strncasecmp( data+sidx, "end", 3) == 0 )
             break;
     }
 
     if ( didx < out.size()  )
         out.resize( didx );
-}
-
-/**** Functions provided for backwards compatibility ****/
-QString KCodecs::base64Encode( const QString& str )
-{
-    if ( str.isEmpty() )
-        return QString::fromLatin1("");
-    QByteArray in, out;
-    const unsigned int len = str.length();
-    in.resize( len );
-    memcpy( in.data(), str.latin1(), len );
-    base64Encode( in, out );
-    return QString( out );
-}
-
-QString KCodecs::base64Decode( const QString& str )
-{
-    if ( str.isEmpty() )
-        return QString::fromLatin1("");
-
-    QByteArray in, out;
-    const unsigned int len = str.length();
-    in.resize( str.length() );
-    memcpy( in.data(), str.latin1(), len );
-    base64Decode( in, out );
-    return QString( out );
-}
-
-QString KCodecs::uuencode( const QString& str )
-{
-    if ( str.isEmpty() )
-        return QString::fromLatin1("");
-
-    QByteArray in, out;
-    const unsigned int len = str.length();
-    in.resize( len );
-    memcpy( in.data(), str.latin1(), len );
-    uuencode( in, out );
-    return QString( out );
-}
-
-QString KCodecs::uudecode( const QString& str )
-{
-    if ( str.isEmpty() )
-        return QString::fromLatin1("");
-
-    QByteArray in, out;
-    const unsigned int len = str.length();
-    in.resize( len );
-    memcpy( in.data(), str.latin1(), len );
-    uudecode( in, out );
-    return QString( out );
-}
-
-QString KCodecs::encodeString( const QString& data )
-{
-    return base64Encode(data);
-}
-
-QString KCodecs::decodeString( const QString& data )
-{
-    return base64Decode(data);
 }
 
 /******************************** KMD5 ********************************/
