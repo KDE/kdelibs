@@ -188,7 +188,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     {
       // Try to find it out by looking at the filename
       KMimeType * mime = KServiceTypeFactory::self()->findFromPattern( fileName );
-      if ( mime )
+      if ( mime && !_is_local_file )
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
         if ( KProtocolManager::self().mimetypeFastMode( _url.protocol(), mime->name() ) &&
