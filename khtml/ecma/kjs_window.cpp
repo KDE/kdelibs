@@ -165,7 +165,7 @@ Window::Window(KHTMLPart *p)
 
 Window::~Window()
 {
-  kdDebug() << "Window::~Window this=" << this << " part=" << m_part << endl;
+  kdDebug(6070) << "Window::~Window this=" << this << " part=" << m_part << endl;
   delete winq;
 }
 
