@@ -300,12 +300,17 @@ void KURL::parse( const char * _url )
 	{
 	    path_part = url.mid( pos2, url.length() );
         }
-	else 
+	else if ( pos3 > pos2 ) 
 	{
 	    path_part = url.mid( pos2, pos3 - pos2 );
 	    ref_part = url.mid( pos3 + 1, url.length() );
 	    // if (path_part.right(1) == "/")  no filename and a reference
 	    // malformed = true;
+	}
+	else
+	{
+	    malformed = true;
+	    return;
 	}
 	bNoPath = false;
     }
@@ -562,10 +567,18 @@ QString KURL::url() const
 	url += path_part; 
 
     if( !search_part.isNull())
+    {
+	if(path_part.isEmpty() || !hasPath() )
+	    url += "/";
     	url += "?" + search_part;
-    
+    }
+
     if( !ref_part.isEmpty() )
+    {
+	if(path_part.isEmpty() || !hasPath() )
+	    url += "/";
 	url += "#" + ref_part;
+    }
     
     return url;
 }
