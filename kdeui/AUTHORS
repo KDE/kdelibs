@@ -53,10 +53,7 @@ Matthias Ettrich <ettrich@kde.org>
 KWMModuleApplication, tearing/docking of ktoolbar and kmenubar, heavy
 modifications to kbutton
 
-
-
-
-
-
-
+Stephan Kulow <coolo@kde.org>
+first versions of KTopLevelWidget and KToolBar, heavy modifications to
+automake and autoconf
 
