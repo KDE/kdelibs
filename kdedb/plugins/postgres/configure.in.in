@@ -33,26 +33,30 @@ if test "x$pgsql_plugin" != "xyes"; then
   compile_postgresql_plugin="no"
 fi
 
-dnl check header files
-pgsql_incdirs="$ac_pgsql_incdir /usr/include /usr/include/pgsql /usr/include/postgresql /usr/local/include /usr/local/pgsql/include /opt/postgres/include"
-AC_FIND_FILE(libpq-fe.h, $pgsql_incdirs, pgsql_incdir)
-if test ! -r $pgsql_incdir/libpq-fe.h; then
-  compile_postgresql_plugin="no"
-  AC_MSG_CHECKING("include ")
-else
-  PG_INCDIR=$pgsql_incdir
-  AC_SUBST(PG_INCDIR)
+if test "$compile_postgresql_plugin" = "yes"; then
+  dnl check header files
+  pgsql_incdirs="$ac_pgsql_incdir /usr/include /usr/include/pgsql /usr/include/postgresql /usr/local/include /usr/local/pgsql/include /opt/postgres/include"
+  AC_FIND_FILE(libpq-fe.h, $pgsql_incdirs, pgsql_incdir)
+  if test ! -r $pgsql_incdir/libpq-fe.h; then
+    compile_postgresql_plugin="no"
+    AC_MSG_CHECKING("include ")
+  else
+    PG_INCDIR=$pgsql_incdir
+    AC_SUBST(PG_INCDIR)
+  fi
 fi
 
-dnl check libraries
-pgsql_libdirs="$ac_pgsql_libdir /usr/lib /usr/local/lib /usr/local/pgsql/lib /opt/postgres/lib"
-AC_FIND_FILE(libpq.so, $pgsql_libdirs, pgsql_libdir)
-if test ! -r $pgsql_libdir/libpq.so; then
-  compile_postgresql_plugin="no"
-  AC_MSG_CHECKING("library ")
-else
-  PG_LIBDIR=$pgsql_libdir
-  AC_SUBST(PG_LIBDIR)
+if test "$compile_postgresql_plugin" = "yes"; then
+  dnl check libraries
+  pgsql_libdirs="$ac_pgsql_libdir /usr/lib /usr/local/lib /usr/local/pgsql/lib /opt/postgres/lib"
+  AC_FIND_FILE(libpq.so, $pgsql_libdirs, pgsql_libdir)
+  if test ! -r $pgsql_libdir/libpq.so; then
+    compile_postgresql_plugin="no"
+    AC_MSG_CHECKING("library ")
+  else
+    PG_LIBDIR=$pgsql_libdir
+    AC_SUBST(PG_LIBDIR)
+  fi
 fi
 
 if test "$compile_postgresql_plugin" = "yes"; then
