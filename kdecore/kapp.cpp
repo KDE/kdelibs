@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.103  1998/06/15 12:49:29  kulow
+// applied patch to replace .kde with localkdedir()
+//
 // Revision 1.102  1998/05/28 21:43:52  kulow
 // removed TESTDIR. Since kdedir() is protected, it shouldn't happen anymore :)
 //
@@ -521,7 +524,7 @@ void KApplication::aboutKDE()
   QMessageBox::about( NULL, klocale->translate( "About KDE" ),
 					  klocale->translate( 
 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
-"a world-wide network of software engineers commited to\n"
+"a world-wide network of software engineers committed to\n"
 "free software development.\n\n"
 "Visit http://www.kde.org for more information on the KDE\n"
 "Project. Please consider joining and supporting KDE.\n\n"
