@@ -36,7 +36,7 @@ class KInstance;
  * into the KConfigureDialog you need a way to get notified. This is what you
  * do:
  * \code
- * KCDDispatcher::self()->registerInstance( instance(), this, SLOT( readSettings() );
+ * KCDDispatcher::self()->registerInstance( instance(), this, SLOT( readSettings() ) );
  * \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>

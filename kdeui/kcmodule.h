@@ -106,6 +106,8 @@ public:
    * so you probably want to call this method in the constructor.
    */
   virtual void load() {};
+  // ### KDE 4: Call load() automatically through a single-shot timer
+  //            from the constructor
 
   /**
    * Save the configuration data.
