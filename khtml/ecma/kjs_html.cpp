@@ -31,6 +31,7 @@
 #include "kjs_dom.h"
 #include "kjs_html.h"
 #include "kjs_window.h"
+#include "kjs_navigator.h"
 
 #include <htmltags.h>
 
@@ -46,6 +47,7 @@ extern "C" {
     KJS::KJSGlobal *global = KJScript::global();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
     global->put("window", zeroRef(new KJS::Window(0L)));
+    global->put("navigator", zeroRef(new Navigator()));
     global->put("Image", zeroRef(new ImageObject(global)));
 
     script->setCurrent(0L);
