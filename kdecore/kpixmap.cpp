@@ -27,10 +27,9 @@
 #include <qbitmap.h>
 #include <qcolor.h>
 
-#include <kapp.h>
 #include <dither.h>
 #include <stdlib.h>
-
+#include <kstddirs.h>
 #include "kpixmap.h"
 
 // Fast diffuse dither to 3x3x3 color cube
@@ -201,8 +200,6 @@ void KPixmap::gradientFill(QColor , QColor , bool , int )
     warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
 }
 
-
-
 void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 {
     QPixmap tile( 8, 8 );
@@ -233,6 +230,60 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 		}
 		sy += 8;
     }
+}
+
+static const char *default_map[] = {
+    "2 2 2 1",
+    ". c #000000",
+    "# c #ffffff",
+    ".#",
+    "#.",
+};
+
+void KPixmap::mapFill( QColor ca, QColor cb, const QString& map )
+{
+    QString filename = map;
+    if (map.at(0) != '/')
+	filename = locate("data", "kdisplay/maps/" + map);
+    QImage *img = 0;
+    if (!filename.isNull()) {
+	img = new QImage(filename);
+	if (img->isNull()) {
+	    delete img;
+	    img = 0;
+	}
+    }
+    if (!img)
+	img = new QImage(default_map);
+
+    int r1 = ca.red();
+    int r2 = cb.red();
+    int g1 = ca.green();
+    int g2 = cb.green();
+    int b1 = ca.blue();
+    int b2 = cb.blue();
+    int u = 255, o = 0;
+    for (int i = 0; i < img->numColors(); i++) {
+	QRgb t = img->color(i);
+	int mean = (qRed(t) + qGreen(t) + qBlue(t)) / 3;
+	u = QMIN(u, mean);
+	o = QMAX(o, mean);
+    }
+    
+    debug("unten %d - oben %d", u, o);
+
+    for (int i = 0; i < img->numColors(); i++) {
+	QRgb t = img->color(i);
+	int mean = (qRed(t) + qGreen(t) + qBlue(t)) / 3;
+	int r = (int)((double(mean - u) / double(o - u)) * (r2 - r1)) + r1;
+	int g = (int)((double(mean - u) / double(o - u)) * (g2 - g1)) + g1;
+	int b = (int)((double(mean - u) / double(o - u)) * (b2 - b1)) + b1;
+	debug("color %d %d %d", r, g, b);
+	img->setColor(i, qRgb(r, g, b));
+    }
+    
+    convertFromImage(*img, 0);
+    delete img;
 }
 
 bool KPixmap::load( const QString& fileName, const char *format,
@@ -455,13 +506,11 @@ bool KPixmap::checkColorTable( const QImage &image )
 	}
     }
 
-    if( failures > 1 )
-	return false;
-    else
-	return true;
+    return ( failures <= 1 );
+
 }
 
 KPixmap::KPixmap(const QPixmap& p)
 {
-   (QPixmap)*this = p;
+   *((QPixmap*)this) = p;
 }

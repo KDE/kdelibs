@@ -104,6 +104,15 @@ public:
 	 */
 	void patternFill( QColor ca, QColor cb, uint pattern[8] );
 
+	/**
+	 * Fills the pixmap with a grey colored map that is colored 
+	 * between the two specified colors so that the first color 
+	 * matches white and the second color matched black. If the
+	 * specified map hasn't either white or black, the most bright
+	 * (or most dark) color is used instead.
+	 **/
+	void mapFill( QColor ca, QColor cb, const QString& map );
+
 	/** 
 	 * Converts an image and sets this pixmap. Returns true if
 	 * successful. 
