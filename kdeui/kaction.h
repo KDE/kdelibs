@@ -423,6 +423,8 @@ public:
      */
     void activate();
 
+    void unplugAll();
+
 public slots:
     virtual void setEnabled(bool enable);
 

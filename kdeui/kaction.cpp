@@ -781,6 +781,12 @@ KActionCollection *KAction::parentCollection() const
   return static_cast<KActionCollection *>( p );
 }
 
+void KAction::unplugAll()
+{
+  while ( containerCount() != 0 )
+    unplug( container( 0 ) );
+} 
+
 class KToggleAction::KToggleActionPrivate
 {
 public:
