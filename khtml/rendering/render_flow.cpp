@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2002 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -96,9 +97,7 @@ void RenderFlow::setStyle(RenderStyle *_style)
     if (isInline() && !m_childrenInline)
         setInline(false);
 
-    m_pre = false;
-    if(style()->whiteSpace() == PRE)
-        m_pre = true;
+    m_pre = (style()->whiteSpace() == PRE);
 
     // ### we could save this call when the change only affected
     // non inherited properties
@@ -408,23 +407,20 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
     }
     //kdDebug() << "RenderFlow::layoutBlockChildren " << prevMargin << endl;
 
-    // take care in case we inherited floats
-    if (child && floatBottom() > m_height)
-	child->setLayouted(false);
-
-
 //     QTime t;
 //     t.start();
 
     while( child != 0 )
     {
 
-        // make sure we relayout children if we need it.
-        if ( relayoutChildren || floatBottom() > m_y ||
+        // make sure we relayout children if we need it,
+        // like inherited floats or percentage based widths.
+        if ( relayoutChildren || floatBottom() > m_height ||
              ( ( child->isReplaced() || child->isFloating() ) &&
 	       ( child->style()->width().isPercent() || child->style()->height().isPercent() ) )
-	    )
+	    ) {
                 child->setLayouted(false);
+           }
 	if ( child->style()->flowAroundFloats() && !child->isFloating() &&
 	     style()->width().isFixed() ) {
 	    // flow around floats only flows around the ones on the left side (right side if direction==RTL)
@@ -690,7 +686,7 @@ void RenderFlow::positionNewFloats()
             }
             if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
-            //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
+            //kdDebug( 6040 ) << this << ": positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
 	f->startY = y;
