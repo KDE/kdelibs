@@ -158,7 +158,7 @@ RenderStyle::RenderStyle(bool)
 }
 
 RenderStyle::RenderStyle(const RenderStyle& other)
-    : DomShared() // shut up, compiler
+    : DOM::DomShared() // shut up, compiler
 {
 
     _display = other._display;
