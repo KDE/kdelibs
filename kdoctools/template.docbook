@@ -9,10 +9,10 @@
                                      this unchanged if your
                                      application is not maintained in KDE CVS -->
   <!ENTITY % addindex "IGNORE">
-  <!ENTITY % English "INCLUDE"> <!-- ONLY If you are writing non-English 
-                                     original documentation, change 
+  <!ENTITY % English "INCLUDE"> <!-- ONLY If you are writing non-English
+                                     original documentation, change
                                      the language here -->
-    
+
   <!-- Do not define any other entities; instead, use the entities
        from entities/general.entities and $LANG/user.entities. -->
 ]>
@@ -21,7 +21,7 @@
      Minor update to "Credits and Licenses" section on August 24, 2000
      Removed "Revision history" section on 22 January 2001
      Changed to Installation/Help menu entities 18 October 2001
-     Other minor cleanup and changes 18 October 2001 
+     Other minor cleanup and changes 18 October 2001
      FPI change and minor changes November 2002 -->
 
 <!--
@@ -56,7 +56,7 @@ as Authors, publish date, the abstract, and Keywords -->
 
 <authorgroup>
 <author>
-<!-- This is just put in as an example.  For real documentation, please 
+<!-- This is just put in as an example.  For real documentation, please
      define a general entity in entities/contributor.entities, e.g.
 <!ENTITY George.N.Ugnacious "<personname><firstname>George</firstname><othername>N.</othername><surname>Ugnacious</surname></personname>">
 <!ENTITY George.N.Ugnacious.mail "<email>gnu@kde.org</email>">
@@ -78,7 +78,7 @@ and use `&George.N.Ugnacious; &George.N.Ugnacious.mail;' in the author element.
 <holder>George N. Ugnacious</holder>
 </copyright>
 <!-- Translators: put here the copyright notice of the translation -->
-<!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook 
+<!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook
      and in the FDL itself on how to use it. -->
 <legalnotice>&FDLNotice;</legalnotice>
 
@@ -282,7 +282,7 @@ taken from that reference and shortened a bit for readability. -->
 <refpurpose>remove a list of children from a parent widget's managed
 list.
 <indexterm id="ix-1007-unmanagechildren-1"><primary>widgets</primary><secondary>removing</secondary></indexterm>
-<indexterm id="ix-1007-unmanagechildren-2"><primary>XtUnmanageChildren</primary></indexterm> 
+<indexterm id="ix-1007-unmanagechildren-2"><primary>XtUnmanageChildren</primary></indexterm>
 </refpurpose>
 
 </refnamediv>
@@ -470,10 +470,10 @@ Documentation Copyright &copy; 1999 George N. Ugnacious <email>gnu@kde.org</emai
 
 &underFDL;               <!-- FDL: do not remove -->
 
-<!-- Determine which license your application is licensed under, 
+<!-- Determine which license your application is licensed under,
      and delete all the remaining licenses below:
 
-     (NOTE:  All documentation are licensed under the FDL, 
+     (NOTE:  All documentation are licensed under the FDL,
      regardless of what license the application uses) -->
 
 &underGPL;        	 <!-- GPL License -->
@@ -491,7 +491,7 @@ Documentation Copyright &copy; 1999 George N. Ugnacious <email>gnu@kde.org</emai
 
 <!-- This first entity contains boiler plate for applications that are
 part of KDE CVS.  You should remove it if you are releasing your
-application --> 
+application -->
 
 &install.intro.documentation;
 
@@ -564,5 +564,6 @@ sgml-indent-step:0
 sgml-indent-data:nil
 End:
 
-vim:tabstop=2:shiftwidth=2:expandtab 
+vim:tabstop=2:shiftwidth=2:expandtab
+kate: space-indent on; indent-width 2; tab-width 2; indent-mode none;
 -->
