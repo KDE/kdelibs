@@ -9,37 +9,43 @@
 rm -f kckey.h kckey.cpp kckey_a
 
 # extract key names and code from QT header
-sed -n '/enum Key/!b2
-		:1 N
+sed -n '/enum Key/!d
+   		:1
+		N
 		/}/!b1
-		p	
-		:2' $1 | sed -n '/=/p' | sed -n '
-		s/	Key_/{ "/
-		s/,\(.*\)$/ },/
-		s/ = /", /p' > kckey_a
+		p' $1 \
+| sed -n '/=/p' \
+| sed -n 's/\s*Key_/{ "/
+		s/,.*$/ },/
+		s/ =/",/
+		s/Key_/Qt::Key_/
+		$s/.*/& }/
+		p' \
+> kckey_a
 
 # write header file
-begin_line="// This file has been automatically genrated by \"generate_keys.sh\"\n\n"
+begin_line="// This file has been automatically genrated by \"generate_keys.sh\""
 echo -e $begin_line \
-		"typedef struct {\n" \
-		"\tconst char *name;\n" \
-		"\tint code;\n" \
-		"} KKeys;\n\n" \
-		"#define MAX_KEY_LENGTH      15   // sort of dummy (for kkeydialog)\n" \
-		"#define MAX_KEY_MODIFIER_LENGTH 15\n" \
-		"#define NB_KEYS " `cat kckey_a | wc -l` "\n" \
-		"extern const KKeys KKEYS[NB_KEYS];\n" > kckey.h
+		"\n\ntypedef struct {" \
+		"\n\tconst char *name;" \
+		"\n\tint code;" \
+		"\n} KKeys;" \
+		"\n\n#define MAX_KEY_LENGTH           15   // should be calculated (gawk ?)" \
+		"\n#define MAX_KEY_MODIFIER_LENGTH   5   // SHIFT CRTL ALT" \
+		"\n#define NB_KEYS                " `cat kckey_a | wc -l` \
+		"\nextern const KKeys KKEYS[NB_KEYS];" \
+> kckey.h
 
 # write source file
 echo -e $begin_line \
-		"#include <qnamespace.h>\n" \
-		"#include \"kckey.h\"\n\n" \
-		"#define Key_Space Qt::Key_Space // hack around\n" \
-		"const KKeys KKEYS[NB_KEYS] = {" > kckey.cpp
+		"\n\n#include <qnamespace.h>" \
+		"\n#include \"kckey.h\"" \
+		"\n\nconst KKeys KKEYS[NB_KEYS] = {" \
+> kckey.cpp
 
 cat kckey_a >> kckey.cpp
 				
-echo -e "} };" >> kckey.cpp
+echo -e "};" >> kckey.cpp
 
 # cleaning
 rm -f kckey_a

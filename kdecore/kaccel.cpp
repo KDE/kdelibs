@@ -429,7 +429,7 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 {
 
-	kdebug(KDEBUG_INFO, 125, "Disconenct and remove");
+	kdebug(KDEBUG_INFO, 125, "Disconnect and remove");
 	// Disconnect and remove all items in pAccel
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
@@ -671,42 +671,25 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 
 
 /*****************************************************************************/
-
 QString keyToString( uint keyCode, bool i18_n )
 {
-	QString res;
+	QString res = "";
 	
-	if ( keyCode == 0 ) {
-		res = "";
-		return res;
+	if ( keyCode == 0 ) return res;
+	if ( keyCode & Qt::SHIFT ){
+		if (i18_n) res += i18n("SHIFT");
+	    else       res += "SHIFT";
+	    res += "+";
 	}
-	if (!i18_n){
-	  if ( keyCode & Qt::SHIFT ){
-	    res += ("SHIFT");
+	if ( keyCode & Qt::CTRL ){
+	   if (i18_n) res += i18n("CTRL");
+	   else       res += "CTRL";
 	    res += "+";
-	  }
-	  if ( keyCode & Qt::CTRL ){
-	    res +=("CTRL");
-	    res += "+";
-	  }
-	  if ( keyCode & Qt::ALT ){
-	    res +=("ALT");
-	    res += "+";
-	  }
 	}
-	else {
-	  if ( keyCode & Qt::SHIFT ){
-	    res = i18n("SHIFT");
+	if ( keyCode & Qt::ALT ){
+		if (i18_n) res += i18n("ALT");
+		else       res += "ALT";
 	    res += "+";
-	  }
-	  if ( keyCode & Qt::CTRL ){
-	    res += i18n("CTRL");
-	    res += "+";
-	  }
-	  if ( keyCode & Qt::ALT ){
-	    res += i18n("ALT");
-	    res += "+";
-	  }
 	}
 
 	uint kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
