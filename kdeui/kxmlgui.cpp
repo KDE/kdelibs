@@ -23,11 +23,13 @@
 #include "kxmlguibuilder.h"
 
 #include <assert.h>
-#include <kaction.h>
+
 #include <qfile.h>
-#include <kdebug.h>
 #include <qtextstream.h>
 #include <qwidget.h>
+
+#include <kaction.h>
+#include <kdebug.h>
 #include <kaccel.h>
 #include <kinstance.h>
 #include <kglobal.h>
@@ -89,10 +91,15 @@ class KXMLGUIFactoryPrivate
 public:
   KXMLGUIFactoryPrivate()
   {
+    static QString defaultMergingName = QString::fromLatin1( "<default>" );
+    static QString actionList = QString::fromLatin1( "actionlist" );
+    static QString name = QString::fromLatin1( "name" );
+    
     m_rootNode = new KXMLGUIContainerNode( 0L, QString::null, 0L );
-    m_defaultMergingName = QString::fromLatin1( "<default>" );
+    m_defaultMergingName = defaultMergingName;
     m_clientBuilder = 0L;
-    tagActionList = QString::fromLatin1( "actionlist" );
+    tagActionList = actionList;
+    attrName = name;
   }
   ~KXMLGUIFactoryPrivate()
   {
@@ -110,6 +117,8 @@ public:
   QList<KAction> m_actionList;
 
   QString tagActionList;
+
+  QString attrName;
 };
 
 KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIClient *_client, KXMLGUIBuilder *_builder, bool _merged, int id, const QString &_groupName )
@@ -143,15 +152,14 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
   if (filename[0] == '/')
     xml_file = filename;
   else
-    xml_file = locate("data", QString(KGlobal::instance()->instanceName()) +
-                              "/" + filename);
+    xml_file = locate("data", QString::fromLatin1(KGlobal::instance()->instanceName() + '/' ) + filename);
 
   QFile file( xml_file );
   if ( !file.open( IO_ReadOnly ) )
   {
     kdError(1000) << "No such XML file " << filename.local8Bit().data() << endl;
     if ( never_null )
-      return "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>";
+      return QString::fromLatin1( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
     else
       return QString::null;
   }
@@ -174,8 +182,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
   QString xml_file(filename);
 
   if (xml_file[0] != '/')
-    xml_file = locateLocal("data", QString(KGlobal::instance()->instanceName())+
-                                   "/" + filename);
+    xml_file = locateLocal("data", QString::fromLatin1( KGlobal::instance()->instanceName() + '/' ) + filename);
 
   QFile file( xml_file );
   if ( !file.open( IO_WriteOnly ) )
@@ -218,7 +225,6 @@ KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent, const 
 
 KXMLGUIFactory::~KXMLGUIFactory()
 {
-  kdDebug(1002) << "KXMLGUIFactory::~KXMLGUIFactory(), calling removeRecursive" << endl;
   delete d;
 }
 
@@ -226,7 +232,6 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
   static QString actionPropElementName = QString::fromLatin1( "ActionProperties" );
   static QString tagAction = QString::fromLatin1( "action" );
-  static QString attrName = QString::fromLatin1( "name" );
   static QString attrAccel = QString::fromLatin1( "accel" );
 
   m_client = client;
@@ -241,7 +246,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   QDomElement docElement = client->domDocument().documentElement();
 
   d->m_rootNode->index = -1;
-  d->m_clientName = docElement.attribute( "name" );
+  d->m_clientName = docElement.attribute( d->attrName );
   d->m_clientBuilder = client->clientBuilder();
 
   QDomElement actionPropElement = docElement.namedItem( actionPropElementName ).toElement();
@@ -268,7 +273,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 	  continue;
 	
 	//don't let someone change the name of the action! (Simon)
-	if ( attr.name() == attrName )
+	if ( attr.name() == d->attrName )
 	  continue;
 
 	QVariant propertyValue;
@@ -299,7 +304,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   d->m_clientBuilder = 0L;
 
   emit clientAdded( client );
-  
+
   if ( client->childClients()->count() > 0 )
   {
     const QList<KXMLGUIClient> *children = client->childClients();
@@ -327,14 +332,14 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
   kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
   m_client = client;
-  d->m_clientName = client->domDocument().documentElement().attribute( "name" );
+  d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
   d->m_clientBuilder = client->clientBuilder();
   client->setFactory( 0L );
   removeRecursive( d->m_rootNode );
   m_client = 0L;
   d->m_clientBuilder = 0L;
   d->m_clientName = QString::null;
-  
+
   emit clientRemoved( client );
 }
 
@@ -402,7 +407,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   static QString tagAction = QString::fromLatin1( "action" );
   static QString tagMerge = QString::fromLatin1( "merge" );
   static QString tagDefineGroup = QString::fromLatin1( "definegroup" );
-  static QString attrName = QString::fromLatin1( "name" );
   static QString attrGroup = QString::fromLatin1( "group" );
 
   QStringList customTags;
@@ -447,7 +451,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
      */
     if ( tag == tagMerge || tag == tagDefineGroup || tag == d->tagActionList )
     {
-      QString mergingName = e.attribute( attrName );
+      QString mergingName = e.attribute( d->attrName );
       if ( mergingName.isEmpty() )
       {
         if ( tag == tagDefineGroup )
@@ -558,7 +562,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	
         // query the client for possible container state information (like toolbar positions for example)
 	// (the array might be empty in case there's no info available)
-	QByteArray stateBuffer = m_client->takeContainerStateBuffer( e.tagName() + e.attribute( attrName ) );
+	QByteArray stateBuffer = m_client->takeContainerStateBuffer( e.tagName() + e.attribute( d->attrName ) );
 	
 	/*
 	 * let the builder create the container
@@ -582,7 +586,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	{
   	  containerList.append( container );
 	
-          containerNode = new KXMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_client, builder, merge, id, group );
+          containerNode = new KXMLGUIContainerNode( container, e.tagName(), e.attribute( d->attrName ), parentNode, m_client, builder, merge, id, group );
 	}
 	
         buildRecursive( e, containerNode );
@@ -765,7 +769,7 @@ KXMLGUIContainerNode *KXMLGUIFactory::findContainer( KXMLGUIContainerNode *node,
   KXMLGUIContainerNode *res = 0L;
   QListIterator<KXMLGUIContainerNode> nIt( node->children );
 
-  QString name = element.attribute( "name" );
+  QString name = element.attribute( d->attrName );
 
   if ( !name.isEmpty() )
   {
@@ -900,7 +904,7 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
   m_client = client;
   d->m_actionListName = name;
   d->m_actionList = actionList;
-  d->m_clientName = client->domDocument().documentElement().attribute( "name" );
+  d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
 
   plugActionListRecursive( d->m_rootNode );
 
@@ -914,7 +918,7 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
 {
   m_client = client;
   d->m_actionListName = name;
-  d->m_clientName = client->domDocument().documentElement().attribute( "name" );
+  d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
 
   unplugActionListRecursive( d->m_rootNode );
 

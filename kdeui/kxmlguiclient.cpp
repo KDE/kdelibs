@@ -207,13 +207,14 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
   static QString tagText = QString::fromLatin1( "text" );
   static QString attrAlreadyVisited = QString::fromLatin1( "alreadyVisited" );
   static QString attrNoMerge = QString::fromLatin1( "noMerge" );
+  static QString attrOne = QString::fromLatin1( "1" );
 
   // there is a possibility that we don't want to merge in the
   // additive.. rather, we might want to *replace* the base with the
   // additive.  this can be for any container.. either at a file wide
   // level or a simple container level.  we look for the 'noMerge'
   // tag, in any event and just replace the old with the new
-  if ( additive.attribute(attrNoMerge) == "1" )
+  if ( additive.attribute(attrNoMerge) == attrOne ) // ### use toInt() instead? (Simon)
   {
     base.parentNode().replaceChild(additive, base);
     return true;
@@ -282,7 +283,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
         if ( newChild.tagName() == tagText )
           continue;
 
-        if ( newChild.attribute( attrAlreadyVisited ) == "1" )
+        if ( newChild.attribute( attrAlreadyVisited ) == attrOne )
           continue;
 
         QString itAppend( newChild.attribute( attrAppend ) );
@@ -591,7 +592,7 @@ public:
 
 QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &doc )
 {
-  QString filter  = QString::fromLatin1( QCString( instance()->instanceName() ) + "/" ) + fileName;
+  QString filter  = QString::fromLatin1( instance()->instanceName() + '/' ) + fileName;
 
   QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
 
@@ -647,7 +648,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
     if ( best != allDocuments.begin() )
     {
       QString f = allDocuments.begin().key();
-      QString backup = f + ".backup";
+      QString backup = f + QString::fromLatin1( ".backup" );
       QDir dir;
       dir.rename( f, backup );
     }

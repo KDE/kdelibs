@@ -945,9 +945,9 @@ void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
       QDomElement e = doc.documentElement().firstChild().toElement();
       for (; !e.isNull(); e = e.nextSibling().toElement() )
       {
-        if ( e.tagName().lower() == QString::fromLatin1( "toolbar" ) )
+        if ( e.tagName().lower().latin1() == "toolbar" )
 	  d->m_factory->resetContainer( e.attribute( "name" ) );
-	else if ( e.tagName().lower() == QString::fromLatin1( "menubar" ) )
+	else if ( e.tagName().lower().latin1() == "menubar" )
 	  d->m_factory->resetContainer( e.tagName(), true );
       }
 

@@ -48,7 +48,18 @@ public:
   QString tagSeparator;
   QString tagTearOffHandle;
 
+  QString attrName;
   QString attrLineSeparator;
+
+  QString attrText1;
+  QString attrText2;
+
+  QString attrIcon;
+
+  QString attrFullWidth;
+  QString attrPosition;
+  QString attrIconText;
+  QString attrIconSize;
 
   KInstance *m_instance;
 };
@@ -67,8 +78,18 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->tagSeparator = QString::fromLatin1( "separator" );
   d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
 
+  d->attrName = QString::fromLatin1( "name" );
   d->attrLineSeparator = QString::fromLatin1( "lineseparator" );
 
+  d->attrText1 = QString::fromLatin1( "text" );
+  d->attrText2 = QString::fromLatin1( "Text" );
+
+  d->attrIcon = QString::fromLatin1( "icon" );
+  d->attrFullWidth = QString::fromLatin1( "fullWidth" );
+  d->attrPosition = QString::fromLatin1( "position" );
+  d->attrIconText = QString::fromLatin1( "iconText" );
+  d->attrIconSize = QString::fromLatin1( "iconSize" );
+  
   d->m_instance = 0;
 }
 
@@ -113,20 +134,20 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagMenu )
   {
-    QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( "name" ).utf8());
+    QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( d->attrName ).utf8());
     popup->setFont(KGlobalSettings::menuFont());
 
     QString i18nText;
-    QCString text = element.namedItem( "text" ).toElement().text().utf8();
+    QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
     if ( text.isEmpty() ) // try with capital T
-      text = element.namedItem( "Text" ).toElement().text().utf8();
+      text = element.namedItem( d->attrText2 ).toElement().text().utf8();
 
     if ( text.isEmpty() ) // still no luck
       i18nText = i18n( "No text!" );
     else
       i18nText = i18n( text );
 		
-    QString icon = element.attribute( "icon" );
+    QString icon = element.attribute( d->attrIcon );
     QPixmap pix;
 
     if ( !icon.isEmpty() )
@@ -158,13 +179,13 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagToolBar )
   {
-    bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
+    bool honor = (element.attribute( d->attrName ).latin1() == "mainToolBar") ? true : false;
 
-    KToolBar *bar = new KToolBar( d->m_widget, element.attribute( "name" ).utf8(), honor);
+    KToolBar *bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
 
-    QCString text = element.namedItem( "text" ).toElement().text().utf8();
+    QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
     if (text.isEmpty())  // try with capital T
-      text = element.namedItem( "Text" ).toElement().text().utf8();
+      text = element.namedItem( d->attrText2 ).toElement().text().utf8();
 
     if (!text.isEmpty())
       bar->setText( i18n( text ) );
@@ -172,10 +193,10 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if ( d->m_widget->inherits( "KTMainWindow" ) )
       static_cast<KTMainWindow *>(d->m_widget)->addToolBar( bar );
 
-    QString attrFullWidth = element.attribute( "fullWidth" ).lower();
-    QString attrPosition = element.attribute( "position" ).lower();
-    QString attrIconText = element.attribute( "iconText" ).lower();
-    QString attrIconSize = element.attribute( "iconSize" ).lower();
+    QCString attrFullWidth = element.attribute( d->attrFullWidth ).lower().latin1();
+    QCString attrPosition = element.attribute( d->attrPosition ).lower().latin1();
+    QCString attrIconText = element.attribute( d->attrIconText ).lower().latin1();
+    QString attrIconSize = element.attribute( d->attrIconSize ).lower();
 
     if ( honor || ( !attrFullWidth.isEmpty() && attrFullWidth == "true" ) )
       bar->setFullSize( true );
@@ -305,7 +326,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         QDomAttr attr = attributes.item( i ).toAttr();
 	
         if ( attr.name().lower() == d->attrLineSeparator &&
-	     attr.value().lower() == "true" )
+	     attr.value().lower().latin1() == "true" )
 	{
 	  isLineSep = true;
 	  break;
