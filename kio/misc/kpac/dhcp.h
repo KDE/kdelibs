@@ -23,6 +23,10 @@
 #ifndef __dhcp_h__
 #define __dhcp_h__
 
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif
+
 #define DHCP_OPT_LEN 312
 
 struct dhcp_msg
