@@ -78,6 +78,7 @@ kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config
 	$(mkinstalldirs) $(includedir)
+	$(mkinstalldirs) $(includedir)/kio
 	$(INSTALL_DATA) $(srcdir)/../libltdl/ltdl.h $(includedir)/ltdl.h
 	$(mkinstalldirs) $(kde_confdir)
 	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
