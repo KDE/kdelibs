@@ -511,7 +511,7 @@ KPropsDlgPlugin::KPropsDlgPlugin( KPropertiesDialog *_props )
 {
   d = new KPropsDlgPluginPrivate;
   properties = _props;
-  fontHeight = 2*properties->dialog()->fontMetrics().height();
+  fontHeight = 2*properties->fontMetrics().height();
   d->m_bDirty = false;
 }
 
@@ -623,7 +623,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   uint iDirCount = S_ISDIR(mode) ? 1 : 0;
   uint iFileCount = 1-iDirCount;
 
-  d->m_frame = properties->dialog()->addPage (i18n("&General"));
+  d->m_frame = properties->addPage (i18n("&General"));
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
                                       KDialog::spacingHint(), "vbl");
@@ -1360,7 +1360,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   // create GUI
 
-  d->m_frame = properties->dialog()->addPage(i18n("&Permissions"));
+  d->m_frame = properties->addPage(i18n("&Permissions"));
 
   QBoxLayout *box = new QVBoxLayout( d->m_frame, KDialog::spacingHint() );
 
@@ -2184,7 +2184,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
   d = new KURLPropsPluginPrivate;
-  d->m_frame = properties->dialog()->addPage(i18n("U&RL"));
+  d->m_frame = properties->addPage(i18n("U&RL"));
   QVBoxLayout * layout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
 
   QLabel *l;
@@ -2294,7 +2294,7 @@ public:
 KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
 {
   d = new KBindingPropsPluginPrivate;
-  d->m_frame = properties->dialog()->addPage(i18n("A&ssociation"));
+  d->m_frame = properties->addPage(i18n("A&ssociation"));
   patternEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
   commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
   mimeEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
@@ -2452,7 +2452,7 @@ public:
 KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
 {
   d = new KDevicePropsPluginPrivate;
-  d->m_frame = properties->dialog()->addPage(i18n("De&vice"));
+  d->m_frame = properties->addPage(i18n("De&vice"));
 
   QStringList devices;
   KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
@@ -2629,7 +2629,7 @@ void KDevicePropsPlugin::applyChanges()
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
-  QFrame *frame = properties->dialog()->addPage(i18n("&Application"));
+  QFrame *frame = properties->addPage(i18n("&Application"));
   QVBoxLayout * mainlayout = new QVBoxLayout( frame );
   mainlayout->setSpacing( KDialog::spacingHint() );
 
@@ -3075,7 +3075,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
   d = new KExecPropsPluginPrivate;
-  d->m_frame = properties->dialog()->addPage(i18n("E&xecute"));
+  d->m_frame = properties->addPage(i18n("E&xecute"));
   QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame );
   mainlayout->setSpacing( KDialog::spacingHint() );
 
@@ -3388,7 +3388,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
   d = new KApplicationPropsPluginPrivate;
-  d->m_frame = properties->dialog()->addPage(i18n("&Application"));
+  d->m_frame = properties->addPage(i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
   QIconSet iconSet;

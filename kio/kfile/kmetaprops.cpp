@@ -127,7 +127,7 @@ void KFileMetaPropsPlugin::createLayout()
     }
 
     // let the dialog create the page frame
-    QFrame* topframe = properties->dialog()->addPage(i18n("&Meta Info"));
+    QFrame* topframe = properties->addPage(i18n("&Meta Info"));
     topframe->setFrameStyle(QFrame::NoFrame);
     QVBoxLayout* tmp = new QVBoxLayout(topframe);
 

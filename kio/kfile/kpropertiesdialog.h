@@ -216,7 +216,7 @@ public:
 
   /**
    * @return a pointer to the dialog
-   * @deprecated
+   * @deprecated the class directly inherits from KDialogBase, so use this instead
    */
   KDE_DEPRECATED KDialogBase* dialog() { return this; }
   KDE_DEPRECATED const KDialogBase* dialog() const { return this; }
