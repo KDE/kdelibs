@@ -255,7 +255,9 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
       list.append( cfg->readEntry( key, "" ) );
   }
 
-  QString user_agent = QString::null;
+  // Keep this in sync with kdebase/kcontrol/kio/defaults.h !!!
+  QString user_agent = QString("Mozilla/4.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)");
+  
   if ( list.count() == 0 )
     return user_agent;
 
