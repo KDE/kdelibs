@@ -33,6 +33,7 @@
 #include <qbuttongroup.h>
 #include <qpopupmenu.h>
 #include <qgroupbox.h>
+#include <qwhatsthis.h>
 
 
 #include <kckey.h>
@@ -389,10 +390,10 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			  bool check_against_std_keys)
   : QWidget( parent )
 {
-	
+
   bKeyIntercept = FALSE;
   kbMode = NoKey;
-	
+
   aKeyIt = new QDictIterator<KKeyEntry> ( *aKeyDict );
 
   //
@@ -423,6 +424,11 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   wList->setAutoUpdate(FALSE);
   wList->setFocus();
   stackLayout->addMultiCellWidget( wList, 1, 1, 0, 1 );
+  QString wtstr = i18n("Here you can see a list of key bindings, i.e. associations between"
+    " actions (e.g. 'Copy') shown in the left column and keys or combination of keys (e.g. CTRL-V)"
+    " shown in the right column.");
+
+  QWhatsThis::add( wList, wtstr );
 
   //
   // CREATE LIST LABELS
@@ -433,6 +439,9 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   keyLabel = new QLabel( i18n("Current key"), this );
   stackLayout->addWidget(keyLabel, 0, 1);
 
+  QWhatsThis::add( actLabel, wtstr );
+  QWhatsThis::add( keyLabel, wtstr );
+
   //
   // Add all "keys" to the list
   //
@@ -442,13 +451,13 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   while ( aIt->current() )
   {
     aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
-		
+
     KSplitListItem *sli = new KSplitListItem(
       item( aIt->current()->aConfigKeyCode, aIt->current()->descr ), id);
-		
+
     connect( wList, SIGNAL( newWidth( int ) ),sli, SLOT( setWidth( int ) ) );
     wList->inSort( sli );
-		
+
     ++ ( *aIt );
     ++id;
   }
@@ -475,7 +484,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
 
   //
-  // CHOOSE KEY GROUP LAYOUT MANAGER	
+  // CHOOSE KEY GROUP LAYOUT MANAGER
   //
   QGridLayout *grid = new QGridLayout( fCArea, 6, 4, KDialog::spacingHint() );
   grid->setRowStretch(0,10);
@@ -489,41 +498,45 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   grid->setColStretch(1,10);
   grid->setColStretch(2,90);
   grid->setColStretch(3,0);
-	
+
   grid->addRowSpacing(0,15);
   grid->addRowSpacing(5,1);
-	
-	
+
+
   kbGroup = new QButtonGroup( fCArea );
   kbGroup->hide();
   kbGroup->setExclusive( true );
-	
+
   QRadioButton *rb = new QRadioButton( i18n("&No key"), fCArea );
   kbGroup->insert( rb, NoKey );
   grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
-	
+  QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
+
   rb = new QRadioButton( i18n("&Default key"), fCArea );
   kbGroup->insert( rb, DefaultKey );
   grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
-	
+  QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
+
   rb = new QRadioButton( i18n("&Custom key"), fCArea );
   kbGroup->insert( rb, CustomKey );
   connect( kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
   grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
+  QWhatsThis::add( rb, i18n("If this option is selected you can create a customized key binding for the"
+    " selected action using the buttons below.") );
 
   QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
   grid->addLayout( pushLayout, 4, 2 );
-	
+
   cShift = new QCheckBox( fCArea );
   cShift->setText( QString::fromLatin1("SHIFT") );
   cShift->setEnabled( FALSE );
   connect( cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
-	
+
   cCtrl = new QCheckBox( fCArea );
   cCtrl->setText( QString::fromLatin1("CTRL") );
   cCtrl->setEnabled( FALSE );
   connect( cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
-	
+
   cAlt = new QCheckBox( fCArea );
   cAlt->setText( QString::fromLatin1("ALT") );
   cAlt->setEnabled( FALSE );
@@ -532,7 +545,15 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   bChange = new KKeyButton(fCArea, "key");
   bChange->setEnabled( FALSE );
   connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
-	
+
+  wtstr = i18n("If 'Custom key' is selected, you can set a combination of keys here. Click on"
+    " the rightmost button once and then press a key to select it for this binding. You can"
+    " check the SHIFT, CTRL and ALT boxes to combine the selected key with modifier keys.");
+  QWhatsThis::add( cShift, wtstr );
+  QWhatsThis::add( cCtrl, wtstr );
+  QWhatsThis::add( cAlt, wtstr );
+  QWhatsThis::add( bChange, wtstr );
+
   //
   // Add widgets to the geometry manager
   //
