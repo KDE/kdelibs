@@ -71,6 +71,7 @@
 #include <kurl.h>
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
+#include <kuser.h>
 
 #include "config-kfile.h"
 #include "kpreviewwidgetbase.h"
@@ -900,7 +901,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "up" )->plug( toolbar );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<p>"
                                             "For instance, if the current location is file:/home/%1 clicking this "
-                                            "button will take you to file:/home.</qt>").arg(getlogin()));
+                                            "button will take you to file:/home.</qt>").arg( KUser().loginName() ));
     coll->action( "back" )->plug( toolbar );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
     coll->action( "forward" )->plug( toolbar );
