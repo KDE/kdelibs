@@ -1674,10 +1674,6 @@ unsigned short *DOM::CSSParser::text(int *length)
 
     for ( int i = 0; i < l; i++ ) {
 	unsigned short *current = start+i;
-	if ( !escape && *current == '\\' ) {
-	    escape = current;
-	    continue;
-	}
 	if ( escape == current - 1 ) {
 	    if ( ( *current >= '0' && *current <= '9' ) ||
 		 ( *current >= 'a' && *current <= 'f' ) ||
@@ -1721,6 +1717,7 @@ unsigned short *DOM::CSSParser::text(int *length)
 	    if ( uc > 0xffff )
 		uc = 0xfffd;
 	    *(out++) = (unsigned short)uc;
+	    escape = 0;
 	    if ( *current == ' ' ||
 		 *current == '\t' ||
 		 *current == '\r' ||
@@ -1728,7 +1725,27 @@ unsigned short *DOM::CSSParser::text(int *length)
 		 *current == '\f' )
 		continue;
 	}
+	if ( !escape && *current == '\\' ) {
+	    escape = current;
+	    continue;
+	}
 	*(out++) = *current;
+    }
+    if ( escape ) {
+	// add escaped char
+	int uc = 0;
+	escape++;
+	while ( escape < start+l ) {
+	    // 		qDebug("toHex( %c = %x", (char)*escape, toHex( *escape ) );
+	    uc *= 16;
+	    uc += toHex( *escape );
+	    escape++;
+	}
+	// 	    qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).latin1(), uc );
+	// can't handle chars outside ucs2
+	if ( uc > 0xffff )
+	    uc = 0xfffd;
+	*(out++) = (unsigned short)uc;
     }
 
     *length = out - start;
