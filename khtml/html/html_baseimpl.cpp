@@ -526,14 +526,10 @@ void HTMLHtmlElementImpl::attach()
     assert(parentNode()->renderer());
     
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
-    if (_style->display() != NONE)
-    {
-        m_render = new RenderHtml(this);
-        m_render->setStyle(_style);
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
-    }
-    _style->deref();
+    // ignore display: none
+    m_render = new RenderHtml(this);
+    m_render->setStyle(_style);
+    parentNode()->renderer()->addChild(m_render, nextRenderer());
     NodeBaseImpl::attach();
 }
 

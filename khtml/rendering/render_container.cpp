@@ -98,7 +98,8 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
                 needsTable = true;
             break;
         case NONE:
-            KHTMLAssert(false);
+            // RenderHtml and some others can have display:none        
+            // KHTMLAssert(false);
             break;
         }
     }
