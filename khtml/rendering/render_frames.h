@@ -152,12 +152,6 @@ public slots:
     void slotViewCleared();
     void slotWidgetDestructed();
 
-private slots:
-	void slotTimedRequest(KIO::Job *, const QString &);
-	
-private:
-	QString m_timedUrl;
-	QString m_timedBaseUrl;
 };
 
 };

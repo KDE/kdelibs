@@ -35,7 +35,6 @@
 
 #include <kapp.h>
 #include <kdebug.h>
-#include <kio/job.h>
 
 #include <qlabel.h>
 #include <qstringlist.h>
@@ -819,20 +818,8 @@ void RenderPartObject::updateWidget()
      o->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
      o->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
 
-	 // Check if serviceType can be handled by ie. nsplugin
-	 // else default to the activexhandler and check for the mimetype
-	 // and create a classid for this mimetype then submit
-	 // the request to the activexhandler (Niko)
-	 bool retval = part->requestObject( this, url, serviceType, o->param );
+     part->requestObject( this, url, serviceType, o->param );
 
-	 if(!retval && serviceType.isEmpty())
-	 {
-		 KIO::TransferJob *job;  
-		 job = KIO::get(KURL(part->url(), url), false, false);
-		 connect(job, SIGNAL(mimetype(KIO::Job *, const QString &)), this, SLOT(slotTimedRequest(KIO::Job *, const QString &)));
-		 m_timedBaseUrl = part->url().url();
-		 m_timedUrl = url;
-	 }
   } else {
       assert(m_obj->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);
@@ -843,30 +830,6 @@ void RenderPartObject::updateWidget()
   }
   setLayouted(false);
 
-}
-
-void RenderPartObject::slotTimedRequest(KIO::Job *job, const QString &type)
-{
-	job->kill();
-	KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-	QStringList params;
-	QString classId;
-	
-	params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
-	params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( m_timedBaseUrl ) );
-
-	if(type == "application/x-shockwave-flash")
-		classId = "CLSID:D27CDB6E-AE6D-11cf-96B8-444553540000";
-	else if(type == "application/x-director")
-		classId = "CLSID:166B1BCA-3F9C-11CF-8075-444553540000";
-	else if(type == "audio/x-pn-realaudio-plugin")
-		classId = "CLSID:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA";
-	else
-		return;
-
-	params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( classId ) ); 
-	params.append( QString::fromLatin1("SRC=\"%1\"").arg( m_timedUrl ) );
-	part->requestObject(this, m_timedUrl, "application/x-activex-handler", params);
 }
 
 void RenderPartObject::close()
