@@ -33,7 +33,6 @@ class KContextMenuManagerPrivate;
 /**
 @short Convenience class to mangage context menus
 @author Matthias Ettrich <ettrich@kde.org>
-@version $Id$
 
 KContextMenuManager manages configurable context popup menus.  Instead
 of reimplementing QWidget::mousePressEvent() or
@@ -43,8 +42,6 @@ the static function insert().
 
 Example:
 \code
-   #include <kcmenumngr.h>
-   ...
    KContextMenuManager::insert( myWidget, myPopupMenu );
 \endcode
 
