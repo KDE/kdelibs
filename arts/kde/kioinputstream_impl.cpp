@@ -100,7 +100,7 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 	    m_finished = false;
 
 	QDataStream dataStream(m_data, IO_WriteOnly | IO_Append);
-	dataStream << data;
+	dataStream.writeRawBytes(data.data(), data.size());
 	
 	if(!m_sendqueue.empty())
 	    processQueue();
