@@ -1728,12 +1728,12 @@ KPopupMenu *KToolBar::contextMenu()
   context->insertTitle(i18n("Toolbar Menu"));
 
   QPopupMenu *orient = new QPopupMenu( context, "orient" );
-  orient->insertItem( i18n("Top"),  CONTEXT_TOP );
-  orient->insertItem( i18n("Left"), CONTEXT_LEFT );
-  orient->insertItem( i18n("Right"), CONTEXT_RIGHT );
-  orient->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
+  orient->insertItem( i18n("toolbar position string","Top"),  CONTEXT_TOP );
+  orient->insertItem( i18n("toolbar position string","Left"), CONTEXT_LEFT );
+  orient->insertItem( i18n("toolbar position string","Right"), CONTEXT_RIGHT );
+  orient->insertItem( i18n("toolbar position string","Bottom"), CONTEXT_BOTTOM );
   orient->insertSeparator(-1);
-  //orient->insertItem( i18n("Floating"), CONTEXT_FLOAT );
+  //orient->insertItem( i18n("toolbar position string","Floating"), CONTEXT_FLOAT );
   orient->insertItem( i18n("min toolbar", "Flat"), CONTEXT_FLAT );
 
   QPopupMenu *mode = new QPopupMenu( context, "mode" );
