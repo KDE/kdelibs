@@ -28,15 +28,6 @@
 
 class KPrinter;
 class KPrintDialogPage;
-class QLabel;
-class QComboBox;
-class QCheckBox;
-class QPushButton;
-class QLineEdit;
-class QVBox;
-class PluginComboBox;
-class KURLRequester;
-class TreeComboBox;
 
 class KPrintDialog : public KDialog, public KPReloadObject
 {
@@ -50,7 +41,10 @@ public:
 	void initialize(KPrinter*);
 	KPrinter* printer() const;
 
-	static bool printerSetup(KPrinter*, QWidget*, const QString& caption = QString::null, bool forceExpand = false);
+	static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString::null, bool forceExpand = false);
+
+signals:
+	void printRequested(KPrinter*);
 
 protected slots:
 	void slotPrinterSelected(int);
@@ -70,21 +64,8 @@ protected:
 	void expandDialog(bool on = true);
 
 protected:
-	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn;
-	QCheckBox	*m_preview;
-	QLineEdit	*m_cmd;
-	TreeComboBox	*m_printers;
-	QVBox		*m_dummy;
-	PluginComboBox	*m_plugin;
-	KURLRequester	*m_file;
-	bool	m_reduced;
-
-	QPtrList<KPrintDialogPage>	m_pages;
-	KPrinter		*m_printer;
+	class KPrintDialogPrivate;
+	KPrintDialogPrivate	*d;
 };
-
-inline KPrinter* KPrintDialog::printer() const
-{ return m_printer; }
 
 #endif

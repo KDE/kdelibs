@@ -168,6 +168,24 @@ KMPrinter* KMManager::softDefault() const
 	return 0;
 }
 
+KMPrinter* KMManager::hardDefault() const
+{
+	QPtrListIterator<KMPrinter>	it(m_printers);
+	for (; it.current();++it)
+		if (it.current()->isHardDefault())
+			return it.current();
+	return 0;
+}
+
+KMPrinter* KMManager::defaultPrinter()
+{
+	printerList(false);
+	KMPrinter	*prt = softDefault();
+	if (!prt)
+		prt = hardDefault();
+	return prt;
+}
+
 QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString::null);

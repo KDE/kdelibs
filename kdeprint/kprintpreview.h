@@ -22,12 +22,11 @@
 #ifndef KPRINTPREVIEW_H
 #define KPRINTPREVIEW_H
 
-#include <kparts/part.h>
-#include <kparts/mainwindow.h>
+#include <kdialogbase.h>
 #include <qstring.h>
 #include <kprocess.h>
 
-class KPrintPreview : public KParts::MainWindow
+class KPrintPreview : public KDialogBase
 {
 	Q_OBJECT
 public:
@@ -39,12 +38,9 @@ public:
 
 	static bool preview(const QString& file, bool previewOnly = false, WId parentId = 0);
 
-signals:
-	void continuePrint();
-	void cancelPrint();
-
 private:
-	KParts::ReadOnlyPart	*gvpart_;
+	class KPrintPreviewPrivate;
+	KPrintPreviewPrivate	*d;
 };
 
 class KPreviewProc : public KProcess

@@ -34,7 +34,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \
 
 include_HEADERS = kprinter.h kprintaction.h
 
-kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h
+kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h
 kdeprintdir = $(includedir)/kdeprint
 
 EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc

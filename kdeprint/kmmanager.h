@@ -96,6 +96,7 @@ public:
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
 	QPtrList<KMPrinter>* printerList(bool reload = true);
+	KMPrinter* defaultPrinter();
 
 	// driver DB functions
 	virtual QString driverDbCreationProgram();
@@ -132,6 +133,7 @@ protected:
 	void setHardDefault(KMPrinter*);
 	void setSoftDefault(KMPrinter*);
 	KMPrinter* softDefault() const;
+	KMPrinter* hardDefault() const;
 	// this function uncompress the given file (or does nothing
 	// if the file is not compressed). Returns wether the file was
 	// compressed or not.

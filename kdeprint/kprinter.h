@@ -117,11 +117,12 @@ public:
 	/**
 	 * Defines the standard pages available for the print dialog:
 	 *  @li @p CopiesPage: page and copies selection (included by default)
+	 *  @li @p FilesPage: file selection (only used by kprinter utility)
 	 *  @li @p Custom: unused
 	 *
 	 * @see addStandardPage(), removeStandardPage()
 	 */
-	enum StandardPageType { CopiesPage = 0x01, Custom = 0x10 };
+	enum StandardPageType { CopiesPage = 0x01, FilesPage = 0x02, Custom = 0x10 };
 	/**
 	 * Defines whether the application can perform page selection itself or not.
 	 * Some print systems (like CUPS) can do page selection, in this case the
@@ -140,11 +141,12 @@ public:
 	 * Defines the type of the application, this affects the GUI of the print dialog:
 	 *  @li @p Dialog: print dialog used in an application (default)
 	 *  @li @p StandAlone: print dialog used as a standalone widget
+	 *  @li @p StandAlonePersistent: print dialog used as standalone widget, but persistent (do not use)
 	 *
 	 * @internal
 	 * @see setApplicationType(), applicationType()
 	 */
-	enum ApplicationType { Dialog = 0x00, StandAlone = 0x01 };
+	enum ApplicationType { Dialog = 0x00, StandAlone = 0x01, StandAlonePersistent = 0x02 };
 
 	// QPrinter extension
 	/**
@@ -674,6 +676,24 @@ public:
 	 * @param msg the error message
 	 */
 	void setErrorMessage(const QString& msg);
+	/**
+	 * Configure the KPrinter object to be used with the printer named
+	 * @p prname. After the call, the KPrinter object can be used without
+	 * the need to call the print dialog. If @p prname is empty, then the
+	 * KPrinter object is configured for the default printer. If @p prname
+	 * corresponds to a pseudo-printer which needs an output file, a file
+	 * dialog will be used. In that case, providing a parent widget for
+	 * that dialog in @p parent may be useful.
+	 * @param prname the name of the printer for which the KPrinter object
+	 * has to be configured
+	 * @param parent a parent widget, used a parent for a file dialog
+	 * @returns boolean flag: if false, the KPrinter has not been correctly
+	 * set up, and the application shouldn't use it to print. This may
+	 * happen if the printer named @p prname has not been found or if the
+	 * user clicked "Cancel" in the file dialog.
+	 * @see setup()
+	 */
+	bool autoConfigure(const QString& prname = QString::null, QWidget *parent = 0);
 
 protected:
 	virtual bool cmd(int, QPainter*, QPDevCmdParam*);

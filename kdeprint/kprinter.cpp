@@ -25,6 +25,7 @@
 #include "kprintpreview.h"
 #include "kmfactory.h"
 #include "kmuimanager.h"
+#include "kmmanager.h"
 
 #include <qpaintdevicemetrics.h>
 #include <qfile.h>
@@ -157,7 +158,14 @@ bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
 	if (parent)
 		d->m_parentId = parent->winId();
-	bool	state = KPrintDialog::printerSetup(this, parent, caption, forceExpand);
+
+	KPrintDialog	*dlg = KPrintDialog::printerDialog(this, parent, caption, forceExpand);
+	bool	state = false;
+	if (dlg)
+	{
+		state = dlg->exec();
+		delete dlg;
+	}
 	return state;
 }
 
@@ -493,10 +501,12 @@ void KPrinter::initOptions(const QMap<QString,QString>& opts)
 { // This function can be used to initialize the KPrinter object just after
   // creation to set some options. Non global options will be propagated to
   // all listed printers (non-global => start with "kde-...")
-	m_options = opts;
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
+	{
+		setOption(it.key(), it.data());
 		if (it.key().left(4) != "kde-")
 			d->m_impl->broadcastOption(it.key(),it.data());
+	}
 }
 
 void KPrinter::reload()
@@ -507,6 +517,23 @@ void KPrinter::reload()
 	global = KMFactory::self()->settings()->pageSize;
 	if (global != -1) setPageSize((KPrinter::PageSize)global);
 	//initOptions(m_options);
+}
+
+bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
+{
+	KMManager	*mgr = KMManager::self();
+	KMPrinter	*mprt(0);
+
+	mgr->printerList(false);
+	if (prname.isEmpty())
+		mprt = mgr->defaultPrinter();
+	else
+		mprt = mgr->findPrinter(prname);
+
+	if (mprt)
+		return mprt->autoConfigure(this, parent);
+	else
+		return false;
 }
 
 //**************************************************************************************

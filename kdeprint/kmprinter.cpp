@@ -20,9 +20,11 @@
  **/
 
 #include "kmprinter.h"
+#include "kprinter.h"
 #include "driver.h"
 
 #include <klocale.h>
+#include <kfiledialog.h>
 
 KMPrinter::KMPrinter()
 : KMObject()
@@ -138,4 +140,35 @@ QString KMPrinter::stateString() const
 		case KMPrinter::Stopped: return i18n("Stopped");
 		default: return i18n("Unknown State", "Unknown");
 	}
+}
+
+bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
+{
+	// standard settings
+	printer->setPrinterName(printerName());
+	printer->setSearchName(name());
+	// printer default settings (useful for instances)
+	printer->setOptions(defaultOptions());
+	// special printer case:
+	//	- add command
+	//	- ask for output file (if needed) using default extension.
+	if (isSpecial())
+	{
+		printer->setPrintProgram(option("kde-special-command"));
+		if (option("kde-special-file") == "1")
+		{
+			QString	ext = "*." + option("kde-special-extension") + "\n*|" + i18n("All Files");
+			QString	filename = KFileDialog::getSaveFileName(QString::fromLatin1("print.")+option("kde-special-extension"), ext, parent);
+			if (!filename.isEmpty())
+			{
+				printer->setOutputToFile(true);
+				printer->setOutputFileName(filename);
+			}
+			else
+				// action cancelled
+				return false;
+		}
+	}
+	
+	return true;
 }

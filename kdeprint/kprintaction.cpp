@@ -24,7 +24,6 @@
 #include <kiconloader.h>
 #include <kpopupmenu.h>
 #include <klocale.h>
-#include <kfiledialog.h>
 
 class KPrintAction::KPrintActionPrivate
 {
@@ -106,33 +105,8 @@ void KPrintAction::slotActivated(int ID)
 {
 	KPrinter	printer(false);
 	KMPrinter	*mprt = KMManager::self()->findPrinter(d->printers[ID]);
-	if (mprt)
+	if (mprt && mprt->autoConfigure(&printer, d->parentWidget))
 	{
-		// standard settings
-		printer.setPrinterName(mprt->printerName());
-		printer.setSearchName(mprt->name());
-		// printer default settings (useful for instances)
-		printer.setOptions(mprt->defaultOptions());
-		// special printer case:
-		//	- add command
-		//	- ask for output file (if needed) using default extension.
-		if (mprt->isSpecial())
-		{
-			printer.setPrintProgram(mprt->option("kde-special-command"));
-			if (mprt->option("kde-special-file") == "1")
-			{
-				QString	ext = "*." + mprt->option("kde-special-extension") + "\n*|" + i18n("All Files");
-				QString	filename = KFileDialog::getSaveFileName(QString::fromLatin1("print.")+mprt->option("kde-special-extension"), ext, d->parentWidget);
-				if (!filename.isEmpty())
-				{
-					printer.setOutputToFile(true);
-					printer.setOutputFileName(filename);
-				}
-				else
-					// action cancelled
-					return;
-			}
-		}
 		// emit the signal
 		emit print(&printer);
 	}

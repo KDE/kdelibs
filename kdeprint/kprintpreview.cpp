@@ -26,6 +26,9 @@
 #include <qlayout.h>
 #include <qvbox.h>
 
+#include <kparts/part.h>
+#include <kaccel.h>
+#include <kaction.h>
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kapplication.h>
@@ -34,8 +37,7 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kconfig.h>
-#include <kprocess.h>
-#include <kdialogbase.h>
+#include <ktoolbar.h>
 
 KPreviewProc::KPreviewProc()
 : KProcess()
@@ -65,48 +67,50 @@ void KPreviewProc::slotProcessExited(KProcess*)
 
 //*******************************************************************************************
 
-class PreviewDlg : public KDialogBase
+class KPrintPreview::KPrintPreviewPrivate
 {
 public:
-	PreviewDlg(QWidget *parent = 0, bool previewOnly = false);
-	KPrintPreview* view()	{ return view_; }
-private:
-	KPrintPreview	*view_;
+	KPrintPreviewPrivate(KPrintPreview *dlg) : gvpart_(0)
+	{
+		mainwidget_ = new QWidget(dlg, "MainWidget");
+		toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
+		actions_ = new KActionCollection(dlg);
+		accel_ = new KAccel(dlg);
+	}
+	~KPrintPreviewPrivate()
+	{
+		if (gvpart_) delete gvpart_;
+	}
+	void plugAction(KAction *act)
+	{
+		act->plug(toolbar_);
+		act->plugAccel(accel_);
+	}
+
+	KParts::ReadOnlyPart	*gvpart_;
+	KToolBar		*toolbar_;
+	KActionCollection	*actions_;
+	QWidget			*mainwidget_;
+	KAccel			*accel_;
 };
-
-PreviewDlg::PreviewDlg(QWidget *parent, bool previewOnly)
-: KDialogBase(Swallow, i18n("Print preview"), 0, (KDialogBase::ButtonCode)0, parent, "PreviewDlg", true, false, QString::null)
-{
-	if (layout())
-		layout()->setMargin(0);
-
-	view_ = new KPrintPreview(this, previewOnly);
-	setMainWidget(view_);
-
-	resize(560, 600);
-
-	connect(view_, SIGNAL(continuePrint()), this, SLOT(accept()));
-	connect(view_, SIGNAL(cancelPrint()), this, SLOT(reject()));
-}
 
 //*******************************************************************************************
 
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
-: KParts::MainWindow(parent, "PreviewDlg")
+: KDialogBase(parent, "PreviewDlg", true, i18n("Print Preview"), 0)
 {
 	kdDebug() << "kdeprint: creating preview dialog" << endl;
-	setXMLFile(locate("config","ui/kprintpreviewui.rc"));
-	setHelpMenuEnabled(false);
+	d = new KPrintPreviewPrivate(this);
 
+	// create main view and actions
+	setMainWidget(d->mainwidget_);
 	if (previewOnly)
-		new KAction(i18n("Close"),"fileclose",Qt::Key_Return,this,SIGNAL(cancelPrint()),actionCollection(),"close_print");
+		new KAction(i18n("Close"), "fileclose", Qt::Key_Return, this, SLOT(reject()), d->actions_, "close_print");
 	else
 	{
-		new KAction(i18n("Print"),"fileprint",Qt::Key_Return,this,SIGNAL(continuePrint()),actionCollection(),"continue_print");
-		new KAction(i18n("Cancel"),"stop",Qt::Key_Escape,this,SIGNAL(cancelPrint()),actionCollection(),"stop_print");
+		new KAction(i18n("Print"), "fileprint", Qt::Key_Return, this, SLOT(accept()), d->actions_, "continue_print");
+		new KAction(i18n("Cancel"), "stop", Qt::Key_Escape, this, SLOT(reject()), d->actions_, "stop_print");
 	}
-
-	gvpart_ = 0;
 
 	// ask the trader for service handling postscript
 	kdDebug() << "kdeprint: querying trader for 'application/postscript' service" << endl;
@@ -117,40 +121,70 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 		KLibFactory	*factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
 		if (factory)
 		{
-			gvpart_ = (KParts::ReadOnlyPart*)factory->create(this, "gvpart", "KParts::ReadOnlyPart");
+			d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "gvpart", "KParts::ReadOnlyPart");
 			break;
 		}
 	}
-	if (!gvpart_)
+	if (!d->gvpart_)
 	{
 		// nothing has been found, try to load directly KGhostview part
 		KLibFactory	*factory = KLibLoader::self()->factory("libkghostview");
 		if (factory)
-			gvpart_ = (KParts::ReadOnlyPart*)factory->create(this, "gvpart", "KParts::ReadOnlyPart");
+			d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "gvpart", "KParts::ReadOnlyPart");
 	}
 
-	if (gvpart_)
+	// populate the toolbar
+	KAction	*act;
+	if (previewOnly)
+		d->plugAction(d->actions_->action("close_print"));
+	else
 	{
-		setCentralWidget(gvpart_->widget());
-		createGUI(gvpart_);
+		d->plugAction(d->actions_->action("continue_print"));
+		d->plugAction(d->actions_->action("stop_print"));
 	}
+	if (d->gvpart_)
+	{
+		KAction	*act;
+		d->toolbar_->insertLineSeparator();
+		if ((act = d->gvpart_->action("zoomIn")) != 0)
+			d->plugAction(act);
+		if ((act = d->gvpart_->action("zoomOut")) != 0)
+			d->plugAction(act);
+		d->toolbar_->insertSeparator();
+		if ((act = d->gvpart_->action("prevPage")) != 0)
+			d->plugAction(act);
+		if ((act = d->gvpart_->action("nextPage")) != 0)
+			d->plugAction(act);
+	}
+	d->toolbar_->setIconText(KToolBar::IconTextRight);
+	d->toolbar_->setBarPos(KToolBar::Top);
+	d->toolbar_->setMovingEnabled(false);
+	//static_cast<QWidget*>(d->toolbar_)->layout()->setMargin(1);
+	d->toolbar_->adjustSize();
 
-	resize(560, 600);
+	// construct the layout
+	QVBoxLayout	*l0 = new QVBoxLayout(d->mainwidget_, 0, 0);
+	l0->addWidget(d->toolbar_, AlignTop);
+	if (d->gvpart_)
+		l0->addWidget(d->gvpart_->widget());
+	
+	resize(600, 500);
+	setCaption(i18n("Print Preview"));
 }
 
 KPrintPreview::~KPrintPreview()
 {
-	if (gvpart_) delete gvpart_;
+	delete d;
 }
 
 void KPrintPreview::openFile(const QString& file)
 {
-	gvpart_->openURL(KURL(file));
+	d->gvpart_->openURL(KURL(file));
 }
 
 bool KPrintPreview::isValid() const
 {
-	return (gvpart_ != 0);
+	return (d->gvpart_ != 0);
 }
 
 bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
@@ -185,11 +219,11 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	else
 	{
 		QWidget	*parentW = QWidget::find(parentId);
-		PreviewDlg	dlg(parentW, previewOnly);
+		KPrintPreview	dlg(parentW, previewOnly);
 
-		if (dlg.view()->isValid())
+		if (dlg.isValid())
 		{
-			dlg.view()->openFile(file);
+			dlg.openFile(file);
 			return dlg.exec();
 		}
 		else

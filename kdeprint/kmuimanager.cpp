@@ -92,10 +92,12 @@ int KMUiManager::copyFlags(KPrinter *pr, bool usePlugin)
 int KMUiManager::dialogFlags()
 {
 	int	f = m_printdialogflags;
-	if (KMFactory::self()->settings()->application == KPrinter::StandAlone)
+	int	appf = KMFactory::self()->settings()->application;
+	if (appf != KPrinter::Dialog)
 	{
 		f &= ~(KMUiManager::Preview);
-		f |= KMUiManager::FileSelect;
+		if ( appf == KPrinter::StandAlonePersistent)
+			f |= KMUiManager::Persistent;
 	}
 	return f;
 }
@@ -107,11 +109,10 @@ void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 	dlg->setFlags(f);
 
 	// add standard dialog pages
-	if (KMFactory::self()->settings()->standardDialogPages & KPrinter::CopiesPage)
+	int	stdpages = KMFactory::self()->settings()->standardDialogPages;
+	if (stdpages & KPrinter::CopiesPage)
 		m_printdialogpages.prepend(new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
-
-	// add file select page if needed (flag set by kprinter)
-	if (f & KMUiManager::FileSelect)
+	if (stdpages & KPrinter::FilesPage)
 		m_printdialogpages.prepend(new KPFileSelectPage(0, "FileSelectPage"));
 
 	// add plugins pages

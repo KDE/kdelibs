@@ -272,3 +272,34 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	  ID and the output type ("not allowed" if no output supported).
 	. added a WhatsThis help to the "Instances" tab briefly explaining
 	  what's an instance.
+
+09/01/2002 Michael Goffioul <goffioul@imec.be>
+  * general: when filtering, the file type is checked against supported
+    formats. If the format is not supported, a warning is issued and the
+    user has the possibility to auto-convert the file to a supported
+    format. Consequence: you can now safely perform page selection on any
+    file type with any printer and any spooler, kdeprint will try to convert
+    the file to PS.
+  * preview dialog: rewrote the code in a cleaner way, avoiding the use
+    of a non toplevel main window. Preview dialog looks simpler now. New
+    issue: toolbuttons overlap the toolbar border (only for toolbar not
+    children of main window).
+  * general: made the "Files" page a standard page in KPrinter. Modified
+    kprinter's code to add that page -> will be easier to remove it when
+    implementing a "--stdin" option.
+  * kprinter:
+  	. added a "--stdin" option. If this option is set, only printing
+	  from stdin is allowed and the "Files" tab is hidden. Can be used in
+	  Netscape. If files are given on the command line, this option is
+	  forced unset.
+	. added a "--nodialog" option for quick print.
+	. added the persistent feature (with some code rewrite in kdeprint
+	  library)
+
+10/01/2002 Michael Goffioul <goffioul@imec.be>
+  * general: added (temporary) workaround for drawing problems in fixed
+    toolbars, until a real fix gets implemented:
+    	static_cast<QWidget*>(tb)->layout()->setMargin(1);
+  * general: started to used new icons provided by Bogdan, for the toolbar
+  * general: added KPrinter::autoConfigure(), to automatically configure
+    a KPrinter object without the need for a print dialog.

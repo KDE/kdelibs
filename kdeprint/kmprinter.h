@@ -31,6 +31,8 @@
 
 class KMDBEntry;
 class DrMain;
+class KPrinter;
+class QWidget;
 
 class KMPrinter : public KMObject
 {
@@ -120,6 +122,9 @@ public:
 	DrMain* driver() const 						{ return m_driver; }
 	void setDriver(DrMain*);
 	DrMain* takeDriver();
+	
+	// configure an existing KPrinter object
+	bool autoConfigure(KPrinter *prt, QWidget *parent = 0);
 
 	// default options
 	const QString& defaultOption(const QString& key) const 		{ return m_defaultoptions[key]; }
