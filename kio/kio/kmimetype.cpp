@@ -819,14 +819,15 @@ pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _service
 
 pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
 {
-  KURL url( cfg.readPathEntry( "URL" ) );
-  if ( !url.isValid() )
+  QString u = cfg.readPathEntry( "URL" );
+  if ( u.isEmpty() )
   {
-    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.").arg( _url.url() );
+    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.").arg( _url.prettyURL() );
     KMessageBoxWrapper::error( 0, tmp );
     return 0;
   }
 
+  KURL url ( u );
   KRun* run = new KRun(url);
 
   // X-KDE-LastOpenedWith holds the service desktop entry name that
