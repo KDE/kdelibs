@@ -65,7 +65,7 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
   /**
     If you want to add new attributes, append them here, add a
     translation string in the ctor of AttributesDialog and
-    handel them in the load() method below.
+    handle them in the load() method below.
     These are the default values from
    */
   if ( mAttributes.count() == 0 ) {
@@ -178,9 +178,10 @@ bool ResourceLDAP::load()
   int i = 0;
   for ( it = mAttributes.begin(); it != mAttributes.end(); ++it ) {
     if ( !it.data().isEmpty() ) {
-      LdapSearchAttr[ i ] = new char[ it.data().utf8().length() + 1 ];
-      memset( LdapSearchAttr[ i ], 0, it.data().utf8().length() + 1 );
-      memcpy( LdapSearchAttr[ i ], it.data().utf8(), it.data().utf8().length() );
+      unsigned int len = it.data().utf8().length();
+      LdapSearchAttr[ i ] = new char[ len+1 ];
+      memcpy( LdapSearchAttr[ i ], it.data().utf8(), len );
+      LdapSearchAttr[ i ][ len ];
       ++i;
     }
   }
