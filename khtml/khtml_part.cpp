@@ -149,6 +149,8 @@ public:
   DOM::HTMLDocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
+  QStringList m_cachedHtml;  
+
   KJSProxy *m_jscript;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
@@ -380,6 +382,41 @@ KHTMLPart::~KHTMLPart()
   delete d;
   khtml::Cache::deref();
 }
+
+bool KHTMLPart::restoreURL( const KURL &url, int charset )
+{
+  QStringList cachedDoc = d->m_cachedHtml;
+  QString referrerUrl = m_url.url();
+
+  kdDebug( 6050 ) << "KHTMLPart::restoreURL " << url.url() << endl;
+
+  d->m_redirectionTimer.stop();
+
+  kdDebug( 6050 ) << "closing old URL" << endl;
+  if ( !closeURL() )
+    return false;
+
+  d->m_bComplete = false;
+  d->m_workingURL = KURL();
+
+  kdDebug( 6050 ) << "begin!" << endl;
+  d->m_bParsing = true;
+
+  begin( url, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+
+  d->m_settings->setCharset( (QFont::CharSet) charset );
+
+  for(QStringList::ConstIterator it = cachedDoc.begin();
+      it != cachedDoc.end();
+      ++it)
+  {
+     d->m_doc->write( *it );
+  }
+  end();
+  d->m_cachedHtml = cachedDoc;
+  return true;
+}
+
 
 bool KHTMLPart::openURL( const KURL &url )
 {
@@ -720,6 +757,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 {
   clear();
   d->m_bCleared = false;
+  d->m_cachedHtml.clear();
 
   // ###
   //stopParser();
@@ -789,6 +827,9 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
   }
+
+  d->m_cachedHtml.append(decoded);
+
   d->m_doc->write( decoded );
 }
 
@@ -796,6 +837,8 @@ void KHTMLPart::write( const QString &str )
 {
   if ( str.isNull() )
     return;
+
+  d->m_cachedHtml.append(str);
 
   d->m_doc->write( str );
 }
@@ -1979,6 +2022,9 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
+  // Save the doc itself.
+  stream << (int) d->m_settings->charset() << d->m_cachedHtml;
+
   // Save the state of the document (Most notably the state of any forms)
   QStringList docState;
   if (d->m_doc)
@@ -2033,6 +2079,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
   QValueList<int> fSizes;
 
   stream >> u >> xOffset >> yOffset;
+
+  int charset;
+  stream >> charset >> d->m_cachedHtml;
+
   stream >> docState;
 
   stream >> fSizes >> d->m_fontBase;
@@ -2141,7 +2191,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.docState = docState;
     d->m_extension->setURLArgs( args );
     kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
-    openURL( u );
+    if (d->m_cachedHtml.isEmpty())
+       openURL( u );
+    else
+       restoreURL( u, charset );
   }
 
 }
