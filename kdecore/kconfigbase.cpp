@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// Imported sources from KDE CVS
+//
+// Revision 1.1.1.2  1997/12/10 07:08:30  jacek
+// Imported sources from KDE CVS
 //
 // Revision 1.1.1.1  1997/12/09 22:02:45  jacek
 // Imported sorces fromkde
@@ -262,7 +266,6 @@ const QString KConfigBase::readEntry( const char* pKey,
 }
 
 int KConfigBase::readListEntry( const char* pKey, QStrList &list,  
-  list.append( value );
 				char sep  ) const
 {
   if( !hasKey( pKey ) )

@@ -135,6 +135,14 @@ void KFM::refreshDesktop()
     ipc->refreshDesktop();
 }
 
+void KFM::sortDesktop()
+{
+    if ( !test() )
+	return;
+    
+    ipc->sortDesktop();
+}
+
 void KFM::openURL()
 {
     if ( !test() )

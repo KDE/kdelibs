@@ -305,6 +305,7 @@ private:
 
 
   // Matthias
+protected:
   void savePropertiesInternal (KConfig*, int);
   bool readPropertiesInternal (KConfig*, int);
 };
