@@ -161,3 +161,9 @@ view_* public variables do no longer exist. There is really no reason
 for an app to use this information. If you do need it anyway, use
 mainViewGeometry() instead.
 
+////////////////////////////////////////////////////////////////////////
+// * KStartParams
+
+KStartParams is a new class for easy command-line argument parsing.
+It's included in kdecore and defined in kstartparams.h. See 
+html-documentation for further informations about using.
