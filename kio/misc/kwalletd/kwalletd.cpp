@@ -384,6 +384,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		while (!b->isOpen()) {
 			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
 			KWin::setState( kpd->winId(), NET::KeepAbove );
+			KWin::setOnAllDesktops(kpd->winId(), true);
 			if (kpd->exec() == KDialog::Accepted) {
 				p = kpd->password();
 				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
