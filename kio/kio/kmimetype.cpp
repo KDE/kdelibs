@@ -946,9 +946,13 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
 {
-  QValueList<Service> result;
-
   KSimpleConfig cfg( path, true );
+  return userDefinedServices( path, cfg, bLocalFiles );
+}
+
+QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, KConfig& cfg, bool bLocalFiles )
+{
+  QValueList<Service> result;
 
   cfg.setDesktopGroup();
 

@@ -563,6 +563,13 @@ public:
   static QValueList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
 
   /**
+   * Overload of userDefinedServices for speed purposes: it takes a KConfig* so that
+   * the caller can check things in the file without having it parsed twice.
+   * @since 3.4
+   */
+  static QValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
+
+  /**
    * @param _path is the path of the desktop entry.
    * @deprecated, see the other executeService
    */
