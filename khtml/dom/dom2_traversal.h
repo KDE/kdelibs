@@ -52,6 +52,7 @@ public:
     NodeIterator();
     NodeIterator(const NodeIterator &other);
     NodeIterator(Node n, NodeFilter *f=0);
+    NodeIterator(Node n, long _whatToShow, NodeFilter *f=0);
     
     NodeIterator & operator = (const NodeIterator &other);
 
@@ -89,7 +90,7 @@ public:
      */
     Node previousNode (  );
 
-    void setWhatToShow(short _whatToShow);
+    void setWhatToShow(long _whatToShow);
     void setFilter(NodeFilter *_filter);
     void setExpandEntityReferences(bool value);
 
@@ -163,10 +164,8 @@ public:
     bool expandEntityReferences;
 
     /**
-     * Internal, not specified by the dom
-     * The value of this flag detirmines wheter the iterator is in front
-     * of the referenceNode or in the back of it. Gets set automaticly by
-     * the nextNode() and previousNode() functions.
+     * internal, used to determine if the iterator is in front or to the back
+     * of the referenceNode
      */
     bool inFront;
     /**
@@ -207,7 +206,7 @@ class NodeFilter
 public:
     NodeFilter();
     NodeFilter(const NodeFilter &other);
-
+    
     NodeFilter & operator = (const NodeFilter &other);
 
     virtual ~NodeFilter();
@@ -264,9 +263,11 @@ class TreeWalker
 public:
     TreeWalker();
     TreeWalker(const TreeWalker &other);
-    
+    TreeWalker(Node n, NodeFilter *f=0);
+    TreeWalker(Node n, long _whatToShow, NodeFilter *f=0);
     TreeWalker & operator = (const TreeWalker &other);
 
+               
     ~TreeWalker();
     /**
      * These are the available values for the <code> whatToShow

@@ -41,8 +41,10 @@ class EntityReference;
 class ProcessingInstruction;
 class DocumentImpl;
 class Range; 
-
-
+class NodeIterator;
+class TreeWalker;
+class NodeFilter;
+ 
 /**
  * The <code> DOMImplementation </code> interface provides a number of
  * methods for performing operations that are independent of any
@@ -284,6 +286,10 @@ public:
      */
     Range createRange();
     Range createRange(const Node &sc, const long so, const Node &ec, const long eo);
+    NodeIterator createNodeIterator();
+    NodeIterator createNodeIterator(long _whatToShow, NodeFilter *filter = 0);
+    TreeWalker createTreeWalker();
+    TreeWalker createTreeWalker(long _whatToShow, NodeFilter *filter = 0);
     
 protected:
     Document( DocumentImpl *i);

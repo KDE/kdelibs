@@ -30,7 +30,6 @@ using namespace DOM;
 NodeIterator::NodeIterator()
 {
   filter = 0;
-  whatToShow = 0x0000FFFF;
 }
 
 NodeIterator::NodeIterator(const NodeIterator &other)
@@ -49,14 +48,28 @@ NodeIterator::NodeIterator(Node n, NodeFilter *f)
     {
       rootNode = n;
       referenceNode = n;
+      whatToShow = 0x0000FFFF;
       filter = f;
     }
 }
 
+NodeIterator::NodeIterator(Node n, long _whatToShow , NodeFilter *f)
+{
+    filter = f;
+    whatToShow = _whatToShow;
+    referenceNode = n;
+    rootNode = n;
+}
+
 NodeIterator &NodeIterator::operator = (const NodeIterator &other)
 {
-    NodeIterator::operator = (other);
-    return *this;
+  referenceNode = other.referenceNode;
+  rootNode = other.rootNode;
+  whatToShow = other.whatToShow;
+  filter = other.filter;
+  inFront = other.inFront;
+  expandEntityReferences = other.expandEntityReferences;
+  return *this;
 }
 
 NodeIterator::~NodeIterator()
@@ -68,7 +81,7 @@ NodeIterator::~NodeIterator()
     }
 }
 
-void NodeIterator::setWhatToShow(short _whatToShow)
+void NodeIterator::setWhatToShow(long _whatToShow)
 {
   whatToShow = _whatToShow;
 }
@@ -115,7 +128,7 @@ Node NodeIterator::nextNode(  )
   Node _tempCurrent = getNextNode(referenceNode);
   while( !_tempCurrent.isNull() )
     {
-      _result = isAccepted(_tempCurrent);
+      _result =  isAccepted(_tempCurrent);
       
       if(_result == NodeFilter::FILTER_ACCEPT)
         {
@@ -139,11 +152,7 @@ Node NodeIterator::getNextNode(Node n)
   if( n.isNull() )
     return n;
 
-  if( inFront == false )      // should we do this? if not we should set inFront somewhere else :)
-    {
-      inFront = true;
-      return referenceNode;
-    }
+  inFront = true;
   
   if( n.hasChildNodes() )
     return n.firstChild();
@@ -198,12 +207,8 @@ Node NodeIterator::getPreviousNode(Node n)
   if( n.isNull() )
     return Node();
 
-  if(inFront == true)
-    {
-      inFront = false;
-      return referenceNode;
-    }
-
+    inFront = false;
+  
   _tempCurrent = n.previousSibling();
   if( !_tempCurrent.isNull() )
     {
@@ -254,7 +259,7 @@ void NodeIterator::deleteNode(Node n)
 short NodeIterator::isAccepted(Node n)
 {
   // if XML is implemented we have to check expandEntityRerefences in this function
-  if( ( ( 1 << n.nodeType()-1) & whatToShow) != 0 )       // whatToShow approved (FIX THIS)
+  if( ( ( 1 << n.nodeType()-1) & whatToShow) != 0 ) 
     {
         if(filter)
             return filter->acceptNode(n);
@@ -274,13 +279,8 @@ NodeFilter::NodeFilter(const NodeFilter &/*other*/)
 {
 }
 
-//NodeFilter::NodeFilter(const NodeFilter/*Impl*/ &impl)
-//{
-//}
-
-NodeFilter &NodeFilter::operator = (const NodeFilter &other)
+NodeFilter &NodeFilter::operator = (const NodeFilter &/*other*/)
 {
-    NodeFilter::operator = (other);
     return *this;
 }
 
@@ -308,12 +308,32 @@ TreeWalker::TreeWalker(const TreeWalker &other)
     filter = other.filter;
     whatToShow = other.whatToShow;
     currentNode = other.currentNode;
+    rootNode = other.rootNode;
+}
+
+TreeWalker::TreeWalker(Node n, NodeFilter *f)
+{
+  currentNode = n;
+  rootNode = n;
+  whatToShow = 0x0000FFFF;
+  filter = f;
+}
+
+TreeWalker::TreeWalker(Node n, long _whatToShow, NodeFilter *f)
+{
+  currentNode = n;
+  rootNode = n;
+  whatToShow = _whatToShow;
+  filter = f;
 }
 
 TreeWalker &TreeWalker::operator = (const TreeWalker &other)
 {
-    TreeWalker::operator = (other);
-    return *this;
+  expandEntityReferences = other.expandEntityReferences;
+  filter = other.filter;
+  whatToShow = other.whatToShow;
+  currentNode = other.currentNode;
+  return *this;
 }
 
 TreeWalker::~TreeWalker()
@@ -474,7 +494,7 @@ Node TreeWalker::nextNode(  )
 short TreeWalker::isAccepted(Node n)
 {
     // if XML is implemented we have to check expandEntityRerefences in this function
-  if( ( ( 1 << n.nodeType()-1 ) & whatToShow) != 0 )       // whatToShow approved (FIX THIS!)
+  if( ( ( 1 << n.nodeType()-1 ) & whatToShow) != 0 )    
     {
       if(filter)
         return filter->acceptNode(n);

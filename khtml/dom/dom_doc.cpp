@@ -31,6 +31,7 @@
 #include "dom_text.h"
 #include "dom_xml.h"
 #include "dom2_range.h"
+#include "dom2_traversal.h"
 #include <stdio.h>               // for printf
 using namespace DOM;
 
@@ -187,6 +188,27 @@ Range Document::createRange(const Node &sc, const long so, const Node &ec, const
     r.setEnd( ec, eo );
     return r;
 }
+
+NodeIterator Document::createNodeIterator()
+{
+  return NodeIterator( *this );
+}
+
+NodeIterator Document::createNodeIterator(long _whatToShow, NodeFilter *filter)
+{
+  return NodeIterator( *this, _whatToShow, filter );
+}
+
+TreeWalker Document::createTreeWalker()
+{
+  return TreeWalker( *this );
+}
+
+TreeWalker Document::createTreeWalker(long _whatToShow, NodeFilter *filter )
+{
+  return TreeWalker( *this, _whatToShow, filter);
+}
+
 
 // ----------------------------------------------------------------------------
 
