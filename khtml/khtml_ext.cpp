@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include "khtml_ext.h"
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
@@ -143,7 +144,7 @@ void KHTMLPartBrowserExtension::cut()
         return;
     }
 
-    ASSERT( m_editableFormWidget );
+    assert( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
 
@@ -186,7 +187,7 @@ void KHTMLPartBrowserExtension::paste()
         return;
     }
 
-    ASSERT( m_editableFormWidget );
+    assert( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
 

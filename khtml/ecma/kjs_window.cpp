@@ -18,6 +18,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <assert.h>
 #include <qtimer.h>
 #include <qinputdialog.h>
 #include <qstringlist.h>
@@ -391,7 +392,7 @@ KJSO Window::get(const UString &p) const
 		(const_cast<Window*>(this)->history = new History(m_part)));
 
   else if (p == "event") {
-    ASSERT( m_evt );
+    assert( m_evt );
     if (m_evt)
       return getDOMEvent(*m_evt);
     else
