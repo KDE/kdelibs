@@ -252,7 +252,7 @@ QString whatstr;
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
   whatstr = i18n("TLS is the newest revision of the SSL protocol."
-                 "  It integrates better with other protocols and has"
+                 " It integrates better with other protocols and has"
                  " replaced SSL in protocols such as POP3 and SMTP.");
   QWhatsThis::add(mUseTLS, whatstr);
 
@@ -274,7 +274,7 @@ QString whatstr;
   SSLv2Box = new QListView(tabSSL, "v2ciphers");
   (void) SSLv2Box->addColumn(i18n("SSLv2 Ciphers To Use:"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
-                " SSL v2 protocol.  The actual protocol used will be"
+                " SSL v2 protocol. The actual protocol used will be"
                 " negotiated with the server at connection time.");
   QWhatsThis::add(SSLv2Box, whatstr);
   SSLv2Box->setSelectionMode(QListView::NoSelection);
@@ -300,7 +300,7 @@ QString whatstr;
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
   (void) SSLv3Box->addColumn(i18n("SSLv3 Ciphers To Use:"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
-                " SSL v3 protocol.  The actual protocol used will be"
+                " SSL v3 protocol. The actual protocol used will be"
                 " negotiated with the server at connection time.");
   QWhatsThis::add(SSLv3Box, whatstr);
   SSLv3Box->setSelectionMode(QListView::NoSelection);
@@ -442,7 +442,7 @@ QString whatstr;
 
   yourSSLBox = new QListView(tabYourSSLCert);
   whatstr = i18n("This list box shows which certificates of yours KDE"
-                " knows about.  You can easily manage them from here.");
+                " knows about. You can easily manage them from here.");
   QWhatsThis::add(yourSSLBox, whatstr);
   grid->addMultiCellWidget(yourSSLBox, 0, 5, 0, 4);
   yourSSLBox->addColumn(i18n("Common Name"));
@@ -595,7 +595,7 @@ QString whatstr;
   otherSSLBox = new QListView(tabOtherSSLCert);
   connect(otherSSLBox, SIGNAL(selectionChanged()), SLOT(slotOtherCertSelect()));
   whatstr = i18n("This list box shows which site and person certificates KDE"
-                " knows about.  You can easily manage them from here.");
+                " knows about. You can easily manage them from here.");
   QWhatsThis::add(otherSSLBox, whatstr);
   otherSSLBox->addColumn(i18n("Organization"));
   otherSSLBox->addColumn(i18n("Common Name"));
@@ -699,7 +699,7 @@ QString whatstr;
 
   caList = new QListView(tabSSLCA);
   whatstr = i18n("This list box shows which certificate authorities KDE"
-                 " knows about.  You can easily manage them from here.");
+                 " knows about. You can easily manage them from here.");
   QWhatsThis::add(caList, whatstr);
   grid->addMultiCellWidget(caList, 0, 7, 0, 6);
   caList->addColumn(i18n("Organization"));
@@ -1557,7 +1557,7 @@ TryImportPassAgain:
    cert = KSSLPKCS12::loadCertFile(certFile, QString(pass));
 
    if (!cert) {
-      rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded.  Try a different password?"), i18n("SSL"));
+      rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded. Try a different password?"), i18n("SSL"));
       if (rc == KMessageBox::Yes) goto TryImportPassAgain;
       return;
    }
@@ -1575,7 +1575,7 @@ TryImportPassAgain:
                                                             i;
              i = static_cast<YourCertItem *>(i->nextSibling())) {
       if (i->configName() == name) {
-         rc = KMessageBox::warningYesNo(this, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("SSL"));
+         rc = KMessageBox::warningYesNo(this, i18n("A certificate with that name already exists. Are you sure that you wish to replace it?"), i18n("SSL"));
          if (rc == KMessageBox::No) {
             delete cert;
             return;
@@ -1612,7 +1612,7 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
          int i = KPasswordDialog::getPassword(oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) return; 
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
-         pprompt = i18n("Decoding failed.  Please try again:");
+         pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
       x->setPassCache(oldpass);
       slotYourUnlock();
@@ -1644,7 +1644,7 @@ QString iss;
          int i = KPasswordDialog::getPassword(oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) return; 
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
-         pprompt = i18n("Decoding failed.  Please try again:");
+         pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
       x->setPassCache(oldpass);
       slotYourUnlock();
@@ -1686,7 +1686,7 @@ QString iss;
          int i = KPasswordDialog::getPassword(oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) return; 
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
-         pprompt = i18n("Decoding failed.  Please try again:");
+         pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
       x->setPassCache(oldpass);
    }
@@ -1780,7 +1780,7 @@ QCString oldpass = "";
          int i = KPasswordDialog::getPassword(oldpass, pprompt);
          if (i != KPasswordDialog::Accepted) break; 
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
-         pprompt = i18n("Decoding failed.  Please try again:");
+         pprompt = i18n("Decoding failed. Please try again:");
       } while (!pkcs);
    }
 

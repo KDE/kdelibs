@@ -91,7 +91,7 @@ QString certt;
    if (_filename->text().isEmpty()) return;
 
    if (!_c) {
-      KMessageBox::sorry(this, i18n("Internal error.  Please report to kfm-devel@kde.org."), i18n("SSL"));
+      KMessageBox::sorry(this, i18n("Internal error. Please report to kfm-devel@kde.org."), i18n("SSL"));
       return;
    }
 
