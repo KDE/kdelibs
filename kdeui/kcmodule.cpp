@@ -21,12 +21,16 @@
 */
 
 #include "kcmodule.h"
+#include <kinstance.h>
+#include <kglobal.h>
 
 class KCModulePrivate
 {
 public:
+        KInstance *_instance;
 	QString _rootOnlyMsg;
 	bool _useRootOnlyMsg;
+        bool _hasOwnInstance;
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
@@ -34,10 +38,27 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 {
 	d = new KCModulePrivate;
 	d->_useRootOnlyMsg = true;
+    d->_instance = new KInstance(name);
+	if (name && strlen(name))
+		KGlobal::locale()->insertCatalogue(name);
+    d->_hasOwnInstance = true;
+    KGlobal::setActiveInstance(this->instance());
+}
+
+KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
+    : QWidget(parent, instance ? instance->instanceName().data() : 0), _btn(Help|Default|Apply)
+{
+    d = new KCModulePrivate;
+    d->_useRootOnlyMsg = true;
+    d->_instance = instance;
+    d->_hasOwnInstance = false;
+    KGlobal::setActiveInstance(this->instance());
 }
 
 KCModule::~KCModule()
 {
+    if (d->_hasOwnInstance)
+       delete d->_instance;
 	delete d;
 }
 
@@ -59,6 +80,11 @@ void KCModule::setUseRootOnlyMsg(bool on)
 bool KCModule::useRootOnlyMsg() const
 {
 	return d->_useRootOnlyMsg;
+}
+
+KInstance *KCModule::instance() const
+{
+    return d->_instance;
 }
 
 #include "kcmodule.moc"

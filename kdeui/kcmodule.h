@@ -26,6 +26,7 @@
 #include <qstringlist.h>
 class KAboutData;
 class KCModulePrivate;
+class KInstance;
 
 /**
  * The base class for control center modules.
@@ -75,11 +76,13 @@ public:
   	       SysDefault=64 /* obsolete, do not use! */ };
 
   /*
-   * Base class for all KControlModules. 
+   * Base class for all KControlModules.
    * Make sure you have a QStringList argument in your
    * implementation.
    */
   KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=QStringList() );
+
+  KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
 
   /*
    * Destroys the module.
@@ -165,7 +168,7 @@ public:
    * Get the RootOnly message for this module.
    *
    * When the module must be run as root, or acts differently
-   * for root and a normal user, it is sometimes useful to 
+   * for root and a normal user, it is sometimes useful to
    * customize the message that appears at the top of the module
    * when used as a normal user. This function returns this
    * customized message. If none has been set, a default message
@@ -187,6 +190,8 @@ public:
    */
   bool useRootOnlyMsg() const;
 
+
+  KInstance *instance() const;
 
 signals:
 
