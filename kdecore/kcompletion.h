@@ -29,13 +29,14 @@
 
 #include <kglobalsettings.h>
 
-#include "kcompletion_private.h"
+//#include "kcompletion_private.h"
 
+class KCompTreeNode;
 class KCompletionPrivate;
 class QPopupMenu;
 
 /**
- * This class let's you easily use "auto-completion", "manual-completion" or
+ * This class lets you easily use "auto-completion", "manual-completion" or
  * "shell completion" on QString objects. A common use is completing filenames
  * or URLs (see @ref KURLCompletion).
  * But URL-completion is not all, everything should be completable. The user
@@ -56,14 +57,14 @@ class QPopupMenu;
  *
  * @li auto-completion always returns a complete item as match.
  *     When more than one matching items are available, it will deliver just
- *     the first (depending on sorting order) item. Iterating thru them is
+ *     the first (depending on sorting order) item. Iterating over them is
  *     possible via @ref nextMatch() and @ref previousMatch().
  *
  * @li manual completion works the same way as auto-completion, the
  *     subtle difference is, that it isn't invoked automatically while the user
  *     is typing, but only when the user presses a special key. The difference
  *     of manual and auto-completion is therefore only visible in UI classes,
- *     KCompletion needs to know about whether to deliver partial matches
+ *     KCompletion needs to know whether to deliver partial matches
  *     (shell completion) or whole matches (auto/manual completion), therefore
  *     @ref KGlobalSettings::CompletionMan and
  *     @ref KGlobalSettings::CompletionAuto have the exact same effect in
@@ -72,7 +73,7 @@ class QPopupMenu;
  * @li shell completion works like how shells complete filenames.
  *     When multiple matches are available, the longest possible string of all
  *     matches is returned (i.e. only a partial item).
- *     Iterating thru all matching items (complete, not partial) is possible
+ *     Iterating over all matching items (complete, not partial) is possible
  *     via @ref nextMatch() and @ref previousMatch().
  *
  * You don't have to worry much about that though, KCompletion handles
@@ -100,9 +101,9 @@ class QPopupMenu;
  *
  * You can dynamically update the completable items by removing and adding them
  * whenever you want.
- * For advanced usage, you could even use multiple KCompletion objects (e.g.
+ * For advanced usage, you could even use multiple KCompletion objects. E.g.
  * imagine an editor like kwrite with multiple open files. You could store
- * items of every file in a different KCompletion-object, so that you know (and
+ * items of each file in a different KCompletion object, so that you know (and
  * tell the user) where a completion comes from.
  *
  * Note: KCompletion does not work with strings that contain 0x0 characters
@@ -472,7 +473,7 @@ public:
     /**
     * Returns a pointer to the current completion object.
     *
-    * If the object does not exisit, it is automatically
+    * If the object does not exist, it is automatically
     * created.  Note that the completion object created
     * here is used by default to handle the signals
     * internally.  It is also deleted when this object's
@@ -725,7 +726,7 @@ protected:
     * This method is implemented here as a matter of
     * convience and for the sake of consistency in the
     * appearance of the completion mode changer items.
-    * It initially inerts four of the standard menu items
+    * It initially inserts four of the standard menu items
     * labeled: "None", "Manual", "Automatic" and "Semi-Automatic".
     * and puts a check mark beside the mode that is currently
     * active.  When the user changes this default mode, another

@@ -24,6 +24,7 @@
 #include <knotifyclient.h>
 
 #include "kcompletion.h"
+#include "kcompletion_private.h"
 
 
 KCompletion::KCompletion()
