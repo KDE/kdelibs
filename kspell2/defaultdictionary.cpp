@@ -109,7 +109,10 @@ void DefaultDictionary::defaultConfigurationChanged()
 {
     delete d->dict;
     d->dict = d->broker->dictionary();
-    m_language = d->dict->language();
+    if ( d->dict )
+        m_language = d->dict->language();
+    else
+        m_language = QString::null;
 }
 
 #include "defaultdictionary.moc"
