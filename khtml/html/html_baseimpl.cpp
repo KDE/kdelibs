@@ -50,7 +50,6 @@ HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
 {
-    delete m_style;
 }
 
 const DOMString HTMLBodyElementImpl::nodeName() const
