@@ -880,7 +880,7 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 			// in which case we need to adjust the height for font size
 			if (widget && (parent = widget->parentWidget() )
 				&& !parent->inherits("QToolBar")
-				&& !parent->inherits("QMainWindow") 
+				&& !parent->inherits("QMainWindow")
 				&& widget->inherits("QDockWindowHandle") )
 					return widget->fontMetrics().lineSpacing();
 			else
@@ -1526,7 +1526,7 @@ static const char * const kstyle_unshade_xpm[] = {
 "............",
 "............"};
 
-static const char * dock_window_close_xpm[] = {
+static const char * const dock_window_close_xpm[] = {
 "8 8 2 1",
 "# c #000000",
 ". c None",
@@ -1716,9 +1716,9 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 		case SH_ItemView_ChangeHighlightOnFocus:
 		case SH_Slider_SloppyKeyEvents:
 		case SH_MainWindow_SpaceBelowMenuBar:
-		case SH_PopupMenu_AllowActiveAndDisabled:        
+		case SH_PopupMenu_AllowActiveAndDisabled:
 			return 0;
-            
+
 		case SH_Slider_SnapToValue:
 		case SH_PrintDialog_RightAlignButtons:
 		case SH_FontDialog_SelectAssociatedText:
