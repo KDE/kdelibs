@@ -58,7 +58,6 @@ protected:
                                   int winId = 0 );
 	bool notifyByExecute(const QString &command);
 	
-	void connectSoundServer();
 	bool isPlaying( const QString& soundFile ) const;
 	
 public:

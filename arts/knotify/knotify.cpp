@@ -25,9 +25,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// C++ headers
-#include <string>
-
 // aRts headers
 #include <connect.h>
 #include <dispatcher.h>
@@ -45,6 +42,8 @@
 // KDE headers
 #include <dcopclient.h>
 #include <kaboutdata.h>
+#include <kartsdispatcher.h>
+#include <kartsserver.h>
 #include <kcmdlineargs.h>
 #include <kconfig.h>
 #include <kcrash.h>
@@ -54,6 +53,7 @@
 #include <kmessagebox.h>
 #include <kpassivepopup.h>
 #include <kiconloader.h>
+#include <kplayobjectfactory.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kuniqueapplication.h>
@@ -71,9 +71,7 @@ public:
     QString externalPlayer;
     KProcess *externalPlayerProc;
 
-    Arts::SoundServerV2 soundServer;
-    Arts::PlayObjectFactory playObjectFactory;
-    QValueList<Arts::PlayObject> playObjects;
+    QPtrList<KDE::PlayObject> playObjects;
 
     bool useExternal;
     bool useArts;
@@ -81,6 +79,9 @@ public:
     QTimer *playTimer;
 };
 
+// Yes, it's ugly to put this here, but this facilitates the cautious startup
+// procedure.
+KArtsServer *soundServer;
 
 int main(int argc, char **argv)
 {
@@ -140,12 +141,14 @@ int main(int argc, char **argv)
     config.writeEntry( "Arts Init", false );
     config.writeEntry( "Use Arts", useArts );
     config.sync();
-    
-    Arts::Dispatcher *dispatcher = 0L;
+
+    KArtsDispatcher *dispatcher = 0;
     if ( useArts )
-        // setup mcop communication
-        dispatcher = new Arts::Dispatcher();
-        
+    {
+        dispatcher = new KArtsDispatcher;
+        soundServer = new KArtsServer;
+    }
+
     // ok, seemed to work.
     config.writeEntry("Arts Init", useArts );
     config.sync();
@@ -167,11 +170,13 @@ int main(int argc, char **argv)
              == KMessageBox::No )
         {
             useArts = false;
+            delete soundServer;
+            soundServer = 0L;
             delete dispatcher;
             dispatcher = 0L;
         }
     }
-    
+
     // when KNotify instantiation crashes, we know it the next start.
     config.writeEntry( "KNotify Init", false );
     config.writeEntry( "Use Arts", useArts );
@@ -188,6 +193,7 @@ int main(int argc, char **argv)
     // kdDebug() << "knotify starting" << endl;
 
     int ret = app.exec();
+    delete soundServer;
     delete dispatcher;
     return ret;
 }
@@ -197,11 +203,11 @@ KNotify::KNotify( bool useArts )
     : QObject(), DCOPObject("Notify")
 {
     d = new KNotifyPrivate;
-    d->soundServer = Arts::SoundServerV2::null();
     d->globalEvents = new KConfig("knotify/eventsrc", true, false, "data");
     d->globalConfig = new KConfig("knotify.eventsrc", true, false);
     d->externalPlayerProc = 0;
     d->useArts = useArts;
+    d->playObjects.setAutoDelete(true);
 
     d->volume = 100;
 
@@ -232,13 +238,13 @@ void KNotify::loadConfig() {
 
     // try to locate a suitable player if none is configured
     if ( d->externalPlayer.isEmpty() ) {
-	QStringList players;
-	players << "wavplay" << "aplay" << "auplay";
-	QStringList::Iterator it = players.begin();
-	while ( d->externalPlayer.isEmpty() && it != players.end() ) {
-	    d->externalPlayer = KStandardDirs::findExe( *it );
-	    ++it;
-	}
+        QStringList players;
+        players << "wavplay" << "aplay" << "auplay";
+        QStringList::Iterator it = players.begin();
+        while ( d->externalPlayer.isEmpty() && it != players.end() ) {
+            d->externalPlayer = KStandardDirs::findExe( *it );
+            ++it;
+        }
     }
 
     // load default volume
@@ -281,22 +287,22 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         // get config file
         KConfig *eventsFile;
         KConfig *configFile;
-	if ( d->events.contains( fromApp ) ) {
-	    eventsFile = d->events[fromApp];
-	} else {
-	    eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
-	    d->events.insert( fromApp, eventsFile );
+        if ( d->events.contains( fromApp ) ) {
+            eventsFile = d->events[fromApp];
+        } else {
+            eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
+            d->events.insert( fromApp, eventsFile );
         }
         if ( d->configs.contains( fromApp) ) {
             configFile = d->configs[fromApp];
         } else {
-	    configFile=new KConfig(fromApp+".eventsrc",true,false);
-	    d->configs.insert( fromApp, configFile );
-	}
+            configFile=new KConfig(fromApp+".eventsrc",true,false);
+            d->configs.insert( fromApp, configFile );
+        }
 
-	if ( !eventsFile->hasGroup( event ) && isGlobal(event) )
+        if ( !eventsFile->hasGroup( event ) && isGlobal(event) )
         {
-	    eventsFile = d->globalEvents;
+            eventsFile = d->globalEvents;
             configFile = d->globalConfig;
         }
 
@@ -327,12 +333,12 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         if( present & KNotifyClient::Messagebox )
             level = eventsFile->readNumEntry( "level", 0 );
 
-	// get command line
-	if (present & KNotifyClient::Execute ) {
-	    commandline = configFile->readEntry( "commandline" );
-	    if ( commandline.length()==0 )
-		commandline = eventsFile->readEntry( "default_commandline" );
-	}
+        // get command line
+        if (present & KNotifyClient::Execute ) {
+            commandline = configFile->readEntry( "commandline" );
+            if ( commandline.length()==0 )
+                commandline = eventsFile->readEntry( "default_commandline" );
+        }
     }
 
     // emit event
@@ -352,14 +358,14 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByStderr( text );
 
     if ( present & KNotifyClient::Execute )
-	notifyByExecute( commandline );
+        notifyByExecute( commandline );
 }
 
 
 bool KNotify::notifyBySound( const QString &sound, const QString &appname )
 {
     if (sound.isEmpty()) {
-	return false;
+        return false;
     }
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
@@ -375,24 +381,26 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         return false;
 
 
-    // Oh dear! we seem to have lost our connection to artsd!
-    if( !external && (d->soundServer.isNull() || d->soundServer.error()) )
-        connectSoundServer();
-
     // kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
 
-    if (!external && !d->soundServer.isNull() && !d->soundServer.error()) {
+    if (!external) {
         // play sound finally
         while( d->playObjects.count()>5 )
-            d->playObjects.remove( d->playObjects.begin() );
+            d->playObjects.removeFirst();
 
-        Arts::PlayObject player =
-            d->playObjectFactory.createPlayObject( QFile::encodeName(soundFile).data() );
-		if (player.isNull())
-			return false;
+        KDE::PlayObjectFactory factory(soundServer->server());
+        KURL soundURL;
+        soundURL.setPath(soundFile);
+        KDE::PlayObject *playObject = factory.createPlayObject(soundURL, true);
+
+        if (playObject->isNull())
+            return false;
 
         if ( d->volume != 100 )
         {
+            // It works to access the playObject immediately because we don't allow
+            // non-file URLs for sounds.
+            Arts::PlayObject player = playObject->object();
             Arts::Synth_BUS_UPLINK uplink = Arts::DynamicCast(player._getChild( "uplink" ));
 
             uplink.stop();
@@ -400,7 +408,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
             Arts::disconnect( player, "left", uplink, "left" );
             Arts::disconnect( player, "right", uplink, "right" );
 
-            Arts::StereoVolumeControl volumeControl = Arts::DynamicCast(d->soundServer.createObject("Arts::StereoVolumeControl"));
+            Arts::StereoVolumeControl volumeControl = Arts::DynamicCast(soundServer->server().createObject("Arts::StereoVolumeControl"));
             player._addChild( volumeControl, "volume" );
             uplink.start();
             volumeControl.start();
@@ -415,8 +423,8 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
             volumeControl.scaleFactor( d->volume/100.0 );
         }
 
-        player.play();
-        d->playObjects.append( player );
+        playObject->play();
+        d->playObjects.append( playObject );
         if ( !d->playTimer )
         {
             d->playTimer = new QTimer( this );
@@ -565,38 +573,6 @@ bool KNotify::isGlobal(const QString &eventname)
     return d->globalEvents->hasGroup( eventname );
 }
 
-
-void KNotify::connectSoundServer()
-{
-    static bool firstTime = true;
-
-    if ( !d->useArts )
-        return;
-    
-    /*
-     * obtain an object reference to the soundserver - if we're doing it
-     * for the first time, retry sometimes, so it will work during the
-     * startup sequence, even if artsd is started some time after the first
-     * process requests knotify to do some notifications
-     */
-    d->soundServer = Arts::Reference("global:Arts_SoundServerV2");
-    if ( firstTime && d->soundServer.isNull() )
-        for( int tries=0; tries<7; tries++ )
-        {
-            sleep( 1 );
-            d->soundServer = Arts::Reference("global:Arts_SoundServerV2");
-            if( !d->soundServer.isNull() ) break;
-        }
-
-
-    if( !d->soundServer.isNull() )
-        // create playObjectFactory
-        d->playObjectFactory=Arts::Reference("global:Arts_PlayObjectFactory");
-
-    firstTime = false;
-}
-
-
 void KNotify::setVolume( int volume )
 {
     if ( volume<0 ) volume=0;
@@ -606,11 +582,11 @@ void KNotify::setVolume( int volume )
 
 void KNotify::playTimeout()
 {
-    for ( QValueList< Arts::PlayObject >::Iterator it = d->playObjects.begin();
-          it != d->playObjects.end(); )
+    for ( QPtrListIterator< KDE::PlayObject > it(d->playObjects); *it;)
     {
-        QValueList< Arts::PlayObject >::Iterator current = it++;
-        if ( (*current).state() != Arts::posPlaying )
+        QPtrListIterator< KDE::PlayObject > current = it;
+        ++it;
+        if ( (*current)->state() != Arts::posPlaying )
             d->playObjects.remove( current );
     }
     if ( !d->playObjects.count() )
@@ -619,13 +595,9 @@ void KNotify::playTimeout()
 
 bool KNotify::isPlaying( const QString& soundFile ) const
 {
-    // in local encoding, as passed to the PlayObjectFactory
-    std::string filename = QFile::encodeName( soundFile ).data();
-
-    for ( QValueList< Arts::PlayObject >::Iterator it = d->playObjects.begin();
-          it != d->playObjects.end(); it++ )
+    for ( QPtrListIterator< KDE::PlayObject > it(d->playObjects); *it; ++it)
     {
-        if ( (*it).mediaName() == filename )
+        if ( (*it)->mediaName() == soundFile )
             return true;
     }
 
