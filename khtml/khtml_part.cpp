@@ -166,7 +166,7 @@ public:
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
     bool keepCharset;
-    
+
   KHTMLSettings *m_settings;
 
   KIO::TransferJob * m_job;
@@ -175,7 +175,7 @@ public:
   bool m_bParsing;
   bool m_bReloading;
     bool m_haveEncoding;
-    
+
   KURL m_workingURL;
   KURL m_baseURL;
   QString m_baseTarget;
@@ -372,10 +372,10 @@ KHTMLPart::~KHTMLPart()
     d->m_manager->setActivePart( 0 );
     // Shouldn't we delete d->m_manager here ? (David)
   }
-  
+
   stopAutoScroll();
   d->m_redirectionTimer.stop();
-  
+
   if ( d->m_job )
     d->m_job->kill();
 
@@ -383,7 +383,7 @@ KHTMLPart::~KHTMLPart()
 
   disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
               this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
-    
+
   clear();
 
   if ( d->m_view )
@@ -764,7 +764,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
         d->m_doc->setReloading();
 
     d->m_workingURL = KURL();
- 
+
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
   }
 
@@ -892,9 +892,9 @@ void KHTMLPart::write( const char *str, int len )
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
       const QTextCodec *c = d->m_decoder->codec();
       if( !d->keepCharset ) {
-	  kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
-	  d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
-	  kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
+          kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+          d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
+          kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       }
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
@@ -1120,13 +1120,13 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
         d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(name) );
 
     if( !m_url.isEmpty() ) {
-	// reload document
-	closeURL();
-	KURL url = m_url;
-	m_url = 0;
-	openURL(url);
+        // reload document
+        closeURL();
+        KURL url = m_url;
+        m_url = 0;
+        openURL(url);
     }
-    
+
     return true;
 }
 
@@ -1573,54 +1573,30 @@ void KHTMLPart::slotSaveBackground()
 
   KURL backgroundURL( m_url, relURL );
 
-  KFileDialog *dlg = new KFileDialog( QString::null, "*",
-                                        d->m_view , "filedialog", true );
-  dlg->setCaption(i18n("Save background image as"));
-
-  dlg->setSelection( backgroundURL.fileName() );
-  if ( dlg->exec() )
-  {
-    KURL destURL( dlg->selectedURL());
-    if ( !destURL.isMalformed() )
-    {
-      /*KIO::Job *job = */KIO::file_copy( backgroundURL, destURL );
-      // TODO connect job result, to display errors
-    }
-  }
-
-  delete dlg;
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save background image as"), backgroundURL );
 }
 
 void KHTMLPart::slotSaveDocument()
 {
-  // ### frames
-
   KURL srcURL( m_url );
 
   if ( srcURL.fileName(false).isEmpty() )
     srcURL.setFileName( "index.html" );
 
-  KFileDialog *dlg = new KFileDialog( QString::null, i18n("HTML files|* *.html *.htm"),
-                                      d->m_view , "filedialog", true );
-  dlg->setCaption(i18n("Save as"));
-
-  dlg->setSelection( srcURL.fileName() );
-  if ( dlg->exec() )
-  {
-     KURL destURL( dlg->selectedURL() );
-      if ( !destURL.isMalformed() )
-      {
-        /*KIO::Job *job = */ KIO::file_copy( url(), destURL );
-        // TODO connect job result, to display errors
-      }
-  }
-
-  delete dlg;
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm") );
 }
 
 void KHTMLPart::slotSaveFrame()
 {
-  // ### frames
+    if ( !d->m_activeFrame )
+        return; // should never be the case, but one never knows :-)
+
+    KURL srcURL( static_cast<KParts::ReadOnlyPart *>( d->m_activeFrame )->url() );
+
+    if ( srcURL.fileName(false).isEmpty() )
+        srcURL.setFileName( "index.html" );
+
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm") );
 }
 
 void KHTMLPart::slotSetEncoding()
@@ -1739,9 +1715,14 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     processObjectRequest( child, url, args.serviceType );
 }
 
-void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype )
+void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
 {
   kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
+
+  // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
+  // by an emitting frame part (emit openURLRequest( blahurl, ... ) . A few lines below we delete the part
+  // though -> the reference becomes invalid -> crash is likely
+  KURL url( _url );
 
   if ( !child->m_services.contains( mimetype ) )
   {

@@ -167,9 +167,9 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   d->m_khtml->openURL( d->m_khtml->url() );
 }
 
-void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url )
+void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter )
 {
-  KFileDialog *dlg = new KFileDialog( QString::null, QString::null, parent, "filedia", true );
+  KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
 
   dlg->setCaption( caption );
 

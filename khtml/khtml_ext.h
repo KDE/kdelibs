@@ -57,7 +57,7 @@ public:
   KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KURL &url );
   virtual ~KHTMLPopupGUIClient();
 
-  static void saveURL( QWidget *parent, const QString &caption, const KURL &url );
+  static void saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter = QString::null );
 
 private slots:
   void slotSaveLinkAs();
@@ -76,9 +76,9 @@ class KHTMLFontSizeAction : public KAction
 public:
     KHTMLFontSizeAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name );
     virtual ~KHTMLFontSizeAction();
-    
+
     virtual int plug( QWidget *w, int index );
-    
+
 private slots:
     void slotActivated( int );
 private:
