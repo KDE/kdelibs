@@ -46,7 +46,7 @@ private:
 KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
  : KDialog(parent, name, modal), d(new KSSLCertDlgPrivate) {
    QGridLayout *grid = new QGridLayout(this, 8, 6, KDialog::marginHint(),
-                                                   KDialog::spacingHint() ); 
+                                                   KDialog::spacingHint() );
 
    _send = new QRadioButton(i18n("Send certificate..."), this);
    grid->addMultiCellWidget(_send, 0, 0, 0, 2);
@@ -69,7 +69,9 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
    grid->addWidget(_ok, 7, 5);
    connect(_ok, SIGNAL(clicked()), SLOT(accept()));
 
+#ifndef QT_NO_WIDGET_TOPEXTRA
    setCaption(i18n("KDE SSL Certificate Dialog"));
+#endif
 }
 
 
@@ -113,7 +115,9 @@ QString KSSLCertDlg::getChoice() {
 
 void KSSLCertDlg::setHost(const QString& host) {
    _host = host;
+#ifndef QT_NO_WIDGET_TOPEXTRA
    setCaption(i18n("KDE SSL Certificate Dialog")+" - "+host);
+#endif
 }
 
 

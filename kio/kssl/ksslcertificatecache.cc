@@ -69,7 +69,11 @@
 #include "ksslcertificatecache.h"
 #include "ksslcertchain.h"
 #include "ksslcertificate.h"
+#if QT_VERSION < 300
+#include <qlist.h>
+#else
 #include <qptrlist.h>
+#endif
 #include <ksimpleconfig.h>
 
 #include <sys/types.h>

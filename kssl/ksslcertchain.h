@@ -21,7 +21,12 @@
 #ifndef _KSSLCERTCHAIN_H
 #define _KSSLCERTCHAIN_H
 
+#include <qglobal.h>
+#if QT_VERSION < 300
+#include <qlist.h>
+#else
 #include <qptrlist.h>
+#endif
 
 class QString;
 class QCString;
@@ -30,11 +35,6 @@ class KSSLCertChainPrivate;
 class QStringList;
 
 #include <ksslcertificate.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 
 class KSSLCertChain {
 friend class KSSL;
