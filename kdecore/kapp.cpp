@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.25  1997/09/04 16:31:57  kdecvs
+// Coolo: I have introduced some dependecies, that I can't resolve.
+// 	Kalle knows about it.
+//
 // Revision 1.24  1997/08/31 19:18:32  kdecvs
 // Kalle:
 // new usage of KLocale
@@ -233,9 +237,6 @@
   if (NULL == theKProcessController) 
 #include <kiconloader.h>
 #include "kwm.h"
-
-  KApp = this;
-
   pIconLoader = NULL;
   pLocale = new KLocale(aAppName);
 #include <qtstream.h>
@@ -254,6 +255,8 @@ QStrList* KApplication::pSearchPaths;
 
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
+  KApp = this;
+   
   pConfigFile = new QFile( aConfigName );
   int nSlashPos = aArgv0.findRev( '/' );
   if( nSlashPos != -1 )
