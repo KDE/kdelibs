@@ -1905,6 +1905,12 @@ protected:
 private:
     class KActionCollectionPrivate;
     KActionCollectionPrivate *d;
+
+protected:
+	friend class KMainWindow;
+	void setMainActionCollectionFor(KMainWindow *);
+public:
+	KMainWindow *mainActionCollectionFor();
 };
 
 #endif

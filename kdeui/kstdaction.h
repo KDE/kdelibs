@@ -448,11 +448,13 @@ namespace KStdAction
 					KActionCollection* parent, const char *name = 0 );
 
 	/**
+	* @obsolete. toolbar actions are created automatically now in the Settings menu. Don't use this anymore
 	* Show/Hide the primary toolbar.
 	*/
 	KToggleAction *showToolbar(const QObject *recvr, const char *slot,
 					KActionCollection* parent, const char *name = 0 );
 	/**
+	* @obsolete. toolbar actions are created automatically now in the Settings menu. Don't use this anymore
 	* Show/Hide the primary toolbar.
 	*/
 	KToggleToolBarAction *showToolbar(const char* toolBarName,

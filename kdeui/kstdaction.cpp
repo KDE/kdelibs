@@ -29,6 +29,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kstdaccel.h>
+#include <kmainwindow.h>
 
 namespace KStdAction
 {
@@ -97,7 +98,7 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ Spelling,      KStdAccel::AccelNone, "tools_spelling", I18N_NOOP("&Spelling..."), 0, "spellcheck" },
 
 	{ ShowMenubar,   KStdAccel::ShowMenubar, "options_show_menubar", I18N_NOOP("Show &Menubar"), 0, "showmenu" },
-	{ ShowToolbar,   KStdAccel::AccelNone, "options_show_toolbar_old", I18N_NOOP("Show &Toolbar"), 0, 0 },
+	{ ShowToolbar,   KStdAccel::AccelNone, "options_show_toolbar", I18N_NOOP("Show &Toolbar"), 0, 0 },
 	{ ShowStatusbar, KStdAccel::AccelNone, "options_show_statusbar", I18N_NOOP("Show St&atusbar"), 0, 0 },
 	{ SaveOptions,   KStdAccel::AccelNone, "options_save_options", I18N_NOOP("&Save Settings"), 0, 0 },
 	{ KeyBindings,   KStdAccel::AccelNone, "options_configure_keybinding", I18N_NOOP("Configure S&hortcuts..."), 0,"configure_shortcuts" },
@@ -281,6 +282,11 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
 KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 {
     KToggleAction *ret;
+        if ((!name) && (parent->mainActionCollectionFor()))
+        {
+                parent->mainActionCollectionFor()->removeToolBarMenuAction();
+        }
+
     ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
                             name ? name : stdName(ShowToolbar));
     ret->setChecked(true);
@@ -290,6 +296,10 @@ KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionColle
 
 KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *name )
 {
+    if ((!name) && (parent->mainActionCollectionFor()))
+        {
+                parent->mainActionCollectionFor()->removeToolBarMenuAction();
+        }
     KToggleToolBarAction *ret;
     ret = new KToggleToolBarAction(toolBarName, i18n("Show &Toolbar"), parent,
                             name ? name : stdName(ShowToolbar));

@@ -502,7 +502,7 @@ public slots:
     * Returns a pointer to the mainwindows action responsible for the toolbars menu
     */
     KToolBarMenuAction *toolBarMenuAction();
-
+    void removeToolBarMenuAction();
 protected:
     void paintEvent( QPaintEvent* e );
     void childEvent( QChildEvent* e);

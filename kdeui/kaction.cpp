@@ -3189,6 +3189,7 @@ public:
     m_highlight = false;
     m_currentHighlightAction = 0;
     m_statusCleared = true;
+    m_mw=0;
   }
 
   KInstance *m_instance;
@@ -3203,12 +3204,13 @@ public:
   KAccel *m_kaccel;
   QWidget *m_builderWidget;
   KAccel *m_builderKAccel;
-
+ 
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
+  KMainWindow *m_mw;
 };
 
 KActionCollection::KActionCollection( QWidget *parent, const char *name,
@@ -3222,6 +3224,7 @@ KActionCollection::KActionCollection( QWidget *parent, const char *name,
   //d->m_bOneKAccelOnly = (d->m_kaccelList.count() > 0);
   setInstance( instance );
 }
+
 
 KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const char *name,
                                       KInstance *instance )
@@ -3272,6 +3275,10 @@ KActionCollection::~KActionCollection()
   delete d->m_builderKAccel;
   delete d; d = 0;
 }
+
+void KActionCollection::setMainActionCollectionFor(KMainWindow *w){d->m_mw=w;}
+KMainWindow *KActionCollection::mainActionCollectionFor(){return d->m_mw;}
+
 
 void KActionCollection::setWidget( QWidget* w )
 {

@@ -163,6 +163,11 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name,WFlags f, bool creat
     initKMainWindow(createToolbarAction,name);
 }
 
+void KMainWindow::removeToolBarMenuAction()
+{
+	delete d->toolbarMenu;
+	d->toolbarMenu=0;
+}
 
 void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
 {
@@ -173,6 +178,7 @@ void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
     mHelpMenu = 0;
     kapp->setTopWidget( this );
     actionCollection()->setWidget( this );
+    actionCollection()->setMainActionCollectionFor(this);
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
     if( !memberList )
         memberList = new QPtrList<KMainWindow>;
