@@ -133,14 +133,10 @@ static const char titleEnd [] = "</title";
             else { \
                 /* These should all die sooner rather than later */ \
                 switch( (x).unicode() ) { \
-                case 0x2013: (x) = '-'; break; \
-                case 0x2014: (x) = '-'; break; \
                 case 0x2018: (x) = '\''; break; \
                 case 0x2019: (x) = '\''; break; \
                 case 0x201c: (x) = '"'; break; \
                 case 0x201d: (x) = '"'; break; \
-                case 0x2022: (x) = '*'; break; \
-                case 0x2122: (x) = 0x2122; break; \
                 default: break; \
                 } \
             }
@@ -1527,7 +1523,7 @@ void HTMLTokenizer::processToken()
         jsProxy->setEventHandlerLineno(tagStartLineno+1);
     if ( dest > buffer )
     {
-#ifdef TOKEN_DEBUG
+#if 0
         if(currToken.id) {
             qDebug( "unexpected token id: %d, str: *%s*", currToken.id,QConstString( buffer,dest-buffer ).string().latin1() );
             assert(0);
