@@ -531,7 +531,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
         p->properties[ i ] = properties[ i ];
     // force support for Supported and SupportingWMCheck for window managers
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties = DesktopNames; // the only thing that can't be changed by clients
+    p->client_properties = DesktopNames; // the only thing that can be changed by clients
 
     role = WindowManager;
 
@@ -572,7 +572,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->properties[ PROTOCOLS ] = properties;
     // force support for Supported and SupportingWMCheck for window managers
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties = DesktopNames; // the only thing that can't be changed by clients
+    p->client_properties = DesktopNames; // the only thing that can be changed by clients
 
     role = WindowManager;
 
