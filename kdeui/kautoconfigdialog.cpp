@@ -41,12 +41,13 @@ public:
 };
 
 KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
-		KDialogBase::DialogType dialogType, KConfig *kconfig, KDialogBase::ButtonCode dialogButtons, bool modal) :
-		QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) {
+    KDialogBase::DialogType dialogType, KConfig *kconfig,
+    KDialogBase::ButtonCode dialogButtons, bool modal) :
+    QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) {
 
   openDialogs.insert(name, this);
-  kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name, modal,
-	Qt::WStyle_DialogBorder | Qt::WDestructiveClose, dialogButtons );
+  kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name,
+  modal, Qt::WStyle_DialogBorder | Qt::WDestructiveClose, dialogButtons );
 
   if(!kconfig)
     kconfig = KGlobal::config();
@@ -79,11 +80,11 @@ void KAutoConfigDialog::connectKAutoConfig( KAutoConfig const* kautoconfig_objec
 }
 
 void KAutoConfigDialog::addPage(QWidget *page,
-		                  const QString &itemName,
-				  const QString &groupName,
-		                  const QString &pixmapName,
-				  const QString &header,
-				  bool manage){
+                                const QString &itemName,
+                                const QString &groupName,
+                                const QString &pixmapName,
+                                const QString &header,
+                                bool manage){
   if(d->shown){
     kdDebug(240) << "KAutoConfigDialog::addPage, can not a page after the dialog has been shown.";
     return;
@@ -92,10 +93,7 @@ void KAutoConfigDialog::addPage(QWidget *page,
     case KDialogBase::TreeList:
     case KDialogBase::IconList:
     case KDialogBase::Tabbed: {
-      QString Header = header;
-      if(Header.isEmpty())
-        Header = itemName;
-      QVBox *frame = kdialogbase->addVBoxPage(itemName, Header, SmallIcon(pixmapName, 32));
+      QVBox *frame = kdialogbase->addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
       page->reparent(((QWidget*)frame), 0, QPoint());
