@@ -288,14 +288,6 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     m_secure->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_secure, 6, 1 );
 
-    label = new QLabel( i18n("Version:"), this );
-    grid->addWidget( label, 7, 0 );
-    m_protocol = new QLineEdit( this );
-    m_protocol->setReadOnly( true );
-    m_protocol->setText( QString::number(cookie->protocolVersion()) );
-    m_protocol->setMaximumWidth( fontMetrics().width('W') * 25 );
-    grid->addWidget( m_protocol, 7, 1 );
-
     if ( cookieCount > 1 )
     {
         QPushButton* btnNext = new QPushButton( i18n("&Next >>"), this );
@@ -336,7 +328,6 @@ void KCookieDetail::slotNextCookie()
           m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
         else
           m_expires->setText( i18n("Not specified") );
-        m_protocol->setText( QString::number(m_cookie->protocolVersion()) );
         m_secure->setText( m_cookie->isSecure() ? i18n("True"):i18n("False") );
     }
 }

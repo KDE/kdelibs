@@ -52,7 +52,6 @@ private :
     QLineEdit*   m_expires;
     QLineEdit*   m_domain;
     QLineEdit*   m_path;
-    QLineEdit*   m_protocol;
     QLineEdit*   m_secure;
 
     KHttpCookie* m_cookie;
