@@ -242,7 +242,7 @@ int revoke(const char *tty)
 #endif
 
 #ifndef HAVE_STRLCPY
-unsigned int strlcpy(char* d, const char* s, unsigned int bufsize)
+unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
 {
     size_t len, ret = strlen(s);
 
@@ -260,7 +260,7 @@ unsigned int strlcpy(char* d, const char* s, unsigned int bufsize)
 #endif
 
 #ifndef HAVE_STRLCAT
-unsigned int strlcat(char* d, const char* s, unsigned int bufsize)
+unsigned long strlcat(char* d, const char* s, unsigned long bufsize)
 {
     char *cp;
     unsigned int len1;
