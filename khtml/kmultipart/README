@@ -6,6 +6,9 @@ Documentation at http://www.netscape.com/assist/net_sites/pushpull.html
 
 Typical real-world uses: webchats, webcams...
 
+Testcases:
+  http://stein.cshl.org/WWW/software/CGI/examples/
+
 TODO:
 * Use the new streaming API of KParts to pipe data into the part,
 the current code does that for KHTML only.
