@@ -1274,20 +1274,24 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
 
   ex = e->pos().x();
   ey = e->pos().y();
-  if(mMouseDragColumn) doMouseMoveCol(e);
   
   if ((e->state() & LeftButton))
   {
-    if (mResizeCol && abs(mMouseStart.x() - ex) > 4)
-      doMouseResizeCol(e);
+    if (!drag)
+    {
+      if(mMouseDragColumn) doMouseMoveCol(e);
 
-    else if (!mResizeCol && 
-	     (ex < mMouseColLeft || 
-	      ex > (mMouseColLeft+mMouseColWidth)))
+      if (mResizeCol && abs(mMouseStart.x() - ex) > 4)
+	doMouseResizeCol(e);
+
+      else if (!mResizeCol && 
+	       (ex < mMouseColLeft || 
+		ex > (mMouseColLeft+mMouseColWidth)))
       {
         mMouseDragColumn=true;
         doMouseMoveCol(e);
       }
+    }
 
     KTabListBoxInherited::mouseMoveEvent(e);
     return;
