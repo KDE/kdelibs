@@ -88,6 +88,10 @@ AC_CHECK_S_ISSOCK
 AC_CHECK_KSIZE_T
 
 KDE_CHECK_MICO()
+IDL_DEPENDENCIES='$(IDL) $(top_srcdir)/corba/cuteidl/sti/CUTE.h'
+AC_SUBST(IDL_DEPENDENCIES)
+IDL='$(top_builddir)/corba/cuteidl/cuteidl'
+AC_SUBST(IDL)
 dnl KDE_CHECK_PYTHON(1.5)
 
 if test -n "$qt_includes"; then
