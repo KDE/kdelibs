@@ -24,6 +24,7 @@
 
 #include <kuserprofile.h>
 #include <kstddirs.h>
+#include <kstaticdeleter.h>
 
 class KTraderSorter
 {
@@ -79,11 +80,12 @@ bool KTraderSorter::operator< ( const KTraderSorter& _o ) const
 // --------------------------------------------------
 
 KTrader* KTrader::s_self = 0;
+KStaticDeleter<KTrader> ktradersd;
 
 KTrader* KTrader::self()
 {
     if ( !s_self )
-	s_self = new KTrader;
+	s_self = ktradersd.setObject( new KTrader );
 
     return s_self;
 }
