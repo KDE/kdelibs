@@ -45,8 +45,9 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
 /* title and tagline are part of the header diff */
 #title {
   position: absolute;
-  top: 25px;
+  top: 63px;
   right: 100px;
+  margin-top: -1em;
   text-align: right;
   font-size: xx-large;
   font-weight: bold;
