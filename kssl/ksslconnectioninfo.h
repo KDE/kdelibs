@@ -21,6 +21,43 @@
 #ifndef _KSSLCONNECTIONINFO_H
 #define _KSSLCONNECTIONINFO_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+ 
+#ifdef HAVE_SSL
+#include <openssl/ssl.h>
+#endif
+ 
+#include <qstring.h>
+ 
+class KSSL;
+ 
+class KSSLConnectionInfo {
+friend class KSSL;
+public:
+  ~KSSLConnectionInfo();
+ 
+  const QString& getCipher() const;
+  const QString& getCipherDescription() const;
+  const QString& getCipherVersion() const;
+  int getCipherUsedBits() const;
+  int getCipherBits() const;
+  // KSSLCertificate *getUserCertificate() const;
+ 
+private:
+ 
+protected:
+  KSSLConnectionInfo();
+  void clean(); 
+
+  // These are here so KSSL can access them directly
+  // It's just as easy as making accessors - they're friends afterall!
+  int m_iCipherUsedBits, m_iCipherBits;
+  QString m_cipherName;
+  QString m_cipherDescription;
+  QString m_cipherVersion;
+};
 
 #endif
 

@@ -97,11 +97,17 @@ bool KSSL::reInitialize() {
 
 int KSSL::connect(int sock) {
 #ifdef HAVE_SSL
+int rc;
   if (!m_bInit) return -1;
   m_ssl = SSL_new(m_ctx);
   if (!m_ssl) return -1;
   SSL_set_fd(m_ssl, sock);
-  return SSL_connect(m_ssl);
+  rc = SSL_connect(m_ssl);
+  if (rc != -1) {
+    setConnectionInfo();
+    setPeerInfo();
+  }
+  return rc;
 #else
   return -1;
 #endif
@@ -154,4 +160,41 @@ bool KSSL::m_bSSLWorks = false;
 bool KSSL::doesSSLWork() {
   return m_bSSLWorks;
 }
+
+
+void KSSL::setConnectionInfo() {
+#ifdef HAVE_SSL
+SSL_CIPHER *sc;
+char buf[1024];
+
+  sc = SSL_get_current_cipher(m_ssl);
+  // set the number of bits, bits used
+  m_ci.m_iCipherUsedBits = SSL_CIPHER_get_bits(sc, &(m_ci.m_iCipherBits));
+  // set the cipher version
+  m_ci.m_cipherVersion = SSL_CIPHER_get_version(sc);
+  // set the cipher name
+  m_ci.m_cipherName = SSL_CIPHER_get_name(sc);
+  // set the cipher description
+  m_ci.m_cipherDescription = SSL_CIPHER_description(sc, buf, 1023);  
+
+#endif
+}
+
+
+void KSSL::setPeerInfo() {
+#ifdef HAVE_SSL
+
+#endif
+}
+
+
+const KSSLConnectionInfo& KSSL::connectionInfo() const {
+  return m_ci;
+}
+
+
+const KSSLPeerInfo& KSSL::peerInfo() const {
+  return m_pi;
+}
+
 

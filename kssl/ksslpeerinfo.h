@@ -40,11 +40,7 @@ public:
 
   enum KSSLType {KSSL_SSLv2, KSSL_SSLv3, KSSL_TLSv1};
 
-  QString getCipher() const;
-  int getCipherUsedBits() const;
-  int getCipherBits() const;
-  // KSSLCertificate *getCertificate() const;
-  KSSLType getSSLType() const;
+  // KSSLCertificate *getPeerCertificate() const;
 
 private:
 

@@ -55,6 +55,9 @@ public:
   int read(void *buf, int len);
   int write(const void *buf, int len);
 
+  const KSSLConnectionInfo& connectionInfo() const;
+  const KSSLPeerInfo& peerInfo() const;
+
 private:
 #ifdef HAVE_SSL
   SSL *m_ssl;
@@ -65,8 +68,11 @@ private:
   bool m_bInit;
   bool m_bAutoReconfig;
   KSSLSettings *m_cfg;
-//  KSSLConnectionInfo m_ci;
+  KSSLConnectionInfo m_ci;
   KSSLPeerInfo m_pi;
+
+  void setConnectionInfo();
+  void setPeerInfo();
 };
 
 
