@@ -25,6 +25,7 @@
 #define _khtml_loader_h
 
 #include "loader_client.h"
+#include "loader_jpeg.h"
 
 #include <qlist.h>
 #include <qobject.h>
@@ -316,11 +317,12 @@ namespace khtml
 	void slotFinished( KIO::Job * );
 	void slotData( KIO::Job *, const QByteArray & );
 
-    protected:
+    private:
 	void servePendingRequests();
 	
 	QList<Request> m_requestsPending;
 	QPtrDict<Request> m_requestsLoading;
+        KJPEGFormatType m_jpegloader;
     };
 
 
