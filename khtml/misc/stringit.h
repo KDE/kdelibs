@@ -56,6 +56,9 @@ public:
     const QChar &operator [] (int i) const {
 	return *(s+i);
     }
+    const QChar& operator*() const  { return *s; }
+    const QChar* operator->() const { return s; }
+
     uint length() const { return l; }
 
     const QChar *current() const { return s; }
