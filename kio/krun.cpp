@@ -523,6 +523,8 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
   kdDebug(7010) << " new KRun " << this << " timer=" << &m_timer << endl;
+
+  kapp->ref();
 }
 
 void KRun::init()
@@ -613,6 +615,7 @@ KRun::~KRun()
   kdDebug(7010) << "KRun::~KRun() " << this << endl;
   m_timer.stop();
   killJob();
+  kapp->deref();
   kdDebug(7010) << "KRun::~KRun() done " << this << endl;
   delete d;
 }
