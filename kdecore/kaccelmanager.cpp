@@ -856,6 +856,12 @@ bool QWidgetStackAccelManager::eventFilter ( QObject * watched, QEvent * e )
 
 void QWidgetStackAccelManager::aboutToShow(QWidget *child)
 {
+    if (!child)
+    {
+        kdDebug(125) << "null pointer given to aboutToShow" << endl;
+        return;
+    }
+
     child->installEventFilter( this );
 }
 
