@@ -23,9 +23,9 @@ Since the very beginning KDE makes use of file-hierarchy to store resources
 for its applications. Resources range from icons, wallpapers, fonts to 
 sounds, menu-descriptions and configuration files. 
 
-In KDE1 there were two locations were resources could be located: the 
-resources provided by the system where located under $KDEDIR and user-
-specific resources where located under $HOME/.kde.
+In KDE1 there were two locations were resources could be located: The 
+resources provided by the system were located under $KDEDIR and user-
+specific resources were located under $HOME/.kde.
 
 In KDE2 resource management has been largely abstracted by the introduction
 of the KStandardDirs class and has become much more flexible. The user /
@@ -62,8 +62,8 @@ that haven't explicitly changed the affected settings to something else.
 
 * Configuration entries can be marked "immutable".
 Starting with KDE3, configuration entries can be marked "immutable". When a
-configuration entry is immutable it means that configurations files that are
-read later will not be able to override its value. Immutable entries can not
+configuration entry is immutable it means that configuration files that are
+read later will not be able to override its value. Immutable entries cannot
 be changed via KConfig and if the entry is present under $KDEHOME it will 
 be ignored.
 
@@ -98,7 +98,7 @@ someOtherKey=11
 have write-access to the user's version of a configuration file, the file
 will be automatically considered immutable. If you do this, the user will
 be warned that the configuration file is not writable. If you do not want
-the warning, add the following to lines to the application's configuration
+the warning, add the following two lines to the application's configuration
 file (or to kdeglobals to disable the warning for all applications):
 
 [KDE Action Restrictions]
@@ -137,8 +137,8 @@ would add:
 [KDE Action Restrictions][$i]
 shell_access=false
 
-Actions that refer to menu and toolbar actions are prefixed with action/' the
-following standard actions are defined:
+Actions that refer to menu and toolbar actions are prefixed with 'action/'. 
+The following standard actions are defined:
 
 action/file_new
 action/file_open
@@ -306,10 +306,10 @@ are prefixed by user/ and identified by the username. For example:
 
 user/root=false
 
-will disables all application entries that require root access. 
+will disable all application entries that require root access. 
 
 
-The most important task is to define a managable number of actions that can be 
+The most important task is to define a manageable number of actions that can be 
 disabled. Actions should be defined in a generic way, "open konsole" would be
 too specific, a better definition of an action would be "shell_access". 
 It should be noted that such an action might affect KDE features which aren't
@@ -340,7 +340,7 @@ print/selection
 
 print/dialog
         - disables the complete print dialog. Selecting the print option will
-          immediate print the selected document using default settings.
+          immediately print the selected document using default settings.
           Make sure that a system wide default printer has been selected.
           No application specific settings are honored.
 
