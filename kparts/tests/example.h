@@ -41,8 +41,6 @@ public:
   Part1();
   virtual ~Part1();
 
-  virtual QWidget *widget();
-
 protected:
   virtual bool openFile();
 
@@ -59,12 +57,8 @@ public:
   Part2();
   virtual ~Part2();
 
-  virtual QWidget *widget();
-
 protected:
   virtual QString configFile() const;
-
-  QWidget *m_widget;
 };
 
 #endif

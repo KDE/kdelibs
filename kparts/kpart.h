@@ -3,6 +3,7 @@
 
 #include <qstring.h>
 #include <qdom.h>
+#include <qguardedptr.h>
 #include <kurl.h>
 
 #include "kxmlgui.h"
@@ -31,13 +32,20 @@ public:
 	 * of the QWidget, meaning that if you delete the KPart,
      * then the widget gets destroyed as well, and vice-versa.
      */
-    virtual QWidget *widget() = 0;
+    virtual QWidget *widget() { return m_widget; }
 
 protected:
+	/**
+	 * Call this in the KPart-inherited class constructor
+	 * to set the main widget
+	 */
+	virtual void setWidget( QWidget * widget ) { m_widget = widget; }
+
     virtual QString configFile() const = 0;
     virtual QString readConfigFile( const QString& filename ) const;
 
 private:
+	QGuardedPtr<QWidget> m_widget;
     QString m_config;
     QActionCollection m_collection;
 };

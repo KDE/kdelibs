@@ -88,6 +88,7 @@ Part1::Part1()
   //  m_box = new QVBox;
   //QBoxLayout *box = new QBoxLayout( this, QBoxLayout::TopToBottom );
   m_edit = new QMultiLineEdit( 0L );
+  setWidget( m_edit );
   //box->addWidget( m_edit );
 
   (void)new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
@@ -95,11 +96,6 @@ Part1::Part1()
 
 Part1::~Part1()
 {
-}
-
-QWidget *Part1::widget()
-{
-  return m_edit;
 }
 
 bool Part1::openFile()
@@ -143,17 +139,11 @@ QString Part1::configFile() const
 Part2::Part2()
  : KPart( "Part2" )
 {
-  m_widget = new QWidget;
-
+  setWidget( new QWidget );
 }
 
 Part2::~Part2()
 {
-}
-
-QWidget *Part2::widget()
-{
-  return m_widget;
 }
 
 QString Part2::configFile() const
