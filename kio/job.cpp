@@ -621,6 +621,7 @@ void TransferJob::slotFinished()
         // Another solution would be to create a subjob, but the same problem
         // happens (unpacking+repacking)
         staticData.truncate(0);
+        m_incomingMetaData.clear();
         m_suspended = false;
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
@@ -696,7 +697,7 @@ void TransferJob::slotMimetype( const QString& type )
 
 void TransferJob::slotMetaData( const KIO::MetaData &_metaData)
 {
-    m_incomingMetaData = _metaData;
+    m_incomingMetaData += _metaData;
 }
 
 MetaData TransferJob::metaData()
