@@ -47,3 +47,7 @@ Icon=man
 Type=MimeType
 MimeType=application/x-troff-man
 Patterns=*.man
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

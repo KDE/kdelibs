@@ -47,3 +47,7 @@ Icon=html
 Type=MimeType
 MimeType=text/xml
 Patterns=*.xml;*.XML;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

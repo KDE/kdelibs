@@ -48,3 +48,7 @@ Icon=source_c
 Type=MimeType
 MimeType=text/x-objcsrc
 Patterns=*.m;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

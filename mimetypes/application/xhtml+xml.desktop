@@ -27,3 +27,7 @@ Comment[tr]=XHTML Belgesi
 Comment[uk]=Документ XHTML
 Type=MimeType
 MimeType=application/xhtml+xml
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

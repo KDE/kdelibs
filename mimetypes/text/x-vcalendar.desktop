@@ -47,3 +47,7 @@ Icon=vcalendar
 Type=MimeType
 MimeType=text/x-vcalendar
 Patterns=*.vcs
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

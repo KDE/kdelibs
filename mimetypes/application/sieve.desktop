@@ -46,3 +46,7 @@ Comment[xh]=Isihluzi Sombhalo oshicilwe phantsi Seposi se SIEVE
 Comment[zh_CN]=SIEVE 邮件过滤脚本
 Comment[zh_TW]=SIEVE 郵件過濾程式
 Comment[zu]=Isikripti Sohluzo Lweposi le-SIEVE
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

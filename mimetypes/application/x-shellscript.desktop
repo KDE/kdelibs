@@ -48,3 +48,7 @@ Icon=shellscript
 Type=MimeType
 MimeType=application/x-shellscript
 Patterns=*.sh;*.csh
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

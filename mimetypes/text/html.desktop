@@ -65,3 +65,7 @@ Type=MimeType
 MimeType=text/html
 Patterns=*.html;*.HTML;*.htm;*.HTM;
 X-KDE-AutoEmbed=true
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

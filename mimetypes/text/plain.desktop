@@ -63,3 +63,7 @@ Comment[zu]=Umbhalo Okungenamhlobiso
 Icon=txt
 Type=MimeType
 Patterns=*.txt;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

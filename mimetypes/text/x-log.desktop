@@ -47,3 +47,7 @@ Comment[zu]=Ifayela Lokungena Lomyaleli
 Type=MimeType
 Patterns=*.log;
 Icon=log
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
