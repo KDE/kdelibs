@@ -11,7 +11,6 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
-#include <qpushbutton.h>
 #include <qwhatsthis.h>
 #include <qtimer.h>
 
@@ -19,6 +18,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kiconloader.h>
+#include <kpushbutton.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -54,7 +54,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     hb->addWidget( autoPreview );
     connect( autoPreview, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
-    previewButton = new QPushButton( SmallIcon("thumbnail"), i18n("&Preview"), this );
+    previewButton = new KPushButton( SmallIconSet("thumbnail"), i18n("&Preview"), this );
     hb->addWidget( previewButton );
     connect( previewButton, SIGNAL(clicked()), SLOT(showPreview()) );
 
