@@ -4693,7 +4693,7 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
 KParts::ReadOnlyPart *KHTMLPart::findFramePart(const QString &f)
 {
   khtml::ChildFrame *childFrame;
-  return findFrameParent(this, f, &childFrame) ? childFrame->m_part : 0L;
+  return findFrameParent(this, f, &childFrame) ? static_cast<KParts::ReadOnlyPart *>(childFrame->m_part) : 0L;
 }
     
 KParts::ReadOnlyPart *KHTMLPart::currentFrame() const
