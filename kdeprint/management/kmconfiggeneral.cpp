@@ -43,9 +43,10 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	setPageHeader(i18n("General settings"));
 	setPagePixmap("fileprint");
 
-	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh Print View (seconds)"), this);
+	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh Interval"), this);
 	m_timer = new KIntNumInput(m_timerbox,"Timer");
 	m_timer->setRange(0,30);
+    m_timer->setSuffix( i18n( " sec" ) );
 	m_timer->setSpecialValueText(i18n("Disabled"));
 	QWhatsThis::add(m_timer, i18n("This time setting controls the refresh rate of various "
 			              "<b>KDE Print</b> components like the print manager "
