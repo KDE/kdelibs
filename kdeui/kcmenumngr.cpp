@@ -25,6 +25,8 @@
 #include "kconfig.h"
 #include <kaccel.h>
 
+template class QPtrDict<QPopupMenu>;
+
 KContextMenuManager* KContextMenuManager::manager = 0;
 
 KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )

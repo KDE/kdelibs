@@ -30,6 +30,7 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
+template class QList<KLaunchRequest>;
 
 KLauncher::KLauncher(int argc, char **argv, const QCString &appName, 
                      int _kinitSocket)
