@@ -373,6 +373,7 @@ void KURLBar::setListBox( KURLBarListBox *view )
 
     setPalette( pal );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
+    m_listBox->setFocusPolicy( TabFocus );
 
     connect( m_listBox, SIGNAL( mouseButtonClicked( int, QListBoxItem *, const QPoint & ) ),
              SLOT( slotSelected( int, QListBoxItem * )));
