@@ -59,3 +59,14 @@ void KPanelApplet::slotSetPopupDirection(Direction d)
   _dir = d;
   emit popupDirectionChanged();
 }
+
+
+void KPanelApplet::action( Action a )
+{
+    if ( (a & About) != 0 )
+	about();
+    if ( (a & Help) != 0 )
+	help();
+    if ( (a & Preferences) != 0 )
+	preferences();
+}

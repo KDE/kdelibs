@@ -105,7 +105,7 @@ public:
 
   /**
    * Construct a @ref KPanelApplet just like any other widget.
-   * 
+   *
    * @param configFile The configFile handed over in the factory function.
    * @param Type The applet @ref type().
    * @param actions Standard RMB menu actions supported by the applet (see @ref action() ).
@@ -161,37 +161,10 @@ public:
    * The height you return is granted.
    **/
   virtual int heightForWidth(int width) const { return width; }
-
-  /**
-   * Is called when the user selects "About" from the applets RMB menu.
-   * Overload this function to launch a about dialog.
-   *
-   * Note that this is called only when your applet supports the About action.
-   * See @ref Action and @ref KPanelApplet().
-   **/
-  virtual void about() {}
-
-  /**
-   * Is called when the user selects "Help" from the applets RMB menu.
-   * Overload this function to launch a manual or help page.
-   *
-   * Note that this is called only when your applet supports the Help action.
-   * See @ref Action and @ref KPanelApplet().
-   **/
-  virtual void help() {}
-
-  /**
-   * Is called when the user selects "Preferences" from the applets RMB menu.
-   * Overload this function to launch a preferences dialog or kcontrol module.
-   *
-   * Note that this is called only when your applet supports the preferences action.
-   * See @ref Action and @ref KPanelApplet().
-   **/
-  virtual void preferences() {}
-
+    
   /**
    * Always use this @ref KConfig object to save/load your applets configuration.
-   * 
+   *
    * For unique applets this config object will write to a config file called
    * <appletname>rc in the users local KDE directory.
    *
@@ -212,6 +185,18 @@ public:
    **/
   int actions() const { return _actions; }
 
+  /**
+   * Generic action dispatcher. Called  when the user selects an item
+   * from the applets RMB menu.
+   *
+   * Reimplement this function to handle actions.
+   *
+   * For About, Help and Preferences, use the convenience handlers
+   * ref about(), help(), preferences()
+   *
+   **/
+   virtual void action( Action a );
+
  signals:
   /**
    * Emit this signal to make the panel relayout all applets, when
@@ -219,7 +204,7 @@ public:
    * height (vertical panel).
    *
    * The panel is going to relayout all applets based on their
-   * widthForHeight(int height) (horizontal panel) or 
+   * widthForHeight(int height) (horizontal panel) or
    * heightForWidth(int width) (vertical panel).
    *
    * Please note that the panel may change the applets location
@@ -229,10 +214,6 @@ public:
    **/
   void updateLayout();
 
-  /**
-   * The popup direction changed.
-   **/
-  void popupDirectionChanged();
 
  public slots:
   /**
@@ -246,6 +227,34 @@ public:
   void slotSetPopupDirection(Direction d);
 
  protected:
+
+  /**
+   * Is called when the user selects "About" from the applets RMB menu.
+   * Reimplement this function to launch a about dialog.
+   *
+   * Note that this is called only when your applet supports the About action.
+   * See @ref Action and @ref KPanelApplet().
+   **/
+  virtual void about() {}
+
+  /**
+   * Is called when the user selects "Help" from the applets RMB menu.
+   * Reimplement this function to launch a manual or help page.
+   *
+   * Note that this is called only when your applet supports the Help action.
+   * See @ref Action and @ref KPanelApplet().
+   **/
+  virtual void help() {}
+
+  /**
+   * Is called when the user selects "Preferences" from the applets RMB menu.
+   * Reimplement this function to launch a preferences dialog or kcontrol module.
+   *
+   * Note that this is called only when your applet supports the preferences action.
+   * See @ref Action and @ref KPanelApplet().
+   **/
+  virtual void preferences() {}
+
   /**
    * @return the applet's orientation. (horizontal or vertical)
    **/
@@ -253,8 +262,18 @@ public:
 
   /**
    * You may need this if you want to popup menus at the right position.
+   *
+   * See @ref  popupDirectionChange()
    **/
   Direction popupDirection() const { return _dir; }
+    
+    
+    /** 
+     * The popup direction changed tp @p direction. Reimplement this
+     * change handler in order to adjust the look of your applet.
+     **/
+    virtual void popupDirectionChange( Direction direction ) {}
+    
 
  private:
   Type         _type;
