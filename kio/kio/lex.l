@@ -29,7 +29,7 @@ DIGIT    [0-9]
 "not" { return NOT; }
 "and" { return AND; }
 "or" { return OR; }
-"in" { return IN; }
+"in" { return _IN; }
 "exist" { return EXIST; }
 "max" { return MAX; }
 "min" { return MIN; }
