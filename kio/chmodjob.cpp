@@ -194,6 +194,13 @@ void ChmodJob::chmodNextFile()
 
 void ChmodJob::slotResult( KIO::Job * job )
 {
+    if ( job->error() )
+    {
+        m_error = job->error();
+        m_errorText = job->errorText();
+        emitResult();
+        return;
+    }
     //kdDebug(7007) << " ChmodJob::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
     switch ( state )
     {
