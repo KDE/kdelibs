@@ -131,14 +131,14 @@ public:
      *
      * @param user          username
      * @param pass          password
-     * @param keep          pointer to flag that indicates
+     * @param keep          pointer to flag that indicates whether to keep password (can be null)
      * @param prompt        text to display to user.
      * @param readOnly      make the username field read-only.
      * @param caption       set the title bar to given text.
      * @param comment       extra comment to display to user.
      * @param label         optinal label for extra comment.
      *
-     * @return Accept/Reject based on the user choice.
+     * @return Accepted/Rejected based on the user choice.
      */
     static int getNameAndPassword( QString& user, QString& pass, bool* keep,
                                    const QString& prompt = QString::null,
