@@ -2295,7 +2295,7 @@ bool HTTPProtocol::httpOpen()
 
 #ifdef DO_GZIP
     if (m_request.allowCompressedPage)
-      header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
+      header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate\r\n";
 #endif
 
     if (!m_request.charsets.isEmpty())
