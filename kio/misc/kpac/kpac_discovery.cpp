@@ -46,7 +46,8 @@ KPACDiscovery::KPACDiscovery()
 
             if (!m_hostname.endsWith(domainname))
             {
-              if (domainname[0] != '.' || m_hostname[m_hostname.length()-1] != '.')
+              if (m_hostname.length() && (domainname[0] != '.' ||
+                  m_hostname[m_hostname.length()-1] != '.'))
                   m_hostname += ".";
 
               m_hostname += domainname;
