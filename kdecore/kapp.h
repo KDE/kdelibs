@@ -294,7 +294,7 @@ public:
   static const QString kde_htmldir();
 
   /**
-   * Returns the directory where KDE applications store their .kdelnk file
+   * Returns the directory where KDE applications store their .desktop file
    *
    * The default for this directory is $KDEDIR/share/applnk
    * @return the name of the directory
@@ -732,6 +732,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.70  1999/05/03 07:02:33  garbanzo
+// Might as well bump the version string and numbers to avoid confusion.
+//
 // Revision 1.69  1999/04/23 13:42:14  mosfet
 // KStyle class addition and the routines to allocate it.
 //
