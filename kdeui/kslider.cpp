@@ -210,7 +210,9 @@ void KSlider::paintEvent( QPaintEvent * )
   QPainter painter;
 
   painter.begin( this );
+  // build a rect for the paint event
   QRect rect(x(),y(),width(),height());
+  erase();  // Clear window fully, because there may be "pixel dirt" around
   paintSlider(&painter, rect);
   drawTickMarks(&painter);
   painter.end();
