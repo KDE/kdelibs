@@ -2440,8 +2440,10 @@ void Ftp::copy( const KURL &src, const KURL &dest, int permissions, bool overwri
     cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, overwrite);
     if( cs == statusServerError ) sCopyFile = src.url();
   }
-  else
-    iError = ERR_UNSUPPORTED_ACTION;
+  else {
+    error( ERR_UNSUPPORTED_ACTION, QString::null );
+    return;
+  }
 
   // perform clean-ups and report error (if any)
   if(iCopyFile != -1)
