@@ -23,17 +23,24 @@
 #include "kmwizardpage.h"
 
 class QLineEdit;
+class KListView;
+class QListViewItem;
 
 class KMWOther : public KMWizardPage
 {
+	Q_OBJECT
 public:
 	KMWOther(QWidget *parent = 0, const char *name = 0);
 
 	void initPrinter(KMPrinter*);
 	void updatePrinter(KMPrinter*);
 
+protected slots:
+	void slotPressed( QListViewItem* );
+
 private:
 	QLineEdit	*m_uri;
+	KListView *m_uriview;
 };
 
 #endif
