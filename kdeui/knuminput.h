@@ -46,6 +46,7 @@ class KIntSpinBox;
 
 class KNumInput : public QWidget
 {
+    Q_OBJECT
 public:
     /**
      * default constructor
@@ -78,7 +79,7 @@ public:
      *     AlignBottom  the label is placed below the edit/slider
      *
      */
-    void setLabel(QString label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
     /**
      * Sets the spacing of tickmarks for the slider.
@@ -211,6 +212,12 @@ public:
      * that the choice has a special (default) meaning.
      */
     void setSpecialValueText(const QString& text);
+
+    /**
+     * reimplemented for internal reasons.
+     *
+     */
+    virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
 public slots:
     /**
@@ -345,7 +352,7 @@ public:
      * reimplemented for internal reasons.
      *
      */
-    void setLabel(QString label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
 public slots:
     /**

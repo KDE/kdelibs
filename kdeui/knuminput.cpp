@@ -125,7 +125,7 @@ void KNumInput::layout(bool deep)
     m_sizeLabel = (m_label ? m_label->sizeHint() : QSize(0,0));
 
     if(m_label && (m_alignment & AlignVCenter))
-        m_colw1 = m_sizeLabel.width();
+        m_colw1 = m_sizeLabel.width() + 4;
     else
         m_colw1 = 0;
 
@@ -382,7 +382,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     }
 
     if(m_label && (m_alignment & AlignVCenter))
-        m_label->setGeometry(0, 0, m_sizeLabel.width(), m_sizeLabel.height());
+        m_label->setGeometry(0, 0, w, m_sizeSpin.height());
 
     m_spin->setGeometry(w, h, m_slider ? m_colw2 : e->size().width() - w, m_sizeSpin.height());
     w += m_colw2 + 8;
@@ -430,6 +430,17 @@ void KIntNumInput::setSpecialValueText(const QString& text)
     m_spin->setSpecialValueText(text);
     layout(true);
 };
+
+
+// -----------------------------------------------------------------------------
+
+void KIntNumInput::setLabel(QString label, int a)
+{
+    KNumInput::setLabel(label, a);
+
+    if(m_label)
+        m_label->setBuddy(m_spin);
+}
 
 
 // -----------------------------------------------------------------------------
@@ -538,7 +549,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     }
 
     if(m_label && (m_alignment & AlignVCenter))
-        m_label->setGeometry(0, 0, m_sizeLabel.width(), m_sizeLabel.height());
+        m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
     edit->setGeometry(w, h, m_slider ? m_colw2 : e->size().width() - w, m_sizeEdit.height());
     w += m_colw2 + 8;
