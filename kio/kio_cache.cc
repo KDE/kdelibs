@@ -567,8 +567,7 @@ QString KIOCache::localKey(const KIOCacheEntry *entry)
     QString localName;
 
     if (timestamp != lastCall) sequence = 0;
-    localName << "entry-" << timestamp << "." << sequence 
-	      << "-" << url.filename().c_str(); 
+    localName.sprintf("entry-%ld.%d-%s", timestamp, sequence, url.filename().c_str());
 
     lastCall = timestamp;
     
