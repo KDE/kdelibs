@@ -23,7 +23,6 @@
 #include <qapplication.h>
 #include <qbuffer.h>
 #include <qfile.h>
-#include <qdir.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -141,12 +140,7 @@ void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
         KURL tmpurl( (*it2).m_str );
         d->mResultDn = tmpurl.path();
         kdDebug(7125) << "findUid(): " << d->mResultDn << endl;
-        if ( !QDir::isRelativePath(d->mResultDn) )
-#ifdef Q_WS_WIN
-          d->mResultDn.remove(0,3); // e.g. "c:/"
-#else
-          d->mResultDn.remove(0,1);
-#endif
+        if ( d->mResultDn.startsWith("/") ) d->mResultDn.remove(0,1);
         return;
       }
     }
@@ -678,7 +672,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
       case LDIF::EndEntry: {
         d->mAddr.setResource( this );
         d->mAddr.insertAddress( d->mAd );
- 	d->mAddr.setChanged( false );
+        d->mAddr.setChanged( false );
         insertAddressee( d->mAddr );
         //clear the addressee
         d->mAddr = Addressee();
