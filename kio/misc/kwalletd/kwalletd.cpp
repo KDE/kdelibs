@@ -69,7 +69,6 @@ class KWalletTransaction {
 		DCOPClient *client;
 		DCOPClientTransaction *transaction;
 		Type tType;
-		QCString returnObject;
 		QCString appid;
 		uint wId;
 		QString wallet;
