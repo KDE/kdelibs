@@ -50,13 +50,7 @@ AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
 AC_CREATE_KFSSTND(default)
 AC_SUBST_KFSSTND
 
-dnl Image libraries
 KDE_CREATE_LIBS_ALIASES
-KDE_CHECK_KIMGIO
-
-AM_CONDITIONAL(HAVE_LIBJPEG, test -n "$LIBJPEG" )
-AM_CONDITIONAL(HAVE_LIBPNG, test -n "$LIBPNG" )
-AM_CONDITIONAL(HAVE_LIBTIFF, test -n "$LIBTIFF")
 
 # configure would do this very late. Too late for us!
 test "x$prefix" = xNONE && prefix=$ac_default_prefix

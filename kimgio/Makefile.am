@@ -1,10 +1,7 @@
-kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
-	         $(TIFF_MODULE) kimg_ico.la
+EXTRA_LTLIBRARIES = kimg_tiff.la kimg_g3.la
 
-if HAVE_LIBTIFF
-TIFF_MODULE = kimg_tiff.la kimg_g3.la
-TIFF_KIMGIO = tiff.kimgio g3.kimgio
-endif
+kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
+	         $(KIMGIO_TIFF_MODULE) kimg_ico.la
 
 KIMGIO_PLUGIN = -avoid-version -no-undefined -export-symbols-regex 'kimgio_.*_(read|write)'
 
@@ -41,6 +38,6 @@ EXTRA_DIST = netpbm.cpp netpbm.h
 servicedir = $(kde_servicesdir)
 service_DATA = png.kimgio xpm.kimgio bmp.kimgio gif.kimgio pnm.kimgio xbm.kimgio \
                jpeg.kimgio xv.kimgio krl.kimgio eps.kimgio \
-               $(TIFF_KIMGIO) ico.kimgio
+               $(KIMGIO_TIFF_DATA) ico.kimgio
 
 
