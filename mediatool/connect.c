@@ -27,13 +27,13 @@
 #include "mediatool.h"
 #include "chunk.h"
 
-#define MAX_CONN 100 /* Lets be safe in the development phase */
+#define MAX_CONN 100
 
 
 /* Some utility function prototypes */
 int ConnGetNewRef(void);
 void LogError(char *message);
-void MdConnectFindSlot(MediaCon **mcon);
+/*void MdConnectFindSlot(MediaCon **mcon); */
 void GetShmAdrByRef(int shm_id, char **shm_adr);
 
 
@@ -84,10 +84,10 @@ void MdConnectInit(void)
       Connections[i] = NULL;
 
   LibraryInitialized=1;
-  /* !!! Find still open connections */
 }
 
 
+#ifdef 0
 /******************************************************************************
  *
  * Function:	MdConnectFindSlot()
@@ -113,7 +113,7 @@ void MdConnectFindSlot(MediaCon **mcon)
     }
   mcon = NULL;
 }
-
+#endif
 
 /******************************************************************************
  *
@@ -143,16 +143,16 @@ void MdConnect(int shm_talkid, MediaCon *mcon)
   GetShmAdrByRef(shm_talkid, &tmpadr);
 
   if ( tmpadr == NULL )
-     return;
+    return;
 
   HeadChunk = (MdCh_IHDR*)FindChunkData(tmpadr, "IHDR");
   if ( HeadChunk == NULL )
-     return;
+    return;
 
   /* Copy reference id */
-  mcon->ref = HeadChunk->ref;
+  mcon->ref      = HeadChunk->ref;
   mcon->shm_adr  = tmpadr;
-
+  mcon->talkid   = shm_talkid;
 }
 
 
@@ -195,19 +195,16 @@ void MdConnectNew(MediaCon *mcon)
   sprintf(pathkey+strlen(pathkey), "%i", newRefnum);
 
   ret = stat(pathkey, &finfo);
-  if ( ret < 0 )
-    {
-      fid = fopen(pathkey, "w");
-      if ( fid==NULL )
-	{
-	  LogError("Could not create a shared talk key file.");
-	  return;
-	}
-      fclose(fid);
+  if ( ret < 0 ) {
+    fid = fopen(pathkey, "w");
+    if ( fid==NULL ) {
+      LogError("Could not create a shared talk key file.");
+      return;
     }
+    fclose(fid);
+  }
 
   /* Now it is guaranteed, a file exists. Get the adress. */
-
   /* Get the talk key for that file. */
   shm_talkkey = ftok(pathkey, 123);
   if ( shm_talkkey == -1 )
@@ -217,11 +214,10 @@ void MdConnectNew(MediaCon *mcon)
     }
 
   shm_talkid = shmget(shm_talkkey, talksize, IPC_CREAT | 0x1b6 ); /* %110110110 */
-  if ( shm_talkid == -1 )
-    {
-      LogError("Could not get shm id.\n");
-      return;
-    }
+  if ( shm_talkid == -1 ) {
+    LogError("Could not get shm id.\n");
+    return;
+  }
 
   GetShmAdrByRef(shm_talkid, &tmpadr);
   StartAdr = tmpadr;
@@ -238,8 +234,9 @@ void MdConnectNew(MediaCon *mcon)
   /* !!! Connection name must be filled out somewhere */
   memset(HeadChunk.name, 0, LEN_NAME+1);
   strcpy(HeadChunk.name, "(unnamed)" );
-  HeadChunk.revision	= 0;
-  HeadChunk.version     = 40;
+  HeadChunk.revision	= 1;
+  HeadChunk.version     = 0;
+  strcpy(HeadChunk.ipcfname,pathkey);
   /* 2b) Write header chunk */
   if (! WriteChunk(tmpadr, "IHDR", (char*)(&HeadChunk), sizeof(MdCh_IHDR) ))
     /* Something has terribly gone wrong! */
@@ -298,7 +295,7 @@ void MdConnectNew(MediaCon *mcon)
 
 /******************************************************************************
  *
- * Function:	
+ * Function:	MdDisconnect()
  *
  * Task:	
  *
@@ -309,10 +306,28 @@ void MdConnectNew(MediaCon *mcon)
  *****************************************************************************/
 void MdDisconnect(MediaCon *mcon)
 {
+  struct shmid_ds InfoBuf;  /* shmctl() wants one */
   char	*helpptr;
+  MdCh_IHDR *hdr;
 
   helpptr = mcon->shm_adr;
   mcon->shm_adr  = NULL;
+
+  /* Mark SHM for automatic deletion on last detach */
+  /* OK. I re-read the manpage on Linux and SunOS. It seems,
+     that the SHM Segement never gets destroyed directly,
+     when there is some segment attached ... fine, this is
+     what I expected.
+     Buttttt! There is no hint, if one can connect to the
+     SHM Segment after marking it for deletion. Well, there
+     is no hint, either, that you cant. So I will do the IPC_RMID
+     shmctl() only on Linux, where it works by chance. */
+
+  hdr = FindChunkData(helpptr,"IHDR");
+  unlink(hdr->ipcfname);
+
+  // Detach when last client goes doen
+  shmctl(mcon->talkid, IPC_RMID, &InfoBuf);
 
   if ( helpptr != NULL)
     shmdt(helpptr);
@@ -379,9 +394,9 @@ int ConnGetNewRef(void)
  * Function:	GetShmAdrByRef()
  *
  * Task:	Get the shared memory segment, that corresponds to a
- *		given filename.
+ *		given connection ID.
  *
- * in:		filename	The filename, as stated above
+ * in:		shm_talkid	The ID, as stated above
  * 
  * out:		shm_adr		Adress of a pointer to a character array.
  *				Is filled with the corresponding memory
@@ -390,27 +405,11 @@ int ConnGetNewRef(void)
  *****************************************************************************/
 void GetShmAdrByRef(int shm_talkid, char **shm_adr)
 {
-  struct shmid_ds InfoBuf;  /* shmctl() wants one */
-
   *shm_adr = shmat ( shm_talkid , NULL, 0 );
-  if ( (*shm_adr) == (char*)-1 )
-    {
-      /* LogError("Warning: Could not attach SHM.\n"); */
-      *shm_adr=NULL;
-      return;
-    }
-  /* Mark SHM for automatic deletion on last detach */
-  /* OK. I re-read the manpage on Linux and SunOS. It seems,
-     that the SHM Segement never gets destroyed directly,
-     when there is some segment attached ... fine, this is
-     what I expected.
-     Buttttt! There is no hint, if one can connect to the
-     SHM Segment after marking it for deletion. Well, there
-     is no hint, either, that you cant. So I will do the IPC_RMID
-     shmctl() only on Linux, where it works by chance. */
-#ifdef linux
-  shmctl(shm_talkid, IPC_RMID, &InfoBuf);
-#endif
+  if ( (*shm_adr) == (char*)-1 ) {
+    *shm_adr=NULL;
+    return;
+  }
 }
 
 
@@ -418,8 +417,4 @@ void LogError(char *message)
 {
   fprintf(stderr,message);
 }
-
-
-
-
 

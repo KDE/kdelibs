@@ -136,6 +136,7 @@ typedef struct
   char		name[LEN_NAME+1];
   int8		revision;	/* Protocol revision			*/
   int8		version;	/* Protocol version			*/
+  char          ipcfname[40];   /* Remember IPC filename for unlink()   */
 } MdCh_IHDR;
 
 
