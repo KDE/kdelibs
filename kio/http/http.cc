@@ -76,6 +76,10 @@ using namespace KIO;
 // Default expire time in seconds: 1 min.
 #define DEFAULT_EXPIRE (1*60)
 
+// time frame in which the cache cleaner is run
+// (30 Minutes)
+#define MAX_CACHE_AGE 30*60
+
 extern "C" {
   void sigalrm_handler(int);
   int kdemain(int argc, char **argv);
@@ -3070,7 +3074,7 @@ void HTTPProtocol::closeCacheEntry()
 
 void HTTPProtocol::cleanCache()
 {
-   const time_t maxAge = 30*60; // 30 Minutes.
+   const time_t maxAge = MAX_CACHE_AGE; // 30 Minutes.
    bool doClean = false;
    QString cleanFile = m_strCacheDir;
    if (cleanFile[cleanFile.length()-1] != '/')
