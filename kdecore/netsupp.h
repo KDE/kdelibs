@@ -36,8 +36,8 @@
 #endif
 
 #ifdef CLOBBER_IN6
-#define kde_in6_addr in6_addr
-#define kde_sockaddr_in6 sockaddr_in6
+#define kde_in6_addr		in6_addr
+#define kde_sockaddr_in6	sockaddr_in6
 #endif
 
 /*
@@ -109,7 +109,14 @@ struct kde_sockaddr_in6
 
 #endif
 
-#ifndef HAVE_GETADDRINFO
+#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
+
+extern int kde_getaddrinfo(const char *name, const char *service,
+			   const struct addrinfo* hint,
+			   struct addrinfo** result);
+
+#else  /* !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO) */
+
 struct addrinfo
 {
   int ai_flags;			/* Input flags.  */
@@ -134,7 +141,6 @@ struct addrinfo
 # define AI_NUMERICHOST	4	/* Don't use name resolution.  */
 
 # ifdef EAI_ADDRFAMILY
-#  warning "Your system already defines some getaddrinfo constants!"
 #  undef EAI_ADDRFAMILY
 #  undef EAI_AGAIN
 #  undef EAI_BADFLAGS
@@ -197,6 +203,7 @@ namespace KDE
 			 int flags);
 }
 
+# define kde_getadddrinfo	KDE::getaddrinfo
 # define getaddrinfo	KDE::getaddrinfo
 # define freeaddrinfo	KDE::freeaddrinfo
 # define gai_strerror	KDE::gai_strerror

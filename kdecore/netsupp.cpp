@@ -32,10 +32,9 @@
 #include <qglobal.h>
 
 // This is so that, if addrinfo is defined, it doesn't clobber our definition
-// Who the hell knows why it may be defined...
-#define addrinfo std_addrinfo
+// It might be defined in the few cases in which we are replacing the system's
+// broken getaddrinfo
 #include <netdb.h>
-#undef addrinfo
 
 #include "config.h"
 #include "kdebug.h"
@@ -76,16 +75,6 @@
 #define KRF_CAN_RESOLVE_UNIX		0x100	/* if present, the resolver can resolve Unix sockets */
 #define KRF_CAN_RESOLVE_IPV4		0x200	/* if present, the resolver can resolve to IPv4 */
 #define KRF_CAN_RESOLVE_IPV6		0x400	/* if present, the resolver can resolve to IPv6 */
-
-#ifndef HAVE_GETADDRINFO
-
-#define KRF_getaddrinfo			KRF_USING_OWN_GETADDRINFO
-#define KRF_resolver			KRF_CAN_RESOLVE_UNIX | KRF_CAN_RESOLVE_IPV4
-
-/*
- * No getaddrinfo() in this system.
- * We shall provide our own
- */
 
 static struct addrinfo*
 make_unix(const char *name, const char *serv)
@@ -137,6 +126,84 @@ make_unix(const char *name, const char *serv)
   return p;
 }
 
+#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
+
+#define KRF_getaddrinfo		0
+#define KRF_resolver		0
+
+/*
+ * Reason for using this function: kde_getaddrinfo
+ *
+ * I decided to add this wrapper function for getaddrinfo
+ * and have this be called by KExtendedSocket instead of
+ * the real getaddrinfo so that we can make sure that the
+ * behaviour is the desired one.
+ *
+ * Currently, the only "undesired" behaviour is getaddrinfo
+ * not returning PF_UNIX sockets in some implementations.
+ *
+ * getaddrinfo and family are defined in POSIX 1003.1g
+ * (Protocol Independent Interfaces) and in RFC 2553
+ * (Basic Socket Interface for IPv6). Whereas the RFC is ambiguosly
+ * vague whether this family of functions should return Internet
+ * sockets only or not, the name of the POSIX draft says
+ * otherwise: it should be independent of protocol.
+ *
+ * So, my interpretation is that they should return every
+ * kind of socket available and known and that's how I
+ * designed KExtendedSocket on top of it.
+ *
+ * That's why there's this wrapper, to make sure PF_UNIX
+ * sockets are returned when expected.
+ */
+
+int kde_getaddrinfo(const char *name, const char *service,
+		    const struct addrinfo* hint,
+		    struct addrinfo** result)
+{
+  // do it fast!
+  register int err = getaddrinfo(name, service, hint, result);
+  if (err == 0)
+    return err;
+
+  // an error? Could it be that the user wanted Unix sockets and this
+  // implementation doesn't return it?
+
+  if (service == NULL || *service == '\0')
+    return err;			// can't be Unix if no service was requested
+
+  // Unix sockets must be localhost
+  // That is, either name is NULL or, if it's not, it must be empty, 
+  // "*" or "localhost"
+  if (name != NULL && !(name[0] == '\0' || (name[0] == '*' && name[1] == '\0') ||
+			strcmp("localhost", name) == 0))
+    return err;			// isn't localhost
+
+  // Unix sockets can only be returned if the user asked for a PF_UNSPEC
+  // or PF_UNIX socket type
+  if (hint != NULL && (hint->ai_family != PF_UNSPEC && hint->ai_family != PF_UNIX))
+    return err;			// user doesn't want Unix
+
+  // If we got here, then it means that the user might be expecting Unix
+  // sockets. The user wants a local socket, with a non-null service and
+  // has told us that they accept PF_UNIX sockets
+  // So, give the user a PF_UNIX socket
+  register struct addrinfo *p = make_unix(NULL, service);
+  if (p == NULL)
+    return EAI_MEMORY;
+  *result = p;
+  return 0;
+}
+
+#else  // !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
+
+#define KRF_getaddrinfo			KRF_USING_OWN_GETADDRINFO
+#define KRF_resolver			KRF_CAN_RESOLVE_UNIX | KRF_CAN_RESOLVE_IPV4
+
+/*
+ * No getaddrinfo() in this system.
+ * We shall provide our own
+ */
 
 /** TODO
  * Try and use gethostbyname2_r before gethostbyname2 and gethostbyname
@@ -783,11 +850,6 @@ int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
 
   return 1;			// invalid family
 }
-
-#else  // defined(HAVE_GETADDRINFO)
-
-#define KRF_getaddrinfo		0
-#define KRF_resolver		0
 
 #endif // HAVE_GETADDRINFO
 

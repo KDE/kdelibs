@@ -52,7 +52,7 @@
 
 /*
  * getaddrinfo is defined in IEEE POSIX 1003.1g (Protocol Independent Interfaces)
- * and RFC 2553 extends that specification
+ * and RFC 2553 (Basic Socket Interface for IPv6) extends that specification
  */
 
 #ifndef AI_NUMERICHOST
@@ -635,7 +635,8 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
   // if we have a timeout in place, we have to place this socket in non-blocking
   // mode
   bool block = blockingMode();
-  ksize_t len = 0;		// we don't really need the sockaddr now
+  struct sockaddr sa;
+  ksize_t len = sizeof(sa);
   sock = NULL;
 
   if (d->timeout.tv_sec > 0 || d->timeout.tv_usec > 0)
@@ -663,13 +664,13 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
     }
 
   // it's common stuff here
-  int newfd = KSocks::self()->accept(sockfd, NULL, &len);
+  int newfd = KSocks::self()->accept(sockfd, &sa, &len);
 
   if (newfd == -1)
     {
       setError(IO_AcceptError, errno);
-      kdWarning() << "Error accepting on socket " << sockfd << ":"
-		  << perror << endl;
+      kdWarning(170) << "Error accepting on socket " << sockfd << ":"
+		     << perror << endl;
       return -1;
     }
 
@@ -985,9 +986,30 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
   int err;
 
   // FIXME! What is the encoding?
-  err = getaddrinfo(host.isNull() ? NULL : (const char*)host.utf8(),
-                   serv.isNull() ? NULL : (const char*)serv.utf8(),
-                   &hint, res);
+  const char *_host = NULL,
+    *_serv = NULL;
+  if (!host.isNull())
+    _host = host.latin1();
+  if (!serv.isNull())
+    _serv = serv.latin1();
+  // Please read the comments before kde_getaddrinfo in netsupp.cpp
+  // for the reason we're using it
+  err = kde_getaddrinfo(_host, _serv, &hint, res);
+
+#ifdef HAVE_RES_INIT
+  if (err == EAI_NONAME || err == EAI_NODATA || err == EAI_AGAIN)
+    {
+      // A loookup error occurred and nothing was resolved
+      // However, since the user could have just dialed up to the ISP
+      // and new nameservers were written to /etc/resolv.conf, we have
+      // to re-parse that
+      res_init();
+
+      // Now try looking up again
+      err = kde_getaddrinfo(_host, _serv, &hint, res);
+    }
+#endif
+
   return err;
 }
 
