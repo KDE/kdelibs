@@ -30,7 +30,7 @@ KStepStyle::KStepStyle()
     :KStyle()
 {
     setButtonDefaultIndicatorWidth(4);
-    setScrollBarExtent(20);
+    setScrollBarExtent(20,20);
 }
 
 KStepStyle::~KStepStyle()
