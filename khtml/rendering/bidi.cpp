@@ -1130,7 +1130,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
             if( w + tmpW <= width ) {
                 lBreak = o;
                 //check the clear status
-                m_clearStatus |= o->style()->clear();
+                m_clearStatus =  (EClear) (m_clearStatus | o->style()->clear());
             }
             goto end;
         } else if(o->isFloating()) {
