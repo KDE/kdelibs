@@ -89,7 +89,10 @@ public class KJASAppletPanel extends javax.swing.JPanel implements StatusListene
 
 				//}
 			}
-		}
+		} else if (img != null) {
+                    img.flush();
+                    img = null;
+                }
 	}
 	void showFailed() {
 		URL url =
