@@ -379,6 +379,27 @@ namespace KIO
    */
   bool manually_mounted(const QString& filename);
 
+  enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime, CaseInsensitive };
+  /**
+   * Checks the capabilities of the filesystem to which a given file belongs.
+   * given feature (e.g. chmod).
+   * @param flag the flag to check
+   * @return true if the filesystem has that flag, false if not (or some error occured)
+   *
+   * The availables flags are:
+   * @li SupportsChmod: returns true if the filesystem supports chmod
+   * (e.g. msdos filesystems return false)
+   * @li SupportsChown: returns true if the filesystem supports chown
+   * (e.g. msdos filesystems return false)
+   * @li SupportsUtime: returns true if the filesystems supports utime
+   * (e.g. msdos filesystems return false)
+   * @li CaseInsensitive: returns true if the filesystem treats
+   * "foo" and "FOO" as being the same file (true for msdos systems)
+   *
+   */
+  bool testFileSystemFlag(const QString& filename, FileSystemFlag flag);
+
+
 /************
  *
  * Universal Directory Service
@@ -431,8 +452,8 @@ public:
   /**
    * Copy constructor.
    */
-   MetaData(const QMap<QString, QString>&metaData) : 
-     QMap<QString, QString>(metaData) { }; 
+   MetaData(const QMap<QString, QString>&metaData) :
+     QMap<QString, QString>(metaData) { };
 
    /**
     * Adds the given meta data map to this map.
