@@ -70,6 +70,9 @@ namespace khtml
 namespace KJS {
     class Window;
     class WindowFunc;
+    class KJSO;
+    class List;
+    class JSEventListener;
 };
 
 namespace KParts
@@ -131,6 +134,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
   friend class KJS::WindowFunc;
+  friend class KJS::JSEventListener;
   friend class KHTMLPartBrowserExtension;
   friend class KHTMLFontSizeAction;
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
@@ -988,6 +992,7 @@ private:
 
   bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
+  QVariant executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
 
   DOM::HTMLDocumentImpl *docImpl() const;
   DOM::DocumentImpl *xmlDocImpl() const;

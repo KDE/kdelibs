@@ -29,16 +29,23 @@ namespace DOM {
   class Node;
 };
 
+namespace KJS {
+  class KJSO;
+  class List;
+}
+
 // callback functions for KJSProxy
 typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
 typedef QVariant (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
 			   const DOM::Node &, KHTMLPart *);
+typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, bool, KHTMLPart *);
 typedef void (KJSClearFunc)(KJScript *script);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
 extern "C" {
   KJSCreateFunc kjs_create;
   KJSEvalFunc kjs_eval;
+  KJSExecFuncCall kjs_execFuncCall;
   KJSClearFunc kjs_clear;
   KJSSpecialFunc kjs_special;
   KJSDestroyFunc kjs_destroy;
@@ -49,28 +56,46 @@ extern "C" {
  */
 class KJSProxy {
 public:
-  KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSClearFunc c,
-	   KJSSpecialFunc sp, KJSDestroyFunc d)
-    : create(cr), script(s), eval(e), clr(c), spec(sp), destr(d) { };
+  KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSExecFuncCall fc,
+           KJSClearFunc c, KJSSpecialFunc sp, KJSDestroyFunc d)
+    : create(cr), script(s), eval(e), execFuncCall(fc), clr(c), spec(sp), destr(d) { };
   ~KJSProxy() { (*destr)(script); }
   QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
   void clear();
+  QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
   KHTMLPart *khtmlpart;
 private:
   KJSCreateFunc *create;
   KJScript *script;
   KJSEvalFunc *eval;
+  KJSExecFuncCall *execFuncCall;
   KJSClearFunc *clr;
   KJSSpecialFunc *spec;
   KJSDestroyFunc *destr;
+  bool inEvaluate;
 };
 
 inline QVariant KJSProxy::evaluate(const QChar *c, unsigned int l,
 			       const DOM::Node &n) {
   if (!script)
     script = (*create)(khtmlpart);
-  return (*eval)(script, c, l, n, khtmlpart);
+  QVariant r;
+  if (inEvaluate)
+    r = (*eval)(script, c, l, n, khtmlpart);
+  else {
+    inEvaluate = true;
+    r = (*eval)(script, c, l, n, khtmlpart);
+    inEvaluate = false;
+  }
+  return r;
+}
+
+inline QVariant KJSProxy::executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args)
+{
+  if (!script)
+    script = (*create)(khtmlpart);
+  return (*execFuncCall)(thisVal,functionObj,args,inEvaluate, khtmlpart);
 }
 
 inline const char *KJSProxy::special(const char *c) {

@@ -51,8 +51,8 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   KJScript *script = kjs_create(khtmlpart);
 
   // proxy class operating via callback functions
-  KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
-	  			 &kjs_special, &kjs_destroy);
+  KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_execFuncCall,
+                                 &kjs_clear, &kjs_special, &kjs_destroy);
   proxy->khtmlpart = khtmlpart;
 
 #ifdef KJS_DEBUGGER
@@ -143,3 +143,16 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   {
     delete script;
   }
+
+  QVariant kjs_execFuncCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, bool inEvaluate, KHTMLPart *khtmlpart)
+  {
+    if (functionObj.implementsCall()) {
+      if (!inEvaluate)
+        KJS::Global::current().put("[[ScriptURL]]",String(khtmlpart->url().url()),DontEnum | DontDelete);
+      functionObj.executeCall(thisVal,&args);
+      if (!inEvaluate)
+        KJS::Global::current().put("[[ScriptURL]]",Undefined(),DontEnum | DontDelete);
+    }
+    return QVariant(); // ### return proper value
+  }
+

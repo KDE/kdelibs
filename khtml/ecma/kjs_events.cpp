@@ -24,6 +24,7 @@
 #include <dom_string.h>
 #include <qptrdict.h>
 #include <qlist.h>
+#include "khtml_part.h"
 
 using namespace KJS;
 
@@ -48,8 +49,11 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (listener.implementsCall()) {
     List args;
     args.append(getDOMEvent(evt));
-    // ### what are we supposed to use for the this value?
-    listener.executeCall(Null(),&args);
+
+    QGuardedPtr<KHTMLPart> part = getInstance();
+    KJSO thisVal = Null();
+    part->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
+
   }
 }
 
