@@ -100,11 +100,7 @@ QString KMCupsManager::cupsInstallDir()
 
 void KMCupsManager::reportIppError(IppRequest *req)
 {
-	int 	status = req->status();
-	if (status == -1)
-		setErrorMsg(i18n("Connexion to CUPS server failed. Check that the CUPS server is running."));
-	else
-		setErrorMsg(QString::fromLocal8Bit(ippErrorString((ipp_status_t)status)));
+	setErrorMsg(req->statusMessage());
 }
 
 bool KMCupsManager::createPrinter(KMPrinter *p)

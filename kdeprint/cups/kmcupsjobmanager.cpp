@@ -81,7 +81,8 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 				return false;
 		}
 
-		value = req.doRequest("/jobs/");
+		if (!(value = req.doRequest("/jobs/")))
+			KMManager::self()->setErrorMsg(req.statusMessage());
 	}
 
 	return value;
@@ -214,26 +215,28 @@ bool KMCupsJobManager::doPluginAction(int ID, const QPtrList<KMJob>& jobs)
 	{
 		case 0:
 			if (jobs.count() == 1)
-				jobIppReport(jobs.getFirst());
-			return true;
+				return jobIppReport(jobs.getFirst());
+			break;
 		case 1:
-			return increasePriority(jobs);
+			return changePriority(jobs, true);
 		case 2:
-			return decreasePriority(jobs);
+			return changePriority(jobs, false);
 	}
 	return false;
 }
 
-void KMCupsJobManager::jobIppReport(KMJob *j)
+bool KMCupsJobManager::jobIppReport(KMJob *j)
 {
 	IppRequest	req;
 
 	req.setOperation(IPP_GET_JOB_ATTRIBUTES);
 	req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
-	if (req.doRequest("/"))
-	{
+	bool	result(true);
+	if ((result=req.doRequest("/")))
 		static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_JOB, i18n("Job Report"));
-	}
+	else
+		KMManager::self()->setErrorMsg(i18n("Unable to retrieve job information: ")+req.statusMessage());
+	return result;
 }
 
 QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
@@ -254,25 +257,39 @@ QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *co
 void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtrList<KMJob>& joblist)
 {
 	QPtrListIterator<KMJob>	it(joblist);
-	bool	syst(true);
+	bool	flag(true);
 	for (; it.current(); ++it)
 	{
-		syst = (syst && it.current()->type() == KMJob::System);
+		flag = (flag && it.current()->type() == KMJob::System
+		        && (it.current()->state() == KMJob::Queued || it.current()->state() == KMJob::Held)
+			&& !it.current()->isRemote());
 	}
-	syst = (syst && joblist.count() > 0);
+	flag = (flag && joblist.count() > 0);
 	coll->action("plugin_ipp")->setEnabled(joblist.count() == 1);
-	coll->action("plugin_prioup")->setEnabled(syst && false);
-	coll->action("plugin_priodown")->setEnabled(syst && false);
+	coll->action("plugin_prioup")->setEnabled(flag);
+	coll->action("plugin_priodown")->setEnabled(flag);
 }
 
-bool KMCupsJobManager::increasePriority(const QPtrList<KMJob>&)
+bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
 {
-	return false;
-}
+	QPtrListIterator<KMJob>	it(jobs);
+	bool	result(true);
+	for (; it.current() && result; ++it)
+	{
+		int	value = it.current()->attribute(0).toInt();
+		if (up) value = QMIN(value+10, 100);
+		else value = QMAX(value-10, 1);
 
-bool KMCupsJobManager::decreasePriority(const QPtrList<KMJob>&)
-{
-	return false;
+		IppRequest	req;
+		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
+		req.addURI(IPP_TAG_OPERATION, "job-uri", it.current()->uri());
+		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->realLogin());
+		req.addInteger(IPP_TAG_JOB, "job-priority", value);
+
+		if (!(result = req.doRequest("/jobs/")))
+			KMManager::self()->setErrorMsg(i18n("Unable to change job priority: ")+req.statusMessage());
+	}
+	return result;
 }
 
 #include "kmcupsjobmanager.moc"

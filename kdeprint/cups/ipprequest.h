@@ -59,6 +59,7 @@ public:
 
 	// request answer functions
 	int status();
+	QString statusMessage();
 	bool integer(const QString& name, int& value);
 	bool boolean(const QString& name, bool& value);
 	bool enumvalue(const QString& name, int& value);
@@ -80,6 +81,9 @@ public:
 
 	// report functions
 	bool htmlReport(int group, QTextStream& output);
+	
+	// debug function
+	void dump(int state);
 
 protected:
 	void addString_p(int group, int type, const QString& name, const QString& value);
@@ -94,6 +98,8 @@ private:
 	ipp_t	*request_;
 	QString	host_;
 	int 	port_;
+	bool	connect_;
+	int	dump_;
 };
 
 inline void IppRequest::addMime(int group, const QString& name, const QString& mime)
@@ -182,5 +188,8 @@ inline void IppRequest::setHost(const QString& host)
 
 inline void IppRequest::setPort(int p)
 { port_ = p; }
+
+inline void IppRequest::dump(int state)
+{ dump_ = state; }
 
 #endif

@@ -30,28 +30,62 @@
 #include <qdatetime.h>
 #include <cups/cups.h>
 
-void dumpRequest(ipp_t *req)
+void dumpRequest(ipp_t *req, bool answer = false)
 {
-	kdDebug() << "------------------------------" << endl;
-	kdDebug() << "state = 0x" << req->state << endl;
-	kdDebug() << "current tag = 0x" << req->curtag << endl;
-	kdDebug() << "request operation ID = 0x" << req->request.op.operation_id << endl;
-	kdDebug() << "request ID = 0x" << req->request.op.request_id << endl;
-	kdDebug() << "request version = " << req->request.op.version[0] << req->request.op.version[1] << endl;
-	ipp_attribute_t	*attr = req->attrs;
+	kdDebug() << "==========" << endl;
+	kdDebug() << (answer ? "Answer" : "Request") << endl;
+	kdDebug() << "==========" << endl;
+	if (!req)
+	{
+		kdDebug() << "Null request" << endl;
+		return;
+	}
+	kdDebug() << "State = 0x" << QString::number(req->state, 16) << endl;
+	kdDebug() << "ID = 0x" << QString::number(req->request.status.request_id, 16) << endl;
+	if (answer)
+	{
+		kdDebug() << "Status = 0x" << QString::number(req->request.status.status_code, 16) << endl;
+		kdDebug() << "Status message = " << ippErrorString(req->request.status.status_code) << endl;
+	}
+	else
+		kdDebug() << "Operation = 0x" << QString::number(req->request.op.operation_id, 16) << endl;
+	kdDebug() << "Version = " << (int)(req->request.status.version[0]) << "." << (int)(req->request.status.version[1]) << endl;
+	kdDebug() << endl;
+
+	ipp_attribute_t *attr = req->attrs;
 	while (attr)
 	{
-		kdDebug() << " " << endl;
-		kdDebug() << "attribute: " << attr->name << endl;
-		kdDebug() << "group tag = 0x" << attr->group_tag << endl;
-		kdDebug() << "value tag = 0x" << attr->value_tag << endl;
-		kdDebug() << "number of values = " << attr->num_values << endl;
-		if (attr->value_tag >= IPP_TAG_TEXT)
-			for (int i=0;i<attr->num_values;i++)
-				kdDebug() << "value[" << i << "] = " << attr->values[i].string.text << endl;
+		QString s = QString::fromLatin1("%1 (0x%2) = ").arg(attr->name).arg(attr->value_tag, 0, 16);
+		for (int i=0;i<attr->num_values;i++)
+		{
+			switch (attr->value_tag)
+			{
+				case IPP_TAG_INTEGER:
+				case IPP_TAG_ENUM:
+					s += ("0x"+QString::number(attr->values[i].integer, 16));
+					break;
+				case IPP_TAG_BOOLEAN:
+					s += (attr->values[i].boolean ? "true" : "false");
+					break;
+				case IPP_TAG_STRING:
+				case IPP_TAG_TEXT:
+				case IPP_TAG_NAME:
+				case IPP_TAG_KEYWORD:
+				case IPP_TAG_URI:
+				case IPP_TAG_MIMETYPE:
+				case IPP_TAG_NAMELANG:
+				case IPP_TAG_TEXTLANG:
+				case IPP_TAG_CHARSET:
+				case IPP_TAG_LANGUAGE:
+					s += attr->values[i].string.text;
+					break;
+			}
+			if (i != (attr->num_values-1))
+				s += ", ";
+		}
+		kdDebug() << s << endl;
 		attr = attr->next;
 	}
-	kdDebug() << "------------------------------" << endl;
 }
 
 //*************************************************************************************
@@ -61,6 +95,7 @@ IppRequest::IppRequest()
 	request_ = 0;
 	port_ = -1;
 	host_ = QString::null;
+	dump_ = 0;
 	init();
 }
 
@@ -71,6 +106,8 @@ IppRequest::~IppRequest()
 
 void IppRequest::init()
 {
+	connect_ = true;
+
 	if (request_)
 	{
 		ippDelete(request_);
@@ -142,7 +179,25 @@ void IppRequest::setOperation(int op)
 
 int IppRequest::status()
 {
-	return (request_ ? request_->request.status.status_code : -1);
+	return (request_ ? request_->request.status.status_code : (connect_ ? -1 : -2));
+}
+
+QString IppRequest::statusMessage()
+{
+	QString	msg;
+	switch (status())
+	{
+		case -2:
+			msg = i18n("Connexion to CUPS server failed. Check that the CUPS server is correctly installed and running.");
+			break;
+		case -1:
+			msg = i18n("The IPP request failed for unknown reason.");
+			break;
+		default:
+			msg = QString::fromLocal8Bit(ippErrorString((ipp_status_t)status()));
+			break;
+	}
+	return msg;
 }
 
 bool IppRequest::integerValue_p(const QString& name, int& value, int type)
@@ -202,6 +257,8 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	if (myHost.isEmpty()) myHost = CupsInfos::self()->host();
 	if (myPort <= 0) myPort = CupsInfos::self()->port();
 	http_t	*HTTP = httpConnect(myHost.latin1(),myPort);
+	
+	connect_ = (HTTP != NULL);
 
 	if (HTTP == NULL)
 	{
@@ -209,18 +266,22 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 		request_ = 0;
 		return false;
 	}
-#if 0
-kdDebug() << "---------------------\nRequest\n---------------------" << endl;
-dumpRequest(request_);
-#endif
+
+	if (dump_ > 0)
+	{
+		dumpRequest(request_, false);
+	}
+
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
 	httpClose(HTTP);
 	if (!request_ || request_->state == IPP_ERROR || (request_->request.status.status_code & 0x0F00))
 		return false;
-#if 0
-kdDebug() << "---------------------\nAnswer\n---------------------" << endl;
-dumpRequest(request_);
-#endif
+
+	if (dump_ > 1)
+	{
+		dumpRequest(request_, true);
+	}
+
 	return true;
 }
 

@@ -42,9 +42,8 @@ public:
 	bool doPluginAction(int, const QPtrList<KMJob>&);
 
 protected:
-	void jobIppReport(KMJob*);
-	bool increasePriority(const QPtrList<KMJob>&);
-	bool decreasePriority(const QPtrList<KMJob>&);
+	bool jobIppReport(KMJob*);
+	bool changePriority(const QPtrList<KMJob>&, bool);
 
 protected:
 	bool listJobs(const QString&, JobType);
