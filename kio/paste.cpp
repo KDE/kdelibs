@@ -71,7 +71,7 @@ void KIO::pasteClipboard( const KURL& dest_url, bool move )
 
 void KIO::pasteData( const KURL& u, const QByteArray& _data )
 {
-  KLineEditDlg l( i18n("Filename for clipboard content:"), "", 0L, false );
+  KLineEditDlg l( i18n("Filename for clipboard content:"), "", 0L );
   int x = l.exec();
   if ( x ) {
     QString url = l.text();
