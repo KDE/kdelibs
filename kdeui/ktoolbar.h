@@ -756,7 +756,7 @@ public:
   // Note: don't merge with the next one, it breaks Qt properties
 
   /**
-   * Same as @ref setIconText(KIconLoader::Size size) but allows you
+   * Same as @ref setIconText(int size) but allows you
    * to disable the toolbar update.
    *
    * @param size   The size to use

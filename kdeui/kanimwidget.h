@@ -42,7 +42,7 @@ class QMouseEvent;
  * icons.append("one");
  * icons.append("two");
  * icons.append("three");
- * KAnimWidget *anim = new KAnimWidget(icons, KIconLoader::Small, this);
+ * KAnimWidget *anim = new KAnimWidget(icons, 0, this);
  * anim->start();
  * </pre>
  *
