@@ -184,7 +184,7 @@ KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
    KSycocaFactory::addEntry(newEntry, resource);
 
    KService * service = (KService *) newEntry;
-   if (!service->isDeleted())
+   if (!service->isDeleted() && !service->property("NoDisplay").asBool())
       m_serviceGroupFactory->addNewEntry(service->entryPath(), resource, service);
 
    QString name = service->desktopEntryName();
