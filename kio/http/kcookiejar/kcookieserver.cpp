@@ -115,10 +115,10 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         QDataStream stream(data, IO_ReadOnly);
         QString arg1;
         stream >> arg1;
-        kDebugInfo(7104, "got findCookies( %s )", arg1.ascii());
+        kdDebug(7104) << "got findCookies( " << arg1 << " )" << endl;
         if (cookiesPending(arg1))
         {
-           kDebugInfo( 7104, "Blocked on pending cookies.");
+           kdDebug(7104) << "Blocked on pending cookies." << endl;
            CookieRequest *request = new CookieRequest;
            request->transaction = dcopClient()->beginTransaction();
            request->url = arg1;
@@ -129,7 +129,7 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         QDataStream stream2(replyData, IO_WriteOnly);
         stream2 << res;
         replyType = "QString";
-        kDebugInfo( 7104, "result = %s", res.ascii());
+        kdDebug(7104) << "result = " << res << endl;
         return true;
     }
     else if (fun == "addCookies(QString,QCString)")
@@ -138,7 +138,7 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         QString arg1;
         QCString arg2;
         stream >> arg1 >> arg2;
-        kDebugInfo( 7104, "got addCookies(%s, %s)", arg1.ascii(), arg2.data());
+        kdDebug(7104) << "got addCookies(" << arg1 << ", " << arg2.data() << ")" << endl;
         addCookies(arg1, arg2);
         replyType = "void";
         return true;
@@ -147,7 +147,7 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
     {
         return true;
     }
-    kDebugInfo( 7104, "Ignoring unknown DCOP function \"%s\"", fun.data());
+    kdDebug(7104) << "Ignoring unknown DCOP function \"" << fun.data() << "\"" << endl;
     return false;
 }
 
@@ -214,7 +214,7 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
                 }
                 else
                 {
-                    kDebugInfo( 7104, "Asking user for advice for cookie from %s", cookie->host().ascii());
+                    kdDebug(7104) << "Asking user for advice for cookie from " << cookie->host() << endl;
                     mPendingCookies->prepend(cookie);
                     KCookieWin *kw = new KCookieWin( 0L, cookie);
 	            userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
@@ -229,13 +229,13 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
         switch(advice)
         {
         case KCookieAccept:
-            kDebugInfo( 7104, "Accepting cookie from %s", cookie->host().ascii());
+            kdDebug(7104) << "Accepting cookie from " << cookie->host() << endl;
             mCookieJar->addCookie(cookie);
 	    break;
 	
 	case KCookieReject:
         default:
-            kDebugInfo( 7104, "Rejecting cookie from %s", cookie->host().ascii());
+            kdDebug(7104) << "Rejecting cookie from " << cookie->host() << endl;
             delete cookie;
 	    break;
         }
@@ -293,7 +293,7 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
 
 void KCookieServer::slotSave()
 {
-   kDebugInfo( 7104, "Saving cookie stuff!\n");
+   kdDebug(7104) << "Saving cookie stuff!\n" << endl;
 
    delete mTimer;
    mTimer = 0;

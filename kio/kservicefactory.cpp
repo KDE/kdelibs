@@ -157,12 +157,12 @@ KService* KServiceFactory::createService(int offset)
         break;
         
      default:
-        kDebugError( 7011, QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
+        kdError(7011) << QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
         break;
    }
    if (!newEntry->isValid())
    {
-      kDebugError( 7011, "KServiceFactory: corrupt object in KSycoca database!\n");
+      kdError(7011) << "KServiceFactory: corrupt object in KSycoca database!\n" << endl;
       delete newEntry;
       newEntry = 0;
    }   
@@ -171,7 +171,7 @@ KService* KServiceFactory::createService(int offset)
 
 KService::List KServiceFactory::allServices()
 {
-   kDebugInfo( 7011, "KServiceFactory::allServices()");
+   kdDebug(7011) << "KServiceFactory::allServices()" << endl;
    KService::List list;
    if (!m_str) return list;
 
@@ -191,8 +191,7 @@ KService::List KServiceFactory::allServices()
 
 KService::List KServiceFactory::offers( int serviceTypeOffset )
 {
-   //kDebugInfo( 7011, QString("KServiceFactory::offers ( %1 )")
-   //                          .arg(serviceTypeOffset,8,16));
+   //kdDebug(7011) << QString("KServiceFactory::offers ( %1 )")   //                          .arg(serviceTypeOffset,8,16) << endl;
    KService::List list;
 
    QDataStream *str = m_str;
@@ -211,7 +210,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
          (*str) >> aServiceOffset;
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
-            //kDebugInfo( 7011, QString("KServiceFactory::offers : Found !"));
+            //kdDebug(7011) << QString("KServiceFactory::offers : Found !") << endl;
             // Save stream position !
             int savedPos = str->device()->at();
             // Create Service

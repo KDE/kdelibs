@@ -58,17 +58,17 @@ IdleSlave::gotInput()
    if (mConn.read( &cmd, data) == -1)
    {
       // Communication problem with slave. 
-      kDebugInfo(7016, "SlavePool: No communication with slave.");
+      kdDebug(7016) << "SlavePool: No communication with slave." << endl;
       delete this;
    }
    else if (cmd == MSG_SLAVE_ACK)
    {
-      kDebugInfo(7016, "SlavePool: Slave is connecting to app.");
+      kdDebug(7016) << "SlavePool: Slave is connecting to app." << endl;
       delete this;
    }
    else if (cmd != MSG_SLAVE_STATUS)
    {
-      kDebugInfo(7016, "SlavePool: Unexpected data from slave.");
+      kdDebug(7016) << "SlavePool: Unexpected data from slave." << endl;
       delete this;
    }
    else 
@@ -742,7 +742,7 @@ KLauncher::requestSlave(const QString &protocol,
 void
 KLauncher::acceptSlave(KSocket *slaveSocket)
 {
-    kDebugInfo(7016, "SlavePool: accepSlave(...)");
+    kdDebug(7016) << "SlavePool: accepSlave(...)" << endl;
     IdleSlave *slave = new IdleSlave(slaveSocket);
     // Send it a SLAVE_STATUS command.
     mSlaveList.append(slave);
@@ -752,7 +752,7 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
 void
 KLauncher::slotSlaveGone()
 {
-    kDebugInfo(7016, "SlavePool: slotSlaveGone(...)");
+    kdDebug(7016) << "SlavePool: slotSlaveGone(...)" << endl;
     IdleSlave *slave = (IdleSlave *) sender();
     mSlaveList.removeRef(slave);
 }

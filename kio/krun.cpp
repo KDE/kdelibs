@@ -246,7 +246,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
 bool KRun::run( const QString& _cmd )
 {
-  kDebugInfo( 7010, "Running %s", _cmd.ascii() );
+  kdDebug(7010) << "Running " << _cmd << endl;
 
   KShellProcess proc;
   proc << _cmd;
@@ -264,7 +264,7 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
 
   if ( _allow_multiple )
   {
-    kDebugArea( 7010, "Allow Multiple" );
+    kdDebug(7010) << "Allow Multiple" << endl;
     argv = new char*[ _urls.count() + 3 ];
     argv[ 0 ] = qstrdup(kfmexec.latin1());
 
@@ -286,7 +286,7 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
   }
   else
   {
-    kDebugArea( 7010, "Not multiple" );
+    kdDebug(7010) << "Not multiple" << endl;
     KURL::List::ConstIterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
     {
@@ -336,7 +336,7 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_dele
 
 void KRun::init()
 {
-  kDebugInfo( 7010, "INIT called" );
+  kdDebug(7010) << "INIT called" << endl;
 
   QString myurl = m_strURL.url();
 
@@ -386,7 +386,7 @@ void KRun::init()
 
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL, m_mode, m_bIsLocalFile );
     assert( mime );
-    kDebugInfo( 7010, "MIME TYPE is %s", debugString(mime->mimeType()) );
+    kdDebug(7010) << "MIME TYPE is " << debugString(mime->mimeType()) << endl;
     foundMimeType( mime->mimeType() );
     return;
   }
@@ -401,14 +401,14 @@ void KRun::init()
   // Let's see whether it is a directory
   if ( !KProtocolManager::self().supportsListing( m_strURL.protocol() ) )
   {
-    kDebugInfo( 7010, "##### NO SUPPORT FOR LISTING" );
+    kdDebug(7010) << "##### NO SUPPORT FOR LISTING" << endl;
     // No support for listing => we can scan the file
     scanFile();
     return;
   }
 
   // Let's see whether it is a directory
-  kDebugInfo( 7010, "##### TESTING DIRECTORY (STATING)" );
+  kdDebug(7010) << "##### TESTING DIRECTORY (STATING)" << endl;
 
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL );
@@ -419,7 +419,7 @@ void KRun::init()
 
 KRun::~KRun()
 {
-  kDebugInfo( 7010, "KRun::~KRun()" );
+  kdDebug(7010) << "KRun::~KRun()" << endl;
   m_timer.stop();
   killJob();
 }
@@ -428,13 +428,13 @@ void KRun::scanFile()
 {
   if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
   {
-     kDebugError( 7010, "#### NO SUPPORT FOR READING!" );
+     kdError(7010) << "#### NO SUPPORT FOR READING!" << endl;
      m_bFault = true;
      m_bFinished = true;
      m_timer.start( 0, true );
      return;
   }
-  kDebugInfo( 7010, "###### Scanning file %s", debugString(m_strURL.url()) );
+  kdDebug(7010) << "###### Scanning file " << debugString(m_strURL.url()) << endl;
 
   KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
   connect(job, SIGNAL( result( KIO::Job *)),
@@ -444,7 +444,7 @@ void KRun::scanFile()
 
 void KRun::slotTimeout()
 {
-  kDebugInfo( 7010, "slotTimeout called" );
+  kdDebug(7010) << "slotTimeout called" << endl;
   if ( m_bInit )
   {
     m_bInit = false;
@@ -484,7 +484,7 @@ void KRun::slotStatResult( KIO::Job * job )
   m_job = 0L;
   if (job->error())
   {
-    kDebugError( 7010,"ERROR %d %s", job->error(), job->errorText().ascii() );
+    kdError(7010) << "ERROR " << job->error() << " " << job->errorText() << endl;
     job->showErrorDialog();
 
     m_bFault = true;
@@ -495,7 +495,7 @@ void KRun::slotStatResult( KIO::Job * job )
 
   } else {
 
-    kDebugInfo( 7010, "####### FINISHED" );
+    kdDebug(7010) << "####### FINISHED" << endl;
 
     KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it = entry.begin();
@@ -532,7 +532,7 @@ void KRun::slotScanFinished( KIO::Job *job )
 
 void KRun::foundMimeType( const QString& type )
 {
-  kDebugInfo( 7010, "Resulting mime type is %s", debugString(type) );
+  kdDebug(7010) << "Resulting mime type is " << debugString(type) << endl;
 
   // Automatically unzip stuff
   if ( type == "application/x-gzip"  ||
@@ -567,7 +567,7 @@ void KRun::foundMimeType( const QString& type )
     // Create the new URL
     m_strURL = KURL::join( lst );
 
-    kDebugInfo( 7010, "Now trying with %s", debugString(m_strURL.url()) );
+    kdDebug(7010) << "Now trying with " << debugString(m_strURL.url()) << endl;
 
     killJob();
 

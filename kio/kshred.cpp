@@ -35,7 +35,7 @@ KShred::KShred(QString fileName)
 {
   if (fileName.isEmpty())
   {
-    kDebugError( "KShred: missing file name in constructor" );
+    kdError() << "KShred: missing file name in constructor" << endl;
     file = 0L;
   }
   else
@@ -44,7 +44,7 @@ KShred::KShred(QString fileName)
     file->setName(fileName);
     if (!file->open(IO_ReadWrite))
     {
-      kDebugError( "KShred: cannot open file '%s' for writing\n", fileName.local8Bit().data() );
+      kdError() << "KShred: cannot open file '" << fileName.local8Bit().data() << "' for writing\n" << endl;
       file = 0L;
     }
   }
@@ -140,7 +140,7 @@ bool
 KShred::shred(QString fileName)
 {
 
-  kDebugError( "KShred: shredding '%s'\n", fileName.local8Bit().data() );
+  kdError() << "KShred: shredding '" << fileName.local8Bit().data() << "'\n" << endl;
   if (fileName.isEmpty())
     return false;
 

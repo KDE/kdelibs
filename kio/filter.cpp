@@ -130,7 +130,7 @@ bool KIOFilter::send( void *_p, int _len )
 	goto again1;
       else if ( n == -1 && errno != EAGAIN )
       {
-	kDebugError( 7005, "ERROR: Write" );
+	kdError(7005) << "ERROR: Write" << endl;
 	return false;
       }
 
@@ -147,7 +147,7 @@ bool KIOFilter::send( void *_p, int _len )
 	  goto again2;
 	else if ( n == -1 && errno != EAGAIN )
 	{
-	  kDebugError( 7005, "ERROR: Read %d", errno );
+	  kdError(7005) << "ERROR: Read " << errno << endl;
 	  return false;
 	}
 	

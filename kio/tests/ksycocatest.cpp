@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
    if ( s1 )
    {
      debug("Found it !");
-     debug(QString("Comment is %1").arg(s1->comment("",false)));
+     debug(QString("Comment is %1").arg(s1->comment(KURL(),false)));
    }
    else
    {
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
    if ( s0 )
    {
      debug("Found it !");
-     debug(QString("Comment is %1").arg(s0->comment("",false)));
+     debug(QString("Comment is %1").arg(s0->comment(KURL(),false)));
    }
    else
    {
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 				 true, false );
    assert( mf );
    debug(QString("Name is %1").arg(mf->name()));
-   debug(QString("Comment is %1").arg(mf->comment("",false)));
+   debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
 
    //
    debug("\nTrying findByURL for home.png");
@@ -125,14 +125,14 @@ int main(int argc, char *argv[])
 				 true, false );
    assert( mf );
    debug(QString("Name is %1").arg(mf->name()));
-   debug(QString("Comment is %1").arg(mf->comment("",false)));
+   debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
 
    //
    debug("\nTrying findByURL for Makefile.am");
    mf  = KMimeType::findByURL( KURL("/tmp/Makefile.am"), 0, true, false );
    assert( mf );
    debug(QString("Name is %1").arg(mf->name()));
-   debug(QString("Comment is %1").arg(mf->comment("",false)));
+   debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
 
    debug("\nTrying findByURL for Makefile.am");
 

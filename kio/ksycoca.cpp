@@ -144,7 +144,7 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
     replyType = "void";
     return true;
   } else {
-    kDebugWarning( 7011, QString("unknown function call to KSycoca::process() : %1").arg(fun));
+    kdWarning(7011) << QString("unknown function call to KSycoca::process() : %1").arg(fun) << endl;
     return false;
   }
 }
@@ -153,12 +153,12 @@ QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 {
    if ( !m_str )
       openDatabase();
-   //kDebugInfo( 7011, QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16));
+   //kdDebug(7011) << QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16) << endl;
    m_str->device()->at(offset);
    Q_INT32 aType;
    (*m_str) >> aType;
    type = (KSycocaType) aType;
-   //kDebugInfo( 7011, QString("KSycoca::found type %1").arg(aType) );
+   //kdDebug(7011) << QString("KSycoca::found type %1").arg(aType) << endl;
    return m_str;
 }
 
@@ -174,8 +174,8 @@ bool KSycoca::checkVersion(bool abortOnError)
    {
       if (!abortOnError) return false;
       // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
-      kDebugError( 7011, "Outdated database ! Stop kded and restart it !" );
-      kDebugError( 7011, "Found version %d, expecting version %d.", aVersion, KSYCOCA_VERSION );
+      kdError(7011) << "Outdated database ! Stop kded and restart it !" << endl;
+      kdError(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << "." << endl;
       abort();
    }
    return true;
@@ -190,16 +190,16 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
    {
       (*m_str) >> aId;
       assert( aId >= 0 && aId <= 2 ); // to update in case of new factories
-      //kDebugInfo( 7011, QString("KSycoca::findFactory : found factory %1").arg(aId));
+      //kdDebug(7011) << QString("KSycoca::findFactory : found factory %1").arg(aId) << endl;
       if (aId == 0)
       {
-         kDebugError( 7011, "Error, KSycocaFactory (id = %d) not found!\n", id);
+         kdError(7011) << "Error, KSycocaFactory (id = " << id << ") not found!\n" << endl;
          break;
       }
       (*m_str) >> aOffset;
       if (aId == id)
       {
-         //kDebugInfo( 7011, QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset));
+         //kdDebug(7011) << QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset) << endl;
          m_str->device()->at(aOffset);
          return m_str;
       }
@@ -239,10 +239,10 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_
       sRelativeFilePath = _fullpath.mid( (*dirsit).length() ); // skip appsdirs
   }
   if ( sRelativeFilePath.isEmpty() )
-    kDebugFatal( 7011, QString("Couldn't find %1 in any %2 dir !!!").arg( _fullpath ).arg( _resource) );
+    kdFatal(7011) << QString("Couldn't find %1 in any %2 dir !!!").arg( _fullpath ).arg( _resource) << endl;
   //else
     // debug code
-    //kDebugInfo( 7011, sRelativeFilePath );
+    //kdDebug(7011) << sRelativeFilePath << endl;
   return sRelativeFilePath;
 }
 

@@ -322,33 +322,33 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
     for( ; it != entry.end(); it++ ) {
         switch ((*it).m_uds) {
             case KIO::UDS_FILE_TYPE:
-                kDebugInfo("File Type : %d", (mode_t)((*it).m_long) );
+                kdDebug() << "File Type : " << (mode_t)((*it).m_long) << endl;
                 if ( S_ISDIR( (mode_t)((*it).m_long) ) )
                 {
-                    kDebugInfo("is a dir");
+                    kdDebug() << "is a dir" << endl;
                 }
                 break;
             case KIO::UDS_ACCESS:
-                kDebugInfo("Access permissions : %d", (mode_t)((*it).m_long) );
+                kdDebug() << "Access permissions : " << (mode_t)((*it).m_long) << endl;
                 break;
             case KIO::UDS_USER:
-                kDebugInfo("User : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "User : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_GROUP:
-                kDebugInfo("Group : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "Group : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_NAME:
-                kDebugInfo("Name : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "Name : " << ((*it).m_str.ascii() ) << endl;
                 //m_strText = decodeFileName( (*it).m_str );
                 break;
             case KIO::UDS_URL:
-                kDebugInfo("URL : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "URL : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_MIME_TYPE:
-                kDebugInfo("MimeType : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "MimeType : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_LINK_DEST:
-                kDebugInfo("LinkDest : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
                 break;
         }
     }
@@ -361,7 +361,7 @@ void KioslaveTest::slotEntries(KIO::Job*, const KIO::UDSEntryList& list) {
         UDSEntry::ConstIterator it2 = it.current()->begin();
         for( ; it2 != it.current()->end(); it2++ ) {
             if ((*it2).m_uds == UDS_NAME)
-                kDebugInfo( "%s", ( *it2 ).m_str.latin1() );
+                kdDebug() << "" << ( *it2 ).m_str << endl;
         }
     }
 }
@@ -370,12 +370,12 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
 {
     if (data.size() == 0)
     {
-       kDebugInfo( 0, "Data: <End>");
+       kdDebug(0) << "Data: <End>" << endl;
     }
     else
     {
        QCString c_string(data.data(), data.size()); // Make it 0-terminated!
-       kDebugInfo( 0, "Data: \"%s\"", c_string.data() );
+       kdDebug(0) << "Data: \"" << c_string.data() << "\"" << endl;
     }
 }
 
@@ -392,11 +392,11 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
 
     if (!fileData)
     {
-       kDebugInfo( 0, "DataReq: <End>");
+       kdDebug(0) << "DataReq: <End>" << endl;
        return;
     }
     data.duplicate(fileData, strlen(fileData));
-    kDebugInfo( 0, "DataReq: \"%s\"", fileData );
+    kdDebug(0) << "DataReq: \"" << fileData << "\"" << endl;
 }
 
 void KioslaveTest::stopJob() {

@@ -236,11 +236,11 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 {
   if (!m_bValid) return false; // safety test
 
-//  kDebugInfo( 7012, "Testing %s", m_strName.ascii());
+//  kdDebug(7012) << "Testing " << m_strName << endl;
 
 //  QStringList::ConstIterator it = m_lstServiceTypes.begin();
 //  for( ; it != m_lstServiceTypes.end(); ++it )
-//    kDebugInfo( 7012, "    has %s", (*it).ascii() );
+//    kdDebug(7012) << "    has " << (*it) << endl;
 
   // TODO : what about "all", "allfiles" and "alldirs" ?
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );

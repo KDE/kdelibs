@@ -95,7 +95,7 @@ void Connection::close()
 void Connection::send(int cmd, const QByteArray& data)
 {
     if (!inited() || queueonly || tasks.count() > 0) {
-	kDebugInfo( 7017, "pending queue %d", cmd);
+	kdDebug(7017) << "pending queue " << cmd << endl;
 	Task *task = new Task();
 	task->cmd = cmd;
 	task->data = data;
@@ -110,7 +110,7 @@ void Connection::send(int cmd, const QByteArray& data)
 
 void Connection::queueOnly(bool queue) {
     unqueuedTasks = tasks.count();
-    kDebugInfo( 7017, "setting queueOnly to %d", queue);
+    kdDebug(7017) << "setting queueOnly to " << queue << endl;
     queueonly = queue;
     dequeue();
 }
@@ -120,7 +120,7 @@ void Connection::dequeue()
     if (tasks.count() == 0  || !inited() || (queueonly && unqueuedTasks == 0))
 	return;
 
-    kDebugInfo(7017, "dequeue");
+    kdDebug(7017) << "dequeue" << endl;
 
     tasks.first();
     Task *task = tasks.take();
@@ -175,11 +175,11 @@ void Connection::connect(QObject *_receiver, const char *_member)
 bool Connection::sendnow( int _cmd, const QByteArray &data )
 {
     if (f_out == 0) {
-	kDebugInfo(7017, "write: not yet inited.");
+	kdDebug(7017) << "write: not yet inited." << endl;
 	return false;
     }
 
-    kDebugInfo(7017, "sendnow %d", _cmd);
+    kdDebug(7017) << "sendnow " << _cmd << endl;
 
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
@@ -187,14 +187,14 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
     size_t n = fwrite( buffer, 1, 10, f_out );
 
     if ( n != 10 ) {
-	kDebugError( 7017, "Could not send header");
+	kdError(7017) << "Could not send header" << endl;
 	return false;
     }
 
     n = fwrite( data.data(), 1, data.size(), f_out );
 
     if ( n != data.size() ) {
-	kDebugError( 7017, "Could not write data");
+	kdError(7017) << "Could not write data" << endl;
 	return false;
     }
 
@@ -208,7 +208,7 @@ int Connection::read( int* _cmd, QByteArray &data )
     kdDebug(7017) << "read\n";
 
     if (!fd_in) {
-	kDebugInfo(7017, "read: not yet inited");
+	kdDebug(7017) << "read: not yet inited" << endl;
 	return -1;
     }
 
@@ -220,12 +220,12 @@ int Connection::read( int* _cmd, QByteArray &data )
 	goto again1;
 
     if ( n == -1) {
-	kDebugError( 7017, "Header read failed, errno=%d", errno);
+	kdError(7017) << "Header read failed, errno=" << errno << endl;
     }
 
     if ( n != 10 ) {
       if ( n ) // 0 indicates end of file
-        kDebugError( 7017, "Header has invalid size (%d)", n);
+        kdError(7017) << "Header has invalid size (" << n << ")" << endl;
       return -1;
     }
 
@@ -252,11 +252,11 @@ int Connection::read( int* _cmd, QByteArray &data )
 		if (errno == EINTR)
 		    continue;
 		
-		kDebugError( 7017, "Data read failed, errno=%d", errno);
+		kdError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }
 	    if (n != bytesToGo) {
-		kDebugInfo( 7017, "Not enough data read (%d instead of %d) cmd=%ld", n, bytesToGo, cmd);
+		kdDebug(7017) << "Not enough data read (" << n << " instead of " << bytesToGo << ") cmd=" << cmd << "d" << endl;
 	    }
 	
 	    bytesRead += n;

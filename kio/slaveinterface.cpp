@@ -49,7 +49,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         emit dataReq();
 	break;
     case MSG_FINISHED:
-	kDebugInfo(7007, "Finished [this = %p]", this);
+	kdDebug(7007) << "Finished [this = " << this << "]" << endl;
 	emit finished();
 	break;
     case MSG_STAT_ENTRY:
@@ -86,7 +86,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_ERROR:
 	stream >> i >> str1;
-	kDebugInfo(7007, "error %d %s", i, debugString(str1));
+	kdDebug(7007) << "error " << i << " " << debugString(str1) << endl;
 	emit error( i, str1 );
 	break;
     case MSG_SLAVE_STATUS:

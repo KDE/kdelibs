@@ -55,7 +55,7 @@ namespace KIO {
      * And slotResult is usually at least:
      *
      *  if ( job->error() )
-     *      job->showErrorDialog();
+     *      job->showErrorDialog( this or 0L  );
      *
      */
     class Job : public QObject {
@@ -105,8 +105,9 @@ namespace KIO {
          * this job.
          * Only call if @ref error is not 0, and only in the slot connected
          * to @ref result.
+         * @param parent the parent widget for the dialog box
          */
-        void showErrorDialog();
+        void showErrorDialog( QWidget * parent = 0L );
 
     signals:
         /**

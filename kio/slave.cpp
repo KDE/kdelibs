@@ -56,7 +56,7 @@ using namespace KIO;
 
 void Slave::accept(KSocket *socket)
 {
-    kDebugInfo("slave has connected to application");
+    kdDebug() << "slave has connected to application" << endl;
     slaveconn.init(socket);
     delete serv;
     serv = 0;
@@ -135,7 +135,7 @@ void Slave::gotAnswer()
 void Slave::kill()
 {
     dead = true; // OO can be such simple.
-    kDebugInfo("killing slave (%s:\\%s)", debugString(m_protocol), debugString(m_host));
+    kdDebug() << "killing slave (" << debugString(m_protocol) << ":\\" << debugString(m_host) << ")" << endl;
     if (m_pid)
     {
        ::kill(m_pid, SIGTERM);
@@ -161,7 +161,7 @@ void Slave::setHost( const QString &host, int port,
 
 Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 {
-    kDebugInfo("createSlave for %s", debugString(url.url()));
+    kdDebug() << "createSlave for " << debugString(url.url()) << endl;
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -171,7 +171,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     // Check kioslave is running
     if (!client->isApplicationRegistered( "kioslave" ))
     {
-        kDebugInfo("Trying to start kioslave");
+        kdDebug() << "Trying to start kioslave" << endl;
         // Launch the kioslave service
         QString errort;
         QCString dcopName;
@@ -223,7 +223,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
         delete slave;
 	return 0;
     }
-    kDebugInfo("PID of slave = %d", pid);
+    kdDebug() << "PID of slave = " << pid << endl;
     slave->setPID(pid);
 
     return slave;

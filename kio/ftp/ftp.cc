@@ -57,7 +57,7 @@ int kdemain( int argc, char **argv )
 {
   KInstance instance( "kio_ftp" );
 
-  kDebugInfo(7102, "Starting %d", getpid());
+  kdDebug(7102) << "Starting " << getpid() << endl;
 
   if (argc != 4)
   {
@@ -68,7 +68,7 @@ int kdemain( int argc, char **argv )
   Ftp slave(argv[2], argv[3]);
   slave.dispatchLoop();
 
-  kDebugInfo(7102, "Done" );
+  kdDebug(7102) << "Done" << endl;
   return 0;
 }
 
@@ -81,7 +81,7 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   m_bPersistent = true;
-  kDebugInfo( 7102, "Ftp::Ftp()");
+  kdDebug(7102) << "Ftp::Ftp()" << endl;
 }
 
 
@@ -155,7 +155,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
     }
     if ((x = ::read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
     {
-      kDebugError( 7102, "read failed" );
+      kdError(7102) << "read failed" << endl;
       retval = -1;
       break;
     }
@@ -182,11 +182,11 @@ bool Ftp::readresp(char expresp)
   char match[5];
   if ( ftpReadline( rspbuf, 256, nControl ) == -1 )
   {
-    kDebugError( 7102, "Could not read" );
+    kdError(7102) << "Could not read" << endl;
     error( ERR_COULD_NOT_READ, "" );
     return false;
   }
-  kDebugInfo( 7102, "resp> %s",rspbuf);
+  kdDebug(7102) << "resp> " << rspbuf << endl;
   if ( rspbuf[3] == '-' )  {
     strncpy( match, rspbuf, 3 );
     match[3] = ' ';
@@ -196,7 +196,7 @@ bool Ftp::readresp(char expresp)
         error( ERR_COULD_NOT_READ, "" );
 	return false;
       }
-      kDebugInfo( 7102, "%s",rspbuf);
+      kdDebug(7102) << rspbuf << endl;
     }
     while ( strncmp( rspbuf, match, 4 ) );
   }
@@ -258,7 +258,7 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
 
 void Ftp::openConnection()
 {
-  kDebugInfo( 7102, "openConnection %s:%d %s %s", m_host.ascii(), m_port, m_user.ascii(), m_pass.ascii());
+  kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " " << m_pass << endl;
 
   assert( !m_bLoggedOn );
 
@@ -269,11 +269,11 @@ void Ftp::openConnection()
 
   m_bFtpStarted = true;
 
-  kDebugInfo( 7102, "Connected ...." );
+  kdDebug(7102) << "Connected ...." << endl;
 
   m_bLoggedOn = ftpLogin( m_user, m_pass );
   if ( !m_bLoggedOn ) {
-    kDebugError( 7102, "Could not login" );
+    kdError(7102) << "Could not login" << endl;
     error( ERR_COULD_NOT_LOGIN, m_host );
     return;
   }
@@ -285,7 +285,7 @@ void Ftp::openConnection()
       m_redirect += "/";
     }
     */
-    kDebugInfo( 7102, "REDIRECTION '%s'", m_redirect.ascii());
+    kdDebug(7102) << "REDIRECTION '" << m_redirect << "'" << endl;
     // TODO emit redirection ?
   }
 
@@ -365,7 +365,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  */
 bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 {
-    kDebugInfo( 7102, "ftpLogin %s %s", user.ascii(), _pass.ascii());
+    kdDebug(7102) << "ftpLogin " << user << " " << _pass << endl;
 
   assert( !m_bLoggedOn );
 
@@ -376,30 +376,30 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
     rspbuf[0] = '\0';
 
     if ( !ftpSendCmd( tempbuf, '3' ) ) {
-      kDebugInfo( 7102, "1> %s", rspbuf );
+      kdDebug(7102) << "1> " << rspbuf << endl;
 
       if ( rspbuf[0] == '2' )
         return true; /* no password required */
     }
 
-    kDebugInfo( 7102, "Old pass is '%s'", m_pass.ascii());
+    kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
     if ( m_pass.isEmpty() ) {
       QString tmp = m_user + "@" + m_host;
       if ( !openPassDlg( tmp, m_user, m_pass ) ) ;
       // return false;
     }
-    kDebugInfo( 7102, "New pass is '%s'", m_pass.ascii());
+    kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
 
     tempbuf = "pass ";
     tempbuf += m_pass;
 
     if ( !ftpSendCmd( tempbuf, '2' ) ) {
-      kDebugInfo( 7102, "Wrong password");
+      kdDebug(7102) << "Wrong password" << endl;
       return false;
     }
   }
 
-  kDebugInfo( 7102, "Login ok");
+  kdDebug(7102) << "Login ok" << endl;
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
@@ -417,7 +417,7 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
     }
   }
   else
-    kDebugWarning( 7102, "syst failed");
+    kdWarning(7102) << "syst failed" << endl;
 
   // No way to know this...
   /*
@@ -426,13 +426,13 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
     return true;
   */
 
-  kDebugInfo( 7102, "Searching for pwd");
+  kdDebug(7102) << "Searching for pwd" << endl;
 
   // Get the current working directory
   if ( !ftpSendCmd( "pwd", '2' ) )
     return false;
 
-  kDebugInfo( 7102, "2> %s", rspbuf );
+  kdDebug(7102) << "2> " << rspbuf << endl;
 
   char *p = rspbuf;
   while ( isdigit( *p ) ) p++; // skip return code
@@ -463,7 +463,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
   QCString buf = cmd;
   buf += "\r\n";
 
-  kDebugInfo( 7102, "%s", cmd.data() );
+  kdDebug(7102) << cmd.data() << endl;
 
   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
     error( ERR_COULD_NOT_WRITE, "" );
@@ -530,9 +530,9 @@ bool Ftp::ftpOpenPASVDataConnection()
   }
 
   if ( setsockopt(sDatal, SOL_SOCKET,SO_KEEPALIVE, (char *) &on, (int) sizeof(on)) < 0 )
-    kDebugError(7102, "Keepalive not allowed");
+    kdError(7102) << "Keepalive not allowed" << endl;
   if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
-    kDebugError(7102, "Linger mode was not allowed.");
+    kdError(7102) << "Linger mode was not allowed." << endl;
   return true;
 }
 
@@ -720,7 +720,7 @@ bool Ftp::ftpCloseCommand()
   }
   if ( !readresp( '2' ) )
   {
-    kDebugInfo( 7102, "Did not get transfer complete message");
+    kdDebug(7102) << "Did not get transfer complete message" << endl;
     return false;
   }
   return true;
@@ -870,7 +870,7 @@ void Ftp::stat( const QString & path )
   if (!m_bLoggedOn)
      openConnection();
 
-  kDebugInfo( 7102, "stat : %s", path.ascii() );
+  kdDebug(7102) << "stat : " << path << endl;
 
   // We can't stat root, but we know it's a dir.
   if ( path.isEmpty() || path == "/" ) {
@@ -926,7 +926,7 @@ void Ftp::stat( const QString & path )
 
   if( !openCommand( "list", listarg, 'A', ERR_DOES_NOT_EXIST ) )
   {
-    kDebugError( 7102, "COULD NOT LIST");
+    kdError(7102) << "COULD NOT LIST" << endl;
     return;
   }
 
@@ -936,7 +936,7 @@ void Ftp::stat( const QString & path )
     return;
   }
 
-  kDebugInfo( 7102, "Starting of list was ok");
+  kdDebug(7102) << "Starting of list was ok" << endl;
 
   assert( search != "" && search != "/" );
 
@@ -951,7 +951,7 @@ void Ftp::stat( const QString & path )
       statEntry( entry );
     }
 
-    kDebugInfo( 7102, "%s", e->name.ascii());
+    kdDebug(7102) << e->name << endl;
   }
 
   if ( !ftpCloseDir() )
@@ -963,7 +963,7 @@ void Ftp::stat( const QString & path )
     return;
   }
 
-  kDebugInfo( 7102, "stat : finished successfully" );
+  kdDebug(7102) << "stat : finished successfully" << endl;
   finished();
 }
 
@@ -981,7 +981,7 @@ void Ftp::listDir( const QString & _path )
     path = m_redirect;
   }
 
-  kDebugInfo( 7102, "hunting for path '%s'", path.ascii());
+  kdDebug(7102) << "hunting for path '" << path << "'" << endl;
 
   if (!ftpOpenDir( path ) )
   {
@@ -1000,10 +1000,10 @@ void Ftp::listDir( const QString & _path )
   FtpEntry * e;
   while( ( e = ftpReadDir() ) )
   {
-    kDebugInfo( 7102, "%s", e->name.ascii());
+    kdDebug(7102) << e->name << endl;
     if ( S_ISDIR( (mode_t)e->type ) )
     {
-        kDebugInfo( 7102, "is a dir" );
+        kdDebug(7102) << "is a dir" << endl;
     }
     entry.clear();
     createUDSEntry( e->name, e, entry );
@@ -1018,9 +1018,7 @@ void Ftp::listDir( const QString & _path )
 
 void Ftp::slave_status()
 {
-  kDebugInfo( 7102, "Got slave_status host = %s [%s]",
-	m_host.ascii() ? m_host.ascii() : "[None]",
-        m_bLoggedOn ? "Connected" : "Not connected" );
+  kdDebug(7102) << "Got slave_status host = " << (m_host.ascii() ? m_host.ascii() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]" << endl;
   slaveStatus( m_host, m_bLoggedOn );
 }
 
@@ -1046,7 +1044,7 @@ bool Ftp::ftpOpenDir( const QString & path )
   if( !dirfile )
     return false;
 
-  kDebugInfo( 7102, "Starting of list was ok");
+  kdDebug(7102) << "Starting of list was ok" << endl;
 
   return true;
 }
@@ -1181,7 +1179,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     time_t currentTime = time( 0L );
                     struct tm * tmptr = gmtime( &currentTime );
                     int currentMonth = tmptr->tm_mon;
-                    //kDebugInfo( 7102, "Current time :%s", asctime( tmptr ) );
+                    //kdDebug(7102) << "Current time :" << asctime( tmptr ) << endl;
                     // Reset time fields
                     tmptr->tm_sec = 0;
                     tmptr->tm_min = 0;
@@ -1223,10 +1221,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                         tmptr->tm_hour = atoi( p_date_3 );
                       }
                       else
-                        kDebugWarning( 7102, "Can't parse third field %s", p_date_3 );
+                        kdWarning(7102) << "Can't parse third field " << p_date_3 << endl;
                     }
 
-                    //kDebugInfo( 7102, asctime( tmptr ) );
+                    //kdDebug(7102) << asctime( tmptr ) << endl;
                     de.date = mktime( tmptr );
 		    return( &de );
                   }
@@ -1239,7 +1237,7 @@ bool Ftp::ftpCloseDir()
 {
   if( dirfile )
   {
-    kDebugInfo( 7102, "... closing");
+    kdDebug(7102) << "... closing" << endl;
 
     if ( ! ftpCloseCommand() )
       return false;
@@ -1249,7 +1247,7 @@ bool Ftp::ftpCloseDir()
 
     //disconnect();
   } else
-    kDebugInfo( 7102, "ftpCloseDir but no dirfile ??" );
+    kdDebug(7102) << "ftpCloseDir but no dirfile ??" << endl;
   return true;
 }
 
@@ -1269,7 +1267,7 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
   // Don't we want support for getting a file from a certain offset ? Hmm...
 
   if ( !openCommand( "retr", path, 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
-    kDebugWarning( 7102, "Can't open for reading");
+    kdWarning(7102) << "Can't open for reading" << endl;
     return;
   }
 
@@ -1336,7 +1334,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   if (!m_bLoggedOn)
      openConnection();
 
-  kDebugInfo( 7102, "Put %s", debugString(dest_orig) );
+  kdDebug(7102) << "Put " << debugString(dest_orig) << endl;
   QString dest_part( dest_orig );
   dest_part += ".part";
 
@@ -1404,7 +1402,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
 
   // if we are using marking of partial downloads -> add .part extension
   if ( bMarkPartial ) {
-    kDebugInfo( 7102, "Adding .part extension to %s", dest_orig.ascii() );
+    kdDebug(7102) << "Adding .part extension to " << dest_orig << endl;
     dest = dest_part;
   } else
     dest = dest_orig;
@@ -1414,7 +1412,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   // set the mode according to offset
   if ( resume ) {
     offset = m_size;
-    kDebugInfo( 7102, "Offset = %ld", offset );
+    kdDebug(7102) << "Offset = " << offset << "d" << endl;
   }
 
   if (! openCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
@@ -1437,7 +1435,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   if (result != 0) // error
   {
     (void) ftpCloseCommand(); // don't care about errors
-    kDebugInfo( 7102, "Error during 'put'. Aborting.");
+    kdDebug(7102) << "Error during 'put'. Aborting." << endl;
     if (bMarkPartial)
     {
       // Remove if smaller than minimum size
@@ -1461,7 +1459,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   // after full download rename the file back to original name
   if ( bMarkPartial )
   {
-    kDebugInfo( 7102, "renaming dest (%s) back to dest_orig (%s)", dest.ascii(), dest_orig.ascii() );
+    kdDebug(7102) << "renaming dest (" << dest << ") back to dest_orig (" << dest_orig << ")" << endl;
     if ( !ftpRename( dest, dest_orig, true ) )
     {
       error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
@@ -1473,7 +1471,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   if ( permissions != -1 )
   {
     if ( m_user == FTP_LOGIN )
-      kDebugInfo( 7102, "Trying to chmod over anonymous FTP ???" );
+      kdDebug(7102) << "Trying to chmod over anonymous FTP ???" << endl;
     chmod(dest_orig, permissions); // will emit error or finished
     return;
   }

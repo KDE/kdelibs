@@ -90,13 +90,13 @@ void SlaveBase::dispatchLoop()
 		QByteArray data;
                 if ( appconn->read(&cmd, data) != -1 )
                 {
-		  kDebugInfo(7019, "app said %c", cmd);
+		  kdDebug(7019) << "app said " << cmd << endl;
                   if (cmd == CMD_SLAVE_CONNECT)
                   {
                      QString app_socket;
                      QDataStream stream( data, IO_ReadOnly);
                      stream >> app_socket;
-                     kDebugInfo(7019, "slavewrapper: Connecting to new app (%s).", app_socket.ascii());
+                     kdDebug(7019) << "slavewrapper: Connecting to new app (" << app_socket << ")." << endl;
                      appconn->send( MSG_SLAVE_ACK );
                      disconnectSlave();
                      mConnectedToApp = true;
@@ -112,14 +112,14 @@ void SlaveBase::dispatchLoop()
 // When the app exits, should the slave be put back in the pool ?
                   if (mConnectedToApp)
                   {
-                     kDebugInfo(7019, "slavewrapper: Communication with app lost. Returning to slave pool.");
+                     kdDebug(7019) << "slavewrapper: Communication with app lost. Returning to slave pool." << endl;
                      disconnectSlave();
                      mConnectedToApp = false;
                      connectSlave(mPoolSocket);
                   }
                   else
                   {
-                     kDebugInfo(7019, "slavewrapper: Communication with pool lost. Exiting.");
+                     kdDebug(7019) << "slavewrapper: Communication with pool lost. Exiting." << endl;
                      exit(0);
                   }
                 }
@@ -127,7 +127,7 @@ void SlaveBase::dispatchLoop()
 	} 
         else if (retval == -1) // error
         {
-          kDebugInfo(7019, "slavewrapper: select returned error %s (%d)", errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown",errno);
+          kdDebug(7019) << "slavewrapper: select returned error " << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown") << " (" << errno << ")" << endl;
           exit(0);
         }
     }
@@ -302,7 +302,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
-    kDebugInfo( 7007, "listEntries %ld", list.count() );
+    kdDebug(7007) << "listEntries " << list.count() << "d" << endl;
 
     KIO_DATA << list.count();
     UDSEntryListIterator it(list);
@@ -388,7 +388,7 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
     if ( m_pConnection->read( &cmd, data ) == -1 ) {
 	return false;
     }
-    kDebugInfo(7007, "reading %d", cmd);
+    kdDebug(7007) << "reading " << cmd << endl;
     if (cmd != CMD_USERPASS) {
 	if (cmd != CMD_NONE)
 	    dispatch( cmd, data );
@@ -396,7 +396,7 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
     } else {
       QDataStream stream( data, IO_ReadOnly );
       stream >> user >> pass;
-      kDebugInfo(7007, "got %d %s %s", cmd, user.ascii(), pass.ascii());
+      kdDebug(7007) << "got " << cmd << " " << user << " " << pass << endl;
       return true;
     }
 }
@@ -410,7 +410,7 @@ int SlaveBase::readData( QByteArray &buffer)
    if (result == -1)
       return -1;
 
-   kDebugInfo( 7007, "readData: cmd = %d, length = %d ", cmd, result );
+   kdDebug(7007) << "readData: cmd = " << cmd << ", length = " << result << " " << endl;
 
    if (cmd != MSG_DATA)
       return -1;

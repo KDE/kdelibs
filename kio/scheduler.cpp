@@ -69,9 +69,9 @@ Scheduler::Scheduler()
 void
 Scheduler::debug_info()
 {
-    kDebugInfo(7006, "Scheduler Info");
-    kDebugInfo(7006, "==========");
-    kDebugInfo(7006, "Total Slaves: %d", slaveList->count());
+    kdDebug(7006) << "Scheduler Info" << endl;
+    kdDebug(7006) << "==========" << endl;
+    kdDebug(7006) << "Total Slaves: " << slaveList->count() << endl;
     Slave *slave = slaveList->first();
     for(; slave; slave = slaveList->next())
     {
@@ -79,14 +79,14 @@ Scheduler::debug_info()
         kdDebug(7006) << " Slave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
         kdDebug(7006) << " -- activeSlaves: " << protInfo->activeSlaves << endl;
     }
-    kDebugInfo(7006, "Idle Slaves: %d", idleSlaves->count());
+    kdDebug(7006) << "Idle Slaves: " << idleSlaves->count() << endl;
     slave = idleSlaves->first();
     for(; slave; slave = idleSlaves->next())
     {
         kdDebug(7006) << " IdleSlave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
 
     }
-    kDebugInfo(7006, "Jobs in Queue: %d", joblist.count());
+    kdDebug(7006) << "Jobs in Queue: " << joblist.count() << endl;
     SimpleJob *job = joblist.first();
     for(; job; job = joblist.next())
     {
@@ -96,12 +96,12 @@ Scheduler::debug_info()
 
 void Scheduler::_doJob(SimpleJob *job) {
     joblist.append(job);
-    kDebugInfo(7006, "Scheduler has now %d jobs %p", joblist.count(), job);
+    kdDebug(7006) << "Scheduler has now " << joblist.count() << " jobs " << job << endl;
     mytimer.start(0, true);
 }
 	
 void Scheduler::_cancelJob(SimpleJob *job) {
-    kDebugInfo(7006, "Scheduler: canceling job %p", job);
+    kdDebug(7006) << "Scheduler: canceling job " << job << endl;
     if ( job->slave() ) // was running
     {
         ProtocolInfo *protInfo = protInfoDict->get(job->slave()->protocol());
@@ -117,7 +117,7 @@ void Scheduler::startStep()
 {
     while (joblist.count())
     {
-       kDebugInfo(7006, "Scheduling job");
+       kdDebug(7006) << "Scheduling job" << endl;
        SimpleJob *job = joblist.at(0);
        QString protocol = job->url().protocol();
        ProtocolInfo *protInfo = protInfoDict->get(protocol);
@@ -159,8 +159,9 @@ void Scheduler::startStep()
              }
              else
              {
-                kDebugFatal(!slave, "couldn't create slave %d %s",
-				    error, debugString(errortext));
+                if (!slave) kdFatal() << "couldn't create slave " << error 
+                                      << error << " "
+                                      << debugString(errortext) << endl;
              }
           }
        }
@@ -178,7 +179,7 @@ void Scheduler::startStep()
 
        if (!slave)
        {
-          kDebugInfo(7006, "No slaves available");
+          kdDebug(7006) << "No slaves available" << endl;
           debug_info();
 	  return;
        }
@@ -187,7 +188,7 @@ void Scheduler::startStep()
        protInfo->activeSlaves++;
        idleSlaves->removeRef(slave);
        joblist.removeRef(job);
-       kDebugInfo(7006, "scheduler: job started %p", job);
+       kdDebug(7006) << "scheduler: job started " << job << endl;
        if ((newSlave) ||
            (slave->host() != host) ||
            (slave->port() != port) ||
@@ -201,11 +202,12 @@ void Scheduler::startStep()
 }
 
 void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QString &host, bool connected) {
-    kDebugInfo(7006, "slave status");
+    kdDebug(7006) << "slave status" << endl;
     Slave *slave = (Slave*)sender();
-    kDebugInfo(7006, "Slave = %p (PID = %d) protocol = %s host = %s %s", 
-	slave, pid, protocol.data(), host.ascii() ? host.ascii() : "[None]",
-	connected ? "Connected" : "Not connected");
+    kdDebug(7006) << "Slave = " << slave << " (PID = " << pid
+                  << ") protocol = " << protocol.data() << " host = "
+                  << ( host.ascii() ? host.ascii() : "[None]" ) << " "
+                  << ( connected ? "Connected" : "Not connected" ) << endl;
 }
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
@@ -221,7 +223,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
        _scheduleCleanup();
        if (joblist.count())
        {
-           kDebugInfo(7006, "Scheduler has now %d jobs", joblist.count());
+           kdDebug(7006) << "Scheduler has now " << joblist.count() << " jobs" << endl;
            mytimer.start(0, true);
        }
        slave->connection()->send( CMD_SLAVE_STATUS );
