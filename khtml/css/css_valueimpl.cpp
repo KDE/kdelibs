@@ -237,7 +237,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
          if (current->m_id == propertyID && NonCSSHint == current->nonCSSHint) {
              value = current->value()->cssText();
              m_lstValues->removeRef(current);
-            setChanged();
+             setChanged();
 	     break;
         }
 

@@ -65,9 +65,9 @@ using namespace DOM;
 #include "cssvalues.c"
 
 
-static QPtrList<CSSProperty>* m_propList = 0;
-static bool m_bImportant = FALSE;
-static bool m_bnonCSSHint = FALSE;
+static QPtrList<CSSProperty>* m_propList;
+static bool m_bImportant;
+static bool m_bnonCSSHint;
 
 int DOM::getPropertyID(const char *tagStr, int len)
 {
