@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2004-10-12 01:16+0200\n"
+"POT-Creation-Date: 2005-01-31 01:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -575,7 +575,9 @@ msgid "&Insert"
 msgstr ""
 
 #: common_texts.cpp:168
-msgid "&Next"
+msgid ""
+"_: Opposite to Previous\n"
+"&Next"
 msgstr ""
 
 #: common_texts.cpp:169
