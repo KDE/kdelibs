@@ -82,6 +82,8 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     QMap<int,KDockWidget*> m_revMap;
     QMap<KDockWidget*,KDockButton_Private*> m_overlapButtons;
     QStringList itemNames;
+    QMap<QString,QString> tabCaptions;
+    QMap<QString,QString> tabTooltips;
     int m_inserted;
     int m_delayedRaise;
     bool m_vertical;

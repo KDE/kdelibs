@@ -190,6 +190,8 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
 //FB    tabClicked(tab);
     KDockContainer::insertWidget(w,pixmap,text,dummy);
     itemNames.append(w->name());
+    tabCaptions.insert(w->name(),w->tabPageLabel());
+    tabTooltips.insert(w->name(),w->toolTipString());
   }
 
 //FB  m_ws->raiseWidget(tab);
@@ -251,6 +253,8 @@ void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
   }
   KDockContainer::removeWidget(w);
   itemNames.remove(w->name());
+  tabCaptions.remove(w->name());
+  tabTooltips.remove(w->name());
   if (!itemNames.count())
     ((KDockWidget*)parentWidget())->undock();
 }
@@ -355,6 +359,14 @@ void KMdiDockContainer::save(QDomElement& dockEl)
 	{
 		el=doc.createElement("child");
 		el.setAttribute("pos",QString("%1").arg(i));
+		QString s=tabCaptions[*it2];
+		if (!s.isEmpty()) {
+			el.setAttribute("tabCaption",s);
+		}
+		s=tabTooltips[*it2];
+		if (!s.isEmpty()) {
+			el.setAttribute("tabTooltip",s);
+		}
 		el.appendChild(doc.createTextNode(*it2));
 		dockEl.appendChild(el);
 		if (m_tb->isTabRaised(it.current()->id()))
@@ -385,6 +397,12 @@ void KMdiDockContainer::load(QDomElement& dockEl)
 			KDockWidget *dw=((KDockWidget*)parent())->dockManager()->getDockWidgetFromName(el.text());
 			if (dw)
 			{
+				if (el.hasAttribute("tabCaption")) {
+					dw->setTabPageLabel(el.attribute("tabCaption"));
+				}
+				if (el.hasAttribute("tabTooltip")) {
+					dw->setToolTipString(el.attribute("tabTooltip"));
+				}
 				dw->manualDock((KDockWidget*)parent(),KDockWidget::DockCenter);
 			}
 		}
@@ -461,6 +479,14 @@ void KMdiDockContainer::save(KConfig* cfg,const QString& group_or_prefix)
   {
 //    cfg->writeEntry(QString("widget%1").arg(i),m_ws->widget(it.current()->id())->name());
     cfg->writeEntry(QString("widget%1").arg(i),(*it2));
+    QString s=tabCaptions[*it2];
+    if (!s.isEmpty()) {
+      cfg->writeEntry(QString("widget%1-tabCaption").arg(i),s);
+    }
+    s=tabTooltips[*it2];
+    if (!s.isEmpty()) {
+      cfg->writeEntry(QString("widget%1-tabTooltip").arg(i),s);
+    }
 //    kdDebug()<<"****************************************Saving: "<<m_ws->widget(it.current()->id())->name()<<endl;
     if (m_tb->isTabRaised(it.current()->id()))
       cfg->writeEntry(m_ws->widget(it.current()->id())->name(),true);
@@ -492,6 +518,14 @@ void KMdiDockContainer::load(KConfig* cfg,const QString& group_or_prefix)
     KDockWidget *dw=((KDockWidget*)parent())->dockManager()->getDockWidgetFromName(dwn);
     if (dw)
     {
+      QString s=cfg->readEntry(QString("widget%1-tabCaption").arg(i));
+      if (!s.isEmpty()) {
+        dw->setTabPageLabel(s);
+      }
+      s=cfg->readEntry(QString("widget%1-tabTooltip").arg(i));
+      if (!s.isEmpty()) {
+        dw->setToolTipString(s);
+      }
       dw->manualDock((KDockWidget*)parent(),KDockWidget::DockCenter);
     }
     if (cfg->readBoolEntry(dwn,false)) raise=dwn;
