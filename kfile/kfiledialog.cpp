@@ -55,6 +55,7 @@
 #include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <kio/job.h>
+#include <kio/scheduler.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
@@ -382,7 +383,7 @@ void KFileDialog::setFilter(const QString& filter)
         setMimeFilter( filters );
         return;
     }
-    
+
     filterWidget->setFilter(filter);
     ops->fileReader()->clearMimeFilter();
     ops->fileReader()->setNameFilter(filterWidget->currentFilter());
@@ -627,6 +628,7 @@ void KFileDialog::slotOk()
         KURL::List::ConstIterator it = list.begin();
         for ( ; it != list.end(); ++it ) {
             job = KIO::stat( *it, !(*it).isLocalFile() );
+            KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
             connect( job, SIGNAL( result(KIO::Job *) ),
                      SLOT( slotStatResult( KIO::Job *) ));
