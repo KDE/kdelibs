@@ -695,7 +695,9 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     if (!extractDomains(cookiePtr->host(), domains))
        return KCookieReject;
 
-    if (!cookiePtr->domain().isEmpty())
+    bool isEmptyDomain = cookiePtr->domain().isEmpty();
+
+    if (!isEmptyDomain )
     {
        // Cookie specifies a domain. Check whether it is valid.
        bool valid = false;
@@ -745,14 +747,16 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
         return KCookieReject;
     }
 #endif
-    // No need to test for empty domain and domain-
-    // hostname match since those things have already
-    // have been taken care of either at the beginning
-    // of this method or in ::makeCookies...(DA)
-    QString domain = cookiePtr->domain();
+    // For empty domain use the FQDN to find a
+    // matching advice for the pending cookie.
+    QString domain;
+    if ( isEmptyDomain )
+       domain = domains[0];
+    else
+       domain = cookiePtr->domain();
+
     KHttpCookieList *cookieList = cookieDomains[domain];
     KCookieAdvice advice;
-
     if (cookieList)
     {
         kdDebug(7104) << "Found domain..." << endl;
@@ -770,7 +774,8 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
         kdDebug(7104) << "No domain specific advice found. Using global policy instead..." << endl;
         advice = globalAdvice;
     }
-    kdDebug(7104) << "Domain name: " << domain << "\tCookie Advice: " << adviceToStr( advice ) << endl;
+    kdDebug(7104) << "Domain name: " << domain << endl
+                  << "Cookie Advice: " << adviceToStr( advice ) << endl;
     return advice;
 }
 
