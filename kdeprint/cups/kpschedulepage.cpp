@@ -48,7 +48,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_time = new QComboBox(this);
 	m_time->insertItem(i18n("Immediately"));
 	m_time->insertItem(i18n("Never (hold indefinitely)"));
-	m_time->insertItem(i18n("Day Time (6 am - 6 pm)"));
+	m_time->insertItem(i18n("Daytime (6 am - 6 pm)"));
 	m_time->insertItem(i18n("Evening (6 pm - 6 am)"));
 	m_time->insertItem(i18n("Night (6 pm - 6 am)"));
 	m_time->insertItem(i18n("Weekend"));
