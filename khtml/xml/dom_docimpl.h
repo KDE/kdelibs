@@ -192,7 +192,7 @@ public:
      /**
      * Updates the pending sheet count and then calls updateStyleSelector.
      */
-    void stylesheetLoaded();
+    void styleSheetLoaded();
 
     /**
      * This method returns true if all top-level stylesheets have loaded (including
@@ -204,7 +204,7 @@ public:
      * Increments the number of pending sheets.  The <link> elements
      * invoke this to add themselves to the loading list.
      */
-    void addPendingSheet();
+    void addPendingSheet() { m_pendingStylesheets++; }
 
     /**
      * Called when one or more stylesheets in the document may have been added, removed or changed.
@@ -333,14 +333,15 @@ public:
     IdNameMapping *elementNames() const { return m_elementNames; }
     IdNameMapping *attrNames() const { return m_attrNames; }
 
-    StyleSheetListImpl* styleSheets();
+    StyleSheetListImpl* styleSheets() { return m_styleSheets; };
 
     DOMString preferredStylesheetSet() const { return m_preferredStylesheetSet; }
     DOMString selectedStylesheetSet() const;
     void setSelectedStylesheetSet(const DOMString&);
     void setPreferredStylesheetSet(const DOMString& s) { m_preferredStylesheetSet = s; }
 
-    QStringList availableStyleSheets() const;
+    QStringList availableStyleSheets() const { return m_availableSheets; }
+
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
 

@@ -248,8 +248,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   KConfig *config = KGlobal::config();
   if ( config->hasGroup( "HTML Settings" ) ) {
     config->setGroup( "HTML Settings" );
-
-    khtml::Decoder::AutomaticDetectinonLanguage language;
+    khtml::Decoder::AutoDetectLanguage language;
     QCString name = QTextCodec::codecForLocale()->name();
     name = name.lower();
 
@@ -1716,9 +1715,9 @@ void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
 
 void KHTMLPart::checkCompleted()
 {
-  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() " << this << " " << name() << endl;
-  //kdDebug( 6050 ) << "                           parsing: " << (d->m_doc && d->m_doc->parsing()) << endl;
-  //kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
+//   kdDebug( 6050 ) << "KHTMLPart::checkCompleted() " << this << " " << name() << endl;
+//   kdDebug( 6050 ) << "                           parsing: " << (d->m_doc && d->m_doc->parsing()) << endl;
+//   kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
   if (d->m_doc && !d->m_doc->parsing() && !d->m_focusNodeRestored)
@@ -1812,8 +1811,8 @@ void KHTMLPart::checkCompleted()
   if (d->m_doc)
      sheets = d->m_doc->availableStyleSheets();
   d->m_paUseStylesheet->setItems( sheets );
-  d->m_paUseStylesheet->setEnabled( !sheets.isEmpty() );
-  if (!sheets.isEmpty())
+  d->m_paUseStylesheet->setEnabled( sheets.count() > 1);
+  if (sheets.count() > 1)
   {
     d->m_paUseStylesheet->setCurrentItem(kMax(sheets.findIndex(d->m_sheetUsed), 0));
     slotUseStylesheet();
@@ -1930,9 +1929,7 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  qDebug( "comparing %s and %s",
-   cUrl.url().latin1(), url.url().latin1() );
-  if (!kapp || !kapp->kapp->authorizeURLAction("redirect", cUrl, url))
+  if (!kapp || !kapp->authorizeURLAction("redirect", cUrl, url))
   {
     kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
     return;
@@ -2754,7 +2751,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     return;
   }
 
-  if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 ) {
+  if (url.find( QString::fromLatin1( "javascript:" ),0, false ) == 0 ) {
     QString jscode = KURL::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );

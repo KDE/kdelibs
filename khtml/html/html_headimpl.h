@@ -72,14 +72,15 @@ class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElement
 {
 public:
     HTMLLinkElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc), m_cachedSheet(0), m_sheet(0), m_disabledState(0),
-	m_loading(false), m_alternate(false) {}
+        : HTMLElementImpl(doc), m_cachedSheet(0), m_sheet(0), m_isDisabled(false),
+	m_loading(false), m_alternate(false), m_isCSSSheet(false) {}
 
     ~HTMLLinkElementImpl();
 
     virtual Id id() const;
 
-    StyleSheetImpl* sheet() const { return m_sheet; }
+    const StyleSheetImpl* sheet() const { return m_sheet; }
+    StyleSheetImpl* sheet() { return m_sheet; }
 
     // overload from HTMLElementImpl
     virtual void parseAttribute(AttributeImpl *attr);
@@ -94,21 +95,19 @@ public:
     bool isLoading() const;
     void sheetLoaded();
 
-    bool isAlternate() const { return m_disabledState == 0 && m_alternate; }
-    bool isDisabled() const { return m_disabledState == 2; }
-    bool isEnabledViaScript() const { return m_disabledState == 1; }
-    
+    bool isAlternate() const { return m_alternate; }
+    bool isCSSStyleSheet() const { return m_isCSSSheet; }
+    bool isDisabled() const { return m_isDisabled; }
+
 protected:
     khtml::CachedCSSStyleSheet *m_cachedSheet;
     CSSStyleSheetImpl *m_sheet;
     DOMString m_url;
-    DOMString m_type;
     QString m_media;
-    DOMString m_rel;
-    int m_disabledState; // 0=unset(default), 1=enabled via script, 2=disabled
-    bool m_loading;
-    bool m_alternate;
-    QString m_data; // needed for temporarily storing the loaded style sheet data
+    bool m_isDisabled : 1;
+    bool m_loading    : 1;
+    bool m_alternate  : 1;
+    bool m_isCSSSheet : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -155,7 +154,8 @@ public:
 
     virtual Id id() const;
 
-    StyleSheetImpl *sheet() const { return m_sheet; }
+    const StyleSheetImpl *sheet() const { return m_sheet; }
+    StyleSheetImpl *sheet() { return m_sheet; }
 
     // overload from HTMLElementImpl
     virtual void parseAttribute(AttributeImpl *attr);
@@ -168,9 +168,9 @@ public:
 
 protected:
     StyleSheetImpl *m_sheet;
-    bool m_loading;
     DOMString m_type;
     QString m_media;
+    bool m_loading;
 };
 
 // -------------------------------------------------------------------------

@@ -42,6 +42,7 @@
 #include <qptrstack.h>
 #include <qpaintdevicemetrics.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kstaticdeleter.h>
 
 #include "rendering/render_root.h"
@@ -1574,6 +1575,8 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
 
         if (renderInfo.URLElement()) {
             assert(renderInfo.URLElement()->isElementNode());
+            //qDebug("urlnode: %s  (%d)", getTagName(renderInfo.URLElement()->id()).string().latin1(), renderInfo.URLElement()->id());
+
             ElementImpl* e =  static_cast<ElementImpl*>(renderInfo.URLElement());
             DOMString href = khtml::parseURL(e->getAttribute(ATTR_HREF));
             DOMString target = e->getAttribute(ATTR_TARGET);
@@ -1584,7 +1587,6 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
             }
             else
                 ev->url = href;
-//            qDebug("url: *%s*", ev->url.string().latin1());
         }
 
         if (!readonly)
@@ -1642,14 +1644,8 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
     return 0;
 }
 
-StyleSheetListImpl* DocumentImpl::styleSheets()
-{
-    return m_styleSheets;
-}
-
-
 // This method is called whenever a top-level stylesheet has finished loading.
-void DocumentImpl::stylesheetLoaded()
+void DocumentImpl::styleSheetLoaded()
 {
   // Make sure we knew this sheet was pending, and that our count isn't out of sync.
   assert(m_pendingStylesheets > 0);
@@ -1657,13 +1653,6 @@ void DocumentImpl::stylesheetLoaded()
   m_pendingStylesheets--;
   updateStyleSelector();
 }
-
-void DocumentImpl::addPendingSheet()
-{
-m_pendingStylesheets++;
-//kdDebug()<<"ADDED SHEET pending="<<m_pendingStylesheets<<endl;
-}
-
 
 DOMString DocumentImpl::selectedStylesheetSet() const
 {
@@ -1701,12 +1690,6 @@ void DocumentImpl::updateStyleSelector()
     }
 }
 
-
-QStringList DocumentImpl::availableStyleSheets() const
-{
-    return m_availableSheets;
-}
-
 void DocumentImpl::recalcStyleSelector()
 {
     if ( !m_render || !attached() ) return;
@@ -1715,91 +1698,106 @@ void DocumentImpl::recalcStyleSelector()
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
-    m_availableSheets.clear();
+    StyleSheetImpl* altsheet = 0;
+    QString sheetUsed = view()->part()->d->m_sheetUsed;
     NodeImpl *n;
-    for (n = this; n; n = n->traverseNextNode()) {
-    	StyleSheetImpl *sheet = 0;
+    for (;;) {
+        m_availableSheets.clear();
+        m_availableSheets << i18n("Basic Page Style");
 
-        if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
-        {
-            // Processing instruction (XML documents only)
-            ProcessingInstructionImpl* pi = static_cast<ProcessingInstructionImpl*>(n);
-            sheet = pi->sheet();
-            if (!sheet && !pi->localHref().isEmpty())
+        for (n = this; n; n = n->traverseNextNode()) {
+            StyleSheetImpl *sheet = 0;
+
+            if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
             {
-                // Processing instruction with reference to an element in this document - e.g.
-                // <?xml-stylesheet href="#mystyle">, with the element
-                // <foo id="mystyle">heading { color: red; }</foo> at some location in
-                // the document
-                ElementImpl* elem = getElementById(pi->localHref());
-                if (elem) {
-                    DOMString sheetText("");
-                    NodeImpl *c;
-                    for (c = elem->firstChild(); c; c = c->nextSibling()) {
-                        if (c->nodeType() == Node::TEXT_NODE || c->nodeType() == Node::CDATA_SECTION_NODE)
-                            sheetText += c->nodeValue();
-                    }
+                // Processing instruction (XML documents only)
+                ProcessingInstructionImpl* pi = static_cast<ProcessingInstructionImpl*>(n);
+                sheet = pi->sheet();
+                if (!sheet && !pi->localHref().isEmpty())
+                {
+                    // Processing instruction with reference to an element in this document - e.g.
+                    // <?xml-stylesheet href="#mystyle">, with the element
+                    // <foo id="mystyle">heading { color: red; }</foo> at some location in
+                    // the document
+                    ElementImpl* elem = getElementById(pi->localHref());
+                    if (elem) {
+                        DOMString sheetText("");
+                        NodeImpl *c;
+                        for (c = elem->firstChild(); c; c = c->nextSibling()) {
+                            if (c->nodeType() == Node::TEXT_NODE || c->nodeType() == Node::CDATA_SECTION_NODE)
+                                sheetText += c->nodeValue();
+                        }
 
-                    CSSStyleSheetImpl *cssSheet = new CSSStyleSheetImpl(this);
-                    cssSheet->parseString(sheetText);
-                    pi->setStyleSheet(cssSheet);
-                    sheet = cssSheet;
+                        CSSStyleSheetImpl *cssSheet = new CSSStyleSheetImpl(this);
+                        cssSheet->parseString(sheetText);
+                        pi->setStyleSheet(cssSheet);
+                        sheet = cssSheet;
+                    }
+                }
+
+            }
+            else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
+                QString title;
+                if ( n->id() == ID_LINK ) {
+                    HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
+                    if (!l->isDisabled() && l->isCSSStyleSheet()) {
+                        sheet = l->sheet();
+
+                        if (sheet || l->isLoading() || l->isAlternate() )
+                            title = l->getAttribute(ATTR_TITLE).string();
+
+                        if (!l->isAlternate() && !title.isEmpty() && sheetUsed.isEmpty())
+                            sheetUsed = view()->part()->d->m_sheetUsed = title;
+                    }
+                }
+                else {
+                    // <STYLE> element
+                    HTMLStyleElementImpl* s = static_cast<HTMLStyleElementImpl*>(n);
+                    if (!s->isLoading()) {
+                        sheet = s->sheet();
+                        if (sheet) title = s->getAttribute(ATTR_TITLE).string();
+                    }
+                    if (!title.isEmpty() && sheetUsed.isEmpty())
+                        sheetUsed = view()->part()->d->m_sheetUsed = title;
+                }
+
+                if ( !title.isEmpty() ) {
+                    if ( title != sheetUsed )
+                        sheet = 0; // don't use it
+
+                    title = title.replace('&',  "&&");
+
+                    if ( !m_availableSheets.contains( title ) )
+                        m_availableSheets.append( title );
                 }
             }
-
-        }
-        else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
-            ElementImpl *e = static_cast<ElementImpl *>(n);
-            QString title = e->getAttribute( ATTR_TITLE ).string();
-	    bool enabledViaScript = false;
-            if (n->id() == ID_LINK) {
-                // <LINK> element
-                HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
-		if (l->isLoading() || l->isDisabled())
-                    continue;
-                if (!l->sheet())
-                    title = QString::null;
-		enabledViaScript = l->isEnabledViaScript();
+            else if (n->id() == ID_BODY) {
+                // <BODY> element (doesn't contain styles as such but vlink="..." and friends
+                // are treated as style declarations)
+                sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
             }
-            else {
-                HTMLStyleElementImpl* s = static_cast<HTMLStyleElementImpl*>(n);
-                // awful hack to ensure that we ignore the title attribute for non-stylesheets
-                // ### make that nicer!
-                if (!(s->sheet() || s->isLoading()))
-                    title = QString::null;
+            if (sheet) {
+                sheet->ref();
+                m_styleSheets->styleSheets.append(sheet);
             }
 
-            QString sheetUsed = view()->part()->d->m_sheetUsed;
-            if ( n->id() == ID_LINK )
-                sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-            else
-                // <STYLE> element
-                sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
-
-            if ( !title.isEmpty() ) {
-                if ( sheetUsed.isEmpty() )
-                    sheetUsed = view()->part()->d->m_sheetUsed = title;
-                if ( !m_availableSheets.contains( title ) )
-                    m_availableSheets.append( title );
-
-                if ( title != sheetUsed )
-                    sheet = 0; // this stylesheet wasn't selected
-            }
-	}
-	else if (n->id() == ID_BODY) {
-            // <BODY> element (doesn't contain styles as such but vlink="..." and friends
-            // are treated as style declarations)
-	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
-        }
-        if (sheet) {
-            sheet->ref();
-            m_styleSheets->styleSheets.append(sheet);
+            // For HTML documents, stylesheets are not allowed within/after the <BODY> tag. So we
+            // can stop searching here.
+            if (isHTMLDocument() && n->id() == ID_BODY)
+                break;
         }
 
-        // For HTML documents, stylesheets are not allowed within/after the <BODY> tag. So we
-        // can stop searching here.
-        if (isHTMLDocument() && n->id() == ID_BODY)
+        // we're done if we don't select an alternative sheet
+        // or we found the sheet we selected
+        if (sheetUsed.isEmpty() ||
+            tokenizer() ||
+            m_availableSheets.contains(sheetUsed)) {
             break;
+        }
+
+        // the alternative sheet we used doesn't exist anymore
+        // so try from scratch again
+        sheetUsed = QString::null;
     }
 
     // De-reference all the stylesheets in the old list

@@ -113,44 +113,44 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch (attr->id())
     {
-    case ATTR_REL:
-        m_rel = attr->value();
-        process();
-        break;
     case ATTR_HREF:
         m_url = getDocument()->completeURL( khtml::parseURL(attr->value()).string() );
 	process();
         break;
+    case ATTR_REL:
     case ATTR_TYPE:
-        m_type = attr->value();
 	process();
+        break;
+    case ATTR_TITLE:
+        // ### when title changes we have to reconsider our alternative
+        // stylesheet choice
         break;
     case ATTR_MEDIA:
         m_media = attr->value().string().lower();
         process();
         break;
     case ATTR_DISABLED: {
-        int oldDisabledState = m_disabledState;
-        m_disabledState = (attr->val() != 0) ? 2 : 1;
-        if (oldDisabledState != m_disabledState) {
+        bool m_oldisDisabled = m_isDisabled;
+        m_isDisabled = attr->val();
+        if (m_oldisDisabled != m_isDisabled) {
             // If we change the disabled state while the sheet is still loading, then we have to
             // perform two checks:
             // Check #1: If the sheet becomes disabled while it was loading, and if it was either
             // a main sheet or a sheet that was previously enabled via script, then we need
             // to remove it from the list of pending sheets.
-            if (isLoading() && m_disabledState == 2 && (!m_alternate || oldDisabledState == 1))
-                getDocument()->stylesheetLoaded();
-                
+            if (isLoading() && m_isDisabled && (!m_alternate || m_oldisDisabled))
+                getDocument()->styleSheetLoaded();
+
             // Check #2: An alternate sheet becomes enabled while it is still loading.
-            if (isLoading() && m_alternate && m_disabledState == 1)
+            if (isLoading() && m_alternate && m_isDisabled)
                 getDocument()->addPendingSheet();
-                
+
             // If the sheet is already loading just bail.
             if (isLoading())
                 break;
-            
+
             // Load the sheet, since it's never been loaded before.
-            if (!m_sheet && m_disabledState == 1)
+            if (!m_sheet && !m_isDisabled)
                 process();
             else
                 getDocument()->updateStyleSelector(); // Update the style selector.
@@ -167,44 +167,44 @@ void HTMLLinkElementImpl::process()
     if (!inDocument())
         return;
 
-    QString type = m_type.string().lower();
-    QString rel = m_rel.string().lower();
+    QString type = getAttribute(ATTR_TYPE).string().lower();
+    QString rel = getAttribute(ATTR_REL).string().lower();
 
     KHTMLPart* part = getDocument()->view() ? getDocument()->view()->part() : 0;
 
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"
-
     if ( part && rel.contains("icon") && !m_url.isEmpty() && !part->parentPart())
         part->browserExtension()->setIconURL( KURL(m_url.string()) );
 
     // Stylesheet
-    // This was buggy and would incorrectly match <link rel="alternate">, which has a different specified meaning. -dwh
-    if(m_disabledState != 2 && (type.contains("text/css") || rel == "stylesheet" || (rel.contains("alternate") && rel.contains("stylesheet")))) {
-
+    else if (!m_isDisabled &&
+        (type.contains("text/css") || rel.contains("stylesheet"))) {
         // no need to load style sheets which aren't for the screen output
         // ### there may be in some situations e.g. for an editor or script to manipulate
         if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") ) {
             m_loading = true;
-	    
-            // Add ourselves as a pending sheet, but only if we aren't an alternate 
+            // Add ourselves as a pending sheet, but only if we aren't an alternate
             // stylesheet.  Alternate stylesheets don't hold up render tree construction.
             m_alternate = rel.contains("alternate");
             if (!isAlternate())
                 getDocument()->addPendingSheet();
-	    
+
             QString chset = getAttribute( ATTR_CHARSET ).string();
             if (m_cachedSheet)
 		m_cachedSheet->deref(this);
             m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(m_url, chset);
-            if (m_cachedSheet)
+            if (m_cachedSheet) {
+                m_isCSSSheet = true;
 		m_cachedSheet->ref(this);
+            }
         }
     }
     else if (m_sheet) {
 	// we no longer contain a stylesheet, e.g. perhaps rel or type was changed
 	m_sheet->deref();
 	m_sheet = 0;
+        m_isCSSSheet = false;
 	getDocument()->updateStyleSelector();
     }
 }
@@ -218,14 +218,11 @@ void HTMLLinkElementImpl::insertedIntoDocument()
 void HTMLLinkElementImpl::removedFromDocument()
 {
     HTMLElementImpl::removedFromDocument();
-    process();
+    getDocument()->updateStyleSelector();
 }
 
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr)
 {
-//    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
-//    kdDebug( 6030 ) << "**** current medium: " << m_media << endl;
-
     if (m_sheet)
         m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this, url);
@@ -240,7 +237,13 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 
     // Tell the doc about the sheet.
     if (!isLoading() && m_sheet && !isDisabled() && !isAlternate())
-        getDocument()->stylesheetLoaded();
+        getDocument()->styleSheetLoaded();
+
+    // ### major inefficiency, but currently necessary for proper
+    // alternate styles support. don't recalc the styleselector
+    // when nothing actually changed!
+    if ( isAlternate() && m_sheet && !isDisabled())
+        getDocument()->updateStyleSelector();
 }
 
 bool HTMLLinkElementImpl::isLoading() const
@@ -255,7 +258,7 @@ bool HTMLLinkElementImpl::isLoading() const
 void HTMLLinkElementImpl::sheetLoaded()
 {
     if (!isLoading() && !isDisabled() && !isAlternate())
-        getDocument()->stylesheetLoaded();
+        getDocument()->styleSheetLoaded();
 }
 
 // -------------------------------------------------------------------------
@@ -384,7 +387,7 @@ void HTMLStyleElementImpl::childrenChanged()
         m_sheet->deref();
         m_sheet = 0;
     }
-    
+
     m_loading = false;
     if ((m_type.isEmpty() || m_type == "text/css") // Type must be empty or CSS
          && (m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print"))) {
@@ -397,7 +400,7 @@ void HTMLStyleElementImpl::childrenChanged()
     }
 
     if (!isLoading() && m_sheet)
-        getDocument()->stylesheetLoaded();
+        getDocument()->styleSheetLoaded();
 }
 
 bool HTMLStyleElementImpl::isLoading() const
@@ -410,7 +413,7 @@ bool HTMLStyleElementImpl::isLoading() const
 void HTMLStyleElementImpl::sheetLoaded()
 {
     if (!isLoading())
-        getDocument()->stylesheetLoaded();
+        getDocument()->styleSheetLoaded();
 }
 
 // -------------------------------------------------------------------------
