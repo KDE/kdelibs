@@ -108,7 +108,7 @@ public:
   /**
    * Assignment operator.
    */
-  KLocale& operator= ( const KLocale& );
+  KLocale& operator= ( const KLocale & rhs );
 
   /**
    * Destructor.
@@ -167,7 +167,10 @@ public:
    *
    * @return True on success.
    */
+#ifndef KDE_NO_COMPAT
   bool setCharset(const QString & charset);
+#endif
+
   /**
    * Changes the current encoding.
    *
@@ -187,7 +190,6 @@ public:
    * @return True on success.
    */
   bool setLanguage(const QString & language);
-
 
   /**
    * Changes the list of prefed languages for the locale. The first valid
@@ -337,14 +339,16 @@ public:
 		      int digits = -1) const;
 
   /**
-   * This function differs from the above only in that it can take
+   * @deprecated This function differs from the above only in that it can take
    * a QString as the argument for convenience.
    *
    * @param numStr The string you want to reformat.
    *
    * @return The number of money as a localized string
    */
+#ifndef KDE_NO_COMPAT
   QString formatMoney(const QString &numStr) const;
+#endif
   
   /**
    * Given a double, convert that to a numeric string containing
@@ -361,14 +365,16 @@ public:
   QString formatNumber(double num, int precision = -1) const;
 
   /**
-   * This function differs from the above only in that it can take
+   * @deprecated This function differs from the above only in that it can take
    * a QString as the argument for convenience.
    *
    * @param numStr The string you want to convert.
    *
    * @return The number as a formated string
    */
+#ifndef KDE_NO_COMPAT
   QString formatNumber(const QString &numStr) const;
+#endif
 
   /**
    * Return a string formatted to the current locale's conventions
@@ -504,7 +510,7 @@ public:
   /**
    * Returns the language used by this object. The domain AND the
    * library translation must be available in this language.
-   * "C" is default, if no other available.
+   * "en_US" is default, if no other available.
    *
    * @return The currently used language.
    */
@@ -519,16 +525,36 @@ public:
   QString country() const;
 
   /**
-   * Returns the languages selected by user.
+   * @deprecated Returns the languages selected by user.
    *
    * @return String containing language codes separated by colons
    */
+#ifndef KDE_NO_COMPAT
   QString languages() const;
+#endif
 
   /**
-   * Returns the languages selected by user.
+   * Retrieves the prefered languages as ISO 639-1 codes. This means
+   * that information about country is removed. If the internal language
+   * code might be represented by more than one 639-1 code, they will all be
+   * listed (but only once).
+   *
+   * If the selected languages are "nno, nbo, deu", you will get:
+   * "nn, no, nb, de".
+   *
+   * @return List of langauge codes
+   *
+   * @sa languageList
+   */
+  QStringList languagesTwoAlpha() const;
+
+  /**
+   * Returns the languages selected by user. The codes returned here is the
+   * internal language codes.
    *
    * @return List of language codes
+   *
+   * @sa languagesTwoAlpha
    */
   QStringList languageList() const;
 
@@ -542,7 +568,9 @@ public:
    *
    * @sa encoding
    */
+#ifndef KDE_NO_COMPAT
   QString charset() const;
+#endif
 
   /**
    * Retrives the user's prefered encoding
@@ -591,6 +619,12 @@ public:
    * @param format The new time format
    */
   void setTimeFormat(const QString & format);
+
+  /**
+   * Changes how KLocale defines the first day in week.
+   *
+   * @param start True if Monday is the first day in the week
+   */
   void setWeekStartsMonday(bool start);
   /**
    * Retrieves the currently selected date format.
@@ -691,7 +725,41 @@ public:
   void setCurrencySymbol(const QString & symbol);
 
   /**
-   * adds another catalogue to search for translation lookup.
+   * Retrieves the prefered page size for printing.
+   *
+   * @return The prefered page size, cast it to QPrinter::PageSize
+   */
+  int pageSize() const;
+
+  /**
+   * Changes the prefered page size when printing.
+   *
+   * @param The new prefered page size in the format QPrinter::PageSize
+   */
+  void setPageSize(int paperFormat);
+
+  /**
+   * The Metric system will give you information in mm, while the
+   * Imperial system will give you information in inches.
+   */
+  enum MessureSystem { Metric, Imperial };
+
+  /**
+   * Retrieves which messuring system we use.
+   *
+   * @return The prefered messuring system
+   */
+  MessureSystem messureSystem() const;
+
+  /**
+   * Changes the prefered messuring system.
+   *
+   * @return value The prefered messuring system
+   */
+  void setMessureSystem(MessureSystem value);
+
+  /**
+   * Adds another catalogue to search for translation lookup.
    * This function is useful for extern libraries and/or code,
    * that provides its own messages.
    *
@@ -703,14 +771,14 @@ public:
   void insertCatalogue(const QString& catalogue);
 
   /**
-   * translates a message as a QTranslator is supposed to.
+   * Translates a message as a QTranslator is supposed to.
    * The parameters are similiar to i18n(), but the result
    * value has other semantics (it can be QString::null)
    **/
   QString translateQt(const char *context, const char *sourceText) const;
 
   /**
-   * returns the parts of the parameter str understood as language setting
+   * Retrieves the parts of the parameter str understood as language setting
    * the format is language_COUNTRY.charset
    *
    * @param str The string to split.
