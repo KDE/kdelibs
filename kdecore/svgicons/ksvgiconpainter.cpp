@@ -347,7 +347,7 @@ public:
 				ArtVpath *vec2 = art_vpath_dash(vec, &dash);
 				art_free(vec);
 
-				delete dashes;
+				delete[] dashes;
 
 				vec = vec2;
 			}
