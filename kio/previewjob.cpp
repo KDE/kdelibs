@@ -37,13 +37,13 @@
 
 #include <kdatastream.h> // Do not remove, needed for correct bool serialization
 #include <kfileitem.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <ktempfile.h>
 #include <ktrader.h>
 #include <kmdcodec.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include <kio/kservice.h>
 

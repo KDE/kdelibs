@@ -32,11 +32,11 @@
 #include <kdatastream.h>
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kprotocolinfo.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kprocess.h>
 #include <dcopclient.h>
 #include <qfile.h>

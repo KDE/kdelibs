@@ -23,7 +23,7 @@
 #include <qbuffer.h>
 
 #include <kuserprofile.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 
 template class KStaticDeleter<KTrader>;

@@ -23,7 +23,7 @@
 #include <qregexp.h>
 
 #include <kconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kuniqueapp.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

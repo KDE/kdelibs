@@ -19,7 +19,7 @@
 #ifndef KMESSAGEBOXWRAPPER_H
 #define KMESSAGEBOXWRAPPER_H
 #include <kmessagebox.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 
 /**

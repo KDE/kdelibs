@@ -22,7 +22,7 @@
 
 #include <qstringlist.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kio/global.h>
 
 // This value has been deprecated!! Use

@@ -20,7 +20,7 @@
 #include <qlayout.h>
 #include <qwidgetstack.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
 

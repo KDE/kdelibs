@@ -31,7 +31,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <stdlib.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 const int KDEBUG_KSHRED = 7026;
 

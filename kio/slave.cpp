@@ -37,8 +37,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
-#include <kstddirs.h>
-#include <kapp.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
 #include <ktempfile.h>
 #include <ksock.h>
 

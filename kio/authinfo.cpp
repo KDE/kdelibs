@@ -30,7 +30,7 @@
 #include <qfile.h>
 
 #include <kdebug.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <kstaticdeleter.h>
 

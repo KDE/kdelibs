@@ -21,7 +21,7 @@
 
 // $Id$
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocale.h>

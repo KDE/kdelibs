@@ -19,9 +19,9 @@
 #include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobal.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
 #include <kconfig.h>

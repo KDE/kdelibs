@@ -25,7 +25,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <kio/observer.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 
 using namespace KIO;

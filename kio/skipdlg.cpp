@@ -27,7 +27,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kwin.h>

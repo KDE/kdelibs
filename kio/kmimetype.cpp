@@ -44,14 +44,14 @@
 #include <qfile.h>
 #include <kmessageboxwrapper.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kprocess.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kurl.h>
 
 template class KSharedPtr<KMimeType>;

@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 KServiceGroupFactory::KServiceGroupFactory()
  : KSycocaFactory( KST_KServiceGroupFactory )

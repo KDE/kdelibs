@@ -26,7 +26,7 @@
 #include <kmessagebox.h>
 #include <qfileinfo.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kio/global.h>
 #include <kdialog.h>
 #include <klocale.h>

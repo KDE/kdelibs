@@ -17,10 +17,10 @@
 */
 #include "kmimemagic.h"
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <qfile.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <assert.h>
 

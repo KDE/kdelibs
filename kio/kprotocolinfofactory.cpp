@@ -16,9 +16,9 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobal.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kprotocolmanager.h>
 

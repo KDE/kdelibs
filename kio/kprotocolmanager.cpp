@@ -25,7 +25,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kio/kpac.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kstringhandler.h>
 #include <kstaticdeleter.h>

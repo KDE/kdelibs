@@ -27,7 +27,7 @@
 #include <qmap.h>
 #include <qdict.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <klocale.h>

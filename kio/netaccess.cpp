@@ -30,7 +30,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <ktempfile.h>
 #include <kdebug.h>

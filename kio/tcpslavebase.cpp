@@ -49,7 +49,7 @@
 #include <qcstring.h>
 #include <qdatastream.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 
 #include "kio/tcpslavebase.h"
 

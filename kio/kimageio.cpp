@@ -11,8 +11,8 @@
 #include"config.h"
 
 #include <qdir.h>
-#include <kapp.h>
-#include <kstddirs.h>
+#include <kapplication.h>
+#include <kstandarddirs.h>
 #include <qstring.h>
 #include <qregexp.h>
 #include <qvaluelist.h>

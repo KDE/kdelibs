@@ -39,7 +39,7 @@ extern "C" {
 #include <qtimer.h>
 #include <qfile.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
