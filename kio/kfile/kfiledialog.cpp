@@ -1124,7 +1124,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 void KFileDialog::buildBookmarkPopup()
 {
     bookmarksMenu->clear();
-    bookmarksMenu->insertItem(i18n("Add to Bookmarks"), (int) 0 );
+    bookmarksMenu->insertItem(SmallIcon("bookmark_add"), i18n("Add to Bookmarks"), (int) 0 );
     bookmarksMenu->insertSeparator();
     int id = 1;
     fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
