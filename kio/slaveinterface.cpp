@@ -172,9 +172,9 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case INF_NEED_PASSWD: {
 	kdDebug(7007) << "needs passwd\n";
-	QString user;
-	stream >> str1 >> user >> f;
-	openPassDlg( str1, user, f);
+	QString user, caption, comment, label;
+	stream >> str1 >> user >> caption >> comment >> label >> f;
+	openPassDlg( str1, user, caption, comment, label, f );
 	break;
     }
     case INF_MESSAGEBOX: {
@@ -248,18 +248,29 @@ void SlaveInterface::sendResumeAnswer( bool resume )
     m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
-void SlaveInterface::openPassDlg( const QString& msg, const QString& user, bool lockUserName )
+void SlaveInterface::openPassDlg( const QString& prompt, const QString& user, bool readOnly )
 {
-    kdDebug(7007) << "SlaveInterface: Message= " << msg << ", User= " << user << ", LockUserName= " << lockUserName << endl;
+    openPassDlg( prompt, user, QString::null, QString::null, QString::null, readOnly );
+}
+
+void SlaveInterface::openPassDlg( const QString& prompt, const QString& user,
+                                  const QString& caption, const QString& comment,
+                                  const QString& label, bool readOnly )
+{
+    kdDebug(7007) << "SlaveInterface: User= " << user << ", Message= " << prompt << endl;
+    bool keep;
     QString u = user, p;
-    QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
-    bool result = Observer::self()->openPassDlg(msg, u , p, lockUserName );
-    if ( m_pConnection ) // Don't do anything if deleted meanwhile
+    bool result = Observer::self()->openPassDlg( prompt, u , p, caption, comment, label, readOnly, &keep );
+    if ( m_pConnection )
     {
-        if( result )
+        QByteArray data;
+        QDataStream stream( data, IO_WriteOnly );
+        if ( result )
         {
-            stream << u << p;
+            stream << u << p << keep;
+            kdDebug(7007) << "SlaveInterface:::openPassDlg got:" << endl
+                          << "  User= " << u << endl
+                          << "  Password= [hidden]" << endl;
             m_pConnection->sendnow( CMD_USERPASS, data );
         }
         else
@@ -267,7 +278,8 @@ void SlaveInterface::openPassDlg( const QString& msg, const QString& user, bool 
     }
 }
 
-void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption, const QString &buttonYes, const QString &buttonNo )
+void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
+                                 const QString &buttonYes, const QString &buttonNo )
 {
     kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << endl;
     QByteArray packedArgs;
@@ -278,9 +290,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
         caption = QString::fromUtf8(kapp->dcopClient()->appId()); // hack, see uiserver.cpp
 
     emit needProgressId();
-
     kdDebug() << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
-
     int result = Observer::self()->messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
     if ( m_pConnection ) // Don't do anything if deleted meanwhile
     {

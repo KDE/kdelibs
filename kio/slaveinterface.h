@@ -184,15 +184,23 @@ protected:
     /**
      * Prompt user for authentication info (login & password).
      *
-     * @param msg     i18n'ed message to explain the dialog box
-     * @param user    user name if one is already supplied
-     * @param lockUserName enable/disable the username field
+     * @param prompt        i18n'ed message to explain the dialog box
+     * @param user          user name if one is already supplied
+     * @param caption
+     * @param comment
+     * @param label
+     * @param readOnly      enable/disable the username field
      *
-     * @return        @p true if sucessfully, false otherwise
+     * @return @p true if sucessfully, false otherwise
      */
-    void openPassDlg( const QString& msg, const QString& user, bool lockUserName );
+    void openPassDlg( const QString& prompt, const QString& user,
+                      const QString& caption, const QString& comment,
+                      const QString& label, bool readOnly );
 
-    void messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
+    void openPassDlg( const QString& prompt, const QString& user, bool readOnly );
+
+    void messageBox( int type, const QString &text, const QString &caption,
+                     const QString &buttonYes, const QString &buttonNo );
 
     // I need to identify the slaves
     void requestNetwork( const QString &, const QString &);

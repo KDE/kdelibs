@@ -82,19 +82,34 @@ public:
    * Note this function simply forwards the request to @ref UIServer::openPassDlg
    * and returns the result of that function call...
    *
-   * @param msg         the resource the requires authorization
+   * @param prompt      the resource the requires authorization
    * @param user        the user to be allowed authorized access
-   * @param passwd      the password of the authorized user
-   * @param lockUserName enables/disables the username field
+   * @param pass        the password of the authorized user
+   * @param caption
+   * @param comment
+   * @param label
+   * @param readOnly    makes username field read-only.
+   * @param keep
    *
    * @return true if authorization was sucessfully obtained.
    */
-  bool openPassDlg(  const QString& msg, QString& user, QString& passwd, bool lockUserName );
+   bool openPassDlg( const QString& prompt, QString& user, QString& pass,
+                     const QString& caption, const QString& comment,
+                     const QString& label, bool readOnly, bool* keep = 0L );
+
+  /**
+   * Same as the above method except in the arguments it accepts.
+   *
+   * @return true if authorization was sucessfully obtained.
+   */
+   bool openPassDlg( const QString& msg, QString& user, QString& pass,
+                     bool lockUserName );
 
   /**
    * Popup a message box. See @ref SlaveBase.
    */
-  int messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo);
+  int messageBox( int progressId, int type, const QString &text, const QString &caption,
+                  const QString &buttonYes, const QString &buttonNo );
 
   /**
    * See renamedlg.h

@@ -59,7 +59,6 @@ namespace KIO {
 class SlaveBasePrivate {
 public:
     QString slaveid;
-    int cachedAuthTimeout;
     bool resume:1;
     bool needSendCanResume:1;
 };
@@ -94,7 +93,6 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->slaveid += QString::number(getpid());
     d->resume = false;
     d->needSendCanResume = false;
-    d->cachedAuthTimeout = 0;
 }
 
 SlaveBase::~SlaveBase()
@@ -488,23 +486,43 @@ bool SlaveBase::dispatch()
     return true;
 }
 
-bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName )
+bool SlaveBase::openPassDlg( AuthInfo& info )
 {
-    kdDebug(7019) << "SlaveBase: OpenPassDlg: User= " << user << ", Message= " << msg << ", LockUserName= " << lockUserName << endl;
-    KIO_DATA << msg << user << lockUserName;
-    m_pConnection->send( INF_NEED_PASSWD, data );
+    kdDebug(7019) << "SlaveBase::OpenPassDlg User= " << info.username << endl;
+    KIO_DATA << info.prompt << info.username << info.caption
+             << info.comment << info.commentLabel << info.readOnly;
     int cmd;
+    m_pConnection->send( INF_NEED_PASSWD, data );
     if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data, &cmd ) != -1 && cmd == CMD_USERPASS )
     {
         QDataStream stream( data, IO_ReadOnly );
-        stream >> user >> passwd;
-        kdDebug(7019) << "Got user=" << user << ", password=[hidden]" << endl;
+        stream >> info.username >> info.password; // >> info.keepPassword;
+        kdDebug(7019) << "SlaveBase::openPassDlg got:" << endl
+                      << " User= " << info.username << endl
+                      << " Password= [hidden]" << endl
+                      << " KeepPassword= " << info.keepPassword << endl;
         return true;
     }
     return false;
 }
 
-int SlaveBase::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName )
+{
+    AuthInfo info;
+    info.prompt = msg;
+    info.username = user;
+    info.readOnly = lockUserName;
+    bool result = openPassDlg( info );
+    if ( result )
+    {
+        user = info.username;
+        passwd = info.password;
+    }
+    return result;
+}
+
+int SlaveBase::messageBox( int type, const QString &text, const QString &caption,
+                           const QString &buttonYes, const QString &buttonNo )
 {
     kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
     KIO_DATA << type << text << caption << buttonYes << buttonNo;
@@ -718,8 +736,11 @@ bool SlaveBase::pingCacheDaemon() const
 
 bool SlaveBase::checkCachedAuthentication(const KURL& url, QString& user, QString& passwd )
 {
-    QString key, extra;
-    return checkCachedAuthentication(url, user, passwd, key, extra, false);
+    AuthInfo info;
+    info.url = url;
+    info.username = user;
+    info.password = passwd;
+    return checkCachedAuthentication( info );
 }
 
 bool SlaveBase::checkCachedAuthentication( const KURL& url,
@@ -729,13 +750,25 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                                           QString& extra,
                                           bool verify_path )
 {
-    QCString auth_key = createAuthCacheKey(url).utf8();
+    AuthInfo info;
+    info.url = url;
+    info.username = user;
+    info.password = passwd;
+    info.realmValue = realm;
+    info.digestInfo = extra;
+    info.verifyPath = verify_path;
+    return checkCachedAuthentication( info );
+}
+
+bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
+{
+    QCString auth_key = createAuthCacheKey( info.url ).utf8();
     QCString grp_key = auth_key.copy();
 
-    if( auth_key.isEmpty() )
+    if ( auth_key.isEmpty() )
         return false;
 
-    if( !pingCacheDaemon() )
+    if ( !pingCacheDaemon() )
         return false;
 
     KDEsuClient client;
@@ -746,19 +779,18 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
     // we need to do further tests to find a matching
     // stored authentication key and hence reduce the
     // number of unnecessary calls to kdesud.
-    if ( client.findGroup(grp_key) )
+    if ( client.findGroup( grp_key ) )
     {
         kdDebug(7019) << "Found match for group key: " << grp_key << endl;
         AuthKeysList list = client.getKeys(grp_key);
-        kdDebug(7019) << "Total # of keys found: " << list.count() << endl;
         if ( list.count() > 0 )
         {
             // Deal with protection space based authentications, namely HTTP.
             // It has by far the most complex scheme in terms of password
             // caching requirements. (DA)
-            if ( verify_path )
+            if ( info.verifyPath )
             {
-                QString new_path = url.path(); // The new path...
+                QString new_path = info.url.path();
                 if( new_path.isEmpty() )
                     new_path = '/';
 
@@ -768,7 +800,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                 {
                     map.insert(QString::fromUtf8( client.getVar(((*lit) + "-path"))),
                                (*lit));
-                    if( !realm.isEmpty() )
+                    if( !info.realmValue.isEmpty() )
                         map.insert(QString::fromUtf8( client.getVar(((*lit) + "-realm"))),
                                    (*lit));
                 }
@@ -776,30 +808,27 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                 // Tests for exact path (filename included) match
                 // first.  If it fails, then simply try the less
                 // stricter directory prefix match. (DA)
-                kdDebug(7019) << "STRICT TEST: absolute path match..." << endl;
+                kdDebug(7019) << "STRICT TEST: Absolute path match for: " << auth_key << endl;
                 AuthKeysMap::Iterator mit = map.begin();
                 for( ; mit != map.end(); ++mit )
                 {
                     if ( new_path == mit.key() )
                     {
-                        if ( !realm.isEmpty() )
+                        if ( !info.realmValue.isEmpty() )
                         {
-                            if ( (++mit != map.end()) && (mit.key() == realm) )
+                            if ( (++mit != map.end()) && (mit.key() == info.realmValue) )
                             {
-                                kdDebug(7019) << "Found absolute path and "
-                                              << "realm match!" << endl;
                                 auth_key = mit.data();  // Update the Authentication key...
                                 found = true;       // Realm value mis-match!!
+                                kdDebug(7019) << "Found a STRICT path match!" << endl;
                                 break;
                             }
-                            kdDebug(7019) << "Realm value mismatch!!" << endl;
                         }
                         else
                         {
-                            kdDebug(7019) << "Found absolute path "
-                                          << "match!" << endl;
                             auth_key = mit.data();
                             found = true;
+                            kdDebug(7019) << "Found a STRICT path match!" << endl;
                             break;
                         }
                     }
@@ -807,8 +836,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
 
                 if ( !found )
                 {
-                    kdDebug(7019) << "SEMI-STRICT TEST: "
-                                  << "directory only match..." << endl;
+                    kdDebug(7019) << "LOOSE TEST: Directory only match for: " <<  auth_key << endl;
                     // Now we can attempt the directory prefix match, i.e.
                     // testing whether the directiory of the new URL contains
                     // the stored_one.  If it does, then we have a match...
@@ -825,28 +853,26 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                         last_slash = str.findRev( '/' );
                         if ( last_slash > 0 )
                             str.truncate(last_slash);
-
                         slen = str.length();
-                        if ( new_path.find(str, 0, false) == 0 &&
-                            (new_path.length() == slen ||
-                            new_path[slen] == '/') )
+                        if ( new_path.startsWith(str) &&
+                             (new_path.length() == slen ||
+                             slen == 1 || new_path[slen] == '/') )
                         {
-                            if ( !realm.isEmpty() )
+                            if ( !info.realmValue.isEmpty() )
                             {
-                                if ((++mit != map.end()) && (mit.key() == realm))
+                                if ((++mit != map.end()) && (mit.key() == info.realmValue))
                                 {
-                                    kdDebug(7019) << "Found directoy and "
-                                                  << "realm match!" << endl;
                                     auth_key = mit.data();
                                     found = true;
+                                    kdDebug(7019) << "Found a LOOSE path match!" << endl;
                                     break;
                                 }
                             }
                             else
                             {
-                                kdDebug(7019) << "Found directory match!" << endl;
                                 auth_key = mit.data();
                                 found = true;
+                                kdDebug(7019) << "Found a LOOSE path match!" << endl;
                                 break;
                             }
                         }
@@ -858,18 +884,19 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                 // For non-realm based systems simply continue to the user
                 // name matching section.  Otherwise perform a realm-only
                 // based verification...
-                if ( realm.isEmpty() )
+                if ( info.realmValue.isEmpty() )
+                {
                     found = true;
+                }
                 else
                 {
-                    kdDebug(7019) << "\"Realm\" based match for: "
-                                  << realm << endl;
+                    kdDebug(7019) << "Realm based match for: " << info.realmValue << endl;
                     AuthKeysList::Iterator it = list.begin();
                     for( ; it != list.end(); ++it )
                     {
-                        if ( realm == QString::fromUtf8(client.getVar((*it) + "-realm")) )
+                        if ( info.realmValue == QString::fromUtf8(client.getVar((*it) + "-realm")) )
                         {
-                            kdDebug(7019) << "Found a \"Realm\" match!" << endl;
+                            kdDebug(7019) << "Found a realm match!" << endl;
                             auth_key = (*it);
                             found = true;
                             break;
@@ -889,19 +916,21 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
         // Now we obtain the cached Authentication if the user
         // name is empty or there is a match b/n the stored
         // and the supplied one.
-        QString u = QString::fromUtf8(client.getVar( auth_key + "-user") );
-        if( ( user.isEmpty() || (!user.isEmpty() && u == user)) )
+        QString stored_user = QString::fromUtf8(client.getVar( auth_key + "-user") );
+        bool emptyUser = info.username.isEmpty();
+        if ( emptyUser || info.username == stored_user )
         {
-            if ( user.isEmpty() ) { user = u; }
-            passwd = QString::fromUtf8(client.getVar( auth_key + "-pass" ) );
-            if( realm.isEmpty() ) { realm = QString::fromUtf8( client.getVar(auth_key + "-realm") ); }
-            extra = QString::fromUtf8( client.getVar( auth_key + "-extra") );
+            if ( emptyUser )
+                info.username = stored_user;
+            info.password = QString::fromUtf8(client.getVar( auth_key + "-pass" ) );
+            if ( info.realmValue.isEmpty() )
+                info.realmValue = QString::fromUtf8( client.getVar(auth_key + "-realm") );
+            info.digestInfo = QString::fromUtf8( client.getVar( auth_key + "-extra") );
             kdDebug(7019) << "Found cached authorization for: " << auth_key << endl
-                          << "  User= " << user << endl
+                          << "  User= " << info.username << endl
                           << "  Password= [hidden]" << endl
-                          << "  Realm= " << realm << endl
-                          << "  Extra= " << extra << endl;
-
+                          << "  Realm= " << info.realmValue << endl
+                          << "  Extra= " << info.digestInfo << endl;
             sendAuthenticationKey( auth_key, grp_key );
             return true;
         }
@@ -915,34 +944,45 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
                                      const QString& realm,
                                      const QString& extra )
 {
-    QCString auth_key = createAuthCacheKey(url).utf8();
+    AuthInfo info;
+    info.url = url;
+    info.username = user;
+    info.password = passwd;
+    info.realmValue = realm;
+    info.digestInfo = extra;
+    return cacheAuthentication( info );
+}
+
+bool SlaveBase::cacheAuthentication( const AuthInfo& info )
+{
+    QCString auth_key = createAuthCacheKey( info.url ).utf8();
     QCString grp_key = auth_key.copy();
 
     // Do not allow caching if: URL is malformed or user name is
     // empty or the password is null!!  Empty password is acceptable
     // but not a NULL one. This is mainly intended as a partial defense
     // against incorrect use (read:abuse) of calling this function.
-    if( auth_key.isEmpty() || user.isEmpty() || passwd.isNull() )
+    if ( auth_key.isEmpty() ||
+        info.username.isEmpty() || info.password.isNull() )
         return false;
 
-    if( !pingCacheDaemon() )
+    if ( !pingCacheDaemon() )
         return false;
 
     KDEsuClient client;
     bool isCached = false;
-    kdDebug(7019) << "Attempting to cache Authentication for: "
-                  << auth_key << endl;
-    if ( !realm.isEmpty() )
+    kdDebug(7019) << "Caching Authentication for: " << auth_key << endl;
+    if ( !info.realmValue.isEmpty() )
     {
-        AuthKeysList list = client.getKeys(auth_key);
         QString stored_value;
-        if( list.count() > 0 )
+        AuthKeysList list = client.getKeys(auth_key);
+        if ( list.count() > 0 )
         {
             AuthKeysList::Iterator it = list.begin();
-            for( ; it != list.end(); ++it )
+            for ( ; it != list.end(); ++it )
             {
                 stored_value = QString::fromUtf8( client.getVar((*it) + "-realm") );
-                if( stored_value == realm )
+                if ( stored_value == info.realmValue )
                 {
                     auth_key = (*it);
                     isCached = true;
@@ -959,7 +999,7 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
         if ( isCached )
         {
             stored_value = QString::fromUtf8( client.getVar(auth_key + "-user") );
-            if( user != stored_value )
+            if ( info.username != stored_value )
                 isCached = false;
         }
         else
@@ -967,53 +1007,54 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             // We only get here if the "Realm" is NOT cached!! Thus
             // we append the realm value to the new entry...
             auth_key += ':';
-            auth_key += realm.utf8();
+            auth_key += info.realmValue.utf8();
         }
     }
     else
     {
         // None realm based protocol autorization...
         QString stored_value = QString::fromUtf8( client.getVar(auth_key + "-user") );
-        if( user == stored_value )
+        if ( info.username == stored_value )
             isCached = true;
     }
 
     // If we have a cached copy already, just update the
     // extra fields if needed.
-    if( isCached )
+    if ( isCached )
     {
-        kdDebug(7019) << "Found a cached copy for: " << auth_key << endl;
-        if( !extra.isEmpty() )
+        kdDebug(7019) << "Found cached copy for: " << auth_key << endl;
+        if ( !info.digestInfo.isEmpty() )
         {
             QString e = QString::fromUtf8( client.getVar(auth_key + "-extra") );
-            if( e != extra )
+            if ( e != info.digestInfo )
             {
-                kdDebug(7019) << "Updating the Extra value: " << extra << endl;
-                client.setVar( (auth_key + "-extra"), extra.utf8(), 0, grp_key );
+                kdDebug(7019) << "Updated only digest value: "
+                              << info.digestInfo << endl;
+                client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
             }
         }
     }
     // Add a new Authentication entry...
     else
     {
-        client.setVar( (auth_key+"-user"), user.utf8(), 0, grp_key );
-        client.setVar( (auth_key+"-pass"), passwd.utf8(), 0, grp_key );
-        if( !realm.isEmpty() )
+        client.setVar( (auth_key+"-user"), info.username.utf8(), 0, grp_key );
+        client.setVar( (auth_key+"-pass"), info.password.utf8(), 0, grp_key );
+        if ( !info.realmValue.isEmpty() )
         {
-            client.setVar( (auth_key + "-realm"), realm.utf8(), 0, grp_key );
-            QString new_path = url.path();
+            client.setVar( (auth_key + "-realm"), info.realmValue.utf8(), 0, grp_key );
+            QString new_path = info.url.path();
             if( new_path.isEmpty() )
                 new_path = '/';
             client.setVar( (auth_key+"-path"), new_path.utf8(), 0, grp_key );
         }
-        if( !extra.isEmpty() )
-            client.setVar( (auth_key + "-extra"), extra.utf8(), 0, grp_key );
+        if ( !info.digestInfo.isEmpty() )
+            client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
 
-        kdDebug(7019) << "Cached NEW Authorization entry for: " << auth_key << endl
-                      << "  User= " << user << endl
+        kdDebug(7019) << "Cached new authentication for: " << auth_key << endl
+                      << "  User= " << info.username << endl
                       << "  Password= [hidden]" << endl
-                      << "  Realm= " << realm << endl
-                      << "  Extra= " << extra << endl;
+                      << "  Realm= " << info.realmValue << endl
+                      << "  Extra= " << info.digestInfo << endl;
         sendAuthenticationKey (auth_key, grp_key);
     }
     return true;

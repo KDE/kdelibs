@@ -29,6 +29,56 @@ class Connection;
 class SlaveBasePrivate;
 
 /**
+ * Structure to hold all authorization information.
+ *
+ * @param username          name as supplied and/or specified by user.
+ *
+ * @param password          password specified by user.
+ *
+ * @param prompt            information requested from user.
+ *
+ * @param caption           text displayed in the title bar of password dialog.
+ *
+ * @param comment           optional field for additional comment to relay to user.
+ *
+ * @param commentLabel      optional label to for additional comment (ex:"Command:").
+ *
+ * @param realmValue        optional field to specify "REALM" value for protocols that
+ *                          use/support digest authentication.
+ *
+ * @param digestInfo        optional field to store any extra authorization string.  This
+ *                          parameter is also only useful for digest authentication.
+ * @param verifyPath
+ *
+ * @param readOnly          flag that forces the username field to be read-only if true.
+ *
+ * @param keepPassword      flag that forces the password to be cached for the duration of
+ *                          the KDE session instead of it being automatically removed when
+ *                          the application is terminated.
+ */
+struct AuthInfo
+{
+    AuthInfo() {
+        verifyPath = false;
+        readOnly = false;
+        keepPassword = false;
+    }
+
+    KURL url;
+    QString username;
+    QString password;
+    QString prompt;
+    QString caption;
+    QString comment;
+    QString commentLabel;
+    QString realmValue;
+    QString digestInfo;
+    bool verifyPath;
+    bool readOnly;
+    bool keepPassword;
+};
+
+/**
  * There are two classes that specifies the protocol between application (job)
  * and kioslave. SlaveInterface is the class to use on the application end,
  * SlaveBase is the one to use on the slave end.
@@ -457,8 +507,15 @@ protected:
      *
      * @return        @p true on if successful, @p false otherwise
      */
-    bool openPassDlg( const QString& msg, QString& user, QString& passwd,
-                      bool lockUserName = false );
+    bool openPassDlg( const QString& msg, QString& user,
+                      QString& passwd, bool lockUserName = false );
+
+    /**
+     * Same as above except in the arguments it takes.
+     *
+     * See @ref AuthInfo.
+     */
+    bool openPassDlg( AuthInfo& info );
 
     /**
      * Checks for cached authentication for the url given by @p url.
@@ -495,6 +552,15 @@ protected:
     bool checkCachedAuthentication( const KURL& url,
                                     QString& user,
                                     QString& passwd);
+
+    /**
+     * Same as above except in the number of arguments it takes.
+     *
+     * See @ref AuthInfo for details.
+     *
+     * @return              @p true if cached Authentication if found
+     */
+    bool checkCachedAuthentication( AuthInfo& info );
 
     /**
      * Caches authentication information in the kdesu daemon.
@@ -535,19 +601,21 @@ protected:
                               const QString& extra = QString::null );
 
     /**
+     * Same as above except in the number of arguments it takes.
+     *
+     * See @ref AuthInfo for details.
+     *
+     * @return          @p true if Authentication was sucessfully cached
+     */
+    bool cacheAuthentication( const AuthInfo& info );
+
+    /**
      * Creates a basic key to be used to cache the password.
      *
      * @param url   URL for which a caching key should be generated.
      * @return      NULL if @p url is malformed, otherwise the generated key.
      */
     QString createAuthCacheKey( const KURL& url );
-
-    /**
-     * Sets the timeout for cached authentication entries.
-     *
-     * @parm sec timeout value in seconds
-     */
-    void setCachedAuthTimeout( int sec );
 
     /**
      * Used by the slave to check if it can connect

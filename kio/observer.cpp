@@ -197,33 +197,41 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
   m_uiserver->unmounting( job->progressId(), point );
 }
 
-
-bool Observer::openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName )
+bool Observer::openPassDlg( const QString& prompt, QString& user,
+                            QString& pass, const QString& caption,
+                            const QString& comment, const QString& label,
+                            bool readOnly, bool* keep )
 {
-  kdDebug(7007) << "Observer: Message= " << msg << ", User= " << user << ", LockUserName= " << lockUserName << endl;
+  kdDebug(7007) << "Observer: User= " << user << ", Message= " << prompt << endl;
   QByteArray data, replyData;
   QCString replyType;
-  QDataStream arg( data, IO_WriteOnly );
-  arg << msg << user << lockUserName;
-  bool result = kapp->dcopClient()->call("kio_uiserver", "UIServer", "openPassDlg(QString,QString,bool)",
-                                         data, replyType, replyData, true );
+  QDataStream stream( data, IO_WriteOnly );
+  stream << prompt << user << caption << comment << label << readOnly;
+  bool result = kapp->dcopClient()->call( "kio_uiserver", "UIServer",
+                                          "openPassDlg(QString,QString,QString,QString,QString,bool)",
+                                          data, replyType, replyData, true );
+
   if ( result && replyType == "QByteArray" )
   {
     QString u, p;
-    Q_UINT8 authorized;
+    Q_UINT8 authorized, keepPasswd;
 
-    QByteArray res_data;
-    QDataStream res_stream( replyData, IO_ReadOnly );
-    res_stream >> res_data;
+    QByteArray wrapper_data;
+    QDataStream wrapper_stream( replyData, IO_ReadOnly );
+    wrapper_stream >> wrapper_data;
 
-    QDataStream stream( res_data, IO_ReadOnly );
-    stream >> authorized >> u >> p;
+    QDataStream data_stream( wrapper_data, IO_ReadOnly );
+    data_stream >> authorized >> u >> p >> keepPasswd;
 
-    if( authorized )
+    if ( authorized )
     {
       user = u;
-      passwd = p;
-      kdDebug(7007) << "Observer::openPassDlg call succeeded: User=" << user << " Password=[hidden] " << endl;
+      pass = p;
+      if ( keep ) { (*keep) = keepPasswd ? true : false; }
+      kdDebug(7007) << "Observer::openPassDlg got:" << endl
+                    << "  User= " << user << endl
+                    << "  Password= [hidden]" << endl
+                    << "  KeepPassword = " << ((keepPasswd) ? true : false )<< endl;
       return true;
     }
   }
@@ -231,7 +239,16 @@ bool Observer::openPassDlg( const QString& msg, QString& user, QString& passwd, 
   return false;
 }
 
-int Observer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+bool Observer::openPassDlg( const QString& msg, QString& user,
+                            QString& pass, bool lockUserName )
+{
+    return openPassDlg( msg, user, pass, QString::null, QString::null,
+                        QString::null, lockUserName );
+}
+
+int Observer::messageBox( int progressId, int type, const QString &text,
+                          const QString &caption, const QString &buttonYes,
+                          const QString &buttonNo )
 {
     QByteArray data, replyData;
     QCString replyType;

@@ -226,13 +226,25 @@ k_dcop:
   /**
    * Prompts the user for authorization information ( login & password ).
    *
-   * @param msg     the resource the requires authorization
-   * @param user    the username to be authenticated
-   * @param lockUserName    enables/disables the username field
+   * @param prompt
+   * @param user
+   * @param caption
+   * @param comment
+   * @param label
+   * @param readonly
    *
-   * @return serialized autorization info: (bool authorized, QString user, QString password)
+   * @return serialized autorization info: (bool authorized, QString user, QString password, bool keepPassword)
    */
-  QByteArray openPassDlg( const QString& msg, const QString& user, bool lockUserName );
+   QByteArray openPassDlg( const QString& prompt, const QString& user,
+                           const QString& caption, const QString& comment,
+                           const QString& label, bool readOnly );
+
+  /**
+   * Same as above except in the number of parameters it takes.
+   *
+   * @return serialized autorization info: (bool authorized, QString user, QString password, bool keepPassword)
+   */
+   QByteArray openPassDlg( const QString& msg, const QString& user, bool lockUserName );
 
   /**
    * Popup a message box

@@ -39,7 +39,7 @@
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
 #include "kio/uiserver.h"
-#include "kio/passdlg.h"
+#include "passdlg.h"
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
 #include "slavebase.h" // for QuestionYesNo etc.
@@ -761,18 +761,29 @@ void UIServer::slotSelection() {
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
-QByteArray UIServer::openPassDlg( const QString& msg, const QString& user, bool lockUserName )
+QByteArray UIServer::openPassDlg( const QString& msg, const QString& user,
+                                  bool lockUserName )
 {
-    kdDebug(7024) << "Message= " << msg << ", User= " << user << ", LockUserName= " << lockUserName << endl;
+    return openPassDlg( msg, user, QString::null, QString::null,
+                        QString::null, lockUserName );
+}
+
+QByteArray UIServer::openPassDlg( const QString& prompt, const QString& user,
+                                  const QString& caption, const QString& comment,
+                                  const QString& label, bool readOnly )
+{
+    kdDebug(7024) << "User= " << user << ", Message= " << prompt << endl;
+    bool keep;
+    QString usr = user, pass;
+    int res = KIO::PasswordDialog::getNameAndPassword( usr, pass, &keep, prompt,
+                                                       readOnly, caption, comment,
+                                                       label );
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
-    KIO::PassDlg dlg( 0, 0, true, 0, msg, user, QString::null );
-    if( lockUserName )
-        dlg.setEnableUserField( false );
-    if ( dlg.exec() )
-        stream << Q_UINT8(1) << dlg.user() << dlg.password();
+    if ( res == QDialog::Accepted )
+        stream << Q_UINT8(1) << usr << pass << (keep ? Q_UINT8(1):Q_UINT8(0));
     else
-        stream << Q_UINT8(0) << QString::null << QString::null;
+        stream << Q_UINT8(0) << QString::null << QString::null << Q_UINT8(0);
     return data;
 }
 
@@ -933,7 +944,6 @@ int main(int argc, char **argv)
 
     // This app is started automatically, no need for session management
     app.disableSessionManagement();
-    app.dcopClient()->setDaemonMode( true );
 
     uiserver =  new UIServer;
 
