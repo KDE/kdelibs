@@ -277,7 +277,10 @@ bool KProcess::start(RunMode runmode, Communication comm)
   }
 
   if (!setupCommunication(comm))
+  {
       kdDebug() << "Could not setup Communication!\n";
+      return false;
+  }
 
   // We do this in the parent because if we do it in the child process
   // gdb gets confused when the application runs from gdb.
@@ -620,21 +623,39 @@ int KProcess::childError(int fdno)
 
 int KProcess::setupCommunication(Communication comm)
 {
-  int ok;
-
   communication = comm;
 
-  ok = 1;
-  if (comm & Stdin)
-        ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, in) >= 0;
+  if ((comm & Stdin) && (socketpair(AF_UNIX, SOCK_STREAM, 0, in) < 0))
+     comm = (Communication) (comm & ~Stdin);
 
-  if (comm & Stdout)
-        ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, out) >= 0;
+  if ((comm & Stdout) && (socketpair(AF_UNIX, SOCK_STREAM, 0, out) < 0))
+     comm = (Communication) (comm & ~Stdout);
 
-  if (comm & Stderr)
-        ok &= socketpair(AF_UNIX, SOCK_STREAM, 0, err) >= 0;
+  if ((comm & Stderr) && (socketpair(AF_UNIX, SOCK_STREAM, 0, err) < 0))
+     comm = (Communication) (comm & ~Stderr);
+  
+  if (communication != comm)
+  {
+     if (comm & Stdin)
+     {
+        close(in[0]);
+        close(in[1]);        
+     }
+     if (comm & Stdout)
+     {
+        close(out[0]);
+        close(out[1]);        
+     }
+     if (comm & Stderr)
+     {
+        close(err[0]);
+        close(err[1]);        
+     }
+     communication = NoCommunication;
+     return 0; // Error
+  }
 
-  return ok;
+  return 1; // Ok
 }
 
 
