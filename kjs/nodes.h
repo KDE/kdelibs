@@ -685,8 +685,9 @@ namespace KJS {
 
   class VarDeclListNode : public Node {
   public:
-    VarDeclListNode(VarDeclNode *v) : list(0L), var(v) {}
-    VarDeclListNode(VarDeclListNode *l, VarDeclNode *v) : list(l), var(v) {}
+    VarDeclListNode(VarDeclNode *v) : list(this), var(v) {}
+    VarDeclListNode(VarDeclListNode *l, VarDeclNode *v)
+      : list(l->list), var(v) { l->list = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -701,14 +702,13 @@ namespace KJS {
 
   class VarStatementNode : public StatementNode {
   public:
-    VarStatementNode(VarDeclListNode *l) : list(l) { reverseList(); }
+    VarStatementNode(VarDeclListNode *l) : list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseList();
     VarDeclListNode *list;
   };
 
@@ -721,7 +721,6 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   protected:
-    void reverseList();
     SourceElementsNode *source;
   };
 
@@ -788,14 +787,13 @@ namespace KJS {
     ForNode(Node *e1, Node *e2, Node *e3, StatementNode *s) :
       expr1(e1), expr2(e2), expr3(e3), statement(s) {}
     ForNode(VarDeclListNode *e1, Node *e2, Node *e3, StatementNode *s) :
-      expr1(reverseList(e1)), expr2(e2), expr3(e3), statement(s) {}
+      expr1(e1->list), expr2(e2), expr3(e3), statement(s) { e1->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    static VarDeclListNode *reverseList(VarDeclListNode *);
     Node *expr1, *expr2, *expr3;
     StatementNode *statement;
   };

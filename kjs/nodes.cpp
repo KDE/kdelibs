@@ -1819,18 +1819,6 @@ void VarDeclListNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- VarStatementNode -----------------------------
 
-void VarStatementNode::reverseList()
-{
-  VarDeclListNode *head = 0;
-  VarDeclListNode *next;
-  for (VarDeclListNode *n = list; n; n = next) {
-    next = n->list;
-    n->list = head;
-    head = n;
-  }
-  list = head;
-}
-
 void VarStatementNode::ref()
 {
   StatementNode::ref();
@@ -1863,23 +1851,15 @@ void VarStatementNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- BlockNode ------------------------------------
 
-BlockNode::BlockNode(SourceElementsNode *s) : source(s)
+BlockNode::BlockNode(SourceElementsNode *s)
 {
-  if (s)
+  if (s) {
+    source = s->elements;
+    s->elements = 0;
     setLoc(s->firstLine(), s->lastLine(), s->code());
-  reverseList();
-}
-
-void BlockNode::reverseList()
-{
-  SourceElementsNode *head = 0;
-  SourceElementsNode *next;
-  for (SourceElementsNode *n = source; n; n = next) {
-    next = n->elements;
-    n->elements = head;
-    head = n;
+  } else {
+    source = 0;
   }
-  source = head;
 }
 
 void BlockNode::ref()
@@ -2113,18 +2093,6 @@ void WhileNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- ForNode --------------------------------------
-
-VarDeclListNode *ForNode::reverseList(VarDeclListNode *list)
-{
-  VarDeclListNode *head = 0;
-  VarDeclListNode *next;
-  for (VarDeclListNode *n = list; n; n = next) {
-    next = n->list;
-    n->list = head;
-    head = n;
-  }
-  return head;
-}
 
 void ForNode::ref()
 {
@@ -3062,13 +3030,14 @@ Value FuncExprNode::evaluate(ExecState *exec) const
 SourceElementsNode::SourceElementsNode(StatementNode *s1)
 {
   element = s1;
-  elements = 0L;
+  elements = this;
   setLoc(s1->firstLine(),s1->lastLine(),s1->code());
 }
 
 SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
 {
-  elements = s1;
+  elements = s1->elements;
+  s1->elements = this;
   element = s2;
   setLoc(s1->firstLine(),s2->lastLine(),s1->code());
 }
