@@ -145,13 +145,10 @@ public:
     virtual void insertChildNode(RenderObject* child, RenderObject* before);
     //////////////////////////////////////////
 
-private:
     //////////////////////////////////////////
     // Helper functions. Dangerous to use!
     void setPreviousSibling(RenderObject *previous) { m_previous = previous; }
     void setNextSibling(RenderObject *next) { m_next = next; }
-public:
-    /* use with care!!!! */
     void setParent(RenderObject *parent) { m_parent = parent; }
     //////////////////////////////////////////
 
@@ -588,8 +585,6 @@ private:
     friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderRoot;
-
-    friend RenderFlow *generateDummyBlock( RenderArena *, RenderObject * );
 };
 
 
