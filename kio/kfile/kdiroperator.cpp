@@ -150,11 +150,11 @@ KDirOperator::~KDirOperator()
     {
         if ( d->config )
             m_fileView->writeConfig( d->config, d->configGroup );
-        
+
         delete m_fileView;
         m_fileView = 0L;
     }
-    
+
     delete myPreview;
     delete dir;
     delete d;
@@ -178,7 +178,7 @@ void KDirOperator::resetCursor()
 void KDirOperator::insertViewDependentActions()
 {
     // If we have a new view actionCollection(), insert its actions
-    //  into viewActionMenu.
+    // into viewActionMenu.
 
     if( m_fileView && viewActionCollection != m_fileView->actionCollection() )
     {
@@ -187,8 +187,22 @@ void KDirOperator::insertViewDependentActions()
         if ( !viewActionCollection->isEmpty() ) {
             viewActionMenu->insert( d->viewActionSeparator );
 
-            for ( uint i = 0; i < viewActionCollection->count(); i++ )
-                viewActionMenu->insert( viewActionCollection->action( i ));
+            // first insert the normal actions, then the grouped ones
+            QStringList groups = viewActionCollection->groups();
+            groups.prepend( QString::null ); // actions without group
+            QStringList::ConstIterator git = groups.begin();
+            KActionPtrList list;
+            KAction *sep = actionCollection()->action("separator");
+            for ( ; git != groups.end(); ++git )
+            {
+                if ( git != groups.begin() )
+                    viewActionMenu->insert( sep );
+                
+                list = viewActionCollection->actions( *git );
+                KActionPtrList::ConstIterator it = list.begin();
+                for ( ; it != list.end(); ++it )
+                    viewActionMenu->insert( *it );
+            }
         }
 
         connect( viewActionCollection, SIGNAL( inserted( KAction * )),

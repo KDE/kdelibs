@@ -146,6 +146,10 @@ public slots:
      */
     void showPreviews();
 
+    void zoomIn();
+    
+    void zoomOut();
+    
     /**
      * Reimplemented for performance reasons.
      * @since 3.1

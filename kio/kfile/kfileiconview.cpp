@@ -68,6 +68,15 @@ public:
         previews = new KToggleAction( i18n("Thumbnail Previews"), 0,
                                       parent->actionCollection(),
                                       "show previews" );
+        zoomIn = KStdAction::zoomIn( parent, SLOT( zoomIn() ),
+                                     parent->actionCollection(), "zoomIn" );
+        zoomOut = KStdAction::zoomOut( parent, SLOT( zoomOut() ),
+                                     parent->actionCollection(), "zoomOut" );
+
+        previews->setGroup("previews");
+        zoomIn->setGroup("previews");
+        zoomOut->setGroup("previews");
+
         connect( previews, SIGNAL( toggled( bool )),
                  parent, SLOT( slotPreviewsToggled( bool )));
 
@@ -83,6 +92,7 @@ public:
     }
 
     KRadioAction *smallColumns, *largeRows;
+    KAction *zoomIn, *zoomOut;
     KToggleAction *previews;
     KIO::PreviewJob *job;
     QTimer *previewTimer;
@@ -446,9 +456,12 @@ void KFileIconView::setIconSize( int size )
 
 void KFileIconView::setPreviewSize( int size )
 {
+    if ( size < 30 )
+        size = 30; // minimum
+
     d->previewIconSize = size;
     if ( d->previews->isChecked() )
-        updateIcons();
+        showPreviews();
 }
 
 void KFileIconView::updateIcons()
@@ -740,6 +753,16 @@ int KFileIconView::iconSizeFor( const KFileItem *item ) const
     if ( d->previews->isChecked() && canPreview( item ) )
         return d->previewIconSize;
     return myIconSize;
+}
+
+void KFileIconView::zoomIn()
+{
+    setPreviewSize( d->previewIconSize + 30 );
+}
+
+void KFileIconView::zoomOut()
+{
+    setPreviewSize( d->previewIconSize - 30 );
 }
 
 void KFileIconView::virtual_hook( int id, void* data )
