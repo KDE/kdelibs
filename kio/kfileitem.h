@@ -146,7 +146,7 @@ public:
 
   /**
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
-   * @return the time asked for
+   * @return the time asked for, (time_t)0 if not available
    */
   time_t time( unsigned int which ) const;
 
