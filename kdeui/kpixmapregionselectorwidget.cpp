@@ -17,6 +17,12 @@
     Boston, MA 02111-1307, USA.
 */
 
+/* NOTE: There are two copies of this .h and the .cpp file, with subtle differences.
+ * One copy is in kdelibs/kdeui, and the other copy is in kdepim/libkdepim
+ * This is because kdepim has to remain backwards compatible.  Any changes
+ * to either file should be made to the other.
+ */
+
 #include "kpixmapregionselectorwidget.h"
 #include <qpainter.h>
 #include <qcolor.h>
@@ -60,6 +66,7 @@ KPixmapRegionSelectorWidget::~KPixmapRegionSelectorWidget()
 
 void KPixmapRegionSelectorWidget::setPixmap( const QPixmap &pixmap )
 {
+   Q_ASSERT(!pixmap.isNull()); //This class isn't designed to deal with null pixmaps.
    m_originalPixmap = pixmap;
    m_unzoomedPixmap = pixmap;
    m_label->setPixmap( pixmap );
@@ -91,6 +98,7 @@ void KPixmapRegionSelectorWidget::setSelectedRegion(const QRect &rect)
 
 void KPixmapRegionSelectorWidget::updatePixmap()
 {
+   Q_ASSERT(!m_originalPixmap.isNull()); if(m_originalPixmap.isNull()) { m_label->setPixmap(m_originalPixmap); return; }
    if (m_selectedRegion.width()>m_originalPixmap.width()) m_selectedRegion.setWidth( m_originalPixmap.width() );
    if (m_selectedRegion.height()>m_originalPixmap.height()) m_selectedRegion.setHeight( m_originalPixmap.height() );
 
