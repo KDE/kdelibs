@@ -185,7 +185,7 @@ bool KDesktopFile::tryExec() const
       QStringList dirs = QStringList::split(':', QString::fromLatin1(::getenv("PATH")));
       QStringList::Iterator it(dirs.begin());
       for (; it != dirs.end(); ++it) {
-	QString fName = *it + te;
+	QString fName = *it + "/" + te;
 	if (::access(QFile::encodeName(fName), R_OK & X_OK) == 0)
 	  return true;
       }
