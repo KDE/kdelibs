@@ -1,10 +1,11 @@
 [KDE Desktop Entry]
 Comment=Windows Executable
-Comment[af]=Vensters Uitvoerbare
+Comment[af]=Windows Uitvoerbare
 Comment[ar]=ملف وندوز تشغيلي
 Comment[az]=Windows İcraçısı
 Comment[bg]=Изпълним файл на Windows
 Comment[bn]=উইন্ডোস এক্সিকিউটেবল
+Comment[br]=Goulev Windows
 Comment[bs]=Windows izvršna datoteka
 Comment[ca]=Executable Windows
 Comment[cs]=Spustitelný soubor z Windows
@@ -61,7 +62,6 @@ Comment[uz]=Windows учун дастур
 Comment[ven]=U tumulea ha dziwindo
 Comment[wa]=Fitchî enondåve po MS-Windows
 Comment[xh]=Windows Eziphumezekayo
-Comment[xx]=xxWindows Executablexx
 Comment[zh_CN]=Windows 可执行文件
 Comment[zh_TW]=Windows 可執行檔
 Comment[zu]=Ama-window Aphumelelanga

@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=FLAC Audio
+Comment[af]=FLAC Klank
 Comment[ar]=ملف FLAC صوتي
 Comment[be]=FLAC аўдыё
 Comment[bg]=Аудио файл FLAC
@@ -58,7 +59,6 @@ Comment[tr]=FLAC Ses Dosyası
 Comment[uk]=Аудіо FLAC
 Comment[uz]=FLAC аудио
 Comment[wa]=Fitchî odio FLAC
-Comment[xx]=xxFLAC Audioxx
 Comment[zh_CN]=FLAC 音频
 Comment[zh_TW]=FLAC 聲音
 MimeType=audio/x-flac

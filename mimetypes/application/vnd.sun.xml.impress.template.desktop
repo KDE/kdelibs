@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Presentation Template
+Comment[af]=OpenOffice.org Voorlegging 
 Comment[be]=Шаблён прэзэнтацыі OpenOffice.org
 Comment[bg]=Шаблон на OpenOffice.org Presentation
 Comment[bn]=ওপেন-অফিস.অর্গ প্রেসেন্টেশন টেম্‌প্লেট
@@ -41,14 +42,13 @@ Comment[se]=OpenOffice.org presentašuvdnamálle
 Comment[sk]=Šablóna prezentácie OpenOffice.org
 Comment[sl]=Predloga predstavitve OpenOffice.org
 Comment[sr]=OpenOffice.org-ов шаблон презентације
-Comment[sr@Latn]=OpenOffice.org-ов шаблон презентације
+Comment[sr@Latn]=OpenOffice.org-ov šablon prezentacije
 Comment[sv]=OpenOffice.org presentationsmall
 Comment[ta]=ழ-ஓப்பன்ஆபீஸ் அளிக்கை
 Comment[tg]=Тақдимоти OpenOffice.org
 Comment[tr]=OpenOffice.org Sunum Şablonu
 Comment[uk]=Шаблон презентації OpenOffice.org
 Comment[uz]=OpenOffice.org намойиш намунаси
-Comment[xx]=xxOpenOffice.org Presentation Templatexx
 Comment[zh_CN]=OpenOffice.org 演示文稿模板
 MimeType=application/vnd.sun.xml.impress.template
 Type=MimeType

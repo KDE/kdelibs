@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=TrueType Font Collection
+Comment[af]=Truetype Skrif Versameling
 Comment[ar]=مجموعة خطوط TrueType
 Comment[az]=TrueType Yazı Növü Kolleksiyası
 Comment[be]=Калекцыя шрыфтоў TrueType
@@ -59,7 +60,6 @@ Comment[tr]=TrueType Yazıtipi
 Comment[uk]=Колекція шрифтів Truetype
 Comment[uz]=TrueType шрифт тўплами
 Comment[wa]=Ramexhnêye di fontes TrueType
-Comment[xx]=xxTrueType Font Collectionxx
 Comment[zh_CN]=Truetype 字体集合
 Comment[zh_TW]=Truetype 字型集合
 Icon=font_truetype

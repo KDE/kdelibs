@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Master Text Document
+Comment[af]=OpenOffice.org Meester Teks Dokument
 Comment[bg]=Главен документ на OpenOffice.org Writer
 Comment[bn]=ওপেন-অফিস.অর্গ মাস্টার টেক্সট নথী
 Comment[bs]=OpenOffice.org glavni tekst dokument
@@ -39,14 +40,13 @@ Comment[se]=OpenOffice.org-váldoteakstadokumeanta
 Comment[sk]=Hlavný textový dokument OpenOffice.org
 Comment[sl]=Glavni besedilni dokument OpenOffice.org
 Comment[sr]=OpenOffice.org-ов главни текстуални документ
-Comment[sr@Latn]=OpenOffice.org-ов главни текстуални документ
+Comment[sr@Latn]=OpenOffice.org-ov glavni tekstualni dokument
 Comment[sv]=OpenOffice.org huvudtextdokument
 Comment[ta]=OpenOffice.org ஆசிரியர் உரை ஆவணம்
 Comment[tg]=Устоди санади OpenOffice.org
 Comment[tr]=OpenOffice.org Ana Metin Belgesi
 Comment[uk]=Головний текстовий документ OpenOffice.org
 Comment[uz]=OpenOffice.org бош матн ҳужжати
-Comment[xx]=xxOpenOffice.org Master Text Documentxx
 Comment[zh_CN]=OpenOffice.org 主文本文档
 MimeType=application/vnd.sun.xml.writer.master
 Type=MimeType

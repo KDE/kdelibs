@@ -1,11 +1,13 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Drawing
+Comment[af]=OpenOffice.org Tekening
 Comment[ar]=مستند OpenOffice.org Drawing
 Comment[az]=OpenOffice.org Rəsmi
 Comment[be]=Малюнак OpenOffice.org
 Comment[bg]=Изображение на OpenOffice.org Drawing
 Comment[bn]=ওপেন-অফিস.অর্গ ড্রয়িং
+Comment[br]=Tresaner OpenOffice.org
 Comment[bs]=OpenOffice.org crtež
 Comment[ca]=Dibuix d'OpenOffice.org
 Comment[cs]=Kresba OpenOffice.org
@@ -55,7 +57,6 @@ Comment[tr]=OpenOffice.org Çizimi
 Comment[uk]=Малюнок OpenOffice.org
 Comment[uz]=OpenOffice.org чизма
 Comment[wa]=Documint di dessinaedje OpenOffice.org
-Comment[xx]=xxOpenOffice.org Drawingxx
 Comment[zh_CN]=OpenOffice.org 绘图
 Comment[zh_TW]=StarOffice.org 繪圖
 MimeType=application/vnd.sun.xml.draw

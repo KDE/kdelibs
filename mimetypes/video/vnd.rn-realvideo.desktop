@@ -5,6 +5,7 @@ MimeType=video/vnd.rn-realvideo
 Icon=video
 Patterns=*.rv;*.RV;
 Comment=RealVideo File
+Comment[af]=RealVideo Lêer
 Comment[ar]=ملف RealVideo
 Comment[az]=RealVideo Faylı
 Comment[be]=Файл RealAudio
@@ -64,7 +65,6 @@ Comment[tr]=RealVideo Dosyası
 Comment[uk]=Файл RealVideo
 Comment[uz]=RealVideo-файли
 Comment[wa]=Fitchî RealVideo
-Comment[xx]=xxRealVideo Filexx
 Comment[zh_CN]=RealVideo 文件
 Comment[zh_TW]=RealVideo 檔案
 

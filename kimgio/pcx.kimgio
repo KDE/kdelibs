@@ -2,6 +2,7 @@
 Type=PCX
 Header=^\012
 Name=PCX Image
+Name[af]='PCX' Beeld
 Name[ar]=صورة من نوع PCX
 Name[az]=PCX Rəsmi
 Name[be]=Выява PCX

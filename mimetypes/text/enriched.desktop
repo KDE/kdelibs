@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/enriched
 Comment=Lightly Enriched Text Document
+Comment[af]='Lightly Enriched' Teks Dokument
 Comment[az]=Həfifcə Zənginləşdirilmiş Mətn Sənədi
 Comment[bg]=Леко разширен текстов файл (Lightly Enriched)
 Comment[bs]=Lightly Enriched tekst dokument
@@ -52,7 +53,6 @@ Comment[tg]=Хуҷҷати Матни Lightly Enriched
 Comment[tr]=Biraz Zenginleştirilmiş Metin Dosyası
 Comment[uk]=Злегка збагачений текстовий документ
 Comment[wa]=Documint tecse ledjirmint eritchî
-Comment[xx]=xxLightly Enriched Text Documentxx
 Comment[zh_CN]=轻装的丰富文本文档
 Comment[zh_TW]=Lightly Enriched 文件檔案
 Icon=txt

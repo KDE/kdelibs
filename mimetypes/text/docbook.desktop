@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=DocBook Document
+Comment[af]=DocBook Dokument
 Comment[ar]=مستند DocBook
 Comment[az]=DocBook Sənədi
 Comment[be]=Дакумэнт DocBook
@@ -60,7 +61,6 @@ Comment[tr]=DocBook Belgesi
 Comment[uk]=Документ DocBook
 Comment[uz]=DocBook ҳужжати
 Comment[wa]=Documint DocBook
-Comment[xx]=xxDocBook Documentxx
 Comment[zh_CN]=DocBook 文档
 Comment[zh_TW]=DocBook 文件
 Icon=wordprocessing

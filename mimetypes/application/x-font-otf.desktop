@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenType Font
+Comment[af]=OpenType Skrif tipe
 Comment[ar]=خط OpenType
 Comment[az]=OpenType Yazı Növü
 Comment[be]=Шрыфт OpenType
@@ -60,7 +61,6 @@ Comment[tr]=OpenType Yazıtipi
 Comment[uk]=Шрифт OpenType
 Comment[uz]=OpenType шрифти
 Comment[wa]=Fonte OpenType
-Comment[xx]=xxOpenType Fontxx
 Comment[zh_CN]=OpenType 字体
 Comment[zh_TW]=OpenType 字型
 Icon=font_truetype

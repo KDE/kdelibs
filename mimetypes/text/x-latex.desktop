@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=LaTeX Document
+Comment[af]=LaTeX Dokument
 Comment[ar]=مستند LaTeX
 Comment[az]=LaTeX Sənədi
 Comment[be]=Дакумэнт LaTeX
@@ -60,7 +61,6 @@ Comment[tr]=LaTeX Belgesi
 Comment[uk]=Документ LaTeX
 Comment[uz]=LaTeX ҳужжати
 Comment[wa]=Documint LaTeX
-Comment[xx]=xxLaTeX Documentxx
 Comment[zh_CN]=LaTeX 文档
 Comment[zh_TW]=LaTex 文件
 Icon=tex

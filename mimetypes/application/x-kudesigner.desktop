@@ -3,6 +3,7 @@
 Encoding=UTF-8
 MimeType=application/x-kudesigner
 Comment=Kugar Report Template
+Comment[af]=Kugar Raport Voorbeeld
 Comment[ar]=قالب تقارير كوغار
 Comment[az]=Kugar Report Sənədi
 Comment[be]=Шаблён справаздачы Kugar
@@ -58,7 +59,6 @@ Comment[tg]=Файли докладии Kugar
 Comment[tr]=Kugar Rapor Şablonu
 Comment[uk]=Шаблон звіту Kugar
 Comment[uz]=Kugar ҳисобот намунаси
-Comment[xx]=xxKugar Report Templatexx
 Comment[zh_CN]=Kugar 报告模板
 Comment[zh_TW]=Kugar 報表樣本
 Icon=kugardata

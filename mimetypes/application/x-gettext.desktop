@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=GNU Gettext Message Catalog
+Comment[af]=GNU Gettext Boodskap Katalogus
 Comment[ar]=ملف ترجمة
 Comment[az]=GNU Gettext İsmarış Kataloqu
 Comment[bg]=Съобщения за превод (GNU Gettext)
@@ -58,7 +59,6 @@ Comment[tr]=GNU Gettext İleti Kataloğu
 Comment[uk]=Каталог повідомлень GNU Gettext
 Comment[uz]=GNU Gettext хабарлар каталоги
 Comment[wa]=Catalogue di messaedjes po GNU gettext
-Comment[xx]=xxGNU Gettext Message Catalogxx
 Comment[zh_CN]=GNU Gettext 消息编目
 Comment[zh_TW]=GNU Gettext 訊息型錄
 Icon=gettext

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XHTML Family Document
+Comment[af]=XHTML Familie Dokument
 Comment[ar]=مستند XHTML
 Comment[az]=XHTML Ailəsi Sənədi
 Comment[be]=Дакумэнт XHTML
@@ -60,7 +61,6 @@ Comment[tr]=XHTML Belgesi
 Comment[uk]=Документ XHTML
 Comment[uz]=XHTML оиласига оид ҳужжат
 Comment[wa]=Documint XHTML
-Comment[xx]=xxXHTML Family Documentxx
 Comment[zh_CN]=XHTML 及类似文档
 Comment[zh_TW]=XHTML Family 文件
 Type=MimeType

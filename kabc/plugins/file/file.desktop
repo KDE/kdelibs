@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=File
+Name[af]=Lêer
 Name[ar]=ملفّ
 Name[az]=Fayl
 Name[be]=Файл
@@ -60,7 +61,6 @@ Name[tr]=Dosya
 Name[uk]=Файл
 Name[uz]=Файл
 Name[wa]=Fitchî
-Name[xx]=xxFilexx
 Name[zh_CN]=文件
 X-KDE-Library=kabc_file
 Type=Service

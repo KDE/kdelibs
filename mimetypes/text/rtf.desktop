@@ -2,6 +2,7 @@
 Encoding=UTF-8
 MimeType=text/rtf
 Comment=RTF Document
+Comment[af]=RTF Dokument
 Comment[ar]=مستند RTF
 Comment[az]=RTF Sənədi
 Comment[be]=Дакумэнт RTF
@@ -61,7 +62,6 @@ Comment[tr]=RTF Belgesi
 Comment[uk]=Документ RTF
 Comment[uz]=RTF ҳужжати
 Comment[wa]=Documint RTF
-Comment[xx]=xxRTF Documentxx
 Comment[zh_CN]=RTF 文档
 Comment[zh_TW]=RTF 文件
 Icon=wordprocessing

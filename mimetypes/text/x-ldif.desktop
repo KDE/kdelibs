@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=LDAP Addressbook
+Comment[af]=LDAP Adresboek
 Comment[ar]=دفتر عناوين LDAP
 Comment[az]=LDAP Ünvan Kitabçası
 Comment[be]=Адрасная кніга LDAP
@@ -60,7 +61,6 @@ Comment[tr]=LDAP Adres Defteri
 Comment[uk]=Адресна книга LDAP
 Comment[uz]=LDAP манзиллар дафтари
 Comment[wa]=Calpin d' adresses LDAP
-Comment[xx]=xxLDAP Addressbookxx
 Comment[zh_CN]=LDAP 地址簿
 Comment[zh_TW]=LDAP 地址簿
 Icon=vcard

@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=PCM Audio
-Comment[af]=Pcm Audio
+Comment[af]=PCM Klank
 Comment[ar]=صوت PCM
 Comment[be]=PCM аўдыё
 Comment[bg]=Аудио файл PCM
@@ -64,7 +64,6 @@ Comment[uz]=PCM аудио
 Comment[ven]=Zwinopfiwa zwa PCM
 Comment[wa]=Son PCM
 Comment[xh]=PCM Evakalayo
-Comment[xx]=xxPCM Audioxx
 Comment[zh_CN]=PCM 音频文件
 Comment[zh_TW]=PCM 聲音文件
 Comment[zu]=Okuzwakalayo kwe-PCM

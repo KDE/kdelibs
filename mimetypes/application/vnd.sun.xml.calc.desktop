@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenOffice.org Spreadsheet
+Comment[af]=OpenOffice.org Spreiblad
 Comment[ar]=مستند OpenOffice.org Spreasheet
 Comment[az]=OpenOffice.org Hesab Cədvəli
 Comment[be]=Электронная табліца OpenOffice.org
@@ -57,7 +58,6 @@ Comment[tr]=OpenOffice.org Hesap Tablosu
 Comment[uk]=Електронна таблиця OpenOffice.org
 Comment[uz]=OpenOffice.org электрон жадвали
 Comment[wa]=Foye di tåvleu OpenOffice.org
-Comment[xx]=xxOpenOffice.org Spreadsheetxx
 Comment[zh_CN]=OpenOffice.org 电子表格
 Comment[zh_TW]=OpenOffice.org 試算表
 Icon=spreadsheet
