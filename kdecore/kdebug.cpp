@@ -62,8 +62,7 @@ template class QList<KDebugEntry>;
 class KDebugEntry
 {
 public:
-  KDebugEntry (int n, QString d) {number=n; descr=d.copy();}
-  KDebugEntry (QString d, int n) {number=n; descr=d.copy();}
+  KDebugEntry (int n, QString d) {number=n; descr=d;}
   unsigned int number;
   QString descr;
 };
