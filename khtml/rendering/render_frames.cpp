@@ -43,7 +43,7 @@
 using namespace khtml;
 
 RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
-			        QList<khtml::Length> *rows, QList<khtml::Length> *cols )
+                                QList<khtml::Length> *rows, QList<khtml::Length> *cols )
 : RenderBox()
 {
   m_frameset = frameSet;
@@ -88,8 +88,8 @@ void RenderFrameSet::layout( )
 
     if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
     {
-	m_width = m_view->visibleWidth();
-	m_height = m_view->visibleHeight();	
+        m_width = m_view->visibleWidth();
+        m_height = m_view->visibleHeight();
     }
 
     int remainingWidth = m_width - (m_frameset->totalCols()-1)*m_frameset->border();
@@ -113,111 +113,111 @@ void RenderFrameSet::layout( )
 
     if(m_rows)
     {
-	for(i = 0; i< m_frameset->totalRows(); i++)
-	{
-	    kdDebug( 6031 ) << "setting row " << i << endl;
-	    if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
-	    {
-		m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
-		kdDebug( 6031 ) << "setting row height to " << m_rowHeight[i] << endl;
-		remainingHeight -= m_rowHeight[i];
-	    }
-	    else if(m_rows->at(i)->type == Relative)
-	    {
-		totalRelative += m_rows->at(i)->value;
-		rowsRelative++;
-	    }
-	}
-	// ###
-	if(remainingHeight < 0) remainingHeight = 0;
+        for(i = 0; i< m_frameset->totalRows(); i++)
+        {
+            kdDebug( 6031 ) << "setting row " << i << endl;
+            if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
+            {
+                m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
+                kdDebug( 6031 ) << "setting row height to " << m_rowHeight[i] << endl;
+                remainingHeight -= m_rowHeight[i];
+            }
+            else if(m_rows->at(i)->type == Relative)
+            {
+                totalRelative += m_rows->at(i)->value;
+                rowsRelative++;
+            }
+        }
+        // ###
+        if(remainingHeight < 0) remainingHeight = 0;
 
-	if ( !totalRelative && rowsRelative )
-	  remainingRelativeWidth = remainingHeight/rowsRelative;
-	
-	for(i = 0; i< m_frameset->totalRows(); i++)
-	 {
-	    if(m_rows->at(i)->type == Relative)
-	    {
-		if ( totalRelative )
-		  m_rowHeight[i] = m_rows->at(i)->value*remainingHeight/totalRelative;
-		else
-		  m_rowHeight[i] = remainingRelativeWidth;
-	  	remainingHeight -= m_rowHeight[i];
-		totalRelative--;
-	    }
-	}
-	
-	// support for totally broken frame declarations
-	if(remainingHeight)
-	{
-	    // just distribute it over all columns...
-	    int rows = m_frameset->totalRows();
-	    for(i = 0; i< m_frameset->totalRows(); i++)
-	    {
-		int toAdd = remainingHeight/rows;
-		rows--;
-		m_rowHeight[i] += toAdd;
-		remainingHeight -= toAdd;
-	    }
-	}	
+        if ( !totalRelative && rowsRelative )
+          remainingRelativeWidth = remainingHeight/rowsRelative;
+
+        for(i = 0; i< m_frameset->totalRows(); i++)
+         {
+            if(m_rows->at(i)->type == Relative)
+            {
+                if ( totalRelative )
+                  m_rowHeight[i] = m_rows->at(i)->value*remainingHeight/totalRelative;
+                else
+                  m_rowHeight[i] = remainingRelativeWidth;
+                remainingHeight -= m_rowHeight[i];
+                totalRelative--;
+            }
+        }
+
+        // support for totally broken frame declarations
+        if(remainingHeight)
+        {
+            // just distribute it over all columns...
+            int rows = m_frameset->totalRows();
+            for(i = 0; i< m_frameset->totalRows(); i++)
+            {
+                int toAdd = remainingHeight/rows;
+                rows--;
+                m_rowHeight[i] += toAdd;
+                remainingHeight -= toAdd;
+            }
+        }
     }
     else
-	m_rowHeight[0] = m_height;
+        m_rowHeight[0] = m_height;
 
     if(m_cols)
     {
-	totalRelative = 0;
-	remainingRelativeWidth = 0;
+        totalRelative = 0;
+        remainingRelativeWidth = 0;
 
-	for(i = 0; i< m_frameset->totalCols(); i++)
-	{
-	    if(m_cols->at(i)->type == Fixed || m_cols->at(i)->type == Percent)
-	    {
-		m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
-		remainingWidth -= m_colWidth[i];
-	    }
-	    else if(m_cols->at(i)->type == Relative)
-	    {
-		totalRelative += m_cols->at(i)->value;
-		colsRelative++;
-	    }
-	}
-	// ###
-	if(remainingWidth < 0) remainingWidth = 0;
-	
-	if ( !totalRelative && colsRelative )
-	  remainingRelativeWidth = remainingWidth/colsRelative;
+        for(i = 0; i< m_frameset->totalCols(); i++)
+        {
+            if(m_cols->at(i)->type == Fixed || m_cols->at(i)->type == Percent)
+            {
+                m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
+                remainingWidth -= m_colWidth[i];
+            }
+            else if(m_cols->at(i)->type == Relative)
+            {
+                totalRelative += m_cols->at(i)->value;
+                colsRelative++;
+            }
+        }
+        // ###
+        if(remainingWidth < 0) remainingWidth = 0;
 
-	for(i = 0; i < m_frameset->totalCols(); i++)
-	{
-	    if(m_cols->at(i)->type == Relative)
-	    {
-		if ( totalRelative )
-		  m_colWidth[i] = m_cols->at(i)->value*remainingWidth/totalRelative;
-		else
-		  m_colWidth[i] = remainingRelativeWidth;
-		remainingWidth -= m_colWidth[i];
-		totalRelative--;
-	    }
-	}
+        if ( !totalRelative && colsRelative )
+          remainingRelativeWidth = remainingWidth/colsRelative;
 
-	// support for totally broken frame declarations
-	if(remainingWidth)
-	{
-	    // just distribute it over all columns...
-	    int cols = m_frameset->totalCols();
-	    for(i = 0; i< m_frameset->totalCols(); i++)
-	    {
-		int toAdd = remainingHeight/cols;
-		cols--;
-		m_rowHeight[i] += toAdd;
-		remainingHeight -= toAdd;
-	    }
-	}
+        for(i = 0; i < m_frameset->totalCols(); i++)
+        {
+            if(m_cols->at(i)->type == Relative)
+            {
+                if ( totalRelative )
+                  m_colWidth[i] = m_cols->at(i)->value*remainingWidth/totalRelative;
+                else
+                  m_colWidth[i] = remainingRelativeWidth;
+                remainingWidth -= m_colWidth[i];
+                totalRelative--;
+            }
+        }
+
+        // support for totally broken frame declarations
+        if(remainingWidth)
+        {
+            // just distribute it over all columns...
+            int cols = m_frameset->totalCols();
+            for(i = 0; i< m_frameset->totalCols(); i++)
+            {
+                int toAdd = remainingHeight/cols;
+                cols--;
+                m_rowHeight[i] += toAdd;
+                remainingHeight -= toAdd;
+            }
+        }
 
     }
     else
-	m_colWidth[0] = m_width;
+        m_colWidth[0] = m_width;
 
     positionFrames();
 
@@ -227,56 +227,56 @@ void RenderFrameSet::layout( )
 
     if(!m_hSplitVar && !m_vSplitVar)
     {
-	kdDebug( 6031 ) << "calculationg fixed Splitters" << endl;
-	if(!m_vSplitVar && m_frameset->totalCols() > 1)
-	{
-	    m_vSplitVar = new bool[m_frameset->totalCols()];
-	    for(int i = 0; i < m_frameset->totalCols(); i++) m_vSplitVar[i] = true;
-	}
-	if(!m_hSplitVar && m_frameset->totalRows() > 1)
-	{
-	    m_hSplitVar = new bool[m_frameset->totalRows()];
-	    for(int i = 0; i < m_frameset->totalRows(); i++) m_hSplitVar[i] = true;
-	}
+        kdDebug( 6031 ) << "calculationg fixed Splitters" << endl;
+        if(!m_vSplitVar && m_frameset->totalCols() > 1)
+        {
+            m_vSplitVar = new bool[m_frameset->totalCols()];
+            for(int i = 0; i < m_frameset->totalCols(); i++) m_vSplitVar[i] = true;
+        }
+        if(!m_hSplitVar && m_frameset->totalRows() > 1)
+        {
+            m_hSplitVar = new bool[m_frameset->totalRows()];
+            for(int i = 0; i < m_frameset->totalRows(); i++) m_hSplitVar[i] = true;
+        }
 
-	for(int r = 0; r < m_frameset->totalRows(); r++)
-	{
-	    for(int c = 0; c < m_frameset->totalCols(); c++)
-	    {
-		bool fixed = false;
-		
-		if ( strcmp( child->renderName(), "RenderFrameSet" ) == 0 )
-		  fixed = static_cast<RenderFrameSet *>(child)->frameSetImpl()->noResize();
-		else
-		  fixed = static_cast<RenderFrame *>(child)->frameImpl()->noResize();
+        for(int r = 0; r < m_frameset->totalRows(); r++)
+        {
+            for(int c = 0; c < m_frameset->totalCols(); c++)
+            {
+                bool fixed = false;
 
-		/*
-		if(child->id() == ID_FRAMESET)
-		    fixed = (static_cast<HTMLFrameSetElementImpl *>(child))->noResize();
-		else if(child->id() == ID_FRAME)
-		    fixed = (static_cast<HTMLFrameElementImpl *>(child))->noResize();
-		*/
+                if ( strcmp( child->renderName(), "RenderFrameSet" ) == 0 )
+                  fixed = static_cast<RenderFrameSet *>(child)->frameSetImpl()->noResize();
+                else
+                  fixed = static_cast<RenderFrame *>(child)->frameImpl()->noResize();
 
-		if(fixed)
-		{
-		    kdDebug( 6031 ) << "found fixed cell " << r << "/" << c << "!" << endl;
-		    if( m_frameset->totalCols() > 1)
-		    {
-			if(c>0) m_vSplitVar[c-1] = false;
-			m_vSplitVar[c] = false;
-		    }
-		    if( m_frameset->totalRows() > 1)
-		    {
-			if(r>0) m_hSplitVar[r-1] = false;
-			m_hSplitVar[r] = false;
-		    }
-		    child = child->nextSibling();
-		    if(!child) goto end2;
-		}		
-		else
-		    kdDebug( 6031 ) << "not fixed: " << r << "/" << c << "!" << endl;
-	    }
-	}
+                /*
+                if(child->id() == ID_FRAMESET)
+                    fixed = (static_cast<HTMLFrameSetElementImpl *>(child))->noResize();
+                else if(child->id() == ID_FRAME)
+                    fixed = (static_cast<HTMLFrameElementImpl *>(child))->noResize();
+                */
+
+                if(fixed)
+                {
+                    kdDebug( 6031 ) << "found fixed cell " << r << "/" << c << "!" << endl;
+                    if( m_frameset->totalCols() > 1)
+                    {
+                        if(c>0) m_vSplitVar[c-1] = false;
+                        m_vSplitVar[c] = false;
+                    }
+                    if( m_frameset->totalRows() > 1)
+                    {
+                        if(r>0) m_hSplitVar[r-1] = false;
+                        m_hSplitVar[r] = false;
+                    }
+                    child = child->nextSibling();
+                    if(!child) goto end2;
+                }
+                else
+                    kdDebug( 6031 ) << "not fixed: " << r << "/" << c << "!" << endl;
+            }
+        }
 
     }
  end2:
@@ -302,30 +302,30 @@ void RenderFrameSet::positionFrames()
     int xPos = 0;
     for(c = 0; c < m_frameset->totalCols(); c++)
     {
-    //	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
+    //      HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
       child->setPos( xPos, yPos );
       child->setSize( m_colWidth[c], m_rowHeight[r] );
 
       child->layout( );
-	
+
       xPos += m_colWidth[c] + m_frameset->border();
       child = child->nextSibling();
 
       if ( !child )
         return;
-    /*	
-	    e->renderer()->setXPos(xPos);
-	    e->renderer()->setYPos(yPos);
-	    e->setWidth(colWidth[c]);
-	    e->setAvailableWidth(colWidth[c]);
-	    e->setDescent(rowHeight[r]);
-	    e->layout();
-	    xPos += colWidth[c] + border;
-	    child = child->nextSibling();
-	    if(!child) return;
+    /*
+            e->renderer()->setXPos(xPos);
+            e->renderer()->setYPos(yPos);
+            e->setWidth(colWidth[c]);
+            e->setAvailableWidth(colWidth[c]);
+            e->setDescent(rowHeight[r]);
+            e->layout();
+            xPos += colWidth[c] + border;
+            child = child->nextSibling();
+            if(!child) return;
     */
-	}
-	yPos += m_rowHeight[r] + m_frameset->border();
+        }
+        yPos += m_rowHeight[r] + m_frameset->border();
     }
 }
 
@@ -349,12 +349,12 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       {
         if(m_vSplitVar && m_vSplitVar[c-1] == true) m_vSplit = c-1;
         kdDebug( 6031 ) << "vsplit!" << endl;
-	res = true;
+        res = true;
         break;
       }
       pos += m_colWidth[c] + m_frameset->border();
     }
-	
+
     pos = m_rowHeight[0];
     for(int r = 1; r < m_frameset->totalRows(); r++)
     {
@@ -363,7 +363,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
         if(m_hSplitVar && m_hSplitVar[r-1] == true) m_hSplit = r-1;
         kdDebug( 6031 ) << "hsplitvar = " << m_hSplitVar << endl;
         kdDebug( 6031 ) << "hsplit!" << endl;
-	res = true;
+        res = true;
         break;
       }
       pos += m_rowHeight[r] + m_frameset->border();
@@ -378,7 +378,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
     else if( m_vSplit != -1 )
     {
       cursor = Qt::splitHCursor;
-    }	
+    }
     else if( m_hSplit != -1 )
     {
       cursor = Qt::splitVCursor;
@@ -409,7 +409,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       int delta = m_vSplitPos - _x;
       m_colWidth[m_vSplit] -= delta;
       m_colWidth[m_vSplit+1] += delta;
-    }	
+    }
     if(m_hSplit != -1 )
     {
       kdDebug( 6031 ) << "split ypos=" << _y << endl;
@@ -467,20 +467,20 @@ void RenderFrame::setWidget( QWidget *widget )
 {
     kdDebug(6031) << "RenderFrame::setWidget()" << endl;
     if(widget->inherits("QScrollView")) {
-	kdDebug(6031) << "frame is a scrollview!" << endl;
-	QScrollView *view = static_cast<QScrollView *>(widget);
-	if(!m_frame->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_frame->_parent))->frameBorder()))
-	    view->setFrameStyle(QFrame::NoFrame);
-	//	if(m_frame->scrolling == QScrollView::AlwaysOff)
-	//    kdDebug(6031) << "no scrollbar"<<endl;
-	view->setVScrollBarMode(m_frame->scrolling);
-	view->setHScrollBarMode(m_frame->scrolling);
-	if(view->inherits("KHTMLView")) {
-	    kdDebug(6031) << "frame is a KHTMLview!" << endl;
-	    KHTMLView *htmlView = static_cast<KHTMLView *>(view);
-	    if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
-	    if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
-	}
+        kdDebug(6031) << "frame is a scrollview!" << endl;
+        QScrollView *view = static_cast<QScrollView *>(widget);
+        if(!m_frame->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_frame->_parent))->frameBorder()))
+            view->setFrameStyle(QFrame::NoFrame);
+        //      if(m_frame->scrolling == QScrollView::AlwaysOff)
+        //    kdDebug(6031) << "no scrollbar"<<endl;
+        view->setVScrollBarMode(m_frame->scrolling);
+        view->setHScrollBarMode(m_frame->scrolling);
+        if(view->inherits("KHTMLView")) {
+            kdDebug(6031) << "frame is a KHTMLview!" << endl;
+            KHTMLView *htmlView = static_cast<KHTMLView *>(view);
+            if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
+            if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
+        }
     }
     RenderPart::setWidget(widget);
 }
@@ -508,74 +508,75 @@ void RenderPartObject::close()
      HTMLEmbedElementImpl *embed = 0;
      NodeImpl *child = o->firstChild();
      while ( child ) {
-	if ( child->id() == ID_EMBED )
-	   embed = static_cast<HTMLEmbedElementImpl *>( child );
-	
-	child = child->nextSibling();
+        if ( child->id() == ID_EMBED )
+           embed = static_cast<HTMLEmbedElementImpl *>( child );
+
+        child = child->nextSibling();
      }
 
      if ( !embed )
      {
-	url = o->url;
-	serviceType = o->serviceType;
-	if(serviceType.isEmpty() || serviceType.isNull()) {
-	   if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
-	      // Flash. set the mimetype
-	      serviceType = "application/x-shockwave-flash";
-	   }
-	   // add more plugins here
-	}	
-	if((url.isEmpty() || url.isNull())) {
-	   // look for a SRC attribute in the params
-	   NodeImpl *child = o->firstChild();	
-	   while ( child ) {
-	      if ( child->id() == ID_PARAM ) {
-		 HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+        url = o->url;
+        serviceType = o->serviceType;
+        if(serviceType.isEmpty() || serviceType.isNull()) {
+           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+              // Flash. set the mimetype
+              serviceType = "application/x-shockwave-flash";
+           }
+           // add more plugins here
+        }
+        if((url.isEmpty() || url.isNull())) {
+           // look for a SRC attribute in the params
+           NodeImpl *child = o->firstChild();
+           while ( child ) {
+              if ( child->id() == ID_PARAM ) {
+                 HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-		 if ( p->name().lower()==QString::fromLatin1("src") ||
-		      p->name().lower()==QString::fromLatin1("movie") )
-		 {
-		    url = p->value();
-		    break;
-		 }
-	      }
-	      child = child->nextSibling();
-	   }
-	}
+                 if ( p->name().lower()==QString::fromLatin1("src") ||
+                      p->name().lower()==QString::fromLatin1("movie") )
+                 {
+                    url = p->value();
+                    break;
+                 }
+              }
+              child = child->nextSibling();
+           }
+        }
 
-	// add all <param>'s to the QStringList argument of the part
-	QStringList params;
-	NodeImpl *child = o->firstChild();
-	while ( child ) {
-	   if ( child->id() == ID_PARAM ) {
-	      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+        // add all <param>'s to the QStringList argument of the part
+        QStringList params;
+        NodeImpl *child = o->firstChild();
+        while ( child ) {
+           if ( child->id() == ID_PARAM ) {
+              HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-	      QString aStr = p->name();
-	      aStr += QString::fromLatin1("=\"");
-	      aStr += p->value();
-	      aStr += QString::fromLatin1("\"");
-	      params.append(aStr);
-	   }
-	
-	   child = child->nextSibling();
-	}
+              QString aStr = p->name();
+              aStr += QString::fromLatin1("=\"");
+              aStr += p->value();
+              aStr += QString::fromLatin1("\"");
+              params.append(aStr);
+           }
 
-	if ( url.isEmpty() && serviceType.isEmpty() )
-	   return; //ooops (-:
+           child = child->nextSibling();
+        }
 
-	static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
+        if ( url.isEmpty() && serviceType.isEmpty() )
+            return; //ooops (-:
+
+        params.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
+        static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
      } else
      {
-	// render embed object
-	url = embed->url;
-	serviceType = embed->serviceType;
+        // render embed object
+        url = embed->url;
+        serviceType = embed->serviceType;
 
-	if ( url.isEmpty() && serviceType.isEmpty() )
-	   return; //ooops (-:
+        if ( url.isEmpty() && serviceType.isEmpty() )
+           return; //ooops (-:
 
-	kdDebug() << "<embed> - part()->requestObject( " << url << " )" << endl;
-	static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType,
-								 embed->param );
+        embed->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
+        static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType,
+                                                                 embed->param );
      }
   } else if ( m_obj->id() == ID_EMBED ) {
      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_obj);
@@ -583,9 +584,9 @@ void RenderPartObject::close()
      serviceType = o->serviceType;
 
      if ( url.isEmpty() && serviceType.isEmpty() )
-	return; //ooops (-:
+        return; //ooops (-:
 
-     kdDebug() << "<embed> - part()->requestObject( " << url << " )" << endl;
+     o->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
      static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, o->param );
   } else {
       assert(m_obj->id() == ID_IFRAME);
@@ -608,15 +609,15 @@ void RenderPartObject::setWidget( QWidget *w )
       QScrollView *view = static_cast<QScrollView *>(w);
       HTMLIFrameElementImpl *m_frame = static_cast<HTMLIFrameElementImpl *>(m_obj);
       if(!m_frame->frameBorder)
-	  view->setFrameStyle(QFrame::NoFrame);
+          view->setFrameStyle(QFrame::NoFrame);
       view->setVScrollBarMode(m_frame->scrolling);
       view->setHScrollBarMode(m_frame->scrolling);
       if(view->inherits("KHTMLView")) {
-	  kdDebug(6031) << "frame is a KHTMLview!" << endl;
-	  KHTMLView *htmlView = static_cast<KHTMLView *>(view);
-	  if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
-	  if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
-	}
+          kdDebug(6031) << "frame is a KHTMLview!" << endl;
+          KHTMLView *htmlView = static_cast<KHTMLView *>(view);
+          if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
+          if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
+        }
   }
   if ( w && m_width == 0 && m_height == 0 ) {
       QSize hint = w->sizeHint();
@@ -642,7 +643,7 @@ void RenderPartObject::setSize( int w, int h )
 void RenderPartObject::layout( )
 {
   setSize( m_style->width().width( m_view->clipper()->width() ),
-	   m_style->height().width( m_view->clipper()->height() ) );
+           m_style->height().width( m_view->clipper()->height() ) );
   calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),
           containingBlockWidth());
   RenderPart::layout();
