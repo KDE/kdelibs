@@ -422,11 +422,12 @@ KAction *KStdAction::open(const QObject *recvr, const char *slot,
                        name ? name : stdName(Open));
 }
 
-KListAction *KStdAction::openRecent(const QObject *recvr, const char *slot,
-                                    QObject *parent, const char *name )
+KRecentFilesAction *KStdAction::openRecent(const QObject *recvr,
+                                    const char *slot, QObject *parent,
+                                    const char *name )
 {
-    return new KListAction(i18n("Open &Recent"), 0, recvr, slot, parent,
-                           name ? name : stdName(OpenRecent));
+    return new KRecentFilesAction(i18n("Open &Recent"), 0, recvr, slot, parent,
+                                  name ? name : stdName(OpenRecent));
 }
 
 KAction *KStdAction::save(const QObject *recvr, const char *slot,

@@ -18,7 +18,7 @@
 #ifndef KSTDACTION_H
 #define KSTDACTION_H
 
-class KListAction;
+class KRecentFilesAction;
 class KToggleAction;
 class KAction;
 class QAction;
@@ -106,8 +106,10 @@ public:
     /**
      * Open a recently used document.
      */
-    static KListAction *openRecent(const QObject *recvr = 0, const char *slot = 0,
-                                   QObject *parent = 0, const char *name = 0L );
+    static KRecentFilesAction *openRecent(const QObject *recvr = 0,
+                                          const char *slot = 0,
+                                          QObject *parent = 0,
+                                          const char *name = 0L );
 
     /**
      * Save the current document.

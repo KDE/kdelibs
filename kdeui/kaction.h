@@ -3,6 +3,7 @@
               (C) 1999 Simon Hausmann <hausmann@kde.org>
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
               (C) 2000 Kurt Granroth <granroth@kde.org>
+              (C) 2000 Michael Koch <koch@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,11 +28,14 @@
 #include <kstdaccel.h>
 
 class KAccel;
+class KConfig;
+class KURL;
 class KActionPrivate;
 class KToggleActionPrivate;
 class KRadioActionPrivate;
 class KSelectActionPrivate;
 class KListActionPrivate;
+class KRecentFilesActionPrivate;
 class KFontActionPrivate;
 class KFontSizeActionPrivate;
 class KActionMenuPrivate;
@@ -737,8 +741,8 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QString& pix, int accel,
-		          const QObject* receiver, const char* slot, QObject* parent,
-                  const char* name = 0 );
+                 const QObject* receiver, const char* slot, QObject* parent,
+                 const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
@@ -759,6 +763,120 @@ public:
 private:
     int m_current;
     KListActionPrivate *d;
+};
+
+class KRecentFilesAction : public KListAction
+{
+  Q_OBJECT
+
+public:
+  /**
+   *  @param text The text that will be displayed.
+   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( const QString& text, int accel,
+                      QObject* parent, const char* name = 0,
+                      unsigned int maxItems = 10 );
+
+  /**
+   *  @param text The text that will be displayed.
+   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param receiver The SLOT's parent.
+   *  @param slot The SLOT to invoke to execute this action.
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( const QString& text, int accel,
+                      const QObject* receiver, const char* slot,
+                      QObject* parent, const char* name = 0,
+                      unsigned int maxItems = 10 );
+
+  /**
+   *  @param text The text that will be displayed.
+   *  @param pix The icons that go with this action.
+   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( const QString& text, const QIconSet& pix, int accel,
+                      QObject* parent, const char* name = 0,
+                      unsigned int maxItems = 10 );
+
+  /**
+   *  @param text The text that will be displayed.
+   *  @param pix The dynamically loaded icon that goes with this action.
+   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( const QString& text, const QString& pix, int accel,
+                      QObject* parent, const char* name = 0,
+                      unsigned int maxItems = 10 );
+
+  /**
+   *  @param text The text that will be displayed.
+   *  @param pix The icons that go with this action.
+   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param receiver The SLOT's parent.
+   *  @param slot The SLOT to invoke to execute this action.
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( const QString& text, const QIconSet& pix, int accel,
+                      const QObject* receiver, const char* slot,
+                      QObject* parent, const char* name = 0,
+                      unsigned int maxItems = 10 );
+
+  /**
+   *  @param text The text that will be displayed.
+   *  @param pix The dynamically loaded icon that goes with this action.
+   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param receiver The SLOT's parent.
+   *  @param slot The SLOT to invoke to execute this action.
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( const QString& text, const QString& pix, int accel,
+                      const QObject* receiver, const char* slot,
+                      QObject* parent, const char* name = 0,
+                      unsigned int maxItems = 10 );
+
+  /**
+   *  @param parent This action's parent.
+   *  @param name An internal name for this action.
+   *  @param maxItems The maximum number of files to display
+   */
+  KRecentFilesAction( QObject* parent = 0, const char* name = 0,
+                      unsigned int maxItems = 10 );
+  virtual ~KRecentFilesAction();
+
+  unsigned int maxItems();
+  void setMaxItems( unsigned int );
+  
+  void addURL( const KURL& );
+  void removeURL( const KURL& );
+  void clearURLList();
+
+  void loadEntries( KConfig* );
+  void saveEntries( KConfig* );
+
+signals:
+  void urlSelected( const KURL& );
+
+protected slots:
+  void itemSelected( const QString& );
+
+private:
+  unsigned int m_maxItems;
+  KRecentFilesActionPrivate *d;
 };
 
 class KFontAction : public KSelectAction

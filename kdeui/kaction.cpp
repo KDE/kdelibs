@@ -3,6 +3,7 @@
               (C) 1999 Simon Hausmann <hausmann@kde.org>
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
               (C) 2000 Kurt Granroth <granroth@kde.org>
+              (C) 2000 Michael Koch <koch@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,6 +28,8 @@
 #include <qobjectlist.h>
 #include <kapp.h>
 #include <kaccel.h>
+#include <kconfig.h>
+#include <kurl.h>
 #include <qtl.h>
 
 #include <X11/Xlib.h>
@@ -758,8 +761,8 @@ KListAction::KListAction( const QString& text, int accel, QObject* parent,
 }
 
 KListAction::KListAction( const QString& text, int accel,
-                            const QObject* receiver, const char* slot,
-                            QObject* parent, const char* name )
+                          const QObject* receiver, const char* slot,
+                          QObject* parent, const char* name )
     : KSelectAction( text, accel, parent, name )
 {
     connect( this, SIGNAL(activated(int)), receiver, slot );
@@ -781,9 +784,9 @@ KListAction::KListAction( const QString& text, const QString& pix,
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
-                            int accel, const QObject* receiver,
-                            const char* slot, QObject* parent,
-			                const char* name )
+                          int accel, const QObject* receiver,
+                          const char* slot, QObject* parent,
+                          const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     connect( this, SIGNAL(activated(int)), receiver, slot );
@@ -826,6 +829,205 @@ QString KListAction::currentText()
 int KListAction::currentItem()
 {
     return m_current;
+}
+
+
+KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
+                                        QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( text, accel, parent, name),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+}
+
+KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
+                                        const QObject* receiver,
+                                        const char* slot,
+                                        QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( text, accel, parent, name),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+
+    connect( this,     SIGNAL(urlSelected(const KURL&)),
+             receiver, slot );
+}
+
+KRecentFilesAction::KRecentFilesAction( const QString& text,
+                                        const QIconSet& pix, int accel,
+                                        QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( text, pix, accel, parent, name),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+}
+
+KRecentFilesAction::KRecentFilesAction( const QString& text,
+                                        const QString& pix, int accel,
+                                        QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+}
+
+KRecentFilesAction::KRecentFilesAction( const QString& text,
+                                        const QIconSet& pix, int accel,
+                                        const QObject* receiver,
+                                        const char* slot,
+                                        QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( text, pix, accel, parent, name),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+
+    connect( this,     SIGNAL(urlSelected(const KURL&)),
+             receiver, slot );
+}
+
+KRecentFilesAction::KRecentFilesAction( const QString& text,
+                                        const QString& pix, int accel,
+                                        const QObject* receiver,
+                                        const char* slot,
+                                        QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+
+    connect( this,     SIGNAL(urlSelected(const KURL&)),
+             receiver, slot );
+}
+
+KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
+                                        unsigned int maxItems )
+  : KListAction( parent, name ),
+    m_maxItems( maxItems )
+{
+    connect( this, SIGNAL( activated( const QString& ) ),
+             this, SLOT( itemSelected( const QString& ) ) );
+}
+
+KRecentFilesAction::~KRecentFilesAction()
+{
+}
+
+unsigned int KRecentFilesAction::maxItems()
+{
+    return m_maxItems;
+}
+
+void KRecentFilesAction::setMaxItems( unsigned int maxItems )
+{
+    QStringList lst       = items();
+    unsigned int oldCount = lst.count();
+    
+    // set new maxItems
+    m_maxItems = maxItems;
+
+    // remove all items that are too much
+    while( lst.count() > maxItems )
+    {
+        // remove last item
+        lst.remove( lst.last() );
+    }
+    
+    // set new list if changed
+    if( lst.count() != oldCount )
+        setItems( lst );
+}
+
+void KRecentFilesAction::addURL( const KURL& url )
+{
+    QString     file = url.url();
+    QStringList lst = items();
+
+    // remove file if already in list
+    lst.remove( file );
+    
+    // remove las item if already maxitems in list
+    if( lst.count() == m_maxItems )
+    {
+        // remove last item
+        lst.remove( lst.last() );
+    }
+    
+    // add file to list
+    lst.prepend( file );
+    setItems( lst );
+}
+
+void KRecentFilesAction::removeURL( const KURL& url )
+{
+    QStringList lst = items();
+    QString     file = url.url();
+
+    // remove url
+    if( lst.count() > 0 )
+    {
+        lst.remove( file );
+        setItems( lst );
+    }
+}
+
+void KRecentFilesAction::clearURLList()
+{
+    clear();
+}
+
+void KRecentFilesAction::loadEntries( KConfig* config )
+{
+    QString     key;
+    QString     value;
+    QStringList lst;
+    
+    config->setGroup( "RecentFiles" );
+
+    // read file list
+    for( unsigned int i = 1 ; i <= m_maxItems ; i++ )
+    {
+        key = QString( "File%1" ).arg( i );
+        value = config->readEntry( key, QString::null );
+        if (!value.isNull())
+            lst.append( value );
+    }
+    
+    // set file
+    setItems( lst );
+}
+
+void KRecentFilesAction::saveEntries( KConfig* config )
+{
+    QString     key;
+    QString     value;
+    QStringList lst = items();
+    
+    config->setGroup( "RecentFiles" );
+
+    // write file list
+    for( unsigned int i = 1 ; i <= lst.count() ; i++ )
+    {
+        key = QString( "File%1" ).arg( i );
+        value = lst[ i - 1 ];
+        config->writeEntry( key, value );
+    }
+}
+
+void KRecentFilesAction::itemSelected( const QString& text )
+{
+    emit urlSelected( KURL( text ) );
 }
 
 KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const char* name )
