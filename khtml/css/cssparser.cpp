@@ -2477,60 +2477,132 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     return rule;
 }
 
-// remove comments, replace character escapes and simplify spacing
+/* Generated a sort of Normal Form for CSS.
+ * Remove comments, it is guaranteed that there will not be more then one space between
+ * tokens and all the tokens within curly braces are lower case (except text 
+ * within quotes and url tags). Space is replaced with QChar(' ') and removed where
+ * it's not necessary.
+ *
+ * 4.1.3 Characters and case
+ *
+ * The following rules always hold:
+ *
+ *  All CSS style sheets are case-insensitive, except for parts that are not under 
+ *  the control of CSS. For example, the case-sensitivity of values of the HTML 
+ *  attributes "id" and "class", of font names, and of URIs lies outside the scope 
+ *  of this specification. Note in particular that element names are case-insensitive 
+ *  in HTML, but case-sensitive in XML. 
+ */
+
 QString StyleBaseImpl::preprocess(const QString &str)
 {
-    QString processed;
+  kdDebug(6080) << "QString StyleBaseImpl::preprocess(const QString &str)" << endl;
+  QString processed;
 
-    bool sq = false;
-    bool dq = false;
-    bool comment = false;
-    bool firstChar = false;
+  bool sq = false;	// Within single quote
+  bool dq = false;	// Within double quote
+  bool bracket = false;	// Within brackets, e.g. url(ThisIsStupid)
+  bool comment = false; // Within comment
+  bool firstChar = false; // Beginning of comment either /* or */
+  bool space = true;    // Last token was space
+  bool curlyBracket = true; // Within curlyBrackets -> lower	
+  hasInlinedDecl = false; // reset the inlined decl. flag
 
-    hasInlinedDecl = false; // reset the inilned decl. flag
-
-    const QChar *ch = str.unicode();
-    const QChar *last = str.unicode()+str.length();
-    while(ch < last) {
-        if ( !comment && !sq && *ch == '"' ) {
-            dq = !dq;
-            processed += *ch;
-        } else if ( !comment && !dq && *ch == '\'' ) {
-            dq = !dq;
-            processed += *ch;
-        } else if ( comment ) {
-            if ( firstChar && *ch == '/' ) {
-                comment = false;
-                firstChar = false;
-            } else if ( *ch == '*' )
-                firstChar = true;
-            else
-                firstChar = false;
-        } else if ( !sq && !dq ) {
-            // check for comment
-            if ( firstChar ) {
-                if ( *ch == '*' ) {
-                    comment = true;
-                } else {
-                    processed += '/';
-                    processed += *ch;
-                }
-                firstChar = false;
-            } else if ( *ch == '/' )
-                firstChar = true;
-            else if ( *ch == '}' ) {
-                processed += *ch;
-                processed += QChar(' ');
-            } else
-                processed += *ch;
-        }
-        else
-            processed += *ch;
-        ++ch;
+  const QChar *ch = str.unicode();
+  const QChar *last = ch + str.length();
+  kdDebug(6080) << "---Before---" << endl;
+  float orgLength = str.length();
+  kdDebug(6080) << "Length: " << orgLength << endl;
+  while(ch < last) {  
+    if( !comment && !sq && *ch == '"' ) {
+      dq = !dq;
+      processed += *ch;
+      space = false;
+    } else if ( !comment && !dq && *ch == '\'') {
+      sq = !sq;
+      processed += *ch;
+      space = false;
+    } else if ( !comment && !dq && !sq && *ch == '(') {
+      bracket = true;
+      processed += *ch;
+      space = true;  // Explictly true
+    } else if ( !comment && !dq && !sq && *ch == ')') {
+      bracket = false;
+      processed += *ch;
+      processed += QChar(' '); // Adding a space after this token
+      space = true;
+    } else if ( !comment && !dq && !sq && *ch == '{') {
+      curlyBracket = true;
+      processed += *ch;
+      space = true;  // Explictly true
+    } else if ( !comment && !dq && !sq && *ch == '}') {
+      curlyBracket = false;
+      processed += *ch;
+      processed += QChar(' '); // Adding a space after this token
+      space = true;    
+    } else if ( comment ) {
+      if ( firstChar && *ch == '/' ) {
+	comment = false;
+	firstChar = false;
+      } else {
+	firstChar = ( *ch == '*' );
+      }
+    } else if ( !sq && !dq && !bracket ) {
+      // check for comment
+      if ( firstChar ) {
+	if ( *ch == '*' ) {
+	  comment = true;
+	} else {
+	  processed += '/';
+	  if (curlyBracket) {
+	    processed += ch->lower();
+	  } else {
+	    processed += *ch;
+	  }
+	  space = ch->isSpace();
+	}
+	firstChar = false;
+      } else if ( *ch == '/' ) {
+	firstChar = true; // Slash added only if next is not '*'
+      } else if ( *ch == ',' || *ch == ';') {
+	processed += *ch;
+	processed += QChar(' '); // Adding a space after these tokens
+	space = true;
+      } else {
+	goto addChar;
+      }
+    } else {
+      goto addChar;
     }
+  end:
+    ++ch;
+  }    
+  kdDebug(6080) << "---After ---" << endl; 
+  kdDebug(6080) <<  processed  << endl; 
+  kdDebug(6080) << "------------" << endl;
+  kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: " 
+		<< 100.0 - (100.0 * (processed.length()/orgLength)) << "%" << endl;
+  kdDebug(6080) << "------------" << endl;
+  return processed;
 
-    processed += ' ';
-    return processed;
+ addChar:
+  if ( !sq && !dq && !bracket ) {
+    if (!(space && ch->isSpace())) { // Don't add more then one space
+      if (ch->isSpace()) {
+	processed += QChar(' '); // Normalize whitespace
+      } else {
+	if (curlyBracket) {
+	  processed += ch->lower();
+	} else {
+	  processed += *ch;
+	}
+      }
+    }
+    space = ch->isSpace();	
+  } else {
+    processed += *ch; // We're within quotes or brackets, leave untouched
+  }
+  goto end;
 }
 
 // ------------------------------------------------------------------------------
