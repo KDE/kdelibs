@@ -140,7 +140,10 @@
 			<Include>
 				<And>
 				<Category>Game</Category>
+				<Or>
 				<Category>X-KDE-KidsGame</Category>
+				<Category>KidsGame</Category>
+				</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -154,6 +157,19 @@
 				</And>
 			</Include>
 		</Menu>
+		<Include>
+			<And>
+			<Category>Game</Category>
+			<Not>
+			<Category>ArcadeGame</Category>
+			<Category>BoardGame</Category>
+			<Category>CardGame</Category>
+			<Category>X-KDE-KidsGame</Category>
+			<Category>KidsGame</Category>
+			<Category>StrategyGame</Category>
+			</Not>
+			</And>
+		</Include>
 	</Menu>
 	<Menu>
 		<Name>Graphics</Name>
