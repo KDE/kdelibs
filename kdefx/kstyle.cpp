@@ -503,6 +503,7 @@ void KStyle::drawControl( ControlElement element,
 			const QProgressBar* pb = (const QProgressBar*)widget;
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
+			bool reverse = QApplication::reverseLayout();
 
 			if (!cr.isValid())
 				return;
@@ -512,27 +513,37 @@ void KStyle::drawControl( ControlElement element,
 				int steps = pb->totalSteps();
 				double pg = progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
-				
+	
 				// Do fancy gradient for highcolor displays
 				if (d->highcolor) {
 					QColor c(cg.highlight());
 					KPixmap pix;
 					pix.resize(cr.width(), cr.height());
-					KPixmapEffect::gradient(pix, c.dark(150), c.light(150),
+					KPixmapEffect::gradient(pix, reverse ? c.light(150) : c.dark(150), 
+											reverse ? c.dark(150) : c.light(150),
 											KPixmapEffect::HorizontalGradient);
-					p->drawPixmap(cr.x(), cr.y(), pix, 0, 0, width, cr.height());
-				} else
-					p->fillRect(cr.x(), cr.y(), width, cr.height(),
-								cg.brush(QColorGroup::Highlight));
+					if (reverse)
+						p->drawPixmap(cr.x()+(cr.width()-width), cr.y(), pix, 
+									  cr.width()-width, 0, width, cr.height());
+					else
+						p->drawPixmap(cr.x(), cr.y(), pix, 0, 0, width, cr.height());
+				} else 
+					if (reverse)
+						p->fillRect(cr.x()+(cr.width()-width), cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));
+					else
+						p->fillRect(cr.x(), cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));
 			}
 			break;
 		}
-		
+
 		case CE_ProgressBarLabel: {
 			const QProgressBar* pb = (const QProgressBar*)widget;
 			QRect cr = subRect(SR_ProgressBarContents, widget);
 			double progress = pb->progress();
-			
+			bool reverse = QApplication::reverseLayout();
+
 			if (!cr.isValid())
 				return;
 
@@ -545,18 +556,20 @@ void KStyle::drawControl( ControlElement element,
 				int steps = pb->totalSteps();
 				double pg = progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
-				QRect crect(cr.x()+width, cr.y(), cr.width(), cr.height());
+				QRect crect;
+				if (reverse)
+					crect.setRect(cr.x()+(cr.width()-width), cr.y(), cr.width(), cr.height());
+				else
+					crect.setRect(cr.x()+width, cr.y(), cr.width(), cr.height());
 
 				p->save();
-				p->setPen(pb->isEnabled() ? cg.highlightedText() : cg.text());
+				p->setPen(pb->isEnabled() ? (reverse ? cg.text() : cg.highlightedText()) : cg.text());
 				p->drawText(r, AlignCenter, pb->progressString());
-				if (width != cr.width()) {
-					p->setClipRect(crect);
-					p->setPen(cg.text());
-					p->drawText(r, AlignCenter, pb->progressString());
-				}
+				p->setClipRect(crect);
+				p->setPen(reverse ? cg.highlightedText() : cg.text());
+				p->drawText(r, AlignCenter, pb->progressString());
 				p->restore();
-				
+
 			} else {
 				p->setPen(cg.text());
 				p->drawText(r, AlignCenter, pb->progressString());
