@@ -463,7 +463,7 @@ void KFileTreeView::populateBranch( KFileTreeBranch *brnch )
    }
 
    startAnimation( brnch->root() );
-   kdDebug() << "Starting to populate !" << endl;
+   kdDebug(250) << "Starting to populate !" << endl;
 }
 
 void KFileTreeView::slotPopulateFinished( KFileTreeViewItem *it )
@@ -553,7 +553,7 @@ void KFileTreeView::slotAnimation()
     {
         uint & iconNumber = it.data().iconNumber;
         QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
-	kdDebug() << "Loading icon " << icon << endl;
+	kdDebug(250) << "Loading icon " << icon << endl;
         it.key()->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
 
         iconNumber++;
@@ -568,7 +568,7 @@ void KFileTreeView::startAnimation( KFileTreeViewItem * item, const char * iconB
    /* TODO: allow specific icons */
    if( ! item )
    {
-      kdDebug() << " startAnimation Got called without valid item !" << endl;
+      kdDebug(250) << " startAnimation Got called without valid item !" << endl;
       return;
    }
 
