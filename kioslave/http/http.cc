@@ -920,6 +920,9 @@ void HTTPProtocol::mkdir( const KURL& url, int )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
+  // Never use a keep-alive connection for MKDIR
+  httpCloseConnection();
+
   retrieveHeader( false );
 
   if ( m_responseCode == 201 )
@@ -967,6 +970,9 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
+  // Never use a keep-alive connection for PUT
+  httpCloseConnection();
+
   retrieveHeader( true );
 }
 
@@ -989,6 +995,9 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for COPY
+  httpCloseConnection();
 
   retrieveHeader( false );
 
@@ -1019,6 +1028,9 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
+  // Never use a keep-alive connection for MOVE
+  httpCloseConnection();
+
   retrieveHeader( false );
 
   if ( m_responseCode == 201 )
@@ -1040,6 +1052,9 @@ void HTTPProtocol::del( const KURL& url, bool )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for DELETE
+  httpCloseConnection();
 
   retrieveHeader( false );
 
@@ -1064,6 +1079,9 @@ void HTTPProtocol::post( const KURL& url )
   m_request.query = url.query();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for POST
+  httpCloseConnection();
 
   retrieveContent();
 }
@@ -1112,6 +1130,9 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
   // insert the document into the POST buffer
   m_bufPOST = lockReq.toCString();
 
+  // Never use a keep-alive connection for LOCK
+  httpCloseConnection();
+
   retrieveContent( true );
 
   if ( m_responseCode == 200 ) {
@@ -1147,6 +1168,9 @@ void HTTPProtocol::davUnlock( const KURL& url )
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
+
+  // Never use a keep-alive connection for UNLOCK
+  httpCloseConnection();
 
   retrieveContent( true );
 
@@ -2184,6 +2208,9 @@ bool HTTPProtocol::readHeader()
      setMetaData("charset", m_strCharset);
      if (!m_lastModified.isEmpty())
          setMetaData("modified", m_lastModified);
+     QString tmp;
+     tmp.setNum(m_expireDate);
+     setMetaData("expire-date", tmp);
      return true;
   }
 
@@ -2981,7 +3008,16 @@ bool HTTPProtocol::readHeader()
     setMetaData("modified", m_lastModified);
 
   if (!mayCache)
+  {
     setMetaData("no-cache", "true");
+    setMetaData("expire-date", "1"); // Expired
+  }
+  else
+  {
+    QString tmp;
+    tmp.setNum(expireDate);
+    setMetaData("expire-date", tmp);
+  }
 
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
@@ -3347,6 +3383,8 @@ void HTTPProtocol::decodeGzip()
   lseek(fd, 0, SEEK_SET);
   gzFile gzf = gzdopen(fd, "rb");
   unlink(filename); // If you want to inspect the raw data, comment this line out
+  free(filename);
+  filename = 0;
 
   // And then reads it back in with gzread so it'll
   // decompress on the fly.
@@ -4042,6 +4080,11 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
          if (!date || difftime(currentDate, date) >= 0)
             m_bMustRevalidate = true;
          m_expireDate = date;
+      }
+      else if (m_request.cache == CC_Refresh)
+      {
+         m_bMustRevalidate = true;
+         m_expireDate = currentDate;
       }
    }
 
