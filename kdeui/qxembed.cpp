@@ -1,47 +1,72 @@
 /****************************************************************************
-** $Id$
-**
-** Implementation of QXEmbed class
-**
-** Created :
-**
-** Copyright (C) 1992-1999 Troll Tech AS.  All rights reserved.
-**
-** This file is part of the Qt GUI Toolkit.
-**
-** This file may be distributed under the terms of the Q Public License
-** as defined by Troll Tech AS of Norway and appearing in the file
-** LICENSE.QPL included in the packaging of this file.
-**
-** Licensees with valid Qt Professional Edition licenses may distribute and
-** use this file in accordance with the Qt Professional Edition License
-** provided at sale or upon request.
-**
-** See http://www.troll.no/pricing.html or email sales@troll.no for
-** information about the Professional Edition licensing, or see
-** http://www.troll.no/qpl/ for QPL licensing information.
-**
+    Implementation of QXEmbed class
+    
+   Copyright (C) 1999-2000 Troll Tech AS
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 *****************************************************************************/
 
-#include <qapplication.h>
 #include "qxembed.h"
+#include <qapplication.h>
+#include <qlist.h>
+#include <qptrdict.h>
+#include <qguardedptr.h>
+#include <qfocusdata.h>
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#define XK_MISCELLANY
+#define XK_LATIN1
+#include <X11/keysymdef.h>
 
-#if 0
-// defined in qapplication_x11.cpp
-extern Atom	qt_embedded_window;
-extern Atom	qt_embedded_window_take_focus;
-extern Atom	qt_embedded_window_focus_in;
-extern Atom	qt_embedded_window_focus_out;
-extern Atom	qt_embedded_window_tab_focus;
-extern Atom	qt_embedded_window_support_tab_focus;
-extern Atom	qt_wheel_event;
-extern Atom	qt_unicode_key_press;
-extern Atom	qt_unicode_key_release;
-extern Atom	qt_wm_delete_window;
+#ifndef XK_ISO_Left_Tab
+#define	XK_ISO_Left_Tab					0xFE20
 #endif
+const int XFocusOut = FocusOut;
+const int XFocusIn = FocusIn;
+#undef FocusOut
+#undef FocusIn
+
+// defined in qapplication_x11.cpp
+extern Atom qt_wm_protocols;
+extern Atom qt_wm_delete_window;
+extern Time qt_x_time;
+
+static Atom xembed = 0;
+
+// xembed messages
+#define XEMBED_EMBEDDED_NOTIFY 	0
+#define XEMBED_PROCESS_NEXT_EVENT  	1
+#define XEMBED_WINDOW_ACTIVATE  	2
+#define XEMBED_WINDOW_DEACTIVATE  	3
+#define XEMBED_REQUEST_FOCUS	 	4
+#define XEMBED_FOCUS_IN 	 	5
+#define XEMBED_FOCUS_OUT  		6
+#define XEMBED_FOCUS_NEXT 		7
+#define XEMBED_FOCUS_PREV 		8
+
+// xembed details
+
+// XEMBED_FOCUS_IN:
+#define XEMBED_FOCUS_CURRENT 	0
+#define XEMBED_FOCUS_FIRST 		1
+#define XEMBED_FOCUS_LAST		2
+
+
 
 class QXEmbedData
 {
@@ -50,90 +75,285 @@ public:
     ~QXEmbedData(){};
 };
 
+class QXEmbedAppFilter : public QObject
+{
+public:
+    QXEmbedAppFilter(){ qApp->installEventFilter( this ); }
+    ~QXEmbedAppFilter(){};
+    bool eventFilter( QObject *, QEvent * );
+};
+
+
+static QXEmbedAppFilter* filter = 0;
+static QPtrDict<QGuardedPtr<QWidget> > *focusMap = 0;
+
+static XKeyEvent last_key_event;
+static bool tabForward = TRUE;
+static bool process_next_event = FALSE;
+
+
+class QPublicWidget : public QWidget
+{
+public:
+    QTLWExtra* topData() { return QWidget::topData(); };
+    QFocusData *focusData(){ return QWidget::focusData(); };
+};
+
+typedef int (*QX11EventFilter) (XEvent*);
+extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
+static QX11EventFilter oldFilter = 0;
+
+
+static void send_xembed_message( WId window, int message, int detail = 0 )
+{
+    XEvent ev;
+    memset(&ev, 0, sizeof(ev));
+    ev.xclient.type = ClientMessage;
+    ev.xclient.window = window;
+    ev.xclient.message_type = xembed;
+    ev.xclient.format = 32;
+    ev.xclient.data.l[0] = qt_x_time;
+    ev.xclient.data.l[1] = message;
+    ev.xclient.data.l[2] = detail;
+    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+}
+
+
+bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
+{
+    switch ( e->type() ) {
+    case QEvent::FocusIn:
+	if ( qApp->focusWidget() == o &&
+	     ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->embedded ) {
+	    QFocusEvent* fe = (QFocusEvent*) e; 
+		
+	    if (fe->reason() == QFocusEvent::Mouse ||
+		fe->reason() == QFocusEvent::Shortcut ||
+		fe->reason() == QFocusEvent::Other ) {
+		WId window = ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->parentWinId;
+		focusMap->remove( qApp->focusWidget()->topLevelWidget() );
+		send_xembed_message( window, XEMBED_REQUEST_FOCUS );
+	    } else if ( fe->reason() == QFocusEvent::ActiveWindow ) {
+		focusMap->remove( qApp->focusWidget()->topLevelWidget() );
+		focusMap->insert( qApp->focusWidget()->topLevelWidget(),
+				  new QGuardedPtr<QWidget>(qApp->focusWidget()->topLevelWidget()->focusWidget() ) );
+		qApp->focusWidget()->clearFocus();
+	    }
+	}
+	break;
+    default:
+	break;
+    }
+    return FALSE;
+}
+
+
+static int qxembed_x11_event_filter( XEvent* e)
+{
+    switch ( e->type ) {
+    case KeyPress: {
+	int kc = XKeycodeToKeysym(qt_xdisplay(), e->xkey.keycode, 0);
+	if ( kc == XK_Tab || kc == XK_ISO_Left_Tab ) {
+	    tabForward = (e->xkey.state & ShiftMask) == 0;
+	    QWidget* w = QWidget::find( e->xkey.window );
+	    if ( w && w->isActiveWindow() && qApp->focusWidget() && 
+		 qApp->focusWidget()->topLevelWidget() == w->topLevelWidget() && 
+		 ((QPublicWidget*)w->topLevelWidget())->topData()->embedded ) {
+		WId window = ((QPublicWidget*)w->topLevelWidget())->topData()->parentWinId;
+		QFocusData *fd = ((QPublicWidget*)w)->focusData();
+		while ( fd->next() != w->topLevelWidget() )
+		    ;
+		QWidget* first = fd->next();
+		QWidget* last = fd->prev(); last = fd->prev();
+		if ( !tabForward && fd->focusWidget() == first ) {
+		    send_xembed_message( window, XEMBED_FOCUS_PREV );
+		    return TRUE;
+		} else if ( tabForward && fd->focusWidget() == last ) {
+		    send_xembed_message( window, XEMBED_FOCUS_NEXT );
+		    return TRUE;
+		}
+	    }
+	}
+    }
+    // FALL THROUGH
+    case KeyRelease: {
+	last_key_event = e->xkey;
+	if ( process_next_event ) {
+	    process_next_event = FALSE;
+	} else {
+	    QWidget* w = QWidget::find( e->xkey.window );
+	    if ( w && ((QPublicWidget*)w->topLevelWidget())->topData()->embedded ) {
+		e->xkey.window = ((QPublicWidget*)w->topLevelWidget())->topData()->parentWinId;
+		XSendEvent(qt_xdisplay(), e->xkey.window, FALSE, NoEventMask, e);
+		return FALSE;
+	    }
+	}
+	break;
+    }
+    case ClientMessage:
+	if ( e->xclient.message_type == xembed ) {
+	    Time msgtime = (Time) e->xclient.data.l[0];
+	    int message = e->xclient.data.l[1];
+	    int detail = e->xclient.data.l[2];
+	    if ( msgtime > qt_x_time )
+		qt_x_time = msgtime;
+	    QWidget* w = QWidget::find( e->xclient.window );
+	    if ( !w )
+		break;
+	    switch ( message) {
+	    case XEMBED_EMBEDDED_NOTIFY:
+		((QPublicWidget*)w->topLevelWidget())->topData()->embedded = 1;
+		break;
+	    case XEMBED_PROCESS_NEXT_EVENT:
+		process_next_event = TRUE;
+		break;
+	    case XEMBED_WINDOW_ACTIVATE: {
+		// fake focus in
+		XEvent ev;
+		memset(&ev, 0, sizeof(ev));
+		ev.xfocus.display = qt_xdisplay();
+		ev.xfocus.type = XFocusIn;
+		ev.xfocus.window = w->topLevelWidget()->winId();
+		ev.xfocus.mode = NotifyNormal;
+		ev.xfocus.detail = NotifyAncestor;
+		qApp->x11ProcessEvent( &ev );
+	    }
+	    break;
+	    case XEMBED_WINDOW_DEACTIVATE: {
+		// fake focus out
+		XEvent ev;
+		memset(&ev, 0, sizeof(ev));
+		ev.xfocus.display = qt_xdisplay();
+		ev.xfocus.type = XFocusOut;
+		ev.xfocus.window = w->topLevelWidget()->winId();
+		ev.xfocus.mode = NotifyNormal;
+		ev.xfocus.detail = NotifyAncestor;
+		qApp->x11ProcessEvent( &ev );
+	    }
+	    break;
+	    case XEMBED_FOCUS_IN: 
+		{
+		    QWidget* focusCurrent = 0;
+		    QGuardedPtr<QWidget>* fw = focusMap->find( w->topLevelWidget() );
+		    if ( fw ) {
+			focusCurrent = *fw;
+			focusMap->remove( w->topLevelWidget() );
+		    }
+		    switch ( detail ) {
+		    case XEMBED_FOCUS_CURRENT:
+			if ( focusCurrent )
+			    focusCurrent->setFocus();
+			else if ( !w->topLevelWidget()->focusWidget() )
+			    w->topLevelWidget()->setFocus();
+			break;
+		    case XEMBED_FOCUS_FIRST: 
+			{
+			    QFocusData *fd = ((QPublicWidget*)w)->focusData();
+			    while ( fd->next() != w->topLevelWidget() )
+				;
+			    QWidget* fw = fd->next();
+			    QFocusEvent::setReason( QFocusEvent::Tab );
+			    if ( w )
+				fw->setFocus();
+			    else
+				w->topLevelWidget()->setFocus();
+			    QFocusEvent::resetReason();
+			}
+			break;
+		    case XEMBED_FOCUS_LAST: 
+			{
+			    QFocusData *fd = ((QPublicWidget*)w)->focusData();
+			    while ( fd->next() != w->topLevelWidget() )
+				;
+			    QWidget* fw = fd->prev();
+			    QFocusEvent::setReason( QFocusEvent::Tab );
+			    if ( w )
+				fw->setFocus();
+			    else
+				w->topLevelWidget()->setFocus();
+			    QFocusEvent::resetReason();
+			}
+			break;
+		    default:
+			break;
+		    }
+		}
+		break;
+	    case XEMBED_FOCUS_OUT:
+		if ( w->topLevelWidget()->focusWidget() ) {
+		    focusMap->insert( w->topLevelWidget(),
+				      new QGuardedPtr<QWidget>(w->topLevelWidget()->focusWidget() ) );
+		    w->topLevelWidget()->focusWidget()->clearFocus();
+		}
+	    break;
+	    default:
+		break;
+	    }
+	}
+	break;
+    default:
+	break;
+    }
+
+    if ( oldFilter )
+	return oldFilter( e );
+    return FALSE;
+}
+
+/*!  
+  Initializes the xembed system. 
+  
+  This function is called automatically when using
+  embedClientIntoWindow() or creating an instance of QXEmbed You may
+  have to call it manually for a client when using embedder-side
+  embedding, though.
+ */
+void QXEmbed::initialize()
+{
+    static bool is_initialized = FALSE;
+    if ( is_initialized )
+	return;
+    xembed = XInternAtom( qt_xdisplay(), "_XEMBED", FALSE );
+    oldFilter = qt_set_x11_event_filter( qxembed_x11_event_filter );
+
+    focusMap = new QPtrDict<QGuardedPtr<QWidget> >;
+    focusMap->setAutoDelete( TRUE );
+    
+    filter = new QXEmbedAppFilter;
+
+    is_initialized = TRUE;
+}
+
 
 /*!
   \class QXEmbed qxembed.h
 
-  \brief The QXEmbed class provides the base technology to embed
-  windows of different applications on the X Window System
+  \brief The QXEmbed widget is a graphical socket that can embed an
+  external X-Window.
 
-  An xembed widget serves as a container that can manage one single
+  \extension XEmbed
+
+  A QXEmbed widget serves as an embedder that can manage one single
   embedded X-window. These so-called client windows can be arbitrary
   QWidgets.
 
-  Using xembed has a couple of significant advantages compared to a
-  low-level call of XReparentWindow
+  There are two different ways of using QXembed, from the embedder's
+  or from the client's side.  When using it from the embedder's side,
+  you already know the window identifier of the window that should be
+  embedded. Simply call embed() with this identifier as parameter.
 
-  <ul>
-  <li> The embedded window is integrated into the outer applications
-  focus chain. With a plain XReparentWindow, it's unpredictable which
-  application will get the focus and process key events.
+  Embedding from the client's side requires that the client knows the
+  window identifier of the respective embedder widget. Use either
+  embedClientIntoWindow() or the high-level wrapper
+  processClientCmdline().
 
-  <li> The outer application always receives keyevents
-  first. Therefore menu accelerators and other shortcuts continue to
-  work.
+  If a window has been embedded succesfully, embeddedWinId() returns
+  its id.
 
-  <li> The XDND drag and drop protocol is routed respectively. Plain
-  XReparentWindow would break drag and drop for the embedded window.
-  </ul>
-
-
-  QXembed, however, also manages non-Qt windows. But as long as these
-  windows do not support the Qt embedding protocol, the specific
-  advantages are lost. This will result in completely broken and
-  unpredictable focus handling, broken accelerators and disfunctional
-  XDND drag and drop.
-
-  Here's an overview of the Qt embedding protocol as implemented by
-  QXEmbed and Qt:
-
-  <ol>
-  <li> The following X-Atoms are required:
-          <ul>
-	  <li> \c qew ("_QT_EMBEDDED_WINDOW")
-	  <li> \c qew_take_focus ("_QT_EMBEDDED_WINDOW_TAKE_FOCUS")
-	  <li> \c qew_focus_in ("_QT_EMBEDDED_WINDOW_FOCUS_IN")
-	  <li> \c qew_focus_out ("_QT_EMBEDDED_WINDOW_FOCUS_OUT")
-	  <li> \c qew_tab_focus ("_QT_EMBEDDED_WINDOW_TAB_FOCUS")
-	  <li> \c qew_micro_focus_hint ("_QT_EMBEDDED_WINDOW_MICRO_FOCUS_HINT")
-	  <li> \c qt_wheel_event ("_QT_WHEEL_EVENT")
-	  <li> \c qt_unicode_key_press ("_QT_UNICODE_KEY_PRESS")
-	  <li> \c qt_unicode_key_release ("_QT_UNICODE_KEY_RELEASE")
-          <ul>
-
-  <li> An embedded widget has the \c qew property set to 1. The \c qew
-  property is of type \c XA_CARDINAL, format 32. It's the
-  responsibility of the embedding widget to set this property
-  respectively. When the window is released, the property should be
-  set to 0.
-
-  <li> If an embedded widget intents to take the focus (for example
-  after it has been clicked when it supports the ClickFocus focus
-  policy), it should send a \c qew_take_focus client message to its
-  parent window.  The \window parameter of the client message has to
-  be set to the window identifier of the parent window.
-
-  <li> An embedded textinput widget that supports a micro focus hint
-  may also want to inform the embedding application about this. For
-  this purpose it can send \c qew_micro_focus_hint client messages to
-  the parent window.  The \c window parameter should be set to the
-  parent's window identifier, \c format is 32 and \c data.l[0] and \c
-  data.l[1] contain the global x and y-coordinates.
-
-  <li> The embedding widget serves as a focus proxy for the embedded
-  window.  Therefore it has to route focus in/out message. Whenever it
-  gets or looses the logical application focus, it shall send
-  qew_focus_in or qew_focus_out to the embedded window.
-
-  <li> keypress and keyrelease TODO
-
-  <li> wheel events TODO
-
-  <li> tab-focus chain TODO
-
-  <li> Drag'n'drop XDND TODO
-
-  </ol>
+  Reimplement the change handler windowChanged() to catch embedding or
+  the destruction of embedded windows. In the latter case, the
+  embedder also emits a signal embeddedWindowDestroyed() for
+  convenience.
 
 */
 
@@ -146,15 +366,15 @@ public:
 QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
   : QWidget(parent, name, f)
 {
+    initialize();
     window = 0;
     setFocusPolicy(StrongFocus);
+    setKeyCompression( FALSE );
 
     //trick to create extraData();
-    QCursor old = cursor();
-    setCursor(Qt::blankCursor);
-    setCursor(old);
+    (void) topData();
 
-    // we are interested int SubstructureNotify
+    // we are interested in SubstructureNotify
     XSelectInput(qt_xdisplay(), winId(),
   		 KeyPressMask | KeyReleaseMask |
   		 ButtonPressMask | ButtonReleaseMask |
@@ -168,6 +388,11 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
 		 SubstructureRedirectMask |
 		 SubstructureNotifyMask
   		 );
+
+    topLevelWidget()->installEventFilter( this );
+    qApp->installEventFilter( this );
+
+    setAcceptDrops( TRUE );
 }
 
 /*!
@@ -175,37 +400,25 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
  */
 QXEmbed::~QXEmbed()
 {
-    static Atom wm_protocols = 0;
-    if (!wm_protocols )
-	wm_protocols = XInternAtom( qt_xdisplay(), "WM_PROTOCOLS", False );
-//     if ( topLevelWidget()->isActiveWindow() ) {
-// 	XEvent e;
-// 	e.type = FocusIn;
-// 	e.xfocus.window = topLevelWidget()->winId();
-// 	e.xfocus.mode = NotifyNormal;
-// 	e.xfocus.detail = NotifyDetailNone;
-// 	XSendEvent(qt_xdisplay(), topLevelWidget()->winId(), 0, FALSE, &e);
-//     }
-
 
     if ( window != 0 ) {
-#if 0
-	XEvent ev;
-	memset(&ev, 0, sizeof(ev));
-	ev.xclient.type = ClientMessage;
-	ev.xclient.window = window;
-	ev.xclient.message_type = wm_protocols;
-	ev.xclient.format = 32;
-	ev.xclient.data.s[0] = qt_wm_delete_window;
-	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
-#endif
-    }
+ 	XUnmapWindow(qt_xdisplay(), window );
+ 	XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
+
+ 	XEvent ev;
+ 	memset(&ev, 0, sizeof(ev));
+ 	ev.xclient.type = ClientMessage;
+ 	ev.xclient.window = window;
+ 	ev.xclient.message_type = qt_wm_protocols;
+ 	ev.xclient.format = 32;
+ 	ev.xclient.data.s[0] = qt_wm_delete_window;
+ 	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+     }
     window = 0;
 }
 
 
-/*!
-  Reimplimented to resize the embedded window respectively.
+/*!\reimp
  */
 void QXEmbed::resizeEvent(QResizeEvent*)
 {
@@ -213,8 +426,7 @@ void QXEmbed::resizeEvent(QResizeEvent*)
 	XResizeWindow(qt_xdisplay(), window, width(), height());
 }
 
-/*!
-  Reimplimented to ensure the embedded window will be visible as well.
+/*!\reimp
  */
 void QXEmbed::showEvent(QShowEvent*)
 {
@@ -223,110 +435,73 @@ void QXEmbed::showEvent(QShowEvent*)
 
 }
 
-/*!
-  Reimplimented to route the keyevents to the embedded window.
+
+/*!\reimp
  */
-void QXEmbed::keyPressEvent( QKeyEvent */*e*/ )
+bool QXEmbed::eventFilter( QObject *o, QEvent * e)
+{
+
+    switch ( e->type() ) {
+    case QEvent::WindowActivate:
+	if ( o == topLevelWidget() )
+	    send_xembed_message( window, XEMBED_WINDOW_ACTIVATE );
+	break;
+    case QEvent::WindowDeactivate:
+	if ( o == topLevelWidget() )
+	    send_xembed_message( window, XEMBED_WINDOW_DEACTIVATE );
+	break;
+    default:
+	break;
+    }
+    return FALSE;
+}
+
+
+bool  QXEmbed::event( QEvent * e)
+{
+    return QWidget::event( e );
+}
+
+/*!\reimp
+ */
+void QXEmbed::keyPressEvent( QKeyEvent *)
 {
     if (!window)
 	return;
-#if 0
-    XEvent ev;
-    QString text = e->text();
-    int i = 1;
-    int m = QMAX(1, text.length());
-    do{
-	memset(&ev, 0, sizeof(ev));
-	ev.xclient.type = ClientMessage;
-	ev.xclient.window = window;
-	ev.xclient.message_type = qt_unicode_key_press;
-	ev.xclient.format = 16;
-	ev.xclient.data.s[0] = e->key();
-	ev.xclient.data.s[1] = e->ascii();
-	ev.xclient.data.s[2] = e->state();
-	ev.xclient.data.s[3] = e->isAutoRepeat();
-	ev.xclient.data.s[4] = !text.isEmpty()?1:e->count();
-	ev.xclient.data.s[5] = !text.isEmpty()?text[i-1].row():QChar::null.row();
-	ev.xclient.data.s[6] = !text.isEmpty()?text[i-1].cell():QChar::null.cell();
-	ev.xclient.data.s[7] = i++;
-	ev.xclient.data.s[8] = m;
-	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
-    } while ( i <= m);
-#endif
+    send_xembed_message( window, XEMBED_PROCESS_NEXT_EVENT );
+    last_key_event.window = window;
+    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, (XEvent*)&last_key_event);
+
 }
 
-/*!
-  Reimplimented to route the keyevents to the embedded window.
+/*!\reimp
  */
-void QXEmbed::keyReleaseEvent( QKeyEvent */*e*/ )
+void QXEmbed::keyReleaseEvent( QKeyEvent *)
 {
     if (!window)
 	return;
-#if 0
-    XEvent ev;
-    QString text = e->text();
-    int i = 1;
-    int m = QMAX(1, text.length());
-    do{
-	memset(&ev, 0, sizeof(ev));
-	ev.xclient.type = ClientMessage;
-	ev.xclient.window = window;
-	ev.xclient.message_type = qt_unicode_key_release;
-	ev.xclient.format = 16;
-	ev.xclient.data.s[0] = e->key();
-	ev.xclient.data.s[1] = e->ascii();
-	ev.xclient.data.s[2] = e->state();
-	ev.xclient.data.s[3] = e->isAutoRepeat();
-	ev.xclient.data.s[4] = !text.isEmpty()?1:e->count();
-	ev.xclient.data.s[5] = !text.isEmpty()?text[i-1].row():QChar::null.row();
-	ev.xclient.data.s[6] = !text.isEmpty()?text[i-1].cell():QChar::null.cell();
-	ev.xclient.data.s[7] = i++;
-	ev.xclient.data.s[8] = m;
-	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
-    } while ( i <= m);
-#endif
+    send_xembed_message( window, XEMBED_PROCESS_NEXT_EVENT );
+    last_key_event.window = window;
+    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, (XEvent*)&last_key_event);
 }
 
-/*!
-  Reimplimented to route the focus events to the embedded window.
+/*!\reimp
  */
-void QXEmbed::focusInEvent( QFocusEvent * ){
+void QXEmbed::focusInEvent( QFocusEvent * e ){
     if (!window)
 	return;
-    sendFocusIn();
+    int detail = XEMBED_FOCUS_CURRENT;
+    if ( e->reason() == QFocusEvent::Tab )
+	detail = tabForward?XEMBED_FOCUS_FIRST:XEMBED_FOCUS_LAST;
+    send_xembed_message( window, XEMBED_FOCUS_IN, detail);
 }
 
-/*!
-  Reimplimented to route the focus events to the embedded window.
+/*!\reimp
  */
 void QXEmbed::focusOutEvent( QFocusEvent * ){
     if (!window)
 	return;
-    sendFocusOut();
-}
-
-
-/*!
-  Reimplimented to route the wheel events to the embedded window.
- */
-void QXEmbed::wheelEvent( QWheelEvent * /*e*/)
-{
-    if (!window)
-	return;
-
-#if 0
-    XEvent ev;
-    memset(&ev, 0, sizeof(ev));
-    ev.xclient.type = ClientMessage;
-    ev.xclient.window = window;
-    ev.xclient.message_type = qt_wheel_event;
-    ev.xclient.format = 32;
-    ev.xclient.data.l[0] = e->globalX();
-    ev.xclient.data.l[1] = e->globalY();
-    ev.xclient.data.l[2] = e->delta();
-    ev.xclient.data.l[3] = e->state();
-    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
-#endif
+    send_xembed_message( window, XEMBED_FOCUS_OUT );
 }
 
 
@@ -336,8 +511,8 @@ void QXEmbed::wheelEvent( QWheelEvent * /*e*/)
 
   This function is useful if the server knows about the client window
   that should be embedded.  Often it is vice versa: the client knows
-  about his target container. In that case, it is not necessary to
-  call embed(). Instead, the client will call the static function
+  about its target embedder. In that case, it is not necessary to call
+  embed(). Instead, the client will call the static function
   embedClientIntoWindow().
 
   \sa embeddedWinId()
@@ -348,15 +523,7 @@ void QXEmbed::embed(WId w)
 	return;
 
     bool has_window =  w == window;
-
     window = w;
-    long a = 1;
-    window_supports_tab_focus = FALSE;
-#if 0
-    XChangeProperty(qt_xdisplay(), w,
-		    qt_embedded_window, XA_CARDINAL, 32, PropModeReplace,
-		    (const unsigned char*)&a, 1);
-#endif
     if ( !has_window )
 	XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
     QApplication::syncX();
@@ -370,11 +537,8 @@ void QXEmbed::embed(WId w)
 	QApplication::postEvent( parent(), layoutHint );
     }
     windowChanged( window );
-
-    if (this == qApp->focusWidget() )
-	sendFocusIn();
-    else
-	sendFocusOut();
+    send_xembed_message( window, XEMBED_EMBEDDED_NOTIFY );
+    send_xembed_message( window, this == qApp->focusWidget()?XEMBED_FOCUS_IN :XEMBED_FOCUS_OUT);
 }
 
 
@@ -387,46 +551,19 @@ WId QXEmbed::embeddedWinId() const
     return window;
 }
 
-void QXEmbed::sendFocusIn()
-{
-#if 0
-    XClientMessageEvent client_message;
-    client_message.type = ClientMessage;
-    client_message.window = window;
-    client_message.format = 32;
-    client_message.message_type = qt_embedded_window_focus_in;
-    XSendEvent( qt_xdisplay(), client_message.window, FALSE, NoEventMask,
-		(XEvent*)&client_message );
-#endif
-}
-
-void QXEmbed::sendFocusOut()
-{
-#if 0
-    XClientMessageEvent client_message;
-    client_message.type = ClientMessage;
-    client_message.window = window;
-    client_message.format = 32;
-    client_message.message_type = qt_embedded_window_focus_out;
-    XSendEvent( qt_xdisplay(), client_message.window, FALSE, NoEventMask,
-		(XEvent*)&client_message );
-#endif
-}
-
 
 /*!\reimp
  */
 bool QXEmbed::focusNextPrevChild( bool next )
 {
-    if ( window && window_supports_tab_focus )
+    if ( window )
 	return FALSE;
     else
 	return QWidget::focusNextPrevChild( next );
 }
 
 
-/*!
-  Reimplemented to observe child window changes
+/*!\reimp
  */
 bool QXEmbed::x11Event( XEvent* e)
 {
@@ -455,17 +592,23 @@ bool QXEmbed::x11Event( XEvent* e)
 	    XMapRaised(qt_xdisplay(), window );
 	break;
     case ClientMessage:
-#if 0
-	if ( e->xclient.format == 32 && e->xclient.message_type ) {
-	    if  ( e->xclient.message_type == qt_embedded_window_support_tab_focus ) {
-		window_supports_tab_focus = TRUE;
-	    }
-	    else if  ( e->xclient.message_type == qt_embedded_window_tab_focus ) {
-		window_supports_tab_focus = TRUE;
-		QWidget::focusNextPrevChild( e->xclient.data.l[0] );
+	if ( e->xclient.format == 32 && e->xclient.message_type == xembed ) {
+	    int message = e->xclient.data.l[1];
+// 	    int detail = e->xclient.data.l[2];
+	    switch ( message ) {
+	    case XEMBED_FOCUS_NEXT:
+		QWidget::focusNextPrevChild( TRUE );
+		break;
+	    case XEMBED_FOCUS_PREV:
+		QWidget::focusNextPrevChild( FALSE );
+		break;
+	    case XEMBED_REQUEST_FOCUS:
+		setFocus();
+		break;
+	    default:
+		break;
 	    }
 	}
-#endif
     default:
 	break;
     }
@@ -524,7 +667,7 @@ bool QXEmbed::processClientCmdline( QWidget* client, int& argc, char ** argv )
 
 
 /*!
-  A utility function for clients that embed theirselves. The widget \a
+  A  function for clients that embed themselves. The widget \a
   client will be embedded in the window \a window. The application has
   to ensure that \a window is the handle of the window identifier of
   an QXEmbed widget.
@@ -533,7 +676,10 @@ bool QXEmbed::processClientCmdline( QWidget* client, int& argc, char ** argv )
  */
 void QXEmbed::embedClientIntoWindow(QWidget* client, WId window)
 {
+    initialize();
     XReparentWindow(qt_xdisplay(), client->winId(), window, 0, 0);
+    ((QXEmbed*)client)->topData()->embedded = TRUE;
+    ((QXEmbed*)client)->topData()->parentWinId = window;
     client->show();
 }
 
@@ -558,6 +704,13 @@ QSize QXEmbed::sizeHint() const
     return minimumSizeHint();
 }
 
+/*!
+  \fn void QXEmbed::embeddedWindowDestroyed()
+
+  This signal is emitted when the embedded window has been destroyed.
+
+  \sa embeddedWinId()
+*/
 
 /*!
   Returns a size sufficient for one character, and scroll bars.
@@ -579,6 +732,7 @@ QSize QXEmbed::minimumSizeHint() const
 
     return QSize( minw, minh );
 }
+
 
 // for KDE
 #include "qxembed.moc"

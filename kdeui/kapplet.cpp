@@ -43,6 +43,7 @@ public:
 KApplet::KApplet( QWidget* parent, const char* name  )
     : QWidget( parent, name), DCOPObject()
 {
+    QXEmbed::initialize();
     d = new KAppletData;
     s = Fixed;
 }
@@ -159,6 +160,9 @@ Qt::Orientation KApplet::orientation() const
 #include "kapplet.moc"
 
 // $Log$
+// Revision 1.11  1999/11/15 11:03:45  mosfet
+// Added stretch methods for layouts. Will add docu when done.
+//
 // Revision 1.10  1999/11/14 05:53:32  ettrich
 //
 // Added KDockWindow, a simpler and more comfortable way of doing panel docking.
