@@ -184,7 +184,7 @@ QString KPrinterImpl::tempFile()
 
 bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 {
-	QStringList	flist = QStringList::split(',',printer->option("kde-filters"),false);
+	QStringList	flist = QStringList::split(',',printer->option("_kde-filters"),false);
 	if (flist.count() == 0)
 		return true;
 

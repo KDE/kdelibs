@@ -206,7 +206,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	bool		status(true);
 
 	// First apply possible filters
-	if (!option("kde-filters").isEmpty())
+	if (!option("_kde-filters").isEmpty())
 	{
 		if (!m_impl->filterFiles(this,files,flag))
 		{

@@ -103,7 +103,7 @@ bool FilterHandler::startElement(const QString&, const QString& lname, const QSt
 		if (m_opt && m_stack.top() && !attrs.value("name").isEmpty())
 		{
 			// prepend "kde-<filtername>-" to all options
-			m_opt->setName(QString::fromLatin1("kde-%1-").arg(m_filter->m_idname)+attrs.value("name"));
+			m_opt->setName(QString::fromLatin1("_kde-%1-").arg(m_filter->m_idname)+attrs.value("name"));
 			m_opt->set("text",attrs.value("description"));
 			m_opt->set("format",attrs.value("format"));
 			m_opt->set("default",attrs.value("default"));

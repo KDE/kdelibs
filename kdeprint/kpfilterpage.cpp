@@ -168,7 +168,7 @@ void KPFilterPage::slotItemSelected(QListViewItem *item)
 
 void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 {
-	QStringList	filters = QStringList::split(',',opts["kde-filters"],false);
+	QStringList	filters = QStringList::split(',',opts["_kde-filters"],false);
 	// remove unneeded filters
 	QDictIterator<KPrintFilter>	dit(m_activefilters);
 	for (;dit.current();)
@@ -203,9 +203,9 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 
 void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
+	QString	val;
 	if (m_view->childCount() > 0)
 	{
-		QString	val;
 		QListViewItem	*item = m_view->firstChild();
 		while (item)
 		{
@@ -217,11 +217,11 @@ void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 			}
 			item = item->nextSibling();
 		}
-		if (!val.isEmpty())
-		{
-			val.truncate(val.length()-1);
-			opts["kde-filters"] = val;
-		}
+	}
+	if (!val.isEmpty() || incldef)
+	{
+		val.truncate(val.length()-1);
+		opts["_kde-filters"] = val;
 	}
 }
 
