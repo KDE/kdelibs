@@ -25,12 +25,18 @@
 
 namespace KJS {
 
+  /**
+   * @short Handle for an Undefined type.
+   */
   class Undefined : public KJSO {
   public:
     Undefined();
     virtual ~Undefined();
   };
 
+  /**
+   * @short Handle for a Null type.
+   */
   class Null : public KJSO {
   public:
     Null();
@@ -41,6 +47,9 @@ namespace KJS {
   class NumberImp;
   class StringImp;
 
+  /**
+   * @short Handle for a Boolean type.
+   */
   class Boolean : public KJSO {
     friend BooleanImp;
   public:
@@ -51,6 +60,9 @@ namespace KJS {
     Boolean(BooleanImp *d);
   };
 
+  /**
+   * @short Handle for a Number type.
+   */
   class Number : public KJSO {
     friend NumberImp;
   public:
@@ -65,6 +77,9 @@ namespace KJS {
     Number(NumberImp *d);
   };
 
+  /**
+   * @short Handle for a String type.
+   */
   class String : public KJSO {
     friend StringImp;
   public:
@@ -75,6 +90,9 @@ namespace KJS {
     String(StringImp *d);
   };
 
+  /**
+   * @short Handle for a Completion type.
+   */
   class Completion : public KJSO {
   public:
     Completion(Imp *d = 0L);

@@ -73,8 +73,14 @@ namespace KJS {
 	       RegExpClass,
 	       ErrorClass };
 
+  /**
+   * Completion types.
+   */
   enum Compl { Normal, Break, Continue, ReturnValue, Throw };
 
+  /**
+   * Error codes.
+   */
   enum ErrorType { NoError = 0,
 		   GeneralError,
 		   EvalError,
@@ -316,6 +322,9 @@ namespace KJS {
     ImpInternal *internal;
   };
 
+  /**
+   * @short General implementation class for Objects
+   */
   class ObjectImp : public Imp {
     friend Object;
   public:
@@ -356,6 +365,9 @@ namespace KJS {
     static Object dynamicCast(const KJSO &obj);
   };
 
+  /**
+   * @short Implementation base class for Host Objects.
+   */
   class HostImp : public Imp {
   public:
     virtual ~HostImp();
@@ -375,6 +387,9 @@ namespace KJS {
     KJSO functionPrototype() const;
   };
 
+  /**
+   * @short Factory methos for error objects.
+   */
   class Error {
   public:
     static KJSO create(ErrorType e, const char *m = 0, int l = -1);

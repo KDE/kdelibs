@@ -39,6 +39,9 @@ namespace KJS {
   class Function;
   class ParamList;
 
+  /**
+   * @short Implementation class for Functions.
+   */
   class FunctionImp : public ObjectImp {
     friend Function;
   public:
@@ -82,7 +85,10 @@ namespace KJS {
     CodeType codeType() const { return HostCode; }
     KJSO thisValue() const;
   };
-
+  
+  /**
+   * @short Implementation class for Constructors.
+   */
   class ConstructorImp : public InternalFunctionImp {
   public:
     ConstructorImp();

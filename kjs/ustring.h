@@ -104,6 +104,9 @@ namespace KJS {
   class UString {
     friend bool operator==(const UString&, const UString&);
     friend KJScript;
+    /**
+     * @internal
+     */
     struct Rep {
       friend UString;
       friend bool operator==(const UString&, const UString&);
