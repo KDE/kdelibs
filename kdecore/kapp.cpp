@@ -709,8 +709,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	  if ( cme->message_type == KDEChangeGeneral )
 		{
 		  readSettings();
+		  kdisplaySetPalette(); // This has to be first (mosfet)
 		  kdisplaySetStyleAndFont();
-		  kdisplaySetPalette();
 		
 		  return True;
 		}
