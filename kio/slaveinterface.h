@@ -125,7 +125,7 @@ class SlaveInterface : public QObject
 
 public:
     SlaveInterface( Connection *connection );
-    virtual ~SlaveInterface() { }
+    virtual ~SlaveInterface();
 
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }

@@ -39,6 +39,12 @@ SlaveInterface::SlaveInterface( Connection * connection )
     signal( SIGPIPE, sigpipe_handler );
 }
 
+SlaveInterface::~SlaveInterface()
+{
+    // Note: no kdDebug() here (scheduler is deleted very late)
+    m_pConnection = 0; // a bit like the "wasDeleted" of QObject...
+}
+
 bool SlaveInterface::dispatch()
 {
     assert( m_pConnection );
@@ -249,13 +255,16 @@ void SlaveInterface::openPassDlg( const QString& msg, const QString& user, bool 
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
     bool result = Observer::self()->openPassDlg(msg, u , p, lockUserName );
-    if( result )
+    if ( m_pConnection ) // Don't do anything if deleted meanwhile
     {
-        stream << u << p;
-        m_pConnection->sendnow( CMD_USERPASS, data );
+        if( result )
+        {
+            stream << u << p;
+            m_pConnection->sendnow( CMD_USERPASS, data );
+        }
+        else
+            m_pConnection->sendnow( CMD_NONE, data );
     }
-    else
-        m_pConnection->sendnow( CMD_NONE, data );
 }
 
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption, const QString &buttonYes, const QString &buttonNo )
@@ -270,10 +279,15 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     emit needProgressId();
 
+    kdDebug() << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
+
     int result = Observer::self()->messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
-    kdDebug(7007) << "result=" << result << endl;
-    stream << result;
-    m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
+    if ( m_pConnection ) // Don't do anything if deleted meanwhile
+    {
+        kdDebug(7007) << this << " SlaveInterface result=" << result << endl;
+        stream << result;
+        m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
+    }
 }
 
 void SlaveInterface::sigpipe_handler(int)
