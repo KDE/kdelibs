@@ -1,0 +1,206 @@
+# Dutch translation of the general kde messages.
+# Copyright (C) 1997 Jeroen van der Most <jvdmost@wi.leidenuniv.nl>.
+#
+
+msgid "Error"
+msgstr "Fout"
+
+msgid "Malformed URL"
+msgstr "URL heeft een verkeerd formaat"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nee"
+
+msgid "Warning"
+msgstr "Waarschuwing"
+
+msgid "Open a file"
+msgstr "Open een bestand"
+
+msgid "Save a file"
+msgstr "Bewaar een bestand"
+
+msgid "Contents"
+msgstr "Inhoud"
+
+msgid "About"
+msgstr "Info"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Save As"
+msgstr "Opslaan als"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Quit"
+msgstr "Afsluiten"
+
+msgid "Untitled"
+msgstr "Naamloos"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Apply"
+msgstr "Toepassen"
+
+msgid "File"
+msgstr "Bestand"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Edit"
+msgstr "Bewerken"
+
+# libkdeui messages
+#: kcolordlg.cpp:239
+msgid "Select Color"
+msgstr "Selecteer kleur"
+
+#: kcolordlg.cpp:244
+msgid "System Colors"
+msgstr "Systeem kleuren"
+
+#: kcolordlg.cpp:269
+msgid "Custom Colors"
+msgstr "Eigen kleuren"
+
+#: kcolordlg.cpp:345
+msgid "Add to Custom Colors"
+msgstr "Aan eigen kleuren toevoegen"
+
+#: kcolordlg.cpp:649 kcolordlg.cpp:699
+msgid "Custom..."
+msgstr "Eigen..."
+
+#: kfontdialog.cpp:95
+msgid "Select Font"
+msgstr "Selecteer lettertype"
+
+#: kfontdialog.cpp:99
+msgid "Requested Font"
+msgstr "Geselecteerd lettertype"
+
+#: kfontdialog.cpp:104
+msgid "Actual Font"
+msgstr "Werkelijk lettertype"
+
+#: kfontdialog.cpp:108 kfontdialog.cpp:112
+msgid "Family:"
+msgstr "Familie:"
+
+#: kfontdialog.cpp:119 kfontdialog.cpp:124
+msgid "Size:"
+msgstr "Grootte:"
+
+# FIXME
+#: kfontdialog.cpp:133 kfontdialog.cpp:138
+msgid "Weight:"
+msgstr "Gewicht"
+
+#: kfontdialog.cpp:147 kfontdialog.cpp:155
+msgid "Style:"
+msgstr "Stijl:"
+
+#: kfontdialog.cpp:190
+msgid "Size"
+msgstr "Grootte"
+
+# FIXME
+#: kfontdialog.cpp:229
+msgid "Weight"
+msgstr "Gewicht"
+
+#: kfontdialog.cpp:230 kfontdialog.cpp:327
+msgid "normal"
+msgstr "normaal"
+
+#: kfontdialog.cpp:231 kfontdialog.cpp:329
+msgid "bold"
+msgstr "vet"
+
+#: kfontdialog.cpp:240
+msgid "Style"
+msgstr "Stijl"
+
+# FIXME
+#: kfontdialog.cpp:241 kfontdialog.cpp:340 kfontdialog.cpp:369
+msgid "roman"
+msgstr "rechtop"
+
+#: kfontdialog.cpp:242 kfontdialog.cpp:342 kfontdialog.cpp:367
+msgid "italic"
+msgstr "cursief"
+
+#: kfontdialog.cpp:270
+msgid "Dolor Ipse"
+msgstr ""
+
+#: kfontdialog.cpp:362
+msgid "Bold"
+msgstr "Vet"
+
+#: kfontdialog.cpp:364
+msgid "Normal"
+msgstr "Normaal"
+
+#: kiconloader.cpp:176
+msgid "Select Icon"
+msgstr "Selecteer pictogram"
+
+#: kiconloader.cpp:182
+msgid "Filter:"
+msgstr ""
+
+#: kiconloader.cpp:337
+#, c-format
+msgid "ERROR: couldn't find icon: %s"
+msgstr "FOUT: kan pictogram %s niet vinden"
+
+#: kmenubar.cpp:106 ktoolbar.cpp:273
+msgid "Top"
+msgstr "Boven"
+
+#: kmenubar.cpp:107 ktoolbar.cpp:275
+msgid "Bottom"
+msgstr "Onder"
+
+#: kmenubar.cpp:108 ktoolbar.cpp:276
+msgid "Floating"
+msgstr "Zwevend"
+
+#: kmenubar.cpp:182 kmenubar.cpp:223 ktoolbar.cpp:699 ktoolbar.cpp:1208
+msgid "Float"
+msgstr "Zweven"
+
+#: kmenubar.cpp:213 ktoolbar.cpp:1198
+msgid "UnFloat"
+msgstr "Vast"
+
+#: ktoolbar.cpp:87 ktoolbar.cpp:145
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: pixmap is leeg, mischien een missend bestand"
+
+#: ktoolbar.cpp:272
+msgid "Left"
+msgstr "Links"
+
+#: ktoolbar.cpp:274
+msgid "Right"
+msgstr "Rechts"
