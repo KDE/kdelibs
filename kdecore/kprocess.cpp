@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29.4.4  1999/07/12 10:26:42  porten
+   kprocess deadlock fix from Alex Hayward (bug #1002 and #1513)
+
    Revision 1.29.4.3  1999/07/04 17:48:09  porten
    check for Stdin flag in writeStdin
 
@@ -217,7 +220,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
   if (0 == pid) {
 	// The child process
-
 	if(!commSetupDoneC())
 	  debug("Could not finish comm setup in child!");
 
@@ -245,7 +247,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
   } else {
 	// the parent continues here
-
 	if (!commSetupDoneP())  // finish communication socket setup for the parent
 	  debug("Could not finish comm setup in parent!");
 
@@ -366,7 +367,6 @@ void KProcess::slotChildOutput(int fdno)
 
 void KProcess::slotChildError(int fdno)
 {
-
   if (!childError(fdno)) {
     errnot->setEnabled(FALSE);
   }
@@ -412,9 +412,6 @@ int KProcess::childOutput(int fdno)
   int len;
 
   len = ::read(fdno, buffer, 1024);
-
-  if (-1 == len)
-	debug("ERROR: %s\n\n", strerror(errno));
 
   if ( 0 < len) {
 	emit receivedStdout(this, buffer, len);
@@ -537,11 +534,13 @@ int KProcess::commSetupDoneC()
 void KProcess::commClose()
 {
   if (NoCommunication != communication) {
-
-	if (communication & Stdin)
+        bool b_in = (communication & Stdin);
+        bool b_out = (communication & Stdout);
+        bool b_err = (communication & Stderr);
+	if (b_in)
 		delete innot;
 
-	if ((communication & Stdout) && (communication & Stderr)) {
+	if (b_out || b_err) {
 	  // If both channels are being read we need to make sure that one socket buffer
 	  // doesn't fill up whilst we are waiting for data on the other (causing a deadlock).
 	  // Hence we need to use select.
@@ -552,52 +551,51 @@ void KProcess::commClose()
 	  int fds_ready = 1;
 	  fd_set rfds;
 
-	  fcntl(out[0], F_SETFL, O_NONBLOCK);
-	  fcntl(err[0], F_SETFL, O_NONBLOCK);
+          int max_fd = 0;
+          if (b_out) {
+	    fcntl(out[0], F_SETFL, O_NONBLOCK);
+            if (out[0] > max_fd)
+              max_fd = out[0];
+            delete outnot;
+          }
+          if (b_err) {
+	    fcntl(err[0], F_SETFL, O_NONBLOCK);
+            if (err[0] > max_fd)
+              max_fd = err[0];
+            delete errnot;
+          }
+           
 
 	  while (1) {
 	    FD_ZERO(&rfds);
-	    FD_SET(out[0], &rfds);
-	    FD_SET(err[0], &rfds);
+            if (b_out) 
+	      FD_SET(out[0], &rfds);
 
-	    fds_ready = select(QMAX(out[0], err[0]), &rfds, 0, 0, 0);
+            if (b_err) 
+	      FD_SET(err[0], &rfds);
+
+	    fds_ready = select(max_fd+1, &rfds, 0, 0, 0);
 	    if (fds_ready <= 0) break;
 
-	    if (FD_ISSET(out[0], &rfds)) {
-	      int ret = 0;
+	    if (b_out && FD_ISSET(out[0], &rfds)) {
+	      int ret = 1;
 	      while (ret > 0) ret = childOutput(out[0]);
 	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
 	    }
                                
-	    if (FD_ISSET(err[0], &rfds)) {
-	      int ret = 0;
+	    if (b_err && FD_ISSET(err[0], &rfds)) {
+	      int ret = 1;
 	      while (ret > 0) ret = childError(err[0]);
 	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
 	    }
 	  }
-
-
-	  fcntl(out[0], F_SETFL, 0);
-	  fcntl(err[0], F_SETFL, 0);
 	}
 
-	if (communication & Stdout) {
-		delete outnot;
-		while(childOutput(out[0])> 0 )
-		  ;
-	}
-
-	if (communication & Stderr) {
-		delete errnot;
-		while(childError(err[0]) > 0)
-		;
-	}
-
-	if (communication & Stdin)
+	if (b_in)
 	    close(in[1]);
-	if (communication & Stdout)
+	if (b_out)
 	    close(out[0]);
-	if (communication & Stderr)
+	if (b_err)
 	    close(err[0]);
 	
 	communication = NoCommunication;
