@@ -40,11 +40,11 @@ class KConfigBasePrivate;
 class KConfigGroup;
 
 /**
- * Abstract base class for KDE configuration entries.
+ * @short KDE Configuration Management abstract base class
  *
- * This class forms the base for all KDE configuration. It is an
+ * This class forms the base for all %KDE configuration. It is an
  * abstract base class, meaning that you cannot directly instantiate
- * objects of this class. Either use KConfig (for usual KDE
+ * objects of this class. Either use KConfig (for usual %KDE
  * configuration) or KSimpleConfig (for special needs as in ksamba), or
  * even KSharedConfig (stores values in shared memory).
  *
@@ -58,12 +58,14 @@ class KConfigGroup;
  * can avoid this feature by having two consecutive $ characters in
  * your config file which get expanded to one.
  *
- * Note: the '=' char is not allowed in keys and the ']' char is not allowed in
- * group name.
+ * \note the '=' char is not allowed in keys and the ']' char is not allowed in
+ * a group name.
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
- * @see  KGlobal#config()  KConfig  KSimpleConfig
- * @short KDE Configuration Management abstract base class
+ * @see KGlobal#config()
+ * @see KConfig
+ * @see KSimpleConfig
+ * @see KSharedConfig
  */
 class KDECORE_EXPORT KConfigBase : public QObject
 {
@@ -88,7 +90,7 @@ public:
    * Specifies the group in which keys will be read and written.
    *
    *  Subsequent
-   * calls to readEntry() and writeEntry() will be aplied only in the
+   * calls to readEntry() and writeEntry() will be applied only in the
    * activated group.
    *
    * Switch back to the default group by passing a null string.
@@ -114,7 +116,7 @@ public:
    * Returns true if the specified group is known about.
    *
    * @param group The group to search for.
-   * @return Whether the group exists.
+   * @return true if the group exists.
    */
   bool hasGroup(const QString &group) const;
 
@@ -134,7 +136,7 @@ public:
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
-   * If you want to read a path, please use readPathEntry.
+   * If you want to read a path, please use readPathEntry().
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
@@ -739,7 +741,7 @@ public:
    * This is stored in the most specific config file when destroying the
    * config object or when calling sync().
    *
-   * If you want to write a path, please use writePathEntry.
+   * If you want to write a path, please use writePathEntry().
    *
    * @param pKey         The key to write.
    * @param pValue       The value to write.
