@@ -46,6 +46,26 @@
 
 using namespace KNS;
 
+class NumSortListViewItem : public KListViewItem
+{
+  public:
+  NumSortListViewItem( QListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
+  KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )  
+  {
+  }
+
+  QString key(int col, bool asc) const {
+    if (col == 2)
+    {
+      
+      QString s;
+      s.sprintf("%08d", text(col).toInt());
+      return s;
+    }
+    return KListViewItem::key( col, asc );
+  }
+};
+
 // BEGIN deprecated for KDE 4
 DownloadDialog::DownloadDialog(Engine *engine, QWidget *)
 : KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
@@ -345,7 +365,7 @@ void DownloadDialog::addEntry(Entry *entry)
 
   KListViewItem *tmp_r = new KListViewItem(lv_r,
     entry->name(), entry->version(), QString("%1").arg(entry->rating()));
-  KListViewItem *tmp_d = new KListViewItem(lv_d,
+  KListViewItem *tmp_d = new NumSortListViewItem(lv_d,
     entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
   KListViewItem *tmp_l = new KListViewItem(lv_l,
     entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
