@@ -1,5 +1,8 @@
 2004-03-01  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_text.cpp (calcMinMaxWidth): some more hacks for white-space !=
+	normal.
+
 	* rendering/render_object.cpp (drawBorder): use drawPixel directly.
 	turns out to be more reliable and equally fast (#62296).
 

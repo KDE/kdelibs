@@ -1042,22 +1042,23 @@ void RenderText::calcMinMaxWidth()
     bool isSpace = false;
     bool isPre = style()->whiteSpace() == PRE;
     bool firstWord = true;
+    bool firstLine = true;
     for(int i = 0; i < len; i++)
     {
+        unsigned short c = str->s[i].unicode();
+        bool previousCharacterIsSpace = isSpace;
         bool isNewline = false;
-        // XXXdwh Wrong in the first stage.  Will stop mutating newlines
-        // in a second stage.
-        if (str->s[i] == '\n') {
-            if (isPre) {
+
+        if ( c == '\n' ) {
+            if ( isPre ) {
                 m_hasBreak = true;
                 isNewline = true;
+                isSpace = false;
             }
             else
-                str->s[i] = ' ';
-        }
-
-        bool previousCharacterIsSpace = isSpace;
-        isSpace = str->s[i].direction() == QChar::DirWS;
+                isSpace = true;
+        } else
+            isSpace = c == ' ';
 
         if ((isSpace || isNewline) && i == 0)
             m_hasBeginWS = true;
@@ -1105,14 +1106,19 @@ void RenderText::calcMinMaxWidth()
         else {
             // Nowrap can never be broken, so don't bother setting the
             // breakable character boolean.
-            if (style()->whiteSpace() != NOWRAP)
+            if (style()->whiteSpace() == NORMAL || isNewline)
                 m_hasBreakableChar = true;
 
             if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
             currMinWidth = 0;
 
-            if (str->s[i] == '\n')
+            if (isNewline)
             {
+                if ( firstLine ) {
+                    firstLine = false;
+                    m_beginMinWidth = currMaxWidth;
+                }
+
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
                 currMaxWidth = 0;
             }
@@ -1126,8 +1132,14 @@ void RenderText::calcMinMaxWidth()
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
 
-    if (style()->whiteSpace() == NOWRAP)
+    if (style()->whiteSpace() != NORMAL)
         m_minWidth = m_maxWidth;
+
+    if (isPre) {
+        if (firstLine)
+            m_beginMinWidth = m_maxWidth;
+        m_endMinWidth = currMaxWidth;
+    }
 
     setMinMaxKnown();
     //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): min = " << m_minWidth << " max = " << m_maxWidth << endl;
