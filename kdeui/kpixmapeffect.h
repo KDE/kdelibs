@@ -183,7 +183,7 @@ public:
      * @param desat A value between 0 and 1 setting the degree of desaturation
      * @return Returns the @ref #pixmap, provided for convenience.
      */
-    static KPixmap& toGray(KPixmap& pixmap, bool fast=false);
+    static KPixmap& desaturate(KPixmap& pixmap, float desat = 0.3);
 };
 
 
