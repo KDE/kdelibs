@@ -34,39 +34,39 @@ public:
 	KCardDB();
 	~KCardDB();
 
-	/*
+	/**
 	 *   This gets the name of the module that handles
 	 *   this type of card based on the ATR.  Returns
 	 *   QString::null if no handler exists.
 	 */
 	const QString getModuleName(const QString ATR);
 
-	/*
+	/**
 	 *   Removes all cards from the database that are handled
 	 *   by the handler "module".  Returns 0 on success.
 	 */
 	int removeByHandler(const QString module);
 
-	/*
+	/**
 	 *   Removes a given ATR/card from the database.  Returns
 	 *   0 on success.
 	 */
 	int removeCard(const QString ATR);
 
-	/*
+	/**
 	 *   This adds an ATR to the database with the given
 	 *   module name as the handler.  Returns 0 on success.
 	 */
 	int addHandler(const QString ATR, const QString module);
 
-	/*
+	/**
 	 *   This launches the card selector application which
 	 *   prompts the user to select the proper module to
 	 *   handle the card he has inserted.
 	 */
 	static int launchSelector(const QString slot, const QString ATR=QString::null);
 
-	/*
+	/**
 	 *   Tries to make an educated guess of a handler to
 	 *   use for a given ATR.  Returns QString::null if it
 	 *   can't come up with anything reasonable.

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 Fernando Llobregat < >
+ * Copyright (C) 2001 Fernando Llobregat <fernando.llobregat@free.fr>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,13 +25,10 @@
 #include <kdebug.h>
 KCardImplementation::KCardImplementation(const QString & type, 
 					 const QString & subType,
-					 const QString & subSubType)
+					 const QString & subSubType):_type(type),_subType(subType),_subSubType(subSubType)
 {
 
- 
-  _type = type;
-  _subType =subType ;
-  _subSubType =subSubType ;
+
   _errno = 0;
   _kcardreader = NULL;
   pcscInt = new KPCSC(TRUE);
@@ -44,6 +41,8 @@ KCardImplementation::~KCardImplementation() {
   
 }
 
+
+
 int KCardImplementation::init ( const QString & selectedReader){
 
   
@@ -54,16 +53,19 @@ int KCardImplementation::init ( const QString & selectedReader){
   return 0;
 }
 
+
+
+
 int KCardImplementation::matchATR(KCardCommand atr) {
 return -1;
 }
 
 
-int KCardImplementation::selectFile(const QString) {
+int KCardImplementation::selectFile(const QString &) {
 return -1;
 }
 
-int KCardImplementation::selectDirectory(const QString) {
+int KCardImplementation::selectDirectory(const QString &) {
 return -1;
 }
 
