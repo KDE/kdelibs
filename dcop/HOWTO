@@ -4,7 +4,10 @@
 			   October 14, 1999
 
 	 Revised and extended by Matthias Ettrich <ettrich@kde.org>
-			   Mar 29, 2000,
+			   Mar 29, 2000
+
+        Extended with DCOP Signals by Waldo Bastian <bastian@kde.org>
+                           Feb 19, 2001
 
 
 Motivation and Background:
@@ -265,6 +268,67 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
     reply << result;
     kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
 }
+
+DCOP Signals
+------------
+
+Sometimes a component wants to send notifications via DCOP to other
+components but does not know which components will be interested in these
+notifications. One could use a broadcast in such a case but this is a very
+crude method. For a more sophisticated method DCOP signals have been invented.
+
+DCOP signals are very similair to Qt signals, there are some differences 
+though. A DCOP signal can be connected to a DCOP function. Whenever the DCOP
+signal gets emitted, the DCOP functions to which the signal is connected are
+being called. DCOP signals are, just like Qt signals, one way. They do not
+provide a return value. 
+
+A DCOP signal originates from a DCOP Object/DCOP Client combination (sender). 
+It can be connected to a function of another DCOP Object/DCOP Client 
+combination (receiver).
+
+There are two major differences between connections of Qt signals and 
+connections of DCOP signals. In DCOP, unlike Qt, a signal connections can
+have an anonymous sender and, unlike Qt, a DCOP signal connection can be
+non-volatile.
+
+With DCOP one can connect a signal without specifying the sending DCOP Object 
+or DCOP Client. In that case signals from any DCOP Object and/or DCOP Client
+will be delivered. This allows the specification of certain events without
+tying oneself to a certain object that implementes the events.
+
+Another DCOP feature are so called non-volatile connections. With Qt signal
+connections, the connection gets deleted when either sender or receiver of
+the signal gets deleted. A volatile DCOP signal connection will behave the
+same. However, a non-volatile DCOP signal connection will not get deleted 
+when the sending object gets deleted. Once a new object gets created with 
+the same name as the original sending object, the connection will be restored.
+There is no difference between the two when the receiving object gets deleted,
+in that case the signal connection will always be deleted.
+
+A receiver can create a non-volatile connection while the sender doesn't (yet)
+exist. An anonymous DCOP connection should always be non-volatile.
+
+The following example shows how KLauncher emits a signal whenever it notices
+that an application that was started via KLauncher terminates.
+
+   QByteArray params;
+   QDataStream stream(params, IO_WriteOnly);
+   stream << pid;
+   kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
+
+The task manager of the KDE panel connects to this signal. It uses an 
+anonymous connection (it doesn't require that the signal is being emitted
+by KLauncher) that is non-volatile:
+
+   connectDCOPSignal(0, 0, "clientDied(pid_t)", "clientDied(pid_t)", false);
+
+It connects the clientDied(pid_t) signal to its own clientDied(pid_t) DCOP
+function. In this case the signal and the function to call have the same name.
+This isn't needed as long as the arguments of both signal and receiving function
+match. The receiving function may ignore one or more of the trailing arguments
+of the signal. E.g. it is allowed to connect the clientDied(pid_t) signal to
+a clientDied(void) DCOP function.
 
 Using the dcopidl compiler
 ---------------------
