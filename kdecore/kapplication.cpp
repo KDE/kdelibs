@@ -127,6 +127,11 @@
 #include <KDE-ICE/ICElib.h>
 #else
 typedef void* IceIOErrorHandler;
+#include <windows.h>
+//KDE4: remove
+#define Button1Mask (1<<8)
+#define Button2Mask (1<<9)
+#define Button3Mask (1<<10)
 #endif
 
 #ifdef Q_WS_X11
@@ -2956,22 +2961,31 @@ uint KApplication::keyboardModifiers()
 
 uint KApplication::mouseState()
 {
+    uint keybstate;
 #ifdef Q_WS_X11
     Window root;
     Window child;
     int root_x, root_y, win_x, win_y;
-    uint keybstate;
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &keybstate );
-    return keybstate & 0xff00;
-#else
-    //TODO for win32
-    return 0;
+#elif defined(Q_WS_WIN)
+    const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
+    if (GetAsyncKeyState(VK_LBUTTON))
+        keybstate |= (mousebtn_swapped ? Button3Mask : Button1Mask);
+    if (GetAsyncKeyState(VK_MBUTTON))
+        keybstate |= Button2Mask;
+    if (GetAsyncKeyState(VK_RBUTTON))
+        keybstate |= (mousebtn_swapped ? Button1Mask : Button3Mask);
+#else 
+    //TODO: other platforms
 #endif
+    return keybstate & 0xff00;
 }
 
 Qt::ButtonState KApplication::keyboardMouseState()
 {
+    int ret = 0;
+#ifdef Q_WS_X11
     Window root;
     Window child;
     int root_x, root_y, win_x, win_y;
@@ -2979,7 +2993,6 @@ Qt::ButtonState KApplication::keyboardMouseState()
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &state );
     // transform the same way like Qt's qt_x11_translateButtonState()
-    int ret = 0;
     if( state & Button1Mask )
         ret |= LeftButton;
     if( state & Button2Mask )
@@ -2994,6 +3007,25 @@ Qt::ButtonState KApplication::keyboardMouseState()
         ret |= AltButton;
     if( state & KKeyNative::modX( KKey::WIN ))
         ret |= MetaButton;
+#elif defined(Q_WS_WIN)
+    const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
+    if (GetAsyncKeyState(VK_LBUTTON))
+        ret |= (mousebtn_swapped ? RightButton : LeftButton);
+    if (GetAsyncKeyState(VK_MBUTTON))
+        ret |= MidButton;
+    if (GetAsyncKeyState(VK_RBUTTON))
+        ret |= (mousebtn_swapped ? LeftButton : RightButton);
+    if (GetAsyncKeyState(VK_SHIFT))
+        ret |= ShiftButton;
+    if (GetAsyncKeyState(VK_CONTROL))
+        ret |= ControlButton;
+    if (GetAsyncKeyState(VK_MENU))
+        ret |= AltButton;
+    if (GetAsyncKeyState(VK_LWIN) || GetAsyncKeyState(VK_RWIN))
+        ret |= MetaButton;
+#else 
+    //TODO: other platforms
+#endif
     return static_cast< ButtonState >( ret );
 }
 

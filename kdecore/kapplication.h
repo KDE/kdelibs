@@ -1076,8 +1076,9 @@ public:
    * @deprecated Use keyboardMouseState()
    * @since 3.1
    */
-  static uint keyboardModifiers();
-  // Same values as Button1Mask etc. in X.h
+  static uint keyboardModifiers() KDE_DEPRECATED;
+
+  /** @deprecated Same values as Button1Mask etc. in X.h */
   enum { Button1Pressed = 1<<8,
          Button2Pressed = 1<<9,
          Button3Pressed = 1<<10,
@@ -1087,7 +1088,7 @@ public:
    * @deprecated Use keyboardMouseState()
    * @since 3.1
    */
-  static uint mouseState();
+  static uint mouseState() KDE_DEPRECATED;
 
 
 public slots:

@@ -99,7 +99,7 @@ private:
  * @version $Id$
  */
 template< class T >
-class KDECORE_EXPORT KSharedPtr
+class KSharedPtr
 {
 public:
 /**

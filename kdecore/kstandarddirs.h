@@ -122,7 +122,7 @@ class KStandardDirsPrivate;
  *
  * @see KGlobalSettings
  */
-class KStandardDirs
+class KDECORE_EXPORT KStandardDirs
 {
 public:
         /**
@@ -699,7 +699,7 @@ public:
  * This function is just for convenience. It simply calls
  *instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
  **/
-QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+KDECORE_EXPORT QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 /*!
  * \relates KStandardDirs
@@ -710,7 +710,7 @@ QString locate( const char *type, const QString& filename, const KInstance* inst
  * specific file, filename must have a trailing slash.
  *
  **/
-QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 /*!
  * \relates KStandardDirs
@@ -721,7 +721,7 @@ QString locateLocal( const char *type, const QString& filename, const KInstance*
  * filename must have a trailing slash.
  *
  **/
-QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
+KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
 
 /*! @} */
 

@@ -228,7 +228,7 @@
   };
 
 
-template < typename T > class KDECORE_EXPORT KConfigSkeletonGenericItem:public KConfigSkeletonItem
+template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
     KConfigSkeletonGenericItem(const QString & group, const QString & key, T & reference,
