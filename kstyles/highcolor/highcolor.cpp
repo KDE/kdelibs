@@ -777,8 +777,10 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_PanelDockWindow: {		// Toolbar
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
+			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
+				: opt.lineWidth();
 			
-			if (opt.lineWidth())
+			if (lw)
 			{
 				p->setPen(cg.light());
 				p->drawLine(r.x(), r.y(), x2-1,  r.y());
