@@ -15,18 +15,6 @@ case "$1" in
           mv /etc/kde2/applnk /usr/share/applnk
         fi
       fi
-	if test /usr/share/applnk/System/kdf.desktop; then
-	    rm -rf /usr/share/applnk/System/kdf.desktop
-	fi
-	if test /usr/share/applnk/System/kwikdisk.desktop; then
-	    rm -rf /usr/share/applnk/System/kwikdisk.desktop
-	fi
-	if test /usr/share/applnk/Graphics/pixie.desktop; then
-	    rm -rf /usr/share/applnk/Graphics/pixie.desktop
-	fi
-	if test /usr/share/applnk/Utilities/kdat.desktop; then
-	    rm -rf /usr/share/applnk/Utilities/kdat.desktop
-	fi
     ;;
 
     abort-upgrade)
