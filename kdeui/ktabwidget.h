@@ -34,6 +34,7 @@ class KTabWidget : public QTabWidget
     Q_PROPERTY( bool tabReorderingEnabled READ isTabReorderingEnabled WRITE setTabReorderingEnabled )
     Q_PROPERTY( bool hoverCloseButton READ hoverCloseButton WRITE setHoverCloseButton )
     Q_PROPERTY( bool hoverCloseButtonDelayed READ hoverCloseButtonDelayed WRITE setHoverCloseButtonDelayed )
+    Q_PROPERTY( bool tabCloseActivatePrevious READ tabCloseActivatePrevious WRITE setTabCloseActivatePrevious )
 
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
@@ -64,6 +65,13 @@ public:
       after a delay.
     */
     bool hoverCloseButtonDelayed() const;
+
+    /*!
+      Returns true if closing the current tab activates the previous
+      actice tab instead of the one to the right.
+      @since 3.3
+    */
+    bool tabCloseActivatePrevious() const;
 
 public slots:
     /*!
@@ -96,7 +104,12 @@ public slots:
     */
     void setHoverCloseButtonDelayed( bool delayed );
 
-
+    /*!
+      If \a delayed is true, closing the current tab activates the
+      previous active tab instead of the one to the right.
+      @since 3.3
+    */
+    void setTabCloseActivatePrevious( bool previous );
 
 signals:
     /*!

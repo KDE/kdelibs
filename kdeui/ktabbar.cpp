@@ -36,7 +36,7 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
     : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
       mHoverCloseButtonTab( 0 ), mDragSwitchTab( 0 ), mHoverCloseButton( 0 ),
       mHoverCloseButtonEnabled( false ), mHoverCloseButtonDelayed( true ),
-      mTabReorderingEnabled( false )
+      mTabReorderingEnabled( false ), mTabCloseActivatePrevious( false )
 {
     setAcceptDrops( true );
     setMouseTracking( true );
@@ -66,13 +66,17 @@ void KTabBar::setTabEnabled( int id, bool enabled )
             t->setEnabled( enabled );
             QRect r( t->rect() );
             if ( !enabled && id == currentTab() && count()>1 ) {
+                QPtrList<QTab> *tablist = tabList();
+                if ( mTabCloseActivatePrevious )
+                    t = tablist->at( count()-2 );
+                else {
                 int index = indexOf( id );
                 index += ( index+1 == count() ) ? -1 : 1;
                 t = tabAt( index );
+                }
 
                 if ( t->isEnabled() ) {
                     r = r.unite( t->rect() );
-                    QPtrList<QTab> *tablist = tabList();
                     tablist->append( tablist->take( tablist->findRef( t ) ) );
                     emit selected( t->identifier() );
                 }
@@ -290,6 +294,9 @@ void KTabBar::dropEvent( QDropEvent *e )
 #ifndef QT_NO_WHEELEVENT
 void KTabBar::wheelEvent( QWheelEvent *e )
 {
+    if ( e->orientation() == Horizontal )
+        return;
+
     emit( wheelDelta( e->delta() ) );
 }
 #endif
@@ -309,6 +316,18 @@ const QColor &KTabBar::tabColor( int id  ) const
         return mTabColors[id];
 
     return colorGroup().foreground();
+}
+
+int KTabBar::insertTab( QTab *t, int index )
+{
+    int res = QTabBar::insertTab( t, index );
+
+    if ( mTabCloseActivatePrevious && count() > 2 ) {
+        QPtrList<QTab> *tablist = tabList();
+        tablist->insert( count()-2, tablist->take( tablist->findRef( t ) ) );
+    }
+
+    return res;
 }
 
 void KTabBar::removeTab( QTab *t )
@@ -368,6 +387,16 @@ bool KTabBar::isTabReorderingEnabled() const
 void KTabBar::setTabReorderingEnabled( bool on )
 {
     mTabReorderingEnabled = on;
+}
+
+bool KTabBar::tabCloseActivatePrevious() const
+{
+    return mTabCloseActivatePrevious;
+}
+
+void KTabBar::setTabCloseActivatePrevious( bool on )
+{
+    mTabCloseActivatePrevious = on;
 }
 
 void KTabBar::closeButtonClicked()

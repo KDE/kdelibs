@@ -76,6 +76,16 @@ bool KTabWidget::isTabReorderingEnabled() const
     return static_cast<KTabBar*>(tabBar())->isTabReorderingEnabled();
 }
 
+void KTabWidget::setTabCloseActivatePrevious( bool previous)
+{
+    static_cast<KTabBar*>(tabBar())->setTabCloseActivatePrevious( previous );
+}
+
+bool KTabWidget::tabCloseActivatePrevious() const
+{
+    return static_cast<KTabBar*>(tabBar())->tabCloseActivatePrevious();
+}
+
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
 {
     if ( isEmptyTabbarSpace( e->pos() ) ) {
@@ -102,6 +112,9 @@ void KTabWidget::dropEvent( QDropEvent *e )
 #ifndef QT_NO_WHEELEVENT
 void KTabWidget::wheelEvent( QWheelEvent *e )
 {
+    if ( e->orientation() == Horizontal )
+        return;
+
     wheelDelta( e->delta() );
 }
 
