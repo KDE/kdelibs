@@ -522,7 +522,7 @@ static QMutex getXXbyYYmutex;
 QStrList Resolver::protocolName(int protonum)
 {
   struct protoent *pe;
-#ifndef GETPROTOBYNAME_R
+#ifndef HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   pe = getprotobynumber(protonum);
@@ -553,7 +553,7 @@ QStrList Resolver::protocolName(int protonum)
 	lst.append(*p);
     }
 
-#ifdef GETPROTOBYNAME_R
+#ifndef HAVE_GETPROTOBYNAME_R
   delete [] buf;
 #endif
 
@@ -563,7 +563,7 @@ QStrList Resolver::protocolName(int protonum)
 QStrList protocolName(const char *protoname)
 {
   struct protoent *pe;
-#ifndef GETPROTOBYNAME_R
+#ifndef HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   pe = getprotobyname(protoname);
@@ -594,7 +594,7 @@ QStrList protocolName(const char *protoname)
 	lst.append(*p);
     }
 
-#ifdef GETPROTOBYNAME_R
+#ifndef HAVE_GETPROTOBYNAME_R
   delete [] buf;
 #endif
 
@@ -604,7 +604,7 @@ QStrList protocolName(const char *protoname)
 int Resolver::protocolNumber(const char *protoname)
 {
   struct protoent *pe;
-#ifndef GETPROTOBYNAME_R
+#ifndef HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   pe = getprotobyname(protoname);
@@ -631,7 +631,7 @@ int Resolver::protocolNumber(const char *protoname)
   if (pe != NULL)
     protonum = pe->p_proto;
 
-#ifdef GETPROTOBYNAME_R
+#ifndef HAVE_GETPROTOBYNAME_R
   delete [] buf;
 #endif
 
@@ -641,7 +641,7 @@ int Resolver::protocolNumber(const char *protoname)
 int Resolver::servicePort(const char *servname, const char *protoname)
 {
   struct servent *se;
-#ifndef GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyname(servname, protoname);
@@ -660,7 +660,7 @@ int Resolver::servicePort(const char *servname, const char *protoname)
       else
 	break;
     }
-  while (pe == 0L);
+  while (se == 0L);
 #endif
 
   // Do common processing
@@ -668,7 +668,7 @@ int Resolver::servicePort(const char *servname, const char *protoname)
   if (se != NULL)
     servport = ntohs(se->s_port);
 
-#ifdef GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYNAME_R
   delete [] buf;
 #endif
 
@@ -678,7 +678,7 @@ int Resolver::servicePort(const char *servname, const char *protoname)
 QStrList serviceName(const char* servname, const char *protoname)
 {
   struct servent *se;
-#ifndef GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyname(servname, protoname);
@@ -697,7 +697,7 @@ QStrList serviceName(const char* servname, const char *protoname)
       else
 	break;
     }
-  while (pe == 0L);
+  while (se == 0L);
 #endif
 
   // Do common processing
@@ -709,7 +709,7 @@ QStrList serviceName(const char* servname, const char *protoname)
 	lst.append(*p);
     }
 
-#ifdef GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYNAME_R
   delete [] buf;
 #endif
 
@@ -719,7 +719,7 @@ QStrList serviceName(const char* servname, const char *protoname)
 QStrList Resolver::serviceName(int port, const char *protoname)
 {
   struct servent *se;
-#ifndef GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyport(port, protoname);
@@ -738,7 +738,7 @@ QStrList Resolver::serviceName(int port, const char *protoname)
       else
 	break;
     }
-  while (pe == 0L);
+  while (se == 0L);
 #endif
 
   // Do common processing
@@ -750,7 +750,7 @@ QStrList Resolver::serviceName(int port, const char *protoname)
 	lst.append(*p);
     }
 
-#ifdef GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYNAME_R
   delete [] buf;
 #endif
 
