@@ -33,7 +33,7 @@
 int KIOJob::s_id = 1;
 map<int,KIOJob*>* KIOJob::s_mapJobs = 0L;
 
-KIOJob::KIOJob() : QObject(), IOJob( 0L )
+KIOJob::KIOJob(const char *name) : QObject(0, name), IOJob( 0L )
 {
   m_id = ++s_id;
 

@@ -36,7 +36,7 @@ class KIOJob : public QObject, public IOJob
 {
   Q_OBJECT
 public:
-  KIOJob();
+  KIOJob(const char *name = 0);
   virtual ~KIOJob();
   
   int id() { return m_id; }
