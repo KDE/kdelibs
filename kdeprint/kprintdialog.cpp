@@ -756,6 +756,8 @@ void KPrintDialog::enableDialogPage( int index, bool flag )
 void KPrintDialog::slotOpenFileDialog()
 {
 	d->m_file->fileDialog()->setCaption(i18n("Print to File"));
+	d->m_file->fileDialog()->setMode(d->m_file->fileDialog()->mode() &
+					~KFile::LocalOnly);
 	d->m_file->fileDialog()->setOperationMode( KFileDialog::Saving );
 }
 
