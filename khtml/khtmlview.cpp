@@ -1835,7 +1835,6 @@ void KHTMLView::accessKeysTimeout()
 d->accessKeysActivated=false;
 d->accessKeysPreActivate = false;
 m_part->setStatusBarText(QString::null, KHTMLPart::BarHoverText);
-emit hideAccessKeys();
 }
 
 // Handling of the HTML accesskey attribute.
