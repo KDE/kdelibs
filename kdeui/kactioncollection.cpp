@@ -710,9 +710,6 @@ bool KActionShortcutList::save() const
 	if( m_actions.xmlFile().isEmpty() )
 		return writeSettings();
 
-	QString tagActionProp = QString::fromLatin1("ActionProperties");
-	QString tagAction     = QString::fromLatin1("Action");
-	QString attrName      = QString::fromLatin1("name");
 	QString attrShortcut  = QString::fromLatin1("shortcut");
 	QString attrAccel     = QString::fromLatin1("accel"); // Depricated attribute
 
@@ -723,22 +720,8 @@ bool KActionShortcutList::save() const
 
 	// Process XML data
 
-	// first, lets see if we have existing properties
-	QDomElement elem;
-	QDomNode it = doc.documentElement().firstChild();
-	for( ; !it.isNull(); it = it.nextSibling() ) {
-	        QDomElement e = it.toElement();
-		if( e.tagName() == tagActionProp ) {
-			elem = e;
-			break;
-		}
-	}
-
-	// if there was none, create one
-	if( elem.isNull() ) {
-		elem = doc.createElement( tagActionProp );
-		doc.documentElement().appendChild( elem );
-	}
+        // Get hold of ActionProperties tag
+        QDomElement elem = KXMLGUIFactory::actionPropertiesElement( doc );
 
 	// now, iterate through our actions
 	uint nSize = count();
@@ -749,23 +732,10 @@ bool KActionShortcutList::save() const
 		//kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
 
 		// now see if this element already exists
-		QDomElement act_elem;
-		for( it = elem.firstChild(); !it.isNull(); it = it.nextSibling() ) {
-			QDomElement e = it.toElement();		
-			if( e.attribute( attrName ) == sName ) {
-				act_elem = e;
-				break;
-			}
-		}
-
-		// nope, create a new one
-		if( act_elem.isNull() ) {
-			if( bSameAsDefault )
-				continue;
-			//kdDebug(129) << "\tnode doesn't exist." << endl;
-			act_elem = doc.createElement( tagAction );
-			act_elem.setAttribute( attrName, sName );
-		}
+                // and create it if necessary (unless bSameAsDefault)
+		QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, sName, !bSameAsDefault );
+                if ( act_elem.isNull() )
+                    continue;
 
 		act_elem.removeAttribute( attrAccel );
 		if( bSameAsDefault ) {
@@ -775,7 +745,6 @@ bool KActionShortcutList::save() const
 				elem.removeChild( act_elem );
 		} else {
 			act_elem.setAttribute( attrShortcut, shortcut(i).toStringInternal() );
-			elem.appendChild( act_elem );
 		}
 	}
 

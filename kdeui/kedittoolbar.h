@@ -1,3 +1,4 @@
+// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
 
@@ -375,6 +376,8 @@ protected slots:
   void slotRemoveButton();
   void slotUpButton();
   void slotDownButton();
+
+  void slotChangeIcon();
 
 protected:
   void setupLayout();

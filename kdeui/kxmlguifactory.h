@@ -1,3 +1,4 @@
+// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
@@ -88,6 +89,19 @@ class KXMLGUIFactory : public QObject
    * Removes all QDomComment objects from the specified node and all its children.
    */
   static void removeDOMComments( QDomNode &node );
+
+  /**
+   * @internal
+   * Find or create the ActionProperties element, used when saving custom action properties
+   */
+  static QDomElement actionPropertiesElement( QDomDocument& doc );
+
+  /**
+   * @internal
+   * Find or create the element for a given action, by name.
+   * Used when saving custom action properties
+   */
+  static QDomElement findActionByName( QDomElement& elem, const QString& sName, bool create );
 
   /**
    * Creates the GUI described by the QDomDocument of the client,

@@ -117,7 +117,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     QFile file( xml_file );
     if ( !file.open( IO_ReadOnly ) )
     {
-        kdError(1000) << "No such XML file " << filename << endl;
+        kdError(240) << "No such XML file " << filename << endl;
         if ( never_null )
             return QString::fromLatin1( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
         else
@@ -141,7 +141,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     QFile file( xml_file );
     if ( !file.open( IO_WriteOnly ) )
     {
-        kdError(1000) << "Could not write to " << filename << endl;
+        kdError(240) << "Could not write to " << filename << endl;
         return false;
     }
 
@@ -534,7 +534,7 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
     else
         propertyValue = QVariant( attribute.value() );
 
-    action->setProperty( attrName.latin1() /* ???????? */, propertyValue );
+    action->setProperty( attrName.latin1(), propertyValue );
 }
 
 
@@ -552,6 +552,46 @@ int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSe
 	return dlg.configure(bSaveSettings);
 }
 
+QDomElement KXMLGUIFactory::actionPropertiesElement( QDomDocument& doc )
+{
+	const QString tagActionProp = QString::fromLatin1("ActionProperties");
+	// first, lets see if we have existing properties
+	QDomElement elem;
+	QDomNode it = doc.documentElement().firstChild();
+	for( ; !it.isNull(); it = it.nextSibling() ) {
+		QDomElement e = it.toElement();
+		if( e.tagName() == tagActionProp ) {
+			elem = e;
+			break;
+		}
+	}
+
+	// if there was none, create one
+	if( elem.isNull() ) {
+		elem = doc.createElement( tagActionProp );
+		doc.documentElement().appendChild( elem );
+	}
+	return elem;
+}
+
+QDomElement KXMLGUIFactory::findActionByName( QDomElement& elem, const QString& sName, bool create )
+{
+        static const QString& attrName = KGlobal::staticQString( "name" );
+	static const QString& tagAction = KGlobal::staticQString( "Action" );
+	for( QDomNode it = elem.firstChild(); !it.isNull(); it = it.nextSibling() ) {
+		QDomElement e = it.toElement();
+		if( e.attribute( attrName ) == sName )
+			return e;
+	}
+
+	if( create ) {
+		QDomElement act_elem = elem.ownerDocument().createElement( tagAction );
+		act_elem.setAttribute( attrName, sName );
+                elem.appendChild( act_elem );
+                return act_elem;
+	}
+        return QDomElement();
+}
 
 void KXMLGUIFactory::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -42,6 +42,8 @@
 #include <qtextstream.h>
 #include <qfile.h>
 #include <kdebug.h>
+#include "kpushbutton.h"
+#include <kprocio.h>
 
 #define LINESEPARATORSTRING i18n("--- line separator ---")
 #define SEPARATORSTRING i18n("--- separator ---")
@@ -171,6 +173,22 @@ public:
     return list;
   }
 
+  /**
+   * Look for a given item in the current toolbar
+   */
+  QDomElement findElementForToolbarItem( const ToolbarItem* item ) const
+  {
+    static const QString &attrName    = KGlobal::staticQString( "name" );
+    QDomElement elem = m_currentToolbarElem.firstChild().toElement();
+    for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
+    {
+      if ((elem.attribute(attrName) == item->internalName()) &&
+          (elem.tagName() == item->internalTag()))
+        return elem;
+    }
+    return QDomElement();
+  }
+
   QValueList<KAction*> m_actionList;
   KActionCollection* m_collection;
   KInstance         *m_instance;
@@ -189,7 +207,7 @@ public:
   XmlDataList m_xmlFiles;
 
   QLabel * m_helpArea;
-
+  KPushButton* m_changeIcon;
 };
 
 class KEditToolbarPrivate {
@@ -499,8 +517,8 @@ void KEditToolbarWidget::setupLayout()
   m_inactiveList->setAllColumnsShowFocus(true);
   m_inactiveList->setMinimumSize(180, 250);
   m_inactiveList->header()->hide();
-  m_inactiveList->addColumn("");
-  int column2 = m_inactiveList->addColumn("");
+  m_inactiveList->addColumn(""); // icon
+  int column2 = m_inactiveList->addColumn(""); // text
   m_inactiveList->setSorting( column2 );
   inactive_label->setBuddy(m_inactiveList);
   connect(m_inactiveList, SIGNAL(selectionChanged(QListViewItem *)),
@@ -512,14 +530,21 @@ void KEditToolbarWidget::setupLayout()
   m_activeList->setAllColumnsShowFocus(true);
   m_activeList->setMinimumWidth(m_inactiveList->minimumWidth());
   m_activeList->header()->hide();
-  m_activeList->addColumn("");
-  m_activeList->addColumn("");
-  m_activeList->setSorting (-1);
+  m_activeList->addColumn(""); // icon
+  m_activeList->addColumn(""); // text
+  m_activeList->setSorting(-1);
   active_label->setBuddy(m_activeList);
 
   connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
           this,         SLOT(slotActiveSelected(QListViewItem *)));
 
+  // "change icon" button
+  d->m_changeIcon = new KPushButton( i18n( "Change &Icon..." ), this );
+
+  connect( d->m_changeIcon, SIGNAL( clicked() ),
+           this, SLOT( slotChangeIcon() ) );
+
+  // The buttons in the middle
   QIconSet iconSet;
 
   m_upAction     = new QToolButton(this);
@@ -559,6 +584,7 @@ void KEditToolbarWidget::setupLayout()
 
   QVBoxLayout *inactive_layout = new QVBoxLayout(KDialog::spacingHint());
   QVBoxLayout *active_layout = new QVBoxLayout(KDialog::spacingHint());
+  QHBoxLayout *changeIcon_layout = new QHBoxLayout(KDialog::spacingHint());
 
   QGridLayout *button_layout = new QGridLayout(5, 3, 0);
 
@@ -579,6 +605,11 @@ void KEditToolbarWidget::setupLayout()
 
   active_layout->addWidget(active_label);
   active_layout->addWidget(m_activeList, 1);
+  active_layout->addLayout(changeIcon_layout);
+
+  changeIcon_layout->addStretch( 1 );
+  changeIcon_layout->addWidget( d->m_changeIcon );
+  changeIcon_layout->addStretch( 1 );
 
   list_layout->addLayout(inactive_layout);
   list_layout->addLayout(button_layout);
@@ -822,10 +853,11 @@ void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
 
 void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
 {
+  m_removeAction->setEnabled( item != 0 );
+  d->m_changeIcon->setEnabled( item != 0 );
+
   if (item)
   {
-    m_removeAction->setEnabled(true);
-
     if (item->itemAbove())
       m_upAction->setEnabled(true);
     else
@@ -840,7 +872,6 @@ void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
   }
   else
   {
-    m_removeAction->setEnabled(false);
     m_upAction->setEnabled(false);
     m_downAction->setEnabled(false);
     d->m_helpArea->setText( QString::null );
@@ -875,16 +906,9 @@ void KEditToolbarWidget::slotInsertButton()
     // we have a selected item in the active list.. so let's try
     // our best to add our new item right after the selected one
     ToolbarItem *act_item = (ToolbarItem*)m_activeList->currentItem();
-    QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
-    for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
-    {
-      if ((elem.attribute(attrName) == act_item->internalName()) &&
-          (elem.tagName() == act_item->internalTag()))
-      {
-        d->m_currentToolbarElem.insertAfter(new_item, elem);
-        break;
-      }
-    }
+    QDomElement elem = d->findElementForToolbarItem( act_item );
+    Q_ASSERT( !elem.isNull() );
+    d->m_currentToolbarElem.insertAfter(new_item, elem);
   }
   else
   {
@@ -903,7 +927,6 @@ void KEditToolbarWidget::slotInsertButton()
 
 void KEditToolbarWidget::slotRemoveButton()
 {
-  static const QString &attrName    = KGlobal::staticQString( "name" );
   static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
@@ -911,22 +934,17 @@ void KEditToolbarWidget::slotRemoveButton()
 
   ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
   // now iterate through to find the child to nuke
-  QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
-  for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
+  QDomElement elem = d->findElementForToolbarItem( item );
+  if ( !elem.isNull() )
   {
-    if ((elem.attribute(attrName) == item->internalName()) &&
-        (elem.tagName() == item->internalTag()))
-    {
-      // nuke myself!
-      d->m_currentToolbarElem.removeChild(elem);
+    // nuke myself!
+    d->m_currentToolbarElem.removeChild(elem);
 
-      // and set this container as a noMerge
-      d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
+    // and set this container as a noMerge
+    d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
 
-      // update the local doc
-      updateLocal(d->m_currentToolbarElem);
-      break;
-    }
+    // update the local doc
+    updateLocal(d->m_currentToolbarElem);
   }
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
@@ -939,55 +957,48 @@ void KEditToolbarWidget::slotUpButton()
   if (!item->itemAbove())
     return;
 
-  static const QString &attrName    = KGlobal::staticQString( "name" );
   static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
   emit enableOk(true);
 
   // now iterate through to find where we are
-  QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
-  for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
+  QDomElement elem = d->findElementForToolbarItem( item );
+  if ( !elem.isNull() )
   {
-    if ((elem.attribute(attrName) == item->internalName()) &&
-        (elem.tagName() == item->internalTag()))
-    {
-      // cool, i found me.  now clone myself
-      ToolbarItem *clone = new ToolbarItem(m_activeList,
-                                           item->itemAbove()->itemAbove(),
-                                           item->internalTag(),
-                                           item->internalName(),
-                                           item->statusText());
-      clone->setText(1, item->text(1));
+    // cool, i found me.  now clone myself
+    ToolbarItem *clone = new ToolbarItem(m_activeList,
+                                         item->itemAbove()->itemAbove(),
+                                         item->internalTag(),
+                                         item->internalName(),
+                                         item->statusText());
+    clone->setText(1, item->text(1));
 
-      // only set new pixmap if exists
-      if( item->pixmap(0) )
-        clone->setPixmap(0, *item->pixmap(0));
+    // only set new pixmap if exists
+    if( item->pixmap(0) )
+      clone->setPixmap(0, *item->pixmap(0));
 
-      // remove the old me
-      m_activeList->takeItem(item);
-      delete item;
+    // remove the old me
+    m_activeList->takeItem(item);
+    delete item;
 
-      // select my clone
-      m_activeList->setSelected(clone, true);
+    // select my clone
+    m_activeList->setSelected(clone, true);
 
-      // make clone visible
-      m_activeList->ensureItemVisible(clone);
+    // make clone visible
+    m_activeList->ensureItemVisible(clone);
 
-      // and do the real move in the DOM
-      QDomNode prev = elem.previousSibling();
-      while ( prev.toElement().tagName() == QString( "WeakSeparator" ) )
+    // and do the real move in the DOM
+    QDomNode prev = elem.previousSibling();
+    while ( prev.toElement().tagName() == QString( "WeakSeparator" ) )
         prev = prev.previousSibling();
-      d->m_currentToolbarElem.insertBefore(elem, prev);
+    d->m_currentToolbarElem.insertBefore(elem, prev);
 
-      // and set this container as a noMerge
-      d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
+    // and set this container as a noMerge
+    d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
 
-      // update the local doc
-      updateLocal(d->m_currentToolbarElem);
-
-      break;
-    }
+    // update the local doc
+    updateLocal(d->m_currentToolbarElem);
   }
 }
 
@@ -999,55 +1010,48 @@ void KEditToolbarWidget::slotDownButton()
   if (!item->itemBelow())
     return;
 
-  static const QString &attrName    = KGlobal::staticQString( "name" );
   static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
 
   // we're modified, so let this change
   emit enableOk(true);
 
   // now iterate through to find where we are
-  QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
-  for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
+  QDomElement elem = d->findElementForToolbarItem( item );
+  if ( !elem.isNull() )
   {
-    if ((elem.attribute(attrName) == item->internalName()) &&
-        (elem.tagName() == item->internalTag()))
-    {
-      // cool, i found me.  now clone myself
-      ToolbarItem *clone = new ToolbarItem(m_activeList,
-                                           item->itemBelow(),
-                                           item->internalTag(),
-                                           item->internalName(),
-                                           item->statusText());
-      clone->setText(1, item->text(1));
+    // cool, i found me.  now clone myself
+    ToolbarItem *clone = new ToolbarItem(m_activeList,
+                                         item->itemBelow(),
+                                         item->internalTag(),
+                                         item->internalName(),
+                                         item->statusText());
+    clone->setText(1, item->text(1));
 
-      // only set new pixmap if exists
-      if( item->pixmap(0) )
-        clone->setPixmap(0, *item->pixmap(0));
+    // only set new pixmap if exists
+    if( item->pixmap(0) )
+      clone->setPixmap(0, *item->pixmap(0));
 
-      // remove the old me
-      m_activeList->takeItem(item);
-      delete item;
+    // remove the old me
+    m_activeList->takeItem(item);
+    delete item;
 
-      // select my clone
-      m_activeList->setSelected(clone, true);
+    // select my clone
+    m_activeList->setSelected(clone, true);
 
-      // make clone visible
-      m_activeList->ensureItemVisible(clone);
+    // make clone visible
+    m_activeList->ensureItemVisible(clone);
 
-      // and do the real move in the DOM
-      QDomNode next = elem.nextSibling();
-      while ( next.toElement().tagName() == QString( "WeakSeparator" ) )
-        next = next.nextSibling();
-      d->m_currentToolbarElem.insertAfter(elem, next);
+    // and do the real move in the DOM
+    QDomNode next = elem.nextSibling();
+    while ( next.toElement().tagName() == QString( "WeakSeparator" ) )
+      next = next.nextSibling();
+    d->m_currentToolbarElem.insertAfter(elem, next);
 
-      // and set this container as a noMerge
-      d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
+    // and set this container as a noMerge
+    d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
 
-      // update the local doc
-      updateLocal(d->m_currentToolbarElem);
-
-      break;
-    }
+    // update the local doc
+    updateLocal(d->m_currentToolbarElem);
   }
 }
 
@@ -1091,6 +1095,70 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
     // just append it
     QDomElement toolbar = (*xit).m_document.documentElement().toElement();
     toolbar.appendChild(elem);
+  }
+}
+
+void KEditToolbarWidget::slotChangeIcon()
+{
+  // we're modified, so let this change
+  emit enableOk(true);
+
+  ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
+  // We can't use KIconChooser here, since it's in libkio
+  // ##### KDE4: reconsider this, e.g. move KEditToolbar to libkio
+  KProcIO proc;
+  QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
+  if ( kdialogExe.isEmpty() ) {
+    kdError(240) << "kdialog not found in paths, check your KDE installation" << endl;
+    return;
+   }
+  proc << kdialogExe;
+  proc << "--geticon";
+  proc << "Toolbar";
+  proc << "Actions";
+  if ( !proc.start( KProcess::Block ) ) {
+    kdError(240) << "Can't run " << kdialogExe << endl;
+    return;
+  }
+
+  if ( !proc.normalExit() || proc.exitStatus() != 0 ) {
+    return;
+  }
+
+  QString line;
+  int length = proc.readln(line, true);
+  if ( length <= 0 )
+    return;
+
+  QString icon = line;
+  item->setPixmap(0, BarIcon(icon, 16));
+
+  // Very much like the beginning of updateLocal
+  XmlDataList::Iterator xit = d->m_xmlFiles.begin();
+  for ( ; xit != d->m_xmlFiles.end(); ++xit)
+  {
+    if ( (*xit).m_type == XmlData::Merged )
+      continue;
+
+    if ( (*xit).m_type == XmlData::Shell ||
+         (*xit).m_type == XmlData::Part )
+    {
+      if ( d->m_currentXmlData.m_xmlFile == (*xit).m_xmlFile )
+      {
+        (*xit).m_isModified = true;
+        return;
+      }
+      continue;
+    }
+
+    (*xit).m_isModified = true;
+
+    // Get hold of ActionProperties tag
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( (*xit).m_document );
+    // Find or create an element for this action
+    QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
+    Q_ASSERT( !act_elem.isNull() );
+    act_elem.setAttribute( "icon", icon );
   }
 }
 
