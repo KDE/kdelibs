@@ -62,7 +62,7 @@
                 <cstring>m_addBtn</cstring>
             </property>
             <property name="text">
-                <string>&lt;&lt; Add To Dictionary</string>
+                <string>&lt;&lt; Add to Dictionary</string>
             </property>
         </widget>
         <spacer row="1" column="3">
