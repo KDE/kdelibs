@@ -49,6 +49,7 @@ QCursor KCursor::handCursor()
                 KConfig *config = KGlobal::config();
                 KConfigGroupSaver saver( config, "General" );
 
+#ifndef Q_WS_WIN // this mask doesn't work too well on win32
                 if ( config->readEntry("handCursorStyle", "Windows") == "Windows" )
                 {
                         static const unsigned char HAND_BITS[] = {
@@ -73,6 +74,7 @@ QCursor KCursor::handCursor()
                         hand_cursor->handle();
                 }
                 else
+#endif //! Q_WS_WIN
                         hand_cursor = new QCursor(PointingHandCursor);
         }
 
