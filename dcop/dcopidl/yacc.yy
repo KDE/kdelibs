@@ -713,7 +713,10 @@ Identifier_list_rest
 	: T_COMMA Identifier_list
 	| /* empty */
 
-Identifier_list : T_IDENTIFIER Identifier_list_rest {}
+Identifier_list_entry : T_IDENTIFIER {}
+                      | asterisks T_IDENTIFIER {}
+
+Identifier_list : Identifier_list_entry Identifier_list_rest {}
 
 member
 	: type Identifier_list T_SEMICOLON {}
