@@ -1775,6 +1775,7 @@ void KHTMLView::print(bool quick)
         root->setMinMaxKnown( false );
         root->setLayouted( false );
         root->layout();
+        khtml::RenderWidget::flushWidgetResizes(); // make sure widgets have their final size
 
         bool printHeader = (printer->option("app-khtml-printheader") == "true");
 
