@@ -1026,7 +1026,7 @@ void KCookieJar::eatAllCookies()
 // On failure 'false' is returned.
 bool KCookieJar::saveCookies(const QString &_filename)
 {
-    KSaveFile saveFile(_filename);
+    KSaveFile saveFile(_filename, 0600);
 
     if (saveFile.status() != 0)
        return false;
