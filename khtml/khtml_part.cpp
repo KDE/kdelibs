@@ -2018,15 +2018,15 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     QCString path = QFile::encodeName( u.path() );
 
     struct stat buff;
-    stat( path.data(), &buff );
+    bool ok = !stat( path.data(), &buff );
 
     struct stat lbuff;
-    lstat( path.data(), &lbuff );
+    if (ok) ok = !lstat( path.data(), &lbuff );
 
     QString text = u.url();
     QString text2 = text;
 
-    if (S_ISLNK( lbuff.st_mode ) )
+    if (ok && S_ISLNK( lbuff.st_mode ) )
     {
       QString tmp;
       if ( com.isNull() )
@@ -2049,7 +2049,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
       text += "  ";
       text += tmp;
     }
-    else if ( S_ISREG( buff.st_mode ) )
+    else if ( ok && S_ISREG( buff.st_mode ) )
     {
       if (buff.st_size < 1024)
         text = i18n("%2 (%1 bytes)").arg((long) buff.st_size).arg(text2); // always put the URL last, in case it contains '%'
@@ -2061,7 +2061,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
       text += "  ";
       text += com;
     }
-    else if ( S_ISDIR( buff.st_mode ) )
+    else if ( ok && S_ISDIR( buff.st_mode ) )
     {
       text += "  ";
       text += com;
