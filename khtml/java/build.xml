@@ -2,16 +2,27 @@
 
 <project name="KJAS" basedir="." default="all">
 
+  <property file="build.properties"/>
+
   <target name="init">
-    <mkdir dir="classes" />
+    <mkdir dir="${build}" />
   </target>
 
   <target name="compile" depends="init">
-    <javac srcdir="org" destdir="classes" deprecation="true" />
+    <javac srcdir="." destdir="${build}" includes="${includes}" excludes="${excludes}" deprecation="true" debug="${debug}" debuglevel="${debuglevel}"/>
   </target>
 
-  <target name="jar" depends="init,compile">
-    <jar jarfile="kjava.jar" compress="false" basedir="classes" />
+  <target name="images" depends="init">
+    <mkdir dir="${build}/images"/>
+    <copy todir="${build}/images">
+      <fileset dir="${images}">
+        <include name="*gif"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="jar" depends="init,images,compile">
+    <jar jarfile="${jar}.jar" compress="false" basedir="${build}" />
   </target>
 
   <target name="all" depends="jar" description="Build everything.">
@@ -19,8 +30,8 @@
   </target>
 
   <target name="clean" depends="init" description="Clean all build products.">
-    <delete file="kjava.jar" />
-    <delete dir="classes" />
+    <delete file="${jar}.jar" />
+    <delete dir="${build}" />
   </target>
 
   <target name="test-init" depends="">
