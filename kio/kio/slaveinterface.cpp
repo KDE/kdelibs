@@ -40,15 +40,8 @@ QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
     // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
     // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
     // that would break the compatibility of the wire-protocol with KDE 2.
-    // On 64-bit platforms nothing has changed.
-    if (sizeof(long) == 8)
-    {
-        s << (Q_UINT32)e.size();
-        KIO::UDSEntry::ConstIterator it = e.begin();
-        for( ; it != e.end(); ++it )
-           s << *it;
-        return s;
-    }
+    // We do the same on 64-bit platforms in case we run in a mixed 32/64bit
+    // environment.
 
     Q_UINT32 size = 0;
     KIO::UDSEntry::ConstIterator it = e.begin();
@@ -83,38 +76,27 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
     // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
     // that would break the compatibility of the wire-protocol with KDE 2.
-    // On 64-bit platforms nothing has changed.
-    if (sizeof(long) == 8)
+    // We do the same on 64-bit platforms in case we run in a mixed 32/64bit
+    // environment.
+    Q_LLONG msb = 0;
+    for(Q_UINT32 i = 0; i < size; i++)
     {
-       for(Q_UINT32 i = 0; i < size; i++)
+       KIO::UDSAtom a;
+       s >> a;
+       if (a.m_uds == KIO::UDS_SIZE_LARGE)
        {
-          KIO::UDSAtom a;
-          s >> a;
-          e.append(a);
+          msb = a.m_long;
        }
-    }
-    else
-    {
-       Q_LLONG msb = 0;
-       for(Q_UINT32 i = 0; i < size; i++)
+       else
        {
-          KIO::UDSAtom a;
-          s >> a;
-          if (a.m_uds == KIO::UDS_SIZE_LARGE)
+          if (a.m_uds == KIO::UDS_SIZE)
           {
-             msb = a.m_long;
+             if (a.m_long < 0)
+                a.m_long += (Q_LLONG) 1 << 32;
+             a.m_long += msb << 32;
           }
-          else
-          {
-             if (a.m_uds == KIO::UDS_SIZE)
-             {
-                if (a.m_long < 0)
-                   a.m_long += (Q_LLONG) 1 << 32;
-                a.m_long += msb << 32;
-             }
-             e.append(a);
-             msb = 0;
-          }
+          e.append(a);
+          msb = 0;
        }
     }
     return s;
@@ -237,9 +219,9 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     QDataStream stream( rawdata, IO_ReadOnly );
 
     QString str1;
-    int i;
+    Q_INT32 i;
     Q_INT8 b;
-    unsigned long ul;
+    Q_UINT32 ul;
 
     switch( _cmd ) {
     case MSG_DATA:
@@ -263,7 +245,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_LIST_ENTRIES:
 	{
-	    uint count;
+	    Q_UINT32 count;
 	    stream >> count;
 
 	    UDSEntryList list;

@@ -251,7 +251,7 @@ private:
 
 inline QDataStream &operator >>(QDataStream &s, KIO::UDSAtom &a )
 {
-    long l;
+    Q_INT32 l;
     s >> a.m_uds;
 
     if ( a.m_uds & KIO::UDS_LONG ) {
@@ -272,7 +272,7 @@ inline QDataStream &operator <<(QDataStream &s, const KIO::UDSAtom &a )
     s << a.m_uds;
 
     if ( a.m_uds & KIO::UDS_LONG )
-        s << (long) a.m_long;
+        s << (Q_INT32) a.m_long;
     else if ( a.m_uds & KIO::UDS_STRING )
         s << a.m_str;
     else {} // DIE!

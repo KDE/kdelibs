@@ -419,7 +419,7 @@ void SlaveBase::error( int _errid, const QString &_text )
 {
     mIncomingMetaData.clear(); // Clear meta data
     mOutgoingMetaData.clear();
-    KIO_DATA << _errid << _text;
+    KIO_DATA << (Q_INT32) _errid << _text;
 
     m_pConnection->send( MSG_ERROR, data );
     //reset
@@ -519,7 +519,7 @@ void SlaveBase::processedPercent( float /* percent */ )
 
 void SlaveBase::speed( unsigned long _bytes_per_second )
 {
-    KIO_DATA << _bytes_per_second;
+    KIO_DATA << (Q_UINT32) _bytes_per_second;
     slaveWriteError = false;
     m_pConnection->send( INF_SPEED, data );
     if (slaveWriteError) exit();
@@ -676,7 +676,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
-    KIO_DATA << (uint)list.count();
+    KIO_DATA << (Q_UINT32)list.count();
     UDSEntryListConstIterator it = list.begin();
     UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it)
@@ -861,7 +861,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
     kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
-    KIO_DATA << (int)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
+    KIO_DATA << (Q_INT32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
     m_pConnection->send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
