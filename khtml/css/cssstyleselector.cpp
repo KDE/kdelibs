@@ -91,7 +91,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     userStyle = 0;
     userSheet = 0;
     paintDeviceMetrics = doc->paintDeviceMetrics();
-	
+
 	if(paintDeviceMetrics) // this may be null, not everyone uses khtmlview (Niko)
 	    computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
 
@@ -153,10 +153,10 @@ void CSSStyleSelector::init()
     element = 0;
     settings = 0;
     paintDeviceMetrics = 0;
-    propsToApply = (CSSOrderedProperty **)malloc(100*sizeof(CSSOrderedProperty *));
-    pseudoProps = (CSSOrderedProperty **)malloc(100*sizeof(CSSOrderedProperty *));
-    propsToApplySize = 100;
-    pseudoPropsSize = 100;
+    propsToApply = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
+    pseudoProps = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
+    propsToApplySize = 128;
+    pseudoPropsSize = 128;
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -257,31 +257,24 @@ static inline void swap( CSSOrderedProperty **_value1, CSSOrderedProperty **_val
 static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 {
     // Goto last element;
-    CSSOrderedProperty ** last = e;
-    --last;
-    // only one element or no elements ?
-    if ( last == b )
-	return;
+    CSSOrderedProperty ** last = e - 1;
 
     // So we have at least two elements in here
-    while( b != last ) {
+    while( b < last ) {
 	bool swapped = FALSE;
-	CSSOrderedProperty **swap_pos = b;
 	CSSOrderedProperty **x = e;
 	CSSOrderedProperty **y = x;
 	--y;
 	do {
 	    --x;
 	    --y;
-	    if ( !(**x < **y) ) {
+	    if ( (**x) < (**y) ) {
 		swapped = TRUE;
 		swap( x, y );
-		swap_pos = y;
 	    }
 	} while( y != b );
 	if ( !swapped )
 	    return;
-	b = swap_pos;
 	b++;
     }
 }
@@ -324,22 +317,20 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		//qDebug("adding property" );
 		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
 		    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j ) {
-			propsToApply[numPropsToApply] = properties[selectorCache[i].props[p]+j];
-			++numPropsToApply;
-			if (numPropsToApply > propsToApplySize ) {
-			    propsToApplySize *= 2;
-			    pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, propsToApplySize*sizeof( CSSOrderedProperty * ) );
+                        if (numPropsToApply >= propsToApplySize ) {
+                            propsToApplySize *= 2;
+			    propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
 			}
+			propsToApply[numPropsToApply++] = properties[selectorCache[i].props[p]+j];
 		    }
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
 		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
 		    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j ) {
-			pseudoProps[numPseudoProps] = properties[selectorCache[i].props[p]+j];
-			++numPseudoProps;
-			if (numPseudoProps > pseudoPropsSize ) {
-			    pseudoPropsSize *= 2;
+                        if (numPseudoProps >= pseudoPropsSize ) {
+                            pseudoPropsSize *= 2;
 			    pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, pseudoPropsSize*sizeof( CSSOrderedProperty * ) );
 			}
+			pseudoProps[numPseudoProps++] = properties[selectorCache[i].props[p]+j];
 			properties[selectorCache[i].props[p]+j]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
 		    }
 	    }
@@ -348,8 +339,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	    selectorCache[i].state = Invalid;
 
     }
-    pseudoProps[numPseudoProps] = 0;
-    
+
     //qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
     //qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
     //selectors_size, schecked, smatch, propsToApply->count(), properties_size );
@@ -358,7 +348,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     // count as author rules, and come before all other style sheets, see hack in append()
     if(e->m_styleDecls)
 	numPropsToApply = addInlineDeclarations( e->m_styleDecls, numPropsToApply );
-    propsToApply[numPropsToApply] = 0;
 
     if ( numPropsToApply > 1 ) {
 	bubbleSort( propsToApply, propsToApply+numPropsToApply-1 );
@@ -382,16 +371,14 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
         if (numPropsToApply ) {
             CSSStyleSelector::style = style;
-            for (CSSOrderedProperty **ordprop = propsToApply;
-                 *ordprop;
-                 ++ordprop ) {
-		if ( fontDirty && (*ordprop)->priority >= (1 << 30) ) {
+            for (int i = 0; i < numPropsToApply; ++i) {
+		if ( fontDirty && propsToApply[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
 		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
 		    fontDirty = false;
 		}
-                applyRule( (*ordprop)->prop );
+                applyRule( propsToApply[i]->prop );
 	    }
 	    if ( fontDirty )
 		CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
@@ -400,9 +387,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
         if ( numPseudoProps ) {
 	    fontDirty = false;
             //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
-            CSSOrderedProperty **ordprop = pseudoProps;
-            while( *ordprop ) {
-		if ( fontDirty && (*ordprop)->priority >= (1 << 30) ) {
+            for (int i = 0; i < numPseudoProps; ++i) {
+		if ( fontDirty && pseudoProps[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
 		    //We have to do this for all pseudo styles
@@ -415,21 +401,19 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		}
 
                 RenderStyle *pseudoStyle;
-                pseudoStyle = style->getPseudoStyle((*ordprop)->pseudoId);
+                pseudoStyle = style->getPseudoStyle(pseudoProps[i]->pseudoId);
                 if (!pseudoStyle)
                 {
-                    pseudoStyle = style->addPseudoStyle((*ordprop)->pseudoId);
+                    pseudoStyle = style->addPseudoStyle(pseudoProps[i]->pseudoId);
                     if (pseudoStyle)
                         pseudoStyle->inheritFrom( style );
                 }
 
 		CSSStyleSelector::style = pseudoStyle;
                 if ( pseudoStyle )
-                    applyRule( (*ordprop)->prop );
-
-
-                ++ordprop;
+                    applyRule( pseudoProps[i]->prop );
             }
+
 	    if ( fontDirty ) {
 		RenderStyle *pseudoStyle = style->pseudoStyle;
 		while ( pseudoStyle ) {
@@ -457,10 +441,10 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
 
     if ( inlineProps.size() < (uint)len )
 	inlineProps.resize( len+1 );
-    if (numProps + len > propsToApplySize ) {
-	    propsToApplySize += len + 1;
-	    pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, propsToApplySize*sizeof( CSSOrderedProperty * ) );
-	}
+    if (numProps + len >= propsToApplySize ) {
+        propsToApplySize += propsToApplySize;
+        propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
+    }
 
     CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
     for(int i = 0; i < len; i++)
@@ -497,9 +481,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
 	array->selector = 0;
 	array->position = i;
 	array->priority = (!first << 30) | (source << 24);
-	propsToApply[numProps] = array;
-	++numProps;
-	array++;
+	propsToApply[numProps++] = array++;
     }
     return numProps;
 }
@@ -1956,21 +1938,18 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             {
             case CSS_PROP_MARKER_OFFSET:
                 // ###
-		    return;
+                return;
             case CSS_PROP_LETTER_SPACING:
-		    width = parentStyle->letterSpacing(); break;
+                width = parentStyle->letterSpacing(); break;
             case CSS_PROP_WORD_SPACING:
-		    width = parentStyle->wordSpacing(); break;
+                width = parentStyle->wordSpacing(); break;
             default:
-            return;
-        }
-            return;
+                return;
+            }
         } else {
 	    if(!primitiveValue) return;
 	    width = primitiveValue->computeLength(style, paintDeviceMetrics);
 	}
-// reason : letter or word spacing may be negative.
-//      if( width < 0 ) return;
         switch(prop->m_id)
         {
         case CSS_PROP_LETTER_SPACING:
@@ -1981,9 +1960,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             break;
             // ### needs the definitions in renderstyle
         case CSS_PROP_MARKER_OFFSET:
-        default:
-            return;
+        default: break;
         }
+        return;
     }
 
 // length, percent
@@ -2000,7 +1979,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
            primitiveValue->getIdent() == CSS_VAL_STATIC_POSITION)
         {
             //kdDebug( 6080 ) << "found value=static-position" << endl;
-            l = Length ( Static);
+            l = Length ( 0, Static );
             apply = true;
         }
     case CSS_PROP_BOTTOM:
@@ -2109,9 +2088,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
                 style->setMarginLeft(l); break;
             case CSS_PROP_TEXT_INDENT:
                 style->setTextIndent(l); break;
-            default:
-                return;
+            default: break;
             }
+        return;
     }
 
     case CSS_PROP_MAX_HEIGHT:
@@ -2303,13 +2282,13 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     {
 	int z_index = 0;
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
-        {
+       {
             if(!parentNode) return;
             z_index = parentStyle->zIndex();
         } else {
-        if(!primitiveValue ||
-           primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
-            return;
+            if(!primitiveValue ||
+               primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+                return;
 	    z_index = (int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER);
 	}
         style->setZIndex( z_index );
@@ -2324,20 +2303,19 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         {
             if(!parentNode) return;
             lineHeight = parentStyle->lineHeight();
-            return;
         } else {
-        if(!primitiveValue) return;
-        int type = primitiveValue->primitiveType();
-        if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
-            lineHeight = Length( -100, Percent );
-        else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-            lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
-        else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-            lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
-        else if(type == CSSPrimitiveValue::CSS_NUMBER)
-            lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
-        else
-            return;
+            if(!primitiveValue) return;
+            int type = primitiveValue->primitiveType();
+            if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
+                lineHeight = Length( -100, Percent );
+            else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+                lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
+            else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
+                lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
+            else if(type == CSSPrimitiveValue::CSS_NUMBER)
+                lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+            else
+                return;
 	}
         style->setLineHeight(lineHeight);
         return;
