@@ -261,7 +261,7 @@ void KURLComboBox::slotActivated( int index )
 
 void KURLComboBox::insertURLItem( const KURLComboItem *item )
 {
-kdDebug() << "insertURLItem " << item->text << endl;
+// kdDebug() << "insertURLItem " << item->text << endl;
     int id = count();
     KComboBox::insertItem( item->pixmap, item->text, id );
     itemMapper.insert( id, item );
