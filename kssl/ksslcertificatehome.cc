@@ -113,12 +113,12 @@ return cfg.readEntry("certificate", "");
 
 
 QString KSSLCertificateHome::getDefaultCertificateName(bool *send, bool *prompt) {
-KSimpleConfig cfg("ksslauthmap", false);
+KConfig cfg("cryptodefaults", false);
 
-   cfg.setGroup("<default>");
-   if (send) *send = cfg.readBoolEntry("send", false);
-   if (prompt) *prompt = cfg.readBoolEntry("prompt", false);
-return cfg.readEntry("defaultCertificate", "");
+   cfg.setGroup("Auth");
+   if (send) *send = (cfg.readEntry("AuthMethod", "") == "send");
+   if (prompt) *prompt = (cfg.readEntry("AuthMethod", "") == "prompt");
+return cfg.readEntry("DefaultCert", "");
 }
 
 
