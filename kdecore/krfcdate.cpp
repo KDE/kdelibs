@@ -78,7 +78,7 @@ static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
 // we follow the recommendation of rfc2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000"
 static const struct {
-    const char *tzName;
+    const char tzName[4];
     int tzOffset;
 } known_zones[] = {
     { "UT", 0 },
