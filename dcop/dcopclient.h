@@ -175,6 +175,7 @@ class DCOPClient : public QObject
 
   /**
    * override to handle app-wide function calls unassociated w/an object.
+   * Note that @param fun is normalized. See normalizeFunctionSignature().
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QByteArray &replyData);
@@ -204,6 +205,23 @@ class DCOPClient : public QObject
 	       const QCString &fun, const QByteArray& data,
 	       QByteArray &replyData);
 
+    
+    
+    /**
+     * Normalizes the function signature @param fun. 
+     * 
+     * A normalized signature doesn't contain any unnecessary whitespace
+     * anymore. The remaining whitespace consists of single blanks only (0x20).
+     *
+     * Example for a normalized signature:
+     * <pre>
+     *   "void someFunction(QString,int)"
+     * </pre>
+     *
+     * When using send() or call(), normlization is done automatically for you.
+     * 
+     */
+    static QCString normalizeFunctionSignature( const QCString& fun );
     
 signals:
   /**

@@ -289,8 +289,7 @@ int DCOPClient::socket() const
     return 0;
 }
 
-
-static QCString normalizeFunctionName( const QCString fun ) {
+QCString DCOPClient::normalizeFunctionSignature( const QCString& fun ) {
     if ( fun.isEmpty() )				// nothing to do
 	return fun.copy();
     QCString result( fun.size() );
@@ -301,7 +300,7 @@ static QCString normalizeFunctionName( const QCString fun ) {
     while ( TRUE ) {
 	while ( *from && isspace(*from) )
 	    from++;
-	if ( last && last != ',' && last !='(' && last !=')' 
+	if ( last && last != ',' && last !='(' && last !=')'
 	     && *from != ',' && *from != ')' && *from !=')') {
 	    *to++ = 0x20;
 	}
@@ -326,13 +325,13 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 {
   if ( !isAttached() )
       return false;
-  
+
 
   DCOPMsg *pMsg;
 
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
-  ds << remApp << remObjId << normalizeFunctionName(remFun) << data;
+  ds << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
 
   IceGetHeader(d->iceConn, d->majorOpcode, DCOPSend,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
@@ -441,7 +440,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
-  ds << remApp << remObjId << normalizeFunctionName(remFun) << data;
+  ds << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
 
   IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);

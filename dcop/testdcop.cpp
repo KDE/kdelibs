@@ -36,18 +36,21 @@ public:
   MyDCOPObject(const QCString &name) : DCOPObject(name) {}
   bool process(const QCString &fun, const QByteArray &data,
 	       QByteArray &replyData);
-  void function(const QString &arg) { qDebug("function got arg: %s",arg.data()); }
+  void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d",arg1.data(), arg2); }
 };
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 			   QByteArray &replyData)
 {
   qDebug("in MyDCOPObject::process");
-  if (fun == "aFunction") {
+  
+  // note "fun" is normlized here (i.e. whitespace clean)
+  if (fun == "void aFunction(QString,int)") {
     QDataStream args(data, IO_ReadOnly);
-    QString arg;
-    args >> arg;
-    function(arg);
+    QString arg1;
+    int arg2;
+    args >> arg1 >> arg2;
+    function(arg1, arg2);
     return true;
   }
 
@@ -74,8 +77,8 @@ int main(int argc, char **argv)
   DCOPObject *obj1 = new MyDCOPObject("object1");
 
   QDataStream ds(data, IO_WriteOnly);
-  ds << QString("This is the argument string");
-  if (!client->call(app.name(), "object1", "aFunction", data, reply))
+  ds << QString("fourty-two") << 42;
+  if (!client->call(app.name(), "object1", "void    aFunction(   QString , int  )", data, reply))
     qDebug("I couldn't call myself");
 
   int n = client->registeredApplications().count();
