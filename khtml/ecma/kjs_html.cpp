@@ -899,6 +899,8 @@ bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
 List *KJS::HTMLElement::eventHandlerScope() const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  /// ######### Do we really need this ?
+  /// "this" (the element) should be in the scope, but the form ???? (DF)
   DOM::HTMLFormElement form;
   switch (element.elementId()) {
     case ID_INPUT:
@@ -915,14 +917,12 @@ List *KJS::HTMLElement::eventHandlerScope() const
       break;
   }
 
-  if (!form.isNull()) {
-    List *scope = new List();
+  List *scope = new List();
+  scope->append(getDOMNode(element));
+  if (!form.isNull())
     scope->append(getDOMNode(form));
-    scope->append(getDOMNode(element.ownerDocument()));
-    return scope;
-  }
-
-  return 0;
+  scope->append(getDOMNode(element.ownerDocument()));
+  return scope;
 }
 
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
@@ -1191,6 +1191,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
                                                  return;
                                              }
                                          }
+                                         kdWarning() << "HTMLElement::tryPut failed, no text node in option" << endl;
                                          return;
       }
       // read-only: index
@@ -1733,6 +1734,7 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
     element.remove(u);
     return;
   }
+
   // is v an option element ?
   DOM::Node node = KJS::toNode(v);
   if (node.isNull() || node.elementId() != ID_OPTION)
@@ -1768,13 +1770,13 @@ Object OptionConstructor::construct(const List &args)
   DOM::Element el = doc.createElement("OPTION");
   DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
   int sz = args.size();
-  if (sz > 0) {
-    DOM::Text t = doc.createTextNode(args[0].toString().value().string());
-    try { opt.appendChild(t); }
-    catch(DOM::DOMException& e) {
-      // oh well
-    }
+  DOM::Text t = doc.createTextNode("");
+  try { opt.appendChild(t); }
+  catch(DOM::DOMException& e) {
+    // oh well
   }
+  if (sz > 0)
+    t.setData( args[0].toString().value().string() ); // set the text
   if (sz > 1)
     opt.setValue(args[1].toString().value().string());
   if (sz > 2)
