@@ -27,6 +27,7 @@
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
+#include <kjs/collector.h>
 
 using namespace KJS;
 
@@ -75,8 +76,23 @@ KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
 
 KJSProxyImpl::~KJSProxyImpl()
 {
-  //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
-  delete m_script;
+  if ( m_script ) {
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
+    // This allows to delete the global-object properties, like all the protos
+    static_cast<ObjectImp*>(m_script->globalObject().imp())->deleteAllProperties( m_script->globalExec() );
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
+    while (KJS::Collector::collect())
+        ;
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
+    delete m_script;
+    //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
+    // Garbage collect - as many times as necessary
+    // (we could delete an object which was holding another object, so
+    // the deref() will happen too late for deleting the impl of the 2nd object).
+    while (KJS::Collector::collect())
+        ;
+  }
+
 #ifndef NDEBUG
   s_count--;
   // If it was the last interpreter, we should have nothing left
