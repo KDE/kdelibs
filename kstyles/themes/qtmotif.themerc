@@ -8,6 +8,7 @@ Comment[ca]=Estil incorporat Motif sense temes
 Comment[cs]=Zabudovaný styl Motif (netémovaný)
 Comment[de]=Eingebauter Motif-Stil (kein komplettes Design)
 Comment[eo]=Originala Motif-stilo neetosa
+Comment[es]=Estilo integrado sin temas Motif
 Comment[et]=Qt Motif'i laadne teemata stiil
 Comment[fi]=Sisäänrakennettu teemoittamaton Motif tyyli
 Comment[fr]=Style Motif d'origine sans thème
@@ -22,6 +23,6 @@ Comment[ro]=Stil Motif fără temă, intern
 Comment[sl]=Vgrajen običajni stil Motif
 Comment[sr]=Ugra�eni, bez teme, Motif stil
 Comment[sv]=Inbyggd otemad Motif-stil
-Comment[tr]=Yerleþik dekorsuz Motif stili
+Comment[tr]=Yerleşik dekorsuz Motif stili
 [KDE]
 widgetStyle=Motif

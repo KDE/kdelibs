@@ -151,6 +151,7 @@ Name[ca]=Marbre
 Name[cs]=Mramor
 Name[de]=Marmor
 Name[eo]=Marmoro
+Name[es]=Mármol
 Name[et]=Marmor
 Name[fi]=Marmori
 Name[fr]=Marbre
@@ -171,6 +172,7 @@ Comment[ca]=Estil marbre lleuger amb temes
 Comment[cs]=Téma světlého mramoru
 Comment[de]=Helles Marmordesign
 Comment[eo]=Hela marmoro
+Comment[es]=Tema estilo marmol claro
 Comment[et]=Hele marmor teemaga stiil
 Comment[fi]=Vaalealla marmorilla teemoitetty tyyli
 Comment[fr]=Style avec thème marbre clair
@@ -185,7 +187,7 @@ Comment[pt]=Estilo mármore claro
 Comment[ro]=Stil cu temă marmură luminoasă
 Comment[sl]=Tematski slog svetlih frnikol
 Comment[sv]=Temad stil med ljus marmor
-Comment[tr]=Açýk mermer dekorlu stil
+Comment[tr]=Açık mermer dekorlu stil
 
 [General]
 foreground=0,0,0

@@ -7,6 +7,7 @@ Comment[ca]=Estil incorporat CDE sense temes
 Comment[cs]=Zabudovaný CDE styl (netémovaný)
 Comment[de]=Eingebauter CDE-Stil (kein komplettes Design)
 Comment[eo]=Originala CDE-stilo neetosa
+Comment[es]=Estilo CDE sin temas integrado
 Comment[et]=Qt CDE laadne teemata stiil
 Comment[fi]=Sisäänrakennettu teemoittamaton CDE tyyli
 Comment[fr]=Style CDE d'origine sans thème
@@ -21,6 +22,6 @@ Comment[ro]=Stil CDE fără temă, intern
 Comment[sl]=Vgrajen običajni stil CDE
 Comment[sr]=Ugra�eni, bez teme, CDE stil
 Comment[sv]=Inbyggd otemad CDE-stil
-Comment[tr]=Yerleþik dekorsuz CDE stili
+Comment[tr]=Yerleşik dekorsuz CDE stili
 [KDE]
 widgetStyle=CDE
