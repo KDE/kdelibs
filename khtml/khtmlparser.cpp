@@ -274,7 +274,7 @@ void KHTMLParser::parseToken(Token *t)
 	    return;
 	}
     }
-    
+
 
     NodeImpl *n = getElement(t);
 
@@ -377,6 +377,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    break;
 	case ID_FORM:
 	{
+	    // this is a really ugly hack to move forms outside of tables.
+	    // needed for broken constructs like <table><form ...><tr>....
+
 	    printf("--> badly placed form!!!\n");
 	    NodeImpl *node = current;
 	    // in case the form is opened inside the table (<table><form ...><tr> or similar)
@@ -392,6 +395,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	
 	    if(node->id() == ID_TABLE)
 	    {
+		// now we need to add the form at the right place in the blockstack
+		HTMLStackElem *tableElem = blockStack;
+		while(tableElem->id != ID_TABLE)
+		    tableElem = tableElem->next;
+		HTMLStackElem *parentElem = tableElem->next;
+
+		CSSStyle *newStyle = styleSheet->newStyle(parentElem->style);
+		
 		printf("trying to add form outside of table\n");
 		node->ref();
 		NodeImpl *parent = node->parentNode();
@@ -400,6 +411,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		try
 		{
 		    parent->addChild(n);
+		    n->attach(HTMLWidget);
+		    static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
+		    // ### FIXME, we have to change the style for all children...
 		}
 		catch(DOMException e)
 		{
@@ -419,6 +433,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		    // this should never happen!
 		    exit(1);
 		}
+
+		// bring the blockStack into the right order...
+		HTMLStackElem *Elem = new HTMLStackElem(ID_FORM, tagPriority[id],
+							newStyle,
+							n, 0, 0,
+							parentElem);
+		tableElem->next = Elem;
+		
 		node->deref();
 		return;
 	    }

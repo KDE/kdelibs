@@ -79,7 +79,7 @@ DOMString HTMLDocument::title() const
 
     NodeImpl *t = e->firstChild();
     if(!t) return 0;
-    
+
     return static_cast<TextImpl *>(t)->data();
 }
 
@@ -146,14 +146,11 @@ DOMString HTMLDocument::cookie() const
 {
     // ###
     return 0;
-    //if(!impl) return 0;
-    //return ((ElementImpl *)impl)->getAttribute("cookie");
 }
 
 void HTMLDocument::setCookie( const DOMString &/*value*/ )
 {
     // ###
-    //if(impl) ((ElementImpl *)impl)->setAttribute("cookie", value);
 }
 
 void HTMLDocument::open(  )

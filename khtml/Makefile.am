@@ -102,6 +102,5 @@ parser:
 
 ## test program
 check_PROGRAMS 	= testkhtml
-testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
-testkhtml_LDADD = $(LIB_KDEUI) $(libkhtml_la_LIBADD)
-
+testkhtml_SOURCES = testkhtml.cpp 
+testkhtml_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)
