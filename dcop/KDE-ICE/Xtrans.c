@@ -211,7 +211,6 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
      *
      * If the protocol part is missing, then assume INET.
      * If the protocol part and host part are missing, then assume local.
-     * If a "::" is found then assume DNET.
      */
 
     char	*mybuf, *tmpptr;
@@ -282,7 +281,7 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 
     _host = mybuf;
 
-    if ((mybuf = strchr (mybuf,':')) == NULL)
+    if ((mybuf = strrchr (mybuf,':')) == NULL)
     {
 	*protocol = NULL;
 	*host = NULL;
@@ -297,14 +296,6 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
     {
 	TRANS(GetHostname) (hostnamebuf, sizeof (hostnamebuf));
 	_host = hostnamebuf;
-    }
-
-    /* Check for DECnet */
-
-    if (*mybuf == ':')
-    {
-	_protocol = "dnet";
-	mybuf++;
     }
 
     /* Get the port */
