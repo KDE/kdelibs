@@ -60,8 +60,8 @@ void KLedLamp::drawContents(QPainter *painter)
 	for (i= 2; i < width-1; i+= dx)
 	   painter->drawLine(i,2,i,height-2);
     break;
-  default:
-    fprintf(stderr, "KLedLamp: INVALID State (%d)\n", s);
+	//  default:
+	//    fprintf(stderr, "KLedLamp: INVALID State (%d)\n", s);
   }
 }
 

@@ -64,7 +64,7 @@ KSlider::KSlider( int _minValue, int _maxValue, int _Step, int _value,
              parent, name )
 {
   // We always have TickMarks
-  if ( orientation() == Vertical)
+  if ( orientation() == KSlider::Vertical)
     QSlider::setTickmarks(Right);
   else
     QSlider::setTickmarks(Below);
@@ -76,7 +76,7 @@ KSlider::KSlider( int _minValue, int _maxValue, int _Step, int _value,
 
 void KSlider::drawShadeLine( QPainter *painter )
 {
-  if ( orientation() == Vertical )
+  if ( orientation() == KSlider::Vertical )
     qDrawShadeLine(painter, 5, 3, 5, height()-3, colorGroup(), true, 1, 2);
   else
     qDrawShadeLine(painter, 3, 5, width()-3, 5, colorGroup(), true, 1, 2);
@@ -121,7 +121,7 @@ void KSlider::drawArrow( QPainter *painter, bool show, const QPoint &pos )
   QPointArray array(5);
 
   // Select Horizontal or Vertical Polygon Array
-  if ( orientation() == Vertical ) {
+  if ( orientation() == KSlider::Vertical ) {
     array.setPoint( 0, pos.x()+0, pos.y()+0 );
     array.setPoint( 1, pos.x()-4, pos.y()+4 );
     array.setPoint( 2, pos.x()-ARROW_LENGTH, pos.y()+4 );
@@ -166,7 +166,7 @@ QSize KSlider::sizeHint() const
 {
   QSize size;
 
-  if ( orientation() == Vertical ) {
+  if ( orientation() == KSlider::Vertical ) {
     size.setWidth( ARROW_LENGTH + 5 + 1 );
     size.setHeight( -1 );
   }
@@ -184,7 +184,7 @@ QPoint KSlider::calcArrowPos( int val )
   QPoint p;
   int diffMaxMin = checkWidth();	// sanity check, Christian Esken
 
-  if ( orientation() == Vertical ) {
+  if ( orientation() == KSlider::Vertical ) {
     p.setY( height() - ( ((height()-10) * ( val - minValue() ))
 				  / diffMaxMin ) + 5 );
     p.setX( ARROW_LENGTH );
@@ -206,7 +206,7 @@ void KSlider::drawTickMarks(QPainter *painter)
 
   int i;
   int diffMaxMin = checkWidth();	// sanity check
-  if ( orientation() == Vertical ) {
+  if ( orientation() == KSlider::Vertical ) {
     // first clear the tickmark area
     painter->fillRect(ARROW_LENGTH+1,0, ARROW_LENGTH + 6, height()-1, colorGroup().background()  );
 
@@ -259,7 +259,7 @@ void KSlider::paintEvent( QPaintEvent *qpe )
   // painter.eraseRect(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height());
   paintSlider(&painter, rect);
 
-  if ( orientation() == Vertical ) {
+  if ( orientation() == KSlider::Vertical ) {
     QRect TickRect(ARROW_LENGTH+1,0,width(),height());
     if (qpe->rect().intersects(TickRect))
        drawTickMarks(&painter);
@@ -277,7 +277,7 @@ void KSlider::paintEvent( QPaintEvent *qpe )
 void KSlider::valueChange()
 {
   QSlider::valueChange();
-  if ( orientation() == Vertical )
+  if ( orientation() == KSlider::Vertical )
     repaint(0,0,ARROW_LENGTH,height());
   else
     repaint(0,0,width(),ARROW_LENGTH);

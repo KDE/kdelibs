@@ -292,7 +292,7 @@ int KNumericSpinBox::getValue()
 
 void KNumericSpinBox::setValue(int value)
 {
-  DBG(printf("numSet(%d): %d .. %d\n",value,_min,_max));
+  //  DBG(printf("numSet(%d): %d .. %d\n",value,_min,_max));
 	
   if(_min <= value && value <= _max)
 	{
