@@ -108,12 +108,10 @@ namespace KDEPrivate
     // but not least the standard default constructor of parent/name .
     // the choice of the right constructor is done using an ordered inheritance
     // test.
-    template <class T>
+    template <class T, class ParentType = QObject>
     class ConcreteFactory
     {
     public:
-        // select the right base type using inheritance tests. 
-        // (can't use the generic InheritanceTest because kcc doesn't get it)
         typedef typename If< PartInheritanceTest< T >::Result,
                              KParts::Part,
                              typename If< QWidgetInheritanceTest< T >::Result,
@@ -127,7 +125,6 @@ namespace KDEPrivate
             while ( metaObject )
             {
                 if ( !qstrcmp( className, metaObject->className() ) )
-                    // instantiate using the right constructor.
                     return create( parentWidget, widgetName,
                                    parent, name, args, Type2Type<BaseType>() );
                 metaObject = metaObject->superClass();
@@ -135,6 +132,9 @@ namespace KDEPrivate
             return 0;
         }
     private:
+        typedef typename If< QWidgetInheritanceTest<ParentType>::Result,
+                             ParentType, QWidget >::Result WidgetParentType;
+
         static inline T *create( QWidget *parentWidget, const char *widgetName,
                                  QObject *parent, const char *name,
                                  const QStringList &args, Type2Type<KParts::Part> )
@@ -146,9 +146,8 @@ namespace KDEPrivate
                                  QObject *parent, const char *name,
                                  const QStringList &args, Type2Type<QWidget> )
         {
-            QWidget *p = dynamic_cast<QWidget *>( parent );
-            // bail out if a parent was provided but it doesn't inherit from
-            // QWidget
+
+            WidgetParentType *p = dynamic_cast<WidgetParentType *>( parent );
             if ( parent && !p ) 
                 return 0;
             return new T( p, name, args );
@@ -158,14 +157,17 @@ namespace KDEPrivate
                                  QObject *parent, const char *name,
                                  const QStringList &args, Type2Type<QObject> )
         { 
-            return new T( parent, name, args ); 
+            ParentType *p = dynamic_cast<ParentType *>( parent );
+            if ( parent && !p )
+                return 0;
+            return new T( p, name, args ); 
         }
     };
 
     // this template is used to iterate through the typelist and call the
     // concrete factory for each type. the specializations of this template
     // are the ones actually being responsible for iterating, in fact.
-    template <class T>
+    template <class T, class ParentType = QObject>
     class MultiFactory
     {
     public:
@@ -174,8 +176,8 @@ namespace KDEPrivate
                                        const char *className, 
                                        const QStringList &args )
         {
-            return ConcreteFactory<T>::create( parentWidget, widgetName,
-                                               parent, name, className, args );
+            return ConcreteFactory<T, ParentType>::create( parentWidget, widgetName,
+                                                           parent, name, className, args );
         }
  
     };
@@ -184,6 +186,18 @@ namespace KDEPrivate
     // (the last item in a typelist is the NullType)
     template <>
     class MultiFactory<KDE::NullType>
+    {
+    public:
+        inline static QObject *create( QWidget *, const char *, QObject *, 
+                                       const char *, const char *, 
+                                       const QStringList & )
+        { return 0; }
+    };
+
+     // this specialized template we 'reach' at the end of a typelist
+    // (the last item in a typelist is the NullType)
+    template <>
+    class MultiFactory<KDE::NullType, KDE::NullType>
     {
     public:
         inline static QObject *create( QWidget *, const char *, QObject *, 
@@ -212,6 +226,35 @@ namespace KDEPrivate
             if ( !object )
                 object = MultiFactory<T2>::create( parentWidget, widgetName,
                                                    parent, name, className, args );
+
+            return object;
+        }
+    };
+
+    template <class Product, class ProductListTail,
+              class ParentType, class ParentTypeListTail>
+    class MultiFactory< KTypeList<Product, ProductListTail>,
+                        KTypeList<ParentType, ParentTypeListTail> >
+    {
+    public:
+        inline static QObject *create( QWidget *parentWidget, const char *widgetName,
+                                       QObject *parent, const char *name,
+                                       const char *className, 
+                                       const QStringList &args )
+        {
+            // try with the head of the typelist first. the head is always
+            // a concrete type.
+            QObject *object = MultiFactory<Product, ParentType>
+                                  ::create( parentWidget, widgetName,
+                                            parent, name, className, args );
+
+            // if that failed continue by advancing the typelist, calling this
+            // template specialization recursively (with T2 being a typelist) .
+            // at the end we reach the nulltype specialization.
+            if ( !object )
+                object = MultiFactory<ProductListTail, ParentTypeListTail>
+                             ::create( parentWidget, widgetName,
+                                       parent, name, className, args );
 
             return object;
         }

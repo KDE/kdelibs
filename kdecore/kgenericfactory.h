@@ -144,7 +144,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; );
  * </pre>
  */
-template <class T>
+template <class T, class ParentType = QObject>
 class KGenericFactory : public KLibFactory, public KGenericFactoryBase<T>
 {
 public:
@@ -157,7 +157,8 @@ protected:
                                   const char *className, const QStringList &args )
     {   
         initializeMessageCatalogue();
-        return KDEPrivate::ConcreteFactory<T>::create( 0, 0, parent, name, className, args );
+        return KDEPrivate::ConcreteFactory<T, ParentType>
+            ::create( 0, 0, parent, name, className, args );
     }
 };
 
@@ -246,6 +247,98 @@ protected:
                                                                         className, args );
     }
 };
+
+/**
+ * This template provides a generic implementation of a @ref KLibFactory ,
+ * for use with shared library components. It implements the pure virtual
+ * createObject method of KLibFactory and instantiates objects of the
+ * specified classes in the given typelist template argument when the class 
+ * name argument of createObject matches a class names in the given hierarchy
+ * of classes.
+ * 
+ * Note that each class in the specified in the typelist template argument 
+ * needs to provide a certain constructor:
+ * <ul>
+ *     <li>If the class is derived from QObject then it needs to have
+ *         a constructor like:
+ *         <code>MyClass( QObject *parent, const char *name,
+ *                        const QStringList &args );</code>
+ *     <li>If the class is derived from QWidget then it needs to have
+ *         a constructor like:
+ *         <code>MyWidget( QWidget *parent, const char *name,
+ *                         const QStringList &args);</code>
+ *     <li>If the class is derived from KParts::Part then it needs to have
+ *         a constructor like:
+ *         <code>MyPart( QWidget *parentWidget, const char *widgetName,
+ *                       QObject *parent, const char *name,
+ *                       const QStringList &args );</code>
+ * </ul>
+ * The args QStringList passed to the constructor is the args string list
+ * that the caller passed to KLibFactory's create method.
+ *
+ * In addition upon instantiation this template provides a central 
+ * @ref KInstance object for your component, accessible through the
+ * static @ref instance() method. The instanceName argument of the
+ * KGenericFactory constructor is passed to the KInstance object.
+ *
+ * The creation of the KInstance object can be customized by inheriting
+ * from this template class and re-implementing the virtual createInstance
+ * method. For example it could look like this:
+ * <pre>
+ *     KInstance *MyFactory::createInstance()
+ *     {
+ *         return new KInstance( myAboutData );
+ *     }
+ * </pre>
+ *
+ * Example of usage of the whole template:
+ * <pre>
+ *     class MyPlugin : public KParts::Plugin
+ *     {
+ *         Q_OBJECT
+ *     public:
+ *         MyPlugin( QObject *parent, const char *name,
+ *                   const QStringList &args );
+ *         ...
+ *     };
+ *
+ *     class MyDialogComponent : public KDialogBase
+ *     {
+ *         Q_OBJECT
+ *     public:
+ *         MyDialogComponent( QWidget *parentWidget, const char *name,
+ *                            const QStringList &args );
+ *         ...
+ *     };
+ *
+ *     typedef K_TYPELIST_2( MyPlugin MyDialogComponent ) Products;
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
+ * </pre>
+ */
+template <class Product, class ProductListTail,
+          class ParentType, class ParentTypeListTail>
+class KGenericFactory< KTypeList<Product, ProductListTail>,
+                       KTypeList<ParentType, ParentTypeListTail> > 
+    : public KLibFactory,
+      public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
+{
+public:
+    KGenericFactory( const char *instanceName  = 0 )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
+    {}
+
+protected:
+    virtual QObject *createObject( QObject *parent, const char *name,
+                                   const char *className, const QStringList &args )
+    {
+        initializeMessageCatalogue();
+        return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail >,
+                                         KTypeList< ParentType, ParentTypeListTail > >
+                                       ::create( 0, 0, parent, name,
+                                                 className, args );
+    }
+};
+
 
 /*
  * vim: et sw=4
