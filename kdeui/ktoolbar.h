@@ -48,11 +48,11 @@ public:
 	KToolBar(QWidget *parent=NULL,char *name=NULL);
 	~KToolBar();
 	int insertItem(QPixmap& pixmap, int ID, bool enabled = TRUE, 
-							char *ToolTipText = NULL, int index=-1);
+				   char *ToolTipText = NULL, int index=-1 );
 	int insertItem(QPixmap& pixmap, int ID, const char *signal, 
-						const QObject *receiver, const char *slot, 
-						bool enabled = TRUE, 
-						char *tooltiptext = NULL, int index=-1);
+				   const QObject *receiver, const char *slot, 
+				   bool enabled = TRUE, 
+				   char *tooltiptext = NULL, int index=-1 );
 	void enableMoving(bool flag = TRUE);
 	int insertSeparator(int index=-1);
 	void setPos(Position pos);

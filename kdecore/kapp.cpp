@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.7  1997/05/08 22:53:16  kalle
+// Kalle:
+// KPixmap gone for good
+// Eliminated static objects from KApplication and HTML-Widget
+//
 // Revision 1.6  1997/05/02 16:46:34  kalle
 // Kalle: You may now override how KApplication reacts to external changes
 // KButton uses the widget default palette
@@ -142,7 +147,7 @@ QStrList* KApplication::pSearchPaths;
   if( getenv( "USE_OLD_CONFIG_LOCATION" ) )
        aConfigName += "/.";
   else  
-       aConfigName += "/.kde/config/.";
+       aConfigName += "/.kde/config/";
 
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
@@ -181,7 +186,7 @@ void KApplication::init()
   {
     QString aConfigName;
     aConfigName = kdedir();
-    aConfigName += "/config/.";
+    aConfigName += "/config/";
     aConfigName += aAppName;
     aConfigName += "rc";
     QFile pConfigFile( aConfigName );
