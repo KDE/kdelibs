@@ -185,7 +185,7 @@ public:
 	/**
 	 * Try to find all directories whose names consist of the
 	 * specified type and a relative path. So would
-	 * findDirs("applnk", "Settings") return
+	 * findDirs("apps", "Settings") return
 	 * @li /opt/kde/share/applnk/Settings/
 	 * @li /home/joe/.kde/share/applnk/Settings/
 	 *
