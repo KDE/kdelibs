@@ -386,6 +386,23 @@ public:
     };
 
     /**
+      Actions that can be done with a window (_NET_WM_ALLOWED_ACTIONS).
+    **/
+    enum Action {
+        ActionMove           = 1<<0,
+        ActionResize         = 1<<1,
+        ActionMinimize       = 1<<2,
+        ActionShade          = 1<<3,
+        ActionStick          = 1<<4,
+        ActionMaxVert        = 1<<5,
+        ActionMaxHoriz       = 1<<6,
+        ActionMax            = ActionMaxVert | ActionMaxHoriz,
+        ActionFullScreen     = 1<<7,
+        ActionChangeDesktop  = 1<<8,
+        ActionClose          = 1<<9
+    };
+    
+    /**
        Supported properties.  Clients and Window Managers must define which
        properties/protocols it wants to support.
 
@@ -479,13 +496,15 @@ public:
         @li WM2StartupId
         @li WM2TransientFor mainwindow for the window (WM_TRANSIENT_FOR)
         @li WM2GroupLeader  group leader (window_group in WM_HINTS)
+        @li WM2AllowedActions
 
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
         WM2StartupId           = 1<<1,
         WM2TransientFor        = 1<<2,
-        WM2GroupLeader         = 1<<3
+        WM2GroupLeader         = 1<<3,
+        WM2AllowedActions      = 1<<4
     };
 
     /**

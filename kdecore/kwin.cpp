@@ -736,6 +736,16 @@ WId KWin::WindowInfo::groupLeader() const
     return d->info->groupLeader();
 }
 
+bool KWin::WindowInfo::actionSupported( NET::Action action ) const
+{
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2AllowedActions ) == 0, 176 )
+        << "Pass NET::WM2AllowedActions to KWin::windowInfo()" << endl;
+    if( allowedActionsSupported())
+        return d->info->allowedActions() & action;
+    else
+        return true; // no idea if it's supported or not -> pretend it is
+}
+
 // see NETWM spec section 7.6
 bool KWin::WindowInfo::isMinimized() const
 {
@@ -773,11 +783,19 @@ bool KWin::icccmCompliantMappingState()
     static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
     if( wm_is_1_2_compliant == noidea ) {
         NETRootInfo info( qt_xdisplay(), NET::Supported );
-        wm_is_1_2_compliant =
-            info.supportedProperties()[ NETRootInfo::STATES ] & NET::Hidden
-            ? yes : no;
+        wm_is_1_2_compliant = info.isSupported( NET::Hidden ) ? yes : no;
     }
     return wm_is_1_2_compliant == yes;
+}
+
+bool KWin::allowedActionsSupported()
+{
+    static enum { noidea, yes, no } wm_supports_allowed_actions = noidea;
+    if( wm_supports_allowed_actions == noidea ) {
+        NETRootInfo info( qt_xdisplay(), NET::Supported );
+        wm_supports_allowed_actions = info.isSupported( NET::WM2AllowedActions ) ? yes : no;
+    }
+    return wm_supports_allowed_actions == yes;
 }
 
 #endif

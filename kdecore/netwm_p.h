@@ -103,8 +103,8 @@ struct NETRootInfoPrivate {
     unsigned long clients_count, stacking_count, virtual_roots_count,
 	kde_system_tray_windows_count;
 
-    unsigned long properties[ 4 ];
-    unsigned long client_properties[ 4 ]; // properties the client is interested in
+    unsigned long properties[ 5 ];
+    unsigned long client_properties[ 5 ]; // properties the client is interested in
 
     int ref;
 };
@@ -136,6 +136,7 @@ struct NETWinInfoPrivate {
     Time user_time;
     char* startup_id;
     Window transient_for, window_group;
+    unsigned long allowed_actions;
 
     unsigned long properties[ 2 ];
 

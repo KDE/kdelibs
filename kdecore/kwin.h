@@ -331,6 +331,11 @@ public:
      * on inactive virtual desktops.
      */
     static bool icccmCompliantMappingState();
+    
+    /**
+     * Returns true if the WM announces which actions it allows for windows.
+     */
+    static bool allowedActionsSupported();
 
     /**
      * @deprecated
@@ -491,6 +496,13 @@ public:
      * Requires NET::WM2GroupLeader passed to KWin::windowInfo().
      */    
     WId groupLeader() const;
+
+    /**
+     * Returns true if the given action is currently supported for the window
+     * by the window manager.
+     * Requires NET::WM2AllowedActions passed to KWin::windowInfo().
+     */    
+    bool actionSupported( NET::Action action ) const;
     
     WindowInfo( const WindowInfo& );
     WindowInfo& operator=( const WindowInfo& );

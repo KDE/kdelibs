@@ -59,7 +59,7 @@ public:
         Indexes for the properties array.
     **/
     // update also NETRootInfoPrivate::properties[] size when extending this
-    enum { PROTOCOLS, WINDOW_TYPES, STATES, PROTOCOLS2,
+    enum { PROTOCOLS, WINDOW_TYPES, STATES, PROTOCOLS2, ACTIONS,
         PROPERTIES_SIZE };
 
     /**
@@ -81,7 +81,7 @@ public:
        the window manager supports. The elements contain OR'ed values of constants
        from the NET base class, in the following order: [0]= NET::Property,
        [1]= NET::WindowTypeMask (not NET::WindowType!), [2]= NET::State,
-       [3]= NET::Property2.
+       [3]= NET::Property2, [4]= NET::Action.
        In future versions, the list may be extended. In case you pass less elements,
        the missing ones will be replaced with default values.
        
@@ -211,6 +211,12 @@ public:
        @since 3.2
     **/
     bool isSupported( NET::State state ) const;
+
+    /**
+       @overload
+       @since 3.2
+    **/
+    bool isSupported( NET::Action action ) const;
 
     /**
        In the Window Manager mode, this is equivalent to the properties
@@ -1089,6 +1095,16 @@ public:
      * Returns the startup notification id of the window.
      */
     const char* startupId() const;
+
+    /**
+     * Sets actions that the window manager allows for the window.
+     */
+    void setAllowedActions( unsigned long actions );
+
+    /**
+     * Returns actions that the window manager allows for the window.
+     */
+    unsigned long allowedActions() const;
 
     /*
      * Returns the WM_TRANSIENT_FOR property for the window, i.e. the mainwindow

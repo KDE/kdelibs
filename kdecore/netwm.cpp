@@ -76,6 +76,7 @@ static Atom net_wm_pid               = 0;
 static Atom net_wm_user_time         = 0;
 static Atom net_wm_handled_icons     = 0;
 static Atom net_startup_id           = 0;
+static Atom net_wm_allowed_actions   = 0;
 
 // KDE extensions
 static Atom kde_net_system_tray_windows       = 0;
@@ -111,6 +112,18 @@ static Atom net_wm_state_fullscreen   = 0;
 static Atom net_wm_state_above        = 0;
 static Atom net_wm_state_below        = 0;
 static Atom net_wm_state_demands_attention = 0;
+
+// allowed actions
+static Atom net_wm_action_move        = 0;
+static Atom net_wm_action_resize      = 0;
+static Atom net_wm_action_minimize    = 0;
+static Atom net_wm_action_shade       = 0;
+static Atom net_wm_action_stick       = 0;
+static Atom net_wm_action_max_vert    = 0;
+static Atom net_wm_action_max_horiz   = 0;
+static Atom net_wm_action_fullscreen  = 0;
+static Atom net_wm_action_change_desk = 0;
+static Atom net_wm_action_close       = 0;
 
 // KDE extension that's not in the specs - Replaced by state_above now?
 static Atom net_wm_state_stays_on_top = 0;
@@ -207,7 +220,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 58;
+static const int netAtomCount = 69;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -245,6 +258,7 @@ static void create_atoms(Display *d) {
  // SELI HACK
 #endif
 //            "_NET_STARTUP_ID",
+            "_NET_AM_ALLOWED_ACTIONS",
 	    "_NET_WM_PING",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
@@ -268,6 +282,17 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_STATE_ABOVE",
 	    "_NET_WM_STATE_BELOW",
 	    "_NET_WM_STATE_DEMANDS_ATTENTION",
+            
+            "_NET_WM_ACTION_MOVE",
+            "_NET_WM_ACTION_RESIZE",
+            "_NET_WM_ACTION_MINIMIZE",
+            "_NET_WM_ACTION_SHADE",
+            "_NET_WM_ACTION_STICK",
+            "_NET_WM_ACTION_MAXIMIZE_VERT",
+            "_NET_WM_ACTION_MAXIMIZE_HORZ",
+            "_NET_WM_ACTION_FULLSCREEN",
+            "_NET_WM_ACTION_CHANGE_DESKTOP",
+            "_NET_WM_ACTION_CLOSE",
 
 	    "_NET_WM_STATE_STAYS_ON_TOP",
 
@@ -313,6 +338,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_user_time,
 	    &net_wm_handled_icons,
             &net_startup_id,
+            &net_wm_allowed_actions,
 	    &net_wm_ping,
 
 	    &net_wm_window_type_normal,
@@ -336,6 +362,17 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_above,
 	    &net_wm_state_below,
 	    &net_wm_state_demands_attention,
+            
+            &net_wm_action_move,
+            &net_wm_action_resize,
+            &net_wm_action_minimize,
+            &net_wm_action_shade,
+            &net_wm_action_stick,
+            &net_wm_action_max_vert,
+            &net_wm_action_max_horiz,
+            &net_wm_action_fullscreen,
+            &net_wm_action_change_desk,
+            &net_wm_action_close,
 
 	    &net_wm_state_stays_on_top,
 
@@ -732,10 +769,12 @@ void NETRootInfo::setDefaultProperties()
     p->properties[ STATES ] = Modal | Sticky | MaxVert | MaxHoriz | Shaded
         | SkipTaskbar | StaysOnTop;
     p->properties[ PROTOCOLS2 ] = 0;
+    p->properties[ ACTIONS ] = 0;
     p->client_properties[ PROTOCOLS ] = 0;
     p->client_properties[ WINDOW_TYPES ] = 0; // these two actually don't
     p->client_properties[ STATES ] = 0;       // make sense in client_properties
     p->client_properties[ PROTOCOLS2 ] = 0;
+    p->client_properties[ ACTIONS ] = 0;
 }
 
 void NETRootInfo::activate() {
@@ -1146,6 +1185,32 @@ void NETRootInfo::setSupported() {
 
     if (p->properties[ PROTOCOLS2 ] & WM2StartupId)
 	atoms[pnum++] = net_startup_id;
+        
+    if (p->properties[ PROTOCOLS2 ] & WM2AllowedActions) {
+        atoms[pnum++] = net_wm_allowed_actions;
+
+	// Actions
+        if (p->properties[ ACTIONS ] & ActionMove)
+    	    atoms[pnum++] = net_wm_action_move;
+        if (p->properties[ ACTIONS ] & ActionResize)
+    	    atoms[pnum++] = net_wm_action_resize;
+        if (p->properties[ ACTIONS ] & ActionMinimize)
+    	    atoms[pnum++] = net_wm_action_minimize;
+        if (p->properties[ ACTIONS ] & ActionShade)
+    	    atoms[pnum++] = net_wm_action_shade;
+        if (p->properties[ ACTIONS ] & ActionStick)
+    	    atoms[pnum++] = net_wm_action_stick;
+        if (p->properties[ ACTIONS ] & ActionMaxVert)
+    	    atoms[pnum++] = net_wm_action_max_vert;
+        if (p->properties[ ACTIONS ] & ActionMaxHoriz)
+    	    atoms[pnum++] = net_wm_action_max_horiz;
+        if (p->properties[ ACTIONS ] & ActionFullScreen)
+    	    atoms[pnum++] = net_wm_action_fullscreen;
+        if (p->properties[ ACTIONS ] & ActionChangeDesktop)
+    	    atoms[pnum++] = net_wm_action_change_desk;
+        if (p->properties[ ACTIONS ] & ActionClose)
+    	    atoms[pnum++] = net_wm_action_close;
+    }
 
     // KDE specific extensions
     if (p->properties[ PROTOCOLS ] & KDESystemTrayWindows)
@@ -1319,6 +1384,31 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_startup_id )
         p->properties[ PROTOCOLS2 ] |= WM2StartupId;
+
+    else if( atom == net_wm_allowed_actions )
+        p->properties[ PROTOCOLS2 ] |= WM2AllowedActions;
+
+        // Actions        
+    else if( atom == net_wm_action_move )
+        p->properties[ ACTIONS ] |= ActionMove;
+    else if( atom == net_wm_action_resize )
+        p->properties[ ACTIONS ] |= ActionResize;
+    else if( atom == net_wm_action_minimize )
+        p->properties[ ACTIONS ] |= ActionMinimize;
+    else if( atom == net_wm_action_shade )
+        p->properties[ ACTIONS ] |= ActionShade;
+    else if( atom == net_wm_action_stick )
+        p->properties[ ACTIONS ] |= ActionStick;
+    else if( atom == net_wm_action_max_vert )
+        p->properties[ ACTIONS ] |= ActionMaxVert;
+    else if( atom == net_wm_action_max_horiz )
+        p->properties[ ACTIONS ] |= ActionMaxHoriz;
+    else if( atom == net_wm_action_fullscreen )
+        p->properties[ ACTIONS ] |= ActionFullScreen;
+    else if( atom == net_wm_action_change_desk )
+        p->properties[ ACTIONS ] |= ActionChangeDesktop;
+    else if( atom == net_wm_action_close )
+        p->properties[ ACTIONS ] |= ActionClose;
 
     // KDE specific extensions
     else if( atom == kde_net_system_tray_windows )
@@ -1524,8 +1614,8 @@ unsigned long NETRootInfo::event(XEvent *ev )
 
 void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties_size )
 {
-    unsigned long props[ PROPERTIES_SIZE ] = { 0, 0, 0, 0 };
-    assert( PROPERTIES_SIZE == 4 ); // add elements above
+    unsigned long props[ PROPERTIES_SIZE ] = { 0, 0, 0, 0, 0 };
+    assert( PROPERTIES_SIZE == 5 ); // add elements above
     unsigned long& dirty = props[ PROTOCOLS ];
     unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
@@ -2202,6 +2292,10 @@ bool NETRootInfo::isSupported( NET::State state ) const {
     return p->properties[ STATES ] & state;
 }
 
+bool NETRootInfo::isSupported( NET::Action action ) const {
+    return p->properties[ ACTIONS ] & action;
+}
+
 const Window *NETRootInfo::clientList() const {
     return p->clients;
 }
@@ -2324,6 +2418,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->startup_id = NULL;
     p->transient_for = None;
     p->window_group = None;
+    p->allowed_actions = 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2348,7 +2443,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
-    if (p->properties) update(p->properties);
+    update(p->properties);
 }
 
 
@@ -2380,6 +2475,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->startup_id = NULL;
     p->transient_for = None;
     p->window_group = None;
+    p->allowed_actions = 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2399,7 +2495,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
-    if (p->properties) update(p->properties);
+    update(p->properties);
 }
 
 
@@ -2912,6 +3008,34 @@ void NETWinInfo::setStartupId(const char* id) {
         strlen( p->startup_id ));
 }
 
+void NETWinInfo::setAllowedActions( unsigned long actions ) {
+    if( role != WindowManager )
+        return;
+    long data[50];
+    int count = 0;
+
+    p->allowed_actions = actions;
+    if (p->allowed_actions & ActionMove) data[count++] = net_wm_action_move;
+    if (p->allowed_actions & ActionResize) data[count++] = net_wm_action_resize;
+    if (p->allowed_actions & ActionMinimize) data[count++] = net_wm_action_minimize;
+    if (p->allowed_actions & ActionShade) data[count++] = net_wm_action_shade;
+    if (p->allowed_actions & ActionStick) data[count++] = net_wm_action_stick;
+    if (p->allowed_actions & ActionMaxVert) data[count++] = net_wm_action_max_vert;
+    if (p->allowed_actions & ActionMaxHoriz) data[count++] = net_wm_action_max_horiz;
+    if (p->allowed_actions & ActionFullScreen) data[count++] = net_wm_action_fullscreen;
+    if (p->allowed_actions & ActionChangeDesktop) data[count++] = net_wm_action_change_desk;
+    if (p->allowed_actions & ActionClose) data[count++] = net_wm_action_close;
+
+#ifdef NETWMDEBUG
+    fprintf(stderr, "NETWinInfo::setAllowedActions: setting property (%d)\n", count);
+    for (int i = 0; i < count; i++)
+        fprintf(stderr, "NETWinInfo::setAllowedActions:   action %ld '%s'\n",
+	    data[i], XGetAtomName(p->display, (Atom) data[i]));
+#endif
+
+    XChangeProperty(p->display, p->window, net_wm_allowed_actions, XA_ATOM, 32,
+		    PropModeReplace, (unsigned char *) data, count);
+}
 
 void NETWinInfo::setKDESystemTrayWinFor(Window window) {
     if (role != Client) return;
@@ -3142,6 +3266,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMHandledIcons;
 	    else if (pe.xproperty.atom == net_startup_id)
 		dirty2 |= WM2StartupId;
+	    else if (pe.xproperty.atom == net_wm_allowed_actions)
+		dirty2 |= WM2AllowedActions;
 	    else if (pe.xproperty.atom == kde_net_wm_system_tray_window_for)
 		dirty |= WMKDESystemTrayWinFor;
 	    else if (pe.xproperty.atom == xa_wm_state)
@@ -3572,6 +3698,57 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		XFree(data_ret);
 	}
     }
+    
+    if( dirty2 & WM2AllowedActions ) {
+        p->allowed_actions = 0;
+	if (XGetWindowProperty(p->display, p->window, net_wm_allowed_actions, 0l, 2048l,
+			       False, XA_ATOM, &type_ret, &format_ret,
+			       &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_ATOM && format_ret == 32 && nitems_ret > 0) {
+		// determine actions
+#ifdef NETWMDEBUG
+		fprintf(stderr, "NETWinInfo::update: updating allowed actions (%ld)\n",
+			nitems_ret);
+#endif
+
+		long *actions = (long *) data_ret;
+		unsigned long count;
+
+		for (count = 0; count < nitems_ret; count++) {
+#ifdef NETWMDEBUG
+		    fprintf(stderr,
+			    "NETWinInfo::update:   adding allowed action %ld '%s'\n",
+			    actions[count],
+			    XGetAtomName(p->display, (Atom) states[count]));
+#endif
+
+		    if ((Atom) actions[count] == net_wm_action_move)
+			p->allowed_actions |= ActionMove;
+		    if ((Atom) actions[count] == net_wm_action_resize)
+			p->allowed_actions |= ActionResize;
+		    if ((Atom) actions[count] == net_wm_action_minimize)
+			p->allowed_actions |= ActionMinimize;
+		    if ((Atom) actions[count] == net_wm_action_shade)
+			p->allowed_actions |= ActionShade;
+		    if ((Atom) actions[count] == net_wm_action_stick)
+			p->allowed_actions |= ActionStick;
+		    if ((Atom) actions[count] == net_wm_action_max_vert)
+			p->allowed_actions |= ActionMaxVert;
+		    if ((Atom) actions[count] == net_wm_action_max_horiz)
+			p->allowed_actions |= ActionMaxHoriz;
+		    if ((Atom) actions[count] == net_wm_action_fullscreen)
+			p->allowed_actions |= ActionFullScreen;
+		    if ((Atom) actions[count] == net_wm_action_change_desk)
+			p->allowed_actions |= ActionChangeDesktop;
+		    if ((Atom) actions[count] == net_wm_action_close)
+			p->allowed_actions |= ActionClose;
+		}
+	    }
+	    if ( data_ret )
+		XFree(data_ret);
+	}
+    }
 
     if (dirty2 & WM2UserTime) {
 	p->user_time = -1U;
@@ -3688,6 +3865,10 @@ Time NETWinInfo::userTime() const {
 
 const char* NETWinInfo::startupId() const {
     return p->startup_id;
+}
+
+unsigned long NETWinInfo::allowedActions() const {
+    return p->allowed_actions;
 }
 
 Window NETWinInfo::transientFor() const {
