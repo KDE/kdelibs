@@ -632,7 +632,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KActionPrivate;
-    KActionPrivate *d;
+    KActionPrivate* const d;
 };
 
 #include <kactioncollection.h>

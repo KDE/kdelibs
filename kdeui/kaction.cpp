@@ -114,7 +114,7 @@ public:
 KAction::KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name )
-: QObject( parent, name )
+: QObject( parent, name ), d(new KActionPrivate)
 {
 	initPrivate( text, cut, receiver, slot );
 }
@@ -122,7 +122,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
-: QObject( parent, name )
+: QObject( parent, name ), d(new KActionPrivate)
 {
 	initPrivate( text, cut, receiver, slot );
 	d->setIconName( sIconName );
@@ -131,7 +131,7 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 KAction::KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
-: QObject( parent, name )
+: QObject( parent, name ), d(new KActionPrivate)
 {
 	initPrivate( text, cut, receiver, slot );
 	d->setIconSet( pix );
@@ -140,7 +140,7 @@ KAction::KAction( const QString& text, const QIconSet& pix, const KShortcut& cut
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
-: QObject( parent, name )
+: QObject( parent, name ), d(new KActionPrivate)
 {
 	initPrivate( item.text(), cut, receiver, slot );
 	if( item.hasIconSet() )
@@ -152,7 +152,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 // KDE 4: remove
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
- : QObject( parent, name )
+ : QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0 );
 }
@@ -160,7 +160,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 KAction::KAction( const QString& text, const KShortcut& cut,
                   const QObject* receiver,
                   const char* slot, QObject* parent, const char* name )
- : QObject( parent, name )
+ : QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot );
 }
@@ -168,7 +168,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 KAction::KAction( const QString& text, const QIconSet& pix,
                   const KShortcut& cut,
                   QObject* parent, const char* name )
- : QObject( parent, name )
+ : QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0 );
     setIconSet( pix );
@@ -177,7 +177,7 @@ KAction::KAction( const QString& text, const QIconSet& pix,
 KAction::KAction( const QString& text, const QString& pix,
                   const KShortcut& cut,
                   QObject* parent, const char* name )
-: QObject( parent, name )
+: QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0 );
     d->setIconName( pix );
@@ -187,7 +187,7 @@ KAction::KAction( const QString& text, const QIconSet& pix,
                   const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
- : QObject( parent, name )
+ : QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot );
     setIconSet( pix );
@@ -197,14 +197,14 @@ KAction::KAction( const QString& text, const QString& pix,
                   const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
-  : QObject( parent, name )
+  : QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot );
     d->setIconName(pix);
 }
 
 KAction::KAction( QObject* parent, const char* name )
- : QObject( parent, name )
+ : QObject( parent, name ), d(new KActionPrivate)
 {
     initPrivate( QString::null, KShortcut(), 0, 0 );
 }
@@ -221,8 +221,15 @@ KAction::~KAction()
     // If actionCollection hasn't already been destructed,
     if ( m_parentCollection ) {
         m_parentCollection->take( this );
-        for( uint i = 0; i < d->m_kaccelList.count(); i++ )
-            d->m_kaccelList[i]->remove( name() );
+
+	const QValueList<KAccel*> & accelList = d->m_kaccelList;
+	QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
+	const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
+
+        const char * const namePtr = name();
+        for (; itr != itrEnd; ++itr )
+            (*itr)->remove(namePtr);
+
     }
 
     // Do not call unplugAll from here, as tempting as it sounds.
@@ -232,14 +239,12 @@ KAction::~KAction()
     // want to destroy everything asap, not to remove actions one by one
     // from the GUI.
 
-    delete d; d = 0;
+    delete d;
 }
 
 void KAction::initPrivate( const QString& text, const KShortcut& cut,
                   const QObject* receiver, const char* slot )
 {
-    d = new KActionPrivate;
-
     d->m_cutDefault = cut;
     d->m_activationReason = KAction::UnknownActivation;
 
@@ -259,7 +264,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
 
 bool KAction::isPlugged() const
 {
-  return (containerCount() > 0) || d->m_kaccel;
+  return (!d->m_containers.empty()) || d->m_kaccel;
 }
 
 bool KAction::isPlugged( const QWidget *container ) const
@@ -380,13 +385,17 @@ bool KAction::initShortcut( const KShortcut& cut )
 // Only to be called from plug()
 void KAction::plugShortcut()
 {
-  KAccel* kaccel = kaccelCurrent();
+  KAccel* const kaccel = kaccelCurrent();
 
   //kdDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
   if( kaccel && qstrcmp( name(), "unnamed" ) ) {
     // Check if already plugged into current KAccel object
-    for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
-      if( d->m_kaccelList[i] == kaccel )
+    const QValueList<KAccel*> & accelList = d->m_kaccelList;
+    QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
+    const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
+
+    for( ; itr != itrEnd; ++itr) {
+      if( (*itr) == kaccel )
         return;
     }
 
@@ -399,16 +408,21 @@ bool KAction::setShortcut( const KShortcut& cut )
   bool bChanged = (d->m_cut != cut);
   d->m_cut = cut;
 
-  KAccel* kaccel = kaccelCurrent();
+  KAccel* const kaccel = kaccelCurrent();
   bool bInsertRequired = true;
   // Apply new shortcut to all existing KAccel objects
-  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
+
+  const QValueList<KAccel*> & accelList = d->m_kaccelList;
+  QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
+  const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
+
+  for( ; itr != itrEnd; ++itr) {
     // Check whether shortcut has already been plugged into
     //  the current kaccel object.
-    if( d->m_kaccelList[i] == kaccel )
+    if( (*itr) == kaccel )
       bInsertRequired = false;
     if( bChanged )
-      updateKAccelShortcut( d->m_kaccelList[i] );
+      updateKAccelShortcut( *itr );
   }
 
   // Only insert action into KAccel if it has a valid name,
@@ -466,10 +480,14 @@ void KAction::insertKAccel( KAccel* kaccel )
 void KAction::removeKAccel( KAccel* kaccel )
 {
   //kdDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
-  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
-    if( d->m_kaccelList[i] == kaccel ) {
+  QValueList<KAccel*> & accelList = d->m_kaccelList;
+  QValueList<KAccel*>::iterator itr = accelList.begin();
+  const QValueList<KAccel*>::iterator itrEnd = accelList.end();
+
+  for( ; itr != itrEnd; ++itr) {
+    if( (*itr) == kaccel ) {
       kaccel->remove( name() );
-      d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
+      accelList.remove( itr );
       disconnect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
       break;
     }
@@ -802,8 +820,14 @@ void KAction::setEnabled(bool enable)
     d->m_kaccel->setEnabled(name(), enable);
   // KDE 4: remove end
 
-  for ( uint i = 0; i < d->m_kaccelList.count(); i++ )
-    d->m_kaccelList[i]->setEnabled( name(), enable );
+  const QValueList<KAccel*> & accelList = d->m_kaccelList;
+  QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
+  const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
+
+  const char * const namePtr = name();
+
+  for ( ; itr != itrEnd; ++itr )
+    (*itr)->setEnabled( namePtr, enable );
 
   d->setEnabled( enable );
 
@@ -840,9 +864,14 @@ void KAction::setText( const QString& text )
       pAction->setLabel( text );
   }
   // KDE 4: remove end
+  const QValueList<KAccel*> & accelList = d->m_kaccelList;
+  QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
+  const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
 
-  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
-    KAccelAction* pAction = d->m_kaccelList[i]->actions().actionPtr(name());
+  const char * const namePtr = name();
+
+  for( ; itr != itrEnd; ++itr ) {
+    KAccelAction* const pAction = (*itr)->actions().actionPtr(namePtr);
     if (pAction)
       pAction->setLabel( text );
   }
@@ -1081,7 +1110,7 @@ KAction::ActivationReason KAction::activationReason() const
 void KAction::slotDestroyed()
 {
   kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
-  const QObject* o = sender();
+  const QObject* const o = sender();
 
   // KDE 4: remove
   if ( o == d->m_kaccel )
@@ -1090,13 +1119,16 @@ void KAction::slotDestroyed()
     return;
   }
   // KDE 4: remove end
+  QValueList<KAccel*> & accelList = d->m_kaccelList;
+  QValueList<KAccel*>::iterator itr = accelList.begin();
+  const QValueList<KAccel*>::iterator itrEnd = accelList.end();
 
-  for( uint i = 0; i < d->m_kaccelList.count(); i++ )
+  for( ; itr != itrEnd; ++itr)
   {
-    if ( o == d->m_kaccelList[i] )
+    if ( o == *itr )
     {
-      disconnect( d->m_kaccelList[i], SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-      d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
+      disconnect( *itr, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+      accelList.remove(itr);
       return;
     }
   }
@@ -1113,8 +1145,13 @@ void KAction::slotDestroyed()
 int KAction::findContainer( const QWidget* widget ) const
 {
   int pos = 0;
-  QValueList<KActionPrivate::Container>::ConstIterator it = d->m_containers.begin();
-  while( it != d->m_containers.end() )
+
+  const QValueList<KActionPrivate::Container> & containers = d->m_containers;
+
+  QValueList<KActionPrivate::Container>::ConstIterator it = containers.constBegin();
+  const QValueList<KActionPrivate::Container>::ConstIterator itEnd = containers.constEnd();
+
+  while( it != itEnd )
   {
     if ( (*it).m_representative == widget || (*it).m_container == widget )
       return pos;
@@ -1128,12 +1165,17 @@ int KAction::findContainer( const QWidget* widget ) const
 void KAction::removeContainer( int index )
 {
   int i = 0;
-  QValueList<KActionPrivate::Container>::Iterator it = d->m_containers.begin();
-  while( it != d->m_containers.end() )
+
+  QValueList<KActionPrivate::Container> & containers = d->m_containers;
+
+  QValueList<KActionPrivate::Container>::Iterator it = containers.begin();
+  const QValueList<KActionPrivate::Container>::Iterator itEnd = containers.end();
+
+  while( it != itEnd )
   {
     if ( i == index )
     {
-      d->m_containers.remove( it );
+      containers.remove( it );
       return;
     }
     ++it;
