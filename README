@@ -10,7 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 2.2.1 of the KDE libraries.
+This is version 2.2.2 of the KDE libraries.
 
 This package includes libraries that are central to the development and 
 execution of a KDE program, as well as internationalization files for these 
@@ -188,7 +188,7 @@ How to report
 Reporting bugs is an art. Why?  Because bug reports can help and hinder.
 
 They hinder if the developers are just buried in an avanche of bug reports.
-They spend hours figuring out which bug reports are valid and which non,
+They spend hours figuring out which bug reports are valid and which not,
 which bug reports are due to bugs or due to installation problems.
 
 They can be a tremendous help to notify developers on problems in areas that

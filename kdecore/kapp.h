@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 221
-#define KDE_VERSION_STRING "2.2.1"
+#define KDE_VERSION 222
+#define KDE_VERSION_STRING "2.2.2"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 2
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 2
 
 class KConfig;
 class KCharsets;
@@ -851,6 +851,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.227.2.4  2001/09/15 06:31:33  binner
+// Is it really CVS which is stupid?
+//
+// Revision 1.227.2.2  2001/09/07 20:53:09  waba
+// KDE 2.2.1
+//
 // Revision 1.227.2.1  2001/08/22 18:57:52  waba
 // Preparing for KDE 2.2.1
 //
