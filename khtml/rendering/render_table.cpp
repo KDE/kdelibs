@@ -1551,6 +1551,9 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     _tx += xPos();
     _ty += yPos();
 
+   if(isRelPositioned())
+        relativePositionOffset(_tx, _ty);
+
 #ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
