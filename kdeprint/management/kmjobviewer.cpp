@@ -53,7 +53,7 @@
 #include <qlineedit.h>
 #include <kdialogbase.h>
 #include <qcheckbox.h>
-#include <qdragobject.h>
+#include <kurldrag.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -76,7 +76,7 @@ KJobListView::KJobListView( QWidget *parent, const char *name )
 
 bool KJobListView::acceptDrag( QDropEvent *e ) const
 {
-	if ( QUriDrag::canDecode( e ) )
+	if ( KURLDrag::canDecode( e ) )
 		return true;
 	else
 		return KListView::acceptDrag( e );
@@ -704,15 +704,15 @@ bool KMJobViewer::isSticky() const
 
 void KMJobViewer::slotDropped( QDropEvent *e, QListViewItem* )
 {
-	QStrList uris;
 	QStringList files;
 	QString target;
 
-	QUriDrag::decode( e, uris );
-	for ( uint i=0; i<uris.count(); i++ )
+        KURL::List uris;
+	KURLDrag::decode( e, uris );
+	for ( KURL::List::ConstIterator it = uris.begin();
+	      it != uris.end(); ++it)
 	{
-		KURL url( uris.at( i ) );
-		if ( KIO::NetAccess::download( url, target ) )
+		if ( KIO::NetAccess::download( *it, target ) )
 			files << target;
 	}
 
