@@ -489,17 +489,18 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
             if (root->isCSSStyleSheet())
                 doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
             if (doc && !doc->isHTMLDocument()) {
-                DOMString s = tag;
+                const DOMString s = tag;
                 cs->tag = doc->elementId(s.implementation());
-            }
-            else
-                cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
+            } else {
+		int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
+		if (tagID != 0) {
+		    cs->tag = tagID;
+		} else {
+                    const DOMString s = tag;
+                    cs->tag = doc->elementId(s.implementation());
+		}
+	    }
         }
-   }
-   if (cs->tag == 0)
-   {
-       delete cs;
-       return(0);
    }
 #ifdef CSS_DEBUG
    kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " match=" << (int)cs->match << " value=" << cs->value.string() << " specificity=" << cs->specificity() << "]" << endl;
