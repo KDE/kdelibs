@@ -29,6 +29,7 @@
 
 
 class KPCSC;
+class KCardStatus;
 class KSimpleConfig;
 class QTimer;
 
@@ -58,7 +59,7 @@ private:
   KSimpleConfig *_cfg;
   QTimer *_timer;
   QStringList _readers;
-  QMap<QString,long> _states;
+  QMap<QString,KCardStatus> _states;
   bool _beepOnEvent, _enablePolling, _launchManager;
 
 };

@@ -146,36 +146,4 @@ return 0;
 }
 
 
-KCardATR KCardReader::getATR() {
-KCardATR x(0);
-long rc = 0;
-
-	if (_atrLen == 0) {
-		rc = SCardStatus(_card, NULL, &_readerLen, 
-				&_state, &_protocol, NULL, &_atrLen);
-
-		if (rc != SCARD_S_SUCCESS || _atrLen == 0) {
-			kdDebug() << "first ATR failed." 
-				  << " rc = " << rc
-				  << " atrLen = " << _atrLen 
-				  << endl;
-			return x;
-		}
-	}
-
-	x.resize(_atrLen);
-	QByteArray reader(_readerLen+1);
-	rc = SCardStatus(_card, reader.data(), &_readerLen, 
-			&_state, &_protocol, x.data(), &_atrLen);
-
-	if (rc != SCARD_S_SUCCESS) {
-		kdDebug() << "second ATR failed." << endl;
-		x.resize(0);
-		return x;
-	}
-
-return x;
-}
-
-
 

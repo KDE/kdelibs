@@ -173,4 +173,9 @@ return x;
 
 
 
+long KPCSC::context() {
+return _ctx;
+}
+
+
 

@@ -19,45 +19,44 @@
  */ 
 
 
-#ifndef _KPCSC_H
-#define _KPCSC_H
+#ifndef _KCARDSTATUS_H
+#define _KCARDSTATUS_H
+
+#include <kpcsc.h>
+#include <kcardreader.h>
+#include <winscard.h>
+#include <qstring.h>
+#include <qarray.h>
+
+typedef QMemArray<unsigned char> KCardATR;
 
 
-#include <qstringlist.h>
-#include <qmemarray.h>
-
-typedef QMemArray<unsigned char> KCardCommand;
-
-class KCardReader;
-
-class KPCSC {
+class KCardStatus {
 public:
+	KCardStatus();
+	KCardStatus(const KCardStatus &x);
+	KCardStatus(long _ctx, QString reader, unsigned long oldState = SCARD_STATE_UNAWARE);
+	~KCardStatus();
 
-	KPCSC(bool autoConnect = true);
-	~KPCSC();
+	bool update(unsigned long timeout = 1);
+	bool isPresent();
+	KCardATR getATR();
 
-	int connect();
-	int reconnect();
-	int disconnect();
-
-	QStringList listReaders(int *err);
-	KCardReader *getReader(QString x);
-
-	static KCardCommand encodeCommand(const QString command);
-	static QString decodeCommand(const KCardCommand command);
-
-	long context();
+	KCardStatus& operator=(const KCardStatus &y);
 
 private:
-	class KPCSCPrivate;
-	KPCSCPrivate *d;
+	class KCardStatusPrivate;
+	KCardStatusPrivate *d;
 
-	bool _connected;
-
-	// PC/SC specific stuff
+private:
+	SCARD_READERSTATE_A _state;
+	QString _name;
 	long _ctx;
-
+	bool _present;
+	KCardATR _atr;
+	char *_c_name;
 };
+
 
 
 #endif
