@@ -129,7 +129,7 @@ myTopWidget::myTopWidget (QWidget *parent, const char *name=0)
   QGridLayout *lay = new QGridLayout (this, 2, 3, 0);
 
   grds = new KGradientWidget(this);
-  lay->addMultiCellWidget(grds, 0, 0 ,0, 1);
+  lay->addMultiCellWidget(grds, 0, 0 ,0, 2);
 
   bLabel = new QLabel("Balance: X = 000; Y = 000", this);
   lay->addWidget(bLabel, 1, 0);
@@ -160,9 +160,10 @@ void myTopWidget::rebalance()
   grds->setBalance(xSlider->value(), ySlider->value());
 
   if ((otime - itime )> 500)
-    grds->repaint(false);
-
-  itime = time.elapsed();
+    {
+      grds->repaint(false);
+      itime = time.elapsed();
+    }
 }
 
 int main(int argc, char **argv)
