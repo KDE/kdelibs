@@ -50,28 +50,31 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 
 	// widget creation
 	QButtonGroup	*m_pagebox = new QButtonGroup(0, Qt::Vertical, i18n("Page selection"), this);
-	m_all = new QRadioButton(i18n("All"), m_pagebox);
-	m_current = new QRadioButton(i18n("Current"), m_pagebox);
-	m_range = new QRadioButton(i18n("Range"), m_pagebox);
+	m_all = new QRadioButton(i18n("&All"), m_pagebox);
+	m_current = new QRadioButton(i18n("Cu&rrent"), m_pagebox);
+	m_range = new QRadioButton(i18n("Ran&ge"), m_pagebox);
 	m_rangeedit = new QLineEdit(m_pagebox);
+	connect(m_range, SIGNAL(clicked()), m_rangeedit, SLOT(setFocus()));
 	QToolTip::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	QWhatsThis::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	//QLabel	*m_rangeexpl = new QLabel(m_pagebox);
 	//m_rangeexpl->setText(i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	QGroupBox	*m_copybox = new QGroupBox(0, Qt::Vertical, i18n("Copies"), this);
-	m_collate = new QCheckBox(i18n("Collate"), m_copybox);
-	m_order = new QCheckBox(i18n("Reverse"), m_copybox);
+	m_collate = new QCheckBox(i18n("Co&llate"), m_copybox);
+	m_order = new QCheckBox(i18n("Re&verse"), m_copybox);
 	m_collatepix = new QLabel(m_copybox);
 	m_collatepix->setAlignment(Qt::AlignCenter);
 	m_collatepix->setMinimumHeight(70);
-	QLabel	*m_copieslabel = new QLabel(i18n("Copies:"), m_copybox);
+	QLabel	*m_copieslabel = new QLabel(i18n("Cop&ies:"), m_copybox);
 	m_copies = new QSpinBox(m_copybox);
 	m_copies->setRange(1,999);
+	m_copieslabel->setBuddy(m_copies);
 	m_pageset = new QComboBox(m_pagebox);
 	m_pageset->insertItem(i18n("All pages"));
 	m_pageset->insertItem(i18n("Odd pages"));
 	m_pageset->insertItem(i18n("Even pages"));
-	QLabel	*m_pagesetlabel = new QLabel(i18n("Page set:"), m_pagebox);
+	QLabel	*m_pagesetlabel = new QLabel(i18n("Page &set:"), m_pagebox);
+	m_pagesetlabel->setBuddy(m_pageset);
 	KSeparator	*sepline = new KSeparator(Horizontal, m_pagebox);
 	sepline->setMinimumHeight(10);
 
