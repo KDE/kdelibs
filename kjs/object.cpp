@@ -642,6 +642,7 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
       if (pr->name == p) {
 	// replace old value
 	pr->object = v;
+	pr->attribute = attr;
 	return;
       }
       pr = pr->next;
@@ -726,7 +727,7 @@ void Imp::putArrayElement(const UString &p, const KJSO& v)
 	if (hasProperty(p, false))
 	  deleteProperty(p);
       }
-      put("length", Number(newLen));
+      put("length", Number(newLen), DontEnum | DontDelete);
       return;
     }
     //    put(p, v);
