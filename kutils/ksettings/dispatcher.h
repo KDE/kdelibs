@@ -22,6 +22,7 @@
 
 #include <qobject.h>
 #include <qmap.h>
+#include <kdelibs_export.h>
 
 class QCString;
 class QSignal;
@@ -46,7 +47,7 @@ namespace KSettings
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class Dispatcher : public QObject
+class KUTILS_EXPORT Dispatcher : public QObject
 {
     friend class KStaticDeleter<Dispatcher>;
 
