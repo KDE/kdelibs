@@ -139,13 +139,16 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     QStringList crashFiles;
 
     int count = 0;
-    for ( ; ( fi = it.current() ) != 0; ++it ) 
+    for ( ; (( fi = it.current() ) != 0) && (count < 20); ++it, ++count ) 
     {
         bool stillAlive = activeLogs.contains( fi->absFilePath() );
         if ( !stillAlive )
             crashFiles << fi->absFilePath();
-        if ( count++ > 20 )
-            break;
+    }
+    // Delete remaining ones
+    for ( ; ( fi = it.current() ) != 0; ++it ) 
+    {
+        QFile::remove( fi->absFilePath() );
     }
 
     return crashFiles;
@@ -153,12 +156,25 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 
 void KCrashBookmarkImporterImpl::parse() 
 {
+    QDict<bool> signatureMap;
     QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
     int count = 1;
     for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) 
     {
         ViewMap views;
         views = parseCrashLog_noemit( *it, m_shouldDelete );
+        QString signature;
+        for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) 
+            signature += "|"+it.data();
+        if (signatureMap[signature])
+        {
+            // Duplicate... throw away and skip
+            QFile::remove(*it);
+            continue;
+        }
+            
+        signatureMap.insert(signature, (bool *) true); // hack
+
         int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
         if ( outerFolder )
             emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
