@@ -449,6 +449,9 @@ public:
    */
   const QString& toolTipString() { return toolTipStr; };
 
+  /** @return true, if a dockback is possible, otherwise false. */
+  bool isDockBackPossible();
+
   /**
    * Catches and processes some QWidget events that are interesting for dockwidgets.
    */
@@ -519,14 +522,14 @@ signals:
 	void iMBeingClosed();
 
 protected slots:
+  /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
+  void dockBack();
+
   /** Does several things here when it has noticed that the former brother widget (closest neighbor) gets lost.
    * The former brother widget is needed for a possible dockback action, to speak with the Beatles:
    * "To get back to where you once belonged" ;-)
    */
   void loseFormerBrotherDockWidget();
-
-  /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
-  void dockBack();
 
 protected:
   /** earlier closest neighbor widget, so it's possible to dock back to it. */
