@@ -109,7 +109,36 @@ public:
      */
     static QPixmap loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
 
-   protected:
+signals:
+    /**
+      Emitted when quit is selected in the menu. If you want to perform any other
+      action than to close the main application window please connect to this signal.
+      * @since 3.1
+    */
+    void quitSelected();
+
+public slots:
+
+    /**
+     * Toggles the state of the window associated with this system tray icon (hides it,
+     * shows it or activates it depending on the window state). The default implementation
+     * of mousePressEvent() calls toggleActive() when the tray icon is left-clicked, use
+     * it when reimplementing mousePressEvent().
+     * @since 3.3
+     */
+    void toggleActive();
+    /**
+     * Activates the window associated with this system tray icon, regardless of its current state.
+     * @since 3.3
+     */
+    void setActive();
+    /**
+     * Hides the window associated with this system tray icon, regardless of its current state.
+     * @since 3.3
+     */
+    void setInactive();
+
+protected:
 
     /**
        Reimplemented to provide the standard show/raise behavior
@@ -144,14 +173,6 @@ public:
        Reimplemented for internal reasons.
      */
     void enterEvent( QEvent* );
-
-signals:
-    /**
-      Emitted when quit is selected in the menu. If you want to perform any other
-      action than to close the main application window please connect to this signal.
-      * @since 3.1
-    */
-    void quitSelected();
 
 private slots:
     void minimizeRestoreAction();

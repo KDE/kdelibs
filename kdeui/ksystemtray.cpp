@@ -145,7 +145,7 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 
     switch ( e->button() ) {
     case LeftButton:
-        activateOrHide();
+        toggleActive();
 	break;
     case MidButton:
 	// fall through
@@ -184,6 +184,21 @@ void KSystemTray::minimizeRestoreAction()
         bool restore = !( parentWidget()->isVisible() );
 	minimizeRestore( restore );
     }
+}
+
+void KSystemTray::toggleActive()
+{
+    activateOrHide();
+}
+
+void KSystemTray::setActive()
+{
+    minimizeRestore( true );
+}
+
+void KSystemTray::setInactive()
+{
+    minimizeRestore( false );
 }
 
 // called when left-clicking the tray icon
