@@ -456,8 +456,7 @@ void KFileDialog::slotOk()
 
     else {
         QString text = locationEdit->currentText();
-        KURL tryURL(text);
-        if ( tryURL.isMalformed() )
+        if ( KURL::isRelativeURL(text) ) // only a full URL isn't relative. Even /path is.
         {
             if ( !text.isEmpty() && text[0] == '/' ) // absolute path
                 selectedURL.setPath( text );
@@ -467,7 +466,7 @@ void KFileDialog::slotOk()
                 selectedURL.addPath( text ); // works for filenames and relative paths
             }
         } else // complete URL
-            selectedURL = tryURL;
+            selectedURL = text;
     }
 
     if ( selectedURL.isMalformed() ) {
@@ -981,7 +980,19 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-    KURL u(ops->url(), url);
+    // This code is the same as the one in slotOK
+    KURL u;
+    if ( KURL::isRelativeURL(url) )
+    {
+        if (!url.isEmpty() && url[0] == '/' ) // absolute path
+            u.setPath( url );
+        else
+        {
+            u = ops->url();
+            u.addPath( url ); // works for filenames and relative paths
+        }
+    } else // complete URL
+        u = url;
 
     if (u.isMalformed()) { // if it still is
         kdWarning() << url << " is not a correct argument for setSelection!" << endl;
