@@ -281,14 +281,14 @@ bool KZip::openArchive( int mode )
 
             // uncompressed file size
             uint ucsize = (uchar)buffer[27] << 24 | (uchar)buffer[26] << 16 |
-	    		(uchar)buffer[25] << 8 | (uchar)buffer[24];
+            (uchar)buffer[25] << 8 | (uchar)buffer[24];
             // compressed file size
             uint csize = (uchar)buffer[23] << 24 | (uchar)buffer[22] << 16 |
-	    		(uchar)buffer[21] << 8 | (uchar)buffer[20];
+            (uchar)buffer[21] << 8 | (uchar)buffer[20];
 
             // offset of local header
             uint localheaderoffset = (uchar)buffer[45] << 24 | (uchar)buffer[44] << 16 |
-				(uchar)buffer[43] << 8 | (uchar)buffer[42];
+            (uchar)buffer[43] << 8 | (uchar)buffer[42];
 
             // some clever people use different extra field lengths
             // in the central header and in the local header... funny.
@@ -296,10 +296,10 @@ bool KZip::openArchive( int mode )
             // from localheaderstart to dataoffset
             char localbuf[5];
             int save_at = dev->at();
-		    dev->at( localheaderoffset + 28 );
+            dev->at( localheaderoffset + 28 );
             dev->readBlock( localbuf, 4);
             int localextralen = (uchar)localbuf[1] << 8 | (uchar)localbuf[0];
-		    dev->at(save_at);
+            dev->at(save_at);
 
             //kdDebug(7040) << "localextralen: " << localextralen << endl;
 
@@ -316,7 +316,7 @@ bool KZip::openArchive( int mode )
 
             QString entryName;
 
-		    if ( name.endsWith( "/" ) ) // Entries with a trailing slash are directories
+            if ( name.endsWith( "/" ) ) // Entries with a trailing slash are directories
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
@@ -332,27 +332,43 @@ bool KZip::openArchive( int mode )
 
             KArchiveEntry* entry;
             if ( isdir )
-                entry = new KArchiveDirectory( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null );
+            {
+                QString path = QDir::cleanDirPath( name.left( pos ) );
+                KArchiveEntry* ent = rootDir()->entry( path );
+                if ( ent && ent->isDirectory() )
+                {
+                    //kdDebug(7040) << "Directory already exists, NOT going to add it again" << endl;
+                    entry = 0L;
+                }
+                else
+                {
+                    entry = new KArchiveDirectory( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null );
+                    //kdDebug(7040) << "KArchiveDirectory created, entryName= " << entryName << ", name=" << name << endl;
+                }
+            }
             else
             {
                 entry = new KZipFileEntry( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null,
-                                          name, dataoffset, ucsize, cmethod, csize );
+                                        name, dataoffset, ucsize, cmethod, csize );
                 static_cast<KZipFileEntry *>(entry)->setHeaderStart( localheaderoffset );
-                //kdDebug(7040) << "KZipFileEntry created" << endl;
+                //kdDebug(7040) << "KZipFileEntry created, entryName= " << entryName << ", name=" << name << endl;
                 d->m_fileList.append( static_cast<KZipFileEntry *>( entry ) );
             }
 
-            if ( pos == -1 )
+            if ( entry )
             {
-                rootDir()->addEntry(entry);
-            }
-            else
-            {
-                // In some tar files we can find dir/./file => call cleanDirPath
-                QString path = QDir::cleanDirPath( name.left( pos ) );
-                // Ensure container directory exists, create otherwise
-                KArchiveDirectory * tdir = findOrCreate( path );
-                tdir->addEntry(entry);
+                if ( pos == -1 )
+                {
+                    rootDir()->addEntry(entry);
+                }
+                else
+                {
+                    // In some tar files we can find dir/./file => call cleanDirPath
+                    QString path = QDir::cleanDirPath( name.left( pos ) );
+                    // Ensure container directory exists, create otherwise
+                    KArchiveDirectory * tdir = findOrCreate( path );
+                    tdir->addEntry(entry);
+                }
             }
 
             //calculate offset to next entry
