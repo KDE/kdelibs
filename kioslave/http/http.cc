@@ -230,10 +230,11 @@ void HTTPProtocol::resetSessionSettings()
   if ( config()->readBoolEntry("SendLanguageSettings", true) )
   {
       m_request.charsets = config()->readEntry( "Charsets", "iso-8859-1" );
+      
       if ( !m_request.charsets.isEmpty() )
           m_request.charsets += DEFAULT_PARTIAL_CHARSET_HEADER;
-      m_request.languages = config()->readEntry( "Languages",
-                                            DEFAULT_LANGUAGE_HEADER );
+      
+      m_request.languages = config()->readEntry( "Languages", DEFAULT_LANGUAGE_HEADER );
   }
   else
   {
@@ -292,16 +293,26 @@ void HTTPProtocol::resetSessionSettings()
   m_remoteRespTimeout = responseTimeout();
 
   setMetaData("request-id", m_request.id);
-
-  // Follow HTTP/1.1 spec and enable keep-alive by default
-  // unless the remote side tells us otherwise or we determine
-  // the persistent link has be terminated by the remote end.  
-  m_bKeepAlive = true;
-  m_bCanResume = false;
-  m_bUnauthorized = false;
   
   // Set the SSL meta-data here...
   setSSLMetaData();
+
+  // Follow HTTP/1.1 spec and enable keep-alive by default
+  // unless the remote side tells us otherwise or we determine
+  // the persistent link has been terminated by the remote end.  
+  m_bKeepAlive = true;
+  m_bCanResume = false;
+  m_bUnauthorized = false;  
+  
+  // A single request can require multiple exchanges with the remote
+  // server due to authentication challenges or SSL tunneling. 
+  // m_bFirstRequest is a flag that indicates whether we are
+  // still processing the first request. This is important because we
+  // should not force a close of a keep-alive connection in the middle
+  // of the first request.
+  // m_bFirstRequest is set to "true" whenever a new connection is
+  // made in httpOpenConnection()
+  m_bFirstRequest = false;
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -373,15 +384,6 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
-  // A single request can require multiple exchanges with the remote
-  // server due to authentication challenges or SSL tunneling. 
-  // m_bFirstRequest is a flag that indicates whether we are
-  // still processing the first request. This is important because we
-  // should not force a close of a keep-alive connection in the middle
-  // of the first request.
-  // m_bFirstRequest is set to "true" whenever a new connection is
-  // made in httpOpenConnection()
-  m_bFirstRequest = false;
   while ( 1 )
   {
     if (!httpOpen())
@@ -409,7 +411,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
       if (isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized && !m_bError)
       {
-        // Only disable tunneling if there was no error
+        // If there is no error, disable tunneling 
         if ( m_responseCode < 400 )
         {
           kdDebug(7113) << "(" << m_pid << ") Unset tunneling flag!" << endl;
@@ -1828,8 +1830,8 @@ bool HTTPProtocol::httpOpen()
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen" << endl;
 
   // Cannot have an https request without the m_bIsSSL being set!  This can
-  // only happen if InitializeSSL() call failed which in turn means that SSL
-  // is not supported by current installation !!
+  // only happen if TCPSlaveBase::InitializeSSL() function failed in which it
+  // means the current installation does not support SSL...
   if ( (m_protocol == "https" || m_protocol == "webdavs") && !m_bIsSSL )
   {
     error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
@@ -2657,10 +2659,8 @@ bool HTTPProtocol::readHeader()
           kdDebug (7113) << "(" << m_pid << ") Media-Parameter Value: "
                          << mediaValue << endl;
 
-          if ( mediaAttribute.find ("charset", 0, false) &&
-               mediaAttribute.length () == 7)
+          if ( mediaAttribute.lower() == "charset")
             m_strCharset = mediaValue;
-
         }
       }
     }
@@ -2992,7 +2992,7 @@ bool HTTPProtocol::readHeader()
        
     if (lastModifiedDate)
     {
-       long diff = difftime(dateHeader, lastModifiedDate);
+       long diff = static_cast<long>(difftime(dateHeader, lastModifiedDate));
        if (diff < 0)
           expireDate = time(0) + 1;
        else 
@@ -3020,6 +3020,11 @@ bool HTTPProtocol::readHeader()
       setMetaData("setcookies", cookieStr);
     }
   }
+  
+  // Do not do a keep-alive connection if the size of the 
+  // response is not known and the response is not Chunked.
+  if (!m_bChunked && m_iSize == -1)
+    m_bKeepAlive = false;
 
   if (m_bMustRevalidate)
   {
@@ -3219,6 +3224,7 @@ bool HTTPProtocol::readHeader()
      else if (m_request.url.path().right(4).upper() == ".PEM")
         m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
   }
+
 #if 0
   // Even if we can't rely on content-length, it seems that we should
   // never get more data than content-length. Maybe less, if the
@@ -3230,7 +3236,7 @@ bool HTTPProtocol::readHeader()
   }
 #endif
 
-  // Set charset. Maybe charSet should be a class member, since
+  // Set charset. Maybe charset should be a class member, since
   // this method is somewhat recursive....
   if ( !mediaAttribute.isEmpty() )
     setMetaData(mediaAttribute, mediaValue);
@@ -3978,7 +3984,6 @@ QString HTTPProtocol::findCookies( const QString &url)
   QDataStream stream(params, IO_WriteOnly);
   stream << url << windowId;
 
-  bool attemptedRestart = false;
   if ( !m_dcopClient->call( "kded", "kcookiejar", "findCookies(QString,long int)",
                             params, replyType, reply ) )
   {
@@ -4373,8 +4378,6 @@ void HTTPProtocol::cleanCache()
 void HTTPProtocol::configAuth( const char *p, bool b )
 {
   HTTP_AUTH f = AUTH_None;
-
-  while( *p == ' ' ) p++;
   const char *strAuth = p;
 
   if ( strncasecmp( p, "Basic", 5 ) == 0 )
@@ -4998,7 +5001,8 @@ QString HTTPProtocol::proxyAuthenticationHeader()
   QString header;
 
   // We keep proxy authentication locally until they are changed.
-  // Thus, no need to check with kdesud on every connection!!
+  // Thus, no need to check with the password manager for every 
+  // connection.
   if ( m_strProxyRealm.isEmpty() )
   {
     AuthInfo info;
