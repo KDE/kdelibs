@@ -1588,8 +1588,8 @@ public:
   virtual KActionPtrList actions( const QString& group ) const;
   virtual KActionPtrList actions() const;
 
-  virtual void createKeyMap( KAccelActions& ) const;
-  virtual void setKeyMap( const KAccelActions& map );
+  //virtual void createKeyMap( KAccelActions& ) const;
+  //virtual void setKeyMap( const KAccelActions& map );
   // Used for reading shortcut configuration from a non-XML rc file.
   bool readShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 );
   // Used for writing shortcut configuration to a non-XML rc file.
@@ -1621,7 +1621,8 @@ signals:
   void actionStatusText( const QString &text );
   void clearStatusText();
 
-protected:
+private:
+  void findMainWindow( QWidget *w );
   void _clear();
   void _insert( KAction* );
   void _remove( KAction* );
