@@ -19,6 +19,12 @@
 
 #include "function_object.h"
 
+#include "lexer.h"
+#include "nodes.h"
+#include "error_object.h"
+
+extern int kjsyyparse();
+
 using namespace KJS;
 
 // ECMA 15.3.1 The Function Constructor Called as a Function
@@ -32,17 +38,63 @@ Object FunctionObject::construct(const List &args)
 {
   UString p("");
   UString body;
-  if (args.isEmpty()) {
+  int argsSize = args.size();
+  if (argsSize == 0) {
     body = "";
-  } if ( args.size() == 1 ) {
+  } if (argsSize == 1) {
     body = args[0].toString().value();
   } else {
     p = args[0].toString().value();
-    for (int k = 1; k < args.size() - 1; k++)
+    for (int k = 1; k < argsSize - 1; k++)
       p += "," + args[k].toString().value();
-    body = args[args.size()-1].toString().value();
+    body = args[argsSize-1].toString().value();
   }
 
-  /* TODO parse parameter list, create function object */
-  return Object::create(NumberClass, Boolean(true));
+  Lexer::curr()->setCode(body.data(), body.size());
+  if (kjsyyparse()) {
+    /* TODO: free nodes */
+    return ErrorObject::create(SyntaxError,
+			       I18N_NOOP("Syntax error in function body"), -1);
+  }
+
+  List scopeChain;
+  scopeChain.append(Global::current());
+  FunctionBodyNode *bodyNode = KJScriptImp::current()->progNode;
+  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
+					      &scopeChain,
+					      argsSize > 1 ? argsSize-1 : 0);
+
+  // parse parameter list. throw syntax error on illegal identifiers
+  int len = p.size();
+  const UChar *c = p.data();
+  int i = 0;
+  UString param;
+  while (i < len) {
+      while (*c == ' ' && i < len)
+	  c++, i++;
+      if (Lexer::isIdentLetter(c->unicode())) {  // else error
+	  param = UString(c, 1);
+	  c++, i++;
+	  while (i < len && (Lexer::isIdentLetter(c->unicode()) ||
+			     Lexer::isDecimalDigit(c->unicode()))) {
+	      param += UString(c, 1);
+	      c++, i++;
+	  }
+	  while (i < len && *c == ' ')
+	      c++, i++;
+	  if (i == len) {
+	      fimp->addParameter(param);
+	      break;
+	  } else if (*c == ',') {
+	      fimp->addParameter(param);
+	      c++, i++;
+	      continue;
+	  } // else error
+      }
+      return ErrorObject::create(SyntaxError,
+				 I18N_NOOP("Syntax error in parameter list"),
+				 -1);
+  }
+
+  return Object(fimp);
 }

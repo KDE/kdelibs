@@ -5,6 +5,7 @@ typedef union {
   Node                *node;
   StatementNode       *stat;
   ParameterNode       *param;
+  FunctionBodyNode    *body;
   FuncDeclNode        *func;
   ProgramNode         *prog;
   AssignExprNode      *init;

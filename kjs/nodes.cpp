@@ -1322,11 +1322,23 @@ Completion FinallyNode::execute()
   return block->execute();
 }
 
+// ECMA 13 + 14 for ProgramNode
+KJSO FunctionBodyNode::evaluate()
+{
+  /* TODO: workaround for empty body which I don't see covered by the spec */
+  if (!source)
+    return Completion(ReturnValue, Undefined());
+
+  source->processFuncDecl();
+
+  return source->evaluate();
+}
+
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
   const List *sc = Context::current()->pScopeChain();
-  FunctionImp *fimp = new DeclaredFunctionImp(ident, block, sc);
+  FunctionImp *fimp = new DeclaredFunctionImp(ident, body, sc);
 
 
   for(ParameterNode *p = param; p != 0L; p = p->nextParam())
@@ -1341,7 +1353,7 @@ void FuncDeclNode::processFuncDecl()
 KJSO FuncExprNode::evaluate()
 {
   const List *sc = Context::current()->pScopeChain();
-  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, block, sc->copy());
+  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, body, sc->copy());
 
   for(ParameterNode *p = param; p != 0L; p = p->nextParam())
     fimp->addParameter(p->ident());
@@ -1364,20 +1376,6 @@ ParameterNode* ParameterNode::append(const UString *i)
 KJSO ParameterNode::evaluate()
 {
   return Undefined();
-}
-
-ProgramNode::ProgramNode(SourceElementsNode *s)
-  : source(s)
-{
-  KJScriptImp::current()->progNode = this;
-}
-
-// ECMA 14
-KJSO ProgramNode::evaluate()
-{
-  source->processFuncDecl();
-
-  return source->evaluate();
 }
 
 void ProgramNode::deleteStatements()

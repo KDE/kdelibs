@@ -56,8 +56,6 @@ namespace KJS {
   // TODO: -0
 };
 
-#define I18N_NOOP(s) s
-
 using namespace KJS;
 
 const TypeInfo Imp::info = { "Imp", AbstractType, 0, 0, 0 };

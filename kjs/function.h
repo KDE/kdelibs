@@ -55,6 +55,7 @@ namespace KJS {
     virtual CodeType codeType() const = 0;
     KJSO thisValue() const;
     void addParameter(const UString &n);
+    void setLength(int l);
     KJSO executeCall(Imp *thisV, const List *args);
     UString name() const;
   protected:
@@ -101,7 +102,7 @@ namespace KJS {
   class ConstructorImp : public InternalFunctionImp {
   public:
     ConstructorImp();
-    ConstructorImp(const UString &n);
+    ConstructorImp(const UString &n);	/* TODO: add length */
     ConstructorImp(const KJSO &, int);
     ConstructorImp(const UString &n, const KJSO &p, int len);
     virtual ~ConstructorImp();

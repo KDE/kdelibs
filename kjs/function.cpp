@@ -80,6 +80,11 @@ void FunctionImp::addParameter(const UString &n)
   *p = new Parameter(n);
 }
 
+void FunctionImp::setLength(int l)
+{
+  put("length", Number(l), ReadOnly|DontDelete|DontEnum);
+}
+
 // ECMA 10.1.3
 void FunctionImp::processParameters(const List *args)
 {
@@ -170,8 +175,8 @@ InternalFunctionImp::InternalFunctionImp()
 
 InternalFunctionImp::InternalFunctionImp(int l)
 {
-    if (l >= 0)
-	put("length", Number(l), ReadOnly|DontDelete|DontEnum);
+  if (l >= 0)
+    setLength(l);
 }
 
 InternalFunctionImp::InternalFunctionImp(const UString &n)
@@ -195,7 +200,7 @@ Completion InternalFunctionImp::execute(const List &)
 ConstructorImp::ConstructorImp() {
   //  setPrototype(KJScript::global().functionPrototype());
   // TODO ???  put("constructor", this);
-  put("length", Number(1), DontEnum);
+  setLength(1);
 }
 
 ConstructorImp::ConstructorImp(const UString &n)
@@ -207,7 +212,7 @@ ConstructorImp::ConstructorImp(const KJSO &p, int len)
 {
   setPrototype(p);
   // TODO ???  put("constructor", *this);
-  put("length", Number(len), DontEnum);
+  setLength(len);
 }
 
 ConstructorImp::ConstructorImp(const UString &n, const KJSO &p, int len)
@@ -215,7 +220,7 @@ ConstructorImp::ConstructorImp(const UString &n, const KJSO &p, int len)
 {
   setPrototype(p);
   // TODO ???  put("constructor", *this);
-  put("length", Number(len), DontEnum);
+  setLength(len);
 }
 
 ConstructorImp::~ConstructorImp() { }
@@ -267,7 +272,7 @@ Constructor::Constructor(Imp *d)
     assert(Global::current().hasProperty("[[Function.prototype]]"));
     setPrototype(Global::current().get("[[Function.prototype]]"));
     put("constructor", *this);
-    put("length", 1, DontEnum);
+    ((FunctionImp*)d)->setLength(1);
   }
 }
 

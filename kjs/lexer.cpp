@@ -167,7 +167,7 @@ int Lexer::lex()
       } else if (current == '"' || current == '\'') {
 	state = InString;
 	stringType = current;
-      } else if (isIdentLetter()) {
+      } else if (isIdentLetter(current)) {
 	record16(current);
 	state = InIdentifier;
       } else if (current == '0') {
@@ -295,7 +295,7 @@ int Lexer::lex()
       }
       break;
     case InIdentifier:
-      if (isIdentLetter() || isDecimalDigit(current)) {
+      if (isIdentLetter(current) || isDecimalDigit(current)) {
 	record16(current);
 	break;
       }
@@ -382,7 +382,7 @@ int Lexer::lex()
 
   // no identifiers allowed directly after numeric literal, e.g. "3in" is bad
   if ((state == Number || state == Octal || state == Hex)
-      && isIdentLetter())
+      && isIdentLetter(current))
     state = Bad;
 
   // terminate string
@@ -482,15 +482,15 @@ bool Lexer::isLineTerminator() const
   return (current == '\n' || current == '\r');
 }
 
-bool Lexer::isIdentLetter() const
+bool Lexer::isIdentLetter(unsigned short c)
 {
   /* TODO: allow other legitimate unicode chars */
-  return (current >= 'a' && current <= 'z' ||
-	  current >= 'A' && current <= 'Z' ||
-	  current == '$' || current == '_');
+  return (c >= 'a' && c <= 'z' ||
+	  c >= 'A' && c <= 'Z' ||
+	  c == '$' || c == '_');
 }
 
-bool Lexer::isDecimalDigit(unsigned short c) const
+bool Lexer::isDecimalDigit(unsigned short c)
 {
   return (c >= '0' && c <= '9');
 }
@@ -730,7 +730,7 @@ bool Lexer::scanRegExp()
     else if (current != '/' || lastWasEscape == true)
     {
         record16(current);
-        lastWasEscape = 
+        lastWasEscape =
             !lastWasEscape && (current == '\\');
     }
     else {
@@ -742,7 +742,7 @@ bool Lexer::scanRegExp()
     shift(1);
   }
 
-  while (isIdentLetter()) {
+  while (isIdentLetter(current)) {
     record16(current);
     shift(1);
   }

@@ -31,6 +31,7 @@ namespace KJS {
 
   class KJSO;
   class RegExp;
+  class SourceElementsNode;
   class ProgramNode;
 
   enum Operator { OpEqual,
@@ -718,25 +719,35 @@ namespace KJS {
     ParameterNode *next;
   };
 
+  // inherited by ProgramNode
+  class FunctionBodyNode : public Node {
+  public:
+      FunctionBodyNode(SourceElementsNode *s) : source(s) { }
+      KJSO evaluate();
+  protected:
+      SourceElementsNode *source;
+  };
+
   class FuncDeclNode : public StatementNode {
   public:
-    FuncDeclNode(const UString *i, ParameterNode *p, StatementNode *b)
-      : ident(*i), param(p), block(b) { }
+    FuncDeclNode(const UString *i, ParameterNode *p, FunctionBodyNode *b)
+      : ident(*i), param(p), body(b) { }
     Completion execute() { /* empty */ return Completion(); }
     void processFuncDecl();
   private:
     UString ident;
     ParameterNode *param;
-    StatementNode *block;
+    FunctionBodyNode *body;
   };
 
   class FuncExprNode : public Node {
   public:
-    FuncExprNode(ParameterNode *p, StatementNode *b) : param(p), block(b) { }
+    FuncExprNode(ParameterNode *p, FunctionBodyNode *b)
+	: param(p), body(b) { }
     KJSO evaluate();
   private:
     ParameterNode *param;
-    StatementNode *block;
+    FunctionBodyNode *body;
   };
 
   class SourceElementNode : public Node {
@@ -764,13 +775,10 @@ namespace KJS {
     SourceElementsNode *elements;
   };
 
-  class ProgramNode : public Node {
+  class ProgramNode : public FunctionBodyNode {
   public:
-    ProgramNode(SourceElementsNode *s);
-    KJSO evaluate();
+    ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s) { }
     void deleteStatements();
-  private:
-    SourceElementsNode *source;
   };
 
 }; // namespace

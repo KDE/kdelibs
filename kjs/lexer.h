@@ -88,8 +88,6 @@ namespace KJS {
 
     bool isWhiteSpace() const;
     bool isLineTerminator() const;
-    bool isIdentLetter() const;
-    bool isDecimalDigit(unsigned short c) const;
     bool isHexDigit(unsigned short c) const;
     bool isOctalDigit(unsigned short c) const;
 
@@ -103,6 +101,9 @@ namespace KJS {
     static unsigned char convertHex(unsigned short c1, unsigned short c2);
     static UChar convertUnicode(unsigned short c1, unsigned short c2,
 				unsigned short c3, unsigned short c4);
+    static bool isIdentLetter(unsigned short c);
+    static bool isDecimalDigit(unsigned short c);
+
   private:
 
     void record8(unsigned short c);

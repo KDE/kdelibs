@@ -29,6 +29,8 @@
 #include "object.h"
 #include "function.h"
 
+#define I18N_NOOP(s) s
+
 namespace KJS {
 
   class Boolean;
@@ -37,6 +39,7 @@ namespace KJS {
   class Object;
   class RegExp;
   class Node;
+  class FunctionBodyNode;
   class ProgramNode;
 #ifdef KJS_DEBUGGER
   class Debugger;
@@ -232,14 +235,15 @@ namespace KJS {
 
   class DeclaredFunctionImp : public ConstructorImp {
   public:
-    DeclaredFunctionImp(const UString &n, StatementNode *b, const List *sc);
+    DeclaredFunctionImp(const UString &n, FunctionBodyNode *b,
+			const List *sc, int len = -1);
     ~DeclaredFunctionImp();
     Completion execute(const List &);
     Object construct(const List &);
     CodeType codeType() const { return FunctionCode; }
     List *scopeChain() const { return scopes; }
   private:
-    StatementNode *block;
+    FunctionBodyNode *body;
     List *scopes;
   };
 

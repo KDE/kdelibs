@@ -53,6 +53,7 @@ using namespace KJS;
   Node                *node;
   StatementNode       *stat;
   ParameterNode       *param;
+  FunctionBodyNode    *body;
   FuncDeclNode        *func;
   ProgramNode         *prog;
   AssignExprNode      *init;
@@ -134,6 +135,7 @@ using namespace KJS;
 %type <slist> StatementList
 %type <init>  Initializer
 %type <func>  FunctionDeclaration
+%type <body>  FunctionBody
 %type <src>   SourceElement
 %type <srcs>  SourceElements
 %type <param> FormalParameterList
@@ -574,15 +576,15 @@ Finally:
 ;
 
 FunctionDeclaration:
-    FUNCTION IDENT '(' ')' Block   { $$ = new FuncDeclNode($2, 0L, $5);
-                                     delete $2; }
-  | FUNCTION IDENT '(' FormalParameterList ')' Block
+    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode($2, 0L, $5);
+                                             delete $2; }
+  | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
                                    { $$ = new FuncDeclNode($2, $4, $6);
                                      delete $2; }
 
 FunctionExpr:
-    FUNCTION '(' ')' Block   	   { $$ = new FuncExprNode(0L, $4); }
-  | FUNCTION '(' FormalParameterList ')' Block
+    FUNCTION '(' ')' FunctionBody  { $$ = new FuncExprNode(0L, $4); }
+  | FUNCTION '(' FormalParameterList ')' FunctionBody
                                    { $$ = new FuncExprNode($3, $5); }
 
 ;
@@ -593,8 +595,14 @@ FormalParameterList:
 	                             delete $3; }
 ;
 
+FunctionBody:
+    '{' '}'  /* TODO: spec ??? */  { $$ = new FunctionBodyNode(0L); }
+  | '{' SourceElements '}'         { $$ = new FunctionBodyNode($2); }
+;
+
 Program:
-    SourceElements                 { $$ = new ProgramNode($1); }
+    SourceElements                 { $$ = new ProgramNode($1);
+                                     KJScriptImp::current()->progNode = $$; }
 ;
 
 SourceElements:

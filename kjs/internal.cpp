@@ -340,10 +340,13 @@ AnonymousFunction::AnonymousFunction()
   /* TODO */
 }
 
-DeclaredFunctionImp::DeclaredFunctionImp(const UString &n, StatementNode *b,
-					 const List *sc)
-  : ConstructorImp(n), block(b), scopes(sc->copy())
+DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
+					 FunctionBodyNode *b, const List *sc,
+					 int len)
+  : ConstructorImp(n), body(b), scopes(sc->copy())
 {
+  if (len >= 0)
+    setLength(len);
 }
 
 DeclaredFunctionImp::~DeclaredFunctionImp()
@@ -365,7 +368,7 @@ Completion DeclaredFunctionImp::execute(const List &)
   }
 #endif
 
-  Completion result = block->execute();
+  KJSO result = body->evaluate(); // completion ??
 
 #ifdef KJS_DEBUGGER
   if (dbg) {
@@ -373,7 +376,10 @@ Completion DeclaredFunctionImp::execute(const List &)
   }
 #endif
 
-  return result;
+  if (result.isA(CompletionType))
+    return Completion(result.imp());
+
+  return Completion(Normal, result);
 }
 
 // ECMA 13.2.2
