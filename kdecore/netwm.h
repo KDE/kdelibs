@@ -270,9 +270,6 @@ public:
 
     /**
        Sets the viewport for the current desktop to the specified point.
-
-       The desktop argument is ignored. Early drafts of the NET WM
-       Specification were unclear about the semantics of this property.
     **/
     void setDesktopViewport(int desktop, const NETPoint &viewport);
 
