@@ -265,7 +265,7 @@ QString Decoder::decode(const char *data, int len)
     return out;
 }
 
-QString Decoder::flush()
+QString Decoder::flush() const
 {
     return m_decoder->toUnicode(buffer, buffer.length());
 }
