@@ -209,6 +209,8 @@ int main( int argc, char **argv )
 #define STRINGENTRY2 " hello"
 #define STRINGENTRY3 "hello "
 #define STRINGENTRY4 " hello "
+#define STRINGENTRY5 " "
+#define STRINGENTRY6 ""
 
   KConfig sc( "kconfigtest" );
 
@@ -222,6 +224,8 @@ int main( int argc, char **argv )
   sc.writeEntry( "stringEntry2", STRINGENTRY2 );
   sc.writeEntry( "stringEntry3", STRINGENTRY3 );
   sc.writeEntry( "stringEntry4", STRINGENTRY4 );
+  sc.writeEntry( "stringEntry5", STRINGENTRY5 );
+  sc.writeEntry( "stringEntry6", STRINGENTRY6 );
 
   sc.setGroup("Bye");  
   sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
@@ -282,6 +286,24 @@ int main( int argc, char **argv )
   s = sc2.readEntry( "stringEntry4" );
   fprintf(stderr, "comparing stringEntry4 %s with %s -> ", STRINGENTRY4, s.latin1());
   if (s == STRINGENTRY4)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
+  s = sc2.readEntry( "stringEntry5" );
+  fprintf(stderr, "comparing stringEntry5 %s with %s -> ", STRINGENTRY5, s.latin1());
+  if (s == STRINGENTRY5)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
+  s = sc2.readEntry( "stringEntry6" );
+  fprintf(stderr, "comparing stringEntry6 %s with %s -> ", STRINGENTRY6, s.latin1());
+  if (s == STRINGENTRY6)
     fprintf(stderr, "OK\n");
   else {
     fprintf(stderr, "not OK\n");
