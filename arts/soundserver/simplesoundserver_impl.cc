@@ -28,6 +28,7 @@
 #include "flowsystem.h"
 #include "audiosubsys.h"
 #include "connect.h"
+#include "debug.h"
 #include <stdio.h>
 #include <iostream>
 
@@ -66,11 +67,25 @@ bool PlayWavJob::done()
 
 PlayStreamJob::PlayStreamJob(ByteSoundProducer bsp) : sender(bsp)
 {
-	printf("Attach ByteSoundProducer!\n");
+	int samplingRate = bsp.samplingRate();
+	int channels = bsp.channels();
+	int bits = bsp.bits();
 
-	convert.samplingRate(bsp.samplingRate());
-	convert.channels(bsp.channels());
-	convert.bits(bsp.bits());
+	arts_debug("incoming stream, parameters: rate=%d, %d bit, %d channels",
+		samplingRate, bits, channels);
+
+	if((samplingRate < 500 || samplingRate > 2000000)
+	|| (channels != 1 && channels != 2) || (bits != 8 && bits != 16))
+	{
+		arts_warning("invalid stream parameters: rate=%d, %d bit, %d channels",
+						samplingRate, bits, channels);
+		terminate();
+		return;
+	}
+
+	convert.samplingRate(samplingRate);
+	convert.channels(channels);
+	convert.bits(bits);
 
 	connect(sender,"outdata",convert,"indata");
 	connect(convert,out);
@@ -182,12 +197,16 @@ float SimpleSoundServer_impl::minStreamBufferTime()
 
 void SimpleSoundServer_impl::attach(ByteSoundProducer bsp)
 {
+	arts_return_if_fail(!bsp.isNull());
+
 	jobs.push_back(new PlayStreamJob(bsp));
 }
 
 void SimpleSoundServer_impl::detach(ByteSoundProducer bsp)
 {
-	printf("Detach ByteSoundProducer!\n");
+	arts_return_if_fail(!bsp.isNull());
+	arts_debug("detach incoming stream");
+
 	list<SoundServerJob *>::iterator j;
 
 	for(j = jobs.begin();j != jobs.end();j++)
@@ -273,7 +292,7 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 	 */
 	if(extensionok)
 	{
-		cout << "extension = " << extension << endl;
+		arts_debug("search playobject, extension = %s",extension.c_str());
 
 		TraderQuery query;
 		query.supports("Interface","Arts::PlayObject");
@@ -291,7 +310,8 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 	 */
 	if(objectType != "")
 	{
-		cout << "Creating " << objectType << " to play file." << endl;
+		arts_debug("creating %s to play file", objectType.c_str());
+
 		PlayObject result = SubClass(objectType);
 		if(result.loadMedia(filename))
 		{
@@ -301,15 +321,9 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 			result._node()->start();
 			return result;
 		}
-		else
-		{
-			cout << "loadmedia failed." << endl;
-		}
+		else arts_warning("couldn't load file %s", filename.c_str());
 	}
-	else
-	{
-		cout << "can't play this" << endl;
-	}
+	else arts_warning("file format extension %s unsupported",extension.c_str());
 
 	return PlayObject::null();
 }
