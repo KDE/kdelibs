@@ -56,10 +56,10 @@ void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
     serviceType = val.lower();
     int pos = serviceType.find( ";" );
     if ( pos!=-1 )
-        serviceType = serviceType.left( pos );
+        serviceType.truncate( pos );
     pos = serviceType.find( "-plugin" );
     if ( pos!=-1 )
-        serviceType = serviceType.left( pos );
+        serviceType.truncate( pos );
     needWidgetUpdate = true;
 }
 
