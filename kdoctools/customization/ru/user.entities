@@ -17,7 +17,7 @@
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ    '<acronym>FAQ</acronym>'>
 
-<! Temporary hack - please translate to Russian: -->
+<!-- Temporary hack - please translate to Russian: -->
 <!ENTITY Shift  "<keycap>Shift</keycap>">
 <!ENTITY Alt    "<keycap>Alt</keycap>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
