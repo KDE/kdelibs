@@ -194,7 +194,9 @@ public:
   QPixmap miniIcon() const;
 
   /**
-      Makes @param topWidget a top widget of the application.
+      Sets the top widget of the application.
+      
+      @param topWidget a top widget of the application.
 
       This means bascially applying the right window caption and
       icon. An application may have several top widgets. You don't
@@ -549,6 +551,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.120  1999/11/07 01:40:14  ettrich
+// some updates, new kwin access to window manager functionality
+//
 // Revision 1.119  1999/11/03 03:14:00  ettrich
 //
 // session management update. New docs, new functions, more fun.
