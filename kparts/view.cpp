@@ -123,23 +123,12 @@ Part* View::hitTest( const QPoint& )
     return part();
 }
 
-bool View::event( QEvent* ev )
+void View::customEvent( QCustomEvent* ev )
 {
-    if ( QWidget::event( ev ) )
-	 return TRUE;
-
     if ( ev->type() == QEvent::User + 291173 )
-    {
 	viewActivateEvent( (ViewActivateEvent*)ev );
-	return TRUE;
-    }
     else if ( ev->type() == QEvent::User + 291174 )
-    {
 	viewSelectEvent( (ViewSelectEvent*)ev );
-	return TRUE;
-    }
-
-    return FALSE;
 }
 
 void View::viewSelectEvent( ViewSelectEvent* ev )

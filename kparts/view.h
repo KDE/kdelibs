@@ -58,7 +58,7 @@ public:
 
     virtual Part* hitTest( const QPoint& pos );
 
-    bool event( QEvent* );
+    virtual void customEvent( QCustomEvent* );
 
     /**
      * Overload this function if the content will be displayed
