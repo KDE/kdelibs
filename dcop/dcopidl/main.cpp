@@ -29,7 +29,7 @@ void dcopidlParse( const char *_code );
 
 int idl_line_no;
 
-#ifdef YYDEBUG
+#if YYDEBUG
 extern int yydebug;
 #endif
 
@@ -52,7 +52,7 @@ int main( int argc, char** argv )
     arr.resize( len + 1 );
     arr[ len ] = 0;
 
-#ifdef YYDEBUG
+#if YYDEBUG
     char *debug = getenv("DEBUG");
     if (debug)
 	yydebug = 1;
