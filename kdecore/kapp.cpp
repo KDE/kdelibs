@@ -960,6 +960,8 @@ QString KApplication::kdedir()
 	  kdedir = "/usr/local/kde";
 #endif
 	}
+	if (kdedir.at(kdedir.length() -1 ) != '/')
+	  kdedir += '/';
   }
 
   return kdedir;
@@ -972,11 +974,8 @@ QString KApplication::kde_htmldir()
 {
     warning("kde_htmldir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_HTMLDIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))  
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
+    if (dir.isNull()) 
+      dir = kdedir() + KStandardDirs::kde_default("html");
     return dir;
 }
 
@@ -984,11 +983,8 @@ QString KApplication::kde_appsdir()
 {
     warning("kde_appsdir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_APPSDIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
+    if (dir.isNull()) 
+      dir = kdedir() + KStandardDirs::kde_default("apps");
     return dir;
 }
                                         
@@ -997,11 +993,8 @@ QString KApplication::kde_datadir()
 {
     warning("kde_datadir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_DATADIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
+    if (dir.isNull())
+      dir = kdedir() + KStandardDirs::kde_default("data");
     return dir;
 }
 
@@ -1009,11 +1002,8 @@ QString KApplication::kde_bindir()
 {
     warning("kde_bindir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_BINDIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
+    if (dir.isNull())
+      dir = kdedir() + KStandardDirs::kde_default("exe");
     return dir;
 }
 
@@ -1021,11 +1011,8 @@ QString KApplication::kde_mimedir()
 {
     warning("kde_mimedir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_MIMEDIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
+     if (dir.isNull()) 
+       dir = kdedir() + KStandardDirs::kde_default("mime");
     return dir;
 }
 

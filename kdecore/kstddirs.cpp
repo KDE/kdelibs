@@ -85,15 +85,18 @@ bool KStandardDirs::addResourceType( const QString& type,
 }
 
 bool KStandardDirs::addResourceDir( const QString& type,
-		     const QString& absdir)
+				    const QString& absdir)
 {
     QStringList *paths = absolutes.find(type);
     if (!paths) {
 	paths = new QStringList();
 	absolutes.insert(type, paths);
     }
-    if (!paths->contains(absdir)) {
-	paths->append(absdir);
+    QString copy = absdir;
+    if (copy.at(copy.length() - 1) != '/')
+      copy += '/';
+    if (!paths->contains(copy)) {
+	paths->append(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }
@@ -141,14 +144,12 @@ QString KStandardDirs::findResourceDir( const QString& type,
 
     QStringList candidates = getResourceDirs(type);
     QString fullPath;
-    const char *testfile;
     struct stat buff;
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) 
     {
-      fullPath = *it + filename; // workaround for (*it + filename).ascii()
-      testfile = fullPath.ascii();
-      if (access(testfile, R_OK) == 0 && stat( testfile, &buff ) == 0)
+      fullPath = *it + filename;
+      if (access(fullPath.ascii(), R_OK) == 0 && stat( fullPath.ascii(), &buff ) == 0)
 	if ( S_ISREG( buff.st_mode ))
 	  return *it;
     }
