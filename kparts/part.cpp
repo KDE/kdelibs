@@ -106,6 +106,9 @@ void PartBase::setInstance( KInstance *inst, bool loadPlugins )
 {
   KXMLGUIClient::setInstance( inst );
   KGlobal::locale()->insertCatalogue( inst->instanceName() );
+  // install partdata resource type
+  inst->dirs()->addResourceType( "partdata", KStandardDirs::kde_default("data")
+                                   + QString::fromLatin1( inst->instanceName() ) + '/' );
   if ( loadPlugins )
     Plugin::loadPlugins( m_obj, instance() );
 }
