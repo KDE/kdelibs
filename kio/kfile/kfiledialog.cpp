@@ -1629,13 +1629,13 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 
     KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
                                       kc->readNumEntry( PathComboCompletionMode,
-                                      KGlobalSettings::CompletionAuto );
+                                      KGlobalSettings::completionMode() );
     if ( cm != KGlobalSettings::completionMode() )
         combo->setCompletionMode( cm );
 
     cm = (KGlobalSettings::Completion)
          kc->readNumEntry( LocationComboCompletionMode,
-                           KGlobalSettings::CompletionAuto );
+                           KGlobalSettings::completionMode() );
     if ( cm != KGlobalSettings::completionMode() )
         locationEdit->setCompletionMode( cm );
 
