@@ -76,6 +76,35 @@ QString KIO::convertSize( unsigned long size )
     return s;
 }
 
+QString KIO::convertSizeFromKB( unsigned long size /* in KB */ )
+{
+    float fsize;
+    QString s;
+    // Tera-byte
+    if ( size >= 1073741824 )
+    {
+        fsize = (float) size / (float) 1073741824;
+        s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    // Giga-byte
+    else if ( size >= 1048576 )
+    {
+        fsize = (float) size / (float) 1048576;
+        s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    // Mega-byte
+    else if ( size > 1024 )
+    {
+        fsize = (float) size / (float) 1024;
+        s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
+    else // Kilo-byte
+    {
+        s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(size));
+    }
+    return s;
+}
+
 QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedSize, unsigned long speed )
 {
   QTime remainingTime;
@@ -506,7 +535,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 		 *  either match the exact device name (floppies),
 		 *  or the device name without the slice#
 		 */
-		if( strncmp( devname.data(), mnt.mnt_special, len ) == 0 
+		if( strncmp( devname.data(), mnt.mnt_special, len ) == 0
 			|| (strncmp( devname.data(),
 				mnt.mnt_special, len - 3 ) == 0
 				&& mnt.mnt_special[len - 3] == '/' )) {
