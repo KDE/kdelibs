@@ -1,4 +1,4 @@
-        /* This file is part of the KDE project
+/* This file is part of the KDE project
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
@@ -251,8 +251,10 @@ void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
     KDockWidget* w = (KDockWidget*) dwdg;
   if (!m_map.contains(w)) return;
   int id=m_map[w];
-  m_tb->setTab(id,false);
-  tabClicked(id);
+  if (m_tb->isTabRaised(id)) {
+	  m_tb->setTab(id,false);
+	  tabClicked(id);
+  }
   m_tb->removeTab(id);
   m_ws->removeWidget(w);
   m_map.remove(w);
@@ -276,10 +278,12 @@ void KMdiDockContainer::undockWidget(KDockWidget *dwdg)
   if (!m_map.contains(w))
     return;
 
-  kdDebug(760)<<"Wiget has been undocked, setting tab down"<<endl;
   int id=m_map[w];
-  m_tb->setTab(id,false);
-  tabClicked(id);
+  if (m_tb->isTabRaised(id)) {
+	  kdDebug(760)<<"Wiget has been undocked, setting tab down"<<endl;
+	  m_tb->setTab(id,false);
+	  tabClicked(id);
+  }
 }
 
 void KMdiDockContainer::tabClicked(int t)
