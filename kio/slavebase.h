@@ -1,4 +1,4 @@
-/* This file is part of the KDE project
+/*
    Copyright (C) 2000 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -405,6 +405,29 @@ public:
      * changed (i.e. proxy settings) .
      */
     virtual void reparseConfiguration();
+
+
+    /**
+     * @return timeout value for connecting to remote host.
+     */
+    int connectTimeout();
+
+    /**
+     * @return timeout value for connecting to proxy in secs.
+     */
+    int proxyConnectTimeout();
+
+    /**
+     * @return timeout value for read from first data from 
+     * remote host in seconds.
+     */
+    int responseTimeout();
+
+    /**
+     * @return timeout value for read from subsequent data from 
+     * remote host in secs.
+     */
+    int readTimeout();
 
     /**
      * @internal

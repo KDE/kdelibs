@@ -1105,3 +1105,45 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     sendAuthenticationKey (auth_key, grp_key, info.keepPassword );
     return true;
 }
+
+int SlaveBase::connectTimeout()
+{
+    bool ok;
+    QString tmp = metaData("ConnectTimeout");
+    int result = tmp.toInt(&ok);
+    if (ok)
+       return result;
+    return KProtocolManager::defaultConnectTimeout();
+}
+
+int SlaveBase::proxyConnectTimeout()
+{
+    bool ok;
+    QString tmp = metaData("ProxyConnectTimeout");
+    int result = tmp.toInt(&ok);
+    if (ok)
+       return result;
+    return KProtocolManager::defaultProxyConnectTimeout();
+}
+
+
+int SlaveBase::responseTimeout()
+{
+    bool ok;
+    QString tmp = metaData("ResponseTimeout");
+    int result = tmp.toInt(&ok);
+    if (ok)
+       return result;
+    return KProtocolManager::defaultResponseTimeout();
+}
+
+
+int SlaveBase::readTimeout()
+{
+    bool ok;
+    QString tmp = metaData("ReadTimeout");
+    int result = tmp.toInt(&ok);
+    if (ok)
+       return result;
+    return KProtocolManager::defaultReadTimeout();
+}

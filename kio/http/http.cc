@@ -155,6 +155,13 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
      kdDebug(7103) << "Can't connect with DCOP server." << endl;
   }
 
+  // Make sure to set some values here... just to be on the safe side.
+  m_proxyConnTimeout = KProtocolManager::defaultProxyConnectTimeout();
+  m_remoteConnTimeout = KProtocolManager::defaultConnectTimeout();
+  m_remoteRespTimeout = KProtocolManager::defaultResponseTimeout();
+  m_maxCacheAge = KProtocolManager::defaultMaxCacheAge();
+  m_bUseCache = true;
+
   reparseConfiguration();
 
 #ifdef DO_SSL
@@ -2041,6 +2048,15 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   kdDebug(7103) << "UseCache: " << metaData("UseCache") << endl;
   kdDebug(7103) << "CacheDir: " << metaData("CacheDir") << endl;
   kdDebug(7103) << "MaxCacheAge: " << metaData("MaxCacheAge") << endl;
+
+  // Obtain the proxy and remote server timeout values
+  m_proxyConnTimeout = proxyConnectTimeout();
+  m_remoteConnTimeout = connectTimeout();
+  m_remoteRespTimeout = responseTimeout();
+
+  kdDebug(7103) << "Timeout proxy = " << m_proxyConnTimeout << 
+                   " connection = " << m_remoteConnTimeout <<
+                   " response = " << m_remoteRespTimeout << endl;
 }
 
 void HTTPProtocol::slave_status()
@@ -3679,11 +3695,6 @@ void HTTPProtocol::reparseConfiguration()
 
   m_bSendUserAgent = KProtocolManager::sendUserAgent();
 
-
-  // Obtain the proxy and remote server timeout values
-  m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();
-  m_remoteConnTimeout = KProtocolManager::connectTimeout();
-  m_remoteRespTimeout = KProtocolManager::responseTimeout();
 
   // Define language and charset settings from KLocale (David)
   // Get rid of duplicate language entries!!
