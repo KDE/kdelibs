@@ -647,7 +647,7 @@ public:
     void setHasActive() {  _hasActive = true; }
 
     bool operator==(const RenderStyle& other) const;
-    bool        isFloating() const { return ( _floating != FNONE); }
+    bool        isFloating() const { return !(_floating == FNONE); }
     bool        hasMargin() const { return surround->margin.nonZero(); }
     bool        hasPadding() const { return surround->padding.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
