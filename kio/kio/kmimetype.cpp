@@ -284,7 +284,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 	    	    	    	     bool *accurate)
 {
     KMimeType::Ptr mime = findByURL(_url, _mode, _is_local_file, _fast_mode);
-    if (accurate) *accurate = !(_fast_mode) || (mime->patternsAccuracy() == 100);
+    if (accurate) *accurate = !(_fast_mode) || ((mime->patternsAccuracy() == 100) && mime != defaultMimeTypePtr());
     return mime;
 }
 
