@@ -1,4 +1,10 @@
+#define protected public // for delegate()
+#include <kcombobox.h>
+#undef protected
+
 #include "kcomboboxtest.h"
+
+#include <assert.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -19,57 +25,64 @@
 KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
               :QWidget(widget, name)
 {
+  // Test for KCombo's KLineEdit destruction
+  KComboBox *testCombo = new KComboBox( true, this ); // rw, with KLineEdit
+  testCombo->setEditable( false ); // destroys our KLineEdit
+  assert( testCombo->delegate() == 0L );
+  delete testCombo; // not needed anymore
+
+
   QVBoxLayout *vbox = new QVBoxLayout (this, KDialog::marginHint(), KDialog::spacingHint());
-  
+
   // Read-only combobox
   QHBox* hbox = new QHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   QLabel* lbl = new QLabel("&Read-Only Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
-  
+
   m_ro = new KComboBox(hbox, "ReadOnlyCombo" );
-  lbl->setBuddy (m_ro);  
+  lbl->setBuddy (m_ro);
   m_ro->setCompletionMode( KGlobalSettings::CompletionAuto );
   QObject::connect (m_ro, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_ro, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
   vbox->addWidget (hbox);
-    
+
   // Read-write combobox
   hbox = new QHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&Editable Combo:", hbox);
-  lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);  
-  
+  lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+
   m_rw = new KComboBox( true, hbox, "ReadWriteCombo" );
   lbl->setBuddy (m_rw);
-  m_rw->setDuplicatesEnabled( true );  
+  m_rw->setDuplicatesEnabled( true );
   m_rw->setInsertionPolicy( QComboBox::NoInsertion );
   QObject::connect (m_rw, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_rw, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
   QObject::connect (m_rw, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
   vbox->addWidget (hbox);
-  
+
   // History combobox...
   hbox = new QHBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&History Combo:", hbox);
-  lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);  
-  
+  lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+
   m_hc = new KHistoryCombo( true, hbox, "ReadWriteCombo" );
   lbl->setBuddy (m_hc);
-  m_hc->setDuplicatesEnabled( true );  
+  m_hc->setDuplicatesEnabled( true );
   m_hc->setInsertionPolicy( QComboBox::NoInsertion );
   QObject::connect (m_hc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_hc, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
   QObject::connect (m_hc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
-  vbox->addWidget (hbox);  
-    
+  vbox->addWidget (hbox);
+
   // Read-write combobox that is a replica of code in konqueror...
   hbox = new QHBox(this);
-  hbox->setSpacing (KDialog::spacingHint());  
+  hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel( "&Konq's Combo:", hbox);
-  lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);  
-  
+  lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+
   m_konqc = new KComboBox( true, hbox, "KonqyCombo" );
   lbl->setBuddy (m_konqc);
   m_konqc->setMaxCount( 10 );
@@ -77,36 +90,36 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   QObject::connect (m_konqc, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
   QObject::connect (m_konqc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
   vbox->addWidget (hbox);
-  
+
   // Create an exit button
   hbox = new QHBox (this);
   m_btnExit = new QPushButton( "E&xit", hbox );
   QObject::connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
-  
+
   // Create a disable button...
   m_btnEnable = new QPushButton( "Disa&ble", hbox );
   QObject::connect (m_btnEnable, SIGNAL(clicked()), SLOT(slotDisable()));
-  
+
   vbox->addWidget (hbox);
-  
+
   // Popuplate the select-only list box
   QStringList list;
-  list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" 
+  list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips"
        << "Computer" << "Mankind";
   list.sort();
-  
+
   // Setup read-only combo
   m_ro->insertStringList( list );
   m_ro->completionObject()->setItems( list );
-  
+
   // Setup read-write combo
   m_rw->insertStringList( list );
   m_rw->completionObject()->setItems( list );
-  
+
   // Setup read-write combo
   m_hc->insertStringList( list );
   m_hc->completionObject()->setItems( list );
-  
+
   // Setup konq's combobox
   KSimpleConfig historyConfig( "konq_history" );
   historyConfig.setGroup( "Location Bar" );
@@ -115,11 +128,11 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   s_pCompletion->setItems( historyConfig.readListEntry( "ComboContents" ) );
   s_pCompletion->setCompletionMode( KGlobalSettings::completionMode() );
   m_konqc->setCompletionObject( s_pCompletion );
-  
+
   QPixmap pix = SmallIcon("www");
   m_konqc->insertItem( pix, "http://www.kde.org" );
   m_konqc->setCurrentItem( m_konqc->count()-1 );
-  
+
   m_timer = new QTimer (this);
   connect (m_timer, SIGNAL (timeout()), SLOT (slotTimeout()));
 }
@@ -137,30 +150,30 @@ void KComboBoxTest::slotDisable ()
 {
   if (m_timer->isActive())
     return;
-    
+
   m_btnEnable->setEnabled (!m_btnEnable->isEnabled());
-    
-  m_timer->start (5000, true);      
+
+  m_timer->start (5000, true);
 }
 
 void KComboBoxTest::slotTimeout ()
 {
   bool enabled = m_ro->isEnabled();
-  
+
   if (enabled)
     m_btnEnable->setText ("Ena&ble");
-  else  
+  else
     m_btnEnable->setText ("Disa&ble");
-    
+
   m_ro->setEnabled (!enabled);
   m_rw->setEnabled (!enabled);
-  m_hc->setEnabled (!enabled);  
+  m_hc->setEnabled (!enabled);
   m_konqc->setEnabled (!enabled);
-  
+
   m_btnEnable->setEnabled (!m_btnEnable->isEnabled());
 }
 
-void KComboBoxTest::slotActivated( int index ) 
+void KComboBoxTest::slotActivated( int index )
 {
   kdDebug() << "Activated Combo: " << sender()->name() << ", index:" << index << endl;
 }
@@ -183,7 +196,7 @@ void KComboBoxTest::quitApp()
 int main ( int argc, char **argv)
 {
   KApplication a(argc, argv, "kcomboboxtest");
-  KComboBoxTest* t= new KComboBoxTest;    
+  KComboBoxTest* t= new KComboBoxTest;
   a.setMainWidget (t);
   t->show ();
   return a.exec();

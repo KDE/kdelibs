@@ -354,22 +354,22 @@ signals:
      * Emitted when the shortcut for substring completion is pressed.
      */
     void substringCompletion( const QString& );
-    
+
    /**
     * Emitted when the text rotation key-bindings are pressed.
     *
     * The argument indicates which key-binding was pressed. In this case this
-    * can be either one of four values: @p PrevCompletionMatch, 
-    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See @ref 
+    * can be either one of four values: @p PrevCompletionMatch,
+    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See @ref
     * KCompletionBase::setKeyBinding() for details.
     *
     * Note that this signal is @em NOT emitted if the completion
     * mode is set to CompletionNone.
     */
     void textRotation( KCompletionBase::KeyBindingType );
-    
+
     /**
-     * Emitted whenever the completion mode is changed by the user 
+     * Emitted whenever the completion mode is changed by the user
      * through the context menu.
      */
     void completionModeChanged( KGlobalSettings::Completion );
@@ -466,6 +466,9 @@ protected:
                          bool destroyOldWindow = true );
 
     virtual void wheelEvent( QWheelEvent *ev );
+
+private slots:
+    void lineEditDeleted();
 
 private:
     // Constants that represent the ID's of the popup menu.
