@@ -524,7 +524,7 @@ findValue (register const char *str, register unsigned int len)
     }
   return 0;
 }
-static const char * valueList[] = {
+static const char * const valueList[] = {
 "",
 "inherit", 
 "none", 

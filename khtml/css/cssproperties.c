@@ -348,7 +348,7 @@ findProp (register const char *str, register unsigned int len)
     }
   return 0;
 }
-static const char * propertyList[] = {
+static const char * const propertyList[] = {
 "",
 "background-color", 
 "background-image", 
