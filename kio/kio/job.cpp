@@ -1886,6 +1886,19 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
                  Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
     }
     QTimer::singleShot(0, this, SLOT(slotStart()));
+    /**
+       States:
+       STATE_STATING for the dest
+       STATE_STATING for each src url (statNextSrc)
+            for each: if dir -> STATE_LISTING (filling 'dirs' and 'files')
+            but if direct rename possible: STATE_RENAMING instead.
+       STATE_CREATING_DIRS (createNextDir, iterating over 'dirs')
+            if conflict: STATE_CONFLICT_CREATING_DIRS
+       STATE_COPYING_FILES (copyNextFile, iterating over 'files')
+            if conflict: STATE_CONFLICT_COPYING_FILES
+       STATE_DELETING_DIRS (deleteNextDir) (if moving)
+       done.
+    */
 }
 
 void CopyJob::slotStart()
@@ -2314,23 +2327,31 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                 m_skipList.append( oldURL.path( 1 ) );
                 skip( oldURL );
                 dirs.remove( it ); // Move on to next dir
-            } else if ( m_bOverwriteAll ) { // overwrite all => just skip
-                emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
-                dirs.remove( it ); // Move on to next dir
-            } else
-            {
-                assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
-                subjobs.remove( job );
-                assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            } else {
+                // Did the user choose to overwrite already?
+                bool bOverwrite = m_bOverwriteAll;
+                QString destFile = (*it).uDest.path();
+                QStringList::Iterator sit = m_overwriteList.begin();
+                for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
+                    if ( *sit == destFile.left( (*sit).length() ) )
+                        bOverwrite = true;
+                if ( bOverwrite ) { // overwrite => just skip
+                    emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
+                    dirs.remove( it ); // Move on to next dir
+                } else {
+                    assert( ((SimpleJob*)job)->url().url() == (*it).uDest.url() );
+                    subjobs.remove( job );
+                    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
-                // We need to stat the existing dir, to get its last-modification time
-                KURL existingDest( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
-                Scheduler::scheduleJob(newJob);
-                kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
-                state = STATE_CONFLICT_CREATING_DIRS;
-                addSubjob(newJob);
-                return; // Don't move to next dir yet !
+                    // We need to stat the existing dir, to get its last-modification time
+                    KURL existingDest( (*it).uDest );
+                    SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
+                    Scheduler::scheduleJob(newJob);
+                    kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
+                    state = STATE_CONFLICT_CREATING_DIRS;
+                    addSubjob(newJob);
+                    return; // Don't move to next dir yet !
+                }
             }
         }
         else
@@ -2758,6 +2779,7 @@ void CopyJob::copyNextFile()
         // Do we set overwrite ?
         bool bOverwrite = m_bOverwriteAll; // yes if overwrite all
         QString destFile = (*it).uDest.path();
+        kdDebug(7007) << "copying " << destFile << endl;
         if ( (*it).uDest == (*it).uSource )
             bOverwrite = false;
         else
@@ -3064,22 +3086,38 @@ void CopyJob::slotResult( Job *job )
             }
             if ( err )
             {
-                bool renaming = ( m_currentSrcURL.directory() == dest.directory() );
-                m_currentSrcURL=*m_currentStatSrc;
-                m_currentDestURL=m_dest;
+                // This code is similar to CopyJob::slotResultConflictCopyingFiles
+                // but here it's about the base src url being moved/renamed
+                // (*m_currentStatSrc) and its dest (m_dest), not about a single file.
+                // It also means we already stated the dest, here.
+                // On the other hand we haven't stated the src yet (we skipped doing
+                // to save time, since it's not necessary to rename directly!)...
 
-                if ( ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST ) && 
-		     renaming )
+                Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
+
+                // Existing dest?
+                if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
                 {
                     if (m_reportTimer)
                         m_reportTimer->stop();
 
                     QString newPath;
-                    RenameDlg_Mode mode = M_SINGLE;
+                    // Offer overwrite only if the existing thing is a file
+                    // If src==dest, use "overwrite-itself"
+                    RenameDlg_Mode mode = (RenameDlg_Mode)
+                        ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
+                            ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
+                    // I won't use M_MULTI or M_SKIP there. It's too ambiguous:
+                    // we are in the middle of the stat phase, so it's hard to know
+                    // if it will apply to the already-stated-dirs that will be copied later,
+                    // and/oor to the to-be-stated src urls that might be in the same case...
+                    mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+                    // we lack mtime info for both the src (not stated)
+                    // and the dest (stated bu this info wasn't stored
                     RenameDlg_Result r = Observer::self()->open_RenameDlg( this,
                                          err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                          m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
-                                         m_currentDestURL.prettyURL(0, KURL::StripFileProtocol),
+                                         dest.prettyURL(0, KURL::StripFileProtocol),
                                          mode, newPath );
                     if (m_reportTimer)
                         m_reportTimer->start(REPORT_TIMEOUT,false);
@@ -3099,22 +3137,29 @@ void CopyJob::slotResult( Job *job )
                             state = STATE_STATING;
                             destinationState = DEST_NOT_STATED;
                             addSubjob(job);
-                            break;
+                            return;
                         }
+                        case R_OVERWRITE:
+                            // Add to overwrite list
+                            // Note that we add dest, not m_dest.
+                            // This ensures that when moving several urls into a dir (m_dest),
+                            // we only overwrite for the current one, not for all.
+                            // When renaming a single file (m_asMethod), it makes no difference.
+                            kdDebug(7007) << "adding to overwrite list: " << dest.path() << endl;
+                            m_overwriteList.append( dest.path() );
+                            break;
                         default:
                             //assert( 0 );
                             break;
                     }
                 }
-                else
-                {
-                    kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
-                    //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
-                    KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
-                    state = STATE_STATING;
-                    addSubjob(job);
-                    m_bOnlyRenames = false;
-                }
+
+                kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
+                //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
+                KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
+                state = STATE_STATING;
+                addSubjob(job);
+                m_bOnlyRenames = false;
             }
             else
             {
