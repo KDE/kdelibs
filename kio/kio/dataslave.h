@@ -123,15 +123,9 @@ namespace KIO {
 	    data(ba);
 	}
 	void dispatch_finished() {
-	  if (_suspended) {
-	    QueueStruct q(QueueFinished);
-	    dispatchQueue.push_back(q);
-	  } else {
-	    finished();
-	    kill();	// commit suicide, we don't want to be reused
-            emit slaveDied(this);
-	    //delete this;
-	  }
+	  // Allways queue, since it will delete us
+          QueueStruct q(QueueFinished);
+          dispatchQueue.push_back(q);
 	}
 
     protected slots:
