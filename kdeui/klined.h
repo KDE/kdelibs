@@ -65,16 +65,41 @@
  *
  * @sect A small example:
  *
- * To use the new completion features :
+ * To simply use the new completion features :
  *
  * <pre>
  * KLineEdit *edit = new KLineEdit( this,"mywidget" );
  * edit->enableCompletion();
  * </pre>
  *
- * To use this widget like it was in KDE 1.1.x simply do not
- * enable the completion object and connect to the necessary
- * signals.
+ * To have more control over the compeltion object,
+ * for session management purposes for example :
+ *
+ * <pre>
+ * KLineEdit *edit = new KLineEdit( this,"mywidget" );
+ * KCompletion *comp = new KCompletion();
+ * edit->setCompletionObject( comp );
+ * </pre>
+ *
+ * The above code can also be modified to make KLineEdit
+ * accept a customized completion object :
+ *
+ * <pre>
+ * KLineEdit *edit = new KLineEdit( this,"mywidget" );
+ * KURLCompletion *comp = new KURLCompletion();
+ * edit->setCompletionObject( comp );
+ * </pre>
+ *
+ * To force KLineEdit to delete the completion object
+ * when it is destroyed simply replace :
+ *
+ * <pre>edit->setCompletionObject( comp );</pre>
+ *
+ * with
+ *
+ * <pre>edit->setCompletionObject( comp, true );</pre>
+ *
+ * See @ref setCompletionObject for more information.
  *
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@earthlink.net>
@@ -120,9 +145,7 @@ public:
     /**
     * Puts cursor at the end of the string.
     * 
-    * When using in a toolbar, call this in your slot connected to signal completion if
-    * necessary.  This method is deprecated.  Please use @see QLineEdit::end( bool )
-    * instead.
+    * This method is deprecated.  Use @see QLineEdit::end instead.
     *
     * @deprecated
     * @see QLineEdit::end( bool )
@@ -130,49 +153,38 @@ public:
     void cursorAtEnd() { end( false ); }
 
     /**
-    * Set the internal @ref KCompletion object managed by this widget.
+    * Sets the @ref KCompletion object this widget will use.
     *
-    * This function allows you to set the completion object to the
-    * generic one (@ref KCompletion) or more specialized ones like
-    * @ref KURLCompletion.  Please note that you cannot set the object.
+    * This function allows you to enable the completion feature by supplying
+    * your own KCompletion object.  It also enables you to control how this
+    * completion object will be handled by this widget (see note below).
     *
-    * NOTE: The pointer to the @ref KCompletion object you have supplied is
-    * now managed by this widget.  Hence, it will be automatically deleted
-    * when this widget's deconstructor is called.  In short, @bf do @bf not delete
-    * it yourself unless you want to crash your application!
+    * NOTE: The completion object assigned by using method is not by default
+    * deleted when this object is destroyed.  If you want KLineEdit to handle
+    * the deletion, make sure you set the flag in the parameter to true.  This
+    * is done to allow multiple widgets to share one completion object.
     *
-    * @param @p obj A @ref KCompletion or a @ref KCompletion derived object.
+    * @param @p obj A @ref KCompletion or a derived child object.
+    * @param @p autoDelete if true, deletes the completion object on exit.
     */
-    void setCompletionObject( KCompletion* obj );
-
-    /**
-    * Retrieve a pointer to the completion object used by this widget.
-    *
-    * If the pointer is NULL, a new object is created.  Note that this
-    * method does not modify any internal variables.  If you want
-    * to enable completion you have to use either @see enableCompletion()
-    * or @see setCompletionObject( KCompletion* ).
-    *
-    * NOTE: The pointer to the @ref KCompletion object returned by this method
-    * is managed by this widget.  Hence, it will be automatically deleted
-    * when this widget's deconstructor is called.  In short, @bf do @bf not delete
-    * it yourself unless you want crash your application!
-    *
-    * @return A pointer to the completion object.
-    */
-    KCompletion* completionObject() const { return (comp == 0) ? new KCompletion() : comp; }
+    void setCompletionObject( KCompletion* obj, bool autoDelete = false );
 
     /**
     * Disable the completion feature of this widget. 
     *
-    * If you were using a custom completion object, you would need
-    * to set it again as this method deletes any reference to it.
-    * @see setCompletionObject().
+    * If you were using a custom completion object, you would need to set it
+    * again as this method deletes any reference to it. See also
+    * @see setCompletionObject.
     */
     void disableCompletion();
 
     /**
-    * Enable the completion feature for this widget.
+    * Enables the completion feature for this widget.
+    *
+    * This is a convienence method.  Unlike @ref setCompletionObject, it does
+    * not allow you to manipulate which KCompletion object to use or how it
+    * should be handled when this widget is destroyed.  Hence, if you need control
+    * over the completion object you would need to use @ref setCompletionObject.
     */
     void enableCompletion();
 
@@ -313,18 +325,15 @@ public:
     void useGlobalSettings();
 
     /**
-    * Checks whether or not the context menu is enabled.
+    * Returns true when the context menu is enabled.
     *
     * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bShowContextMenu; }
 
     /**
-    * Checks whether or not the mode changer is visible in the context menu.
-    *
-    * This is a convenient method that allows the programmer to provide the
-    * user the ability to change to the completion mode on the fly.  This way
-    * the programmer can defer what completion mode to use to the user.
+    * Returns true if the mode changer item is visible in
+    * the context menu.
     *
     * @return @p true if the mode changer is visible in context menu.
     */
@@ -401,8 +410,6 @@ protected slots:
 protected:
     // Pointers for the context & sub menus.
     QPopupMenu *contextMenu, *subMenu;
-    // Pointer to Completion object.
-    KCompletion *comp;
 
     virtual void initialize( bool , bool );
     virtual void keyPressEvent( QKeyEvent * );
@@ -430,14 +437,17 @@ private :
     // Flag to indicate whether a mode switcher
     // item will be available in the popup menu.
     bool m_bShowModeChanger;
-    // Flag to determine whether completion should be
-    // ignored when mode is set to CompletionAuto.
-    // Also used to determine whether the current text
+    // Flag to determine whether the current text
     // needs to be inserted in KCompletion's list.
     bool m_bHasInputChanged;
+    // Flag that determined whether the completion object
+    // should be deleted when this object is destroyed.
+    bool m_bIsForeignCompObj;
 
     // Stores the completion mode locally.
     KGlobal::Completion m_iCompletionMode;
+    // Pointer to Completion object.
+    KCompletion *comp;
 };
 
 #endif

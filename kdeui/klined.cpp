@@ -51,20 +51,19 @@ KLineEdit::~KLineEdit ()
 {
     delete contextMenu;
     delete subMenu;
-    delete comp;
+    if( !m_bIsForeignCompObj )
+        delete comp;
 }
 
-void KLineEdit::setCompletionObject ( KCompletion* obj )
+void KLineEdit::setCompletionObject ( KCompletion* obj, bool autoDelete )
 {
     // Ignore NULL assignments.  If programmer needs to delete
     // the completion object, (s)he should invoke disableCompletion().
     if( obj == 0 )
         return;
 
-    if( comp != 0 )
-        delete comp;  //delete the old object.
-
     comp = obj;
+    m_bIsForeignCompObj = autoDelete;
 }
 
 void KLineEdit::disableCompletion()
@@ -76,11 +75,10 @@ void KLineEdit::disableCompletion()
 void KLineEdit::enableCompletion()
 {
     if( comp == 0 )
-        comp = completionObject();
-    // Make sure beeping for CompletionShell and
-    // the completion mode in KCompletion are set
-    // up properly.
-    setCompletionMode( m_iCompletionMode );
+    {
+        comp = new KCompletion();
+        setCompletionMode( m_iCompletionMode );  // forces a completion mode sync w/ KCompletion.
+    }
 }
 
 void KLineEdit::showModeChanger( bool showChanger )
@@ -318,6 +316,9 @@ void KLineEdit::initialize( bool showMenu, bool showChanger )
     // return without changing text.
     m_bHasInputChanged = false;
 
+    // Delete any internal reference to KCompletion object
+    //
+    m_bIsForeignCompObj = false;
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
     m_iCompletionKey = 0;
