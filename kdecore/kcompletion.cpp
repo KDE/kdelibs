@@ -172,8 +172,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
-    if ( (myCompletionMode == KGlobalSettings::CompletionShell ||
-	  myCompletionMode == KGlobalSettings::CompletionMan) &&
+    if ( myCompletionMode == KGlobalSettings::CompletionShell &&
 	 string == myLastString ) {
 	// Don't use myMatches since calling postProcessMatches()
 	// on myMatches here would interfere with call to
@@ -332,10 +331,7 @@ QString KCompletion::findCompletion( const QString& string )
     if ( node && node->childrenCount() > 1 ) {
 	myHasMultipleMatches = true;
 	
-	if ( myCompletionMode == KGlobalSettings::CompletionAuto ||
-	     myCompletionMode == KGlobalSettings::CompletionPopup ) {
-	    // myCompletionMode == KGlobalSettings::CompletionMan ) {
-
+	if ( myCompletionMode == KGlobalSettings::CompletionAuto ) {
 	    myRotationIndex = 1;
 	    if (myOrder != Weighted) {
 		while ( (node = node->firstChild()) ) {
