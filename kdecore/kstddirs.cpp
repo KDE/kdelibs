@@ -181,7 +181,7 @@ static void lookupDirectory(const QString& path, const QRegExp &regexp,
 	continue; // No match
 
       fn = path + fn;
-      if ( stat( fn, &buff ) != 0 ) {
+      if ( stat( fn.ascii(), &buff ) != 0 ) {
 	QString tmp = QString("Error statting %1:").arg( fn );
 	perror(tmp.ascii());
 	continue; // Couldn't stat (Why not?)

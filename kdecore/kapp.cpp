@@ -417,7 +417,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		    chown(aConfigFile.name().ascii(), getuid(), getgid());
 		    
 		    aConfigFile.close();
-		    pSessionConfig = new KConfig(QString::null, aSessionConfigName);
+		    pSessionConfig = new KConfig(QString::null, !aSessionConfigName.isNull());
 		    
 		    // do not write back. the application will get
 		    // a new one if demanded.
