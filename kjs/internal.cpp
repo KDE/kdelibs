@@ -299,9 +299,8 @@ Context::~Context()
 
 void Context::mark()
 {
-  assert(thisVal);
-  if (thisVal->refcount == 0)
-    thisVal->mark();
+  if (thisVal.imp()->refcount == 0)
+    thisVal.imp()->mark();
   if (activation.imp() && activation.imp()->refcount == 0)
     activation.imp()->mark();
   if (variable.imp() && variable.imp()->refcount == 0)
@@ -647,8 +646,7 @@ bool KJScriptImp::call(Imp *scope, const UString &func, const List &args)
       return false;
   }
   ConstructorImp *ctor = static_cast<ConstructorImp*>(v.imp());
-  Null nil; /* TODO */
-  ctor->executeCall(nil.imp(), &args);
+  ctor->executeCall(scope, &args);
   return !hadException();
 }
 

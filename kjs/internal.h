@@ -218,12 +218,12 @@ namespace KJS {
     void popScope();
     List *copyOfChain();
     KJSO variableObject() const { return variable; }
-    Imp* thisValue() const { return thisVal; }
+    Imp* thisValue() const { return thisVal.imp(); }
     void setThisValue(Imp *t) { thisVal = t; }
     LabelStack *seenLabels() { return &ls; }
   private:
     LabelStack ls;
-    Imp *thisVal;
+    KJSO thisVal;
     KJSO activation;
     KJSO variable;
     List *scopeChain;
