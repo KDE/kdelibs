@@ -68,7 +68,10 @@ CSSStyleSheetImpl *CSSStyleSelector::userSheet = 0;
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
 
+static int dynamicState;
 static RenderStyle::PseudoId dynamicPseudo;
+static int usedDynamicStates;
+static int selectorState;
 static bool lastSelectorPart;
 
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
@@ -150,11 +153,13 @@ void CSSStyleSelector::clear()
 
 static bool strictParsing;
 
-RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
+RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 {
     // this is a bit hacky, but who cares....
     ::strictParsing = strictParsing;
-
+    ::dynamicState = state;
+    ::usedDynamicStates = StyleSelector::None;
+    
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
 
    // the higher the offset or important number, the later the rules get applied.
@@ -168,6 +173,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
 
     if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
+
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
     dynamicPseudo = RenderStyle::NOPSEUDO;
@@ -189,20 +195,16 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     pseudoProps->setAutoDelete( false ); // so we don't delete them twice
     for(int i = 0; i < (int)propsToApply->count(); i++) {
 	CSSOrderedProperty* ordprop = propsToApply->at(i);
-	// LINK pseudo ids have to be applied to :hover too
-	if ( ordprop->pseudoId == RenderStyle::NOPSEUDO || ordprop->pseudoId == RenderStyle::LINK )
+	if ( ordprop->pseudoId == RenderStyle::NOPSEUDO )
 	    applyRule( style, ordprop->prop, e );
-	if ( ordprop->pseudoId != RenderStyle::NOPSEUDO )
+	else
 	    pseudoProps->append( ordprop );
     }
 
     for(int i = 0; i < (int)pseudoProps->count(); i++) {
 	CSSOrderedProperty* ordprop = pseudoProps->at(i);
 	RenderStyle *pseudoStyle;
-	if ( ordprop->pseudoId != RenderStyle::LINK )
-	    pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
-	else
-	    pseudoStyle = style->getPseudoStyle(RenderStyle::HOVER);
+	pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
 	if ( pseudoStyle )
 	    applyRule(pseudoStyle, ordprop->prop, e);
     }
@@ -210,6 +212,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     delete pseudoProps;
     delete propsToApply;
 
+    if ( usedDynamicStates & StyleSelector::Hover )
+	style->setHasHover();
+    if ( usedDynamicStates & StyleSelector::Focus )
+	style->setHasFocus();
+    if ( usedDynamicStates & StyleSelector::Active )
+	style->setHasActive();
+    
     return style;
 }
 
@@ -231,7 +240,8 @@ CSSOrderedRule::~CSSOrderedRule()
 
 bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
 {
-    dynamicPseudo=RenderStyle::NOPSEUDO;
+    dynamicPseudo = RenderStyle::NOPSEUDO;
+    selectorState = StyleSelector::None;
     lastSelectorPart = true;
     CSSSelector *sel = selector;
     NodeImpl *n = e;
@@ -286,6 +296,11 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
         }
         relation = sel->relation;
     }
+    usedDynamicStates |= selectorState;
+    if ( ( (selectorState & StyleSelector::Hover) && !(dynamicState & StyleSelector::Hover) ) ||
+	 ( (selectorState & StyleSelector::Focus) && !(dynamicState & StyleSelector::Focus) ) ||
+	 ( (selectorState & StyleSelector::Active) && !(dynamicState & StyleSelector::Active) ) )
+	return false;
     return true;
 }
 
@@ -368,37 +383,35 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 		n = n->nextSibling();
 	    if( n == e )
 		return true;
-	} else if(sel->value == ":link") {
+	} else if ( last && sel->value == ":first-line" ) { // first-line and first-letter are only allowed at the end of a selector
+	    dynamicPseudo=RenderStyle::FIRST_LINE;
+	    return true;
+	} else if ( last && sel->value == ":first-letter" ) {
+	    dynamicPseudo=RenderStyle::FIRST_LETTER;
+	    return true;
+	} else if( sel->value == ":link") {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
 	    if ( pseudoState == PseudoLink ) {
-		if ( dynamicPseudo != RenderStyle::HOVER )
-		    dynamicPseudo = RenderStyle::LINK;
 		return true;
 	    }
 	} else if ( sel->value == ":visited" ) {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
 	    if ( pseudoState == PseudoVisited ) {
-		if ( dynamicPseudo != RenderStyle::HOVER )
-		    dynamicPseudo = RenderStyle::LINK;
 		return true;
 	    }
-	} else if ( sel->value == ":first-line" && last ) { // first-line and first-letter are only allowed at the end of a selector
-	    dynamicPseudo=RenderStyle::FIRST_LINE;
-	    return true;
-	} else if ( sel->value == ":first-letter" && last ) {
-	    dynamicPseudo=RenderStyle::FIRST_LETTER;
-	    return true;
 	} else if ( sel->value == ":hover" ) {
-	    dynamicPseudo=RenderStyle::HOVER;
+	    selectorState |= StyleSelector::Hover;
+	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
+	    // to the element.
+	    return true; 
+	} else if ( sel->value == ":focus" ) {
+	    selectorState |= StyleSelector::Focus;
 	    return true;
-// 	} else if ( sel->value == ":focus" ) {
-// 	    dynamicPseudo=RenderStyle::FOCUS;
-// 	    return true;
-// 	} else if ( sel->value == ":active" ) {
-// 	    dynamicPseudo=RenderStyle::ACTIVE;
-// 	    return true;
+	} else if ( sel->value == ":active" ) {
+	    selectorState |= StyleSelector::Active;
+	    return true;
 	}
 	return false;
     }

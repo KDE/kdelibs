@@ -64,7 +64,14 @@ namespace khtml
 	StyleSelector() {};
 	virtual ~StyleSelector() {};
 	
-	virtual RenderStyle *styleForElement(DOM::ElementImpl *e) = 0;
+	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int = None) = 0;
+	
+	enum State {
+	    None = 0x00,
+	    Hover = 0x01,
+	    Focus = 0x02,
+	    Active = 0x04
+	};
     };
 
 
@@ -96,7 +103,7 @@ namespace khtml
 	static void setUserStyle(const DOM::DOMString &sheet);
 	static void clear();
 	
-	virtual RenderStyle *styleForElement(DOM::ElementImpl *e);
+	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int state = None );
 	
 	bool strictParsing;
     protected:

@@ -125,7 +125,6 @@ public:
 
     virtual void applyChanges(bool = true, bool = true);
 
-    virtual khtml::RenderStyle *activeStyle();
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     virtual NamedNodeMapImpl *attributes() const;
 

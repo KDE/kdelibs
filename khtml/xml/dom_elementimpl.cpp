@@ -455,20 +455,6 @@ void ElementImpl::setTabIndex( short _tabindex )
   tabindex=_tabindex;
 }
 
-khtml::RenderStyle* ElementImpl::activeStyle()
-{
-    if (!m_style) return 0;
-
-    RenderStyle* dynamicStyle=0;
-    if ( pressed() && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::ACTIVE)))
-	return dynamicStyle;
-    else if (m_focused && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::FOCUS)))
-	return dynamicStyle;
-    else if  ( mouseInside() && (dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER)))
-        return dynamicStyle;
-    return m_style;
-}
-
 void ElementImpl::normalize( int &exceptioncode )
 {
     // In DOM level 2, this gets moved to Node
@@ -559,7 +545,15 @@ void ElementImpl::recalcStyle()
     bool faf = m_style->flowAroundFloats();
     EDisplay oldDisplay = m_style->display();
 
-    setStyle(document->styleSelector()->styleForElement(this));
+    int dynamicState = StyleSelector::None;
+    if ( m_mouseInside )
+	dynamicState |= StyleSelector::Hover;
+    if ( m_focused )
+	dynamicState |= StyleSelector::Focus;
+    if ( m_active )
+	dynamicState |= StyleSelector::Active;
+	
+    setStyle( document->styleSelector()->styleForElement(this, dynamicState) );
 
     if (oldDisplay != m_style->display()) {
 	detach();
@@ -568,7 +562,7 @@ void ElementImpl::recalcStyle()
 
     m_style->setFlowAroundFloats(faf);
     if( m_render && m_style )
-	m_render->setStyle(activeStyle());
+	m_render->setStyle(m_style);
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
 	n->recalcStyle();
@@ -664,7 +658,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 
     setMouseInside(inside);
 
-    if (oldinside != inside && m_style->getPseudoStyle(RenderStyle::HOVER))
+    if ( oldinside != inside && m_style->hasHover() )
         applyChanges(true,false);
 
     // reset previous z index
@@ -685,7 +679,7 @@ void ElementImpl::setFocus(bool received)
 	m_render->setKeyboardFocus(DOM::ActivationOff);
 
     NodeBaseImpl::setFocus(received);
-    if (m_style->getPseudoStyle(RenderStyle::FOCUS))
+    if (m_style->hasFocus())
         applyChanges(true,false);
 
     RenderObject *cb = m_render->containingBlock();
@@ -705,7 +699,7 @@ void ElementImpl::setActive(bool down)
 	m_render->setKeyboardFocus(DOM::ActivationOff);
 
     NodeBaseImpl::setActive(down);
-    if (m_style->getPseudoStyle(RenderStyle::ACTIVE))
+    if (m_style->hasActive())
         applyChanges(true,false);
 
     RenderObject *cb = m_render->containingBlock();

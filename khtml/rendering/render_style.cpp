@@ -113,6 +113,10 @@ RenderStyle::setBitDefaults()
 
     _htmlHacks=false;
     _flowAroundFloats=false;
+    
+    _hasHover = false;
+    _hasFocus = false;
+    _hasActive = false;
 }
 
 
@@ -198,6 +202,10 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     surround = other.surround;
 
     inherited = other.inherited;
+
+    _hasHover = other._hasHover;
+    _hasFocus = other._hasFocus;
+    _hasActive = other._hasActive;
 
     pseudoStyle=0;
 

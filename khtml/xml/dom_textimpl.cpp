@@ -362,7 +362,7 @@ void TextImpl::recalcStyle()
 {
     if (!parentNode())
 	return;
-    if(m_render) m_render->setStyle(parentNode()->activeStyle());
+    if(m_render) m_render->setStyle(parentNode()->style());
 }
 
 // DOM Section 1.1.1

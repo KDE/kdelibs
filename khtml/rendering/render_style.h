@@ -491,8 +491,8 @@ class RenderStyle : public DOM::DomShared
 public:
     static void cleanup();
 
-    // LINK is only used in the CSSStyleSelector, to get the pseudo style for :hover right.
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER, LINK, FOCUS, ACTIVE };
+    // static pseudo styles. Dynamic ones are produced on the fly.
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER };
 
 protected:
     void setBitDefaults();
@@ -530,8 +530,11 @@ protected:
 
     bool _flowAroundFloats :1;
 
-    PseudoId _styleType:3;
-
+    PseudoId _styleType : 2;
+    bool _hasHover : 1;
+    bool _hasFocus : 1;
+    bool _hasActive : 1;
+    
 // non-inherited attributes
     DataRef<StyleBoxData> box;
     DataRef<StyleVisualData> visual;
@@ -564,6 +567,14 @@ public:
     RenderStyle* addPseudoStyle(PseudoId pi);
     void removePseudoStyle(PseudoId pi);
 
+    bool hasHover() const { return _hasHover; }
+    bool hasFocus() const { return _hasFocus; }
+    bool hasActive() const { return _hasActive; }
+
+    void setHasHover() { _hasHover = true; }
+    void setHasFocus() { _hasFocus = true; }
+    void setHasActive() { _hasActive = true; }
+    
     bool operator==(const RenderStyle& other) const;
 
 //    static int counter;
