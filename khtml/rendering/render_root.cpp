@@ -57,7 +57,7 @@ void RenderRoot::layout(bool deep)
     	RenderFlow::layout(true);
 
     // resize so that body height >= viewport height
-    if (style()->htmlHacks())
+/*    if (style()->htmlHacks())
     {
     	RenderObject* child = firstChild();
 	if (!deep)
@@ -81,7 +81,7 @@ void RenderRoot::layout(bool deep)
     	    if (child)	
     		child->setHeight(h - child->marginTop()+child->marginBottom());
 	}
-    }
+    }*/
 
 }
 

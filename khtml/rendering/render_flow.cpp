@@ -185,9 +185,13 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 void RenderFlow::calcWidth()
 {
     Length w = m_style->width();
-    m_width = containingBlockWidth() - marginLeft() - marginRight();
-    //assert(containingBlock() != this);
-    m_width = w.width(m_width);
+    if (w.type == Variable)
+    	m_width = containingBlockWidth() - marginLeft() - marginRight();
+    else
+    {
+    	m_width = w.width(containingBlockWidth());
+	m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    }
 
     if(m_width < m_minWidth) m_width = m_minWidth;
 
@@ -250,28 +254,30 @@ void RenderFlow::layout( bool deep )
     Length h = style()->height();
 
     if (h.isFixed())
-    	m_height = MAX (h.value, m_height);
+    	m_height = MAX (h.value + borderTop() + paddingTop() 
+	    + borderBottom() + paddingBottom() , m_height);
     else if (h.isPercent())
     {
     	Length ch = containingBlock()->style()->height();
 	if (ch.isFixed())
-    	    m_height = MAX (h.width(ch.value), m_height);
+    	    m_height = MAX (h.width(ch.value) + borderTop() + paddingTop() 
+	    	+ borderBottom() + paddingBottom(), m_height);
     }
 
     if(floatBottom() > m_height)	
     {
-	if(isFloating())
+	if(isFloating() || isTableCell())
+	{
 	    m_height = floatBottom();
-	else if(isTableCell())
-	    m_height = floatBottom();
+	    m_height += borderBottom() + paddingBottom();
+	}
 	else if( m_next)
 	{
 	    assert(!m_next->isInline());
 	    m_next->setLayouted(false);
 	    m_next->layout();
 	}
-    }
-
+    }     
     setLayouted();
 }
 
@@ -480,13 +486,16 @@ RenderFlow::insertFloat(RenderObject *o)
     positionNewFloats();
 
     // html blocks flow around floats, to do this add floats to parent too
-    if(style()->htmlHacks() && childrenInline())
+    if(style()->htmlHacks() && childrenInline() )
     {
     	RenderObject* obj = parent();
      	while ( obj && obj->childrenInline() ) obj=obj->parent();
     	if (obj && obj->isFlow() && f->noPaint == false)
 	{
 	    RenderFlow* par = static_cast<RenderFlow*>(obj);
+	    
+	    if (par->isFloating())
+	    	return;
 
 	    if(!par->specialObjects) {
 		par->specialObjects = new QList<SpecialObject>;
@@ -544,10 +553,13 @@ void RenderFlow::positionNewFloats()
 	if (o->style()->floating() == FLEFT)
 	{
 	    int fx = leftMargin(y);
-	    if (rightMargin(y)-fx < f->width)
+	    if (contentWidth() >= f->width)
 	    {
-		fx=borderLeft();
-		y=leftBottom()+1;
+	    	while (rightMargin(y)-fx < f->width)
+	    	{		
+		    y++;
+		    fx = leftMargin(y);
+	    	}
 	    }
 	    f->left = fx;
 //	    kdDebug(300) << "positioning left aligned float at (" << //		   fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
@@ -557,10 +569,13 @@ void RenderFlow::positionNewFloats()
 	else
 	{
 	    int fx = rightMargin(y);
-	    if (fx - leftMargin(y) < f->width)
+	    if (contentWidth() >= f->width)
 	    {
-		fx=m_width-borderRight();
-		y=leftBottom()+1;
+	    	while (fx - leftMargin(y) < f->width)
+	    	{
+		    y++;
+		    fx = rightMargin(y);
+	    	}
 	    }
 	    f->left = fx - f->width;
 //	    kdDebug(300) << "positioning right aligned float at (" << //		   fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
@@ -733,6 +748,7 @@ RenderFlow::clearFloats()
     }
 
     // add overhanging special objects from the previous RenderFlow
+    if (isFloating()) return;
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
     if(!flow->specialObjects) return;
@@ -990,7 +1006,8 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    newBox->setParent(this);
 	    m_first = m_last = newBox;
 	    newBox->close();
-	    newBox->setYPos(-100000);	
+	    newBox->setYPos(-100000);
+	    newBox->setLayouted(false);
 	    newBox->layout();
 	}
 	m_childrenInline = false;

@@ -149,7 +149,7 @@ public:
 protected:
     short m_minWidth;
     short m_maxWidth;
-    short m_contentHeight;
+    int m_contentHeight;
 
     SelectionState m_selectionState : 3 ;
 
