@@ -75,6 +75,7 @@
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
+#include <kuser.h>
 
 
 //////////////////
@@ -95,7 +96,6 @@ public:
    bool useShell : 1;
 
    KPty *pty;
-   const char *user;
 
    int priority;
 
@@ -836,11 +836,6 @@ int KProcess::setupCommunication(Communication comm)
       out[0] = mfd;
     if (rcomm & Stderr)
       err[0] = mfd;
-
-    // we do this here, as after tty setup we won't get valid data
-    d->user = getlogin();
-    if (!d->user)
-      d->user = getenv("LOGNAME");
   }
 
   communication = comm;
@@ -966,7 +961,7 @@ int KProcess::commSetupDoneC()
   if (d->usePty) {
     d->pty->setCTty();
     if (d->addUtmp)
-      d->pty->login(d->user, getenv("DISPLAY"));
+      d->pty->login(KUser(KUser::UseRealUserID).loginName().local8Bit().data(), getenv("DISPLAY"));
   }
 
   return ok;
