@@ -128,9 +128,10 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 [ \t]			;
 [\n]			{ idl_line_no++; }
 
-"/\*"([^\*]|\*[^/])*	{ comment_mode = 1; }
-[^\n]*"\*/"[^\n]*		{ comment_mode = 0; /* this also eats one-line comments */ }
-[^\n]*			{ if (!comment_mode) { REJECT; } }
+"/\*"           { comment_mode = 1; }
+"\*/"           { if (!comment_mode) { REJECT; } else { comment_mode = 0; } }
+[^\n*]*         { if (!comment_mode) { REJECT; } }
+"*"             { if (!comment_mode) { REJECT; } }
 
 "//"[^\n]*		;
 "#!"[^\n]*		{
