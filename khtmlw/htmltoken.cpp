@@ -424,8 +424,8 @@ void HTMLTokenizer::write( const char *str )
 			{
 			    *dest = 0;
 			    appendToken( buffer, dest-buffer );
-			    dest = buffer;
 			}
+			dest = buffer;
 			*dest = TAG_ESCAPE;
 			*(dest+1) = '\n';
 			*(dest+2) = 0;

@@ -1656,7 +1656,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 
 	QString href;
 	QString coords;
-	QString atarget = baseTarget;
+	QString atarget = baseTarget.copy();
 	HTMLArea::Shape shape = HTMLArea::Rect;
 
 	while ( stringTok->hasMoreTokens() )
@@ -1823,7 +1823,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	}
 	if ( !target && !baseTarget.isEmpty() )
 	{
-	    target = new char [ baseTarget.length() ];
+	    target = new char [ baseTarget.length()+1 ];
 	    strcpy( target, baseTarget );
 	    parsedTargets.append( target );
 	}

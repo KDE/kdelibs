@@ -236,6 +236,7 @@ HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 {
+    autoDelete=false;
     text = "";
     font = _font;
     ascent = _painter->fontMetrics().ascent();
