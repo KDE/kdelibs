@@ -875,7 +875,7 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
     if ( !isInline() ) 
 	return true;
 
-    // find the next text/image after the anchor, to get a position
+    // find the next text/image child, to get a position
     while(o) {
 	if(o->firstChild())
 	    o = o->firstChild();
@@ -909,8 +909,13 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos)
 
     RenderObject *o = m_render;
     o->absolutePosition( xPos, yPos );
-
-    // find the last text/image in the anchor, to get a position
+    if (!isInline())
+    {
+	xPos += o->width();
+	yPos += o->height();
+	return true;
+    }
+    // find the last text/image child, to get a position
     while(o) {
 	if(o->lastChild())
 	    o = o->lastChild();

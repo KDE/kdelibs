@@ -213,6 +213,8 @@ public:
      */
     ElementImpl *findNextLink(ElementImpl *start, bool forward);
 
+    ElementImpl *findNextLink(bool forward) { return findNextLink(m_focusNode, forward); };
+
     // overrides NodeImpl
     virtual bool mouseEvent( int x, int y,
 			     int _tx, int _ty,
@@ -227,6 +229,9 @@ public:
     QList<StyleSheetImpl> htmlAuthorStyleSheets();
 
     void addXMLStyleSheet(StyleSheetImpl *_styleSheet);
+
+    ElementImpl *focusNode();
+    void setFocusNode(ElementImpl *);
 
 signals:
     virtual void finishedParsing();
@@ -270,6 +275,8 @@ protected:
     unsigned short m_elementNameAlloc;
     unsigned short m_elementNameCount;
     QList<StyleSheetImpl> m_xmlStyleSheets;
+
+    ElementImpl *m_focusNode;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

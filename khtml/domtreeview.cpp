@@ -32,6 +32,7 @@ DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * n
 
 DOMTreeView::~DOMTreeView()
 {
+    disconnect(part);
 }
 
 void DOMTreeView::showTree(const DOM::Node &pNode)

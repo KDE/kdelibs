@@ -522,7 +522,6 @@ void HTMLGenericFormElementImpl::onFocus()
 {
     // ###:-| this is called from JS _and_ from event handlers.
     // Split into two functions (BIC)
-    view->setLinkCursor(this);
     DOMString script = getAttribute(ATTR_ONFOCUS);
     if (!script.isEmpty() && view->part()->jScriptEnabled())
         view->part()->executeScript(Node(this), script.string());

@@ -197,6 +197,8 @@ public:
             m_bPluginsOverride = part->d->m_bPluginsOverride;
         }
     }
+
+    focusNodeNumber = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -341,6 +343,8 @@ public:
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;
+
+  int focusNodeNumber;
 };
 
 namespace khtml {
@@ -1347,7 +1351,6 @@ void KHTMLPart::slotFinishedParsing()
 
   if (!d->m_view)
     return; // We are probably being destructed.
-
   // check if the scrollbars are really needed for the content
   // if not, remove them, relayout, and repaint
 
@@ -1355,7 +1358,6 @@ void KHTMLPart::slotFinishedParsing()
 
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
-
 #if 0
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
 
@@ -1474,6 +1476,24 @@ void KHTMLPart::checkCompleted()
 
   if ( m_url.htmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+
+  int focusNodeNumber;
+  if ((focusNodeNumber = d->focusNodeNumber))
+  {
+      DOM::ElementImpl *focusNode = 0;
+      while(focusNodeNumber--)
+      {
+	  if ((focusNode = d->m_doc->findNextLink(focusNode, true))==0)
+	      break;
+	  kdDebug(6000)<<"restoring: "<<focusNodeNumber<<".\n";
+      }
+      if (focusNode)
+      {
+	  QRect focusRect = focusNode->getRect();
+	  d->m_view->ensureVisible(focusRect.x(), focusRect.y());
+	  d->m_doc->setFocusNode(focusNode);
+      }
+  }
 
   if ( !d->m_redirectURL.isEmpty() )
     emit completed( true );
@@ -2779,9 +2799,24 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
-//  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
+  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
+  kdDebug( 6050 ) << " old focusNodeNumber="<< d->focusNodeNumber << endl;
+  kdDebug( 6050 ) << " view at "<<d->m_view << endl;
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
+
+  // save link cursor position
+  int focusNodeNumber = 0;
+  if (d->m_doc)
+  {
+      DOM::ElementImpl *focusNode = d->m_doc->focusNode();
+      while( focusNode )
+      {
+	  focusNodeNumber++;
+	  focusNode = d->m_doc->findNextLink(focusNode, false);
+      }
+  }
+  stream << focusNodeNumber;
 
   // Save the doc's cache id.
   stream << d->m_cacheId;
@@ -2857,6 +2892,11 @@ void KHTMLPart::restoreState( QDataStream &stream )
   long old_cacheId = d->m_cacheId;
 
   stream >> u >> xOffset >> yOffset;
+
+  // restore link cursor position
+  // nth node is active. value is set in checkCompleted()
+  stream >> d->focusNodeNumber;
+  kdDebug()<<"new focus Node number is:"<<d->focusNodeNumber<<endl;
 
   stream >> d->m_cacheId;
 

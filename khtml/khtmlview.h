@@ -204,13 +204,15 @@ private:
      * move the view towards the given rectangle be up to one page.
      * return true if reached.
      */
-    bool paginateTo(const QRect &);
+    bool scrollTo(const QRect &);
 
     /**
      * move the view towards the next node
      * or the last node from this one.
      */
     bool gotoLink(bool);
+
+    DOM::ElementImpl *focusNode();
 
     void useSlowRepaints();
 

@@ -118,6 +118,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_elementNames = 0;
     m_elementNameAlloc = 0;
     m_elementNameCount = 0;
+    m_focusNode = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -141,6 +142,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_elementNames = 0;
     m_elementNameAlloc = 0;
     m_elementNameCount = 0;
+    m_focusNode = 0;
 }
 
 DocumentImpl::~DocumentImpl()
@@ -1303,6 +1305,28 @@ void DocumentImpl::addXMLStyleSheet(StyleSheetImpl *_styleSheet)
     m_xmlStyleSheets.append(_styleSheet);
 }
 
+void DocumentImpl::setFocusNode(ElementImpl *n)
+{
+    // ### add check for same Document
+    if (m_focusNode != n)
+    {
+	if (m_focusNode)
+	    m_focusNode->setFocus(false);
+	m_focusNode = n;
+	kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
+	if (n)
+	{
+	    n->setPressed(false);
+	    n->setFocus();
+	}
+    }
+}
+
+ElementImpl *DocumentImpl::focusNode()
+{
+    return m_focusNode;
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
@@ -1403,7 +1427,6 @@ NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
     exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
 }
-
 
 
 #include "dom_docimpl.moc"

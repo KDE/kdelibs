@@ -665,7 +665,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     setMouseInside(inside);
 
     if (oldinside != inside && m_style->getPseudoStyle(RenderStyle::HOVER))
-        applyChanges(true,false);
+        applyChanges(false,false);
 
     // reset previous z index
     if ( positioned )
@@ -696,6 +696,8 @@ void ElementImpl::setPressed(bool down)
 	return;
     if (down)
 	m_render->setKeyboardFocus(DOM::ActivationActive);
+    else if (m_focused)
+	m_render->setKeyboardFocus(DOM::ActivationPassive);
     else
 	m_render->setKeyboardFocus(DOM::ActivationOff);
 

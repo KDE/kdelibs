@@ -458,12 +458,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             break;
 
         case Key_Space:
-            if (d->currentNode)
-            {
-                toggleActLink(false);
-                break;
-            }
-            // no current Node? scroll...
         case Key_Next:
             scrollBy( 0, clipper()->height() - offs );
             break;
@@ -486,7 +480,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             break;
         case Key_Enter:
         case Key_Return:
-            toggleActLink(false);
+            if (m_part->xmlDocImpl())
+	    {
+		ElementImpl *e = m_part->xmlDocImpl()->focusNode();
+		if (e)
+		    e->setPressed();
+		d->originalNode = e;
+	    }
             break;
         case Key_Home:
             setContentsPos( 0, 0 );
@@ -495,9 +495,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             setContentsPos( 0, contentsHeight() - height() );
             break;
         default:
-            //  d->currentNode->keyPressEvent( _ke );
+	    _ke->ignore();
             return;
-            break;
         }
     _ke->accept();
 }
@@ -508,7 +507,18 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
     {
     case Key_Enter:
     case Key_Return:
-        toggleActLink(true);
+	if (m_part->xmlDocImpl())
+	{
+	    ElementImpl *e = m_part->xmlDocImpl()->focusNode();
+	    if (e && e==d->originalNode && (e->id()==ID_A || e->id()==ID_AREA))
+	    {
+		HTMLAreaElementImpl *a = static_cast<HTMLAreaElementImpl *>(e);
+		emit m_part->urlSelected( a->areaHref().string(),
+					  LeftButton, 0,
+					  a->targetRef().string() );
+	    }
+	    m_part->xmlDocImpl()->setFocusNode(0);
+	}
         return;
       break;
     }
@@ -561,7 +571,7 @@ DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
     return d->underMouse;
 }
 
-bool KHTMLView::paginateTo(const QRect &bounds)
+bool KHTMLView::scrollTo(const QRect &bounds)
 {
     int x, y, xe, ye;
     x = bounds.left();
@@ -631,19 +641,18 @@ bool KHTMLView::gotoLink(bool forward)
     if (!m_part->xmlDocImpl())
         return false;
 
-    ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(d->currentNode, forward);
+    ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(forward);
     if (!nextTarget)
     {
-	if (paginateTo(QRect(contentsX()+d->borderX, (forward?contentsHeight()-d->borderY:d->borderY), 0, 0)))
+	if (scrollTo(QRect(contentsX()+d->borderX, (forward?contentsHeight()-d->borderY:d->borderY), 0, 0)))
 	{
-	    if (d->currentNode) d->currentNode->setFocus(false);
-	    d->currentNode = 0;
+	    if (m_part->xmlDocImpl()->focusNode()) m_part->xmlDocImpl()->setFocusNode(0);
 	    d->borderTouched = false;
 	    return false;
 	}
 	return true;
     }
-    else if (!d->currentNode && !d->borderTouched)
+    else if (!m_part->xmlDocImpl()->focusNode() && !d->borderTouched)
     {
 	kdDebug(6000)<<"B"<<endl;
 	// we're just about entering the view, so let's set reasonable initial values.
@@ -654,7 +663,7 @@ bool KHTMLView::gotoLink(bool forward)
 	    return true;
     }
 
-    if (paginateTo(nextTarget->getRect()))
+    if (scrollTo(nextTarget->getRect()))
     {
 	HTMLAreaElementImpl *anchor = 0;
         if ( ( nextTarget->id() == ID_A || nextTarget->id() == ID_AREA ) )
@@ -665,10 +674,8 @@ bool KHTMLView::gotoLink(bool forward)
 
 	kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
 
-	if (d->currentNode) d->currentNode->setFocus(false);
+	m_part->xmlDocImpl()->setFocusNode(nextTarget);
 	emit m_part->sigNodeSelected(Node(nextTarget));
-        d->currentNode = nextTarget;
-	d->currentNode->setFocus();
     }
     else kdDebug(6000)<<"did not reach the link."<<endl;
     return true;
@@ -798,42 +805,6 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     m_part->xmlDocImpl()->setPaintDevice( this );
 }
 
-void KHTMLView::toggleActLink(bool actState)
-{
-    if ( d->currentNode )
-    {
-        //retrieve url
-        ElementImpl *e = static_cast<ElementImpl *>(d->currentNode);
-        if (!actState) // inactive->active
-        {
-            int x,y;
-	    d->currentNode->setPressed(true);
-            d->currentNode->setFocus(true);
-            d->originalNode=d->currentNode;
-            d->linkPressed=true;
-            e->getUpperLeftCorner(x,y);
-            ensureVisible(x,y);
-        }
-        else //active->inactive
-        {
-            e->setPressed(false);
-            d->linkPressed=false;
-            if (d->currentNode==d->originalNode)
-            {
-              if (e->id()==ID_A || e->id()==ID_AREA)
-                {
-                  HTMLAreaElementImpl *a = static_cast<HTMLAreaElementImpl *>(d->currentNode);
-                  d->currentNode=0;
-                  m_part->urlSelected( a->areaHref().string(),
-                                       LeftButton, 0,
-                                       a->targetRef().string() );
-                }
-            }
-            d->originalNode=0;
-        }
-    }
-}
-
 
 void KHTMLView::useSlowRepaints()
 {
@@ -865,42 +836,3 @@ void KHTMLView::restoreScrollBar ( )
         updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
 }
-
-void KHTMLView::setLinkCursor(DOM::ElementImpl *n)
-{
-  if (lstViews)
-  {
-      lstViews->first();
-      while(lstViews->next())
-      {
-          KHTMLView * actView = lstViews->current();
-          if (!actView || !this)
-              kdFatal(6000)<<"no object / subject\n";
-
-          if (actView != this)
-          {
-              if (actView->d->currentNode && actView->d->currentNode!=n)
-	      {
-                  actView->d->currentNode->setFocus(false);
-		  actView->d->currentNode->setPressed(false);
-	      }
-              actView->d->currentNode = 0;
-          }
-
-      }
-  }
-
-  if (d->currentNode != n)
-  {
-      if (d->currentNode)
-          d->currentNode->setFocus(false);
-      d->currentNode = n;
-      if (n)
-      {
-          n->setPressed(false);
-          n->setFocus();
-      }
-  }
-  d->linkPressed=false;
-}
-
