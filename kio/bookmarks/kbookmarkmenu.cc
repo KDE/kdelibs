@@ -62,6 +62,18 @@
 
 template class QPtrList<KBookmarkMenu>;
 
+static bool *s_advanced = 0;
+
+static bool isAdvanced()
+{
+  if (!s_advanced) {
+    s_advanced = new bool;
+    KGlobal::config()->setGroup( "Settings" );
+    (*s_advanced) = KGlobal::config()->readBoolEntry( "AdvancedAddBookmark", false );
+  }
+  return (*s_advanced);
+}
+
 /********************************************************************
  *
  * KBookmarkMenu
@@ -91,11 +103,12 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     connect( _parentMenu, SIGNAL( aboutToShow() ),
              SLOT( slotAboutToShow() ) );
 
-#if 0
-    (void) _parentMenu->contextMenu();
-    connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
-             this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
-#endif
+    if ( isAdvanced() ) 
+    {
+      (void) _parentMenu->contextMenu();
+      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
+                this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
+    }
 
     if ( m_bIsRoot )
     {
@@ -398,10 +411,7 @@ void KBookmarkMenu::slotAddBookmark()
 
   KBookmarkGroup parentBookmark;
 
-  KGlobal::config()->setGroup( "Settings" );
-  bool autoPick = !KGlobal::config()->readBoolEntry( "AdvancedAddBookmark", false );
-
-  if (autoPick) 
+  if ( !isAdvanced() ) 
   {
     parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
