@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,8 @@
 
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qregexp.h>
+
 #include "blowfish.h"
 #include "sha1.h"
 #include "cbc.h"
@@ -262,6 +264,7 @@ QString Backend::openRCToString(int rc) {
 			return i18n("Error validating wallet integrity. Possibly corrupted.");
 		case -5:
 		case -7:
+		case -9:
 			return i18n("Read error - possibly incorrect password.");
 		case -6:
 			return i18n("Decryption error.");
@@ -402,7 +405,7 @@ int Backend::open(const QByteArray& password) {
 	if (fsize < 0 || fsize > long(encrypted.size()) - blksz - 4) {
 		//kdDebug() << "fsize: " << fsize << " encrypted.size(): " << encrypted.size() << " blksz: " << blksz << endl;
 		encrypted.fill(0);
-		return -7;         // file structure error.
+		return -9;         // file structure error.
 	}
 
 	// compute the hash ourself
@@ -523,22 +526,13 @@ int Backend::sync(const QByteArray& password) {
 		hashStream << static_cast<Q_UINT32>(i.data().count());
 
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
-			switch (j.data()->type()) {
-			case KWallet::Wallet::Password:
-			case KWallet::Wallet::Stream:
-			case KWallet::Wallet::Map:
-				dStream << j.key();
-				dStream << static_cast<Q_INT32>(j.data()->type());
-				dStream << j.data()->value();
+			dStream << j.key();
+			dStream << static_cast<Q_INT32>(j.data()->type());
+			dStream << j.data()->value();
 
-				md5.reset();
-				md5.update(j.key().utf8());
-				hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
-				break;
-			default:
-				assert(0);
-				break;
-			}
+			md5.reset();
+			md5.update(j.key().utf8());
+			hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		}
 	}
 
@@ -670,6 +664,26 @@ Entry *rc = 0L;
 	}
 
 return rc;
+}
+
+
+QPtrList<Entry> Backend::readEntryList(const QString& key) {
+	QPtrList<Entry> rc;
+
+	if (!_open) {
+		return rc;
+	}
+
+	QRegExp re(key, true, true);
+
+	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
+			if (re.exactMatch(j.key())) {
+				rc.append(j.data());
+			}
+		}
+	}
+	return rc;
 }
 
 

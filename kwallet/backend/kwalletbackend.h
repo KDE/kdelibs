@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -76,6 +76,10 @@ class Backend {
 
 		// Look up an entry.  Returns null if it doesn't exist.
 		Entry *readEntry(const QString& key);
+		
+		// Look up a list of entries.  Supports wildcards.
+		// You delete the list.
+		QPtrList<Entry> readEntryList(const QString& key);
 
 		// Store an entry.
 		void writeEntry(Entry *e);

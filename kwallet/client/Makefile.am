@@ -10,5 +10,5 @@ libkwalletclient_la_SOURCES =   kwallet.skel \
 
 libkwalletclient_la_METASOURCES = AUTO
 
-include_HEADERS = kwallet.h
+include_HEADERS = kwallet.h kwallettypes.h
 

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2002-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,6 +21,9 @@
 
 #ifndef _KWALLET_H
 #define _KWALLET_H
+
+#include <qglobal.h>
+#ifdef Q_OS_UNIX
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -301,6 +304,46 @@ class Wallet : public QObject, public DCOPObject {
 		virtual int readPassword(const QString& key, QString& value);
 
 		/**
+		 *  Read the entries matching @p key from the current folder.
+		 *  The entry format is unknown except that it is either a
+		 *  QByteArray or a QDataStream, which effectively means that
+		 *  it is anything.
+		 *  @param key The key of the entry to read.  Wildcards
+		 *             are supported.
+		 *  @param value A buffer to fill with the value.  The key in
+		 *               the map is the entry key.
+		 *  @return Returns 0 on success, non-zero on error.
+		 *  @since 3.4
+		 */
+		int readEntryList(const QString& key, QMap<QString, QByteArray>& value);
+
+		/**
+		 *  Read the map entry @p key from the current folder.
+		 *  @param key The key of the entry to read.  Wildcards
+		 *             are supported.
+		 *  @param value A buffer to fill with the value.  The key in
+		 *               the map is the entry key.
+		 *  @return Returns 0 on success, non-zero on error.  Will
+		 *          return an error if the key was not originally
+		 *          written as a map.
+		 *  @since 3.4
+		 */
+		int readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value);
+
+		/**
+		 *  Read the password entry @p key from the current folder.
+		 *  @param key The key of the entry to read.  Wildcards
+		 *             are supported.
+		 *  @param value A buffer to fill with the value.  The key in
+		 *               the map is the entry key.
+		 *  @return Returns 0 on success, non-zero on error.  Will
+		 *          return an error if the key was not originally
+		 *          written as a password.
+		 *  @since 3.4
+		 */
+		int readPasswordList(const QString& key, QMap<QString, QString>& value);
+
+		/**
 		 *  Write @p key = @p value as a binary entry to the current
 		 *  folder.  Be careful with this, it could cause inconsistency
 		 *  in the future since you can put an arbitrary entry type in
@@ -470,5 +513,7 @@ class Wallet : public QObject, public DCOPObject {
 
 }
 
-#endif
+#endif //Q_OS_UNIX
+
+#endif //_KWALLET_H
 
