@@ -115,8 +115,6 @@ namespace KJS {
       int token;
     };
 
-    static struct keyword keytable[];
-
     // for future extensions
     class LexerPrivate;
     LexerPrivate *priv;

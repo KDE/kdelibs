@@ -28,6 +28,7 @@
 #include "nodes.h"
 #include "lexer.h"
 #include "ustring.h"
+#include "lookup.h"
 
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
@@ -35,6 +36,8 @@ using namespace KJS;
 #ifndef KDE_USE_FINAL
 #include "grammar.h"
 #endif
+
+#include "lexer.lut.h"
 
 // a bridge for yacc from the C world to C++
 int kjsyylex()
@@ -385,7 +388,7 @@ int Lexer::lex()
   case Other:
     return token;
   case Identifier:
-    if (!(token = lookupKeyword(UString(buffer16, pos16).cstring().c_str()))) {
+    if ((token = Lookup::find(&mainTable, buffer16, pos16)) < 0) {
       kjsyylval.ustr = new UString(buffer16, pos16);
       return IDENT;
     }
@@ -657,85 +660,3 @@ void Lexer::record16(UChar c)
 
   buffer16[pos16++] = c;
 }
-
-int Lexer::lookupKeyword(const char *text)
-{
-  struct keyword *p = keytable;
-
-  while (p->name) {
-    if (!strcmp(text, p->name))
-      return p->token;
-    else
-      p++;
-  }
-
-  return 0;
-}
-
-struct Lexer::keyword Lexer::keytable[] = {
-  // literals
-  { "null",      NULLTOKEN },
-  { "true",      TRUETOKEN },
-  { "false",     FALSETOKEN },
-  // keywords
-  { "break",     BREAK },
-  { "case",      CASE },
-  { "catch",     CATCH },
-  { "default",   DEFAULT },
-  { "finally",   FINALLY },
-  { "for",       FOR },
-  { "instanceof",INSTANCEOF },
-  { "new",       NEW },
-  { "var",       VAR },
-  { "continue",  CONTINUE },
-  { "function",  FUNCTION },
-  { "return",    RETURN },
-  { "void",      VOID },
-  { "delete",    DELETE },
-  { "if",        IF },
-  { "this",      THIS },
-  { "do",        DO },
-  { "while",     WHILE },
-  { "else",      ELSE },
-  { "in",        IN },
-  { "switch",    SWITCH },
-  { "throw",     THROW },
-  { "try",       TRY },
-  { "typeof",    TYPEOF },
-  { "with",      WITH },
-  // reserved for future use
-  { "abstract",  RESERVED },
-  { "boolean",   RESERVED },
-  { "byte",      RESERVED },
-  { "char",      RESERVED },
-  { "const",     RESERVED },
-  { "debugger",  RESERVED },
-  { "double",    RESERVED },
-  { "export",    RESERVED },
-  { "extends",   RESERVED },
-  { "final",     RESERVED },
-  { "float",     RESERVED },
-  { "goto",      RESERVED },
-  { "implements",RESERVED },
-  { "int",       RESERVED },
-  { "interface", RESERVED },
-  { "long",      RESERVED },
-  { "native",    RESERVED },
-  { "package",   RESERVED },
-  { "private",   RESERVED },
-  { "protected", RESERVED },
-  { "public",    RESERVED },
-  { "short",     RESERVED },
-  { "static",    RESERVED },
-  { "super",     RESERVED },
-  { "synchronized", RESERVED },
-  { "throws",    RESERVED },
-  { "transient", RESERVED },
-  { "volatile",  RESERVED },
-  { "extends",   RESERVED },
-  { "class",     RESERVED },
-  { "const",     RESERVED },
-  { "enum",      RESERVED },
-  { "import",    RESERVED },
-  { 0,             0      }
-};

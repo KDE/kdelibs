@@ -102,7 +102,8 @@ namespace KJS {
     UString(char c);
     UString(int i);
     UString(const char *c);
-    UString(UChar *c, int length, bool copy = true);
+    UString(const UChar *c, unsigned int length);
+    UString(UChar *c, unsigned int length, bool copy);
     UString(const UString &);
     UString(const UString *);
     UString(const DOM::DOMString &);

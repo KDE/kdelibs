@@ -526,7 +526,7 @@ Object* Object::create(Class c, KJSO *val, Object *p)
     case ErrorClass:
       prot = global->errProto;
       break;
-    case UndefClass:
+    default:
       prot = 0L;
       break;
     }

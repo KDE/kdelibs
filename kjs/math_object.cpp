@@ -23,13 +23,50 @@
 #include "kjs.h"
 #include "operations.h"
 #include "math_object.h"
+#include "lookup.h"
+
+#include "math_object.lut.h"
 
 using namespace KJS;
 
 KJSO *Math::get(const UString &p)
 {
-  /* TODO: temporarily removed until an experiment is finnished ;) */
-  return KJSO::get(p);
+  int token = Lookup::find(&mathTable, p);
+
+  if (token < 0)
+    return KJSO::get(p);
+
+  double d;
+  switch (token) {
+  case Math::Euler:
+    d = exp(1);
+    break;
+  case Math::Ln2:
+    d = log(2);
+    break;
+  case Math::Ln10:
+    d = log(10);
+    break;
+  case Math::Log2E:
+    d = 1.0/log(2);
+    break;
+  case Math::Log10E:
+    d = 1.0/log(10);
+    break;
+  case Math::Pi:
+    d = 2.0 * asin(1);
+    break;
+  case Math::Sqrt1_2:
+    d = sqrt(0.5);
+    break;
+  case Math::Sqrt2:
+    d = sqrt(2);
+    break;
+  default:
+    return new MathFunc(token);
+  };
+
+  return newNumber(d);
 }
 
 KJSO* MathFunc::execute(const List &args)

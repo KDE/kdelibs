@@ -22,13 +22,13 @@ INCLUDES = $(all_includes)
 lib_LTLIBRARIES = libkjs.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
-	operations.cpp ustring.cpp function.cpp types.cpp \
+	operations.cpp ustring.cpp function.cpp types.cpp lookup.cpp \
 	math_object.cpp global_object.cpp bool_object.cpp object_object.cpp \
 	array_object.cpp string_object.cpp number_object.cpp 
 
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = kjs.h object.h operations.h ustring.h \
-	function.h
+	function.h lookup.h
 
 noinst_HEADERS = nodes.h lexer.h types.h \
 	grammar.h object_object.h function_object.h \
