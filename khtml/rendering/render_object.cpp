@@ -536,6 +536,7 @@ QString RenderObject::information() const
     if (mouseInside()) ts << "mi ";
     if (element() && element()->active()) ts << "act ";
     if (element() && element()->hasAnchor()) ts << "anchor ";
+    if (element() && element()->focused()) ts << "focus ";
     if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 	<< (isTableCell() ?
@@ -796,6 +797,8 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off);
         //kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
         switch(pos) {
+        case SelectionPointBeforeInLine:
+        case SelectionPointAfterInLine:
         case SelectionPointInside:
             node = nod;
             offset = off;
@@ -836,10 +839,11 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
-    if (isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside() )
+    if (isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
             if (!child->isPositioned() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
                 inside = true;
+    }
 
     if (inside && element()) {
         if (!info.innerNode())
