@@ -178,19 +178,22 @@ void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 
 void KListViewLineEdit::terminate()
 {
+    if ( item )
+    {
         item->setText(col, text());
-        hide();
         int c=col;
         QListViewItem *i=item;
         col=0;
         item=0;
+        hide(); // will call focusOutEvent, that's why we set item=0 before
         releaseMouse();
         emit done(i,c);
+    }
 }
 
 void KListViewLineEdit::focusOutEvent(QFocusEvent *)
 {
-  terminate();
+    terminate();
 }
 
 KListView::KListView( QWidget *parent, const char *name )
@@ -472,24 +475,26 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
                 treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() )
            && ( p.x() >= header()->cellPos( header()->mapToActual( 0 ) ) );
 
+  bool renameStarted = false;
+
   // If the row was already selected, create an editor widget.
   if (at && at->isSelected() && itemsRenameable() && !rootDecoClicked)
   {
     int col = header()->mapToLogical( header()->cellAt( p.x() ) );
     if ( d->renameable.contains(col) )
+    {
         rename(at, col);
+        renameStarted = true;
+    }
   }
 
-  if (e->button() == LeftButton)
+  //Start a drag, if we didn't just start a rename
+  if (e->button() == LeftButton && !renameStarted && !rootDecoClicked)
   {
-      // if the user clicked into the root decoration of the item, don't try to start a drag!
-      if ( !rootDecoClicked )
-      {
-          d->startDragPos = e->pos();
+    d->startDragPos = e->pos();
 
-          if (at)
-              d->validDrag = true;
-      }
+    if (at)
+      d->validDrag = true;
   }
 
   QListView::contentsMousePressEvent( e );
