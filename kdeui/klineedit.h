@@ -175,7 +175,7 @@ public:
     /*
     * Returns a pointer to the current completion object.
     *
-    * @return a pointer the completion object.
+    * @return the completion object or null (0) if one does not exist.
     */
     KCompletion* completionObject() const { return comp; }
 
@@ -185,7 +185,7 @@ public:
     *
     * See @ref setCompeltionObject and @ref enableCompletion for details.
     *
-    * @return true if the completion object
+    * @return true if the completion object is deleted
     */
     bool delCompletionOnExit() const { return m_bAutoDelCompObj; }
 
