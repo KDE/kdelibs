@@ -22,10 +22,10 @@
 #ifndef _KDE_VERSION_H_
 #define _KDE_VERSION_H_
 
-#define KDE_VERSION 297
-#define KDE_VERSION_STRING "2.97 (3.0 rc1)"
+#define KDE_VERSION 299
+#define KDE_VERSION_STRING "2.99 (3.0 rc3)"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 3
+#define KDE_VERSION_RELEASE 9
 
 #endif // _KDE_VERSION_H_
