@@ -1052,10 +1052,15 @@ void DocumentImpl::open(  )
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    removeChildren();
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current();)
-        m_windowEventListeners.removeRef(it.current());
+    {
+        RenderObject* render = m_render;
+        m_render = 0; // indicate destruction mode
+        removeChildren();
+        QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+        for (; it.current();)
+            m_windowEventListeners.removeRef(it.current());
+        m_render = render;
+    }
 
     m_tokenizer = createTokenizer();
     m_decoderMibEnum = 0;
