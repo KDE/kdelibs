@@ -36,5 +36,4 @@ private:
     QCString m_dcopName;
 };
 
-// vim: sw=4 et sts=4
 #endif
