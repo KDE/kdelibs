@@ -47,11 +47,9 @@ signals:
     // we need an id so that applications can distinguish between new
     // scans and redone scans!
     void preview( const QImage&, int id );
-
     void finalImage( const QImage&, int id );
-
     void textRecognized( const QString&, int id );
-
+    
 private:
     int m_currentId;
 
@@ -89,5 +87,64 @@ private:
     KInstance *m_instance;
 
 };
+
+// baseclass for ocr-dialogs
+class KOCRDialog : public KDialogBase
+{
+    Q_OBJECT
+
+public:
+    static KOCRDialog * getOCRDialog( QWidget *parent=0L,
+					const char *name=0, bool modal=false );
+    ~KOCRDialog();
+
+protected:
+    KOCRDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
+		 QWidget *parent=0L, const char *name=0, bool modal=false );
+
+    int id() const { return m_currentId; }
+    int nextId() { return ++m_currentId; }
+
+signals:
+    void textRecognized( const QString&, int id );
+
+private:
+    int m_currentId;
+
+};
+
+
+class KOCRDialogFactory : public KLibFactory
+{
+public:
+    virtual ~KOCRDialogFactory();
+
+    /**
+     * Your library should reimplement this method to return your KOCRDialog
+     * derived dialog.
+     */
+    virtual KOCRDialog * createDialog( QWidget *parent=0, const char *name=0,
+					bool modal=false ) = 0;
+
+protected:
+    KOCRDialogFactory( QObject *parent=0, const char *name=0 );
+
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
+                                   const char* classname = "QObject",
+                                   const QStringList &args = QStringList() );
+
+
+    void setName( const QCString& instanceName ) {
+	delete m_instance;
+	m_instance = new KInstance( instanceName );
+    }
+
+    KInstance *instance() const { return m_instance; }
+
+private:
+    KInstance *m_instance;
+
+};
+
 
 #endif // KSCAN_H

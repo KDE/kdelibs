@@ -62,6 +62,46 @@ KScanDialog::~KScanDialog()
 ///////////////////////////////////////////////////////////////////
 
 
+// static factory method
+KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent, const char *name,
+					  bool modal )
+{
+    KTrader::OfferList offers = KTrader::self()->query("KScan/KOCRDialog");
+    if ( offers.isEmpty() )
+	return 0L;
+	
+    KService::Ptr ptr = *(offers.begin());
+    KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+
+    if ( !factory )
+        return 0;
+
+    QStringList args;
+    args << QString::number( (int)modal );
+
+    QObject *res = factory->create( parent, name, "KOCRDialog", args );
+
+    return dynamic_cast<KOCRDialog *>( res );
+}
+
+
+KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
+			  QWidget *parent, const char *name, bool modal )
+    : KDialogBase( dialogFace, i18n("OCR image"), buttonMask, Close,
+		   parent, name, modal, true ),
+      m_currentId( 1 )
+{
+
+}
+
+KOCRDialog::~KOCRDialog()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////
+
+
 KScanDialogFactory::KScanDialogFactory( QObject *parent, const char *name )
     : KLibFactory( parent, name ),
       m_instance( 0L )
@@ -90,5 +130,39 @@ QObject *KScanDialogFactory::createObject( QObject *parent, const char *name,
 
     return createDialog( static_cast<QWidget *>( parent ), name, modal );
 }
+
+
+///////////////////////////////////////////////////////////////////
+
+
+KOCRDialogFactory::KOCRDialogFactory( QObject *parent, const char *name )
+    : KLibFactory( parent, name ),
+      m_instance( 0L )
+{
+}
+
+KOCRDialogFactory::~KOCRDialogFactory()
+{
+    delete m_instance;
+}
+
+QObject *KOCRDialogFactory::createObject( QObject *parent, const char *name,
+                                           const char *classname,
+                                           const QStringList &args )
+{
+    if ( strcmp( classname, "KOCRDialog" ) != 0 )
+        return 0;
+
+    if ( parent && !parent->isWidgetType() )
+       return 0;
+
+    bool modal = false;
+
+    if ( args.count() == 1 )
+        modal = (bool)args[ 0 ].toInt();
+
+    return createDialog( static_cast<QWidget *>( parent ), name, modal );
+}
+
 
 #include "kscan.moc"
