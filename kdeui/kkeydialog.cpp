@@ -59,6 +59,7 @@
 #define XK_MISCELLANY
 #include <X11/Xlib.h>	// For x11Event()
 #include <X11/keysymdef.h> // For XK_...
+#include <qwhatsthis.h>
 
 #ifdef KeyPress
 const int XFocusOut = FocusOut;
@@ -88,6 +89,8 @@ class KKeyChooserItem : public KListViewItem
 		{ return m_pList->isConfigurable( m_iAction ); }
 	const KShortcut& shortcutDefault() const
 		{ return m_pList->shortcutDefault( m_iAction ); }
+        QString whatsThis() const
+        { return m_pList->whatsThis( m_iAction ); }
 
 	void setShortcut( const KShortcut& cut );
 	void commitChanges();
@@ -100,6 +103,20 @@ class KKeyChooserItem : public KListViewItem
 	uint m_iAction;
 	bool m_bModified;
 	KShortcut m_cut;
+};
+
+// WhatsThis on KKeyChooserItems
+class KKeyChooserWhatsThis : public QWhatsThis
+{
+public:
+    KKeyChooserWhatsThis( QListView* listview )
+        : QWhatsThis( listview->viewport() ), m_listView( listview ) {}
+
+protected:
+    virtual QString text( const QPoint& p );
+
+private:
+    QListView* m_listView;
 };
 
 //---------------------------------------------------------------------
@@ -341,6 +358,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
                        "of keys (e.g. Ctrl+V) shown in the right column.");
 
   QWhatsThis::add( d->pList, wtstr );
+  new KKeyChooserWhatsThis( d->pList );
 
   d->pList->setAllColumnsShowFocus( true );
   d->pList->addColumn(i18n("Action"));
@@ -1034,6 +1052,24 @@ int KKeyChooserItem::compare( QListViewItem* item, int iCol, bool bAscending ) c
 	}
 
 	return QListViewItem::compare( item, iCol, bAscending );
+}
+
+////
+
+QString KKeyChooserWhatsThis::text( const QPoint& p ) {
+    if ( !m_listView )
+        return QString::null;
+
+    const QListViewItem* item = m_listView->itemAt( p );
+    const KKeyChooserItem* pItem = dynamic_cast<const KKeyChooserItem*>(item);
+    if ( !pItem )
+        return QWhatsThis::textFor( m_listView );
+
+    const QString itemWhatsThis = pItem->whatsThis();
+    if ( itemWhatsThis.isEmpty() )
+        return QWhatsThis::textFor( m_listView );
+
+    return itemWhatsThis;
 }
 
 /************************************************************************/

@@ -628,7 +628,7 @@ public:
 	void applyDataRestrictions(const QString &) const;
 	void createSpecialResource(const char*);
 
-        // Like their publi counter parts but with an extra priority argument
+        // Like their public counter parts but with an extra priority argument
         // If priority is true, the directory is added directly after
         // $KDEHOME/$XDG_DATA_HOME/$XDG_CONFIG_HOME
 	void addPrefix( const QString& dir, bool priority );
