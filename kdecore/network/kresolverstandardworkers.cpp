@@ -112,9 +112,9 @@ namespace
     int res;
     int my_h_errno;
     char *buf = 0L;
-  
-    qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)", 
-	   m_hostname.data(), m_af);
+ 
+    // qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)", 
+    //	   m_hostname.data(), m_af);
     do
       {
 	res = 0;
@@ -155,8 +155,8 @@ namespace
 
 	if (resultptr != 0L)
 	  my_h_errno = 0;
-	qDebug("GetHostByNameThread::run(): gethostbyname for %s (af = %d) returned: %d",
-	       m_hostname.data(), m_af, my_h_errno);
+	// qDebug("GetHostByNameThread::run(): gethostbyname for %s (af = %d) returned: %d",
+	//       m_hostname.data(), m_af, my_h_errno);
 
 	if (res == ERANGE)
 	  {
@@ -230,7 +230,7 @@ namespace
       {
 	sa.setHost(KIpAddress(he->h_addr_list[i], he->h_addrtype == AF_INET ? 4 : 6));
 	results.prepend(KResolverEntry(sa, socktype, proto, canon, m_hostname));
-	qDebug("KStandardWorker::processResults: adding %s", sa.toString().latin1());
+	// qDebug("KStandardWorker::processResults: adding %s", sa.toString().latin1());
       }
     //  qDebug("KStandardWorker::processResults: added %d entries", i);
   }
@@ -296,8 +296,8 @@ namespace
 
     addrinfo *result;
     int res = getaddrinfo(m_node, m_serv, &hint, &result);
-    qDebug("QGetAddrInfoThread::run: getaddrinfo for [%s]:%s (af = %d); result = %d", 
-	   m_node.data(), m_serv.data(), m_af, res);
+    // qDebug("QGetAddrInfoThread::run: getaddrinfo for [%s]:%s (af = %d); result = %d", 
+    //	   m_node.data(), m_serv.data(), m_af, res);
 
     if (res != 0)
       {
@@ -407,8 +407,8 @@ bool KStandardWorker::sanityCheck()
 	      return false;		// invalid hostname!
 	    }
 
-	  qDebug("Using encoded hostname '%s' for '%s' (UTF-8)", m_encodedName.data(),
-		 node.utf8().data());
+	  // qDebug("Using encoded hostname '%s' for '%s' (UTF-8)", m_encodedName.data(),
+	  //	 node.utf8().data());
 	}
     }
   else
