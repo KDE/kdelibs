@@ -1,5 +1,5 @@
 /*
- * Override X11 functions and communicate via DCOP, to provide app-starting
+ * Override X11 functions and set X window properties, to provide app-starting
  * notification.
  *
  * The original functions XMapWindow() and XMapRaised() are replaced with new
@@ -10,21 +10,24 @@
  * KDE_RealXMapRaised and KDE_RealXMapWindow to the original functions, so
  * that they may be called later.
  *
- * Next we send a DCOP signal via the C interface.
+ * Next we set properties on the initial window, which will be picked up by
+ * the wm when it sees the window map.
  *
  * (C) 2000 Rik Hemsley <rik@kde.org>
  * (C) 2000 Simon Hausmann <hausmann@kde.org>
  */
 
+#include <malloc.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <dlfcn.h>
+#include <string.h>
 
-#include <X11/Xlib.h>
 #include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
-#include "dcopc.h"
+#include <ltdl.h>
 
 int XMapWindow(Display *, Window);
 int XMapRaised(Display *, Window);
@@ -34,13 +37,13 @@ typedef Window (*KDE_XMapRequestSignature)(Display *, Window);
 KDE_XMapRequestSignature KDE_RealXMapWindow = NULL;
 KDE_XMapRequestSignature KDE_RealXMapRaised = NULL;
 
-void KDE_InterceptXMapRequest();
+void KDE_InterceptXMapRequest(Display *, Window);
 
   int
 XMapWindow(Display * d, Window w)
 {
   if (NULL == KDE_RealXMapWindow)
-    KDE_InterceptXMapRequest();
+    KDE_InterceptXMapRequest(d, w);
 
   return KDE_RealXMapWindow(d, w);
 }
@@ -49,19 +52,22 @@ XMapWindow(Display * d, Window w)
 XMapRaised(Display * d, Window w)
 {
   if (NULL == KDE_RealXMapRaised)
-    KDE_InterceptXMapRequest();
+    KDE_InterceptXMapRequest(d, w);
 
   return KDE_RealXMapRaised(d, w);
 }
 
   void
-KDE_InterceptXMapRequest()
+KDE_InterceptXMapRequest(Display * d, Window w)
 {
   /* Vars *****************************************************************/
 
-  void  * libX11Handle    = 0L;
-  char  * dcopData        = 0L;
-  int     dcopDataLength  = 0;
+  Atom netMapNotify;
+  XTextProperty prop;
+  Status status;
+  char * pidString = 0L;
+
+  lt_dlhandle libX11Handle;
 
   /* Init *****************************************************************/
 
@@ -69,10 +75,10 @@ KDE_InterceptXMapRequest()
 
   /* Find symbols *********************************************************/
 
-  libX11Handle = dlopen("libX11.so", RTLD_GLOBAL | RTLD_NOW);
+  libX11Handle = lt_dlopen("libX11.so");
 
   if (NULL == libX11Handle)
-    libX11Handle = dlopen("libX11.so.6", RTLD_GLOBAL | RTLD_NOW);
+    libX11Handle = lt_dlopen("libX11.so.6");
 
   if (NULL == libX11Handle) {
     fprintf(stderr, "KDE: Could not dlopen libX11\n");
@@ -80,7 +86,7 @@ KDE_InterceptXMapRequest()
   }
 
   KDE_RealXMapWindow =
-    (KDE_XMapRequestSignature)dlsym(libX11Handle, "XMapWindow");
+    (KDE_XMapRequestSignature)lt_dlsym(libX11Handle, "XMapWindow");
 
   if (NULL == KDE_RealXMapWindow) {
     fprintf(stderr, "KDE: Could not find symbol XMapWindow in libX11\n");
@@ -88,29 +94,27 @@ KDE_InterceptXMapRequest()
   }
 
   KDE_RealXMapRaised =
-    (KDE_XMapRequestSignature)dlsym(libX11Handle, "XMapRaised");
+    (KDE_XMapRequestSignature)lt_dlsym(libX11Handle, "XMapRaised");
 
   if (NULL == KDE_RealXMapRaised) {
     fprintf(stderr, "KDE: Could not find symbol XMapRaised in libX11\n");
     exit(1);
   }
 
-  /* Do some DCOP *********************************************************/
+  /* Set property on initial window ***************************************/
 
-  dcopData = (char *)malloc(128);
+  netMapNotify = XInternAtom(d, "_NET_MAP_NOTIFY", False);
 
-  /* marshall the arguments for the function call. here's it's just the pid */
-  dcopDataLength = dcop_write_int(dcopData, (int)getpid()) - dcopData;
-  
-  dcop_send_signal(
-    "kicker",
-    "TaskbarApplet",
-    "clientMapped(int)",
-    dcopData,
-    dcopDataLength
-  );
+  pidString = (char *)malloc(32);
 
-  /* Done ***************************************************************/
+  snprintf(pidString, 32, "%d", getpid());
+
+  status = XStringListToTextProperty(&pidString, 1, &prop);
+
+  if (0 != status)
+    XSetTextProperty(d, w, &prop, netMapNotify);
+  else
+    fprintf(stderr, "KDE: kmapnotify: Could not set text property\n");
 }
 
 /* vim: set ts=2:sw=2:tw=78: */
