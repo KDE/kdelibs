@@ -19,7 +19,6 @@
 #ifndef _KLOCALE_H
 #define _KLOCALE_H
 
-#include <qintdict.h>
 #include <qstring.h>
 #include <qstringlist.h>
 
@@ -321,7 +320,7 @@ public:
      *
      * @return If the user wants 12h lock
      */
-    bool use12Clock();
+    bool use12Clock() const;
 
     /**
      * Return a string containing the name of the month name.
@@ -382,30 +381,6 @@ public:
     QDate readDate(const QString &str) const;
 
     /**
-      * Creates an alias for the string text. It will be translated
-      * and stored under the integer constant index.
-      * This can help you to avoid repeated translation.
-      * Be aware, that this is only needed in cases, where you want
-      * to translate it in loops or something like that.
-      * In every other case, the @ref translate methods is fast
-      * enough.
-      *
-      * @param text The text to alias.
-      * @param index The index key to use.
-      */
-    void aliasLocale( const char *text, long int index);
-
-    /**
-      * Returns an alias, that you have set before or 0, if not
-      * set. This method uses @ref QIntDict.
-      *
-      * @param The key of the string to look up.
-      *
-      * @return The translated string.
-      */
-    QString getAlias( long key ) const;
-
-    /**
       * Returns the language used by this object. The domain AND the
       * library translation must be available in this language.
       * 'C' is default, if no other available.
@@ -415,32 +390,19 @@ public:
     QString language() const;
 
     /**
-      * Returns the locale used for money by object.
+      * Returns the country code of the country where the user lives.
+      * 'C' is default, if no other available
       *
-      * @return The currency use locale for money formating.
+      * @return The country code for the user.
       */
-    QString money() const;
-
-    /**
-      * Returns the locale used for numbers by object.
-      *
-      * @return The currently used locale for numer formating.
-      */
-    QString number() const;
-
-    /**
-      * Returns the locale used for time by object.
-      *
-      * @return The currently used locale for time formated.
-      */
-    QString time() const;
+    QString country() const;
 
     /**
       * Returns the languages selected by user.
       *
-      * @return String containing locale codes separated by colons
+      * @return String containing language codes separated by colons
       */
-    QString languages() const { return langs; }
+    QString languages() const;
 
     /**
       * Returns the languages selected by user.
@@ -483,15 +445,15 @@ public:
                      QString &charset);
 
     /**
-     * Init the l10n part of the instance with the config object.
+     * Init the localization part of the instance with the config object.
      *
      * @param config The configuration object used for init.
      */
     void initFormat(KConfig *config);
 
     /**
-     * Init the l18n part of the instance with the given config object. It should
-     * be valid and contain the global entries.
+     * Init the language part of the instance with the given config object. It 
+     * should be valid and contain the global entries.
      *
      * @param config The configuration object used for init.
      * @param catalogue The main catalogue to use.
@@ -540,15 +502,16 @@ protected:
     QString _datefmtshort;
 
     QStrList *catalogues;
-    QIntDict<QString> aliases;
     bool _inited;
-    QString lang;
-    QTextCodec *_codec;
-    QString langs;
-    QString _number;
-    QString _money;
-    QString _time;
 
+    QString lang; // The current language used by the locale
+    QTextCodec *_codec; // Codec used for translations
+    QString langs; // Prefered languages
+    QString _country; // Where the user lives
+
+    /**
+     * @internal function used by the constructor.
+     */
     void setEncodingLang(const QString &_lang);
 
     // Disallow assignment and copy-construction
