@@ -19,6 +19,7 @@
 #define _KGLOBALSETTINGS_H
 
 #include <qstring.h>
+class QColor;
 
 /**
  * Access the KDE global configuration.
@@ -143,6 +144,11 @@ class KGlobalSettings
      */
     static QString trashPath() { initStatic(); return *s_trashPath; }
 
+
+    /**
+     * The default color to use when highlighting toolbar buttons
+     */
+    static QColor toolBarHighlightColor();
 
 private:
     /**
