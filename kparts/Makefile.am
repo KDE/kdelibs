@@ -14,9 +14,10 @@ check-local:
 
 lib_LTLIBRARIES = libkparts.la
 
-libkparts_la_SOURCES = kpart.cpp kplugin.cpp kpartmanager.cpp kpartsmainwindow.cpp kxmlgui.cpp kevent.cpp
+libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp xmlgui.cpp event.cpp
 
-include_HEADERS = kpart.h kplugin.h kpartmanager.h kpartsmainwindow.h kxmlgui.h kevent.h
+kpartsincludedir = $(includedir)/kparts
+kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h xmlgui.h event.h
 
 libkparts_la_METASOURCES = AUTO
 
