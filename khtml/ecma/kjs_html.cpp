@@ -117,12 +117,13 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     coll = doc.all();
     break;
   case Open:
-    doc.open();
+    // this is just a dummy function,  has no purpose anymore
+    //doc.open();
     result = Undefined();
     break;
   case Close:
-    // ### see khtmltests/ecma/tokenizer-script-recursion.html
-    // for an explanation why this is commented out
+    // this is just a dummy function,  has no purpose
+    // see khtmltests/ecma/tokenizer-script-recursion.html
     // doc.close();
     result = Undefined();
     break;
