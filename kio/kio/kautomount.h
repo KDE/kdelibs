@@ -83,7 +83,7 @@ private:
  *
  * @short This class implements synchronous unmounting of devices,
  */
-class KAutoUnmount : public QObject
+class KIO_EXPORT KAutoUnmount : public QObject
 {
   Q_OBJECT
   friend class gcc_gives_a_warning_without_this;
