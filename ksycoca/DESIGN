@@ -7,7 +7,7 @@ List of factories
  | * Factory id, Factory offset
  | * ...
  | * 0
- | * UserProfile offset
+ | * ServiceType-index offset
 
 For each factory
  | * offset of the dict
