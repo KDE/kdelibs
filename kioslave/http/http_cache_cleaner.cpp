@@ -243,6 +243,20 @@ extern "C" int kdemain(int argc, char **argv)
 
    cachedEntries.sort();
 
+   int maxCachedSize = m_maxCacheSize / 2;
+
+   for(FileInfo *fileInfo = cachedEntries.first();
+       fileInfo;
+       fileInfo = cachedEntries.next())
+   {
+      if (fileInfo->size > maxCachedSize)
+      {
+         QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         unlink(filename.data());
+//         kdDebug () << appName << ": Object too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
+      }
+   }
+
    int totalSize = 0;
 
    for(FileInfo *fileInfo = cachedEntries.first();
@@ -253,7 +267,7 @@ extern "C" int kdemain(int argc, char **argv)
       {
          QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
-//         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
+//         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << fileInfo->size << ")" << endl;
       }
       else
       {
