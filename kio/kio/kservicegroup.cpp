@@ -227,26 +227,30 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     KSortableValueList<SPtr,QCString> glist;
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
     {
+        KSycocaEntry *p = (*it);
         // Choose the right list
-        KSortableValueList<SPtr,QCString> & list = (*it)->isType(KST_KServiceGroup) ? glist : slist;
-        QCString key( (*it)->name().length() * 4 + 1 );
+        KSortableValueList<SPtr,QCString> & list = p->isType(KST_KServiceGroup) ? glist : slist;
+        QString name = p->isType(KST_KServiceGroup) ? 
+                                   static_cast<KServiceGroup *>(p)->caption() :
+                                   p->name();
+        QCString key( name.length() * 4 + 1 );
         // strxfrm() crashes on Solaris
 #ifndef USE_SOLARIS
         // maybe it'd be better to use wcsxfrm() where available
-        size_t ln = strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size());
+        size_t ln = strxfrm( key.data(), name.local8Bit().data(), key.size());
         if( ln != size_t( -1 ))
         {
             if( ln >= key.size())
             { // didn't fit?
                 key.resize( ln + 1 );
-                if( strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size()) == size_t( -1 ))
-                    key = (*it)->name().local8Bit();
+                if( strxfrm( key.data(), name.local8Bit().data(), key.size()) == size_t( -1 ))
+                    key = name.local8Bit();
             }
         }
         else
 #endif
         {
-            key = (*it)->name().local8Bit();
+            key = name.local8Bit();
         }
         list.insert(key,SPtr(*it));
     }
