@@ -753,6 +753,7 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
      array of messages.  */
   bottom = 0;
   top = domain->nstrings;
+  act = top;
   while (bottom < top)
     {
       int cmp_val;
