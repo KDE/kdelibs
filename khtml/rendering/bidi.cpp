@@ -794,6 +794,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
 void RenderFlow::layoutInlineChildren()
 {
+    invalidateVerticalPositions();
 #ifdef DEBUG_LAYOUT
     QTime qt;
     qt.start();
