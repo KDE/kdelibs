@@ -74,7 +74,7 @@ using namespace khtml;
 // 4 lists (OL UL DIR MENU)
 // 5 TD TH
 // 6 TR
-// 7 tbody thead tfoot caption
+// 7 tbody thead tfoot caption  object
 // 8 table
 // 9 body frameset
 // 10 html
@@ -142,7 +142,7 @@ const unsigned short tagPriority[] = {
     9, // ID_NOEMBED
     9, // ID_NOFRAMES
     3, // ID_NOSCRIPT
-    1, // ID_OBJECT
+    7, // ID_OBJECT
     4, // ID_OL
     1, // ID_OPTGROUP
     2, // ID_OPTION
@@ -786,7 +786,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
             }
             break;
-        case ID_UL:
+	    case ID_OBJECT:
+		kdDebug() << "KHTMLParser::insertNode " << id << endl; 
+		discard_until = id + ID_CLOSE_TAG;
+		return false;
+	    case ID_UL:
         case ID_OL:
         case ID_DIR:
         case ID_MENU:
