@@ -121,7 +121,7 @@ public:
     NodeListImpl *getElementsByTagName ( const DOMString &name );
     NodeListImpl *getElementsByNameAttr ( const DOMString &name );
 
-    void normalize (  );
+    void normalize ( int &exceptioncode );
 
     virtual void applyChanges(bool = true, bool = true);
 

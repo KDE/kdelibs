@@ -151,22 +151,24 @@ Attr Element::getAttributeNode( const DOMString &name )
 
 Attr Element::setAttributeNode( const Attr &newAttr )
 {
-    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-  if (impl) 
-      ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl, exceptioncode);
+  int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+  AttrImpl *r = 0;
+  if (impl)
+      r = ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl, exceptioncode);
   if ( exceptioncode )
       throw DOMException( exceptioncode );
-  return newAttr;
+  return r;
 }
 
 Attr Element::removeAttributeNode( const Attr &oldAttr )
 {
-    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+  int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+  AttrImpl *r = 0;
   if (impl)
-      ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl, exceptioncode);
+      r = ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl, exceptioncode);
   if ( exceptioncode )
       throw DOMException( exceptioncode );
-  return oldAttr;
+  return r;
 }
 
 NodeList Element::getElementsByTagName( const DOMString &name )
@@ -183,7 +185,13 @@ NodeList Element::getElementsByNameAttr( const DOMString &name )
 
 void Element::normalize()
 {
-  if (impl) ((ElementImpl *)impl)->normalize();
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    int exceptioncode = 0;
+    ((ElementImpl *)impl)->normalize(exceptioncode);
+    if (exceptioncode)
+	throw DOMException(exceptioncode);
 }
 
 bool Element::isHTMLElement() const

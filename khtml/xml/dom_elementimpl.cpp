@@ -150,7 +150,7 @@ void AttrImpl::setValue( const DOMString &v )
     // according to the DOM docs, we should create an unparsed Text child
     // node here; we decided this was not necessary for HTML
 
-    // ### TODO: parse value string, interprete entities
+    // ### TODO: parse value string, interprete entities (not sure if we are supposed to do this)
 
     if (_element)
 	_element->checkReadOnly();
@@ -344,13 +344,17 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
 {
     // ### check for invalid characters in value -> throw exception
     int exceptioncode; // ### propogate
-    AttrImpl *oldAttr;
+    AttrImpl *oldAttr = 0;
     if (value.isNull())
 	oldAttr = static_cast<AttrImpl*>(namedAttrMap->removeNamedItem(name,exceptioncode));
     else {
-	oldAttr = static_cast<AttrImpl*>(namedAttrMap->setNamedItem(new AttrImpl(name,value,document), exceptioncode));
+	AttrImpl *a = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name));
+	if (a)
+	    a->setValue(value);
+	else
+	    oldAttr = static_cast<AttrImpl*>(namedAttrMap->setNamedItem(new AttrImpl(name,value,document), exceptioncode));
     }
-    if (oldAttr && oldAttr->deleteMe())
+    if (oldAttr && oldAttr->deleteMe()) // ### deref instead?
 	delete oldAttr;
 }
 
@@ -448,29 +452,28 @@ khtml::RenderStyle* ElementImpl::activeStyle()
     return m_style;
 }
 
-void ElementImpl::normalize()
+void ElementImpl::normalize( int &exceptioncode )
 {
-    // ### not sure if CDATA nodes are supposed to be merged or not
+    // In DOM level 2, this gets moved to Node
+    // ### normalize attributes? (when we store attributes using child nodes)
+    exceptioncode = 0;
     NodeImpl *child = _first;
-    while(1)
-    {
+    while (child) {
 	NodeImpl *nextChild = child->nextSibling();
-	if(!nextChild) return;
-	if ( (child->nodeType() == Node::TEXT_NODE)
-	     && (nextChild->nodeType() == Node::TEXT_NODE))
-	{
-	    (static_cast<TextImpl *>(child))->appendData( (static_cast<TextImpl *>(nextChild))->data() );
-	    int exceptioncode = 0;
-	    removeChild(nextChild, exceptioncode);
+	if (child->nodeType() == Node::ELEMENT_NODE) {
+	    static_cast<ElementImpl*>(child)->normalize(exceptioncode);
+	    if (exceptioncode)
+		return;
+	    child = nextChild;
+	}
+	else if (nextChild && child->nodeType() == Node::TEXT_NODE && nextChild->nodeType() == Node::TEXT_NODE) {
+	    static_cast<TextImpl*>(child)->appendData(static_cast<TextImpl*>(nextChild)->data());
+	    removeChild(nextChild,exceptioncode);
+	    if (exceptioncode)
+		return;
 	}
 	else
-	{
 	    child = nextChild;
-	    if(child->isElementNode())
-	    {
-		(static_cast<ElementImpl *>(child))->normalize();
-	    }
-	}
     }
 }
 
@@ -875,6 +878,7 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg, int &exceptioncode )
 
     uint i;
     for (i = 0; i < len; i++) {
+	// ### for XML attributes are case sensitive (?) - check this elsewhere also
 	if (!strcasecmp(attrs[i]->name(),attr->name())) {
 	    // attribute with this id already in list
 	    AttrImpl *oldAttr = attrs[i];
