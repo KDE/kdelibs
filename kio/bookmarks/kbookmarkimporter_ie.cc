@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2002 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 2002-2003  Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -119,12 +119,65 @@ void KIEBookmarkImporterImpl::parse() {
 
 QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
 {
+    // notify user that they must give a new dir such 
+    // as "Favourites" as otherwise it'll just place
+    // lots of .url files in the given dir and gui
+    // stuff in the exporter is ugly so that exclues
+    // the possibility of just writing to Favourites
+    // and checking if overwriting...
     return KFileDialog::getExistingDirectory();
 }
 
 /////////////////////////////////////////////////
 
+class IEExporter : private KBookmarkGroupTraverser {
+public:
+    IEExporter( const QString & );
+    void write( const KBookmarkGroup &grp ) { traverse(grp); };
+private:
+    virtual void visit( const KBookmark & );
+    virtual void visitEnter( const KBookmarkGroup & );
+    virtual void visitLeave( const KBookmarkGroup & );
+private:
+    QDir m_currentDir;
+};
+
+static QString ieStyleQuote( const QString &str ) {
+    // gotta test all the possible chars that ie replaces...
+    QString s(str);
+    s.replace( "/", "%67" );
+    return s;
+}
+
+IEExporter::IEExporter( const QString & dname ) {
+    m_currentDir.setPath( dname );
+}
+
+void IEExporter::visit( const KBookmark &bk ) {
+    QString fname = m_currentDir.path() + "/" + ieStyleQuote( bk.fullText() ) + ".url";
+    // kdDebug() << "creating " << fname << endl;
+    QFile file( fname );
+    file.open( IO_WriteOnly );
+    QTextStream ts( &file );
+    ts << "[InternetShortcut]\r\n";
+    ts << "URL=" << bk.url().url().utf8() << "\r\n";
+}
+
+void IEExporter::visitEnter( const KBookmarkGroup &grp ) {
+    QString dname = m_currentDir.path() + "/" + ieStyleQuote( grp.fullText() );
+    // kdDebug() << "creating dir " << dname << endl;
+    m_currentDir.mkdir( dname );
+    m_currentDir.cd( dname );
+}
+
+void IEExporter::visitLeave( const KBookmarkGroup & ) {
+    // kdDebug() << "cdup" << endl;
+    m_currentDir.cdUp();
+}
+
 void KIEBookmarkExporterImpl::write(KBookmarkGroup parent) {
+    IEExporter exporter( m_fileName );
+    exporter.write( parent );
 }
 
 ////
