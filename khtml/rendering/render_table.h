@@ -107,7 +107,7 @@ public:
 
     virtual void setCellWidths( );
 
-    virtual void position(InlineBox *, int from, int len, bool reverse, int) {}
+    virtual void position(InlineBox *, int, int, bool, int) {}
 
     virtual void calcWidth();
 
