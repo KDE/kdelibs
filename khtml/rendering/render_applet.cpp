@@ -73,8 +73,7 @@ short RenderApplet::intrinsicWidth() const
     if( m_widget )
         rval = ((KJavaAppletWidget*)(m_widget))->sizeHint().width();
 
-    //kdDebug(6100) << "RenderApplet::intrinsicWidth(), returning " << rval << endl;
-    return rval;
+    return rval > 10 ? rval : 50;
 }
 
 int RenderApplet::intrinsicHeight() const
@@ -84,8 +83,7 @@ int RenderApplet::intrinsicHeight() const
     if( m_widget )
         rval = m_widget->sizeHint().height();
 
-    //kdDebug(6100) << "RenderApplet::intrinsicHeight(), returning " << rval << endl;
-    return rval;
+    return rval > 10 ? rval : 50;
 }
 
 void RenderApplet::layout()
@@ -117,7 +115,7 @@ void RenderApplet::layout()
         tmp->showApplet();
     }
 
-    setLayouted();
+    setLayouted(!style()->width().isPercent() && !style()->height().isPercent());
 }
 
 void RenderApplet::processArguments(QMap<QString, QString> args)
