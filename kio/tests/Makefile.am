@@ -59,9 +59,6 @@ previewtest_SOURCES = previewtest.cpp previewtest.h
 ktartest_SOURCES = ktartest.cpp
 metatest_SOURCES = metatest.cpp
 
-INCLUDES=  -I$(srcdir)/.. $(all_includes)
-METASOURCES = AUTO
-
 # kfile meta stuff. Comment this in, if you want a small
 # metadata plugin test and "make install".
 # kde_module_LTLIBRARIES = dummymeta.la
