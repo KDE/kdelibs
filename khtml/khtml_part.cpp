@@ -806,15 +806,15 @@ void KHTMLPart::slotFinishedParsing()
     NodeImpl *node = imgColl.item( i );
     if ( node->id() != ID_IMG )
       continue;
-    
+
     QString imgURL = static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_SRC ).string();
     KURL url;
-    
+
     if ( KURL::isRelativeURL( imgURL ) )
       url = completeURL( imgURL );
     else
       url = KURL( imgURL );
-    
+
     if ( !imageURLs.contains( url ) )
     {
       d->m_totalImageCount++;
@@ -1676,7 +1676,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   }
 
   child->m_args.reload = d->m_bReloading;
-  
+
   child->m_bCompleted = false;
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
@@ -2683,11 +2683,13 @@ public:
   KHTMLPart *m_khtml;
   KURL m_url;
   KURL m_imageURL;
+  KAction *m_paPrintFrame;
   KAction *m_paSaveLinkAs;
   KAction *m_paSaveImageAs;
   KAction *m_paCopyLinkLocation;
   KAction *m_paCopyImageLocation;
   KAction *m_paReloadFrame;
+  KAction *m_paViewFrameSource;
 };
 
 
@@ -2706,6 +2708,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   {
     d->m_paReloadFrame = new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
 				      actionCollection(), "reloadframe" );
+    d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
+    d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
+					  actionCollection(), "viewFrameSource" );
   }
 
   if ( !url.isEmpty() )
