@@ -41,7 +41,7 @@ namespace khtml {
 	bool override : 1;
 	QChar::Direction dir : 5;
 	QChar::Direction basicDir : 5;
-	
+
 	BidiContext *parent;
 
 
@@ -60,12 +60,12 @@ namespace khtml {
 
 	    // add level of run (cases I1 & I2)
 	    if( level % 2 ) {
-		if(dir == QChar::DirL || dir == QChar::DirAN)
+		if(dir == QChar::DirL || dir == QChar::DirAN || dir == QChar::DirEN )
 		    level++;
 	    } else {
 		if( dir == QChar::DirR )
 		    level++;
-		else if( dir == QChar::DirAN )
+		else if( dir == QChar::DirAN || dir == QChar::DirEN )
 		    level += 2;
 	    }
 	}
@@ -103,8 +103,8 @@ namespace khtml {
 
 	RenderFlow *par;
 	RenderObject *obj;
-	unsigned int pos;
-
+	bool isText : 1;
+	unsigned int pos : 30;
     };
 
     struct BidiStatus {

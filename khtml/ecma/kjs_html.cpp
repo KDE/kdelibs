@@ -41,6 +41,8 @@
 #include "ecma/kjs_html.lut.h"
 
 #include "misc/htmltags.h"
+#include "rendering/render_object.h"
+#include "rendering/render_root.h"
 
 #include <kdebug.h>
 
@@ -160,7 +162,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   if (!element.isNull() &&
       (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
   {
-    KJS::HTMLCollection htmlcoll(exec,coll);
+    KJS::HTMLCollection htmlcoll(exec,coll,KJS::HTMLCollection::ReturnNode);
     return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
   }
 
@@ -172,7 +174,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Referrer:
       return getString(doc.referrer());
     case Domain:
-      return getString(doc.domain());
+      return String(doc.domain());
     case URL:
       return getString(doc.URL());
     case Body:
@@ -257,7 +259,12 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
   if(!element.isNull())
   {
-    KJS::HTMLCollection htmlcoll(exec,coll);
+    /// ### We use the document.all collection here, but in fact in IE:
+    // * document.all('bleh') looks for id=bleh or name=bleh,
+    // * document.bleh looks for name=bleh only (!)
+    // The other difference is what they return for frames/iframes, but we already take
+    // care of that with ReturnNodeOfFrame.
+    KJS::HTMLCollection htmlcoll(exec,coll, KJS::HTMLCollection::ReturnNodeOrFrame);
     return htmlcoll.getNamedItems(exec, propertyName); // Get all the items with the same name
   }
   return Undefined();
@@ -520,6 +527,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   innerHTML	KJS::HTMLElement::ElementInnerHTML DontDelete
   innerText	KJS::HTMLElement::ElementInnerText DontDelete
   document	KJS::HTMLElement::ElementDocument  DontDelete|ReadOnly
+  scrollHeight	KJS::HTMLElement::ElementScrollHeight	DontDelete|ReadOnly
+  scrollWidth	KJS::HTMLElement::ElementScrollWidth	DontDelete|ReadOnly
 # IE extension
   children	KJS::HTMLElement::ElementChildren  DontDelete|ReadOnly
 @end
@@ -571,8 +580,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   link		KJS::HTMLElement::BodyLink	DontDelete
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
-  scrollHeight	KJS::HTMLElement::BodyScrollHeight	DontDelete|ReadOnly
-  scrollWidth	KJS::HTMLElement::BodyScrollWidth	DontDelete|ReadOnly
 @end
 @begin HTMLFormElementTable 11
 # Also supported, by name/index
@@ -944,7 +951,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @begin HTMLIFrameElementTable 12
   align		  KJS::HTMLElement::IFrameAlign			DontDelete
   contentDocument KJS::HTMLElement::IFrameContentDocument       DontDelete|ReadOnly
-  document	  KJS::HTMLElement::IFrameDocument		DontDelete|ReadOnly
   frameBorder	  KJS::HTMLElement::IFrameFrameBorder		DontDelete
   height	  KJS::HTMLElement::IFrameHeight		DontDelete
   longDesc	  KJS::HTMLElement::IFrameLongDesc		DontDelete
@@ -972,7 +978,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       uint u = propertyName.toULong(&ok);
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
-      KJS::HTMLCollection coll(exec,form.elements());
+      KJS::HTMLCollection coll(exec, form.elements(), KJS::HTMLCollection::ReturnNode);
       Value namedItems = coll.getNamedItems(exec, propertyName);
       if (namedItems.type() != UndefinedType)
         return namedItems;
@@ -986,20 +992,6 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
       break;
-  case ID_FRAME:
-  case ID_IFRAME: {
-      DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
-      if ( doc && doc->view() ) {
-        KHTMLPart* part = doc->view()->part();
-        if ( part ) {
-          Object globalObject = Object::dynamicCast( Window::retrieve( part ) );
-          // Calling hasProperty on a Window object doesn't work, it always says true.
-          // Hence we need to use getDirect instead.
-          if ( !globalObject.isNull() && static_cast<ObjectImp *>(globalObject.imp())->getDirect( propertyName ) )
-            return globalObject.get( exec, propertyName );
-        }
-      }
-  }
   default:
     break;
   }
@@ -1098,8 +1090,19 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case BodyLink:            return getString(body.link());
     case BodyText:            return getString(body.text());
     case BodyVLink:           return getString(body.vLink());
-    case BodyScrollHeight:   return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsHeight() : 0);
-    case BodyScrollWidth:    return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsWidth() : 0);
+    // Those exist for all elements, but have a different implementation for body
+    // e.g. lowestPosition doesn't include margins.
+    case ElementScrollHeight:
+    case ElementScrollWidth:
+      {
+        khtml::RenderObject *rend = body.ownerDocument().handle() ? body.ownerDocument().handle()->renderer() : 0L;
+        if (rend) {
+          Q_ASSERT( rend->isRoot() );
+          khtml::RenderRoot* root = static_cast<khtml::RenderRoot*>(rend);
+          return Number( token == ElementScrollWidth ? root->docWidth() : root->docHeight() );
+        }
+        return Number(0);
+      }
     }
   }
   break;
@@ -1109,12 +1112,12 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case FormElements:        return getHTMLCollection(exec,form.elements());
     case FormLength:          return Number(form.length());
-    case FormName:            return getString(form.name());
+    case FormName:            return String(form.name()); // NOT getString (IE gives empty string)
     case FormAcceptCharset:   return getString(form.acceptCharset());
     case FormAction:          return getString(form.action());
     case FormEncType:         return getString(form.enctype());
     case FormMethod:          return getString(form.method());
-    case FormTarget:          return getString(form.target());
+    case FormTarget:          return String(form.target());
     }
   }
   break;
@@ -1129,7 +1132,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case SelectOptions:         return getSelectHTMLCollection(exec, select.options(), select); // type HTMLCollection
     case SelectDisabled:        return Boolean(select.disabled());
     case SelectMultiple:        return Boolean(select.multiple());
-    case SelectName:            return getString(select.name());
+    case SelectName:            return String(select.name());
     case SelectSize:            return Number(select.size());
     case SelectTabIndex:        return Number(select.tabIndex());
     }
@@ -1170,7 +1173,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputChecked:         return Boolean(input.checked());
     case InputDisabled:        return Boolean(input.disabled());
     case InputMaxLength:       return Number(input.maxLength());
-    case InputName:            return getString(input.name());
+    case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputReadOnly:        return Boolean(input.readOnly());
     case InputSize:            return getString(input.size());
     case InputSrc:             return getString(input.src());
@@ -1189,7 +1192,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case TextAreaAccessKey:       return getString(textarea.accessKey());
     case TextAreaCols:            return Number(textarea.cols());
     case TextAreaDisabled:        return Boolean(textarea.disabled());
-    case TextAreaName:            return getString(textarea.name());
+    case TextAreaName:            return String(textarea.name());
     case TextAreaReadOnly:        return Boolean(textarea.readOnly());
     case TextAreaRows:            return Number(textarea.rows());
     case TextAreaTabIndex:        return Number(textarea.tabIndex());
@@ -1204,7 +1207,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ButtonForm:            return getDOMNode(exec,button.form()); // type HTMLFormElement
     case ButtonAccessKey:       return getString(button.accessKey());
     case ButtonDisabled:        return Boolean(button.disabled());
-    case ButtonName:            return getString(button.name());
+    case ButtonName:            return String(button.name());
     case ButtonTabIndex:        return Number(button.tabIndex());
     case ButtonType:            return getString(button.type());
     case ButtonValue:           return getString(button.value());
@@ -1379,7 +1382,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorCoords:          return getString(anchor.coords());
     case AnchorHref:            return getString(anchor.href());
     case AnchorHrefLang:        return getString(anchor.hreflang());
-    case AnchorHash:            return getString('#'+KURL(anchor.href().string()).ref());
+    case AnchorHash:            return String('#'+KURL(anchor.href().string()).ref());
     case AnchorHost:            return getString(KURL(anchor.href().string()).host());
     case AnchorHostname: {
       KURL url(anchor.href().string());
@@ -1407,7 +1410,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_IMG: {
     DOM::HTMLImageElement image = element;
     switch (token) {
-    case ImageName:            return getString(image.name());
+    case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
     case ImageAlign:           return getString(image.align());
     case ImageAlt:             return getString(image.alt());
     case ImageBorder:          return Number(image.border());
@@ -1415,7 +1418,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageHspace:          return Number(image.hspace());
     case ImageIsMap:           return Boolean(image.isMap());
     case ImageLongDesc:        return getString(image.longDesc());
-    case ImageSrc:             return getString(image.src());
+    case ImageSrc:             return String(image.src());
     case ImageUseMap:          return getString(image.useMap());
     case ImageVspace:          return Number(image.vspace());
     case ImageWidth:           return Number(image.width());
@@ -1544,7 +1547,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   }
   break;
   case ID_CAPTION: {
-    DOM::HTMLTableCaptionElement tableCaption;
+    DOM::HTMLTableCaptionElement tableCaption = element;
     switch (token) {
     case TableCaptionAlign:       return getString(tableCaption.align());
     }
@@ -1630,7 +1633,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameName:            return getString(frameElement.name());
     case FrameNoResize:        return Boolean(frameElement.noResize());
     case FrameScrolling:       return getString(frameElement.scrolling());
-    case FrameSrc:             return getString(frameElement.src());
+    case FrameSrc:
+    case FrameLocation:        return getString(frameElement.src());
     }
   }
   break;
@@ -1639,7 +1643,6 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case IFrameAlign:                return getString(iFrame.align());
       // ### security check ?
-    case IFrameDocument: // non-standard, mapped to contentDocument
     case IFrameContentDocument:      return getDOMNode(exec, iFrame.contentDocument());
     case IFrameFrameBorder:     return getString(iFrame.frameBorder());
     case IFrameHeight:          return getString(iFrame.height());
@@ -1659,7 +1662,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   // generic properties
   switch (token) {
   case ElementId:
-    return getString(element.id());
+    return String(element.id()); // getString is wrong here. Other browsers return empty string if no id specified.
   case ElementTitle:
     return getString(element.title());
   case ElementLang:
@@ -1676,6 +1679,15 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,element.ownerDocument());
   case ElementChildren:
     return getHTMLCollection(exec,element.children());
+  case ElementScrollHeight: {
+    khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
+    // Note: lowestPosition only works on blocklevel, special or replaced elements
+    return Number(rend ? rend->lowestPosition() : 0);
+  }
+  case ElementScrollWidth: {
+    khtml::RenderObject *rend = element.handle() ? element.handle()->renderer() : 0L;
+    return Number(rend ? rend->rightmostPosition() : 0);
+  }
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
   kdWarning() << "HTMLElement::getValueProperty unhandled token " << token << endl;
@@ -2469,7 +2481,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
     }
     break;
     case ID_CAPTION: {
-      DOM::HTMLTableCaptionElement tableCaption;
+      DOM::HTMLTableCaptionElement tableCaption = element;
       switch (token) {
       case TableAlign:           { tableCaption.setAlign(str); return; }
       }
@@ -2624,8 +2636,8 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
 const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
-HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
-  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
+HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c, ReturnType ret)
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c), m_returnType(ret) {}
 
 HTMLCollection::~HTMLCollection()
 {
@@ -2647,7 +2659,12 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) 
   kdDebug() << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
 #endif
   if (propertyName == "length")
+  {
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "  collection length is " << collection.length() << endl;
+#endif
     return Number(collection.length());
+  }
   else if (propertyName == "selectedIndex" &&
 	   collection.item(0).elementId() == ID_OPTION) {
     // NON-STANDARD options.selectedIndex
@@ -2753,7 +2770,10 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning single node" << endl;
 #endif
-      return getDOMNode(exec,node);
+      if ( m_returnType == ReturnNodeOrFrame )
+        return getDOMNodeOrFrame(exec,node);
+      else
+        return getDOMNode(exec,node);
     }
     else // multiple items, return a collection
     {
@@ -2766,7 +2786,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif
-      return Value(new DOMNamedNodesCollection(exec,nodes));
+      return Value(new DOMNamedNodesCollection(exec,nodes,m_returnType));
     }
   }
 #ifdef KJS_VERBOSE
@@ -2829,8 +2849,12 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
 #endif
+  if ( propertyName == "selectedIndex" ) {
+    element.setSelectedIndex( value.toInteger( exec ) );
+    return;
+  }
   // resize ?
-  if (propertyName == "length") {
+  else if (propertyName == "length") {
     long newLen = value.toInteger(exec);
     long diff = element.length() - newLen;
 

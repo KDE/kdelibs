@@ -15,6 +15,7 @@
 171        kdecore (KSocks)
 172        kdecore (KStartupInfo)
 173        kdecore (KLocale)
+174        kdecore (KProcIO)
 200        kdeui (KMainWindow)
 220        kdeui (KToolBar)
 230        kdeui (KCommand)
@@ -82,7 +83,10 @@
 4300        kdvi (kdegraphics)
 4400        kpaint (kdegraphics)
 4500        kghostview (kdegraphics)
-4600        kview (kdegraphics)
+4600        kview
+4610        kviewviewer
+4620        kviewcanvas
+4630        kview_plugin
 
 # kdenetwork
 5001        caitoo
@@ -302,6 +306,7 @@
 40000        kformula
 40001	     krayon
 41000	     krayon
+42000        kplato
 
 # kdemultimedia
 66666	noatun

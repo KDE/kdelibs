@@ -21,7 +21,9 @@ KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 SUBDIRS = misc dom css xml html rendering pics $(DOJAVA) . ecma
 
-lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
+lib_LTLIBRARIES = libkhtml.la
+kde_module_LTLIBRARIES = khtmlimagepart.la
+
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
 		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
 		      khtml_printsettings.cpp
@@ -41,9 +43,9 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(top_builddir)/kparts/libkparts.la \
 	$(top_builddir)/kdeprint/libkdeprint.la 
 
-libkhtmlimage_la_SOURCES = khtmlimage.cpp
-libkhtmlimage_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
-libkhtmlimage_la_LIBADD = libkhtml.la
+khtmlimagepart_la_SOURCES = khtmlimage.cpp
+khtmlimagepart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
+khtmlimagepart_la_LIBADD = libkhtml.la
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
@@ -89,3 +91,6 @@ testrender_SOURCES = testrender.cpp
 testrender_LDADD = libkhtml.la
 test_regression_SOURCES = test_regression.cpp
 test_regression_LDADD = libkhtml.la ecma/kjs_html.la $(top_builddir)/kjs/libkjs.la
+
+DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts
+DOXYGEN_EXCLUDE =  test*.*

@@ -93,6 +93,7 @@ void KGzipFilter::init( int mode )
     }
     m_mode = mode;
     d->bCompressed = true;
+    m_headerWritten = false;
 }
 
 void KGzipFilter::terminate()
@@ -122,6 +123,7 @@ void KGzipFilter::reset()
         int result = deflateReset(&d->zStream);
         if ( result != Z_OK )
             kdDebug(7005) << "deflateReset returned " << result << endl;
+        m_headerWritten = false;
     }
 }
 
@@ -226,11 +228,14 @@ bool KGzipFilter::writeHeader( const QCString & fileName )
     m_crc = crc32(0L, Z_NULL, 0);
     d->zStream.next_out = p;
     d->zStream.avail_out = i;
+    m_headerWritten = true;
     return true;
 }
 
 void KGzipFilter::writeFooter()
 {
+    Q_ASSERT( m_headerWritten );
+    if (!m_headerWritten) kdDebug() << kdBacktrace();
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
     //kdDebug(7005) << "KGzipFilter::writeFooter writing CRC= " << QString::number( m_crc, 16 ) << endl;
@@ -317,9 +322,12 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
     if ( result != Z_OK && result != Z_STREAM_END )
         kdDebug(7005) << "  deflate returned " << result << endl;
 #endif
-    //kdDebug(7005) << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
-    m_crc = crc32(m_crc, p, len - d->zStream.avail_in);
-    if ( result == Z_STREAM_END )
+    if ( m_headerWritten )
+    {
+        //kdDebug(7005) << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
+        m_crc = crc32(m_crc, p, len - d->zStream.avail_in);
+    }
+    if ( result == Z_STREAM_END && m_headerWritten )
     {
         //kdDebug(7005) << "KGzipFilter::compress finished, write footer" << endl;
         writeFooter();

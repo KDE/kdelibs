@@ -448,7 +448,9 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
-                       buttonContinue, KStdGuiItem::cancel() );
+                       buttonContinue.text() == QString::null ?
+                           KStdGuiItem::cont() : buttonContinue, 
+                       KStdGuiItem::cancel() );
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,

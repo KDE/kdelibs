@@ -585,7 +585,7 @@ public:
      * know what you are doing.
      *
      * @param text The text that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
@@ -593,7 +593,7 @@ public:
 
     /**
      *  @param text The text that will be displayed.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -605,7 +605,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */

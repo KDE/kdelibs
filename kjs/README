@@ -5,12 +5,10 @@ Microsoft's JScript.
 I'm currently pursuing to be compliant with Edition 3 of ECMA-262. Postscript
 and pdf versions of the standard are available at:
 
-http://www.ecma.ch
-
 ftp://ftp.ecma.ch/ecma-st/Ecma-262.pdf for PDF and
 ftp://ftp.ecma.ch/ecma-st/Ecma-262.psc for postscript.
 
-About 90% of the required features should be covered by now. Note that this
+About 95% of the required features should be covered by now. Note that this
 number covers the core language elements only. Features like the famous
 roll-over buttons on the www are NOT part of the standard. Those extensions
 are added via a module loaded dynamically by the KHTML Widget.
@@ -19,8 +17,7 @@ I'll provide some examples of how to extend this library for various needs at
 a later point in time. Feel free to contact me via mail if you have any
 questions on how to provide scripting capabilites for your application.
 
-A debugger is being worked on. Enable it in the KControl module for
-Javascript.
+A debugger is being worked on.
 
 Bug reports, patches or feedback of any kind is very welcome.
 

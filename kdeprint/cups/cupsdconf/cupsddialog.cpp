@@ -231,11 +231,11 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 	QFileInfo	fi(fn);
 	QString		errormsg;
 	// check existence
-	if (!fi.exists()) errormsg = i18n("File \"%1\" doesn't exist !").arg(fn);
+	if (!fi.exists()) errormsg = i18n("File \"%1\" does not exist!").arg(fn);
 	// check read state
-	else if (!fi.isReadable()) errormsg = i18n("Can't open file \"%1\" !\nCheck file permissions.").arg(fn);
+	else if (!fi.isReadable()) errormsg = i18n("Unable to open file \"%1\"!\nCheck file permissions.").arg(fn);
 	// check write state
-	else if (!fi.isWritable()) errormsg = i18n("You are not allowed to modify file \"%1\" !\nCheck file permissions or contact system administrator.").arg(fn);
+	else if (!fi.isWritable()) errormsg = i18n("You are not allowed to modify file \"%1\"!\nCheck file permissions or contact the system administrator.").arg(fn);
 
 	if (!errormsg.isEmpty())
 	{

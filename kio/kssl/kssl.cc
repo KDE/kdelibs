@@ -266,6 +266,7 @@ int KSSL::connect(int sock) {
   } else {
     kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
     kdDebug(7029) << "                      ERROR = " << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
+    d->kossl->ERR_print_errors_fp(stderr);
     return -1;
   }
   return rc;
@@ -298,7 +299,15 @@ int KSSL::peek(void *buf, int len) {
 int KSSL::read(void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
+
+  int rc = d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
+  if (rc <= 0) {
+    int err = d->kossl->SSL_get_error(d->m_ssl, rc);
+    kdDebug(7029) << "SSL READ ERROR: " << err << endl;
+    if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
+      rc = -1;      // OpenSSL returns 0 on error too
+  }
+  return rc;
 #else
   return -1;
 #endif
@@ -308,7 +317,16 @@ int KSSL::read(void *buf, int len) {
 int KSSL::write(const void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
+
+  int rc = d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
+  if (rc <= 0) {      // OpenSSL returns 0 on error too
+    int err = d->kossl->SSL_get_error(d->m_ssl, rc);
+    kdDebug(7029) << "SSL WRITE ERROR: " << err << endl;
+    if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
+      rc = -1;
+  }
+
+  return rc;
 #else
   return -1;
 #endif

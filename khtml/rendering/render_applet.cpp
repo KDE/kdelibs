@@ -42,7 +42,7 @@
 using namespace khtml;
 using namespace DOM;
 
-RenderApplet::RenderApplet(HTMLElementImpl *applet, QMap<QString, QString> args )
+RenderApplet::RenderApplet(HTMLElementImpl *applet, const QMap<QString, QString> &args )
     : RenderWidget(applet)
 {
     // init RenderObject attributes
@@ -110,15 +110,15 @@ void RenderApplet::layout()
             child = child->nextSibling();
         }
         //kdDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height << endl;
-        m_widget->resize(m_width-marginLeft()-marginRight()-paddingLeft()-paddingRight(),
-                         m_height-marginTop()-marginBottom()-paddingTop()-paddingBottom());
+        m_widget->resize(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                         m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
         tmp->showApplet();
     }
 
     setLayouted();
 }
 
-void RenderApplet::processArguments(QMap<QString, QString> args)
+void RenderApplet::processArguments(const QMap<QString, QString> &args)
 {
     KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(m_widget);
     KJavaApplet* applet = w ? w->applet() : 0;
@@ -127,15 +127,18 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
         applet->setBaseURL( args[QString::fromLatin1("baseURL") ] );
         applet->setAppletClass( args[QString::fromLatin1("code") ] );
 
-        if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
-            applet->setCodeBase( args[QString::fromLatin1("codeBase") ] );
+	QString str = args[QString::fromLatin1("codeBase") ];
+        if( !str.isEmpty() )
+            applet->setCodeBase( str );
 
-        if( !args[QString::fromLatin1("name") ].isNull() )
-            applet->setAppletName( args[QString::fromLatin1("name") ] );
+	str = args[QString::fromLatin1("name") ];
+        if( !str.isNull() )
+            applet->setAppletName( str );
         else
             applet->setAppletName( args[QString::fromLatin1("code") ] );
 
-        if( !args[QString::fromLatin1("archive") ].isEmpty() )
+	str = args[QString::fromLatin1("archive") ];
+        if( !str.isEmpty() ) 
             applet->setArchives( args[QString::fromLatin1("archive") ] );
     }
 }
@@ -172,8 +175,8 @@ void RenderEmptyApplet::layout()
     if(m_widget)
     {
         //kdDebug(6100) << "RenderEmptyApplet::layout, m_width = " << m_width << ", m_height = " << m_height << endl;
-        m_widget->resize(m_width-marginLeft()-marginRight()-paddingLeft()-paddingRight(),
-                         m_height-marginTop()-marginBottom()-paddingTop()-paddingBottom());
+        m_widget->resize(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                         m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
     }
 
     setLayouted();

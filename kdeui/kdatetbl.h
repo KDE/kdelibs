@@ -75,7 +75,7 @@ protected:
   /**
    * The resize event.
    */
-  void viewportResizeEvent(QResizeEvent*);
+  virtual void viewportResizeEvent(QResizeEvent*);
   /**
    * Paint a cell. This simply draws the month names in it.
    */
@@ -83,12 +83,12 @@ protected:
   /**
    * Catch mouse click and move events to paint a rectangle around the item.
    */
-  void contentsMousePressEvent(QMouseEvent *e);
-  void contentsMouseMoveEvent(QMouseEvent *e);
+  virtual void contentsMousePressEvent(QMouseEvent *e);
+  virtual void contentsMouseMoveEvent(QMouseEvent *e);
   /**
    * Emit monthSelected(int) when a cell has been released.
    */
-  void contentsMouseReleaseEvent(QMouseEvent *e);
+  virtual void contentsMouseReleaseEvent(QMouseEvent *e);
 
 private:
   class KDateInternalMonthPrivate;
@@ -138,7 +138,7 @@ protected:
   /**
    * Catch key press events.
    */
-  void keyPressEvent(QKeyEvent* e);
+  virtual void keyPressEvent(QKeyEvent* e);
   /**
    * The only subwidget that uses the whole dialog window.
    */
@@ -166,7 +166,7 @@ public:
    * The resize event. Simply resizes the main widget to the whole
    * widgets client size.
    */
-  void resizeEvent(QResizeEvent*);
+  virtual void resizeEvent(QResizeEvent*);
   /**
    * Open the popup window at position pos.
    */

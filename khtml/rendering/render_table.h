@@ -104,7 +104,7 @@ public:
                     RenderTableCell* _cell, bool recalc = true);
 
     void recalcColInfos();
-    
+
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void print( QPainter *, int x, int y, int w, int h,
@@ -160,7 +160,7 @@ public:
 	    start = 0;
             min=0;
             max=0;
-            type=khtml::Undefined;
+            type=khtml::Variable;
             value=0;
             minCell=0;
             maxCell=0;
@@ -445,7 +445,6 @@ public:
 
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
-    khtml::Length width();
 
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 

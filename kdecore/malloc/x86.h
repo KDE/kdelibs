@@ -20,10 +20,13 @@ static __inline__ int lock(mutex_t *m) {
        : "memory");
     if(!r)
       return 0;
+#ifdef _POSIX_PRIORITY_SCHEDULING
     if(cnt < 50) {
       sched_yield();
       cnt++;
-    } else {
+    } else
+#endif
+        {
       tm.tv_sec = 0;
       tm.tv_nsec = 2000001;
       nanosleep(&tm, NULL);
@@ -33,7 +36,6 @@ static __inline__ int lock(mutex_t *m) {
 }
 
 static __inline__ int unlock(mutex_t *m) {
-  m->lock = 0;
-  __asm __volatile ("" : "=m" (m->lock) : "0" (m->lock));
+  __asm __volatile ("movl $0,%0" : "=m" (m->lock));
   return 0;
 }

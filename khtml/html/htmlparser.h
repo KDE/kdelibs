@@ -38,6 +38,7 @@
 #include <qdatetime.h>
 #endif
 
+
 #include "dom/dom_string.h"
 #include "xml/dom_nodeimpl.h"
 #include "html/html_documentimpl.h"
@@ -83,10 +84,9 @@ public:
      */
     void reset();
 
-    bool parsingBody() const { return inBody; }
-
     bool skipMode() const { return (discard_until != 0); }
-    bool noSpaces() const { return (!_inline  || !inBody); }
+    bool noSpaces() const { return (!m_inline  || !inBody); }
+    bool preMode() const { return inPre; }
     bool selectMode() const { return inSelect; }
 
     DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document->document()); }
@@ -104,7 +104,7 @@ protected:
 
     void processCloseTag(khtml::Token *);
 
-    bool insertNode(DOM::NodeImpl *n);
+    bool insertNode(DOM::NodeImpl *n, bool flat = false);
 
     /*
      * The currently active element (the one new elements will be added to)
@@ -153,16 +153,16 @@ protected:
     void startBody();
 
     bool inBody;
-    // in case we haven't found an explicit body element up to now, this is true.
-    // needed for broken HTML as: <center><frameset>... as the center element creates an implicit body
-    bool noRealBody;
+    bool haveContent;
     bool haveFrameSet;
-    bool _inline;
+    bool m_inline;
     bool end;
-    bool flat;
     bool haveKonqBlock;
     bool inSelect;
-    
+
+
+    int inPre;
+
     /*
      * tells the parser to discard all tags, until it reaches the one specified
      */

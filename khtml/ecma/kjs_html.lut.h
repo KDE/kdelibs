@@ -47,7 +47,7 @@ const struct HashTable HTMLDocumentTable = { 2, 35, HTMLDocumentTableEntries, 31
 namespace KJS {
 
 const struct HashEntry HTMLElementTableEntries[] = {
-   { 0, 0, 0, 0, 0 },
+   { "scrollHeight", KJS::HTMLElement::ElementScrollHeight, DontDelete|ReadOnly, 0, 0 },
    { "innerHTML", KJS::HTMLElement::ElementInnerHTML, DontDelete, 0, &HTMLElementTableEntries[10] },
    { "title", KJS::HTMLElement::ElementTitle, DontDelete, 0, &HTMLElementTableEntries[8] },
    { 0, 0, 0, 0, 0 },
@@ -57,12 +57,13 @@ const struct HashEntry HTMLElementTableEntries[] = {
    { "dir", KJS::HTMLElement::ElementDir, DontDelete, 0, &HTMLElementTableEntries[9] },
    { "lang", KJS::HTMLElement::ElementLang, DontDelete, 0, 0 },
    { "className", KJS::HTMLElement::ElementClassName, DontDelete, 0, &HTMLElementTableEntries[11] },
-   { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, &HTMLElementTableEntries[12] },
-   { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, 0 },
+   { "innerText", KJS::HTMLElement::ElementInnerText, DontDelete, 0, &HTMLElementTableEntries[13] },
+   { "document", KJS::HTMLElement::ElementDocument, DontDelete|ReadOnly, 0, &HTMLElementTableEntries[12] },
+   { "scrollWidth", KJS::HTMLElement::ElementScrollWidth, DontDelete|ReadOnly, 0, 0 },
    { "children", KJS::HTMLElement::ElementChildren, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLElementTable = { 2, 13, HTMLElementTableEntries, 8 };
+const struct HashTable HTMLElementTable = { 2, 14, HTMLElementTableEntries, 8 };
 
 }; // namespace
 
@@ -183,13 +184,11 @@ const struct HashEntry HTMLBodyElementTableEntries[] = {
    { "vLink", KJS::HTMLElement::BodyVLink, DontDelete, 0, 0 },
    { "text", KJS::HTMLElement::BodyText, DontDelete, 0, 0 },
    { "link", KJS::HTMLElement::BodyLink, DontDelete, 0, 0 },
-   { "aLink", KJS::HTMLElement::BodyALink, DontDelete, 0, &HTMLBodyElementTableEntries[10] },
-   { "bgColor", KJS::HTMLElement::BodyBgColor, DontDelete, 0, &HTMLBodyElementTableEntries[9] },
-   { "scrollHeight", KJS::HTMLElement::BodyScrollHeight, DontDelete|ReadOnly, 0, 0 },
-   { "scrollWidth", KJS::HTMLElement::BodyScrollWidth, DontDelete|ReadOnly, 0, 0 }
+   { "aLink", KJS::HTMLElement::BodyALink, DontDelete, 0, 0 },
+   { "bgColor", KJS::HTMLElement::BodyBgColor, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLBodyElementTable = { 2, 11, HTMLBodyElementTableEntries, 8 };
+const struct HashTable HTMLBodyElementTable = { 2, 9, HTMLBodyElementTableEntries, 8 };
 
 }; // namespace
 
@@ -945,17 +944,16 @@ namespace KJS {
 
 const struct HashEntry HTMLIFrameElementTableEntries[] = {
    { 0, 0, 0, 0, 0 },
-   { "frameBorder", KJS::HTMLElement::IFrameFrameBorder, DontDelete, 0, &HTMLIFrameElementTableEntries[15] },
+   { "frameBorder", KJS::HTMLElement::IFrameFrameBorder, DontDelete, 0, &HTMLIFrameElementTableEntries[14] },
    { 0, 0, 0, 0, 0 },
    { "marginHeight", KJS::HTMLElement::IFrameMarginHeight, DontDelete, 0, 0 },
-   { "src", KJS::HTMLElement::IFrameSrc, DontDelete, 0, &HTMLIFrameElementTableEntries[16] },
+   { "src", KJS::HTMLElement::IFrameSrc, DontDelete, 0, &HTMLIFrameElementTableEntries[15] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "align", KJS::HTMLElement::IFrameAlign, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "height", KJS::HTMLElement::IFrameHeight, DontDelete, 0, &HTMLIFrameElementTableEntries[14] },
-   { "contentDocument", KJS::HTMLElement::IFrameContentDocument, DontDelete|ReadOnly, 0, &HTMLIFrameElementTableEntries[13] },
-   { "document", KJS::HTMLElement::IFrameDocument, DontDelete|ReadOnly, 0, &HTMLIFrameElementTableEntries[12] },
+   { "height", KJS::HTMLElement::IFrameHeight, DontDelete, 0, &HTMLIFrameElementTableEntries[13] },
+   { "contentDocument", KJS::HTMLElement::IFrameContentDocument, DontDelete|ReadOnly, 0, &HTMLIFrameElementTableEntries[12] },
    { "longDesc", KJS::HTMLElement::IFrameLongDesc, DontDelete, 0, 0 },
    { "marginWidth", KJS::HTMLElement::IFrameMarginWidth, DontDelete, 0, 0 },
    { "name", KJS::HTMLElement::IFrameName, DontDelete, 0, 0 },
@@ -963,7 +961,7 @@ const struct HashEntry HTMLIFrameElementTableEntries[] = {
    { "width", KJS::HTMLElement::IFrameWidth, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLIFrameElementTable = { 2, 17, HTMLIFrameElementTableEntries, 12 };
+const struct HashTable HTMLIFrameElementTable = { 2, 16, HTMLIFrameElementTableEntries, 12 };
 
 }; // namespace
 

@@ -174,7 +174,6 @@ SlaveBase::SlaveBase( const QCString &protocol,
     listEntry_sec = tp.tv_sec;
     listEntry_usec = tp.tv_usec;
     mConnectedToApp = true;
-    connectSlave(mAppSocket);
 
     d = new SlaveBasePrivate;
     // by kahl for netmgr (need a way to identify slaves)
@@ -188,6 +187,8 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->last_tv.tv_sec = 0;
     d->last_tv.tv_usec = 0;
     d->processed_size = 0;
+
+    connectSlave(mAppSocket);
 }
 
 SlaveBase::~SlaveBase()
@@ -387,7 +388,7 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
 	    d->last_tv.tv_sec = tv.tv_sec;
 	    d->last_tv.tv_usec = tv.tv_usec;
 	}
-    } 
+    }
     d->processed_size = _bytes;
 }
 
@@ -642,7 +643,7 @@ bool SlaveBase::dispatch()
     kdDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
         return false;
     }
-    
+
     dispatch( cmd, data );
     return true;
 }
@@ -771,7 +772,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_SLAVE_CONNECT:
     {
-        d->onHold = false; 
+        d->onHold = false;
         QString app_socket;
         QDataStream stream( data, IO_ReadOnly);
         stream >> app_socket;
@@ -799,12 +800,12 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         stream >> d->configData;
         KSocks::setConfig(d->config);
         break;
-    case CMD_GET: 
+    case CMD_GET:
     {
         stream >> url;
         get( url );
     } break;
-    case CMD_PUT: 
+    case CMD_PUT:
     {
         int permissions;
         Q_INT8 iOverwrite, iResume;

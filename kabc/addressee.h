@@ -395,8 +395,8 @@ class Addressee
   private:
     Addressee copy();
     void detach();
-
-    struct AddresseeData;  
+  
+    struct AddresseeData;
     KSharedPtr<AddresseeData> mData;
 };
 

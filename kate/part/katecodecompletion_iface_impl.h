@@ -73,6 +73,7 @@ class CodeCompletion_Impl : public QObject {
 
 private:
   void updateBox(bool newCoordinate=false);
+  void doComplete(void);
   KDevArgHint* m_pArgHint;
   KateView *m_view;
   QVBox *m_completionPopup;

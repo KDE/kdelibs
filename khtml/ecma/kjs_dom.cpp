@@ -20,9 +20,11 @@
 
 #include <khtmlview.h>
 #include "xml/dom2_eventsimpl.h"
-#include "rendering/render_object.h"
+#include "rendering/render_root.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
+#include "misc/htmltags.h" // ID_*
+#include "html/html_baseimpl.h"
 #include <kdebug.h>
 #include <khtml_part.h>
 
@@ -235,10 +237,11 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     // make sure our rendering is up to date before
     // we allow a query on these attributes.
     DOM::DocumentImpl* docimpl = node.handle()->getDocument();
-    if ( docimpl )
-    {
+    KHTMLView* v = 0;
+    if ( docimpl ) {
+      v = docimpl->view();
       docimpl->updateRendering();
-      if ( docimpl->view() )
+      if ( v )
         docimpl->view()->layout();
     }
 
@@ -266,15 +269,13 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
         // "Width of the object including padding, but not including margin, border, or scroll bar."
         return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
     case ScrollLeft:
-      if (!rend)
+      if (!rend || !v)
         return Undefined();
-      else
-        return Number(-rend->xPos() + node.ownerDocument().view()->contentsX());
+      return Number(-rend->xPos() + v->contentsX());
     case ScrollTop:
-      if (!rend)
+      if (!rend || !v)
         return Undefined();
-      else
-        return Number(-rend->yPos() + node.ownerDocument().view()->contentsY());
+      return Number(-rend->yPos() + v->contentsY());
     default:
       kdWarning() << "Unhandled token in DOMNode::getValueProperty : " << token << endl;
       break;
@@ -1223,6 +1224,29 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
+// When someone does document.myiframe they want the window object of the iframe,
+// but not when doing document.getElementById('myiframe').
+// The former calls this method, the latter calls the normal getDOMNode
+Value KJS::getDOMNodeOrFrame(ExecState *exec, DOM::Node n)
+{
+  if (n.isNull())
+    return Null();
+  if (n.nodeType() == DOM::Node::ELEMENT_NODE)
+  {
+    DOM::Element element = static_cast<DOM::Element>(n);
+    if (element.elementId() == ID_IFRAME || element.elementId() == ID_FRAME)
+    {
+      DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
+      if ( doc && doc->view() ) {
+        KHTMLPart* part = doc->view()->part();
+        if ( part )
+          return Window::retrieve( part );
+      }
+    }
+  }
+  return getDOMNode(exec, n);
+}
+
 Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 {
   DOMObject *ret = 0;
@@ -1444,8 +1468,8 @@ Object KJS::getDOMExceptionConstructor(ExecState *exec)
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *, QValueList<DOM::Node>& nodes )
-  : DOMObject(), m_nodes(nodes)
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *, QValueList<DOM::Node>& nodes, int returnType )
+  : DOMObject(), m_nodes(nodes), m_returnType(returnType)
 {
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
 }
@@ -1459,7 +1483,10 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyNa
   unsigned int u = propertyName.toULong(&ok);
   if (ok) {
     DOM::Node node = m_nodes[u];
-    return getDOMNode(exec,node);
+    if ( m_returnType == KJS::HTMLCollection::ReturnNodeOrFrame )
+      return getDOMNodeOrFrame(exec,node);
+    else
+      return getDOMNode(exec,node);
   }
   return DOMObject::tryGet(exec,propertyName);
 }

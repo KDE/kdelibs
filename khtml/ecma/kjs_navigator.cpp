@@ -32,6 +32,7 @@
 #include "kjs_navigator.lut.h"
 #include "kjs_binding.h"
 #include "khtml_part.h"
+#include <sys/utsname.h>
 
 using namespace KJS;
 
@@ -196,7 +197,14 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
               (userAgent.find(QString::fromLatin1("Mac_PowerPC"),0,false)>=0) )
       return String(QString::fromLatin1("MacPPC"));
     else
-      return String(QString::fromLatin1("X11"));
+    {
+        struct utsname name;
+        int ret = uname(&name);
+        if ( ret >= 0 )
+            return String(QString::fromLatin1("%1 %1 X11").arg(name.sysname).arg(name.machine));
+        else // can't happen
+            return String(QString::fromLatin1("Unix X11"));
+    }
   case _Plugins:
     return Value(new Plugins(exec));
   case _MimeTypes:

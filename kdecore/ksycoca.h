@@ -34,7 +34,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 46
+#define KSYCOCA_VERSION 49
 
 /**
  * @internal
@@ -134,11 +134,13 @@ protected:
    void closeDatabase();
    KSycocaFactoryList *m_lstFactories;
    QDataStream *m_str;
-   static KSycoca *_self;
    bool bNoDatabase;
    size_t m_sycoca_size;
    const char *m_sycoca_mmap;
    Q_UINT32 m_timeStamp;
+
+public:
+   static KSycoca *_self; // Internal use only.
 
 protected:
   virtual void virtual_hook( int id, void* data );

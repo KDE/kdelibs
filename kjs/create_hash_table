@@ -35,10 +35,14 @@ while (<IN>) {
   s/^\s*//g;
   if (/^\#|^$/) {
       # comment. do nothing
-    } elsif (/^\@begin\s*(\w+)\s*(\d+)\s*$/ && !$inside) {
-      $inside = 1;
-      $name = $1;
-      $hashsize = $2;
+    } elsif (/^\@begin/ && !$inside) {
+      if (/^\@begin\s*([:_\w]+)\s*(\d+)\s*$/) {
+        $inside = 1;
+        $name = $1;
+        $hashsize = $2;
+      } else {
+         printf STDERR "WARNING: \@begin without table name and hashsize, skipping $_\n";
+      }
     } elsif (/^\@end\s*$/ && $inside) {
 
       if($findSize) {
@@ -94,10 +98,17 @@ sub calcTable() {
 	$size++;
       }
     }
+    #print STDERR "table[$h] = $i\n";
     $table[$h] = $i;
     $i++;
     $maxdepth = $depth if ( $depth > $maxdepth);
   }
+
+  # Ensure table is big enough (in case of undef entries at the end)
+  if ( $#table+1 < $size ) {
+    $#table = $size-1;
+  }
+  #print STDERR "After loop: size=$size table=".($#table+1)."\n";
 
   if ($findSize) {
     my $emptycount = 0;
@@ -106,12 +117,12 @@ sub calcTable() {
     }
     print STDERR "Hashsize: $hashsize  Total Size: $size Empty: $emptycount MaxDepth: $maxdepth Collisions: $collisions\n";
   }
-#  my $i = 0;
+#  my $debugtable = 0;
 #  foreach $entry (@table) {
-#    print "$i " . $entry;
-#    print " -> " . $links[$i] if (defined($links[$i]));
-#    print "\n";
-#    $i++;
+#    print STDERR "$debugtable " . (defined $entry ? $entry : '<undefined>');
+#    print STDERR " -> " . $links[$debugtable] if (defined($links[$debugtable]));
+#    print STDERR "\n";
+#    $debugtable++;
 #  }
 }
 
@@ -130,10 +141,14 @@ sub output() {
     print "/* Automatically generated from $file using $0. DO NOT EDIT ! */\n";
   }
 
+  my $nameEntries = "${name}Entries";
+  $nameEntries =~ s/:/_/g;
   print "\n#include \"lookup.h\"\n" if ($includelookup);
+  print "\nusing namespace KJS;\n"; # because of DontDelete etc.
   print "\nnamespace KJS {\n";
-  print "\nconst struct HashEntry ${name}Entries[] = {\n";
+  print "\nconst struct HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
+  #print STDERR "writing out table with ".($#table+1)." entries\n";
   foreach $entry (@table) {
     if (defined($entry)) {
       my $key = $keys[$entry];
@@ -143,7 +158,7 @@ sub output() {
       print ", " . $params[$entry];
       print ", ";
       if (defined($links[$i])) {
-	print "&${name}Entries[$links[$i]]" . " \}";
+	print "&".$nameEntries."[$links[$i]]" . " \}";
       } else {
 	print "0 \}"
       }
@@ -156,6 +171,6 @@ sub output() {
   }
   print "};\n";
   print "\nconst struct HashTable $name = ";
-  print "\{ 2, $size, ${name}Entries, $hashsize \};\n\n";
+  print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
   print "}; // namespace\n";
 }

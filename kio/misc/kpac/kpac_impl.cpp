@@ -65,8 +65,8 @@ QString KPACImpl::proxyForURL(const KURL &url)
         kdDebug(7025) << "KPACImpl::proxyForURL(): config not (yet) read, not using a proxy" << endl;
         return QString::null;
     }
-
-    QString code = QString("return FindProxyForURL('%1', '%2');").arg(url.url()).arg(url.host());
+    // don't use "return FindProxyForURL('%1','%2')" here - it breaks with URLs containing %20
+    QString code = QString("return FindProxyForURL('" ) + url.url() + "', '" + url.host() + "');";
     UString ucode = code.local8Bit().data();
     Completion comp = m_interpreter->evaluate(ucode);
     if (comp.complType() == Throw)

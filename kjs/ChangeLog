@@ -1,3 +1,34 @@
+2002-06-15  Harri Porten  <porten@kde.org>
+
+	* added the KJS_MAX_STACK macro that sets a limit to the function
+	call stack depth (unless set to -1).
+	* regexp_object.cpp: made RegExp.prototype visible
+	* adjusted length property of slit and split to what the spec says
+	* some conversions and new calls less
+
+2002-06-08  Harri Porten  <porten@kde.org>
+
+	* string_object.cpp: fixed the leaks introduced by the previous
+	fixes of match() and split(). One has to clean up after each
+	call to RegExp::match().
+	* added some KJS_DEBUG_MEM ifdef'ed globalClear() functions
+	that clear up static allocations. Makes debugging memory
+	leaks easier as we're down to 0 "still reachable" leaks (apart
+	from STL related issue in the node leak check list).
+
+2002-06-02  Harri Porten  <porten@kde.org>
+
+	* math_object.cpp: fixed handling of NaN in Math.round()
+
+2002-06-01  Harri Porten  <porten@kde.org>
+
+	* string_object.cpp: correct global flag use in match(). Fixed
+	some split() cases. Fixed unlikely leak.
+	* regexp_object.cpp: set 'index' and 'input' properties of
+	RegExp.prototype.exec() and String.prototype.match() result.
+	Made new RegExp() really produce an empty regexp.
+	* array_object.cpp: correct sorting for 'undefined' properties
+
 2001-01-04  Harri Porten  <harri@trolltech.com>
 
 	* ustring.h: pack bytes to avoid alignment problems (ARM) reported

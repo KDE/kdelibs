@@ -30,6 +30,7 @@
 extern "C" {
 #ifdef HAVE_SSL
 static int (*K_SSL_connect)     (SSL *) = NULL;
+static int (*K_SSL_accept)      (SSL *) = NULL;
 static int (*K_SSL_read)        (SSL *, void *, int) = NULL;
 static int (*K_SSL_write)       (SSL *, const void *, int) = NULL;
 static SSL *(*K_SSL_new)        (SSL_CTX *) = NULL;
@@ -104,6 +105,7 @@ static int (*K_SSL_CTX_use_certificate) (SSL_CTX*, X509*) = NULL;
 static int (*K_SSL_get_error) (SSL*, int) = NULL;
 static STACK_OF(X509)* (*K_SSL_get_peer_cert_chain) (SSL*) = NULL;
 static void (*K_X509_STORE_CTX_set_chain) (X509_STORE_CTX *, STACK_OF(X509)*) = NULL;
+static void (*K_X509_STORE_CTX_set_purpose) (X509_STORE_CTX *, int) = NULL;
 static void (*K_sk_free) (STACK*) = NULL;
 static int (*K_sk_num) (STACK*) = NULL;
 static char* (*K_sk_pop) (STACK*) = NULL;
@@ -152,6 +154,7 @@ static int (*K_X509_REQ_set_pubkey)(X509_REQ*, EVP_PKEY*) = NULL;
 static RSA *(*K_RSA_generate_key)(int, unsigned long, void (*)(int,int,void *), void *) = NULL;
 static int (*K_i2d_X509_REQ_fp)(FILE*, X509_REQ*) = NULL;
 static void (*K_ERR_clear_error)() = NULL;
+static void (*K_ERR_print_errors_fp)(FILE*) = NULL;
 #endif
 };
 
@@ -346,6 +349,7 @@ KConfig *cfg;
       K_X509_REQ_free = (void (*)(X509_REQ*)) _cryptoLib->symbol("X509_REQ_free");
       K_X509_REQ_new = (X509_REQ* (*)()) _cryptoLib->symbol("X509_REQ_new");
       K_X509_STORE_CTX_set_chain = (void (*)(X509_STORE_CTX *, STACK_OF(X509)*)) _cryptoLib->symbol("X509_STORE_CTX_set_chain");
+      K_X509_STORE_CTX_set_purpose = (void (*)(X509_STORE_CTX *, int)) _cryptoLib->symbol("X509_STORE_CTX_set_purpose");
       K_sk_free = (void (*) (STACK *)) _cryptoLib->symbol("sk_free");
       K_sk_num = (int (*) (STACK *)) _cryptoLib->symbol("sk_num");
       K_sk_pop = (char* (*) (STACK *)) _cryptoLib->symbol("sk_pop");
@@ -393,6 +397,7 @@ KConfig *cfg;
       K_RSA_generate_key = (RSA* (*)(int, unsigned long, void (*)(int,int,void *), void *)) _cryptoLib->symbol("RSA_generate_key");
       K_i2d_X509_REQ_fp = (int (*)(FILE *, X509_REQ *)) _cryptoLib->symbol("i2d_X509_REQ_fp");
       K_ERR_clear_error = (void (*)()) _cryptoLib->symbol("ERR_clear_error");
+      K_ERR_print_errors_fp = (void (*)(FILE*)) _cryptoLib->symbol("ERR_print_errors_fp");
 #endif
    }
 
@@ -425,6 +430,7 @@ KConfig *cfg;
 #ifdef HAVE_SSL 
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
+      K_SSL_accept = (int (*)(SSL *)) _sslLib->symbol("SSL_accept");
       K_SSL_read = (int (*)(SSL *, void *, int)) _sslLib->symbol("SSL_read");
       K_SSL_write = (int (*)(SSL *, const void *, int)) 
                             _sslLib->symbol("SSL_write");
@@ -516,6 +522,12 @@ KOpenSSLProxy *KOpenSSLProxy::self() {
 
 int KOpenSSLProxy::SSL_connect(SSL *ssl) {
    if (K_SSL_connect) return (K_SSL_connect)(ssl);
+   return -1;
+}
+
+
+int KOpenSSLProxy::SSL_accept(SSL *ssl) {
+   if (K_SSL_accept) return (K_SSL_accept)(ssl);
    return -1;
 }
 
@@ -922,6 +934,10 @@ void KOpenSSLProxy::X509_STORE_CTX_set_chain(X509_STORE_CTX *v, STACK_OF(X509)* 
    if (K_X509_STORE_CTX_set_chain) (K_X509_STORE_CTX_set_chain)(v,x);
 }
 
+void KOpenSSLProxy::X509_STORE_CTX_set_purpose(X509_STORE_CTX *v, int purpose) {
+   if (K_X509_STORE_CTX_set_purpose) (K_X509_STORE_CTX_set_purpose)(v,purpose);
+}
+
 
 STACK* KOpenSSLProxy::sk_dup(STACK *s) {
    if (K_sk_dup) return (K_sk_dup)(s);
@@ -1199,6 +1215,11 @@ int KOpenSSLProxy::i2d_X509_REQ_fp(FILE *fp, X509_REQ *x) {
 
 void KOpenSSLProxy::ERR_clear_error() {
    if (K_ERR_clear_error) (K_ERR_clear_error)();
+}
+
+
+void KOpenSSLProxy::ERR_print_errors_fp(FILE* fp) {
+   if (K_ERR_print_errors_fp) (K_ERR_print_errors_fp)(fp);
 }
 
 

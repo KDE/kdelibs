@@ -104,6 +104,10 @@ InfoOutput=4
 [7018]
 InfoOutput=4
 
+# KGame debug info off
+[11001]
+InfoOutput=4
+
 # KOStore debug info off
 [30002]
 InfoOutput=4

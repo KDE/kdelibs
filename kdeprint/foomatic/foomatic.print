@@ -1,8 +1,10 @@
 [KDE Print Entry]
 PrintSystem=foomatic
 Comment=Foomatic (CUPS, LPRng, PDQ)
+Comment[af]=Foomaties (Cups, Lprng, Pdq)
 Comment[ar]= Foomatic (CUPS, LPRng, PDQ)
 Comment[eo]=Presprogramo "Foomatic" (CUPS, LPRng, PDQ)
+Comment[sv]=Foomatic (Cups, LPRng, PDQ)
 Comment[xx]=xx
 DetectUris=exec:/foomatic-configure,config:/foomatic/
 DetectPrecedence=0

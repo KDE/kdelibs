@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=PCM audio
-Comment[af]=pcm audio
+Comment[af]=Pcm audio
 Comment[ar]=ملف PCM صوتي
 Comment[az]=PCM səsləri
 Comment[bg]=Звуков файл на PCM
@@ -43,7 +43,7 @@ Comment[th]=แฟ้มเสียง PCM
 Comment[tr]=PCM sesleri
 Comment[uk]=PCM-аудіо
 Comment[ven]=Zwinopfiwa zwa PCM
-Comment[vi]=Audio PCM 
+Comment[vi]=Audio PCM
 Comment[xh]=PCM evakalayo
 Comment[xx]=xx
 Comment[zh_CN]=PCM 音频文件

@@ -95,14 +95,15 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   char kde_tmp_dir[PATH_MAX+1];
   char user_tmp_dir[PATH_MAX+1];
   char tmp_buf[PATH_MAX+1];
-  char *home_dir = getenv("HOME");
-  const char *kde_home = getenv("KDEHOME");
+  int uid = getuid();
+  const char *home_dir = getenv("HOME");
+  const char *kde_home = uid ? getenv("KDEHOME") : getenv("KDEROOTHOME");
   int result;
   struct stat stat_buf;
 
   kde_tmp_dir[0] = 0;
 
-  pw_ent = getpwuid(getuid());
+  pw_ent = getpwuid(uid);
   if (!pw_ent)
   {
      fprintf(stderr, "Error: Can not find password entry for uid %d.\n", getuid());
@@ -119,6 +120,10 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
 
   if (kde_home[0] == '~')
   {
+     if (uid == 0)
+     {
+        home_dir = pw_ent->pw_dir ? pw_ent->pw_dir : "/root";
+     }
      if (!home_dir || !home_dir[0])
      {
         fprintf(stderr, "Aborting. $HOME not set!");

@@ -122,7 +122,6 @@ signals:
 
 class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
-    Q_OBJECT
 public:
     XMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
     virtual ~XMLTokenizer();

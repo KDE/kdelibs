@@ -102,10 +102,10 @@ For HTML, the tokenizer is located in khtmltokenizer.cpp. The tokenizer uses the
 of a HTML-file as input and breaks this contents up in a linked list of
 tokens. The tokenizer recognizes HTML-entities and HTML-tags. Text between
 begin- and end-tags is handled distinctly for several tags. The distinctions
-are in the way how spaces, linefeeds, HTLM-entities and other tags are
+are in the way how spaces, linefeeds, HTML-entities and other tags are
 handled.
 <p>
-The tokenizer is completly state-driven on a character by character base.
+The tokenizer is completly state-driven on a character by character basis.
 All text passed over to the tokenizer is directly tokenized. A complete
 HTML-file can be passed to the tokenizer as a whole, character by character
 (not very efficient) or in blocks of any (variable) size.
@@ -157,8 +157,8 @@ HTMLDocumentElementImpl*
                 \--> TextImpl*
 </pre>
 <p>
-We use a refcounting scheme to assure, that all the objects get deleted, in 
-case the root element get deleted (as long as there's no interface class 
+We use a refcounting scheme to assure that all the objects get deleted, in
+case the root element gets deleted (as long as there's no interface class 
 holding a pointer to the Implementation).
 <p>
 The interface classes (the ones without the Impl) are defined in the <code>dom/</code>

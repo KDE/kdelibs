@@ -220,7 +220,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 	d->mpGroups[i].size = config->readNumEntry("Size", 0);
 	d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
 	if (QPixmap::defaultDepth()>8)
-	    d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", false);
+	    d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", true);
 	else
 	    d->mpGroups[i].alphaBlending = false;
 
@@ -266,21 +266,23 @@ void KIconLoader::addAppDir(const QString& appname)
 
 void KIconLoader::addAppThemes(const QString& appname)
 {
-    KIconThemeNode *node = 0L;
-    KIconTheme *theme = 0L;
-
-    theme = new KIconTheme("hicolor", appname);
-    if (theme->isValid())
-	node = new KIconThemeNode(theme);
-    else
-	delete theme;
-
-    if (node)
+    if ( KIconTheme::current() != "hicolor" )
     {
-	node->links.append(d->mpThemeRoot);
-	d->mpThemeRoot = node;
+        KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
+        if (def->isValid())
+        {
+            KIconThemeNode* node = new KIconThemeNode(def);
+            d->mpThemeRoot->links.append(node);
+            addBaseThemes(node, appname);
+        }
+        else
+            delete def;
     }
 
+    KIconTheme *def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
+    KIconThemeNode* node = new KIconThemeNode(def);
+    d->mpThemeRoot->links.append(node);
+    addBaseThemes(node, appname);
 }
 
 void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
