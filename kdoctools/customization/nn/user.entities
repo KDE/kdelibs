@@ -28,6 +28,7 @@
 <!ENTITY dpi	'<acronym>ppt</acronym>'>
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY infocenter	"<application>Infosenter</application>">
 <!ENTITY kcontrolcenter	"<application>&kde; Kontrollsenter</application>">
