@@ -150,7 +150,7 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
   m_bMimeTypeKnown( !mimeType.isEmpty() ),
-  d(0L)
+  d(0)
 {
   if (m_bMimeTypeKnown)
     m_pMimeType = KMimeType::mimeType( mimeType );
@@ -159,9 +159,15 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 }
 
 KFileItem::KFileItem( const KFileItem & item ) :
-  d(0L)
+  d(0)
 {
     assign( item );
+}
+
+KFileItem& KFileItem::operator=( const KFileItem & item )
+{
+    assign( item );
+    return *this;
 }
 
 KFileItem::~KFileItem()
@@ -773,6 +779,8 @@ bool KFileItem::cmp( const KFileItem & item )
 
 void KFileItem::assign( const KFileItem & item )
 {
+    if ( this == &item )
+        return;
     m_entry = item.m_entry;
     m_url = item.m_url;
     m_bIsLocalURL = item.m_bIsLocalURL;
@@ -795,10 +803,11 @@ void KFileItem::assign( const KFileItem & item )
     // note: m_extra is NOT copied, as we'd have no control over who is
     // deleting the data or not.
 
+    delete d; d = 0;
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
     if (item.d) {
-	d=new KFileItemPrivate;
+	d = new KFileItemPrivate;
 	d->iconName=item.d->iconName;
     }
 }

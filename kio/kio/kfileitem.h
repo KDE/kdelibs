@@ -464,6 +464,9 @@ public:
    */
   void assign( const KFileItem & item );
 
+  /// Assignment operator, calls assign()
+  KFileItem& operator=( const KFileItem& );
+
   /**
    * Tries to give a local URL for this file item if possible.
    * The given boolean indicates if the returned url is local or not.
