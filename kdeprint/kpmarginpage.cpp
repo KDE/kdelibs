@@ -148,7 +148,7 @@ void KPMarginPage::setOptions(const QMap<QString,QString>& opts)
 	m_margin->setCustomEnabled(marginset);
 }
 
-void KPMarginPage::getOptions(QMap<QString,QString>& opts, bool incldef)
+void KPMarginPage::getOptions(QMap<QString,QString>& opts, bool /* incldef */)
 {
 	if (m_margin->isCustomEnabled() /*|| incldef*/)
 	{
