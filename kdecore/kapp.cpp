@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.19  1997/08/29 23:52:02  kdecvs
+// Kalle: Do not crash when $HOME/.kde/config does not exist
+//
 // Revision 1.18  1997/08/29 15:56:55  kdecvs
 // Torben: added some needed functions and bugfixes for kfm-0.9
 //
@@ -765,6 +768,7 @@ void KApplication::appendSearchPath( const char *path )
 	// printf("contrast = %d\n", contrast);
 		
 	if ( applicationStyle==MotifStyle ) {
+		QColorGroup disabledgrp( textColor, backgroundColor, 
     							backgroundColor.light(highlightVal),
     							backgroundColor.dark(lowlightVal), 
     							backgroundColor.dark(120),
@@ -782,6 +786,7 @@ void KApplication::appendSearchPath( const char *path )
   if ( !str.isNull() )
 	generalFont.setPointSize(atoi(str.data()));
     } else {
+    	QColorGroup disabledgrp( textColor, backgroundColor, 
     							backgroundColor.light(150),
     							backgroundColor.dark(), 
     							backgroundColor.dark(120),
@@ -792,6 +797,7 @@ void KApplication::appendSearchPath( const char *path )
     							backgroundColor.dark(), 
     							backgroundColor.dark(120),
                         	textColor, windowColor );
+  config->setGroup( "GUI Style" );
     	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
   if ( !str.isNull() )
 	{
@@ -801,6 +807,7 @@ void KApplication::appendSearchPath( const char *path )
 		applicationStyle=MotifStyle;
 	} else
 	  applicationStyle=MotifStyle;	
+	
     QApplication::setFont( generalFont, TRUE );
     // setFont() works every time for me !
 void KApplication::kdisplaySetPalette()
@@ -812,6 +819,7 @@ void KApplication::kdisplaySetPalette()
   //		different widgets !!
   // 3) Motif style needs a different palette to Windows style.
 	
+    QApplication::setStyle( applicationStyle );
 	
     emit kdisplayStyleChanged();
 	emit appearanceChanged();

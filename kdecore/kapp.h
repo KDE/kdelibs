@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.14  1997/07/26 18:33:45  ettrich
+// Matthias: added a little "public:" before the color definitions. Otherwise
+//    clients (for example kwm) cannot read the settings, so they are senseless
+//    at present. Kwm needs this now, so I hope this is ok.
+//
 // Revision 1.13  1997/07/25 19:46:42  kalle
 // SGI changes
 //
@@ -435,6 +440,13 @@ public:
 */
   QColor selectColor;
   QColor selectTextColor;
+/**
+* KApplication has changed its Font due to a KDisplay request.
+*
+* Normally widgets will update their fonts automatically, but you should
+* connect to this to monitor global font changes, especially if you are
+* using explicit fonts.
+*/
   void kdisplayStyleChanged();
 
   /**
