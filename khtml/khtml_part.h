@@ -1302,6 +1302,11 @@ private slots:
   /*
    * @internal
    */
+  void slotUserSheetStatDone( KIO::Job* );
+
+  /*
+   * @internal
+   */
   void slotJobSpeed( KIO::Job*, unsigned long );
 
   /**

@@ -1,3 +1,12 @@
+2004-02-22  Frerich Raabe  <raabe@kde.org>
+
+	* khtml_part.cpp/.h (openURL): In case the call is a reload, do a stat
+	on the user-defined stylesheet and reload it in case it changed in
+	the meanwhile (#39962).
+	* khtmlpart_p.h (class KHTMLPartPrivate): Added
+	m_userStyleSheetLastModified variable which keeps track of the
+	mtime of the user-defined sheet.
+
 2004-02-20  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/bidi.cpp (operator ++): skip empty RenderText.

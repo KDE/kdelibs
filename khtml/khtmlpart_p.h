@@ -206,6 +206,7 @@ public:
     m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
     m_statusBarJSErrorLabel = 0L;
+    m_userStyleSheetLastModified = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -465,6 +466,7 @@ public:
     return m_extendAtEnd ? m_endOffset : m_startOffset;
   }
 
+  time_t m_userStyleSheetLastModified;
 };
 
 #endif

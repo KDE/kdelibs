@@ -632,6 +632,15 @@ bool KHTMLPart::openURL( const KURL &url )
            this, SLOT( slotJobDone( KIO::Job* ) ) );
 
   d->m_jobspeed = 0;
+
+  // If this was an explicit reload and the user style sheet should be used,
+  // do a stat to see whether the stylesheet was changed in the meanwhile.
+  if ( args.reload && !settings()->userStyleSheet().isEmpty() ) {
+    KURL url( settings()->userStyleSheet() );
+    KIO::StatJob *job = KIO::stat( url, false /* don't show progress */ );
+    connect( job, SIGNAL( result( KIO::Job * ) ),
+             this, SLOT( slotUserSheetStatDone( KIO::Job * ) ) );
+  }
   emit started( 0L );
 
   return true;
@@ -1869,6 +1878,37 @@ void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
 
   if ( !parentPart() )
     d->m_progressUpdateTimer.start( 0, true );
+}
+
+void KHTMLPart::slotUserSheetStatDone( KIO::Job *_job )
+{
+  using namespace KIO;
+
+  if ( _job->error() ) {
+    showError( _job );
+    return;
+  }
+
+  const UDSEntry entry = dynamic_cast<KIO::StatJob *>( _job )->statResult();
+  UDSEntry::ConstIterator it = entry.begin();
+  UDSEntry::ConstIterator end = entry.end();
+  for ( ; it != end; ++it ) {
+    if ( ( *it ).m_uds == UDS_MODIFICATION_TIME ) {
+     break;
+    }
+  }
+
+  // If the filesystem supports modification times, only reload the
+  // user-defined stylesheet if necessary - otherwise always reload.
+  if ( it != end ) {
+    const time_t lastModified = static_cast<time_t>( ( *it ).m_long );
+    if ( d->m_userStyleSheetLastModified >= lastModified ) {
+      return;
+    }
+    d->m_userStyleSheetLastModified = lastModified;
+  }
+
+  setUserStyleSheet( KURL( settings()->userStyleSheet() ) );
 }
 
 void KHTMLPart::checkCompleted()
