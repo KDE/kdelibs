@@ -21,6 +21,7 @@
 
 #include <xml/dom_nodeimpl.h>
 #include <dom/html_element.h>
+#include <html/html_elementimpl.h>
 #include <rendering/render_style.h>
 #include <kjs/types.h>
 #include <css/cssproperties.h>
@@ -74,5 +75,5 @@ void Style::put(const UString &p, const KJSO& v)
     }
     el.removeCSSProperty( prop );
     if(!propvalue.isEmpty())
-        el.addCSSProperty( prop, DOM::DOMString(propvalue) );
+        static_cast<HTMLElementImpl*>(el.handle())->addCSSProperty( prop, DOM::DOMString(propvalue), false );
 }

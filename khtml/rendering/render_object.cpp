@@ -683,6 +683,9 @@ void RenderObject::updateSize()
 
 void RenderObject::setStyle(RenderStyle *style)
 {
+    if (m_style == style)
+	return;
+	
     // reset style flags
     m_floating = false;
     m_positioned = false;
@@ -693,7 +696,6 @@ void RenderObject::setStyle(RenderStyle *style)
     //m_inline = true;
     m_visible = true;
 
-    if ( m_style != style ) {
     RenderStyle *oldStyle = m_style;
     m_style = style;
     if (m_style)
@@ -717,7 +719,6 @@ void RenderObject::setStyle(RenderStyle *style)
 
     setMinMaxKnown(false);
     setLayouted(false);
-    }
 }
 
 void RenderObject::setContainsPositioned(bool p)

@@ -49,7 +49,7 @@ public:
 
     virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
 
-    void addCSSProperty( const DOMString &property, const DOMString &value);
+    void addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint = true);
     void addCSSLength(int id, const DOMString &value);
     void addCSSProperty(int id, const DOMString &value);
     void addCSSProperty(const DOMString &property);

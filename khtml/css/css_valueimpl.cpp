@@ -493,9 +493,12 @@ int CSSPrimitiveValueImpl::getIdent()
 
 DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 {
+    // ### return the original value instead of a generated one (e.g. color
+    // name if it was specified) - check what spec says about this
     DOMString text;
     switch ( m_type ) {
 	case CSSPrimitiveValue::CSS_UNKNOWN:
+	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_NUMBER:
 	    text = DOMString(QString::number( (int)m_value.num ));
@@ -549,19 +552,30 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    text = DOMString(QString::number( m_value.num ) + "khz");
 	    break;
 	case CSSPrimitiveValue::CSS_DIMENSION:
+	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_STRING:
+	    // ###
+	    break;
 	case CSSPrimitiveValue::CSS_URI:
 	    text = DOMString( m_value.string );
 	    break;
 	case CSSPrimitiveValue::CSS_IDENT:
+	    text = getValueName(m_value.ident);
+	    break;
 	case CSSPrimitiveValue::CSS_ATTR:
+	    // ###
+	    break;
 	case CSSPrimitiveValue::CSS_COUNTER:
+	    // ###
+	    break;
 	case CSSPrimitiveValue::CSS_RECT:
+	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
-	    QColor c = m_value.rgbcolor->color();
-	    text = "#" + QString::number( c.red(), 16 ) + QString::number( c.red(), 16 ) + QString::number( c.red(), 16 );
+	    text = m_value.rgbcolor->color().name();
+	    break;
+	default:
 	    break;
     }
     return text;

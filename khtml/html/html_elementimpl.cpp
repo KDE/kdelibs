@@ -214,10 +214,10 @@ static inline CSSStyleDeclarationImpl *createDecl( DocumentImpl *document )
     return m_styleDecls;
 }
 
-void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value)
+void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint)
 {
     if(!m_styleDecls) m_styleDecls = createDecl( document );
-    m_styleDecls->setProperty(property, value, false, true);
+    m_styleDecls->setProperty(property, value, false, nonCSSHint);
 }
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
