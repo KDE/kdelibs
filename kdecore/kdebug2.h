@@ -76,8 +76,8 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
 kdbgstream kdDebug(int area = 0);
 kdbgstream kdDebug(bool cond, int area = 0);
 #else
-kndbgstream kdDebug(int = 0) { return kndbgstream(); }
-kndbgstream kdDebug(bool , int  = 0) { return kndbgstream(); }
+inline kndbgstream kdDebug(int = 0) { return kndbgstream(); }
+inline kndbgstream kdDebug(bool , int  = 0) { return kndbgstream(); }
 #endif
 kdbgstream kdError(int area = 0);
 
