@@ -91,7 +91,7 @@ kioinclude_HEADERS = connection.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
-	statusbarprogress.h uiserver.h
+	statusbarprogress.h uiserver.h tcpslavebase.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
