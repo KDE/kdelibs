@@ -23,46 +23,27 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifdef KDE_USE_FINAL
-#undef Always
-#include <qdockwindow.h>
-#endif
-
-#include "kaction.h"
-#include "kactionshortcutlist.h"
+#include "kactionclasses.h"
 
 #include <assert.h>
 
 #include <qfontdatabase.h>
 #include <qobjectlist.h>
-#include <qptrdict.h>
-#include <qregexp.h>
-#include <qtl.h>
-#include <qtooltip.h>
-#include <qvariant.h>
 #include <qwhatsthis.h>
 #include <qtimer.h>
 
 #include <kaccel.h>
-#include <kaccelbase.h>
 #include <kapplication.h>
-#include <kcombobox.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kfontcombo.h>
-#include <kglobalsettings.h>
-#include <kguiitem.h>
-#include <kiconloader.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
 #include <kpopupmenu.h>
-#include <kstdaccel.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
-#include <klocale.h>
 
-#ifndef KDE_USE_FINAL
 static QFontDatabase *fontDataBase = 0;
 
 static void cleanupFontDatabase()
@@ -98,7 +79,6 @@ static QValueList<int> get_standard_font_sizes()
     }
     return fontDataBase->standardSizes();
 }
-#endif
 
 class KToggleAction::KToggleActionPrivate
 {

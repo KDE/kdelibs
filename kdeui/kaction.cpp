@@ -23,44 +23,23 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifdef KDE_USE_FINAL
-#undef Always
-#include <qdockwindow.h>
-#endif
-
 #include "kaction.h"
-#include "kactionshortcutlist.h"
 
 #include <assert.h>
 
-#include <qfontdatabase.h>
-#include <qobjectlist.h>
-#include <qptrdict.h>
-#include <qregexp.h>
-#include <qtl.h>
 #include <qtooltip.h>
-#include <qvariant.h>
 #include <qwhatsthis.h>
-#include <qtimer.h>
 
 #include <kaccel.h>
 #include <kaccelbase.h>
 #include <kapplication.h>
-#include <kcombobox.h>
-#include <kconfig.h>
 #include <kdebug.h>
-#include <kfontcombo.h>
-#include <kglobalsettings.h>
 #include <kguiitem.h>
-#include <kiconloader.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
 #include <kpopupmenu.h>
-#include <kstdaccel.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
-#include <kurl.h>
-#include <klocale.h>
 
 /**
 * How it works.
@@ -82,42 +61,6 @@
 * This is used to save user-modified settings back to the *ui.rc file.
 * It is set by KXMLGUIFactory.
 */
-
-static QFontDatabase *fontDataBase = 0;
-
-static void cleanupFontDatabase()
-{
-    delete fontDataBase;
-    fontDataBase = 0;
-}
-
-static void get_fonts( QStringList &lst )
-{
-    if ( !fontDataBase ) {
-        fontDataBase = new QFontDatabase();
-        qAddPostRoutine( cleanupFontDatabase );
-    }
-    lst.clear();
-    QStringList families = fontDataBase->families();
-    for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it )
-    {
-        QString family = *it;
-        if ( family. contains('-') ) // remove foundry
-            family = family.right( family.length() - family.find('-' ) - 1);
-        if ( !lst.contains( family ) )
-            lst.append( family );
-    }
-    lst.sort();
-}
-
-static QValueList<int> get_standard_font_sizes()
-{
-    if ( !fontDataBase ) {
-        fontDataBase = new QFontDatabase();
-        qAddPostRoutine( cleanupFontDatabase );
-    }
-    return fontDataBase->standardSizes();
-}
 
 int KAction::getToolButtonID()
 {
