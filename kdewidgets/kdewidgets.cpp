@@ -17,6 +17,7 @@
 #include "kdatepicker.h"
 #include "kdatewidget.h"
 #include "kdialog.h"
+#include "knuminput.h"
 #include "kdualcolorbutton.h"
 #include "keditlistbox.h"
 #include "kfontcombo.h"
@@ -170,6 +171,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.whatsThis = "KDialog";
 	widget.isContainer = true;
 	m_widgets.insert("KDialog", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = "knuminput.png";
+	widget.includeFile = "knuminput.h";
+	widget.toolTip = "FLoat Number Input Widget (KDE)";
+	widget.whatsThis = "KDoubleNumInput";
+	widget.isContainer = false;
+	m_widgets.insert("KDoubleNumInput", widget);
 
 	widget.group = "Graphics (KDE)";
 	widget.iconSet = "kdualcolorbutton.png";
@@ -382,6 +391,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KDateWidget(parent, name);
 	if (key == "KDialog")
 		return new KDialogPreview(parent, name);
+	if (key == "KDoubleNumInput")
+		return new KDoubleNumInput(parent, name);
 	if (key == "KDualColorButton")
 		return new KDualColorButton(parent, name);
 	if (key == "KEditListBox")

@@ -164,3 +164,8 @@ WhatsThis=An input widget for integer numbers, consisting of a spinbox and a sli
 IncludeFile=knuminput.h
 Group=Input (KDE)
 
+[KDoubleNumInput]
+ToolTip=FLoat Number Input Widget (KDE)
+WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
+IncludeFile=knuminput.h
+Group=Input (KDE)
