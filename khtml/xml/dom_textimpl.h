@@ -107,10 +107,6 @@ public:
     virtual void detach();
     virtual void applyChanges(bool top=true, bool force=true);
 
-    virtual bool prepareMouseEvent( int _x, int _y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev);
-
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
 

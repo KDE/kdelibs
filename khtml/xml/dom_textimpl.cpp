@@ -333,37 +333,6 @@ khtml::RenderStyle *TextImpl::style() const
     return _parent ? _parent->style() : 0;
 }
 
-bool TextImpl::prepareMouseEvent( int _x, int _y,
-                                  int _tx, int _ty,
-                                  MouseEvent *ev)
-{
-    //kdDebug( 6020 ) << "Text::prepareMouseEvent" << endl;
-
-    if(!m_render) return false;
-
-    if (m_render->style() && m_render->style()->visiblity() == HIDDEN)
-        return false;
-
-    int origTx = _tx;
-    int origTy = _ty;
-
-    if(m_render->parent() && m_render->parent()->isAnonymousBox())
-    {
-        // we need to add the offset of the anonymous box
-        _tx += m_render->parent()->xPos();
-        _ty += m_render->parent()->yPos();
-    }
-
-    if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty) )
-    {
-        ev->innerNode = Node(this);
-        ev->nodeAbsX = origTx;
-        ev->nodeAbsY = origTy;
-        return true;
-    }
-    return false;
-}
-
 khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                  DOM::Node & node, int & offset )
 {

@@ -170,14 +170,6 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 #endif
 }
 
-bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty, int height)
-{
-    if((_ty + m_y > _y) || (_ty + m_y + height < _y) ||
-       (_tx + m_x > _x) || (_tx + m_x + m_width < _x))
-        return false;
-    return true;
-}
-
 FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, int lineHeight)
 {
     //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
@@ -369,15 +361,18 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     return s;
 }
 
-bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty)
+bool RenderText::containsPoint(int _x, int _y, int _tx, int _ty)
 {
+    int height = m_lineHeight + borderTop() + paddingTop() +
+                 borderBottom() + paddingBottom();
+
     TextSlave *s = m_lines.count() ? m_lines[0] : 0;
     int si = 0;
-    while(s)
-    {
-        if( s->checkPoint(_x, _y, _tx, _ty, m_lineHeight) )
+    while(s) {
+        if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + height) &&
+           (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) )
             return true;
-        // ### this might be wrong, if combining chars are used ( eg arabic )
+
         s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
     }
     return false;
@@ -465,11 +460,8 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
     if(parent() && parent()->absolutePosition(xPos, yPos, false)) {
-        if ( m_lines.count() ) {
-            TextSlave* s = m_lines[0];
-            xPos += s->m_x;
-            yPos += s->m_y;
-        }
+        xPos -= paddingLeft() + borderLeft();
+        yPos -= borderTop() + paddingTop();
         return true;
     }
     xPos = yPos = 0;
