@@ -265,11 +265,12 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         QString onlyfilename = path.mid(path.findRev('/')+1);
 
                         hstr += ("; filename=\"" + onlyfilename + "\"").ascii();
-                        if(!static_cast<HTMLInputElementImpl*>(current)->value().isEmpty())
-                        {
-                            hstr += "\r\nContent-Type: ";
+                        if(!static_cast<HTMLInputElementImpl*>(current)->value().isEmpty()) {
                             KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
-                            hstr += ptr->name().ascii();
+                            if (!ptr->name().isEmpty()) {
+                                hstr += "\r\nContent-Type: ";
+                                hstr += ptr->name().ascii();
+                            }
                         }
                     }
 
@@ -760,14 +761,6 @@ void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ACCESSKEY:
         break;
-    case ATTR_ONFOCUS:
-        setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
-        break;
-    case ATTR_ONBLUR:
-        setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
-        break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -1023,14 +1016,6 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_HEIGHT:
         addCSSLength(CSS_PROP_HEIGHT, attr->value() );
-        break;
-    case ATTR_ONFOCUS:
-        setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
-        break;
-    case ATTR_ONBLUR:
-        setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
@@ -1384,23 +1369,6 @@ NodeImpl::Id HTMLLabelElementImpl::id() const
     return ID_LABEL;
 }
 
-void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
-{
-    switch(attr->id())
-    {
-    case ATTR_ONFOCUS:
-        setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
-        break;
-    case ATTR_ONBLUR:
-        setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
-        break;
-    default:
-        HTMLElementImpl::parseAttribute(attr);
-    }
-}
-
 void HTMLLabelElementImpl::attach()
 {
     // skip the generic handler
@@ -1577,7 +1545,7 @@ DOMString HTMLSelectElementImpl::value( )
             && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
             return static_cast<HTMLOptionElementImpl*>(items[i])->value();
     }
-    return DOMString();
+    return DOMString("");
 }
 
 void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)
@@ -1678,14 +1646,6 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
-        break;
-    case ATTR_ONFOCUS:
-        setHTMLEventListener(EventImpl::FOCUS_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
-        break;
-    case ATTR_ONBLUR:
-        setHTMLEventListener(EventImpl::BLUR_EVENT,
-            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
@@ -2095,14 +2055,6 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ACCESSKEY:
         // ignore for the moment
-        break;
-    case ATTR_ONFOCUS:
-        setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
-        break;
-    case ATTR_ONBLUR:
-        setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,

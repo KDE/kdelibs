@@ -201,10 +201,6 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::MOUSEUP_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onmouseup"));
         break;
-    case ATTR_ONFOCUS:
-        setHTMLEventListener(EventImpl::DOMFOCUSIN_EVENT,
-	    getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
-        break;
     case ATTR_ONKEYDOWN:
         setHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeydown"));
@@ -216,6 +212,14 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ONKEYUP:
         setHTMLEventListener(EventImpl::KHTML_KEYUP_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onkeyup"));
+        break;
+    case ATTR_ONFOCUS:
+        setHTMLEventListener(EventImpl::FOCUS_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(),"onfocus"));
+        break;
+    case ATTR_ONBLUR:
+        setHTMLEventListener(EventImpl::BLUR_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(),"onblur"));
         break;
 // other misc attributes
     default:
