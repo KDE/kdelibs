@@ -470,10 +470,13 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 
 void KThemeStyle::polish( QWidget *w )
 {
+    if (w->inherits("QStatusBar"))
+        w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
+
     if (w->backgroundPixmap() && !w->isTopLevel())
     {
         //The brushHandle check verifies that the bg pixmap is actually the brush..
-        if (!brushHandleSet || brushHandle ==w->backgroundPixmap()->handle())
+        if (!brushHandleSet || brushHandle == w->backgroundPixmap()->handle())
         {
             w->setBackgroundOrigin( QWidget::WindowOrigin );
         }
@@ -664,6 +667,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
     bool down = ( flags & Style_Down );
     bool on = flags & Style_On;
     QColorGroup g = g_base;
+    
 
     switch ( pe )
     {
