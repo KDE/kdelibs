@@ -121,8 +121,8 @@ public:
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
     typedef Q_UINT32 Id;
-    static const Q_UINT32 IdNSMask    = 0xffff0000;
-    static const Q_UINT32 IdLocalMask = 0x0000ffff;
+    static const Q_UINT32 IdNSMask;
+    static const Q_UINT32 IdLocalMask;
     // id() is used to easily and exactly identify a node. It
     // is optimized for quick comparison and low memory consumption.
     // its value depends on the owner document of the node and is
@@ -383,6 +383,8 @@ protected:
 
     // 3 bits unused
 };
+const Q_UINT32 NodeImpl::IdNSMask    = 0xffff0000;
+const Q_UINT32 NodeImpl::IdLocalMask = 0x0000ffff;
 
 // this is the full Node Implementation with parents and children.
 class NodeBaseImpl : public NodeImpl
