@@ -42,7 +42,7 @@
 
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
-  : KConfigBase(), bGroupImmutable(false), bFileImmutable(false), 
+  : KConfigBase(), bGroupImmutable(false), bFileImmutable(false),
     bForceGlobal(false)
 {
   // set the object's read-only status.
@@ -97,9 +97,9 @@ QStringList KConfig::groupList() const
 {
   QStringList retList;
 
-  KEntryMapConstIterator aIt;
+  KEntryMapConstIterator aIt = aEntryMap.begin();
   KEntryMapConstIterator aEnd = aEntryMap.end();
-  for (aIt = aEntryMap.begin(); aIt != aEnd; ++aIt)
+  for (; aIt != aEnd; ++aIt)
   {
     while(aIt.key().mKey.isEmpty())
     {
@@ -129,12 +129,10 @@ QStringList KConfig::groupList() const
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
   QCString pGroup_utf = pGroup.utf8();
-  QMap<QString, QString> tmpMap;
-  KEntryMapConstIterator aIt;
-  KEntry aEntry;
   KEntryKey groupKey( pGroup_utf, 0 );
+  QMap<QString, QString> tmpMap;
 
-  aIt = aEntryMap.find(groupKey);
+  KEntryMapConstIterator aIt = aEntryMap.find(groupKey);
   if (aIt == aEntryMap.end())
      return tmpMap;
   ++aIt; // advance past special group entry marker
@@ -222,9 +220,7 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-  KEntryMapConstIterator aIt;
-
-  aIt = aEntryMap.find(_key);
+  KEntryMapConstIterator aIt = aEntryMap.find(_key);
   if (aIt != aEntryMap.end())
   {
     const KEntry &entry = *aIt;
