@@ -151,6 +151,10 @@ void KApplication::init()
   kdisplaySetPalette();
   kdisplaySetStyleAndFont();
 
+  // install appdata resource type
+  KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
+                                   + name() + "/");
+
   // install an event filter for KDebug
   installEventFilter( this );
 
