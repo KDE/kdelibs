@@ -322,7 +322,7 @@ void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
   layout->addWidget( d->dummy );
   layout->addWidget( d->toDesktopButton );
   layout->addWidget( stayButton );
-  bool dontShowDummy=drag->isVisibleTo(this) || dockbackButton->isVisibleTo(this) || 
+  bool dontShowDummy=drag->isVisibleTo(this) || dockbackButton->isVisibleTo(this) ||
 	d->toDesktopButton->isVisibleTo(this) || stayButton->isVisibleTo(this) ||
 	closeButton->isVisibleTo(this);
   for (QPtrListIterator<KDockButton_Private> it( d->btns );it.current()!=0;++it) {
@@ -513,7 +513,7 @@ void KDockWidget::setPixmap(const QPixmap& pixmap) {
 	pix=new QPixmap(pixmap);
 	setIcon(*pix);
 	KDockTabGroup *dtg=parentDockTabGroup();
-	if (dtg) 
+	if (dtg)
 		dtg->changeTab(this,pixmap,dtg->tabLabel(this));
 	 QWidget *contWid=parentDockContainer();
          if (contWid)
@@ -731,7 +731,7 @@ void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
     layout->addWidget( header );
   }
   kdDebug()<<caption()<<": KDockWidget::setHeader"<<endl;
-  setEnableDocking(eDocking);  
+  setEnableDocking(eDocking);
 }
 
 void KDockWidget::setEnableDocking( int pos )
@@ -997,11 +997,15 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	  if (!contWid) contWid=target->widget;
 	  if (contWid)
 	  {
-	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
+	  	KDockContainer *cont=dynamic_cast<KDockContainer*>(contWid);
 		  if (cont)
 		  {
-			if (latestKDockContainer() && (latestKDockContainer()!=contWid))
-				static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
+			if (latestKDockContainer() && (latestKDockContainer()!=contWid)) {
+				KDockContainer* dc = dynamic_cast<KDockContainer*>(latestKDockContainer());
+				if (dc) {
+					dc->removeWidget(this);
+				}
+			}
 //			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
 			cont->insertWidget( this, icon() ? *icon() : QPixmap(),
@@ -2932,7 +2936,7 @@ QWidget *KDockTabGroup::transientTo() {
 			}
 		}
 	}
-  
+
 	kdDebug()<<"KDockTabGroup::transientTo: "<<((tT!=0)?"YES":"NO")<<endl;
 
 	return tT;
