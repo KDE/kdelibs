@@ -228,9 +228,11 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCN(QString cn
       }
       certList.remove(node);
       certList.prepend(node);
+      cacheSaveToDisk();
       return node->policy;
     }
   }
+  cacheSaveToDisk();
   return KSSLCertificateCache::Unknown;
 }
 
@@ -244,6 +246,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCertificate(K
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         return KSSLCertificateCache::Unknown;
       }
       certList.remove(node);
@@ -264,6 +267,7 @@ bool KSSLD::cacheSeenCN(QString cn) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         continue;
       }
       certList.remove(node);
@@ -284,6 +288,7 @@ bool KSSLD::cacheSeenCertificate(KSSLCertificate cert) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         return false;
       }
       certList.remove(node);
@@ -304,6 +309,7 @@ bool KSSLD::cacheIsPermanent(KSSLCertificate cert) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         return false;
       }
       certList.remove(node);
@@ -324,10 +330,10 @@ bool KSSLD::cacheRemoveByCN(QString cn) {
       certList.remove(node);
       cfg->deleteGroup(node->cert->getSubject());
       delete node;
-      cacheSaveToDisk();
       gotOne = true;
     }
   }
+  cacheSaveToDisk();
   return gotOne;
 }
 
@@ -397,6 +403,7 @@ QStringList KSSLD::cacheGetHostList(KSSLCertificate cert) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         return QStringList();
       }
       certList.remove(node);
@@ -417,6 +424,7 @@ bool KSSLD::cacheAddHost(KSSLCertificate cert, QString host) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         return false;
       }
       node->hosts << host;
@@ -439,11 +447,13 @@ bool KSSLD::cacheRemoveHost(KSSLCertificate cert, QString host) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
+        cacheSaveToDisk();
         return false;
       }
       node->hosts.remove(host);
       certList.remove(node);
       certList.prepend(node);
+      cacheSaveToDisk();
       return true;
     }
   }
@@ -594,6 +604,7 @@ KConfig cfg("ksslcalist", false, false);
 	cfg.writeEntry("site", ssl);
 	cfg.writeEntry("email", email);
 	cfg.writeEntry("code", code);
+	cfg.sync();
 
 return true;
 }
