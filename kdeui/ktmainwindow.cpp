@@ -69,12 +69,12 @@ public:
 	// we do the Windows-thing here: close the windows step by
 	// step until it's cancelled.
 	
-	// not really a fast method but the only compatible one 
-	if ( sm.allowsInteraction() ) { 
+	// not really a fast method but the only compatible one
+	if ( sm.allowsInteraction() ) {
 	    bool cancelled = false;
 	    commitingData = true;
-	    for ( KTMainWindow* it = KTMainWindow::memberList->first(); 
-		  it && !cancelled; 
+	    for ( KTMainWindow* it = KTMainWindow::memberList->first();
+		  it && !cancelled;
 		  it = KTMainWindow::memberList->next() ) {
 		cancelled = !it->close();
 	    }
@@ -105,15 +105,15 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
 
     //
     // 1999-09-29 Espen Sand
-    // The KApplication::setTopWidget() above does a 
-    // "widget->setCaption(getCaption())". I have reimplemented 
-    // KTMainWindow::setCaption() so that it automatically adds the 
-    // application name, so I need to revert the caption made in 
+    // The KApplication::setTopWidget() above does a
+    // "widget->setCaption(getCaption())". I have reimplemented
+    // KTMainWindow::setCaption() so that it automatically adds the
+    // application name, so I need to revert the caption made in
     // KApplication::setTopWidget().
     //
-    // We should consider adding as new (default) parameter to 
-    // KApplication::setTopWidget() were we can force it to use a 
-    // "QString::null" argument instead of the current getCaption(). 
+    // We should consider adding as new (default) parameter to
+    // KApplication::setTopWidget() were we can force it to use a
+    // "QString::null" argument instead of the current getCaption().
     // That will reduce some overhead when starting an app. The code below
     // is then not necessary.
     //
@@ -123,7 +123,7 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
     // see if there already is a member list
     if( !memberList )
       memberList = new QList<KTMainWindow>;
-    
+
     if ( !ksm )
 	ksm = new KTLWSessionManaged();
 
@@ -268,6 +268,8 @@ QRect KTMainWindow::mainViewGeometry() const
 
 void KTMainWindow::updateRects()
 {
+    if ( !isUpdatesEnabled() )
+	return;
 	delete layoutMgr;
 
 	layoutMgr = new KTMLayout(this);
@@ -358,11 +360,11 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     s.prepend("WindowProperties");
     config->setGroup(s);
 
-    // store the className for later restorating 
+    // store the className for later restorating
     config->writeEntry("ClassName", className());
 
-    //use KWM for window properties 
-    config->writeEntry("KTWGeometry", KWM::properties(winId()));
+    //use KWM for window properties
+    //config->writeEntry("KTWGeometry", KWM::properties(winId()));
     entryList.clear();
 
     if (kstatusbar)
@@ -456,7 +458,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	return FALSE;
       }
 
-    // Use KWM for window properties 
+    // Use KWM for window properties
     QString geom = config->readEntry ("KTWGeometry");
     if (!geom.isEmpty()){
       setGeometry(KWM::setProperties(winId(), geom));
@@ -478,7 +480,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             //debug ("KTWreadProps: bad number of kmenubar args");
             return FALSE;
         }
-	bool showmenubar = false; 
+	bool showmenubar = false;
         entry = entryList.first();
         if (entry=="Enabled")
 	  showmenubar = True;
