@@ -493,6 +493,28 @@ int ContainerNode::calcMergingIndex( const QString &mergingName,
     return (*it).value;
 }
 
+int BuildHelper::calcMergingIndex( const QDomElement &element, MergingIndexList::Iterator &it, QString &group )
+{
+    static const QString &attrGroup = KGlobal::staticQString( "group" );
+
+    bool haveGroup = false;
+    group = element.attribute( attrGroup );
+    if ( !group.isEmpty() ) {
+        group.prepend( attrGroup );
+        haveGroup = true;
+    }
+
+    int idx;
+    if ( haveGroup )
+        idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
+    else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
+        idx = parentNode->index;
+    else
+        idx = (*m_state.currentClientMergingIt).value;
+
+    return idx;
+}
+
 BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
     : containerClient( 0 ), ignoreDefaultMergingIndex( false ), m_state( state ), 
       parentNode( node )
@@ -553,30 +575,13 @@ void BuildHelper::processElement( const QDomElement &e )
 
 void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isActionTag )
 {
-    static const QString &attrGroup = KGlobal::staticQString( "group" );
-
     if ( !parentNode->container )
         return;
 
     MergingIndexList::Iterator it( m_state.currentClientMergingIt );
 
-    bool haveGroup = false;
-    QString group( e.attribute( attrGroup ) );
-    if ( !group.isEmpty() )
-    {
-        group.prepend( attrGroup );
-        haveGroup = true;
-    }
-
-    int idx;
-    if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely
-                     // cached running merging index values.
-        idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
-    else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
-        // if we don't have a current merging index, then we want to append our action
-        idx = parentNode->index;
-    else
-        idx = (*m_state.currentClientMergingIt).value;
+    QString group;
+    int idx = calcMergingIndex( e, it, group );
 
     containerClient = parentNode->findChildContainerClient( m_state.guiClient, group, it );
 
@@ -721,7 +726,6 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name, 
 void BuildHelper::processContainerElement( const QDomElement &e, const QString &tag,
                                            const QString &name )
 {
-    static const QString &attrGroup = KGlobal::staticQString( "group" );
     static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
 
     ContainerNode *containerNode = parentNode->findContainer( name, tag,
@@ -731,22 +735,9 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
     if ( !containerNode )
     {
         MergingIndexList::Iterator it( m_state.currentClientMergingIt );
+        QString group;
 
-        bool haveGroup = false;
-        QString group( e.attribute( attrGroup ) );
-        if ( !group.isEmpty() )
-        {
-            group.prepend( attrGroup );
-            haveGroup = true;
-        }
-
-        int idx;
-        if ( haveGroup )
-            idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
-        else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
-            idx = parentNode->index;
-        else
-            idx = (*m_state.currentClientMergingIt).value;
+        int idx = calcMergingIndex( e, it, group );
 
         int id;
 

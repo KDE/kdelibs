@@ -204,6 +204,8 @@ private:
     QWidget *createContainer( QWidget *parent, int index, const QDomElement &element,
                               int &id, KXMLGUIBuilder **builder );
 
+    int calcMergingIndex( const QDomElement &element, MergingIndexList::Iterator &it, QString &group );
+
     QStringList customTags;
     QStringList containerTags;
 
