@@ -104,96 +104,96 @@ SampleStorage SoundServerV2_impl::sampleStorage() {
 
 PlayObject SoundServerV2_impl::createPlayObjectForURL(const std::string& url, const std::string& mimetype, bool createBUS)
 {
-    arts_debug("search playobject, mimetype = %s", mimetype.c_str());
+	arts_debug("search playobject, mimetype = %s", mimetype.c_str());
 
-    TraderQuery query;
-    query.supports("Interface","Arts::PlayObject");
-    query.supports("MimeType", mimetype);
+	TraderQuery query;
+	query.supports("Interface","Arts::PlayObject");
+	query.supports("MimeType", mimetype);
 
-    string objectType;
+	string objectType;
 
-    vector<TraderOffer> *offers = query.query();
-    if(!offers->empty())
-	objectType = offers->front().interfaceName();	// first offer
-    
-    delete offers;
+	vector<TraderOffer> *offers = query.query();
+	if(!offers->empty())
+		objectType = offers->front().interfaceName();	// first offer
 
-    /*
-     * create a PlayObject and connect it
-     */
-    if(objectType != "")
-    {
-	arts_debug("creating %s to play file", objectType.c_str());
+	delete offers;
 
-	PlayObject result = SubClass(objectType);
-	if(result.loadMedia(url))
+	/*
+	 * create a PlayObject and connect it
+	 */
+	if(objectType != "")
 	{
-	    if(createBUS)
-	    {
-		// TODO: check for existence of left & right streams
-		Synth_BUS_UPLINK uplink;
-		uplink.busname("out_soundcard");
-		connect(result,"left",uplink,"left");
-		connect(result,"right",uplink,"right");
-		uplink.start();
-		result._node()->start();
-		result._addChild(uplink,"uplink");
-		return result;
-	    }
-	    else
-	        return result;
-	}
-	else arts_warning("couldn't load file %s", url.c_str());
-    }
-    else arts_warning("mimetype %s unsupported", mimetype.c_str());
+		arts_debug("creating %s to play file", objectType.c_str());
 
-    return PlayObject::null();
+		PlayObject result = SubClass(objectType);
+		if(result.loadMedia(url))
+		{
+			if(createBUS)
+			{
+				// TODO: check for existence of left & right streams
+				Synth_BUS_UPLINK uplink;
+				uplink.busname("out_soundcard");
+				connect(result,"left",uplink,"left");
+				connect(result,"right",uplink,"right");
+				uplink.start();
+				result._node()->start();
+				result._addChild(uplink,"uplink");
+				return result;
+			}
+			else
+				return result;
+		}
+		else arts_warning("couldn't load file %s", url.c_str());
+	}
+	else arts_warning("mimetype %s unsupported", mimetype.c_str());
+
+	return PlayObject::null();
 }
 
 PlayObject SoundServerV2_impl::createPlayObjectForStream(InputStream instream, const std::string& mimetype, bool createBUS)
 {
-    arts_debug("search playobject, mimetype = %s", mimetype.c_str());
+	arts_debug("search playobject, mimetype = %s", mimetype.c_str());
 
-    TraderQuery query;
-    query.supports("Interface","Arts::StreamPlayObject");
-    query.supports("MimeType", mimetype);
+	TraderQuery query;
+	query.supports("Interface","Arts::StreamPlayObject");
+	query.supports("MimeType", mimetype);
 
-    string objectType;
+	string objectType;
 
-    vector<TraderOffer> *offers = query.query();
-    if(!offers->empty())
-	objectType = offers->front().interfaceName();	// first offer
-    
-    delete offers;
+	vector<TraderOffer> *offers = query.query();
+	if(!offers->empty())
+		objectType = offers->front().interfaceName();	// first offer
 
-    /*
-     * create a PlayObject and connect it
-     */
-    if(objectType != "")
-    {
-	arts_debug("creating %s to play file", objectType.c_str());
+	delete offers;
 
-	StreamPlayObject result = SubClass(objectType);
-	result.streamMedia(instream);
-
-	if(createBUS)
+	/*
+	 * create a PlayObject and connect it
+	 */
+	if(objectType != "")
 	{
-	    // TODO: check for existence of left & right streams
-	    Synth_BUS_UPLINK uplink;
-	    uplink.busname("out_soundcard");
-	    connect(result,"left",uplink,"left");
-	    connect(result,"right",uplink,"right");
-	    uplink.start();
-	    result._node()->start();
-	    result._addChild(uplink,"uplink");
-	    return result;
-	}
-	else
-	    return result;
-    }
-    else arts_warning("mimetype %s unsupported for streaming", mimetype.c_str());
+		arts_debug("creating %s to play file", objectType.c_str());
 
-    return PlayObject::null();
+		StreamPlayObject result = SubClass(objectType);
+		result.streamMedia(instream);
+
+		if(createBUS)
+		{
+			// TODO: check for existence of left & right streams
+			Synth_BUS_UPLINK uplink;
+			uplink.busname("out_soundcard");
+			connect(result,"left",uplink,"left");
+			connect(result,"right",uplink,"right");
+			uplink.start();
+			result._node()->start();
+			result._addChild(uplink,"uplink");
+			return result;
+		}
+		else
+			return result;
+	}
+	else arts_warning("mimetype %s unsupported for streaming", mimetype.c_str());
+
+	return PlayObject::null();
 }
 
 #ifndef __SUNPRO_CC

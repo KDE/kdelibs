@@ -33,31 +33,31 @@
 
 namespace Arts {
 	class SoundServerV2_impl : virtual public SoundServerV2_skel,
-							   public SoundServer_impl
+	public SoundServer_impl
 	{
-	protected:
-		SampleStorage _sampleStorage;
-	public:
-		SoundServerV2_impl();
+		protected:
+			SampleStorage _sampleStorage;
+		public:
+			SoundServerV2_impl();
 
-		long autoSuspendSeconds();
-		void autoSuspendSeconds(long newValue);
-		std::string audioMethod();
-		long samplingRate();
-		long channels();
-		long bits();
-		bool fullDuplex();
-		std::string audioDevice();
-		long fragments();
-		long fragmentSize();
-		std::string version();
-		long bufferSizeMultiplier();
-		void bufferSizeMultiplier(long newValue);
-		StereoVolumeControl outVolume();
-		SampleStorage sampleStorage();
+			long autoSuspendSeconds();
+			void autoSuspendSeconds(long newValue);
+			std::string audioMethod();
+			long samplingRate();
+			long channels();
+			long bits();
+			bool fullDuplex();
+			std::string audioDevice();
+			long fragments();
+			long fragmentSize();
+			std::string version();
+			long bufferSizeMultiplier();
+			void bufferSizeMultiplier(long newValue);
+			StereoVolumeControl outVolume();
+			SampleStorage sampleStorage();
 
-		Arts::PlayObject createPlayObjectForURL(const std::string& url, const std::string& mimetype, bool createBUS);
-		Arts::PlayObject createPlayObjectForStream(Arts::InputStream instream, const std::string& mimetype, bool createBUS);
+			Arts::PlayObject createPlayObjectForURL(const std::string& url, const std::string& mimetype, bool createBUS);
+			Arts::PlayObject createPlayObjectForStream(Arts::InputStream instream, const std::string& mimetype, bool createBUS);
 	};
 };
 
