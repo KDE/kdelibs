@@ -1991,6 +1991,7 @@ DOMString HTMLOptionElementImpl::text() const
 	else
 	    return firstChild()->nodeValue();
     }
+    return "";
 }
 
 long HTMLOptionElementImpl::index() const
