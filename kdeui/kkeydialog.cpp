@@ -527,7 +527,7 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 				delete pProgramItem;
 			pProgramItem = pParentItem = pItem;
 		} else if( it.key().contains("Group:") ) {
-			pItem = new QListViewItem( pProgramItem, pItem, (*it).descr );
+			pItem = new QListViewItem( pProgramItem, pParentItem, (*it).descr );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -736,7 +736,7 @@ void KKeyChooser::toChange( QListViewItem *item )
     } else {
         /* get the entry */
         KKeyEntryMap::Iterator it = d->actionMap[item];
-	int keyDefault = d->bPreferFourModifierKeys ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
+	int keyDefault = /*d->bPreferFourModifierKeys ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
 
 	// Set key strings
 	QString keyStrCfg = KAccel::keyToString( (*it).aConfigKeyCode, true );
@@ -814,8 +814,8 @@ void KKeyChooser::defaultKey()
     /* update the list and the change area */
     if( d->actionMap.contains( item ) ) {
         (*d->actionMap[item]).aConfigKeyCode =
-            (d->bPreferFourModifierKeys) ?
-                (*d->actionMap[item]).aDefaultKeyCode4 :
+            /*(d->bPreferFourModifierKeys) ?
+                (*d->actionMap[item]).aDefaultKeyCode4 :*/
                 (*d->actionMap[item]).aDefaultKeyCode;
 
         item->setText( 1,
@@ -844,7 +844,7 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	    //kdDebug(125) << QString( "allDefault: %1 3:%2 4:%3\n" ).arg(it.key()).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
             if ( (*it).bConfigurable ) {
                 (*it).aCurrentKeyCode = (*it).aConfigKeyCode =
-                    (useFourModifierKeys) ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
+                    /*(useFourModifierKeys) ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
             }
             at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
     }

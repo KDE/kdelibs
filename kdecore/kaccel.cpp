@@ -67,7 +67,7 @@ QString KKey::toString()		{ return KAccel::keyToString( m_keyCombQt ); }
 void KKeyEntry::operator=(const KKeyEntry& e) {
     aCurrentKeyCode = e.aCurrentKeyCode;
     aDefaultKeyCode = e.aDefaultKeyCode;
-    aDefaultKeyCode4 = e.aDefaultKeyCode4;
+    //aDefaultKeyCode4 = e.aDefaultKeyCode4;
     aConfigKeyCode = e.aConfigKeyCode;
     bConfigurable = e.bConfigurable;
     bEnabled = e.bEnabled;
@@ -77,14 +77,12 @@ void KKeyEntry::operator=(const KKeyEntry& e) {
     descr = e.descr;
     menuId = e.menuId;
     menu = e.menu;
-    keyCodeNative = e.keyCodeNative;
-    keyModNative = e.keyModNative;
 }
 
 KKeyEntry::KKeyEntry() {
     aCurrentKeyCode = 0;
     aDefaultKeyCode = 0;
-    aDefaultKeyCode4 = 0;
+    //aDefaultKeyCode4 = 0;
     aConfigKeyCode = 0;
     bConfigurable = false;
     bEnabled = false;
@@ -93,8 +91,6 @@ KKeyEntry::KKeyEntry() {
     member = 0;
     menuId = 0;
     menu = 0;
-    keyCodeNative = 0;
-    keyModNative = 0;
 }
 
 KKeyEntry::KKeyEntry(const KKeyEntry& e) {
@@ -227,8 +223,8 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
     KKeyEntry entry;
 
     entry.aDefaultKeyCode = defaultKeyCode3.key();
-    entry.aDefaultKeyCode4 = defaultKeyCode4.key();
-    entry.aCurrentKeyCode = entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : defaultKeyCode3.key();
+    //entry.aDefaultKeyCode4 = defaultKeyCode4.key();
+    entry.aCurrentKeyCode = /*entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : */ defaultKeyCode3.key();
     kdDebug(125) << "useFourModifierKeys() = " << useFourModifierKeys() << " entry.aCurrentKeyCode = " << entry.aCurrentKeyCode << endl;
     entry.bConfigurable = configurable;
     entry.descr = descr;
@@ -381,7 +377,7 @@ void KAccel::readKeyMap( KKeyEntryMap &map, const QString& group, KConfigBase *c
         s = pConfig->readEntry(it.key());
 
         if ( s.isNull() || s.startsWith( "default" ))
-            (*it).aConfigKeyCode = useFourModifierKeys() ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
+            (*it).aConfigKeyCode = /*useFourModifierKeys() ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
         else if( s == "none" )
             (*it).aConfigKeyCode = 0;
         else

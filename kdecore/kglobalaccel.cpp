@@ -48,6 +48,13 @@ const int XKeyPress = KeyPress;
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs
 
+struct KKeyNative {
+    uint keyCode, keyMod;	// For storing the X11 codes (for global shortcuts)
+
+    KKeyNative() : keyCode(0), keyMod(0) { }
+};
+typedef QMap<QString, KKeyNative> KKeyNativeMap;
+
 class  KGlobalAccelPrivate : public QWidget
 {
 public:
@@ -73,6 +80,7 @@ private:
 public:
     QStringList* rawModeList;
     static bool g_bKeyEventsEnabled;
+    KKeyNativeMap keyNativeMap;
 };
 
 bool KGlobalAccelPrivate::g_bKeyEventsEnabled = true;
@@ -167,7 +175,7 @@ QString KGlobalAccel::findKey( int key ) const
 }
 
 bool KGlobalAccel::insertItem(  const QString& descr, const QString& action,
-				 KKey defaultKeyCode3, KKey defaultKeyCode4,
+				 KKey defaultKeyCode3, KKey /*defaultKeyCode4*/,
                                 bool configurable )
 {
   if (aKeyMap.contains(action))
@@ -175,8 +183,8 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action,
 
   KKeyEntry entry;
   entry.aDefaultKeyCode = defaultKeyCode3.key();
-  entry.aDefaultKeyCode4 = defaultKeyCode4.key();
-  entry.aCurrentKeyCode = entry.aConfigKeyCode = KAccel::useFourModifierKeys() ? defaultKeyCode4.key() : defaultKeyCode3.key();
+  //entry.aDefaultKeyCode4 = defaultKeyCode4.key();
+  entry.aCurrentKeyCode = /*try.aConfigKeyCode = KAccel::useFourModifierKeys() ? defaultKeyCode4.key() : */ defaultKeyCode3.key();
   entry.bConfigurable = configurable;
   entry.bEnabled = false;
   entry.aAccelId = 0;
@@ -218,7 +226,7 @@ KKeyEntryMap KGlobalAccel::keyDict() const
 void KGlobalAccel::readSettings(KConfig* config)
 {
 	kdDebug(125) << "KGlobalAccel::readSettings()\n";
-	QArray<KKeyEntry*> aKeysToGrab( aKeyMap.count() );
+	QMap<int, QString> aKeysToGrab;
 	int cKeysToGrab = 0;
 
 	KConfigBase *pConfig = config ? config : KGlobal::config();
@@ -232,20 +240,26 @@ void KGlobalAccel::readSettings(KConfig* config)
 		uint keyQt;
 		uchar keyCodeX;
 		uint keyModX;
+		KKeyNative keyNative;
 
 		if ( keyStr.isEmpty() || keyStr.startsWith( "default" ))
-			keyQt = KAccel::useFourModifierKeys() ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
+			keyQt = /*KAccel::useFourModifierKeys() ? (*it).aDefaultKeyCode4 :*/ (*it).aDefaultKeyCode;
 		else
 			keyQt = KAccel::stringToKey( keyStr );
+		if( d->keyNativeMap.contains( it.key() ) )
+			keyNative = d->keyNativeMap[ it.key() ];
+
+		// Get X keycodes for current X keymap.
 		KAccel::keyQtToKeyX( keyQt, &keyCodeX, 0, &keyModX );
 
 		kdDebug(125) << QString( it.key()+" = "+keyStr+" key: 0x%1 curKey: 0x%2 enabled: %3\n" )
 			.arg( keyQt, 0, 16 ). arg( (*it).aCurrentKeyCode, 0, 16 ).arg( (*it).bEnabled );
 
 		// If the X codes have changed,
-		if( (*it).bEnabled && (keyCodeX != (*it).keyCodeNative || keyModX != (*it).keyModNative) && keyCodeX != 0 ) {
-			grabKey( &(*it), false );
-			aKeysToGrab[cKeysToGrab++] = &(*it);
+		if( (*it).bEnabled && (keyCodeX != keyNative.keyCode || keyModX != keyNative.keyMod) ) {
+			if( keyNative.keyCode )
+				grabKey( it.key(), false );
+			aKeysToGrab[cKeysToGrab++] = it.key();
 		}
 		(*it).aConfigKeyCode = (*it).aCurrentKeyCode = keyQt;
 	}
@@ -303,17 +317,11 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
     }
 
     KKeyEntry& entry = aKeyMap[action];
-    if( entry.bEnabled == activate )
-        return;
-    aKeyMap[action].bEnabled = activate;
-
-    if ( entry.aCurrentKeyCode == 0 ) return;
-
-    if ( entry.bEnabled )
-        grabKey( &entry, true );
-    else
-        grabKey( &entry, false );
-
+    if ( entry.bEnabled != activate ) {
+        aKeyMap[action].bEnabled = activate;
+        if ( entry.aCurrentKeyCode )
+            grabKey( action, activate );
+    }
 }
 
 bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
@@ -323,11 +331,12 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 	// ungrab all connected and enabled keys
         QString s;
         if ( (*it).bEnabled )
-            grabKey( (KKeyEntry*)&(*it), false );
+            grabKey( it.key(), false );
     }
 
     // Clear the dictionary
     aKeyMap.clear();
+    d->keyNativeMap.clear();
 
     // Insert the new items into the dictionary and reconnect if neccessary
     // Note also swap config and current key codes !!!!!!
@@ -341,7 +350,7 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 
         aKeyMap[it.key()] = entry;
         if ( entry.bEnabled )
-            grabKey( &entry, true );
+            grabKey( it.key(), true );
     }
     return true;
 }
@@ -397,29 +406,39 @@ static void calculateGrabMasks()
 	g_keyModMaskXAlwaysOff |= KAccel::keyModXModeSwitch();
 }
 
-bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
+bool KGlobalAccel::grabKey( const QString &action, bool bGrab )
 {
-	if (do_not_grab)
-		return true;
-	if( !pKeyEntry )
+	if( action.isEmpty() )
 		return false;
+	if( bGrab ) {
+		if( do_not_grab )
+			return true;
+		if( !aKeyMap.contains( action ) )
+			return false;
+	} else if( !d->keyNativeMap.contains( action ) ) {
+		kdDebug(125) << "Tried to ungrab an action (" << action <<") which is not is d->keyNativeMap." << endl;
+		return false;
+	}
 
 	// Make sure that grab masks have been initialized.
 	if( g_keyModMaskXOnOrOff == 0 )
 		calculateGrabMasks();
 
 	// Get the X equivalents.
-	KKey key = pKeyEntry->aCurrentKeyCode;
+	KKey key;
+	KKeyNative keyNative;
 	uchar keyCodeX;
 	uint keyModX;
 
 	if( bGrab ) {
+		key = aKeyMap[action].aCurrentKeyCode;
 		KAccel::keyQtToKeyX( key.key(), &keyCodeX, 0, &keyModX );
-		pKeyEntry->keyCodeNative = keyCodeX;
-		pKeyEntry->keyModNative = keyModX;
+		keyNative.keyCode = keyCodeX;
+		keyNative.keyMod = keyModX;
+		d->keyNativeMap[action] = keyNative;
 	} else {
-		keyCodeX = pKeyEntry->keyCodeNative;
-		keyModX = pKeyEntry->keyModNative;
+		keyCodeX = d->keyNativeMap[action].keyCode;
+		keyModX = d->keyNativeMap[action].keyMod;
 	}
 
 	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
@@ -427,7 +446,7 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 #ifndef __osf__
 // this crashes under Tru64 so .....
 	kdDebug(125) << QString( "grabKey( key: 0x%1, bGrab: %2 ): %3 keyCodeX: %4 keyModX: %5\n" )
-		.arg( key.key(), 0, 16 ).arg( bGrab ).arg( bGrab ? key.toString() : "" )
+		.arg( key.key(), 0, 16 ).arg( bGrab ).arg( action )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 #endif
 
@@ -456,16 +475,17 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 				// If grab failed, then ungrab any previously successful grabs.
 				if( grabFailed ) {
 					kdDebug(125) << "grab failed!\n";
-					pKeyEntry->keyCodeNative = 0;
-					pKeyEntry->keyModNative = 0;
+					d->keyNativeMap.remove( action );
 					for( uint m = 0; m < irrelevantBitsMask; m++ ) {
 						if( m & keyModMaskX == 0 )
 							XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
 					}
 					break;
 				}
-			} else
+			} else {
+				d->keyNativeMap.remove( action );
 				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
+			}
 		}
 	}
 

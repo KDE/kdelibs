@@ -67,7 +67,7 @@ struct KKeyEntry {
  public:
     int aCurrentKeyCode;
     int aDefaultKeyCode;		// For keyboards with no meta key
-    int aDefaultKeyCode4;		// For keyboards with meta key (4 modifiers)
+    //int aDefaultKeyCode4;		// For keyboards with meta key (4 modifiers)
     int aConfigKeyCode;
     bool bConfigurable;
     bool bEnabled;
@@ -77,7 +77,6 @@ struct KKeyEntry {
     QString descr;
     int menuId;
     QPopupMenu *menu;
-    uint keyCodeNative, keyModNative;	// For storing the X11 codes (for global shortcuts)
 
     void operator=(const KKeyEntry& e);
     KKeyEntry();

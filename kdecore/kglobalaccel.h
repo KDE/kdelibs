@@ -105,7 +105,7 @@ class KGlobalAccel : public QObject
 	 * Removes all accelerator items.
 	 */
 	void clear();
-	
+
 	/**
 	 * Connect an accelerator item to a slot/signal in another object.
 	 *
@@ -290,7 +290,7 @@ protected:
 	//  Return true if successful.
 	// Modifications with NumLock, CapsLock, ScrollLock, and ModeSwitch are
 	//  also grabbed.
-	bool grabKey( KKeyEntry *pKeyEntry, bool bGrab );
+	bool grabKey( const QString& action, bool bGrab );
 
     	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
