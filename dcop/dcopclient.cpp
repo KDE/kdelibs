@@ -1117,7 +1117,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
         QCString remApp = *it;
         QCString replyType;
         QByteArray replyData;
-        bool result;
+        bool result = false;
         DCOPClient *localClient = findLocalClient( remApp );
 
         if ( (phase == 1) && localClient ) {
