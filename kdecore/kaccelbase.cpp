@@ -119,14 +119,6 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 	return false;
 }
 
-/*void KAccelBase::removeDeletedMenu( QPopupMenu* pMenu )
-{
-	for( KAccelActions::iterator it = m_rgActions.begin(); it != m_rgActions.end(); ++it ) {
-		if( (*it).m_pMenu == pMenu )
-			(*it).m_pMenu = 0;
-	}
-}*/
-
 bool KAccelBase::setAutoUpdate( bool bAuto )
 {
 	kdDebug(125) << "KAccelBase::setAutoUpdate( " << bAuto << " ): m_bAutoUpdate on entrance = " << m_bAutoUpdate << endl;
@@ -135,11 +127,6 @@ bool KAccelBase::setAutoUpdate( bool bAuto )
 		updateConnections();
 	m_bAutoUpdate = bAuto;
 	return b;
-}
-
-void KAccelBase::clearActions()
-{
-	m_rgActions.clear();
 }
 
 KAccelAction* KAccelBase::insert( const QString& sAction, const QString& sDesc, const QString& sHelp,
@@ -521,35 +508,33 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
-        // remove points to the item to remove - always done _after_ moving to the next item
-        KKeyToActionMap::iterator remove = m_mapKeyToAction.end();
-	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
-		if (remove != m_mapKeyToAction.end()) {
-			m_mapKeyToAction.remove(remove);
-			remove = m_mapKeyToAction.end();
-		}
+	KKeyToActionMap::iterator it = m_mapKeyToAction.begin();
+	while( it != m_mapKeyToAction.end() ) {
 		KKeyServer::Key key = it.key();
 		ActionInfo* pInfo = &(*it);
 
+		// If the given action is connected to this key,
 		if( &action == pInfo->pAction ) {
-			remove = it; // remember to remove that one
+			if( it == m_mapKeyToAction.begin() ) {
+				m_mapKeyToAction.remove( it );
+				it = m_mapKeyToAction.begin();
+			} else {
+				KKeyToActionMap::iterator itRemove = it;
+				--it;
+				m_mapKeyToAction.remove( itRemove );
+				it++;
+			}
 			disconnectKey( action, key );
 			action.decConnections();
-		} /*else if( pInfo->pInfoNext ) {
-			while( pInfo = pInfo->pInfoNext ) {
-				if( &action == pInfo->pAction ) {
-
-				}
-			}
-		}*/
+		}
+		// If this is a multi-key shortcut,
 		else if( (*it).pAction == 0 ) {
 			// FIXME: won't work for multi-key shortcuts.
 			//if( cutOld.contains( key.key() ) )
 				return updateConnections();
-		}
+		} else
+			it++;
 	}
-	if (remove != m_mapKeyToAction.end())
-		m_mapKeyToAction.remove(remove);
 	return true;
 }
 

@@ -144,7 +144,7 @@ class KAccelBase
 	bool setAutoUpdate( bool bAuto );
 
 // Procedures for manipulating Actions.
-	void clearActions();
+	//void clearActions();
 
 	KAccelAction* insert( const QString& sName, const QString& sDesc );
 	KAccelAction* insert(
