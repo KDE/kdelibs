@@ -1096,7 +1096,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     for( unsigned int i = 1 ; i <= d->m_maxItems ; i++ )
     {
         key = QString( "File%1" ).arg( i );
-        value = config->readEntry( key, QString::null );
+        value = config->readPathEntry( key, QString::null );
 
         if (!value.isNull())
             lst.append( value );
@@ -1127,7 +1127,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
     {
         key = QString( "File%1" ).arg( i );
         value = lst[ i - 1 ];
-        config->writeEntry( key, value );
+        config->writePathEntry( key, value );
     }
 
     config->setGroup( oldGroup );

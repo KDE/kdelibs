@@ -89,7 +89,7 @@ KPluginInfo::KPluginInfo( const QString & filename )
 		//m_propertymap[ "Name" ] = file.readEntry( "Name" );
 		//m_propertymap[ "Comment" ] = file.readEntry( "Comment" );
 
-		m_propertymap[ "PluginName" ] = file.readEntry( "Filename" );
+		m_propertymap[ "PluginName" ] = file.readPathEntry( "Filename" );
 		//m_propertymap[ "Author" ] = file.readEntry( "Author" );
 		m_propertymap[ "Website" ] = file.readEntry( "Site" );
 		//m_propertymap[ "Email" ] = file.readEntry( "Email" );

@@ -184,10 +184,10 @@ void KPrinter::loadSettings()
 		setSearchName(conf->readEntry("Printer",QString::null));
 
 	// latest used print command
-	setOption("kde-printcommand",conf->readEntry("PrintCommand"));
+	setOption("kde-printcommand",conf->readPathEntry("PrintCommand"));
 
 	// latest used document directory
-	setDocDirectory( conf->readEntry( "DocDirectory" ) );
+	setDocDirectory( conf->readPathEntry( "DocDirectory" ) );
 	setDocFileName( "print" );
 }
 
@@ -204,17 +204,17 @@ void KPrinter::saveSettings()
 	conf->setGroup("KPrinter Settings");
 	conf->writeEntry("Printer",searchName());
 	// latest used print command
-	conf->writeEntry("PrintCommand",option("kde-printcommand"));
+	conf->writePathEntry("PrintCommand",option("kde-printcommand"));
 
 	// latest used document directory
 	if ( d->m_docdirectory.isEmpty() )
 	{
 		KURL url( outputFileName() );
 		if ( url.isValid() )
-			conf->writeEntry( "DocDirectory", url.directory() );
+			conf->writePathEntry( "DocDirectory", url.directory() );
 	}
 	else
-		conf->writeEntry( "DocDirectory", d->m_docdirectory );
+		conf->writePathEntry( "DocDirectory", d->m_docdirectory );
 }
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
@@ -768,6 +768,7 @@ const char* pageSizeToPageName(KPrinter::PageSize s)
 	}
 }
 
+#if 0
 static QSize rangeToSize(const QString& s)
 {
 	QString	range = s;
@@ -788,6 +789,7 @@ static QSize rangeToSize(const QString& s)
 
 	return QSize(from,to);
 }
+#endif
 
 static void dumpOptions(const QMap<QString,QString>& opts)
 {
