@@ -1,6 +1,6 @@
 <?xml version="1.01" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="LaTeX" version="1.01" kateversion="2.1" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex" casesensitive="1">
+<language name="LaTeX" version="1.02" kateversion="2.1" section="Markup" extensions="*.tex;*.TEX;*.bib;*.BIB;*.ltx;*.LTX;*.sty;*.STY;*.cls;*.CLS" mimetype="text/x-tex" casesensitive="1">
   <highlighting>
     <list name="keywords">
       <item>mu</item>
@@ -10,13 +10,13 @@
       <item>phi</item>
       <item>varphi</item>
       <item>pi</item>
+      <item>epsilon</item>
+      <item>sigma</item>
+      <item>eta</item>
       <item>left</item>
       <item>right</item>
       <item>partial</item>
-      <item>sigma</item>
       <item>ldots</item>
-      <item> begin</item>
-      <item> itemize</item>
       <item>abovedisplayskip</item>
       <item>abovedisplayshortskip</item>
       <item>abstract</item>
@@ -55,6 +55,7 @@
       <item>cal</item>
       <item>caption</item>
       <item>cc</item>
+      <item>cdot</item>
       <item>center</item>
       <item>centering</item>
       <item>centerline</item>
@@ -320,12 +321,20 @@
   <context attribute="0" lineEndContext="0">
     <StringDetect String="\begin{" attribute="3" context="1" insensitive="FALSE"/>
     <StringDetect String="\end{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\section{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\subsection{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\subsubsection{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\title{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\author{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\usepackage{" attribute="3" context="1" insensitive="FALSE"/>
+    <StringDetect String="\usepackage[" attribute="3" context="1" insensitive="FALSE"/>
     <StringDetect String="\(" attribute="4" context="3"/>
     <DetectChar char="\" attribute="1" context="2" />
     <RegExpr String="%.*$" attribute="2" context="0"/>
   </context>
   <context attribute="5" lineEndContext="1">
     <DetectChar char="}" attribute="3" context="0"/>
+    <DetectChar char="]" attribute="3" context="0"/>
   </context>
   <context attribute="0" lineEndContext="0">
     <keyword String="keywords" attribute="1" context="0" />
