@@ -595,7 +595,7 @@ void KFileBaseDialog::pathChanged()
 
     // TODO: converting QString to char * isn't good idea. 
     // Someday, it must be changed to use QString itself.
-    char *path = qstrdup((char *)(dir->path().local8Bit()));
+    char *path = qstrdup(dir->path().local8Bit().data());
 
     QString pos = QString::fromLocal8Bit(strtok(path, "/"));
 
