@@ -31,6 +31,8 @@
  *
  * @version 1.0 Draft 7
  *
+ * @since KDE 3.4
+ *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
  *
@@ -52,7 +54,9 @@
  *
  * @section Requirements
  *
- * KDE 3.2.x and a speech synthesis engine, such as Festival.  Festival can be
+ * You must install the kdeaccessibility package for KTTS to function.
+ *
+ * You will need a speech synthesis engine, such as Festival.  Festival can be
  * obtained from 
  * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
  * Festival is distributed with most Linux distros.  Check your distro CDs.  Also works
