@@ -117,6 +117,10 @@ struct KFileDialogPrivate
     KDirComboBox *pathCombo;
 
     KIO::StatJob *statjob;
+
+    // an indicator that we're currently in a completion operation
+    // we need to lock some slots for this
+    bool completionLock;
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -132,6 +136,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
 
+    d->completionLock = false;
     d->myStatusLine = 0;
     KDirComboBox *combo = new KDirComboBox( this, "path combo" );
     connect( combo, SIGNAL( urlActivated( const QString&  )),
@@ -226,11 +231,10 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(locationEdit, SIGNAL(textChanged(const QString&)),
 	    SLOT(locationChanged(const QString&)));
     connect(locationEdit, SIGNAL(completion()), SLOT(completion()));
-    //    connect(locationEdit, SIGNAL( previous()),
-    //	    &(ops->myCompletion), SLOT( slotPreviousMatch() ) );
-    //    connect(locationEdit, SIGNAL( next()),
-    //	    &(ops->myCompletion), SLOT( slotNextMatch() ) );
-
+    connect(locationEdit, SIGNAL( previous()),
+    	    &(ops->myCompletion), SLOT( slotPreviousMatch() ) );
+    connect(locationEdit, SIGNAL( next()),
+    	    &(ops->myCompletion), SLOT( slotNextMatch() ) );
 
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
     d->filterLabel->adjustSize();
@@ -260,7 +264,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     initGUI(); // activate GM
 
     if (!d->url.isEmpty()) {
-	kdDebug(kfile_area) << "edit " << locationEdit->text(0) << endl;
 	checkPath(d->url.url());
 	locationEdit->setEditText(d->url.url());
     }
@@ -368,7 +371,7 @@ void KFileDialog::accept()
                                          false);
     saveConfig( c, ConfigGroup );
     delete c;
-    
+
     KDialogBase::accept();
 }
 
@@ -383,7 +386,8 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
     if ( (ops->mode() & KFile::Files) == KFile::Files )
 	multiSelectionChanged( i );
     else
-	locationEdit->setEditText(d->url.url());
+	if ( !d->completionLock )
+	    locationEdit->setEditText(d->url.url());
     emit fileHighlighted(d->url.url());
 }
 
@@ -490,6 +494,9 @@ void KFileDialog::filterChanged() // SLOT
 
 void KFileDialog::locationChanged(const QString& txt)
 {
+    if ( d->completionLock )
+	return;
+    
     // no completion and directory following in multiselection mode!
     if ( (ops->mode() & KFile::Files) == KFile::Files )
 	return;
@@ -816,6 +823,8 @@ void KFileDialog::completion() // SLOT
 
     if ( KURL(text).isMalformed() )
 	return;                         // invalid entry in location
+    
+    d->completionLock = true;
 
     if (text.left(base.length()) == base) {
 	QString complete =
@@ -823,19 +832,13 @@ void KFileDialog::completion() // SLOT
 
 	if (!complete.isNull()) {
 	    kdDebug(kfile_area) << "Complete " << complete << endl;
-	    disconnect( locationEdit, SIGNAL(textChanged(const QString&)),
-			this, SLOT( locationChanged(const QString&) ));
 	
 	    QString newText = base + complete;
 	    locationEdit->setCompletion( newText );
 	    d->url = newText;
-	
-	    connect( locationEdit, SIGNAL( textChanged( const QString& )),
-		     this, SLOT( locationChanged( const QString& ) ));
-	} else {
-	    warning("no completion");
 	}
     }
+    d->completionLock = false;
 }
 
 
@@ -917,7 +920,7 @@ KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
     if (!url.isMalformed())
         KRecentDocument::add(url.url(-1), false);
 
-    return url;;
+    return url;
 }
 
 KURL::List KFileDialog::getOpenURLs(const QString& dir,
@@ -1147,7 +1150,8 @@ void KFileComboBox::setCompletion(const QString& completion)
     if ( edit->text() != completion )
 	edit->setText( completion );
 
-    if ( KGlobal::completionMode() == KGlobal::CompletionAuto ) {
+    if ( KGlobal::completionMode() == KGlobal::CompletionAuto ||
+	 KGlobal::completionMode() == KGlobal::CompletionMan ) {
         edit->setSelection( pos, edit->text().length() );
 	edit->setCursorPosition( pos );
     }
@@ -1169,6 +1173,11 @@ bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
 	if ( edit->cursorPosition() == (int) edit->text().length() ) {
 	    if ( e->key() == Qt::Key_End || e->key() == Qt::Key_Right ) {
 	        if ( KGlobal::completionMode() == KGlobal::CompletionShell ) {
+		    edit->deselect();
+		    emit completion();
+		    ret = true; // don't pass the event any further
+		}
+		else if ( KGlobal::completionMode() == KGlobal::CompletionMan ) {
 		    edit->deselect();
 		    emit completion();
 		    ret = true; // don't pass the event any further
