@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.34  1997/09/28 17:22:20  kalle
+ * NLS bug fixed (?)
+ *
  * Revision 1.33  1997/09/24 19:27:23  kalle
  * Whitespace in config entries is a little less critical now (by Jan Kneschke)
  *
@@ -438,10 +441,15 @@ QString KConfig::readEntry( const QString& rKey,
 
   // check for environment variables and make necessary translations
   int nDollarPos = aValue.find( '$' );
+
+  // detach the QString if you are doing modifications!
+  if (nDollarPos != -1)
+    aValue.detach();
+
   while( nDollarPos != -1 )
 	{
 	  // there is at least one $
-	  if( (aValue)[nDollarPos+1] != '$' )
+ 	  if( (aValue)[nDollarPos+1] != '$' )
 	    {
 	      uint nEndPos = nDollarPos;
 	      // the next character is no $
@@ -458,12 +466,12 @@ QString KConfig::readEntry( const QString& rKey,
 	      else
 			aValue.remove( nDollarPos, nEndPos-nDollarPos );
 	    }
-	  else
+	  else {
 	    // remove one of the dollar signs
-	    aValue.remove( nDollarPos, nDollarPos+1 );
+	    aValue.remove( nDollarPos, 1 );
+	  }
 	  nDollarPos = aValue.find( '$', nDollarPos+2 );
 	};
-
   return aValue;
 }
 
