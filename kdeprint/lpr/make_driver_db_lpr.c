@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 		dbFile = stdout;
 	initFiles();
 	n += initMatic();
-	// do it for other handlers
+	/* do it for other handlers */
 
 	fprintf(stdout, "%d\n", n);
 	fflush(stdout);
