@@ -48,6 +48,7 @@ protected:
 
     bool body;
     bool beginning;
+    bool visualRTL;
 };
 
 #endif

@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-//#define DEBUG_LAYOUT
-//#define BIDI_DEBUG
+#define DEBUG_LAYOUT
+#define BIDI_DEBUG
 
 #include "render_text.h"
 #include "dom_stringimpl.h"
@@ -434,6 +434,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
 unsigned int RenderText::width( int from, int len) const
 {
+    if(!str->s) return 0;
     QConstString s(str->s+from, len);
     int w = fm->width(s.string());
     // ### add margins and support for RTL

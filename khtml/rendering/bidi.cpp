@@ -551,6 +551,13 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 
 #ifdef BIDI_DEBUG
     printf("reorderLine: lineLow = %d, lineHigh = %d\n", levelLow, levelHigh);
+    printf("logical order is:\n");
+    QListIterator<BiDiWord> it2(d->line);
+    BiDiWord *r2;
+    for ( ; (r2 = it2.current()); ++it2 )
+    {
+	printf("    %p\n", r2);
+    }
 #endif
 
     int count = d->line.count() - 1;
@@ -565,12 +572,10 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	    while(i < count && d->line.at(i)->level >= levelHigh) i++;
 	    int end = i;
 
-	    if(start == count-1) break;
-	
 	    if(start != end)
 	    {
 		printf("reversing from %d to %d\n", start, end);
-		for(int j = 0; j < (end-start)/2; j++)
+		for(int j = 0; j < (end-start+1)/2; j++)
 		{
 		    BiDiWord *first = d->line.take(start+j);
 		    BiDiWord *last = d->line.take(end-j-1);
@@ -586,11 +591,11 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 
 #ifdef BIDI_DEBUG
     printf("visual order is:\n");
-    QListIterator<BiDiWord> it2(d->line);
-    BiDiWord *r2;
-    for ( ; (r2 = it2.current()); ++it2 )
+    QListIterator<BiDiWord> it3(d->line);
+    BiDiWord *r3;
+    for ( ; (r3 = it3.current()); ++it3 )
     {
-	printf("    %p\n", r2);
+	printf("    %p\n", r3);
     }
 #endif
 
@@ -831,7 +836,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirRLO:
 	{
-	    //printf("right to left override\n");
+	    printf("right to left override\n");
 	    unsigned char level = d->currentEmbedding->level;
 	    if(level%2) // we have an odd level
 		level += 2;
@@ -851,7 +856,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirLRO:
 	{
-	    //printf("left to right override\n");
+	    printf("left to right override\n");
 	    unsigned char level = d->currentEmbedding->level;
 	    if(level%2) // we have an odd level
 		level++;
@@ -871,6 +876,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirPDF:
 	{
+	    printf("pop directional format\n");
 	    BiDiControl *control = d->stackEmbedding.pop();
 	    if(control)
 	    {

@@ -25,6 +25,7 @@
 
 #include "decoder.h"
 #include "htmlhashes.h"
+#include <qregexp.h>
 
 #include <ctype.h>
 #include <stdio.h> // for the printf debug messages
@@ -36,6 +37,7 @@ printf("INIT HTML Codec name= %s\n", codec->name());
     enc = 0;
     body = false;
     beginning = true;
+    visualRTL = false;
 }
 KHTMLDecoder::~KHTMLDecoder()
 {
@@ -44,9 +46,20 @@ KHTMLDecoder::~KHTMLDecoder()
 void KHTMLDecoder::setEncoding(const char *_encoding)
 {
     enc = _encoding;
+    codec = QTextCodec::codecForName(enc);
+    if(codec->mibEnum() == 11) // iso8859-8 (visually ordered)
+    {
+	codec = QTextCodec::codecForName("iso8859-8-i");
+	visualRTL = true;
+    }
+    else if(codec->mibEnum() == 9) // iso8859-6 (visually ordered)
+    {
+	codec = QTextCodec::codecForName("iso8859-8-i");
+	visualRTL = true;
+    }
 }
 
-const char *KHTMLDecoder::encoding() const 
+const char *KHTMLDecoder::encoding() const
 {
     return enc;
 }
@@ -55,7 +68,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
 {
     // this is not completely efficient, since the function might go
     // through the html head several times...
-    
+
     if(enc.isEmpty() && !body) {
 	buffer += data;
 
@@ -70,7 +83,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
 	    // we still don't have an encoding, and are in the head
 	    // the following tags are allowed in <head>:
 	    // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
-	    
+	
 	    const char *ptr = buffer.data();
 	    while(*ptr != '\0')
 	    {
@@ -80,11 +93,11 @@ QString KHTMLDecoder::decode(const char *data, int len)
 		    if(*ptr == '/') ptr++, end=true;
 		    char tmp[20];
 		    int len = 0;
-		    while (  
+		    while (
 			((*ptr >= 'a') && (*ptr <= 'z') ||
 			 (*ptr >= 'A') && (*ptr <= 'Z') ||
 			 (*ptr >= '0') && (*ptr <= '9'))
-			&& len < 19 ) 
+			&& len < 19 )
 		    {
 			tmp[len] = tolower( *ptr );
 			ptr++;
@@ -92,7 +105,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
 		    }
 		    int id = khtml::getTagID(tmp, len);
 		    if(end) id += ID_CLOSE_TAG;
-		    
+		
 		    switch( id ) {
 		    case ID_META:
 		    {
@@ -108,20 +121,20 @@ QString KHTMLDecoder::decode(const char *data, int len)
 			if( (pos = str.find("content-type", pos)) == -1) break;
 			if( (pos = str.find("charset", pos)) == -1) break;
 			pos += 7;
-			while( (str[pos] == ' ' || str[pos] == '=' 
-				|| str[pos] == '"') 
-			       && pos < (int)str.length()) 
+			while( (str[pos] == ' ' || str[pos] == '='
+				|| str[pos] == '"')
+			       && pos < (int)str.length())
 			    pos++;
 			
 			uint endpos = pos;
-			while( (str[endpos] != ' ' || str[endpos] != '"' 
+			while( (str[endpos] != ' ' || str[endpos] != '"'
 				|| str[endpos] != '>')
 			       && endpos < str.length() )
 			    endpos++;
 			
 			enc = str.mid(pos, endpos-pos);
 			printf("KHTMLDecoder: found charset: %s\n", enc.data());
-			codec = QTextCodec::codecForName(enc);
+			setEncoding(enc);
 			goto found;
 		    }
 		    case ID_SCRIPT:
@@ -156,7 +169,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
     // this is according to HTML4.0 specs
     if (!codec)
     {
-        enc = "iso8859-1";
+        if(enc.isEmpty()) enc = "iso8859-1";
 	codec = QTextCodec::codecForName(enc);
     }
     QString out;
@@ -165,8 +178,23 @@ QString KHTMLDecoder::decode(const char *data, int len)
 	out = codec->toUnicode(buffer);
 	buffer = "";
     }
-    else 
+    else
 	out = codec->toUnicode(data, len);
+
+    // ### this is still broken
+    if(visualRTL)
+    {
+	QString beginTag = QChar(0x202c);
+	beginTag += QChar('<');  // PDF + '<'
+	QString endTag = QChar('>');
+	endTag += QChar(0x202d);  // '>' + LRO
+	out.replace(QRegExp("<"), beginTag);
+	out.replace(QRegExp(">"), endTag);
+	QString middle = QChar(0x202d);
+	middle += " *";
+	middle += QChar(0x202c);
+	out.replace(QRegExp(middle), " ");
+    }
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...
