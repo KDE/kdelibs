@@ -136,7 +136,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault it null.
+   * @return The value for this key. Can be QString::null if aDefault is null.
    */
    QString readEntry(const QString& pKey,
                      const QString& aDefault = QString::null ) const;
@@ -146,7 +146,7 @@ public:
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
-   * @return The value for this key. Can be QString::null if aDefault it null.
+   * @return The value for this key. Can be QString::null if aDefault is null.
    */
    QString readEntry(const char *pKey,
                      const QString& aDefault = QString::null ) const;
