@@ -626,7 +626,7 @@ QString KLocale::translate( const char *singular, const char *plural,
   if ( r.isEmpty() || useDefaultLanguage() || d->plural_form == -1) {
     if ( n == 1 ) {
       return put_n_in( QString::fromUtf8( singular ),  n );
-	} else {	
+	} else {
 	  QString tmp = QString::fromUtf8( plural );
 #ifndef NDEBUG
 	  if (tmp.find("%n") == -1) {
@@ -730,7 +730,7 @@ QString KLocale::translate( const char *singular, const char *plural,
       return put_n_in(forms[1], n);
     else if ( n < 11)
       return put_n_in(forms[2], n);
-    else  
+    else
       return put_n_in(forms[3], n);
   case 12: // Balcan
      EXPECT_LENGTH( 3 );
@@ -738,7 +738,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 	return put_n_in(forms[0], n);
      else if (n / 10 != 1 && n % 10 >= 2 && n % 10 <= 4)
 	return put_n_in(forms[1], n);
-     else 
+     else
 	return put_n_in(forms[2], n);
   }
   kdFatal() << "The function should have been returned in another way\n";
@@ -754,11 +754,11 @@ QString KLocale::translateQt( const char *context, const char *source,
 		<< "Fix the program" << endl;
     return QString::null;
   }
-  
+
   if ( useDefaultLanguage() ) {
     return QString::null;
   }
-   
+
   char *newstring = 0;
   const char *translation = 0;
   QString r;
@@ -1226,7 +1226,7 @@ QDate KLocale::readDate(const QString &intstr, bool shortFormat, bool* ok) const
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
-  //kdDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
+  //kdDebug() << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
   QString str = intstr.simplifyWhiteSpace().lower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
@@ -1234,21 +1234,21 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   uint strpos = 0;
   uint fmtpos = 0;
 
-  while (fmt.length() > fmtpos || str.length() > strpos)
+  bool error = false;
+
+  while (fmt.length() > fmtpos && str.length() > strpos && !error)
+  {
+
+    QChar c = fmt.at(fmtpos++);
+
+    if (c != '%') {
+      if (c.isSpace() && str.at(strpos).isSpace())
+        strpos++;
+      else if (c != str.at(strpos++))
+        error = true;
+    }
+    else
     {
-      if ( !(fmt.length() > fmtpos && str.length() > strpos) )
-        goto error;
-
-      QChar c = fmt.at(fmtpos++);
-
-      if (c != '%') {
-        if (c.isSpace())
-          strpos++;
-        else if (c != str.at(strpos++))
-          goto error;
-        continue;
-      }
-
       // remove space at the begining
       if (str.length() > strpos && str.at(strpos).isSpace())
         strpos++;
@@ -1258,46 +1258,48 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       {
 	case 'a':
 	case 'A':
-	  // this will just be ignored
+
+          error = true;
 	  for (int j = 1; j < 8; j++) {
 	    QString s = weekDayName(j, c == 'a').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s)
+            {
 	      strpos += len;
+              error = false;
+            }
 	  }
 	  break;
 	case 'b':
 	case 'B':
+
+          error = true;
 	  for (int j = 1; j < 13; j++) {
 	    QString s = monthName(j, c == 'b').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s) {
 	      month = j;
 	      strpos += len;
+              error = false;
 	    }
 	  }
 	  break;
 	case 'd':
 	case 'e':
 	  day = readInt(str, strpos);
-	  if (day < 1 || day > 31)
-	    goto error;
-
+	  error = (day < 1 || day > 31);
 	  break;
 
 	case 'n':
 	case 'm':
 	  month = readInt(str, strpos);
-	  if (month < 1 || month > 12)
-	    goto error;
-
+	  error = (month < 1 || month > 12);
 	  break;
 
 	case 'Y':
 	case 'y':
 	  year = readInt(str, strpos);
-	  if (year < 0)
-	    goto error;
+	  error = (year < 0);
 	  // Qt treats a year in the range 0-100 as 1900-1999.
 	  // It is nicer for the user if we treat 0-68 as 2000-2068
 	  if (year < 69)
@@ -1306,17 +1308,28 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	    year += 1900;
 
 	  break;
-	}
+      }
     }
+  }
+
+  /* for a match, we should reach the end of both strings, not just one of
+     them */
+  if ( fmt.length() > fmtpos || str.length() > strpos )
+  {
+    error = true;
+  }
+
   //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
-  if ( year != -1 && month != -1 && day != -1 )
+  if ( year != -1 && month != -1 && day != -1 && !error)
   {
     if (ok) *ok = true;
     return QDate(year, month, day);
   }
- error:
-  if (ok) *ok = false;
-  return QDate(); // invalid date
+  else
+  {
+    if (ok) *ok = false;
+    return QDate(); // invalid date
+  }
 }
 
 QTime KLocale::readTime(const QString &intstr, bool *ok) const
