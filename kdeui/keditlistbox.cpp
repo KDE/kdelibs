@@ -149,6 +149,9 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
    m_lineEdit->setTrapReturnKey(true);
    connect(m_lineEdit,SIGNAL(returnPressed()),this,SLOT(addItem()));
    connect(m_listBox, SIGNAL(highlighted(int)), SLOT(enableMoveButtons(int)));
+   
+   // maybe supplied lineedit has some text already
+   typedSomething( m_lineEdit->text() );
 }
 
 void KEditListBox::typedSomething(const QString& text)
