@@ -26,14 +26,13 @@
 #include "kfmipc.h"
 #include "kfmclient_ipc.h"
 
-KfmIpc::KfmIpc( int _port )
+KfmIpc::KfmIpc( char * _path )
 {
     bHeader = TRUE;
     cHeader = 0;
     pBody = 0L;
 
-    port = _port;
-    sock = new KSocket( "localhost", port );
+    sock = new KSocket( _path );
     connect( sock, SIGNAL( readEvent(KSocket*) ), this, SLOT( readEvent(KSocket*) ) );
     connect( sock, SIGNAL( closeEvent(KSocket*) ), this, SLOT( closeEvent(KSocket*) ) );
     sock->enableRead( TRUE );

@@ -35,7 +35,7 @@ class KfmIpc : public QObject
 {
     Q_OBJECT
 public:
-    KfmIpc( int _port );
+    KfmIpc( char * _path );
     ~KfmIpc();
 
     bool isConnected();
@@ -84,7 +84,6 @@ public slots:
 private:
     void parse( char *_data, int _len );
 
-    int port;
     KSocket *sock;
     bool connected;
     char headerBuffer[11];

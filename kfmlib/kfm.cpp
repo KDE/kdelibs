@@ -114,12 +114,12 @@ void KFM::init()
 	return;
     }
 
-    // Read the port number
+    // Read the socket's name
     buffer[0] = 0;
-    fgets( buffer, 1023, f );
+    fscanf(f, "%s", buffer); 
     fclose( f );
-    int slot = atoi( buffer );
-    if ( slot <= 0 )
+    char * slot = strdup( buffer );
+    if ( slot == (void *) 0 )
     {
 	warning("ERROR: Invalid Slot\n");
 	return;
@@ -127,6 +127,7 @@ void KFM::init()
     
     // Connect to KFM
     ipc = new KfmIpc( slot );
+    free(slot);
 
     connect( ipc, SIGNAL( finished() ), this, SLOT( slotFinished() ) );
     connect( ipc, SIGNAL( error( int, const char* ) ),
@@ -216,9 +217,9 @@ void KFM::openProperties( const char *_url )
 
 void KFM::exec( const char *_url, const char *_binding )
 {
-    if ( !test() )
+    if ( !test() ) {
 	return;
-    
+    }
     ipc->exec( _url, _binding );
 }
 
