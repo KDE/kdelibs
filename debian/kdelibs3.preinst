@@ -7,12 +7,12 @@ set -e
 
 case "$1" in
     install|upgrade)
-      if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
-        if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
-          rm -rf /etc/kde2/applnk > /dev/null 2>&1
+      if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
+        if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
+          rm -rf /usr/share/applnk > /dev/null 2>&1
         else
-          rm -rf /usr/share/applnk* >/dev/null 2>&1
-          mv /etc/kde2/applnk /usr/share/applnk
+          rm -rf /etc/kde2/applnk* >/dev/null 2>&1
+          mv /usr/share/applnk /etc/kde2/applnk
         fi
       fi
     ;;
