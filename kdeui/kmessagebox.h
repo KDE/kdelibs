@@ -68,7 +68,7 @@ public:
  };
 
  /**
-  * @li Notify Emit a KNotifyClient event (Not yet implemented)
+  * @li Notify Emit a KNotifyClient event
   * @li AllowLink The message may contain links.
   * @li Dangerous The action to be confirmed by the dialog is a potentially destructive one
   */
