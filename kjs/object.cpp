@@ -538,13 +538,10 @@ Object Error::create(ExecState *exec, ErrorType errtype, const char *message,
   args.append(String(message));
   Object err = Object::dynamicCast(cons.construct(exec,args));
 
-  if (lineno == -1)
-    lineno = exec->context().curStmtFirstLine();
-  if (sourceId == -1)
-    sourceId = exec->context().sourceId();
-
-  err.put(exec, "sourceId", Number(sourceId));
-  err.put(exec, "line", Number(lineno));
+  if (lineno != -1)
+    err.put(exec, "line", Number(lineno));
+  if (sourceId != -1)
+    err.put(exec, "sourceId", Number(sourceId));
 
   return err;
 
