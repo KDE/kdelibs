@@ -59,7 +59,7 @@ class KCPUInfo
          * @see     Extensions
          */
         static bool haveExtension( unsigned int extension )
-        { return s_features & extension; }
+        { return (s_features & extension) != 0; }
 
     private:
         static unsigned int s_features;
