@@ -1699,6 +1699,13 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     return;
   }
 
+  QString urlStr = url.url();
+  if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  {
+      executeScript( urlStr.right( urlStr.length() - 11) );
+      return;
+  }
+
   KParts::URLArgs args( _args );
 
   if ( child->m_run )
