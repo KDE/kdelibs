@@ -262,6 +262,7 @@
 <!ENTITY kpanel	"<application>kpanel</application>">
 <!ENTITY kpat	"<application>KPatience</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
+<!ENTITY kpf	"<application>kpf</application>">
 <!ENTITY kpm	"<application>Kpm</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
