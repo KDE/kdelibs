@@ -460,7 +460,7 @@ void KWM::unregisterSoundEvent(const QString &event){
   ev.xclient.format = 8;
 
   int i;
-  const char* s = event.data();
+  const char* s = event.ascii();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -544,7 +544,7 @@ void KWM::setWindowRegion(int desk, const QRect &region){
     QString n;
     n.setNum(desk);
     n.prepend("KWM_WINDOW_REGION_");
-    a[desk-1] = XInternAtom(qt_xdisplay(), n.data(), False);
+    a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
   setQRectProperty(qt_xrootwin(), a[desk-1], region);
   if (!ac)
@@ -565,7 +565,7 @@ QRect KWM::getWindowRegion(int desk){
     QString n;
     n.setNum(desk);
     n.prepend("KWM_WINDOW_REGION_");
-    a[desk-1] = XInternAtom(qt_xdisplay(), n.data(), False);
+    a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
   QRect result = QApplication::desktop()->geometry();
   getQRectProperty(qt_xrootwin(), a[desk-1], result);
@@ -601,7 +601,7 @@ void KWM::setDesktopName(int desk, const QString &name){
     QString n;
     n.setNum(desk);
     n.prepend("KWM_DESKTOP_NAME_");
-    a[desk-1] = XInternAtom(qt_xdisplay(), n.data(), False);
+    a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
   setQStringProperty(qt_xrootwin(), a[desk-1], name);
 }
@@ -620,7 +620,7 @@ QString KWM::getDesktopName(int desk){
     QString n;
     n.setNum(desk);
     n.prepend("KWM_DESKTOP_NAME_");
-    a[desk-1] = XInternAtom(qt_xdisplay(), n.data(), False);
+    a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
   getQStringProperty(qt_xrootwin(), a[desk-1], result);
   return result;

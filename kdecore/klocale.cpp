@@ -93,6 +93,7 @@ const QString KLocale::mergeLocale(const QString& lang,const QString& country,
 	ret += "_" + country;
     if (!charset.isEmpty()) 
 	ret+= "." +charset;
+    printf("KLocale::mergeLocale: %s\n", ret.ascii());
     return ret;
 }
 
@@ -271,7 +272,7 @@ KLocale::KLocale( QString catalogue )
     
     chset=chrset;
 #ifdef HAVE_SETLOCALE
-    setlocale(LC_MESSAGES,lang);
+    setlocale(LC_MESSAGES,lang.ascii());
     lc_numeric  = setlocale(LC_NUMERIC, 0); // save these values
     lc_monetary = setlocale(LC_MONETARY, 0); 
     lc_time     = setlocale(LC_TIME, 0);
@@ -315,7 +316,7 @@ void KLocale::insertCatalogue( const QString& catalogue )
 {
     k_bindtextdomain ( catalogue.ascii() , 
 		       KGlobal::dirs()->findResourceDir("locale", 
-			     lang + "/LC_MESSAGES/" + catalogue + ".mo"));
+			     lang + "/LC_MESSAGES/" + catalogue + ".mo").ascii());
 
     catalogues->append(catalogue.ascii());
 }
@@ -332,7 +333,7 @@ const QString KLocale::translate(const char* msgid)
     for (const char* catalogue = catalogues->first(); catalogue; 
 	 catalogue = catalogues->next()) 
     {
-	text = k_dcgettext( catalogue, msgid, lang);
+	text = k_dcgettext( catalogue, msgid, lang.ascii());
 	if ( text != msgid) // we found it
 	    break;
     }

@@ -51,7 +51,7 @@ void KRootProp::sync()
 
 		XChangeProperty(kde_display, root, at,
 			XA_STRING, 8, PropModeReplace,
-			(const unsigned char *)propString.data(), propString.length());
+			(const unsigned char *)propString.ascii(), propString.length());
 					
 	}
 }
@@ -71,7 +71,7 @@ void KRootProp::setProp( const QString& rProp )
 		sync();
 
 	if( !rProp.isEmpty() ) {
-  		at = XInternAtom( kde_display, rProp.data(), False);
+  		at = XInternAtom( kde_display, rProp.ascii(), False);
 		
 		XGetWindowProperty( kde_display, root, at, 0, 256,
 			False, XA_STRING, &type, &format, &nitems, &bytes_after,

@@ -104,7 +104,7 @@ KApplication::KApplication( int& argc, char** argv ) :
 KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
   QApplication( argc, argv )
 {
-    QApplication::setName(rAppName);
+    QApplication::setName(rAppName.ascii());
 
   init();
 
@@ -146,16 +146,16 @@ void KApplication::init()
   // We should check if  mkdir() succeeds, but since we cannot do much anyway...
   // But we'll check at least for access permissions (for SUID case)
   if ( (QDir::home() != QDir::root()) && checkAccess(configPath, W_OK) ) { 
-    if ( mkdir (configPath.data(), 0755) == 0) {  // make it public(?)
-      chown(configPath.data(), getuid(), getgid());
+    if ( mkdir (configPath.ascii(), 0755) == 0) {  // make it public(?)
+      chown(configPath.ascii(), getuid(), getgid());
       configPath += "/share";
       if ( checkAccess(configPath, W_OK) ) {
-        if ( mkdir (configPath.data(), 0755) == 0 ) { // make it public
-          chown(configPath.data(), getuid(), getgid());
+        if ( mkdir (configPath.ascii(), 0755) == 0 ) { // make it public
+          chown(configPath.ascii(), getuid(), getgid());
           configPath += "/config";
           if ( checkAccess(configPath, W_OK) ) {
-            if ( mkdir (configPath.data(), 0700) == 0 ) // make it private
-              chown(configPath.data(), getuid(), getgid());
+            if ( mkdir (configPath.ascii(), 0700) == 0 ) // make it private
+              chown(configPath.ascii(), getuid(), getgid());
           }
         }
       }
@@ -839,7 +839,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             lt_dlinit();
         }
 
-        if(locate("lib", styleStr)) {
+        if(!locate("lib", styleStr).isNull()) {
           styleStr = locate("lib", styleStr);
           styleHandle = lt_dlopen(styleStr.ascii());
         }
@@ -1122,7 +1122,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
          file.prepend("khelpcenter ");
-         execl(shell, shell, "-c", file.data(), 0L);
+         execl(shell, shell, "-c", file.ascii(), 0L);
 	  exit( 1 );
     }
 }
@@ -1155,7 +1155,7 @@ QString KApplication::kde_htmldir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_HTMLDIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))  
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))  
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;
@@ -1167,7 +1167,7 @@ QString KApplication::kde_appsdir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_APPSDIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;
@@ -1180,7 +1180,7 @@ QString KApplication::kde_datadir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_DATADIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;
@@ -1192,7 +1192,7 @@ QString KApplication::kde_toolbardir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_TOOLBARDIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;
@@ -1204,7 +1204,7 @@ QString KApplication::kde_bindir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_BINDIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;
@@ -1216,7 +1216,7 @@ QString KApplication::kde_configdir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_CONFIGDIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;
@@ -1228,7 +1228,7 @@ QString KApplication::kde_mimedir()
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_MIMEDIR;
-	if (!strncmp(dir.data(), "KDEDIR", 6))
+	if (!strncmp(dir.ascii(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
     }
     return dir;

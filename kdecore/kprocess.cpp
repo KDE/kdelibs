@@ -651,8 +651,8 @@ char *KShellProcess::searchShell()
     // CC: hmm, invalid $SHELL in environment -- maybe there are whitespaces to be stripped?
     QString stmp = QString(shell);
     QString shell_stripped = stmp.stripWhiteSpace();
-    if (isExecutable(shell_stripped.data())) {
-      copy = qstrdup(shell_stripped.data());
+    if (isExecutable(shell_stripped.ascii())) {
+      copy = qstrdup(shell_stripped.ascii());
       CHECK_PTR(copy);
     }
   }
