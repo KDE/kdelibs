@@ -29,7 +29,6 @@
 #define DEFAULT_USERAGENT_STRING ""
 
 class KConfig;
-class KPAC;
 
 /**
  * Provides information about I/O (Internet, etc.) settings chosen/set
@@ -359,6 +358,5 @@ public:
   static KConfig *config();
 private:
   static KConfig *http_config();
-  static KPAC *pac();
 };
 #endif

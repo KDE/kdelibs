@@ -21,11 +21,11 @@
 #include <string.h>
 #include <sys/utsname.h>
 
+#include <dcopref.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
-#include <kio/kpac.h>
 #include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kstringhandler.h>
@@ -46,7 +46,6 @@ public:
 
    KConfig *config;
    KConfig *http_config;
-   KPAC *pac;
    bool init_busy;
    KURL url;
    QString protocol;
@@ -58,7 +57,7 @@ public:
 static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
-                        :config(0), http_config(0), pac(0), init_busy(false)
+                        :config(0), http_config(0), init_busy(false)
 {
    kpmpksd.setObject(this);
 }
@@ -67,7 +66,6 @@ KProtocolManagerPrivate::~KProtocolManagerPrivate()
 {
    delete config;
    delete http_config;
-   delete pac;
    kpmpksd.setObject(0);
 }
 
@@ -109,42 +107,6 @@ KConfig *KProtocolManager::http_config()
      d->http_config = new KConfig("kio_httprc", false, false);
   }
   return d->http_config;
-}
-
-KPAC *KProtocolManager::pac()
-{
-  ProxyType type = proxyType();
-  if (type < PACProxy)
-    return 0;
-
-  if (!d->pac)
-  {
-    if (d->init_busy) return 0;
-    d->init_busy = true;
-
-    KLibrary *lib = KLibLoader::self()->library("libkpac");
-    if (lib)
-    {
-      KPAC *(*create_pac)() = (KPAC *(*)())(lib->symbol("create_pac"));
-      if (create_pac)
-      {
-        KPAC *newPAC = create_pac();
-        switch (type)
-        {
-          case PACProxy:
-            newPAC->init( proxyConfigScript() );
-            break;
-          case WPADProxy:
-            newPAC->discover();
-          default:
-            break;
-        }
-        d->pac = newPAC;
-      }
-    }
-    d->init_busy = false;
-  }
-  return d->pac;
 }
 
 /*=============================== TIMEOUT SETTINGS ==========================*/
@@ -281,8 +243,12 @@ QString KProtocolManager::proxyForURL( const KURL &url )
   {
       case PACProxy:
       case WPADProxy:
-          if (!url.host().isEmpty() && pac())
-              proxy = pac()->proxyForURL( url ).stripWhiteSpace();
+          if (!url.host().isEmpty())
+          {
+            QString p = url.protocol();
+            if ( p.startsWith( "http" ) || p == "ftp" || p == "gopher" )
+              DCOPRef( "kded", "proxyscout" ).call( "proxyForURL", url ).get( proxy );
+          }
           break;
       case EnvVarProxy:
           proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit())).stripWhiteSpace();
@@ -300,8 +266,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-  if ( d && d->pac ) // don't load KPAC here if it isn't already
-    d->pac->badProxy( proxy );
+    DCOPRef( "kded", "proxyscout" ).send( "blackListProxy", proxy );
 }
 
 /*

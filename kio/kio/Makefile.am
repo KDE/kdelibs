@@ -74,7 +74,7 @@ libkiocore_la_SOURCES = \
 	job.cpp global.cpp \
 	slaveconfig.cpp kurlpixmapprovider.cpp \
 	netaccess.cpp paste.cpp \
-	kmimemagic.cpp kpac.cpp \
+	kmimemagic.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
@@ -97,7 +97,7 @@ kioinclude_HEADERS = connection.h \
 	progressbase.h defaultprogress.h \
 	statusbarprogress.h tcpslavebase.h \
 	observer.h chmodjob.h uiserver_stub.h \
-        kpac.h kmdbase.h authinfo.h \
+        kmdbase.h authinfo.h \
 	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h \
 	metainfojob.h davjob.h renamedlg.h skipdlg.h
 
