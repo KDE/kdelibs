@@ -88,10 +88,11 @@ class KSocksTable {
    QMap<SymbolKeys,QString>  symbols;
    // The name of this library
    QString                   myname;
+   bool                      hasWorkingAsyncConnect;
 };
 
 
-KSocksTable::KSocksTable() : myname("Unknown") {
+KSocksTable::KSocksTable() : myname("Unknown"), hasWorkingAsyncConnect(true) {
 }
 
 
@@ -161,6 +162,7 @@ class KDanteSocksTable : public KSocksTable {
 };
 
 KDanteSocksTable::KDanteSocksTable() : KSocksTable() {
+  hasWorkingAsyncConnect = false;
   myname = i18n("Dante SOCKS client");
   symbols.insert(S_SOCKSinit,   "SOCKSinit");
   symbols.insert(S_connect,     "Rconnect");
@@ -405,7 +407,6 @@ KSocks::~KSocks() {
    _me = 0;
 }
 
-
 void KSocks::die() {
    if (_me == this) {
       _me = 0;
@@ -449,6 +450,10 @@ void KSocks::enableSocks() {
       _useSocks = true;
 }
 
+bool KSocks::hasWorkingAsyncConnect()
+{
+   return (_useSocks && _st) ? _st->hasWorkingAsyncConnect : true;
+}
 
 
 /*

@@ -81,6 +81,12 @@ public:
     */
    bool hasSocks();
 
+   /**
+    * Returns whether asynchronous connects work with the
+    * selected SOCKS impementation
+    */
+   bool hasWorkingAsyncConnect();
+
    /*
     **     REIMPLEMENTATIONS OF LIBC SOCKET FUNCTIONS
     **/
