@@ -57,7 +57,7 @@ protected slots:
 
 protected:
 
-  bool createUDSEntry( const QString & filename, const QCString & path, KIO::UDSEntry & entry );
+  bool createUDSEntry( const QString & filename, const QCString & path, KIO::UDSEntry & entry, short int details );
 
   QIntDict<QString> usercache;      // maps long ==> QString *
   QIntDict<QString> groupcache;

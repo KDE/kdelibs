@@ -668,9 +668,12 @@ void FileProtocol::del( const KURL& url, bool isfile)
     finished();
 }
 
-bool FileProtocol::createUDSEntry( const QString & filename, const QCString & path, UDSEntry & entry  )
+bool FileProtocol::createUDSEntry( const QString & filename, const QCString & path, UDSEntry & entry, short int details )
 {
     assert(entry.count() == 0); // by contract :-)
+    // Note: details = 0 (only "file or directory or symlink or doesn't exist") isn't implemented
+    // because there's no real performance penalty in kio_file for returning the complete
+    // details. Please consider doing it in your kioslave if you're using this one as a model :)
     UDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
     atom.m_str = filename;
@@ -680,109 +683,109 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
     mode_t access;
     KDE_struct_stat buff;
 
-	if ( KDE_lstat( path.data(), &buff ) == 0 )  {
+    if ( KDE_lstat( path.data(), &buff ) == 0 )  {
 
-	    if (S_ISLNK(buff.st_mode)) {
+        if (S_ISLNK(buff.st_mode)) {
 
-		char buffer2[ 1000 ];
-		int n = readlink( path.data(), buffer2, 1000 );
-		if ( n != -1 ) {
-		    buffer2[ n ] = 0;
-                }
+            char buffer2[ 1000 ];
+            int n = readlink( path.data(), buffer2, 1000 );
+            if ( n != -1 ) {
+                buffer2[ n ] = 0;
+            }
 
-		atom.m_uds = KIO::UDS_LINK_DEST;
-		atom.m_str = QString::fromLocal8Bit( buffer2 );
-		entry.append( atom );
+            atom.m_uds = KIO::UDS_LINK_DEST;
+            atom.m_str = QString::fromLocal8Bit( buffer2 );
+            entry.append( atom );
 
-		// A link poiting to nowhere ?
-		if ( KDE_stat( path.data(), &buff ) == -1 ) {
-		    // It is a link pointing to nowhere
-		    type = S_IFMT - 1;
-		    access = S_IRWXU | S_IRWXG | S_IRWXO;
+            // A symlink -> follow it only if details>1
+            if ( details > 1 && KDE_stat( path.data(), &buff ) == -1 ) {
+                // It is a link pointing to nowhere
+                type = S_IFMT - 1;
+                access = S_IRWXU | S_IRWXG | S_IRWXO;
 
-		    atom.m_uds = KIO::UDS_FILE_TYPE;
-		    atom.m_long = type;
-		    entry.append( atom );
+                atom.m_uds = KIO::UDS_FILE_TYPE;
+                atom.m_long = type;
+                entry.append( atom );
 
-		    atom.m_uds = KIO::UDS_ACCESS;
-		    atom.m_long = access;
-		    entry.append( atom );
+                atom.m_uds = KIO::UDS_ACCESS;
+                atom.m_long = access;
+                entry.append( atom );
 
-		    atom.m_uds = KIO::UDS_SIZE;
-		    atom.m_long = 0L;
-		    entry.append( atom );
+                atom.m_uds = KIO::UDS_SIZE;
+                atom.m_long = 0L;
+                entry.append( atom );
 
-		    goto notype;
+                goto notype;
 
-		}
-	    }
-	} else {
-            kdWarning() << "lstat didn't work on " << path.data() << endl;
-	    return false;
-	}
+            }
+        }
+    } else {
+        kdWarning() << "lstat didn't work on " << path.data() << endl;
+        return false;
+    }
 
-	type = buff.st_mode & S_IFMT; // extract file type
-	access = buff.st_mode & 07777; // extract permissions
+    type = buff.st_mode & S_IFMT; // extract file type
+    access = buff.st_mode & 07777; // extract permissions
 
-	atom.m_uds = KIO::UDS_FILE_TYPE;
-	atom.m_long = type;
-	entry.append( atom );
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = type;
+    entry.append( atom );
 
-	atom.m_uds = KIO::UDS_ACCESS;
-	atom.m_long = access;
-	entry.append( atom );
+    atom.m_uds = KIO::UDS_ACCESS;
+    atom.m_long = access;
+    entry.append( atom );
 
-	atom.m_uds = KIO::UDS_SIZE;
-	atom.m_long = buff.st_size;
-	entry.append( atom );
+    atom.m_uds = KIO::UDS_SIZE;
+    atom.m_long = buff.st_size;
+    entry.append( atom );
 
-    notype:
-	atom.m_uds = KIO::UDS_MODIFICATION_TIME;
-	atom.m_long = buff.st_mtime;
-	entry.append( atom );
+ notype:
+    atom.m_uds = KIO::UDS_MODIFICATION_TIME;
+    atom.m_long = buff.st_mtime;
+    entry.append( atom );
 
-	atom.m_uds = KIO::UDS_USER;
-	uid_t uid = buff.st_uid;
-	QString *temp = usercache.find( uid );
+    atom.m_uds = KIO::UDS_USER;
+    uid_t uid = buff.st_uid;
+    QString *temp = usercache.find( uid );
 
-	if ( !temp ) {
-	    struct passwd *user = getpwuid( uid );
-	    if ( user ) {
-		usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
-		atom.m_str = user->pw_name;
-	    }
-	    else
-		atom.m_str = QString::number( uid );
-	}
-	else
-	    atom.m_str = *temp;
-	entry.append( atom );
+    if ( !temp ) {
+        struct passwd *user = getpwuid( uid );
+        if ( user ) {
+            usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
+            atom.m_str = user->pw_name;
+        }
+        else
+            atom.m_str = QString::number( uid );
+    }
+    else
+        atom.m_str = *temp;
+    entry.append( atom );
 
-	atom.m_uds = KIO::UDS_GROUP;
-	gid_t gid = buff.st_gid;
-	temp = groupcache.find( gid );
-	if ( !temp ) {
-	    struct group *grp = getgrgid( gid );
-	    if ( grp ) {
-		groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
-		atom.m_str = grp->gr_name;
-	    }
-	    else
-		atom.m_str = QString::number( gid );
-	}
-	else
-	    atom.m_str = *temp;
-	entry.append( atom );
+    atom.m_uds = KIO::UDS_GROUP;
+    gid_t gid = buff.st_gid;
+    temp = groupcache.find( gid );
+    if ( !temp ) {
+        struct group *grp = getgrgid( gid );
+        if ( grp ) {
+            groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
+            atom.m_str = grp->gr_name;
+        }
+        else
+            atom.m_str = QString::number( gid );
+    }
+    else
+        atom.m_str = *temp;
+    entry.append( atom );
 
-	atom.m_uds = KIO::UDS_ACCESS_TIME;
-	atom.m_long = buff.st_atime;
-	entry.append( atom );
+    atom.m_uds = KIO::UDS_ACCESS_TIME;
+    atom.m_long = buff.st_atime;
+    entry.append( atom );
 
-	// Note: buff.st_ctime isn't the creation time !
-        // We made that mistake for KDE 2.0, but it's in fact the
-        // "file status" change time, which we don't care about.
+    // Note: buff.st_ctime isn't the creation time !
+    // We made that mistake for KDE 2.0, but it's in fact the
+    // "file status" change time, which we don't care about.
 
-	return true;
+    return true;
 }
 
 void FileProtocol::stat( const KURL & url )
@@ -801,8 +804,12 @@ void FileProtocol::stat( const KURL & url )
 	return;
     }
 
+    QString sDetails = metaData(QString::fromLatin1("details"));
+    int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
+    kdDebug() << "FileProtocol::stat details=" << details << endl;
+
     UDSEntry entry;
-    if ( !createUDSEntry( url.fileName(), _path, entry ) )
+    if ( !createUDSEntry( url.fileName(), _path, entry, details ) )
     {
 	// Should never happen
 	error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
@@ -898,7 +905,7 @@ void FileProtocol::listDir( const KURL& url)
     QStrListIterator it(entryNames);
     for (; it.current(); ++it) {
         entry.clear();
-        if ( createUDSEntry( QFile::decodeName(*it), *it /* we can use the filename as relative path*/, entry ) )
+        if ( createUDSEntry( QFile::decodeName(*it), *it /* we can use the filename as relative path*/, entry, 2 ) )
           listEntry( entry, false);
         else
           ;//Well, this should never happen... but with wrong encoding names
