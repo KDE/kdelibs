@@ -1394,9 +1394,6 @@ int main(int argc, char **argv, char **envp)
          keep_running = 0;
    }
    
-   if (suicide)
-      setenv("KDE_MINIMAL_SESSION", "true", true);
-
    pipe(d.initpipe);
 
    // Fork here and let parent process exit.
@@ -1432,7 +1429,10 @@ int main(int argc, char **argv, char **envp)
    kdeinit_initsetproctitle(argc, argv, envp);
    kdeinit_setproctitle("Starting up...");
    kdeinit_library_path();
+   // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
+   if (!suicide)
+      setenv("KDE_FULL_SESSION", "true", true);
    KApplication::loadedByKdeinit = true;
 
    d.maxname = strlen(argv[0]);
