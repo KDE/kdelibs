@@ -159,14 +159,14 @@ void Kded::initModules()
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
-         bool autoload = service->property("X-KDE-Kded-autoload").toBool();
+         bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
          autoload = config->readBoolEntry("autoload", autoload);
          if (autoload && kde_running)
             loadModule(service, false);
 
          bool dontLoad = false;
-         QVariant p = service->property("X-KDE-Kded-load-on-demand");
+         QVariant p = service->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
          if (p.isValid() && (p.toBool() == false))
             dontLoad = true;
          if (dontLoad)
@@ -204,7 +204,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
 
     if (onDemand)
     {
-      QVariant p = s->property("X-KDE-Kded-load-on-demand");
+      QVariant p = s->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
       if (p.isValid() && (p.toBool() == false))
       {
          noDemandLoad(s->desktopEntryName());
@@ -215,8 +215,14 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
 
     KLibLoader *loader = KLibLoader::self();
 
-    QVariant v = s->property("X-KDE-FactoryName");
+    QVariant v = s->property("X-KDE-FactoryName", QVariant::String);
     QString factory = v.isValid() ? v.toString() : QString::null;
+    if (factory.isEmpty())
+    {
+       // Stay bugward compatible
+       v = s->property("X-KDE-Factory", QVariant::String);
+       factory = v.isValid() ? v.toString() : QString::null;
+    }
     if (factory.isEmpty())
       factory = s->library();
 
