@@ -28,17 +28,17 @@ KPartManager::~KPartManager()
 
 bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
 {
-  /*
+
   if ( ev->type() == QEvent::FocusIn )
   {
-    qDebug("Focus Event");
+    qDebug("FocusIn Event");
     QObject* o = obj;
     do
     {
-      if ( o->inherits("KPart") )
+      if ( o->inherits("QWidget") )
       {
-        KPart *part = (KPart *)o;
-	if ( m_parts.findRef( part ) == -1 ) // TODO : port to findWidget
+        KPart * part = findPartFromWidget( (QWidget*)o );
+	if ( !part )
 	  return FALSE;
 		
         KPart *oldActivePart = m_activePart;
@@ -51,7 +51,6 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
 
     return FALSE;
   }
-  */
 
   if ( ev->type() != QEvent::MouseButtonPress &&
        ev->type() != QEvent::MouseButtonDblClick )
