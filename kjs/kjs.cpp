@@ -82,16 +82,14 @@ bool KJScript::evaluate(const UString &code)
   return evaluate((QChar*)code.data(), code.size());
 }
 
-bool KJScript::evaluate(const QChar *_code, unsigned int length)
+bool KJScript::evaluate(const QChar *code, unsigned int length)
 {
   init();
-
-  UChar *code = (UChar*) _code;
 
   // maintain lock on global "current" pointer while running
   KJScriptLock lock(this);
 
-  lexer()->setCode(code, length);
+  lexer()->setCode((UChar*)code, length);
   int parseError = kjsyyparse();
 
   if (parseError) {

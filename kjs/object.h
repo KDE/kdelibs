@@ -71,7 +71,10 @@ namespace KJS {
 	       StringClass,
 	       BooleanClass,
 	       NumberClass,
-	       ObjectClass };
+	       ObjectClass,
+	       DateClass,
+	       RegExpClass,
+	       ErrorClass };
 
   enum Compl { Normal, Break, Continue, ReturnValue, Throw };
 
@@ -354,6 +357,9 @@ namespace KJS {
     Object *stringProto;
     Object *boolProto;
     Object *numProto;
+    Object *dateProto;
+    Object *regProto;
+    Object *errProto;
   };
 
 }; // namespace
