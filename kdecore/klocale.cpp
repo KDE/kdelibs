@@ -629,7 +629,7 @@ double KLocale::readMoney(const QString &str, bool * ok) const
 
     QString tot;
     if (neg) tot = '-';
-    tot += major + QString::fromLatin1(".") + minior;
+    tot += major + '.' + minior;
     return tot.toDouble(ok);
 }
 
@@ -651,7 +651,7 @@ double KLocale::readNumber(const QString &str, bool * ok) const
 
     QString tot;
     if (neg) tot = '-';
-    tot += major + QString::fromLatin1(".") + minior;
+    tot += major + '.' + minior;
     return tot.toDouble(ok);
 }
 
