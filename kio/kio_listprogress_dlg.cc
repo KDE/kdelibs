@@ -262,7 +262,7 @@ void KIOListProgressDlg::slotUpdate()
 	statusString += i18n("No\n");
       
       // files
-      tmp.sprintf( "%d / %d\n", job->m_iProcessedFiles, job->m_iTotalFiles );
+      tmp.sprintf( "%lu / %lu\n", job->m_iProcessedFiles, job->m_iTotalFiles );
       statusString += tmp;
       totalFiles += ( job->m_iTotalFiles - job->m_iProcessedFiles );
 
