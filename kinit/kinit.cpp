@@ -125,7 +125,6 @@ static struct {
   QCString errorMsg;
   bool launcher_ok;
   bool suicide;
-  bool home_readonly;
 } d;
 
 extern "C" {
@@ -742,6 +741,7 @@ static void init_kdeinit_socket()
 
   {
      QCString path = home_dir;
+     QCString readOnly = getenv("KDE_HOME_READONLY");
      if (access(path.data(), R_OK|W_OK))
      {
        if (errno == ENOENT)
@@ -749,7 +749,7 @@ static void init_kdeinit_socket()
           fprintf(stderr, "kdeinit: Aborting. $HOME directory (%s) does not exist.\n", path.data());
           exit(255);
        }
-       else if (!d.home_readonly)
+       else if (readOnly.isEmpty())
        {
           fprintf(stderr, "kdeinit: Aborting. No write access to $HOME directory (%s).\n", path.data());
           exit(255);
@@ -1471,7 +1471,6 @@ int main(int argc, char **argv, char **envp)
    int launch_kded = 1;
    int keep_running = 1;
    d.suicide = false;
-   d.home_readonly = false;
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -1486,8 +1485,6 @@ int main(int argc, char **argv, char **envp)
          launch_kded = 0;
       if (strcmp(safe_argv[i], "--suicide") == 0)
          d.suicide = true;
-      if (strcmp(safe_argv[i], "--home-readonly") == 0)
-         d.home_readonly = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
       if (strcmp(safe_argv[i], "--help") == 0)
@@ -1497,7 +1494,6 @@ int main(int argc, char **argv, char **envp)
      // printf("    --no-klauncher    Do not start klauncher\n");
         printf("    --no-kded         Do not start kded\n");
         printf("    --suicide         Terminate when no KDE applications are left running\n");
-        printf("    --home-readonly   Do no abort when home-directory is read-only\n");
      // printf("    --exit            Terminate when kded has run\n");
         exit(0);
       }
