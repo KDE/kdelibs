@@ -1986,14 +1986,15 @@ void KFileDialog::updateAutoSelectExtension (void)
                   "saving files with extensions:<br>"
                   "<ol>"
                     "<li>Any extension specified in the <b>%1</b> text "
-                    "area will be updated if you change the <b>%2</b>.<br>"
+                    "area will be updated if you change the file type "
+                    "to save in.<br>"
                     "<br></li>"
-                    "<li>If no extension is specified in the <b>%3</b> "
+                    "<li>If no extension is specified in the <b>%2</b> "
                     "text area when you click "
-                    "<b>Save</b>, %4 will be added to the end of the "
+                    "<b>Save</b>, %3 will be added to the end of the "
                     "filename (if the filename does not already exist). "
-                    "This extension is based on the <b>%5</b> you have "
-                    "specified.<br>"
+                    "This extension is based on the file type that you "
+                    "have chosen to save in.<br>"
                     "<br>"
                     "If you don't want KDE to supply an extension for the "
                     "filename, you can either turn this option off or you "
@@ -2006,10 +2007,8 @@ void KFileDialog::updateAutoSelectExtension (void)
                   "files more manageable."
                     )
                 .arg (locationLabelText)
-                .arg (filterLabelText)
                 .arg (locationLabelText)
                 .arg (whatsThisExtension)
-                .arg (filterLabelText)
             + "</qt>"
             );
 
@@ -2042,8 +2041,11 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
     KURL url = getCompleteURL (urlStr);
     kdDebug (kfile_area) << "updateLocationEditExtension (" << url << ")" << endl;
 
-    const int dot = urlStr.findRev ('.');
-    const int len = urlStr.length ();
+    const int fileNameOffset = urlStr.findRev ('/') + 1;
+    QString fileName = urlStr.mid (fileNameOffset);
+
+    const int dot = fileName.findRev ('.');
+    const int len = fileName.length ();
     if (dot > 0 && // has an extension already and it's not a hidden file
                    // like ".hidden" (but we do accept ".hidden.ext")
         dot != len - 1 // and not deliberately suppressing extension
@@ -2070,14 +2072,14 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
         //
 
         // catch "double extensions" like ".tar.gz"
-        if (lastExtension.length () && urlStr.endsWith (lastExtension))
-            urlStr.truncate (len - lastExtension.length ());
+        if (lastExtension.length () && fileName.endsWith (lastExtension))
+            fileName.truncate (len - lastExtension.length ());
         // can only handle "single extensions"
         else
-            urlStr.truncate (dot);
+            fileName.truncate (dot);
 
         // add extension
-        locationEdit->setCurrentText (urlStr + d->extension);
+        locationEdit->setCurrentText (urlStr.left (fileNameOffset) + fileName + d->extension);
         locationEdit->lineEdit()->setEdited (true);
     }
 }
@@ -2088,17 +2090,17 @@ void KFileDialog::appendExtension (KURL &url)
     if (!d->autoSelectExtCheckBox->isChecked () || d->extension.isEmpty ())
         return;
 
-    QString urlStr = url.path ();
-    if (urlStr.isEmpty ())
+    QString fileName = url.fileName ();
+    if (fileName.isEmpty ())
         return;
 
     kdDebug (kfile_area) << "appendExtension(" << url << ")" << endl;
 
-    const int len = urlStr.length ();
-    const int dot = urlStr.findRev ('.');
+    const int len = fileName.length ();
+    const int dot = fileName.findRev ('.');
 
     const bool suppressExtension = (dot == len - 1);
-    const bool unspecifiedExtension = (dot < 0);
+    const bool unspecifiedExtension = (dot <= 0);
 
     // don't KIO::NetAccess::Stat if unnecessary
     if (!(suppressExtension || unspecifiedExtension))
@@ -2126,13 +2128,13 @@ void KFileDialog::appendExtension (KURL &url)
         // turn off this feature so that you can type "README.")
         //
         kdDebug (kfile_area) << "\tstrip trailing dot" << endl;
-        url.setPath (urlStr.left (len - 1));
+        url.setFileName (fileName.left (len - 1));
     }
     // evilmatically append extension :) if the user hasn't specified one
     else if (unspecifiedExtension)
     {
         kdDebug (kfile_area) << "\tappending extension \'" << d->extension << "\'..." << endl;
-        url.setPath (urlStr + d->extension);
+        url.setFileName (fileName + d->extension);
         kdDebug (kfile_area) << "\tsaving as \'" << url << "\'" << endl;
     }
 }
