@@ -1667,12 +1667,24 @@ void DocumentImpl::updateStyleSelector()
     }
 }
 
+
+QStringList DocumentImpl::availableStyleSheets() const
+{
+    return m_availableSheets;
+}
+
+void DocumentImpl::useStyleSheet( const QString &title )
+{
+    m_sheetUsed = title;
+}
+
 void DocumentImpl::recalcStyleSelector()
 {
     if ( !m_render || !attached() ) return;
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
+    m_availableSheets.clear();
     NodeImpl *n;
     for (n = this; n; n = n->traverseNextNode()) {
     	StyleSheetImpl *sheet = 0;
@@ -1705,15 +1717,25 @@ void DocumentImpl::recalcStyleSelector()
             }
 
         }
-        else if (n->id() == ID_LINK) {
-            // <LINK> element
-	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-        }
-        else if (n->id() == ID_STYLE) {
-            // <STYLE> element
-	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
-        }
-        else if (n->id() == ID_BODY) {
+        else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
+	    ElementImpl *e = static_cast<ElementImpl *>(n);
+	    QString title = e->getAttribute( ATTR_TITLE ).string();
+	    if ( !title.isEmpty() ) {
+		if ( m_usersheet.isEmpty() )
+		    m_usersheet = title;
+		if ( !m_availableSheets.contains( title ) )
+		    m_availableSheets.append( title );
+		if ( m_usersheet != title )
+		    break;
+	    }
+	    if ( n->id() == ID_LINK )
+		// <LINK> element
+		sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
+	    else 
+		// <STYLE> element
+		sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
+	}
+	else if (n->id() == ID_BODY) {
             // <BODY> element (doesn't contain styles as such but vlink="..." and friends
             // are treated as style declarations)
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
@@ -1980,6 +2002,5 @@ NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
     // so we do not support it...
     return 0;
 }
-
 
 #include "dom_docimpl.moc"
