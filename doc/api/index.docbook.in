@@ -117,10 +117,9 @@
 
          <para>
             <programlisting>
-<![CDATA[#include <klocale.h>
+#include &lt;klocale.h&gt;
 ...
 QLabel *lbl = new QLabel(i18n("File name:"), this);
-]]>
             </programlisting>
          </para>
 
@@ -145,9 +144,8 @@ QLabel *lbl = new QLabel(i18n("File name:"), this);
 
          <para>
             <programlisting>
-<![CDATA[messages:
+messages:
 	$(XGETTEXT) -C -ki18n -x $(kde_includes)/kde.pot -o $(podir)/foo.pot $(foo_SOURCES)
-]]>
             </programlisting>
          </para>
 
@@ -160,10 +158,9 @@ QLabel *lbl = new QLabel(i18n("File name:"), this);
 
          <para>
             <programlisting>
-<![CDATA[#: foo.cpp:3 
+#: foo.cpp:3 
 msgid "File name:" 
 msgstr ""
-]]>
             </programlisting>
          </para>
 
@@ -175,14 +172,12 @@ msgstr ""
 
          <para>
             <programlisting>
-<![CDATA[
 QString filename;
 ...
 filename = ... // get a file name from the user or from somewhere else
 if (!QFileInfo(filename).exists()) {
     QMessageBox::information(this, "Foo", i18n("File ") + filename + i18n(" does not exist.));
 }
-]]>
             </programlisting>
          </para>
 
@@ -195,28 +190,26 @@ if (!QFileInfo(filename).exists()) {
 
          <para>
             <programlisting>
-<![CDATA[
 QString filename;
 ...
 filename = ... // get a file name from the user or from somewhere else
 if (!QFileInfo(filename).exists()) {
-    QMessageBox::information(this, "Foo", i18n("File %1 does not exist.").arg(filename));
+    QMessageBox::information(this, "Foo", i18n("File &percnt;1 does not exist.").arg(filename));
 }
-]]>
             </programlisting>
          </para>
 
          <para>
             The method <function>arg()</function> takes substrings of the form
-            &quot;%n&quot;, where <replaceable>n</replaceable> is a number between 0
+            &quot;&percnt;n&quot;, where <replaceable>n</replaceable> is a number between 0
             and 9, and replaces the one with the lowest number with its argument. For
             convenience, this method is overloaded for integers and floats, so in
             contrast to c-like functions like <function>sprintf()</function>, it is
             typesafe. It also has the important advantage that when you have several
             insertions in a string, the translator has the freedom the change their
             order. For example, consider the english phrase <blockquote><para>Printed
-            %1 pages of %2 total.</para></blockquote> A german translator could now
-            use as a translation <blockquote><para>Von insgesamt %2 Seiten wurden %1
+            &percnt;1 pages of &percnt;2 total.</para></blockquote> A german translator could now
+            use as a translation <blockquote><para>Von insgesamt &percnt;2 Seiten wurden &percnt;1
             gedruckt.</para></blockquote>
          </para>
 
@@ -235,11 +228,11 @@ if (!QFileInfo(filename).exists()) {
             argument only serves the purpose of distinguishing different meanings of
             the untranslated string. In the above example, you can use 
             <blockquote><para>
-               <![CDATA[i18n("A set of", "Set")]]>
+               i18n("A set of", "Set")
             </para></blockquote>
             for one occurance of &quot;Set&quot; and 
             <blockquote><para>
-               <![CDATA[i18n("to set", "Set")]]>
+               i18n("to set", "Set")
             </para></blockquote>
             for the other one.
          </para>
@@ -336,12 +329,11 @@ if (!QFileInfo(filename).exists()) {
          </para>
          <para>
             <programlisting>
-<![CDATA[QDomDocument doc(filename);
+QDomDocument doc(filename);
 if (doc.doctype().name() != "search") {
-    cout << "Not the correct document type." << endl;
+    cout &lt;&lt; "Not the correct document type." &lt;&lt; endl;
     return;
 }
-]]>
             </programlisting>
          </para>
          <para>
@@ -356,10 +348,9 @@ if (doc.doctype().name() != "search") {
          </para>
          <para>
             <programlisting>
-<![CDATA[QDomElement docel = doc.documentElement();
-cout << "Name:   " << docel.attribute("name").latin1() << endl;
-cout << "Method: " << docel.attribute("method").latin1() << endl;
-]]>
+QDomElement docel = doc.documentElement();
+cout &lt;&lt; "Name:   " &lt;&lt; docel.attribute("name").latin1() &lt;&lt; endl;
+cout &lt;&lt; "Method: " &lt;&lt; docel.attribute("method").latin1() &lt;&lt; endl;
             </programlisting>
          </para>
          <para>
@@ -369,13 +360,13 @@ cout << "Method: " << docel.attribute("method").latin1() << endl;
          </para>
          <para>
             <programlisting>
-<![CDATA[QDomElement childel = docel.firstChild().toElement()
+QDomElement childel = docel.firstChild().toElement()
 while (!childel.isNull()) {
     if (childel.tagName() == "input") {
         // do something with element childel
     }
     childel = childel.nextSibling().toElement();
-}]]>
+}
             </programlisting>
          </para>
          <para>
@@ -391,10 +382,10 @@ while (!childel.isNull()) {
          </para>
          <para>
             <programlisting>
-               <![CDATA[QDomElement interpretel = docel.namedItem("interpret").toElement();
+               QDomElement interpretel = docel.namedItem("interpret").toElement();
                if (!interpret.isNull()) {
                // do something with interpretel
-               }]]>
+               }
             </programlisting>
          </para>
          
