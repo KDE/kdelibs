@@ -19,11 +19,6 @@
 <!ENTITY HKNga       "hiire <mousebutton>keskmise</mousebutton> nupuga">
 <!ENTITY HPNga       "hiire <mousebutton>parema</mousebutton> nupuga">
 
-<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
-<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
-<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
-
-
 <!ENTITY cdrom  '<hardware>CD-ROM</hardware>'>
 
 <!ENTITY nt     "<abbrev>nt.</abbrev>">		<!-- English: &eg; -->
@@ -41,4 +36,15 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> menüü">
+
+<!-- Temporary solution to have at least partially translated docs.
+ -->
+
+<!ENTITY dpi    '<acronym>dpi</acronym>'>
+<!ENTITY eg     "<abbrev>e.g.</abbrev>">
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY ie     "<abbrev>i.e.</abbrev>">
+<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
+<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
+<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
 
