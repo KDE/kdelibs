@@ -64,7 +64,7 @@ public:
   volatile int refcount;
 
   ResolverEntryPrivate() :
-    addr(0L), socktype(0), protocol(0), canonName(QString::null),
+    addr(0L), socktype(0), protocol(0), 
     refcount(1)
   { }
 };
@@ -182,7 +182,7 @@ public:
   int refcount;
 
   ResolverResultsPrivate() :
-    node(QString::null), service(QString::null), errorcode(0), syserror(0)
+    errorcode(0), syserror(0)
   { }
 
   // duplicate the data if necessary, while decreasing the reference count
