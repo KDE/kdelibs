@@ -153,6 +153,8 @@ public:
 
     static RegressionTest *curr;
 
+    static bool cvsIgnored( const QString &filename );
+
 private:
     void evalJS( KJS::ScriptInterpreter &interp, const QString &filename, bool report ); // used by testJS
 

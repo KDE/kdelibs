@@ -181,10 +181,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
                                          "Script-generated " + filename + "-render");
             } else {
                 // compare with output file
-                if ( ::access( QFile::encodeName( m_regTest->m_baseDir + "/baseline/" + filename + "-dom" ), R_OK ) ||
-                     m_regTest->reportResult(  m_regTest->checkOutput(filename+"-dom") ) )
-                    if ( !::access( QFile::encodeName(  m_regTest->m_baseDir + "/baseline/" + filename + "-render" ), R_OK ) )
-                         m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"));
+                if ( m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom") ) )
+                    m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"));
             }
             break;
         }
@@ -686,10 +684,8 @@ void RegressionTest::testStaticFile(const QString & filename)
         reportResult( checkOutput(filename+"-render") );
     } else {
         // compare with output file
-        if ( ::access( QFile::encodeName( m_baseDir + "/baseline/" + filename + "-dom" ), R_OK ) ||
-             reportResult( checkOutput(filename+"-dom") ) )
-            if ( !::access( QFile::encodeName( m_baseDir + "/baseline/" + filename + "-render" ), R_OK ) )
-                reportResult(checkOutput(filename+"-render"));
+        if ( reportResult( checkOutput(filename+"-dom") ) )
+            reportResult(checkOutput(filename+"-render"));
     }
 }
 
@@ -766,47 +762,42 @@ void RegressionTest::testJSFile(const QString & filename)
 
 bool RegressionTest::checkOutput(const QString &againstFilename)
 {
-    QString data = getPartOutput( againstFilename.endsWith( "-dom" ) ? DOMTree : RenderTree );
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
+    if ( cvsIgnored( absFilename ) )
+        return true;
+
+    QString data = getPartOutput( againstFilename.endsWith( "-dom" ) ? DOMTree : RenderTree );
+
     bool result = true;
 
     // compare result to existing file
 
-    QFile file(absFilename);
-    if (!file.open(IO_ReadOnly)) {
-        if ( !m_genOutput ) {
-            fprintf(stderr,"Error reading file %s\n",absFilename.latin1());
-            exit(1);
-        }
-        result = false;
-    } else {
+    QString outputFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
 
+    if ( m_genOutput )
+        outputFilename = absFilename;
+
+    QFile file(absFilename);
+    if (file.open(IO_ReadOnly)) {
         QTextStream stream ( &file );
         stream.setEncoding( QTextStream::UnicodeUTF8 );
 
         QString fileData = stream.read();
 
         result = ( fileData == data );
-    }
-
-    if ( m_genOutput ) {
-        if ( result ) // no need to regenerate
+        if ( !m_genOutput && result ) {
+            ::unlink( QFile::encodeName( outputFilename ) );
             return true;
-    } else {
-        absFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
-        if ( result ) {
-            ::unlink( QFile::encodeName( absFilename ) );
-            return result;
         }
     }
 
     // generate result file
 
-    QFileInfo info(absFilename);
+    QFileInfo info(outputFilename);
     createMissingDirs(info.dirPath());
-    QFile file2(absFilename);
+    QFile file2(outputFilename);
     if (!file2.open(IO_WriteOnly)) {
-        fprintf(stderr,"Error writing to file %s\n",absFilename.latin1());
+        fprintf(stderr,"Error writing to file %s\n",outputFilename.latin1());
         exit(1);
     }
 
@@ -814,7 +805,7 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     stream2.setEncoding( QTextStream::UnicodeUTF8 );
     stream2 << data;
     if ( m_genOutput )
-        printf("Generated %s\n",againstFilename.latin1());
+        printf("Generated %s\n", outputFilename.latin1());
 
     return result;
 }
@@ -882,6 +873,26 @@ void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
     PartMonitor pm(m_part);
     m_part->openURL(url);
     pm.waitForCompletion();
+}
+
+bool RegressionTest::cvsIgnored( const QString &filename )
+{
+    QFileInfo fi( filename );
+    QString ignoreFilename = fi.dirPath() + "/.cvsignore";
+    QFile ignoreFile(ignoreFilename);
+    if (!ignoreFile.open(IO_ReadOnly))
+        return false;
+
+    QTextStream ignoreStream(&ignoreFile);
+    QString line;
+    while (!(line = ignoreStream.readLine()).isNull()) {
+        if ( line == fi.fileName() ) {
+            kdDebug() << filename << " is ignored\n";
+            return true;
+        }
+    }
+    ignoreFile.close();
+    return false;
 }
 
 #include "test_regression.moc"
