@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+template class QDict<QDOM_NodePrivate>;
+
 // NOT REVISED
 
 /**
