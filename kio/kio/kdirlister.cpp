@@ -513,14 +513,6 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   //   - only update a directory: the listers are in urlsCurrentlyHeld
   //   - update a currently running listing: the listers are in urlsCurrently
 
-  // A lister can be EITHER in urlsCurrentlyListed OR urlsCurrentlyHeld but NOT
-  // in both at the same time.
-  //     On the other hand there can be some listers in urlsCurrentlyHeld
-  // and some in urlsCurrentlyListed for the same url!
-  // Or differently said, there can be an entry for _dir in urlsCurrentlyListed
-  // and urlsCurrentlyHeld. This happens if more listers are requesting _dir at
-  // the same time and one lister is stopped during the listing of files.
-
   // restart the job for _dir if it is running already
   bool killed = killJob( urlStr );
 
@@ -564,7 +556,6 @@ KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString&
 {
   Q_ASSERT( lister );
 
-  // TODO: make this faster - how?
   for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
         it != lister->d->lstDirs.end(); ++it )
   {
@@ -640,10 +631,6 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
     deleteDir( *it );
   }
 }
-
-// TODO:
-// - is fileList guaranteed to contain *only* files? -> NO!
-// - difference between path and directory?
 
 void KDirListerCache::FilesChanged( const KURL::List &fileList )
 {
@@ -1204,7 +1191,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   jobs.remove( job );
 
-  deleteUnmarkedItems( listers, dir->lstItems, true );
+  deleteUnmarkedItems( listers, dir->lstItems );
 
   for ( kdl = listers->first(); kdl; kdl = listers->next() )
   {
@@ -1244,11 +1231,7 @@ bool KDirListerCache::killJob( const QString& _url )
   return false;
 }
 
-// Purpose: there are some listers that are holding lstItems and we need to
-//          delete the unmarked items from this list. If really, then the item
-//          was deleted from the filesystem and needs to be removed from the
-//          cache as well.
-void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileItemList *lstItems, bool really )
+void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileItemList *lstItems )
 {
   // Find all unmarked items and delete them
   KFileItem* item;
@@ -1259,14 +1242,11 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
       for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
         kdl->emitDeleteItem( item );
 
-      if ( really )
-      {
-        deleteDir( item->url() );
+      deleteDir( item->url() );
 
-        // finally actually delete the item
-        lstItems->take();
-        delete item;
-      }
+      // finally actually delete the item
+      lstItems->take();
+      delete item;
     }
     else
       lstItems->next();

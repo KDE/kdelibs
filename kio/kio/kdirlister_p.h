@@ -121,10 +121,9 @@ public:
 
   void listDir( KDirLister* lister, const KURL &_url, bool _keep, bool _reload );
 
-  /**
-   * Stop all running jobs for lister
-   */
+  // stop all running jobs for lister
   void stop( KDirLister *lister );
+  // stop just the job listing url for lister
   void stop( KDirLister *lister, const KURL &_url );
 
   void setAutoUpdate( KDirLister *lister, bool enable );
@@ -182,7 +181,11 @@ private slots:
 
 private:
   bool killJob( const QString &_url );
-  void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList *, bool really );
+  
+  // when there were items deleted from the filesystem all the listers holding
+  // the parent directory need to be notified, the unmarked items have to be deleted
+  // and removed from the cache including all the childs.
+  void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList * );
   void processPendingUpdates();
   void forgetDirInternal( KDirLister *lister, const KURL &_url );
   // common for slotRedirection and FileRenamed
@@ -233,6 +236,14 @@ private:
   // an item is a complete directory
   QDict<DirItem> itemsInUse;
   QCache<DirItem> itemsCached;
+
+  // A lister can be EITHER in urlsCurrentlyListed OR urlsCurrentlyHeld but NOT
+  // in both at the same time.
+  //     On the other hand there can be some listers in urlsCurrentlyHeld
+  // and some in urlsCurrentlyListed for the same url!
+  // Or differently said, there can be an entry for url in urlsCurrentlyListed
+  // and urlsCurrentlyHeld. This happens if more listers are requesting url at
+  // the same time and one lister was stopped during the listing of files.
 
   // saves all urls that are currently being listed and maps them
   // to their KDirListers
