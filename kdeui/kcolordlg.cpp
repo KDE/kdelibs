@@ -573,9 +573,7 @@ int KColorDialog::getColor( QColor &theColor )
 
 void KColorDialog::slotOkPressed()
 {
-cerr << "coldlg" << endl;
 	writeSettings();
-cerr << "coldlg" << endl;
 	accept();
 }
 
