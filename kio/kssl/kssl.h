@@ -69,7 +69,7 @@ public:
 	 *  @return true on success
 	 *
 	 *  This will do nothing if it is already initialized.
-	 *  @see #reInitialize
+	 *  @see reInitialize
 	 */
 	bool initialize();
 
@@ -105,7 +105,7 @@ public:
 	 *
 	 *  This is not generally needed unless you are reusing the KSSL object
 	 *  for a new session.
-	 *  @see #initialize
+	 *  @see initialize
 	 */
 	bool reInitialize();
 
@@ -116,7 +116,7 @@ public:
 	 *
 	 *  If you setAutoReconfig() to false, then this will simply
 	 * reInitialize() and not read in the new configuration.
-	 *  @see #setAutoReconfig
+	 *  @see setAutoReconfig
 	 */
 	bool reconfig();
 

@@ -144,13 +144,13 @@ class KDirOperator : public QWidget
      * will be shown. Call updateDir() to apply it.
      *
      * @see KDirLister::setNameFilter
-     * @see #nameFilter
+     * @see nameFilter
      */
     void setNameFilter(const QString& filter);
 
     /**
      * @returns the current namefilter.
-     * @see #setNameFilter
+     * @see setNameFilter
      */
     const QString& nameFilter() const { return dir->nameFilter(); }
 
@@ -169,7 +169,7 @@ class KDirOperator : public QWidget
      * Call updateDir() to apply it.
      *
      * @see KDirLister::setMimeFilter
-     * @see #mimeFilter
+     * @see mimeFilter
      */
     void setMimeFilter( const QStringList& mimetypes );
 
@@ -182,8 +182,8 @@ class KDirOperator : public QWidget
      * Clears both the namefilter and mimetype filter, so that all files and
      * directories will be shown. Call updateDir() to apply it.
      *
-     * @see #setMimeFilter
-     * @see #setNameFilter
+     * @see setMimeFilter
+     * @see setNameFilter
      */
     void clearFilter();
 
@@ -214,14 +214,14 @@ class KDirOperator : public QWidget
      * @see KFileIconView
      * @see KFileDetailView
      * @see KFileCombiView
-     * @see #view
+     * @see view
      */
 	// ### KDE4: make virtual
     void setView(KFileView *view);
 
     /**
      * @returns the currently used view.
-     * @see #setView
+     * @see setView
      */
     KFileView * view() const { return m_fileView; }
 
@@ -401,8 +401,8 @@ class KDirOperator : public QWidget
      * Note that KDirOperator does NOT take ownership of that object (typically
      * it's KGlobal::config() anyway.
      *
-     * @see #viewConfig
-     * @see #viewConfigGroup
+     * @see viewConfig
+     * @see viewConfigGroup
      * @since 3.1
      */
 	// ### KDE4: make virtual
@@ -436,16 +436,16 @@ class KDirOperator : public QWidget
      * to apply it.
      *
      * @see setView
-     * @see #setViewConfig
-     * @see #writeConfig
+     * @see setViewConfig
+     * @see writeConfig
      */
     virtual void readConfig( KConfig *, const QString& group = QString::null );
 
     /**
      * Saves the current settings like sorting, simple or detailed view.
      *
-     * @see #readConfig
-     * @see #setViewConfig
+     * @see readConfig
+     * @see setViewConfig
      */
     virtual void writeConfig( KConfig *, const QString& group = QString::null );
 
@@ -465,7 +465,7 @@ class KDirOperator : public QWidget
     /**
      * @returns whether files (not directories) should only be select()ed by
      * double-clicks.
-     * @see #setOnlyDoubleClickSelectsFiles
+     * @see setOnlyDoubleClickSelectsFiles
      */
     bool onlyDoubleClickSelectsFiles() const;
 
@@ -572,7 +572,7 @@ protected:
      * @see KFileIconView
      * @see KFilePreview
      * @see KFile::FileView
-     * @see #setView
+     * @see setView
      */
      virtual KFileView* createView( QWidget* parent, KFile::FileView view );
      /**
@@ -591,7 +591,7 @@ protected:
 
     /**
      * Updates the sorting-related actions to comply with the current sorting
-     * @see #sorting
+     * @see sorting
      */
     void updateSortActions();
 

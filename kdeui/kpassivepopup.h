@@ -131,7 +131,7 @@ public:
 
     /**
      * @returns true if the widget auto-deletes itself when the #timeout occurs.
-     * @see #setAutoDelete
+     * @see setAutoDelete
      */
     bool autoDelete() const { return m_autoDelete; }
 
@@ -139,7 +139,7 @@ public:
      * Convenience method that displays popup with the specified  message  beside the
      * icon of the specified widget.
      * Note that the returned object is destroyed when it is hidden.
-     * @see #setAutoDelete
+     * @see setAutoDelete
      */
     static KPassivePopup *message( const QString &text, QWidget *parent, const char *name=0 );
 
@@ -147,7 +147,7 @@ public:
      * Convenience method that displays popup with the specified caption and message
      * beside the icon of the specified widget.
      * Note that the returned object is destroyed when it is hidden.
-     * @see #setAutoDelete
+     * @see setAutoDelete
      */
     static KPassivePopup *message( const QString &caption, const QString &text,
 				   QWidget *parent, const char *name=0 );
@@ -156,7 +156,7 @@ public:
      * Convenience method that displays popup with the specified icon, caption and
      * message beside the icon of the specified widget.
      * Note that the returned object is destroyed when it is hidden.
-     * @see #setAutoDelete
+     * @see setAutoDelete
      */
     static KPassivePopup *message( const QString &caption, const QString &text,
 				   const QPixmap &icon,
@@ -166,7 +166,7 @@ public:
      * Convenience method that displays popup with the specified icon, caption and
      * message beside the icon of the specified window.
      * Note that the returned object is destroyed when it is hidden.
-     * @see #setAutoDelete
+     * @see setAutoDelete
      */
     static KPassivePopup *message( const QString &caption, const QString &text,
 				   const QPixmap &icon,

@@ -77,14 +77,14 @@ public:
 	/**
 	 *  Does the user want to be warned on sending unencrypted data
 	 *  @return true if the user wants to be warned
-	 *  @see #setWarnOnUnencrypted
+	 *  @see setWarnOnUnencrypted
 	 */
 	bool warnOnUnencrypted() const;
 
 	/**
 	 *  Change the user's warnOnUnencrypted() setting
 	 *  @param x true if the user is to be warned
-	 *  @see #warnOnUnencrypted
+	 *  @see warnOnUnencrypted
 	 */
 	void setWarnOnUnencrypted(bool x);
 

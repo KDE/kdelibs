@@ -54,7 +54,7 @@ struct SpecialEvent
   /**
    * Delta milliseconds from the previous SpecialEvent. 
    *
-   * @see #absmilliseconds
+   * @see absmilliseconds
    */
   ulong diffmilliseconds;
 
@@ -62,7 +62,7 @@ struct SpecialEvent
    * The absolute millisecond (from the beginning of the song) at which this
    * SpecialEvent object is played.
    *
-   * @see #diffmilliseconds
+   * @see diffmilliseconds
    */
   ulong absmilliseconds;
 
@@ -209,7 +209,7 @@ struct PlayerController
 
   /**
    * Activate or disactivate the force to use a patch for a given channel.
-   * @see #pgm
+   * @see pgm
    */
   volatile bool forcepgm[16];
 
@@ -369,7 +369,7 @@ class MidiPlayer
   /**
    * Returns information about the current MIDI file.
    *
-   * @see #loadSong
+   * @see loadSong
    */
   MidiFileInfo *information(void) { return info; };
 

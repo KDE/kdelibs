@@ -87,8 +87,8 @@ public:
      *
      * @p Other means that no default actions are performed.
      *
-     * @see #setOperationMode
-     * @see #operationMode
+     * @see setOperationMode
+     * @see operationMode
      */
     enum OperationMode { Other = 0, Opening, Saving };
 
@@ -217,7 +217,7 @@ public:
      *
      * Call this method right after instantiating KFileDialog.
      *
-     * @see #operationMode
+     * @see operationMode
      * @see KFileDialog::OperationMode
      */
     void setOperationMode( KFileDialog::OperationMode );
@@ -226,7 +226,7 @@ public:
      * @returns the current operation mode, Opening, Saving or Other. Default
      * is Other.
      *
-     * @see #operationMode
+     * @see operationMode
      * @see KFileDialog::OperationMode
      */
     OperationMode operationMode() const;
@@ -281,8 +281,8 @@ public:
      * kfile->setFilter( "*.cue|CUE\\/BIN Files (*.cue)" );
      * \endcode
      *
-     * @see #filterChanged
-     * @see #setMimeFilter
+     * @see filterChanged
+     * @see setMimeFilter
      */
     void setFilter(const QString& filter);
 
@@ -660,7 +660,7 @@ public:
 
     /**
      * Returns the mode of the filedialog.
-     * @see #setMode()
+     * @see setMode()
      */
     KFile::Mode mode() const;
 
@@ -747,7 +747,7 @@ signals:
      * Note: fileHighlighted() or fileSelected() are @em not
      * emitted in multiselection mode. You may use selectedItems() to
      * ask for the current highlighted items.
-     * @see #fileSelected
+     * @see fileSelected
      */
     void selectionChanged();
 

@@ -64,23 +64,23 @@ public:
     /**
      * Sets @p url for this item. Also updates the visible text to the
      * filename/directory of the url, if no description is set.
-     * @see #url
+     * @see url
      */
     void setURL( const KURL& url );
     /**
      * @p sets the icon for this item. See KIconLoader for a description
      * of the icon groups.
-     * @see #icon
+     * @see icon
      */
     void setIcon( const QString& icon, KIcon::Group group = KIcon::Panel );
     /**
      * Sets the description of this item that will be shown as item-text.
-     * @see #description
+     * @see description
      */
     void setDescription( const QString& desc );
     /**
      * Sets a tooltip to be used for this item.
-     * @see #tooolTip
+     * @see tooolTip
      */
     void setToolTip( const QString& tip );
 
@@ -101,27 +101,27 @@ public:
 
     /**
      * returns the url  of this item.
-     * @see #setURL
+     * @see setURL
      */
     const KURL& url() const                     { return m_url; }
     /**
      * returns the description of this item.
-     * @see #setDescription
+     * @see setDescription
      */
     const QString& description() const          { return m_description; }
     /**
      * returns the icon of this item.
-     * @see #setIcon
+     * @see setIcon
      */
     const QString& icon() const                 { return m_icon; }
     /**
      * returns the tooltip of this item.
-     * @see #setToolTip
+     * @see setToolTip
      */
     QString toolTip() const;
     /**
      * returns the icon-group of this item (determines icon-effects).
-     * @see #setIcon
+     * @see setIcon
      */
     KIcon::Group iconGroup() const              { return m_group; }
     /**
@@ -131,14 +131,14 @@ public:
 
     /**
      * Makes this item a local or global one.
-     * @see #applicationLocal
+     * @see applicationLocal
      */
     void setApplicationLocal( bool local )      { m_appLocal = local; }
     /**
      * returns whether this is a global item or a local one. KURLBar
      * can differentiate between global and local items (only for the current
      * application) for easy extensiblity.
-     * @see #setApplicationLocal
+     * @see setApplicationLocal
      */
     bool applicationLocal() const               { return m_appLocal; }
 
@@ -234,7 +234,7 @@ public:
     virtual void setOrientation( Qt::Orientation orient );
     /**
      * @returns the current orientation mode.
-     * @see #setOrientation
+     * @see setOrientation
      */
     Orientation orientation() const;
 
@@ -242,19 +242,19 @@ public:
      * Allows to set a custom KURLBarListBox.
      * Note: The previous listbox will be deleted. Items of the previous
      * listbox will not be moved to the new box.
-     * @see #listBox
+     * @see listBox
      */
     virtual void setListBox( KURLBarListBox * );
     /**
      * @returns the KURLBarListBox that is used.
-     * @see #setListBox
+     * @see setListBox
      */
     KURLBarListBox *listBox() const { return m_listBox; }
 
     /**
      * Sets the default iconsize to be used for items inserted with
      * insertItem. By default KIcon::SizeMedium.
-     * @see #iconsize
+     * @see iconsize
      */
     virtual void setIconSize( int size );
     /**
@@ -309,15 +309,15 @@ public:
 
     /**
      * @returns the current KURLBarItem, or 0L if none.
-     * @see #setCurrentItem
-     * @see #currentURL
+     * @see setCurrentItem
+     * @see currentURL
      */
     KURLBarItem * currentItem() const;
     /**
      * @returns the url of the current item or an invalid url, if there is
      * no current item.
-     * @see #currentItem
-     * @see #setCurrentItem
+     * @see currentItem
+     * @see setCurrentItem
      */
     KURL currentURL() const;
 
@@ -342,8 +342,8 @@ public slots:
     /**
      * Makes the item with the url @p url the current item. Does nothing
      * if no item with that url is available.
-     * @see #currentItem
-     * @see #currentURL
+     * @see currentItem
+     * @see currentURL
      */
     virtual void setCurrentItem( const KURL& url );
 
@@ -460,12 +460,12 @@ public:
      * Sets the orientation of the widget. Horizontal means, all items are
      * arranged in one row. Vertical means, all items are arranged in one
      * column.
-     * @see #orientation
+     * @see orientation
      */
     virtual void setOrientation( Qt::Orientation orient );
     /**
      * @returns the current orientation.
-     * @see #setOrientation
+     * @see setOrientation
      */
     Qt::Orientation orientation() const { return m_orientation; }
 

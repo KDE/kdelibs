@@ -50,7 +50,7 @@ public:
      * it changes.
      *
      * Default is false.
-     * @see #isSynchronizing
+     * @see isSynchronizing
      */
     static void setSynchronizing( bool sync );
 
@@ -58,7 +58,7 @@ public:
      * Checks whether Clipboard and Selection will be synchronized upon changes.
      * @returns whether Clipboard and Selection will be synchronized upon
      * changes.
-     * @see #setSynchronizing
+     * @see setSynchronizing
      */
     static bool isSynchronizing()
     {
@@ -72,7 +72,7 @@ public:
      *
      * @param enable true to enable implicit selection, false otherwise.
      * Default is true.
-     * @see #selectionSetting
+     * @see selectionSetting
      */
     static void setReverseSynchronizing( bool enable );
 
@@ -81,7 +81,7 @@ public:
      * buffer upon changes.
      * @returns whether the Clipboard buffer will be copied to the Selection
      * buffer upon changes.
-     * @see #setSelectionSetting
+     * @see setSelectionSetting
      */
     static bool isReverseSynchronizing()
     {

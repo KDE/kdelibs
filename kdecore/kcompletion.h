@@ -176,8 +176,8 @@ public:
      * @param string the string to complete
      * @return the matching item, or QString::null if there is no matching
      * item.
-     * @see #slotMakeCompletion
-     * @see #substringCompletion
+     * @see slotMakeCompletion
+     * @see substringCompletion
      */
     virtual QString makeCompletion( const QString& string );
 
@@ -187,7 +187,7 @@ public:
      * @return a list of items which all contain @p text as a substring,
      * i.e. not necessarily at the beginning.
      *
-     * @see #makeCompletion
+     * @see makeCompletion
      */
     QStringList substringCompletion( const QString& string ) const;
 
@@ -198,7 +198,7 @@ public:
      * @return the next item from the matching-items-list.
      * When there is no match, QString::null is returned and
      * a sound is be issued.
-     * @see #slotPreviousMatch
+     * @see slotPreviousMatch
      */
     QString previousMatch();
 
@@ -209,7 +209,7 @@ public:
      * isSoundsEnabled()).
      * @return the next item from the matching-items-list.  When there is no
      * match, QString::null is returned and a sound is issued
-     * @see #slotNextMatch
+     * @see slotNextMatch
      */
     QString nextMatch();
 
@@ -237,7 +237,7 @@ public:
      * before calling items().
      *
      * @return a list of all items
-     * @see #setItems
+     * @see setItems
      */
     QStringList items() const;
 
@@ -247,8 +247,8 @@ public:
      * KGlobalSettings::completionMode() is used.
      * KGlobalSettings::CompletionNone disables completion.
      * @param mode the completion mode
-     * @see #completionMode
-     * @see #KGlobalSettings::completionMode
+     * @see completionMode
+     * @see KGlobalSettings::completionMode
      */
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
@@ -257,7 +257,7 @@ public:
      * May be different from KGlobalSettings::completionMode(), if you
      * explicitly called setCompletionMode().
      * @return the current completion mode
-     * @see #setCompletionMode
+     * @see setCompletionMode
      */
     KGlobalSettings::Completion completionMode() const {
 	return myCompletionMode;
@@ -281,14 +281,14 @@ public:
      *
      * Default is insertion order.
      * @param order the new order
-     * @see #order
+     * @see order
      */
     virtual void setOrder( CompOrder order );
 
     /**
      * Returns the completion order.
      * @return the current completion order.
-     * @see #setOrder
+     * @see setOrder
      */
     CompOrder order() const { return myOrder; }
 
@@ -297,7 +297,7 @@ public:
      * E.g. makeCompletion( "CA" ); might return "carp@cs.tu-berlin.de".
      * Default is false (case sensitive).
      * @param ignoreCase true to ignore the case
-     * @see #ignoreCase
+     * @see ignoreCase
      */
     virtual void setIgnoreCase( bool ignoreCase );
 
@@ -305,7 +305,7 @@ public:
      * Return whether KCompletion acts case insensitively or not.
      * Default is false (case sensitive).
      * @return true if the case will be ignored
-     * @see #setIgnoreCase
+     * @see setIgnoreCase
      */
     bool ignoreCase() const { return myIgnoreCase; }
 
@@ -313,7 +313,7 @@ public:
      * Returns a list of all items matching the last completed string.
      * Might take some time, when you have LOTS of items.
      * @return a list of all matches for the last completed string.
-     * @see #substringCompletion
+     * @see substringCompletion
      */
     QStringList allMatches();
 
@@ -334,7 +334,7 @@ public:
      * after that in order to have the matches ordered correctly.
      *
      * @return a list of all completion matches
-     * @see #substringCompletion
+     * @see substringCompletion
      */
     KCompletionMatches allWeightedMatches();
 
@@ -356,7 +356,7 @@ public:
      * For playing the sounds, KNotifyClient() is used.
      *
      * @param enable true to enable sounds
-     * @see #isSoundsEnabled
+     * @see isSoundsEnabled
      */
     virtual void setEnableSounds( bool enable ) { myBeep = enable; }
 
@@ -364,28 +364,28 @@ public:
      * Tells you whether KCompletion will play sounds on certain occasions.
      * Default is enabled.
      * @return true if sounds are enabled
-     * @see #enableSounds
-     * @see #disableSounds
+     * @see enableSounds
+     * @see disableSounds
      */
     bool isSoundsEnabled() const { return myBeep; }
 
     /**
      * Returns true when more than one match is found.
      * @return true if there are more than one match
-     * @see #multipleMatches
+     * @see multipleMatches
      */
     bool hasMultipleMatches() const { return myHasMultipleMatches; }
 
 #ifndef KDE_NO_COMPAT
     /**
      * @deprecated
-     * @see #setEnableSounds
+     * @see setEnableSounds
      */
     void enableSounds() { myBeep = true; }
 
     /**
      * @deprecated
-     * @see #setEnableSounds
+     * @see setEnableSounds
      */
     void disableSounds() { myBeep = false; }
 #endif
@@ -395,7 +395,7 @@ public slots:
      * Attempts to complete "string" and emits the completion via match().
      * Same as makeCompletion() (just as a slot).
      * @param string the string to complete
-     * @see #makeCompletion
+     * @see makeCompletion
      */
     void slotMakeCompletion( const QString& string ) {
 	(void) makeCompletion( string );
@@ -404,7 +404,7 @@ public slots:
     /**
      * Searches the previous matching item and emits it via match().
      * Same as previousMatch() (just as a slot).
-     * @see #previousMatch
+     * @see previousMatch
      */
     void slotPreviousMatch() {
 	(void) previousMatch();
@@ -413,7 +413,7 @@ public slots:
     /**
      * Searches the next matching item and emits it via match().
      * Same as nextMatch() (just as a slot).
-     * @see #nextMatch
+     * @see nextMatch
      */
     void slotNextMatch() {
 	(void) nextMatch();
@@ -439,7 +439,7 @@ public slots:
      * before calling setItems().
      *
      * @param list the list of items that are available for completion
-     * @see #items
+     * @see items
      */
     virtual void setItems( const QStringList& list);
 
@@ -498,7 +498,7 @@ signals:
     /**
      * This signal is emitted, when calling makeCompletion() and more than
      * one matching item is found.
-     * @see #hasMultipleMatches
+     * @see hasMultipleMatches
      */
     void multipleMatches();
 
@@ -514,7 +514,7 @@ protected:
      *
      * Default implementation does nothing.
      * @param match the match to process
-     * @see #postProcessMatches
+     * @see postProcessMatches
      */
     virtual void postProcessMatch( QString *match ) const { Q_UNUSED(match) }
 
@@ -526,7 +526,7 @@ protected:
      *
      * Default implementation does nothing.
      * @param matches the matches to process
-     * @see #postProcessMatch
+     * @see postProcessMatch
      */
     virtual void postProcessMatches( QStringList * matches ) const { Q_UNUSED(matches)}
 
@@ -538,7 +538,7 @@ protected:
      *
      * Default implementation does nothing.
      * @param matches the matches to process
-     * @see #postProcessMatch
+     * @see postProcessMatch
      */
     virtual void postProcessMatches( KCompletionMatches * matches ) const {Q_UNUSED(matches)}
 
@@ -888,10 +888,10 @@ public:
      *   @li NextCompletionMatch	the next match key for for multiple completion.
      *   @li SubstringCompletion  the key for substring completion
      * @param key key-binding used to rotate down in a list.
-     * @return  true if key-binding can successfully be set.
-     * @see #getKeyBinding
+     * @return true if key-binding can successfully be set.
+     * @see getKeyBinding
      */
-    bool setKeyBinding( KeyBindingType item , const KShortcut& cut );
+    bool setKeyBinding( KeyBindingType item , const KShortcut& key );
 
     /**
      * Returns the key-binding used for the specified item.
@@ -903,7 +903,7 @@ public:
      *
      * @param item the item to check
      * @return the key-binding used for the feature given by @p item.
-     * @see #setKeyBinding
+     * @see setKeyBinding
      */
     const KShortcut& getKeyBinding( KeyBindingType item ) const {
         return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];

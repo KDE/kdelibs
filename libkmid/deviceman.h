@@ -247,16 +247,16 @@ class DeviceManager
      *
      * Then /dev/sequencer is opened and the MIDI devices are opened
      * (calling MidiOut::openDev() ).
-     * @see #ok() to check if there was any problem
-     * @see #closeDev()
-     * @see #initDev()
+     * @see ok() to check if there was any problem
+     * @see closeDev()
+     * @see initDev()
      */
     void openDev        (void);
 
     /**
      * Closes the devices, and /dev/sequencer.
      *
-     * @see #openDev()
+     * @see openDev()
      */
     void closeDev       (void);
 
@@ -274,7 +274,7 @@ class DeviceManager
      * @param note the key of the note to play (0 to 127).
      * @param vel the velocity of the note (0 to 127).
      *
-     * @see #noteOff()
+     * @see noteOff()
      */
     void noteOn         ( uchar chn, uchar note, uchar vel );
 
@@ -286,7 +286,7 @@ class DeviceManager
      * @param note the key of the note to play (0 to 127).
      * @param vel the velocity of the note (0 to 127).
      *
-     * @see #noteOn()
+     * @see noteOn()
      */
     void noteOff        ( uchar chn, uchar note, uchar vel );
 
@@ -423,7 +423,7 @@ class DeviceManager
      * Returns the device to which the MIDI events will be sent.
      * Returns -1 if there's no available device.
      *
-     * @see #setDefaultDevice()
+     * @see setDefaultDevice()
      */
     int defaultDevice(void);
 
@@ -434,7 +434,7 @@ class DeviceManager
      * type(), you should choose which device to use (note that they are
      * numbered with midi ports being first and synth devices next)
      *
-     * @see #defaultDevice()
+     * @see defaultDevice()
      */
     void setDefaultDevice(int i);
 
@@ -472,7 +472,7 @@ class DeviceManager
      * Returns the filename where the Midi Mapper was loaded from, or "" if no
      * MIDI Mapper is in use.
      *
-     * @see #setMidiMap()
+     * @see setMidiMap()
      */
     const char *midiMapFilename(void);
 
@@ -482,7 +482,7 @@ class DeviceManager
      * more information.
      *
      * @see MidiMapper::MidiMapper()
-     * @see #midiMapFilename()
+     * @see midiMapFilename()
      */
     void setMidiMap(MidiMapper *map);
 
@@ -497,8 +497,8 @@ class DeviceManager
      * connected to these ports, so sending MIDI events to these ports will not
      * produce any music in this case.
      *
-     * @see #synthDevices()
-     * @see #setDefaultDevice()
+     * @see synthDevices()
+     * @see setDefaultDevice()
      */
     int midiPorts(void) { return n_midi; };
 
@@ -507,9 +507,9 @@ class DeviceManager
      * of these devices will need special configuration, for example, to load
      * sound patches.
      *
-     * @see #midiPorts()
-     * @see #setDefaultDevice()
-     * @see #setPatchesToUse()
+     * @see midiPorts()
+     * @see setDefaultDevice()
+     * @see setPatchesToUse()
      */
     int synthDevices(void) { return n_synths; };
 

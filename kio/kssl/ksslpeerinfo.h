@@ -61,7 +61,7 @@ public:
 	 *  sense, taking into account, for instance,  wildcards.
 	 * 
 	 *  @return true if it matches
-	 *  @see #setPeerHost
+	 *  @see setPeerHost
 	 */
 	bool certMatchesAddress();
 
@@ -71,7 +71,7 @@ public:
 	 *  sense, taking into account, for instance,  wildcards.
 	 * 
 	 *  @return true if it matches
-	 *  @see #setPeerHost
+	 *  @see setPeerHost
 	 */
 	bool cnMatchesAddress(QString cn);
 

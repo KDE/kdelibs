@@ -124,13 +124,13 @@ public:
 
     /**
      * Sets how many items should be handled and displayed by the combobox.
-     * @see #maxItems
+     * @see maxItems
      */
     void setMaxItems( int );
 
     /**
      * @returns the maximum of items the combobox handles.
-     * @see #setMaxItems
+     * @see setMaxItems
      */
     int maxItems() const { return myMaximum; }
 
@@ -158,7 +158,7 @@ public:
     /**
      * Clears all items and inserts the default urls into the combo. Will be
      * called implicitly upon the first call to setURLs() or setURL()
-     * @see #addDefaultURL
+     * @see addDefaultURL
      */
     void setDefaults();
 

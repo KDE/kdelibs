@@ -129,7 +129,7 @@ public:
     /**
      * Sets the size of the icons to be shown / selected.
      * @see KIcon::StdSizes
-     * @see #iconSize
+     * @see iconSize
      */
     void setIconSize(int size);
 
@@ -160,7 +160,7 @@ public:
      * exec()utes this modal dialog and returns the name of the selected icon,
      * or QString::null if the dialog was aborted.
      * @returns the name of the icon, suitable for loading with KIconLoader.
-     * @see #getIcon
+     * @see getIcon
      */
     QString openDialog();
 
@@ -279,7 +279,7 @@ public:
     /**
      * Sets the size of the icon to be shown / selected.
      * @see KIcon::StdSizes
-     * @see #iconSize
+     * @see iconSize
      */
     void setIconSize( int size );
 

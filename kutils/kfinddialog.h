@@ -165,7 +165,7 @@ public:
      * Returns the state of the options. Disabled options may be returned in
      * an indeterminate state.
      *
-     * @see #setOptions
+     * @see setOptions
      */
     long options() const;
 

@@ -199,7 +199,7 @@ public:
    * on @p which.
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
    * @returns a formatted string of the requested time.
-   * @see #time
+   * @see time
    */
   QString timeString( unsigned int which = KIO::UDS_MODIFICATION_TIME ) const;
 
@@ -379,8 +379,8 @@ public:
    *
    * @param key the key of the extra data
    * @param value the value of the extra data
-   * @see #extraData
-   * @see #removeExtraData
+   * @see extraData
+   * @see removeExtraData
    */
   virtual void setExtraData( const void *key, void *value );
 
@@ -389,7 +389,7 @@ public:
    * @param key the key of the extra data
    * @return the extra data associated to an item with @p key via
    * setExtraData. 0L if nothing was associated with @p key.
-   * @see #extraData
+   * @see extraData
    */
   virtual const void * extraData( const void *key ) const;
 
@@ -398,7 +398,7 @@ public:
    * @param key the key of the extra data
    * @return the extra data associated to an item with @p key via
    * setExtraData. 0L if nothing was associated with @p key.
-   * @see #extraData
+   * @see extraData
    */
   virtual void * extraData( const void *key );
 

@@ -311,7 +311,7 @@ public:
 public slots:
   /**
    * Clears the entire actionCollection, deleting all actions.
-   * @see #remove
+   * @see remove
    */
   void clear();
 #endif // !KDE_NO_COMPAT

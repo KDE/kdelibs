@@ -95,7 +95,7 @@ class KMidSimpleAPI
      * Stops playing a song inmediatly. It doesn't return until the child
      * process that is playing the song is terminated.
      *
-     * @see #kMidPlay
+     * @see kMidPlay
      */
     static int kMidStop(void);
 
@@ -107,7 +107,7 @@ class KMidSimpleAPI
 
     /**
      * Returns 1 if the library is playing a song, and 0 if it's not.
-     * @see #kMidPlay
+     * @see kMidPlay
      */
     static int kMidIsPlaying(void);
 
@@ -115,8 +115,8 @@ class KMidSimpleAPI
      * Returns the number of MIDI devices  ( MIDI ports + synthesizers )
      * @see DeviceManager::midiPorts
      * @see DeviceManager::synthDevices
-     * @see #kMidName
-     * @see #kMidType
+     * @see kMidName
+     * @see kMidType
      */
     static int kMidDevices(void);
 
@@ -126,8 +126,8 @@ class KMidSimpleAPI
      * case the parameter has a value out of the valid range 
      * ( see kMidDevices() ) it returns an empty string.
      *
-     * @see #kMidDevices
-     * @see #kMidType
+     * @see kMidDevices
+     * @see kMidType
      */
     static const char *kMidName(int i);
 

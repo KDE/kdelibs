@@ -186,50 +186,50 @@ public:
   /**
    * @returns if it is legal to move items in the list view.  True by default.
    *
-   * @see #setDragEnabled()
-   * @see #setItemsMovable()
+   * @see setDragEnabled()
+   * @see setItemsMovable()
    */
   bool itemsMovable() const;
 
   /**
    * @return whether inplace-renaming has been enabled.  False by default.
    *
-   * @see #setItemsRenameable()
+   * @see setItemsRenameable()
    */
   bool itemsRenameable() const;
 
   /**
    * @return whether dragging is enabled.  False by default.
    *
-   * @see #setDragEnabled()
+   * @see setDragEnabled()
    */
   bool dragEnabled() const;
 
   /**
    * @return true if AutoOpen is enabled (not implemented currently).
    *
-   * @see #setAutoOpen()
+   * @see setAutoOpen()
    */
   bool autoOpen() const;
 
   /**
    * @return true if @p column is renamable.
    *
-   * @see #setRenameable()
+   * @see setRenameable()
    */
   bool isRenameable (int column) const;
 
   /**
    * @return true if drawing of the drop-visualizer has been enabled.  True by default.
    *
-   * @see #setDropVisualizer()
+   * @see setDropVisualizer()
    */
   bool dropVisualizer() const;
 
   /**
    * @return the column for which tooltips are displayed (or -1 if none set).
    *
-   * @see #setTooltipColumn()
+   * @see setTooltipColumn()
    */
   int tooltipColumn() const;
 
@@ -244,14 +244,14 @@ public:
   /**
    * @return true if drawing of the drop-highlighter has been enabled.  False by default.
    *
-   * @see #setDropHighlighter()
+   * @see setDropHighlighter()
    */
   bool dropHighlighter() const;
 
   /**
    * The dropVisualizerWidth defaults to 4.
    *
-   * @see #setDropVisualizerWidth()
+   * @see setDropVisualizerWidth()
    * @return the current width of the drop-visualizer.
    */
   int dropVisualizerWidth () const;
@@ -280,28 +280,28 @@ public:
 
   /**
    * @deprecated
-   * @see #setFullWidth()
+   * @see setFullWidth()
    */
   void setFullWidth();
 
   /**
    * Let the last column fit exactly all the available width.
    *
-   * @see #fullWidth()
+   * @see fullWidth()
    */
   void setFullWidth(bool fullWidth);
 
   /**
    * Returns whether the last column is set to fit the available width.
    *
-   * @see #setFullWidth()
+   * @see setFullWidth()
    */
   bool fullWidth() const;
 
   /**
    * Reimplemented for full width support
    *
-   * @see #removeColumn()
+   * @see removeColumn()
    */
   virtual int addColumn(const QString& label, int width = -1);
   /**
@@ -311,7 +311,7 @@ public:
   /**
    * Reimplemented for full width support
    *
-   * @see #addColumn()
+   * @see addColumn()
    */
   virtual void removeColumn(int index);
 
@@ -322,13 +322,13 @@ public:
    * @param c the color to use for every other item. Set to an invalid
    *        colour to disable alternate colours.
    *
-   * @see #alternateBackground()
+   * @see alternateBackground()
    **/
   void setAlternateBackground(const QColor &c);
   /**
    * @return the alternate background color
    *
-   * @see #setAlternateBackground()
+   * @see setAlternateBackground()
    */
   const QColor &alternateBackground() const;
 
@@ -422,7 +422,7 @@ signals:
    * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items)
    *
-   * @see #acceptDrop()
+   * @see acceptDrop()
    */
   void dropped (QDropEvent * e, QListViewItem *after);
 

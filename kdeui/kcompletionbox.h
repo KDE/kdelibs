@@ -103,7 +103,7 @@ public slots:
      * Default off, as it conflicts with the usual behavior of Tab to traverse
      * widgets. It is useful for cases like Konqueror's Location Bar, though.
      *
-     * @see #isTabHandling
+     * @see isTabHandling
      */
     void setTabHandling( bool enable );
 
@@ -113,7 +113,7 @@ public slots:
      *
      * Default is false.
      *
-     * @see #setTabHandling
+     * @see setTabHandling
      */
     bool isTabHandling() const;
 

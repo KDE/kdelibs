@@ -256,7 +256,7 @@ public:
    * Note: the direcory is not automatically reloaded.
    *
    * @param filter the new filter, QString::null to disable filtering
-   * @see #matchesFilter
+   * @see matchesFilter
    */
   virtual void setNameFilter( const QString &filter );
 
@@ -275,8 +275,8 @@ public:
    *
    * @param mimeList a list of mime-types.
    *
-   * @see #clearMimeFilter
-   * @see #matchesMimeFilter
+   * @see clearMimeFilter
+   * @see matchesMimeFilter
    */
   virtual void setMimeFilter( const QStringList &mimeList );
 
@@ -290,8 +290,8 @@ public:
    * Also calling this function will not affect any named filter already set.
    *
    * @param mimeList a list of mime-types.
-   * @see #clearMimeFilter
-   * @see #matchesMimeFilter
+   * @see clearMimeFilter
+   * @see matchesMimeFilter
    * @since 3.1
    * @internal
    */
@@ -301,7 +301,7 @@ public:
   /**
    * Clears the mime based filter.
    *
-   * @see #setMimeFilter
+   * @see setMimeFilter
    */
   virtual void clearMimeFilter();
 
@@ -315,7 +315,7 @@ public:
    * Checks whether @p name matches a filter in the list of name filters.
    * @return true if @p name matches a filter in the list,
    * otherwise false.
-   * @see #setNameFilter
+   * @see setNameFilter
    */
   bool matchesFilter( const QString& name ) const;
 
@@ -324,7 +324,7 @@ public:
    * @param mime the mimetype to find in the filter list.
    * @return true if @p name matches a filter in the list,
    * otherwise false.
-   * @see #setMimeFilter.
+   * @see setMimeFilter.
    */
   bool matchesMimeFilter( const QString& mime ) const;
 
@@ -538,8 +538,8 @@ protected:
    * @return true if the item is "ok".
    *         false if the item shall not be shown in a view, e.g.
    * files not matching a pattern *.cpp ( KFileItem::isHidden())
-   * @see #matchesFilter
-   * @see #setNameFilter
+   * @see matchesFilter
+   * @see setNameFilter
    */
   virtual bool matchesFilter( const KFileItem * ) const;
 
@@ -552,8 +552,8 @@ protected:
    * @return true if the item is "ok".
    *         false if the item shall not be shown in a view, e.g.
    * files not matching a pattern *.cpp ( KFileItem::isHidden())
-   * @see #matchesMimeFilter
-   * @see #setMimeFilter
+   * @see matchesMimeFilter
+   * @see setMimeFilter
    */
   virtual bool matchesMimeFilter( const KFileItem * ) const;
 

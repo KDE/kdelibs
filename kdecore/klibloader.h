@@ -85,7 +85,7 @@ public:
      * otherwise a warning will be printed.
      * @param name the name of the symbol to look up
      * @return the address of the symbol, or 0 if it does not exist
-     * @see #hasSymbol
+     * @see hasSymbol
      */
     void* symbol( const char* name ) const;
 
@@ -171,7 +171,7 @@ public:
      *                 will be loaded without resolving dependencies. USE WITH CARE :)
      * @return the KLibFactory, or 0 if the library does not exist or it does
      *         not have a factory
-     * @see #library
+     * @see library
      */
     KLibFactory* factory( const char* libname );
 
@@ -193,7 +193,7 @@ public:
      * @return KLibrary is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
-     * @see #factory
+     * @see factory
      */
     virtual KLibrary* library( const char* libname );
 
@@ -217,7 +217,7 @@ public:
      * @return KLibrariy is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
-     * @see #factory
+     * @see factory
      */
     KLibrary* globalLibrary( const char *name );
 

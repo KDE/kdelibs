@@ -202,8 +202,8 @@ public:
    * Note that a password can only appear in a URL string if you also set
    * a user.
    * @param _txt the password to set or QString::null to remove the password
-   * @see #setUser
-   * @see #hasUser
+   * @see setUser
+   * @see hasUser
    **/
   void setPass( const QString& _txt );
   /**
@@ -383,9 +383,9 @@ public:
   /**
    * Returns the HTML reference (the part of the URL after "#").
    * @return The HTML-style reference.
-   * @see #split
-   * @see #hasSubURL
-   * @see #encodedHtmlRef
+   * @see split
+   * @see hasSubURL
+   * @see encodedHtmlRef
    */
   QString htmlRef() const;
 
@@ -450,7 +450,7 @@ public:
    * Checks whether the URL has any sub URLs. See split()
    * for examples for sub URLs.
    * @return true if the file has at least one sub URL.
-   * @see #split
+   * @see split
    */
   bool hasSubURL() const;
 
@@ -716,7 +716,7 @@ public:
    *
    * @param _url The URL that has to be split.
    * @return An empty list on error or the list of split URLs.
-   * @see #hasSubURL
+   * @see hasSubURL
    */
   static List split( const QString& _url );
 
@@ -733,7 +733,7 @@ public:
    * @return An empty list on error or the list of split URLs.
    *
    * @param _url The URL that has to be split.
-   * @see #hasSubURL
+   * @see hasSubURL
    */
   static List split( const KURL& _url );
 

@@ -137,14 +137,14 @@ public:
    * close-button will cause the KDatePicker's topLevelWidget()'s close()
    * method being called. This is mostly useful for toplevel datepickers
    * without a window manager decoration.
-   * @see #hasCloseButton
+   * @see hasCloseButton
    * @since 3.1
    */
   void setCloseButton( bool enable );
 
   /**
    * @returns true if a KDatePicker shows a close-button.
-   * @see #setCloseButton
+   * @see setCloseButton
    * @since 3.1
    */
   bool hasCloseButton() const;

@@ -114,10 +114,10 @@ protected:
      * which preview and which text-recognition belongs to which scan.
      *
      * @return the current id for the image
-     * @see #nextId
-     * @see #finalImage
-     * @see #preview
-     * @see #textRecognized
+     * @see nextId
+     * @see finalImage
+     * @see preview
+     * @see textRecognized
      */
     int id() const { return m_currentId; }
 
@@ -126,10 +126,10 @@ protected:
      * for the signals.
      *
      * @return the id for the next image
-     * @see #id
-     * @see #finalImage
-     * @see #preview
-     * @see #textRecognized
+     * @see id
+     * @see finalImage
+     * @see preview
+     * @see textRecognized
      *
      */
     int nextId() { return ++m_currentId; }
@@ -273,8 +273,8 @@ protected:
      * which text-recognition belongs to which scan.
      *
      * @return the current id for the image
-     * @see #nextId
-     * @see #textRecognized
+     * @see nextId
+     * @see textRecognized
      */
     int id() const { return m_currentId; }
 
@@ -283,8 +283,8 @@ protected:
      * for the signals.
      *
      * @return the id for the next image
-     * @see #id
-     * @see #textRecognized
+     * @see id
+     * @see textRecognized
      */
     int nextId() { return ++m_currentId; }
 

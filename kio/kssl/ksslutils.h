@@ -40,7 +40,7 @@ class QDateTime;
  *  @param tm the OpenSSL ASN1_UTCTIME pointer
  *
  *  @return the date formatted in a QString
- *  @see #ASN1_UTCTIME_QDateTime
+ *  @see ASN1_UTCTIME_QDateTime
  */
 QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
 

@@ -54,7 +54,7 @@ public:
      * Opens the archive for reading or writing.
      * Inherited classes might want to reimplement openArchive instead.
      * @param mode may be IO_ReadOnly or IO_WriteOnly
-     * @see #close
+     * @see close
      */
     virtual bool open( int mode );
 
@@ -62,7 +62,7 @@ public:
      * Closes the archive.
      * Inherited classes might want to reimplement closeArchive instead.
      *
-     * @see #open
+     * @see open
      */
     virtual void close();
 

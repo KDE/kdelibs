@@ -94,7 +94,7 @@ public:
      * Enables/disables showing file:/ in the lineedit, when a local file has
      * been selected in the filedialog or was set via setURL().
      * Default is false, not showing file:/
-     * @see #showLocalProtocol
+     * @see showLocalProtocol
      */
     void setShowLocalProtocol( bool b );
 
@@ -115,7 +115,7 @@ public:
     /**
      * @returns whether local files will be prefixed with file:/ in the
      * lineedit
-     * @see #setShowLocalProtocol
+     * @see setShowLocalProtocol
      */
     bool showLocalProtocol() const { return myShowLocalProt; }
 

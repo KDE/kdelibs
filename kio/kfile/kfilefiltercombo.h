@@ -63,13 +63,13 @@ class KFileFilterCombo : public KComboBox
      * setFilter().
      *
      * By default, this is set to i18n("*|All Files")
-     * @see #defaultFilter
+     * @see defaultFilter
      */
     void setDefaultFilter( const QString& filter );
 
     /**
      * @return the default filter, used when an empty filter is set.
-     * @see #setDefaultFilter
+     * @see setDefaultFilter
      */
     QString defaultFilter() const;
     

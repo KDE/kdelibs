@@ -153,7 +153,7 @@ public:
      * The function returns TRUE on success or FALSE if no such command line
      * parameter is specified.
      *
-     * @see #embedClientIntoWindow()
+     * @see embedClientIntoWindow()
      */
     static bool processClientCmdline( QWidget* client, int& argc, char ** argv );
 
@@ -188,7 +188,7 @@ signals:
     /**
      * This signal is emitted when the embedded window has been destroyed.
      *
-     * @see #embeddedWinId()
+     * @see embeddedWinId()
      */
     void embeddedWindowDestroyed();
 

@@ -189,7 +189,7 @@ public:
       * or Size. E.g. to sort by mimetype or any possible string. Set the
       * sorting to QDir::Unsorted for that and do the rest internally.
       *
-      * @see #sortingKey
+      * @see sortingKey
       */
     virtual void setSorting(QDir::SortSpec sort);
 
@@ -230,7 +230,7 @@ public:
     /**
      * @returns the localized name of the view, which could be displayed
      * somewhere, e.g. in a menu, where the user can choose between views.
-     * @see #setViewName
+     * @see setViewName
      */
     QString viewName() const { return m_viewName; }
 
@@ -326,7 +326,7 @@ public:
     /**
      * @returns whether files (not directories) should only be select()ed by
      * double-clicks.
-     * @see #setOnlyDoubleClickSelectsFiles
+     * @see setOnlyDoubleClickSelectsFiles
      */
     bool onlyDoubleClickSelectsFiles() const {
 	return myOnlyDoubleClickSelectsFiles;

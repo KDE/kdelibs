@@ -93,15 +93,15 @@ class AlsaOut : public MidiOut
    * shouldn't call this yourself (except if you created the MidiOut object
    * yourself.
    * @param sqfd a file descriptor of /dev/sequencer
-   * @see #closeDev
-   * @see #initDev
+   * @see closeDev
+   * @see initDev
    */
   virtual void openDev	(int sqfd);
 
   /**
    * Closes the device. It basically tells the device (the file descriptor)
    * is going to be closed.
-   * @see #openDev
+   * @see openDev
    */
   virtual void closeDev	();
 
@@ -124,13 +124,13 @@ class AlsaOut : public MidiOut
    *
    * which are defined in midispec.h
    *
-   * @see #deviceName
+   * @see deviceName
    */
   int          deviceType () const { return devicetype; };
 
   /**
    * Returns the name and type of this MIDI device.
-   * @see #deviceType
+   * @see deviceType
    */
   virtual const char * deviceName (void) const;
 

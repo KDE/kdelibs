@@ -94,14 +94,14 @@ public:
      * too long.
      *
      * @param history The replacement history.
-     * @see #replacementHistory
+     * @see replacementHistory
      */
     void setReplacementHistory( const QStringList &history );
 
     /**
      * Returns the list of history items.
      *
-     * @see #setReplacementHistory
+     * @see setReplacementHistory
      */
     QStringList replacementHistory() const;
 
@@ -116,7 +116,7 @@ public:
      * Returns the state of the options. Disabled options may be returned in
      * an indeterminate state.
      *
-     * @see #setOptions
+     * @see setOptions
      */
     long options() const;
 

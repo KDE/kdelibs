@@ -150,7 +150,7 @@ class MidiMapper
   public:
     /**
      * Constructor. Loads a MIDI Mapper definition from a file.
-     * @see #filename()
+     * @see filename()
      */
     MidiMapper(const char *name);
 

@@ -1568,7 +1568,7 @@ public:
    *
    * You should call this from your destructor in derivative classes.
    *
-   * @see #rollback(), #isReadOnly()
+   * @see rollback(), #isReadOnly()
    */
   virtual void sync();
 

@@ -163,7 +163,7 @@ public:
      * In this case set @p customEventFilter to true and call
      * autoHideEventFilter() from the beginning of your eventFilter().
      *
-     * @see #autoHideEventFilter
+     * @see autoHideEventFilter
      */
     static void setAutoHideCursor( QWidget *w, bool enable,
 				   bool customEventFilter );

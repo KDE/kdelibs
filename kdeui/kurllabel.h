@@ -156,7 +156,7 @@ public slots:
   /**
    * Sets the URL for this label to @p url.
    *
-   * @see #url
+   * @see url
    */
   void setURL (const QString& url);
 

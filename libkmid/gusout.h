@@ -134,8 +134,8 @@ class GUSOut : public MidiOut
      * function when the device used is a GUS device, and you're supposed to use
      * a DeviceManager object instead of a GUSOut object except in rare ocassions.
      *
-     * @see #patch()
-     * @see #loadPatch()
+     * @see patch()
+     * @see loadPatch()
      */
     void setPatchesToUse(int *patchesused);
 
@@ -146,8 +146,8 @@ class GUSOut : public MidiOut
      * @return 0 if OK and -1 if there was an error (patch not found, not enough
      * memory, etc.)
      *
-     * @see #patch()
-     * @see #setPatchesToUse()
+     * @see patch()
+     * @see setPatchesToUse()
      */
     int loadPatch  (int pgm);
 
@@ -156,8 +156,8 @@ class GUSOut : public MidiOut
      * In the case it hasn't been loaded, it returns the number of another patch
      * that is loaded and that should be used instead.
      *
-     * @see #loadPatch()
-     * @see #setPatchesToUse()
+     * @see loadPatch()
+     * @see setPatchesToUse()
      */
     int patch(int p); 
 

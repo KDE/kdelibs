@@ -119,8 +119,8 @@ class NoteArray
   /**
    * Initializes the iterator.
    *
-   * @see #get()
-   * @see #next()
+   * @see get()
+   * @see next()
    */ 
   void iteratorBegin(void) { it=data; };
 

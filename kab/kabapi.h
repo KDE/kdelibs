@@ -62,7 +62,7 @@ class KListBox;
   * @short The class KabAPI defines the API to access user address databases.
   * @author Mirko Boehm <mirko@kde.org>
   * @version $Id$
-  * @see #AddressBook #KDialogBase
+  * @see AddressBook #KDialogBase
   */
 
 class KabAPI : public KDialogBase
@@ -84,7 +84,7 @@ public:
    * database file (usually $HOME/.kde/share/apps/kab/addressbook.database)
    * and loads its contents.
    * @return NoError if all succeeded or a valid ErrorCode.
-   * @see #AddressBook::ErrorCode
+   * @see AddressBook::ErrorCode
    */
   AddressBook::ErrorCode init();
   /**
@@ -107,7 +107,7 @@ public:
   /**
    * The method getEntry returns the selected entry.
    * @return NoError if all succeeded or a valid ErrorCode.
-   * @see #AddressBook::ErrorCode
+   * @see AddressBook::ErrorCode
    * @param entry Reference to an AddressBook::Entry -object.
    * @param key Reference to a KabKey where the key of the entry is stored.
    */
@@ -121,7 +121,7 @@ public:
    * she can retrieve the whole database in one operation.
    * It is required that the referenced list is empty.
    * Note that the function returns NoEntry if the database is empty.
-   * @see #AddressBook::ErrorCode
+   * @see AddressBook::ErrorCode
    * @short Retrieves all entries out of the database.
    * @param entries Reference to a list of entries.
    * @return NoError or a valid error code.

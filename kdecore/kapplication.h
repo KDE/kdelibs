@@ -204,7 +204,7 @@ public:
    * @return If true, this application was restored by the session manager.
    *    Note that this may mean the config object returned by
    * sessionConfig() contains data saved by a session closedown.
-   * @see #sessionConfig()
+   * @see sessionConfig()
    */
   bool isRestored() const { return QApplication::isSessionRestored(); }
 

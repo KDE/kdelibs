@@ -322,7 +322,7 @@ class KGlobalSettings
      * colors should use this too, to obey to the user's preferences. Returns
      * an invalid color if the user doesn't want alternating backgrounds.
      * @return the alternate background color
-     * @see #calculateAlternateBackgroundColor
+     * @see calculateAlternateBackgroundColor
      */
     static QColor alternateBackgroundColor();
 
@@ -331,7 +331,7 @@ class KGlobalSettings
      * color for e.g. listviews.
      * @param base the base for the calculation
      * @return the calculated color
-     * @see #alternateBackgroundColor
+     * @see alternateBackgroundColor
      */
     static QColor calculateAlternateBackgroundColor(const QColor& base);
 

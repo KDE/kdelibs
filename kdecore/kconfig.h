@@ -123,14 +123,14 @@ public:
    * Forces all following write-operations being performed on kdeglobals,
    * independent of the bGlobal flag in writeEntry().
    * @param force true to force writing in kdeglobals
-   * @see #forceGlobal
+   * @see forceGlobal
    */
   void setForceGlobal( bool force ) { bForceGlobal = force; }
 
   /**
    * Returns true if all entries are being written into kdeglobals.
    * @return true if all entries are being written into kdeglobals
-   * @see #setForceGlobal
+   * @see setForceGlobal
    */
   bool forceGlobal() const { return bForceGlobal; }
 

@@ -552,7 +552,7 @@ public:
      * Inserts @p items into the combobox. @p items might get
      * truncated if it is longer than maxCount()
      *
-     * @see #historyItems
+     * @see historyItems
      */
     inline void setHistoryItems( QStringList items ) {
         setHistoryItems(items, false);
@@ -594,7 +594,7 @@ public:
      * KCompletion object with mode KCompletion::Insertion and the mode is set
      * to KCompletion::Weighted afterwards.
      *
-     * @see #historyItems
+     * @see historyItems
      * @see KComboBox::completionObject
      * @see KCompletion::setItems
      * @see KCompletion::items
@@ -605,7 +605,7 @@ public:
      * Returns the list of history items. Empty, when this is not a read-write
      * combobox.
      *
-     * @see #setHistoryItems
+     * @see setHistoryItems
      */
     QStringList historyItems() const;
 
@@ -614,7 +614,7 @@ public:
      *
      * @return @p true if at least one item was removed.
      *
-     * @see #addToHistory
+     * @see addToHistory
      */
     bool removeFromHistory( const QString& item );
 
@@ -628,13 +628,13 @@ public:
      *
      * Set @p prov to 0L if you want to disable pixmaps. Default no pixmaps.
      *
-     * @see #pixmapProvider
+     * @see pixmapProvider
      */
     void setPixmapProvider( KPixmapProvider *prov );
 
     /**
      * @returns the current pixmap provider.
-     * @see #setPixmapProvider
+     * @see setPixmapProvider
      * @see KPixmapProvider
      */
     KPixmapProvider * pixmapProvider() const { return myPixProvider; }
@@ -662,7 +662,7 @@ public slots:
      * completion. It would be annoying if completion would give an item
      * not in the combobox, and vice versa.
      *
-     * @see #removeFromHistory
+     * @see removeFromHistory
      * @see QComboBox::setDuplicatesEnabled
      */
     void addToHistory( const QString& item );

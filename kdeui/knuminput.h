@@ -256,17 +256,17 @@ public:
 
     /**
      * @return the suffix displayed behind the value.
-     * @see #setSuffix()
+     * @see setSuffix()
      */
     QString suffix() const;
     /**
      * @return the prefix displayed in front of the value.
-     * @see #setPrefix()
+     * @see setPrefix()
      */
     QString prefix() const;
     /**
      * @return the string displayed for a special value.
-     * @see #setSpecialValueText()
+     * @see setSpecialValueText()
      */
     QString specialValueText() const;
 
@@ -508,25 +508,25 @@ public:
 
     /**
      * @return the suffix.
-     * @see #setSuffix()
+     * @see setSuffix()
      */
     QString suffix() const;
 
     /**
      * @return the prefix.
-     * @see #setPrefix()
+     * @see setPrefix()
      */
     QString prefix() const;
 
     /**
      * @return the precision.
-     * @see #setPrecision()
+     * @see setPrecision()
      */
     int precision() const;
 
     /**
      * @return the string displayed for a special value.
-     * @see #setSpecialValueText()
+     * @see setSpecialValueText()
      */
     QString specialValueText() const { return m_specialvalue; }
 
@@ -607,7 +607,7 @@ public slots:
      * this feature. Note that the suffix is attached to the value without any
      * spacing. So if you prefer to display a space separator, set suffix
      * to something like " cm".
-     * @see #setSuffix()
+     * @see setSuffix()
      */
     void setSuffix(const QString &suffix);
 
@@ -615,7 +615,7 @@ public slots:
      * Sets the prefix to be displayed to @p prefix. Use QString::null to disable
      * this feature. Note that the prefix is attached to the value without any
      * spacing.
-     * @see #setPrefix()
+     * @see setPrefix()
      */
     void setPrefix(const QString &prefix);
 

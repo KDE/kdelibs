@@ -75,7 +75,7 @@ class MidiStatus
 
     /**
      * Stores a new patch in channel @p chn.
-     * @see #chnPatch()
+     * @see chnPatch()
      * @see MidiOut::chnPatchChange()
      */
     void chnPatchChange	( uchar chn, uchar patch );

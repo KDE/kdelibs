@@ -137,7 +137,7 @@ public:
 	/**
 	 *  List the signers in the database.
 	 *  @return the list of subjects in the database
-	 *  @see #getCert
+	 *  @see getCert
 	 */
 	QStringList list();
 
