@@ -1199,6 +1199,7 @@ signals:
 
   /**
    * Used internally by invokeEditSlot().
+   * @internal
    */
   void editSignal();
 
