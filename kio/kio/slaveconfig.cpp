@@ -116,7 +116,7 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    }
 
    int pos = 0;
-   while (pos > -1)
+   do
    {
       pos = host.findRev('.', pos-1);
 
@@ -128,6 +128,7 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
       if (scp->configFile->hasGroup(domain))
          readConfig(scp->configFile, domain.lower(), metaData);
    }
+   while (pos > 0);
 }
 
 
