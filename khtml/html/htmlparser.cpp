@@ -518,7 +518,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 // and go ahead!
                 popBlock( ID__KONQBLOCK );
                 haveKonqBlock = false;
-                handled = true;
+                handled = checkChild( current->id(), id );
                 break;
             default:
                 break;
@@ -555,8 +555,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 if(node->id() == ID_TR &&
                    ( parent->id() == ID_THEAD ||
                      parent->id() == ID_TBODY ||
-                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE &&
-                    checkChild( ID__KONQBLOCK, id ))
+                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE )
                 {
                     node = parentparent;
                     NodeImpl *parent = node->parentNode();
