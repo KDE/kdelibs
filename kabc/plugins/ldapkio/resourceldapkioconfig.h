@@ -85,7 +85,7 @@ class AttributesDialog : public KDialogBase
 
     KComboBox *mMapCombo, *mRDNCombo;
     QValueList< QMap<QString, QString> > mMapList;
-
+    QMap<QString, QString> mDefaultMap;
     QDict<KLineEdit> mLineEditDict;
     QDict<QString> mNameDict;
 };

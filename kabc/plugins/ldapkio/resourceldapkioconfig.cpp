@@ -176,6 +176,18 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
   mNameDict.insert( "jpegPhoto", new QString( i18n( "Photo" ) ) );
 
+  // default map
+  mDefaultMap.insert( "objectClass", "inetOrgPerson" );
+  mDefaultMap.insert( "commonName", "cn" );
+  mDefaultMap.insert( "formattedName", "displayName" );
+  mDefaultMap.insert( "familyName", "sn" );
+  mDefaultMap.insert( "givenName", "givenName" );
+  mDefaultMap.insert( "mail", "mail" );
+  mDefaultMap.insert( "mailAlias", "" );
+  mDefaultMap.insert( "phoneNumber", "telephoneNumber" );
+  mDefaultMap.insert( "uid", "uid" );
+  mDefaultMap.insert( "jpegPhoto", "jpegPhoto" );
+  
   // overwrite the default values here
   QMap<QString, QString> kolabMap, netscapeMap, evolutionMap, outlookMap;
 
@@ -229,6 +241,21 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
     layout->addWidget( label, i, 0 );
     layout->addWidget( lineedit, i, 1 );
   }
+  
+  for ( i = 1; i < mMapCombo->count(); i++ ) {
+    QDictIterator<KLineEdit> it2( mLineEditDict );
+    for ( ; it2.current(); ++it2 ) {
+      if ( mMapList[ i ].contains( it2.currentKey() ) ) {
+        if ( mMapList[ i ][ it2.currentKey() ] != it2.current()->text() ) break;
+      } else {
+        if ( mDefaultMap[ it2.currentKey() ] != it2.current()->text() ) break;
+      }
+    }
+    if ( !it2.current() ) {
+      mMapCombo->setCurrentItem( i );
+      break;
+    }
+  }
 
   KAcceleratorManager::manage( this );
 }
@@ -255,22 +282,10 @@ int AttributesDialog::rdnprefix() const
 
 void AttributesDialog::mapChanged( int pos )
 {
-  // default map
-  QMap<QString, QString> defaultMap;
-  defaultMap.insert( "objectClass", "inetOrgPerson" );
-  defaultMap.insert( "commonName", "cn" );
-  defaultMap.insert( "formattedName", "displayName" );
-  defaultMap.insert( "familyName", "sn" );
-  defaultMap.insert( "givenName", "givenName" );
-  defaultMap.insert( "mail", "mail" );
-  defaultMap.insert( "mailAlias", "" );
-  defaultMap.insert( "phoneNumber", "telephoneNumber" );
-  defaultMap.insert( "uid", "uid" );
-  defaultMap.insert( "jpegPhoto", "" );
 
   // apply first the default and than the spezific changes
   QMap<QString, QString>::Iterator it;
-  for ( it = defaultMap.begin(); it != defaultMap.end(); ++it )
+  for ( it = mDefaultMap.begin(); it != mDefaultMap.end(); ++it )
     mLineEditDict[ it.key() ]->setText( it.data() );
 
   for ( it = mMapList[ pos ].begin(); it != mMapList[ pos ].end(); ++it ) {
