@@ -122,18 +122,24 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
     if (a == module_win_raise){
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
-	if (*wp == w)
+	if (*wp == w) {
 	  windows_sorted.remove();
+	  break;
+	}
       }
-      windows_sorted.append(wp);
+      if (wp) 
+	windows_sorted.append(wp);
       emit windowRaise(w);
     }
     if (a == module_win_lower){
       for (wp=windows_sorted.first(); wp; wp=windows_sorted.next()){
-	if (*wp == w)
+	if (*wp == w) {
 	  windows_sorted.remove();
+	  break;
+	}
       }
-      windows_sorted.insert(0, wp);
+      if (wp) 
+	windows_sorted.insert(0, wp);
       emit windowLower(w);
     }
     if (a == module_win_activate){
