@@ -32,7 +32,7 @@
  * The file looks like this:
  * <pre>
  * [!Global!]
- * Name=executable
+ * IconName=Filename (e.g. kdesktop, without any extension)
  * Comment=FriendlyNameOfApp
  *
  * [eventname]
