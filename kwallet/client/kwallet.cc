@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #include "kwallet.h"
 #include <kdebug.h>
@@ -153,7 +153,8 @@ Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
 		return w;
 	}
 
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
+
+	DCOPReply r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name);
 	if (r.isValid()) {
 		int drc = -1;
 		r.get(drc);
@@ -570,7 +571,7 @@ void Wallet::walletOpenResult(int id) {
 		return;
 	}
 
-	if (id >= 0) { 
+	if (id >= 0) {
 		_handle = id;
 		emit walletOpened(true);
 	} else {
