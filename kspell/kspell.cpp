@@ -831,7 +831,7 @@ void KSpell::check3 ()
     case KS_CANCEL:
     //      kdebug (KDEBUG_INFO, 750, "cancelled\n");
       ksdlg->hide();
-      emit done (origbuffer.ascii());
+      emit done (origbuffer);
       return;
     case KS_STOP:
       ksdlg->hide();
