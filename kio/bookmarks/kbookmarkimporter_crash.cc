@@ -35,7 +35,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#define LINELIMIT 4096
+static const int g_lineLimit = 4096;
 
 typedef QMap<QString, QString> ViewMap;
 
@@ -53,18 +53,18 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
     if ( !f.open( IO_ReadOnly ) )
         return views;
 
-    QCString s( LINELIMIT );
+    QCString s( g_lineLimit );
 
     QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
     Q_ASSERT( codec );
     if ( !codec ) 
         return views;
 
-    while ( f.readLine( s.data(), LINELIMIT ) >=0 ) 
+    while ( f.readLine( s.data(), g_lineLimit ) >=0 ) 
     {
         if ( s[s.length()-1] != '\n' )
         {
-            kdWarning() << "Crash bookmarks contain a line longer than " << LINELIMIT << ". Skipping." << endl;
+            kdWarning() << "Crash bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
             continue;
         }
         QString t = codec->toUnicode( s.stripWhiteSpace() );
@@ -191,7 +191,5 @@ QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const
 {
     return locateLocal( "tmp", "" );
 }
-
-#undef LINELIMIT
 
 #include "kbookmarkimporter_crash.moc"

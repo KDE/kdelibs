@@ -236,7 +236,7 @@ void KBookmarkBar::slotBookmarkSelected()
 }
 
 static KToolBar* s_sepToolBar = 0;
-static const int sepId = -9999; // fixme with define for num?
+static const int sepId = -9999;
 
 static void removeTempSep()
 {

@@ -30,7 +30,7 @@
 #include "kbookmarkimporter.h"
 #include "kbookmarkimporter_ie.h"
 
-#define LINELIMIT 4096
+static const int g_lineLimit = 4096;
 
 /* antlarr: KDE 4: Make them const QString & */
 void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString name ) {
@@ -41,10 +41,10 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
 
         QCString s(4096);
 
-        while(f.readLine(s.data(), LINELIMIT)>=0) {
-            if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than LINELIMIT. Skipping.
+        while(f.readLine(s.data(), g_lineLimit)>=0) {
+            if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.
             {
-               kdWarning() << "IE bookmarks contain a line longer than " << LINELIMIT << ". Skipping." << endl;
+               kdWarning() << "IE bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
             QCString t = s.stripWhiteSpace();
@@ -179,5 +179,4 @@ void KIEBookmarkExporterImpl::write(KBookmarkGroup parent) {
     exporter.write( parent );
 }
 
-#undef LINELIMIT 
 #include "kbookmarkimporter_ie.moc"
