@@ -193,7 +193,7 @@ QImage KIconEffect::apply(QImage image, int group, int state) const
 
 QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, bool trans) const
 {
-    apply (image, effect, value, col, KGlobalSettings::baseColor(), trans);
+    return apply (image, effect, value, col, KGlobalSettings::baseColor(), trans);
 }
 
 QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, const QColor col2, bool trans) const
@@ -251,7 +251,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
 	const QColor col, bool trans) const
 {
-    apply (pixmap, effect, value, col, KGlobalSettings::baseColor(), trans);
+    return apply (pixmap, effect, value, col, KGlobalSettings::baseColor(), trans);
 }
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
