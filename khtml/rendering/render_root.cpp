@@ -118,7 +118,7 @@ void RenderRoot::layout()
 #endif
     if (!m_printingMode) {
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       0);
+                                       m_view->contentsHeight());
         m_width = s.width();
         m_height = s.height();
     }
@@ -132,7 +132,7 @@ void RenderRoot::layout()
     if (!m_printingMode) {
         m_view->resizeContents(docWidth(), docHeight());
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       m_view->contentsHeight());
+                                       0);
         setWidth( m_viewportWidth = s.width() );
         setHeight(  m_viewportHeight = s.height() );
     }
