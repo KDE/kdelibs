@@ -1757,8 +1757,9 @@ QSize KDialogBase::configDialogSize( KConfig& config,
    int w, h;
    int scnum = QApplication::desktop()->screenNumber(parentWidget());
    QRect desk = QApplication::desktop()->screenGeometry(scnum);
-   w = QMIN( 530, (int) (desk.width() * 0.5)); // maximum default width = 530
-   h = (int) (desk.height() * 0.4);
+   
+   w = sizeHint().width();
+   h = sizeHint().height();
 
    KConfigGroupSaver cs(&config, groupName);
    w = config.readNumEntry( QString::fromLatin1("Width %1").arg( desk.width()), w );
