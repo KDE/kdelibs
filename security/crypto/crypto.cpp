@@ -1,7 +1,7 @@
 /**
  * crypto.cpp
  *
- * Copyright (c) 2000-2001 George Staikos <staikos@kde.org>
+ * Copyright (c) 2000-2003 George Staikos <staikos@kde.org>
  *               2000 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -430,7 +430,7 @@ QString whatstr;
   tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert, 15, 6, KDialog::marginHint(), KDialog::spacingHint() );
+  grid = new QGridLayout(tabYourSSLCert, 16, 6, KDialog::marginHint(), KDialog::spacingHint() );
 
   yourSSLBox = new QListView(tabYourSSLCert);
   whatstr = i18n("This list box shows which certificates of yours KDE"
@@ -490,6 +490,11 @@ QString whatstr;
   QWhatsThis::add(yValidFrom, whatstr);
   whatstr = i18n("The certificate is valid until this date.");
   QWhatsThis::add(yValidUntil, whatstr);
+  grid->addWidget(new QLabel(i18n("MD5 digest:"), tabYourSSLCert), 14, 0);
+  yHash = new QLabel(tabYourSSLCert);
+  grid->addWidget(yHash, 14, 1);
+  whatstr = i18n("A hash of the certificate used to identify it quickly.");
+  QWhatsThis::add(yHash, whatstr);
 
 #if 0
   QHButtonGroup *ocbg = new QHButtonGroup(i18n("On SSL Connection..."), tabYourSSLCert);
@@ -582,7 +587,7 @@ QString whatstr;
   tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  oGrid = grid = new QGridLayout(tabOtherSSLCert, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
+  oGrid = grid = new QGridLayout(tabOtherSSLCert, 21, 6, KDialog::marginHint(), KDialog::spacingHint());
 
   otherSSLBox = new QListView(tabOtherSSLCert);
   connect(otherSSLBox, SIGNAL(selectionChanged()), SLOT(slotOtherCertSelect()));
@@ -676,6 +681,11 @@ QString whatstr;
   QWhatsThis::add(policyReject, whatstr);
   whatstr = i18n("Select this if you wish to be prompted for action when receiving this certificate.");
   QWhatsThis::add(policyPrompt, whatstr);
+  grid->addWidget(new QLabel(i18n("MD5 digest:"), tabOtherSSLCert), 20, 0);
+  pHash = new QLabel(tabOtherSSLCert);
+  grid->addWidget(pHash, 20, 1);
+  whatstr = i18n("A hash of the certificate used to identify it quickly.");
+  QWhatsThis::add(pHash, whatstr);
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -691,7 +701,7 @@ QString whatstr;
   tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCA, 10, 8, KDialog::marginHint(), KDialog::spacingHint());
+  grid = new QGridLayout(tabSSLCA, 11, 8, KDialog::marginHint(), KDialog::spacingHint());
 
   caList = new QListView(tabSSLCA);
   whatstr = i18n("This list box shows which certificate authorities KDE"
@@ -734,6 +744,11 @@ QString whatstr;
   caSite->setEnabled(false);
   caEmail->setEnabled(false);
   caCode->setEnabled(false);
+  grid->addWidget(new QLabel(i18n("MD5 digest:"), tabSSLCA), 10, 0);
+  cHash = new QLabel(tabSSLCA);
+  grid->addWidget(cHash, 10, 1);
+  whatstr = i18n("A hash of the certificate used to identify it quickly.");
+  QWhatsThis::add(cHash, whatstr);
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -1519,10 +1534,12 @@ QString iss = QString::null;
          untilDate->setText(x ? KGlobal::locale()->formatDateTime(x->getExpires())
                               : KGlobal::locale()->formatDateTime(QDateTime::currentDateTime()));
          untilDate->setEnabled(x && !x->isPermanent());
+         pHash->setText(cert->getMD5DigestText());
          delete cert;
       } else {
          validFrom->setText(QString::null);
          validUntil->setText(QString::null);
+         pHash->clear();
       }
 
       switch(x->getPolicy()) {
@@ -1559,6 +1576,7 @@ QString iss = QString::null;
       validUntil->setText(QString::null);
       untilDate->setText(QString::null);
       untilDate->setEnabled(false);
+      pHash->clear();
    }
 
 
@@ -1787,11 +1805,14 @@ QString iss;
 
          yValidFrom->setText(cert->getNotBefore());
          yValidUntil->setText(cert->getNotAfter());
+         yHash->setText(cert->getMD5DigestText());
          delete pkcs;
       } else {
          yourSSLUnlock->setEnabled(x != NULL);
+         yHash->clear();
       }
    } else {
+      yHash->clear();
    }
 
    ySubject->setValues(x ? x->getName() : QString(QString::null));
@@ -2073,6 +2094,7 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
        caSite->setChecked(false);
        caEmail->setChecked(false);
        caCode->setChecked(false);
+       cHash->clear();
     } else {
        caSite->setEnabled(cert->x509V3Extensions().certTypeSSLCA());
        caEmail->setEnabled(cert->x509V3Extensions().certTypeEmailCA());
@@ -2081,6 +2103,7 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
        caEmail->setChecked(x->getEmail());
        caCode->setChecked(x->getCode());
        caIssuer->setValues(cert->getIssuer());
+       cHash->setText(cert->getMD5DigestText());
        delete cert;
     }
  } else {
@@ -2090,6 +2113,7 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
     caCode->setEnabled(false);
     caSubject->setValues(QString(QString::null));
     caIssuer->setValues(QString(QString::null));
+    cHash->clear();
  }
 }
 
@@ -2437,6 +2461,3 @@ bool noneDef, noneHost;
 }
 
 #include "crypto.moc"
-
-
-

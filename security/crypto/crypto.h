@@ -344,12 +344,14 @@ private:
   QPushButton *authAdd, *authRemove;
   QLineEdit *authHost;
   QPtrList<HostAuthItem> authDelList;
+  QLabel *yHash, *pHash;
 
   /* CA stuff */
   KSSLCertBox *caSubject, *caIssuer;
   QPushButton *caSSLImport, *caSSLRemove, *caSSLRestore;
   QCheckBox *caSite, *caEmail, *caCode;
   KSSLSigners *_signers;
+  QLabel *cHash;
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts, *authcfg;
