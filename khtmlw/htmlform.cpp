@@ -743,10 +743,8 @@ void HTMLForm::slotSubmit()
 	}
 
 	QString url = action();
-	url += '?';
-	url += encoding;
 
-	emit submitted( method(), url );
+	emit submitted( method(), url, encoding );
 }
 
 void HTMLForm::slotRadioSelected( const char *n, const char *v )

@@ -83,8 +83,8 @@ KHTMLView* KHTMLView::newView( QWidget *_parent, const char *_name, int _flags )
 	     this, SLOT( slotPopupMenu( KHTMLView *, const char *, const QPoint & ) ) );
     connect( view, SIGNAL( cancelImageRequest( KHTMLView *, const char* ) ),
 	     this, SLOT( slotCancelImageRequest( KHTMLView *, const char * ) ) );
-    connect( view, SIGNAL( formSubmitted( KHTMLView *, const char *, const char* ) ),
-	     this, SLOT( slotFormSubmitted( KHTMLView *, const char *, const char* ) ) ); */
+    connect( view, SIGNAL( formSubmitted( KHTMLView *, const char *, const char*, const char* ) ),
+	     this, SLOT( slotFormSubmitted( KHTMLView *, const char *, const char*, const char* ) ) ); */
 }
 
 KHTMLView* KHTMLView::findView( const char *_name )
@@ -205,8 +205,8 @@ void KHTMLView::initGUI()
 	     this, SLOT( slotImageRequest( const char * ) ) );
     connect( view, SIGNAL( cancelFileRequest( const char* ) ),
 	     this, SLOT( slotCancelImageRequest( const char * ) ) );
-    connect( view, SIGNAL( formSubmitted( const char *, const char* ) ),
-	     this, SLOT( slotFormSubmitted( const char *, const char* ) ) );
+    connect( view, SIGNAL( formSubmitted( const char *, const char*, const char* ) ),
+	     this, SLOT( slotFormSubmitted( const char *, const char*, const char* ) ) );
     connect( view, SIGNAL( documentStarted() ),
 	     this, SLOT( slotDocumentStarted() ) );
     connect( view, SIGNAL( documentDone() ),
@@ -476,16 +476,16 @@ void KHTMLView::slotImageLoaded( const char *_url, const char *_filename )
 	view->slotFileLoaded( _url, _filename );
 }
 
-void KHTMLView::slotFormSubmitted( KHTMLView *_view, const char *_method, const char *_url )
+void KHTMLView::slotFormSubmitted( KHTMLView *_view, const char *_method, const char *_url, const char *_data )
 {
-    emit formSubmitted( _view, _url, _method );
+    emit formSubmitted( _view, _url, _method, _data );
 }
 
-void KHTMLView::slotFormSubmitted( const char *_method, const char *_url )
+void KHTMLView::slotFormSubmitted( const char *_method, const char *_url, const char *_data )
 {
     // debugT("Form submitted '%s'\n",_url);
     
-    emit formSubmitted( this, _url, _method );
+    emit formSubmitted( this, _url, _method, _data );
 }
 
 void KHTMLView::slotGoUp()

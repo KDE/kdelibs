@@ -287,9 +287,9 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
     }
 }
 
-void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url )
+void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, const char *_data )
 {
-    emit formSubmitted( _method, _url );
+    emit formSubmitted( _method, _url, _data );
 }
 
 void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
@@ -2598,8 +2598,8 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 
 		form = new HTMLForm( action, method );
 		formList.append( form );
-		connect( form, SIGNAL( submitted( const char *, const char *) ),
-				SLOT( slotFormSubmitted( const char *, const char * ) ) );
+		connect( form, SIGNAL( submitted( const char *, const char *, const char * ) ),
+				SLOT( slotFormSubmitted( const char *, const char *, const char * ) ) );
 	}
 	else if ( strncmp( str, "/form", 5 ) == 0 )
 	{

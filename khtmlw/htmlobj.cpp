@@ -32,6 +32,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
+#include <errno.h>
 
 #include <qfile.h>
 #include <qimage.h>
@@ -725,18 +726,28 @@ void HTMLImage::setOverlay( const char *_ol )
 void HTMLImage::fileLoaded( const char *_filename )
 {
 #ifdef USE_QMOVIE
-    FILE *f = fopen( _filename, "rb" );
     char buffer[ 4 ];
-    int n = fread( buffer, 1, 3, f );
-    if ( n >= 0 )
-      buffer[ n ] = 0;
+    buffer[0] = 0;
+    FILE *f = fopen( _filename, "rb" );
+    if ( f )
+    {
+      int n = fread( buffer, 1, 3, f );
+      if ( n >= 0 )
+	buffer[ n ] = 0;
+      else
+	buffer[0] = 0;
+      fclose( f );
+    }
     else
-      buffer[0] = 0;
-    fclose( f );
+    {
+      warning( "Could not load %s\n", _filename );
+      perror( "" );
+    }
+    
     if ( strcmp( buffer, "GIF" ) == 0 )
     {
-	movie = new QMovie( _filename, 8192 );
-	movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
+      movie = new QMovie( _filename, 8192 );
+      movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
     }
     else
     {

@@ -600,9 +600,10 @@ signals:
      *
      * @param _url is the <form action=...> value
      * @param _method is the <form method=...> value
+     * @param _data is the encoded data to send 
      */
     void formSubmitted( KHTMLView *_view, const char *_method,
-	const char *_url );
+	const char *_url, const char *_data );
 
     /**
      * Emitted if the user presses the mouse button over this widget and if
@@ -719,9 +720,10 @@ public slots:
      *
      * @param _method is the <form method=...> value
      * @param _url is the <form action=...> value
+     * @param _data is the encoded from data submitted
      */
     void slotFormSubmitted( KHTMLView *_view, const char *_method,
-	const char *_url );
+	const char *_url, const char *_data );
 
     /**
      * This slot is connected to all children. It emits the signal
@@ -798,13 +800,13 @@ protected slots:
 
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal
-     * @ref #cancelImageRequest if called. <b>This slot is for internal use
-     * only</b>.
+     * if the form is submitted
      *
      * @param _url is the <form action=...> value
      * @param _method is the <form method=...> value
+     * @param _data is the encoded form data submitted 
      */
-    virtual void slotFormSubmitted( const char *_url, const char *_method );
+    virtual void slotFormSubmitted( const char *_url, const char *_method, const char *_data );
 
     /**
      * This slot is connected to @ref KHTMLWidget. It emits the signal

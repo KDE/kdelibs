@@ -690,7 +690,7 @@ signals:
     void cancelFileRequest( const char *_url );
 
     // signal when user has submitted a form
-    void formSubmitted( const char *_method, const char *_url );
+    void formSubmitted( const char *_method, const char *_url, const char *_data );
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
@@ -749,7 +749,7 @@ protected slots:
      *
      * Called when the user submitted a form.
      */
-    void slotFormSubmitted( const char *_method, const char *_url );
+    void slotFormSubmitted( const char *_method, const char *_url, const char *_data );
 
     /*
      * INTERNAL

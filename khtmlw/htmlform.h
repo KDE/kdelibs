@@ -342,7 +342,7 @@ public slots:
 	void slotRadioSelected( const char *n, const char *v );
 
 signals:
-	void submitted( const char *method, const char *url );
+	void submitted( const char *method, const char *url, const char *data );
 	void radioSelected( const char *n, const char *v );
 
 private:

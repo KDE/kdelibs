@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.16 - 15 Jun 1998 (Torben Weis)
+---------------
+
+Fixed GIF detection code. If it is a give and only then we use
+QMovie. We dont look at the filename any longer to figure this out.
+This means that KFMs visual schnauzer can finally handle gif images.
+
 Version 0.12.16 - 12 Jun 1998 (Torben Weis)
 ---------------
 
