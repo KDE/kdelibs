@@ -30,6 +30,7 @@ namespace KJS {
     DateObject(const Object& proto) : ConstructorImp(proto, 7) { }
     Completion execute(const List &);
     Object construct(const List &);
+    KJSO get(const UString &p) const;
   };
 
   class DatePrototype : public ObjectImp {
