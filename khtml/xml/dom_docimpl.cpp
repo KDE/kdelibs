@@ -888,7 +888,7 @@ QStringList DocumentImpl::docState()
 bool DocumentImpl::unsubmittedFormChanges()
 {
     for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
-        if (it.current()->state().right(1)=="X")
+        if (it.current()->state().right(1)=="M")
             return true;
 
     return false;
