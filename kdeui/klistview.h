@@ -19,6 +19,7 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
+#include <qvector.h>
 #include <qlistview.h>
 
 #include <qlist.h>
@@ -326,6 +327,13 @@ signals:
    *
    **/
   void moved(QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
+
+  /**
+   * This signal is emitted after all the items have been moved. It reports info for
+   * each and every item moved, in order.  The first element in @param items associates
+   * with the first of afterFirst and afterNow.
+   **/
+  void moved(QVector<QListViewItem> &items, QVector<QListViewItem> &afterFirst, QVector<QListViewItem> &afterNow);
 
   /**
    * This signal gets emitted when an item is renamed via in-place renaming.

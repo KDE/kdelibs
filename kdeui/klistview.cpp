@@ -550,6 +550,17 @@ void KListView::contentsDropEvent(QDropEvent* e)
     {
       if (itemsMovable())
       {
+        bool slowVectorCrap=(bool)receivers(SIGNAL(moved(QVector<QListViewItem>&, QVector<QListViewItem>&, QVector<QListViewItem>&)));
+
+        QVector<QListViewItem> *items, *afterFirsts, *afterNows;
+        if (slowVectorCrap)
+        {
+          items=new QVector<QListViewItem>(5);
+          afterFirsts=new QVector<QListViewItem>(5);
+          afterNows=new QVector<QListViewItem>(5);
+        }
+        uint itempos(0);
+
         for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
         {
           if (!i->isSelected())
@@ -558,8 +569,37 @@ void KListView::contentsDropEvent(QDropEvent* e)
           moveItem(i, parent, afterme);
           emit moved(i, afterFirst, afterme);
 
+          if (slowVectorCrap)
+          {
+            if (itempos>=items->size())
+            {
+              static const uint increment=3;
+              items->resize(itempos+1+increment);
+              afterFirsts->resize(itempos+1+increment);
+              afterNows->resize(itempos+1+increment);
+              itempos+=increment;
+            }
+
+            items->insert(itempos,i);
+            afterFirsts->insert(itempos,afterFirst);
+            afterNows->insert(itempos,afterme);
+
+            itempos++;
+          }
+
           afterme=i;
         }
+
+        if (slowVectorCrap)
+        {
+          // shrink down the vector to the minimum size.
+          items->resize(itempos);
+          afterFirsts->resize(itempos);
+          afterNows->resize(itempos);
+
+          moved(*items,*afterFirsts,*afterNows);
+        }
+
         if (firstChild())
           moved();
 
