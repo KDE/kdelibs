@@ -32,6 +32,10 @@ PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
        "dtd/kde-next.dtd"
 PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
        "dtd/kdex.dtd"
+-- This is to work round a bug in the docbook tools --
+PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
+       "dtd/kdex.dtd"
+-- --
 PUBLIC "+//IDN kde.org//DTD DocBook V4.1-Based Variant V1.0//EN"
        "dtd/kde-next.dtd"
 PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"
