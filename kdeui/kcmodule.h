@@ -61,7 +61,8 @@ class KInstance;
  * The parameter "name_of_the_po_file" has to correspond with the messages target
  * that you created in your Makefile.am.
  *
- * See kdebase/kcontrol/HOWTO for more detailed documentation.
+ * See http://developer.kde.org/documentation/other/kcm_howto.html
+ * for more detailed documentation.
  *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
  */
