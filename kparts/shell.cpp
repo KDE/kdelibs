@@ -305,6 +305,7 @@ void Shell::createToolBars( const QDomElement& element )
 
 void Shell::createMenuBar( const QDomElement& shell, const QDomElement& part )
 {
+    setUpdatesEnabled( FALSE );
     QStringList names;
 
     QDomElement e = shell.firstChild().toElement();
@@ -360,6 +361,7 @@ void Shell::createMenuBar( const QDomElement& shell, const QDomElement& part )
 		}
     	}
     }
+    setUpdatesEnabled( TRUE );
 }
 
 QPopupMenu* Shell::createMenu( const QDomElement& shell, const QDomElement& part )
