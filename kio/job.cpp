@@ -1182,6 +1182,9 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
     for (; it.current(); ++it) {
         UDSEntry::ConstIterator it2 = it.current()->begin();
         struct CopyInfo info;
+        info.permissions = (mode_t) -1;
+        info.mtime = (time_t) -1;
+        info.ctime = (time_t) -1;
         QString relName;
         for( ; it2 != it.current()->end(); it2++ ) {
             switch ((*it2).m_uds) {
