@@ -399,7 +399,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   }
 
   reparseConfiguration();
-
+  resetSessionSettings();
 
   m_bEOF=false;
 #ifdef DO_SSL
@@ -1004,11 +1004,6 @@ bool HTTPProtocol::http_open()
   m_qTransferEncodings.clear();
   m_bChunked = false;
   m_iSize = -1;
-  m_strRealm = QString::null;
-  m_strAuthString = QString::null;
-  Authentication = AUTH_None;
-  m_iAuthFailed = 0;
-  m_bCanResume = false;
 
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
@@ -1226,20 +1221,18 @@ bool HTTPProtocol::http_open()
     {
       kdDebug(7113) << "Checking for Proxy Authentication..." << endl;
       QString user, passwd, realm, extra;
-      bool isCached = checkCachedAuthentication( m_proxyURL, user, passwd, realm, extra, false );
-      if( isCached )
+      bool isCached = checkCachedAuthentication( m_proxyURL, user, passwd, realm, extra, true );
+      if ( isCached )
       {
         m_proxyURL.setUser( user );
         m_proxyURL.setPass( passwd );
         m_strProxyRealm = realm;
-        if( !extra.isEmpty() )
+        if ( extra.isEmpty() )
+            ProxyAuthentication = AUTH_Basic;
+        else
         {
           ProxyAuthentication = AUTH_Digest;
           m_strProxyAuthString = extra;
-        }
-        else
-        {
-          ProxyAuthentication = AUTH_Basic;
         }
         kdDebug(7113) << "Request URL matches protection space. Retreived cached authentication: " << endl
                       << " User= " << user << endl
@@ -1538,8 +1531,8 @@ bool HTTPProtocol::readHeader()
 
       // unauthorized access
       if ((code == 401) || (code == 407)) {
-    	unauthorized = true;
-    	m_iAuthFailed++;
+        unauthorized = true;
+        m_iAuthFailed++;
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
@@ -1789,9 +1782,9 @@ bool HTTPProtocol::readHeader()
     http_closeConnection();  // Close the connection first
     QString msg, user, passwd, extra;
 
-    if( m_iAuthFailed > 1 || (!user.isEmpty() && !passwd.isEmpty()) )
+    if ( m_iAuthFailed > 1 || (!user.isEmpty() && !passwd.isEmpty()) )
     {
-      if( code == 401 )
+      if ( code == 401 )
         msg = i18n( "Authentication Failed!" );
       else if( code == 407 )
         msg = i18n( "Proxy Authentication Failed!");
@@ -1808,7 +1801,7 @@ bool HTTPProtocol::readHeader()
 
     bool result = false;
 
-    if( code == 401 )
+    if ( code == 401 )
     {
       // For cases where the user does http://foo@www.foo.org
       if( !m_request.user.isEmpty() )
@@ -1837,13 +1830,14 @@ bool HTTPProtocol::readHeader()
                     "<b>%1</b> at <b>%2</b></center>" ).arg( m_strRealm ).arg( m_request.hostname );
       }
     }
-    else if( code == 407 )
+    else if ( code == 407 )
     {
       if( m_strProxyRealm.isEmpty() )
         m_strProxyRealm = m_state.hostname;
 
-      msg = i18n( "<b>Proxy Authentication</b> required to access this site.<br/>"
-                  "Enter your Authentication information below:" );
+      msg = i18n( "A <b>proxy server</b> is requiring authorization in order<br/>"
+                  "to allow access to the requested site. Please supply the<br/>"
+                  "required information below:" );
     }
 
     // If no matching realm value was found for the host in the
@@ -1880,6 +1874,7 @@ bool HTTPProtocol::readHeader()
 
     result = readHeader();
     m_iAuthFailed--;
+    kdDebug(7103) << "Number of time authorization failed: " << m_iAuthFailed << endl;
     if( result && m_iAuthFailed == 0 )
     {
         if( code == 401 )
@@ -3376,12 +3371,22 @@ void HTTPProtocol::reparseConfiguration()
   // Use commas not spaces.
   m_strLanguages = languageList.join( ", " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, utf-8;q=0.8, *;q=0.9");
+  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, *;q=0.9, utf-8;q=0.8");
+}
+
+void HTTPProtocol::resetSessionSettings()
+{
+  m_request.window = metaData("window-id");
+  m_strRealm = QString::null;
+  m_strAuthString = QString::null;
+  Authentication = AUTH_None;
+  m_iAuthFailed = 0;
+  m_bCanResume = false;
 }
 
 void HTTPProtocol::retrieveContent( bool check_ssl )
 {
-  m_request.window = metaData("window-id");
+  resetSessionSettings();
 
   if(!http_open())
     return;
@@ -3402,7 +3407,7 @@ void HTTPProtocol::retrieveContent( bool check_ssl )
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
-  m_request.window = metaData("window-id");
+  resetSessionSettings();
 
   if (!http_open())
     return false;

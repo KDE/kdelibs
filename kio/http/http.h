@@ -246,6 +246,8 @@ protected:
    */
   bool retrieveHeader(bool close_connection = true);
 
+  void resetSessionSettings();
+
 protected: // Members
   HTTPState m_state;
   HTTPRequest m_request;
