@@ -35,10 +35,13 @@ extern "C" {
 #endif
 
 
+#define maxFnameLen 256
+
 KAudio::KAudio() : QObject()
 {
   char		ServerId[256];
-  char		KMServerCidFile[256];
+  char		KMServerCidFile[maxFnameLen];
+  const char    kasFileName[]="/.kaudioserver";
   char		*tmpadr;
   FILE		*KMServerCidHandle;
   MediaCon	m;
@@ -53,8 +56,15 @@ KAudio::KAudio() : QObject()
    * Read in audio player id (This is NOT a pid, but a communication connection id)
    *********************************************************************************/
   tmpadr= getenv("HOME");
+  int homePathLen = strlen(tmpadr);
+
+  if ( (homePathLen+strlen(kasFileName)+1 ) >= maxFnameLen ) {
+    cerr <<  "HOME path too long.\n";
+    return;
+  }
   strcpy(KMServerCidFile,tmpadr);
-  strcpy(KMServerCidFile+strlen(KMServerCidFile),"/.kaudioserver");
+  strcpy(KMServerCidFile+homePathLen,kasFileName);
+
   KMServerCidHandle = fopen(KMServerCidFile,"r");
   if (KMServerCidHandle == 0L)
     {
