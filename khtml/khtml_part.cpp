@@ -33,6 +33,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_inlineimpl.h"
+#include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
@@ -63,6 +64,7 @@ using namespace DOM;
 #include <kparts/partmanager.h>
 #include <kxmlgui.h>
 #include <kcursor.h>
+#include <kiconeffect.h>
 
 #include <qtextcodec.h>
 
@@ -446,6 +448,13 @@ bool KHTMLPart::closeURL()
     kdDebug( 6050 ) << " was still parsing... calling end " << endl;
     slotFinishedParsing();
     d->m_bParsing = false;
+  }
+
+  if ( !d->m_workingURL.isEmpty() )
+  {
+    // Aborted before starting to render
+    kdDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << m_url.prettyURL() << endl;
+    emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
   }
 
   d->m_workingURL = KURL();
@@ -971,7 +980,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
     d->m_encoding = name;
     d->m_haveEncoding = override;
-    
+
     // ### hack!!!!
     if(!d->m_settings->charset() == QFont::Unicode)
 	d->m_settings->setCharset( KGlobal::charsets()->nameToID(name) );
@@ -2460,6 +2469,22 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
      QString target;
      QString url = splitUrlTarget(d->m_strSelectedURL, &target);
      kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
+
+     // Visual action effect, over text links
+     if ( !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE )
+     {
+       khtml::RenderText * renderText = static_cast<khtml::RenderText *>(innerNode.handle()->renderer());
+       khtml::TextSlave * firstSlave = renderText->first();
+       //QRect r ( firstSlave->x, firstSlave->y, firstSlave->m_width, firstSlave->m_height );
+       int x, y;
+       renderText->absolutePosition( x, y );
+       //QRect r ( x, y, renderText->width(), renderText->height() );
+       int vx, vy;
+       view()->contentsToViewport( x, y, vx, vy );
+       QRect r ( vx, vy, firstSlave->m_width, firstSlave->m_height );
+       kdDebug( 6000 ) << " x=" << r.x() << " y=" << r.y() << " width=" << r.width() << " height=" << r.height() << endl;
+       KIconEffect::visualActivate( view()->viewport(), r );
+     }
 
      urlSelected( url, _mouse->button(), _mouse->state(), target );
    }
