@@ -181,7 +181,7 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
 //             size = float( int( ( size + 1 ) / 2 )*2 );
     }
 
-    qDebug(" -->>> using %f pixel font", size);
+    //qDebug(" -->>> using %f pixel font", size);
 
     f.setPixelSizeFloat( size );
 }
