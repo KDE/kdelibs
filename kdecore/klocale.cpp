@@ -347,7 +347,7 @@ QString KLocale::catalogueFileName(const QString & language,
 
 bool KLocale::isLanguageInstalled(const QString & language) const
 {
-  // Do now allow empty languages
+  // Do not allow empty languages
   if ( language.isEmpty() ) return false;
 
   bool bRes = true;
