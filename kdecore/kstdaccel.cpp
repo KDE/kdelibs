@@ -90,6 +90,11 @@ uint KStdAccel::undo(void) const
   return readKey(KAccel::Undo, Qt::CTRL+Qt::Key_Z);
 }
 
+uint KStdAccel::redo(void) const
+{
+  return readKey(KAccel::Redo, Qt::CTRL+Qt::Key_Y);
+}
+
 uint KStdAccel::find(void) const
 {
   return readKey(KAccel::Find, Qt::CTRL+Qt::Key_F);

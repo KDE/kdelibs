@@ -69,6 +69,9 @@ public:
   /** Undo last operation. Default: Ctrl-z */
   uint undo(void) const;
 
+  /** Redo. Default: Ctrl-y */
+  uint redo(void) const;
+
   /** Find, search. Default: Ctrl-f */
   uint find(void) const;
 

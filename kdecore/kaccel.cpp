@@ -283,6 +283,10 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 			name=i18n("Undo") ;
 			key = "CTRL+Z";
 			break;
+		case Redo:
+			name=i18n("Redo") ;
+			key = "CTRL+Y";
+			break;
 		case Find:
 			name=i18n("Find") ;
 			key = "CTRL+F";
@@ -519,6 +523,9 @@ const QString KAccel::stdAction( StdAccel id ) {
 			break;
 		case Undo:
 			action = "Undo";
+			break;
+		case Redo:
+			action = "Redo";
 			break;
 		case Find:
 			action = "Find";

@@ -137,7 +137,7 @@ class KAccel
 {
  public:
  	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
-		Paste, Undo, Find, Replace, Insert, Home, End, Prior,
+		Paste, Undo, Redo, Find, Replace, Insert, Home, End, Prior,
 		Next, Help };
 	/**
 	 * Creates a KAccel object with a parent widget and a name.
@@ -268,7 +268,7 @@ class KAccel
 				
 	/**
 	 *	Inserts a standard accelerator item if id equal to Open,
-	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo,
+	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
 	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
 
 	 * If an action already exists the old association and connections
@@ -362,7 +362,7 @@ class KAccel
 	
 	/**
 	 *	Returns a standard action name if id equal to Open,
-	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo,
+	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
 	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help
 	 *	and zero otherwise.
 	 */
