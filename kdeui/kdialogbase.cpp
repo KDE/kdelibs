@@ -684,29 +684,29 @@ void KDialogBase::setButtonStyle( int style )
   }
   else if (mButtonOrientation == Horizontal)
   {
-    static const int layoutRule[5][9] =
+    static const int layoutRule[5][10] =
     {
-      {Help,Default,Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
-      {Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
-      {Help,Default,Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
-      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Stretch,Default,Help},
-      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Stretch,Default,Help}
+      {Details,Help,Default,Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
+      {Details,Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+      {Details,Help,Default,Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Stretch,Default,Help,Details},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Stretch,Default,Help,Details}
     };
-    layoutMax = 9;
+    layoutMax = 10;
     layout = layoutRule[ d->mButton.style ];
   }
   else
   {
-    static const int layoutRule[5][9] =
+    static const int layoutRule[5][10] =
     {
-      {Ok,Apply|Try,User1,User2,User3,Stretch,Default,Cancel|Close,Help},
-      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Stretch, Default,Help},
-      {Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
-      {Help,Default,Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
-      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Stretch,Default,Help},
-      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Stretch,Default,Help}
+      {Ok,Apply|Try,User1,User2,User3,Stretch,Default,Cancel|Close,Help, Details},
+      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Stretch, Default,Help, Details},
+      {Details,Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+      {Details,Help,Default,Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Stretch,Default,Help,Details},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Stretch,Default,Help,Details}
     };
-    layoutMax = 9;
+    layoutMax = 10;
     layout = layoutRule[ d->mButton.style ];
   }
 
