@@ -193,6 +193,8 @@ public:
      *
      *  If the user hasn't searched for anything until now, this method
      *   will simply return without doing anything.
+     *
+     * @return 1 if a search was done. 0 if no search was done.
      **/
     int 	repeatSearch();
 
