@@ -144,7 +144,6 @@
 <!ENTITY GIF	"<acronym>GIF</acronym>">
 <!ENTITY GMT	"<acronym>GMT</acronym>">
 <!ENTITY GNU	"<acronym>GNU</acronym>">
-<!ENTITY GPL	"<acronym>GPL</acronym>">
 <!ENTITY GUI	"<acronym>GUI</acronym>">
 <!ENTITY Handspring "<trademark>Handspring</trademark>">
 <!ENTITY Hewlett-Packard	'<trademark
@@ -369,6 +368,8 @@
 <!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY X-Windows	'<trademark class="registered">X Window
  System</trademark>'> 
+<!-- <!ENTITY GPL	"<acronym>GPL</acronym>"> 
+     Don't know how this lasted so long, except, nobody tried to use it -->
 
 <!-- Kind of obsolete: to be localised -->
 <!-- do NOT remove these without a version number change in the fpi! -->
