@@ -21,6 +21,7 @@
  *
  * $Id$
  */
+//#define DEBUG_LAYOUT
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
@@ -82,7 +83,7 @@ void RenderFrameSet::layout( bool deep )
 {
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << nodeName().string() << "(FrameSet)::layout(" << deep << ") width=" << width << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << renderName() << "(FrameSet)::layout(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
 #endif
 
     if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
@@ -502,8 +503,8 @@ void RenderPartObject::close()
 {
   QString url;
   QString serviceType;
-  
-  if(m_obj->id() == ID_OBJECT) {     
+
+  if(m_obj->id() == ID_OBJECT) {
      // check for embed child object
      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
      HTMLEmbedElementImpl *embed = 0;

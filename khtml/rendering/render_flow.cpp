@@ -211,7 +211,7 @@ void RenderFlow::setXPos( int xPos )
 
 void RenderFlow::layout( bool deep )
 {
-//    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
+    //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
     //QTime t;
     //t.start();
 
@@ -298,7 +298,7 @@ void RenderFlow::layout( bool deep )
 void RenderFlow::layoutBlockChildren(bool deep)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "layoutBlockChildren" << endl;
+    kdDebug( 6040 ) << "layoutBlockChildren(" << deep << ")" << endl;
 #endif
 
     bool _layouted = true;
@@ -346,8 +346,10 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
 	child->setYPos(m_height);
 
-	if(deep) child->layout(deep);
-	else if (!child->layouted())
+	if(deep) {
+	    //kdDebug(6040) << "layouting " << child->renderName() << endl;
+	    child->layout(deep);
+	} else if (!child->layouted())
 	    _layouted = false;
 
     	// html blocks flow around floats	

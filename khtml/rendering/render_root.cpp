@@ -38,7 +38,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_positioned=true; // to 0,0 :)
     printingMode = false;
     updateCount = 0;
-    
+
     selectionStart = 0;
     selectionEnd = 0;
     selectionStartPos = -1;
@@ -80,8 +80,15 @@ void RenderRoot::calcMinMaxWidth()
 
 void RenderRoot::layout(bool deep)
 {
+    //kdDebug(6040) << "RenderRoot::layout(" << deep << ")" << endl;
+    
     calcMinMaxWidth();
     calcWidth();
+
+    // this fixes frameset resizing
+    if(firstChild())
+	firstChild()->setLayouted(false);
+    
     if (deep)
     	RenderFlow::layout(true);
 	
