@@ -234,8 +234,9 @@ HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc)
 
 HTMLMapElementImpl::~HTMLMapElementImpl()
 {
-    if(ownerDocument()->isHTMLDocument())
-        static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap.remove(name);
+    if(ownerDocument())
+	if(ownerDocument()->isHTMLDocument())
+    	    static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap.remove(name);
 }
 
 const DOMString HTMLMapElementImpl::nodeName() const
