@@ -23,6 +23,8 @@
 #ifndef KTabListBox_h
 #define KTabListBox_h
 
+#warning This is obsolete, use QListView instead
+
 #undef del_item
 #include <qdict.h>
 #include <qtableview.h>
