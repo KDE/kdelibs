@@ -876,8 +876,8 @@ bool HTTPProtocol::http_open()
         u.setUser( m_state.user );
         u.setPass( m_state.passwd );
       }
-*/
     }
+*/
     header += u.url();
   }
   else
