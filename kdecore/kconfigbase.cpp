@@ -549,7 +549,8 @@ int KConfigBase::readListEntry( const char *pKey,
     }
     if (str_list[i] == '\\') {
       i++;
-      value += str_list[i];
+      if ( i < len )
+        value += str_list[i];
       continue;
     }
     // if we fell through to here, we are at a separator.  Append
@@ -593,7 +594,8 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
       if( str_list[i] == '\\' )
         {
           i++;
-          value += str_list[i];
+          if ( i < len )
+            value += str_list[i];
           continue;
         }
       list.append( value );
