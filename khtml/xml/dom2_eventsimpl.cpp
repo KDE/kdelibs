@@ -527,8 +527,7 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *vi
       // ### DOM_VK_RIGHT_SHIFT
       break;
   case Qt::Key_Meta:
-      m_virtKeyVal = DOM_VK_LEFT_META;
-      // ### DOM_VK_RIGHT_META
+      m_virtKeyVal = DOM_VK_META;
       break;
   case Qt::Key_CapsLock:
       m_virtKeyVal = DOM_VK_CAPS_LOCK;
@@ -545,9 +544,9 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *vi
   case Qt::Key_Home:
       m_virtKeyVal = DOM_VK_HOME;
       break;
-  case Qt::Key_Insert:
-      m_virtKeyVal = DOM_VK_INSERT;
-      break;
+//   case Qt::Key_Insert:
+//       m_virtKeyVal = DOM_VK_INSERT;
+//       break;
   case Qt::Key_Pause:
       m_virtKeyVal = DOM_VK_PAUSE;
       break;
@@ -732,10 +731,12 @@ int TextEventImpl::keyCode() const
         return 0;
 
     switch(m_virtKeyVal) {
+        // ### probably true for all DOM_VK_* codes
+        case DOM_VK_LEFT:
+        case DOM_VK_RIGHT:
         case DOM_VK_UP:
-            return 0x26; // Windows key-codes
         case DOM_VK_DOWN:
-            return 0x28;
+            return m_virtKeyVal;
         default:
             return charCode();
     }
