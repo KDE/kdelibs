@@ -152,14 +152,43 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (radix < 2 || radix > 36 || radix == 10)
       result = String(v.toString(exec));
     else {
-      unsigned i = v.toUInt32(exec);
-      char s[33];
-      char *p = s + sizeof(s);
-      *--p = '\0';
+      const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+      // INT_MAX results in 1024 characters left of the dot with radix 2
+      // give the same space on the right side. safety checks are in place
+      // unless someone finds a precise rule.
+      char s[2048 + 3];
+      double x = v.toNumber(exec);
+      // apply algorithm on absolute value. add sign later.
+      bool neg = false;
+      if (x < 0.0) {
+        neg = true;
+        x = -x;
+      }
+      // convert integer portion
+      double f = floor(x);
+      double d = f;
+      char *dot = s + sizeof(s) / 2;
+      char *p = dot;
+      *p = '\0';
       do {
-        *--p = "0123456789abcdefghijklmnopqrstuvwxyz"[i % radix];
-        i /= radix;
-      } while (i);
+        *--p = digits[int(fmod(d, double(radix)))];
+        d /= radix;
+      } while ((d <= -1.0 || d >= 1.0) && p > s);
+      // any decimal fraction ?
+      d = x - f;
+      const double eps = 0.001; // TODO: guessed. base on radix ?
+      if (d < -eps || d > eps) {
+        *dot++ = '.';
+        do {
+          d *= radix;
+          *dot++ = digits[int(d)];
+          d -= int(d);
+        } while ((d < -eps || d > eps) && dot - s < int(sizeof(s)) - 1);
+        *dot = '\0';
+      }
+      // add sign if negative
+      if (neg)
+        *--p = '-';
       result = String(p);
     }
     break;
@@ -244,7 +273,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     char buf[80];
     int decimalPoint;
     int sign;
-  
+
     if (isNaN(x))
       return String("NaN");
 
@@ -256,7 +285,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (sign) {
       buf[i++] = '-';
     }
-  
+
     if (decimalPoint == 999) {
       strcpy(buf + i, result);
     } else {
@@ -279,7 +308,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	    buf[i++] = '0';
 	}
       }
-    
+
       buf[i++] = 'e';
       buf[i++] = (decimalPoint >= 0) ? '+' : '-';
       // decimalPoint can't be more than 3 digits decimal given the
@@ -299,7 +328,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
 
     assert(i <= 80);
-  
+
     kjs_freedtoa(result);
 
     return String(UString(buf));
