@@ -16,10 +16,10 @@ class ByteStreamToAudio_impl : public ByteStreamToAudio_skel,
 	int haveBytes, pos;
 	queue< DataPacket<mcopbyte>* > inqueue;
 	long _samplingRate, _channels, _bits;
-	bool running;
+	bool _running;
 public:
 	ByteStreamToAudio_impl() :haveBytes(0), pos(0),
-			_samplingRate(44100), _channels(2), _bits(16), running(false)
+			_samplingRate(44100), _channels(2), _bits(16), _running(false)
 	{
 		//
 	}
@@ -32,6 +32,8 @@ public:
 
 	long bits() { return _bits; }
 	void bits(long newBits) { _bits = newBits; }
+
+	bool running() { return _running; }
 
 	void process_indata(DataPacket<mcopbyte> *packet)
 	{
@@ -77,14 +79,14 @@ public:
 		
 		if(i == samples) /* did we have enough input available? */
 		{
-			running = true;
+			_running = true;
 		}
 		else
 		{
-			if(running)
+			if(_running)
 			{
 				cout << "ByteStreamToAudio: input underrun" << endl;
-				running = false;
+				_running = false;
 			}
 
 			/* fill the rest with zero samples */

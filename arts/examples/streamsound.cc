@@ -98,11 +98,9 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	Sender *sender = new Sender();
+	ByteSoundProducer_var sender = new Sender();
 	server->attach(sender);
 	sender->start();
-	// we don't hold a reference to the sender at all any more - the
-	// soundserver should do so, as long as he wants
-	sender->_release();
 	dispatcher.run();
+	server->detach(sender);		// in this example: not reached
 }

@@ -296,6 +296,12 @@ interface ByteStreamToAudio : SynthModule {
 	attribute long channels;
 	attribute long bits;
 
+	/**
+	 * is conversion currently running, or is it stalled due to the fact
+	 * that there is not enough input input?
+	 */
+	readonly attribute boolean running;
+
 	async in byte stream indata;
 
 	out audio stream left,right;

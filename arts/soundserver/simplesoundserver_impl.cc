@@ -34,14 +34,18 @@ using namespace std;
 AttachedProducer::AttachedProducer(ByteSoundProducer *sender,
 										ByteStreamToAudio *receiver)
 {
-	this->sender = sender->_copy();
-	this->receiver = receiver->_copy();
+	_sender = sender->_copy();
+	_receiver = receiver->_copy();
 }
 
-bool AttachedProducer::finished()
+ByteSoundProducer *AttachedProducer::sender()
 {
-	// TODO: might cut the last few milliseconds in some cases
-	return (sender->finished() || sender->_error());
+	return _sender;
+}
+
+ByteStreamToAudio *AttachedProducer::receiver()
+{
+	return _receiver;
 }
 
 /*
@@ -103,7 +107,7 @@ long SimpleSoundServer_impl::play(const string& filename)
 	return 1;
 }
 
-long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
+void SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 {
 	printf("Attach ByteSoundProducer!\n");
 
@@ -120,7 +124,34 @@ long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 	convert->_node()->start();
 
 	activeProducers.push_back(new AttachedProducer(bsp,convert));
-	return 1;
+}
+
+void SimpleSoundServer_impl::detach(ByteSoundProducer *bsp)
+{
+	printf("Detach ByteSoundProducer!\n");
+	list<AttachedProducer *>::iterator p;
+
+	for(p = activeProducers.begin();p != activeProducers.end();p++)
+	{
+		AttachedProducer *prod = (*p);
+		if(bsp->_isEqual(prod->sender()))
+		{
+			/* 
+			 * Hint: the order of the next lines is not unimportant:
+			 *
+			 * delete prod involves _release()ing remote objects,
+			 * and while this is happening, other producers could
+			 * attach/detach and we could end up doing something wrong
+             */
+			activeProducers.erase(p);
+
+			activeConverters.push_back(prod->receiver()->_copy());
+			delete prod;
+
+			return;
+		}
+	}
+	assert(false);		// you shouldn't detach things you never attached!
 }
 
 StereoEffectStack *SimpleSoundServer_impl::outstack()
@@ -135,6 +166,15 @@ Object *SimpleSoundServer_impl::createObject(const string& name)
 
 void SimpleSoundServer_impl::notifyTime()
 {
+	static long lock = 0;
+	assert(!lock);		// paranoid reentrancy check (remove me later)
+	lock++;
+	/*
+	 * Three times the same game: look if a certain object is still
+	 * active - if yes, keep, if no, remove
+	 */
+
+	/* look for WAVs which may have terminated by now */
 	list<Synth_PLAY_WAV *>::iterator i;
 
 	i = activeWavs.begin();
@@ -143,30 +183,55 @@ void SimpleSoundServer_impl::notifyTime()
 		Synth_PLAY_WAV *playwav = (*i);
 		if(playwav->finished())
 		{
+			activeWavs.erase(i);
+
 			cout << "finished" << endl;
 			playwav->_release();
-			activeWavs.erase(i);
+
 			i = activeWavs.begin();
 		}
 		else i++;
 	}
 
+	/* look for producers which servers have died */
 	list<AttachedProducer *>::iterator p;
 
 	p = activeProducers.begin();
 	while(p != activeProducers.end())
 	{
 		AttachedProducer *prod = (*p);
-		if(prod->finished())
+		if(prod->sender()->_error())
 		{
-			cout << "stream finished" << endl;
+			activeProducers.erase(p);
+
+			cout << "stream closed (client died)" << endl;
+			activeConverters.push_back(prod->receiver()->_copy());
 			delete prod;
 
-			activeProducers.erase(p);
 			p = activeProducers.begin();
 		}
 		else p++;
 	}
+
+	/* look for converters which are no longer running */
+	list<ByteStreamToAudio *>::iterator ci;
+
+	ci = activeConverters.begin();
+	while(ci != activeConverters.end())
+	{
+		ByteStreamToAudio *conv = (*ci);
+		if(!conv->running())
+		{
+			activeConverters.erase(ci);
+
+			cout << "converter (for stream) finished" << endl;
+			conv->_release();
+
+			ci = activeConverters.begin();
+		}
+		else ci++;
+	}
+	lock--;
 }
 
 PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)

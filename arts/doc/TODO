@@ -36,6 +36,15 @@ These are:
      regardless whether what samplingrate the server is running on)
    - allow progressive loading for wave files
 - write blockwise caching (not requiring whole samples to be held in memory)
+- someday implement a clever way how apps that are not written for aRts can
+  use /dev/dsp nevertheless, maybe one of:
+   - starting artsd only on demand
+   - make artsd go to a sleep mode automatically if no clients are connected
+   - make artsd go to a sleep mode after a timeout
+   - make arts detect automatically when it is silent, and close /dev/dsp
+     then (this would for instance also close if clients are connected but
+     not playing anything)
+   - make an explicit call like "shutdown now" (esdctl off/esdctl on)
 
 3. To have more fun
 

@@ -54,7 +54,6 @@ public:
 	~Sender()
 	{
 		if(waiting) Dispatcher::the()->ioManager()->remove(this,IOType::read);
-		Dispatcher::the()->terminate();
 	}
 
 	long samplingRate() { return 44100; }
@@ -101,6 +100,11 @@ public:
 			Dispatcher::the()->ioManager()->remove(this,IOType::read);
 			waiting = false;
 		}
+
+		/*
+		 * terminate dispatcher to end the program
+		 */
+		Dispatcher::the()->terminate();
 	}
 	void request_outdata(DataPacket<mcopbyte> *packet)
 	{
@@ -161,11 +165,9 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	Sender *sender = new Sender(stdin);
+	ByteSoundProducer_var sender = new Sender(stdin);
 	server->attach(sender);
 	sender->start();
-	// we don't hold a reference to the sender at all any more - the
-	// soundserver should do so, as long as he wants
-	sender->_release();		// TODO: race condition? shouldn't be.
 	dispatcher.run();
+	server->detach(sender);
 }

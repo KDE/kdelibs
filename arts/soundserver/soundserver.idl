@@ -6,7 +6,6 @@ interface ByteSoundProducer : SynthModule
 	readonly attribute long samplingRate;
 	readonly attribute long channels;
 	readonly attribute long bits;
-	readonly attribute boolean finished;
 
 	async out byte stream outdata;
 };
@@ -41,7 +40,16 @@ interface SimpleSoundServer
 	 */
 	//void stop(long ID);
 
-	long attach(ByteSoundProducer producer);
+	/**
+	 * attaches a byte sound producer (read: a client which produces/mixes
+	 * an audio stream itself and just wants playback via the soundserver)
+	 */
+	void attach(ByteSoundProducer producer);
+
+	/**
+	 * detaches a previous attached byte sound producer
+	 */
+	void detach(ByteSoundProducer producer);
 
 	object createObject(string name);
 };

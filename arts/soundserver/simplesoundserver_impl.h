@@ -32,11 +32,13 @@
 
 class AttachedProducer {
 protected:
-	ByteSoundProducer_var sender;
-	ByteStreamToAudio_var receiver;
+	ByteSoundProducer_var _sender;
+	ByteStreamToAudio_var _receiver;
+
 public:
 	AttachedProducer(ByteSoundProducer *sender, ByteStreamToAudio *receiver);
-	bool finished();
+	ByteSoundProducer *sender();
+	ByteStreamToAudio *receiver();
 };
 
 class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
@@ -46,6 +48,7 @@ protected:
 	Synth_PLAY_var playSound;
 	Synth_MULTI_ADD_var addLeft, addRight;
 	std::list<Synth_PLAY_WAV *> activeWavs;
+	std::list<ByteStreamToAudio *> activeConverters;
 	std::list<AttachedProducer *> activeProducers;
 	StereoEffectStack_var _outstack;
 
@@ -53,13 +56,19 @@ public:
 	SimpleSoundServer_impl();
 	~SimpleSoundServer_impl();
 
-	long attach(ByteSoundProducer *bsp);
+	void notifyTime();
+
+	// streaming audio
+	void attach(ByteSoundProducer *bsp);
+	void detach(ByteSoundProducer *bsp);
+
+	// simple soundserver interface
 	long play(const std::string& s);
+
+	// kmedia2
 	PlayObject *createPlayObject(const std::string& filename);
 	StereoEffectStack *outstack();
 	Object *createObject(const std::string& name);
-
-	void notifyTime();
 };
 
 #endif /* SIMPLESOUNDSERVER_IMPL_H */
