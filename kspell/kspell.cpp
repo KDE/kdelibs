@@ -461,7 +461,7 @@ int KSpell::parseOneResponse (char *buffer, char *word, QStrList *sugg)
   kdebug(KDEBUG_ERROR, 750, "HERE?: [%s]", buffer);
   kdebug(KDEBUG_ERROR, 750, "Please report this to dsweet@physics.umd.edu");
   kdebug(KDEBUG_ERROR, 750, "Thank you!");
-  emit done(FALSE);
+  emit done((bool)FALSE);
   emit done (KSpell::buffer.data());
   return MISTAKE;
 }
@@ -580,7 +580,7 @@ void KSpell::checkList4 ()
       break;
     case KS_CANCEL:
       ksdlg->hide();
-      emit done (FALSE);
+      emit done ((bool)FALSE);
       return;
     case KS_STOP:
       ksdlg->hide();
