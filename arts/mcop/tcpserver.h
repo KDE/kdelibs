@@ -44,6 +44,7 @@ public:
 	virtual ~TCPServer();
 	bool running();
 	std::string url();
+	static void setPort(int port);
 
 	void notifyIO(int fd, int types);
 };

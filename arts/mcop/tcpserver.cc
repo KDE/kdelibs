@@ -69,6 +69,13 @@ TCPServer::~TCPServer()
 
 string xserverurl;
 
+static int TCPServerPort = 0;
+
+void TCPServer::setPort(int port)
+{
+	TCPServerPort = port;
+}
+
 bool TCPServer::initSocket()
 {
     struct sockaddr_in socket_addr;
@@ -87,8 +94,20 @@ bool TCPServer::initSocket()
 		return false;
 	}
 
+    if (TCPServerPort)
+	{
+		int optval = 1;
+		if(setsockopt (theSocket, SOL_SOCKET, SO_REUSEADDR,
+		               &optval, sizeof (optval)) < 0)
+		{
+			fprintf(stderr,"MCOP TCPServer: can't set adress reuse\n");
+			close(theSocket);
+			return false;
+		}
+	}
+
     socket_addr.sin_family = AF_INET;
-    socket_addr.sin_port = htons( 0 );		// chosse port freely
+    socket_addr.sin_port = htons( TCPServerPort );	// 0 = choose port freely
     socket_addr.sin_addr.s_addr = htonl( inet_addr("0.0.0.0") );
     if ( bind( theSocket, (struct sockaddr *) &socket_addr,
                sizeof(struct sockaddr_in) ) < 0 )

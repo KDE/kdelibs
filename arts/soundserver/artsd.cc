@@ -30,6 +30,7 @@
 #include "soundserver.h"
 #include "audiosubsys.h"
 #include "synthschedule.h"
+#include "tcpserver.h"
 
 using namespace std;
 using namespace Arts;
@@ -42,7 +43,6 @@ extern "C" void stopServer(int)
 static void initSignals()
 {
     signal(SIGHUP ,stopServer);
-    signal(SIGQUIT,stopServer);
     signal(SIGINT ,stopServer);
     signal(SIGTERM,stopServer);                                                 
 }
@@ -53,6 +53,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
 	fprintf(stderr,"-n                  enable network transparency\n");
+	fprintf(stderr,"-p <port>           set TCP port to use (implies -n)\n");
 	fprintf(stderr,"-d                  enable full duplex operation\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
@@ -63,17 +64,19 @@ static Dispatcher::StartServer	cfgServers		= Dispatcher::startUnixServer;
 static int  					cfgSamplingRate	= 0;
 static int  					cfgFragmentCount= 0;
 static int  					cfgFragmentSize	= 0;
+static int  					cfgPort			= 0;
 static bool  					cfgFullDuplex	= 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:nF:S:hd")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nF:S:hd")) > 0)
 	{
 		switch(optch)
 		{
 			case 'r': cfgSamplingRate = atoi(optarg);
 				break;
+			case 'p': cfgPort = atoi(optarg); // setting a port => network transparency
 			case 'n': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::startTCPServer);
 				break;
 			case 'F': cfgFragmentCount = atoi(optarg);
@@ -148,6 +151,8 @@ static void cleanUnusedReferences()
 int main(int argc, char **argv)
 {
 	handleArgs(argc, argv);
+
+	if(cfgPort)			 TCPServer::setPort(cfgPort);
 
 	Dispatcher dispatcher(0,cfgServers);
 	initSignals();
