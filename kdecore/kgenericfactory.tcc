@@ -53,7 +53,7 @@ namespace KDEPrivate
     };
 
     /* Simon: KCC doesn't eat the generic InheritanceDetector<Base>. 
-       Instead we have to use concrete instantiations :-(
+       Instead we have to use concrete specializations :-(
 
     template <class Base, class Derived>
     struct InheritanceTest
