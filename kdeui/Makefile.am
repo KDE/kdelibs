@@ -72,7 +72,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h \
 		kactionselector.h klanguagebutton.h klistviewsearchline.h \
 		kpixmapregionselectorwidget.h kpixmapregionselectordialog.h \
-		kiconviewsearchline.h
+		kiconviewsearchline.h ktoolbarlabelaction.h
 
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
@@ -121,7 +121,8 @@ libkdeui_la_SOURCES = \
 		ksplashscreen.cpp kspellui.ui kconfigdialog.cpp \
 		kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp \
 		kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
-		kwhatsthismanager.cpp kiconviewsearchline.cpp
+		kwhatsthismanager.cpp kiconviewsearchline.cpp \
+		ktoolbarlabelaction.cpp
 
 noinst_HEADERS = kdockwidget_private.h kdockwidget_p.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
