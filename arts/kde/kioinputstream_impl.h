@@ -34,8 +34,8 @@ class KIOInputStream_impl : public QObject, virtual public KIOInputStream_skel,
 {
 Q_OBJECT
 public:
-	static const unsigned int PACKET_COUNT = 8;
-	static const unsigned int PACKET_SIZE = 8192;
+	static const unsigned int PACKET_COUNT;
+	static const unsigned int PACKET_SIZE;
 
 	KIOInputStream_impl();
 	~KIOInputStream_impl();

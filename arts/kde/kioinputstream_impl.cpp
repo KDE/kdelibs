@@ -19,9 +19,7 @@
 
 	*/
 
-#define protected public
 #include <kio/jobclasses.h>
-#undef protected
 #include <kio/job.h>
 #include <kdebug.h>
 #include <qtimer.h>
@@ -31,6 +29,9 @@
 #include <stdlib.h>
 
 using namespace Arts;
+
+const unsigned int KIOInputStream_impl::PACKET_COUNT = 8;
+const unsigned int KIOInputStream_impl::PACKET_SIZE = 8192;
 
 KIOInputStream_impl::KIOInputStream_impl()
 {
@@ -135,7 +136,7 @@ void KIOInputStream_impl::processQueue()
 	    m_job->suspend();
 	else if(m_size < PACKET_SIZE * 4)
 	{
-	    if(m_job->m_suspended)
+	    if(m_job->isSuspended())
 		m_job->resume();
 	}
 
