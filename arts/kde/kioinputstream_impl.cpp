@@ -117,7 +117,7 @@ long KIOInputStream_impl::seek(long)
 void KIOInputStream_impl::processQueue()
 {
 	// TODO:
-	// Respecet PACKET_SIZE!
+	// Respect PACKET_SIZE!
 	kdDebug() << "p1" << endl;
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
 	{
