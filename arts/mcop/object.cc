@@ -166,7 +166,7 @@ Connection *Object_base::_getConnection() const
 	return 0;
 }
 
-bool Object_base::_isEqual(Object_base *object) const;
+bool Object_base::_isEqual(Object_base *object) const
 {
 	return (_internalObjectID == object->_internalObjectID);
 }
