@@ -1302,7 +1302,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
-  d->m_focusNodeRestored = false;
 
   KHTMLFactory::vLinks()->insert( url.url() );
 
