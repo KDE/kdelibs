@@ -2,6 +2,8 @@
 Type=ICO
 Header=^\001\001
 Name=MSWindows Icons
+Name[da]=MSWindows Ikoner
+Name[he]=Windows ילמס
 Read=true
 Write=false
 Suffices=ico,ICO
