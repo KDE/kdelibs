@@ -18,7 +18,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include "publicservice.h"
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 #include <netinet/in.h>
 #include <qapplication.h>
 #include "sdevent.h"
