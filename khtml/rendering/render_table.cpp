@@ -974,12 +974,6 @@ void RenderTable::calcColMinMax()
                 " realMaxWidth=" << realMaxWidth << endl;
 */
 
-    int cw = containingBlockWidth();
-
-    m_marginRight=0;
-    m_marginLeft=0;
-
-    calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),cw);
 }
 
 void RenderTable::calcWidth()
@@ -987,17 +981,15 @@ void RenderTable::calcWidth()
     if ( isPositioned() ) {
         calcAbsoluteHorizontal();
     }
-    else {
-        Length ml = style()->marginLeft();
-        Length mr = style()->marginRight();
-        int cw = containingBlockWidth();
-        m_marginLeft = ml.minWidth(cw);
-        m_marginRight = mr.minWidth(cw);
-    }
 
+    int availableWidth = containingBlockWidth();
+
+    m_marginRight=0;
+    m_marginLeft=0;
+
+    calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),availableWidth);
 
     LengthType widthType = style()->width().type;
-    int availableWidth = containingBlockWidth();
     if(widthType > Relative) {
 	// Percent or fixed table
         m_width = style()->width().minWidth( availableWidth );
