@@ -100,7 +100,7 @@ class KURL;
  * </pre>
  *
  * Note that you have to either delete the allocated completion object
- * when you don't need it anymore, or call 
+ * when you don't need it anymore, or call
  * setAutoDeleteCompletionObject( true );
  *
  * Miscellaneous function calls:
@@ -297,6 +297,10 @@ public:
     */
     virtual bool eventFilter( QObject *, QEvent * );
 
+    /**
+    * Re-implemented from @ref KCompletionBase for internal reasons.
+    */
+    virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
 signals:
     /**
@@ -375,14 +379,19 @@ public slots:
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
-    /*
-    * Sets the completed text in the line-edit appropriately.
-    *
-    * This function is an implementation for @ref KCompletionBase::setCompletedText.
-    * It is provided to allow outside
-    *
-    */
+    /**
+     * Sets the completed text in the line-edit appropriately.
+     *
+     * This function is an implementation for
+     * @ref KCompletionBase::setCompletedText.
+     */
     virtual void setCompletedText( const QString& );
+
+    /**
+     * Sets @p items into the completion-box if @ref completionMode() is
+     * CompletionPopup. The popup will be shown immediately.
+     */
+    void setCompletedItems( const QStringList& items );
 
 protected slots:
 
@@ -423,6 +432,7 @@ protected:
     virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
 private:
+    void makeCompletionBox(); // creates the completion box
 
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
