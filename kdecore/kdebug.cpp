@@ -141,7 +141,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
     oldarea = nArea;
     if ( nArea > 0)
       aAreaName = getDescrFromNum(nArea);
-    if (aAreaName.isEmpty())
+    if ((nArea == 0) || aAreaName.isEmpty())
       aAreaName = KGlobal::instance()->instanceName();
   }
 
