@@ -181,6 +181,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 mHoverCloseButton->setIconSet( SmallIcon( "fileclose" ) );
                 mHoverCloseButton->setGeometry( rect );
                 mHoverCloseButton->setEnabled(false);
+                mHoverCloseButton->setFlat(true);
                 mHoverCloseButton->show();
                 mEnableCloseButtonTimer->start( QApplication::doubleClickInterval()*2, true );
                 mHoverCloseButtonTab = t;
