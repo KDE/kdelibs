@@ -738,6 +738,10 @@ namespace KIO {
          * Forward signal from subjob
          */
         void slotProcessedSize( KIO::Job*, unsigned long data_size );
+        /**
+         * Forward signal from subjob
+         */
+        void slotTotalSize( KIO::Job*, unsigned long size );
 
     private:
         CopyMode m_mode;

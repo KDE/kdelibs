@@ -693,7 +693,7 @@ void TransferJob::resume()
 
 void TransferJob::start(Slave *slave)
 {
-    kdDebug() << "TransferJob::start" << endl;
+    kdDebug(7007) << "TransferJob::start" << endl;
 
     assert(slave);
     connect( slave, SIGNAL( data( const QByteArray & ) ),
@@ -989,7 +989,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
 {
     if ( job == m_putJob )
     {
-        kdDebug() << "FileCopyJob::slotCanResume from PUT job. offset=" << offset << endl;
+        kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << offset << endl;
 
         if (offset)
         {
@@ -1016,7 +1016,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
         kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
         if (offset)
         {
-            kdDebug() << "Setting metadata for resume" << endl;
+            kdDebug(7007) << "Setting metadata for resume" << endl;
             m_getJob->addMetaData( "resume", QString::number(offset) );
             // Might or might not get emitted
             connect( m_getJob, SIGNAL(canResume(KIO::Job *, unsigned long)),
@@ -1035,7 +1035,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
     {
         // Cool, the get job said ok, we can resume
         m_canResume = true;
-        kdDebug() << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
+        kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
     }
     else
         kdWarning(7007) << "FileCopyJob::slotCanResume from unknown job=" << job
@@ -1056,7 +1056,7 @@ void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
    if (!m_resumeAnswerSent)
    {
        m_resumeAnswerSent = true;
-       kdDebug() << "FileCopyJob::slotData (first time) -> send resume answer " << m_canResume << endl;
+       kdDebug(7007) << "FileCopyJob::slotData (first time) -> send resume answer " << m_canResume << endl;
        m_putJob->slave()->sendResumeAnswer( m_canResume );
    }
 }
@@ -1604,11 +1604,11 @@ void CopyJob::startListing( const KURL & src )
 void CopyJob::skip( const KURL & sourceUrl )
 {
     // Check if this is one if toplevel sources
-    kdDebug() << "CopyJob::skip: looking for " << sourceUrl.prettyURL() << endl;
+    kdDebug(7007) << "CopyJob::skip: looking for " << sourceUrl.prettyURL() << endl;
     KURL::List::Iterator sit = m_srcListCopy.find( sourceUrl );
     if ( sit != m_srcListCopy.end() )
     {
-        kdDebug() << "CopyJob::skip: removing " << sourceUrl.prettyURL() << " from list" << endl;
+        kdDebug(7007) << "CopyJob::skip: removing " << sourceUrl.prettyURL() << " from list" << endl;
         m_srcListCopy.remove( sit );
     }
 }
@@ -1993,7 +1993,6 @@ void CopyJob::copyNextFile()
 
     // clear processed size for last file and add it to overall processed size
     m_processedSize += m_fileProcessedSize;
-    kdDebug() << "processedsize now " << m_processedSize << endl;
     m_fileProcessedSize = 0;
 
     // Take the first file in the list
@@ -2053,7 +2052,7 @@ void CopyJob::copyNextFile()
                     // name the file like the URL
                     (*it).uDest.setFileName( KIO::encodeFileName( (*it).uSource.prettyURL() )+".desktop" );
                     QString path = (*it).uDest.path();
-                    kdDebug() << "CopyJob::copyNextFile path=" << path << endl;
+                    kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
                     QFile f( path );
                     if ( f.open( IO_ReadWrite ) )
                     {
@@ -2128,6 +2127,8 @@ void CopyJob::copyNextFile()
         addSubjob(newjob);
         connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
                  this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+        connect( newjob, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+                 this, SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
     }
     else
     {
@@ -2176,6 +2177,20 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   //kdDebug(7007) << "emit processedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
+}
+
+void CopyJob::slotTotalSize( KIO::Job*, unsigned long size )
+{
+  // Special case for copying a single file
+  // This is because some protocols don't implement stat properly
+  // (e.g. HTTP), and don't give us a size in some cases (redirection)
+  // so we'd rather rely on the size given for the transfer
+  if ( files.count() == 1 )
+  {
+    kdDebug(7007) << "Single file -> updating totalsize to " << size << endl;
+    m_totalSize = size;
+    emit totalSize( this, size );
+  }
 }
 
 void CopyJob::slotResultDeletingDirs( Job * job )
