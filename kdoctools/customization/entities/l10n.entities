@@ -50,6 +50,15 @@
 <!-- ============================================================= -->
 
 <!-- All supported languages -->
+
+<!ENTITY % Afrikaans "IGNORE">
+<![%Afrikaans;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Afrikaans Documentation V1.0//AF"
+           "../af/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % Catalan "IGNORE">
 <![%Catalan;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Catalan Documentation V1.0//CA"
@@ -246,6 +255,14 @@
 <![%Swedish;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Swedish Documentation V1.0//SV"
            "../sv/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Turkish "IGNORE">
+<![%Turkish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Turkish Documentation V1.0//TR"
+           "../tr/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
