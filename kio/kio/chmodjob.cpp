@@ -40,20 +40,6 @@
 
 using namespace KIO;
 
-struct KIO::ChmodInfo
-{
-    KURL url;
-    int permissions;
-};
-
-/*
-
- NOTE : This job is currently in ksycoca because kfileitem needs to know
- about mimetypes. For KDE 3.0, make a base class for KFileItem, that holds
- all the information except the mimetype, so that jobs can use it.
-
-*/
-
 ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
                     int newOwner, int newGroup,
                     bool recursive, bool showProgressInfo )

@@ -38,8 +38,6 @@
 
 namespace KIO {
 
-    struct ChmodInfo;
-
     /**
      * This job changes permissions on a list of files or directories,
      * optionally in a recursive manner.
@@ -66,6 +64,11 @@ namespace KIO {
         void processList();
 
     private:
+        struct ChmodInfo
+        {
+            KURL url;
+            int permissions;
+        };
         enum { STATE_LISTING, STATE_CHMODING } state;
         int m_permissions;
         int m_mask;
