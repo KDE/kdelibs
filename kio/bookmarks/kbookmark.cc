@@ -224,6 +224,12 @@ bool KBookmark::isSeparator() const
     return (element.tagName() == "separator");
 }
 
+bool KBookmark::hasParent() const
+{
+    QDomElement parent = element.parentNode().toElement();
+    return !parent.isNull();
+}
+
 QString KBookmark::text() const
 {
     return KStringHandler::csqueeze( fullText() );
@@ -276,13 +282,12 @@ QString KBookmark::address() const
     else
     {
         // Use keditbookmarks's DEBUG_ADDRESSES flag to debug this code :)
-        QDomElement parent = element.parentNode().toElement();
-        if(parent.isNull())
+        if (!hasParent())
         {
-          Q_ASSERT(!parent.isNull());
-          return "ERROR"; // Avoid an infinite loop
+            Q_ASSERT(hasParent());
+            return "ERROR"; // Avoid an infinite loop
         }
-        KBookmarkGroup group( parent );
+        KBookmarkGroup group = parentGroup();
         QString parentAddress = group.address();
         uint counter = 0;
         // Implementation note: we don't use QDomNode's childNode list because we

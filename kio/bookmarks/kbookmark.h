@@ -52,6 +52,14 @@ public:
     bool isNull() const {return element.isNull();}
 
     /**
+     * @return true if bookmark is contained by a QDomDocument,
+     * if not it is most likely that it has become seperated and
+     * is thus invalid and/or has been deleted from the bookmarks.
+     * @since 3.2
+     */
+    bool hasParent() const;
+
+    /**
      * Text shown for the bookmark
      * If bigger than 40, the text is shortened by
      * replacing middle characters with "..." (see KStringHandler::csqueeze)
