@@ -144,6 +144,38 @@
                                 <cstring>_lastModified</cstring>
                             </property>
                         </widget>
+                        <widget class="QLabel" row="3" column="0">
+                            <property name="name">
+                                <cstring>_eLabel</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Document encoding:</string>
+                            </property>
+                            <property name="buddy" stdset="0">
+                                <cstring>_encoding</cstring>
+                            </property>
+                        </widget>
+                        <widget class="KActiveLabel" row="3" column="1">
+                            <property name="name">
+                                <cstring>_encoding</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>1</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                        </widget>
                     </grid>
                 </widget>
             </hbox>

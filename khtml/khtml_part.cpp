@@ -3690,6 +3690,13 @@ void KHTMLPart::slotViewPageInfo()
   else
     dlg->_lastModified->setText(lastModified());
 
+  const QString& enc = encoding();
+  if (enc.isEmpty()) {
+    dlg->_eLabel->hide();
+    dlg->_encoding->hide();
+  } else {
+    dlg->_encoding->setText(enc);
+  }
   /* populate the list view now */
   const QStringList headers = QStringList::split("\n", d->m_httpHeaders);
 
