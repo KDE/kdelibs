@@ -65,6 +65,9 @@
 <!ENTITY traducteurGuillaumeDuweltzRebert     '<othercredit role="translator"><firstname>Guillaume</firstname><surname>Duweltz</surname><affiliation><address><email>gduwelz-rebert.cs@clearstream.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurGuillaumeDuweltzRebert      '<othercredit role="relecteur"><firstname>Guillaume</firstname><surname>Duweltz</surname><affiliation><address><email>gduwelz-rebert.cs@clearstream.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurSamiFantar    '<othercredit role="translator"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurSamiFantar     '<othercredit role="reviewer"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurNilsSergioFernandez    '<othercredit role="translator"><firstname>Nils Sergio</firstname><surname>FernÃ¡ndez Rönningen</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurNilsSergioFernandez     '<othercredit role="reviewer"><firstname>Nils Sergio</firstname><surname>FernÃ¡ndez Rönningen</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -147,6 +150,7 @@
 <!ENTITY PhillipDucharme   'Phillip Ducharme <email>philip.ducharme@hermes.usherb.ca</email>'>
 <!ENTITY HeleneDuwelzRebert 'Hélène Duwelz-Rebert <email>helened@herbalife.com</email>'>
 <!ENTITY GuillaumeDuwelzRebert 'Guillaume Duwelz-Rebert <email>gduwelz-rebert.cs@clearstream.com</email>'>
+<!ENTITY SamiFantar          'Sami Fantar <email>sami.fantar@laposte.net</email>'>
 <!ENTITY NilsSergioFernandez 'Nils Sergio Fernandez Rönningen <email>nilsfernandez@yahoo.fr</email>'>
 <!ENTITY FredericFoiry       'Frédéric Foiry <email>frederic.foiry@wanadoo.fr</email>'>
 <!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
