@@ -67,7 +67,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return bar;
   }
 
-  if ( element.tagName().lower() == "menu" && parent )
+  if ( element.tagName().lower() == "menu" )
   {
     QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( "name" ).utf8());
     popup->setFont(KGlobal::menuFont());
@@ -78,9 +78,9 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if (text.isEmpty())  // still no luck
       text = i18n("No text!");
 
-    if ( parent->inherits( "KMenuBar" ) )
+    if ( parent && parent->inherits( "KMenuBar" ) )
       id = ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
-    else if ( parent->inherits( "QPopupMenu" ) )
+    else if ( parent && parent->inherits( "QPopupMenu" ) )
       id = ((QPopupMenu *)parent)->insertItem( text, popup, -1, index );
 
     return popup;
