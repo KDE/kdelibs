@@ -12,4 +12,13 @@
 <!ENTITY Ctrl		"<keycap>Ctrl</keycap>">
 <!ENTITY Alt		"<keycap>Alt</keycap>">
 <!ENTITY Esc		"<keycap>Esc</keycap>">
-<!ENTITY Backspace        "<keycap>Backspace</keycap>">
+<!ENTITY Backspace      "<keycap>Backspace</keycap>">
+<!ENTITY kicon          "<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>ve&#318;k&#233; K</title></objectinfo>
+  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+   <textobject><phrase>K</phrase></textobject>
+   </inlinemediaobject>
+   </guiicon>-Symbol"><!-- kicon -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> menu"> <!-- kmenu -->
+    
