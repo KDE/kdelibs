@@ -4806,13 +4806,16 @@ KHTMLPart *
 KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame )
 {
 #ifdef DEBUG_FINDFRAME
-  kdDebug(6050) << "KHTMLPart::findFrameParent: this = " << this << " URL = " << m_url << " findFrameParent( " << f << " )" << endl;
+  kdDebug(6050) << "KHTMLPart::findFrameParent: this = " << this << " URL = " << m_url << " name = " << name() << " findFrameParent( " << f << " )" << endl;
 #endif
   // Check access
   KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
 
   if (!checkFrameAccess(callingHtmlPart))
      return 0;
+
+  if (!childFrame && !parentPart() && (name() == f))
+     return this;
 
   FrameIt it = d->m_frames.find( f );
   const FrameIt end = d->m_frames.end();
