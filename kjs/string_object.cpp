@@ -118,6 +118,8 @@ KJSO StringPrototype::get(const UString &p) const
     id = StringProtoFunc::Replace;
   else if (p == "search")
     id = StringProtoFunc::Search;
+  else if (p == "slice")
+    id = StringProtoFunc::Slice;
   else if (p == "split")
     id = StringProtoFunc::Split;
   else if (p == "substr")
@@ -281,6 +283,27 @@ Completion StringProtoFunc::execute(const List &args)
 	result = String(u3);
     }
     break;
+  case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/string.htm#1194366
+    {
+        // The arg processing is very much like ArrayProtoFunc::Slice
+        result = Object::create(ArrayClass); // We return a new array
+        int begin = args[0].toUInt32();
+        int end = len;
+        if (!args[1].isA(UndefinedType))
+        {
+          end = args[1].toUInt32();
+          if ( end < 0 )
+            end += len;
+        }
+        // safety tests
+        if ( begin < 0 || end < 0 || begin >= end ) {
+            result = String();
+            break;
+        }
+        //printf( "Slicing from %d to %d \n", begin, end );
+        result = String( s.value().substr(begin, end-begin) );
+        break;
+    }
   case Split:
     result = Object::create(ArrayClass);
     u = s.value();
