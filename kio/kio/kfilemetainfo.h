@@ -626,7 +626,7 @@ public:
     uint unit() const;
 
     /**
-     * Returns the atttributes for this item. See
+     * Returns the attributes for this item. See
      * KFileMimeTypeInfo::Attributes.
      * @return the attributes
      **/
