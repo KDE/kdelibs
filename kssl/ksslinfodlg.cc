@@ -186,7 +186,13 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
        QPtrList<KSSLCertificate> cl = cert->chain().getChain();
        for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
          KSSLX509Map map(c->getSubject());
-         d->_chain->insertItem(QString::number(++cnt)+" - "+map.getValue("CN"));
+	 QString id;
+	 id = map.getValue("CN");
+	 if (id.length() == 0)
+		 id = map.getValue("O");
+	 if (id.length() == 0)
+		 id = map.getValue("OU");
+         d->_chain->insertItem(QString::number(++cnt)+" - "+id);
        }
        d->_chain->setCurrentItem(0);
     } else d->_chain->setEnabled(false);
