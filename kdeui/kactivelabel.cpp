@@ -18,6 +18,7 @@
 */
 
 #include <kapplication.h>
+#include <qsimplerichtext.h>
 
 #include "kactivelabel.h"
 
@@ -81,6 +82,34 @@ void KActiveLabel::focusOutEvent( QFocusEvent* fe )
    QTextBrowser::focusOutEvent(fe);
    if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
       selectAll(false);
+}
+
+QSize KActiveLabel::minimumSizeHint() const
+{
+   QSize ms = minimumSize();
+   if ((ms.width() > 0) && (ms.height() > 0))
+      return ms;
+
+   int w = 400;
+   if (ms.width() > 0)
+      w = ms.width();
+  
+   QString txt = text();
+   QSimpleRichText rt(txt, font());
+   rt.setWidth(w - 2*frameWidth() - 10);
+   w = 10 + rt.widthUsed() + 2*frameWidth();
+   if (w < ms.width())
+      w = ms.width();
+   int h = rt.height() + 2*frameWidth();
+   if ( h < ms.height())
+      h = ms.height();
+      
+   return QSize(w, h);
+}
+
+QSize KActiveLabel::sizeHint() const
+{
+   return minimumSizeHint();
 }
 
 #include "kactivelabel.moc"

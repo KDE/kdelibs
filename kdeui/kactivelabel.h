@@ -50,6 +50,9 @@ public:
      */
     KActiveLabel(const QString & text, QWidget * parent, const char * name = 0);
 
+    QSize minimumSizeHint() const;
+    QSize sizeHint() const;
+
 public slots:
     /**
      * Opens @p link.
