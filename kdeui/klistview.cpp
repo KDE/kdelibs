@@ -51,10 +51,9 @@ public:
 
   QCursor oldCursor;
 
-
-  QRect *invalidateRect;
-  QPoint *pressPos;
-  QPoint *startDragPos;
+  QRect invalidateRect;
+  QPoint pressPos;
+  QPoint startDragPos;
   KListViewLineEdit *editor;
   QValueList<int> renameable;
 
@@ -129,9 +128,6 @@ KListView::KListView( QWidget *parent, const char *name )
 {
 	{
 		d=new KListViewPrivate;
-		d->invalidateRect=0;
-		d->pressPos=0;
-		d->startDragPos=0;
 		d->editor=new KListViewLineEdit(this);
 		d->itemsMovable=true;
 		d->itemsRenameable=false;
@@ -167,9 +163,6 @@ KListView::KListView( QWidget *parent, const char *name )
 
 KListView::~KListView()
 {
-    delete d->startDragPos;
-    delete d->pressPos;
-    delete d->invalidateRect;
     delete d->editor;
 }
 
@@ -377,8 +370,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
         treeStepSize() * ( i->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() ||
         p.x() < header()->cellPos( header()->mapToIndex( 0 ) ) )
     {
-      delete d->pressPos;
-      d->pressPos= new QPoint(p);
+      d->pressPos = p;
     }
   }
 
@@ -413,18 +405,17 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 	QListView::contentsMouseMoveEvent( e );
 
 	// I have just started to move my mouse..
-	if ((e->state() == LeftButton) && !d->startDragPos)
+	if ((e->state() == LeftButton) && !d->startDragPos.isNull())
 	{
-		d->startDragPos=new QPoint(e->pos());
+	  d->startDragPos = e->pos();
 	}
 	else // Now, I may begin dragging!
-		if (d->startDragPos && (e->state() == LeftButton) && dragEnabled())
+		if ((e->state() == LeftButton) && dragEnabled())
 	{
 		// Have we moved the mouse far enough?
-		if ((*d->startDragPos-e->pos()).manhattanLength() > QApplication::startDragDistance())
+		if ((d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
 		{
-            delete d->startDragPos;
-			d->startDragPos= new QPoint(e->pos());
+			d->startDragPos = e->pos();
 		
 			startDrag();
 		}
@@ -498,16 +489,14 @@ void KListView::dragMoveEvent(QDragMoveEvent *event)
 
 	if (dropVisualizer())
 	{
-		QRect *rectTemp=new QRect(drawDropVisualizer(0,0, afterme));
-		if (d->invalidateRect && (*d->invalidateRect)!=*rectTemp)
+		QRect rectTemp (drawDropVisualizer(0,0, afterme));
+		if (d->invalidateRect != rectTemp)
 		{
 			cleanRect();
 			QPainter painter(viewport());
 			drawDropVisualizer(&painter,0, afterme);
 		}
-
-		delete d->invalidateRect;
-		d->invalidateRect=rectTemp;
+		d->invalidateRect = rectTemp;
 	}
 }
 
@@ -519,20 +508,18 @@ void KListView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void KListView::cleanRect()
 {
-    if (!d->invalidateRect) return;
-    QRect *temp=d->invalidateRect;
-    d->invalidateRect=0;
+    if (!d->invalidateRect.isValid()) return;
+
+    QRect temp = d->invalidateRect;
+    d->invalidateRect = QRect();
 	
-    viewport()->update(*temp);
-	
-    delete temp;
+    viewport()->update(temp);
 }
 
 void KListView::viewportPaintEvent(QPaintEvent *event)
 {
     QListView::viewportPaintEvent(event);
-	delete d->invalidateRect;
-	d->invalidateRect=0;
+	d->invalidateRect = QRect();
 }
 
 void KListView::findDrop(const QPoint &_p, QListViewItem *&parent, QListViewItem *&after) const
@@ -566,9 +553,8 @@ void KListView::findDrop(const QPoint &_p, QListViewItem *&parent, QListViewItem
 
 void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
-    delete d->pressPos;
-    d->pressPos=0;
-    QListView::contentsMouseReleaseEvent( e );
+  d->pressPos = QPoint ();
+  QListView::contentsMouseReleaseEvent( e );
 }
 
 QListViewItem *KListView::lastItem() const
