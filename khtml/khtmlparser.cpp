@@ -109,7 +109,9 @@ QString toRoman( int number, bool upper )
 
 void setNamedColor(QColor &color, const char *name)
 {
-    if ((*name != '#') && (strlen(name) == 6))
+    char *endP;
+    if ((*name != '#') && (strlen(name) == 6) &&
+        (strtoul(name, &endP, 16), (endP == name+6)) )
     {
         QString col("#");
         col += name;
