@@ -44,7 +44,7 @@
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
   : KDialogBase( Plain,
-                 i18n("Submit a bug report"),
+                 i18n("Submit a Bug Report"),
                  Ok | Cancel,
                  Ok,
                  parentw,
