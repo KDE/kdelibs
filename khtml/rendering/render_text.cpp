@@ -399,7 +399,7 @@ void RenderText::calcMinMaxWidth()
 	}
 	else
 	{
-	    printf("c = %x\n", c.unicode());
+	    //printf("c = %x\n", c.unicode());
 	    int w = fm->width(c);
 	    currMinWidth += w;
 	    currMaxWidth += w;
