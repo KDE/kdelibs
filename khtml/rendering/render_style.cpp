@@ -328,6 +328,10 @@ void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
     css3InheritedData = inheritParent->css3InheritedData;
     inherited = inheritParent->inherited;
     inherited_flags = inheritParent->inherited_flags;
+
+    // Simulate ":after,:before { white-space: pre-line }"
+    if (styleType() == AFTER || styleType() == BEFORE)
+        setWhiteSpace(PRE_LINE);
 }
 
 RenderStyle::~RenderStyle()
