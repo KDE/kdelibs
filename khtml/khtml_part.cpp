@@ -823,6 +823,16 @@ bool KHTMLPart::metaRefreshEnabled() const
   return d->m_metaRefreshEnabled;
 }
 
+// Define this to disable dlopening kjs_html, when directly linking to it.
+// You need to edit khtml/Makefile.am to add ./ecma/libkjs_html.la to LIBADD
+// and to edit khtml/ecma/Makefile.am to s/kjs_html/libkjs_html/, remove libkhtml from LIBADD,
+//        remove LDFLAGS line, and replace kde_module with either lib (shared) or noinst (static)
+//#define DIRECT_LINKAGE_TO_ECMA
+
+#ifdef DIRECT_LINKAGE_TO_ECMA
+extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
+#endif
+
 KJSProxy *KHTMLPart::jScript()
 {
   if ( d->m_bJScriptOverride && !d->m_bJScriptForce || !d->m_bJScriptOverride && !d->m_bJScriptEnabled)
@@ -830,6 +840,7 @@ KJSProxy *KHTMLPart::jScript()
 
   if ( !d->m_jscript )
   {
+#ifndef DIRECT_LINKAGE_TO_ECMA
     KLibrary *lib = KLibLoader::self()->library("kjs_html");
     if ( !lib ) {
       setJScriptEnabled( false );
@@ -846,6 +857,10 @@ KJSProxy *KHTMLPart::jScript()
     initFunction initSym = (initFunction) sym;
     d->m_jscript = (*initSym)(this);
     d->m_kjs_lib = lib;
+#else
+    d->m_jscript = kjs_html_init(this);
+    // d->m_kjs_lib remains 0L.
+#endif
     if (d->m_bJScriptDebugEnabled)
         d->m_jscript->setDebugEnabled(true);
   }
