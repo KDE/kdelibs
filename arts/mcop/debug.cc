@@ -38,6 +38,7 @@ static Arts::Mutex *arts_debug_mutex = 0;
 
 /* routines for variable length sprintf without buffer overflow (from GLib) */
 static char* arts_strdup_vprintf(const char *format, va_list args1);
+static char* arts_strdup_printf (const char *format, ...);
 
 namespace Arts {
 
@@ -45,7 +46,7 @@ static char * shell_quote(const char *s)
 {
    char *result;
    char *p;
-   p = result = malloc(strlen(s)*5+1);
+   p = result = (char *) malloc(strlen(s)*5+1);
    while(*s)
    {
      if (*s == '\'')
