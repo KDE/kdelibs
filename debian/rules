@@ -60,6 +60,9 @@ configure-stamp:
 		$(MAKE) -f admin/Makefile.common ;\
 	fi
 
+	# ensure configure is executable
+	chmod +x configure
+
 	# make build directory
 	mkdir $(objdir)
 
@@ -162,7 +165,7 @@ binary-common:
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
-	dh_undocumented
+#	dh_undocumented
 	dh_installman
 	dh_strip
 	dh_link
