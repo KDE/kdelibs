@@ -21,11 +21,13 @@
 #ifndef KSVGIconEngine_H
 #define KSVGIconEngine_H
 
+#include <kdelibs_export.h>
+
 /** \internal DO NOT USE! */
 
 class KSVGIconPainter;
 
-class KSVGIconEngine
+class KDECORE_EXPORT KSVGIconEngine
 {
 public:
 	KSVGIconEngine();
