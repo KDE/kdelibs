@@ -958,7 +958,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( paintDeviceMetrics() );
-        if ( parseMode() != Strict )
+        if ( inCompatMode() )
             _style->setHtmlHacks(true); // enable html specific rendering tricks
 
         StyleChange ch = diff( _style, oldStyle );
@@ -1504,23 +1504,16 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         if ( pos == -1 )
             pos = str.find(QRegExp("[ \t]"));
 
+        bool ok = false;
+	int delay = kMax( 0, content.implementation()->toInt(&ok) );
+        if ( !ok && str.length() && str[0] == '.' )
+            ok = true;
+
         if (pos == -1) // There can be no url (David)
         {
-            bool ok = false;
-            int delay = 0;
-	    delay = content.implementation()->toInt(&ok);
             if(ok)
                 v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
-            int delay = 0;
-            int fract = pos;
-            bool ok = false;
-            if ( (fract = str.find('.') ) < 0 || fract > pos)
-                fract = pos;
-	    DOMStringImpl* s = content.implementation()->substring(0, fract);
-	    delay = s->toInt(&ok);
-	    delete s;
-
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             str = str.mid(pos);
@@ -1532,7 +1525,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
                 str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
             QString newURL = getDocument()->completeURL( str );
-            if ( ok || !fract)
+            if ( ok )
                 v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2 || newURL == URL().url());
         }
     }
