@@ -462,8 +462,6 @@ QString whatType = d->browserExtension->urlArgs().serviceType;
 if (whatType.isEmpty())
 	whatType = KServiceTypeFactory::self()->findFromPattern(m_file)->name();
 
-_ca_filenameLabel->setText(m_file);
-
 /*
    QString blah = "file: " + m_file
    + "\nurl: " + m_url.url()
@@ -509,6 +507,8 @@ if (whatType == "application/x-pkcs12") {
 		whatType == "application/binary-certificate") {
 	FILE *fp; 
 	bool isPEM = false;
+
+	_ca_filenameLabel->setText(m_file);
 
 	/////////////  UGLY HACK TO GET AROUND OPENSSL PROBLEMS ///////////
 	if (whatType == "application/x-x509-ca-cert") {
