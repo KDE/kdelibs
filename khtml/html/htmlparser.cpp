@@ -264,6 +264,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // sometimes flat doesn't make sense
     switch(t->tid) {
+    case ID_SELECT:
     case ID_OPTION:
         t->flat = false;
     }

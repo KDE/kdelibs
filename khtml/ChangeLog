@@ -1,7 +1,12 @@
-2003-11-25  Stephan Kulow  <coolo@kde.org>
+2003-11-26  Dirk Mueller  <mueller@kde.org>
 
+	* html/htmlparser.cpp (parseToken): ignore flat on <select>. maybe
+	we should only do this in compat mode though (#69017).
 
 2003-11-25  Dirk Mueller  <mueller@kde.org>
+
+	* html/html_formimpl.cpp (defaultEventHandler): ignore stale keyup events
+	on space too.
 
 	* css/html4.css: Set quirky margins on elements that need it (#66490).
 
