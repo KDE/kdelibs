@@ -113,12 +113,13 @@ public:
   int hue() const
         { return _hue; }
   void setHue( int h )
-        { _hue = h; update(); }
+        { _hue = h; }
   int saturation() const
         { return _sat; }
   void setSaturation( int s )
-        { _sat = s; update(); }
+        { _sat = s; }
 
+  void updateContents();
 protected:
   /**
    * Draws the contents of the widget on a pixmap,
@@ -137,7 +138,6 @@ protected:
   virtual void drawContents( QPainter *painter );
 
 private:
-  void updateContents();
   int _hue;
   int _sat;
   QPixmap pixmap;
