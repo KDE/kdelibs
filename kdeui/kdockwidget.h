@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
+   Copyright (C) 2000 Falk Brettschneider <gigafalk@yahoo.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -15,6 +16,14 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
+/*
+   activities:
+   -----------
+   03/2000                 : class documentation added by Falk Brettschneider
+   10/1999 - 03/2000       : programmed by Max Judin
+*/
+
 #ifndef KDOCKWIDGET_H
 #define KDOCKWIDGET_H
 
@@ -41,65 +50,179 @@ class KConfig;
 
 typedef QList<QWidget> WidgetList;
 
+/**
+ * An abstract base clase for all dockwidget headers. See the class description of KDockWidgetHeader!
+ *
+ * @author Max Judin.
+ * @version $Id$
+ */
 class KDockWidgetAbstractHeader : public QFrame
 {
   Q_OBJECT
 public:
-  KDockWidgetAbstractHeader( KDockWidget* parent, const char* name = 0L );
-  virtual ~KDockWidgetAbstractHeader(){};
 
+  /** 
+   * Constructs this.
+   * 
+   * @param parent the parent widget (usually a dockwidget)
+   * @param name   the object instance name
+   */
+  KDockWidgetAbstractHeader( KDockWidget* parent, const char* name = 0L );
+  
+  /**
+   * Destructs this.
+   */
+  virtual ~KDockWidgetAbstractHeader(){};
+  
+  /** Provides things concerning to switching to toplevel mode. Must be overridden by an inheriting class. */
   virtual void setTopLevel( bool ){};
+
+  /** Provides saving the current configuration. Must be overridden by an inheriting class. */
   virtual void saveConfig( KConfig* ){};
+
+  /** Provides loading the current configuration.  Must be overridden by an inheriting class */
   virtual void loadConfig( KConfig* ){};
 };
 
+/**
+ * An abstract class for all dockwidget header drags. See the class description of KDockWidgetHeaderDrag!
+ *
+ * @author Max Judin.
+ * @version $Id$
+ */
 class KDockWidgetAbstractHeaderDrag : public QFrame
 {
   Q_OBJECT
 public:
+
+  /** 
+   * Constructs this.
+   * 
+   * @param parent the parent widget (usually a dockwidget header)
+   * @param dock   the dockwidget where it belongs to
+   * @param name   the object instance name
+   */
   KDockWidgetAbstractHeaderDrag( KDockWidgetAbstractHeader* parent,
                                  KDockWidget* dock, const char* name = 0L );
+
+  /**
+   * Destructs this.
+   */
   virtual ~KDockWidgetAbstractHeaderDrag(){};
 
+  /** @return the dockwidget where this belongs to */
   KDockWidget* dockWidget(){ return d; }
 
 private:
+  /** the dockwidget where this belongs to */
   KDockWidget* d;
 };
 
+/**
+ * This special widget is the panel one can grip with the mouse. The widget for dragging, so to speak.
+ * Usually it is located in the KDockWidgetHeader. 
+ *
+ * @author Max Judin.
+ * @version $Id$
+ */
 class KDockWidgetHeaderDrag : public KDockWidgetAbstractHeaderDrag
 {
   Q_OBJECT
 public:
+
+  /** 
+   * Constructs this.
+   * 
+   * @param parent the parent widget (usually a dockwidget header)
+   * @param dock   the dockwidget where it belongs to
+   * @param name   the object instance name
+   */
   KDockWidgetHeaderDrag( KDockWidgetAbstractHeader* parent, KDockWidget* dock,
                          const char* name = 0L );
+
+  /**
+   * Destructs this.
+   */
   virtual ~KDockWidgetHeaderDrag(){};
 
 protected:
+
+  /**
+   * Draws the drag panel (a double line)
+   */
   virtual void paintEvent( QPaintEvent* );
 };
 
+/**
+ * The header (additional bar) for a KDockWidget.
+ * It have got the buttons located there. And it is for recording and reading the button states.
+ *
+ * @author Max Judin.
+ * @version $Id$
+ */
 class KDockWidgetHeader : public KDockWidgetAbstractHeader
 {
   Q_OBJECT
 public:
+
+  /** 
+   * Constructs this.
+   * 
+   * @param parent the parent widget (usually a dockwidget)
+   * @param name   the object instance name
+   */
   KDockWidgetHeader( KDockWidget* parent, const char* name = 0L );
+
+  /**
+   * Destructs this.
+   */
   virtual ~KDockWidgetHeader(){};
 
-  virtual void setTopLevel( bool );
-  virtual void saveConfig( KConfig* );
+  /**
+   * Hides the close button and stay button when switching to toplevel or vice versa shows them.
+   *
+   * @param t toplevel or not
+   */
+  virtual void setTopLevel( bool t);
+
+  /**
+   * Saves the current button state to a KDE config container object.
+   *
+   * @param c the configuration safe
+   */
+  virtual void saveConfig( KConfig* c);
+
+  /**
+   * Loads the current button state from a KDE config container object.
+   *
+   * @param c the configuration safe
+   */
   virtual void loadConfig( KConfig* );
 
 protected slots:
+  /**
+   * Set dragging the dockwidget off when the stay button is pressed down and vice versa.
+   */
   void slotStayClicked();
 
 protected:
+
+  /** A layout manager for placing the embedded buttons (close and stay) */
   QHBoxLayout* layout;
+  
+  /** a little button for closing (undocking and hiding) the dockwidget */
   KDockButton_Private* closeButton;
+  
+  /** a little button for enabling/disabling dragging the dockwidget with the mouse */
   KDockButton_Private* stayButton;
+  
+  /** the drag panel (double line) */
   KDockWidgetHeaderDrag* drag;
 };
 
+/**
+ *
+ */
 class KDockTabGroup : public KDockTabCtl
 {
   Q_OBJECT
@@ -128,6 +251,15 @@ friend class KDockSplitter;
 friend class KDockMainWindow;
 
 public:
+  /**
+   * Constructs a dockwidget. Initially, docking to another and docking to this is allowed for every DockPosition.
+   * It is supposed to be no (tab) group. It will taken under control of its dockmanager.
+   *
+   * @param dockManager the responsible manager (dock helper)
+   * @param name        object instance name
+   * @param pixmap      an icon (for instance shown when docked centered)
+   * @param parent      parent widget
+   */
   KDockWidget( KDockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L );
 
@@ -136,6 +268,9 @@ public:
    */
   virtual ~KDockWidget();
 
+  /**
+   * The possible positions where a dockwidget can dock to another dockwidget
+   */
   enum DockPosition
   {
     DockNone   = 0,
@@ -157,50 +292,171 @@ public:
    */
   KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false );
 
+  /**
+   * Specify where it is either possible or impossible for this to dock to another dockwidget.
+   *
+   * @param pos an OR'ed set of DockPositions
+   */
   void setEnableDocking( int pos );
+
+  /**
+   * @return where it is either possible or impossible for this to dock to another dockwidget (an OR'ed set of DockPositions)
+   */
   int enableDocking(){ return eDocking; }
 
+  /**
+   * Specify where it is either possible or impossible for another dockwidget to dock to this.
+   *
+   * @param pos an OR'ed set of DockPositions
+   */
   void setDockSite( int pos ){ sDocking = pos;}
+
+  /**
+   * @return where it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of DockPositions)
+   */
   int dockSite(){ return sDocking; }
 
-  void setWidget( QWidget* );
-  void setHeader( KDockWidgetAbstractHeader* );
+  /**
+   * Set the embedded widget. A QLayout takes care about proper resizing, automatically.
+   *
+   * @param w the pointer to the dockwidget's child widget
+   */
+  void setWidget( QWidget* w);
 
+  /**
+   * Set the header of this dockwidget. A QLayout takes care about proper resizing, automatically.
+   * The header contains the drag panel, the close button and the stay button.
+   *
+   * @param ah a base class pointer to the dockwidget header
+   */
+  void setHeader( KDockWidgetAbstractHeader* ah);
+
+  /**
+   * Normally it simply shows the dockwidget. 
+   * But additionally, if it is docked to a tab widget (DockCenter), it is set as the active (visible) tab page.
+   */
   void makeDockVisible();
+  
+  /** 
+   * @return if it may be possible to hide this.  
+   * There are reasons that it's impossible:
+   * <UL><LI>it is a (tab) group</LI>
+   * <LI>it is invisible, already ;-)</LI>
+   * <LI>the parent of this is the KDockMainWindow</LI>
+   * <LI>it isn't able to dock to another widget</LI></UL>
+   */
   bool mayBeHide();
+  
+  /** 
+   * @return if it may be possible to show this
+   * There are reasons that it's impossible:
+   * <UL><LI>it is a (tab) group</LI>
+   * <LI>it is visible, already ;-)</LI>
+   * <LI>the parent of this is the KDockMainWindow</LI></UL>
+   */
   bool mayBeShow();
 
+  /**
+   * @return the dockmanager that is responsible for this.
+   */
   KDockManager* dockManager(){ return manager; }
 
+  /**
+   * Catches and processes some QWidget events that are interesting for dockwidgets.
+   */
   virtual bool event( QEvent * );
+  
+  /**
+   * Add dockwidget management actions to QWidget::show. 
+   */
   virtual void show();
 
 public slots:
+  /**
+   * Toggles the visibility state of the dockwidget if it is able to be shown or to be hidden. 
+   *
+   */
   void changeHideShowState();
 
 protected:
+  
+  /**
+   * @return the parent widget of this if it inherits class KDockTabGroup
+   */
   KDockTabGroup* parentTabGroup();
+  
+  /**
+   * Check some conditions and show or hide the dockwidget header (drag panel).
+   * The header is hidden if:
+   * <LU><LI>the parent widget is the KDockMainWindow</LI>
+   * <LI>this is a (tab) group dockwidget</LI>
+   * <LI>it is not able to dock to another dockwidgets</LI>
+   */
   void updateHeader();
 
 signals:
-  //emit for dock when another KDockWidget docking in this KDockWidget
-  void docking( KDockWidget*, KDockWidget::DockPosition );
+  /**
+   * Emits that another dockwidget is docking to this.
+   *
+   * @param dw the dockwidget that is docking to this
+   * @param the DockPosition where it wants to dock to
+   */
+  void docking( KDockWidget* dw, KDockWidget::DockPosition );
+  
+  /**
+   * Signals that the dock default position is set.
+   */
   void setDockDefaultPos();
 
 public slots:
+
+  /**
+   * Undocks this. It means it becomes a toplevel widget framed by the system window manager.
+   * A small panel at the top of this undocked widget gives the possibility to drag it into
+   * another dockwidget by mouse (docking).
+   */
   void undock();
 
 private:
-  void setDockTabName( KDockTabGroup* );
+  /** 
+   * Sets the caption (window title) of the given tab widget.
+   *
+   * @param g the group (tab) widget
+   */
+  void setDockTabName( KDockTabGroup* g);
+  
+  /**
+   * Reparent to s or set this to the KDockMainWindow's view if s is that dockmainwindow.
+   * If s is O, simply move the widget.
+   *
+   * @param s the target widget to reparent to
+   * @param p the point to move to (if it doesn't reparent)
+   */
   void applyToWidget( QWidget* s, const QPoint& p  = QPoint(0,0) );
 
+  /** A base class pointer to the header of this dockwidget */
   KDockWidgetAbstractHeader* header;
+  
+  /** the embedded widget */
   QWidget* widget;
+  
+  /** the layout manager that takes care about proper resizing and moving the embedded widget and the header */
   QVBoxLayout* layout;
+  
+  /** the responsible dockmanager */
   KDockManager* manager;
+  
+  /** an icon for the tab widget header */
   QPixmap* pix;
 
+  /**
+   * Information about the ability for docking to another dockwidget.
+   */
   int eDocking;
+
+  /**
+   * Information which site of this dockwidget is free for docking of other dockwidgets.
+   */
   int sDocking;
 
   // GROUP data
