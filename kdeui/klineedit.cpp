@@ -389,7 +389,6 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
-
     // Filter key-events if EchoMode is normal and
     // completion mode is not set to CompletionNone
     if ( echoMode() == QLineEdit::Normal &&
@@ -423,7 +422,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 d->disableRestoreSelection = false;
                 return;
             }
-
             if ( e->key() == Key_Escape )
             {
                 if (hasSelectedText() && !d->userSelection )
@@ -532,7 +530,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 setCursorPosition(cPos);
                 cursorNotAtEnd=true;
             }
+            if ( e->key() == Key_Return || e->key() == Key_Enter )
+            {
+                if ( d->completionBox && d->completionBox->isVisible())
+                    d->completionBox->hide();
 
+            }
             uint selectedLength=selectedText().length();
 
             QLineEdit::keyPressEvent ( e );
