@@ -89,7 +89,7 @@
 #include <kaboutdata.h>
 
 typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
-K_EXPORT_COMPONENT_FACTORY( libkcm_crypto, KryptoFactory("kcmcrypto") );
+K_EXPORT_COMPONENT_FACTORY( kcm_crypto, KryptoFactory("kcmcrypto") );
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
