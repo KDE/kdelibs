@@ -172,13 +172,6 @@ void KHTMLView::init()
 
 void KHTMLView::clear()
 {
-    if (d->vmode==Auto)
-        QScrollView::setVScrollBarMode(AlwaysOn);
-    else
-        QScrollView::setVScrollBarMode(d->vmode);
-    QScrollView::setHScrollBarMode(d->hmode);
-
-    resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
     if(d->useSlowRepaints)
@@ -186,6 +179,13 @@ void KHTMLView::clear()
 
     d->reset();
     emit cleared();
+ 
+    QScrollView::setHScrollBarMode(d->hmode);       
+    if (d->vmode==Auto)
+        QScrollView::setVScrollBarMode(AlwaysOn);
+    else
+        QScrollView::setVScrollBarMode(d->vmode);    
+    resizeContents(visibleWidth(), visibleHeight());    
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
