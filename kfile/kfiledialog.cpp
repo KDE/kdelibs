@@ -567,6 +567,10 @@ void KFileDialog::accept()
     delete c;
 
     KDialogBase::accept();
+    
+    if ( mode() & KFile::Files != KFile::Files ) // single selection
+	emit fileSelected(d->url.url());
+
     emit okClicked();
 }
 
@@ -608,7 +612,6 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
         d->url = i->url();
         locationEdit->setCurrentItem( 0 );
         locationEdit->setEditText( i->name() );
-        emit fileSelected(d->url.url());
     }
     else {
         multiSelectionChanged();

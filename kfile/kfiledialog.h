@@ -421,7 +421,11 @@ public:
 
 signals:
     /**
-      * Emitted when the user selects a file.
+      * Emitted when the user selects a file. It is only emitted in single-
+      * selection mode. The best way to get notified about selected file(s)
+      * is to connect to the okClicked() signal inherited from KDialogBase
+      * and call @ref selectedFile(), @ref selectedFiles(),
+      * @ref selectedURL() or @ref selectedURLs().
       */
     void fileSelected(const QString&);
 
@@ -436,6 +440,7 @@ signals:
      * Note: @ref fileHighlighted() or @ref fileSelected() are @em not
      * emitted in multiselection mode. You may use selectedItems() to
      * ask for the current highlighted items.
+     * @see #fileSelected
      */
     void selectionChanged();
 
