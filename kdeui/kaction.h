@@ -445,9 +445,11 @@ public slots:
     /**
      * Sets the keyboard accelerator associated with this action.
      */
-    virtual void setAccel( QKeySequence key);
+    virtual void setAccel( QKeySequence key );
 
-    virtual void updateConnections();
+    // This is just a place-holder for now -- will be implemented soon
+    //  with a KShortcut argument instead of QKeySequence. -- ellis
+    virtual void setShortcut( QKeySequence key );
 
     virtual void setGroup( const QString& );
 
@@ -1570,9 +1572,10 @@ public:
   KActionCollection& operator= (const KActionCollection& );
   KActionCollection& operator+= (const KActionCollection& );
 
-  virtual void updateConnections();
-  //virtual void setKeyMap( const KAccelActions& map );
-  virtual KAccelActions& keyMap();
+  virtual void createKeyMap( KAccelActions& );
+  //virtual void updateConnections();
+  virtual void setKeyMap( const KAccelActions& map );
+  //virtual KAccelActions& keyMap();
 
   void setInstance( KInstance *instance );
   KInstance *instance() const;

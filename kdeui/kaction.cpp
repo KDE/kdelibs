@@ -309,13 +309,13 @@ void KAction::setAccel( QKeySequence qkey )
 #endif
   d->m_accel = qkey;
 
-  if ( m_parentCollection )
-  {
-    KAccelActions& actions = m_parentCollection->keyMap();
-    KAccelAction* pAction = actions.actionPtr(name());
-    if (pAction)
-        pAction->setShortcuts(KAccelShortcuts(KKeySequence(qkey)));
-  }
+  //if ( m_parentCollection )
+  //{
+  //  KAccelActions& actions = m_parentCollection->keyMap();
+  //  KAccelAction* pAction = actions.actionPtr(name());
+  //  if (pAction)
+  //      pAction->setShortcuts(KAccelShortcuts(KKeySequence(qkey)));
+  //}
 
   if( d->m_kaccel )
   {
@@ -341,25 +341,13 @@ void KAction::setAccel( int i, const QKeySequence& a )
   }
 }
 
-void KAction::updateConnections()
-{
-  /*kdDebug(125) << "KAction::updateConnections()" << endl; // -- ellis
-  if ( d->m_kaccel )
-    d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
-  if ( d->m_pAccelAction )
-  {
-    KKeySequence key = d->m_pAccelAction->getShortcut(0).getSequence(0).getKey(0);
-    if ( d->m_accel != key )
-    {
-      d->m_accel = key.keyQt();
-      d->m_kaccel->updateConnections();
-    }
-  }*/
-}
-
 QKeySequence KAction::accel() const
 {
   return d->m_accel;
+}
+
+void KAction::setShortcut( QKeySequence )
+{
 }
 
 void KAction::setGroup( const QString& grp )
@@ -556,16 +544,23 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
       (char*)0 = 0;
     }
   }*/
-  if (d->m_kaccel)
+  if ( d->m_kaccel )
     unplugAccel();
-  d->m_kaccel = kacc;
-  //d->m_pAccelAction = d->m_kaccel->insertAction(name(), d->plainText(),
-  d->m_kaccel->insertAction(name(), d->plainText(),
-      KKeySequence(d->m_accel),
-      this, SLOT(slotActivated()),
-      0, 0, configurable, isEnabled());
-  connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
-  connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+
+  // We can only plug this action into the given KAccel object
+  //  if it does not already contain an action with the same name.
+  if ( !kacc->actions().actionPtr(name()) )
+  {
+    d->m_kaccel = kacc;
+    d->m_kaccel->insertAction(name(), d->plainText(),
+        KKeySequence(d->m_accel),
+        this, SLOT(slotActivated()),
+        0, 0, configurable, isEnabled());
+    connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
+    connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+  }
+  else
+    kdWarning(125) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
 }
 
 void KAction::unplugAccel()
@@ -638,13 +633,13 @@ void KAction::setText( const QString& text )
   for( int i = 0; i < len; ++i )
     setText( i, text );
 
-  if ( m_parentCollection )
+  /*if ( m_parentCollection )
   {
     KAccelActions& actions = m_parentCollection->keyMap();
     KAccelAction* pAction = actions.actionPtr(name());
     if ( pAction )
       pAction->m_sDesc = d->plainText();
-  }
+  }*/
 }
 
 void KAction::setText( int i, const QString &text )
@@ -2656,7 +2651,7 @@ public:
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
-  KAccelActions m_keyMap;
+  //KAccelActions m_keyMap;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
 };
@@ -2674,7 +2669,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 {
   d = new KActionCollectionPrivate;
   d->m_actionDict = copy.d->m_actionDict;
-  d->m_keyMap.init( copy.d->m_keyMap );
+  //d->m_keyMap.init( copy.d->m_keyMap );
   setInstance( copy.instance() );
 }
 
@@ -2699,8 +2694,8 @@ void KActionCollection::insert( KAction* action )
   emit inserted( action );
 
   KAccelShortcuts cuts( KKeySequence(action->accel()) );
-  d->m_keyMap.insertAction( action->name(), action->plainText(),
-      cuts, cuts );
+  //d->m_keyMap.insertAction( action->name(), action->plainText(), QString::null,
+  //    cuts, cuts );
 }
 
 void KActionCollection::remove( KAction* action )
@@ -2714,7 +2709,7 @@ KAction* KActionCollection::take( KAction* action )
   if ( !a || a != action )
       return 0;
 
-  d->m_keyMap.removeAction( a->name() );
+  //d->m_keyMap.removeAction( a->name() );
   emit removed( action );
   return a;
 }
@@ -2749,20 +2744,28 @@ KAction* KActionCollection::action( int index ) const
 //  return d->m_actions.at( index );
 }
 
-void KActionCollection::updateConnections()
+void KActionCollection::createKeyMap( KAccelActions& map )
 {
-  kdDebug(125) << "KActionCollection::updateConnections()" << endl; // -- ellis
-  for( KAccelActions::const_iterator it = d->m_keyMap.begin(); it != d->m_keyMap.end(); ++it )
-  {
-    const KAccelAction& aa = *it;
-    KAction* act = action( aa.m_sName.latin1() );
-    act->setAccel( aa.getShortcut(0).getSequence(0).getKey(0) );
+  kdDebug(125) << "KActionCollection::createKeyMap( " << &map << ")" << endl; // -- ellis
+  map.clear();
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  for( ; it.current(); ++it ) {
+    KAction* action = it.current();
+    KAccelShortcuts cuts( KKeySequence(action->accel()) );
+    map.insertAction( action->name(), action->plainText(), QString::null,
+      cuts, cuts );
   }
 }
 
-KAccelActions & KActionCollection::keyMap()
+void KActionCollection::setKeyMap( const KAccelActions& map )
 {
-  return d->m_keyMap;
+  kdDebug(125) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
+  for( uint i = 0; i < map.size(); i++ )
+  {
+    const KAccelAction* aa = map.actionPtr( i );
+    KAction* act = action( aa->m_sName.latin1() );
+    act->setAccel( aa->getShortcut(0).getSequence(0).getKey(0) );
+  }
 }
 
 uint KActionCollection::count() const
@@ -2823,7 +2826,7 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
 KActionCollection &KActionCollection::operator=( const KActionCollection &c )
 {
   d->m_actionDict = c.d->m_actionDict;
-  d->m_keyMap.init( c.d->m_keyMap );
+  //d->m_keyMap.init( c.d->m_keyMap );
   setInstance( c.instance() );
   return *this;
 }
