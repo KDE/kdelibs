@@ -1299,50 +1299,52 @@ void RenderFlow::makeChildrenNonInline()
 	    boxLast = child;
 	}
 
-	if ((!child->isInline() && !child->isFloating()) || !next) {
-	    if (boxFirst != child || (boxFirst && !next)) {
-		// make anon box of those before child
-		RenderStyle *newStyle = new RenderStyle(style());
-		newStyle->setDisplay(BLOCK);
+	if ((!child->isInline() && !child->isFloating() && boxFirst != child) ||
+            (!next && (boxFirst->isInline() || boxFirst->isFloating()))) {
+	
+	    // make anon box of those before child
+	    RenderStyle *newStyle = new RenderStyle(style());
+	    newStyle->setDisplay(BLOCK);
 
-		RenderFlow *box = new RenderFlow();
-		box->setStyle(newStyle);
-		box->setIsAnonymousBox(true);
-		// ### the children have a wrong style!!!
-		// They get exactly the style of this element, not of the anonymous box
-		// might be important for bg colors!
-		box->setPreviousSibling(boxFirst->previousSibling());
-		if (boxFirst->previousSibling())
-		    boxFirst->previousSibling()->setNextSibling(box);
-		boxFirst->setPreviousSibling(0);
+	    RenderFlow *box = new RenderFlow();
+	    box->setStyle(newStyle);
+	    box->setIsAnonymousBox(true);
+	    // ### the children have a wrong style!!!
+	    // They get exactly the style of this element, not of the anonymous box
+	    // might be important for bg colors!
+	    box->setPreviousSibling(boxFirst->previousSibling());
+	    if (boxFirst->previousSibling())
+		boxFirst->previousSibling()->setNextSibling(box);
+	    boxFirst->setPreviousSibling(0);
 
-		box->setNextSibling(boxLast->nextSibling());
-		if (boxLast->nextSibling())
-		    boxLast->nextSibling()->setPreviousSibling(box);
-		boxLast->setNextSibling(0);
+	    box->setNextSibling(boxLast->nextSibling());
+	    if (boxLast->nextSibling())
+		boxLast->nextSibling()->setPreviousSibling(box);
+	    boxLast->setNextSibling(0);
 
-		if (m_first == boxFirst)
-		    m_first = box;
-		if (m_last == boxLast)
-		    m_last = box;
+	    if (m_first == boxFirst)
+		m_first = box;
+	    if (m_last == boxLast)
+		m_last = box;
 
-		box->setFirstChild(boxFirst);
-		box->setLastChild(boxLast);
+	    box->setFirstChild(boxFirst);
+	    box->setLastChild(boxLast);
 
-		RenderObject *o = box->firstChild();
-		while(o) {
-		    o->setParent(box);
-		    o = o->nextSibling();
-		}
-		box->setParent(this);
-
-		box->close();
-		box->setYPos(-100000);
-		box->setLayouted(false);
-
+	    RenderObject *o = box->firstChild();
+	    while(o) {
+		o->setParent(box);
+		o = o->nextSibling();
 	    }
-	    boxFirst = boxLast = next;
+	    box->setParent(this);
+
+	    box->close();
+	    box->setYPos(-100000);
+	    box->setLayouted(false);
 	}
+	
+	if (!child->isInline() && !child->isFloating())
+	    boxFirst = boxLast = next;
+	
 	child = next;
     }
     setLayouted(false);
