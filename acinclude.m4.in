@@ -237,8 +237,35 @@ AC_DEFUN(KDE_MISC_TESTS,
    AC_CHECK_LIB(crypt, main, [LIBCRYPT="-lcrypt"]) dnl for BSD
    AC_SUBST(LIBCRYPT)
    AC_CHECK_KSIZE_T
-   dnl I need to check for libsocket before testing X
-   AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
+   AC_CHECK_LIB(dnet, dnet_ntoa, [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet"])
+   if test $ac_cv_lib_dnet_dnet_ntoa = no; then
+      AC_CHECK_LIB(dnet_stub, dnet_ntoa,
+        [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet_stub"])
+   fi
+   AC_CHECK_FUNC(gethostbyname)
+   if test $ac_cv_func_gethostbyname = no; then
+     AC_CHECK_LIB(nsl, gethostbyname, X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl")
+   fi
+   AC_CHECK_FUNC(connect)
+   if test $ac_cv_func_connect = no; then
+      AC_CHECK_LIB(socket, connect, X_EXTRA_LIBS="-lsocket $X_EXTRA_LIBS", ,
+        $X_EXTRA_LIBS)
+   fi
+
+   AC_CHECK_FUNC(remove)
+   if test $ac_cv_func_remove = no; then
+      AC_CHECK_LIB(posix, remove, X_EXTRA_LIBS="$X_EXTRA_LIBS -lposix")
+   fi
+ 
+   # BSDI BSD/OS 2.1 needs -lipc for XOpenDisplay.
+   AC_CHECK_FUNC(shmat)
+   if test $ac_cv_func_shmat = no; then
+     AC_CHECK_LIB(ipc, shmat, X_EXTRA_LIBS="$X_EXTRA_LIBS -lipc")
+   fi
+
+   LIBSOCKET=$X_EXTRA_LIBS
+   AC_SUBST(LIBSOCKET)
+   AC_SUBST(X_EXTRA_LIBS)
    AC_CHECK_LIB(ucb, killpg, [LIBUCB="-lucb"]) dnl for Solaris2.4
    AC_SUBST(LIBUCB)
 
@@ -250,8 +277,6 @@ AC_DEFUN(KDE_MISC_TESTS,
         AC_CHECK_LIB(bsd, gethostbyname, [LIBSOCKET="-lbsd"]) dnl for LynxOS
          ;;
     esac
-
-    AC_SUBST(LIBSOCKET)
 
 ])
 
@@ -1110,7 +1135,6 @@ ac_save_cc=$CC
 ac_save_cflags=$CFLAGS
 CC=$CXX
 CFLAGS=$CXXFLAGS
-silent=yes
 AM_PROG_LIBTOOL dnl for libraries
 CC=$ac_save_cc
 CFLAGS=$ac_save_cflags
