@@ -7,6 +7,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
+#include <qdir.h>
 
 class Client : public KXMLGUIClient
 {
@@ -21,6 +22,10 @@ int main( int argc, char **argv )
 {
     KApplication app( argc, argv, "kxmlguitest" );
 
+    // KXMLGUIClient looks in the "data" resource for the .rc files
+    // Let's add $PWD (ideally $srcdir instead...) to it
+    KGlobal::dirs()->addResourceDir( "data", QDir::currentDirPath() );
+
     KMainWindow *mainwindow = new KMainWindow;
     mainwindow->show();
 
@@ -30,6 +35,7 @@ int main( int argc, char **argv )
 
     Client *shell = new Client;
     shell->setInstance( new KInstance( "konqueror" ) );
+    shell->instance()->dirs()->addResourceDir( "data", QDir::currentDirPath() );
 
     (void)new KAction( "Split", "view_left_right", 0, 0, 0, shell->actionCollection(), "splitviewh" );
 
