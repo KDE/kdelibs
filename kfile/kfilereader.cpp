@@ -247,7 +247,7 @@ void KFileReader::getEntries()
     }
 
     // remote files are loaded asynchronously
-    if ( true ) {
+    if ( !isLocalFile() ) {
 	myDirtyFlag = startLoading();
 	return;
     }
