@@ -98,6 +98,16 @@ public:
     bool checkAvailable(bool) { return isAvailable(); }
 #endif
 
+    /** @since 3.2
+     * @return the fade color.
+     */
+    const QColor &fadeColor() const { return m_FadeColor; }
+
+    /** @since 3.2
+     * @return the fade strength.
+     */
+    double fadeStrenght() const { return m_Fade; }
+
 public slots:
     /**
      * Starts background handling.
