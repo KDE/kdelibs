@@ -32,7 +32,6 @@
 KColorButton::KColorButton( QWidget *parent, const char *name )
 	: QPushButton( parent, name )
 {
-	connect( this, SIGNAL( clicked() ), SLOT( slotClicked() ) );
         setAcceptDrops( true);
         inMouse = false;
 }
@@ -40,7 +39,6 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
 KColorButton::KColorButton( const QColor &c, QWidget *parent, const char *name )
 	: QPushButton( parent, name )
 {
-	connect( this, SIGNAL( clicked() ), SLOT( slotClicked() ) );
 	col = c;
         setAcceptDrops( true);
         inMouse = false;

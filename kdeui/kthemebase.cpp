@@ -18,6 +18,7 @@
 */                   
 
 #include <kthemebase.h>
+#include <kpixmapeffect.h>
 #include <kapp.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
@@ -471,8 +472,9 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                                   widget);
                 pixmaps[widget] = new KPixmap;
                 pixmaps[widget]->resize(w, h);
-                pixmaps[widget]->gradientFill(*grLowColors[widget],
-                                              *grHighColors[widget], KPixmap::Vertical);
+                KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
+                                        *grLowColors[widget],
+                                        KPixmapEffect::VerticalGradient);
             }
         }
     }
@@ -492,9 +494,9 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                                   KThemeCache::HorizontalScale, widget);
                 pixmaps[widget] = new KPixmap;
                 pixmaps[widget]->resize(w, h);
-                pixmaps[widget]->gradientFill(*grHighColors[widget],
-                                              *grLowColors[widget],
-                                              KPixmap::Horizontal);
+                KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
+                                        *grLowColors[widget],
+                                        KPixmapEffect::HorizontalGradient);
             }
         }
     }
@@ -515,9 +517,9 @@ KPixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
                                   widget);
                 pixmaps[widget] = new KPixmap;
                 pixmaps[widget]->resize(w, h);
-                pixmaps[widget]->gradientFill(*grHighColors[widget],
-                                              *grLowColors[widget],
-                                              KPixmap::Diagonal);
+                KPixmapEffect::gradient(*pixmaps[widget], *grHighColors[widget],
+                                        *grLowColors[widget],
+                                        KPixmapEffect::DiagonalGradient);
             }
         }
     }
