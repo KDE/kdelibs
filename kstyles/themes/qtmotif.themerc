@@ -2,6 +2,7 @@
 Name=Motif
 Name[bn]=মোটিফ
 Name[fa]=موتیف
+Name[ta]=மோடிஃப்
 Name[xx]=xxMotifxx
 Comment=Built-in unthemed Motif style
 Comment[af]=Ingeboude ongetemade Motif styl
@@ -55,7 +56,7 @@ Comment[sk]=Zabudovaný netémový CDE štýl
 Comment[sl]=Vgrajen običajni slog Motif
 Comment[sr]=Уграђени, без теме, Motif стил
 Comment[sv]=Inbyggd otemad Motif-stil
-Comment[ta]=உள்ளமைந்த மேம்படுத்திய Motif பாந்தம்
+Comment[ta]=உள்ளமைந்த மேம்படுத்திய மோடிஃப் பாணி
 Comment[tg]= Сохташудани Сабки Motif бебарнома аст
 Comment[th]=รูปแบบภายใน - โมทีฟ
 Comment[tr]=Yerleşik, temasız Motif stili

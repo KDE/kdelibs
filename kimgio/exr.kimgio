@@ -5,6 +5,7 @@ Name=ILM EXR Image Kimgio
 Name[da]=ILM EXR billede Kimgio
 Name[pt_BR]=Imagem ILM EXR do Kimgio 
 Name[sv]=ILM EXR-bild Kimgio
+Name[ta]=ILM EXR பிம்ப கிம்ஜியோ
 Read=true
 Write=false
 Suffices=.exr,.EXR
