@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.20  2001/10/10 17:40:39  mueller
+ * CVS_SILENT: fixincludes
+ *
  * Revision 1.19  2001/08/08 14:35:12  hausmann
  * - removed empty KActionCollection::childEvent
  * - added sizeHint() and minimumSizeHint() methods to KLed, as advised by
@@ -535,7 +538,7 @@ KLed::shape() const
   return led_shape;
 }
 
-const QColor
+QColor
 KLed::color() const
 {
   return led_color;

@@ -142,7 +142,7 @@ public:
    * @see Color
    * @short Returns LED color.
    */
-  const QColor color() const;
+  QColor color() const;
 
   /**
    * Returns the look of the widget.
