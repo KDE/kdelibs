@@ -279,7 +279,7 @@ void Scheduler::slotCleanIdleSlaves()
    for(Slave *slave = idleSlaves->first();slave;)
    {
       kdDebug(7006) << "Slave: " << slave->protocol() << " " << slave->host()
-	            << " Idle for " << slave->idleTime() << "secs pid = " << slave->slave_pid() <<  endl;
+	            << " Idle for " << (int) slave->idleTime() << "secs pid = " << slave->slave_pid() <<  endl;
       if (slave->idleTime() >= MAX_SLAVE_IDLE)
       {
          kdDebug(7006) << "Removing idle slave: " << slave->protocol() << " " << slave->host() << endl;
