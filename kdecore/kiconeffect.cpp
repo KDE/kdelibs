@@ -383,7 +383,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
     else
     {
 	img.create(pix.size(), 1, 2, QImage::BigEndian);
-	img.fill(0);
+	img.fill(1);
     }
 
     for (int y=0; y<img.height(); y++)
