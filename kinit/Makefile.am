@@ -62,13 +62,9 @@ METASOURCES = AUTO
 
 noinst_HEADERS = klauncher.h autostart.h klauncher_cmds.h setproctitle.h
 
-kwrapper.c : wrapper.c
-# do nothing, it just depends on it
-	
+kwrapper.o: wrapper.c
 
-shell.c : wrapper.c
-# do nothing, it just depends on it
-	
+shell.o: wrapper.c
 
 dummy.cpp:
 	echo > dummy.cpp
