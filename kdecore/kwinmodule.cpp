@@ -166,18 +166,21 @@ const QValueList<WId>& KWinModule::systemTrayWindows() const
 bool KWinModulePrivate::x11Event( XEvent * ev )
 {
     if ( ev->xany.window == qt_xrootwin() ) {
+        int old_current_desktop = currentDesktop();
+        WId old_active_window = activeWindow();
+        int old_number_of_desktops = numberOfDesktops();
 	int m = NETRootInfo::event( ev );
 
-	if ( m & CurrentDesktop )
+	if (( m & CurrentDesktop ) && currentDesktop() != old_current_desktop )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->currentDesktopChanged( currentDesktop() );
-	if ( m & ActiveWindow )
+	if (( m & ActiveWindow ) && activeWindow() != old_active_window )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->activeWindowChanged( activeWindow() );
 	if ( m & DesktopNames )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->desktopNamesChanged();
-	if ( m & NumberOfDesktops )
+	if (( m & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m & WorkArea )
