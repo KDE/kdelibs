@@ -43,12 +43,11 @@ bool KSSLSigners::addCA(KSSLCertificate& cert,
                         bool ssl,
                         bool email,
                         bool code) {
-QString c = cert.toString();
-	return addCA(c, ssl, email, code);
+	return addCA(cert.toString(), ssl, email, code);
 }
 
 
-bool KSSLSigners::addCA(QString& cert,
+bool KSSLSigners::addCA(QString cert,
                         bool ssl,
                         bool email,
                         bool code) {
@@ -92,12 +91,11 @@ return false;
 
 
 bool KSSLSigners::useForSSL(KSSLCertificate& cert) {
-QString c = cert.getSubject();
-	return useForSSL(c);
+	return useForSSL(cert.getSubject());
 }
 
 
-bool KSSLSigners::useForSSL(QString& subject) {
+bool KSSLSigners::useForSSL(QString subject) {
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
@@ -118,12 +116,11 @@ return false;
 
 
 bool KSSLSigners::useForEmail(KSSLCertificate& cert) {
-QString c = cert.getSubject();
-	return useForEmail(c);
+	return useForEmail(cert.getSubject());
 }
 
 
-bool KSSLSigners::useForEmail(QString& subject) {
+bool KSSLSigners::useForEmail(QString subject) {
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
@@ -144,12 +141,11 @@ return false;
 
 
 bool KSSLSigners::useForCode(KSSLCertificate& cert) {
-QString c = cert.getSubject();
-	return useForCode(c);
+	return useForCode(cert.getSubject());
 }
 
 
-bool KSSLSigners::useForCode(QString& subject) {
+bool KSSLSigners::useForCode(QString subject) {
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
@@ -170,12 +166,11 @@ return false;
 
 
 bool KSSLSigners::remove(KSSLCertificate& cert) {
-QString c = cert.getSubject();
-	return remove(c);
+	return remove(cert.getSubject());
 }
 
 
-bool KSSLSigners::remove(QString& subject) {
+bool KSSLSigners::remove(QString subject) {
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
@@ -211,6 +206,46 @@ QStringList KSSLSigners::list() {
 
 return drc;
 }
+
+
+QString KSSLSigners::getCert(QString subject) {
+     QString drc;
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << subject;
+     bool rc = dcc->call("kded", "kssld",
+                         "caGetCert(QString)",
+                         data, rettype, retval);
+
+     if (rc && rettype == "QString") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        retStream >> drc;
+     }
+
+return drc;
+}
+
+
+bool KSSLSigners::setUse(QString subject, bool ssl, bool email, bool code) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << subject << ssl << email << code;
+     bool rc = dcc->call("kded", "kssld",
+                         "caSetUse(QString,bool,bool,bool)",
+                         data, rettype, retval);
+
+     if (rc && rettype == "bool") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        bool drc;
+        retStream >> drc;
+        return drc;
+     }
+
+return false;
+}
+
 
 
 
