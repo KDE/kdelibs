@@ -1,7 +1,7 @@
-SUBDIRS = vcard . formats plugins
+SUBDIRS = vcard vcardparser . formats plugins
 
 INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
-  -I$(top_srcdir)/kabc -I$(top_srcdir)/kab $(all_includes)
+  -I$(top_srcdir)/kabc -I$(top_srcdir)/kab $(all_includes) -I$(srcdir)/vcardparser
 
 addressee.h addressee.cpp field.cpp: $(srcdir)/scripts/makeaddressee \
 				$(srcdir)/scripts/addressee.src.cpp \
@@ -15,7 +15,7 @@ CLEANFILES = addressee.h addressee.cpp field.cpp
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2 -module
-libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la \
+libkabc_la_LIBADD  = vcard/libvcard.la vcardparser/libvcards.la  ../kdeui/libkdeui.la ../kio/libkio.la \
   ../kresources/libkderesources.la
 
 libkabc_la_SOURCES = \
@@ -25,8 +25,8 @@ libkabc_la_SOURCES = \
   picture.cpp plugin.cpp resource.cpp \
   secrecy.cpp sound.cpp stdaddressbook.cpp \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
-  vcardformatimpl.cpp vcardformatplugin.cpp addresslineedit.cpp ldapclient.cpp \
-  addresseelist.cpp
+  vcardformatimpl.cpp vcardformatplugin.cpp vcardformatplugin2.cpp \
+  addresslineedit.cpp ldapclient.cpp addresseelist.cpp
 
 
 kabcincludedir = $(includedir)/kabc
@@ -35,8 +35,8 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   errorhandler.h field.h formatfactory.h formatplugin.h geo.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
   secrecy.h sound.h stdaddressbook.h timezone.h \
-  vcardconverter.h vcardformat.h vcardformatplugin.h addresslineedit.h \
-  ldapclient.h addresseelist.h
+  vcardconverter.h vcardformat.h vcardformatplugin.h vcardformatplugin2.h \
+  addresslineedit.h ldapclient.h addresseelist.h
 
 METASOURCES = AUTO
 

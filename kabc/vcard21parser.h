@@ -49,7 +49,7 @@
 #define VCARD_PHOTO          "photo"
 #define VCARD_BDAY           "bday"
 #define VCARD_ADR            "adr"
-  
+
 // types
 #define VCARD_ADR_DOM      "dom"
 #define VCARD_ADR_INTL     "intl"
@@ -183,7 +183,7 @@ public:
 /**
  * @short Helper class
  */
-class VCardLine
+class VCardLineX
 {
 public:
   QString name;
@@ -200,7 +200,7 @@ public:
  */
 class VCard21ParserImpl
 {
-  friend class VCardLine;
+  friend class VCardLineX;
 
 public:
   VCard21ParserImpl() {  };
@@ -211,10 +211,10 @@ public:
   QStringList getValues(const QString& name, const QString& qualifier);
   QStringList getValues(const QString& name);
 
-  QValueList<VCardLine> *_vcdata;
+  QValueList<VCardLineX> *_vcdata;
 
 private:
-  VCard21ParserImpl (QValueList<VCardLine> *_vcd);
+  VCard21ParserImpl (QValueList<VCardLineX> *_vcd);
 };
 
 #endif
