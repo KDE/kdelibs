@@ -1,0 +1,22 @@
+<!-- This file contains entities (only!) to make authoring/translating
+     a document easier.  They are necessarily language-specific.
+     In the case of name clashes, entities in this file always lose.
+     Keep the entities simple, but _always_ provide them with full markup.
+     Please keep the entities sorted on the name: it will avoid duplicate
+     names (which if they occur will cost you a _lot_ of time)
+ -->
+
+<!-- Adressen en namen -->
+<!ENTITY Niels.Reedijk "Niels Reedijk <email>n.reedijk@planet.nl</email>">
+<!ENTITY Floris.Lambrechts "Floris Lambrechts <email>floris.lambrechts@linuxfocus.org</email>">
+<!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
+
+<!-- Tekstschema's -->
+<!ENTITY meld.fouten.vertaling "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
+
+<!-- Entities voor vertalers -->
+<!ENTITY vertaling.floris "&meld.fouten.vertaling; <para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
+<!ENTITY vertaling.niels "&meld.fouten.vertaling; <para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
+
+<!ENTITY nagelezen.floris "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
+<!ENTITY nagelezen.niels "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
