@@ -210,7 +210,9 @@ void KFormulaEdit::redraw(int all)
     for(i = QMIN(cursorPos, selectStart);
 	i <= QMAX(cursorPos, selectStart); i++) {
 
-      if(isInString(i, KFormula::delim() + QChar(SQRT) + QChar(DIVIDE))) {
+      if(isInString(i, KFormula::delim() + QChar(SQRT) + QChar(DIVIDE)) ||
+	 (IS_REFERENCE(info[i].where->getType()) &&
+	  i > QMIN(cursorPos, selectStart))) {
 	if(tmp.isNull()) {
 	  tmp = info[i].where->getLastRect();
 	}
@@ -1372,7 +1374,7 @@ void KFormulaEdit::insertChar(QChar c)
 
   if(restricted) { // we need to limit to only those things
                    // which can be evaluated.
-    if(!isalnum((char)c) && !isspace((char)c) && (char)c != '.' &&
+    if(!isalnum((char)c) && !isspace((char)c) && (char)c != '.' && !IS_REFERENCE(c.unicode()) &&
        !(KFormula::eval()).contains(c) && (extraChars.isNull() || !extraChars.contains(c))) return;
   }
 

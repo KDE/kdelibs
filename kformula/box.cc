@@ -58,8 +58,15 @@ box::box(BoxType setType, box * setB1, box * setB2)
   type = setType;
   b1 = setB1;
   b2 = setB2;
-  if(b1 != NULL) b1->parent = this;
-  if(b2 != NULL) b2->parent = this;
+  if(!IS_REFERENCE(setType)) {
+    if(b1 != NULL) b1->parent = this;
+    if(b2 != NULL) b2->parent = this;
+  }
+  else {
+    if(b1 != NULL) {
+      b1->refParents.append(this);
+    }
+  }
   fontsize = DEFAULT_FONT_SIZE;
   relx = rely = 0;
   dirty = 1;
@@ -68,13 +75,23 @@ box::box(BoxType setType, box * setB1, box * setB2)
 
 box::~box()
 {
-  if(b1 != NULL) b1->parent = NULL;
-  if(b2 != NULL) b2->parent = NULL;
+  if(!IS_REFERENCE(type)) {
+    if(b1 != NULL) b1->parent = NULL;
+    if(b2 != NULL) b2->parent = NULL;
+  }
+  else {
+    if(b1 != NULL) b1->refParents.removeRef(this);
+  }
   b1 = b2 = NULL;
   if(parent) {
     if(parent->b1 == this) parent->b1 = NULL;
     if(parent->b2 == this) parent->b2 = NULL;
     parent->makeDirty();
+  }
+
+  for(unsigned int i = 0; i < refParents.count(); ++i) {
+    refParents.at(i)->b1 = NULL;
+    refParents.at(i)->makeDirty();
   }
 }
 
@@ -86,8 +103,13 @@ void box::makeDirty()
   dirty = 1;
 
   if(parent) parent->makeDirty();
-  if ( b1 ) b1->makeDirty();
-  if ( b2 ) b1->makeDirty();
+  //if ( b1 ) b1->makeDirty();
+  //if ( b2 ) b2->makeDirty();
+  unsigned int i;
+
+  for(i = 0; i < refParents.count(); ++i) {
+    refParents.at(i)->makeDirty();
+  }
 }
 
 //--------------------------------SET TEXT-----------------------
@@ -147,7 +169,12 @@ void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *f
   QFontMetrics fm = p.fontMetrics();
   if ( f_ )
       fm = QFontMetrics( *f_ );
-  
+
+  if(IS_REFERENCE(type)) {
+    b1->calculate(p, fontsize);
+    rect = b1->getRect();
+  }
+  else  
   switch(type)
     {
     case TEXT:
@@ -512,6 +539,9 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
   if(b1 != NULL) b1->draw(p, x + b1x, y + b1y, f_, bc, fc );
   if(b2 != NULL) b2->draw(p, x + b2x, y + b2y, f_, bc, fc );
 
+  if(IS_REFERENCE(type)) { //nothing
+  }
+  else
   switch(type) {
   case TEXT:
     if(text.length() == 0) { //empty

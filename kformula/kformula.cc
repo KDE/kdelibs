@@ -29,6 +29,7 @@
 #include <kstddirs.h>
 
 template class QArray<box*>;
+template class QDict<double>;
 
 //initialize the static members:
 QString *KFormula::SPECIAL = NULL;
@@ -304,14 +305,14 @@ int KFormula::findMatch(QString s, int pos)
 
 //---------------------CONSTRUCTORS AND DESTRUCTORS-----------------
 KFormula::KFormula(bool r)
-    : font( 0 ), backColor( 0 ), foreColor( 0 )
+  : font( 0 ), backColor( 0 ), foreColor( 0 ), referenceFetcher(0)
 {
   posx = posy = 0;
   restricted = r;
 }
 
 KFormula::KFormula(int x, int y, bool r)
-    : font( 0 ), backColor( 0 ), foreColor( 0 )
+  : font( 0 ), backColor( 0 ), foreColor( 0 ), referenceFetcher(0)
 {
   posx = x;
   posy = y;
@@ -330,6 +331,8 @@ KFormula::~KFormula()
       delete backColor;
   if ( foreColor)
       delete foreColor;
+  if ( referenceFetcher)
+      delete referenceFetcher;
 }
 
 //---------------------------GET CURSOR POS-------------------------
@@ -358,16 +361,43 @@ void KFormula::makeDirty()
 	boxes[ i ]->makeDirty();
 }
 
+//-------------------REFETCH REFERENCES AND CALCULATE-----------------
+void KFormula::refetchReferencesAndCalculate(QPainter &p)
+{
+  if(boxes.size() == 0) return;
+  if(boxes[boxes.size() - 1]->dirty == false) return;
+
+  unsigned int i;
+  for(i = 0; i < boxes.size(); ++i) {
+    if(!IS_REFERENCE(boxes[i]->getType())) continue;
+
+    KFormula *k = referenceFetcher->getFormula(boxes[i]->getType() - REFERENCE_ABOVE);
+
+    if(k->boxes[k->boxes.size() - 1] != boxes[i]->b1) {
+      boxes[i]->b1 = k->boxes[k->boxes.size() - 1];
+      boxes[i]->b1->refParents.append(boxes[i]);
+
+      ASSERT(boxes[i]->dirty);
+    }
+
+    k->refetchReferencesAndCalculate(p);
+  }
+
+  boxes[boxes.size() - 1]->calculate(p, p.font().pointSize(),
+				     getFont(),
+				     getBackColor(),
+				     getForeColor() );
+}
+
 //--------------------------------REDRAW----------------------------
 //first call calculate, figure out the center, and draw the boxes
 void KFormula::redraw(QPainter &p)
 {
 
   if(boxes.size() == 0) return;
-  boxes[boxes.size() - 1]->calculate(p, p.font().pointSize(),
-				     getFont(),
-				     getBackColor(),
-				     getForeColor() );
+
+  refetchReferencesAndCalculate(p);
+
   QRect tmp = boxes[boxes.size() - 1]->getRect();
   boxes[boxes.size() - 1]->draw(p, posx - tmp.center().x(),
 				posy - tmp.center().y(),
@@ -407,7 +437,7 @@ void KFormula::setPos(int x, int y)
 //if it's a text box, looks up variables vars and their values
 //in vals and returns them.  otherwise, evaluates the children and
 //does whatever is necessary to them.
-double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
+double KFormula::evaluate(const QDict<double>& variables,
 			  int *error, box *b)
 {
   if(!restricted) return 0; // evaluate only if restricted
@@ -421,21 +451,26 @@ double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
 
   if(!b) b = boxes[boxes.size() - 1];
 
+  if(IS_REFERENCE(b->type)) { //reference--this is simple
+    if(referenceFetcher == 0) {
+      *error = UNDEFINED_REFERENCE;
+      return 0;
+    }
+    return referenceFetcher->getValue(b->type - REFERENCE_ABOVE);
+  }
+
   if(b->type == TEXT) {
     QString temptext = b->text.stripWhiteSpace();
 
     if(temptext.length() > 0) { //is it empty?
       double x;
       bool ok;
-      char varname[1024];
 
       x = temptext.toDouble(&ok);
       if(ok) return x; // we have a number
 
-      strcpy(varname, temptext.ascii());
-
-      int i = vars.find(varname);
-      if(i != -1) return vals[i];
+      double *v = variables.find(temptext);
+      if(v != NULL) return *v;
       else { // variable not found
         *error = UNDEFINED_VARIABLE;
         return 0;
@@ -460,7 +495,7 @@ double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
   double b1 = 0, b2 = 0;
   int undefined_in_b1 = 0; // whether b1 had an undefined variable
 
-  if(b->b1) b1 = evaluate(vars, vals, error, b->b1);
+  if(b->b1) b1 = evaluate(variables, error, b->b1);
 
   if(*error == UNDEFINED_VARIABLE && b->type == CAT) {
     *error = 0; // it may be a function!
@@ -469,7 +504,7 @@ double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
 
   if(*error) return 0;
 
-  if(b->b2) b2 = evaluate(vars, vals, error, b->b2);
+  if(b->b2) b2 = evaluate(variables, error, b->b2);
 
   if(*error) return 0;
 
@@ -662,10 +697,10 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
       }
   }
 
-  //isolate all symbols from text:
+  //isolate all symbols and references from text:
   for(i = 0; i < (int)text.length(); i++)
     {
-      if(text[i].unicode() >= SYMBOL_ABOVE) {
+      if(text[i].unicode() >= SYMBOL_ABOVE || IS_REFERENCE(text[i].unicode())) {
 	if(i > 0 && !special().contains(text[i - 1])) {
 	  text.insert(i, QChar(CAT));
 	  INSERTED(i);
@@ -835,8 +870,19 @@ box * KFormula::makeBoxes(QString str, int offset,
   }
 
   if(str[0] != L_GROUP) { //we have a literal--make a
-                                 //TEXT or SYMBOL box:
+                                 //TEXT or SYMBOL or REFERENCE box:
     boxes.resize(boxes.size() + 1);
+    if(IS_REFERENCE(str[0].unicode())) {
+      ASSERT(referenceFetcher != NULL);
+      
+      KFormula *f = referenceFetcher->getFormula(str[0].unicode() - REFERENCE_ABOVE);
+
+      ASSERT(f != NULL);
+
+      boxes[boxes.size() - 1] =
+	new box((BoxType)str[0].unicode(), f->boxes[f->boxes.size() - 1]);
+    }
+    else
     if(str[0].unicode() < SYMBOL_ABOVE) {
       boxes[boxes.size() - 1] = new box(str.left(maxlen));
     }

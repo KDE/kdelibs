@@ -22,6 +22,7 @@
 
 #include <qpainter.h>
 #include <qstring.h>
+#include <qlist.h>
 #include <qfont.h>
 #include <kdebug.h> //will be included in practically all source files
 
@@ -33,6 +34,12 @@
 
 //symbols have values above this
 #define SYMBOL_ABOVE   20000
+
+//references have values above this and below SYMBOL_ABOVE
+#define MAX_REFERENCES 1000 //maximum references per formula
+#define REFERENCE_ABOVE (SYMBOL_ABOVE - MAX_REFERENCES)
+#define IS_REFERENCE(r) ((r) >= REFERENCE_ABOVE && (r) < SYMBOL_ABOVE)
+#define REFERENCE_NUM(r) ((r) < MAX_REFERENCES ? (r) + REFERENCE_ABOVE : /*error*/ 0)
 
 //can be set to 0 if you want to print the string out somewhere.
 //UNUSED_OFFSET is only used in this file.
@@ -118,6 +125,7 @@ protected:
   box *b1;
   box *b2; //the children
   box *parent;  //duh
+  QList<box> refParents; //boxes referring to this one
   int b1x;
   int b1y;
   int b2x;

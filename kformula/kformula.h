@@ -25,7 +25,7 @@
 #include <qpainter.h>
 #include <qcstring.h>
 #include <qrect.h>
-#include <qstrlist.h>
+#include <qdict.h>
 #include "box.h"
 
 struct charinfo { // used to determine where each character gets
@@ -49,8 +49,23 @@ enum ErrorType {
     ROOT_OF_NEGATIVE,
     UNDEFINED_VARIABLE,
     EMPTY_BOX,
-    PARSE_ERROR
+    PARSE_ERROR,
+    UNDEFINED_REFERENCE
 };
+
+/**
+ * The ReferenceFetcher class (pure virtual) is used to resolve references.
+ * You should override it in your application (if you use references)
+ * to return the necessary reference info at runtime.
+ * @short Resolve references
+ */
+class ReferenceFetcher
+{
+public:
+  virtual KFormula *getFormula(int reference_number) = 0;
+  virtual double getValue(int reference_number) { return 0 * reference_number; }
+};
+
 
 /**
  * The KFormula class is used for parsing and displaying formulas.
@@ -100,10 +115,10 @@ public:
     void parse(QString text, QArray<charinfo> *info = NULL);
     QRect getCursorPos(charinfo i);
 
-    /**
-     * The arguments to this will be replaced with a dict at some point...
-     */
-    double evaluate(QStrList &vars, const QArray<double> &vals,
+    void setReferenceFetcher(ReferenceFetcher *r)
+    { if(referenceFetcher) delete referenceFetcher; referenceFetcher = r; }
+
+    double evaluate(const QDict<double>& variables,
 		    int *error = NULL, box *b = NULL);
     QSize size() const;
     void makeDirty();
@@ -140,10 +155,12 @@ private:
     QFont *font;
     QColor *backColor;
     QColor *foreColor;
+    ReferenceFetcher *referenceFetcher;
 
 private:
     void parenthesize(QString &temp, int &i, QArray<charinfo> *info);
     box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);
+    void refetchReferencesAndCalculate(QPainter &p);
 
 public:
     static QString special() { initStrings(); return *SPECIAL; }
