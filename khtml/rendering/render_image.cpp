@@ -179,8 +179,8 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
           p->setPen(QColor("green"));
         else
           p->setPen(QColor("blue"));
-        p->drawRect( _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
-        p->drawRect( _tx + leftBorder+1, _ty + topBorder+1, cWidth-2, cHeight-2);
+        p->drawRect( _tx + leftBorder, _ty + topBorder-1, cWidth, cHeight+2);
+        p->drawRect( _tx + leftBorder-1, _ty + topBorder, cWidth+2, cHeight);
       }
 }
 

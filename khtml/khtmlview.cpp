@@ -477,10 +477,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         break;
     case Key_Enter:
     case Key_Return:
-        if (!d->linkPressed)
+      //        if (!d->linkPressed)
           toggleActLink(false);
-        else
-          toggleActLink(true);
+	  //        else
+	  //          toggleActLink(true);
         break;
     case Key_Home:
         setContentsPos( 0, 0 );
@@ -570,15 +570,13 @@ bool KHTMLView::gotoNextLink()
     NodeImpl *n = d->currentNode;
     NodeImpl *begin = 0;
 
-    //kdDebug( 6000 ) << "gotoNextLink: old tabindex: "<< d->tabIndex << "\n";
-
     if (d->tabIndex!=-1)
     {
         d->tabIndex++;
         if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
         {
-            d->tabIndex=-1;
             n=0;
+            d->tabIndex=-1;
         }
     }
 
@@ -604,17 +602,15 @@ bool KHTMLView::gotoNextLink()
                     wrap=false;
                 }
                 else
-                {
                     next=n->parentNode();
-                }
             }
             if (wrap)
             {
                 //        kdDebug(6000)<<"wrapped around document border.\n";
                 if (d->tabIndex==-1)
                     d->tabIndex++;
-                else if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
-                    return false;
+                if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
+                    d->tabIndex=-1;
             }
         }
         //kdDebug( 6000 ) << "gotoPrevLink: in-between tabindex: "<< d->tabIndex << "\n";
@@ -652,14 +648,8 @@ bool KHTMLView::gotoNextLink()
 bool KHTMLView::gotoPrevLink()
 {
     if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
-
     if (!(m_part->docImpl()))
-    {
-        //kdDebug(6000)<<"gotoPrevLink: No Document!!\n";
         return false;
-    }
-
-    //kdDebug( 6000 ) << "gotoPrevLink: old tabindex: "<< d->tabIndex << "\n";
 
     // find next link
     NodeImpl *n = d->currentNode;
@@ -677,9 +667,7 @@ bool KHTMLView::gotoPrevLink()
 
     //    kdDebug( 6000 ) << "gotoPrevLink: current tabindex: "<< d->tabIndex << "\n";
 
-
     if(!n) n = m_part->docImpl()->body();
-
     while(n) {
         // find next Node
         if(n->lastChild())
@@ -689,7 +677,8 @@ bool KHTMLView::gotoPrevLink()
         else {
             NodeImpl *prev = n->parentNode();
             bool wrap=true;
-            while(prev) {
+            while(prev)
+	    {
                 n=prev;
                 if (n->previousSibling())
                 {
@@ -724,7 +713,7 @@ bool KHTMLView::gotoPrevLink()
                 return gotoLink();
             }
         }
-        if (!begin)
+        else if (!begin)
         {
             begin=n;
             //    kdDebug(6000)<<"marked "<< d->tabIndex<<" as the beginning of search"<<endl;
@@ -830,6 +819,7 @@ void KHTMLView::print()
 
 void KHTMLView::toggleActLink(bool actState)
 {
+  kdDebug(6000)<<"toggleActLink: "<<(actState?"true":"false")<<"\n";
     if ( d->currentNode )
     {
         //retrieve url

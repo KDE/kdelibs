@@ -193,6 +193,12 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 #endif
 }
 
+void TextSlave::printActivation( QPainter *p, int _tx, int _ty)
+{
+  p->drawRect(_tx+x,_ty+y-1, m_width, m_height+2);
+  p->drawRect(_tx+x-1,_ty+y, m_width+2, m_height);
+}
+
 
 bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 {
@@ -319,7 +325,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   int absx, absy;
   absolutePosition(absx,absy);
   if (absx == -1) {
-    // we don't know out absoluate position, and there is not point returning
+    // we don't know out absolute position, and there is not point returning
     // just a relative one
     _x = _y = -1;
   }
@@ -468,12 +474,32 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
     {
+        bool clip = p->hasClipping();
+	p->setClipping(false);
         if (hasKeyboardFocus==DOM::ActivationPassive)
           p->setPen(QColor("green"));
         else
           p->setPen(QColor("blue"));
-        p->drawRect(tx+xPos(),ty+yPos(),width(0,length()), height());
-        p->drawRect(tx+xPos()+1,ty+yPos()+1,width(0,length())-2, height()-2);
+
+        breakallowed = false;
+        while(s)
+        {
+            if(s->checkVerticalPoint(y, ty, h))
+            {
+                breakallowed = true;
+                s->printActivation(p, tx, ty);
+            }
+            else if(breakallowed)
+                break;
+
+            int diff;
+            if(s->next())
+                diff = s->next()->m_text - s->m_text;
+            else
+                diff = s->len;
+            s=s->next();
+        }
+	p->setClipping(clip);
     }
 #ifdef BIDI_DEBUG
     p->setPen(QPen(QColor("#00CC00"), 1, Qt::DashLine));

@@ -328,7 +328,11 @@ void NodeImpl::setKeyboardFocus(ActivationState b)
   if (m_render)
     {
       m_render->setKeyboardFocus(b);
-      m_render->containingBlock()->repaint();
+      RenderObject *cb = m_render->containingBlock();
+      // repaint one pixel outside the element`s dimensions to make
+      // sure that a Selection (that can be larger than the object)
+      // is completely redrawn.
+      cb->repaintRectangle(-1, -1, cb->width()+2, cb->height()+2);
     }
 }
 

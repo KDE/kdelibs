@@ -57,7 +57,15 @@ public:
     void print( QPainter *p, int _tx, int _ty);
     void printDecoration( QPainter *p, int _tx, int _ty, int decoration);
     void printBoxDecorations(QPainter *p, RenderText *parent, int _tx, int _ty, bool begin, bool end);
+    void printActivation( QPainter *, int, int );
+
     bool checkPoint(int _x, int _y, int _tx, int _ty);
+
+    /**
+     * if this textslave was rendered @ref _ty pixels below the upper edge
+     * of a view, would the @ref _y -ordinate be inside the vertical range
+     * of this object's representation?
+     */
     bool checkVerticalPoint(int _y, int _ty, int _h)
     { if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
     void printSelection(QPainter *p, int tx, int ty, int startPos, int endPos);

@@ -488,7 +488,7 @@ void RenderObject::setContainsPositioned(bool p)
 void RenderObject::setKeyboardFocus(DOM::ActivationState b)
 {
   RenderObject *actChild = firstChild();
-  printTree(0);
+  //  printTree(0);
   while(actChild) {
       actChild->setKeyboardFocus(b);
       actChild=actChild->nextSibling();
