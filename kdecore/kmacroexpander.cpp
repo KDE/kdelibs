@@ -258,7 +258,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
             else
                 break;
         } else if (cc == '}') {
-            if (state.current == group)
+            if (state.current == KMacroExpander::group)
                 state = sstack.pop();
             else
                 break;
@@ -267,7 +267,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
             state.current = parent;
         } else if (cc == '{') {
             sstack.push( state );
-            state.current = group;
+            state.current = KMacroExpander::group;
         }
         pos++;
     }
