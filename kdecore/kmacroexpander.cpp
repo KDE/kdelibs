@@ -102,7 +102,7 @@ void KMacroExpanderBase::expandMacros( QString &str )
 namespace KMacroExpander {
 
     enum Quoting { noquote, singlequote, doublequote, dollarquote, 
-                   parent, subst, group, math };
+                   paren, subst, group, math };
     typedef struct {
         Quoting current;
         bool dquote;
@@ -138,21 +138,17 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
         }
             if (state.dquote) {
                 rst.replace( QRegExp("([$`\"\\\\])"), "\\\\1" );
-                str.replace( pos, len, rst);
-                pos += rst.length();
             } else if (state.current == dollarquote) {
                 rst.replace( QRegExp("(['\\\\])"), "\\\\1" );
-                str.replace( pos, len, rst );
-                pos += rst.length();
             } else {
-                rst.replace( "'", "'\\''");
+                rst.replace( '\'', "'\\''");
 		if (state.current != singlequote) {
                     rst.prepend( "'" );
                     rst.append( "'" );
                 }
-                str.replace( pos, len, rst);
-                pos += rst.length();
             }
+            str.replace( pos, len, rst);
+            pos += rst.length();
             continue;
       nohit:
         if (state.current == singlequote) {
@@ -176,7 +172,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
                     pos += 2;
                     continue;
                 } else {
-                    state.current = parent;
+                    state.current = paren;
                     state.dquote = false;
                 }
             } else if (cc == '{') {
@@ -217,7 +213,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
             }
             str[pos2] = ')';
             sstack.push( state );
-            state.current = parent;
+            state.current = paren;
             state.dquote = false;
             continue;
         } else if (state.current == doublequote) {
@@ -248,12 +244,12 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
                     pos = ostack.top().pos;
                     str = ostack.top().str;
                     ostack.pop();
-                    state.current = parent;
+                    state.current = paren;
                     state.dquote = false;
                     sstack.push( state );
                 }
                 continue;
-            } else if (state.current == parent)
+            } else if (state.current == paren)
                 state = sstack.pop();
             else
                 break;
@@ -264,7 +260,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, uint &pos )
                 break;
         } else if (cc == '(') {
             sstack.push( state );
-            state.current = parent;
+            state.current = paren;
         } else if (cc == '{') {
             sstack.push( state );
             state.current = KMacroExpander::group;

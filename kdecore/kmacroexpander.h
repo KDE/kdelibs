@@ -77,7 +77,7 @@ public:
      *  should start, and upon exit where processing stopped
      * @return false if the string could not be parsed and therefore no safe
      *  substitution was possible. Note that macros will have been processed
-     *  up to the point where the error occured. An unmatched closing parent
+     *  up to the point where the error occured. An unmatched closing paren
      *  or brace outside any shell construct is @em not an error (unlike in
      *  the end-user functions in the KMacroExpander namespace), but still
      *  prematurely terminates processing.
@@ -100,7 +100,7 @@ protected:
     /**
      * This function is called for every single char within the string if
      * the escape char is QChar::null. It should determine whether the
-     * string starting at @p pos witin @p str is a valid macro and return
+     * string starting at @p pos within @p str is a valid macro and return
      * the substitution value for it if so.
      * @param str the input string
      * @param pos the offset within @p str
@@ -130,7 +130,10 @@ private:
     QChar escapechar;
 };
 
-
+/**
+ * A group of functions providing macro expansion (substitution) in strings,
+ * optionally with quoting appropriate for shell execution.
+ */
 namespace KMacroExpander {
     /**
      * Perform safe macro expansion (substitution) on a string.
