@@ -42,16 +42,6 @@ class KUniqueApplication : public KApplication, public DCOPObject
   Q_OBJECT
 public:
   /**
-   * @deprecated
-   * Constructor. Parses command-line arguments.
-   * Parameters : See @ref KApplication constructor.
-   */
-  KUniqueApplication( int& argc, char** argv,
-		      const QCString& rAppName = 0, 
-		      bool allowStyles=true, 
-		      bool GUIenabled=true);
-
-  /**
    * Constructor. Takes command line arguments from KCmdLineArgs
    * Parameters : See @ref KApplication constructor.
    */
@@ -111,9 +101,6 @@ public:
    * called if this isn't necessary.
    */
   static bool start();
-
-  static bool start(int& argc, char** argv, const QCString &rAppName);
-   
   
   /** Destructor */
   virtual ~KUniqueApplication();
@@ -145,10 +132,11 @@ public:
    */
   virtual int newInstance();
 
+private:
   /**
-   * @deprecated 
+   * @deprecated Do not use!
    */
-  virtual int newInstance(QValueList<QCString> params);
+  virtual int newInstance(QValueList<QCString>);
 
 private:
   static DCOPClient *s_DCOPClient;
