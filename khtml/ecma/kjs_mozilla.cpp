@@ -56,7 +56,7 @@ Value MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) cons
   Q_UNUSED(exec);
   switch (token) {
   default:
-    kdDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token << endl;
+    kdDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token << endl;
     return Value();
   }
 }
