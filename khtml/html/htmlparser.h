@@ -107,6 +107,14 @@ protected:
     /*
      * The currently active element (the one new elements will be added to)
      */
+    void setCurrent( DOM::NodeImpl* newNode )
+    {
+        if ( newNode ) newNode->ref();
+        if ( current ) current->deref();
+        current = newNode;
+    }
+
+private:
     DOM::NodeImpl *current;
 
     HTMLStackElem *blockStack;

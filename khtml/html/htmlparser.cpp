@@ -70,15 +70,14 @@ public:
                    int _level,
                    DOM::NodeImpl *_node,
 		   bool _inline,
-                   HTMLStackElem * _next
-        )
+                   HTMLStackElem * _next )
         :
         id(_id),
         level(_level),
 	m_inline(_inline),
         node(_node),
         next(_next)
-        { }
+        {}
 
     int       id;
     int       level;
@@ -123,6 +122,7 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
     document->ref();
 
     blockStack = 0;
+    current = 0;
 
     // ID_CLOSE_TAG == Num of tags
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
@@ -139,9 +139,13 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
 
     blockStack = 0;
+    current = 0;
 
     reset();
+
     current = i;
+    current->ref();
+
     inBody = true;
 }
 
@@ -153,6 +157,8 @@ KHTMLParser::~KHTMLParser()
 
     freeBlock();
 
+    if (current) current->deref();
+
     document->deref();
 
     delete [] forbiddenTag;
@@ -161,7 +167,7 @@ KHTMLParser::~KHTMLParser()
 
 void KHTMLParser::reset()
 {
-    current = document->document();
+    setCurrent ( document->document() );
 
     freeBlock();
 
@@ -318,7 +324,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #endif
 	    if(n->isInline()) m_inline = true;
             pushBlock(id, tagPriority[id]);
-            current = newNode;
+            setCurrent( newNode );
         } else {
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget)
@@ -408,7 +414,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 DOM::NodeImpl *newNode = head->addChild(n);
                 if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
-                    current = newNode;
+                    setCurrent ( newNode );
 #if SPEED_DEBUG < 2
 		    if(!n->attached() && HTMLWidget)
                         n->attach();
@@ -617,7 +623,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                          !flat && endTag[id] != DOM::FORBIDDEN ) {
 
                         pushBlock(id, tagPriority[id]);
-                        current = n;
+                        setCurrent ( current );
                         haveMalformedTable = true;
                     }
                     return true;
@@ -1094,6 +1100,7 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_SELECT+ID_CLOSE_TAG:
         inSelect = false;
         break;
+
     default:
         break;
     }
@@ -1195,7 +1202,8 @@ void KHTMLParser::popOneBlock()
         --inPre;
 
     m_inline = Elem->m_inline;
-    current = Elem->node;
+
+    setCurrent( Elem->node );
 
     if (haveMalformedTable && (!current ||
                                current->id() == ID_TR ||
