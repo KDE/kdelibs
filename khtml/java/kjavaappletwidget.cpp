@@ -16,7 +16,7 @@ struct KJavaAppletWidgetPrivate
 
 static unsigned int count = 0;
 
-KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
+    KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
                                       QWidget *parent, const char *name )
    : QXEmbed( parent, name )
 {

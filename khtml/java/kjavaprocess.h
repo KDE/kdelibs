@@ -86,8 +86,16 @@ public:
 
     /**
      * Send a string to the standard input (System.in) of the JVM.
+     * Now deprecated- use the send(QStringList&) method to use the
+     * updated protocol
      */
     void send( const QString& command );
+
+    /**
+     * same as above, but will create a proper message for the new KJAS
+     * protocol
+     */
+    void send( char cmd_code, const QStringList& args );
 
 protected slots:
     void wroteData();
@@ -98,9 +106,14 @@ protected slots:
 protected:
     virtual void invokeJVM();
     virtual void killJVM();
+
+    void popBuffer();
+
     KProcess *javaProcess;
 signals:
     void received( const QString & );
+    void received( const QByteArray& );
+
 private:
     KJavaProcessPrivate *d;
     QStrList inputBuffer;
@@ -111,6 +124,9 @@ private:
 
 /**
  * $Log$
+ * Revision 1.6  2000/06/06 22:53:36  gehrmab
+ * Beauty and wellness for the API documentation
+ *
  * Revision 1.5  2000/06/03 19:38:45  coolo
  * ok, I'm giving up. If someone has tons of time, he should fix all the code
  * that is using Qapp::style()

@@ -6,6 +6,20 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 
+#define CREATE_CONTEXT   (char)1
+#define DESTROY_CONTEXT  (char)2
+#define CREATE_APPLET    (char)3
+#define DESTROY_APPLET   (char)4
+#define START_APPLET     (char)5
+#define STOP_APPLET      (char)6
+#define SHOW_APPLET      (char)7
+#define SET_PARAMETER    (char)8
+#define SHUTDOWN_SERVER  (char)9
+#define SHOW_DOCUMENT    (char)12
+#define SHOW_URLINFRAME  (char)13
+#define SHOW_STATUS      (char)14
+#define RESIZE_APPLET    (char)15
+
 // For future expansion
 struct KJavaAppletServerPrivate
 {
@@ -21,7 +35,11 @@ KJavaAppletServer::KJavaAppletServer()
 
    process = new KJavaProcess();
    CHECK_PTR( process );
-   connect( process, SIGNAL(received(const QString&)), this, SLOT(received(const QString&)) );
+//   connect( process, SIGNAL(received(const QString&)),
+//            this,    SLOT(received(const QString&)) );
+
+   connect( process, SIGNAL(received(const QByteArray&)),
+            this,    SLOT(received(const QByteArray&)) );
 
    setupJava( process );
 
@@ -48,7 +66,8 @@ void KJavaAppletServer::freeJavaServer()
 {
    self->d->counter--;
 
-   if( self->d->counter == 0 ) {
+   if( self->d->counter == 0 )
+   {
       self->quit();
       delete self;
       self = 0;
@@ -62,20 +81,30 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     if( config.readBoolEntry( "JavaAutoDetect", true) )
         p->setJVMPath( "java" );
-    else {
+    else
+    {
         QString jPath = config.readEntry( "JavaPath", "/usr/lib/jdk" );
         // Cut off trailing slash if any
-        if(jPath[jPath.length()-1] == '/')
+        if( jPath[jPath.length()-1] == '/' )
           jPath.remove(jPath.length()-1, 1);
 
         p->setJVMPath( jPath + "/bin/java");
     }
     QString extraArgs = config.readEntry( "JavaArgs", "" );
+    p->setExtraArgs( extraArgs );
 
     if( config.readBoolEntry( "ShowJavaConsole", false) )
-        extraArgs = "-Dkjas.showConsole " + extraArgs;
+    {
+        p->setSystemProperty( "kjas.showConsole", QString::null );
+    }
 
-    p->setExtraArgs( extraArgs );
+    if( config.readBoolEntry( "UseJava2SecurityManager", true ) )
+    {
+        p->setSystemProperty( "java.security.manager", QString::null );
+
+        QString class_file = locate( "data", "kjava/kjava.policy" );
+        p->setSystemProperty( "java.security.policy", class_file );
+    }
 
     p->setMainClass( "org.kde.kjas.server.Main" );
 
@@ -87,7 +116,8 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     QString new_classpath = "CLASSPATH=" +  kjava_classes;
 
     char *classpath = getenv("CLASSPATH");
-    if(classpath) {
+    if(classpath)
+    {
         new_classpath += ":";
         new_classpath += classpath;
     }
@@ -98,16 +128,22 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
 void KJavaAppletServer::createContext( int contextId )
 {
-    QString s;
-    s.sprintf( "createContext!%d\n", contextId );
-    process->send( s );
+    kdDebug() << "createContext: " << contextId << endl;
+
+    QStringList args;
+    args.append( QString::number( contextId ) );
+
+    process->send( CREATE_CONTEXT, args );
 }
 
 void KJavaAppletServer::destroyContext( int contextId )
 {
-    QString s;
-    s.sprintf( "destroyContext!%d\n", contextId );
-    process->send( s );
+    kdDebug() << "destroyContext: " << contextId << endl;
+
+    QStringList args;
+    args.append( QString::number( contextId ) );
+
+    process->send( DESTROY_CONTEXT, args );
 }
 
 void KJavaAppletServer::createApplet( int contextId, int appletId,
@@ -118,82 +154,104 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
                                       const QString jarFile,
                                       QSize size )
 {
-    QString s;
-    s.sprintf( "createApplet!%d!%d!%s!%s!%s!%s!%s!%d!%d\n",
-               contextId, appletId,
-               (name.isNull() || name.isEmpty())
-                   ? "null" : name.latin1(),
-               (clazzName.isNull() || clazzName.isEmpty())
-                   ? "null" : clazzName.latin1(),
-               (baseURL.isNull() || baseURL.isEmpty())
-                   ? "null" : baseURL.latin1(),
-               (codeBase.isNull() || codeBase.isEmpty())
-                   ? "null" : codeBase.latin1(),
-               (jarFile.isNull() || jarFile.isEmpty())
-                   ? "null" : jarFile.latin1(),
-               size.width(), size.height() );
-    process->send( s );
+    kdDebug() << "createApplet: contextId = " << contextId     << endl
+              << "              appletId  = " << appletId      << endl
+              << "              name      = " << name          << endl
+              << "              clazzName = " << clazzName     << endl
+              << "              baseURL   = " << baseURL       << endl
+              << "              codeBase  = " << codeBase      << endl
+              << "              jarFile   = " << jarFile       << endl
+              << "              width     = " << size.width()  << endl
+              << "              height    = " << size.height() << endl;
 
+    QStringList args;
+    args.append( QString::number( contextId ) );
+    args.append( QString::number( appletId ) );
+
+    //it's ok if these are empty strings, I take care of it later...
+    args.append( name );
+    args.append( clazzName );
+    args.append( baseURL );
+    args.append( codeBase );
+    args.append( jarFile );
+
+    args.append( QString::number( size.width() ) );
+    args.append( QString::number( size.height() ) );
+
+    process->send( CREATE_APPLET, args );
 }
 
 void KJavaAppletServer::destroyApplet( int contextId, int appletId )
 {
-    QString s;
-    s.sprintf( "destroyApplet!%d!%d\n",
-               contextId, appletId );
-    process->send( s );
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+
+    process->send( DESTROY_APPLET, args );
 }
 
 
 void KJavaAppletServer::setParameter( int contextId, int appletId,
                                       const QString name, const QString value )
 {
-    QString s;
-    s.sprintf( "setParameter!%d!%d!%s!%s\n",
-               contextId, appletId,
-               name.latin1(), value.latin1() );
-    process->send( s );
+    kdDebug() << "setParameter, contextId = " << contextId << endl
+              << "              appletId  = " << appletId  << endl
+              << "              name      = " << name      << endl
+              << "              value     = " << value     << endl;
+
+    QStringList args;
+    args.append( QString::number( contextId ) );
+    args.append( QString::number( appletId ) );
+
+    args.append( name );
+    args.append( value );
+
+    process->send( SET_PARAMETER, args );
 }
 
 void KJavaAppletServer::showApplet( int contextId, int appletId,
                                     const QString title )
 {
-    QString s;
-    s.sprintf( "showApplet!%d!%d!%s\n",
-               contextId, appletId,
-               title.latin1() );
-    process->send( s );
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+    args.append( title );
+
+    process->send( SHOW_APPLET, args );
 }
 
 void KJavaAppletServer::startApplet( int contextId, int appletId )
 {
-    QString s;
-    s.sprintf( "startApplet!%d!%d\n",
-               contextId, appletId );
-    process->send( s );
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+
+    process->send( START_APPLET, args );
 }
 
 void KJavaAppletServer::stopApplet( int contextId, int appletId )
 {
-    QString s;
-    s.sprintf( "stopApplet!%d!%d\n",
-               contextId, appletId );
-    process->send( s );
+    QStringList args;
+    args.append( QString::number(contextId) );
+    args.append( QString::number(appletId) );
+
+    process->send( STOP_APPLET, args );
 }
 
 void KJavaAppletServer::quit()
 {
-    QString s;
-    s = "quit\n";
-    process->send( s );
+    QStringList args;
+
+    process->send( SHUTDOWN_SERVER, args );
 }
 
-
-void KJavaAppletServer::received( const QString &s )
+void KJavaAppletServer::received( const QString& s )
 {
-    if ( !s.isEmpty() ) {
+    if ( !s.isEmpty() )
+    {
         QStringList cmdLine = QStringList::split( "!", s, true );
-        if ( cmdLine.count()>0 && !cmdLine[0].isEmpty() ) {
+        if ( cmdLine.count()>0 && !cmdLine[0].isEmpty() )
+        {
             QString cmd = cmdLine[0].lower();
 
             QStringList arg;
@@ -204,4 +262,46 @@ void KJavaAppletServer::received( const QString &s )
             emit receivedCommand( cmd, arg );
         }
     }
+}
+
+void KJavaAppletServer::received( const QByteArray& qb )
+{
+    QString cmd;
+    QStringList args;
+    int index = 0;
+
+    //get the command code
+    char cmd_code = qb[ index++ ];
+    if( cmd_code == SHOW_DOCUMENT )
+        cmd = "showdocument";
+    else
+    if( cmd_code == SHOW_URLINFRAME )
+        cmd = "showurlinframe";
+    else
+    if( cmd_code == SHOW_STATUS )
+        cmd = "showstatus";
+    else
+    if( cmd_code == RESIZE_APPLET )
+        cmd = "resizeapplet";
+
+    ++index; //skip the sep
+
+    //parse args, but skip the contextID which is sent for now....
+    int size = qb.size();
+    bool contextID = true;
+    while( index < size )
+    {
+        QString tmp;
+        while( qb[index] != 0 )
+        {
+            tmp += qb[ index++ ];
+        }
+        if( contextID )
+            contextID = false;
+        else
+            args.append( tmp );
+        ++index;
+    }
+
+    emit receivedCommand( cmd, args );
 }

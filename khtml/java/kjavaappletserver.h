@@ -95,6 +95,7 @@ protected:
 
 protected slots:
     void received( const QString &s );
+    void received( const QByteArray& qb );
 
 private:
     void setupJava( KJavaProcess *p );
@@ -105,6 +106,11 @@ private:
 /**
  *
  * $Log$
+ * Revision 1.8  2000/09/27 11:46:32  sschiman
+ * * I've added implementations for the showDocument and showStatus calls to kjas
+ * for java applets that want to change the location of a frame. This should fix
+ * java menus. (okayed by Lars and mhk)
+ *
  * Revision 1.7  2000/06/06 22:53:36  gehrmab
  * Beauty and wellness for the API documentation
  *

@@ -11,7 +11,7 @@ struct KJavaAppletContextPrivate
 };
 
 KJavaAppletContext::KJavaAppletContext()
-  : QObject()
+    : QObject()
 {
    d = new KJavaAppletContextPrivate;
 
@@ -101,7 +101,6 @@ void KJavaAppletContext::stop (KJavaApplet *applet )
     server->stopApplet( id, applet->appletId() );
 }
 
-
 void KJavaAppletContext::received( const QString &cmd, const QStringList &arg )
 {
     if ( cmd=="showstatus" && arg.count()>0 )
@@ -110,4 +109,8 @@ void KJavaAppletContext::received( const QString &cmd, const QStringList &arg )
         emit showDocument( arg[0], arg[1] );
     else if ( cmd=="showdocument" && arg.count()>0 )
         emit showDocument( arg[0], "_top" );
+    else if ( cmd=="resizeapplet" )
+    {
+
+    }
 }

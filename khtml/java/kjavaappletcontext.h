@@ -20,43 +20,44 @@ class KJavaAppletContext : public QObject
 Q_OBJECT
 
 public:
-   /**
-    * If server is zero then the default server is used.
-    */
-   KJavaAppletContext();
-   ~KJavaAppletContext();
+    /**
+     * If server is zero then the default server is used.
+     */
+    KJavaAppletContext();
+    ~KJavaAppletContext();
 
-   /**
-    * Returns a singleton context. This should only be used for simple
-    * purposes, more complex applications require multiple contexts.
-    */
-   static KJavaAppletContext *getDefaultContext();
+    /**
+     * Returns a singleton context. This should only be used for simple
+     * purposes, more complex applications require multiple contexts.
+     */
+    static KJavaAppletContext *getDefaultContext();
 
-   int contextId();
-   void setContextId( int id );
 
-  // Forwarded from the applets
-  void create( KJavaApplet * );
-  void destroy( KJavaApplet * );
-  void setParameter( KJavaApplet *applet, const QString &name, const QString &value );
-  void show( KJavaApplet *, const QString &title );
-  void start( KJavaApplet * );
-  void stop( KJavaApplet * );
+    int contextId();
+    void setContextId( int id );
+
+    // Forwarded from the applets
+    void create( KJavaApplet * );
+    void destroy( KJavaApplet * );
+    void setParameter( KJavaApplet *applet, const QString &name, const QString &value );
+    void show( KJavaApplet *, const QString &title );
+    void start( KJavaApplet * );
+    void stop( KJavaApplet * );
 
 signals:
-  void showStatus( const QString &txt );
-  void showDocument( const QString &url, const QString &target );
+    void showStatus( const QString &txt );
+    void showDocument( const QString &url, const QString &target );
 
 protected:
-   //* The applet server this context is attached to.
-   KJavaAppletServer *server;
+     //* The applet server this context is attached to.
+     KJavaAppletServer *server;
 
 protected slots:
-   void received( const QString &cmd, const QStringList &arg );
+     void received( const QString &cmd, const QStringList &arg );
 
 private:
-   int id;
-   struct KJavaAppletContextPrivate *d;
+     int id;
+     struct KJavaAppletContextPrivate *d;
 };
 
 #endif // KJAVAAPPLETCONTEXT_H
@@ -64,6 +65,11 @@ private:
 /**
  *
  * $Log$
+ * Revision 1.5  2000/09/27 11:46:32  sschiman
+ * * I've added implementations for the showDocument and showStatus calls to kjas
+ * for java applets that want to change the location of a frame. This should fix
+ * java menus. (okayed by Lars and mhk)
+ *
  * Revision 1.4  2000/06/06 22:53:36  gehrmab
  * Beauty and wellness for the API documentation
  *

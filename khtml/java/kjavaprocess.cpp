@@ -1,5 +1,9 @@
 #include "kjavaprocess.moc"
-#include "kdebug.h"
+#include <kdebug.h>
+#include <kprotocolmanager.h>
+#include <qtextstream.h>
+
+#include <iostream.h>
 
 typedef QMap<QString, QString> PropsMap;
 
@@ -19,27 +23,39 @@ struct KJavaProcessPrivate
    QString mainClass;
    QString extraArgs;
    QString classArgs;
+   QList<QByteArray> BufferList;
 };
+
+
 
 KJavaProcess::KJavaProcess()
     : inputBuffer(),
       systemProps()
 {
-   d = new KJavaProcessPrivate;
-   CHECK_PTR( d );
+    d = new KJavaProcessPrivate;
+    CHECK_PTR( d );
+    d->BufferList.setAutoDelete( true );
 
-   javaProcess = new KProcess();
-   CHECK_PTR( javaProcess );
+    javaProcess = new KProcess();
+    CHECK_PTR( javaProcess );
 
-   connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
-            this, SLOT( wroteData() ) );
-   connect( javaProcess, SIGNAL( processExited( KProcess * ) ),
-            this, SLOT( javaHasDied() ) );
-   connect( javaProcess, SIGNAL( receivedStdout( KProcess *, char *, int ) ),
-            this, SLOT( receivedData( KProcess *, char *, int ) ) );
+    connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
+             this, SLOT( wroteData() ) );
+    connect( javaProcess, SIGNAL( processExited( KProcess * ) ),
+             this, SLOT( javaHasDied() ) );
+    connect( javaProcess, SIGNAL( receivedStdout( KProcess *, char *, int ) ),
+             this, SLOT( receivedData( KProcess *, char *, int ) ) );
 
-   d->jvmPath = "java";
-   d->mainClass = "-help";
+    d->jvmPath = "java";
+    d->mainClass = "-help";
+
+    //check for proxy settings
+    if( KProtocolManager::useProxy() )
+    {
+        d->httpProxyHost = KProtocolManager::proxyFor( "http" );
+
+        setSystemProperty( "kjas.proxy", d->httpProxyHost );
+    }
 }
 
 KJavaProcess::~KJavaProcess()
@@ -121,30 +137,98 @@ void KJavaProcess::setClassArgs( const QString& args )
    d->classArgs = args;
 }
 
-void KJavaProcess::send( const QString& command )
+void KJavaProcess::send( const QString& /*command*/ )
 {
-    inputBuffer.append( command.ascii() );
+    kdWarning() << "you called the deprecated send command- it won't work" << endl;
+}
 
-    kdWarning() << "sendRequest: " << command;
+void KJavaProcess::send( char cmd_code, const QStringList& args )
+{
+    kdDebug() << "KJavaProcess::send( the new one)" << endl;
 
-    // If there's nothing being sent right now
-    if ( inputBuffer.count() == 1 ) {
-        if ( !javaProcess->writeStdin( inputBuffer.first(),
-                                       qstrlen( inputBuffer.first() ) ) ) {
-            kdWarning() << "Could not write " << command << " command\n";
+    //the buffer to store stuff, etc.
+    QByteArray* buff = new QByteArray();
+    QTextOStream output( *buff );
+    char sep = 0;
+
+    //make space for the command size: 8 characters...
+    QCString space( "        " );
+    output << space;
+
+    //write command code
+    kdDebug() << "cmd_code = " << (int)cmd_code << endl;
+    output << cmd_code;
+
+    //store the arguments...
+    if( args.count() == 0 )
+    {
+        output << sep;
+    }
+    else
+    {
+        for( QStringList::ConstIterator it = args.begin();
+             it != args.end(); ++it )
+        {
+            if( !(*it).isEmpty() )
+            {
+                output << (*it).latin1();
+            }
+            output << sep;
+        }
+    }
+
+    int size = buff->size() - 8;  //subtract out the length of the size_str
+    QString size_str = QString("%1").arg( size, 8 );
+    kdDebug() << "size of message = " << size_str << endl;
+
+    const char* size_ptr = size_str.latin1();
+    for( int i = 0; i < 8; i++ )
+        buff->at(i) = size_ptr[i];
+
+    d->BufferList.append( buff );
+
+    kdDebug() << "just added this buffer of size: " << buff->size() << " to the queue: " << endl;
+
+    if( d->BufferList.count() == 1 )
+    {
+        popBuffer();
+    }
+}
+
+void KJavaProcess::popBuffer()
+{
+    QByteArray* buf = d->BufferList.first();
+    if( buf )
+    {
+        cout << "Sending buffer to java, buffer = >>";
+        for( unsigned int i = 0; i < buf->size(); i++ )
+        {
+            if( buf->at(i) == (char)0 )
+                cout << "<SEP>";
+            else if( buf->at(i) > 0 && buf->at(i) < 10 )
+                cout << "<CMD " << (int) buf->at(i) << ">";
+            else
+                cout << buf->at(i);
+        }
+        cout << "<<" << endl;
+
+        //write the data
+        if ( !javaProcess->writeStdin( buf->data(),
+                                       buf->size() ) )
+        {
+            qWarning( "Could not write command" );
         }
     }
 }
 
 void KJavaProcess::wroteData( )
 {
-    inputBuffer.removeFirst();
+    //do this here- we can't free the data until we know it went through
+    d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
 
-    if ( inputBuffer.count() >= 1 ) {
-        if ( !javaProcess->writeStdin( inputBuffer.first(),
-                                       qstrlen( inputBuffer.first() ) ) ) {
-            qWarning( "Could not lazy write %s command", inputBuffer.first() );
-        }
+    if ( d->BufferList.count() >= 1 )
+    {
+        popBuffer();
     }
 }
 
@@ -153,10 +237,28 @@ void KJavaProcess::invokeJVM()
 {
     *javaProcess << d->jvmPath;
 
-    if( d->extraArgs != QString::null )
+    //set the system properties, iterate through the qmap of system properties
+    for( QMap<QString,QString>::Iterator it = systemProps.begin();
+         it != systemProps.end(); ++it )
     {
-        // BUG HERE: if an argument contains space (-Dname="My name")
-        // this parsing will fail. Need more sofisticated parsing
+        QString currarg;
+
+        if( !it.key().isEmpty() )
+        {
+            currarg = "-D" + it.key();
+            if( !it.data().isEmpty() )
+                currarg += "=" + it.data();
+        }
+
+        if( !currarg.isEmpty() )
+            *javaProcess << currarg;
+    }
+
+    //load the extra user-defined arguments
+    if( !d->extraArgs.isEmpty() )
+    {
+            // BUG HERE: if an argument contains space (-Dname="My name")
+        // this parsing will fail. Need more sophisticated parsing
         QStringList args = QStringList::split( " ", d->extraArgs );
         for ( QStringList::Iterator it = args.begin(); it != args.end(); ++it )
             *javaProcess << *it;
@@ -167,7 +269,15 @@ void KJavaProcess::invokeJVM()
     if ( d->classArgs != QString::null )
         *javaProcess << d->classArgs;
 
-    qWarning( "Invoking JVM now..." );
+    kdDebug() << "Invoking JVM now...with arguments = " << endl;
+    QStrList* args = javaProcess->args();
+    QString str_args;
+    for( char* it = args->first(); it; it = args->next() )
+    {
+        str_args += it;
+        str_args += ' ';
+    }
+    kdDebug() << str_args << endl;
 
     KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
     javaProcess->start( KProcess::NotifyOnExit, comms );
@@ -184,17 +294,24 @@ void KJavaProcess::processExited()
     d->ok = false;
 }
 
-void KJavaProcess::receivedData( KProcess *, char *buffer, int len )
+void KJavaProcess::receivedData( KProcess*, char* buffer, int len )
 {
-    char *cpy = new char[ MAX_INPUT_SIZE + 1 ];
-    CHECK_PTR( cpy );
+    //here we need to parse out returned commands from the java process
+    kdWarning() << "HEY- We got a message from the Java Process. It is " << len << "bytes" << endl;
+    cout << "buffer = >>";
+    for( int i = 0; i < len; i++ )
+    {
+        if( buffer[i] == (char)0 )
+            cout << "<SEP>";
+        else if( buffer[i] > (char)0 && buffer[i] < (char)16 )
+            cout << "<CMD " << (int) buffer[i] << ">";
+        else
+            cout << buffer[i];
+    }
+    cout << "<<" << endl;
 
-    memcpy( cpy, buffer, len * sizeof( char ) );
-    cpy[ len ] = 0;
+    QByteArray qb;
+    QByteArray copied_data = qb.duplicate( buffer, len );
 
-    QString s;
-    s = (const char *) cpy;
-    delete cpy;
-
-    emit received( s.stripWhiteSpace() );
+    emit received( copied_data );
 }

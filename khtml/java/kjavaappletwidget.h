@@ -47,9 +47,6 @@ class KWinModule;
  * a while before settling down. This will not affect you unless you use the
  * KJAS protocol directly.
  *
- * The window swallowing code used in this widget is based on KSwallowWidget by
- * Matthias Hoelzer.
- *
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
@@ -58,107 +55,106 @@ class KJavaAppletWidget : public QXEmbed
 Q_OBJECT
 
 public:
-   KJavaAppletWidget( KJavaAppletContext *context,
-                      QWidget *parent=0, const char *name=0 );
+    KJavaAppletWidget( KJavaAppletContext *context,
+                       QWidget *parent=0, const char *name=0 );
 
-   KJavaAppletWidget( KJavaApplet *applet,
-                      QWidget *parent=0, const char *name=0 );
+    KJavaAppletWidget( KJavaApplet *applet,
+                       QWidget *parent=0, const char *name=0 );
 
-   KJavaAppletWidget( QWidget *parent=0, const char *name=0 );
+    KJavaAppletWidget( QWidget *parent=0, const char *name=0 );
 
-  ~KJavaAppletWidget();
+   ~KJavaAppletWidget();
 
-   //
-   // Stuff to do with the applet
-   //
+    //
+    // Stuff to do with the applet
+    //
+    void setAppletName( const QString &appletName );
+    QString &appletName();
 
-   void setAppletName( const QString &appletName );
-   QString &appletName();
+    /**
+     * Specify the name of the class file to run. For example 'Lake.class'.
+     */
+    void setAppletClass( const QString &clazzName );
 
-   /**
-    * Specify the name of the class file to run. For example 'Lake.class'.
-    */
-   void setAppletClass( const QString &clazzName );
+    /**
+     * Get the name of the class file to run. For example 'Lake.class'.
+     */
+    QString &appletClass();
 
-   /**
-    * Get the name of the class file to run. For example 'Lake.class'.
-    */
-   QString &appletClass();
+    /**
+     * Specify the location of the jar file containing the class.
+     * (unimplemented)
+     */
+    void setJARFile( const QString &jar );
 
-   /**
-    * Specify the location of the jar file containing the class.
-    * (unimplemented)
-    */
-   void setJARFile( const QString &jar );
+    /**
+     * Get the location of the jar file containing the class.
+     * (unimplemented)
+     */
+    QString &jarFile();
 
-   /**
-    * Get the location of the jar file containing the class.
-    * (unimplemented)
-    */
-   QString &jarFile();
+    /**
+     * Specify a parameter to be passed to the applet.
+     */
+    void setParameter( const QString &name, const QString &value );
 
-   /**
-    * Specify a parameter to be passed to the applet.
-    */
-   void setParameter( const QString &name, const QString &value );
+    /**
+     * Get the value of a parameter to be passed to the applet.
+     */
+    QString &parameter( const QString &name );
 
-   /**
-    * Get the value of a parameter to be passed to the applet.
-    */
-   QString &parameter( const QString &name );
+    /**
+     * Set the URL of the document embedding the applet.
+     */
+    void setBaseURL( const QString &base );
 
-   /**
-    * Set the URL of the document embedding the applet.
-    */
-   void setBaseURL( const QString &base );
-
-   /**
-    * Get the URL of the document embedding the applet.
-    */
-   QString &baseURL();
-
-  /**
-    * Set the codebase of the applet classes.
-    */
-   void setCodeBase( const QString &codeBase );
+    /**
+     * Get the URL of the document embedding the applet.
+     */
+    QString &baseURL();
 
    /**
-    * Get the codebase of the applet classes.
-    */
-   QString &codeBase();
+     * Set the codebase of the applet classes.
+     */
+    void setCodeBase( const QString &codeBase );
 
-   /**
-    * Create the applet.
-    */
-   void create();
+    /**
+     * Get the codebase of the applet classes.
+     */
+    QString &codeBase();
 
-   /**
-    * Shows applet on the screen
-    */
-   void showApplet();
+    /**
+     * Create the applet.
+     */
+    void create();
 
-   /**
-    * Run the applet.
-    */
-   void start();
+    /**
+     * Shows applet on the screen
+     */
+    void showApplet();
 
-   /**
-    * Pause the applet.
-    */
-   void stop();
+    /**
+     * Run the applet.
+     */
+    void start();
 
-  void resize( int, int );
+    /**
+     * Pause the applet.
+     */
+    void stop();
+
+    void resize( int, int );
   
 protected slots:
-    //
-    // Stuff to do with swallowing the applets Frame
-    //
+     //
+     // Stuff to do with swallowing the applets Frame
+     //
 
-    void setWindow( WId w );
+     void setWindow( WId w );
 
 protected:
-   void swallowWindow( WId w );
-   void uniqueTitle();
+    void swallowWindow( WId w );
+    void uniqueTitle();
 
 private:
     // Applet info
@@ -171,13 +167,17 @@ private:
     // Swallowing info
     QString swallowTitle;
 
-  struct KJavaAppletWidgetPrivate *d;
+    struct KJavaAppletWidgetPrivate *d;
 };
 
 #endif // KJAVAAPPLETWIDGET_H
 
 /*
  * $Log$
+ * Revision 1.13  2000/09/19 23:21:04  rogozin
+ * Fix #9091 and partially #10125
+ * Implement support for BASE tag
+ *
  * Revision 1.12  2000/08/19 01:41:59  rogozin
  * - fix problem when Java 1.1 displays cliped applet
  * - withdrow code is removed since it exists in the QXEmbed
