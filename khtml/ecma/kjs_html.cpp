@@ -3404,15 +3404,16 @@ void Image::tryPut(ExecState *exec, const Identifier &propertyName, const Value&
 void Image::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   switch (token) {
-  case Src: {
-    String str = value.toString(exec);
-    src = str.value();
+  case Src:
+    src = value.toString(exec);
     if ( img ) img->deref(this);
     img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
 // ### img = doc ? doc->docLoader()->requestImage( src.string() ) : 0;
-    if ( img ) img->ref(this);
+    if ( img ) {
+      img->ref(this);
+      src = img->url();
+    }
     break;
-  }
   case OnLoad:
     if ( m_onLoadListener )
         m_onLoadListener->deref();
