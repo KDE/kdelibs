@@ -148,11 +148,10 @@ void StdAddressBook::init( bool )
 {
   KRES::ResourceManager<Resource> manager( "contact" );
 
-  QPtrList<Resource> resources = manager.resources( true );
-  for ( Resource *res = resources.first(); res; res = resources.next() ) {
-    if ( !addResource( res ) ) {
-      delete res;
-      continue;
+  KRES::ResourceManager<Resource>::Iterator it;
+  for( it = manager.begin(); it != manager.end(); ++it ) {
+    if ( (*it)->isActive() ) {
+      addResource( *it );
     }
   }
 
