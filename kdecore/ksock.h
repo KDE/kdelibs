@@ -90,6 +90,7 @@
 
 #ifndef KSOCK_H
 #define KSOCK_H
+
 #ifdef HAVE_CONFIG_H
 #endif
 
@@ -114,7 +115,6 @@
  *
  * @author Torben Weis <weis@uni-frankfurt.de>
  * @version $Id$
-    
  * @short a TCP/IP client socket.
  */
 class KSocket : public QObject
@@ -129,6 +129,12 @@ public:
     
     /** 
      * Create a socket and connect to a host.
+     * @param _host	the remote host to which to connect.
+     * @param _port	the port on the remote host.
+     */
+    KSocket( const char *_host, unsigned short int _port );
+    
+    /** 
      * Connects to a UNIX domain socket.
      * @param _path    the filename of the socket
      */
@@ -195,16 +201,21 @@ public slots:
     void slotWrite( int );
     
     /** 
+     * Connected to the readNotifier.
+     */
     void slotRead( int );
     
 protected:
-    
+    bool connect( const char *_host, unsigned short int _port );
+    bool connect( const char *_path );
   
     bool init_sockaddr( const char *hostname, unsigned short int port );
     
     struct sockaddr_in server_name;
     struct sockaddr_un unix_addr;
-    
+
+    /******************************************************
+     * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.
      */
     int sock;
@@ -234,7 +245,12 @@ protected:
 class KServerSocket : public QObject
 {
     Q_OBJECT
-    
+public:
+    /**
+     * Constructor.
+     * @param _port	the port number to monitor for incoming connections.
+     */
+    KServerSocket( int _port );
 
     /**
      * Creates a UNIX domain server socket.
@@ -270,7 +286,8 @@ public slots:
 signals:
     /**
      * A connection has been accepted.
-
+     * It is your task to delete the KSocket if it is no longer needed.
+     */
     void accepted( KSocket* );
 
 protected:
@@ -281,6 +298,8 @@ protected:
      * Notifies us when there is something to read on the port.
      */
     QSocketNotifier *notifier;
+    
+    /** 
      * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.
      */    

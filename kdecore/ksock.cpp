@@ -129,9 +129,17 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
 KSocket::KSocket( const char *_host, unsigned short int _port ) :
+  sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
+{
+  domain = PF_INET;
+  connect( _host, _port );
+}
+
+KSocket::KSocket( const char *_path ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
   domain = PF_UNIX;
@@ -188,6 +196,9 @@ void KSocket::slotWrite( int )
 }
 
 /*
+ * Initializes a sockaddr structure. Do this after creating a socket and
+ * before connecting to any other socket. Here you must specify the
+ * host and port you want to connect to.
  */
 bool KSocket::init_sockaddr( const char *hostname, unsigned short int port )
 {
@@ -204,10 +215,45 @@ bool KSocket::init_sockaddr( const char *hostname, unsigned short int port )
 	  warning("Unknown host %s.\n",hostname);
 	  return false;	
     }
+  server_name.sin_addr = *(struct in_addr*) hostinfo->h_addr;    
+  
+  return true;
+}
+
+/*
+ * Connects the PF_UNIX domain socket to _path.
+ */
+bool KSocket::connect( const char *_path )
+{
+  if ( domain != PF_UNIX )
+    fatal( "Connecting a PF_INET socket to a PF_UNIX domain socket\n");
+  
+  sock = ::socket(PF_UNIX,SOCK_STREAM,0);
+  if (sock < 0)
+	return false;
+  
+  unix_addr.sun_family = AF_UNIX;
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {      
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
+    return false;
+  }  
+  strcpy( unix_addr.sun_path, _path );
+
+  if ( 0 > ::connect( sock, (struct sockaddr*)(&unix_addr), 
+					  sizeof( unix_addr ) ) )
+  {
+      ::close( sock );
+      sock = -1;
+      return false;
   }
 
   return true;
 }
+
+/*
+ * Connects the socket to _host, _port.
  */
 bool KSocket::connect( const char *_host, unsigned short int _port )
 {
@@ -233,6 +279,9 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
 	  return false;
 	}
 
+  return true;
+}
+
 unsigned long KSocket::getAddr()
 {
   if ( domain != PF_INET )
@@ -250,29 +299,101 @@ KSocket::~KSocket()
 	delete readNotifier;
     }
     if ( writeNotifier )
+	delete writeNotifier; 
+  
+    ::close( sock ); 
+}
+
+
+KServerSocket::KServerSocket( const char *_path ) :
+  sock( -1 )
+{
+  domain = PF_UNIX;
+  
+  if ( !init ( _path ) )
+  {
+    fatal("Error constructing PF_UNIX domain server socket\n");
+    return;
   }
     
   notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
+  connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
+}
 
-    {
-	  fatal("Error constructing\n");
-	  return;
-    }
+KServerSocket::KServerSocket( int _port ) :
+  sock( -1 )
+{
+  domain = PF_INET;
 
   if ( !init ( _port ) )
   {
     fatal("Error constructing\n");
     return;
+  }
+    
+  notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
+  connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
+}
+
+bool KServerSocket::init( const char *_path )
+{
+  if ( domain != PF_UNIX )
+    return false;
+  
+  struct sockaddr_un name;
+    
+  sock = ::socket( PF_UNIX, SOCK_STREAM, 0 );
+  if (sock < 0)
+  {
+    warning( "Could not create socket\n");
     return false;
   }
+
+  unlink(_path);   
+  name.sun_family = AF_UNIX;
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {      
+    warning( "Too long PF_UNIX domain name '%s'\n",_path);
+    return false;
+  }  
+  strcpy( name.sun_path, _path );
+
+    
+  if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
+  {
+    warning("Could not bind to socket\n");
+    ::close( sock );
+    sock = -1;
+    return false;
+  }
+  
+  if ( chmod( _path, 0666) < 0 )
+  {
+    warning("Could not setupt premissions for server socket\n");
+    ::close( sock );
+    sock = -1;
+    return false;
+  }
+               
+  if ( listen( sock, 1000 ) < 0 )
+  {
+    warning("Error listening on socket\n");
+    ::close( sock );
+    sock = -1;
+    return false;
+  }
+
+  return true;
+}
 
 bool KServerSocket::init( unsigned short int _port )
 {
   if ( domain != PF_INET )
-    {
-	  warning( "Could not create socket\n");
-	  return false;
-    }
+    return false;
+  
+  struct sockaddr_in name;
+    
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
   {
@@ -300,12 +421,18 @@ bool KServerSocket::init( unsigned short int _port )
 	  return false;
     }
 
+  return true;
+}
+
 unsigned short KServerSocket::getPort()
 {
   if ( domain != PF_INET )
     return false;
 
   struct sockaddr_in name; ksize_t len = sizeof(name);
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  return ntohs(name.sin_port);
+}
 
 unsigned long KServerSocket::getAddr()
 {
@@ -313,18 +440,36 @@ unsigned long KServerSocket::getAddr()
     return false;
 
   struct sockaddr_in name; ksize_t len = sizeof(name);
-  struct sockaddr_in clientname;
-  int new_sock;
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  return ntohl(name.sin_addr.s_addr);
+}
+
+void KServerSocket::slotAccept( int )
+{
+  if ( domain == PF_INET )
+  {      
+    struct sockaddr_in clientname;
+    int new_sock;
     
-  ksize_t size = sizeof(clientname);
-  else if ( domain == PF_UNIX )
-  if ((new_sock = accept (sock, (struct sockaddr *) &clientname, &size)) < 0)
-    struct sockaddr_un clientname;
-	  warning("Error accepting\n");
-	  return;
     ksize_t size = sizeof(clientname);
     
-  emit accepted( new KSocket( new_sock ) );
+    if ((new_sock = accept (sock, (struct sockaddr *) &clientname, &size)) < 0)
+    {
+      warning("Error accepting\n");
+      return;
+    }
+
+    emit accepted( new KSocket( new_sock ) );
+  }
+  else if ( domain == PF_UNIX )
+  {      
+    struct sockaddr_un clientname;
+    int new_sock;
+    
+    ksize_t size = sizeof(clientname);
+    
+    if ((new_sock = accept (sock, (struct sockaddr *) &clientname, &size)) < 0)
+    {
       warning("Error accepting\n");
       return;
     }
