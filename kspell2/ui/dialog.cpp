@@ -100,6 +100,7 @@ void Dialog::initConnections()
              SLOT( slotReplaceWord() ) );
     connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotFinished() ) );
     connect( this, SIGNAL( cancelClicked() ),this, SLOT( slotCancel() ) );
+    connect( d->ui->m_replacement ,  SIGNAL( returnPressed () ), this, SLOT( slotReplaceWord()) );
 }
 
 void Dialog::initGui()
