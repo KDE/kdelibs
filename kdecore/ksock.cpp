@@ -255,6 +255,10 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 
 KSocket::~KSocket()
 {
+  // Coolo says delete 0 is ok :) -thiago
+  delete d->readNotifier;
+  delete d->writeNotifier;
+
   delete d;
 
   if (sock != -1) {
