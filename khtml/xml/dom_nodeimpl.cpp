@@ -522,7 +522,8 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
                  !evt->defaultPrevented() && !evt->defaultHandled(); --it)
             it.current()->defaultEventHandler(evt);
 
-        if (evt->id() == EventImpl::CLICK_EVENT && !evt->defaultPrevented())
+        if (evt->id() == EventImpl::CLICK_EVENT && !evt->defaultPrevented() &&
+			static_cast<MouseEventImpl*>(evt)->button() == 0)
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, static_cast<UIEventImpl*>(evt)->detail());
     }
 
