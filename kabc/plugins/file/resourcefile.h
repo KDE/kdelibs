@@ -43,7 +43,7 @@ class ResourceConfigWidget;
 class Lock;
 
 /**
-  @internal
+  This resource allows access to a local file.
 */
 class ResourceFile : public Resource
 {

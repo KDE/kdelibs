@@ -368,7 +368,11 @@ bool AddressBook::save( Ticket *ticket )
 
   if ( ticket->resource() ) {
     deleteRemovedAddressees();
-    return ticket->resource()->save( ticket );
+    bool ok = ticket->resource()->save( ticket );
+    ticket->resource()->releaseSaveTicket( ticket );
+    return ok;
+//    Activate in KDE 4.0
+//    return ticket->resource()->releaseSaveTicket( ticket );
   }
 
   return false;
@@ -380,7 +384,11 @@ bool AddressBook::asyncSave( Ticket *ticket )
 
   if ( ticket->resource() ) {
     d->mPendingSaveResources.append( ticket->resource() );
-    return ticket->resource()->asyncSave( ticket );
+    bool ok = ticket->resource()->asyncSave( ticket );
+    ticket->resource()->releaseSaveTicket( ticket );
+    return ok;
+//    Activate in KDE 4.0
+//    return ticket->resource()->asyncSave( ticket );
   }
 
   return false;
@@ -493,14 +501,18 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   return 0;
 }
 
-void AddressBook::releaseSaveTicket( Ticket *ticket )
+void AddressBook::releaseSaveTicket( Ticket* )
 {
+/*
+  // Will be activated in KDE 4.0
+
   if ( !ticket )
     return;
 
   if ( ticket->resource() ) {
     ticket->resource()->releaseSaveTicket( ticket );
   }
+*/
 }
 
 void AddressBook::insertAddressee( const Addressee &a )

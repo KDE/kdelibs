@@ -136,6 +136,9 @@ class AddressBook : public QObject
     Ticket *requestSaveTicket( Resource *resource = 0 );
 
     /**
+      Attention!!! This method will be activated in KDE 4.0, at the
+      moment it does nothing...
+
       Releases the ticket requested previously with requestSaveTicket().
       You have to call this function after saving, otherwise the possible
       locks of the resource won't be removed.
