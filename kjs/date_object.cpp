@@ -214,6 +214,10 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   else
     t = localtime(&tv);
 
+  // trick gcc. We don't want the Y2K warnings.
+  const char *xFormat = "%x";
+  const char *cFormat = "%c";
+
   switch (id) {
   case ToString:
   case ToDateString:
@@ -222,7 +226,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   case ToUTCString:
     setlocale(LC_TIME,"C");
     if (id == DateProtoFuncImp::ToDateString) {
-      strftime(timebuffer, bufsize, "%x",t);
+      strftime(timebuffer, bufsize, xFormat, t);
     } else if (id == DateProtoFuncImp::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
     } else { // ToString, toGMTString & toUTCString
@@ -233,11 +237,11 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = String(timebuffer);
     break;
   case ToLocaleString:
-    strftime(timebuffer, bufsize, "%c", t);
+    strftime(timebuffer, bufsize, cFormat, t);
     result = String(timebuffer);
     break;
   case ToLocaleDateString:
-    strftime(timebuffer, bufsize, "%x", t);
+    strftime(timebuffer, bufsize, xFormat, t);
     result = String(timebuffer);
     break;
   case ToLocaleTimeString:
