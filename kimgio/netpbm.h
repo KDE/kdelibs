@@ -3,6 +3,8 @@
 // netpbm.h -- QImage IO handler declaration for several graphics formats using
 //           using the NetPBM tools.
 //
+// This library is distributed under the conditions of the GNU LGPL.
+//
 
 //////
 // PCX IO handlers for QImage.

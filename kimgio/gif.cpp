@@ -1,3 +1,4 @@
+// This library is distributed under the conditions of the GNU LGPL.
 #include <qimage.h>
 #include <qdatastream.h>
 

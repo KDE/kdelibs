@@ -1,3 +1,4 @@
+// This library is distributed under the conditions of the GNU LGPL.
 #include <unistd.h>
 #include <stdio.h>
 #include <qimage.h>

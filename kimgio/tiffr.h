@@ -2,6 +2,8 @@
 * QImageIO Routines to read/write TIFF images.
 * Sirtaj Singh Kang, Oct 1998.
 *
+* This library is distributed under the conditions of the GNU LGPL.
+*
 * $Id$
 */
 

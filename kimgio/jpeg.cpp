@@ -6,6 +6,8 @@
 // Sirtaj Kang, Oct 1996.
 // JPEG-write bindings contributed by Troll Tech
 //
+// This library is distributed under the conditions of the GNU LGPL.
+//
 // $Id$
 
 #ifdef HAVE_CONFIG_H
