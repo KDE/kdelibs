@@ -82,7 +82,7 @@ public:
 
   Entry* entry(const QString&);
   int scanEntry(Entry* e);
-  void emitEvent(Entry* e, int event);
+  void emitEvent(Entry* e, int event, const QString &fileName = QString::null);
 
 public slots:
   void slotRescan();

@@ -170,7 +170,8 @@ public:
 
 private slots:
   void slotFileDirty( const QString &_file );
-  void slotDirectoryDirty( const QString &_dir );
+  void slotFileCreated( const QString &_file );
+  void slotFileDeleted( const QString &_file );
   void slotURLDirty( const KURL &_dir );
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );

@@ -39,7 +39,7 @@ int main (int argc, char **argv)
   KDirWatch *dirwatch2 = new KDirWatch;
 
   testObject.connect(dirwatch1, SIGNAL( dirty( const QString &)), SLOT( dirty( const QString &)) );
-  testObject.connect(dirwatch1, SIGNAL( fileDirty( const QString &)), SLOT( fileDirty( const QString &)) );
+  testObject.connect(dirwatch1, SIGNAL( created( const QString &)), SLOT( created( const QString &)) );
   testObject.connect(dirwatch1, SIGNAL( deleted( const QString &)), SLOT( deleted( const QString &)) );
 
   if (args->count() >0) {

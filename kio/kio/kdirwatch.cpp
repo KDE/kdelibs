@@ -145,7 +145,7 @@ KDirWatchPrivate::KDirWatchPrivate()
  	     this, SLOT(famEventReceived()) );
   }
   else {
-    kdDebug(7001) << "Can't use FAM (fam damon not running?)" << endl;
+    kdDebug(7001) << "Can't use FAM (fam daemon not running?)" << endl;
     use_fam=false;
   }
 #endif
@@ -692,7 +692,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   return true;
 }
 
-// instance ==0: start scanning for all instances
+// instance ==0: stop scanning for all instances
 void KDirWatchPrivate::stopScan(KDirWatch* instance)
 {
   EntryMap::Iterator it = m_mapEntries.begin();
@@ -793,8 +793,11 @@ int KDirWatchPrivate::scanEntry(Entry* e)
  * and stored pending events. When watching is stopped, the event is
  * added to the pending events.
  */
-void KDirWatchPrivate::emitEvent(Entry* e, int event)
+void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 {
+  QString path = e->path;
+  if (!fileName.isEmpty()) path += "/" + fileName;
+
   Client* c = e->m_clients.first();
   for(;c;c=e->m_clients.next()) {
     if (c->instance==0 || c->count==0) continue;
@@ -814,28 +817,18 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event)
     if (event == NoChange) continue;
 
     if (event & Deleted) {
-      if (e->isDir)
-	c->instance->setDirDeleted(e->path);
-      else
-	c->instance->setFileDeleted(e->path);
+      c->instance->setDeleted(path);
       // emit only Deleted event...
       continue;
     }
 
     if (event & Created) {
-      if (e->isDir)
-	c->instance->setDirCreated(e->path);
-      else
-	c->instance->setFileCreated(e->path);
+      c->instance->setCreated(path);
       // possible emit Change event after creation
     }
 
-    if (event & Changed) {
-      if (e->isDir)
-	c->instance->setDirDirty(e->path);
-      else
-	c->instance->setFileDirty(e->path);
-    }
+    if (event & Changed)
+      c->instance->setDirty(path);
   }
 }
 
@@ -987,70 +980,58 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     return;
   }
 
-  // Was a watched file changed?
-  if ( !e->isDir ) {
-    if (fe->code == FAMDeleted) emitEvent(e, Deleted);
-    else if (fe->code == FAMChanged) emitEvent(e, Changed);
-    else if (fe->code == FAMCreated) emitEvent(e, Created);
-    return;
-  }
+  if (e->isDir)
+    switch (fe->code)
+    {
+      case FAMDeleted: 
+        if (strlen(fe->filename) == 0)
+        {
+          // a watched directory was deleted
 
-  /* only interested in
-   * - dir/file creation inside a watched dir
-   * - dir/file deletion inside a watched dir
-   * - deletion of a watched dir
-   */
+          e->m_status = NonExistent;
+          FAMCancelMonitor(&fc, &(e->fr) ); // needed ?
+          kdDebug(7001) << "Cancelled FAMReq "
+                        << FAMREQUEST_GETREQNUM(&(e->fr))
+                        << " for " << e->path << endl;
+          // Scan parent for a new creation
+          addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
+        }
+        emitEvent(e, Deleted, QFile::decodeName(fe->filename));
+        break;
 
-  if (fe->code != FAMCreated &&
-      fe->code != FAMDeleted) return;
+      case FAMCreated: {
+          // check for creation of a directory we have to watch
+          Entry *sub_entry = e->m_entries.first();
+          for(;sub_entry; sub_entry = e->m_entries.next())
+            if (sub_entry->path == e->path + "/" + fe->filename) break;
+          if (sub_entry && sub_entry->isDir) {
+            QString path = e->path;
+            removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
+            sub_entry->m_status = Normal;
+            if (!useFAM(sub_entry))
+              useStat(sub_entry);
+        
+            emitEvent(sub_entry, Created);
+          }
+          else emitEvent(e, Created, QFile::decodeName(fe->filename));
+          break;
+        }
 
-  // if fe->filename is relative, a file in a watched dir was
-  // changed, deleted or created
-  if ( fe->filename[0] != '/') {
+      case FAMChanged:
+        emitEvent(e, Changed, QFile::decodeName(fe->filename));
 
-    // WABA: We ignore changes to ".directory*" files because they
-    // tend to be generated as a result of 'dirty' events. Which
-    // leads to a never ending stream of cause & result.
-    if (strncmp(fe->filename, ".directory", 10) == 0) return;
-
-    emitEvent(e, Changed);
-
-    if (fe->code == FAMCreated) {
-      // check for creation of a directory we have to watch
-      Entry *sub_entry = e->m_entries.first();
-      for(;sub_entry; sub_entry = e->m_entries.next())
-	if (sub_entry->path == e->path + "/" + fe->filename) break;
-      if (sub_entry && sub_entry->isDir) {
-	// only possible for a FAMCreated event
-	QString path = e->path;
-	removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
-	sub_entry->m_status = Normal;
-	if (!useFAM(sub_entry))
-	  useStat(sub_entry);
-
-	emitEvent(sub_entry, Created);
-      }
+      default:
+        break;
     }
-
-    return;
-  }
-
-  if (fe->code == FAMDeleted) {
-    // a watched directory was deleted
-
-    e->m_status = NonExistent;
-    FAMCancelMonitor(&fc, &(e->fr) ); // needed ?
-    kdDebug(7001) << "Cancelled FAMReq "
-		  << FAMREQUEST_GETREQNUM(&(e->fr))
-		  << " for " << e->path << endl;
-    // Scan parent for a new creation
-    addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
-    emitEvent(e, Deleted);
-    return;
-  }
-
-  // a watched directory was changed
-  emitEvent(e, Changed);
+  else switch (fe->code)
+    {
+      case FAMCreated: emitEvent(e, Created);
+                       break;
+      case FAMDeleted: emitEvent(e, Deleted);
+                       break;
+      case FAMChanged: emitEvent(e, Changed);
+                       break;
+    }
 }
 #else
 void KDirWatchPrivate::famEventReceived() {}
@@ -1234,44 +1215,27 @@ void KDirWatch::statistics()
 }
 
 
-void KDirWatch::setFileCreated( const QString & _file )
+void KDirWatch::setCreated( const QString & _file )
 {
-  kdDebug(7001) << name() << " emitting fileCreated " << _file << endl;
-  emit fileCreated( _file );
+  kdDebug(7001) << name() << " emitting created " << _file << endl;
+  emit created( _file );
 }
 
-void KDirWatch::setFileDirty( const QString & _file )
+void KDirWatch::setDirty( const QString & _file )
 {
-  kdDebug(7001) << name() << " emitting fileDirty " << _file << endl;
-  emit fileDirty( _file );
+  kdDebug(7001) << name() << " emitting dirty " << _file << endl;
+  emit dirty( _file );
 }
 
-void KDirWatch::setFileDeleted( const QString & _file )
+void KDirWatch::setDeleted( const QString & _file )
 {
-  kdDebug(7001) << name() << " emitting fileDeleted " << _file << endl;
-  emit fileDeleted( _file );
+  kdDebug(7001) << name() << " emitting deleted " << _file << endl;
+  emit deleted( _file );
 }
-
-void KDirWatch::setDirCreated( const QString & _path )
-{
-  kdDebug(7001) << name() << " emitting created dir " << _path << endl;
-  emit created( _path );
-}
-
-void KDirWatch::setDirDirty( const QString & _path )
-{
-  kdDebug(7001) << name() << " emitting dirty dir " << _path << endl;
-  emit dirty( _path );
-}
-
-void KDirWatch::setDirDeleted( const QString & _path )
-{
-  kdDebug(7001) << name() << " emitting deleted dir " << _path << endl;
-  emit deleted( _path );
-}
-
 
 #include "kdirwatch.moc"
 #include "kdirwatch_p.moc"
 
 //sven
+
+// vim: sw=2 ts=8 et

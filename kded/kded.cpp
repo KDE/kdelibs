@@ -261,6 +261,8 @@ void Kded::build()
 
   QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
            this, SLOT(update(const QString&)));
+  QObject::connect( m_pDirWatch, SIGNAL(created(const QString&)),
+           this, SLOT(update(const QString&)));
   QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
            this, SLOT(dirDeleted(const QString&)));
 

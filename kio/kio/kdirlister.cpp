@@ -59,9 +59,11 @@ KDirListerCache::KDirListerCache( int maxCount )
   urlsCurrentlyHeld.setAutoDelete( true );
 
   connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
-           this, SLOT( slotDirectoryDirty( const QString& ) ) );
-  connect( kdirwatch, SIGNAL( fileDirty( const QString& ) ),
            this, SLOT( slotFileDirty( const QString& ) ) );
+  connect( kdirwatch, SIGNAL( created( const QString& ) ),
+           this, SLOT( slotFileCreated( const QString& ) ) );
+  connect( kdirwatch, SIGNAL( deleted( const QString& ) ),
+           this, SLOT( slotFileDeleted( const QString& ) ) );
 }
 
 KDirListerCache::~KDirListerCache()
@@ -710,22 +712,30 @@ void KDirListerCache::slotFileDirty( const QString& _file )
   KURL u;
   u.setPath( _file );
   KFileItem *item = findByURL( 0, u ); // search all items
-  if ( item )
+  if ( item && !item->isDir() )
   {
     // we need to refresh the item, because e.g. the permissions can have changed.
     item->refresh();
     emitRefreshItem( item );
   }
+  else
+    slotURLDirty( u );
 }
 
-void KDirListerCache::slotDirectoryDirty( const QString& _dir )
+void KDirListerCache::slotFileCreated( const QString& _file )
 {
-  //kdDebug(7004) << k_funcinfo << _dir << endl;
+  // XXX: how to avoid a complete rescan here?
+  KURL u;
+  u.setPath( _file );
+  u.setPath( u.directory() );
+  FilesAdded( u );
+}
 
-  // _dir does not contain a trailing slash
-  KURL url;
-  url.setPath( _dir );
-  slotURLDirty( url );
+void KDirListerCache::slotFileDeleted( const QString& _file )
+{
+  KURL u;
+  u.setPath( _file );
+  FilesRemoved( u );
 }
 
 void KDirListerCache::slotURLDirty( const KURL& _dir )

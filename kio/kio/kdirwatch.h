@@ -182,30 +182,12 @@ class KDirWatch : public QObject
     */
    static void statistics();
 
-   /**
-    * @ref created()
-    */
-   void setDirCreated( const QString& );
-   /**
-    * @ref dirty()
-    */
-   void setDirDirty( const QString& );
-   /**
-    * @ref deleted()
-    */
-   void setDirDeleted( const QString& );
-   /**
-    * @ref fileCreated()
-    */
-   void setFileCreated( const QString& );
-   /**
-    * @ref fileDirty()
-    */
-   void setFileDirty( const QString& );
-   /**
-    * @ref fileDeleted()
-    */
-   void setFileDeleted( const QString& );
+   /** @ref created() */
+   void setCreated( const QString& );
+   /** @ref dirty() */
+   void setDirty( const QString& );
+   /** @ref deleted() */
+   void setDeleted( const QString& );
 
    /**
     * The KDirWatch instance usually globally used in an application.
@@ -217,8 +199,14 @@ class KDirWatch : public QObject
  signals:
 
    /**
-    * Emitted when a watched directory is changed, i.e. files
+    * Emitted when a watched object is changed.
+    * For a directory this signal is emitted when files
     * therein are created or deleted.
+    * For a file this signal is emitted when its size or attributes change.
+    *
+    * When you watch a directory, changes in the size or attributes of
+    * contained files may or may not trigger this signal to be emitted
+    * depending on which backend is used by KDirWatch.
     *
     * The new ctime is set
     * before the signal is emitted.
@@ -226,42 +214,17 @@ class KDirWatch : public QObject
    void dirty (const QString&);
 
    /**
-    * Emitted when a watched directory is created.
+    * Emitted when a file or directory is created.
     */
    void created (const QString&);
      
    /**
-    * Emitted when a watched directory is deleted.
+    * Emitted when a file or directory is deleted.
     *
-    * The directory is still watched for new creation.
+    * The object is still watched for new creation.
     */
    void deleted (const QString&);
      
-   
-   /**
-    * Emitted when KDirWatch learns that the file
-    * @p _file has changed.
-    *
-    * This happens for instance when a .desktop file 
-    * gets a new icon. One has to call 
-    * @ref setFileDirty() or watch the file for changes
-    * for this signal to be emitted.
-    *
-    * Note that KDirNotify is network transparent and
-    * broadcasts to all processes, so it sort of supersedes this.
-    */
-   void fileDirty (const QString&);
-
-   /**
-    * Emitted when a watched file is created.
-    */
-   void fileCreated (const QString&);
-
-   /**
-    * Emitted when a watched file is deleted.
-    */
-   void fileDeleted (const QString&);
-
  private:
    bool _isStopped;
    
@@ -270,3 +233,5 @@ class KDirWatch : public QObject
 };
 
 #endif
+
+// vim: sw=3 et

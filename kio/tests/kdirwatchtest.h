@@ -26,7 +26,7 @@ public:
    myTest() { };
 public slots:
    void dirty(const QString &a) { printf("Dirty: %s\n", a.ascii()); };
-   void fileDirty(const QString& f) { printf("File-Dirty: %s\n", f.ascii()); }
+   void created(const QString& f) { printf("Created: %s\n", f.ascii()); }
    void deleted(const QString& f) { printf("Deleted: %s\n", f.ascii()); }
 };
 
