@@ -197,34 +197,6 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
   _bin_name = _bin_name.mid(lastSlash + 1);
 
-  // By default, res_name should be equal to bin_name.
-  // Some apps don't do this though, like Netscape 4.x.
-
-  QString _res_name = _bin_name;
-
-  bool _appStartNotify = true;
-
-  QString _dot_desktop;
-
-  // Were we passed the name of the desktop file ?
-  if (!_desktop_file.isNull())
-    _dot_desktop = _desktop_file;
-
-  else {
-
-    KService::Ptr service = KService::serviceByDesktopName(_bin_name);
-
-    if (service)
-      _dot_desktop = service->desktopEntryPath();
-  }
-
-  if (!_dot_desktop.isEmpty() )
-  {
-    KDesktopFile desktopFile(_dot_desktop, true);
-    _res_name = desktopFile.readEntry("XClassHintResName", _bin_name);
-    _appStartNotify = !desktopFile.readBoolEntry("NoAppStartNotify", false);
-  }
-
   // End app starting notification stuff.
 
   QString mini_icon = _mini_icon;
@@ -262,6 +234,8 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
       */
 
   }
+  
+  bool retval = true;
 
   if ( b_allow_multiple || _urls.isEmpty() )
   {	
@@ -283,19 +257,14 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = exec.find( "%U" )) != -1 )
       exec.replace( pos, 2, U );
 
-    // App starting notification is done here if not a buggy app.
-
     pid_t pid = run(exec);
 
-    if (pid != -1) {
+    // App starting notification.
 
-      if (_appStartNotify)
-        clientStarted(_bin_name, mini_icon, _res_name, pid);
-
-      return true;
-    }
+    if (pid == -1)
+      retval = false;
     else
-      return false;
+      clientStarted(_bin_name, mini_icon, pid);
   }
 
   it = _urls.begin();
@@ -324,18 +293,15 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
     pid_t pid = run(e);
 
-    if (pid != -1) {
+    // App starting notification.
 
-      if (_appStartNotify)
-        clientStarted(_bin_name, mini_icon, _res_name, pid);
-
-      return true;
-    }
+    if (pid == -1)
+      retval = false;
     else
-      return false;
+      clientStarted(_bin_name, mini_icon, pid);
   }
 
-  return true;
+  return retval;
 }
 
 pid_t KRun::run( const QString& _cmd )
@@ -343,7 +309,7 @@ pid_t KRun::run( const QString& _cmd )
   kdDebug(7010) << "Running " << _cmd << endl;
 
   KShellProcess proc;
-  proc << _cmd;
+  proc << "LD_PRELOAD=${KDEDIR}/lib/libkmapnotify.so" << _cmd;
   proc.start(KShellProcess::DontCare);
 
   return proc.getPid();
@@ -372,7 +338,7 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
   {
     kdDebug(7010) << "Not multiple" << endl;
     KURL::List::ConstIterator it = _urls.begin();
-    pid_t pid; // we'll return only the last one...
+    pid_t pid = -1; // we'll return only the last one...
     for( ; it != _urls.end(); ++it )
     {
         KProcess proc;
@@ -719,17 +685,16 @@ void KRun::killJob()
 void KRun::clientStarted(
   const QString & execName,
   const QString & iconName,
-  const QString & resName,
   pid_t pid
 )
 {
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
-  stream << execName << iconName << resName << (int)pid;
+  stream << execName << iconName << (int)pid;
   kapp->dcopClient()->send(
     "kicker",
     "TaskbarApplet",
-    "clientStarted(QString,QString,QString,int)",
+    "clientStarted(QString,QString,int)",
     params
   );
 }
