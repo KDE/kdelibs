@@ -672,11 +672,15 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
 
 void RegressionTest::dumpRenderTree( QTextStream &outputStream, KHTMLPart* part )
 {
-    static_cast<DocumentImpl*>( part->document().handle() )->renderer()->layer()->dump( outputStream );
+    DOM::DocumentImpl* doc = static_cast<DocumentImpl*>( part->document().handle() );
+    if ( !doc || !doc->renderer() )
+        return;
+    doc->renderer()->layer()->dump( outputStream );
 
     // Dump frames if any
     // Get list of names instead of frames() to sort the list alphabetically
     QStringList names = part->frameNames();
+    names.sort();
     for ( QStringList::iterator it = names.begin(); it != names.end(); ++it ) {
         outputStream << "FRAME: " << (*it) << "\n";
 	KHTMLPart* frame = part->findFrame( (*it) );
