@@ -70,6 +70,12 @@ bool KSambaSharePrivate::findSmbConf() {
   else
   if ( QFile::exists("/usr/samba/lib/smb.conf") )
     smbConf = "/usr/samba/lib/smb.conf";
+  else
+  if ( QFile::exists("/usr/lib/smb.conf") )
+    smbConf = "/usr/lib/smb.conf";
+  else
+  if ( QFile::exists("/usr/local/lib/smb.conf") )
+    smbConf = "/usr/local/lib/smb.conf";
   else {
     kdDebug(7000) << "KSambaShare: Could not found smb.conf!" << endl;
     return false;
