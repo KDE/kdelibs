@@ -405,6 +405,8 @@ public:
      */
     NodeImpl *previousFocusNode(NodeImpl *fromNode);
 
+    ElementImpl* findAccessKeyElement(QChar c);
+
     int nodeAbsIndex(NodeImpl *node);
     NodeImpl *nodeWithAbsIndex(int absIndex);
 

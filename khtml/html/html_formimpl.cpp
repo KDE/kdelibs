@@ -951,6 +951,12 @@ void HTMLButtonElementImpl::activate()
         m_form->reset();
 }
 
+void HTMLButtonElementImpl::click()
+{
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
+}
+
 bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
 {
     if (m_type != SUBMIT || name().isEmpty() || !m_activeSubmit)
@@ -1157,8 +1163,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         if (m_render && m_type == IMAGE) m_render->updateFromElement();
         break;
     case ATTR_USEMAP:
-    case ATTR_ACCESSKEY:
         // ### ignore for the moment
+        break;
+    case ATTR_ACCESSKEY:
         break;
     case ATTR_WIDTH:
         // ignore this attribute,  do _not_ add
@@ -1594,7 +1601,6 @@ void HTMLLegendElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_ACCESSKEY:
-        // ### ignore for the moment
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -1816,7 +1822,6 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         m_multiple = (attr->val() != 0);
         break;
     case ATTR_ACCESSKEY:
-        // ### ignore for the moment
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
@@ -2223,7 +2228,6 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
             m_wrap = ta_NoWrap;
         break;
     case ATTR_ACCESSKEY:
-        // ignore for the moment
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,

@@ -32,6 +32,7 @@
 
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
+#include "html/html_formimpl.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_canvas.h"
 #include "rendering/render_frames.h"
@@ -1019,6 +1020,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 #endif // KHTML_NO_CARET
 
+    // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
+    // may eat the event
+    if( handleAccessKey( _ke )) {
+        _ke->accept();
+        return;
+    }
+
     if ( dispatchKeyEvent( _ke )) {
         // If either keydown or keypress was accepted by a widget, or canceled by JS, stop here.
         _ke->accept();
@@ -1581,6 +1589,100 @@ void KHTMLView::focusNextPrevNode(bool next)
     // Set focus node on the document
     m_part->xmlDocImpl()->setFocusNode(newFocusNode);
     emit m_part->nodeActivated(Node(newFocusNode));
+}
+
+// Handling of the HTML accesskey attribute.
+bool KHTMLView::handleAccessKey( const QKeyEvent* ev )
+{
+    const int mods = Qt::AltButton | Qt::ControlButton;
+    if( ( ev->state() & mods ) != mods )
+        return false;
+// Qt interprets the keyevent also with the modifiers, and ev->text() matches that,
+// but this code must act as if the modifiers weren't pressed
+    QChar c;
+    if( ev->key() >= Key_A && ev->key() <= Key_Z )
+        c = 'A' + ev->key() - Key_A;
+    else if( ev->key() >= Key_0 && ev->key() <= Key_9 )
+        c = '0' + ev->key() - Key_0;
+    else {
+        // TODO fake XKeyEvent and XLookupString ?
+        // This below seems to work e.g. for eacute though.
+        if( ev->text().length() == 1 )
+            c = ev->text()[ 0 ];
+    }
+    if( c.isNull())
+        return false;
+    return focusNodeWithAccessKey( c );
+}
+
+bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
+{
+    DocumentImpl *doc = m_part->xmlDocImpl();
+    if( !doc )
+        return false;
+    ElementImpl* node = doc->findAccessKeyElement( c );
+    if( !node ) {
+        QPtrList<KParts::ReadOnlyPart> frames = m_part->frames();
+        for( QPtrListIterator<KParts::ReadOnlyPart> it( frames );
+             it != NULL;
+             ++it ) {
+            if( !(*it)->inherits( "KHTMLPart" ))
+                continue;
+            KHTMLPart* part = static_cast< KHTMLPart* >( *it );
+            if( part->view() && part->view() != caller
+                && part->view()->focusNodeWithAccessKey( c, this ))
+                return true;
+        }
+        // pass up to the parent
+        if (m_part->parentPart() && m_part->parentPart()->view()
+            && m_part->parentPart()->view() != caller )
+            return m_part->parentPart()->view()->focusNodeWithAccessKey( c, this );
+        return false;
+    }
+
+    // Scroll the view as necessary to ensure that the new focus node is visible
+#ifndef KHTML_NO_CARET
+    // if it's an editable element, activate the caret
+    if (!m_part->isCaretMode() && !m_part->isEditable()
+	&& node->contentEditable()) {
+        d->caretViewContext();
+        moveCaretTo(node, 0L, true);
+    } else {
+        caretOff();
+    }
+#endif // KHTML_NO_CARET
+
+    if (!scrollTo(node->getRect()))
+	return true;
+
+    if( node->isSelectable()) {
+        // Set focus node on the document
+        m_part->xmlDocImpl()->setFocusNode(node);
+        emit m_part->nodeActivated(Node(node));
+    }
+    switch( node->id()) {
+        case ID_A:
+            static_cast< HTMLAnchorElementImpl* >( node )->click();
+          break;
+        case ID_INPUT:
+            static_cast< HTMLInputElementImpl* >( node )->click();
+          break;
+        case ID_BUTTON:
+            static_cast< HTMLButtonElementImpl* >( node )->click();
+          break;
+        case ID_AREA:
+            static_cast< HTMLAreaElementImpl* >( node )->click();
+          break;
+        case ID_LABEL:
+            // TODO should be click(), after it works for label
+          break;
+        case ID_TEXTAREA:
+          break; // just focusing it is enough
+        case ID_LEGEND:
+            // TODO
+          break;
+    }
+    return true;
 }
 
 void KHTMLView::setMediaType( const QString &medium )

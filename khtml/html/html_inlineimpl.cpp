@@ -160,6 +160,12 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 }
 
 
+void HTMLAnchorElementImpl::click()
+{
+    QMouseEvent me(QEvent::MouseButtonRelease, QPoint(0,0),Qt::LeftButton, 0);
+    dispatchMouseEvent(&me,EventImpl::CLICK_EVENT, 1);
+}
+
 void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
@@ -174,6 +180,8 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_TITLE:
     case ATTR_REL:
 	break;
+    case ATTR_ACCESSKEY:
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }

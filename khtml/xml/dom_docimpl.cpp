@@ -1454,6 +1454,23 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
     }
 }
 
+ElementImpl* DocumentImpl::findAccessKeyElement(QChar c)
+{
+    c = c.upper();
+    for( NodeImpl* n = this;
+         n != NULL;
+         n = n->traverseNextNode()) {
+        if( n->isElementNode()) {
+            ElementImpl* en = static_cast< ElementImpl* >( n );
+            DOMString s = en->getAttribute( ATTR_ACCESSKEY );
+            if( s.length() == 1
+                && s[ 0 ].upper() == c )
+                return en;
+        }
+    }
+    return NULL;
+}
+
 int DocumentImpl::nodeAbsIndex(NodeImpl *node)
 {
     assert(node->getDocument() == this);
