@@ -18,17 +18,21 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-#ifndef _KSSLCERTIFICATEFACTORY_H
-#define _KSSLCERTIFICATEFACTORY_H
+#ifndef _KSSLCERTIFICATECACHE_H
+#define _KSSLCERTIFICATECACHE_H
 
-class KSSLCertificateFactory {
+
+// This class is used to keep track of the certificates that we have
+// seen already.
+
+class KSSLCertificateCache {
  
 public:
  
 private:
  
-  class KSSLCertificateFactoryPrivate;
-  KSSLCertificateFactoryPrivate *d;
+  class KSSLCertificateCachePrivate;
+  KSSLCertificateCachePrivate *d;
  
 protected:
 

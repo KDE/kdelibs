@@ -95,7 +95,9 @@ KShellProcess p;
 void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
                         const QString& ip, const QString& url,
                         const QString& cipher, const QString& cipherdesc,
-                        const QString& sslversion, int usedbits, int bits) {
+                        const QString& sslversion, int usedbits, int bits,
+                        KSSLCertificate::KSSLValidation certState,
+                        const QString& goodFrom, const QString& goodUntil) {
 // Needed to put the GUI stuff here to get the layouting right
     QGridLayout *layout = new QGridLayout(2, 2, KDialog::spacingHint());
     layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 0, 0);
@@ -113,7 +115,49 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     layout->addWidget(urlLabel, 1, 1);
     connect(urlLabel, SIGNAL(leftClickedURL(const QString &)), SLOT(urlClicked(const QString &)));
     layout->addWidget(new QLabel(i18n("Certificate State:"), this), 2, 0);
-    layout->addWidget(new QLabel(i18n("Verification not yet implemented"), this), 2, 1);
+
+    QLabel *csl;
+    QPalette cspl;
+    switch(certState) {
+    case KSSLCertificate::Ok:
+      layout->addWidget(csl = new QLabel(i18n("Certificate is valid from %1 until %1.").arg(goodFrom).arg(goodUntil), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+      csl->setPalette(cspl);
+    break;
+    case KSSLCertificate::InvalidCA:
+      layout->addWidget(csl = new QLabel(i18n("Certificate signing authority is unknown or invalid."), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+      csl->setPalette(cspl);
+    break;
+    case KSSLCertificate::SelfSigned:
+      layout->addWidget(csl = new QLabel(i18n("Certificate is self signed and thus may not be trustworthy."), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+      csl->setPalette(cspl);
+    break;
+    case KSSLCertificate::Expired:
+      layout->addWidget(csl = new QLabel(i18n("Certificate has expired."), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+      csl->setPalette(cspl);
+    break;
+    case KSSLCertificate::Revoked:
+      layout->addWidget(csl = new QLabel(i18n("Certificate has been revoked."), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+      csl->setPalette(cspl);
+    break;
+    default:
+      layout->addWidget(csl = new QLabel(i18n("Certificate is not valid."), this), 2, 1);
+      cspl = csl->palette();
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+      csl->setPalette(cspl);
+    break;
+    }
+    update();
+
     layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 3, 0);
     layout->addWidget(new QLabel(cipher, this), 3, 1);
     layout->addWidget(new QLabel(i18n("Details:"), this), 4, 0);
@@ -121,7 +165,7 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     layout->addWidget(new QLabel(i18n("SSL Version:"), this), 5, 0);
     layout->addWidget(new QLabel(sslversion, this), 5, 1);
     layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 6, 0);
-    layout->addWidget(new QLabel(QString("%1 bits used of a %1 bit cipher").arg(usedbits).arg(bits), this), 6, 1);
+    layout->addWidget(new QLabel(i18n("%1 bits used of a %1 bit cipher").arg(usedbits).arg(bits), this), 6, 1);
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 }
 

@@ -59,8 +59,8 @@ public:
   int read(void *buf, int len);
   int write(const void *buf, int len);
 
-  const KSSLConnectionInfo& connectionInfo() const;
-  const KSSLPeerInfo& peerInfo() const;
+  KSSLConnectionInfo& connectionInfo();
+  KSSLPeerInfo& peerInfo();
 
 private:
   static bool m_bSSLWorks;
@@ -74,6 +74,7 @@ private:
 
   void setConnectionInfo();
   void setPeerInfo();
+  bool setVerificationLogic();
 };
 
 

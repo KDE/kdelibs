@@ -22,7 +22,17 @@
 #include <config.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
+ 
+#include <stdlib.h>
+#include <pwd.h>
+#include <unistd.h>
+
+
 #include "ksslsettings.h"
+#include <kglobal.h>
+#include <kstddirs.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
@@ -51,17 +61,17 @@ KSSLSettings::~KSSLSettings() {
 }
  
 
-bool KSSLSettings::sslv2() {
+bool KSSLSettings::sslv2() const {
   return m_bUseSSLv2;
 }
 
 
-bool KSSLSettings::sslv3() {
+bool KSSLSettings::sslv3() const {
   return m_bUseSSLv3;
 }
 
 
-bool KSSLSettings::tlsv1() {
+bool KSSLSettings::tlsv1() const {
   return m_bUseTLSv1;
 }
 
@@ -72,7 +82,6 @@ QString clist = "";
   if (!m_bUseTLSv1) {
     QString tcipher;
     bool firstcipher = true;
-    bool v2ciphers_unset = false, v3ciphers_unset = false;
     SSL_METHOD *meth;
 
     if (m_bUseTLSv1)
@@ -98,24 +107,14 @@ QString clist = "";
       }
  
       for(int i = 0;; i++) {
-        tcipher.sprintf("cipher_%d", i);
+        SSL_CIPHER *sc = (meth->get_cipher)(i);
+        if (!sc) break;;
+        tcipher.sprintf("cipher_%s", sc->name);
  
-        if (!m_cfg->hasKey(tcipher)) {
-          if (i == 0)
-            if (k == 0)
-              v2ciphers_unset = true;
-            else v3ciphers_unset = true;
-          break;
-        } // if
- 
-        if (m_cfg->readBoolEntry(tcipher)) {  // add it to the list
-          SSL_CIPHER *sc = (meth->get_cipher)(i);
-          if (!sc) continue;
- 
+        if (m_cfg->readBoolEntry(tcipher)) {
           if (firstcipher)          // we don't start with a ':'
             firstcipher = false;
           else clist.append(":");
- 
           clist.append(sc->name);
         } // if
       } // for  i
@@ -125,7 +124,7 @@ QString clist = "";
 return clist;
 }
 
-
+// FIXME - sync these up so that we can use them with the control module!!
 void KSSLSettings::load() {
   m_cfg->reparseConfiguration();
 
@@ -144,7 +143,16 @@ void KSSLSettings::load() {
   m_bWarnOnUnencrypted = m_cfg->readBoolEntry("OnUnencrypted", false);
   m_bWarnOnMixed = m_cfg->readBoolEntry("OnMixed", true);
 
-  // FIXME - ciphers
+  m_cfg->setGroup("Validation");
+  m_bWarnSelfSigned = m_cfg->readBoolEntry("WarnSelfSigned", true);
+  m_bWarnExpired = m_cfg->readBoolEntry("WarnExpired", true);
+  m_bWarnRevoked = m_cfg->readBoolEntry("WarnRevoked", true);
+
+  #ifdef HAVE_SSL
+
+
+
+  #endif
 }
 
 
@@ -156,8 +164,10 @@ void KSSLSettings::defaults() {
   m_bWarnOnLeave = true;
   m_bWarnOnUnencrypted = false;
   m_bWarnOnMixed = true;
+  m_bWarnSelfSigned = true;
+  m_bWarnExpired = true;
+  m_bWarnRevoked = true;
 
-  // FIXME - ciphers
 }
 
 
@@ -177,7 +187,54 @@ void KSSLSettings::save() {
   m_cfg->writeEntry("OnUnencrypted", m_bWarnOnUnencrypted);
   m_cfg->writeEntry("OnMixed", m_bWarnOnMixed);
 
+  m_cfg->setGroup("Validation");
+  m_cfg->writeEntry("WarnSelfSigned", m_bWarnSelfSigned);
+  m_cfg->writeEntry("WarnExpired", m_bWarnExpired);
+  m_cfg->writeEntry("WarnRevoked", m_bWarnRevoked);
+
   // FIXME - ciphers
+#if 0
+#ifdef HAVE_SSL
+  m_cfg->setGroup("SSLv2");
+  for (unsigned int i = 0; i < v2ciphers.count(); i++) {
+    QString ciphername;
+    ciphername.sprintf("cipher_%s", v2ciphers[i].ascii());
+    if (v2selectedciphers.contains(v2ciphers[i])) {
+      m_cfg->writeEntry(ciphername, true);
+    } else m_cfg->writeEntry(ciphername, false);
+  }
+ 
+  m_cfg->setGroup("SSLv3");
+  for (unsigned int i = 0; i < v3ciphers.count(); i++) {
+    QString ciphername;
+    ciphername.sprintf("cipher_%s", v3ciphers[i].ascii());
+    if (v3selectedciphers.contains(v3ciphers[i])) {
+      m_cfg->writeEntry(ciphername, true);
+    } else m_cfg->writeEntry(ciphername, false);
+  }
+#endif 
+ 
+  m_cfg->sync();
+ 
+  // insure proper permissions -- contains sensitive data
+  QString cfgName(KGlobal::dirs()->findResource("config", "kcmcryptorc"));
+  if (!cfgName.isEmpty())
+    ::chmod(cfgName.utf8(), 0600);
+#endif
 }
+
+
+bool KSSLSettings::warnOnEnter() const       { return m_bWarnOnEnter; }
+bool KSSLSettings::warnOnUnencrypted() const { return m_bWarnOnUnencrypted; }
+bool KSSLSettings::warnOnLeave() const       { return m_bWarnOnLeave; }
+bool KSSLSettings::warnOnMixed() const       { return m_bWarnOnMixed; }
+bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }
+bool KSSLSettings::warnOnRevoked() const     { return m_bWarnRevoked; }
+bool KSSLSettings::warnOnExpired() const     { return m_bWarnExpired; }
+
+void KSSLSettings::setTLSv1(bool enabled) { m_bUseTLSv1 = enabled; }
+void KSSLSettings::setSSLv2(bool enabled) { m_bUseSSLv2 = enabled; }
+void KSSLSettings::setSSLv3(bool enabled) { m_bUseSSLv3 = enabled; }
+
 
 

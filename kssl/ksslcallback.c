@@ -16,22 +16,32 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
-#ifndef _KSSLCERTIFICATEFACTORY_H
-#define _KSSLCERTIFICATEFACTORY_H
+// DON'T INCLUDE ANYTHING IN HERE.  THIS FILE IS NOT COMPILED AS IT IS.
 
-class KSSLCertificateFactory {
- 
-public:
- 
-private:
- 
-  class KSSLCertificateFactoryPrivate;
-  KSSLCertificateFactoryPrivate *d;
- 
-protected:
+#ifdef HAVE_SSL
 
+extern "C" {
+static int X509Callback(int ok, X509_STORE_CTX *ctx) {
+ 
+  // Here is how this works.  We put "ok = 1;" in any case that we
+  // don't consider to be an error.  There are many more values to choose from
+ 
+  if (!ok) {
+    switch (ctx->error) {
+    case X509_V_ERR_CERT_HAS_EXPIRED:
+    case X509_V_ERR_INVALID_CA:
+    case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+    case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+    case X509_V_ERR_INVALID_PURPOSE:
+    default:
+     break;
+    }
+  }
+ 
+  return(ok);
+}
 };
 
 #endif

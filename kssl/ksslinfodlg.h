@@ -26,6 +26,7 @@
 #include <kdialog.h>
 #include "ksslx509map.h"
 #include <qlabel.h>
+#include "ksslcertificate.h"
 
 class QScrollView;
 
@@ -40,7 +41,9 @@ public:
   void setup(const QString& peername, const QString& issuer,
              const QString& ip, const QString& url,
              const QString& cipher, const QString& cipherdesc,
-             const QString& sslversion, int usedbits, int bits);
+             const QString& sslversion, int usedbits, int bits,
+             KSSLCertificate::KSSLValidation certState,
+             const QString& goodFrom, const QString& goodUntil);
 
 private:
   QScrollView *buildCertInfo(const QString &certName);

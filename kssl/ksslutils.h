@@ -16,23 +16,26 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
+#ifndef _INCLUDE_KSSLUTILS_H
+#define _INCLUDE_KSSLUTILS_H
 
-#ifndef _KSSLCERTIFICATEFACTORY_H
-#define _KSSLCERTIFICATEFACTORY_H
-
-class KSSLCertificateFactory {
- 
-public:
- 
-private:
- 
-  class KSSLCertificateFactoryPrivate;
-  KSSLCertificateFactoryPrivate *d;
- 
-protected:
-
-};
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
+#ifdef HAVE_SSL
+#include <openssl/x509.h>
+#endif
+#include <qstring.h>
+
+
+#ifdef HAVE_SSL
+// This functionality is missing in OpenSSL
+QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
+#endif
+
+
+
+
+#endif

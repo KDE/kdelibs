@@ -29,7 +29,7 @@ KSSLPeerInfo::~KSSLPeerInfo() {
 
 }
 
-const KSSLCertificate& KSSLPeerInfo::getPeerCertificate() const {
+KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
   return m_cert;
 }
 

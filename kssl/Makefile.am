@@ -12,8 +12,10 @@ include_HEADERS = \
 		ksslcertificate.h        \
 		ksslconnectioninfo.h     \
 		ksslcertificatefactory.h \
+		ksslcertificatecache.h   \
 		ksslpeerinfo.h           \
 		ksslinfodlg.h            \
+		ksslutils.h              \
 		ksslx509map.h
  
 
@@ -24,8 +26,10 @@ libkssl_la_SOURCES	= \
 			ksslcertificate.cc        \
 			ksslconnectioninfo.cc     \
 			ksslcertificatefactory.cc \
+			ksslcertificatecache.cc   \
 			ksslpeerinfo.cc           \
 			ksslinfodlg.cc            \
+			ksslutils.cc              \
 			ksslx509map.cc
 
 libkssl_la_LDFLAGS = $(SSL_LDFLAGS) $(all_libraries) -version-info 2:0 -no-undefined

@@ -35,6 +35,13 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
+//  This class looks exceptionally complicated for a reason.  OpenSSL works
+//  differently for remote and local certificates.  If we are to re-use the
+//  verification code for a local and a remote certificate, we would have to
+//  write the remote certificate to disk first.  This is a waste of cpu
+//  cycles, disk, and any other resource it might consume.  And well, it's
+//  just plain silly.
+
 #include <qstring.h>
 
 class KSSL;
@@ -51,14 +58,22 @@ friend class KSSLPeerInfo;
 public:
   ~KSSLCertificate();
 
+  enum KSSLValidation { Unknown, Ok, NoCARoot, InvalidPurpose,
+                        PathLengthExceeded, InvalidCA, Expired,
+                        SelfSigned, ErrorReadingRoot, NoSSL,
+                        Revoked, Untrusted, SignatureFailed,
+                        Rejected };
+
   QString getSubject() const;
   QString getIssuer() const;
+  QString getNotBefore() const;
+  QString getNotAfter() const;
   // getSerialNumber() const;
-  // getNotBefore() const;
-  // getNotAfter() const;
   // getSignatureType() const;
   // get public key ??
-  bool isValid() const;
+  bool isValid();
+  KSSLValidation validate();
+  KSSLValidation revalidate();
   
 
 private:
@@ -69,6 +84,7 @@ protected:
   KSSLCertificate();
 
   void setCert(X509 *c);
+  KSSLValidation processError(int ec);
 };
 
 

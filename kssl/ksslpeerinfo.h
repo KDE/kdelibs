@@ -32,7 +32,7 @@ friend class KSSL;
 public:
   ~KSSLPeerInfo();
 
-  const KSSLCertificate& getPeerCertificate() const;
+  KSSLCertificate& getPeerCertificate();
   // peer IP address
   // peer port
  

@@ -22,7 +22,7 @@
 #define _KSSLSETTINGS_H
 
 #include <qstring.h>
-
+#include <qvaluelist.h>
 #include <kconfig.h>
 
 class KSSLSettings {
@@ -30,15 +30,24 @@ public:
   KSSLSettings(bool readConfig = true);
   ~KSSLSettings();
 
-  bool sslv2();
-  bool sslv3();
-  bool tlsv1();
+  bool sslv2() const;
+  bool sslv3() const;
+  bool tlsv1() const;
 
-  bool warnOnEnter() { return m_bWarnOnEnter; }
-  bool warnOnUnencrypted() { return m_bWarnOnUnencrypted; }
-  bool warnOnLeave() { return m_bWarnOnLeave; }
-  bool warnOnMixed() { return m_bWarnOnMixed; }
+  bool warnOnEnter() const;
+  bool warnOnUnencrypted() const;
+  bool warnOnLeave() const;
+  bool warnOnMixed() const;
+  bool warnOnSelfSigned() const;
+  bool warnOnRevoked() const;
+  bool warnOnExpired() const;
+  
+  void setTLSv1(bool enabled);
+  void setSSLv2(bool enabled);
+  void setSSLv3(bool enabled);
 
+  // Returns the OpenSSL cipher list for selecting the list of ciphers to
+  // use in a connection
   QString getCipherList();
 
   void load();
@@ -49,6 +58,11 @@ private:
   KConfig *m_cfg;
   bool m_bUseSSLv2, m_bUseSSLv3, m_bUseTLSv1;
   bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
+  bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
+
+  QValueList<QString> v2ciphers, v2selectedciphers,
+                      v3ciphers, v3selectedciphers;
+  QValueList<int>     v2bits, v3bits;
 
   class KSSLSettingsPrivate;
   KSSLSettingsPrivate *d;

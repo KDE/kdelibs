@@ -26,6 +26,9 @@
 #ifdef HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/pem.h>
 #undef crypt
 #endif
 
@@ -43,6 +46,7 @@ public:
 
   }
 
+  KSSLCertificate::KSSLValidation m_cert_vfy_res;
   #ifdef HAVE_SSL
     SSL *m_ssl;
     SSL_CTX *m_ctx;
@@ -52,11 +56,13 @@ public:
 
 
 KSSL::KSSL(bool init) {
+  kdDebug() << "KSSL constructor enter" << endl;
   d = new KSSLPrivate;
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
   if (init) initialize();
+  kdDebug() << "KSSL constructor exit" << endl;
 }
 
 
@@ -64,10 +70,12 @@ KSSL::~KSSL() {
   close();
   delete m_cfg;
   delete d;
+  kdDebug() << "KSSL destructor exit" << endl;
 }
 
 
 bool KSSL::initialize() {
+  kdDebug() << "KSSL initialize" << endl;
 #ifdef HAVE_SSL
   if (m_bInit) return false;
 
@@ -110,6 +118,7 @@ return false;
 
 void KSSL::close() {
 #ifdef HAVE_SSL
+  kdDebug() << "KSSL close" << endl;
   if (!m_bInit) return;
   SSL_shutdown(d->m_ssl);
   SSL_free(d->m_ssl);
@@ -124,14 +133,41 @@ bool KSSL::reInitialize() {
   return initialize();
 }
 
+// get the callback file - it's hidden away in here
+#include "ksslcallback.c"
+
+
+bool KSSL::setVerificationLogic() {
+  kdDebug() << "KSSL verification logic" << endl;
+#ifdef HAVE_SSL
+// FIXME - check return code
+SSL_set_verify_result(d->m_ssl, X509_V_OK);
+SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
+
+if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, "/home/kde/kde/kdelibs/kssl/carootfiles")) {
+// FIXME: recover here
+  return false;
+}
+
+return true;
+#endif
+return false;
+}
+
 
 int KSSL::connect(int sock) {
+  kdDebug() << "KSSL connect" << endl;
 #ifdef HAVE_SSL
 int rc;
   if (!m_bInit) return -1;
   d->m_ssl = SSL_new(d->m_ctx);
   if (!d->m_ssl) return -1;
-  SSL_set_fd(d->m_ssl, sock);
+
+  if (!setVerificationLogic())
+    return -1;
+
+  rc = SSL_set_fd(d->m_ssl, sock);
+  if (rc == -1) return rc;
   rc = SSL_connect(d->m_ssl);
   if (rc != -1) {
     setConnectionInfo();
@@ -213,17 +249,22 @@ char buf[1024];
 
 void KSSL::setPeerInfo() {
 #ifdef HAVE_SSL
-  m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
+//  m_pi.m_cert.setPeerCert(SSL_get_peer_certificate(d->m_ssl), 
+//                          (KSSLCertificate::KSSLValidation)SSL_get_verify_result(d->m_ssl));
+// FIXME: Set the right value here
+//                          d->m_cert_vfy_res);
+
+m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
 #endif
 }
 
 
-const KSSLConnectionInfo& KSSL::connectionInfo() const {
+KSSLConnectionInfo& KSSL::connectionInfo() {
   return m_ci;
 }
 
 
-const KSSLPeerInfo& KSSL::peerInfo() const {
+KSSLPeerInfo& KSSL::peerInfo() {
   return m_pi;
 }
 
