@@ -1992,11 +1992,17 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
   grid->addWidget(nameEdit, 0, 1);
 
-  l = new QLabel(i18n("Comment:"),  d->m_frame, "Label_3" );
+  l = new QLabel(i18n("Description:"),  d->m_frame, "Label_5" );
   grid->addWidget(l, 1, 0);
 
+  genNameEdit = new KLineEdit( d->m_frame, "LineEdit_4" );
+  grid->addWidget(genNameEdit, 1, 1);
+
+  l = new QLabel(i18n("Comment:"),  d->m_frame, "Label_3" );
+  grid->addWidget(l, 2, 0);
+
   commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
-  grid->addWidget(commentEdit, 1, 1);
+  grid->addWidget(commentEdit, 2, 1);
 
   l = new QLabel(i18n("File types:"), d->m_frame);
   toplayout->addWidget(l, 0, AlignLeft);
@@ -2028,6 +2034,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   KSimpleConfig config( path );
   config.setDesktopGroup();
   QString commentStr = config.readEntry( QString::fromLatin1("Comment") );
+  QString genNameStr = config.readEntry( QString::fromLatin1("GenericName") );
 
   QStringList selectedTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
@@ -2042,6 +2049,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   }
 
   commentEdit->setText( commentStr );
+  genNameEdit->setText( genNameStr );
   nameEdit->setText( nameStr );
 
   selectedTypes.sort();
@@ -2067,6 +2075,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
   connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
+           this, SIGNAL( changed() ) );
+  connect( genNameEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
   connect( extensionsList, SIGNAL( selected( int ) ),
            this, SIGNAL( changed() ) );
@@ -2127,6 +2137,7 @@ void KApplicationPropsPlugin::applyChanges()
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
+  config.writeEntry( QString::fromLatin1("GenericName"), genNameEdit->text(), true, false, true );
 
   QStringList selectedTypes;
   for ( uint i = 0; i < extensionsList->count(); i++ )

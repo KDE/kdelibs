@@ -620,6 +620,7 @@ private:
   void updateButton();
 
   QLineEdit *commentEdit;
+  QLineEdit *genNameEdit;
   QLineEdit *nameEdit;
   QListBox  *extensionsList;
   QListBox  *availableExtensionsList;
