@@ -72,7 +72,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     setAllColumnsShowFocus( true );
     setDragEnabled(true);
 
-    connect( header(), SIGNAL( sectionClicked(int)),
+    connect( header(), SIGNAL( clicked(int)),
              SLOT(slotSortingChanged(int) ));
 
 
