@@ -100,7 +100,8 @@ public:
       paintAbove (0),
       paintCurrent (0),
       paintBelow (0),
-      painting (false)
+      painting (false),
+      shadeSortColumn (true)
   {
       renameable.append(0);
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
@@ -145,7 +146,7 @@ public:
   bool fullWidth:1;
   bool sortAscending:1;
   bool tabRename:1;
-
+  
   int sortColumn;
 
   //+1 means downwards (y increases, -1 means upwards, 0 means not selected), aleXXX
@@ -165,7 +166,8 @@ public:
   QListViewItem *paintAbove;
   QListViewItem *paintCurrent;
   QListViewItem *paintBelow;
-  bool painting;
+  bool painting:1;
+  bool shadeSortColumn:1;
 
   QColor alternateBackground;
 };
@@ -1985,6 +1987,17 @@ void KListView::setAlternateBackground(const QColor &c)
   repaint();
 }
 
+void KListView::setShadeSortColumn(bool shadeSortColumn)
+{
+  d->shadeSortColumn = shadeSortColumn;
+  repaint();
+}
+
+bool KListView::shadeSortColumn() const
+{
+  return d->shadeSortColumn;
+}
+
 void KListView::saveLayout(KConfig *config, const QString &group) const
 {
   KConfigGroupSaver saver(config, group);
@@ -2185,6 +2198,32 @@ const QColor &KListViewItem::backgroundColor()
   return listView()->viewport()->colorGroup().base();
 }
 
+QColor KListViewItem::backgroundColor(int column)
+{
+  KListView* view = static_cast< KListView* >(listView());  
+  QColor color = isAlternate() ?
+                 view->alternateBackground() :
+                 view->viewport()->colorGroup().base();
+
+  // calculate a different color if the current column is sorted (only if more than 1 column)
+  if ( (view->columns() > 1) && view->shadeSortColumn() && (column == view->columnSorted()) )
+  {
+    if ( color == Qt::black )
+      color = QColor(55, 55, 55);  // dark gray
+    else
+    {
+      int h,s,v;
+      color.hsv(&h, &s, &v);
+      if ( v > 175 )
+        color = color.dark(104);
+      else
+        color = color.light(120);
+    }
+  }
+
+  return color;
+}
+
 bool KListViewItem::isAlternate()
 {
   KListView* const lv = static_cast<KListView *>(listView());
@@ -2263,18 +2302,19 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
 {
   QColorGroup _cg = cg;
   const QPixmap *pm = listView()->viewport()->backgroundPixmap();
+
   if (pm && !pm->isNull())
   {
-        _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
-        QPoint o = p->brushOrigin();
-        p->setBrushOrigin( o.x()-listView()->contentsX(), o.y()-listView()->contentsY() );
+    _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(column), *pm));
+    QPoint o = p->brushOrigin();
+    p->setBrushOrigin( o.x()-listView()->contentsX(), o.y()-listView()->contentsY() );
   }
-  else if (isAlternate())
-       if (listView()->viewport()->backgroundMode()==Qt::FixedColor)
-            _cg.setColor(QColorGroup::Background, static_cast< KListView* >(listView())->alternateBackground());
-       else
-        _cg.setColor(QColorGroup::Base, static_cast< KListView* >(listView())->alternateBackground());
-
+  else
+  {
+    _cg.setColor((listView()->viewport()->backgroundMode() == Qt::FixedColor) ?
+                 QColorGroup::Background : QColorGroup::Base,
+                 backgroundColor(column));
+  }
   QListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 

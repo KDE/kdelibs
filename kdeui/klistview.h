@@ -65,7 +65,8 @@ class KDEUI_EXPORT KListView : public QListView
   Q_PROPERTY( int tooltipColumn READ tooltipColumn WRITE  setTooltipColumn )
   Q_PROPERTY( int dropVisualizerWidth READ dropVisualizerWidth WRITE  setDropVisualizerWidth )
   Q_PROPERTY( QColor alternateBackground READ alternateBackground WRITE  setAlternateBackground )
-
+  Q_PROPERTY( bool shadeSortColumn READ shadeSortColumn WRITE setShadeSortColumn )
+  
   Q_OVERRIDE( SelectionModeExt selectionMode READ selectionModeExt WRITE setSelectionModeExt )
 
 public:
@@ -385,6 +386,17 @@ public:
    */
   virtual void takeItem(QListViewItem *i);
 
+  /**
+   * Set to true if the currently sorted column should be drawn shaded. Defaults to true
+   * @param shadeSortColumn True if sort column should be shaded.
+   */
+  void setShadeSortColumn(bool shadeSortColumn);
+  
+  /**
+   * See if the sort column should be drawn shaded
+   * @return true if the sort column should be shaded
+   */
+  bool shadeSortColumn(void) const;
 signals:
 
   /**
@@ -1033,7 +1045,6 @@ public:
 
   virtual void insertItem(QListViewItem *item);
   virtual void takeItem(QListViewItem *item);
-
   /**
    * returns true if this item is to be drawn with the alternate background
    */
@@ -1041,7 +1052,16 @@ public:
   /**
    * returns the background color for this item
    */
-  const QColor &backgroundColor();
+  const QColor &backgroundColor() KDE_DEPRECATED;  // #### should be removed in 4.0; use below instead
+
+  /**
+   * returns the background color for this item at given column
+   * This can be different in the column which is sorted due to shading
+   * ### could be merged with above (column = -1) to be source compatible
+   * ### but will only work if sort-shading is not used or the listView has
+   * ### only 1 column
+   */
+  QColor backgroundColor(int column);
 
   virtual void paintCell(QPainter *p, const QColorGroup &cg,
     int column, int width, int alignment);
