@@ -48,6 +48,7 @@
 #include <kio/ioslave_defaults.h>
 #include <klargefile.h>
 #include <kglobal.h>
+#include <kmimetype.h>
 
 using namespace KIO;
 
@@ -151,6 +152,11 @@ void FileProtocol::get( const KURL& url )
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
 	return;
     }
+
+    // Determine the mimetype of the file to be retrieved, and emit it.
+    // This is mandatory in all slaves (for KRun/BrowserRun to work).
+    KMimeType::Ptr mt = KMimeType::findByURL( url.path(), buff.st_mode, true /* local URL */ );
+    emit mimeType( mt->name() );
 
     totalSize( buff.st_size );
     KIO::filesize_t processed_size = 0;
