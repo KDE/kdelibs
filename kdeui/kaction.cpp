@@ -97,19 +97,17 @@ public:
   KActionPrivate() : KGuiItem()
   {
     m_kaccel    = 0;
-    //m_pAccelAction   = 0;
-    m_accel     = 0;
+    m_cut       = 0;
   }
   ~KActionPrivate()
   {
   }
   KAccel *m_kaccel;
-  //KAccelAction *m_pAccelAction;
 
   QString m_groupText;
   QString m_group;
 
-  QKeySequence m_accel;
+  KShortcut m_cut;
 
   struct Container
   {
@@ -124,7 +122,7 @@ public:
   QValueList<Container> m_containers;
 };
 
-KAction::KAction( const QString& text, const QKeySequence& accel,
+KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
 {
@@ -132,15 +130,15 @@ KAction::KAction( const QString& text, const QKeySequence& accel,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_accel = accel;      // default key binding
+        d->m_cut = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
-    setAccel( accel );
+    setShortcut( cut );
     setText( text );
 }
 
-KAction::KAction( const QString& text, const QKeySequence& accel,
+KAction::KAction( const QString& text, const KShortcut& cut,
                   const QObject* receiver,
                   const char* slot, QObject* parent, const char* name )
  : QObject( parent, name )
@@ -149,11 +147,11 @@ KAction::KAction( const QString& text, const QKeySequence& accel,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_accel = accel;      // default key binding
+        d->m_cut = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
-    setAccel( accel );
+    setShortcut( cut );
     setText( text );
 
     if ( receiver )
@@ -161,7 +159,7 @@ KAction::KAction( const QString& text, const QKeySequence& accel,
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix,
-                  const QKeySequence& accel,
+                  const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
 {
@@ -169,17 +167,17 @@ KAction::KAction( const QString& text, const QIconSet& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_accel = accel;      // default key binding
+        d->m_cut = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
-    setAccel( accel );
+    setShortcut( cut );
     setText( text );
     setIconSet( pix );
 }
 
 KAction::KAction( const QString& text, const QString& pix,
-                  const QKeySequence& accel,
+                  const KShortcut& cut,
                   QObject* parent, const char* name )
 : QObject( parent, name )
 {
@@ -187,18 +185,18 @@ KAction::KAction( const QString& text, const QString& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_accel = accel;      // default key binding
+        d->m_cut = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
     setText( text );
-    setAccel( accel );
+    setShortcut( cut );
 
     d->setIconName( pix );
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix,
-                  const QKeySequence& accel,
+                  const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
  : QObject( parent, name )
@@ -207,11 +205,11 @@ KAction::KAction( const QString& text, const QIconSet& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_accel = accel;      // default key binding
+        d->m_cut = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
-    setAccel( accel );
+    setShortcut( cut );
     setText( text );
     setIconSet( pix );
 
@@ -220,7 +218,7 @@ KAction::KAction( const QString& text, const QIconSet& pix,
 }
 
 KAction::KAction( const QString& text, const QString& pix,
-                  const QKeySequence& accel,
+                  const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
   : QObject( parent, name )
@@ -229,11 +227,11 @@ KAction::KAction( const QString& text, const QString& pix,
 
     m_parentCollection = parentCollection();
     if ( m_parentCollection ) {
-        d->m_accel = accel;      // default key binding
+        d->m_cut = cut;      // default key binding
         m_parentCollection->insert( this );
     }
 
-    setAccel( accel );
+    setShortcut( cut );
     setText( text );
 
     d->setIconName(pix);
@@ -297,39 +295,49 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
   return true;
 }
 
-void KAction::setAccel( QKeySequence qkey )
+void KAction::setShortcut( const KShortcut& cut )
 {
+  d->m_cut = cut;
+
+  if( d->m_kaccel )
+    d->m_kaccel->setShortcut( name(), cut );
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setShortcut( i, cut );
+}
+
+void KAction::setAccel( int keyQt )
+{
+/*
+#ifdef Q_WS_X11
   // Make sure that we are really
   //  using the right modifier combination by converting to its X equivalent
   //  and back. Neccessary for punctuation keys on varying layouts.
-#ifdef Q_WS_X11
   uint keySymX, keyModX;
   KKeyX11::keyQtToKeyX( qkey, 0, &keySymX, &keyModX );
   qkey = KKeyX11::keySymXToKeyQt( keySymX, keyModX );
 #endif
-  d->m_accel = qkey;
-
-  //if ( m_parentCollection )
-  //{
-  //  KAccelActions& actions = m_parentCollection->keyMap();
-  //  KAccelAction* pAction = actions.actionPtr(name());
-  //  if (pAction)
-  //      pAction->setShortcuts(KAccelShortcuts(KKeySequence(qkey)));
-  //}
-
-  if( d->m_kaccel )
-  {
-    //d->m_pAccelAction = d->m_kaccel->actions().actionPtr(name());
-    d->m_kaccel->setShortcuts(name(), KShortcuts(qkey));
-  }
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    setAccel( i, qkey );
+*/
+  setShortcut( keyQt );
 }
 
-void KAction::setAccel( int i, const QKeySequence& a )
+/*void KAction::setAccel( int i, const QKeySequence& a )
 {
+  QWidget* w = container( i );
+  if ( w->inherits( "QPopupMenu" ) )
+    static_cast<QPopupMenu*>(w)->setAccel( a, itemId( i ) );
+  else if ( w->inherits( "QMenuBar" ) )
+    static_cast<QMenuBar*>(w)->setAccel( a, itemId( i ) );
+
+  if ( !d->m_kaccel && a ) {// this case happens after configuring key bindings
+      plugMainWindowAccel( w );
+  }
+}*/
+
+void KAction::setShortcut( int i, const KShortcut& cut )
+{
+  int a = cut.keyCodeQt();
   QWidget* w = container( i );
   if ( w->inherits( "QPopupMenu" ) )
     static_cast<QPopupMenu*>(w)->setAccel( a, itemId( i ) );
@@ -341,13 +349,24 @@ void KAction::setAccel( int i, const QKeySequence& a )
   }
 }
 
-QKeySequence KAction::accel() const
+const KShortcut& KAction::shortcut() const
 {
-  return d->m_accel;
+  return d->m_cut;
 }
 
-void KAction::setShortcut( QKeySequence )
+QString KAction::shortcutText() const
 {
+  return d->m_cut.toStringInternal();
+}
+
+void KAction::setShortcutText( const QString& s )
+{
+  d->m_cut.init(s);
+}
+
+int KAction::accel() const
+{
+  return d->m_cut.keyCodeQt();
 }
 
 void KAction::setGroup( const QString& grp )
@@ -380,10 +399,7 @@ void KAction::setToolTip( const QString& tt )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-  {
     setToolTip( i, tt );
-    setStatusText( i, tt );
-  }
 }
 
 void KAction::setToolTip( int i, const QString& tt )
@@ -399,25 +415,9 @@ QString KAction::toolTip() const
   return d->toolTip( );
 }
 
-// remove in KDE 3.0
-void KAction::setStatusText( const QString &text )
-{
-  setToolTip(text);
-}
-
-void KAction::setStatusText( int, const QString & )
-{
-  // ### remove in KDE 3.0 :-)
-}
-
-// remove in KDE 4.0 .-)
-QString KAction::statusText() const
-{
-  return toolTip();
-}
-
 int KAction::plug( QWidget *w, int index )
 {
+	kdDebug(125) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
   if (w == 0) {
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
@@ -425,22 +425,23 @@ int KAction::plug( QWidget *w, int index )
   // Plug into the KMainWindow accel so that keybindings work for
   // actions that are only plugged into a toolbar, and in case of
   // hiding the menubar.
-  if (!d->m_kaccel && d->m_accel) // only if not already plugged into a kaccel, and only if there is a shortcut !
+  if (!d->m_kaccel && !d->m_cut.isNull()) // only if not already plugged into a kaccel, and only if there is a shortcut !
     plugMainWindowAccel( w );
 
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
+    int keyQt = d->m_cut.keyCodeQt();
     int id;
 
     if ( d->hasIconSet() )
         id = menu->insertItem( iconSet(), d->text(), this,//dsweet
-                               SLOT( slotActivated() ), d->m_accel,
+                               SLOT( slotActivated() ), keyQt,
                                -1, index );
     else
         id = menu->insertItem( d->text(), this,
                                SLOT( slotActivated() ),  //dsweet
-                               d->m_accel, -1, index );
+                               keyQt, -1, index );
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -552,10 +553,10 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if ( !kacc->actions().actionPtr(name()) )
   {
     d->m_kaccel = kacc;
-    d->m_kaccel->insertAction(name(), d->plainText(),
-        KKeySequence(d->m_accel),
+    d->m_kaccel->insertAction(name(), d->plainText(), QString::null,
+        KShortcut(d->m_cut),
         this, SLOT(slotActivated()),
-        0, 0, configurable, isEnabled());
+        configurable, isEnabled());
     connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
     connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
   }
@@ -592,7 +593,7 @@ void KAction::plugMainWindowAccel( QWidget *w )
 void KAction::setEnabled(bool enable)
 {
   if (d->m_kaccel)
-    d->m_kaccel->setActionEnabled(name(), enable);
+    d->m_kaccel->setEnabled(name(), enable);
 
   if ( enable == d->isEnabled() )
     return;
@@ -624,7 +625,7 @@ void KAction::setText( const QString& text )
   {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
     if (pAction)
-      pAction->m_sDesc = text;
+      pAction->setDesc( text );
   }
 
   d->setText( text );
@@ -897,7 +898,7 @@ void KAction::slotKeycodeChanged()
   kdDebug(125) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
   KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
   if( pAction )
-    setAccel(pAction->getShortcut(0).getSequence(0).getKey(0));
+    setAccel(pAction->shortcut().keyPrimaryQt());
 }
 
 KActionCollection *KAction::parentCollection() const
@@ -923,54 +924,54 @@ public:
   QString m_exclusiveGroup;
 };
 
-KToggleAction::KToggleAction( const QString& text, const QKeySequence& accel,
+KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
                               QObject* parent,
                               const char* name )
-    : KAction( text, accel, parent, name )
+    : KAction( text, cut, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QKeySequence& accel,
+KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
                               QObject* parent, const char* name )
-  : KAction( text, accel, receiver, slot, parent, name )
+  : KAction( text, cut, receiver, slot, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               QObject* parent, const char* name )
-  : KAction( text, pix, accel, parent, name )
+  : KAction( text, pix, cut, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               QObject* parent, const char* name )
- : KAction( text, pix, accel, parent, name )
+ : KAction( text, pix, cut, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
-  : KAction( text, pix, accel, receiver, slot, parent, name )
+  : KAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
-  : KAction( text, pix, accel, receiver, slot, parent, name )
+  : KAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KToggleActionPrivate;
 }
@@ -1078,46 +1079,46 @@ QString KToggleAction::exclusiveGroup() const
 }
 
 
-KRadioAction::KRadioAction( const QString& text, const QKeySequence& accel,
+KRadioAction::KRadioAction( const QString& text, const KShortcut& cut,
                             QObject* parent, const char* name )
-: KToggleAction( text, accel, parent, name )
+: KToggleAction( text, cut, parent, name )
 {
 }
 
-KRadioAction::KRadioAction( const QString& text, const QKeySequence& accel,
+KRadioAction::KRadioAction( const QString& text, const KShortcut& cut,
                             const QObject* receiver, const char* slot,
                             QObject* parent, const char* name )
-: KToggleAction( text, accel, receiver, slot, parent, name )
+: KToggleAction( text, cut, receiver, slot, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QIconSet& pix,
-                            const QKeySequence& accel,
+                            const KShortcut& cut,
                             QObject* parent, const char* name )
-: KToggleAction( text, pix, accel, parent, name )
+: KToggleAction( text, pix, cut, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QString& pix,
-                            const QKeySequence& accel,
+                            const KShortcut& cut,
                             QObject* parent, const char* name )
-: KToggleAction( text, pix, accel, parent, name )
+: KToggleAction( text, pix, cut, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QIconSet& pix,
-                            const QKeySequence& accel,
+                            const KShortcut& cut,
                             const QObject* receiver, const char* slot,
                             QObject* parent, const char* name )
-: KToggleAction( text, pix, accel, receiver, slot, parent, name )
+: KToggleAction( text, pix, cut, receiver, slot, parent, name )
 {
 }
 
 KRadioAction::KRadioAction( const QString& text, const QString& pix,
-                            const QKeySequence& accel,
+                            const KShortcut& cut,
                             const QObject* receiver, const char* slot,
                             QObject* parent, const char* name )
-: KToggleAction( text, pix, accel, receiver, slot, parent, name )
+: KToggleAction( text, pix, cut, receiver, slot, parent, name )
 {
 }
 
@@ -1160,53 +1161,53 @@ public:
   QStringList m_list;
 };
 
-KSelectAction::KSelectAction( const QString& text, const QKeySequence& accel,
+KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               QObject* parent, const char* name )
-  : KAction( text, accel, parent, name )
+  : KAction( text, cut, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QKeySequence& accel,
+KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
                               QObject* parent, const char* name )
-  : KAction( text, accel, receiver, slot, parent, name )
+  : KAction( text, cut, receiver, slot, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               QObject* parent, const char* name )
-  : KAction( text, pix, accel, parent, name )
+  : KAction( text, pix, cut, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               QObject* parent, const char* name )
-  : KAction( text, pix, accel, parent, name )
+  : KAction( text, pix, cut, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
-  : KAction( text, pix, accel, receiver, slot, parent, name )
+  : KAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
-                              const QKeySequence& accel,
+                              const KShortcut& cut,
                               const QObject* receiver,
                               const char* slot, QObject* parent,
                               const char* name )
-  : KAction( text, pix, accel, receiver, slot, parent, name )
+  : KAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KSelectActionPrivate;
 }
@@ -1266,6 +1267,7 @@ void KSelectAction::setComboWidth( int width )
 }
 QPopupMenu* KSelectAction::popupMenu()
 {
+	kdDebug(125) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
   {
     d->m_menu = new KPopupMenu(0L, "KSelectAction::popupMenu()");
@@ -1322,6 +1324,7 @@ void KSelectAction::changeItem( int id, int index, const QString& text)
 
 void KSelectAction::setItems( const QStringList &lst )
 {
+	kdDebug(125) << "KAction::setItems()" << endl; // remove -- ellis
   d->m_list = lst;
   d->m_current = -1;
 
@@ -1398,6 +1401,7 @@ void KSelectAction::setComboWidth( int id, int width )
 
 void KSelectAction::setItems( int id, const QStringList& lst )
 {
+	kdDebug(125) << "KAction::setItems( " << id << ", lst )" << endl; // remove -- ellis
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
@@ -1417,6 +1421,7 @@ void KSelectAction::setItems( int id, const QStringList& lst )
 
 int KSelectAction::plug( QWidget *widget, int index )
 {
+	kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( widget->inherits("QPopupMenu") )
   {
     // Create the PopupMenu and store it in m_menu
@@ -1550,17 +1555,17 @@ public:
   int m_current;
 };
 
-KListAction::KListAction( const QString& text, const QKeySequence& accel,
+KListAction::KListAction( const QString& text, const KShortcut& cut,
                           QObject* parent, const char* name )
-  : KSelectAction( text, accel, parent, name )
+  : KSelectAction( text, cut, parent, name )
 {
   d = new KListActionPrivate;
 }
 
-KListAction::KListAction( const QString& text, const QKeySequence& accel,
+KListAction::KListAction( const QString& text, const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-  : KSelectAction( text, accel, parent, name )
+  : KSelectAction( text, cut, parent, name )
 {
   d = new KListActionPrivate;
   if ( receiver )
@@ -1568,26 +1573,26 @@ KListAction::KListAction( const QString& text, const QKeySequence& accel,
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
-                          const QKeySequence& accel,
+                          const KShortcut& cut,
                           QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, parent, name )
+  : KSelectAction( text, pix, cut, parent, name )
 {
   d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
-                          const QKeySequence& accel,
+                          const KShortcut& cut,
                           QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, parent, name )
+  : KSelectAction( text, pix, cut, parent, name )
 {
   d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
-                          const QKeySequence& accel, const QObject* receiver,
+                          const KShortcut& cut, const QObject* receiver,
                           const char* slot, QObject* parent,
                           const char* name )
-  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+  : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
   if ( receiver )
@@ -1595,10 +1600,10 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
-                          const QKeySequence& accel, const QObject* receiver,
+                          const KShortcut& cut, const QObject* receiver,
                           const char* slot, QObject* parent,
                           const char* name )
-  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+  : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
   if ( receiver )
@@ -1650,10 +1655,10 @@ public:
 };
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QKeySequence& accel,
+                                        const KShortcut& cut,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, accel, parent, name)
+  : KListAction( text, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
@@ -1663,12 +1668,12 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
-                                        const QKeySequence& accel,
+                                        const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         uint maxItems )
-  : KListAction( text, accel, parent, name)
+  : KListAction( text, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
@@ -1683,10 +1688,10 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QIconSet& pix,
-                                        const QKeySequence& accel,
+                                        const KShortcut& cut,
                                         QObject* parent, const char* name,
                                         uint maxItems )
-  : KListAction( text, pix, accel, parent, name)
+  : KListAction( text, pix, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
@@ -1697,10 +1702,10 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QString& pix,
-                                        const QKeySequence& accel,
+                                        const KShortcut& cut,
                                         QObject* parent, const char* name,
                                         uint maxItems )
-  : KListAction( text, pix, accel, parent, name)
+  : KListAction( text, pix, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
@@ -1711,12 +1716,12 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QIconSet& pix,
-                                        const QKeySequence& accel,
+                                        const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         uint maxItems )
-  : KListAction( text, pix, accel, parent, name)
+  : KListAction( text, pix, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
@@ -1731,12 +1736,12 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QString& pix,
-                                        const QKeySequence& accel,
+                                        const KShortcut& cut,
                                         const QObject* receiver,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         uint maxItems )
-  : KListAction( text, pix, accel, parent, name)
+  : KListAction( text, pix, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
   d->m_maxItems = maxItems;
@@ -1896,9 +1901,9 @@ public:
 };
 
 KFontAction::KFontAction( const QString& text,
-                          const QKeySequence& accel, QObject* parent,
+                          const KShortcut& cut, QObject* parent,
                           const char* name )
-  : KSelectAction( text, accel, parent, name )
+  : KSelectAction( text, cut, parent, name )
 {
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
@@ -1906,10 +1911,10 @@ KFontAction::KFontAction( const QString& text,
     setEditable( TRUE );
 }
 
-KFontAction::KFontAction( const QString& text, const QKeySequence& accel,
+KFontAction::KFontAction( const QString& text, const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-    : KSelectAction( text, accel, receiver, slot, parent, name )
+    : KSelectAction( text, cut, receiver, slot, parent, name )
 {
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
@@ -1918,9 +1923,9 @@ KFontAction::KFontAction( const QString& text, const QKeySequence& accel,
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix,
-                          const QKeySequence& accel,
+                          const KShortcut& cut,
                           QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, parent, name )
+    : KSelectAction( text, pix, cut, parent, name )
 {
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
@@ -1929,9 +1934,9 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix,
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix,
-                          const QKeySequence& accel,
+                          const KShortcut& cut,
                           QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, parent, name )
+    : KSelectAction( text, pix, cut, parent, name )
 {
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
@@ -1940,10 +1945,10 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix,
-                          const QKeySequence& accel,
+                          const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+    : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
@@ -1952,10 +1957,10 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix,
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix,
-                          const QKeySequence& accel,
+                          const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+    : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
     d = new KFontActionPrivate;
     get_fonts( d->m_fonts );
@@ -1980,7 +1985,7 @@ KFontAction::~KFontAction()
 }
 
 /*
- * Maintenance note: Keep in sync with KFontCombo::setCurrentFont() 
+ * Maintenance note: Keep in sync with KFontCombo::setCurrentFont()
  */
 void KFontAction::setFont( const QString &family )
 {
@@ -2007,7 +2012,7 @@ void KFontAction::setFont( const QString &family )
              return;
           }
        }
-    }    
+    }
 
     lowerName += " [";
     i = 0;
@@ -2055,54 +2060,54 @@ public:
 };
 
 KFontSizeAction::KFontSizeAction( const QString& text,
-                                  const QKeySequence& accel,
+                                  const KShortcut& cut,
                                   QObject* parent, const char* name )
-  : KSelectAction( text, accel, parent, name )
+  : KSelectAction( text, cut, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text,
-                                  const QKeySequence& accel,
+                                  const KShortcut& cut,
                                   const QObject* receiver, const char* slot,
                                   QObject* parent, const char* name )
-  : KSelectAction( text, accel, receiver, slot, parent, name )
+  : KSelectAction( text, cut, receiver, slot, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
-                                  const QKeySequence& accel,
+                                  const KShortcut& cut,
                                   QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, parent, name )
+  : KSelectAction( text, pix, cut, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
-                                  const QKeySequence& accel,
+                                  const KShortcut& cut,
                                   QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, parent, name )
+  : KSelectAction( text, pix, cut, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
-                                  const QKeySequence& accel,
+                                  const KShortcut& cut,
                                   const QObject* receiver,
                                   const char* slot, QObject* parent,
                                   const char* name )
-    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+    : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
-                                  const QKeySequence& accel,
+                                  const KShortcut& cut,
                                   const QObject* receiver,
                                   const char* slot, QObject* parent,
                                   const char* name )
-  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+  : KSelectAction( text, pix, cut, receiver, slot, parent, name )
 {
   init();
 }
@@ -2284,6 +2289,7 @@ void KActionMenu::setStickyMenu(bool sticky) {
 
 int KActionMenu::plug( QWidget* widget, int index )
 {
+	kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( widget->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
@@ -2433,9 +2439,9 @@ void KActionMenu::setIconSet( int id, const QIconSet& iconSet )
 
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QString& icon,
-                                          const QKeySequence& accel,
+                                          const KShortcut& cut,
                                           QObject* parent, const char* name )
-  : KAction( text, icon, accel, parent, name )
+  : KAction( text, icon, cut, parent, name )
 {
   m_popup = 0;
   m_delayed = true;
@@ -2444,11 +2450,11 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
 
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QString& icon,
-                                          const QKeySequence& accel,
+                                          const KShortcut& cut,
                                           const QObject* receiver,
                                           const char* slot, QObject* parent,
                                           const char* name )
-  : KAction( text, icon, accel, receiver, slot, parent, name )
+  : KAction( text, icon, cut, receiver, slot, parent, name )
 {
   m_popup = 0;
   m_delayed = true;
@@ -2456,11 +2462,11 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
 }
 
 KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
-                                          const QKeySequence& accel,
+                                          const KShortcut& cut,
                                           const QObject* receiver,
                                           const char* slot, QObject* parent,
                                           const char* name )
-  : KAction( item.text(), item.iconSet(), accel, receiver, slot, parent, name )
+  : KAction( item.text(), item.iconSet(), cut, receiver, slot, parent, name )
 {
   m_popup = 0;
   m_delayed = true;
@@ -2705,7 +2711,7 @@ void KActionCollection::insert( KAction* action )
 
   emit inserted( action );
 
-  KAccelShortcuts cuts( KKeySequence(action->accel()) );
+  KShortcut cut( action->accel() );
   //d->m_keyMap.insertAction( action->name(), action->plainText(), QString::null,
   //    cuts, cuts );
 }
@@ -2763,9 +2769,9 @@ void KActionCollection::createKeyMap( KAccelActions& map )
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it ) {
     KAction* action = it.current();
-    KAccelShortcuts cuts( KKeySequence(action->accel()) );
+    KShortcut cut( action->accel() );
     map.insertAction( action->name(), action->plainText(), QString::null,
-      cuts, cuts );
+      cut, cut );
   }
 }
 
@@ -2775,8 +2781,8 @@ void KActionCollection::setKeyMap( const KAccelActions& map )
   for( uint i = 0; i < map.size(); i++ )
   {
     const KAccelAction* aa = map.actionPtr( i );
-    KAction* act = action( aa->m_sName.latin1() );
-    act->setAccel( aa->getShortcut(0).getSequence(0).getKey(0) );
+    KAction* act = action( aa->name().latin1() );
+    act->setAccel( aa->shortcut().keyPrimaryQt() );
   }
 }
 

@@ -29,12 +29,13 @@ class QCheckBox;
 class QGroupBox;
 class QLabel;
 class QLineEdit;
+class QRadioButton;
 class KAccel;
 class KAccelAction;
 class KAccelActions;
-class KAccelShortcut;
 class KActionCollection;
 class KGlobalAccel;
+class KShortcut;
 
 class KKeyDialogPrivate;
 class KKeyChooserPrivate;
@@ -114,9 +115,9 @@ class KKeyChooser : public QWidget
 
 	void updateButtons();
 	void fontChange( const QFont& _font );
-	bool isKeyPresent( KAccelShortcut cut, bool warnuser = true );
-	void _warning( KAccelShortcut cut, QString sAction, QString sTitle );
-	void setKey( KAccelShortcut cut );
+	bool isKeyPresent( KShortcut cut, bool warnuser = true );
+	void _warning( KShortcut cut, QString sAction, QString sTitle );
+	void setShortcut( KShortcut cut );
 
  signals:
 	/**
@@ -146,7 +147,7 @@ class KKeyChooser : public QWidget
 	void slotDefaultKey();
 	void slotCustomKey();
 	void slotListItemSelected( QListViewItem *item );
-	void capturedKey( KAccelShortcut cut );
+	void capturedShortcut( KShortcut cut );
 
  protected:
 	bool m_bAllowMetaKey;
@@ -158,6 +159,10 @@ class KKeyChooser : public QWidget
 	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
 	//  otherwise aDefaultKeycode.
 	bool m_bPreferFourModifierKeys;
+
+	QRadioButton* m_prbNone;
+	QRadioButton* m_prbDef;
+	QRadioButton* m_prbCustom;
 
  private:
 	class KKeyChooserPrivate *d;

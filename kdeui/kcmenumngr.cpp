@@ -23,7 +23,7 @@
 #include "kcmenumngr.h"
 #include "kglobal.h"
 #include "kconfig.h"
-#include <kkeysequence.h>
+#include "kshortcut.h"
 
 #undef KeyPress
 #undef None
@@ -35,8 +35,8 @@ KContextMenuManager* KContextMenuManager::manager = 0;
 KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )
     : QObject( parent, name)
 {
-    KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Keys") ) ;
-    menuKey = KKeySequence( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) );
+    KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Shortcuts") ) ;
+    menuKey = KShortcut( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyPrimaryQt();
     saver.config()->setGroup( QString::fromLatin1("ContextMenus") ) ;
     showOnPress = saver.config()->readBoolEntry(QString::fromLatin1("ShowOnPress"), TRUE );
 }

@@ -31,7 +31,7 @@
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
-#include <kaccelbase.h>
+#include <kaccelaction.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -40,6 +40,7 @@
 #include <kkey_x11.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kshortcut.h>
 #include <kxmlguifactory.h>
 
 #ifdef Q_WS_X11
@@ -212,7 +213,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
     KAccelAction *pAccelAction = actions.actionPtr(action->name());
     if( !pAccelAction )
       continue;
-    KAccelShortcuts &cuts = pAccelAction->m_rgShortcuts;
+    const KShortcut &cut = pAccelAction->shortcut();
 
     // now see if this element already exists
     QDomElement act_elem;
@@ -231,7 +232,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
       act_elem = doc.createElement( tagAction );
       act_elem.setAttribute( attrName, action->name() );
     }
-    act_elem.setAttribute( attrAccel, cuts.toString( KKeySequence::I18N_No ) );
+    act_elem.setAttribute( attrAccel, cut.toStringInternal() );
 
     elem.appendChild( act_elem );
   }
@@ -297,7 +298,7 @@ void KKeyChooser::init( KAccelActions& actions,
   d->actionsNew.init( actions ); // Make copy to modify
   d->bAllowMetaKey = bAllowMetaKey;
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
-  d->bPreferFourModifierKeys = KKeySequence::useFourModifierKeys();
+  d->bPreferFourModifierKeys = KAccelAction::useFourModifierKeys();
 
   //
   // TOP LAYOUT MANAGER
@@ -376,30 +377,30 @@ void KKeyChooser::init( KAccelActions& actions,
   d->kbGroup->hide();
   d->kbGroup->setExclusive( true );
 
-  QRadioButton *rb = new QRadioButton( i18n("&None"), d->fCArea );
-  d->kbGroup->insert( rb, NoKey );
-  rb->setEnabled( false );
+  m_prbNone = new QRadioButton( i18n("&None"), d->fCArea );
+  d->kbGroup->insert( m_prbNone, NoKey );
+  m_prbNone->setEnabled( false );
   //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
-  grid->addWidget( rb, 1, 0 );
-  QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
-  connect( rb, SIGNAL(clicked()), SLOT(slotNoKey()) );
+  grid->addWidget( m_prbNone, 1, 0 );
+  QWhatsThis::add( m_prbNone, i18n("The selected action will not be associated with any key.") );
+  connect( m_prbNone, SIGNAL(clicked()), SLOT(slotNoKey()) );
 
-  rb = new QRadioButton( i18n("De&fault"), d->fCArea );
-  d->kbGroup->insert( rb, DefaultKey );
-  rb->setEnabled( false );
+  m_prbDef = new QRadioButton( i18n("De&fault"), d->fCArea );
+  d->kbGroup->insert( m_prbDef, DefaultKey );
+  m_prbDef->setEnabled( false );
   //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
-  grid->addWidget( rb, 1, 1 );
-  QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
-  connect( rb, SIGNAL(clicked()), SLOT(slotDefaultKey()) );
+  grid->addWidget( m_prbDef, 1, 1 );
+  QWhatsThis::add( m_prbDef, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
+  connect( m_prbDef, SIGNAL(clicked()), SLOT(slotDefaultKey()) );
 
-  rb = new QRadioButton( i18n("&Custom"), d->fCArea );
-  d->kbGroup->insert( rb, CustomKey );
-  rb->setEnabled( false );
+  m_prbCustom = new QRadioButton( i18n("&Custom"), d->fCArea );
+  d->kbGroup->insert( m_prbCustom, CustomKey );
+  m_prbCustom->setEnabled( false );
   //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
-  grid->addWidget( rb, 1, 2 );
-  QWhatsThis::add( rb, i18n("If this option is selected you can create a customized key binding for the"
+  grid->addWidget( m_prbCustom, 1, 2 );
+  QWhatsThis::add( m_prbCustom, i18n("If this option is selected you can create a customized key binding for the"
     " selected action using the buttons below.") );
-  connect( rb, SIGNAL(clicked()), SLOT(slotCustomKey()) );
+  connect( m_prbCustom, SIGNAL(clicked()), SLOT(slotCustomKey()) );
 
   //connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
 
@@ -408,7 +409,7 @@ void KKeyChooser::init( KAccelActions& actions,
 
   d->bChange = new KKeyButton(d->fCArea, "key");
   d->bChange->setEnabled( false );
-  connect( d->bChange, SIGNAL(capturedKey(KAccelShortcut)), SLOT(capturedKey(KAccelShortcut)) );
+  connect( d->bChange, SIGNAL(capturedShortcut(KShortcut)), SLOT(capturedShortcut(KShortcut)) );
   grid->addRowSpacing( 1, d->bChange->sizeHint().height() + 5 );
 
   wtstr = i18n("Use this button to choose a new shortcut key. Once you click it, "
@@ -456,24 +457,24 @@ void KKeyChooser::buildListView()
 	pParentItem->setSelectable( false );
 	for( uint i = 0; i < d->actionsNew.size(); i++ ) {
 		KAccelAction& action = *d->actionsNew.actionPtr( i );
-		kdDebug(125) << "Key: " << action.m_sName << endl;
-		if( action.m_sName.startsWith( "Program:" ) ) {
-			pItem = new KListViewItem( d->pList, pProgramItem, action.m_sDesc );
+		kdDebug(125) << "Key: " << action.name() << endl;
+		if( action.name().startsWith( "Program:" ) ) {
+			pItem = new KListViewItem( d->pList, pProgramItem, action.desc() );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
 			if( !pProgramItem->firstChild() )
 				delete pProgramItem;
 			pProgramItem = pParentItem = pItem;
-		} else if( action.m_sName.startsWith( "Group:" ) ) {
-			pItem = new KListViewItem( pProgramItem, pParentItem, action.m_sDesc );
+		} else if( action.name().startsWith( "Group:" ) ) {
+			pItem = new KListViewItem( pProgramItem, pParentItem, action.desc() );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
 			if( pGroupItem && !pGroupItem->firstChild() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else if( !action.m_sName.isEmpty() )
+		} else if( !action.name().isEmpty() )
 			pItem = new KKeyChooserItem( pParentItem, pItem, action );
 	}
 	if( !pProgramItem->firstChild() )
@@ -493,42 +494,37 @@ void KKeyChooser::updateButtons()
 
 	if ( !pItem ) {
 		// if nothing is selected -> disable radio boxes
-		d->kbGroup->find(NoKey)->setEnabled( false );
-		d->kbGroup->find(DefaultKey)->setEnabled( false );
-		d->kbGroup->find(CustomKey)->setEnabled( false );
+		m_prbNone->setEnabled( false );
+		m_prbDef->setEnabled( false );
+		m_prbCustom->setEnabled( false );
 		d->bChange->setEnabled( false );
-		d->bChange->setKey( KAccelShortcut() );
+		d->bChange->setShortcut( KShortcut() );
 	} else {
-		/* get the entry */
 		KAccelAction& action = pItem->action();
-		KAccelShortcut cutCur = action.getShortcut( 0 );
-		KAccelShortcut cutDef;
-		if( action.shortcutDefaults().size() > 0 )
-			cutDef = action.shortcutDefaults()[0];
 
 		// Set key strings
-		QString keyStrCfg = cutCur.toString();
-		QString keyStrDef = cutDef.toString();
+		QString keyStrCfg = action.shortcut().toString();
+		QString keyStrDef = action.shortcutDefault().toString();
 
-		d->bChange->setKey( cutCur );
+		d->bChange->setShortcut( action.shortcut() );
 		//item->setText( 1, keyStrCfg );
 		pItem->repaint();
 		d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
 
 		// Select the appropriate radio button.
-		int index = (cutCur.count() == 0) ? NoKey
-				: (cutCur == cutDef) ? DefaultKey
+		int index = (action.shortcut().count() == 0) ? NoKey
+				: (action.shortcut() == action.shortcutDefault()) ? DefaultKey
 				: CustomKey;
-		((QRadioButton *)d->kbGroup->find(NoKey))->setChecked( index == NoKey );
-		((QRadioButton *)d->kbGroup->find(DefaultKey))->setChecked( index == DefaultKey );
-		((QRadioButton *)d->kbGroup->find(CustomKey))->setChecked( index == CustomKey );
+		m_prbNone->setChecked( index == NoKey );
+		m_prbDef->setChecked( index == DefaultKey );
+		m_prbCustom->setChecked( index == CustomKey );
 
 		// Enable buttons if this key is configurable.
 		// The 'Default Key' button must also have a default key.
-		((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( action.m_bConfigurable );
-		((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( action.m_bConfigurable && cutDef.count() != 0 );
-		((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( action.m_bConfigurable );
-		d->bChange->setEnabled( action.m_bConfigurable );
+		m_prbNone->setEnabled( action.isConfigurable() );
+		m_prbDef->setEnabled( action.isConfigurable() && action.shortcutDefault().count() != 0 );
+		m_prbCustom->setEnabled( action.isConfigurable() );
+		d->bChange->setEnabled( action.isConfigurable() );
 	}
 }
 
@@ -538,7 +534,7 @@ void KKeyChooser::slotNoKey()
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
 	if( pItem ) {
 		//kdDebug(125) << "no Key" << d->pList->currentItem()->text(0) << endl;
-		pItem->action().setShortcut( 0, KAccelShortcut() );
+		pItem->action().setShortcut( KShortcut() );
 		//updateButtons( d->pList->currentItem() );
 		updateButtons();
 		emit keyChange();
@@ -550,13 +546,7 @@ void KKeyChooser::slotDefaultKey()
 	// return if no key is selected
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
 	if( pItem ) {
-		//kdDebug(125) << "no Key" << d->pList->currentItem()->text(0) << endl;
-		KAccelShortcuts cuts = pItem->action().shortcutDefaults();
-		if( cuts.size() > 0 )
-			pItem->action().setShortcut( 0, cuts[0] );
-		else
-			pItem->action().setShortcut( 0, KAccelShortcut() );
-		//updateButtons( d->pList->currentItem() );
+		pItem->action().setShortcut( pItem->action().shortcutDefault() );
 		updateButtons();
 		emit keyChange();
 	}
@@ -564,7 +554,7 @@ void KKeyChooser::slotDefaultKey()
 
 void KKeyChooser::slotCustomKey()
 {
-	d->bChange->captureKey( true );
+	d->bChange->captureShortcut( true );
 }
 
 void KKeyChooser::allDefault()
@@ -644,7 +634,7 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 
 	for( uint i = 0; i < d->actionsNew.size(); i++ ) {
 		KAccelAction& action = *d->actionsNew.actionPtr( i );
-		action.m_rgShortcuts = action.shortcutDefaults();
+		action.setShortcut( action.shortcutDefault() );
 	}
 
 	emit keyChange();
@@ -662,12 +652,12 @@ void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
 	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
 }
 
-void KKeyChooser::capturedKey( KAccelShortcut cut )
+void KKeyChooser::capturedShortcut( KShortcut cut )
 {
-	if( cut.count() == 0 )
+	if( cut.isNull() )
 		d->lInfo->setText( i18n("Undefined key") );
 	else
-		setKey( cut );
+		setShortcut( cut );
 }
 
 void KKeyChooser::listSync()
@@ -682,9 +672,9 @@ void KKeyChooser::listSync()
 }
 
 //#include <iostream.h>
-void KKeyChooser::setKey( KAccelShortcut cut )
+void KKeyChooser::setShortcut( KShortcut cut )
 {
-	kdDebug(125) << "KKeyChooser::setKey( " << cut.toString() << " )" << endl;
+	kdDebug(125) << "KKeyChooser::setShortcut( " << cut.toString() << " )" << endl;
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
 	if( !pItem )
 		return;
@@ -692,7 +682,7 @@ void KKeyChooser::setKey( KAccelShortcut cut )
 	// If key isn't already in use,
 	if( !isKeyPresent( cut ) ) {
 		// Set new key code
-		pItem->action().setShortcut( 0, cut );
+		pItem->action().setShortcut( cut );
 		// Update display
 		//updateButtons( pItem );
 		updateButtons();
@@ -729,7 +719,7 @@ void KKeyChooser::setKey( KAccelShortcut cut )
 */
 }
 
-void KKeyChooser::_warning( KAccelShortcut cut, QString sAction, QString sTitle )
+void KKeyChooser::_warning( KShortcut cut, QString sAction, QString sTitle )
 {
 	sAction = sAction.stripWhiteSpace();
 
@@ -742,12 +732,12 @@ void KKeyChooser::_warning( KAccelShortcut cut, QString sAction, QString sTitle 
 	KMessageBox::sorry( this, s, sTitle );
 }
 
-bool KKeyChooser::isKeyPresent( KAccelShortcut cut, bool bWarnUser )
+bool KKeyChooser::isKeyPresent( KShortcut cut, bool bWarnUser )
 {
 	if( cut.count() == 0 )
 		return false;
 
-	KAccelAction* pAction = d->actionsNew.actionPtr( cut );
+	KAccelAction* pAction = d->actionsNew.actionPtr( cut.seq(0) );
 	if( pAction ) {
 		if( bWarnUser ) {
 			QString s =
@@ -756,7 +746,7 @@ bool KKeyChooser::isKeyPresent( KAccelShortcut cut, bool bWarnUser )
 				"to the action: %2.\n"
 				"\n"
 				"Please choose a unique key combination.").
-				arg(cut.toString()).arg(pAction->m_sDesc);
+				arg(cut.toString()).arg(pAction->desc());
 			KMessageBox::sorry( this, s, i18n("Key Conflict") );
 		}
 		return true;
@@ -850,10 +840,10 @@ QString KKeyChooserItem::text( int iCol ) const
 	KAccelAction& action = *m_pAction;
 
 	if( iCol == 0 )
-		return action.m_sDesc;
-	else if( iCol <= (int) action.shortcutCount()
-		  && iCol <= (int) action.m_rgShortcuts.size() )
-		return action.m_rgShortcuts[iCol-1].toString();
+		return action.desc();
+	else if( iCol <= (int) action.sequenceCount()
+		  && iCol <= (int) action.shortcut().count() )
+		return action.seq(iCol-1).toString();
 	else
 		return QString::null;
 }

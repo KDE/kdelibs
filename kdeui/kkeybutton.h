@@ -2,7 +2,7 @@
 #define _KKEYBUTTON_H_
 
 #include <qpushbutton.h>
-#include <kaccelbase.h>	// For class KAccelShortcut
+#include <kshortcut.h>	// For class KShortcut
 
 /**
  *  A push button that looks like a keyboard key.
@@ -25,9 +25,10 @@ public:
    */
   virtual ~KKeyButton();
 
-  void setKey( KAccelShortcut cut );
-  //KKeySequence getKey() const { return m_key; }
-  KAccelShortcut getKey() const { return m_cut; }
+  void setShortcut( const KShortcut& cut );
+  KShortcut getShortcut() const
+    { return m_cut; }
+
   /**
    * Reimplemented for internal purposes.
    */
@@ -37,19 +38,17 @@ public:
    * In editing mode, the widget has a different
    * look.
    */
-  //void setEditing(bool _editing);
-  void captureKey( bool bCapture );
+  void captureShortcut( bool bCapture );
   /**
    * @return whether the widget is in editing mode.
    */
   bool isCapturing() const	{ return m_bEditing; }
 
 signals:
-  //void capturedKey( KKeySequence key );
-  void capturedKey( KAccelShortcut m_cut );
+  void capturedShortcut( KShortcut );
 
 public slots:
-  void slotCaptureKey();
+  void slotCaptureShortcut();
 
 protected:
 #ifdef Q_WS_X11
@@ -59,8 +58,7 @@ protected:
 
 protected:
   bool m_bEditing;
-  //KKeySequence m_key;
-  KAccelShortcut m_cut;
+  KShortcut m_cut;
 
   /**
    * Reimplemented for internal reasons.

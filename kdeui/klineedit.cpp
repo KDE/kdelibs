@@ -171,13 +171,14 @@ void KLineEdit::makeCompletion( const QString& text )
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
-    if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) )
+    KKey key( e );
+    if ( KStdAccel::deleteWordBack().contains( key ) )
     {
         deleteWordBack();  // to be replaced with QT3 function
         e->accept();
         return;
     }
-    else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) )
+    else if ( KStdAccel::deleteWordForward().contains( key ) )
     {
         deleteWordForward(); // to be replaced with QT3 function
         e->accept();
@@ -242,13 +243,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         else if ( mode == KGlobalSettings::CompletionShell )
         {
             // Handles completion.
-            int key;
-            if ( keys[TextCompletion] == 0 )
-                key = KStdAccel::key(KStdAccel::TextCompletion);
+            KShortcut cut;
+            if ( keys[TextCompletion].isNull() )
+                cut = KStdAccel::shortcut(KStdAccel::TextCompletion);
             else
-                key = keys[TextCompletion];
+                cut = keys[TextCompletion];
 
-            if ( KStdAccel::isEqual( e, key ) )
+            if ( cut.contains( key ) )
             {
                 // Emit completion if the completion mode is CompletionShell
                 // and the cursor is at the end of the string.
@@ -271,13 +272,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         if ( mode != KGlobalSettings::CompletionNone )
         {
             // Handles previous match
-            int key;
-            if ( keys[PrevCompletionMatch] == 0 )
-                key = KStdAccel::key(KStdAccel::PrevCompletion);
+            KShortcut cut;
+            if ( keys[PrevCompletionMatch].isNull() )
+                cut = KStdAccel::shortcut(KStdAccel::PrevCompletion);
             else
-                key = keys[PrevCompletionMatch];
+                cut = keys[PrevCompletionMatch];
 
-            if ( KStdAccel::isEqual( e, key ) )
+            if ( cut.contains( key ) )
             {
                 if ( emitSignals() )
                     emit textRotation( KCompletionBase::PrevCompletionMatch );
@@ -287,12 +288,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
 
             // Handles next match
-            if ( keys[NextCompletionMatch] == 0 )
-                key = KStdAccel::key(KStdAccel::NextCompletion);
+            if ( keys[NextCompletionMatch].isNull() )
+                cut = KStdAccel::key(KStdAccel::NextCompletion);
             else
-                key = keys[NextCompletionMatch];
+                cut = keys[NextCompletionMatch];
 
-            if ( KStdAccel::isEqual( e, key ) )
+            if ( cut.contains( key ) )
             {
                 if ( emitSignals() )
                     emit textRotation( KCompletionBase::NextCompletionMatch );
@@ -305,14 +306,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         // substring completion
         if ( compObj() )
         {
-            int key;
-
-            if ( keys[SubstringCompletion] == 0 )
-                key = KStdAccel::key(KStdAccel::SubstringCompletion);
+            KShortcut cut;
+            if ( keys[SubstringCompletion].isNull() )
+                cut = KStdAccel::shortcut(KStdAccel::SubstringCompletion);
             else
-                key = keys[SubstringCompletion];
+                cut = keys[SubstringCompletion];
 
-            if ( KStdAccel::isEqual( e, key ) )
+            if ( cut.contains( key ) )
             {
                 if ( emitSignals() )
                     emit substringCompletion( text() );
@@ -463,22 +463,23 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
         if ( ev->type() == QEvent::AccelOverride )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+	    KKey key( e );
             KeyBindingMap keys = getKeyBindings();
-            int tc_key = ( keys[TextCompletion] == 0 ) ?
-                           KStdAccel::key(KStdAccel::TextCompletion) :
+            const KShortcut& tc_key = ( keys[TextCompletion].isNull() ) ?
+                           KStdAccel::shortcut(KStdAccel::TextCompletion) :
                            keys[TextCompletion];
-            int nc_key = ( keys[NextCompletionMatch] == 0 ) ?
-                           KStdAccel::key(KStdAccel::NextCompletion) :
+            const KShortcut& nc_key = ( keys[NextCompletionMatch].isNull() ) ?
+                           KStdAccel::shortcut(KStdAccel::NextCompletion) :
                            keys[NextCompletionMatch];
-            int pc_key = ( keys[PrevCompletionMatch] == 0 ) ?
-                           KStdAccel::key(KStdAccel::PrevCompletion) :
+            const KShortcut& pc_key = ( keys[PrevCompletionMatch].isNull() ) ?
+                           KStdAccel::shortcut(KStdAccel::PrevCompletion) :
                            keys[PrevCompletionMatch];
 
-            if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack() ) ||
-                 KStdAccel::isEqual( e, KStdAccel::deleteWordForward() ) ||
-                 KStdAccel::isEqual( e, tc_key ) ||
-                 KStdAccel::isEqual( e, nc_key ) ||
-                 KStdAccel::isEqual( e, pc_key ) )
+            if ( KStdAccel::deleteWordBack().contains( key ) ||
+                 KStdAccel::deleteWordForward().contains( key ) ||
+                 tc_key.contains( key ) ||
+                 nc_key.contains( key ) ||
+                 pc_key.contains( key ) )
             {
                 e->accept();
                 return true;

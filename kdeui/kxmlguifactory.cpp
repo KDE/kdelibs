@@ -34,7 +34,7 @@
 #include <kdebug.h>
 #include <kinstance.h>
 #include <kglobal.h>
-#include <kkeysequence.h>
+#include <kshortcut.h>
 #include <kstandarddirs.h>
 
 /*
@@ -1372,7 +1372,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
 
             // readable accels please ;-)
             if ( attr.name().lower() == attrAccel )
-                propertyValue = QVariant( KKeySequence(attr.value()).keyQt() );
+                propertyValue = QVariant( KShortcut(attr.value()).keyPrimaryQt() );
             else if ( propertyType == QVariant::Int )
                 propertyValue = QVariant( attr.value().toInt() );
             else if ( propertyType == QVariant::UInt )
