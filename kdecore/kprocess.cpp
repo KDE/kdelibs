@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29.4.1  1999/04/07 15:39:11  porten
+   restore SIGPIPE handler
+
    Revision 1.29  1999/01/18 10:56:22  kulow
    .moc files are back in kdelibs. Built fine here using automake 1.3
 
@@ -106,8 +109,6 @@
 
 KProcess::KProcess()
 {
-  arguments.setAutoDelete(TRUE);
-
   if (0 == theKProcessController) {
 	theKProcessController= new KProcessController();
 	CHECK_PTR(theKProcessController);
@@ -149,16 +150,11 @@ KProcess::~KProcess()
 
 bool KProcess::setExecutable(const char *proc)
 {
-  char *hlp;
-
-
   if (runs) return FALSE;
 
   arguments.removeFirst();
   if (0 != proc) {
-    hlp = kstrdup(proc);
-    CHECK_PTR(hlp);
-    arguments.insert(0,hlp);
+    arguments.insert(0,proc);
   }
 
   return TRUE;
@@ -171,10 +167,8 @@ bool KProcess::setExecutable(const char *proc)
 
 KProcess &KProcess::operator<<(const char *arg)
 {
-  char *new_arg= kstrdup(arg);
-
-  CHECK_PTR(new_arg);
-  arguments.append(new_arg);
+  CHECK_PTR(arg);
+  arguments.append(arg);
   return *this;
 }
 
