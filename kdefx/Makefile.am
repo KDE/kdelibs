@@ -27,9 +27,9 @@ libkdefx_la_LDFLAGS = $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-
 libkdefx_la_LIBADD = $(LIB_QT)
 
 include_HEADERS = kpixmap.h kpixmapsplitter.h \
-	kpixmapeffect.h kimageeffect.h kdrawutil.h
+	kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h
 
 libkdefx_la_SOURCES = kpixmap.cpp kpixmapsplitter.cpp \
-		kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp
+		kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp
 
 METASOURCES = AUTO

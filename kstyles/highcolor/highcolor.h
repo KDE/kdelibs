@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * KDE3 HighColor Style (version 0.0.3a)
+ * KDE3 HighColor Style (version 0.0.99)
  * Copyright (C) 2001, Karol Szwed <gallium@kde.org>
  *
  * Drawing routines adapted from the KDE2 HCStyle,
@@ -29,12 +29,13 @@
 #ifndef __HIGHCOLOR_H
 #define __HIGHCOLOR_H
 
-#include <qstyle.h>
-#include <qcommonstyle.h>
 #include <qbitmap.h>
+#include <qcommonstyle.h>
+#include <qintdict.h>
+#include <qstyle.h>
 #include <kdrawutil.h>
 #include <kpixmap.h>
-#include <qintdict.h>
+#include <kstyle.h>
 
 
 enum GradientType{ VSmall=0, VMed, VLarge, HMed, HLarge, GradientCount };
@@ -53,7 +54,7 @@ class GradientSet
 };
 
 
-class HighColorStyle : public QCommonStyle
+class HighColorStyle : public KStyle
 {
 	Q_OBJECT
 
@@ -64,15 +65,23 @@ class HighColorStyle : public QCommonStyle
 		void polish( QWidget* widget );
 		void unPolish( QWidget* widget );
 
-		virtual void polishPopupMenu( QPopupMenu* );
-		
-		void drawPrimitive( PrimitiveElement pe,
-					QPainter *p,
+		void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg );
+
+		void drawKStylePrimitive( KStylePrimitive kpe,
+					QPainter* p,
+					const QWidget* widget,
 					const QRect &r,
 					const QColorGroup &cg,
 					SFlags flags = Style_Default,
 					const QStyleOption& = QStyleOption::Default ) const;
 		
+		void drawPrimitive( PrimitiveElement pe,
+					QPainter* p,
+					const QRect &r,
+					const QColorGroup &cg,
+					SFlags flags = Style_Default,
+					const QStyleOption& = QStyleOption::Default ) const;
+
 		void drawControl( ControlElement element,
 					QPainter *p,
 					const QWidget *widget,
@@ -103,16 +112,6 @@ class HighColorStyle : public QCommonStyle
 					const QRect &r,
 					const QStyleOption& = QStyleOption::Default ) const;
 		
-		SubControl querySubControl( ComplexControl control,
-					const QWidget *widget,
-					const QPoint &pos,
-					const QStyleOption& = QStyleOption::Default ) const;
-
-		QRect querySubControlMetrics( ComplexControl control,
-					const QWidget *widget,
-					SubControl sc,
-					const QStyleOption& = QStyleOption::Default ) const;
-		
 		int pixelMetric( PixelMetric m, 
 					const QWidget *widget = 0 ) const;
 		
@@ -128,11 +127,6 @@ class HighColorStyle : public QCommonStyle
 		QPixmap stylePixmap( StylePixmap stylepixmap,
 					const QWidget *widget = 0,
 					const QStyleOption& = QStyleOption::Default ) const;
-
-		int styleHint( StyleHint sh, 
-					const QWidget *w = 0,
-					const QStyleOption &opt = QStyleOption::Default,
-					QStyleHintReturn* shr = 0 ) const;
 
 	protected:
 		bool eventFilter( QObject *object, QEvent *event );

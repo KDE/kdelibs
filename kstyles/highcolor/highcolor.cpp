@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * KDE3 HighColor Style (version 0.9b)
+ * KDE3 HighColor Style (version 0.99)
  * Copyright (C) 2001 Karol Szwed      <gallium@kde.org>
  *           (C) 2001 Fredrik Höglund  <fredrik@kde.org> 
  *
@@ -31,12 +31,9 @@
 #include <qpainter.h>
 #include <qpointarray.h>
 #include <qstyleplugin.h>
-#include <qstylefactory.h>
-#include <qcommonstyle.h>
 
 #include <qcombobox.h>
 #include <qmenubar.h>
-#include <qprogressbar.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
 #include <qslider.h>
@@ -52,7 +49,6 @@
 #include "highcolor.moc"
 #include "bitmaps.h"
 
-//#define DEBUG_MENUS
 
 // -- Style Plugin Interface -------------------------
 class HighColorStylePlugin : public QStylePlugin
@@ -91,9 +87,9 @@ QBitmap maskBmp;
 QBitmap xBmp;
 QIntDict<GradientSet> gDict;
 
-static const int itemFrame       = 2;
+static const int itemFrame       = 1;
 static const int itemHMargin     = 3;
-static const int itemVMargin     = 1;
+static const int itemVMargin     = 0;
 static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
 
@@ -172,14 +168,9 @@ KPixmap* GradientSet::gradient(GradientType type)
 
 // ---------------------------------------------------------------------------
 
-HighColorStyle::HighColorStyle( bool hc ) : QCommonStyle()
+HighColorStyle::HighColorStyle( bool hc ) 
+	: KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar )
 {
-	winstyle = QStyleFactory::create("Windows");
-	if(!winstyle) {
-		// We don't have the Windows style, neither builtin nor as a plugin.
-		// Use any style rather than crashing.
-		winstyle = QStyleFactory::create(*(QStyleFactory::keys().begin()));
-	}
 	highcolor = (QPixmap::defaultDepth() > 8) ? hc : false;
 	gDict.setAutoDelete(true);
 }
@@ -195,16 +186,11 @@ void HighColorStyle::polish(QWidget* widget)
 	// Put in order of highest occurance to maximise hit rate
 	if (widget->inherits("QPushButton")) {
 		widget->installEventFilter(this);
-	}
-
-	else if (widget->inherits("QToolBar")) {
-		widget->installEventFilter(this);
-	}
-
-	else if (widget->inherits("QMenuBar")) {
-		widget->installEventFilter(this);
+	} else if (widget->inherits("QMenuBar")) {
 		widget->setBackgroundMode(QWidget::NoBackground);
 	}
+
+	KStyle::polish( widget );
 }
 
 
@@ -213,15 +199,24 @@ void HighColorStyle::unPolish(QWidget* widget)
 	if (widget->inherits("QPushButton")) {
 		widget->removeEventFilter(this);
 	}
-
-	else if (widget->inherits("QToolBar")) {
-		widget->removeEventFilter(this);
-	}
-	
 	else if (widget->inherits("QMenuBar")) {
 		widget->setBackgroundMode(QWidget::PaletteBackground);
-		widget->removeEventFilter(this);
 	}
+
+	KStyle::unPolish( widget );
+}
+
+
+/* reimp. */
+void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg )
+{
+	QColor col = cg.background();
+
+	if ( highcolor )
+		KPixmapEffect::gradient( pix, col.light(120), col.dark(115), 
+								 KPixmapEffect::HorizontalGradient );
+	else
+		pix.fill( col );
 }
 
 
@@ -661,7 +656,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->drawLine(x+1, y+1, x+1, y2-1);
 				p->setPen(oldPen);
 			} else
-				QCommonStyle::drawPrimitive(pe, p, r, cg, flags, opt);
+				KStyle::drawPrimitive(pe, p, r, cg, flags, opt);
 
 			break;
 		}
@@ -689,136 +684,6 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			break;
 		}
 
-
-		// TOOLBAR/DOCK WINDOW HANDLE
-		// -------------------------------------------------------------------
-		case PE_DockWindowHandle: {
-
-			// wild hacks are here. beware.
-			QWidget* widget;
-			if (p->device()->devType() == QInternal::Widget) {
-				widget = dynamic_cast<QWidget*>(p->device());
-				if (!widget) return;
-			} else
-				return;		// Don't paint on non-widgets
-
-			// Check if we are a normal toolbar or a hidden dockwidget.
-			if ( widget->parent() &&
-			    (widget->parent()->inherits("QToolBar") ||		// Normal toolbar
-				(widget->parent()->inherits("QMainWindow")) ))	// Collapsed dock
-			{
-				// Draw a toolbar handle
-				int x = r.x(); int y = r.y();
-				int x2 = r.x() + r.width()-1;
-				int y2 = r.y() + r.height()-1;
-
-				if (!(flags & Style_Horizontal)) {
-					renderGradient( p, r, cg.button(), true);
-
-					p->setPen(cg.light());
-					p->drawLine(x+4, y+1, x2-4, y+1);
-					p->drawLine(x+4, y+3, x2-4, y+3);
-					p->drawLine(x+4, y+5, x2-4, y+5);
-
-					p->setPen(cg.mid());
-					p->drawLine(x+4, y+2, x2-4, y+2);
-					p->drawLine(x+4, y+4, x2-4, y+4);
-					p->drawLine(x+4, y+6, x2-4, y+6);
-
-				} else {
-					renderGradient( p, r, cg.button(), false);
-
-					p->setPen(cg.light());
-					p->drawLine(x+1, y+4, x+1, y2-4);
-					p->drawLine(x+3, y+4, x+3, y2-4);
-					p->drawLine(x+5, y+4, x+5, y2-4);
-
-					p->setPen(cg.mid());
-					p->drawLine(x+2, y+4, x+2, y2-4);
-					p->drawLine(x+4, y+4, x+4, y2-4);
-					p->drawLine(x+6, y+4, x+6, y2-4);
-				}
-			} else if ( widget->inherits("QDockWindowHandle") &&
-					 widget->width()  > 2 &&
-					 widget->height() > 2 )
-			{
-				bool horizontal = flags & Style_Horizontal;
-				int x,y,w,h,x2,y2;
-
-				r.rect( &x, &y, &w, &h );
-				x2 = x + w - 1;
-				y2 = y + h - 1;
-
-				QFont fnt;
-				fnt = QApplication::font(widget);
-				fnt.setPointSize( fnt.pointSize()-2 );
-
-				// Draw the item on an off-screen pixmap
-				// to preserve Xft antialiasing for
-				// vertically oriented handles.
-				QPixmap pix;
-				if (horizontal)
-					pix.resize( h-2, w-2 );
-				else
-					pix.resize( w-2, h-2 );
-
-				pix.fill(cg.highlight());
-				QPainter p2;
-				p2.begin(&pix);
-				p2.setPen(cg.background());	// ### debug
-				p2.setFont(fnt);
-				p2.drawText(pix.rect(), AlignCenter,
-						widget->property("caption").toString());
-				p2.end();
-
-				// Draw a sunken bevel
-				p->setPen(cg.dark());
-				p->drawLine(x, y, x2, y);
-				p->drawLine(x, y, x, y2);
-				p->setPen(cg.light());
-				p->drawLine(x+1, y2, x2, y2);
-				p->drawLine(x2, y+1, x2, y2);
-
-				if (horizontal) {
-					QWMatrix m;
-					m.rotate(-90.0);
-					QPixmap vpix = pix.xForm(m);
-					bitBlt(widget, r.x()+1, r.y()+1, &vpix);
-				} else
-					bitBlt(widget, r.x()+1, r.y()+1, &pix);
-
-			} else { // Something else, probably kicker applet handles.
-				int x = r.x(); int y = r.y();
-				int x2 = r.x() + r.width()-1;
-				int y2 = r.y() + r.height()-1;
-
-				if (!(flags & Style_Horizontal)) {
-
-					p->setPen(cg.light());
-					p->drawLine(x, y+1, x2, y+1);
-					p->drawLine(x, y+3, x2, y+3);
-					p->drawLine(x, y+5, x2, y+5);
-
-					p->setPen(cg.mid());
-					p->drawLine(x, y+2, x2, y+2);
-					p->drawLine(x, y+4, x2, y+4);
-					p->drawLine(x, y+6, x2, y+6);
-
-				} else {
-
-					p->setPen(cg.light());
-					p->drawLine(x+1, y, x+1, y2);
-					p->drawLine(x+3, y, x+3, y2);
-					p->drawLine(x+5, y, x+5, y2);
-
-					p->setPen(cg.mid());
-					p->drawLine(x+2, y, x+2, y2);
-					p->drawLine(x+4, y, x+4, y2);
-					p->drawLine(x+6, y, x+6, y2);
-				}
-			}
-			break;
-		}
 
 
 		// TOOLBAR SEPARATOR
@@ -886,8 +751,187 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->restore();
 
 			} else
-				QCommonStyle::drawPrimitive( pe, p, r, cg, flags, opt );
+				KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
 		}
+	}
+}
+
+
+void HighColorStyle::drawKStylePrimitive( KStylePrimitive kpe,
+										  QPainter* p,
+										  const QWidget* widget,
+										  const QRect &r,
+										  const QColorGroup &cg,
+										  SFlags flags,
+										  const QStyleOption &opt ) const
+{
+	switch ( kpe )
+	{
+		// TOOLBAR HANDLE
+		// -------------------------------------------------------------------
+		case KPE_ToolBarHandle: {
+			int x = r.x(); int y = r.y();
+			int x2 = r.x() + r.width()-1;
+			int y2 = r.y() + r.height()-1;
+
+			if (flags & Style_Horizontal) {
+
+				renderGradient( p, r, cg.button(), false);
+				p->setPen(cg.light());
+				p->drawLine(x+1, y+4, x+1, y2-4);
+				p->drawLine(x+3, y+4, x+3, y2-4);
+				p->drawLine(x+5, y+4, x+5, y2-4);
+
+				p->setPen(cg.mid());
+				p->drawLine(x+2, y+4, x+2, y2-4);
+				p->drawLine(x+4, y+4, x+4, y2-4);
+				p->drawLine(x+6, y+4, x+6, y2-4);
+
+			} else {
+				
+				renderGradient( p, r, cg.button(), true);
+				p->setPen(cg.light());
+				p->drawLine(x+4, y+1, x2-4, y+1);
+				p->drawLine(x+4, y+3, x2-4, y+3);
+				p->drawLine(x+4, y+5, x2-4, y+5);
+
+				p->setPen(cg.mid());
+				p->drawLine(x+4, y+2, x2-4, y+2);
+				p->drawLine(x+4, y+4, x2-4, y+4);
+				p->drawLine(x+4, y+6, x2-4, y+6);
+
+			}
+			break;
+		}
+
+							   
+		// GENERAL/KICKER HANDLE
+		// -------------------------------------------------------------------
+		case KPE_GeneralHandle: {
+			int x = r.x(); int y = r.y();
+			int x2 = r.x() + r.width()-1;
+			int y2 = r.y() + r.height()-1;
+
+			if (flags & Style_Horizontal) {
+
+				p->setPen(cg.light());
+				p->drawLine(x+1, y, x+1, y2);
+				p->drawLine(x+3, y, x+3, y2);
+				p->drawLine(x+5, y, x+5, y2);
+
+				p->setPen(cg.mid());
+				p->drawLine(x+2, y, x+2, y2);
+				p->drawLine(x+4, y, x+4, y2);
+				p->drawLine(x+6, y, x+6, y2);
+				
+			} else {
+
+				p->setPen(cg.light());
+				p->drawLine(x, y+1, x2, y+1);
+				p->drawLine(x, y+3, x2, y+3);
+				p->drawLine(x, y+5, x2, y+5);
+
+				p->setPen(cg.mid());
+				p->drawLine(x, y+2, x2, y+2);
+				p->drawLine(x, y+4, x2, y+4);
+				p->drawLine(x, y+6, x2, y+6);
+
+			}
+			break;
+		}
+
+
+		// SLIDER GROOVE
+		// -------------------------------------------------------------------
+		case KPE_SliderGroove: {
+			const QSlider* slider = (const QSlider*)widget;
+			bool horizontal = slider->orientation() == Horizontal;
+			int gcenter = (horizontal ? r.height() : r.width()) / 2;
+
+			QRect gr;
+			if (horizontal)
+				gr = QRect(r.x(), r.y()+gcenter-3, r.width(), 7);
+			else
+				gr = QRect(r.x()+gcenter-3, r.y(), 7, r.height());
+
+			int x,y,w,h;
+			gr.rect(&x, &y, &w, &h);
+			int x2=x+w-1;
+			int y2=y+h-1;
+
+			// Draw the slider groove.
+			p->setPen(cg.dark());
+			p->drawLine(x+2, y, x2-2, y);
+			p->drawLine(x, y+2, x, y2-2);
+			p->fillRect(x+2,y+2,w-4, h-4, 
+				slider->isEnabled() ? cg.dark() : cg.mid());
+			p->setPen(cg.shadow());
+			p->drawRect(x+1, y+1, w-2, h-2);
+			p->setPen(cg.light());
+			p->drawPoint(x+1,y2-1);
+			p->drawPoint(x2-1,y2-1);
+			p->drawLine(x2, y+2, x2, y2-2);
+			p->drawLine(x+2, y2, x2-2, y2);
+			break;
+		}
+
+		// SLIDER HANDLE
+		// -------------------------------------------------------------------
+		case KPE_SliderHandle: {
+			const QSlider* slider = (const QSlider*)widget;
+			bool horizontal = slider->orientation() == Horizontal;
+			int x,y,w,h;
+			r.rect(&x, &y, &w, &h);
+			int x2 = x+w-1;
+			int y2 = y+h-1;
+				
+			p->setPen(cg.mid());
+			p->drawLine(x+1, y, x2-1, y);
+			p->drawLine(x, y+1, x, y2-1);
+			p->setPen(cg.shadow());
+			p->drawLine(x+1, y2, x2-1, y2);
+			p->drawLine(x2, y+1, x2, y2-1);
+
+			p->setPen(cg.light());
+			p->drawLine(x+1, y+1, x2-1, y+1);
+			p->drawLine(x+1, y+1, x+1,  y2-1);
+			p->setPen(cg.dark());
+			p->drawLine(x+2, y2-1, x2-1, y2-1);
+			p->drawLine(x2-1, y+2, x2-1, y2-1);
+			p->setPen(cg.midlight());
+			p->drawLine(x+2, y+2, x2-2, y+2);
+			p->drawLine(x+2, y+2, x+2, y2-2);
+			p->setPen(cg.mid());
+			p->drawLine(x+3, y2-2, x2-2, y2-2);
+			p->drawLine(x2-2, y+3, x2-2, y2-2);
+			renderGradient(p, QRect(x+3, y+3, w-6, h-6), 
+						   cg.button(), !horizontal);
+
+			// Paint riffles
+			if (horizontal) {
+				p->setPen(cg.light());
+				p->drawLine(x+5, y+4, x+5, y2-4);
+				p->drawLine(x+8, y+4, x+8, y2-4);
+				p->drawLine(x+11,y+4, x+11, y2-4);
+				p->setPen(slider->isEnabled() ? cg.shadow(): cg.mid());
+				p->drawLine(x+6, y+4, x+6, y2-4);
+				p->drawLine(x+9, y+4, x+9, y2-4);
+				p->drawLine(x+12,y+4, x+12, y2-4);
+			} else {
+				p->setPen(cg.light());
+				p->drawLine(x+4, y+5, x2-4, y+5);
+				p->drawLine(x+4, y+8, x2-4, y+8);
+				p->drawLine(x+4, y+11, x2-4, y+11);
+				p->setPen(slider->isEnabled() ? cg.shadow() : cg.mid());
+				p->drawLine(x+4, y+6, x2-4, y+6);
+				p->drawLine(x+4, y+9, x2-4, y+9);
+				p->drawLine(x+4, y+12, x2-4, y+12);
+			}
+			break;
+		}
+
+		default:
+			KStyle::drawKStylePrimitive( kpe, p, widget, r, cg, flags, opt);
 	}
 }
 
@@ -965,7 +1009,7 @@ void HighColorStyle::drawControl( ControlElement element,
 					state = QIconSet::On;
 
 				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
-				p->drawPixmap( x + 2, y + h / 2 - pixmap.height() / 2, pixmap );
+				p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
 				int  pw = pixmap.width();
 				x += pw + 4;
 				w -= pw + 4;
@@ -979,11 +1023,13 @@ void HighColorStyle::drawControl( ControlElement element,
 				int i;
 
 				// Text shadow
-				for(i=0; i<2; i++)
-					drawItem( p, QRect(x+i+1, y+1, w, h), AlignCenter | ShowPrefix, 
-							button->colorGroup(), button->isEnabled(), button->pixmap(),
-							button->text(), -1,	
-							active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
+				if (button->isEnabled()) // Don't draw double-shadow when disabled
+					for(i=0; i<2; i++)
+						drawItem( p, QRect(x+i+1, y+1, w, h), AlignCenter | ShowPrefix, 
+								button->colorGroup(), button->isEnabled(), button->pixmap(),
+								button->text(), -1,	
+								active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
+
 				// Normal Text
 				for(i=0; i<2; i++)
 					drawItem( p, QRect(x+i, y, w, h), AlignCenter | ShowPrefix, 
@@ -1000,171 +1046,6 @@ void HighColorStyle::drawControl( ControlElement element,
 				drawPrimitive( PE_FocusRect, p,
 						QStyle::visualRect(subRect(SR_PushButtonFocusRect, widget), widget),
 						cg, flags );
-			break;
-		}
-
-
-		// TABS
-		// -------------------------------------------------------------------
-		case CE_TabBarTab: {
-			const QTabBar* tb  = (const QTabBar*) widget;
-			QTabBar::Shape tbs = tb->shape();
-			bool selected      = flags & Style_Selected;
-			int x = r.x(), y=r.y(), bottom=r.bottom(), right=r.right();
-
-			switch (tbs) {
-				
-				case QTabBar::RoundedAbove: {
-					if (!selected) 
-						p->translate(0,1);
-					p->setPen(selected ? cg.light() : cg.shadow());
-					p->drawLine(x, y+4, x, bottom);
-					p->drawLine(x, y+4, x+4, y);
-					p->drawLine(x+4, y, right-1, y);
-					if (selected) 
-						p->setPen(cg.shadow());
-					p->drawLine(right, y+1, right, bottom);
-
-					p->setPen(cg.midlight());
-					p->drawLine(x+1, y+4, x+1, bottom);
-					p->drawLine(x+1, y+4, x+4, y+1);
-					p->drawLine(x+5, y+1, right-2, y+1);
-
-					if (selected) {
-						p->setPen(cg.mid());
-						p->drawLine(right-1, y+1, right-1, bottom);
-					} else {
-						p->setPen(cg.mid());
-						p->drawPoint(right-1, y+1);
-						p->drawLine(x+4, y+2, right-1, y+2);
-						p->drawLine(x+3, y+3, right-1, y+3);
-						p->fillRect(x+2, y+4, r.width()-3, r.height()-6, cg.mid());
-		
-						p->setPen(cg.light());
-						p->drawLine(x, bottom-1, right, bottom-1);
-						p->translate(0,-1);
-					}
-					break;
-				}
-				
-				case QTabBar::RoundedBelow: {
-					if (!selected) 
-						p->translate(0,-1);
-					p->setPen(selected ? cg.light() : cg.shadow());
-					p->drawLine(x, bottom-4, x, y);
-					if (selected)
-						p->setPen(cg.mid());
-					p->drawLine(x, bottom-4, x+4, bottom);
-					if (selected)
-						p->setPen(cg.shadow());
-					p->drawLine(x+4, bottom, right-1, bottom);
-					p->drawLine(right, bottom-1, right, y);
-
-					p->setPen(cg.midlight());
-					p->drawLine(x+1, bottom-4, x+1, y);
-					p->drawLine(x+1, bottom-4, x+4, bottom-1);
-					p->drawLine(x+5, bottom-1, right-2, bottom-1);
-
-					if (selected) {
-						p->setPen(cg.mid());
-						p->drawLine(right-1, y, right-1, bottom-1);
-					} else {
-						p->setPen(cg.mid());
-						p->drawPoint(right-1, bottom-1);
-						p->drawLine(x+4, bottom-2, right-1, bottom-2);
-						p->drawLine(x+3, bottom-3, right-1, bottom-3);
-						p->fillRect(x+2, y+2, r.width()-3, r.height()-6, cg.mid());
-						p->translate(0,1);
-						p->setPen(cg.dark());
-						p->drawLine(x, y, right, y);
-					}
-					break;
-				}
-				
-				case QTabBar::TriangularAbove: {
-					if (!selected) 
-						p->translate(0,1);
-					p->setPen(selected ? cg.light() : cg.shadow());
-					p->drawLine(x, bottom, x, y+6);
-					p->drawLine(x, y+6, x+6, y);
-					p->drawLine(x+6, y, right-6, y);
-					if (selected)
-						p->setPen(cg.mid());
-					p->drawLine(right-5, y+1, right-1, y+5); 
-					p->setPen(cg.shadow());
-					p->drawLine(right, y+6, right, bottom);	
-
-					p->setPen(cg.midlight());
-					p->drawLine(x+1, bottom, x+1, y+6);
-					p->drawLine(x+1, y+6, x+6, y+1);
-					p->drawLine(x+6, y+1, right-6, y+1);
-					p->drawLine(right-5, y+2, right-2, y+5);
-					p->setPen(cg.mid());
-					p->drawLine(right-1, y+6, right-1, bottom);
-
-					QPointArray a(6);
-					a.setPoint(0, x+2, bottom);
-					a.setPoint(1, x+2, y+7);
-					a.setPoint(2, x+7, y+2);
-					a.setPoint(3, right-7, y+2);
-					a.setPoint(4, right-2, y+7);
-					a.setPoint(5, right-2, bottom);
-					p->setPen  (selected ? cg.background() : cg.mid());
-					p->setBrush(selected ? cg.background() : cg.mid());
-					p->drawPolygon(a);
-					p->setBrush(NoBrush);
-					if (!selected) {
-						p->translate(0,-1);
-						p->setPen(cg.light());
-						p->drawLine(x, bottom, right, bottom);
-					}
-					break;
-				}
-
-				default: { // QTabBar::TriangularBelow
-					if (!selected) 
-						p->translate(0,-1);
-					p->setPen(selected ? cg.light() : cg.shadow());
-					p->drawLine(x, y, x, bottom-6);
-					if (selected)
-						p->setPen(cg.mid());
-					p->drawLine(x, bottom-6, x+6, bottom);
-					if (selected)
-						p->setPen(cg.shadow());
-					p->drawLine(x+6, bottom, right-6, bottom);
-					p->drawLine(right-5, bottom-1, right-1, bottom-5); 
-					if (!selected)
-						p->setPen(cg.shadow());
-					p->drawLine(right, bottom-6, right, y);	
-
-					p->setPen(cg.midlight());
-					p->drawLine(x+1, y, x+1, bottom-6);
-					p->drawLine(x+1, bottom-6, x+6, bottom-1);
-					p->drawLine(x+6, bottom-1, right-6, bottom-1);
-					p->drawLine(right-5, bottom-2, right-2, bottom-5);
-					p->setPen(cg.mid());
-					p->drawLine(right-1, bottom-6, right-1, y);
-
-					QPointArray a(6);
-					a.setPoint(0, x+2, y);
-					a.setPoint(1, x+2, bottom-7);
-					a.setPoint(2, x+7, bottom-2);
-					a.setPoint(3, right-7, bottom-2);
-					a.setPoint(4, right-2, bottom-7);
-					a.setPoint(5, right-2, y);
-					p->setPen  (selected ? cg.background() : cg.mid());
-					p->setBrush(selected ? cg.background() : cg.mid());
-					p->drawPolygon(a);
-					p->setBrush(NoBrush);
-					if (!selected) {
-						p->translate(0,1);
-						p->setPen(cg.dark());
-						p->drawLine(x, y, right, y);
-					}
-					break;
-				}
-			};
-
 			break;
 		}
 
@@ -1190,7 +1071,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			drawItem( p, r, AlignCenter | AlignVCenter | ShowPrefix
 					| DontClip | SingleLine, cg, flags & Style_Enabled,
 					mi->pixmap(), mi->text() );
-			
+
 			break;
 		}
 
@@ -1214,8 +1095,8 @@ void HighColorStyle::drawControl( ControlElement element,
 			bool etchtext	= styleHint( SH_EtchDisabledText );
 			bool reverse	= QApplication::reverseLayout();
 
-                        if ( checkable )
-                                checkcol = QMAX( checkcol, 20 );
+			if ( checkable )
+				checkcol = QMAX( checkcol, 20 );
 
 			// Are we a menu item separator?
 			if ( mi->isSeparator() ) {
@@ -1230,6 +1111,10 @@ void HighColorStyle::drawControl( ControlElement element,
 			if ( active )
 				qDrawShadePanel( p, x, y, w, h, cg, true, 1,
 						         &cg.brush(QColorGroup::Midlight) );
+			// Draw the transparency pixmap
+			else if (widget->backgroundPixmap())
+				p->drawPixmap(x, y, *widget->backgroundPixmap(), 
+							  x, y, w, h);
 			else
 				p->fillRect( r, cg.button() );
 			
@@ -1330,10 +1215,6 @@ void HighColorStyle::drawControl( ControlElement element,
 						int tabx = reverse ? x + rightBorder + itemHMargin + itemFrame :
 							x + w - tab - rightBorder - itemHMargin - itemFrame;
 
-#ifdef DEBUG_MENUS
-						p->drawRect( QRect( tabx, y+m, tab, h-2*m) );
-#endif
-						
 						// Draw the right part of the label (accelerator text)
 						if ( etchtext && !enabled && !active ) {
 							// Draw etched text if we're inactive and the menu item is disabled
@@ -1345,10 +1226,6 @@ void HighColorStyle::drawControl( ControlElement element,
 						s = s.left( t );
 					}
 
-#ifdef DEBUG_MENUS
-					p->drawRect( QRect(xp, y+m, tw, h-2*m) ); 
-#endif
-					
 					// Draw the left part of the label (or the whole label 
 					// if there's no accelerator)
 					if ( etchtext && !enabled && !active ) {
@@ -1403,83 +1280,8 @@ void HighColorStyle::drawControl( ControlElement element,
 			break;
 		}
 
-		// PROGRESSBAR
-		// -------------------------------------------------------------------
-		case CE_ProgressBarGroove: {
-			QRect fr = subRect(SR_ProgressBarGroove, widget);
-			drawPrimitive(PE_Panel, p, fr, cg, Style_Sunken, QStyleOption::Default);
-			break;
-		}
-
-		case CE_ProgressBarContents: {
-			// ### Take into account totalSteps() for busy indicator
-			const QProgressBar* pb = (const QProgressBar*)widget;
-			QRect cr = subRect(SR_ProgressBarContents, widget);
-			double progress = pb->progress();
-
-			if (!cr.isValid())
-				return;
-
-			// Draw progress bar
-			if (progress > 0) {
-				int steps = pb->totalSteps();
-				double pg = progress / steps;
-				int width = QMIN(cr.width(), (int)(pg * cr.width()));
-				
-				// Do fancy gradient for highcolor displays
-				if (highcolor) {
-					QColor c(cg.highlight());
-					KPixmap pix;
-					pix.resize(cr.width(), cr.height());
-					KPixmapEffect::gradient(pix, c.dark(150), c.light(150),
-											KPixmapEffect::HorizontalGradient);
-					p->drawPixmap(cr.x(), cr.y(), pix, 0, 0, width, cr.height());
-				} else
-					p->fillRect(cr.x(), cr.y(), width, cr.height(),
-								cg.brush(QColorGroup::Highlight));
-			}
-			break;
-		}
-		
-		case CE_ProgressBarLabel: {
-			const QProgressBar* pb = (const QProgressBar*)widget;
-			QRect cr = subRect(SR_ProgressBarContents, widget);
-			double progress = pb->progress();
-			
-			if (!cr.isValid())
-				return;
-
-			QFont font = p->font();
-			font.setBold(true);
-			p->setFont(font);
-
-			// Draw label
-			if (progress > 0) {
-				int steps = pb->totalSteps();
-				double pg = progress / steps;
-				int width = QMIN(cr.width(), (int)(pg * cr.width()));
-				QRect crect(cr.x()+width, cr.y(), cr.width(), cr.height());
-
-				p->save();
-				p->setPen(pb->isEnabled() ? cg.highlightedText() : cg.text());
-				p->drawText(r, AlignCenter, pb->progressString());
-				if (width != cr.width()) {
-					p->setClipRect(crect);
-					p->setPen(cg.text());
-					p->drawText(r, AlignCenter, pb->progressString());
-				}
-				p->restore();
-				
-			} else {
-				p->setPen(cg.text());
-				p->drawText(r, AlignCenter, pb->progressString());
-			}
-
-			break;
-		}
-
 		default:
-			QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
+			KStyle::drawControl(element, p, widget, r, cg, flags, opt);
 	}
 }
 
@@ -1505,7 +1307,7 @@ void HighColorStyle::drawControlMask( ControlElement element,
 		}
 
 		default:
-			QCommonStyle::drawControlMask(element, p, widget, r, opt);
+			KStyle::drawControlMask(element, p, widget, r, opt);
 	}
 }
 
@@ -1614,82 +1416,6 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 			break;
 		}
 
-		// 3 BUTTON SCROLLBAR
-		// -------------------------------------------------------------------
-		case CC_ScrollBar: {
-			const QScrollBar *sb = (const QScrollBar*)widget;
-
-			QRect  addline, subline, subline2, addpage, subpage, slider, first, last;
-			bool   maxedOut   = (sb->minValue()    == sb->maxValue());
-			bool   horizontal = (sb->orientation() == Qt::Horizontal);
-			SFlags sflags     = ((horizontal ? Style_Horizontal : Style_Default) |
-								 (maxedOut   ? Style_Default : Style_Enabled));
-
-			subline = querySubControlMetrics(control, widget, SC_ScrollBarSubLine, opt);
-			addline = querySubControlMetrics(control, widget, SC_ScrollBarAddLine, opt);
-			subpage = querySubControlMetrics(control, widget, SC_ScrollBarSubPage, opt);
-			addpage = querySubControlMetrics(control, widget, SC_ScrollBarAddPage, opt);
-			slider  = querySubControlMetrics(control, widget, SC_ScrollBarSlider,  opt);
-			first   = querySubControlMetrics(control, widget, SC_ScrollBarFirst,   opt);
-			last    = querySubControlMetrics(control, widget, SC_ScrollBarLast,    opt);
-			subline2 = addline;
-
-			if (horizontal)
-				subline2.moveBy(-addline.width(), 0);
-			else
-				subline2.moveBy(0, -addline.height());
-
-			// Draw the up/left button set
-			if ((controls & SC_ScrollBarSubLine) && subline.isValid()) {
-				drawPrimitive(PE_ScrollBarSubLine, p, subline, cg,
-							sflags | (active == SC_ScrollBarSubLine ?
-								Style_Down : Style_Default));
-
-				if (subline2.isValid())
-					drawPrimitive(PE_ScrollBarSubLine, p, subline2, cg,
-							sflags | (active == SC_ScrollBarSubLine ?
-								Style_Down : Style_Default));
-			}
-
-			if ((controls & SC_ScrollBarAddLine) && addline.isValid())
-				drawPrimitive(PE_ScrollBarAddLine, p, addline, cg,
-							sflags | ((active == SC_ScrollBarAddLine) ?
-										Style_Down : Style_Default));
-
-			if ((controls & SC_ScrollBarSubPage) && subpage.isValid())
-				drawPrimitive(PE_ScrollBarSubPage, p, subpage, cg,
-							sflags | ((active == SC_ScrollBarSubPage) ?
-										Style_Down : Style_Default));
-
-			if ((controls & SC_ScrollBarAddPage) && addpage.isValid())
-				drawPrimitive(PE_ScrollBarAddPage, p, addpage, cg,
-							sflags | ((active == SC_ScrollBarAddPage) ?
-										Style_Down : Style_Default));
-
-			if ((controls & SC_ScrollBarFirst) && first.isValid())
-				drawPrimitive(PE_ScrollBarFirst, p, first, cg,
-							sflags | ((active == SC_ScrollBarFirst) ?
-										Style_Down : Style_Default));
-
-			if ((controls & SC_ScrollBarLast) && last.isValid())
-				drawPrimitive(PE_ScrollBarLast, p, last, cg,
-							sflags | ((active == SC_ScrollBarLast) ?
-										Style_Down : Style_Default));
-
-			if ((controls & SC_ScrollBarSlider) && slider.isValid()) {
-				drawPrimitive(PE_ScrollBarSlider, p, slider, cg,
-							sflags | ((active == SC_ScrollBarSlider) ?
-										Style_Down : Style_Default));
-				// Draw focus rect
-				if (sb->hasFocus()) {
-					QRect fr(slider.x() + 2, slider.y() + 2,
-							 slider.width() - 5, slider.height() - 5);
-					drawPrimitive(PE_FocusRect, p, fr, cg, Style_Default);
-				}
-			}
-			break;
-		}
-
 		// TOOLBUTTON
 		// -------------------------------------------------------------------
 		case CC_ToolButton: {
@@ -1749,127 +1475,10 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 			break;
 		}
 
-		// SLIDER
-		// -------------------------------------------------------------------
-		case CC_Slider: {
-			const QSlider* slider = (const QSlider*)widget;
-			bool horizontal = slider->orientation() == Horizontal;
-			QRect groove = querySubControlMetrics(CC_Slider, widget,
-								SC_SliderGroove, opt);
-			QRect handle = querySubControlMetrics(CC_Slider, widget,
-								SC_SliderHandle, opt);
-
-			// Double-buffer slider for no flicker
-			QPixmap pix(widget->size());
-			QPainter p2;
-			p2.begin(&pix);
-
-			if ( slider->parentWidget() &&
-				 slider->parentWidget()->backgroundPixmap() &&
-				 !slider->parentWidget()->backgroundPixmap()->isNull() ) {
-				QPixmap pixmap = *(slider->parentWidget()->backgroundPixmap());
-				p2.drawTiledPixmap(r, pixmap, slider->pos());
-			} else
-				pix.fill(cg.background());
-
-			// Draw slider groove
-			if ((controls & SC_SliderGroove) && groove.isValid())
-			{
-				int gcenter = (horizontal ? groove.height() : groove.width()) / 2;
-				QRect gr;
-
-				if (horizontal)
-					gr = QRect(groove.x(), groove.y()+gcenter-3, groove.width(), 7);
-				else
-					gr = QRect(groove.x()+gcenter-3, groove.y(), 7, groove.height());
-				int x,y,w,h;
-				gr.rect(&x, &y, &w, &h);
-				int x2=x+w-1;
-				int y2=y+h-1;
-
-				// Draw the slider groove.
-				p2.setPen(cg.dark());
-				p2.drawLine(x+2, y, x2-2, y);
-				p2.drawLine(x, y+2, x, y2-2);
-				p2.fillRect(x+2,y+2,w-4, h-4, 
-					slider->isEnabled() ? cg.dark() : cg.mid());
-				p2.setPen(cg.shadow());
-				p2.drawRect(x+1, y+1, w-2, h-2);
-				p2.setPen(cg.light());
-				p2.drawPoint(x+1,y2-1);
-				p2.drawPoint(x2-1,y2-1);
-				p2.drawLine(x2, y+2, x2, y2-2);
-				p2.drawLine(x+2, y2, x2-2, y2);
-
-				// Draw the focus rect around the groove
-				if (slider->hasFocus())
-					drawPrimitive(PE_FocusRect, &p2, groove, cg);
-			}
-
-			// Draw the tickmarks
-			if (controls & SC_SliderTickmarks)
-				QCommonStyle::drawComplexControl(control, &p2, widget, 
-						r, cg, flags, SC_SliderTickmarks, active, opt);
-
-			// Draw the slider handle
-			if ((controls & SC_SliderHandle) && handle.isValid()) {
-				int x,y,w,h;
-				handle.rect(&x, &y, &w, &h);
-				int x2 = x+w-1;
-				int y2 = y+h-1;
-				
-				p2.setPen(cg.mid());
-				p2.drawLine(x+1, y, x2-1, y);
-				p2.drawLine(x, y+1, x, y2-1);
-				p2.setPen(cg.shadow());
-				p2.drawLine(x+1, y2, x2-1, y2);
-				p2.drawLine(x2, y+1, x2, y2-1);
-
-				p2.setPen(cg.light());
-				p2.drawLine(x+1, y+1, x2-1, y+1);
-				p2.drawLine(x+1, y+1, x+1,  y2-1);
-				p2.setPen(cg.dark());
-				p2.drawLine(x+2, y2-1, x2-1, y2-1);
-				p2.drawLine(x2-1, y+2, x2-1, y2-1);
-				p2.setPen(cg.midlight());
-				p2.drawLine(x+2, y+2, x2-2, y+2);
-				p2.drawLine(x+2, y+2, x+2, y2-2);
-				p2.setPen(cg.mid());
-				p2.drawLine(x+3, y2-2, x2-2, y2-2);
-				p2.drawLine(x2-2, y+3, x2-2, y2-2);
-				renderGradient(&p2, QRect(x+3, y+3, w-6, h-6), 
-								cg.button(), !horizontal);
-
-				// Paint riffles
-				if (horizontal) {
-					p2.setPen(cg.light());
-					p2.drawLine(x+5, y+4, x+5, y2-4);
-					p2.drawLine(x+8, y+4, x+8, y2-4);
-					p2.drawLine(x+11,y+4, x+11, y2-4);
-					p2.setPen(slider->isEnabled() ? cg.shadow(): cg.mid());
-					p2.drawLine(x+6, y+4, x+6, y2-4);
-					p2.drawLine(x+9, y+4, x+9, y2-4);
-					p2.drawLine(x+12,y+4, x+12, y2-4);
-				} else {
-					p2.setPen(cg.light());
-					p2.drawLine(x+4, y+5, x2-4, y+5);
-					p2.drawLine(x+4, y+8, x2-4, y+8);
-					p2.drawLine(x+4, y+11, x2-4, y+11);
-					p2.setPen(slider->isEnabled() ? cg.shadow() : cg.mid());
-					p2.drawLine(x+4, y+6, x2-4, y+6);
-					p2.drawLine(x+4, y+9, x2-4, y+9);
-					p2.drawLine(x+4, y+12, x2-4, y+12);
-				}
-				p2.end();
-				bitBlt((QWidget*)widget, r.x(), r.y(), &pix);
-			}
-			break;
-		}
 
 		default:
-			// ### Only have to implement CC_ListView to use QCommonStyle
-			winstyle->drawComplexControl(control, p, widget,
-							r, cg, flags, controls, active, opt);
+			KStyle::drawComplexControl(control, p, widget,
+						r, cg, flags, controls, active, opt);
 			break;
 	}
 }
@@ -1897,53 +1506,35 @@ void HighColorStyle::drawComplexControlMask( ComplexControl control,
 		}
 
 		default:
-			QCommonStyle::drawComplexControlMask(control, p, widget, r, opt);
+			KStyle::drawComplexControlMask(control, p, widget, r, opt);
 	}
 }
 
 
 QRect HighColorStyle::subRect(SubRect r, const QWidget *widget) const
 {
-	switch(r)
-	{
-		// We want the focus rect for buttons to be adjusted from
-		// the Qt3 defaults to be similar to Qt 2's defaults.
-		// -------------------------------------------------------------------
-		case SR_PushButtonFocusRect: {
-			const QPushButton* button = (const QPushButton*) widget;
+	// We want the focus rect for buttons to be adjusted from
+	// the Qt3 defaults to be similar to Qt 2's defaults.
+	// -------------------------------------------------------------------
+	if (r == SR_PushButtonFocusRect ) {
+		const QPushButton* button = (const QPushButton*) widget;
+		QRect wrect(widget->rect());
+		int dbw1 = 0, dbw2 = 0;
 
-			QRect wrect(widget->rect());
-			int dbw1 = 0, dbw2 = 0;
-
-			if (button->isDefault() || button->autoDefault()) {
-				dbw1 = pixelMetric(PM_ButtonDefaultIndicator, widget);
-				dbw2 = dbw1 * 2;
-			}
-
-			int dfw1 = pixelMetric(PM_DefaultFrameWidth, widget) * 2,
-				dfw2 = dfw1 * 2;
-
-			return QRect(wrect.x()      + dfw1 + dbw1 + 1,
-						 wrect.y()      + dfw1 + dbw1 + 1,
-						 wrect.width()  - dfw2 - dbw2 - 1,
-						 wrect.height() - dfw2 - dbw2 - 1);
+		if (button->isDefault() || button->autoDefault()) {
+			dbw1 = pixelMetric(PM_ButtonDefaultIndicator, widget);
+			dbw2 = dbw1 * 2;
 		}
 
-		// KDE2 smooth progress bar
-		// -------------------------------------------------------------------
-		case SR_ProgressBarGroove:
-			return widget->rect();
-			
-		case SR_ProgressBarContents:
-		case SR_ProgressBarLabel: {
-			// ### take into account indicatorFollowsStyle()
-			QRect rt = widget->rect();
-			return QRect(rt.x()+2, rt.y()+2, rt.width()-4, rt.height()-4);
-		}
+		int dfw1 = pixelMetric(PM_DefaultFrameWidth, widget) * 2,
+			dfw2 = dfw1 * 2;
 
-		default:
-			return QCommonStyle::subRect(r, widget);
-	}
+		return QRect(wrect.x()      + dfw1 + dbw1 + 1,
+					 wrect.y()      + dfw1 + dbw1 + 1,
+					 wrect.width()  - dfw2 - dbw2 - 1,
+					 wrect.height() - dfw2 - dbw2 - 1);
+	} else
+		return KStyle::subRect(r, widget);
 }
 
 
@@ -1963,10 +1554,6 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 				return 3;
 		}
 
-		case PM_ButtonShiftHorizontal:		// Offset by 1
-		case PM_ButtonShiftVertical:		// ### Make configurable
-			return 1;
-
 		// CHECKBOXES / RADIO BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ExclusiveIndicatorWidth:	// Radiobutton size
@@ -1976,93 +1563,14 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 13;						// 13x13
 		}
 
-		// TABS
-		// --------------------------------------------------------------------
-		case PM_TabBarTabHSpace:
-			return 24;
-
-		case PM_TabBarTabVSpace: {
-			const QTabBar * tb = (const QTabBar *) widget;
-			if ( tb->shape() == QTabBar::RoundedAbove ||
-				 tb->shape() == QTabBar::RoundedBelow )
-				return 10;
-			else
-				return 4;
-		}
-
-		case PM_TabBarTabOverlap: {
-			const QTabBar* tb = (const QTabBar*)widget;
-			QTabBar::Shape tbs = tb->shape();
-			
-			if ( (tbs == QTabBar::RoundedAbove) || 
-				 (tbs == QTabBar::RoundedBelow) )
-				return 0;
-			else
-				return 2;
-		}
-		
-		// SLIDER
-		// -------------------------------------------------------------------
-		case PM_SliderLength:
-			return 18;
-
-		case PM_SliderThickness:
-			return 24;
-
-		// Determines how much space to leave for the actual non-tickmark 
-		// portion of the slider.
-		case PM_SliderControlThickness: {
-			const QSlider* slider   = (const QSlider*)widget;
-			QSlider::TickSetting ts = slider->tickmarks();
-			int thickness = (slider->orientation() == Horizontal) ? 
-							 slider->height() : slider->width();
-			switch (ts) {
-				case QSlider::NoMarks:				// Use total area.
-					break;
-				case QSlider::Both:
-					thickness = (thickness/2) + 3;	// Use approx. 1/2 of area.
-					break;
-				default:							// Use approx. 2/3 of area
-					thickness = ((thickness*2)/3) + 3;
-					break;
-			};
-			return thickness;
-		}
-
-		// SPLITTER
-		// -------------------------------------------------------------------
-		case PM_SplitterWidth:
-			if (widget && widget->inherits("QDockWindowResizeHandle"))
-				return 8;	// ### why do we need this?
-			else
-				return 6;
-		
-		// PROGRESSBAR
-		// -------------------------------------------------------------------
-		case PM_ProgressBarChunkWidth:
-			return 1;
-
-		// FRAMES
-		// -------------------------------------------------------------------
-		case PM_MenuBarFrameWidth:
-			return 1;
-
-		case PM_DockWindowFrameWidth:
-			return 1;
-			
-		// GENERAL
-		// -------------------------------------------------------------------
-		case PM_MaximumDragDistance:
-			return -1;
-			
 		default:
-			return QCommonStyle::pixelMetric(m, widget);
+			return KStyle::pixelMetric(m, widget);
 	}
 }
 
 
 QSize HighColorStyle::sizeFromContents( ContentsType contents,
-										const QWidget *widget,
+										const QWidget* widget,
 										const QSize &contentSize,
 										const QStyleOption& opt ) const
 {
@@ -2071,8 +1579,9 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 		// PUSHBUTTON SIZE
 		// ------------------------------------------------------------------
 		case CT_PushButton: {
-			const QPushButton *button = (const QPushButton *) widget;
-			int w  = contentSize.width(), h = contentSize.height();
+			const QPushButton* button = (const QPushButton*) widget;
+			int w  = contentSize.width();
+			int h  = contentSize.height();
 			int bm = pixelMetric( PM_ButtonMargin, widget );
 			int fw = pixelMetric( PM_DefaultFrameWidth, widget ) * 2;
 
@@ -2091,7 +1600,7 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 					h += di * 2;
 				}
 			}
-				
+
 			if ( h < 22 )
 				h = 22;
 
@@ -2154,119 +1663,8 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 
 
 		default:
-			return QCommonStyle::sizeFromContents( contents, widget, contentSize, opt );
+			return KStyle::sizeFromContents( contents, widget, contentSize, opt );
 	}
-}
-
-
-QStyle::SubControl HighColorStyle::querySubControl( ComplexControl control,
-                                                    const QWidget *widget,
-                                                    const QPoint &pos,
-                                                    const QStyleOption& opt ) const
-{
-	QStyle::SubControl ret =
-		QCommonStyle::querySubControl(control, widget, pos, opt);
-
-	// Enable third button
-	if (control == CC_ScrollBar &&
-		ret == SC_None)
-		ret = SC_ScrollBarSubLine;
-
-	return ret;
-}
-
-
-// Many thanks to Brad for contributing this code.
-QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
-											  const QWidget *widget,
-											  SubControl sc,
-											  const QStyleOption& opt ) const
-{
-    QRect ret;
-
-    switch (control)
-	{
-	    case CC_ScrollBar: {
-			const QScrollBar *sb = (const QScrollBar*)widget;
-			bool horizontal = sb->orientation() == Qt::Horizontal;
-			int sliderstart = sb->sliderStart();
-			int sbextent    = pixelMetric(PM_ScrollBarExtent, widget);
-			int maxlen      = (horizontal ? sb->width() : sb->height()) - (sbextent*3);
-			int sliderlen;
-
-			// calculate slider length
-			if (sb->maxValue() != sb->minValue())
-			{
-				uint range = sb->maxValue() - sb->minValue();
-				sliderlen = (sb->pageStep() * maxlen) /	(range + sb->pageStep());
-
-				int slidermin = pixelMetric( PM_ScrollBarSliderMin, widget );
-				if ( sliderlen < slidermin || range > INT_MAX / 2 )
-					sliderlen = slidermin;
-				if ( sliderlen > maxlen )
-					sliderlen = maxlen;
-			} else
-				sliderlen = maxlen;
-
-			// Subcontrols
-			switch (sc) {
-				case SC_ScrollBarSubLine:
-					// top/left button
-					ret.setRect(0, 0, sbextent, sbextent);
-					break;
-
-				case SC_ScrollBarAddLine:
-					// bottom/right button
-					if (horizontal)
-						ret.setRect(sb->width() - sbextent, 0, sbextent, sbextent);
-					else
-						ret.setRect(0, sb->height() - sbextent, sbextent, sbextent);
-					break;
-
-				case SC_ScrollBarSubPage:
-					// between top/left button and slider
-					if (horizontal)
-						ret.setRect(sbextent, 0, sliderstart - sbextent, sbextent);
-					else
-						ret.setRect(0, sbextent, sbextent, sliderstart - sbextent);
-					break;
-
-				case SC_ScrollBarAddPage:
-					// between bottom/right button and slider
-					if (horizontal)
-						ret.setRect(sliderstart + sliderlen, 0,
-								maxlen - sliderstart - sliderlen + sbextent, sbextent);
-					else
-						ret.setRect(0, sliderstart + sliderlen, sbextent,
-								maxlen - sliderstart - sliderlen + sbextent);
-					break;
-
-				case SC_ScrollBarGroove:
-					if (horizontal)
-						ret.setRect(sbextent, 0, sb->width() - sbextent * 3, sb->height());
-					else
-						ret.setRect(0, sbextent, sb->width(), sb->height() - sbextent * 3);
-					break;
-
-				case SC_ScrollBarSlider:
-					if (horizontal)
-						ret.setRect(sliderstart, 0, sliderlen, sbextent);
-					else
-						ret.setRect(0, sliderstart, sbextent, sliderlen);
-					break;
-
-				default:
-					break;
-			}
-			break;
-		}
-
-		default:
-			ret = QCommonStyle::querySubControlMetrics(control, widget, sc, opt);
-
-			break;
-	}
-	return ret;
 }
 
 
@@ -2283,105 +1681,20 @@ QPixmap HighColorStyle::stylePixmap(StylePixmap stylepixmap,
 		default:
 			break;
 	}
-	// ### Only need new images for the others to
-	// use QCommonStyle
-	return winstyle->stylePixmap(stylepixmap, widget, opt);
-}
 
-
-int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOption &opt, QStyleHintReturn *shr) const
-{
-	switch (sh)
-	{
-		case SH_ItemView_ChangeHighlightOnFocus:
-		case SH_Slider_SloppyKeyEvents:
-			return 0;
-
-		// We don't want any spacing below the menu bar when highcolor
-		case SH_MainWindow_SpaceBelowMenuBar:
-			return (highcolor ? 0 : 1);
-
-		case SH_EtchDisabledText:
-		case SH_Slider_SnapToValue:
-		case SH_PrintDialog_RightAlignButtons:
-		case SH_FontDialog_SelectAssociatedText:
-		case SH_PopupMenu_AllowActiveAndDisabled:
-		case SH_MenuBar_AltKeyNavigation:
-		case SH_MenuBar_MouseTracking:
-		case SH_PopupMenu_MouseTracking:
-		case SH_ComboBox_ListMouseTracking:
-			return 1;
-
-		case SH_PopupMenu_SubMenuPopupDelay:
-			return 128;
-
-		default:
-			return QCommonStyle::styleHint(sh, w, opt, shr);
-	}
-}
-
-
-void HighColorStyle::polishPopupMenu(QPopupMenu *p)
-{
-	if ( !p->testWState( WState_Polished ) )
-		p->setCheckable( true );
+	return KStyle::stylePixmap(stylepixmap, widget, opt);
 }
 
 
 bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 {
-	bool isMenuBar = object->inherits( "QMenuBar" );
-	bool isToolBar = object->inherits( "QToolBar" );
-
-	// Make the QMenuBar/QToolBar paintEvent() cover a larger area to 
-	// ensure that the gradient contents are properly painted.
-	// We essentially modify the paintEvent's rect to include the
-	// panel border, which also paints the widget's interior.
-	// This is nasty, but I see no other way to properly repaint 
-	// gradients in all QMenuBars and QToolBars.
-	// -- Karol.
-	if ( isMenuBar || isToolBar ) 
-	{
-		if (event->type() == QEvent::Paint) 
-		{
-			bool horizontal = true;
-			QPaintEvent* pe = (QPaintEvent*)event;
-			QFrame* frame   = (QFrame*)object;
-			QRect r = pe->rect();
-
-			if ( isToolBar ) {
-				QToolBar* tb = (QToolBar*)object;
-				if (tb->orientation() == Qt::Vertical)
-					horizontal = false;
-			}
-
-			if (horizontal) {
-				if ( r.height() == frame->height() )
-					return false;	// Let QFrame handle the painting now.
-			
-				// Else, send a new paint event with an updated paint rect.
-				QPaintEvent dummyPE( QRect( r.x(), 0, r.width(), frame->height()) );
-				QApplication::sendEvent( frame, &dummyPE ); 
-			} 
-			else {	// Vertical
-				if ( r.width() == frame->width() )
-					return false;	// Let QFrame handle the painting now.
-
-				QPaintEvent dummyPE( QRect( 0, r.y(), frame->width(), r.height()) );
-				QApplication::sendEvent( frame, &dummyPE ); 
-			}
-			
-			// Discard this event as we sent a new paintEvent.
-			return true;
-		}
-		return false; // We obviously can't be a pushbutton
-	}
+	if (KStyle::eventFilter( object, event ))
+		return true;
 
 	// Handle push button hover effects.
-	else if ( object-inherits("QPushButton") )
+	QPushButton* button = dynamic_cast<QPushButton*>(object);
+	if ( button )
 	{
-		QPushButton* button = (QPushButton*) object;
-
 		if ( (event->type() == QEvent::Enter) &&
 			 (button->isEnabled()) ) {
 			hoverWidget = button;

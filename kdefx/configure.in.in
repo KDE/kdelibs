@@ -1,0 +1,11 @@
+
+dnl -----------------------------------------------------
+dnl XRender check
+dnl -----------------------------------------------------
+AC_MSG_CHECKING([for XRender X11/extensions/Xrender.h])
+FOUND_XRENDER=NO
+KDE_CHECK_HEADER(X11/extensions/Xrender.h,FOUND_XRENDER="YES",FOUND_XRENDER="NO")
+if test "$FOUND_XRENDER" = YES; then
+    AC_DEFINE_UNQUOTED(HAVE_XRENDER, 1, [Define if your system has Xrender support])
+fi
+
