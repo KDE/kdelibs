@@ -517,7 +517,7 @@ void KDockWidget::setPixmap(const QPixmap& pixmap) {
 		dtg->changeTab(this,pixmap,dtg->tabLabel(this));
 	 QWidget *contWid=parentDockContainer();
          if (contWid)
-         	((KDockContainer*)contWid->qt_cast("KDockContainer"))->setPixmap(this,pixmap);
+         	dynamic_cast<KDockContainer*>(contWid)->setPixmap(this,pixmap);
 
 
 }
@@ -535,7 +535,9 @@ KDockWidget::~KDockWidget()
     d->blockHasUndockedSignal = false;
   }
 
-  if (latestKDockContainer()) static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
+  if (latestKDockContainer()) {
+    dynamic_cast<KDockContainer*>(latestKDockContainer())->removeWidget(this);
+  }
   emit iMBeingClosed();
   if (manager->d) manager->d->containerDocks.remove(this);
   manager->childDock->remove( this );
@@ -694,17 +696,17 @@ void KDockWidget::setLatestKDockContainer(QWidget* container)
 {
 	if (container)
 	{
-		if (container->qt_cast("KDockContainer"))
-		d->container=container;
+		if (dynamic_cast<KDockContainer*>(container))
+			d->container=container;
 		else
-		d->container=0;
+			d->container=0;
 	}
 }
 
 QWidget* KDockWidget::latestKDockContainer()
 {
 	if (!(d->container)) return 0;
-	if (d->container->qt_cast("KDockContainer")) return d->container;
+	if (dynamic_cast<KDockContainer*>(d->container.operator->())) return d->container;
 	return 0;
 }
 
@@ -755,8 +757,10 @@ void KDockWidget::updateHeader()
       header->hide();
     } else {
       header->setTopLevel( false );
-      if (widget && (widget->qt_cast("KDockContainer"))) header->hide(); else
-      header->show();
+      if (widget && dynamic_cast<KDockContainer*>(widget))
+        header->hide();
+      else
+        header->show();
     }
   } else {
     header->setTopLevel( true );
@@ -935,7 +939,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   }
 
   if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() &&
-  	!(parent()->qt_cast("KDockContainer")) && !parentDockContainer()){
+  	!(dynamic_cast<KDockContainer*>(parent())) && !parentDockContainer()){
 //  kdDebug()<<"KDockWidget::manualDock(): success = false (3)"<<endl;
 //  kdDebug()<<parent()->name()<<endl;
     succes = false;
@@ -1162,7 +1166,7 @@ QWidget *KDockWidget::parentDockContainer() const
 {
   if (!parent()) return 0L;
   QWidget* candidate = parentWidget()->parentWidget();
-  if (candidate && candidate->qt_cast("KDockContainer")) return candidate;
+  if (candidate && dynamic_cast<KDockContainer*>(candidate)) return candidate;
   return 0L;
 }
 
@@ -1313,8 +1317,9 @@ void KDockWidget::undock()
   {
 //  		  kdDebug()<<"undocked from dockcontainer"<<endl;
   		  undockedFromContainer=true;
-		  static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"))->undockWidget(this);
-		  formerBrotherDockWidget=static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"))->parentDockWidget();
+		  KDockContainer* dc = dynamic_cast<KDockContainer*>(d->container.operator->());
+		  dc->undockWidget(this);
+		  formerBrotherDockWidget=dc->parentDockWidget();
 		  applyToWidget( 0L );
   }
    if (!undockedFromContainer) {
@@ -1394,7 +1399,7 @@ void KDockWidget::setWidget( QWidget* mw )
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
-  if (widget->qt_cast("KDockContainer"))
+  if (dynamic_cast<KDockContainer*>(widget))
   {
     d->isContainer=true;
     manager->d->containerDocks.append(this);
@@ -1768,7 +1773,7 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   }
   if ( qt_find_obj_child( w, "KDockSplitter", "_dock_split_" ) ) return 0L;
   if ( qt_find_obj_child( w, "KDockTabGroup", "_dock_tab" ) ) return 0L;
-  if (w->qt_cast("KDockContainer")) return 0L;
+  if (dynamic_cast<KDockContainer*>(w)) return 0L;
 
   if (!childDockWidgetList) return 0L;
   if ( childDockWidgetList->find(w) != -1 ) return 0L;
@@ -2308,7 +2313,8 @@ void KDockManager::writeConfig( KConfig* c, QString group )
 //  kdDebug()<<QString("list size: %1").arg(nList.count())<<endl;
   for (QObjectListIt it(d->containerDocks);it.current();++it)
   {
-  	static_cast<KDockContainer*>(((KDockWidget*)it.current())->widget->qt_cast("KDockContainer"))->prepareSave(nList);
+  	KDockContainer* dc = dynamic_cast<KDockContainer*>(((KDockWidget*)it.current())->widget);
+  	dc->prepareSave(nList);
   }
 //  kdDebug()<<QString("new list size: %1").arg(nList.count())<<endl;
 
@@ -2320,7 +2326,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
     if ( obj->header ){
       obj->header->saveConfig( c );
     }
-    if (obj->d->isContainer) static_cast<KDockContainer*>(obj->widget->qt_cast("KDockContainer"))->save(c);
+    if (obj->d->isContainer) dynamic_cast<KDockContainer*>(obj->widget)->save(c);
 /*************************************************************************************************/
     if ( obj->isGroup ){
       if ( (findList.find( obj->firstName ) != findList.end()) && (findList.find( obj->lastName ) != findList.end() )){
@@ -2505,7 +2511,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj = getDockWidgetFromName( oname );
     }
 
-    if (obj && obj->d->isContainer)  static_cast<KDockContainer*>(obj->widget->qt_cast("KDockContainer"))->load(c);
+    if (obj && obj->d->isContainer)  dynamic_cast<KDockContainer*>(obj->widget)->load(c);
     if ( obj && obj->header){
       obj->header->loadConfig( c );
     }
