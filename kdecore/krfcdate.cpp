@@ -91,7 +91,7 @@ static const struct {
     { "MDT", -360 },
     { "PST", -480 },
     { "PDT", -420 },
-    { 0, 0 }
+    { { 0,0,0,0 }, 0 }
 };
 
 time_t
