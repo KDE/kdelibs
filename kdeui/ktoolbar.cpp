@@ -28,7 +28,7 @@
 
 
       qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-#define TOOLBARHEIGHT 30
+#define TOOLBARHEIGHT 34
 
 #define CONTEXT_LEFT 0
 #define CONTEXT_RIGHT 1
