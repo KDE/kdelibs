@@ -20,6 +20,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// is just to find problems and can be removed by undefining TEST_KDEDIR in
+// Makefile.am
+//
+// Revision 1.78  1997/12/28 21:32:14  kulow
 // last time I forgot two functions kde_mimedir() and kde_confdir()
 // I will move this functions very soon to static functions of a new
 // class KPaths. Kapplication is not the optimal class to contain this
@@ -70,7 +74,6 @@
 // Matthias: fix for setWmCommand: now setWmCommand can also be used for
 //   PseudoSessionManagement (this is the default when session management
 //   was not enabled with enableSessionManagement).
-#include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
 //
 // Revision 1.66  1997/10/25 22:27:40  kalle
@@ -84,6 +87,7 @@
 //
 // Revision 1.63  1997/10/21 20:44:41  kulow
 // removed all NULLs and replaced it with 0L or "".
+// There are some left in mediatool, but this is not C++
 //
 // Revision 1.62  1997/10/17 15:46:22  stefan
 // Moved the include of stdlib.h -- otherwise gcc-2.7.2.1 has an internal
