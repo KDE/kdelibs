@@ -1053,9 +1053,8 @@ bool HTTPProtocol::http_open()
   QString referrer = metaData("referrer");
   if (!referrer.isEmpty())
   {
-     //    messageBox(Information, referrer, "...ist der referer", "referer");
      // HTTP uses "Referer" although the correct spelling is "referrer"
-     header += "referer: "+referrer+"\r\n";
+     header += "Referer: "+referrer+"\r\n";
   }
 
   QString acceptHeader = metaData("accept");
