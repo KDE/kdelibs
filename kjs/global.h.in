@@ -28,13 +28,15 @@
 #define KJS_MAX_STACK 1000
 
 // we don't want any padding between UChars (ARM processor)
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__INTEL_COMPILER)
 #define KJS_PACKED __attribute__((__packed__))
 #else
 #define KJS_PACKED
 #endif
 
-#if @HAVE_GCC_VISIBILITY@
+#undef HAVE_GCC_VISIBILITY
+
+#ifdef HAVE_GCC_VISIBILITY
 #define KJS_EXPORT __attribute__ ((visibility("default")))
 #else
 #define KJS_EXPORT
