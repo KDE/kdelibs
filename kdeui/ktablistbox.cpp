@@ -955,7 +955,7 @@ KTabListBoxTable::KTabListBoxTable(KTabListBox *parent):
   setCursor(arrowCursor);
   setMouseTracking(FALSE);
 
-  setFocusPolicy(StrongFocus);
+  setFocusPolicy(ClickFocus);
 }
 
 
