@@ -160,6 +160,7 @@ public:
     m_bJavaForce = false;
     m_bJavaOverride = false;
     m_frameNameId = 1;
+    m_cacheId = 0;
   }
   ~KHTMLPartPrivate()
   {
