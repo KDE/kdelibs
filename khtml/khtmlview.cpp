@@ -142,7 +142,7 @@ class KHTMLViewPrivate {
     friend class KHTMLToolTip;
 public:
     KHTMLViewPrivate()
-        : underMouse( 0 )
+        : underMouse( 0 ), lastKeyNode(0)
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -176,6 +176,10 @@ public:
         if (underMouse)
 	    underMouse->deref();
 	underMouse = 0;
+	if (lastKeyNode)
+	    lastKeyNode->deref();
+	lastKeyNode = 0;
+	lastKeyPress = 0;
         linkPressed = false;
         useSlowRepaints = false;
         originalNode = 0;
@@ -292,6 +296,9 @@ public:
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
     int layoutTimerId;
+
+    NodeImpl *lastKeyNode;
+    int lastKeyPress;
 
     int repaintTimerId;
     int scrollTimerId;
@@ -1006,11 +1013,19 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 #endif // KHTML_NO_CARET
 
+    if (d->lastKeyNode)
+	d->lastKeyNode->deref();
+    d->lastKeyNode = 0;
+    d->lastKeyPress = _ke->key();
+
     if (m_part->xmlDocImpl()) {
-        if (m_part->xmlDocImpl()->focusNode()
-            && m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke)) {
-	    _ke->accept();
-	    return;
+	d->lastKeyNode = m_part->xmlDocImpl()->focusNode();
+        if (d->lastKeyNode) {
+	    d->lastKeyNode->ref();
+            if (d->lastKeyNode->dispatchKeyEvent(_ke)) {
+		_ke->accept();
+		return;
+	    }
 	}
         if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT))
             if (m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke))
@@ -1153,17 +1168,23 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
-    if(m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
-        // Qt is damn buggy. we receive release events from our child
-        // widgets. therefore, do not support keyrelease event on generic
-        // nodes for now until we found  a workaround for the Qt bugs. (Dirk)
-//         if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke)) {
-//             _ke->accept();
-//             return;
-//         }
-//        QScrollView::keyReleaseEvent(_ke);
-        Q_UNUSED(_ke);
+    if(m_part->xmlDocImpl()) {
+	NodeImpl *fn =  m_part->xmlDocImpl()->focusNode();
+	if (fn && fn->dispatchKeyEvent(_ke)) {
+	    _ke->accept();
+	}
+	if (fn && d->lastKeyNode == fn && d->lastKeyPress == _ke->key()
+	    && !_ke->isAutoRepeat()) {
+	    d->lastKeyNode->deref();
+	    d->lastKeyNode = 0;
+	    d->lastKeyPress = 0;
+	    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
+		      _ke->text(), true, _ke->count());
+	    fn->dispatchKeyEvent(&k);
+	}
     }
+    if (!_ke->isAccepted())
+	QScrollView::keyReleaseEvent(_ke);
 }
 
 void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent * /*ce*/ )
