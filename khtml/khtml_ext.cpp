@@ -139,9 +139,6 @@ KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
 
 void KHTMLPopupGUIClient::slotSaveLinkAs()
 {
-  if ( d->m_url.fileName( false ).isEmpty() )
-    d->m_url.setFileName( "index.html" );
-
   saveURL( d->m_khtml->widget(), i18n( "Save Link As" ), d->m_url );
 }
 
@@ -178,7 +175,10 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
 
   dlg->setCaption( caption );
 
-  dlg->setSelection( url.fileName() );
+  if (!url.fileName().isEmpty())
+    dlg->setSelection( url.fileName() );
+  else
+    dlg->setSelection( QString::fromLatin1("index.html") );
 
   if ( dlg->exec() )
   {
@@ -197,7 +197,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
             saved = true;
           }
         }
-        else 
+        else
         {
           // save to temp file, then move to final destination.
           KTempFile destFile;
