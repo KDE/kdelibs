@@ -375,7 +375,7 @@ protected:
 *
 * @short A widget for drag support.
 * @author Torben Weis (weis@kde.org)
-  { drag = FALSE; dndData = 0L; dndIcon = 0L; }
+* @version $Id$
 */
 class KDNDWidget : public QWidget
 {
