@@ -50,6 +50,7 @@ ins
 isindex
 kbd
 label
+layer
 legend
 li
 link
@@ -60,6 +61,7 @@ meta
 noembed
 noframes
 noscript
+nolayer
 object
 ol
 optgroup

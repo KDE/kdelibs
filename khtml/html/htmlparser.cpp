@@ -130,6 +130,7 @@ const unsigned short tagPriority[] = {
     0, // ID_ISINDEX
     1, // ID_KBD
     1, // ID_LABEL
+    1, // ID_LAYER
     1, // ID_LEGEND
     3, // ID_LI
     0, // ID_LINK
@@ -1029,6 +1030,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_DIV:
         n = new HTMLDivElementImpl(document);
         break;
+    case ID_LAYER:
+        n = new HTMLLayerElementImpl(document);
+        break;
     case ID_H1:
     case ID_H2:
     case ID_H3:
@@ -1181,6 +1185,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_NOSCRIPT:
         if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
+        return 0;
+    case ID_NOLAYER:
+        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
         return 0;
         // Waldo's plaintext stuff
     case ID_PLAIN:

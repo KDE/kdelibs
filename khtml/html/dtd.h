@@ -173,6 +173,8 @@ DOMString findDefAttrHTML(ushort id);
 #define MAPEndTag REQUIRED
 #define AREAStartTag REQUIRED
 #define AREAEndTag FORBIDDEN
+#define LAYERStartTag REQUIRED
+#define LAYEREndTag REQUIRED
 #define LINKStartTag REQUIRED
 #define LINKEndTag FORBIDDEN
 #define IMGStartTag REQUIRED
