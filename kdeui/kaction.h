@@ -497,6 +497,7 @@ protected:
     QPopupMenu* popupMenu( int index ) const;
     void removeContainer( int index );
     int findContainer( const QWidget* widget ) const;
+    void plugMainWindowAccel( QWidget *w );
 
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );

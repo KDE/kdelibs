@@ -327,6 +327,9 @@ void KAction::setAccel( int i, int a )
     static_cast<QPopupMenu*>(w)->setAccel( a, itemId( i ) );
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->setAccel( a, itemId( i ) );
+
+  if ( !d->m_kaccel && a ) // this case happens after configuring key bindings
+      plugMainWindowAccel( w );
 }
 
 int KAction::accel() const
@@ -410,18 +413,7 @@ int KAction::plug( QWidget *w, int index )
   // actions that are only plugged into a toolbar, and in case of
   // hiding the menubar.
   if (!d->m_kaccel && d->m_accel) // only if not already plugged into a kaccel, and only if there is a shortcut !
-  {
-    // Note: topLevelWidget() stops too early, we can't use it.
-    QWidget * tl = w;
-    while ( tl->parentWidget() )
-        tl = tl->parentWidget();
-
-    KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
-    if (mw)
-      plugAccel( mw->accel() );
-//    else
-//      kdDebug() << "KAction::plug: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
-  }
+    plugMainWindowAccel( w );
 
   if ( w->inherits("QPopupMenu") )
   {
@@ -563,6 +555,21 @@ void KAction::unplugAccel()
    d->m_kaccel->removeItem(name());
    d->m_kaccel->disconnect(this);
    d->m_kaccel = 0;
+}
+
+void KAction::plugMainWindowAccel( QWidget *w )
+{
+  // Note: topLevelWidget() stops too early, we can't use it.
+  QWidget * tl = w;
+  QWidget * n;
+  while ( ( n = tl->parentWidget() ) ) // lookup parent and store
+    tl = n;
+
+  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
+  if (mw)
+    plugAccel( mw->accel() );
+//    else
+//      kdDebug() << "KAction::plug: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
 }
 
 void KAction::setEnabled(bool enable)
