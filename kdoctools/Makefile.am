@@ -1,5 +1,5 @@
 
-INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/gzip -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
@@ -53,7 +53,7 @@ uninstall-local:
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook
 
 kgzipfilter.cpp: 
-	$(LN_S) $(srcdir)/../kio/gzip/kgzipfilter.cpp .
+	$(LN_S) $(srcdir)/../kioslave/gzip/kgzipfilter.cpp .
 
 kbzip2filter.cpp:
-	$(LN_S) $(srcdir)/../kio/bzip2/kbzip2filter.cpp .
+	$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
