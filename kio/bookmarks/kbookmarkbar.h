@@ -62,10 +62,17 @@ signals:
     void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
 
 public slots:
+    void clear();
+
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
-    void slotMy();
-    void clear();
+
+    void slotRMBActionRemove( int );
+    void slotRMBActionInsert( int );
+    void slotRMBActionOpen( int );
+    void slotRMBActionCopyLocation( int );
+    void slotRMBActionEditAt( int );
+    void slotRMBActionProperties( int );
 
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );

@@ -343,12 +343,10 @@ static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, 
 // init    - validDrag == false
 // release - validDrag == false
 // press   - validDrag == true
-//           and set startDragDos = ev->pos // move    - when ((startDragPos - ev->pos()).manhattanLength() > QApplication::startDragDistance())
+//           and set startDragDos = ev->pos 
+// move    - when ((startDragPos - ev->pos()).manhattanLength() > QApplication::startDragDistance())
 //           validDrag == false 
 //           and do the funky kbookmarkdrag stuff
-
-// TODO    *** for right click ***
-// make right click give the correct menu
 
 // TODO    *** drop improvements ***
 // open submenus on drop interactions
@@ -370,12 +368,25 @@ static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
   s->m_pOwner = m_pOwner;                         \
   s->m_parentMenu = 0;
 
-void KBookmarkBar::slotMy()
-{
-   kdDebug(7043) << "proof!" << endl;
-}
-
 static QString s_highlightedAddress;
+
+void KBookmarkBar::slotRMBActionEditAt( int val )
+{ INIT; rmbSelf(this)->slotRMBActionEditAt( val ); }
+
+void KBookmarkBar::slotRMBActionProperties( int val )
+{ INIT; rmbSelf(this)->slotRMBActionProperties( val ); }
+
+void KBookmarkBar::slotRMBActionInsert( int val )
+{ INIT; rmbSelf(this)->slotRMBActionInsert( val ); }
+
+void KBookmarkBar::slotRMBActionRemove( int val )
+{ INIT; rmbSelf(this)->slotRMBActionRemove( val ); }
+
+void KBookmarkBar::slotRMBActionCopyLocation( int val )
+{ INIT; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+
+void KBookmarkBar::slotRMBActionOpen( int val )
+{ INIT; rmbSelf(this)->slotRMBActionOpen( val ); }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {

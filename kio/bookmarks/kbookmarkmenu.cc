@@ -357,7 +357,8 @@ void RMB::slotRMBActionRemove( int val )
   KBookmarkGroup parentBookmark = atAddress( m_parentAddress ).toGroup();
   parentBookmark.deleteBookmark( bookmark );
   m_pManager->emitChanged( parentBookmark );
-  m_parentMenu->hide();
+  if (m_parentMenu)
+    m_parentMenu->hide();
 }
 
 void RMB::slotRMBActionCopyLocation( int val )
