@@ -1008,7 +1008,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( !target.isEmpty() )
   {
-    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false, false );
+    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false, true );
     if ( frame )
     {
       requestObject( frame, cURL, args );
@@ -1509,7 +1509,8 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
   if ( newWin )
   {
     KParts::URLArgs newArgs( args );
-    newArgs.frameName = QString::null; //not really necessary, but safer ;-)
+    // actually bad, since the page might want to reference the target. Lars
+    //newArgs.frameName = QString::null; //not really necessary, but safer ;-)
     emit d->m_extension->createNewWindow( url, newArgs );
   }
   return 0L;

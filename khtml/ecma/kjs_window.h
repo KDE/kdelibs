@@ -40,7 +40,7 @@ namespace KJS {
   public:
     WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
     KJSO *execute(const List &);
-    enum { Alert, Confirm };
+    enum { Alert, Confirm, Open };
   private:
     KHTMLView *widget;
     int id;

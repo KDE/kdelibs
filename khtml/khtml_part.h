@@ -55,6 +55,11 @@ namespace khtml
   struct ChildFrame;
 };
 
+namespace KJS {
+    class Window;
+    class WindowFunc;
+};
+
 namespace KParts
 {
   class PartManager;
@@ -111,6 +116,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
+  friend class KJS::WindowFunc;
 public:
   /**
    * Constructs a new KHTMLPart.
@@ -481,32 +487,32 @@ protected:
 					    const QStringList &params);
 
   /**
-   * @internal
+   * derived classes can use this hook to filter out key events from the KHTMLView.
    */
   virtual bool keyPressHook(QKeyEvent *) { return false; }
   /**
-   * @internal
+   * derived classes can use this hook to filter out key events from the KHTMLView.
    */
   virtual bool keyReleaseHook(QKeyEvent*) { return false; }
 
   /**
-   * @internal
+   * derived classes can use this hook to filter out mouse events from the KHTMLView.
    */
   virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
   /**
-   * @internal
+   * derived classes can use this hook to filter out mouse events from the KHTMLView.
    */
   virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
   /**
-   * @internal
+   * derived classes can use this hook to filter out mouse events from the KHTMLView.
    */
   virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
   /**
-   * @internal
+   * derived classes can use this hook to filter out mouse events from the KHTMLView.
    */
   virtual bool mouseReleaseHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
   /**
-   * @internal
+   * derived classes can use this hook to process paint events from the KHTMLView.
    */
   virtual void drawContentsHook(QPainter *) {}
 
@@ -587,9 +593,9 @@ private:
   /**
    * @internal
    */
-  void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName, 
+  void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                      const QStringList &args = QStringList() );
- 
+
   /**
    * @internal
    */

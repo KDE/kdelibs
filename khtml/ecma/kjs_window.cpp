@@ -26,6 +26,10 @@
 #include <kjs/operations.h>
 #include "kjs_window.h"
 
+#include <qevent.h>
+#include "khtmlview.h"
+#include "khtml_part.h"
+
 using namespace KJS;
 
 KJSO *Window::get(const UString &p)
@@ -34,6 +38,8 @@ KJSO *Window::get(const UString &p)
     return new WindowFunc(widget, WindowFunc::Alert);
   else if (p == "confirm")
     return new WindowFunc(widget, WindowFunc::Confirm);
+  else if (p == "open")
+    return new WindowFunc(widget, WindowFunc::Open);
 
   return newUndefined();
 }
@@ -63,7 +69,16 @@ KJSO *WindowFunc::execute(const List &args)
 				  i18n("OK"), i18n("Cancel"));
     result = newBoolean((i == KMessageBox::Yes));
     break;
+  case Open:
+  {
+      v = args[1];
+      s = toString(v);
+      QString target = s->stringVal().qstring();
+      widget->part()->urlSelected( str, 0, 0, target );
+      // ### add size and other parameters defined in the third argument.
+      // see http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/open_0.asp
+      result = newUndefined();
   }
-
+  }
   return newCompletion(Normal, result);
 }
