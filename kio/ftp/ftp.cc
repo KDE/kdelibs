@@ -69,6 +69,7 @@ int kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalogue("kdelibs");
   KInstance instance( "kio_ftp" );
+  ( void ) KGlobal::locale();
 
   kdDebug(7102) << "Starting " << getpid() << endl;
 
@@ -95,7 +96,7 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
   ksControl = NULL;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
-  setMultipleAuthCaching( true );  
+  setMultipleAuthCaching( true );
   kdDebug(7102) << "Ftp::Ftp()" << endl;
 }
 
@@ -749,7 +750,7 @@ bool Ftp::ftpOpenEPRTDataConnection()
   ks.release();
   return true;
 }
-   
+
 
 /*
  * ftpOpenDataConnection - set up data connection
@@ -1253,15 +1254,15 @@ void Ftp::stat( const KURL &url)
     // Just return that it's a dir.
     UDSEntry entry;
     UDSAtom atom;
- 
+
     atom.m_uds = KIO::UDS_NAME;
     atom.m_str = filename;
     entry.append( atom );
- 
+
     atom.m_uds = KIO::UDS_FILE_TYPE;
     atom.m_long = S_IFDIR;
     entry.append( atom );
- 
+
     atom.m_uds = KIO::UDS_ACCESS;
     atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     entry.append( atom );
@@ -1370,21 +1371,21 @@ void Ftp::stat( const KURL &url)
 	// where listing permissions are denied, but downloading is still possible.
         UDSEntry entry;
         UDSAtom atom;
- 
+
         atom.m_uds = KIO::UDS_NAME;
         atom.m_str = filename;
         entry.append( atom );
- 
+
         atom.m_uds = KIO::UDS_FILE_TYPE;
         atom.m_long = S_IFREG;
         entry.append( atom );
- 
+
         atom.m_uds = KIO::UDS_ACCESS;
         atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
         entry.append( atom );
- 
+
         // No clue about size, ownership, group, etc.
- 
+
         statEntry(entry);
         finished();
         return;

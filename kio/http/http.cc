@@ -98,6 +98,7 @@ int kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalogue("kdelibs");
   KInstance instance( "kio_http" );
+  ( void ) KGlobal::locale();
 
   kdDebug(7113) << "Starting " << getpid() << endl;
 
@@ -167,7 +168,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
   reparseConfiguration();
   setMultipleAuthCaching( true );
-  
+
 #ifdef DO_SSL
   m_bUseSSL=true;
 #endif
@@ -951,7 +952,7 @@ bool HTTPProtocol::http_open()
   {
     AuthInfo info;
     info.url = m_request.url;
-    info.verifyPath = true;    
+    info.verifyPath = true;
     if ( !m_request.user.isEmpty() )
       info.username = m_request.user;
     if ( checkCachedAuthentication( info ) )
@@ -1005,7 +1006,7 @@ bool HTTPProtocol::http_open()
       info.url = m_proxyURL;
       info.username = m_proxyURL.user();
       info.password = m_proxyURL.pass();
-      info.verifyPath = true;      
+      info.verifyPath = true;
 
       // If the proxy URL already contains username
       // and password simply attempt to retrieve it
@@ -2127,7 +2128,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   QString tmp = metaData("cache");
-  if (!tmp.isEmpty())   
+  if (!tmp.isEmpty())
     m_request.cache = parseCacheControl(tmp);
   else
     m_request.cache = DEFAULT_CACHE_CONTROL;
@@ -2648,7 +2649,7 @@ bool HTTPProtocol::readBody( )
           cpMimeBuffer = true;
           continue;   // Do not send up the data since we do not yet know its mimetype!
         }
-        
+
 	kdDebug(7113) << "Mimetype buffer size: " << mimeTypeBuffer.size() << endl;
         KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
         if( result )
@@ -3344,7 +3345,7 @@ bool HTTPProtocol::getAuthorization()
       info.realmValue = m_strRealm;
     }
 
-    info.verifyPath = false;    
+    info.verifyPath = false;
     result = checkCachedAuthentication( info );
     if ( Authentication == AUTH_Digest )
     {
@@ -3410,7 +3411,7 @@ bool HTTPProtocol::getAuthorization()
 
 void HTTPProtocol::saveAuthorization()
 {
-  AuthInfo info;  
+  AuthInfo info;
   if ( m_prevResponseCode == 407 )
   {
     info.url = m_proxyURL;
