@@ -265,10 +265,14 @@ void KIO::SessionData::reset()
     }
     d->language = languageList.join( ", " );
 
+#if QT_VERSION < 300
     // Get charset settings...
     // FIXME: Ugly hack to get appropriate charset value.  Needs
     // to be simplified when it gets fixed in QT/kdecore.
     d->charsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
+#else
+#warning FIXME: need to iterate over available textcodecs or something, said Lars ;-)
+#endif
 
     // Get cache settings...
     KProtocolManager::reparseConfiguration();
