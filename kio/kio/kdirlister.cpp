@@ -1708,7 +1708,7 @@ void KDirLister::emitChanges()
         continue;
       }
 
-      if ( (*kit)->text()[0] == dot )
+      if ( (*kit)->isHidden() )
       {
         if ( d->changes & DOT_FILES )
         {

@@ -437,7 +437,7 @@ int KFileItem::overlays() const
        && !isReadable())
      _state |= KIcon::LockOverlay;
 
-  if ( m_strName[0] == '.' )
+  if ( isHidden() )
      _state |= KIcon::HiddenOverlay;
 
   if( S_ISDIR( m_fileMode ) && m_bIsLocalURL)
@@ -515,6 +515,14 @@ bool KFileItem::isReadable() const
       return false;
 
   return true;
+}
+
+bool KFileItem::isHidden() const
+{
+  if ( !m_url.isEmpty() )
+      return m_url.filename()[0] == '.';
+  else
+      return m_strName[0] == '.';
 }
 
 bool KFileItem::isDir() const

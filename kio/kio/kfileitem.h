@@ -183,6 +183,12 @@ public:
   bool isReadable() const;
 
   /**
+   * Checks whether the file is hidden.
+   * @return true if the file is hidden.
+   */
+  bool isHidden() const;
+
+  /**
    * Returns the link destination if isLink() == true.
    * @return the link destination. QString::null if the item is not a link
    */
