@@ -149,7 +149,6 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QBrush brushLightblue(KGlobalSettings::baseColor());
   QFont font=KGlobalSettings::generalFont();
   // -----
-  font.setPointSize(fontsize);
   int firstWeekDay = KGlobal::locale()->weekStartDay();
   if(row==0)
     { // we are drawing the headline
@@ -541,7 +540,7 @@ void KDateTable::unsetCustomDatePainting( const QDate &date )
 }	
 
 KDateInternalWeekSelector::KDateInternalWeekSelector
-(int fontsize, QWidget* parent, const char* name)
+(QWidget* parent, const char* name)
   : QLineEdit(parent, name),
     val(new QIntValidator(this)),
     result(0)
@@ -549,7 +548,6 @@ KDateInternalWeekSelector::KDateInternalWeekSelector
   QFont font;
   // -----
   font=KGlobalSettings::generalFont();
-  font.setPointSize(fontsize);
   setFont(font);
   setFrameStyle(QFrame::NoFrame);
   setValidator(val);
@@ -611,7 +609,7 @@ KDateInternalMonthPicker::~KDateInternalMonthPicker() {
 }
 
 KDateInternalMonthPicker::KDateInternalMonthPicker
-(const QDate & date, int fontsize, QWidget* parent, const char* name)
+(const QDate & date, QWidget* parent, const char* name)
   : QGridView(parent, name),
     result(0) // invalid
 {
@@ -621,7 +619,6 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   activeCol = -1;
   activeRow = -1;
   font=KGlobalSettings::generalFont();
-  font.setPointSize(fontsize);
   setFont(font);
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
@@ -785,7 +782,7 @@ KDateInternalMonthPicker::contentsMouseReleaseEvent(QMouseEvent *e)
 
 
 KDateInternalYearSelector::KDateInternalYearSelector
-(int fontsize, QWidget* parent, const char* name)
+(QWidget* parent, const char* name)
   : QLineEdit(parent, name),
     val(new QIntValidator(this)),
     result(0)
@@ -793,7 +790,6 @@ KDateInternalYearSelector::KDateInternalYearSelector
   QFont font;
   // -----
   font=KGlobalSettings::generalFont();
-  font.setPointSize(fontsize);
   setFont(font);
   setFrameStyle(QFrame::NoFrame);
   // we have to respect the limits of QDate here, I fear:

@@ -45,9 +45,7 @@ public slots:
 signals:
   void closeMe(int);
 public:
-  KDateInternalWeekSelector(int fontsize,
-			    QWidget* parent=0,
-			    const char* name=0);
+  KDateInternalWeekSelector( QWidget* parent=0, const char* name=0);
   int getWeek();
   void setWeek(int week);
 
@@ -88,7 +86,7 @@ public:
   /**
    * The constructor.
    */
-  KDateInternalMonthPicker(const QDate & date, int fontsize, QWidget* parent, const char* name=0);
+  KDateInternalMonthPicker(const QDate& date, QWidget* parent, const char* name=0);
   /**
    * The destructor.
    */
@@ -146,9 +144,7 @@ public slots:
 signals:
   void closeMe(int);
 public:
-  KDateInternalYearSelector(int fontsize,
-			    QWidget* parent=0,
-			    const char* name=0);
+  KDateInternalYearSelector( QWidget* parent=0, const char* name=0);
   int getYear();
   void setYear(int year);
 

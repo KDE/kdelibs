@@ -263,7 +263,7 @@ KDatePicker::selectWeekClicked()
   QDate date = table->getDate();
 
   KPopupFrame* popup = new KPopupFrame(this);
-  KDateInternalWeekSelector* picker = new KDateInternalWeekSelector(fontsize, popup);
+  KDateInternalWeekSelector* picker = new KDateInternalWeekSelector(popup);
   picker->setMaxWeek(calendar->weeksInYear(calendar->year(date)));
   // -----
   picker->resize(picker->sizeHint());
@@ -300,7 +300,7 @@ KDatePicker::selectMonthClicked()
 
   int month;
   KPopupFrame* popup = new KPopupFrame(this);
-  KDateInternalMonthPicker* picker = new KDateInternalMonthPicker(table->getDate(), fontsize, popup);
+  KDateInternalMonthPicker* picker = new KDateInternalMonthPicker(table->getDate(), popup);
   // -----
   picker->resize(picker->sizeHint());
   popup->setMainWidget(picker);
@@ -334,7 +334,7 @@ KDatePicker::selectYearClicked()
 
   int year;
   KPopupFrame* popup = new KPopupFrame(this);
-  KDateInternalYearSelector* picker = new KDateInternalYearSelector(fontsize, popup);
+  KDateInternalYearSelector* picker = new KDateInternalYearSelector(popup);
   // -----
   picker->resize(picker->sizeHint());
   popup->setMainWidget(picker);
