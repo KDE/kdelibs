@@ -4,8 +4,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  extern char *base64_encode_line(const char *s);
-  extern char *base64_encode_string(const char *s, unsigned int len);
+  char *base64_encode_line(const char *s);
+  char *base64_encode_string(const char *s, unsigned int len);
 #ifdef __cplusplus
 }
 #endif

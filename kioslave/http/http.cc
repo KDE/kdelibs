@@ -171,10 +171,10 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
   if (user && passwd) {
     char *t1, *t2;
 
-    t1 = (char *)malloc(strlen(user) + 1 + 2 * strlen(passwd) + 1);
+    t1 = (char *)malloc(strlen(user) +1+strlen(passwd));
+    bzero(t1, strlen(user)+1+strlen(passwd));
     sprintf(t1, "%s:%s", user, passwd);
     t2 = base64_encode_line(t1);
-    fprintf(stderr, "T2 is: %s\n", t2);
     free(t1);
     wwwauth = (char *)malloc(strlen(t2) + strlen(header) + 11); // UPDATE WHEN FORMAT BELOW CHANGES !!!
     sprintf(wwwauth, "%s: Basic %s\r\n", header, t2);
@@ -512,8 +512,7 @@ repeat2:
     string pass = _url.pass();
     if (m_strRealm.empty())
       m_strRealm = _url.host();
-    if ( !open_PassDlg(m_strRealm.c_str(), user, pass) )
-    {
+    if ( !open_PassDlg(m_strRealm.c_str(), user, pass) ) {
       error( ERR_ACCESS_DENIED, _url.url() );
       return false;
     }
@@ -741,8 +740,9 @@ void HTTPProtocol::slotGet( const char *_url )
     f=m_sContentMD5.length();
   if (strncmp(enc_digest, m_sContentMD5.c_str(), f)) {
     fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.c_str());
-    fflush(stderr);
-  }
+  } else
+    fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
+  fflush(stderr);
   free(enc_digest);
 #endif
 
@@ -1138,7 +1138,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 // 	    l = lst;
 // 	    l.getLast()->addPath( filename.c_str() );
     
-// 	    list<K2URL>::iterator it = l.begin();
+// 	    list<KURL>::iterator it = l.begin();
 // 	    for( ; it != l.end(); it++ )
 // 	      d += it->url();
 
