@@ -1867,15 +1867,31 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
                 isEnabled = lineEdit->isEnabled();
             }
 
+            uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+                    Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+
+            // HACK!!
+            //
+            // In order to draw nice edges in khtml, we need to paint alpha-blended.
+            // On the other hand, we can't paint alpha-blended in normal widgets.
+            //
+            // In this place there is no reliable way to detect if we are in khtml; the
+            // only thing we know is that khtml buffers its widgets into a pixmap. So
+            // when the paint device is a QPixmap, chances are high that we are in khtml.
+            // It's possible that this breaks other things, so let's see how it works...
+            if (p->device() && dynamic_cast<QPixmap*>(p->device() ) ) {
+                contourFlags += Draw_AlphaBlend;
+            }
+
             if ( _inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
             {
                 renderContour(p, r, cg.background(),
-                              getColor(cg,FocusHighlight,enabled) );
+                              getColor(cg,FocusHighlight,enabled), contourFlags );
             }
             else
             {
                 renderContour(p, r, cg.background(),
-                              getColor(cg, ButtonContour, enabled) );
+                              getColor(cg, ButtonContour, enabled), contourFlags );
             }
             const QColor contentColor = enabled?cg.base():cg.background();
             if (_inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
