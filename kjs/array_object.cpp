@@ -195,12 +195,13 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     int n = 0;
     Value curArg = thisObj;
     Object curObj = Object::dynamicCast(thisObj);
+    bool first = true;
     ListIterator it = args.begin();
     for (;;) {
       if (curArg.type() == ObjectType &&
           curObj.inherits(&ArrayInstanceImp::info)) {
         unsigned int k = 0;
-        if (n > 0)
+        if (!first)
           length = curObj.get(exec,"length").toUInt32(exec);
         while (k < length) {
           UString p = UString::from(k);
@@ -217,6 +218,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
         break;
       curArg = *it;
       curObj = Object::dynamicCast(it++); // may be 0
+      first = false;
     }
     arr.put(exec,"length", Number(n), DontEnum | DontDelete);
 
