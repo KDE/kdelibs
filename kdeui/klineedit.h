@@ -61,7 +61,7 @@
  * through either one of the methods mentioned above.  If you do not need these
  * feature, simply use @ref KCompletionBase::setHandleSignals or alternatively the
  * boolean parameter in @p setCompletionObject, to turn them off.
- * 
+ *
  * The default key-binding for completion and rotation is determined from the
  * global settings in @ref KStdAccel.  These values, however, can be set locally to
  * override the global settings through the @ref setKeyBinding member function.  To
@@ -221,7 +221,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void previousMatch( KCompletionBase::KeyBindingType /*type*/ );
+    void previousMatch( KeyBindingType /*type*/ );
 
     /**
     * Signal emitted when the key-binding set for
@@ -232,7 +232,7 @@ signals:
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
     */
-    void nextMatch( KCompletionBase::KeyBindingType /*type*/ );
+    void nextMatch( KeyBindingType /*type*/ );
 
 public slots:
 
@@ -246,7 +246,7 @@ public slots:
     *
     * @param type the key-binding invoked.
     */
-    void rotateText( KCompletionBase::KeyBindingType /* type */ );
+    void rotateText( KeyBindingType /* type */ );
 
 protected slots:
 

@@ -62,7 +62,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
-void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
+void KLineEdit::rotateText( KeyBindingType type )
 {
    	KCompletion* comp = compObj();
 	if( comp &&
@@ -119,7 +119,7 @@ void KLineEdit::makeCompletion( const QString& text )
     	}
         return;
     }
-    
+
     setText( match );
 	if( mode == KGlobalSettings::CompletionAuto ||
 		mode == KGlobalSettings::CompletionMan )
@@ -134,14 +134,14 @@ void KLineEdit::connectSignals( bool handle ) const
     if( handle && !handleSignals() )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( previousMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-        connect( this, SIGNAL( nextMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
+        connect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        connect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
     }
     else if( !handle && handleSignals() )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( previousMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
-        disconnect( this, SIGNAL( nextMatch( KCompletionBase::KeyBindingType ) ), this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
+        disconnect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        disconnect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
     }
 }
 
@@ -192,14 +192,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     	key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
         if( KStdAccel::isEqual( e, key ) && fireSignals )
         {
-            emit previousMatch( KCompletionBase::PrevCompletionMatch );
+            emit previousMatch( PrevCompletionMatch );
             return;
         }
         // Handles next match
 	    key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
         if( KStdAccel::isEqual( e, key ) && fireSignals)
         {
-            emit nextMatch( KCompletionBase::NextCompletionMatch );
+            emit nextMatch( NextCompletionMatch );
             return;
         }
     }
@@ -214,22 +214,22 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         // Return if popup menu is not enabled !!
         if( !m_bEnableMenu )
             return;
-            
+
         QPopupMenu *popup = new QPopupMenu( this );
         insertDefaultMenuItems( popup );
         bool flag = ( echoMode()==QLineEdit::Normal && !isReadOnly() );
-        bool allMarked = ( markedText().length() == text().length() );        
+        bool allMarked = ( markedText().length() == text().length() );
         popup->setItemEnabled( KCompletionBase::Cut, flag && hasMarkedText() );
         popup->setItemEnabled( KCompletionBase::Copy, flag && hasMarkedText() );
-        popup->setItemEnabled( KCompletionBase::Clear, flag && (text().length() > 0) );        
+        popup->setItemEnabled( KCompletionBase::Clear, flag && (text().length() > 0) );
         popup->setItemEnabled( KCompletionBase::Paste, flag &&
                                (bool)QApplication::clipboard()->text().length() );
         popup->setItemEnabled( KCompletionBase::Unselect, hasMarkedText() );
         popup->setItemEnabled( KCompletionBase::SelectAll, flag && hasMarkedText() && !allMarked );
-        
+
         int result = popup->exec( e->globalPos() );
         delete popup;
-                
+
         if( result == KCompletionBase::Cut )
             cut();
         else if( result == KCompletionBase::Copy )
@@ -243,7 +243,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         else if( result == KCompletionBase::SelectAll )
             selectAll();
         else if( result == KCompletionBase::Default )
-            setCompletionMode( KGlobalSettings::completionMode() );            
+            setCompletionMode( KGlobalSettings::completionMode() );
         else if( result == KCompletionBase::NoCompletion )
             setCompletionMode( KGlobalSettings::CompletionNone );
         else if( result == KCompletionBase::AutoCompletion )
@@ -252,7 +252,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
             setCompletionMode( KGlobalSettings::CompletionMan );
         else if( result == KCompletionBase::ShellCompletion )
             setCompletionMode( KGlobalSettings::CompletionShell );
-        return;      
+        return;
     }
     QLineEdit::mousePressEvent( e );
 }
