@@ -152,13 +152,14 @@ bool KImageIO::canRead(const QString& type)
 QStringList KImageIO::types(Mode ) {
   static QStringList types;
   if (types.isEmpty()) {
-    types.append("GIF");
+    
 #ifdef HAVE_QIMGIO
     types.append("JPEG");
 #endif
+    types.append("PNG");
     types.append("XPM");
     types.append("XBM");
-    types.append("PNG");
+    types.append("GIF");
   }
   return types;
 }
