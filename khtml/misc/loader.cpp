@@ -193,7 +193,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
 {
     // Set the type we want (probably css or xml)
     QString ah = QString::fromLatin1( accept );
-    if ( ah.length() )
+    if ( !ah.isEmpty() )
         ah += ",";
     ah += "*/*;q=0.1";
     setAccept( ah );
@@ -482,7 +482,7 @@ static QString buildAcceptHeader()
     QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
     if (result.endsWith(", "))
         result.truncate(result.length()-2);
-    if ( result.length() )
+    if ( !result.isEmpty() )
         result += ";q=0.5";
     result += ",*/*;q=0.1";
     return result;
