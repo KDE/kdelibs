@@ -23,7 +23,7 @@
 #include <qlist.h>
 #include <kaction.h>
 
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 #include <kxmlgui.h>
 #include <kparts/part.h>

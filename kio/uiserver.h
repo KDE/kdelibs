@@ -24,7 +24,7 @@
 #include <dcopobject.h>
 #include <kio/global.h>
 #include <kurl.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 #include <kdatastream.h>
 
 #include <klistview.h>
@@ -177,7 +177,7 @@ protected:
  * @author Matej Koss <koss@miesto.sk>
  * @internal
  */
-class UIServer : public KTMainWindow, public DCOPObject {
+class UIServer : public KMainWindow, public DCOPObject {
 
   K_DCOP
   Q_OBJECT

@@ -335,7 +335,7 @@ void ListProgress::writeConfig() {
 //------------------------------------------------------------
 
 
-UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
+UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
 {
 
   readSettings();
@@ -356,7 +356,7 @@ UIServer::UIServer() : KTMainWindow(""), DCOPObject("UIServer")
   // setup listview
   listProgress = new ListProgress( this, "progresslist" );
 
-  setView( listProgress, true);
+  setCentralWidget( listProgress );
 
   connect( listProgress, SIGNAL( selectionChanged() ),
 	   SLOT( slotSelection() ) );

@@ -413,7 +413,7 @@ public:
    * Destructor
    * Applications using a ReadWritePart should make sure, before
    * destroying it, to call @ref #closeURL().
-   * In @ref KTMainWindow::queryClose(), for instance, they should allow
+   * In @ref KMainWindow::queryClose(), for instance, they should allow
    * closing only if the return value of @ref #closeURL() was true.
    * This allows to cancel.
    */
