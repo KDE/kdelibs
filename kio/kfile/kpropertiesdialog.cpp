@@ -698,7 +698,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     QString path;
     if ( !m_bFromTemplate ) {
-      QString tmp = properties->kurl().path( 1 );
       isTrash = ( properties->kurl().protocol().find( "trash", 0, false)==0 );
       if ( properties->kurl().protocol().find("device", 0, false)==0)
             isDevice = true;
