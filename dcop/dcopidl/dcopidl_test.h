@@ -16,7 +16,7 @@ class Test2;
 
 class Test3;
 
-class Test : virtual public DCOPObject
+class Test : public MyParentClass, virtual public DCOPObject
 {
     K_DCOP
 public:

@@ -40,6 +40,7 @@ void yyerror( const char *s )
 %token <_str> T_STRING_LITERAL
 %token <_str> T_INCLUDE
 %token T_CLASS
+%token T_STRUCT
 %token T_LEFT_CURLY_BRACKET
 %token T_LEFT_PARANTHESIS
 %token T_RIGHT_CURLY_BRACKET
@@ -65,6 +66,8 @@ void yyerror( const char *s )
 %type <_str> body
 %type <_str> class_header
 %type <_str> super_classes
+%type <_str> super_class
+%type <_str> super_class_name
 %type <_str> typedef
 %type <_str> typedef_params
 %type <_str> function
@@ -101,31 +104,51 @@ rest
 	| T_CLASS T_IDENTIFIER T_SEMICOLON main
 	  {
 	  }
+	| T_STRUCT T_IDENTIFIER T_SEMICOLON main
+	  {
+	  }
 	;
 
-super_classes
-	: T_IDENTIFIER T_LEFT_CURLY_BRACKET
+super_class_name
+	: T_IDENTIFIER
 	  {
 		QString* tmp = new QString( "<SUPER name=\"%1\"/>" );
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	  }
-	| T_IDENTIFIER T_COMMA super_classes
+	;
+
+super_class
+	: T_VIRTUAL T_PUBLIC super_class_name
 	  {
-		QString* tmp = new QString( "<SUPER name=\"%1\"/>%2" );
-		*tmp = tmp->arg( *($1) ).arg( *($3) );
-		$$ = tmp;
+		$$ = $3;
+	  }
+	| T_PUBLIC super_class_name
+	  {
+		$$ = $2;
+	  }
+	| super_class_name
+	  {
+		$$ = $1;
+	  }
+	;
+
+super_classes
+	: super_class T_LEFT_CURLY_BRACKET
+	  {
+		$$ = $1;
+	  }
+	| super_class T_COMMA super_classes
+	  {
+		/* $$ = $1; */
+		$$ = new QString( *($1) + *($3) );
 	  }
 	;
 
 class_header
-	: T_COLON T_VIRTUAL T_PUBLIC super_classes
+	: T_COLON super_classes
 	  {
-		$$ = $4;
-	  }
-	| T_COLON T_PUBLIC super_classes
-	  {
-		$$ = $3;
+		$$ = $2;
 	  }
 	| T_LEFT_CURLY_BRACKET
 	  {

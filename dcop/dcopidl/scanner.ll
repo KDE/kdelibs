@@ -161,6 +161,7 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 const			return T_CONST;
 enum			return T_ENUM;
 class			return T_CLASS;
+struct			return T_STRUCT;
 virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
 "k_dcop"		return T_DCOP_AREA;
