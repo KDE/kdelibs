@@ -53,7 +53,8 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     frame = Void;
 
     incremental = false;
-    
+    m_noBorder = true;
+
     // reset font color and sizes here, if we don't have strict parse mode.
     // this is 90% compatible to ie and mozilla, and the by way easiest solution...
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
@@ -61,7 +62,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
 	addCSSProperty( CSS_PROP_FONT_SIZE, "medium" );
 	addCSSProperty( CSS_PROP_COLOR, doc->textColor() );
 	addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_default" );
-    } 
+    }
 }
 
 HTMLTableElementImpl::~HTMLTableElementImpl()
@@ -282,6 +283,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 #ifdef DEBUG_DRAW_BORDER
     	border=1;
 #endif
+        m_noBorder = !border;
 	QString str;
 	str.sprintf("%dpx", border);
 	addCSSProperty(CSS_PROP_BORDER_WIDTH, str);
@@ -643,19 +645,19 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 	int border;
 	border = attr->val() ? attr->val()->toInt() : 0;
 	QString str;
-	str.sprintf("%dpx solid black", border);
-	addCSSProperty(CSS_PROP_BORDER, str);
+	str.sprintf("%dpx", border);
+	addCSSProperty(CSS_PROP_BORDER_WIDTH, str);
 	break;
     }
     case ATTR_ROWSPAN:
 	// ###
 	rSpan = attr->val() ? attr->val()->toInt() : 1;
-	if(rSpan < 1) rSpan = 1; // fix for GNOME websites... ;-)
+	if(rSpan < 1) rSpan = 1;
 	break;
     case ATTR_COLSPAN:
 	// ###
 	cSpan = attr->val() ? attr->val()->toInt() : 1;
-	if(cSpan < 1) cSpan = 1; // fix for GNOME websites... ;-)
+	if(cSpan < 1) cSpan = 1;
 	break;
     case ATTR_NOWRAP:
 	nWrap = (attr->val() != 0);
@@ -691,6 +693,19 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 {
+    HTMLElementImpl* p = static_cast<HTMLElementImpl*>(_parent);
+    while(p && p->id() != ID_TABLE)
+        p = static_cast<HTMLElementImpl*>(p->parentNode());
+
+    if(p) {
+        HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
+
+        if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull())
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0px");
+        if(!table->getAttribute(ATTR_BORDERCOLOR).isNull())
+            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
+    }
+
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();
     if(r)

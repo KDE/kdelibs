@@ -111,7 +111,9 @@ protected:
     Frame frame;
     Rules rules;
 
-    bool incremental;
+    bool incremental : 1;
+    bool m_noBorder  : 1;
+    friend class HTMLTableCellElementImpl;
 };
 
 // -------------------------------------------------------------------------
@@ -272,7 +274,6 @@ public:
     virtual tagStatus endTag() { return CAPTIONEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-
 };
 
 }; //namespace
