@@ -34,22 +34,9 @@
 #include <fam.h>
 #endif
 
-#ifdef __linux__
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#if defined(_XOPEN_SOURCE) && _XOPEN_SOURCE - 0 < 500
-#undef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 500
-#endif
+#ifdef HAVE_DNOTIFY
 #include <fcntl.h>
 #include <signal.h>
-#ifdef F_NOTIFY
-#define HAVE_DNOTIFY
-#endif
-#endif
-
-#ifdef HAVE_DNOTIFY
 #include <qintdict.h>
 #endif
 
