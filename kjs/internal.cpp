@@ -890,19 +890,24 @@ KJSO KJS::hasInstance(const KJSO &F, const KJSO &V)
 
 #ifndef NDEBUG
 #include <stdio.h>
-void KJS::printInfo( const char *s, const KJSO &o )
+void KJS::printInfo( const char *s, const KJSO &o, int lineno )
 {
     if (o.isNull())
-      fprintf(stderr, "KJS: %s: (null)\n", s);
+      fprintf(stderr, "KJS: %s: (null)", s);
     else {
       KJSO v = o;
       if (o.isA(ReferenceType))
 	  v = o.getValue();
-      fprintf(stderr, "KJS: %s: %s : %s (%p)\n",
+      fprintf(stderr, "KJS: %s: %s : %s (%p)",
 	      s,
 	      v.toString().value().ascii(),
 	      v.imp()->typeInfo()->name,
 	      (void*)v.imp());
+    if (lineno >= 0)
+      fprintf(stderr, ", line %d\n",lineno);
+    else
+      fprintf(stderr, "\n");
+    if (!o.isNull())
       if (o.isA(ReferenceType)) {
 	  fprintf(stderr, "KJS: Was property '%s'\n", o.getPropertyName().ascii());
 	  printInfo("of", o.getBase());

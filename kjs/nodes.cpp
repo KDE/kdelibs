@@ -364,7 +364,7 @@ KJSO FunctionCallNode::evaluate()
 
   if (!v.isObject()) {
 #ifndef NDEBUG
-    printInfo("Failed function call attempt on", e);
+    printInfo("Failed function call attempt on", e, line);
 #endif
     delete argList;
     return throwError(TypeError, "Expression is no object. Cannot be called.");
@@ -372,7 +372,7 @@ KJSO FunctionCallNode::evaluate()
 
   if (!v.implementsCall()) {
 #ifndef NDEBUG
-    printInfo("Failed function call attempt on", e);
+    printInfo("Failed function call attempt on", e, line);
 #endif
     delete argList;
     return throwError(TypeError, "Expression does not allow calls.");

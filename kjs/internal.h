@@ -397,7 +397,7 @@ namespace KJS {
 
 // #define KJS_VERBOSE
 #ifndef NDEBUG
-  void printInfo( const char *s, const KJSO &o );
+  void printInfo( const char *s, const KJSO &o, int lineno = -1 );
 #endif
 
 }; // namespace

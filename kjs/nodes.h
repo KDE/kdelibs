@@ -80,11 +80,11 @@ namespace KJS {
 #endif
   protected:
     KJSO throwError(ErrorType e, const char *msg);
+    int line;
   private:
     // disallow assignment and copy-construction
     Node(const Node &);
     Node& operator=(const Node&);
-    int line;
     static  int nodeCount;
     static Node *first;
     Node *next, *prev;
