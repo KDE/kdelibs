@@ -28,6 +28,9 @@
 
 namespace KIO { class Job; }
 
+class QWidgetStack;
+class QBoxLayout;
+
 /**
 * This is a special IO progress widget.
 *
@@ -86,8 +89,9 @@ protected:
 
   void setMode();
 
-  bool eventFilter( QObject *, QEvent * );
-
+  virtual bool eventFilter( QObject *, QEvent * );
+  QBoxLayout *box;
+  QWidgetStack *stack;
 };
 
 #endif  //  __statusbarprogress_h__

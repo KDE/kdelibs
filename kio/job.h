@@ -178,11 +178,11 @@ namespace KIO {
      */
     ListJob *listRecursive( const KURL& url, bool showProgressInfo = true );
 
-    CopyJob *copy( const KURL& src, const KURL& dest );
-    CopyJob *copy( const KURL::List& src, const KURL& dest );
+    CopyJob *copy( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    CopyJob *copy( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
-    CopyJob *move( const KURL& src, const KURL& dest );
-    CopyJob *move( const KURL::List& src, const KURL& dest );
+    CopyJob *move( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    CopyJob *move( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
      * Delete a file or directory
@@ -190,8 +190,8 @@ namespace KIO {
      * @param shred if true, delete in a way that makes recovery impossible
      * (only supported for local files currently)
      */
-    DeleteJob *del( const KURL& src, bool shred = false );
-    DeleteJob *del( const KURL::List& src, bool shred = false );
+    DeleteJob *del( const KURL& src, bool shred = false, bool showProgressInfo = true );
+    DeleteJob *del( const KURL::List& src, bool shred = false, bool showProgressInfo = true );
 };
 
 #endif

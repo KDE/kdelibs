@@ -79,7 +79,7 @@ kioinclude_HEADERS = connection.h renamedlg.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
-	statusbarprogress.h observer.h
+	statusbarprogress.h
 
 #listprogressdlg.h
 
@@ -87,7 +87,7 @@ kioinclude_HEADERS = connection.h renamedlg.h \
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	uiserver.h
+	uiserver.h observer.h
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = kurifilterplugin.desktop

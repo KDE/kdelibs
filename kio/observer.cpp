@@ -17,11 +17,11 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <kio/observer.h>
-#include <kio/global.h>
 #include <kdebug.h>
 #include <kapp.h>
 #include <dcopclient.h>
+
+#include "observer.h"
 
 #include "uiserver_stub.h"
 
@@ -60,3 +60,5 @@ void Observer::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
 {
   kdDebug() << "** Observer::slotEntries " << job << " " << entries.count() << endl;
 }
+
+#include "observer.moc"

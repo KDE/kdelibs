@@ -113,32 +113,6 @@ namespace KIO {
          */
         void result( KIO::Job *job );
 
-        void processedData( KIO::Job *, unsigned long data_size );
-
-        /**
-         * Progress signals (TO BE MOVED TO RESPECTIVE JOBS)
-         */
-        void totalSize( KIO::Job *, unsigned long size );
-        void totalFiles( KIO::Job *, unsigned long files );
-        void totalDirs( KIO::Job *, unsigned long dirs );
-
-        void processedSize( KIO::Job *, unsigned long size );
-        void processedFiles( KIO::Job *, unsigned long files );
-        void processedDirs( KIO::Job *, unsigned long dirs );
-
-        void speed( KIO::Job *, unsigned long bytes_per_second );
-        void percent( KIO::Job *, unsigned int percent );
-
-        /**
-         * Status signals
-         */
-        void copyingFile( KIO::Job *, const KURL& from, const KURL& to );
-        void movingFile( KIO::Job *, const KURL& from, const KURL& to );
-        void deletingFile( KIO::Job *, const KURL& file );
-        void renamingFile( KIO::Job *, const KURL& old_name, const KURL& new_name );
-        void canResume( KIO::Job *, bool can_resume );
-
-
     protected slots:
         /**
          * Called whenever a subjob finishes.
@@ -147,7 +121,6 @@ namespace KIO {
          * Override if you don't want subjobs errors to be propagated.
          */
         virtual void slotResult( KIO::Job *job );
-
 
     protected:
         /**
@@ -169,8 +142,6 @@ namespace KIO {
         int m_error;
         QString m_errorText;
         int id; // for uiserver
-
-        long int m_processedSize; // to be removed
     };
 
     /**
@@ -209,6 +180,11 @@ namespace KIO {
          */
         Slave *slave() { return m_slave; }
 
+    signals:
+        void totalSize( KIO::Job *, unsigned long size );
+        void processedSize( KIO::Job *, unsigned long size );
+        void percent( KIO::Job *, unsigned int percent );
+        void speed( KIO::Job *, unsigned long bytes_per_second );
 
     protected slots:
         /**
@@ -225,11 +201,17 @@ namespace KIO {
          */
         virtual void slotError( int , const QString & );
 
+        void slotTotalSize( unsigned long data_size );
+        void slotProcessedSize( unsigned long data_size );
+        void slotSpeed( unsigned long bytes_per_second );
+
     protected:
         Slave * m_slave;
         QByteArray m_packedArgs;
         KURL m_url;
         int m_command;
+        unsigned long m_totalSize;
+        unsigned int m_percent;
     };
 
     // Stat Job
@@ -369,6 +351,12 @@ namespace KIO {
          */
         virtual void slotResult( KIO::Job *job );
 
+    signals:
+        void processedSize( KIO::Job *, unsigned long size );
+        void percent( KIO::Job *, unsigned int percent );
+        void speed( KIO::Job *, unsigned long bytes_per_second );
+
+
     protected:
         void startCopyJob();
         void startDataPump();
@@ -436,13 +424,31 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
+        CopyJob( const KURL::List& src, const KURL& dest, bool move = false, bool observe = true );
 
     signals:
+
+        void totalSize( KIO::Job *, unsigned long size );
+        void totalFiles( KIO::Job *, unsigned long files );
+        void totalDirs( KIO::Job *, unsigned long dirs );
+
+        void processedSize( KIO::Job *, unsigned long size );
+        void processedFiles( KIO::Job *, unsigned long files );
+        void processedDirs( KIO::Job *, unsigned long dirs );
+
+        void percent( KIO::Job *, unsigned int percent );
+
+        void speed( KIO::Job *, unsigned long bytes_per_second );
+
+        void copying( KIO::Job *, const KURL& from, const KURL& to );
+        void moving( KIO::Job *, const KURL& from, const KURL& to );
         /**
          * The @p job is creating the directory @dir
          */
-        void creatingDir( KIO::Job * job, const KURL& dir );
+        void creatingDir( KIO::Job *, const KURL& dir );
+        void renaming( KIO::Job *, const KURL& old_name, const KURL& new_name );
+
+        void canResume( KIO::Job *, bool can_resume );
 
     protected:
         void startNextJob();
@@ -458,18 +464,21 @@ namespace KIO {
         void slotResultDeletingDirs( KIO::Job * job );
         void deleteNextDir();
 
-        void slotProcessedData( KIO::Job * job, unsigned long data_size );
-
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
+
+        void slotProcessedSize( KIO::Job*, unsigned long data_size );
+        void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
 
     private:
         bool m_move;
         enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
         enum { STATE_STATING, STATE_LISTING, STATE_CREATING_DIRS, STATE_CONFLICT_CREATING_DIRS,
                STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES, STATE_DELETING_DIRS } state;
-        long int m_totalSize;
+        unsigned long m_totalSize;
+        unsigned long m_processedSize;
+        unsigned int m_percent;
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
@@ -489,7 +498,21 @@ namespace KIO {
     Q_OBJECT
 
     public:
-    DeleteJob( const KURL::List& src, bool shred );
+        DeleteJob( const KURL::List& src, bool shred, bool observe = true );
+
+    signals:
+
+        void totalSize( KIO::Job *, unsigned long size );
+        void totalFiles( KIO::Job *, unsigned long files );
+        void totalDirs( KIO::Job *, unsigned long dirs );
+
+        void processedSize( KIO::Job *, unsigned long size );
+        void processedFiles( KIO::Job *, unsigned long files );
+        void processedDirs( KIO::Job *, unsigned long dirs );
+
+        void percent( KIO::Job *, unsigned int percent );
+
+        void deleting( KIO::Job *, const KURL& file );
 
     protected:
         void startNextJob();
@@ -500,10 +523,14 @@ namespace KIO {
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
 
+        void slotProcessedSize( KIO::Job*, unsigned long data_size );
+
     private:
         enum { STATE_STATING, STATE_LISTING,
                STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
-        long int m_totalSize;
+        unsigned long m_totalSize;
+        unsigned long m_processedSize;
+        unsigned int m_percent;
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;

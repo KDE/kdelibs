@@ -17,6 +17,8 @@
 */
 
 #include <qtooltip.h>
+#include <qlayout.h>
+#include <qwidgetstack.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -30,32 +32,32 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   m_bShowButton = button;
   m_bOnlyClean = true;  // we don't want to delete this widget, only clean
 
-  QFontMetrics fm = fontMetrics();
-  int w_offset = fm.width( "x" ) + 10;
-  int w = fm.width( " 999.9 kB/s 00:00:01 " ) + 8;
-  int h = fm.height() + 3;
+  int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
+  box = new QHBoxLayout( this, 0, 0 );
 
-  m_pButton = new QPushButton( "x", this );
-  m_pButton->setGeometry( 0, 1, w_offset, h - 1);
-  QToolTip::add( m_pButton, i18n("Cancel job") );
+  m_pButton = new QPushButton( "X", this );
+  box->addWidget( m_pButton  );
+  stack = new QWidgetStack( this );
+  box->addWidget( stack );
 
   m_pProgressBar = new KProgress( 0, 100, 0, KProgress::Horizontal, this );
   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
   m_pProgressBar->setLineWidth( 1 );
   m_pProgressBar->setBackgroundMode( QWidget::PaletteBackground );
   m_pProgressBar->setBarColor( Qt::blue );
-  m_pProgressBar->setGeometry( w_offset, 1, w + w_offset, h - 1 );
   m_pProgressBar->installEventFilter( this );
+  m_pProgressBar->setMinimumWidth( w );
+  stack->addWidget( m_pProgressBar, 1 );
 
   m_pLabel = new QLabel( "", this );
-  m_pLabel->setFrameStyle( QFrame::Box | QFrame::Raised );
-  m_pLabel->setGeometry( w_offset, 1, w + w_offset, h - 1 );
+  m_pLabel->setAlignment( AlignHCenter | AlignVCenter );
   m_pLabel->installEventFilter( this );
+  m_pLabel->setMinimumWidth( w );
+  stack->addWidget( m_pLabel, 2 );
+  setMinimumSize( sizeHint() );
 
   mode = None;
   setMode();
-
-  resize( w + w_offset, h );
 }
 
 
@@ -74,24 +76,23 @@ void StatusbarProgress::setMode() {
     if ( m_bShowButton ) {
       m_pButton->hide();
     }
-    m_pProgressBar->hide();
-    m_pLabel->hide();
+    stack->hide();
     break;
 
   case Label:
     if ( m_bShowButton ) {
       m_pButton->show();
     }
-    m_pProgressBar->hide();
-    m_pLabel->show();
+    stack->show();
+    stack->raiseWidget( m_pLabel );
     break;
 
   case Progress:
     if ( m_bShowButton ) {
       m_pButton->show();
     }
-    m_pProgressBar->show();
-    m_pLabel->hide();
+    stack->show();
+    stack->raiseWidget( m_pProgressBar );
     break;
   }
 }

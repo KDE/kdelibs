@@ -19,8 +19,9 @@
 #ifndef __kio_observer_h__
 #define __kio_observer_h__
 
-#include <kio/global.h>
 #include <qobject.h>
+
+#include "kio/global.h"
 
 class UIServer_stub;
 class KURL;

@@ -46,9 +46,9 @@ protected slots:
   virtual void slotSpeed( KIO::Job*, unsigned long _bytes_per_second );
   virtual void slotPercent( KIO::Job*, unsigned int _percent );
 
-  virtual void slotCopyingFile( KIO::Job*, const KURL& _src, const KURL& _dest );
-  virtual void slotMovingFile( KIO::Job*, const KURL& _src, const KURL& _dest );
-  virtual void slotDeletingFile( KIO::Job*, const KURL& _file );
+  virtual void slotCopying( KIO::Job*, const KURL& _src, const KURL& _dest );
+  virtual void slotMoving( KIO::Job*, const KURL& _src, const KURL& _dest );
+  virtual void slotDeleting( KIO::Job*, const KURL& _file );
   virtual void slotCreatingDir( KIO::Job*, const KURL& _dir );
 
   virtual void slotCanResume( KIO::Job*, bool );

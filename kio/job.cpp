@@ -62,7 +62,7 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
-Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_processedSize(0)
+Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0)
 {
     // All jobs delete themselves after emiting 'result'.
 
@@ -124,7 +124,7 @@ void Job::showErrorDialog( QWidget * parent )
 SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
                      bool showProgressInfo )
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
-    m_url(url), m_command(command)
+    m_url(url), m_command(command), m_totalSize(0), m_percent(0)
 {
     if (m_url.isMalformed())
     {
@@ -161,6 +161,15 @@ void SimpleJob::start(Slave *slave)
     connect( m_slave, SIGNAL( finished() ),
 	     SLOT( slotFinished() ) );
 
+    connect( m_slave, SIGNAL( totalSize( unsigned long ) ),
+	     SLOT( slotTotalSize( unsigned long ) ) );
+
+    connect( m_slave, SIGNAL( processedSize( unsigned long ) ),
+	     SLOT( slotProcessedSize( unsigned long ) ) );
+
+    connect( m_slave, SIGNAL( speed( unsigned long ) ),
+	     SLOT( slotSpeed( unsigned long ) ) );
+
     m_slave->connection()->send( m_command, m_packedArgs );
 }
 
@@ -187,6 +196,33 @@ void SimpleJob::slotError( int error, const QString & errorText )
     slotFinished();
 }
 
+void SimpleJob::slotTotalSize( unsigned long size )
+{
+  m_totalSize = size;
+  emit totalSize( this, size );
+}
+
+void SimpleJob::slotProcessedSize( unsigned long size )
+{
+  emit processedSize( this, size );
+
+  // calculate percents
+  uint ipercent = m_percent;
+
+  if ( m_totalSize == 0 )
+    m_percent = 100;
+  else
+    m_percent = (uint)(( (float)size / (float)m_totalSize ) * 100.0);
+  
+  if ( m_percent > ipercent ) {
+    emit percent( this, m_percent );
+  }
+}
+
+void SimpleJob::slotSpeed( unsigned long bytes_per_second )
+{
+  emit speed( this, bytes_per_second );
+}
 
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
@@ -476,8 +512,8 @@ MimetypeJob *KIO::mimetype(const KURL& url )
  */
 FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
                           bool move, bool overwrite, bool resume)
-    : Job(), m_src(src), m_dest(dest), m_permissions(permissions), m_move(move),
-      m_overwrite(overwrite), m_resume(resume)
+    : Job(), m_src(src), m_dest(dest),
+      m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume)
 {
     kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;
@@ -515,6 +551,15 @@ void FileCopyJob::startCopyJob()
     KIO_ARGS << m_src.path() << m_dest.path() << m_permissions << (Q_INT8) m_overwrite;
     m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs);
     addSubjob( m_copyJob );
+
+    connect( m_copyJob, SIGNAL(totalSize( KIO::Job*, unsigned long )),
+             this, SIGNAL( totalSize(KIO::Job*, unsigned long)) );
+
+    connect( m_copyJob, SIGNAL(processedSize( KIO::Job*, unsigned long )),
+             this, SIGNAL( processedSize(KIO::Job*, unsigned long)) );
+
+    connect( m_copyJob, SIGNAL(percent( KIO::Job*, unsigned long )),
+             this, SIGNAL( percent(KIO::Job*, unsigned long)) );
 }
 
 void FileCopyJob::startDataPump()
@@ -543,11 +588,6 @@ void FileCopyJob::slotData( KIO::Job * job, const QByteArray &data)
    m_getJob->suspend();
    m_putJob->resume(); // Drink the beer
    m_buffer = data;
-
-   emit processedData( this, data.size() );
-
-   m_processedSize += data.size();
-   emit processedSize( this, m_processedSize );
 }
 
 void FileCopyJob::slotDataReq( KIO::Job * job, QByteArray &data)
@@ -759,7 +799,7 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 //////////
 
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix) :
-    SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
+    SimpleJob(u, CMD_LISTDIR, QByteArray()),
     recursive(_recursive), prefix(_prefix)
 {
     // We couldn't set the args when calling the parent constructor,
@@ -886,12 +926,42 @@ void ListJob::start(Slave *slave)
 }
 
 
-CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move )
-    : Job(), m_move(move),
+CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo )
+  : Job(), m_move(move),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
-      m_totalSize(0), m_srcList(src), m_dest(dest),
+      m_totalSize(0), m_processedSize(0), m_srcList(src), m_dest(dest),
       m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
+  if ( showProgressInfo ) {
+    connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+
+    connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+
+    connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( percent( KIO::Job*, unsigned int ) ),
+	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned int ) ) );
+
+    connect( this, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
+	     Observer::self(), SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
+    connect( this, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
+	     Observer::self(), SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
+    connect( this, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
+	     Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
+
+    connect( this, SIGNAL( canResume( KIO::Job*, bool ) ),
+	     Observer::self(), SLOT( slotCanResume( KIO::Job*, bool ) ) );
+  }
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest );
     kdDebug(7007) << "CopyJob:stating the dest " << m_dest.url() << endl;
@@ -1470,17 +1540,17 @@ void CopyJob::copyNextFile()
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
             kdDebug() << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
-	    emit movingFile( this, (*it).uSource, (*it).uDest );
+	    emit moving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
             kdDebug() << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
-	    emit copyingFile( this, (*it).uSource, (*it).uDest );
+	    emit copying( this, (*it).uSource, (*it).uDest );
         }
         addSubjob(newjob);
-	connect( newjob, SIGNAL( processedData( KIO::Job *, unsigned long ) ),
-		 this, SLOT( slotProcessedData( KIO::Job *, unsigned long ) ) );
+	connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     }
     else
     {
@@ -1515,10 +1585,29 @@ void CopyJob::deleteNextDir()
     }
 }
 
-void CopyJob::slotProcessedData( KIO::Job *, unsigned long data_size )
+void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
+  kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
   m_processedSize += data_size;
   emit processedSize( this, m_processedSize );
+
+  // calculate percents
+  uint ipercent = m_percent;
+
+  if ( m_totalSize == 0 )
+    m_percent = 100;
+  else
+    m_percent = (uint)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
+  
+  if ( m_percent > ipercent ) {
+    emit percent( this, m_percent );
+  }
+}
+
+void CopyJob::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
+{
+  kdDebug(7007) << "CopyJob::slotSpeed " << bytes_per_second << endl;
+  emit speed( this, bytes_per_second );
 }
 
 void CopyJob::slotResultDeletingDirs( Job * job )
@@ -1586,38 +1675,61 @@ void CopyJob::slotResult( Job *job )
     }
 }
 
-CopyJob *KIO::copy(const KURL& src, const KURL& dest )
+CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
     KURL::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob( srcList, dest );
+    CopyJob *job = new CopyJob( srcList, dest, false, showProgressInfo );
     return job;
 }
 
-CopyJob *KIO::copy( const KURL::List& src, const KURL& dest )
+CopyJob *KIO::copy( const KURL::List& src, const KURL& dest, bool showProgressInfo )
 {
-    CopyJob *job = new CopyJob( src, dest );
+    CopyJob *job = new CopyJob( src, dest, false, showProgressInfo );
     return job;
 }
 
-CopyJob *KIO::move(const KURL& src, const KURL& dest )
+CopyJob *KIO::move(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
   KURL::List srcList;
   srcList.append( src );
-  CopyJob *job = new CopyJob( srcList, dest, true );
+  CopyJob *job = new CopyJob( srcList, dest, true, showProgressInfo );
   return job;
 }
 
-CopyJob *KIO::move( const KURL::List& src, const KURL& dest )
+CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressInfo )
 {
-  CopyJob *job = new CopyJob( src, dest, true );
+  CopyJob *job = new CopyJob( src, dest, true, showProgressInfo );
   return job;
 }
 
-DeleteJob::DeleteJob( const KURL::List& src, bool shred )
-    : Job(), m_totalSize(0), m_srcList(src), m_shred(shred)
+DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
+    : Job(), m_totalSize(0), m_processedSize(0), m_srcList(src), m_shred(shred)
 {
-    startNextJob();
+  if ( showProgressInfo ) {
+    connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+
+    connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+
+    connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+    connect( this, SIGNAL( percent( KIO::Job*, unsigned int ) ),
+	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned int ) ) );
+
+    connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
+	     Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
+  }
+  startNextJob();
 }
 
 void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
@@ -1703,16 +1815,18 @@ void DeleteJob::deleteNextFile()
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
             job = KIO::special(KURL("file:/"), packedArgs);
- 	    emit deletingFile( this, *it );
+ 	    emit deleting( this, *it );
         } else
         {
             // Normal deletion
             job = KIO::file_delete( *it );
-	    emit deletingFile( this, *it );
+	    emit deleting( this, *it );
         }
         if ( isLink ) symlinks.remove(it);
                  else files.remove(it);
         addSubjob(job);
+	connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     } else
     {
         state = STATE_DELETING_DIRS;
@@ -1732,6 +1846,25 @@ void DeleteJob::deleteNextDir()
     }
     else // We have finished deleting
         startNextJob();
+}
+
+void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
+{
+  kdDebug(7007) << "DeleteJob::slotProcessedSize " << data_size << endl;
+  m_processedSize += data_size;
+  emit processedSize( this, m_processedSize );
+
+  // calculate percents
+  uint ipercent = m_percent;
+
+  if ( m_totalSize == 0 )
+    m_percent = 100;
+  else
+    m_percent = (uint)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
+  
+  if ( m_percent > ipercent ) {
+    emit percent( this, m_percent );
+  }
 }
 
 void DeleteJob::slotResult( Job *job )
@@ -1847,17 +1980,17 @@ void DeleteJob::slotResult( Job *job )
     }
 }
 
-DeleteJob *KIO::del( const KURL& src, bool shred )
+DeleteJob *KIO::del( const KURL& src, bool shred, bool showProgressInfo )
 {
   KURL::List srcList;
   srcList.append( src );
-  DeleteJob *job = new DeleteJob( srcList, shred );
+  DeleteJob *job = new DeleteJob( srcList, shred, showProgressInfo );
   return job;
 }
 
-DeleteJob *KIO::del( const KURL::List& src, bool shred )
+DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
 {
-  DeleteJob *job = new DeleteJob( src, shred );
+  DeleteJob *job = new DeleteJob( src, shred, showProgressInfo );
   return job;
 }
 

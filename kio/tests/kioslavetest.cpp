@@ -213,6 +213,11 @@ void KioslaveTest::startJob() {
 
   pbStart->setEnabled( false );
 
+  bool observe = true;
+  if (progressMode != ProgressDefault) {
+    observe = false;
+  }
+
   switch ( selectedOperation ) {
   case List:
     job = KIO::listDir( src );
@@ -244,19 +249,19 @@ void KioslaveTest::startJob() {
     break;
 
   case Copy:
-    job = KIO::copy( src, dest );
+    job = KIO::copy( src, dest, observe );
     break;
 
   case Move:
-    job = KIO::move( src, dest );
+    job = KIO::move( src, dest, observe );
     break;
 
   case Delete:
-    job = KIO::del( src );
+    job = KIO::del( src, false, observe );
     break;
     
   case Shred:
-    job = KIO::del(src, true);
+    job = KIO::del(src, true, observe);
     break;
 
   case Mkdir:

@@ -47,11 +47,11 @@ void ProgressBase::Connect() {
 	   SLOT( slotPercent( KIO::Job*, unsigned int ) ) );
 
   connect( m_pJob, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
-	   SLOT( slotCopyingFile( KIO::Job*, const KURL&, const KURL& ) ) );
+	   SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
   connect( m_pJob, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
-	   SLOT( slotMovingFile( KIO::Job*, const KURL&, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( deletingFile( KIO::Job*, const KURL& ) ),
-	   SLOT( slotDeletingFile( KIO::Job*, const KURL& ) ) );
+	   SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
+	   SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
   connect( m_pJob, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
  	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
 

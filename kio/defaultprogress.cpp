@@ -167,7 +167,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second )
 }
 
 
-void DefaultProgress::slotCopyingFile( KIO::Job*, const KURL& _from,
+void DefaultProgress::slotCopying( KIO::Job*, const KURL& _from,
 					    const KURL& _to )
 {
   setCaption(i18n("Copy file(s) progress"));
@@ -177,7 +177,7 @@ void DefaultProgress::slotCopyingFile( KIO::Job*, const KURL& _from,
 }
 
 
-void DefaultProgress::slotMovingFile( KIO::Job*, const KURL& _from,
+void DefaultProgress::slotMoving( KIO::Job*, const KURL& _from,
 					    const KURL& _to )
 {
   setCaption(i18n("Move file(s) progress"));
@@ -195,7 +195,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& _dir )
 }
 
 
-void DefaultProgress::slotDeletingFile( KIO::Job*, const KURL& _url )
+void DefaultProgress::slotDeleting( KIO::Job*, const KURL& _url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
