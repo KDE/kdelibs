@@ -234,6 +234,7 @@ private:
   QVButtonGroup *defCertBG, *hostCertBG;
   QRadioButton *defSend, *defPrompt, *defDont;
   QListView *hostAuthList;
+  QPushButton *authAdd, *authRemove;
 
 
   KConfig *config;
