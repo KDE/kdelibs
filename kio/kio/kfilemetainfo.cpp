@@ -584,8 +584,8 @@ QString KFileMetaInfo::mimeType() const
 
 bool KFileMetaInfo::contains(const QString& key) const
 {
-    QStringList groups = preferredGroups();
-    for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it)
+    QStringList glist = groups();
+    for (QStringList::Iterator it = glist.begin(); it != glist.end(); ++it)
     {
         KFileMetaInfoGroup g = d->groups[*it];
         if (g.contains(key)) return true;
@@ -639,28 +639,27 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
                     it = d->groups.find( preferredGroup );
             }
         }
-        
+
         if ( it != d->groups.end() ) {
             KFileMetaInfoItem item = it.data().addItem( key );
             if ( item.isValid() )
                 return item;
         }
     }
-    
+
     QStringList groups = preferredGroups();
 
     KFileMetaInfoItem item;
-    bool ok = false;
 
     QStringList::ConstIterator groupIt = groups.begin();
     for ( ; groupIt != groups.end(); ++groupIt )
     {
         QMapIterator<QString,KFileMetaInfoGroup> it = d->groups.find( *groupIt );
-        if ( it != d->groups.end() ) 
+        if ( it != d->groups.end() )
         {
             KFileMetaInfoGroup group = it.data();
-            item = findEditableItem( group, key, ok );
-            if ( ok )
+            item = findEditableItem( group, key );
+            if ( item.isValid() )
                 return item;
         }
         else // not existant -- try to create the group
@@ -688,8 +687,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
 }
 
 KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group, 
-                                                   const QString& key, 
-                                                   bool& valid )
+                                                   const QString& key )
 {
     KFileMetaInfoItem item = group.addItem( key );
     if ( item.isValid() && item.isEditable() )
