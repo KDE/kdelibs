@@ -831,7 +831,7 @@ void DocumentImpl::clear()
     removeChildren();
 }
 
-ElementImpl *DocumentImpl::getElementById( const DOMString &elementId )
+ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
     QStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;

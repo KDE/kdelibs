@@ -177,7 +177,7 @@ public:
     void finishParsing (  );
     void clear();
     // moved from HTMLDocument in DOM2
-    ElementImpl *getElementById ( const DOMString &elementId );
+    ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     QString URL() const { return m_url; }
     void setURL(QString url) { m_url = url; }
