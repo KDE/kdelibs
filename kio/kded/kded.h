@@ -36,6 +36,7 @@
 #include <klibloader.h>
 
 class KDirWatch;
+class KService;
 
 // No need for this in libkio - apps only get readonly access
 class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
@@ -61,7 +62,10 @@ public:
 
    virtual QCStringList functions();
 
-   KDEDModule *loadModule(const QCString &obj);
+   void noDemandLoad(const QString &obj); // Don't load obj on demand
+
+   KDEDModule *loadModule(const QCString &obj, bool onDemand);
+   KDEDModule *loadModule(const KService *service, bool onDemand);
    bool unloadModule(const QCString &obj);
 
 public slots:
@@ -139,6 +143,7 @@ protected:
    QValueList<DCOPClientTransaction *> m_requests;
    QAsciiDict<KDEDModule> m_modules;
    QAsciiDict<KLibrary> m_libs;
+   QAsciiDict<QObject> m_dontLoad;
 };
 
 class KUpdateD : public QObject

@@ -48,6 +48,7 @@
 #include <kstandarddirs.h>
 #include <kdatastream.h>
 #include <kio/global.h>
+#include <kservicetype.h>
 
 static bool checkStamps = true;
 
@@ -129,21 +130,45 @@ bool Kded::process(const QCString &obj, const QCString &fun,
 {
   if (obj == "ksycoca") return false; // Ignore this one.
 
-  KDEDModule *module = loadModule(obj);
-  if (module)
+  if (m_dontLoad[obj])
+     return false;
+
+  KDEDModule *module = loadModule(obj, true);
+  if (!module)
      return false; 
 
   return module->process(fun, data, replyType, replyData);
 }
 
-KDEDModule *Kded::loadModule(const QCString &obj)
+void Kded::noDemandLoad(const QString &obj)
+{
+  m_dontLoad.insert(obj.latin1(), this);
+}
+
+KDEDModule *Kded::loadModule(const QCString &obj, bool onDemand)
 {
   KDEDModule *module = m_modules.find(obj);
   if (module)
      return module;
   KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
+  return loadModule(s, onDemand);
+}
+
+KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
+{
+  KDEDModule *module = 0;
   if (s && !s->library().isEmpty())
   {
+    if (onDemand)
+    {
+      QVariant p = s->property("X-KDE-Kded-load-on-demand");
+      if (p.isValid() && (p.toBool() == false))
+      {
+         noDemandLoad(s->desktopEntryName());
+         return 0;
+      }
+    }
+    QCString obj = s->desktopEntryName().latin1();
     // get the library loader instance
  
     KLibLoader *loader = KLibLoader::self();
@@ -179,8 +204,8 @@ KDEDModule *Kded::loadModule(const QCString &obj)
       }
       loader->unloadLibrary(QFile::encodeName(libname));
     }
+    kdDebug(7020) << "Could not load module '" << obj << "'\n";
   }
-  kdDebug(7020) << "Could not load module '" << obj << "'\n";
   return 0;
 }
 
@@ -512,7 +537,7 @@ public:
       QCString module;
       QDataStream arg( data, IO_ReadOnly );
       arg >> module;
-      bool result = (m_kded->loadModule(module) != 0);
+      bool result = (m_kded->loadModule(module, false) != 0);
       replyType = "bool";
       QDataStream _replyStream( replyData, IO_WriteOnly );
       _replyStream << result;
@@ -613,6 +638,25 @@ int main(int argc, char *argv[])
              kded, SLOT(slotApplicationRemoved(const QCString&)));
      client->setNotifications(true);
      client->setDaemonMode( true );
+
+     // Preload kded modules.
+     KService::List kdedModules = KServiceType::offers("KDEDModule");
+     for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
+     {
+         KService::Ptr service = *it;
+         bool autoload = service->property("X-KDE-Kded-autoload").toBool();
+         config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
+         autoload = config->readBoolEntry("autoload", autoload);
+         if (autoload)
+            kded->loadModule(service, false);
+
+         bool dontLoad = false;
+         QVariant p = service->property("X-KDE-Kded-load-on-demand");
+         if (p.isValid() && (p.toBool() == false))
+            dontLoad = true;
+         if (dontLoad)
+            kded->noDemandLoad(service->desktopEntryName());
+     }
 
      // During startup kdesktop waits for KDED to finish.
      // Send a notifyDatabaseChanged signal even if the database hasn't

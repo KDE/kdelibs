@@ -93,3 +93,13 @@ your print-command to the printer, the print module will make sure to
 inform the user when a print problem occurs (printer out of paper, printer
 on fire)
 
+A KDED module should install a .desktop file with
+	ServicesTypes=KDEDModule
+
+A KDED module will be loaded on startup if it has a line
+	X-KDE-Kded-autoload=true
+
+Normally KDED modules are loaded whenever they are accessed. On demand loading can
+be disabled by putting the following line in the .desktop file:
+	X-KDE-Kded-load-on-demand=false
+
