@@ -786,10 +786,9 @@ void KDirOperator::setCurrentItem( const QString& filename )
     const KFileViewItem *item = 0L;
 
     if ( !filename.isNull() )
-        item = static_cast<KFileViewItem *>(dir->find( filename ));
+        item = static_cast<KFileViewItem *>(dir->findByName( filename ));
 
     fileView->clearSelection();
-
     if ( item )
         fileView->setCurrentItem( QString::null, item );
 }
@@ -1111,7 +1110,7 @@ void KDirOperator::insertIntoView(const KFileItemList& items)
 {
     if ( items.isEmpty() )
 	return;
-    
+
     pendingMimeTypes.clear();
     KFileViewItemList list;
     KFileItemListIterator it( items );
@@ -1130,7 +1129,6 @@ void KDirOperator::slotIOFinished()
 {
     if ( dir->url().isLocalFile() ) {
 	fileView->clear();
-	KFileItemList &list = dir->items();
 	insertIntoView( dir->items() );
     }
 

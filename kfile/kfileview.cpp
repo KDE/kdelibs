@@ -115,6 +115,9 @@ bool KFileView::updateNumbers(const KFileViewItem *i)
 
 void KFileView::addItemList(const KFileViewItemList &list)
 {
+    if ( list.isEmpty() )
+	return;
+    
     KFileViewItem *tmp, *tfirst = 0;
     int counter = 0;
 
