@@ -151,8 +151,11 @@ void KWalletD::processTransactions() {
 }
 
 void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObject, uint wId) {
+	DCOPClient *dc = callingDcopClient();
+	if (!dc) return;
+	
 	int rc = open(wallet, wId);
-	QCString appid = friendlyDCOPPeerName();
+	QCString appid = dc->senderId();
 	DCOPRef(appid, returnObject).send("walletOpenResult", rc);
 }
 
