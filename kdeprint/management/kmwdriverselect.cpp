@@ -110,7 +110,7 @@ void KMWDriverSelect::slotDriverComment()
 {
 	int	index = m_list->currentItem();
 	if (m_entries && index >=0 && index < (int)(m_entries->count()) && !m_entries->at(index)->drivercomment.isEmpty())
-		KMessageBox::information(this, m_entries->at(index)->drivercomment);
+		KMessageBox::information(this, m_entries->at(index)->drivercomment, QString::null, QString::null, KMessageBox::AllowLink);
 	else
 		KMessageBox::error(this, i18n("No information about the selected driver."));
 }
