@@ -103,7 +103,7 @@ int rc = -1;
 	if (r.isValid()) {
 		r.get(rc);
 	}
-return -1;
+return rc;
 }
 
 
@@ -113,7 +113,7 @@ int rc = -1;
 	if (r.isValid()) {
 		r.get(rc);
 	}
-return -1;
+return rc;
 }
 
 
