@@ -27,7 +27,8 @@
 
 class KStaticDeleterBase {
 public:
-    virtual void destructObject() = 0;
+    virtual ~KStaticDeleterBase() { }
+    virtual void destructObject();
 };
 
 /**
