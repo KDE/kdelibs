@@ -62,9 +62,12 @@ public:
 
 // -------------------------------------------------------------------------
 
+typedef enum { BRNone=0, BRLeft, BRRight, BRAll} BRClear;
+
 class HTMLBRElementImpl : public HTMLElementImpl
 {
 public:
+
     HTMLBRElementImpl(DocumentImpl *doc);
 
     ~HTMLBRElementImpl();
@@ -72,9 +75,17 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
     virtual bool isRendered() { return true; }
+    
+    virtual void parseAttribute(Attribute *attr);
 
     virtual tagStatus startTag() { return BRStartTag; }
     virtual tagStatus endTag() { return BREndTag; }
+    
+    virtual BRClear clear() { return _clear; }
+    
+protected:
+    
+    BRClear _clear; 
 };
 
 // -------------------------------------------------------------------------

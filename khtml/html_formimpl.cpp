@@ -395,6 +395,20 @@ void HTMLGenericFormElementImpl::detach()
     view = 0;
 }
 
+short HTMLGenericFormElementImpl::getMinWidth() const 
+{
+    if (w)
+    	return w->width();
+    return 0;
+}
+
+short HTMLGenericFormElementImpl::getMaxWidth() const 
+{
+    if (w)
+    	return w->width();
+    return 0;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)

@@ -110,6 +110,9 @@ public:
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
+    
+    virtual short getMinWidth() const;
+    virtual short getMaxWidth() const;
 
 protected:
     HTMLFormElementImpl *getForm() const;

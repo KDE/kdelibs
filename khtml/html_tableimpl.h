@@ -229,6 +229,8 @@ protected:
     void calcPercentRelativeMax(int c, ColInfo* col);
     void spreadSpanMinMax(int col, int span, int min, int max, LengthType type);
     int distributeWidth(int distrib, LengthType type, int typeCols );
+    int distributeMinWidth(int distrib, LengthType distType, 
+    	    LengthType toType, int start, int span ); 
     
     int maxColSpan;
     

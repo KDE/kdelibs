@@ -202,6 +202,7 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 
 HTMLBRElementImpl::HTMLBRElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
+    _clear = BRNone;
 }
 
 HTMLBRElementImpl::~HTMLBRElementImpl()
@@ -217,6 +218,24 @@ ushort HTMLBRElementImpl::id() const
 {
     return ID_BR;
 }
+
+void HTMLBRElementImpl::parseAttribute(Attribute *attr)
+{
+    switch(attr->id)
+    {
+    case ATTR_CLEAR:
+	if ( strcasecmp( attr->value(), "left" ) == 0 )
+	    _clear = BRLeft;
+	else if ( strcasecmp( attr->value(), "right" ) == 0 )
+	    _clear = BRRight;
+	else if ( strcasecmp( attr->value(), "all" ) == 0 )
+	    _clear = BRAll;
+	break;
+    default:
+    	HTMLElementImpl::parseAttribute(attr);
+    }    
+}
+
 
 // -------------------------------------------------------------------------
 

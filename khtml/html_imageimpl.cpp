@@ -92,11 +92,11 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
 				  int _tx, int _ty, DOMString &url)
 {
     printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
-    if (ismap)
+    if (usemap.length()>0)
     {
-    	cout << "ismap: " << usemap.string() << endl;
+    	cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
-    	if ( (map = HTMLMapElementImpl::getMap(usemap)) )
+    	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
     	    return map->mapMouseEvent(_x-getXPos()-_tx, _y-getYPos()-_ty+ascent,
 	    	getWidth(), getHeight(), button, type, url);
     }
@@ -161,7 +161,6 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
 	if ( attr->value()[0] == '#' )
 	{
 	    usemap = attr->value();
-	    ismap = true;
 	}
 	else
 	{

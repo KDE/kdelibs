@@ -210,6 +210,8 @@ protected:
 
     inline int getRightMargin(int y);
     inline int getLeftMargin(int y);
+    inline int getLeftBottom();
+    inline int getRightBottom();
     inline int getWidth(int y);
 
     void insertMarginElement(HAlign align, int y, NodeImpl* node);

@@ -33,6 +33,7 @@
 #include <qlist.h>
 
 #include "html_elementimpl.h"
+#include "html_inlineimpl.h"
 #include "html_blockimpl.h"
 #include "html_imageimpl.h"
 #include "html_documentimpl.h"
@@ -53,6 +54,16 @@
 
 using namespace DOM;
 
+
+inline int MAX(int a, int b)
+{
+    return a > b ? a : b;
+}
+
+inline int MIN(int a, int b)
+{
+    return a < b ? a : b;
+}
 
 HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 {
@@ -226,8 +237,12 @@ void HTMLElementImpl::setAvailableWidth(int w)
     while(child != 0)
     {
     	if (child->getMinWidth() > availableWidth)
+	{
 	    printf("ERROR: %d too narrow availableWidth=%d minWidth=%d\n",
 	    id(), availableWidth, child->getMinWidth());
+	    calcMinMaxWidth();
+	    setLayouted(false);
+	}
 	child->setAvailableWidth(availableWidth);
 	child = child->nextSibling();
     }
@@ -251,7 +266,7 @@ void HTMLElementImpl::close()
 
 void HTMLElementImpl::updateSize()
 {
-//    printf("element::updateSize()\n");
+    printf("element::updateSize()\n");
     setLayouted(false);
     calcMinMaxWidth();
     if(_parent)
@@ -515,6 +530,7 @@ void HTMLPositionedElementImpl::updateSize()
 	layout(true);	
 	if(ascent != oldAscent || descent != oldDescent)
 	{
+	    setLayouted(false);
 	    if(_parent) _parent->updateSize();
 	} else {
 	    //printf("HACK!\n");
@@ -656,6 +672,8 @@ void HTMLBlockElementImpl::layout( bool deep )
 	    child = child->nextSibling();
 	}
     }
+    descent = MAX (descent, getLeftBottom());
+    descent = MAX (descent, getRightBottom());
     setLayouted(layouted_);
 }
 
@@ -739,6 +757,41 @@ HTMLBlockElementImpl::getRightMargin(int y) {
     return res;
 
 }
+
+int
+HTMLBlockElementImpl::getLeftBottom() {
+    if (!leftMargin)
+	return 0;;
+    QListIterator<MarginRange> lIt(*leftMargin);
+    int bottom=0;
+    MarginRange* r;	
+    while ( (r = lIt.current()) )
+    {
+	if (r->endY>bottom)
+	    bottom=r->endY;
+	++lIt;
+    }
+    return bottom;
+
+}
+
+int
+HTMLBlockElementImpl::getRightBottom() {
+    if (!rightMargin)
+	return 0;
+    QListIterator<MarginRange> rIt(*rightMargin);
+    int bottom=0;
+    MarginRange* r;	
+    while ( (r = rIt.current()) )
+    {
+	if (r->endY>bottom)
+	    bottom=r->endY;
+	++rIt;
+    }
+    return bottom;
+}
+
+
 void
 HTMLBlockElementImpl::clearMargins()
 {
@@ -764,9 +817,16 @@ HTMLBlockElementImpl::calcFloating(NodeImpl *child, int elemY)
 
     if (child->hAlign()==Left)
     {
-	child->setXPos(child->hSpace());			
-	child->setYPos(elemY+child->vSpace());
-	insertMarginElement(Left,elemY,child);
+    	int fx = getLeftMargin(elemY);
+	int fy = elemY;
+	if (getRightMargin(elemY)-fx < child->getWidth())
+	{
+	    fx=0;
+	    fy=getLeftBottom()+1;
+	}
+	child->setXPos(fx+child->hSpace());			
+	child->setYPos(fy+child->vSpace());
+	insertMarginElement(Left,fy,child);
     }
     else
     {
@@ -1239,13 +1299,38 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    break;
  		case ID_P + ID_CLOSE_TAG:				    
 		    lineDescent += 8;
-		case ID_BR:
 		    if (lineAscent==0)
 		    	lineAscent=defTextHeight;
 		    endOfLine = true;
 		    nextNode = true;
+		    break;		    
+		case ID_BR:
+		    {
+		    HTMLBRElementImpl *br = 
+		    	static_cast<HTMLBRElementImpl*>(current);
+			
+		    if (lineAscent==0)
+		    	lineAscent=defTextHeight;			
+			
+		    switch(br->clear())
+		    {
+		    	case BRNone:
+			    break;			    
+			case BRLeft:
+			    descent = MAX(descent,getLeftBottom());
+			    break;
+			case BRRight:
+			    descent = MAX(descent,getRightBottom());
+			    break;
+			case BRAll:
+			    descent = MAX(descent,
+			    	MAX(getLeftBottom(),getRightBottom()));
+				
+		    }
+		    endOfLine = true;
+		    nextNode = true;
+		    }
 		    break;
-
  		default:	    		
  		    current->setXPos(xPos+current->hSpace());
   		    int asc;
@@ -1383,15 +1468,20 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
     NodeImpl *child = firstChild();
     while(child != 0)
     {
-	if(child->isInline() || child->isFloating())
+	if((child->isInline() || child->isFloating() ) &&
+	    !( child->id()==ID_BR || child->id()==ID_P))  // any more?
 	{
-	    // ### we have to take care about nbsp's, and places were
-	    //     we can't break between two inline objects...
+	    // we have to take care about nbsp's, and places were
+	    // we can't break between two inline objects...
 	    // But for the moment, this will do...
+	    
+	    // Nghhhh... hunted this one long time
+	    // really important to get this right for table layouting -antti
+	    	  
 	    int w = child->getMinWidth();
 	    if(minWidth < w) minWidth = w;
 	    w = child->getMaxWidth();
-	    inlineMax += w;
+	    inlineMax += w;	    
 
 	}
 	else

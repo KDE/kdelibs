@@ -26,7 +26,7 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
-//#define TOKEN_DEBUG
+// #define TOKEN_DEBUG
 
 
 #ifdef HAVE_CONFIG_H
@@ -327,6 +327,7 @@ void HTMLTokenizer::parseComment(HTMLStringIt &src)
 	    // We got a '-->' sequence
 	    comment = false;
 	    ++src;
+	    discard=LFDiscard;
 	    return; // Finished parsing comment!
 	}
 	else
