@@ -242,7 +242,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
         //     before the import rule)
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "import rule = " << url.string() << ", mediaList = "
-                        << mediaList.string << endl;
+                        << mediaList.string() << endl;
 #endif
         // ignore block following @import rule
         if( *curP == '{' ) {
