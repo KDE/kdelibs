@@ -16,4 +16,7 @@
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
 <!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
-<!ENTITY FAQ    '<acronym>FAQ</acronym>'>
+<!ENTITY FAQ    '<acronym>PFs</acronym>'>
+<!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
+<!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
+<!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
