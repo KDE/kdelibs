@@ -311,6 +311,19 @@
 >>55 string   application/x-kivio         application/x-kivio
 >>55 string   application/x-karbon        application/x-karbon
 
+# OpenOffice.org 1.1 puts the mimetype into the header too
+0    string   PK\003\004			     application/x-zip
+>30  string   mimetype     
+>>38 string   application/vnd.sun.xml.calc               application/vnd.sun.xml.calc
+>>38 string   application/vnd.sun.xml.calc.template      application/vnd.sun.xml.calc.template
+>>38 string   application/vnd.sun.xml.draw               application/vnd.sun.xml.draw
+>>38 string   application/vnd.sun.xml.draw.template      application/vnd.sun.xml.draw.template
+>>38 string   application/vnd.sun.xml.impress            application/vnd.sun.xml.impress
+>>38 string   application/vnd.sun.xml.impress.template   application/vnd.sun.xml.impress.template
+>>38 string   application/vnd.sun.xml.writer             application/vnd.sun.xml.writer
+>>38 string   application/vnd.sun.xml.writer.master      application/vnd.sun.xml.writer.master
+>>38 string   application/vnd.sun.xml.writer.template    application/vnd.sun.xml.writer.template
+
 # BZIP2
 0	string          BZh             application/x-bzip2
 
