@@ -250,7 +250,7 @@ private:
  * @see KDataToolAction, and for activating a tool, passing it the data
  * (and possibly getting modified data from it).
  */
-class KDataTool : public QObject
+class KIO_EXPORT KDataTool : public QObject
 {
     Q_OBJECT
 public:
