@@ -464,6 +464,9 @@ Value KJS::parseDate(const String &s)
   if ( firstSlash == -1 )
   {
     time_t seconds = KRFCDate_parseDate( u );
+#ifdef KJS_VERBOSE
+    fprintf(stderr,"KRFCDate_parseDate returned seconds=%d\n",seconds);
+#endif
     if ( seconds == -1 )
       return Undefined();
     else
@@ -547,6 +550,8 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      //     Sat, 01 Jan 2000 08:00:00 GMT
      // or
      //     01 Jan 99 22:00 +0100    (exceptions in rfc822/rfc2822)
+     // ### non RFC format, added for Javascript:
+     //     [Wednesday] January 09 1999 23:12:40 GMT
      //
      // We ignore the weekday
      //
@@ -556,13 +561,39 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      const char *dateString = _date.ascii();
      int day = 0;
      char monthStr[4];
-     int month = 0;
+     int month = -1; // not set yet
      int year = 0;
      int hour = 0;
      int minute = 0;
      int second = 0;
 
+     // Skip leading space
+     while(*dateString && isspace(*dateString))
+     	dateString++;
+
+     const char *wordStart = dateString;
+     // Check contents of first words if not number
      while(*dateString && !isdigit(*dateString))
+     {
+        if ( isspace(*dateString) && dateString - wordStart >= 3 )
+        {
+          monthStr[0] = tolower(*wordStart++);
+          monthStr[1] = tolower(*wordStart++);
+          monthStr[2] = tolower(*wordStart++);
+          monthStr[3] = '\0';
+          //fprintf(stderr,"KJS::parseDate found word starting with '%s'\n", monthStr);
+          const char *str = strstr(haystack, monthStr);
+          if (str)
+            month = (str-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
+          while(*dateString && isspace(*dateString))
+             dateString++;
+          wordStart = dateString;
+        }
+        else
+           dateString++;
+     }
+
+     while(*dateString && isspace(*dateString))
      	dateString++;
 
      if (!*dateString)
@@ -583,34 +614,40 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      while(*dateString && isspace(*dateString))
      	dateString++;
 
-     for(int i=0; i < 3;i++)
+     if ( month == -1 ) // not found yet
      {
-         if (!*dateString || (*dateString == '-') || isspace(*dateString))
+        for(int i=0; i < 3;i++)
+        {
+           if (!*dateString || (*dateString == '-') || isspace(*dateString))
               return result;  // Invalid date
-         monthStr[i] = tolower(*dateString++);
+           monthStr[i] = tolower(*dateString++);
+        }
+        monthStr[3] = '\0';
+
+        newPosStr = (char*)strstr(haystack, monthStr);
+
+        if (!newPosStr)
+           return result;  // Invalid date
+
+        month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
+
+        if ((month < 0) || (month > 11))
+           return result;  // Invalid date
+
+        while(*dateString && (*dateString != '-') && !isspace(*dateString))
+           dateString++;
+
+        if (!*dateString)
+           return result;  // Invalid date
+
+        // '-99 23:12:40 GMT'
+        if ((*dateString != '-') && !isspace(*dateString))
+           return result;  // Invalid date
+        dateString++;
      }
-     monthStr[3] = '\0';
-
-     newPosStr = (char*)strstr(haystack, monthStr);
-
-     if (!newPosStr)
-     	return result;  // Invalid date
-
-     month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
 
      if ((month < 0) || (month > 11))
      	return result;  // Invalid date
-
-     while(*dateString && (*dateString != '-') && !isspace(*dateString))
-     	dateString++;
-
-     if (!*dateString)
-     	return result;  // Invalid date
-
-     // '-99 23:12:40 GMT'
-     if ((*dateString != '-') && !isspace(*dateString))
-     	return result;  // Invalid date
-     dateString++;
 
      // '99 23:12:40 GMT'
      year = strtol(dateString, &newPosStr, 10);
