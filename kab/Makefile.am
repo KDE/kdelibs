@@ -14,6 +14,15 @@ lib_LTLIBRARIES = libkab.la
 KABVERSION=	0.0.1
 KABPATCH=	0
 
+include_HEADERS = \
+	stl_headers.h \
+	kabapi.h \
+	kab.h \
+	addressbook.h \
+	configDB.h \
+	keyvaluemap.h \
+	sections.h
+
 # Which sources should be compiled for khexdit.
 libkab_la_SOURCES	= \
 	kabapi.cc \
@@ -47,15 +56,6 @@ libkab_la_SOURCES	= \
 #	DialogBase.cpp \
 #	DialogBaseData.cpp \
 
-
-include_HEADERS = \
-	stl_headers.h \
-	kabapi.h \
-	kab.h \
-	addressbook.h \
-	configDB.h \
-	keyvaluemap.h \
-	sections.h
 
 libkab_la_LDFLAGS = -version-info 3:0 $(X_LDFLAGS) $(QT_LDFLAGS) $(USER_LDFLAGS)
 libkab_la_LIBADD  = ../kfile/libkfile.la
