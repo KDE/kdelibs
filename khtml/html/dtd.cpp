@@ -80,12 +80,12 @@ const unsigned short DOM::tagPriority[] = {
     3, // ID_FORM
     0, // ID_FRAME
     9, // ID_FRAMESET
-    3, // ID_H1
-    3, // ID_H2
-    3, // ID_H3
-    3, // ID_H4
-    3, // ID_H5
-    3, // ID_H6
+    5, // ID_H1
+    5, // ID_H2
+    5, // ID_H3
+    5, // ID_H4
+    5, // ID_H5
+    5, // ID_H6
     9, // ID_HEAD
     0, // ID_HR
     10, // ID_HTML
@@ -106,6 +106,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_MAP
     4, // ID_MENU
     0, // ID_META
+    1, // ID_NOBR
     9, // ID_NOEMBED
     9, // ID_NOFRAMES
     3, // ID_NOSCRIPT
@@ -143,6 +144,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_U
     4, // ID_UL
     1, // ID_VAR
+    1, // ID_WBR
     1, // ID_XMP
     0, // ID_TEXT
 };
@@ -210,6 +212,7 @@ const tagStatus DOM::endTag[] = {
     REQUIRED,  // ID_MAP
     REQUIRED,  // ID_MENU
     FORBIDDEN, // ID_META
+    REQUIRED,  // ID_NOBR
     REQUIRED,  // ID_NOEMBED
     REQUIRED,  // ID_NOFRAMES
     REQUIRED,  // ID_NOSCRIPT
@@ -247,6 +250,7 @@ const tagStatus DOM::endTag[] = {
     REQUIRED,  // ID_U
     REQUIRED,  // ID_UL
     REQUIRED,  // ID_VAR
+    REQUIRED,  // ID_WBR
     REQUIRED,  // ID_XMP
     REQUIRED   // ID_TEXT
 };
@@ -296,6 +300,8 @@ static const ushort tag_list_0[] = {
     ID_INS,
     ID_DEL,
     ID_COMMENT,
+    ID_NOBR,
+    ID_WBR,
     0
 };
 
@@ -372,6 +378,8 @@ static const ushort tag_list_1[] = {
     ID__KONQBLOCK,
     ID_INS,
     ID_DEL,
+    ID_NOBR,
+    ID_WBR,
     0
 };
 
@@ -601,6 +609,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // BODY: _1 * + _2
         if( check_array(childID, tag_list_1) ) return true;
         return check_array(childID, tag_list_2);
+    case ID_NOBR:
+    case ID_WBR:
     case ID_ADDRESS:
         // ADDRESS: ( _0 | P ) *
         if( check_array(childID, tag_list_0) ) return true;
