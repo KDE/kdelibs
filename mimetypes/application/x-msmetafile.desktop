@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=document
+Type=MimeType
+MimeType=application/x-msmetafile
+Patterns=*.wmf;*.WMF
+Comment=Microsoft Metafile

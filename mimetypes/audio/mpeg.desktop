@@ -1,0 +1,9 @@
+[Desktop Entry]
+# Basetype for MPEG 1-2 audio, also called mp2 and mp3.
+# See also audio/x-mp3
+Encoding=UTF-8
+Type=MimeType
+MimeType=audio/mpeg
+Icon=sound
+Patterns=*.mp2;*.MP2;
+Comment=MPEG Audio

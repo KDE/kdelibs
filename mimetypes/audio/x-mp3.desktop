@@ -1,6 +1,10 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
+MimeType=audio/x-mp3
+Icon=sound
+Patterns=*.mp3;*.MP3;
+X-KDE-IsAlso=audio/mpeg
 Comment=MPEG Layer 3 Audio
 Comment[af]=Mpeg Laag 3 Audio
 Comment[ar]=صوت MPEG الطبقة 3
@@ -58,6 +62,3 @@ Comment[xx]=xxMPEG Layer 3 Audioxx
 Comment[zh_CN]=MP3 音频文件
 Comment[zh_TW]=MP3 音樂
 Comment[zu]=Ozwakalayo Ugqinsi 3 we-MPEG
-MimeType=audio/x-mp3
-Icon=sound
-Patterns=*.mp3;*.MP3;
