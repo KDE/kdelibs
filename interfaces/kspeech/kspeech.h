@@ -25,21 +25,21 @@
 #include <qstringlist.h>
 
 /**
- * @interface kspeech
+ * @interface KSpeech
  *
  * kspeech - the KDE Text-to-Speech API.
  *
- * @version 1.0 Draft 8
+ * @version 1.0 Draft 9
  *
  * @since KDE 3.4
  *
  * This class defines the DCOP interface for applications desiring to speak text.
- * Applications may speak text by sending DCOP messages to application "kttsd" object "kspeech".
+ * Applications may speak text by sending DCOP messages to application "kttsd" object "KSpeech".
  *
  * %KTTSD -- the KDE Text-to-Speech Deamon -- is the program that supplies the services
  * in the KDE Text-to-Speech API.
  *
- * @warning The kspeech interface is still being developed and is likely to change in the future.
+ * @warning The KSpeech interface is still being developed and is likely to change in the future.
  *
  * @section Features
  *
@@ -54,7 +54,7 @@
  *
  * @section Requirements
  *
- * You may build any KDE application to use kspeech, since the interface is in kdelibs, but
+ * You may build any KDE application to use KSpeech, since the interface is in kdelibs, but
  * the kdeaccessibility package must be installed for KTTS to function.
  *
  * You will need a speech synthesis engine, such as Festival.  See the KTTS Handbook
@@ -137,7 +137,7 @@
  * To create a text job to be spoken
  *
    @verbatim
-     dcop kttsd kspeech setText <text> <talker>
+     dcop kttsd KSpeech setText <text> <talker>
    @endverbatim
  *
  * where \<text\> is the text to be spoken, and \<talker\> is usually a language code
@@ -146,19 +146,19 @@
  * Example.
  *
    @verbatim
-     dcop kttsd kspeech setText "This is a test." "en"
+     dcop kttsd KSpeech setText "This is a test." "en"
    @endverbatim
  *
  * To start speaking the text.
  *
    @verbatim
-     dcop kttsd kspeech startText 0
+     dcop kttsd KSpeech startText 0
    @endverbatim
  *
  * To stop speaking and rewind to the beginning of the text.
  *
    @verbatim
-     dcop kttsd kspeech stopText 0
+     dcop kttsd KSpeech stopText 0
    @endverbatim
  *
  * Depending upon the speech plugin used, speaking may not immediately stop.
@@ -166,7 +166,7 @@
  * To stop and remove a text job.
  *
    @verbatim
-     dcop kttsd kspeech removeText 0
+     dcop kttsd KSpeech removeText 0
    @endverbatim
  *
  * Note: For more information about talker codes, see @ref talkers below.
@@ -183,22 +183,22 @@
  *
  * To make DCOP calls from your program using kspeech_stub, follow these steps:
  *
- * 1.  Include kspeech_stub.h in your code.  Derive an object from the kspeech_stub interface.
+ * 1.  Include kspeech_stub.h in your code.  Derive an object from the KSpeech_stub interface.
  *     For example, suppose you are developing a KPart and want to call %KTTSD.
  *     Your class declaration might look like this:
  *
    @verbatim
      #include <kspeech_stub.h>
-     class MyPart: public KParts::ReadOnlyPart, public kspeech_stub {
+     class MyPart: public KParts::ReadOnlyPart, public KSpeech_stub {
    @endverbatim
  *
  * 2.  In your class constructor, initialize DCOPStub, giving it the sender
- *     "kttsd", object "kspeech".
+ *     "kttsd", object "KSpeech".
  *
    @verbatim
      MyPart::MyPart(QWidget *parent, const char *name) :
         KParts::ReadOnlyPart(parent, name),
-        DCOPStub("kttsd", "kspeech") {
+        DCOPStub("kttsd", "KSpeech") {
    @endverbatim
  *
  * 3.  See if KTTSD is running, and if not, start it.
@@ -257,7 +257,7 @@
      #include <kspeechsink.h>
      class MyPart: 
          public KParts::ReadOnlyPart,
-         public kspeech_stub,
+         public KSpeech_stub,
          virtual public KSpeechSink
      {
          protected:
@@ -290,7 +290,7 @@
          client->registerAs(kapp->name());    
      }
      // Connect KTTSD DCOP signals to our slots.
-     connectDCOPSignal("kttsd", "kspeech",
+     connectDCOPSignal("kttsd", "KSpeech",
          "sentenceStarted(QCString,uint,uint)",
          "sentenceStarted(QCString,uint,uint)",
          false);
@@ -593,7 +593,9 @@
  * @author Gunnar Schmi Dt <gunnar@schmi-dt.de>
  */
 
-class kspeech : virtual public DCOPObject {
+// NOTE: kspeech class is now obsolete.  Please use KSpeech instead.
+
+class KSpeech : virtual public DCOPObject {
     K_DCOP
 
     public:
@@ -1013,7 +1015,7 @@ class kspeech : virtual public DCOPObject {
         *                       If no plugin has been configured for the specified Talker code,
         *                       defaults to the closest matching talker.
         */
-	virtual ASYNC changeTextTalker(const QString &talker, uint jobNum=0 ) = 0;
+        virtual ASYNC changeTextTalker(const QString &talker, uint jobNum=0 ) = 0;
 
         /**
         * Get the user's default talker.
@@ -1191,4 +1193,5 @@ class kspeech : virtual public DCOPObject {
         void textRemoved(const QCString& appId, uint jobNum);
         //@}
 };
+
 #endif // _KSPEECH_H_
