@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include <kapp.h>
 #include <kglobal.h>
+#include <kstringhandler.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -579,8 +580,19 @@ KCmdLineArgs::usage(const char *id)
      {
        const KCmdLineOptions *option = args->options;
        QCString opt = "";
+//
        while(option && option->name)
        {
+         QString description;
+         QString descriptionRest;
+         QStringList dl;
+         if (option->description)
+         {
+            description = i18n(option->description);
+            dl = KStringHandler::split(description, "\n");
+            description = dl.first();
+            dl.remove( dl.begin() );
+         }
          QCString name = option->name;
          if (name[0] == '+')
          {
@@ -589,7 +601,7 @@ KCmdLineArgs::usage(const char *id)
                printQ(i18n("\nArguments:\n"));
             hasArgs = true;
             printQ(optionFormatString.arg(name, -25)
-		 .arg(i18n(option->description)));
+		 .arg(description));
          }
          else 
          {
@@ -600,7 +612,6 @@ KCmdLineArgs::usage(const char *id)
             if (!option->description)
             {
                opt = name + ", ";
-                
             }
             else 
             {
@@ -608,15 +619,21 @@ KCmdLineArgs::usage(const char *id)
                if (!option->def)
                {
                   printQ(optionFormatString.arg(opt, -25)
-                         .arg(i18n(option->description)));
+                         .arg(description));
                }
                else
                {
                   printQ(optionFormatStringDef.arg(opt, -25) 
-                         .arg(i18n(option->description)).arg(option->def));
+                         .arg(description).arg(option->def));
                }
                opt = "";
             }
+         }
+         for(QStringList::Iterator it = dl.begin();
+             it != dl.end();
+             it++)
+         {  
+            printQ(optionFormatString.arg("", -25).arg(*it));
          }
          
          option++;
