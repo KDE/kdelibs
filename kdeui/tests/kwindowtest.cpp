@@ -511,20 +511,20 @@ int main( int argc, char *argv[] )
 {
     int i;
     KApplication *myApp = new KApplication( argc, argv, "KWindowTest" );
-//    testWindow *test = new testWindow;
-    testWindow test;
+    testWindow *test = new testWindow;
+//    testWindow test;
 
-    myApp->setMainWidget(&test);
+    myApp->setMainWidget(test);
 
     i = QMessageBox::information(0, "Select", "Select type of mainwidget",
                              "Fixed", "Y-fixed", "Resizable");
     if (i == 0)
-        test.beFixed();
+        test->beFixed();
     else if (i == 1)
-        test.beYFixed();
+        test->beYFixed();
 
-    test.show();
-	test.resize(400, 500);
+    test->show();
+	test->resize(400, 500);
     int ret = myApp->exec();
 
     //delete test;
