@@ -38,8 +38,8 @@ class KFontRequester : public QWidget
 {
   Q_OBJECT
 
-  Q_PROPERTY( QString m_title READ title WRITE setTitle )
-  Q_PROPERTY( QString m_sampleText READ sampleText WRITE setSampleText )
+  Q_PROPERTY( QString title READ title WRITE setTitle )
+  Q_PROPERTY( QString sampleText READ sampleText WRITE setSampleText )
 
   public:
 
