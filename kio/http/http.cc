@@ -307,7 +307,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         if ( isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized
              && !m_bError )
         {
-            kdDebug(7113) << "(" << getpid() << ") Unset Tunneling flag!" << endl;
+            kdDebug(7103) << "(" << getpid() << ") Unsetting tunneling flag!" << endl;
             setEnableSSLTunnel( false );
             m_bIsTunneled = true;
             continue;
@@ -720,6 +720,7 @@ bool HTTPProtocol::http_open()
 
   // Clean up previous POST
   bool moreData = false;
+
   // Variable to hold the entire header...
   QString header;
 
@@ -730,12 +731,12 @@ bool HTTPProtocol::http_open()
       break;
   case HTTP_PUT:
       header = "PUT ";
-      moreData = true;
+      moreData = !isSSLTunnelEnabled();
       m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   case HTTP_POST:
       header = "POST ";
-      moreData = true;
+      moreData = !isSSLTunnelEnabled();
       m_bCachedWrite = false; // Do not put nay result in the cache
       break;
   case HTTP_HEAD:
@@ -749,7 +750,6 @@ bool HTTPProtocol::http_open()
 
   if ( isSSLTunnelEnabled() )
   {
-    kdDebug(7113) << "(" << getpid() << ") Attempting to tunnel through a proxy..." << endl;
     header = QString("CONNECT %1:%2 HTTP/1.1"
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
 
@@ -1164,6 +1164,7 @@ bool HTTPProtocol::readHeader()
         m_prevResponseCode = m_responseCode;
 
       m_responseCode = atoi(buf+9);
+      setMetaData( "http-responseCode", QString::number(m_responseCode) );
 
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
