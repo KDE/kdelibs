@@ -38,11 +38,28 @@ public:
 	virtual void destination(const string& newDestination) = 0;
 };
 
+#ifdef __SUNPRO_CC
+/* Bloody SunPRO CC has problems with instantiation of the below two
+   templates, if the _clients and assignable member of AudioManager_impl
+   are declared to be directly the type list<xxx *>. So instead be move
+   a typedef in between, which makes it magically work.
+   We could also use an explicit instantiation, but this is not allowed
+   on all C++ compilers in this scope.  Note also, that we don't need
+   to replace _all_ occurences of list<xxx*> below, only the two in the
+   member declaration.  What a mess.  */
+typedef list<AudioManagerClient_impl *> L_AMC;
+typedef list<AudioManagerAssignable *> L_AMA;
+#else
+/* with normal compilers there is no need for this typedef.  */
+#define L_AMC list<AudioManagerClient_impl *>
+#define L_AMA list<AudioManagerAssignable *>
+#endif
+
 class AudioManager_impl : virtual public AudioManager_skel
 {
 protected:
-	list<AudioManagerClient_impl *> _clients;
-	list<AudioManagerAssignable *> assignable;
+	L_AMC _clients;
+	L_AMA assignable;
 	long _changes, nextID;
 	static AudioManager_impl *instance;
 public:
