@@ -1,4 +1,4 @@
-kdelibs (4:1.1.2-20001124-1) stable; urgency=low
+kdelibs (4:1.1.2-final-1) stable; urgency=low
  
   * clean upstream cvs pull and build updates
   * dependency cleanup
