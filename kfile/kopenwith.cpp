@@ -426,7 +426,7 @@ void KOpenWithDlg::slotOK()
       accept();
       return;
     }
-  kdDebug() << "slotOK 5" << endl;
+  kdDebug() << "slotOK" << endl;
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
@@ -447,13 +447,13 @@ void KOpenWithDlg::slotOK()
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  desktop.writeEntry(QString::fromLatin1("Name"), haveApp ? qName : serviceName);
+  desktop.writeEntry(QString::fromLatin1("Name"), haveApp ? m_pService->name() : serviceName);
   desktop.writeEntry(QString::fromLatin1("Exec"), keepExec);
   if (remember)
     if (remember->isChecked()) {
       QStringList mimeList;
       KDesktopFile oldDesktop(locate("apps", pathName), true);
-      mimeList = oldDesktop.readListEntry(QString::fromLatin1("MimeType"));
+      mimeList = oldDesktop.readListEntry(QString::fromLatin1("MimeType"), ';');
       if (!mimeList.contains(qServiceType))
 	mimeList.append(qServiceType);
       desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
@@ -468,6 +468,7 @@ void KOpenWithDlg::slotOK()
   desktop.sync();
 
   // rebuild the database
+  kdDebug() << "rebuilding the database" << endl;
   DCOPClient *dcc = kapp->dcopClient();
   QByteArray replyData;
   QCString retType;
@@ -478,7 +479,7 @@ void KOpenWithDlg::slotOK()
   kdDebug() << pathName << endl;
   m_pService = KService::serviceByDesktopPath( pathName );
 
-  assert( m_pService );
+  ASSERT( m_pService );
 
   haveApp = false;
   accept();
