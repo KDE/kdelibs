@@ -1543,11 +1543,14 @@ void KLocale::initEncoding(KConfig *config)
 {
   const int mibDefault = 4; // ISO 8859-1
 
-  int encodingMib = mibDefault; // set to default
+  int encodingMib;
   
   KConfigGroupSaver saver(config, "Locale");
-  encodingMib = config->readNumEntry("EncodingMib",
-				     encodingMib);
+  
+  if (config->hasKey("EncodingMib"))
+    encodingMib = config->readNumEntry("EncodingMib");
+  else
+    encodingMib = QTextCodec::codecForLocale()->mibEnum();
 
   setEncoding( encodingMib );
 
@@ -1556,8 +1559,6 @@ void KLocale::initEncoding(KConfig *config)
       kdWarning(173) << "encodingMib " << encodingMib
 		     << " is not known. using ISO 8859-1 instead." << endl;
       setEncoding(mibDefault);
-      // ### we should default to Qt's default, as thats always more
-      // intelligent
     }
 
   Q_ASSERT( d->codecForEncoding );
