@@ -22,6 +22,14 @@
 // $Id$
 //
 // $Log$
+// Revision 1.31  1999/07/25 10:42:44  kulow
+// taking over qvariant from koffice and porting kdelibs to QVariant.
+// I mainly s/QProperty/QVariant and sorted header files to make it
+// compile (qvariant.h uses Bool and askes for trouble with kwm.h or
+// krootprop.h which include X11.h ;(
+// If QVariant differs from QProperty more than in the name, someone
+// else has to port it as I have no good way to find out differences
+//
 // Revision 1.30  1999/06/19 20:15:39  kulow
 // implemented KConfigBase::getConfigState. I changed the elements
 // to NoAccess, ReadOnly, ReadWrite.
@@ -70,6 +78,9 @@
 #include <qfont.h>
 #include <qstrlist.h>
 #include <qstringlist.h>
+#ifdef Bool
+#error include X11/Xlib.h after Qt and KDE includes
+#endif
 #include <qvariant.h>
 #include <qmap.h>
 
