@@ -29,6 +29,32 @@
 
 class KConfig;
 #include <qtabdlg.h>
+#include <qstrlist.h>
+
+#include <klocale.h>
+
+#ifdef klocale
+#undef klocale
+#endif
+
+#define klocale kcclocale
+
+class KCCLocale;
+
+extern KCCLocale *kcclocale;
+
+class KCCLocale : public KLocale {
+
+public:
+    KCCLocale( const char *catalogue = 0L );
+    ~KCCLocale() {};
+
+    const char *translate( const char *index );
+    void addDomain( const char *catalogue );
+
+private:
+    QStrList domains;
+};
 
 class KPeerConfig
 {
@@ -98,7 +124,8 @@ private:
   QString icon;
   QString help;
   QString title;
-  
+  KCCLocale *pLocale;
+
   bool    supportsInit;
   bool    needsRoot;
 };
