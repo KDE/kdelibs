@@ -173,7 +173,7 @@ void ResourcesConfigPage::slotAdd()
 
   // Create new resource
   Resource *resource = mManager->createResource( type );
-  if( !resource ) {
+  if ( !resource ) {
     KMessageBox::error( this, i18n("Unable to create resource of type '%1'.")
                               .arg( type ) );
     return;

@@ -289,7 +289,6 @@ void ResourceManagerImpl::load()
   QString standardKey = mConfig->readEntry( "Standard" );
 
   uint counter = 0;
-//  bool haveStandardResource = false;
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
     loadResource( *it, false );
     counter++;
