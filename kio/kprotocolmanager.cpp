@@ -107,7 +107,7 @@ int KProtocolManager::connectTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int mrct = cfg->readNumEntry( "RemoteConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
+  int mrct = cfg->readNumEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
   if( mrct < MIN_TIMEOUT_VALUE || mrct > MAX_CONNECT_TIMEOUT )
     mrct = DEFAULT_CONNECT_TIMEOUT;
   return mrct;
@@ -127,7 +127,7 @@ int KProtocolManager::responseTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  int mrrt = cfg->readNumEntry( "RemoteResponseTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
+  int mrrt = cfg->readNumEntry( "ResponseTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
   if( mrrt < MIN_TIMEOUT_VALUE || mrrt > MAX_PROXY_CONNECT_TIMEOUT )
     mrrt = DEFAULT_RESPONSE_TIMEOUT;
   return mrrt;
