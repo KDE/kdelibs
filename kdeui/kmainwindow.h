@@ -349,7 +349,7 @@ public:
      * @param name The internal name of the toolbar. If no name is
      *             specified "mainToolBar" is assumed.
      *
-     * @return A pointer to the toolbar or @p 0L if it doesn't exist
+     * @return A pointer to the toolbar
      **/
     KToolBar *toolBar( const char *name=0 );
 
