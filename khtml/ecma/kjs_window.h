@@ -68,6 +68,7 @@ namespace KJS {
      */
     static Window *retrieve(KHTMLPart *p);
 
+    virtual void mark(Imp *imp = 0L);
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);

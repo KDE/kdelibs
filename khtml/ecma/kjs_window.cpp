@@ -190,6 +190,20 @@ Location *Window::location() const
   return loc;
 }
 
+// reference our special objects during garbage collection
+void Window::mark(Imp *)
+{
+  HostImp::mark();
+  if (screen && !screen->refcount)
+    screen->mark();
+  if (history && !history->refcount)
+    history->mark();
+  if (frames && !frames->refcount)
+    frames->mark();
+  if (loc && !loc->refcount)
+    loc->mark();
+}
+
 bool Window::hasProperty(const UString &p, bool recursive) const
 {
   if (p == "closed")
