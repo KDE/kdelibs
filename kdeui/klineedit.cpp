@@ -25,6 +25,7 @@
 
 #include <klocale.h>
 #include <kstdaccel.h>
+#include <kdebug.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -109,7 +110,7 @@ void KLineEdit::makeCompletion( const QString& text )
 {
 
     KCompletion *comp = compObj();
-    if( !comp && text.length() == 0 )
+    if( !comp )
     {
        return;  // No completion object...
     }
@@ -166,7 +167,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             if( !keycode.isNull() && keycode.unicode()->isPrint() && fireSignals )
             {
                 QLineEdit::keyPressEvent ( e );
-                emit completion( displayText() );
+                QString txt = text();
+                if( !hasMarkedText() && txt.length() )
+                {
+                    kdDebug() << "Key Pressed: " << keycode.latin1() << endl;
+                    kdDebug() << "Current text: " << txt.latin1() << endl;
+                    emit completion( txt );
+                }
                 return;
             }
         }
@@ -212,8 +219,8 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     {
         // Return if popup menu is not enabled !!
         if( !m_bEnableMenu )
-            return;            
-            
+            return;
+
         QPopupMenu *popup = new QPopupMenu( this );            
         popup->insertItem( i18n( "Cut" ), Cut );
         popup->insertItem( i18n( "Copy" ), Copy );

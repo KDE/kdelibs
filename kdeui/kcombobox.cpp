@@ -110,7 +110,7 @@ void KComboBox::setCompletedText( const QString& text, bool marked )
 	{
         m_pEdit->setSelection( pos, text.length() );
         m_pEdit->setCursorPosition( pos );
-    }    
+    }
 }
 
 void KComboBox::setCompletedText( const QString& text )
@@ -130,7 +130,7 @@ void KComboBox::makeCompletion( const QString& text )
        // We test for zero length text because for some
        // reason we get an extra text completion with an empty
        // text when the insertion policy is set to "NoInsertion"
-       if( !comp || text.length() == 0 )
+       if( !comp )
        {
 	  return; // No Completion object or empty completion text allowed!
        }
@@ -229,7 +229,13 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             if( !keycode.isNull() && keycode.unicode()->isPrint() && emitSignals() )
             {
                 QComboBox::keyPressEvent ( e );
-                emit completion( currentText() );
+                QString txt = currentText();
+                if( !m_pEdit->hasMarkedText() && txt.length() )
+                {
+                    kdDebug() << "Key Pressed: " << keycode.latin1() << endl;
+                    kdDebug() << "Current text: " << txt.latin1() << endl;
+                    emit completion( txt );
+                }
                 return;
             }
         }
@@ -365,7 +371,6 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
     else if ( (o == this || o == m_pEdit) && ev->type() == QEvent::KeyPress ) {
 	QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-	kdDebug() << "Got a Key event with code: " << e->key() << endl;
 	if ( e->key() == Key_Return || e->key() == Key_Enter) {
 
 	    // On Return pressed event, emit both returnPressed(const QString&)
@@ -577,7 +582,7 @@ void KHistoryCombo::insertItems( const QStringList& items )
 	item = *it;
 	if ( !item.isEmpty() ) { // only insert non-empty items
 	    if ( myPixProvider )
-		insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), 
+		insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall),
 			    item );
 	    else
 		insertItem( item );
