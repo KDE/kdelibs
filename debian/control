@@ -12,7 +12,7 @@ Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3-crypto
-Conflicts: kdelibs3-nossl
+Conflicts: kdelibs3-nossl, kdebase (<= 4:2.0-20001015-0)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
