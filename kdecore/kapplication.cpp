@@ -61,6 +61,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kclipboard.h>
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kcmdlineargs.h>
@@ -717,6 +718,8 @@ void KApplication::init(bool GUIenabled)
   if( KProcessController::theKProcessController == 0 )
       (void) new KProcessController();
 
+  (void) KClipboard::self();
+  
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;

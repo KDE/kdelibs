@@ -20,50 +20,57 @@
 #ifndef KCLIPBOARD_H
 #define KCLIPBOARD_H
 
-#include <qstring.h>
+#include <qmime.h>
+#include <qobject.h>
+#include <qstrlist.h>
 
-class QMimeSource;
-
-class KClipboard
+class KClipboard : public QObject
 {
+    Q_OBJECT
+
 public:
     enum Mode { Clipboard = 1, Selection = 2 };
-    static void setText( const QString& text, uint mode = Clipboard,
-                         bool honorConfiguration = true );
-    static void setData( QMimeSource *data, uint mode = Clipboard,
-                         bool honorConfiguration = true );
-    static void clear( uint mode = Clipboard, bool honorConfiguration = true );
+
+    static KClipboard *self();
 
     static void setSynchronizing( bool sync )
     {
-        init();
         s_sync = sync;
     }
     static bool isSynchronizing()
     {
-        init();
         return s_sync;
     }
 
     static void setImplicitSelection( bool enable )
     {
-        init();
         s_implicitSelection = enable;
     }
     static bool implicitSelection()
     {
-        init();
         return s_implicitSelection;
     }
 
-private:
-    static void init();
-    static void setClipboard( const QString& text, QMimeSource* data,
-                              uint mode, bool honorConfiguration );
-    static uint applyConfig( uint mode );
+protected slots:
+    void slotSelectionChanged();
+    void slotClipboardChanged();
 
+protected:
+    ~KClipboard();
+
+private:
+    KClipboard( QObject *parent = 0, const char *name = 0L );
+
+    // does not restore the old selection mode.
+    static void setClipboard( QMimeSource* data, Mode mode );
+
+    static KClipboard *s_self;
     static bool s_sync;
     static bool s_implicitSelection;
+    static bool s_blocked;
+
+    class MimeSource;
+    
 };
 
 #endif // KCLIPBOARD_H
