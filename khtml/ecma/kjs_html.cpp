@@ -46,6 +46,7 @@ extern "C" {
     KJS::KJSGlobal *global = KJScript::global();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
     global->put("window", zeroRef(new KJS::Window(0L)));
+    global->put("Image", zeroRef(new ImageObject(global)));
 
     script->setCurrent(0L);
     // this is somewhat ugly. But the only way I found to control the
@@ -526,3 +527,55 @@ KJSO *KJS::HTMLCollectionFunc::execute(KJSContext *context)
   return new KJSCompletion(Normal, result);
 }
 
+////////////////////// Image Object ////////////////////////
+
+ImageObject::ImageObject(KJSGlobal *global)
+{
+  KJSConstructor *ctor = new ImageConstructor(global);
+  setConstructor(ctor);
+  setPrototype(global->objProto);
+  ctor->deref();
+
+  put("length", zeroRef(new KJSNumber(2)), DontEnum);
+}
+
+KJSO* ImageObject::execute(KJSContext *)
+{
+  return new KJSCompletion(Normal, zeroRef(new KJSUndefined()));
+}
+
+ImageConstructor::ImageConstructor(KJSGlobal *glob)
+  : global(glob)
+{
+  setPrototype(glob->funcProto);
+}
+
+KJSObject* ImageConstructor::construct(KJSList *)
+{
+  /* TODO: fetch optional height & width from arguments */
+
+  KJSObject *result = (KJSObject*) new Image();
+  /* TODO: do we need a prototype ? */
+
+  return result;
+}
+
+KJSO *Image::get(const CString &p) const
+{
+  KJSO *result;
+
+  if (p == "src")
+    result = new KJSString(src.ascii());
+  else
+    result = new KJSUndefined();
+
+  return result;
+}
+
+void Image::put(const CString &p, KJSO *v, int)
+{
+  if (p == "src") {
+    KJSO *str = toString(v);
+    src = str->sVal().ascii();
+  }
+}

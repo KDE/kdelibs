@@ -80,6 +80,31 @@ namespace KJS {
     int id;
   };
 
+  ////////////////////// Image Object ////////////////////////
+
+  class ImageObject : public KJSInternalFunction {
+  public:
+    ImageObject(KJSGlobal *global);
+    KJSO* execute(KJSContext *);
+  private:
+    CString src;
+  };
+
+  class ImageConstructor : public KJSConstructor {
+  public:
+    ImageConstructor(KJSGlobal *global);
+    KJSObject* construct(KJSList *);
+  private:
+    KJSGlobal *global;
+  };
+
+  class Image : public HostObject {
+  public:
+    virtual KJSO *get(const CString &p) const;
+    virtual void put(const CString &p, KJSO *v, int attr = None);
+  private:
+    CString src;
+  };
 }; // namespace
 
 #endif
