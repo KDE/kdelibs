@@ -2312,12 +2312,12 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     }
   }
 
+  QString currentUrl = splitUrlTarget(d->m_strSelectedURL);
   if ( _mouse->button() == RightButton )
-    popupMenu( d->m_strSelectedURL );
+    popupMenu( currentUrl );
   else if ( _mouse->button() == MidButton && !d->m_strSelectedURL.isEmpty() )
   {
-    QString url = splitUrlTarget(d->m_strSelectedURL);
-    KURL u = completeURL( url );
+    KURL u = completeURL( currentUrl );
     if ( !u.isMalformed() )
       emit d->m_extension->createNewWindow( u );
 
