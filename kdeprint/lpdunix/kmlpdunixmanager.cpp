@@ -232,7 +232,7 @@ void KMLpdUnixManager::parseEtcPrintcap()
 QString getEtcPrintersConfName()
 {
 	QString	printersconf("/etc/printers.conf");
-	if (!QFile::exists(printersconf))
+	if (!QFile::exists(printersconf) && !KStandardDirs::findExe( "ypcat" ).isEmpty())
 	{
 		// standard file not found, try NIS
 		printersconf = locateLocal("tmp","printers.conf");
