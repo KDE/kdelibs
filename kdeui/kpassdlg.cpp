@@ -107,10 +107,13 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 	}
 	break;
     default:
-	if ((m_Length < PassLen) && (e->ascii() >= 32)) {
-	    m_Password[m_Length] = (char) e->ascii();
-	    m_Password[++m_Length] = '\000';
-	    showPass();
+	if (m_Length < (PassLen - 1)) {
+	    char ke = e->text().local8Bit()[0];
+	    if (ke >= 32) {
+		m_Password[m_Length] = ke;
+		m_Password[++m_Length] = '\000';
+		showPass();
+	    }
 	}
 	break;
     }
