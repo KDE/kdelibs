@@ -128,7 +128,7 @@ namespace KJS {
     virtual String toString() const;
   private:
     friend class Window;
-    Location(KHTMLPart *p) : part(p) { }
+    Location(KHTMLPart *p);
     QGuardedPtr<KHTMLPart> part;
   };
 

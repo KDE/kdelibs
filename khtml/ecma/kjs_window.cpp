@@ -840,6 +840,8 @@ KJSO FrameArray::get(const UString &p) const
 
 ////////////////////// Location Object ////////////////////////
 
+Location::Location(KHTMLPart *p) : part(p) { }
+
 KJSO Location::get(const UString &p) const
 {
   if (part.isNull())
