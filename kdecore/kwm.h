@@ -461,10 +461,10 @@ public:
   static QRect geometryRestore(Window w);
 
   /**
-    * Returns the icon geometry of a window. 
+    * Returns the icon geometry of a window.
     */
   static QRect iconGeometry(Window w);
-    
+
   /**
    * Is the window iconified?
    */
@@ -473,6 +473,10 @@ public:
    * Is the window maximized?
    */
   static bool isMaximized(Window w);
+  /**
+   * Shall the window be maximized?
+   */
+  static bool isDoMaximize(Window w);
   /**
    * Is the window sticky?
    */
@@ -528,9 +532,17 @@ public:
    */
   static void move(Window w, const QPoint &pos);
   /**
-   * Maximize/Unmaximize a window according to value
+   * Maximize/Unmaximize a window according to value.  If the window
+   *  is not mapped yet, this function only sets the _state_ of the
+   *  maximize button, it does _not_ change the geometry. See
+   * doMaximize below.
+     
    */
   static void setMaximize(Window w, bool value);
+  /**
+     Maximize a window (changing the geometry to fill the entire screen).
+   */
+  static void doMaximize(Window w, bool value);
   /**
    * Iconify/UnIconify a window according to value
    */

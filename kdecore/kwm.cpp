@@ -867,6 +867,16 @@ bool KWM::isMaximized(Window w){
   }
   return result != 0;
 }
+bool KWM::isDoMaximize(Window w){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
+  long result = 0;
+  if (!getSimpleProperty(w, a, result)){
+    doMaximize(w, result != 0);
+  }
+  return result != 0;
+}
 bool KWM::isSticky(Window w){
   static Atom a = 0;
   if (!a)
@@ -948,6 +958,12 @@ void KWM::setMaximize(Window w, bool value){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
+  setSimpleProperty(w, a, value?1:0);
+}
+void KWM::doMaximize(Window w, bool value) { 
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
   setSimpleProperty(w, a, value?1:0);
 }
 void KWM::setIconify(Window w, bool value){
