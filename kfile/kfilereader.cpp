@@ -250,7 +250,7 @@ void KFileReader::getEntries()
     }
 
     // remote files are loaded asynchronously
-    if ( !isLocalFile() ) {
+    if ( true ) {
 	myDirtyFlag = startLoading();
 	return;
     }
@@ -360,7 +360,7 @@ void KFileReader::statLocalFiles()
 
     kDebugInfo(kfile_area, "emit contents %ld", time(0));
     if (!myNewEntries.isEmpty())
-	emit contents( &myNewEntries, myPendingEntries.isEmpty());
+	emit contents( myNewEntries, myPendingEntries.isEmpty());
 
     if (!myPendingEntries.isEmpty())
 	QTimer::singleShot(0, this, SLOT(statLocalFiles()));
@@ -371,7 +371,7 @@ void KFileReader::listContents()
     if (myDirtyFlag)
 	getEntries();
     else
-        emit contents( &myEntries, true );
+        emit contents( myEntries, true );
 }
 
 bool KFileReader::match(const QString& name) const
@@ -428,13 +428,12 @@ void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
     kDebugInfo(kfile_area, "slotListEntry");
     KIO::UDSEntryListIterator it(entries);
+    myNewEntries.clear();
     for (; it.current(); ++it) {
       KFileViewItem *i= new KFileViewItem(*(it.current()));
       CHECK_PTR(i);
 
       myEntries.append(i);
-      myNewEntries.clear();
-
       i->setHidden(!filterEntry(i));
       if (!i->isHidden()) {
 	  emit dirEntry(i);
@@ -442,20 +441,20 @@ void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
       }
     }
 
-    // TODO: when do we know we're done?
-    // (David): well, in slotIOFinished :)
     if ( myNewEntries.count() > 0 )
-      emit contents( &myNewEntries, false);
+      emit contents( myNewEntries, false);
 }
 
 void KFileReader::slotIOFinished( KIO::Job * job )
 {
+    kDebugInfo(kfile_area, "slotIOFinished");
+    myJob= 0;
+    myNewEntries.clear();
     if (job->error())
 	emit error( job->error(), job->errorText() );
-    //else
-    //    emit finished();
+    else
+	emit contents(myNewEntries, true);
 
-    myJob= 0;
 }
 
 void KFileReader::slotDirDirty( const QString& )
@@ -527,11 +526,11 @@ void KFileReader::slotDirUpdate()
 	    item->setDeleted(); // mark them as removed
 
 	if ( myUpdateList.count() > 0 )
-	    emit itemsDeleted( &myUpdateList );
+	    emit itemsDeleted( myUpdateList );
 	
 	// new signal because of no sorting?
 	if ( myNewEntries.count() > 0 )
-	    emit contents(&myNewEntries, true);
+	    emit contents(myNewEntries, true);
     }
 }
 

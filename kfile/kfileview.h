@@ -78,7 +78,7 @@ public:
     /**
      * inserts a list of items.
      **/
-    virtual void addItemList(const KFileViewItemList *list);
+    virtual void addItemList(const KFileViewItemList &list);
 
     /**
       * a pure virtual function to get a QWidget, that can be added to

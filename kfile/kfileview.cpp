@@ -114,12 +114,12 @@ bool KFileView::updateNumbers(const KFileViewItem *i)
     return true;
 }
 
-void KFileView::addItemList(const KFileViewItemList *list)
+void KFileView::addItemList(const KFileViewItemList &list)
 {
     KFileViewItem *tmp, *tfirst = 0;
     int counter = 0;
 
-    for (KFileViewItemListIterator it(*list); it.current(); ++it) {
+    for (KFileViewItemListIterator it(list); it.current(); ++it) {
 
 	tmp = it.current();
 

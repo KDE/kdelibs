@@ -222,8 +222,8 @@ class KDirOperator : public QWidget {
     void slotKIOError(int, const QString& );
     void pathChanged();
     void filterChanged();
-    void insertNewFiles(const KFileViewItemList *newone, bool ready);
-    void itemsDeleted(const KFileViewItemList *);
+    void insertNewFiles(const KFileViewItemList &newone, bool ready);
+    void itemsDeleted(const KFileViewItemList &);
 
     void selectDir(const KFileViewItem*);
     void selectFile(const KFileViewItem*);

@@ -106,7 +106,7 @@ public:
      * should just use @ref listContents and get the list via the signal
      * contents. Never returns 0L.
      */
-    const KFileViewItemList * currentContents() const { return &myEntries; }
+    const KFileViewItemList & currentContents() const { return myEntries; }
 
     /**
      * Returns true if the name matches the filter.
@@ -179,9 +179,9 @@ public:
     /**
      * Emitted, if new files are queued
      **/
-    void contents(const KFileViewItemList *, bool ready);
+    void contents(const KFileViewItemList &, bool ready);
 
-    void itemsDeleted(const KFileViewItemList *);
+    void itemsDeleted(const KFileViewItemList &);
 
     void dirDeleted();
 

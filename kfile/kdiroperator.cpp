@@ -69,10 +69,10 @@ KDirOperator::KDirOperator(const QString& dirName,
     dir = new KFileReader(*lastDirectory);
     dir->setAutoUpdate( true );
 
-    connect(dir, SIGNAL(contents(const KFileViewItemList *, bool)),
-	    SLOT(insertNewFiles(const KFileViewItemList *, bool)));
-    connect(dir, SIGNAL(itemsDeleted(const KFileViewItemList *)),
-	    SLOT(itemsDeleted(const KFileViewItemList *)));
+    connect(dir, SIGNAL(contents(const KFileViewItemList &, bool)),
+	    SLOT(insertNewFiles(const KFileViewItemList &, bool)));
+    connect(dir, SIGNAL(itemsDeleted(const KFileViewItemList &)),
+	    SLOT(itemsDeleted(const KFileViewItemList &)));
     connect(dir, SIGNAL(error(int, const QString& )),
 	    SLOT(slotKIOError(int, const QString& )));
     connect(dir, SIGNAL(filterChanged()),
@@ -740,19 +740,19 @@ void KDirOperator::setFileReader( KFileReader *reader )
     dir = reader;
 }
 
-void KDirOperator::insertNewFiles(const KFileViewItemList *newone, bool ready)
+void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
 {
-    if (!newone)
+    if (newone.isEmpty() && !ready)
 	return;
 
-    kDebugInfo(kfile_area, "insertNewFiles %d", newone->count());
+    kDebugInfo(kfile_area, "insertNewFiles %d", newone.count());
     myCompleteListDirty = true;
 
     bool isLocal = dir->isLocalFile();
     if (!isLocal)
 	fileView->addItemList(newone);
 
-    KFileViewItemListIterator it(*newone);
+    KFileViewItemListIterator it(newone);
     for( ; it.current(); ++it ) {
         KFileViewItem *item = it.current();
 
@@ -795,12 +795,12 @@ void KDirOperator::selectDir(const KFileViewItem *item)
     setURL(tmp.url(), true);
 }
 
-void KDirOperator::itemsDeleted(const KFileViewItemList *list)
+void KDirOperator::itemsDeleted(const KFileViewItemList &list)
 {
-    if ( !list || list->count() == 0 )
+    if ( list.count() == 0 )
         return;
 
-    KFileViewItemListIterator it(*list);
+    KFileViewItemListIterator it(list);
     for( ; it.current(); ++it )
         fileView->updateView( it.current() );
 
@@ -834,7 +834,7 @@ QString KDirOperator::makeCompletion(const QString& string)
     }
 
     if ( myCompleteListDirty ) { // create the list of all possible completions
-        KFileViewItemListIterator it( *(dir->currentContents()));
+        KFileViewItemListIterator it( dir->currentContents());
 	for( ; it.current(); ++it ) {
             KFileViewItem *item = it.current();
 
@@ -852,7 +852,7 @@ void KDirOperator::slotCompletionMatch(const QString& match)
     const KFileViewItem *item = 0L;
 
     if ( !match.isNull() )
-        item = dir->currentContents()->findByName( match );
+        item = dir->currentContents().findByName( match );
     else
         fileView->clearSelection();
 
