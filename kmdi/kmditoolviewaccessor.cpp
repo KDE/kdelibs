@@ -108,7 +108,8 @@ void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetW
       {
         if (pTargetWnd == mdiMainFrm->m_pDockbaseAreaOfDocumentViews->getWidget()) DockToOurself = TRUE;
       }
-      if (pTargetWnd == this) DockToOurself = TRUE;
+      // this is not inheriting QWidget*, its plain impossible that this condition is true
+      //if (pTargetWnd == this) DockToOurself = TRUE;
       if (DockToOurself) pTargetDock = mdiMainFrm->m_pDockbaseAreaOfDocumentViews;
       else if(pTargetWnd != 0L) {
          pTargetDock = mdiMainFrm->dockManager->findWidgetParentDock( pTargetWnd);
