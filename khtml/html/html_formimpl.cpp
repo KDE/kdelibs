@@ -1380,18 +1380,17 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    uint i;
-    uint lastoption = -1;
+    // return the number of the first option selected
+    uint o = 0;
     QMemArray<HTMLGenericFormElementImpl*> items = listItems();
-    for (i = 0; i < items.size(); i++) {
+    for (unsigned int i = 0; i < items.size(); i++) {
         if (items[i]->id() == ID_OPTION) {
-            lastoption = i;
             if (static_cast<HTMLOptionElementImpl*>(items[i])->selected())
-            return listToOptionIndex(int(i)); // selectedIndex is the *first* selected item; there may be others
+                return o;
+            o++;
     }
     }
-    if (!m_multiple && m_size <= 1)
-        return lastoption;
+    Q_ASSERT(m_multiple);
     return -1;
 }
 
@@ -1682,31 +1681,32 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 void HTMLSelectElementImpl::recalcListItems()
 {
     NodeImpl* current = firstChild();
-    bool inOptGroup = false;
     m_listItems.resize(0);
-    bool foundSelected = false;
+    HTMLOptionElementImpl* foundSelected = 0;
     while(current) {
-        if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
+        if (current->id() == ID_OPTGROUP && current->firstChild()) {
             // ### what if optgroup contains just comments? don't want one of no options in it...
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
             current = current->firstChild();
-            inOptGroup = true;
         }
         if (current->id() == ID_OPTION) {
             m_listItems.resize(m_listItems.size()+1);
             m_listItems[m_listItems.size()-1] = static_cast<HTMLGenericFormElementImpl*>(current);
-            if (foundSelected && !m_multiple && static_cast<HTMLOptionElementImpl*>(current)->selected())
-                static_cast<HTMLOptionElementImpl*>(current)->setSelected(false);
-            foundSelected = static_cast<HTMLOptionElementImpl*>(current)->selected();
+            if (!foundSelected && !m_multiple) {
+                foundSelected = static_cast<HTMLOptionElementImpl*>(current);
+                foundSelected->m_selected = true;
+            }
+            else if (foundSelected && !m_multiple && static_cast<HTMLOptionElementImpl*>(current)->selected()) {
+                foundSelected->m_selected = false;
+                foundSelected = static_cast<HTMLOptionElementImpl*>(current);
+            }
         }
         NodeImpl *parent = current->parentNode();
         current = current->nextSibling();
         if (!current) {
-            if (inOptGroup) {
+            if (parent != this)
                 current = parent->nextSibling();
-                inOptGroup = false;
-            }
         }
     }
     m_recalcListItems = false;
