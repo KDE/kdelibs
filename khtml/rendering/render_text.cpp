@@ -568,7 +568,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         InlineTextBox* s = m_lines[si];
-        int result;
+        FindSelectionResult result;
         const Font *f = htmlFont( si==0 );
         result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, this, offset, m_lineHeight);
 
