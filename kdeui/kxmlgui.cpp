@@ -1123,16 +1123,16 @@ QList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, const 
 {
     QList<QWidget> res;
 
-    if ( node->tagName == tagName )
+    if ( node->tagName == tagName.lower() )
         res.append( node->container );
 
     QListIterator<KXMLGUIContainerNode> it( node->children );
     for (; it.current(); ++it )
     {
         QList<QWidget> lst = findRecursive( it.current(), tagName );
-        QListIterator<QWidget> it( lst );
-        for (; it.current(); ++it )
-            res.append( it.current() );
+        QListIterator<QWidget> wit( lst );
+        for (; wit.current(); ++wit )
+            res.append( wit.current() );
     }
 
     return res;
