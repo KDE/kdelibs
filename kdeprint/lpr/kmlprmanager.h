@@ -42,6 +42,7 @@ public:
 	bool disablePrinter(KMPrinter*);
 	bool savePrinterDriver(KMPrinter*, DrMain*);
 	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
+	DrMain* loadFileDriver(const QString&);
 
 protected:
 	void listPrinters();

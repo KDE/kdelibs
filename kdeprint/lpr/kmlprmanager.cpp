@@ -115,7 +115,6 @@ LprHandler* KMLprManager::findHandler(KMPrinter *prt)
 	LprHandler	*handler(0);
 	if (handlerstr.isEmpty() || (handler = m_handlers.find(handlerstr)) == NULL)
 	{
-		setErrorMsg(i18n("Internal error."));
 		return NULL;
 	}
 	return handler;
@@ -126,7 +125,6 @@ PrintcapEntry* KMLprManager::findEntry(KMPrinter *prt)
 	PrintcapEntry	*entry = m_entries.find(prt->printerName());
 	if (!entry)
 	{
-		setErrorMsg(i18n("Internal error."));
 		return NULL;
 	}
 	return entry;
@@ -136,10 +134,9 @@ bool KMLprManager::completePrinter(KMPrinter *prt)
 {
 	LprHandler	*handler = findHandler(prt);
 	PrintcapEntry	*entry = findEntry(prt);
-	if (!handler || !entry)
-		return false;
-
-	return handler->completePrinter(prt, entry, false);
+	if (handler && entry)
+		return handler->completePrinter(prt, entry, false);
+	return false;
 }
 
 bool KMLprManager::completePrinterShort(KMPrinter *prt)
@@ -166,7 +163,16 @@ DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool)
 	PrintcapEntry	*entry = findEntry(prt);
 	if (handler && entry)
 		return handler->loadDriver(prt, entry);
-	setErrorMsg(i18n("Internal error."));
+	return NULL;
+}
+
+DrMain* KMLprManager::loadFileDriver(const QString& filename)
+{
+	int	p = filename.find('/');
+	QString	handler_str = (p != -1 ? filename.left(p) : QString::fromLatin1("default"));
+	LprHandler	*handler = m_handlers.find(handler_str);
+	if (handler)
+		return handler->loadDbDriver(filename);
 	return NULL;
 }
 
@@ -198,6 +204,5 @@ bool KMLprManager::savePrinterDriver(KMPrinter *prt, DrMain *driver)
 	PrintcapEntry	*entry = findEntry(prt);
 	if (handler && entry)
 		return handler->savePrinterDriver(prt, entry, driver);
-	setErrorMsg(i18n("Internal error."));
 	return false;
 }

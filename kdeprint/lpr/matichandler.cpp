@@ -283,6 +283,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 	QFile	tmpFile(locateLocal("tmp", "foomatic_" + kapp->randomString(8)));
 	QFile	inFile(driver->get("template"));
 	QString	outFile = maticFile(entry);
+	bool	result(false);
 
 	if (inFile.open(IO_ReadOnly) && tmpFile.open(IO_WriteOnly))
 	{
@@ -315,11 +316,12 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		QString	cmd = "mv " + tmpFile.name() + " " + outFile;
 		int	status = ::system(QFile::encodeName(cmd).data());
 		QFile::remove(tmpFile.name());
-		return (status != -1 && WEXITSTATUS(status) == 0);
+		result = (status != -1 && WEXITSTATUS(status) == 0);
 	}
-	else
-	{
-		QFile::remove(tmpFile.name());
-		return false;
-	}
+
+	if (!result)
+		manager()->setErrorMsg(i18n("You probably don't have the required permissions "
+		                            "to perform that operation."));
+	QFile::remove(tmpFile.name());
+	return result;
 }

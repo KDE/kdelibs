@@ -58,12 +58,18 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 
 DrMain* LprHandler::loadDriver(KMPrinter*, PrintcapEntry*)
 {
-	manager()->setErrorMsg(i18n("Unrecognized entry"));
+	manager()->setErrorMsg(i18n("Unrecognized entry."));
 	return NULL;
 }
 
 bool LprHandler::savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*)
 {
-	manager()->setErrorMsg(i18n("Unrecognized entry"));
+	manager()->setErrorMsg(i18n("Unrecognized entry."));
 	return false;
+}
+
+DrMain* LprHandler::loadDbDriver(const QString&)
+{
+	manager()->setErrorMsg(i18n("Unrecognized entry."));
+	return NULL;
 }
