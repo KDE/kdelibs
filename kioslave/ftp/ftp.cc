@@ -1734,7 +1734,8 @@ bool Ftp::ftpOpenDir( const QString & path )
   // We use '-a' because the application MAY be interested in dot files.
   // The only way to really know would be to have a metadata flag for this...
   // Since some windows ftp server seems not to support the -a argument, we use a fallback here.
-  if( !ftpOpenCommand( "list -a", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  // In fact we have to use -la otherwise -a removes the default -l (e.g. ftp.trolltech.com)
+  if( !ftpOpenCommand( "list -la", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
   {
     if ( !ftpOpenCommand( "list", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
     {
