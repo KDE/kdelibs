@@ -153,6 +153,7 @@ int KFilterDev::at() const
 
 bool KFilterDev::at( int pos )
 {
+    ASSERT ( filter->mode() == IO_ReadOnly );
     kdDebug() << "KFilterDev::at " << pos << endl;
 
     if ( ioIndex == pos )
@@ -164,6 +165,7 @@ bool KFilterDev::at( int pos )
         // We can forget about the cached data
         d->ungetchBuffer.resize(0);
         d->bNeedHeader = true;
+        d->result = KFilterBase::OK;
         filter->setInBuffer(0L,0);
         filter->reset();
         return filter->device()->reset();
@@ -194,6 +196,8 @@ bool KFilterDev::atEnd() const
 
 int KFilterDev::readBlock( char *data, uint maxlen )
 {
+    ASSERT ( filter->mode() == IO_ReadOnly );
+    //kdDebug() << "KFilterDev::readBlock maxlen=" << maxlen << "  ok=" << (d->result == KFilterBase::OK) << endl;
     // If we had an error, or came to the end of the stream, return 0.
     if ( d->result != KFilterBase::OK )
         return 0;
@@ -228,7 +232,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
 
         if (d->result == KFilterBase::ERROR)
         {
-            kdDebug() << "KFilterDev: Error when uncompressing data" << endl;
+            kdWarning() << "KFilterDev: Error when uncompressing data" << endl;
             // What to do ?
             break;
         }
@@ -248,7 +252,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
             ioIndex += outReceived;
             if (d->result == KFilterBase::END)
             {
-                kdDebug() << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
+                //kdDebug() << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
                 break; // Finished.
             }
             availOut = maxlen - dataReceived;
@@ -261,6 +265,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
 
 int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
 {
+    ASSERT ( filter->mode() == IO_WriteOnly );
     // If we had an error, return 0.
     if ( d->result != KFilterBase::OK )
         return 0;
@@ -285,7 +290,7 @@ int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
 
         if (d->result == KFilterBase::ERROR)
         {
-            kdDebug() << "KFilterDev: Error when compressing data" << endl;
+            kdWarning() << "KFilterDev: Error when compressing data" << endl;
             // What to do ?
             break;
         }
@@ -338,6 +343,7 @@ int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
 
 int KFilterDev::getch()
 {
+    ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug() << "KFilterDev::getch" << endl;
     if ( !d->ungetchBuffer.isEmpty() ) {
         int len = d->ungetchBuffer.length();
