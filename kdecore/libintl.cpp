@@ -61,10 +61,10 @@ Cambridge, MA 02139, USA.  */
 #endif     
 
 #include <stdlib.h>
+#include <stdio.h>
 #ifdef __alpha
 #define __USE_GNU
 #endif
-#include <string.h>
 
 #if defined(HAVE_ARGZ_H)
 #ifdef __BEGIN_DECLS
@@ -135,8 +135,6 @@ extern int errno;
 #endif
 
 #include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
 
 #ifdef NULL
 #undef NULL
