@@ -1,19 +1,17 @@
 <!-- ONLY to supply declarations that were switched off earlier 
      Take _all_ care to make it only _more_ restrictive.  -->
 
-<!-- here could the original declaration come, eg %DocBookDTD;
-     (it's a nice way of doing this; other customisations should
-     be redone following this `architecture': the result might be
-     much simpler) -->
 <!ATTLIST QandASet 
                 DefaultLabel (qanda|number|none) #IMPLIED 
                 %idreq.common.attrib; 	-- changed --
                 %qandset.role.attrib; 
                 %local.qandset.attrib;>
+
 <!ATTLIST QandADiv
 		%idreq.common.attrib;   -- changed --
 		%qandadiv.role.attrib;
 		%local.qandadiv.attrib;>
+
 <!ATTLIST Section
 		%label.attrib;
 		%status.attrib;
@@ -21,6 +19,7 @@
 		%section.role.attrib;
 		%local.section.attrib;
 >
+
 <!ATTLIST Chapter
 		%label.attrib;
 		%status.attrib;
@@ -28,6 +27,7 @@
 		%chapter.role.attrib;
 		%local.chapter.attrib;
 >
+
 <!ATTLIST Sect1
 		Renderas	(Sect2
 				|Sect3
