@@ -20,7 +20,7 @@ class KFileFilter : public QComboBox
     QStrList *filters;
 
  protected slots:
-    void changed(const char*);
+    void changed(const QString &);
 
  signals:
     void filterChanged();
