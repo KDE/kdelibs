@@ -25,7 +25,8 @@
 #include <qapplication.h>
 #include <qtimer.h>
 
-#define TIMEOUT_INTERVAL 2000
+#define TIMEOUT_WAN 2000
+#define TIMEOUT_LAN 200
 
 namespace DNSSD
 {
@@ -41,6 +42,7 @@ public:
 	{};
 	bool m_finished;
 	QString m_domain;
+	bool m_local;
 	QTimer timeout;
 	QString m_type;
 };
@@ -48,6 +50,7 @@ public:
 Query::Query(const QString& type, const QString& domain)
 {
 	d = new QueryPrivate(type,domain);
+	d->m_local=(domain.section('.',-1,-1).lower()=="local");
 	connect(&d->timeout,SIGNAL(timeout()),this,SLOT(timeout()));
 }
 
@@ -83,7 +86,7 @@ void Query::startQuery()
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	if (!d->isRunning()) emit finished();
-		else d->timeout.start(TIMEOUT_INTERVAL,true);
+		else d->timeout.start(d->m_local ? TIMEOUT_LAN : TIMEOUT_WAN,true);
 }
 void Query::virtual_hook(int, void*)
 {
