@@ -246,20 +246,22 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     //qDebug("applying properties, count=%d", propsToApply->count() );
     
     if ( propsToApply->count() != 0 ) {
-	for(int i = 0; i < (int)propsToApply->count(); i++) {
-	    CSSOrderedProperty* ordprop = propsToApply->at(i);
+	CSSOrderedProperty *ordprop = propsToApply->first();
+	while( ordprop ) {
 	    //qDebug("property %d has spec %x", ordprop->prop->m_id, ordprop->priority );
 	    applyRule( style, ordprop->prop, e );
+	    ordprop = propsToApply->next();
 	}
     }
 
     if ( style->display() != INLINE && pseudoProps->count() != 0 ) {
-	for(int i = 0; i < (int)pseudoProps->count(); i++) {
-	    CSSOrderedProperty* ordprop = pseudoProps->at(i);
+	CSSOrderedProperty *ordprop = pseudoProps->first();
+	while( ordprop ) {
 	    RenderStyle *pseudoStyle;
 	    pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
 	    if ( pseudoStyle )
 		applyRule(pseudoStyle, ordprop->prop, e);
+	    ordprop = pseudoProps->next();
 	}
     }
 
@@ -566,6 +568,7 @@ void CSSStyleSelector::buildLists()
 
     selectorState = new SelectorState[selectors_size];
 
+    // presort properties. Should make the sort() calls in styleForElement faster.
     propertyList.sort();
     properties_size = propertyList.count() + 1;
     properties = new CSSOrderedProperty *[ properties_size ];
