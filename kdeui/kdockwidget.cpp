@@ -45,6 +45,8 @@
 #include <qpopupmenu.h>
 #endif
 
+#include <stdlib.h>
+
 #define DOCK_CONFIG_VERSION "0.0.5"
 
 static const char* const close_xpm[]={
@@ -416,10 +418,11 @@ KDockWidget::~KDockWidget()
   
   if (latestKDockContainer()) static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
   emit iMBeingClosed();
-  manager->d->containerDocks.remove(this);
+  if (manager->d) manager->d->containerDocks.remove(this);
   manager->childDock->remove( this );
   delete pix;
   delete d; // destroy private data
+  d=0;
 }
 
 void KDockWidget::setLatestKDockContainer(QWidget* container)
@@ -1257,6 +1260,7 @@ KDockManager::~KDockManager()
   }
   delete childDock;
   delete d;
+  d=0;
 }
 
 void KDockManager::activate()
@@ -2453,21 +2457,75 @@ void KDockArea::setMainDockWidget( KDockWidget* mdw )
 #endif
 
 // KDOCKCONTAINER - AN ABSTRACTION OF THE KDOCKTABWIDGET
-KDockContainer::KDockContainer(){;}
-KDockContainer::~KDockContainer(){;}
+KDockContainer::KDockContainer(){m_childrenListBegin=0; m_childrenListEnd=0;}
+KDockContainer::~KDockContainer(){
+
+	if (m_childrenListBegin!=0)
+	{
+		struct ListItem *tmp=m_childrenListBegin;
+		while (tmp)
+		{
+			struct ListItem *tmp2=tmp->next;
+			delete tmp->data;
+			delete tmp;
+			tmp=tmp2;
+		}
+		m_childrenListBegin=0;
+		m_childrenListEnd=0;
+	}
+
+}
+
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
-void KDockContainer::insertWidget (KDockWidget *dw, QPixmap, const QString &, int &){m_children.append(dw);}
-void KDockContainer::removeWidget (KDockWidget *dw){m_children.remove(dw);}
+void KDockContainer::insertWidget (KDockWidget *dw, QPixmap, const QString &, int &)
+	{
+		struct ListItem *it=new struct ListItem;
+		it->data=strdup(dw->name());
+		it->next=0;
+
+		if (m_childrenListEnd)
+		{
+			m_childrenListEnd->next=it;
+			it->prev=m_childrenListEnd;
+			m_childrenListEnd=it;
+		}
+		else
+		{
+			it->prev=0;
+			m_childrenListEnd=it;
+			m_childrenListBegin=it;
+		}
+	}
+void KDockContainer::removeWidget (KDockWidget *dw){
+	for (struct ListItem *tmp=m_childrenListBegin;tmp;tmp=tmp->next)
+	{
+		if (!strcmp(tmp->data,dw->name()))
+		{
+			free(tmp->data);
+			if (tmp->next) tmp->next->prev=tmp->prev;
+			if (tmp->prev) tmp->prev->next=tmp->next;
+			if (tmp==m_childrenListBegin) m_childrenListBegin=tmp->next;
+			if (tmp==m_childrenListEnd) m_childrenListEnd=tmp->prev;
+			delete tmp;
+			break;
+		}
+	}
+}
+
+//m_children.remove(dw->name());}
 void KDockContainer::undockWidget (KDockWidget *){;}
 void KDockContainer::setToolTip(KDockWidget *, QString &){;}
 void KDockContainer::load (KConfig*){;}
 void KDockContainer::save (KConfig*){;}
 void KDockContainer::prepareSave(QStringList &names)
 {
-	for (uint i=0;i<m_children.count();i++)
-	{
-		names.remove(m_children.at(i)->name());
-	}
+	
+	for (struct ListItem *tmp=m_childrenListBegin;tmp; tmp=tmp->next)
+		names.remove(tmp->data);
+//	for (uint i=0;i<m_children.count();i++)
+//	{
+//		names.remove(m_children.at(i));
+//	}
 }
 
 void KDockWidgetAbstractHeader::virtual_hook( int, void* )

@@ -34,7 +34,9 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 ***********************************************************************/
 
 
+
 // Add some describing comment !!
+
 class EXPORT_DOCKCLASS KDockContainer
 {
 public:
@@ -51,7 +53,19 @@ protected:
   friend class KDockManager;
   void prepareSave(QStringList &names);
 private:
-  QPtrList<KDockWidget> m_children;
+
+	struct ListItem {
+		struct ListItem *prev;
+		struct ListItem *next;
+		char *data;
+	};
+
+
+
+  struct ListItem *m_childrenListBegin;
+  struct ListItem *m_childrenListEnd;
+
   class KDockContainerPrivate;
   KDockContainerPrivate *d;
 };
+
