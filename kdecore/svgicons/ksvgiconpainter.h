@@ -54,6 +54,8 @@ public:
 	void setFillRule(const QString &fillRule);
 	void setFillOpacity(double fillOpacity, bool justset = false);
 	void setStrokeOpacity(double strokeOpacity, bool justset = false);
+	void setStrokeDashOffset(const QString &dashOffset);
+	void setStrokeDashArray(const QString &dashes);
 	
 	void setWorldMatrix(QWMatrix *worldMatrix);
 	void setClippingRect(int x, int y, int w, int h);

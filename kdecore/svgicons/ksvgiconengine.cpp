@@ -262,6 +262,7 @@ public:
 		// Set important default attributes
 		m_engine->painter()->setFillColor("black");
 		m_engine->painter()->setStrokeColor("none");
+		m_engine->painter()->setStrokeDashArray("");
 	//	m_engine->painter()->setFillOpacity(255, true);
 	//	m_engine->painter()->setStrokeOpacity(255, true);
 
@@ -456,6 +457,10 @@ public:
 			m_engine->painter()->setCapStyle(value);
 		else if(command == "stroke-linejoin")
 			m_engine->painter()->setJoinStyle(value);
+		else if(command == "stroke-dashoffset")
+			m_engine->painter()->setStrokeDashOffset(value);
+		else if(command == "stroke-dasharray")
+			m_engine->painter()->setStrokeDashArray(value);
 		else if(command == "stroke")
 			m_engine->painter()->setStrokeColor(value);
 		else if(command == "fill")

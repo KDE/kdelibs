@@ -34,6 +34,7 @@
 #include <libart_lgpl/art_rgb.h>
 #include <libart_lgpl/art_rgba.h>
 #include <libart_lgpl/art_vpath.h>
+#include <libart_lgpl/art_vpath_dash.h>
 #include <libart_lgpl/art_bpath.h>
 #include <libart_lgpl/art_affine.h>
 #include <libart_lgpl/art_svp_ops.h>
@@ -69,9 +70,11 @@ public:
 		// Create new image with alpha support
 		m_image = new QImage(width, height, 32);
 		m_image->setAlphaBuffer(true);
-		
+
 		m_strokeWidth = 1.0;
 		m_strokeMiterLimit = 4;
+		m_dashOffset = 0;
+		m_dashes = "";
 
 		m_fillOpacity = 255.0;
 		m_strokeOpacity = 255.0;
@@ -259,7 +262,30 @@ public:
 				capStyle = ART_PATH_STROKE_CAP_ROUND;
 			else if(m_capStyle == "square")
 				capStyle = ART_PATH_STROKE_CAP_SQUARE;
-			
+
+			if(m_dashes.length() > 0)
+			{
+				QRegExp reg("[a-zA-Z,(; ]");
+				QStringList dashList = QStringList::split(reg, m_dashes);
+
+				double *dashes = new double[dashList.count()];
+				for(int i = 0; i < dashList.count(); i++)
+					dashes[i] = dashList[i].toDouble();
+
+				ArtVpathDash dash;
+				dash.offset = m_dashOffset;
+				dash.n_dash = dashList.count();
+
+				dash.dash = dashes;
+
+				ArtVpath *vec2 = art_vpath_dash(vec, &dash);
+				art_free(vec);
+
+				delete dashes;
+
+				vec = vec2;
+			}
+
 			svp = art_svp_vpath_stroke(vec, joinStyle, capStyle, strokeWidth, m_strokeMiterLimit, 0.25);
 
 			strokeSVP = svp;
@@ -855,6 +881,8 @@ private:
 	QString m_joinStyle;
 	QString m_capStyle;
 	int m_strokeMiterLimit;
+	QString m_dashes;
+	unsigned short m_dashOffset;
 
 	QColor m_fillColor;
 	QColor m_strokeColor;
@@ -945,6 +973,16 @@ void KSVGIconPainter::setStrokeWidth(double width)
 void KSVGIconPainter::setStrokeMiterLimit(const QString &miter)
 {
 	d->helper->m_strokeMiterLimit = miter.toInt();
+}
+
+void KSVGIconPainter::setStrokeDashOffset(const QString &dashOffset)
+{
+	d->helper->m_dashOffset = dashOffset.toUInt();
+}
+
+void KSVGIconPainter::setStrokeDashArray(const QString &dashes)
+{
+	d->helper->m_dashes = dashes;
 }
 
 void KSVGIconPainter::setCapStyle(const QString &cap)
