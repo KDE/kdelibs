@@ -316,13 +316,12 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 static KCmdLineOptions options[] =
 {
   { "g", 0, 0 } ,
-  { "genoutput", "Generate output (instead of checking)", 0 } ,
+  { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
   { "s", 0, 0 } ,
   { "show", "Show the window while running tests", 0 } ,
   { "t", 0, 0 } ,
   { "test <filename>", "Run only a single test", 0 } ,
-  { "+source_dir", "Directory containing html files to prcoess", 0 } ,
-  { "+output_dir", "Directory for comparison/storage of KHTMLPart internal structure dump", 0 } ,
+  { "+base_dir", "Directory containing tests,basedir and output directories", 0 } ,
   KCmdLineLastOption
 };
 
@@ -350,22 +349,20 @@ int main(int argc, char *argv[])
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
 
-    if ( args->count() < 2 ) {
+    if ( args->count() < 1 ) {
 	KCmdLineArgs::usage();
 	::exit( 1 );
     }
 
-    QFileInfo sourceDir(args->arg(0));
-    if (!sourceDir.exists() || !sourceDir.isDir() || !sourceDir.isDir()) {
-	fprintf(stderr,"ERROR: Source directory \"%s\": no such directory.\n",args->arg(0));
-	exit(1);
+    const char *subdirs[] = {"tests", "baseline", "output"};
+    for ( int i = 0; i < 3; i++ ) {
+        QFileInfo sourceDir(QFile::encodeName( args->arg(0) ) + "/" + subdirs[i]);
+        if ( !sourceDir.exists() || !sourceDir.isDir() ) {
+            fprintf(stderr,"ERROR: Source directory \"%s/%s\": no such directory.\n",args->arg(0), subdirs[i]);
+            exit(1);
+        }
     }
 
-    QFileInfo outputDir(args->arg(1));
-    if (!outputDir.exists() || !outputDir.isDir() || !outputDir.isDir()) {
-	fprintf(stderr,"ERROR: Output directory \"%s\": no such directory.\n",args->arg(1));
-	exit(1);
-    }
 
     // create widgets
     KHTMLFactory *fac = new KHTMLFactory();
@@ -387,8 +384,9 @@ int main(int argc, char *argv[])
         toplevel->show();
 
     // run the tests
-    RegressionTest *regressionTest = new RegressionTest(part,args->arg(0),
-							args->arg(1),args->isSet("genoutput"));
+    RegressionTest *regressionTest = new RegressionTest(part,
+                                                        args->arg(0),
+                                                        args->isSet("genoutput"));
     QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KURL &, const KParts::URLArgs &)),
 		     regressionTest, SLOT(slotOpenURL(const KURL&, const KParts::URLArgs &)));
 
@@ -432,20 +430,19 @@ int main(int argc, char *argv[])
 
 RegressionTest *RegressionTest::curr = 0;
 
-RegressionTest::RegressionTest(KHTMLPart *part, QString _sourceFilesDir,
-			       QString _outputFilesDir, bool _genOutput)
+RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
+			       bool _genOutput)
   : QObject(part)
 {
     m_part = part;
-    m_sourceFilesDir = _sourceFilesDir;
-    m_outputFilesDir = _outputFilesDir;
+    m_baseDir = baseDir;
+    m_baseDir = m_baseDir.replace( "//", "/" );
+    if ( m_baseDir.endsWith( "/" ) )
+        m_baseDir = m_baseDir.left( m_baseDir.length() - 1 );
     m_genOutput = _genOutput;
-    m_currentBase = "";
     m_passes = 0;
     m_failures = 0;
     m_errors = 0;
-    m_currentCategory = "";
-    m_currentTest = "";
 
     curr = this;
 };
@@ -454,12 +451,12 @@ RegressionTest::RegressionTest(KHTMLPart *part, QString _sourceFilesDir,
 
 bool RegressionTest::runTests(QString relPath, bool mustExist)
 {
-    if (!QFile(m_sourceFilesDir+"/"+relPath).exists()) {
+    if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
 	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
 	return false;
     }
 
-    QString fullPath = m_sourceFilesDir+"/"+relPath;
+    QString fullPath = m_baseDir + "/tests/"+relPath;
     QFileInfo info(fullPath);
 
     if (!info.exists() && mustExist) {
@@ -475,7 +472,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
     if (info.isDir()) {
 
 	// Read ignore file for this directory
-	QString ignoreFilename = m_sourceFilesDir+"/"+relPath+"/ignore";
+	QString ignoreFilename = m_baseDir + "/tests/"+relPath+"/ignore";
 	QFileInfo ignoreInfo(ignoreFilename);
 	QStringList ignoreFiles;
 	if (ignoreInfo.exists()) {
@@ -492,7 +489,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	}
 
 	// Run each test in this directory, recusively
-	QDir sourceDir(m_sourceFilesDir+"/"+relPath);
+	QDir sourceDir(m_baseDir + "/tests/"+relPath);
 	for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
 	    QString filename = sourceDir[fileno];
 	    QString relFilename = relPath.isEmpty() ? filename : relPath+"/"+filename;
@@ -503,7 +500,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
     else if (info.isFile()) {
 	QString relativeDir = QFileInfo(relPath).dirPath();
 	QString filename = info.fileName();
-	m_currentBase = m_sourceFilesDir+"/"+relativeDir;
+	m_currentBase = m_baseDir + "/tests/"+relativeDir;
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
 	if (filename.endsWith(".html") || filename.endsWith( ".htm" )) {
@@ -650,10 +647,7 @@ QString RegressionTest::getPartOutput( OutputType type)
         getPartDOMOutput( outputStream );
     }
 
-    if ( m_sourceFilesDir.endsWith( "/" ) )
-        dump.replace( m_sourceFilesDir, QString::fromLatin1( "REGRESSION_SRCDIR/" ) );
-    else
-        dump.replace( m_sourceFilesDir, QString::fromLatin1( "REGRESSION_SRCDIR" ) );
+    dump.replace( m_baseDir + "/tests", QString::fromLatin1( "REGRESSION_SRCDIR" ) );
     return dump;
 }
 
@@ -664,7 +658,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     // load page
     KURL url;
     url.setProtocol("file");
-    url.setPath(QFileInfo(m_sourceFilesDir+"/"+filename).absFilePath());
+    url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absFilePath());
     PartMonitor pm(m_part);
     m_part->openURL(url);
     pm.waitForCompletion();
@@ -675,9 +669,9 @@ void RegressionTest::testStaticFile(const QString & filename)
         reportResult( checkOutput(filename+"-render") );
     } else {
         // compare with output file
-        if ( ::access( QFile::encodeName( m_outputFilesDir + "/" + filename + "-dom" ), R_OK ) ||
+        if ( ::access( QFile::encodeName( m_baseDir + "/baseline/" + filename + "-dom" ), R_OK ) ||
              reportResult( checkOutput(filename+"-dom") ) )
-            if ( !::access( QFile::encodeName( m_outputFilesDir + "/" + filename + "-render" ), R_OK ) )
+            if ( !::access( QFile::encodeName( m_baseDir + "/baseline/" + filename + "-render" ), R_OK ) )
                 reportResult(checkOutput(filename+"-render"));
     }
 }
@@ -743,20 +737,22 @@ void RegressionTest::testJSFile(const QString & filename)
     QStringList dirs = QStringList::split( '/', filename );
     // NOTE: the basename is of little interest here, but the last basedir change
     // isn't taken in account
-    QString basedir =  m_sourceFilesDir+"/";
+    QString basedir =  m_baseDir + "/tests/";
     for ( QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it )
     {
         if ( ! ::access( QFile::encodeName( basedir + "shell.js" ), R_OK ) )
             evalJS( interp, basedir + "shell.js", false );
         basedir += *it + "/";
     }
-    evalJS( interp, m_sourceFilesDir + "/"+ filename, true );
+    evalJS( interp, m_baseDir + "/tests/"+ filename, true );
 }
 
 bool RegressionTest::checkOutput(const QString &againstFilename)
 {
     QString data = getPartOutput( againstFilename.endsWith( "-dom" ) ? DOMTree : RenderTree );
-    QString absFilename = QFileInfo(m_outputFilesDir+"/"+againstFilename).absFilePath();
+    QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
+    bool result = true;
+
     if (!m_genOutput) {
 	// compare result to existing file
 
@@ -771,25 +767,33 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
 
         QString fileData = stream.read();
 
-	return ( fileData == data );
-    }
-    else {
-	// generate result file
-	QFileInfo info(absFilename);
-	createMissingDirs(info.dirPath());
-	QFile file(absFilename);
-	if (!file.open(IO_WriteOnly)) {
-	    fprintf(stderr,"Error writing to file %s\n",absFilename.latin1());
-	    exit(1);
-	}
+	result = ( fileData == data );
 
-	QTextStream stream(&file);
-        stream.setEncoding( QTextStream::UnicodeUTF8 );
-        stream << data;
-	printf("Generated %s\n",againstFilename.latin1());
-
-	return true;
+        absFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
+        if ( result ) {
+            ::unlink( QFile::encodeName( absFilename ) );
+            return result;
+        }
     }
+
+
+    // generate result file
+
+    QFileInfo info(absFilename);
+    createMissingDirs(info.dirPath());
+    QFile file(absFilename);
+    if (!file.open(IO_WriteOnly)) {
+        fprintf(stderr,"Error writing to file %s\n",absFilename.latin1());
+        exit(1);
+    }
+
+    QTextStream stream(&file);
+    stream.setEncoding( QTextStream::UnicodeUTF8 );
+    stream << data;
+    if ( m_genOutput )
+        printf("Generated %s\n",againstFilename.latin1());
+
+    return result;
 }
 
 bool RegressionTest::reportResult(bool passed, const QString & description)

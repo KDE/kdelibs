@@ -123,8 +123,8 @@ class RegressionTest : public QObject
   Q_OBJECT
 public:
 
-    RegressionTest(KHTMLPart *part, QString _sourceFilesDir,
-		   QString _resultFilesDir, bool _genOutput);
+    RegressionTest(KHTMLPart *part, const QString &baseDir,
+		   bool _genOutput);
 
     enum OutputType { DOMTree, RenderTree };
     QString getPartOutput( OutputType type );
@@ -137,8 +137,7 @@ public:
     void createMissingDirs(QString path);
 
     KHTMLPart *m_part;
-    QString m_sourceFilesDir;
-    QString m_outputFilesDir;
+    QString m_baseDir;
     bool m_genOutput;
     QString m_currentBase;
 
