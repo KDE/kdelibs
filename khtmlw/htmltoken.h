@@ -127,23 +127,35 @@ protected:
     
 	typedef enum 
 	{ 
-		NonePending = 0, SpacePending, 
-		LFPending, TabPending 
+		NonePending = 0, 
+		SpacePending, 
+		LFPending, 
+		TabPending 
 	} HTMLPendingType;
 
     // To avoid multiple spaces
     HTMLPendingType pending;
 
-    // Discard space / line breaks immediately after start-tags
-    bool discard;
+	typedef enum 
+	{ 
+		NoneDiscard = 0, 
+		SpaceDiscard, 
+		LFDiscard, 
+	} HTMLDiscardType;
+
+    // Discard line breaks immediately after start-tags
+    // Discard spaces after '=' within tags
+    HTMLDiscardType discard;
 
 	 // Discard the LF part of CRLF sequence
     bool skipLF;
 
     // Flag to say that we have the '<' but not the character following it.
     // Used to decide whether we will get a <TAG> or </TAG>
-    // In case of a </TAG> we ignore pending spaces.
-    // In case of a <TAG> we add the spaces.
+    // In case of a </TAG> we ignore pending LFs.
+    // In case of a <TAG> we add any pending LF as a space.
+    // If the character following is not '/', 'a..z', 'A..Z' or '!' 
+    // the tag is inserted as text
 	bool startTag;
 
 	// Are we in a <title> ... </title> block

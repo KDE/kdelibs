@@ -878,6 +878,11 @@ protected:
 	target = 0;
     }
 
+	/*
+	 * This function creates a new flow adds it to '_clue' and sets 'flow'
+	 */
+	void newFlow(HTMLClue *_clue);
+
 	void insertText(char *str, const HTMLFont * fp);
 
     /*
@@ -1230,6 +1235,11 @@ protected:
     void blockEndFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
 
 	 /*
+	  * Code for closing-tag to end PRE tag
+	  */
+    void blockEndPre(HTMLClueV *_clue, HTMLStackElem *stackElem);
+
+	 /*
 	  * Code for closing-tag to restore font and font-color
 	  */
     void blockEndColorFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
@@ -1385,6 +1395,9 @@ protected:
 
     // true if the current text is destined for a <TEXTAREA>...</TEXTAREA>
     bool inTextArea;
+
+    // true if the current text is destined for a <PRE>...</PRE>
+    bool inPre;
 
     // the text to be put in a form element
     QString formText;

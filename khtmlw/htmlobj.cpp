@@ -239,14 +239,18 @@ void HTMLVSpace::getSelectedText( QString &_str )
 }
 
 //-----------------------------------------------------------------------------
-HTMLHSpace::HTMLHSpace( const HTMLFont * _font, QPainter *_painter )
+HTMLHSpace::HTMLHSpace( const HTMLFont * _font, QPainter *_painter, bool hidden )
 	: HTMLObject()
 {
     font = _font;
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent()+1;
-    width = _painter->fontMetrics().width( ' ' );
+    if ( !hidden)
+        width = _painter->fontMetrics().width( ' ' );
+    else
+        width = 0;
     setSeparator( true );
+    setHidden( hidden );
 }
 
 void HTMLHSpace::recalcBaseSize( QPainter *_painter )
@@ -261,7 +265,7 @@ void HTMLHSpace::recalcBaseSize( QPainter *_painter )
 
 void HTMLHSpace::getSelectedText( QString &_str )
 {
-    if ( isSelected() )
+    if ( !isHidden() && isSelected() )
     {
         _str += ' ';
     }
@@ -288,6 +292,9 @@ bool HTMLHSpace::print( QPainter *_painter, int, int _y, int, int _height, int _
 
 void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
 {
+    if (isHidden())
+    	return;
+    	
     _painter->setFont( *font );
     
     if ( isSelected() && _painter->device()->devType() != PDT_PRINTER )
@@ -305,11 +312,9 @@ void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter
-                   ,bool _autoDelete)
+HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter)
     : HTMLObject()
 {
-    setAutoDelete(_autoDelete);
     text = _text;
     font = _font;
     ascent = _painter->fontMetrics().ascent();
@@ -321,7 +326,6 @@ HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 {
-    setAutoDelete(false);
     text = "";
     font = _font;
     ascent = _painter->fontMetrics().ascent();
@@ -334,7 +338,6 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 
 HTMLText::~HTMLText() 
 { 
-    if (isAutoDelete()) delete [] text; 
 }     
 
 
@@ -533,8 +536,8 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
-                                QPainter *_painter, bool _autoDelete)
-  : HTMLText( _text, _font, _painter, _autoDelete)
+                                QPainter *_painter)
+  : HTMLText( _text, _font, _painter)
 {
     int runWidth = 0;
     const char *textPtr = _text;

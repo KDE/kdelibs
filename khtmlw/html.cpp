@@ -1447,6 +1447,7 @@ void KHTMLWidget::selectFont()
     {
 	fontsize = settings->fontBaseSize;
 	debug( "aarrrgh - no font" );
+	assert(0);
     }
 
     HTMLFont f( font_stack.top()->family(), fontsize, weight,
@@ -1568,6 +1569,21 @@ void KHTMLWidget::blockEndFont( HTMLClueV *_clue, HTMLStackElem *Elem)
     }
 }
 
+void KHTMLWidget::blockEndPre( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    // We add a hidden space to get the height
+    // If there is no flow box, we add one.
+    if (!flow)
+    	newFlow( _clue );
+   
+    flow->append(new HTMLHSpace( currentFont(), painter, true ));
+
+    popFont();
+    vspace_inserted = insertVSpace( _clue, vspace_inserted );
+    flow = 0;
+    inPre = false;
+}
+
 void KHTMLWidget::blockEndColorFont( HTMLClueV *_clue, HTMLStackElem *Elem)
 {
     popColor();
@@ -1662,6 +1678,7 @@ void KHTMLWidget::parse()
     formSelect = 0;
     inOption = false;
     inTextArea = false;
+    inPre = false;
     inTitle = false;
     bodyParsed = false;
 
@@ -1874,6 +1891,19 @@ bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
     return true;
 }
 
+void KHTMLWidget::newFlow(HTMLClue * _clue)
+{
+    if (inPre)
+         flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
+	    else
+         flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+
+    flow->setIndent( indent );
+    flow->setHAlign( divAlign );
+    _clue->append( flow );
+}
+
+
 // Function insertText
 // ====
 // This function inserts text in the flow. It decides whether to use
@@ -1981,19 +2011,17 @@ void KHTMLWidget::insertText(char *str, const HTMLFont * fp)
                 {
 		    if ( url || target )
 	       		flow->append( new HTMLLinkTextMaster( str, 
-	       			      fp, painter, url, target, FALSE ) );
+	       			      fp, painter, url, target) );
 	            else
-		       	flow->append( new HTMLTextMaster( str, 
-		       	              fp, painter, FALSE ) );
+		       	flow->append( new HTMLTextMaster( str, fp, painter ) );
                 }
                 else
                 {
 	            if ( url || target )
 	       	        flow->append( new HTMLLinkText( str, 
-	       	                      fp, painter, url, target, FALSE ) );
+	       	                      fp, painter, url, target ) );
 		    else
-		        flow->append( new HTMLText( str, 
-		                      fp, painter, FALSE ) );
+		        flow->append( new HTMLText( str, fp, painter ) );
 		}
             }
             if (insertSpace)
@@ -2085,13 +2113,8 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    {
 		vspace_inserted = false;
 
-		if ( flow == 0 )
-		{
-		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		    flow->setIndent( indent );
-		    flow->setHAlign( divAlign );
-		    _clue->append( flow );
-		}
+	    	if (!flow)
+	            newFlow(_clue);
 		
     	        if (charsetConverter){
 		   debugM("Using charset converter...");
@@ -2203,13 +2226,14 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    // The tag used for line break when we are in <pre>...</pre>
 	    if ( *str == '\n' )
 	    {
-		// tack a space on the end to ensure the previous line is not
-		// zero pixels high
-		if ( flow && !flow->hasChildren() )
-		    flow->append( new HTMLHSpace( currentFont(), painter ) );
-		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		_clue->append( flow );
+		if (!flow)
+		    newFlow(_clue);
+
+		// Add a hidden space to get the line-height right.
+		flow->append(new HTMLHSpace( currentFont(), painter, true ));
+		vspace_inserted = false;
+	
+		newFlow(_clue); // Explicitly make a new flow! 
 	    }
 	    else
 		parseOneToken( _clue, str );
@@ -2372,9 +2396,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
     else if ( strncmp( str, "address", 7) == 0 )
     {
 //	vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	flow->setHAlign( divAlign );
-	_clue->append( flow );
+	flow = 0;
 	italic = TRUE;
 	weight = QFont::Normal;
 	selectFont();
@@ -2494,12 +2516,8 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
     else if ( strncmp(str, "blockquote", 10 ) == 0 )
     {
 	pushBlock(ID_BLOCKQUOTE, 2, &blockEndIndent, indent);
-	
 	indent += INDENT_SIZE;
-
-	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	flow->setIndent( indent );
-	_clue->append( flow );
+	flow = 0; 
     }
     else if ( strncmp(str, "/blockquote", 11 ) == 0 )
     {
@@ -2622,26 +2640,24 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
             }
 	}
 
-	HTMLVSpace *vs; 
-	if (vspace_inserted)
+	if (!flow)
+	    newFlow(_clue);
+
+	HTMLObject *last = flow->lastChild(); 
+	if (!last || last->isNewline())
 	{
-		vs = new HTMLVSpace( 
-				HTMLFont::pointSize( settings->fontBaseSize ),
-				clear 
-			);
+		// Start of line, add vertical space based on current font.
+		flow->append( new HTMLVSpace( 
+				HTMLFont::pointSize( currentFont()->size() ),
+				clear ));
 	}
 	else
 	{
-		vs = new HTMLVSpace(0, clear);
+		// Terminate current line
+		flow->append( new HTMLVSpace(0, clear));
 	}
-	if (flow == 0)
-	{
-	    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	    flow->setIndent( indent );
-	    _clue->append( flow );
-	}
-	flow->append( vs );
-	vspace_inserted = true;
+
+	vspace_inserted = false;
     }
     else if ( strncmp(str, "b", 1 ) == 0 )
     {
@@ -2677,19 +2693,13 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 	}
 	else if (strncmp( str, "cell", 4 ) == 0)
 	{
-	    if ( flow == 0)
-	    {
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
-	    }
+	    if (!flow)
+	        newFlow(_clue);
 
 	    parseCell( flow, str );
 
-	    HTMLText *t = new HTMLText( "", currentFont(), painter );
-	    t->setSeparator( true );
-	    flow->append( t );
+	    // Add a hidden space
+	    flow->append( new HTMLHSpace( currentFont(), painter, true ) );
 	}
 	else if (strncmp( str, "cite", 4 ) == 0)
 	{
@@ -2801,10 +2811,6 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	}
 	vspace_inserted = false;
 	flow = 0;
-
-	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	flow->setIndent( indent );
-	_clue->append( flow );
     }
     else if (strncmp( str, "dd", 2 ) == 0)
     {
@@ -2817,10 +2823,6 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	    indent += INDENT_SIZE;
 	}
 	flow = 0;
-
-	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	flow->setIndent( indent );
-	_clue->append( flow );
     }
 }
 
@@ -3110,12 +3112,8 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			}
 		}
 		// Start a new flow box
-//		if ( !flow )
-//		{
-		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		    flow->setIndent( indent );
-		    _clue->append( flow );
-//		}
+		newFlow(_clue);
+
 		flow->setHAlign( align );
 
 		switch ( str[1] )
@@ -3211,10 +3209,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			}
 		}
 
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( align );
-		_clue->append( flow );
+		newFlow(_clue);
 
 		flow->append( new HTMLRule( length, percent, size, shade ) );
 
@@ -3299,13 +3294,8 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	{
 	    KURL kurl( baseURL, filename );
 	    // Do we need a new FlowBox ?
-	    if ( flow == 0)
-	    {
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
-	    }
+	    if ( !flow )
+	    	newFlow(_clue);
 
 	    HTMLImage *image;
 
@@ -3378,13 +3368,10 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
     {
 	if ( form == 0 )
 		return;
-	if ( flow == 0 )
-	{
-	    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	    flow->setIndent( indent );
-	    flow->setHAlign( divAlign );
-	    _clue->append( flow );
-	}
+
+	if ( !flow )
+	    newFlow(_clue);
+
 	parseInput( str + 6 );
 	vspace_inserted = false;
     }
@@ -3684,12 +3671,11 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	if ( strncmp( str, "pre", 3 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		_clue->append( flow );
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		pushBlock(ID_PRE, 2, &blockEndFont, true);
+		flow = 0;
+		inPre = true;
+		pushBlock(ID_PRE, 2, &blockEndPre);
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{
@@ -3716,11 +3702,8 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 			}
 		}
 		if ( flow == 0 && align != divAlign )
-		{
-		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		    flow->setIndent( indent );
-		    _clue->append( flow );
-		}
+		    newFlow(_clue);
+
 		if ( align != divAlign )
 		    flow->setHAlign( align );
 	}
@@ -3791,13 +3774,8 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		formSelect = new HTMLSelect( this, name, size, multi );
 		formSelect->setForm( form );
 		form->addElement( formSelect );
-		if ( flow == 0 )
-		{
-			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-			flow->setIndent( indent );
-			flow->setHAlign( divAlign );
-			_clue->append( flow );
-		}
+		if ( !flow )
+		    newFlow(_clue);
 
 		flow->append( formSelect );
 	}
@@ -3867,12 +3845,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 	{
 		closeAnchor();
 		if ( !vspace_inserted || !flow )
-		{
-		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		    flow->setIndent( indent );
-		    flow->setHAlign( divAlign );
-		    _clue->append( flow );
-		}
+		    newFlow(_clue);
 
 		parseTable( flow, _clue->getMaxWidth(), str + 6 );
 
@@ -3924,13 +3897,8 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 		formTextArea = new HTMLTextArea( this, name, rows, cols );
 		formTextArea->setForm( form );
 		form->addElement( formTextArea );
-		if ( flow == 0 )
-		{
-			flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-			flow->setIndent( indent );
-			flow->setHAlign( divAlign );
-			_clue->append( flow );
-		}
+		if ( !flow )
+		    newFlow(_clue);
 
 		flow->append( formTextArea );
 

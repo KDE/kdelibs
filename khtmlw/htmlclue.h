@@ -123,7 +123,7 @@ public:
     bool hasChildren() const
 	    {	return (head != 0L); }
     HTMLObject *children() { return head; }
-
+	HTMLObject *lastChild() { return tail; }
     /************************************************************
      * Make an object a child of this Box.
      */

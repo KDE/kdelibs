@@ -237,7 +237,7 @@ public:
 
     enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
 			AllSelected = 0x08, FixedWidth = 0x10, Aligned = 0x20,
-			Printed = 0x40, AutoDelete = 0x80};
+			Printed = 0x40, Hidden = 0x80};
 
     bool isSeparator() const { return flags & Separator; }
     bool isNewline() const { return flags & NewLine; }
@@ -246,7 +246,7 @@ public:
     bool isFixedWidth() const { return flags & FixedWidth; }
     bool isAligned() const { return flags & Aligned; }
     bool isPrinted() const { return flags & Printed; }
-    bool isAutoDelete() const { return flags & AutoDelete; }
+    bool isHidden() const { return flags & Hidden; }
     virtual bool isSlave() const { return 0; }
     
     void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
@@ -256,7 +256,7 @@ public:
     void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
     void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
     void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
-    void setAutoDelete( bool p ) { p ? flags|=AutoDelete : flags&=~AutoDelete; }
+    void setHidden( bool p ) { p ? flags|=Hidden : flags&=~Hidden; }
     
     /*
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
@@ -342,7 +342,7 @@ class HTMLHSpace : public HTMLObject
 {
 public:
 
-    HTMLHSpace( const HTMLFont *, QPainter * );
+    HTMLHSpace( const HTMLFont *, QPainter *, bool hidden=false );
     virtual ~HTMLHSpace() { }
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
@@ -360,7 +360,7 @@ class HTMLText : public HTMLObject
 {
 	friend HTMLTextSlave;
 public:
-    HTMLText( const char*, const HTMLFont *, QPainter * ,bool _autoDelete=FALSE);
+    HTMLText( const char*, const HTMLFont *, QPainter *);
     HTMLText( const HTMLFont *, QPainter * );
     virtual ~HTMLText();
 
@@ -389,7 +389,7 @@ class HTMLTextMaster : public HTMLText
 	friend HTMLTextSlave;
 public:
     HTMLTextMaster( const char* _text, const HTMLFont *_font, 
-    				QPainter *_painter, bool _autoDelete=FALSE);
+    				QPainter *_painter);
     	             
     virtual int  calcMinWidth() { return minWidth; }
     virtual int  calcPreferredWidth() { return prefWidth; }
@@ -447,8 +447,8 @@ class HTMLLinkText : public HTMLText
 {
 public:
     HTMLLinkText( const char*_str, const HTMLFont *_font, QPainter *_painter,
-	    char *_url, const char *_target, bool _autoDelete=FALSE )
-	: HTMLText( _str, _font, _painter,_autoDelete )
+	    char *_url, const char *_target)
+	: HTMLText( _str, _font, _painter)
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkText() { }
 
@@ -469,8 +469,8 @@ class HTMLLinkTextMaster : public HTMLTextMaster
 {
 public:
     HTMLLinkTextMaster( const char*_str, const HTMLFont *_font, QPainter *_painter,
-	    char *_url, const char *_target, bool _autoDelete=FALSE )
-	: HTMLTextMaster( _str, _font, _painter,_autoDelete )
+	    char *_url, const char *_target)
+	: HTMLTextMaster( _str, _font, _painter)
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkTextMaster() { }
 

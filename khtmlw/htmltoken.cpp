@@ -110,7 +110,7 @@ void HTMLTokenizer::begin()
     dest = buffer;
     tag = false;
     pending = NonePending;
-    discard = false;
+    discard = NoneDiscard;
     pre = false;
     prePos = 0;
     script = false;
@@ -424,13 +424,32 @@ void HTMLTokenizer::write( const char *str )
 	    if (*src == '/') 
 	    {
 	       // Start of an End-Tag 
-	       pending = NonePending; // Ignore leading spaces 
+	       if (pending == LFPending)
+	           pending = NonePending; // Ignore leading LFs
+	    }
+	    else if ( ((*src >= 'a') && (*src <='z')) || 
+	    	      ((*src >= 'A') && (*src <='Z')) )	    	    
+	    {
+	       // Start of a Start-Tag
+	    }
+	    else if ( *src == '!')
+	    {
+	       // <!-- comment -->
 	    }
 	    else
 	    {
-	    	if (pending)
-	    	    addPending();
+	       // Invalid tag
+	       // Add as is
+	       if (pending)
+	           addPending();
+	       *dest = '<';
+	       dest++;
+	       *dest++ = *src++;
+               continue;	        
 	    }
+
+            if (pending)
+	        addPending();
 
 	    if ( dest > buffer )
 	    {
@@ -452,7 +471,7 @@ void HTMLTokenizer::write( const char *str )
 	    if ( pre )
 		prePos++;	    
 	    
-	    discard = false; 
+	    discard = NoneDiscard; 
 	    if (pending)
 	    	addPending();
 	    
@@ -464,7 +483,7 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    src++;
 	    startTag = true;
-	    discard = false;
+	    discard = NoneDiscard;
 	}
 	else if ( *src == '>' && tag && !tquote )
 	{
@@ -478,13 +497,13 @@ void HTMLTokenizer::write( const char *str )
 	    if (*ptr == '/')
 	    { 
 	    	// End Tag
-	    	discard = false;
+	    	discard = NoneDiscard;
 	    }
 	    else
 	    {
 	    	// Start Tag
-	    	// Ignore spaces & CR/LF's after a start tag
-	    	discard = true;
+	    	// Ignore CR/LF's after a start tag
+	    	discard = LFDiscard;
 	    }
 	    while ( *ptr && *ptr != ' ' )
 	    {
@@ -571,8 +590,7 @@ void HTMLTokenizer::write( const char *str )
 		blocking.removeLast();
 	    }
 	}
-	else if (( *src == '\n' ) || ( *src == '\r' ) ||
-	         ( *src == ' ' ) || ( *src == '\t'))
+	else if (( *src == '\n' ) || ( *src == '\r' ))
 	{
 	    if ( tquote)
 	    {
@@ -581,31 +599,37 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( tag )
 	    {
                 searchCount = 0; // Stop looking for '<!--' sequence
-		if (!discard)
-		    pending = SpacePending;
+		if (discard == NoneDiscard)
+		    pending = SpacePending; // Treat LFs inside tags as spaces
 	    }
 	    else if ( pre || textarea)
 	    {
-	    	if (!discard)
+	    	if (discard == LFDiscard) 
 	    	{
-	    	    if (pending)
-	    	        addPending();
-	    	    if (*src == ' ')
-	    	        pending = SpacePending;
-	    	    else if (*src == '\t')
-	    	        pending = TabPending;
-	    	    else
-	    	    	pending = LFPending;
+		    // Ignore this LF
+	    	    discard = NoneDiscard; // We have discarded 1 LF
 	    	}
 	    	else
 	    	{
-	    	    discard = false; // We have discarded 1 white-space
-	    	}
+	    	    // Process this LF
+	    	    if (pending)
+	    	        addPending();
+		    pending = LFPending;
+		}
 	    } 
 	    else
 	    {
-	    	if (!discard)
-	    	    pending = SpacePending;
+	    	if (discard == LFDiscard) 
+	    	{
+		    // Ignore this LF
+	    	    discard = NoneDiscard; // We have discarded 1 LF
+	    	}
+	    	else
+	    	{
+	    	    // Process this LF
+	    	    if (pending == NonePending)
+			pending = LFPending;
+		}
 	    }
 	    /* Check for MS-DOS CRLF sequence */
 	    if (*src == '\r')
@@ -614,9 +638,36 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    src++;
 	}
+	else if (( *src == ' ' ) || ( *src == '\t'))
+	{
+	    if ( tquote)
+	    {
+	    	*dest++ = *src; // Just add it
+	    }
+	    else if ( tag )
+	    {
+                searchCount = 0; // Stop looking for '<!--' sequence
+		if (discard == NoneDiscard)
+		    pending = SpacePending;
+	    }
+	    else if ( pre || textarea)
+	    {
+	    	if (pending)
+	    	    addPending();
+	    	if (*src == ' ')
+	    	    pending = SpacePending;
+	    	else 
+	    	    pending = TabPending;
+	    } 
+	    else
+	    {
+	    	pending = SpacePending;
+	    }
+	    src++;
+	}
 	else if ( *src == '\"' || *src == '\'')
 	{ // we treat " & ' the same in tags
-    	    discard = false;
+    	    discard = NoneDiscard;
 	    if ( tag )
 	    {
 	        searchCount = 0; // Stop looking for '<!--' sequence
@@ -652,7 +703,7 @@ void HTMLTokenizer::write( const char *str )
 	else if ( *src == '=' )
 	{
 	    src++;
-	    discard = false;
+	    discard = NoneDiscard;
 	    if ( tag )
 	    {
 	        searchCount = 0; // Stop looking for '<!--' sequence
@@ -660,7 +711,7 @@ void HTMLTokenizer::write( const char *str )
 		if ( !tquote )
 		{
 		    pending = NonePending; // Discard spaces before '='
-		    discard = true; // Ignore following spaces
+		    discard = SpaceDiscard; // Ignore following spaces
 		}
 	    }
 	    else
@@ -676,7 +727,7 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else
 	{
-	    discard = false;
+	    discard = NoneDiscard;
 	    if (pending)
 	    	addPending();
 
