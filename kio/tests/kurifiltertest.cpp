@@ -125,6 +125,21 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
     kdDebug() << "-----" << endl;
 }
 
+void testLocalFile( const QString& filename )
+{
+    QFile tmpFile( filename ); // Yeah, I know, security risk blah blah. This is a test prog!
+
+    if ( tmpFile.open( IO_ReadWrite ) )
+    {
+        QCString fname = QFile::encodeName( tmpFile.name() );
+        filter(fname, fname, KURIFilterData::LOCAL_FILE);
+        tmpFile.close();
+        tmpFile.remove();
+    }
+    else
+        kdDebug() << "Couldn't create " << tmpFile.name() << ", skipping test" << endl;
+}
+
 static const char appName[] = "kurifiltertest";
 static const char programName[] = I18N_NOOP("kurifiltertest");
 static const char description[] = I18N_NOOP("Unit test for the URI filter plugin framework.");
@@ -181,19 +196,12 @@ int main(int argc, char **argv)
     filter( "/etc/passwd#q8", "file:///etc/passwd#q8", KURIFilterData::LOCAL_FILE );
         // local file with query (can be used by javascript)
     filter( "file:/etc/passwd?foo=bar", "file:///etc/passwd?foo=bar", KURIFilterData::LOCAL_FILE );
-        // local file with ? in the name (#58990)
-    QFile tmpFile( "/tmp/kurifiltertest?foo" ); // Yeah, I know, security risk blah blah. This is a test prog!
+    testLocalFile( "/tmp/kurifiltertest?foo" ); // local file with ? in the name (#58990)
+    testLocalFile( "/tmp/kurlfiltertest#foo" ); // local file with '#' in the name
+    testLocalFile( "/tmp/kurlfiltertest#foo?bar" ); // local file with both
+    testLocalFile( "/tmp/kurlfiltertest?foo#bar" ); // local file with both, the other way round
 
-    if ( tmpFile.open( IO_ReadWrite ) )
-    {
-        QCString fname = QFile::encodeName( tmpFile.name() );
-        filter(fname, fname, KURIFilterData::LOCAL_FILE);
-        tmpFile.close();
-        tmpFile.remove();
-    }
-    else
-        kdDebug() << "Couldn't create " << tmpFile.name() << ", skipping test" << endl;
-        // hostnames are lowercased by KURL
+    // hostnames are lowercased by KURL
     filter( "http://www.myDomain.commyPort/ViewObjectRes//Default:name=hello",
             "http://www.mydomain.commyport/ViewObjectRes//Default:name=hello", KURIFilterData::NET_PROTOCOL);
     filter( "ftp://ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
