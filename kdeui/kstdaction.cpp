@@ -87,8 +87,8 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ Goto,          KStdAccel::AccelNone, "go_goto", I18N_NOOP("&Go To..."), 0, 0 },
 	{ GotoPage,      KStdAccel::AccelNone, "go_goto_page", I18N_NOOP("&Go to Page..."), 0, "goto" },
 	{ GotoLine,      KStdAccel::GotoLine, "go_goto_line", I18N_NOOP("&Go to Line..."), 0, 0 },
-	{ FirstPage,     KStdAccel::AccelNone, "go_first", I18N_NOOP("&First Page"), 0, "top" },
-	{ LastPage,      KStdAccel::AccelNone, "go_last", I18N_NOOP("&Last Page"), 0, "bottom" },
+	{ FirstPage,     KStdAccel::Home, "go_first", I18N_NOOP("&First Page"), 0, "top" },
+	{ LastPage,      KStdAccel::End, "go_last", I18N_NOOP("&Last Page"), 0, "bottom" },
 
 	{ AddBookmark,   KStdAccel::AddBookmark, "bookmark_add", I18N_NOOP("&Add Bookmark"), 0, "bookmark_add" },
 	{ EditBookmarks, KStdAccel::AccelNone, "bookmark_edit", I18N_NOOP("&Edit Bookmarks"), 0, "bookmark" },
