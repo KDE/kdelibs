@@ -593,7 +593,7 @@ void FinallyNode::streamTo(SourceStream &s) const
 
 void TryNode::streamTo(SourceStream &s) const
 {
-  s << "try " << block
+  s << SourceStream::Endl << "try " << block
     << _catch
     << _final;
 }
