@@ -242,7 +242,7 @@ public:
        @li Shaded indicates that the window is shaded (rolled-up).
 
        @li SkipTaskbar indicates that a window should not be included on a taskbar.
-       
+
        @li StaysOnTop indicate that a window should be kept on top of other windows.
     **/
 
@@ -382,10 +382,11 @@ public:
 	WMKDESystemTrayWinFor = 1<<26, // NOT STANDARD
 	XAWMState             = 1<<27, // NOT STANDARD
 	WMKDEFrameStrut       = 1<<28, // NOT STANDARD
-	
+
 	// Need to be reordered
 	WMIconName            = 1<<29,
-	WMVisibleIconName     = 1<<30
+	WMVisibleIconName     = 1<<30,
+	WMGeometry	      = 1<<31
     };
 };
 

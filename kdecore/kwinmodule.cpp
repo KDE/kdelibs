@@ -183,7 +183,7 @@ void KWinModulePrivate::updateStackingOrder()
 void KWinModulePrivate::addClient(Window w)
 {
     if ( !QWidget::find( w ) )
-	XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
+	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
     bool emit_strutChanged = FALSE;
     for ( module = modules.first(); module; module = modules.next() ) {
 	NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
@@ -262,12 +262,12 @@ QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
 
     QValueList<WId>::ConstIterator it;
     for( it = d->windows.begin(); it != d->windows.end(); ++it ) {
-	
+
 	if(exclude.contains(*it) > 0) continue;
-	
+
 	NETWinInfo info( qt_xdisplay(), (*it), qt_xrootwin(), NET::WMStrut | NET::WMDesktop);
 	//if(!(info.desktop() == desktop || info.desktop() == NETWinInfo::OnAllDesktops)) continue;
-	
+
 	QRect r = all;
 	NETStrut strut = info.strut();
 	if ( strut.left > 0 )

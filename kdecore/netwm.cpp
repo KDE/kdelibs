@@ -1902,7 +1902,8 @@ void NETWinInfo::setStrut(NETStrut strut) {
 
 
 void NETWinInfo::setState(unsigned long state, unsigned long mask) {
-    if (p->mapping_state_dirty) update(XAWMState);
+    if (p->mapping_state_dirty)
+	update(XAWMState);
 
     if (role == Client && p->mapping_state != Withdrawn) {
 
@@ -1937,7 +1938,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	}
 
 	if ((mask & Max) && (( (p->state&mask) & Max) != (state & Max))) {
-	    
+
 	    unsigned long wishstate = (p->state & ~mask) | (state & mask);
 	    if ( ( (wishstate & MaxHoriz) != (p->state & MaxHoriz) )
 		 && ( (wishstate & MaxVert) != (p->state & MaxVert) ) ) {
@@ -1999,7 +2000,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
             XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
         }
-	
+
 	if ((mask & StaysOnTop) && ((p->state & StaysOnTop) != (state & StaysOnTop))) {
 	    e.xclient.data.l[0] = (state & StaysOnTop) ? 1 : 0;
 	    e.xclient.data.l[1] = net_wm_state_stays_on_top;
@@ -2142,7 +2143,8 @@ void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
 
 
 void NETWinInfo::setDesktop(int desktop) {
-    if (p->mapping_state_dirty) update(XAWMState);
+    if (p->mapping_state_dirty)
+	update(XAWMState);
 
     if (role == Client && p->mapping_state != Withdrawn) {
 	// we only send a ClientMessage if we are 1) a client and 2) managed
@@ -2230,26 +2232,27 @@ void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
 
 
 void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
-    Window unused;
-    int x, y;
-    unsigned int w, h, junk;
-    XGetGeometry(p->display, p->window, &unused, &x, &y, &w, &h, &junk, &junk);
-    XTranslateCoordinates(p->display, p->window, p->root, 0, 0, &x, &y, &unused);
+    if (p->win_geom.size.width == 0 || p->win_geom.size.height == 0) {
+	Window unused;
+	int x, y;
+	unsigned int w, h, junk;
+	XGetGeometry(p->display, p->window, &unused, &x, &y, &w, &h, &junk, &junk);
+	XTranslateCoordinates(p->display, p->window, p->root, 0, 0, &x, &y, &unused
+			      );
 
-    p->win_geom.pos.x = x;
-    p->win_geom.pos.y = y;
+	p->win_geom.pos.x = x;
+	p->win_geom.pos.y = y;
 
-    p->win_geom.size.width = w;
-    p->win_geom.size.height = h;
+	p->win_geom.size.width = w;
+	p->win_geom.size.height = h;
+    }
 
-    p->frame_geom.pos.x = x - p->frame_strut.left;
-    p->frame_geom.pos.y = y - p->frame_strut.top;
-
-    p->frame_geom.size.width = w + p->frame_strut.left + p->frame_strut.right;
-    p->frame_geom.size.height = h + p->frame_strut.top + p->frame_strut.bottom;
-
-    frame = p->frame_geom;
     window = p->win_geom;
+
+    frame.pos.x = window.pos.x - p->frame_strut.left;
+    frame.pos.y = window.pos.y - p->frame_strut.top;
+    frame.size.width = window.size.width + p->frame_strut.left + p->frame_strut.right;
+    frame.size.height = window.size.height + p->frame_strut.top + p->frame_strut.bottom;
 }
 
 
@@ -2416,6 +2419,19 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	}
 
 	update(dirty);
+    } else if (event->type == ConfigureNotify) {
+
+#ifdef NETWMDEBUG
+	fprintf(stderr, "NETWinInfo::event: handling ConfigureNotify event\n");
+#endif
+
+	dirty |= WMGeometry;
+
+	// update window geometry
+	p->win_geom.pos.x = event->xconfigure.x;
+	p->win_geom.pos.y = event->xconfigure.y;
+	p->win_geom.size.width = event->xconfigure.width;
+	p->win_geom.size.height = event->xconfigure.height;
     }
 
     return dirty;
@@ -2483,7 +2499,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			    states[count],
 			    XGetAtomName(p->display, (Atom) states[count]));
 #endif
-		
+
 		    if ((Atom) states[count] == net_wm_state_modal)
 			p->state |= Modal;
 		    else if ((Atom) states[count] == net_wm_state_sticky)

@@ -115,7 +115,7 @@ struct NETWinInfoPrivate {
     RArray<NETIcon> icons;
     int icon_count;
 
-    NETRect icon_geom, win_geom, frame_geom;
+    NETRect icon_geom, win_geom;
     unsigned long state;
     NETStrut strut, frame_strut;
     NET::WindowType type;
