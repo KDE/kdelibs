@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include <qregexp.h>
 #include <qasciidict.h>
@@ -49,6 +50,7 @@
 #include "kdebug.h"
 #include "kinstance.h"
 #include "kshell.h"
+#include "ksimpleconfig.h"
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -137,7 +139,27 @@ QStringList KStandardDirs::allTypes() const
     return list;
 }
 
+static void priorityAdd(QStringList &prefixes, const QString& dir, bool priority)
+{
+    if (priority && !prefixes.isEmpty())
+    {
+        // Add in front but behind $KDEHOME
+        QStringList::iterator it = prefixes.begin();
+        it++;
+        prefixes.insert(it, 1, dir);
+    }
+    else
+    {
+        prefixes.append(dir);
+    }
+}
+
 void KStandardDirs::addPrefix( const QString& _dir )
+{
+    addPrefix(_dir, false);
+}
+
+void KStandardDirs::addPrefix( const QString& _dir, bool priority )
 {
     if (_dir.isNull())
 	return;
@@ -147,12 +169,17 @@ void KStandardDirs::addPrefix( const QString& _dir )
 	dir += '/';
 
     if (!prefixes.contains(dir)) {
-	prefixes.append(dir);
+        priorityAdd(prefixes, dir, priority);
 	dircache.clear();
     }
 }
 
 void KStandardDirs::addXdgConfigPrefix( const QString& _dir )
+{
+    addXdgConfigPrefix(_dir, false);
+}
+
+void KStandardDirs::addXdgConfigPrefix( const QString& _dir, bool priority )
 {
     if (_dir.isNull())
 	return;
@@ -162,12 +189,17 @@ void KStandardDirs::addXdgConfigPrefix( const QString& _dir )
 	dir += '/';
 
     if (!d->xdgconf_prefixes.contains(dir)) {
-	d->xdgconf_prefixes.append(dir);
+        priorityAdd(d->xdgconf_prefixes, dir, priority);
 	dircache.clear();
     }
 }
 
 void KStandardDirs::addXdgDataPrefix( const QString& _dir )
+{
+    addXdgDataPrefix(_dir, false);
+}
+
+void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
 {
     if (_dir.isNull())
 	return;
@@ -177,11 +209,10 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir )
 	dir += '/';
 
     if (!d->xdgdata_prefixes.contains(dir)) {
-	d->xdgdata_prefixes.append(dir);
+	priorityAdd(d->xdgdata_prefixes, dir, priority);
 	dircache.clear();
     }
 }
-
 
 QString KStandardDirs::kfsstnd_prefixes()
 {
@@ -190,6 +221,13 @@ QString KStandardDirs::kfsstnd_prefixes()
 
 bool KStandardDirs::addResourceType( const char *type,
 				     const QString& relativename )
+{
+    return addResourceType(type, relativename, true);
+}
+
+bool KStandardDirs::addResourceType( const char *type,
+                                     const QString& relativename,
+                                     bool priority )
 {
     if (relativename.isNull())
        return false;
@@ -203,7 +241,10 @@ bool KStandardDirs::addResourceType( const char *type,
     if (copy.at(copy.length() - 1) != '/')
 	copy += '/';
     if (!rels->contains(copy)) {
-	rels->prepend(copy);
+        if (priority)
+	    rels->prepend(copy);
+	else
+	    rels->append(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }
@@ -212,6 +253,14 @@ bool KStandardDirs::addResourceType( const char *type,
 
 bool KStandardDirs::addResourceDir( const char *type,
 				    const QString& absdir)
+{
+    // KDE4: change priority to bring in line with addResourceType
+    return addResourceDir(type, absdir, false);
+}
+
+bool KStandardDirs::addResourceDir( const char *type,
+				    const QString& absdir,
+				    bool priority)
 {
     QStringList *paths = absolutes.find(type);
     if (!paths) {
@@ -223,7 +272,10 @@ bool KStandardDirs::addResourceDir( const char *type,
       copy += '/';
 
     if (!paths->contains(copy)) {
-	paths->append(copy);
+        if (priority)
+            paths->prepend(copy);
+        else
+	    paths->append(copy);
 	dircache.remove(type); // clean the cache
 	return true;
     }
@@ -1170,10 +1222,70 @@ void KStandardDirs::checkConfig() const
         const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::_instance->_config);
 }
 
+static QStringList lookupProfiles(const QString &mapFile)
+{
+    QStringList profiles;
+
+    if (mapFile.isEmpty() || !QFile::exists(mapFile))
+    {
+       profiles << "default";
+       return profiles;
+    }
+
+    struct passwd *pw = getpwuid(geteuid());
+    if (!pw)
+    {
+        profiles << "default";
+        return profiles; // Not good
+    }
+
+    QCString user = pw->pw_name;
+
+    KSimpleConfig mapCfg(mapFile, true);
+    mapCfg.setGroup("Users");
+    if (mapCfg.hasKey(user.data()))
+    {
+        profiles = mapCfg.readListEntry(user.data());
+        return profiles; 
+    }
+        
+    mapCfg.setGroup("General");
+    QStringList groups = mapCfg.readListEntry("groups");
+
+    mapCfg.setGroup("Groups");
+
+    for( QStringList::ConstIterator it = groups.begin();
+         it != groups.end(); ++it )
+    {
+        QCString grp = (*it).utf8();
+        // Check if user is in this group
+        struct group *grp_ent = getgrnam(grp);
+        if (!grp_ent) continue;
+
+        char ** members = grp_ent->gr_mem;
+        for(char * member; (member = *members); ++members)
+        {
+            if (user == member)
+            {
+                // User is in this group --> add profiles
+                profiles += mapCfg.readListEntry(*it);
+                break;
+            }
+        }
+    }
+
+    if (profiles.isEmpty())
+        profiles << "default";
+    return profiles;
+}
+
 bool KStandardDirs::addCustomized(KConfig *config)
 {
     if (addedCustoms) // there are already customized entries
-        return false; // we just quite and hope they are the right ones
+        return false; // we just quit and hope they are the right ones
+
+    // save it for future calls - that will return
+    addedCustoms = true;
 
     // save the numbers of config directories. If this changes,
     // we will return true to give KConfig a chance to reparse
@@ -1181,38 +1293,53 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
     // reading the prefixes in
     QString oldGroup = config->group();
-    config->setGroup("Directories");
+    QString group = QString::fromLatin1("Directories");
+    config->setGroup(group);
+    QString userMapFile = config->readEntry("userProfileMapFile");
 
-    QStringList list;
-    QStringList::ConstIterator it;
-    list = config->readListEntry("prefixes");
-    for (it = list.begin(); it != list.end(); it++)
-	addPrefix(*it);
-
-    // iterating over all entries in the group Directories
-    // to find entries that start with dir_$type
-    QMap<QString, QString> entries = config->entryMap("Directories");
-
-    QMap<QString, QString>::ConstIterator it2;
-    for (it2 = entries.begin(); it2 != entries.end(); it2++)
+    QStringList profiles = lookupProfiles(userMapFile);
+    
+    bool priority = false;
+    while(true)
     {
-	QString key = it2.key();
-	if (key.left(4) == "dir_") {
-	    // generate directory list, there may be more than 1.
-	    QStringList dirs = QStringList::split(',',
-						  *it2);
-	    QStringList::Iterator sIt(dirs.begin());
-	    QString resType = key.mid(4, key.length());
-	    for (; sIt != dirs.end(); ++sIt) {
-		addResourceDir(resType.latin1(), *sIt);
-	    }
+        config->setGroup(group);
+        QStringList list = config->readListEntry("prefixes");
+        for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
+        {
+            addPrefix(*it, priority);
+	    addXdgConfigPrefix(*it+"/etc/xdg", priority);
 	}
+
+        // iterating over all entries in the group Directories
+        // to find entries that start with dir_$type
+        QMap<QString, QString> entries = config->entryMap(group);
+        for (QMap<QString, QString>::ConstIterator it2 = entries.begin(); 
+             it2 != entries.end(); it2++)
+        {
+            QString key = it2.key();
+            if (key.startsWith("dir_")) {
+                // generate directory list, there may be more than 1.
+                QStringList dirs = QStringList::split(',',
+						  *it2);
+                QStringList::Iterator sIt(dirs.begin());
+                QString resType = key.mid(4, key.length());
+                for (; sIt != dirs.end(); ++sIt) {
+                    addResourceDir(resType.latin1(), *sIt, priority);
+                }
+            }
+        }
+        if (profiles.isEmpty())
+           break;
+        group = QString::fromLatin1("Directories-%1").arg(profiles.back());
+        profiles.pop_back();
+        priority = true;
     }
 
     // Process KIOSK restrictions.
     config->setGroup("KDE Resource Restrictions");
-    entries = config->entryMap("KDE Resource Restrictions");
-    for (it2 = entries.begin(); it2 != entries.end(); it2++)
+    QMap<QString, QString> entries = config->entryMap("KDE Resource Restrictions");
+    for (QMap<QString, QString>::ConstIterator it2 = entries.begin(); 
+         it2 != entries.end(); it2++)
     {
 	QString key = it2.key();
         if (!config->readBoolEntry(key, true))
@@ -1223,8 +1350,6 @@ bool KStandardDirs::addCustomized(KConfig *config)
         }
     }
 
-    // save it for future calls - that will return
-    addedCustoms = true;
     config->setGroup(oldGroup);
 
     // return true if the number of config dirs changed
