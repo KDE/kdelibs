@@ -58,6 +58,7 @@
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kuniqueapplication.h>
+#include <kwin.h>
 
 #include "knotify.h"
 #include "knotify.moc"
@@ -356,7 +357,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyBySound( sound, fromApp, eventId );
 
     if ( present & KNotifyClient::PassivePopup )
-        notifyByPassivePopup( text, fromApp, winId );
+        notifyByPassivePopup( text, fromApp, checkWinId( fromApp, winId ));
 
     else if ( present & KNotifyClient::Messagebox )
         notifyByMessagebox( text, level );
@@ -369,6 +370,9 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
     if ( present & KNotifyClient::Execute )
         notifyByExecute( commandline );
+
+    if ( present & KNotifyClient::Taskbar )
+        notifyByTaskbar( checkWinId( fromApp, winId ));
 }
 
 
@@ -517,34 +521,8 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
 
 bool KNotify::notifyByPassivePopup( const QString &text, 
                                     const QString &appName,
-                                    int senderWinId )
+                                    WId senderWinId )
 {
-    if ( senderWinId == 0 )
-    {
-        QCString senderId = kapp->dcopClient()->senderId();
-        QCString compare = (appName + "-mainwindow").latin1();
-        int len = compare.length();
-        // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
-    
-        QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
-        for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
-            QCString obj( *it );
-            if ( obj.left(len) == compare) {
-                // kdDebug( ) << "found " << obj << endl;
-                QCString replyType;
-                QByteArray data, replyData;
-
-                if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
-                    QDataStream answer(replyData, IO_ReadOnly);
-                    if (replyType == "int") {
-                        answer >> senderWinId;
-                        // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
-                        //      << "' senderWinId=" << senderWinId << endl;
-                    }
-		}
-            }
-        }
-    }
     KIconLoader iconLoader( appName );
     KConfigGroup config( d->events[ appName ], "!Global!" );
     QString iconName = config.readEntry( "IconName", appName );
@@ -604,6 +582,13 @@ bool KNotify::notifyByStderr(const QString &text)
     return true;
 }
 
+bool KNotify::notifyByTaskbar( WId win )
+{
+    if( win == 0 )
+        return false;
+    KWin::demandAttention( win );
+    return true;
+}
 
 bool KNotify::isGlobal(const QString &eventname)
 {
@@ -675,4 +660,33 @@ void KNotify::soundFinished( int eventId, PlayingFinishedStatus reason )
     DCOPClient::mainClient()->emitDCOPSignal( "KNotify", "playingFinished(int,int)", data );
 }
 
+WId KNotify::checkWinId( const QString &appName, WId senderWinId )
+{
+    if ( senderWinId == 0 )
+    {
+        QCString senderId = kapp->dcopClient()->senderId();
+        QCString compare = (appName + "-mainwindow").latin1();
+        int len = compare.length();
+        // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
+    
+        QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
+        for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
+            QCString obj( *it );
+            if ( obj.left(len) == compare) {
+                // kdDebug( ) << "found " << obj << endl;
+                QCString replyType;
+                QByteArray data, replyData;
 
+                if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
+                    QDataStream answer(replyData, IO_ReadOnly);
+                    if (replyType == "int") {
+                        answer >> senderWinId;
+                        // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
+                        //      << "' senderWinId=" << senderWinId << endl;
+                    }
+		}
+            }
+        }
+    }
+    return senderWinId;
+}

@@ -253,6 +253,7 @@ namespace KNotify
         void executeToggled( bool on );
         void messageBoxChanged();
         void stderrToggled( bool on );
+        void taskbarToggled( bool on );
 
         void soundFileChanged( const QString& text );
         void logfileChanged( const QString& text );

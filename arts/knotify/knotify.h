@@ -74,14 +74,17 @@ private:
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 	bool notifyByPassivePopup(const QString &text, const QString &appName,
-                                  int winId = 0 );
+                                  WId winId );
 	bool notifyByExecute(const QString &command);
+	bool notifyByTaskbar( WId winId );
 	
 	bool isPlaying( const QString& soundFile ) const;
 
     void soundFinished( int eventId, PlayingFinishedStatus reason );
     void abortFirstPlayObject();
 	
+        WId checkWinId( const QString& appName, WId senderWinId );
+
 	/**
 	 * checks if eventname is a global event (exists in config/eventsrc)
 	 **/

@@ -110,7 +110,7 @@ public:
      * will be marked specially as demanding user's attention.
      * See also explanation in description of @ref activateWindow().
      *
-     * Note that often it's better to use KPassivePopup.
+     * Note that it's usually better to use KNotifyClient.
      *
      * @since 3.2
      */

@@ -38,11 +38,14 @@ class KInstance;
  * Name=FriendlyNameOfEvent
  * Comment=Description Of Event
  * default_sound=filetoplay.wav
+ * default_logfile=logfile.txt
+ * default_commandline=command
  * default_presentation=1
  *  ...
  * </pre>
  * default_presentation contains these ORed events:
- *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8
+ *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8, PassivePopup=16,
+ *      Execute=32, Taskbar=64
  *
  * KNotify will search for sound files given with a relative path first in
  * the application's sound directory ( share/apps/Application Name/sounds ), then in
@@ -137,7 +140,8 @@ namespace KNotifyClient
 		Logfile = 4,
 		Stderr = 8,
 		PassivePopup = 16, ///< @since 3.1
-		Execute = 32       ///< @since 3.1
+		Execute = 32,      ///< @since 3.1
+		Taskbar = 64       ///< @since 3.2
 	};
 
 	/**

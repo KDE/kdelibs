@@ -71,6 +71,7 @@ namespace KNotify
             combo->insertItem( i18n("Message Windows") );
             combo->insertItem( i18n("Passive Windows") );
             combo->insertItem( i18n("Standard Error Output") );
+            combo->insertItem( i18n("Taskbar") );
         }
 
         static int type( KComboBox *combo )
@@ -89,6 +90,8 @@ namespace KNotify
                     return KNotifyClient::PassivePopup;
                 case 5:
                     return KNotifyClient::Stderr;
+                case 6:
+                    return KNotifyClient::Taskbar;
             }
 
             return KNotifyClient::None;
@@ -155,17 +158,21 @@ void KNotifyDialog::slotDefault()
 //////////////////////////////////////////////////////////////////////
 
 
-#define COL_EXECUTE 0
-#define COL_STDERR  1
-#define COL_MESSAGE 2
-#define COL_LOGFILE 3
-#define COL_SOUND   4
-#define COL_EVENT   5
+enum
+    {
+    COL_EXECUTE = 0,
+    COL_STDERR  = 1,
+    COL_MESSAGE = 2,
+    COL_LOGFILE = 3,
+    COL_SOUND   = 4,
+    COL_TASKBAR = 5,
+    COL_EVENT   = 6
+    };
 
 class KNotifyWidget::Private
 {
 public:
-    QPixmap pixmaps[5];
+    QPixmap pixmaps[6];
 };
 
 // simple access to all knotify-handled applications
@@ -197,12 +204,14 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     QPixmap pmessage = SmallIcon("info");
     QPixmap plogfile = SmallIcon("log");
     QPixmap psound = SmallIcon("sound");
+    QPixmap ptaskbar = SmallIcon("kicker");
 
     d->pixmaps[COL_EXECUTE] = pexec;
     d->pixmaps[COL_STDERR]  = pstderr;
     d->pixmaps[COL_MESSAGE] = pmessage;
     d->pixmaps[COL_LOGFILE] = plogfile;
     d->pixmaps[COL_SOUND]   = psound;
+    d->pixmaps[COL_TASKBAR] = ptaskbar;
 
     int w = KIcon::SizeSmall + 6;
 
@@ -212,6 +221,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     header->setLabel( COL_MESSAGE, pmessage, QString::null, w );
     header->setLabel( COL_LOGFILE, plogfile, QString::null, w );
     header->setLabel( COL_SOUND,   psound,   QString::null, w );
+    header->setLabel( COL_TASKBAR, ptaskbar, QString::null, w );
 
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
@@ -233,6 +243,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
              SLOT( messageBoxChanged() ) );
     connect( m_stderr, SIGNAL( toggled( bool )),
              SLOT( stderrToggled( bool ) ) );
+    connect( m_taskbar, SIGNAL( toggled( bool )),
+             SLOT( taskbarToggled( bool ) ) );
 
     connect( m_soundPath, SIGNAL( textChanged( const QString& )),
              SLOT( soundFileChanged( const QString& )));
@@ -283,6 +295,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_messageBox->show();
         m_passivePopup->show();
         m_stderr->show();
+        m_taskbar->show();
         m_controlsBox->show();
 
         m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
@@ -299,6 +312,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_messageBox->hide();
         m_passivePopup->hide();
         m_stderr->hide();
+        m_taskbar->hide();
         m_controlsBox->hide();
 
         m_actionsBoxLayout->setSpacing( 0 );
@@ -400,6 +414,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
     m_messageBox->setChecked(event.presentation & (KNotifyClient::Messagebox | KNotifyClient::PassivePopup));
     m_passivePopup->setChecked(event.presentation & KNotifyClient::PassivePopup);
     m_stderr->setChecked( event.presentation & KNotifyClient::Stderr );
+    m_taskbar->setChecked(event.presentation & KNotifyClient::Taskbar);
 
     updatePixmaps( item );
 
@@ -431,6 +446,9 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
     item->setPixmap( COL_STDERR,
                      (event.presentation & KNotifyClient::Stderr) ?
                      d->pixmaps[COL_STDERR] : emptyPix );
+    item->setPixmap( COL_TASKBAR,
+                     (event.presentation & KNotifyClient::Taskbar) ?
+                     d->pixmaps[COL_TASKBAR] : emptyPix );
 }
 
 void KNotifyWidget::addVisibleApp( Application *app )
@@ -472,6 +490,8 @@ void KNotifyWidget::addToView( const EventList& events )
             item->setPixmap( COL_MESSAGE, d->pixmaps[COL_MESSAGE] );
         if ( event->presentation & KNotifyClient::Stderr )
             item->setPixmap( COL_STDERR, d->pixmaps[COL_STDERR] );
+        if ( event->presentation & KNotifyClient::Taskbar )
+            item->setPixmap( COL_TASKBAR, d->pixmaps[COL_TASKBAR] );
     }
 }
 
@@ -570,6 +590,15 @@ void KNotifyWidget::stderrToggled( bool on )
     widgetChanged( item, KNotifyClient::Stderr, on );
 }
 
+void KNotifyWidget::taskbarToggled( bool on )
+{
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+    item->setPixmap( COL_TASKBAR, on ? d->pixmaps[COL_TASKBAR] : QPixmap() );
+    widgetChanged( item, KNotifyClient::Taskbar, on );
+}
+
 void KNotifyWidget::soundFileChanged( const QString& text )
 {
     if ( signalsBlocked() )
@@ -641,6 +670,9 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
             break;
         case COL_STDERR:
             m_stderr->toggle();
+            break;
+        case COL_TASKBAR:
+            m_taskbar->toggle();
             break;
         case COL_MESSAGE:
             m_passivePopup->setChecked( true ); // default to passive popups
@@ -1045,6 +1077,9 @@ int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
             break;
         case COL_STDERR:
             action = KNotifyClient::Stderr;
+            break;
+        case COL_TASKBAR:
+            action = KNotifyClient::Taskbar;
             break;
     }
 
