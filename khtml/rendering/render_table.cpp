@@ -91,8 +91,6 @@ RenderTable::RenderTable()
 
     colInfos.setAutoDelete(true);
 
-    setParsing();
-
     _currentCol=0;
 
     _lastParentWidth = 0;
@@ -1510,7 +1508,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     _ty += yPos();
 
 #ifdef TABLE_DEBUG
-//    kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     if (!containsPositioned() && !isRelPositioned() && !isPositioned())
     {
@@ -1519,7 +1517,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
 
 #ifdef DEBUG_LAYOUT
-//     kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
+     kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
      if(isVisible())
