@@ -62,6 +62,10 @@ kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 
 kmedia2.cc: kmedia2.h
 
+artsversion.h: $(top_srcdir)/arts/soundserver/artsversion-new.h
+	(cmp -s $(top_srcdir)/arts/soundserver/artsversion-new.h artsversion.h \
+	  || cp $(top_srcdir)/arts/soundserver/artsversion-new.h artsversion.h) 
+
 artscat.cc: soundserver.h
 artsd.cc: soundserver.h
 artsplay.cc: soundserver.h

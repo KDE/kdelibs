@@ -3,7 +3,7 @@
 # based on the esddsp script
 
 # keep this in sync with artsversion.h
-version="0.5.1"
+version="@ARTS_VERSION@"
 
 # default values for script variables
 verbose=0

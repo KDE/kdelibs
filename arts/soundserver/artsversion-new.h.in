@@ -23,9 +23,9 @@
 #ifndef ARTS_VERSION
 
 /* version information for all aRts utilities and programs */
-#define ARTS_MAJOR_VERSION                               (0)
-#define ARTS_MINOR_VERSION                               (5)
-#define ARTS_MICRO_VERSION                               (1)
-#define ARTS_VERSION									 ("0.5.1")
+#define ARTS_MAJOR_VERSION                               (@ARTS_MAJOR_VERSION@)
+#define ARTS_MINOR_VERSION                               (@ARTS_MINOR_VERSION@)
+#define ARTS_MICRO_VERSION                               (@ARTS_MICRO_VERSION@)
+#define ARTS_VERSION									 ("@ARTS_VERSION@")
 
 #endif
