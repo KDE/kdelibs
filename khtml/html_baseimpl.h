@@ -20,6 +20,10 @@
  *
  * $Id$
  */
+
+#ifndef HTML_BASEIMPL_H
+#define HTML_BASEIMPL_H 1
+
 #include "dtd.h"
 #include "html_elementimpl.h"
 
@@ -166,4 +170,6 @@ protected:
 };
 
 }; //namespace
+
+#endif
 
