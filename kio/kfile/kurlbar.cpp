@@ -381,6 +381,8 @@ void KURLBar::setListBox( KURLBarListBox *view )
     connect( m_listBox, SIGNAL( contextMenuRequested( QListBoxItem *,
                                                       const QPoint& )),
              SLOT( slotContextMenuRequested( QListBoxItem *, const QPoint& )));
+    connect( m_listBox, SIGNAL( returnPressed( QListBoxItem * ) ),
+             SLOT( slotSelected( QListBoxItem * ) ));
 }
 
 void KURLBar::setIconSize( int size )
