@@ -125,12 +125,12 @@ class KStandardDirs
 {
 public:
         /**
-	 * KStandardDirs constructor. It just initializes the caches.
+	 * KStandardDirs' constructor. It just initializes the caches.
 	 **/
 	KStandardDirs( );
 
 	/**
-	 * KStandardDirs destructor.
+	 * KStandardDirs' destructor.
 	 */
 	virtual ~KStandardDirs();
 
