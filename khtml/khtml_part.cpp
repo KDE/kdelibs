@@ -1772,8 +1772,10 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   else
     emit setWindowCaption( i18n( "[Untitled]" ) );
 
+  bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
+  bool servedAsXML = KMimeType::mimeType(args.serviceType)->is( "text/xml" );
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
-  if (args.serviceType == "text/xml") {
+  if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
   } else {
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
