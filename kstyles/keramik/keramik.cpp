@@ -91,19 +91,24 @@ class GradientSet
 };
 
 // ### Remove globals
+/*
 QBitmap lightBmp;
 QBitmap grayBmp;
 QBitmap dgrayBmp;
 QBitmap centerBmp;
 QBitmap maskBmp;
 QBitmap xBmp;
+*/
 QIntDict<GradientSet> gDict;
 
-static const int itemFrame       = 1;
-static const int itemHMargin     = 6;
-static const int itemVMargin     = 0;
-static const int arrowHMargin    = 6;
-static const int rightBorder     = 12;
+namespace
+{
+	const int itemFrame       = 1;
+	const int itemHMargin     = 6;
+	const int itemVMargin     = 0;
+	const int arrowHMargin    = 6;
+	const int rightBorder     = 12;
+}
 
 // ---------------------------------------------------------------------------
 
