@@ -1,4 +1,4 @@
- /*
+/*
   This file is or will be part of KDE desktop environment
 
   Copyright 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
@@ -116,6 +116,23 @@ void KDirWatch::addDir( const QString& _path )
 #endif
   if ( m_mapDirs.count() == 1 ) // if this was first entry (=timer was stopped)
     timer->start(freq);      // then start the timer
+}
+
+time_t KDirWatch::ctime( const QString &_path )
+{
+  if ( m_mapDirs.isEmpty() )
+    return 0;
+
+  QString path = _path;
+
+  if ( path.right(1) == "/" )
+    path.truncate( path.length() - 1 );
+
+  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
+  if ( it == m_mapDirs.end() )
+    return 0;
+
+  return (*it).m_ctime;
 }
 
 void KDirWatch::removeDir( const QString& _path )

@@ -68,6 +68,11 @@ class KDirWatch : public QObject
    void addDir(const QString& path);
 
    /**
+    * Returns the time the directory was last changed.
+    */
+   time_t ctime(const QString& path);
+
+   /**
     * Removes directory from list of scanned directories. If specified
     * path is not in the list, does nothing.
     */
