@@ -22,6 +22,7 @@
 #include <qptrdict.h>
 
 #include <khtml_part.h>
+#include <misc/loader.h>
 #include <dom/html_base.h>
 #include <dom/html_block.h>
 #include <dom/html_document.h>
@@ -1550,6 +1551,7 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 
 ////////////////////// Image Object ////////////////////////
 
+#if 0
 ImageObject::ImageObject(const Global& global)
 {
   Constructor ctor(new ImageConstructor(global));
@@ -1563,9 +1565,11 @@ Completion ImageObject::tryExecute(const List &)
 {
   return Completion(Normal, Undefined());
 }
+#endif
 
-ImageConstructor::ImageConstructor(const Global& glob)
-  : global(glob)
+ImageConstructor::ImageConstructor(const Global& glob, const DOM::Document &d)
+  : global(glob),
+    doc(d)
 {
   setPrototype(global.functionPrototype());
 }
@@ -1574,7 +1578,7 @@ Object ImageConstructor::construct(const List &)
 {
   /* TODO: fetch optional height & width from arguments */
 
-  Object result(new Image());
+  Object result(new Image(doc));
   /* TODO: do we need a prototype ? */
 
   return result;
@@ -1587,7 +1591,7 @@ KJSO Image::tryGet(const UString &p) const
   if (p == "src")
     result = String(src);
   else
-    result = Undefined();
+    result = tryGet(p);
 
   return result;
 }
@@ -1597,6 +1601,10 @@ void Image::tryPut(const UString &p, const KJSO& v)
   if (p == "src") {
     String str = v.toString();
     src = str.value();
+    (void) khtml::Cache::requestImage(src.string(),
+				      doc.view()->part()->baseURL().url());
+  } else {
+    DOMObject::tryPut(p, v);
   }
 }
 

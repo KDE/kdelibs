@@ -259,7 +259,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "screen")
     return KJSO(new Screen());
   else if (p == "Image")
-    return KJSO(new ImageConstructor(Global::current()));
+    return KJSO(new ImageConstructor(Global::current(), part->document()));
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")

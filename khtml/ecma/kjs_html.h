@@ -101,6 +101,7 @@ namespace KJS {
 
   ////////////////////// Image Object ////////////////////////
 
+#if 0
   class ImageObject : public DOMFunction {
   public:
     ImageObject(const Global &global);
@@ -108,22 +109,26 @@ namespace KJS {
   private:
     UString src;
   };
+#endif
 
   class ImageConstructor : public ConstructorImp {
   public:
-    ImageConstructor(const Global& global);
+    ImageConstructor(const Global& global, const DOM::Document &d);
     Object construct(const List &);
   private:
     Global global;
+    DOM::Document doc;
   };
 
   class Image : public DOMObject {
   public:
+    Image(const DOM::Document &d) : doc(d) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
     virtual Boolean toBoolean() const { return Boolean(true); }
   private:
     UString src;
+    DOM::Document doc;
   };
 
   KJSO getHTMLCollection(DOM::HTMLCollection c);
