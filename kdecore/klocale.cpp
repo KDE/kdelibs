@@ -40,8 +40,6 @@
 #include "kinstance.h"
 #include "kconfig.h"
 #include "kdebug.h"
-#include "kcalendarsystem.h"
-#include "kcalendarsystemfactory.h"
 #include "klocale.h"
 
 static const char * const SYSTEM_MESSAGES = "kdelibs";
@@ -65,9 +63,6 @@ public:
   KLocale::MeasureSystem measureSystem;
   QStringList langTwoAlpha;
   KConfig *languages;
-
-  QString calendarType;
-  KCalendarSystem * calendar;
 };
 
 static KLocale *this_klocale = 0;
@@ -77,7 +72,6 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
   d = new KLocalePrivate;
   d->config = config;
   d->languages = 0;
-  d->calendar = 0;
 
   initCatalogue(catalogue);
   initEncoding(0);
@@ -98,7 +92,6 @@ QString KLocale::_initLanguage(KConfigBase *config)
 {
   if (this_klocale)
   {
-     // ### HPB Why this cast??
      this_klocale->initLanguage((KConfig *) config, true);
      return this_klocale->language();
   }
@@ -330,9 +323,6 @@ void KLocale::initFormat()
   readConfigNumEntry("PageSize", (int)QPrinter::A4, d->pageSize, int);
   readConfigNumEntry("MeasureSystem", (int)Metric, d->measureSystem,
 		     MeasureSystem);
-  readConfigEntry("CalendarSystem", "gregorian", d->calendarType);
-  delete d->calendar;
-  d->calendar = 0; // ### HPB Is this the correct place?
 
   // end of hack
   KGlobal::_locale = lsave;
@@ -466,11 +456,6 @@ QString KLocale::country() const
   return m_country;
 }
 
-QString KLocale::monthNameCalendar(int month, bool shortName) const
-{
-  return calendar()->monthName(month, shortName);
-}
-
 QString KLocale::monthName(int i, bool shortName) const
 {
   if ( shortName )
@@ -507,12 +492,6 @@ QString KLocale::monthName(int i, bool shortName) const
       }
 
   return QString::null;
-}
-
-QString KLocale::monthNameCalendarPossessive(int month, bool shortName) const
-{
-  // ### HPB This should use possessive forms
-  return "of " + calendar()->monthName(month, shortName);
 }
 
 QString KLocale::monthNamePossessive(int i, bool shortName) const
@@ -1086,10 +1065,6 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
   bool escape = false;
   int number = 0;
 
-  int year = calendar()->year(pDate);
-  int month = calendar()->month(pDate);
-  int day = calendar()->day(pDate);
-
   for ( uint format_index = 0; format_index < rst.length(); ++format_index )
     {
       if ( !escape )
@@ -1107,37 +1082,37 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	      buffer[index++] = '%';
 	      break;
 	    case 'Y':
-	      put_it_in( buffer, index, year / 100 );
+	      put_it_in( buffer, index, pDate.year() / 100 );
 	    case 'y':
-	      put_it_in( buffer, index, year % 100 );
+	      put_it_in( buffer, index, pDate.year() % 100 );
 	      break;
 	    case 'n':
-	      number = month;
+	      number = pDate.month();
 	    case 'e':
 	      // to share the code
 	      if ( rst.at( format_index ).unicode() == 'e' )
-		number = day;
+		number = pDate.day();
 	      if ( number / 10 )
 		buffer[index++] = number / 10 + '0';
 	      buffer[index++] = number % 10 + '0';
 	      break;
 	    case 'm':
-	      put_it_in( buffer, index, month );
+	      put_it_in( buffer, index, pDate.month() );
 	      break;
 	    case 'b':
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		put_it_in( buffer, index, monthNameCalendarPossessive(month, true) );
+		put_it_in( buffer, index, monthNamePossessive(pDate.month(), true) );
 	      else
-		put_it_in( buffer, index, monthNameCalendar(month, true) );
+		put_it_in( buffer, index, monthName(pDate.month(), true) );
 	      break;
 	    case 'B':
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		put_it_in( buffer, index, monthNameCalendarPossessive(month, false) );
+		put_it_in( buffer, index, monthNamePossessive(pDate.month(), false) );
 	      else
-		put_it_in( buffer, index, monthNameCalendar(month, false) );
+		put_it_in( buffer, index, monthName(pDate.month(), false) );
 	      break;
 	    case 'd':
-	      put_it_in( buffer, index, day );
+	      put_it_in( buffer, index, pDate.day() );
 	      break;
 	    case 'a':
 	      put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), true) );
@@ -1361,7 +1336,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   QString str = intstr.simplifyWhiteSpace().lower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
-  int year = calendar()->year(QDate::currentDate());
+  int year = QDate::currentDate().year();
   uint strpos = 0;
   uint fmtpos = 0;
 
@@ -1411,7 +1386,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  if (d->nounDeclension && d->dateMonthNamePossessive) {
 	    j = 1;
 	    while (error && (j < 13)) {
-	      QString s = monthNameCalendarPossessive(j, c == 'b').lower();
+	      QString s = monthNamePossessive(j, c == 'b').lower();
 	      int len = s.length();
 	      if (str.mid(strpos, len) == s) {
 	        month = j;
@@ -1423,7 +1398,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  }
 	  j = 1;
 	  while (error && (j < 13)) {
-	    QString s = monthNameCalendar(j, c == 'b').lower();
+	    QString s = monthName(j, c == 'b').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s) {
 	      month = j;
@@ -1451,7 +1426,6 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  error = (year < 0);
 	  // Qt treats a year in the range 0-100 as 1900-1999.
 	  // It is nicer for the user if we treat 0-68 as 2000-2068
-	  // ### HPB Calendar fix
 	  if (year < 69)
 	    year += 2000;
 	  else if (c == 'y')
@@ -1473,11 +1447,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   if ( year != -1 && month != -1 && day != -1 && !error)
   {
     if (ok) *ok = true;
-
-    QDate result;
-    calendar()->setYMD(result, year, month, day);
-
-    return result;
+    return QDate(year, month, day);
   }
   else
   {
@@ -2101,33 +2071,6 @@ QString KLocale::twoAlphaToCountryName(const QString &code) const
   return cfg.readEntry("Name");
 }
 
-void KLocale::setCalendar(const QString & calType)
-{
-  doFormatInit();
-
-  d->calendarType = calType;
-
-  delete d->calendar;
-  d->calendar = 0;
-}
-
-QString KLocale::calendarType() const
-{
-  doFormatInit();
-
-  return d->calendarType;
-}
-
-const KCalendarSystem * KLocale::calendar() const
-{
-  doFormatInit();
-
-  // Check if it's the correct calendar?!?
-  if ( !d->calendar )
-    d->calendar = KCalendarSystemFactory::create( d->calendarType, this );
-
-  return d->calendar;
-}
 
 KLocale::KLocale(const KLocale & rhs)
 {
@@ -2163,7 +2106,6 @@ KLocale & KLocale::operator=(const KLocale & rhs)
   // the assignment operator works here
   *d = *rhs.d;
   d->languages = 0; // Don't copy languages
-  d->calendar = 0; // Don't copy the calendar
 
   return *this;
 }

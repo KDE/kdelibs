@@ -35,7 +35,6 @@ class KConfig;
 class KConfigBase;
 class KLocalePrivate;
 class KCatalogue;
-class KCalendarSystem;
 
 #ifndef I18N_NOOP
 #define I18N_NOOP(x) (x)
@@ -437,10 +436,6 @@ public:
    * @since 3.1
    */
   int weekStartDay() const;
-  
-  const KCalendarSystem * calendar() const;
-  QString calendarType() const;
-  void setCalendar(const QString & calendarType);
 
   /**
    * Returns a string containing the name of the month name.
@@ -451,7 +446,6 @@ public:
    * @return The name of the month
    */
   QString monthName(int i, bool shortName = false) const;
-  QString monthNameCalendar(int month, bool shortName = false) const;
 
   /**
    * Returns a string containing the possessive form of the month name.
@@ -465,7 +459,6 @@ public:
    * @since 3.1
   */
   QString monthNamePossessive(int i, bool shortName = false) const;
-  QString monthNameCalendarPossessive(int month, bool ShortName = false) const;
 
   /**
    * Returns a string containing the name of the week day.
