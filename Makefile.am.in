@@ -18,8 +18,11 @@
 #    Boston, MA 02111-1307, USA.
 
 
-COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kjs kio kioslave kded ksmartcard kimgio kparts kdeprint libkmid kconf_update interfaces kspell
-COMPILE_LAST = doc
+COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kio
+COMPILE_BEFORE_doc = kdoctools
+COMPILE_BEFORE_khtml = kparts kdeprint kspell kjs
+COMPILE_BEFORE_kdeprint = kparts
+COMPILE_BEFORE_kinit = kparts
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl/ltdl.m4
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl/ltdl.m4 > acinclude.m4
