@@ -658,6 +658,11 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJob::slotRedirection( const KURL &url)
 {
      kdDebug(7007) << "StatJob::slotRedirection(" << url.prettyURL() << ")" << endl;
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "StatJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       return;
+     }
      m_redirectionURL = url; // We'll remember that when the job finishes
      if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
@@ -741,6 +746,11 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.prettyURL() << ")" << endl;
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "TransferJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       return;
+     }
 
     // Some websites keep redirecting to themselves where each redirection
     // acts as the stage in a state-machine. We define "endless redirections"
@@ -1646,6 +1656,11 @@ void ListJob::slotResult( KIO::Job * job )
 
 void ListJob::slotRedirection( const KURL & url )
 {
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "ListJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       return;
+     }
     m_redirectionURL = url; // We'll remember that when the job finishes
     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
@@ -3487,6 +3502,11 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
+  if (!kapp->authorizeURLAction("redirect", m_url, url))
+  {
+     kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+     return;
+  }
   m_redirectionURL = url;
   if (m_currentEntry->url.hasUser() && !url.hasUser() && (m_currentEntry->url.host().lower() == url.host().lower()))
       m_redirectionURL.setUser(m_currentEntry->url.user()); // Preserve user
