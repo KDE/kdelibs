@@ -20,7 +20,6 @@
 */  
 // ------------------------------------------------------------------------
 //
-// Handles khtml's io, up to now mainly loading of files
 // Provides a cache for effective caching of images in memory
 //
 // $Id$

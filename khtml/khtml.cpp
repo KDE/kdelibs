@@ -49,7 +49,7 @@
 #include "khtmlframe.h"
 #include "khtmltable.h"
 #include "khtmlview.h"
-#include "khtmlpage.h"
+#include "khtmlsavedpage.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -2788,23 +2788,6 @@ KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
 	}
     }    
     *s += "</frameset>";
-}
-
-SavedPage::SavedPage()
-{
-    frameName = 0;
-    isFrame = false;
-    isFrameSet = false;
-    url = 0;
-    xOffset = yOffset = 0;
-    frameLayout = 0;
-    frames = 0;
-}
-
-SavedPage::~SavedPage()
-{
-    if( frameLayout ) delete frameLayout;
-    if( frames ) delete frames;
 }
 
 #include "khtml.moc"
