@@ -2329,11 +2329,13 @@ void KDockManager::readConfig(QDomElement &base)
             mvd->applyToWidget(main);
             mvd->show();
         }
-    }
 
-    QRect mr = rectEntry(base, "geometry");
-    main->move(mr.topLeft());
-    main->resize(mr.size());
+        // only resize + move non-mainwindows
+        QRect mr = rectEntry(base, "geometry");
+        main->move(mr.topLeft());
+        main->resize(mr.size());
+    }
+    
     if (isMainVisible)
         main->show();
 
