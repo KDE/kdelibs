@@ -63,12 +63,12 @@ binary-arch:  build
 	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
 	  (mkdir -p debian/tmp/usr/share/kdoc/index) ; \
-	  (mkdir -p debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html) ; \
+	  (mkdir -p debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference) ; \
 	  qt2kdoc --url=/usr/share/doc/qt2.1-doc/doc/html \
-	  --outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	  --outdir=`pwd`/debian/tmp/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
 	  --compress \
 	  /usr/share/doc/qt2.1-doc/doc/html ; \
-	  makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	  makekdedoc --libdir=`pwd`/debian/tmp/usr/share/doc/kdelibs3-doc-cvs/html/kdoc-reference \
 	  --outputdir=`pwd`/debian/kdelibs3-doc-cvs/usr/share/doc/kdelibs3-doc-cvs/html ; \
 	fi
 
@@ -78,6 +78,7 @@ binary-arch:  build
 	dh_undocumented
 	dh_link
 	dh_strip 
+	dh_perl
 	dh_compress 
 	dh_fixperms 
 	dh_suidregister 

@@ -1,8 +1,9 @@
-kdelibs-cvs (4:2.0-20000308-1.0) experimental; urgency=low
+kdelibs-cvs (4:2.0-20000403-1.0) experimental; urgency=low
  
   * More upstream CVS updates
+  * Adding in depends for kde-qt-addon
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 08 Mar 2000 19:30:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 03 Apr 2000 06:30:00 -0700
 
 kdelibs-cvs (4:2.0-20000306-1.1) experimental; urgency=low
  
