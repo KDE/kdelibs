@@ -60,6 +60,7 @@
 #include <kmimetype.h>
 #include <kprocess.h>
 #include <kprotocolinfo.h>
+#include <krecentdirs.h>
 #include <kstddirs.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
@@ -135,13 +136,16 @@ struct KFileDialogPrivate
     // indicates if the location edit should be kept or cleared when changing
     // directories
     bool keepLocation;
+
+    // The file class used for KRecentDirs
+    QString fileClass;
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
 
 static KStaticDeleter<KURL> ldd;
 
-KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
+KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                          QWidget *parent, const char* name, bool modal)
     : KDialogBase( parent, name, modal, QString::null, 0 )
 {
@@ -209,12 +213,20 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
         lastDirectory = ldd.setObject(new KURL());
     }
 
-    if (!dirName.isEmpty())
-        d->url = KCmdLineArgs::makeURL( QFile::encodeName(dirName) );
-    else {
+    if (startDir.isEmpty())
+    {
         if (lastDirectory->isEmpty())
             *lastDirectory = QDir::currentDirPath();
         d->url = *lastDirectory;
+    }
+    else if (startDir[0] == ':')
+    {
+        d->fileClass = startDir;
+        d->url = KRecentDirs::dir(d->fileClass);
+    }
+    else
+    {
+        d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
     }
 
     ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
@@ -582,6 +594,8 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 void KFileDialog::accept()
 {
     *lastDirectory = ops->url();
+    if (!d->fileClass.isEmpty())
+       KRecentDirs::add(d->fileClass, ops->url().url());
     KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
     saveConfig( c, ConfigGroup );
@@ -1082,10 +1096,10 @@ void KFileDialog::updateStatusLine(int dirs, int files)
     d->myStatusLine->setText(lStatusText);
 }
 
-QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
+QString KFileDialog::getOpenFileName(const QString& startDir, const QString& filter,
                                      QWidget *parent, const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(startDir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
@@ -1099,10 +1113,10 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
     return filename;
 }
 
-QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filter,
+QStringList KFileDialog::getOpenFileNames(const QString& startDir,const QString& filter,
                                      QWidget *parent, const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(startDir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
@@ -1117,10 +1131,10 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
     return list;
 }
 
-KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
+KURL KFileDialog::getOpenURL(const QString& startDir, const QString& filter,
                                 QWidget *parent, const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(startDir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
     dlg.ops->clearHistory();
@@ -1137,12 +1151,12 @@ KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
     return url;
 }
 
-KURL::List KFileDialog::getOpenURLs(const QString& dir,
+KURL::List KFileDialog::getOpenURLs(const QString& startDir,
                                           const QString& filter,
                                           QWidget *parent,
                                           const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(startDir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
@@ -1165,11 +1179,11 @@ KURL::List KFileDialog::getOpenURLs(const QString& dir,
     return list;
 }
 
-QString KFileDialog::getExistingDirectory(const QString& dir,
+QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
-    KFileDialog dlg(dir, QString::null, parent, "filedialog", true);
+    KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
     dlg.setMode(KFile::Directory);
     dlg.ops->clearHistory();
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
