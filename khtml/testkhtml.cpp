@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
     int ret = a.exec();
 
     delete dtv;
-    delete doc;
 
     khtml::Cache::clear();
     khtml::CSSStyleSelector::clear();
