@@ -582,6 +582,8 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
+      connect(subMenu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ), 
+                 this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ));
       m_lstSubMenus.append( subMenu );
     }
   }

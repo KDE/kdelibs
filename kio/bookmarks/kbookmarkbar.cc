@@ -201,6 +201,8 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             KBookmarkMenu *menu = new KBookmarkMenu(m_pManager, m_pOwner, action->popupMenu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,
                                                     bm.address());
+            connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ), 
+                    this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ));
             menu->fillBookmarkMenu();
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
