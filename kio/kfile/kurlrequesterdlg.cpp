@@ -94,7 +94,7 @@ void KURLRequesterDlg::slotClear()
 KURL KURLRequesterDlg::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
-        return urlRequester_->url();
+        return KURL::fromPathOrURL( urlRequester_->url() );
     else
         return KURL();
 }
