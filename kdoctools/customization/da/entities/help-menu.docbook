@@ -7,11 +7,11 @@
 </shortcut>
 <guimenu>Hjælp</guimenu>
 <guimenuitem>&kappname;-håndbogen</guimenuitem>
+</menuchoice>
+</term>
 <listitem><para><action>Starter KDE's Hjælpesystem</action> startende med
 hjælpesiderne for &kappname; (dette dokument).</para></listitem>
 </varlistentry>
-</menuchoice>
-</term>
 
 <varlistentry>
 <term><menuchoice>
@@ -55,4 +55,3 @@ forfatterinformation.</action></para></listitem>
 information.</action></para></listitem>
 </varlistentry>
 </variablelist>
-
