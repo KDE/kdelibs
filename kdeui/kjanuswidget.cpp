@@ -30,7 +30,6 @@
 #include <qvbox.h>
 #include <qwidgetstack.h>
 #include <qpainter.h>
-#include <qtimer.h>
 #include <qstyle.h>
 
 #include <kapplication.h>
@@ -61,7 +60,19 @@ class KJanusWidget::IconListItem : public QListBoxItem
     int mMinimumWidth;
 };
 
-
+// Added to make sure that the indices returned by KJanusWidget::pageIndex()
+// remain constant and safe to store.
+// Ravi <ravi@ee.eng.ohio-state.edu> Sun Feb 23 2003
+class KJanusWidget::KJanusWidgetPrivate
+{
+public:
+  // Dictionary for multipage modes.
+  QMap<int,QWidget*> mIntToPage;
+  // Reverse dictionary. Used because showPage() may be performance critical.
+  QMap<QWidget*,int> mPageToInt;
+  // Dictionary of title string associated with page.
+  QMap<int, QString> mIntToTitle;
+};
 
 template class QPtrList<QListViewItem>;
 
@@ -76,8 +87,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 
   if( mFace == TreeList || mFace == IconList )
   {
-    mPageList = new QPtrList<QWidget>;
-    mTitleList = new QStringList();
+    d = new KJanusWidgetPrivate;
 
     QFrame *page;
     if( mFace == TreeList )
@@ -148,7 +158,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   }
   else if( mFace == Tabbed )
   {
-    mPageList = new QPtrList<QWidget>;
+    d = new KJanusWidgetPrivate;
 
     mTabControl = new QTabWidget( this );
     mTabControl->setMargin (KDialog::marginHint());
@@ -176,10 +186,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
 
 KJanusWidget::~KJanusWidget()
 {
-  delete mPageList;
-  mPageList = 0;
-  delete mTitleList;
-  mTitleList = 0;
+  delete d;
 }
 
 
@@ -403,16 +410,20 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
 void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 				  const QString &header,const QPixmap &pixmap )
 {
+  static int nextPageIndex = 0; // The next page index.
   connect(page, SIGNAL(destroyed(QObject*)), SLOT(pageGone(QObject*)));
-  
+
   if( mFace == Tabbed )
   {
     mTabControl->addTab (page, items.last());
-    mPageList->append (page);
+    d->mIntToPage[nextPageIndex] = static_cast<QWidget*>(page);
+    d->mPageToInt[static_cast<QWidget*>(page)] = nextPageIndex;
+    nextPageIndex++;
   }
   else if( mFace == TreeList || mFace == IconList )
   {
-    mPageList->append( page );
+    d->mIntToPage[nextPageIndex] = static_cast<QWidget*>(page);
+    d->mPageToInt[static_cast<QWidget*>(page)] = nextPageIndex;
     mPageStack->addWidget( page, 0 );
 
     if (items.count() == 0) {
@@ -453,12 +464,12 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
     {
       mTitleLabel->setMinimumWidth( r.width() );
     }
-    mTitleList->append( title );
-
-    if( mTitleList->count() == 1 )
+    d->mIntToTitle[nextPageIndex] = title;
+    if( d->mIntToTitle.count() == 1 )
     {
       showPage(0);
     }
+    nextPageIndex++;
   }
   else
   {
@@ -541,7 +552,7 @@ bool KJanusWidget::slotShowPage()
 
     QWidget *stackItem = mTreeListToPageStack[node];
     // Make sure to call through the virtual function showPage(int)
-    return showPage(pageIndex(stackItem)); 
+    return showPage(d->mPageToInt[stackItem]);
   }
   else if( mFace == IconList )
   {
@@ -549,7 +560,7 @@ bool KJanusWidget::slotShowPage()
     if( node == 0 ) { return( false ); }
     QWidget *stackItem = mIconListToPageStack[node];
     // Make sure to call through the virtual function showPage(int)
-    return showPage(pageIndex(stackItem)); 
+    return showPage(d->mPageToInt[stackItem]);
   }
 
   return( false );
@@ -558,13 +569,13 @@ bool KJanusWidget::slotShowPage()
 
 bool KJanusWidget::showPage( int index )
 {
-  if( mPageList == 0 || mValid == false )
+  if( d == 0 || mValid == false )
   {
     return( false );
   }
   else
   {
-    return showPage(mPageList->at(index));
+    return showPage(d->mIntToPage[index]);
   }
 }
 
@@ -581,8 +592,8 @@ bool KJanusWidget::showPage( QWidget *w )
     mPageStack->raiseWidget( w );
     mActivePageWidget = w;
 
-    int index = mPageList->findRef( w );
-    mTitleLabel->setText( *mTitleList->at(index) );
+    int index = d->mPageToInt[w];
+    mTitleLabel->setText( d->mIntToTitle[index] );
     if( mFace == TreeList )
     {
       QMap<QListViewItem *, QWidget *>::Iterator it;
@@ -606,15 +617,6 @@ bool KJanusWidget::showPage( QWidget *w )
           break;
         }
       }
-
-      //
-      // 2000-02-13 Espen Sand
-      // Don't ask me why (because I don't know). If I select a page
-      // with the mouse the page is not updated until it receives an
-      // event. It seems this event get lost if the mouse is not moved
-      // when released. The timer ensures the update
-      //
-      QTimer::singleShot( 0, mActivePageWidget, SLOT(update()) );
     }
   }
   else if( mFace == Tabbed )
@@ -637,17 +639,17 @@ int KJanusWidget::activePageIndex() const
     QListViewItem *node = mTreeList->selectedItem();
     if( node == 0 ) { return -1; }
     QWidget *stackItem = mTreeListToPageStack[node];
-    return mPageList->findRef(stackItem);
+    return d->mPageToInt[stackItem];
   }
   else if (mFace == IconList) {
     QListBoxItem *node = mIconList->item( mIconList->currentItem() );
     if( node == 0 ) { return( false ); }
     QWidget *stackItem = mIconListToPageStack[node];
-    return mPageList->findRef(stackItem);
+    return d->mPageToInt[stackItem];
   }
   else if( mFace == Tabbed ) {
     QWidget *widget = mTabControl->currentPage();
-    return( widget == 0 ? -1 : mPageList->findRef( widget ) );
+    return( widget == 0 ? -1 : d->mPageToInt[widget] );
   }
   else {
     return( -1 );
@@ -663,7 +665,7 @@ int KJanusWidget::pageIndex( QWidget *widget ) const
   }
   else if( mFace == TreeList || mFace == IconList )
   {
-    return( mPageList->findRef( widget ) );
+    return( d->mPageToInt[widget] );
   }
   else if( mFace == Tabbed )
   {
@@ -674,11 +676,11 @@ int KJanusWidget::pageIndex( QWidget *widget ) const
     //
     if( widget->isA("QFrame") )
     {
-      return( mPageList->findRef( widget->parentWidget() ) );
+      return( d->mPageToInt[widget->parentWidget()] );
     }
     else
     {
-      return( mPageList->findRef( widget ) );
+      return( d->mPageToInt[widget] );
     }
   }
   else
@@ -1055,14 +1057,10 @@ void KJanusWidget::virtual_hook( int, void* )
 // Ravikiran Rajagopal <ravi@ee.eng.ohio-state.edu>
 void KJanusWidget::removePage( QWidget *page )
 {
-  if (!mPageList || !mPageList->containsRef(page))
+  if (!d || !d->mPageToInt.contains(page))
     return;
 
-  int index = mPageList->findRef( page );
-  if ( mTitleList )
-    mTitleList->remove(mTitleList->at(index));
-
-  mPageList->removeRef(page);
+  int index = d->mPageToInt[page];
 
   if ( mFace == TreeList )
   {
@@ -1073,6 +1071,9 @@ void KJanusWidget::removePage( QWidget *page )
         delete i.key();
         mPageStack->removeWidget(page);
         mTreeListToPageStack.remove(i);
+        d->mIntToTitle.remove(index);
+        d->mPageToInt.remove(page);
+        d->mIntToPage.remove(index);
                 break;
       }
   }
@@ -1085,13 +1086,34 @@ void KJanusWidget::removePage( QWidget *page )
         delete i.key();
         mPageStack->removeWidget(page);
         mIconListToPageStack.remove(i);
+        d->mIntToTitle.remove(index);
+        d->mPageToInt.remove(page);
+        d->mIntToPage.remove(index);
                 break;
       }
   }
   else // Tabbed
   {
     mTabControl->removePage(page);
+    d->mPageToInt.remove(page);
+    d->mIntToPage.remove(index);
   }
+}
+
+QString KJanusWidget::pageTitle(int index)
+{
+  if (!d || !d->mIntToTitle.contains(index))
+    return QString::null;
+  else
+    return d->mIntToTitle[index];
+}
+
+QWidget *KJanusWidget::pageWidget(int index)
+{
+  if (!d || !d->mIntToPage.contains(index))
+    return 0;
+  else
+    return d->mIntToPage[index];
 }
 
 #include "kjanuswidget.moc"
