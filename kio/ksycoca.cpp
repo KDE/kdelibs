@@ -88,16 +88,23 @@ KSycoca::KSycoca( bool /* dummy */ )
    _self = this;
 }
 
+static void delete_ksycoca_self() {
+  delete KSycoca::self();
+}
+
 KSycoca * KSycoca::self()
 {
-  if (!_self)
-    _self = new KSycoca();
+    if (!_self) {
+        qAddPostRoutine(delete_ksycoca_self);
+        _self = new KSycoca();
+    }
   return _self;
 }
 
 KSycoca::~KSycoca()
 {
    closeDatabase();
+   delete m_lstFactories;
    _self = 0L;
 }
 
