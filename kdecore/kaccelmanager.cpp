@@ -274,7 +274,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
   {
     QWidget *w = static_cast<QWidget*>(it);
 
-    if ( !w->isVisibleTo( widget ) )
+    if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
         continue;
 
     manageWidget(w, item);
@@ -329,7 +329,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
   // now treat 'ordinary' widgets
   QLabel *label =  dynamic_cast<QLabel*>(w);
-  if (w->isFocusEnabled() || (label && label->buddy()) || dynamic_cast<QGroupBox*>(w))
+  if (w->isFocusEnabled() || (label && label->buddy()) || dynamic_cast<QGroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
   {
     QString content;
     QVariant variant;

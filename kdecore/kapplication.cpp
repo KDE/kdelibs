@@ -823,9 +823,7 @@ void KApplication::init(bool GUIenabled)
         QMimeSourceFactory::addFactory( oldDefaultFactory );
     }
 
-    KConfigGroupSaver saver( config, "Development" );
-    if( config->hasKey( "CheckAccelerators" ) || config->hasKey( "AutoCheckAccelerators" ))
-        d->checkAccelerators = new KCheckAccelerators( this );
+    d->checkAccelerators = new KCheckAccelerators( this );
   }
 
   // save and restore the RTL setting, as installTranslator calls qt_detectRTLLanguage,
