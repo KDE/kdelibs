@@ -1887,7 +1887,17 @@ bool HTTPProtocol::httpOpen()
     {
       KURL u;
       // u.setUser( m_state.user );
-      u.setProtocol( m_protocol );
+      if (m_protocol == "http")
+         u.setProtocol( "http" );
+      else if (m_protocol == "https" )
+         u.setProtocol( "https" );
+      if (m_protocol == "webdav")
+         u.setProtocol( "http" );
+      else if (m_protocol == "webdavs" )
+         u.setProtocol( "https" );
+      else
+         u.setProtocol( m_protocol );
+
       u.setHost( m_state.hostname );
       if (m_state.port != m_iDefaultPort)
          u.setPort( m_state.port );
