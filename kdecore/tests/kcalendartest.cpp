@@ -89,10 +89,10 @@ void test(QDate & date) {
 	kdDebug() << "Day name for first day of week is " << KGlobal::locale()->calendar()->weekDayName(1) << endl;
 	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->weekDayName(1, true) << endl;
 		
-	kdDebug() << "Month name for second month is " << KGlobal::locale()->calendar()->monthName(2) << endl;
+	kdDebug() << "Month name for second month is " << KGlobal::locale()->calendar()->monthName(2, KGlobal::locale()->calendar()->year(date)) << endl;
 	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->monthName(2, true) << endl;
-	kdDebug() << "Month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2) << endl;
-	kdDebug() << "Short month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, true) << endl;
+	kdDebug() << "Month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date)) << endl;
+	kdDebug() << "Short month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date), true) << endl;
 	
 	
 	

@@ -359,8 +359,10 @@ QString KCalendarSystemHijri::monthNamePossessive(const QDate& date,
   return monthNamePossessive(month(date), shortName);
 }
 
-QString KCalendarSystemHijri::monthName(int month, bool shortName) const
+QString KCalendarSystemHijri::monthName(int month, int year, bool shortName) const
 {
+  Q_UNUSED(year);
+
   if (shortName)
     switch ( month )
       {
@@ -421,9 +423,11 @@ QString KCalendarSystemHijri::monthName(int month, bool shortName) const
   return QString::null;
 }
 
-QString KCalendarSystemHijri::monthNamePossessive(int month,
+QString KCalendarSystemHijri::monthNamePossessive(int month, int year,
                                                   bool shortName) const
 {
+  Q_UNUSED(year);
+
   if (shortName)
     switch ( month )
       {

@@ -54,7 +54,7 @@ public:
 KDateWidget::KDateWidget( QWidget *parent, const char *name )
   : QWidget( parent, name )
 {
-  init();
+  init(QDate());
   setDate(QDate());
 }
 
@@ -63,11 +63,11 @@ KDateWidget::KDateWidget( QDate date, QWidget *parent,
 			    const char *name )
   : QWidget( parent, name )
 {
-  init();
+  init(date);
   setDate(date);
 }
 
-void KDateWidget::init()
+void KDateWidget::init(const QDate & date)
 {
   d = new KDateWidgetPrivate;
   KLocale *locale = KGlobal::locale();
@@ -77,7 +77,7 @@ void KDateWidget::init()
   d->m_month = new QComboBox(false, this);
   for (int i = 1; ; ++i)
   {
-    QString str = locale->calendar()->monthName(i);
+    QString str = locale->calendar()->monthName(i, locale->calendar()->year(date));
     if (str.isNull()) break;
     d->m_month->insertItem(str);
   }

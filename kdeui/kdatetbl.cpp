@@ -610,6 +610,7 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setVScrollBarMode(AlwaysOff);
   setFrameStyle(QFrame::NoFrame);
   setNumCols(3);
+  mDate = date;
   // For monthsInYear != 12
   if( KGlobal::locale()->calendar()->monthsInYear(date) % 3 == 0 )
      setNumRows( KGlobal::locale()->calendar()->monthsInYear(date) / 3 );
@@ -623,7 +624,8 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   QFontMetrics metrics(font);
   for(int i = 1; ; ++i)
     {
-      QString str = KGlobal::locale()->calendar()->monthName(i, false);
+      QString str = KGlobal::locale()->calendar()->monthName(i, 
+         KGlobal::locale()->calendar()->year(date), false);
       if (str.isNull()) break;
       rect=metrics.boundingRect(str);
       if(max.width()<rect.width()) max.setWidth(rect.width());
@@ -665,7 +667,11 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   QString text;
   // ----- find the number of the cell:
   index=3*row+col+1;
-  text=KGlobal::locale()->calendar()->monthName(index, false);
+  text=KGlobal::locale()->calendar()->monthName(index, 
+    KGlobal::locale()->calendar()->year(mDate), false);
+
+  kdDebug() << "Year: " << KGlobal::locale()->calendar()->year(mDate) << endl; 
+
   painter->drawText(0, 0, cellWidth(), cellHeight(), AlignCenter, text);
   if ( activeCol == col && activeRow == row )
       painter->drawRect( 0, 0, cellWidth(), cellHeight() );

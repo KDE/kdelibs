@@ -290,7 +290,7 @@ int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
   {
    if( weekDay1 < 5 ) // To calculate properly the number of weeks
                      //  from day a to x let's make a day 1 of week
-      firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1));  
+      firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1));
 
    week = firstDayWeek1.daysTo(date) / 7 + 1;
   }
@@ -302,19 +302,27 @@ int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
 QString KCalendarSystemHebrew::monthName(const QDate& date,
                                         bool shortName) const
 {
-  return monthName(month(date), shortName);
+  return monthName(month(date), year(date), shortName);
 }
 
 // Ok
 QString KCalendarSystemHebrew::monthNamePossessive(const QDate& date,
                                                   bool shortName) const
 {
-  return monthNamePossessive(month(date), shortName);
+  return monthNamePossessive(month(date), year(date), shortName);
 }
 
 // ### Fixme
-QString KCalendarSystemHebrew::monthName(int month, bool /*shortName*/) const
+QString KCalendarSystemHebrew::monthName(int month, int year, bool /*shortName*/) const
 {
+  // We must map conversion algorithm month index to real index
+  if( month == 6 && is_leap_year(year) )
+    month = 13; /*Adar I*/
+  else if ( month == 7 && is_leap_year(year) )
+    month = 14; /*Adar II*/
+  else if ( month > 7 && is_leap_year(year) )
+    month--; //Becouse of Adar II
+
   switch(month)
   {
   case 1:
@@ -353,10 +361,10 @@ QString KCalendarSystemHebrew::monthName(int month, bool /*shortName*/) const
 }
 
 // ### Fixme
-QString KCalendarSystemHebrew::monthNamePossessive(int month,
+QString KCalendarSystemHebrew::monthNamePossessive(int month, int year,
                                                   bool shortName) const
 {
-  return "of " + monthName(month, shortName);
+  return "of " + monthName(month, year, shortName);
 }
 
 bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
@@ -464,7 +472,13 @@ int KCalendarSystemHebrew::month(const QDate& date) const
 {
   class h_date *sd = toHebrew(date);
 
-  return sd->hd_mon;
+  int month = sd->hd_mon;
+  if( month == 13 /*AdarI*/ )
+     month = 6;
+  else if( month == 14 /*AdarII*/ )
+     month = 7;
+
+  return month;
 }
 
 // Ok

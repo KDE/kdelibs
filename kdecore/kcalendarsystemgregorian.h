@@ -67,9 +67,9 @@ public:
   virtual int weeksInYear(int year) const;
   virtual int weekNumber(const QDate& date, int * yearNum = 0) const;
 
-  virtual QString monthName (int month, bool shortName = false) const;
+  virtual QString monthName (int month, int year, bool shortName = false) const;
   virtual QString monthName (const QDate & date, bool shortName = false ) const;
-  virtual QString monthNamePossessive(int month, bool shortName = false) const;
+  virtual QString monthNamePossessive(int month, int year, bool shortName = false) const;
   virtual QString monthNamePossessive(const QDate & date, bool shortName = false ) const;
   virtual QString weekDayName (int weekDay, bool shortName = false) const;
   virtual QString weekDayName (const QDate & date, bool shortName = false) const;

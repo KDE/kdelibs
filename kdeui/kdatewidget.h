@@ -70,7 +70,7 @@ signals:
    void changed(QDate);
 
 protected:
-   void init();
+   void init(const QDate & year);
 
 protected slots:
   void slotDateChanged();

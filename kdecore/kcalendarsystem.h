@@ -180,10 +180,11 @@ public:
    * If an invalid month is specified, QString::null is returned.
    *
    * @param month The month number
+   * @param year The year the month belongs to
    * @param shortName Specifies if the short month name should be used
    * @return The name of the month
    */
-  virtual QString monthName (int month, bool shortName = false) const = 0;
+  virtual QString monthName (int month, int year, bool shortName = false) const = 0;
 
   /**
    * Gets specific calendar type month name for a given gregorian date
@@ -201,11 +202,12 @@ public:
    * If an invalid month is specified, QString::null is returned.
    *
    * @param month The month number
+   * @param year The year the month belongs to
    * @param shortName Specifies if the short month name should be used
    *
    * @return The possessive form of the name of the month
    */
-  virtual QString monthNamePossessive(int month, bool shortName = false) const = 0;
+  virtual QString monthNamePossessive(int month, int year, bool shortName = false) const = 0;
 
   /**
    * Returns a string containing the possessive form of the month name.

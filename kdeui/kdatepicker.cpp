@@ -426,7 +426,8 @@ KDatePicker::setFontSize(int s)
 
   for (int i = 1; ; ++i)
     {
-      QString str = KGlobal::locale()->calendar()->monthName(i, false);
+      QString str = KGlobal::locale()->calendar()->monthName(i, 
+         KGlobal::locale()->calendar()->year(table->getDate()), false);
       if (str.isNull()) break;
       r=metrics.boundingRect(str);
       maxMonthRect.setWidth(QMAX(r.width(), maxMonthRect.width()));

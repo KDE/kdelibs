@@ -84,10 +84,11 @@ QString KCalendarSystemGregorian::monthNamePossessive(const QDate& date, bool sh
   return monthNamePossessive(month(date), shortName);
 }
 
-QString KCalendarSystemGregorian::monthName(int month, bool shortName) const
+QString KCalendarSystemGregorian::monthName(int month, int year, bool shortName) const
 {
   kdDebug(5400) << "Gregorian getMonthName" << endl;
-
+  Q_UNUSED(year);
+  
   if ( shortName )
     switch ( month )
       {
@@ -148,10 +149,11 @@ QString KCalendarSystemGregorian::monthName(int month, bool shortName) const
   return QString::null;
 }
 
-QString KCalendarSystemGregorian::monthNamePossessive(int month,
+QString KCalendarSystemGregorian::monthNamePossessive(int month, int year,
                                                       bool shortName) const
 {
   kdDebug(5400) << "Gregorian getMonthName" << endl;
+  Q_UNUSED(year);
 
   if ( shortName )
     switch ( month )
