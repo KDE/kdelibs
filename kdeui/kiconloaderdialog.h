@@ -175,9 +175,9 @@ protected:
  * the icon will open the dialog. If the icon changes, a
  * signal is emitted and the buttons pixmap becomes updated.
  *
- * HACK
- * Since I did not want to break binary compatibility, it does
- * NOT use the same search path as the dialog. This IS a bug.
+ * You can set the resource type for locating the icon pixmaps.
+ * See @ref setIconType for changing the default setting,
+ * which is "toolbar". 
  */
 class KIconLoaderButton : public QPushButton
 {
@@ -189,7 +189,15 @@ public:
     KIconLoaderButton( QWidget *_widget );
     KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_widget );
     ~KIconLoaderButton();
-    
+
+    /**
+     * Sets the resource type for locating icon pixmaps and reloads
+     * the icon, if a name has already been given. The default
+     * resource type is "toolbar".
+     *
+     * @param _resType is a resource type known to @ref KStandardDirs.
+     */
+    void setIconType(const QString& _resType);
     /**
      * Set the buttons icon. 
      *
@@ -216,7 +224,7 @@ signals:
     
 protected:
     KIconLoaderDialog *loaderDialog;
-    QString iconStr;
+    QString iconStr, resType;
     KIconLoader *iconLoader;
 };
 

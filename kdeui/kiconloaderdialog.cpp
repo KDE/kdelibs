@@ -275,7 +275,7 @@ void KIconLoaderDialog::init()
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
   connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
-  changeDirs(KGlobal::dirs()->getResourceDirs("icon"));
+  changeDirs(KGlobal::dirs()->getResourceDirs("toolbar"));
   
   resize( 470, 350 );
   setMinimumSize( 470, 250 );
@@ -368,6 +368,7 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
 KIconLoaderButton::KIconLoaderButton( QWidget *_parent ) : QPushButton( _parent )
 {
     iconStr = "";
+    resType = "toolbar";
     connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
     iconLoader = KGlobal::iconLoader();
     loaderDialog = new KIconLoaderDialog();
@@ -376,9 +377,20 @@ KIconLoaderButton::KIconLoaderButton( QWidget *_parent ) : QPushButton( _parent 
 KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_parent ) : QPushButton( _parent )
 {
     iconStr = "";
+    resType = "toolbar";
     connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
     loaderDialog = new KIconLoaderDialog( _icon_loader );
     iconLoader = _icon_loader;
+}
+
+void KIconLoaderButton::setIconType(const QString& _resType) 
+{
+    resType = _resType;
+    loaderDialog->changeDirs(KGlobal::dirs()->getResourceDirs(resType));
+    
+    // Reload icon (might differ in new resource type)
+    if(!iconStr.isEmpty())
+        setIcon(iconStr);
 }
 
 void KIconLoaderButton::slotChangeIcon()
@@ -396,15 +408,12 @@ void KIconLoaderButton::slotChangeIcon()
 void KIconLoaderButton::setIcon(const QString& _icon)
 {
     iconStr = _icon;
-
-    // A Hack, since it uses loadApplicationIcon!!!
-    setPixmap( KGlobal::iconLoader()->loadApplicationIcon( iconStr ) );
+    setPixmap( locate(resType, iconStr) );
 }
 
 KIconLoaderButton::~KIconLoaderButton()
 {
-    if ( loaderDialog )
-	delete loaderDialog;
+    delete loaderDialog;
 }
 #include "kiconloaderdialog.moc"
 
