@@ -94,22 +94,33 @@ public:
         if ( sm.allowsInteraction() ) {
             bool cancelled = false;
             QListIterator<KMainWindow> it(*KMainWindow::memberList);
-            KMainWindow* last = 0;
             ::no_query_exit = true;
-            for (it.toFirst(); it.current() && !cancelled; ++it){
-                if ( !it.current()->testWState( Qt::WState_ForceHide ) ) {
-                    last = it.current();
+            for (it.toFirst(); it.current() && !cancelled;){
+                KMainWindow *window = *it;
+                ++it; // Update now, the current window might get deleted 
+                if ( !window->testWState( Qt::WState_ForceHide ) ) {
                     QCloseEvent e;
-                    QApplication::sendEvent( last, &e );
+                    QApplication::sendEvent( window, &e );
                     cancelled = !e.isAccepted();
-//                     if ( !cancelled && it.current()->testWFlags( Qt::WDestructiveClose ) )
-//                       delete it.current();
+//                     if ( !cancelled && window->testWFlags( Qt::WDestructiveClose ) )
+//                       delete window;
                 }
             }
-            no_query_exit = FALSE;
-            if ( !cancelled && last )
-                cancelled = !last->queryExit();
-            return !cancelled;
+            ::no_query_exit = false;
+            if (cancelled) 
+               return false;
+
+            KMainWindow* last = 0;
+            for (it.toFirst(); it.current() && !cancelled; ++it){
+                KMainWindow *window = *it;
+                if ( !window->testWState( Qt::WState_ForceHide ) ) {
+                    last = window;
+                }
+            }
+            if ( last )
+                return last->queryExit();
+            // else
+            return true;
         }
 
         // the user wants it, the user gets it
