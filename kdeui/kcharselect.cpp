@@ -169,6 +169,11 @@ KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,c
 
   setFont(_font.isEmpty() ? QVBox::font().family() : _font);
   setTableNum(_tableNum);
+
+  connect(charTable,SIGNAL(highlighted(const QChar &)),this,SLOT(charHighlighted(const QChar &)));
+  connect(charTable,SIGNAL(highlighted()),this,SLOT(charHighlighted()));
+  connect(charTable,SIGNAL(activated(const QChar &)),this,SLOT(charActivated(const QChar &)));
+  connect(charTable,SIGNAL(activated()),this,SLOT(charActivated()));
 }
 
 //==================================================================
@@ -268,9 +273,10 @@ void KCharSelect::fillFontCombo()
 }
 
 //==================================================================
-void KCharSelect::fontChanged(const QString &_font)
+void KCharSelect::fontSelected(const QString &_font)
 {
   charTable->setFont(_font);
+  emit fontChanged(_font);
 }
 
 //==================================================================

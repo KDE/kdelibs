@@ -105,7 +105,7 @@ protected:
   QStrList fontList;
 
 protected slots:
-  void fontChanged(const QString &_font);
+  void fontSelected(const QString &_font);
   void tableChanged(int _value);
   void charHighlighted(const QChar &c)
   { emit highlighted(c); }
@@ -121,6 +121,7 @@ signals:
   void highlighted();
   void activated(const QChar &c);
   void activated();
+  void fontChanged(const QString &_font);
   
 };
   
