@@ -25,24 +25,28 @@
 #include <kstandarddirs.h>
 #include "kstyledirs.h"
 
-KStyleDirs* KStyleDirs::instance = 0;
+namespace KStyleDirs {
 
-KStyleDirs::KStyleDirs()
+static bool _inited = false;
+
+void init()
 {
-    addResourceType( "themepixmap", KStandardDirs::kde_default( "data" ) + "kstyle/pixmaps/" );
-    addResourceType( "themerc", KStandardDirs::kde_default( "data" ) + "kstyle/themes/" );
+    if (_inited)
+	return;
+
+    KGlobal::dirs()->addResourceType( "themepixmap", KStandardDirs::kde_default( "data" ) + "kstyle/pixmaps/" );
+    KGlobal::dirs()->addResourceType( "themerc", KStandardDirs::kde_default( "data" ) + "kstyle/themes/" );
+    _inited = true;
 }
 
-KStyleDirs::~KStyleDirs()
+void addToSearch( const char* type, QSettings& s )
 {
-}
-
-void KStyleDirs::addToSearch( const char* type, QSettings& s ) const
-{
-    const QStringList & dirs = resourceDirs(type);
-    for ( int c = dirs.size()-1; c >= 0 ; c-- )
+    const QStringList & ds = dirs()->resourceDirs(type);
+    for ( int c = ds.size()-1; c >= 0 ; c-- )
     {
-        s.insertSearchPath( QSettings::Unix, dirs[ c ]);
+        s.insertSearchPath( QSettings::Unix, ds[ c ]);
     }
 }
 
+
+}

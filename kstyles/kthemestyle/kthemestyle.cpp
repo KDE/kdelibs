@@ -124,7 +124,7 @@ public:
     QStringList keys() const
     {
         QSettings cfg;
-        KStyleDirs::dirs()->addToSearch( "config", cfg );
+        KStyleDirs::addToSearch( "config", cfg );
 
         QStringList keys;
         bool ok;
@@ -142,7 +142,7 @@ public:
     QStyle* create( const QString& key )
     {
         QSettings cfg;
-        KStyleDirs::dirs()->addToSearch( "config", cfg );
+        KStyleDirs::addToSearch( "config", cfg );
 
         QString file = cfg.readEntry( "/kthemestyle/" + key + "/file" );
         if ( !key.isEmpty() )
@@ -308,7 +308,6 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 
 int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) const
 {
-    int m;
     switch ( metric )
     {
         case PM_MenuBarFrameWidth:
@@ -373,7 +372,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 
 KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
-        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), vsliderCache( 0 ), menuCache( 0 )
+        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -1023,7 +1022,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
             }
         case PE_ScrollBarSubLine:
             {
-                bool active = ( flags & Style_Active ) || ( flags & Style_Down ); //activeControl == QStyle::AddLine;
+		//   bool active = ( flags & Style_Active ) || ( flags & Style_Down ); //activeControl == QStyle::AddLine;
                 bool horizontal = ( flags & Style_Horizontal );
                 drawBaseButton( p, r.x(), r.y(), r.width(), r.height(),
                                 *colorGroup( g, down ? ScrollButtonDown : ScrollButton ),
@@ -1114,7 +1113,7 @@ void KThemeStyle::drawControl( ControlElement element,
                                const QStyleOption& opt ) const
 {
     bool handled = false;
-    bool sunken = ( how & Style_Sunken );
+    //    bool sunken = ( how & Style_Sunken );
     int x, y, w, h;
     r.rect( &x, &y, &w, &h );
 
@@ -1383,8 +1382,8 @@ void KThemeStyle::drawControl( ControlElement element,
                 QMenuBar *mb = ( QMenuBar* ) widget;
                 QRect pr = mb->rect();
                 bool active = how & Style_Active;
-                bool focused = how & Style_HasFocus;
-                const QColorGroup *g = colorGroup( cg, active ? MenuBarItem : MenuBar );
+                // bool focused = how & Style_HasFocus;
+		const QColorGroup *g = colorGroup( cg, active ? MenuBarItem : MenuBar );
                 QColor btext = g->buttonText();
 
                 QPixmap* cache = makeMenuBarCache(pr.width(), pr.height());
@@ -1435,8 +1434,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 bool reverse = QApplication::reverseLayout();
 
                 const QColorGroup& cg_ours = *colorGroup( cg, active ? MenuItemDown : MenuItem );
-                QColor btext = cg_ours.buttonText();
-
+                // QColor btext = cg_ours.buttonText();
 
                 if ( checkable )
                     checkcol = QMAX( checkcol, 20 );
@@ -1673,7 +1671,7 @@ void KThemeStyle::drawControl( ControlElement element,
             {
                 bool reverse = QApplication::reverseLayout();
                 const QProgressBar* br = ( const QProgressBar* ) widget;
-                QRect cr = subRect( SR_ProgressBarContents, widget );
+                // QRect cr = subRect( SR_ProgressBarContents, widget );
                 float prog = 1.0;
                 if ( br->totalSteps() )
                     prog = ( float ) br->progress() / br->totalSteps();
@@ -1926,11 +1924,11 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
     bool handled = false;
     int x, y, w, h;
     r.rect( &x, &y, &w, &h );
-    bool sunken = ( how & Style_Sunken );
+    // bool sunken = ( how & Style_Sunken );
     bool down = how & Style_Down;
     bool on = how & Style_On;
 
-    bool enabled = ( how & Style_Enabled );
+    // bool enabled = ( how & Style_Enabled );
 
     switch ( control )
     {
@@ -1959,7 +1957,7 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
                     drawBaseButton( p, button.x(), button.y(), button.width(), button.height(), *colorGroup( g, widget ), down || on, false,
                                     widget );
 
-                    int m = decoWidth( widget );
+                    // int m = decoWidth( widget );
                 }
 
                 if ( controls & SC_ToolButtonMenu )
@@ -2036,7 +2034,7 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
                                   ( maxedOut ? Style_Default : Style_Enabled ) );
 
                 //Here, we don't do add page, subpage, etc.,
-                QRect addline, subline, subline2, groove, slider, first, last;
+                QRect addline, subline, subline2, groove, slider;
                 subline = querySubControlMetrics( control, widget, SC_ScrollBarSubLine, opt );
                 addline = querySubControlMetrics( control, widget, SC_ScrollBarAddLine, opt );
                 groove = querySubControlMetrics( control, widget, SC_ScrollBarGroove, opt );
@@ -2361,8 +2359,8 @@ int KThemeStyle::popupMenuItemHeight( bool /*checkable*/, QMenuItem *mi,
 
 
 
-void KThemeStyle::drawTabMask( QPainter* p, const QTabBar* tb, QTab* t,
-                               bool selected )
+void KThemeStyle::drawTabMask( QPainter* , const QTabBar* , QTab* ,
+                               bool /* selected */ )
 {
     /*
         QRect r(t->r);

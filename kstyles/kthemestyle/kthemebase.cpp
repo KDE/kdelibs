@@ -420,7 +420,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     QSettings config;
     if (configDirName.isEmpty() || configDirName == ".")
     {
-    	KStyleDirs::dirs()->addToSearch( "themerc", config );
+    	KStyleDirs::addToSearch( "themerc", config );
     }
     else config.insertSearchPath( QSettings::Unix, configDirName );
 
@@ -619,7 +619,6 @@ KThemeBase::~KThemeBase()
         if ( grHighColors[ i ] )
             delete( grHighColors[ i ] );
     }
-    KStyleDirs::release();
     delete cache;
     delete d;
 }
@@ -1141,7 +1140,6 @@ static int readNumEntry( Prop& prop, QString setting, int def )
 
 static QColor readColorEntry( Prop& prop, QString setting, const QColor& def )
 {
-    bool ok;
     QString s_val = prop[ setting ];
     if ( !s_val.isEmpty() )
     {
