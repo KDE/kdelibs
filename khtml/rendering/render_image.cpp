@@ -56,6 +56,9 @@ void RenderImage::setStyle(RenderStyle* style)
 {
     RenderReplaced::setStyle(style);
 
+    if(m_style->width().isFixed())  pixSize.setWidth(m_style->width().value);
+    if(m_style->height().isFixed()) pixSize.setHeight(m_style->height().value);
+
     // init RenderObject attributes
     m_inline = ( m_style->display()==INLINE );
 }
@@ -76,10 +79,11 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     // Image dimensions have been changed, recalculate layout
     if(o->pixmap_size() !=  pixSize)
     {
-        //kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
+//        qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
+//               o->pixmap_size().width(), o->pixmap_size().height());
+
         pix = p;
         pixSize = o->pixmap_size();
-        //kdDebug( 6040 ) << "Image size is now " << pixSize.width() << " " << pixSize.height() << endl;
         setLayouted(false);
         setMinMaxKnown(false);
         //kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
