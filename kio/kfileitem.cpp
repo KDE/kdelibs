@@ -294,7 +294,7 @@ bool KFileItem::acceptsDrops()
   if ( !m_bIsLocalURL )
     return false;
 
-  if ( m_pMimeType && mimetype() == "application/x-desktop")
+  if ( mimetype() == "application/x-desktop")
     return true;
 
   // Executable, shell script ... ?
