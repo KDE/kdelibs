@@ -214,22 +214,27 @@ void KPixmapIO::putImage(QPixmap *dst, const QPoint &offset,
 void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 {
     int size = src->width() * src->height();
+    bool fallback = true;
     if (m_bShm && (src->depth() > 1) && (d->bpp > 8) && (size > d->threshold))
     {
 #ifdef HAVE_MITSHM
-	initXImage(src->width(), src->height());
-	convertToXImage(*src);
+	if( initXImage(src->width(), src->height()))
+	{
+	    convertToXImage(*src);
 #if QT_VERSION < 300
-	XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(), d->ximage,
-		dx, dy, 0, 0, src->width(), src->height(), false);
+	    XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(), d->ximage,
+		    dx, dy, 0, 0, src->width(), src->height(), false);
 #else
-	XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
-		dx, dy, 0, 0, src->width(), src->height(), false);
+	    XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
+		    dx, dy, 0, 0, src->width(), src->height(), false);
 #endif
-	XSync(qt_xdisplay(), false);
-	doneXImage();
+	    XSync(qt_xdisplay(), false);
+	    doneXImage();
+	    fallback  = false;
+	}
 #endif
-    } else
+    }
+    if( fallback )
     {
 	QPixmap pix;
 	pix.convertFromImage(*src);
@@ -248,15 +253,20 @@ QImage KPixmapIO::getImage(const QPixmap *src, int sx, int sy, int sw, int sh)
 {
     QImage image;
     int size = src->width() * src->height();
+    bool fallback = true;
     if ((m_bShm) && (d->bpp >= 8) && (size > d->threshold))
     {
 #ifdef HAVE_MITSHM
-	initXImage(sw, sh);
-	XShmGetImage(qt_xdisplay(), src->handle(), d->ximage, sx, sy, AllPlanes);
-	image = convertFromXImage();
-	doneXImage();
+	if( initXImage(sw, sh))
+	{
+	    XShmGetImage(qt_xdisplay(), src->handle(), d->ximage, sx, sy, AllPlanes);
+	    image = convertFromXImage();
+	    doneXImage();
+	    fallback = false;
+	}
 #endif
-    } else
+    }
+    if( fallback )
     {
 	QPixmap pix(sw, sh);
 	bitBlt(&pix, 0, 0, src, sx, sy, sw, sh);
@@ -293,17 +303,24 @@ void KPixmapIO::setShmPolicy(int policy)
 }
 
 
-void KPixmapIO::initXImage(int w, int h)
+bool KPixmapIO::initXImage(int w, int h)
 {
     if (d->ximage && (w == d->ximage->width) && (h == d->ximage->height))
-	return;
+	return true;
 
-    createXImage(w, h);
+    if( !createXImage(w, h))
+	return false;
     int size = d->ximage->bytes_per_line * d->ximage->height;
     if (size > d->shmsize)
-	createShmSegment(size);
+    {
+	if( !createShmSegment(size))
+	{
+	    destroyXImage();
+	    return false;
+	}
+    }
     d->ximage->data = d->shminfo->shmaddr;
-    return;
+    return true;
 }
 
 
@@ -327,11 +344,12 @@ void KPixmapIO::destroyXImage()
 }
 
 
-void KPixmapIO::createXImage(int w, int h)
+bool KPixmapIO::createXImage(int w, int h)
 {
     destroyXImage();
     d->ximage = XShmCreateImage(qt_xdisplay(), (Visual *) QPaintDevice::x11AppVisual(),
 	    QPaintDevice::x11AppDepth(), ZPixmap, 0L, d->shminfo, w, h);
+    return d->ximage != None;
 }
 
 
@@ -347,38 +365,39 @@ void KPixmapIO::destroyShmSegment()
 }
 
 
-void KPixmapIO::createShmSegment(int size)
+bool KPixmapIO::createShmSegment(int size)
 {
     destroyShmSegment();
     d->shminfo->shmid = shmget(IPC_PRIVATE, size, IPC_CREAT|0600);
-    if (d->shminfo->shmid < 0)
+    if ( d->shminfo->shmid < 0)
     {
 	kdWarning(290) << "Could not get shared memory segment.\n";
 	m_bShm = false;
-	return;
+	return false;
     }
 
     d->shminfo->shmaddr = (char *) shmat(d->shminfo->shmid, 0, 0);
-    if (d->shminfo->shmaddr < 0)
+    if (d->shminfo->shmaddr == (char *)-1)
     {
 	kdWarning(290) << "Could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
-	return;
+	return false;
     }
 
     d->shminfo->readOnly = false;
-    if (!XShmAttach(qt_xdisplay(), d->shminfo))
+    if ( !XShmAttach(qt_xdisplay(), d->shminfo))
     {
 	kdWarning() << "X-Server could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmdt(d->shminfo->shmaddr);
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
-	return;
+	return false;
     }
 
     d->shmsize = size;
     XSync(qt_xdisplay(), false);
+    return true;
 }
 
 
@@ -838,11 +857,11 @@ void KPixmapIO::convertToXImage(const QImage &img)
 
 void KPixmapIO::preAllocShm(int) {}
 void KPixmapIO::setShmPolicy(int) {}
-void KPixmapIO::initXImage(int, int) {}
+bool KPixmapIO::initXImage(int, int) { return false; }
 void KPixmapIO::doneXImage() {}
-void KPixmapIO::createXImage(int, int) {}
+bool KPixmapIO::createXImage(int, int) { return false; }
 void KPixmapIO::destroyXImage() {}
-void KPixmapIO::createShmSegment(int) {}
+bool KPixmapIO::createShmSegment(int) { return false; }
 void KPixmapIO::destroyShmSegment() {}
 QImage KPixmapIO::convertFromXImage() { return QImage(); }
 void KPixmapIO::convertToXImage(const QImage &) {}
