@@ -172,7 +172,8 @@ void KJavaAppletWidget::setWindow( WId w )
 
    XGetWMName( qt_xdisplay(), w, &titleProperty );
 
-   if ( swallowTitle == titleProperty.value )
+#warning This may or may not be correct.
+   if ( swallowTitle == (char*)titleProperty.value )
        {
          swallowWindow( w );
 	
