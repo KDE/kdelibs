@@ -1686,7 +1686,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     NodeImpl::Id id = 0;
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
-    if (lookupHTML && isHTMLDocument() && _type != NodeImpl::NamespaceId) {
+    if (lookupHTML && _type != NodeImpl::NamespaceId) {
         // Each document maintains a mapping of tag name -> id for every tag name encountered
         // in the document.
         cs = (htmlMode() == XHtml);
