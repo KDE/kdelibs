@@ -533,18 +533,24 @@ selector:
 	$$ = $1;
     }
     | selector combinator simple_selector {
-        $$ = $3;
-        CSSSelector *end = $3;
-        while( end->tagHistory )
-            end = end->tagHistory;
-        end->relation = $2;
-        end->tagHistory = $1;
-	if ( $2 == CSSSelector::Descendant ||
-	     $2 == CSSSelector::Child ) {
-	    CSSParser *p = static_cast<CSSParser *>(parser);
-	    DOM::DocumentImpl *doc = p->document();
-	    if ( doc )
-		doc->setUsesDescendantRules(true);
+	if ( !$1 || !$3 ) {
+	    delete $1;
+	    delete $3;
+	    $$ = 0;
+	} else {
+	    $$ = $3;
+	    CSSSelector *end = $3;
+	    while( end->tagHistory )
+		end = end->tagHistory;
+	    end->relation = $2;
+	    end->tagHistory = $1;
+	    if ( $2 == CSSSelector::Descendant ||
+		 $2 == CSSSelector::Child ) {
+		CSSParser *p = static_cast<CSSParser *>(parser);
+		DOM::DocumentImpl *doc = p->document();
+		if ( doc )
+		    doc->setUsesDescendantRules(true);
+	    }
 	}
     }
     | selector error {
