@@ -31,6 +31,7 @@
 #include <kaboutdata.h>
 
 #include "vcardtool.h"
+#include "vcard.h"
 
 static const KCmdLineOptions options[] =
 {
@@ -75,7 +76,7 @@ int main( int argc, char **argv )
   KABC::Addressee::List list = tool.parseVCards( text );
 
   if ( args->isSet( "vcard21" ) ) {
-    text = tool.createVCards( list, VCard::v2_1 ); // uses version 2.1
+    text = tool.createVCards( list, KABC::VCard::v2_1 ); // uses version 2.1
   } else {
     text = tool.createVCards( list ); // uses version 3.0
   }
