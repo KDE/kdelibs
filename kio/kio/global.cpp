@@ -1906,7 +1906,7 @@ KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)
   if (tmp == "reload")
      return KIO::CC_Reload;
 
-  kdWarning() << "unrecognized Cache control option:"<<cacheControl<<endl;
+  kdDebug() << "unrecognized Cache control option:"<<cacheControl<<endl;
   return KIO::CC_Verify;
 }
 
@@ -1922,6 +1922,6 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
 	return "Refresh";
     if (cacheControl == KIO::CC_Reload)
 	return "Reload";
-    kdFatal() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
+    kdDebug() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
     return QString::null;
 }
