@@ -23,8 +23,6 @@
 #endif
 
 #include "ksslpeerinfo.h"
-#include <qstring.h>
-#include <qregexp.h>
 #include <kdebug.h>
 
 #include <ksockaddr.h>
@@ -75,30 +73,54 @@ bool KSSLPeerInfo::certMatchesAddress() {
   QString cn = certinfo.getValue("CN");
 
   if (d->proxying) {
-	  if (cn.startsWith("*")) {
-     		QRegExp cnre(cn.lower(), false, true);
-		if (cnre.exactMatch(d->proxyHost.lower())) return true;
-	  } else {
-		if (cn.lower() == d->proxyHost.lower()) return true;
-	  }
-	  return false;
+    QStringList domains;
+
+    kdDebug(7029) << "Matching CN=" << cn << " to " << d->proxyHost << endl;
+
+    extractDomains(d->proxyHost, domains);
+    QStringList::Iterator it = domains.begin();
+    for (; it != domains.end(); it++)
+    {
+      int match = cn.findRev(*it, -1, false);
+      kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
+                    << ", host.length= " << (*it).length() << endl;
+
+      if (match > -1 && ((match + (*it).length()) == cn.length()))
+      {
+        kdDebug(7029) << "Found a match ==> " << (*it) << endl;
+        return true;
+      }
+    }
+    return false;
   }
 
 
   if (cn.startsWith("*")) {   // stupid wildcard cn
-     QRegExp cnre(cn.lower(), false, true);
      QString host, port;
+     QStringList domains;
 
-     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0) {
-         kdDebug(7029 ) << "resolving failure: " << d->host->nodeName() << endl;
-         host = d->host->nodeName();
+     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0)
+        host = d->host->nodeName();
+
+     kdDebug(7029) << "Matching CN=" << cn << " to " << host << endl;
+
+     extractDomains( host, domains );
+     QStringList::Iterator it = domains.begin();
+
+     for (; it != domains.end(); it++)
+     {
+        int match = cn.findRev(*it, -1, false);
+        kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
+                      << ", host.length= " << (*it).length() << endl;
+
+        if (match > -1 && ((match + (*it).length()) == cn.length()))
+        {
+          kdDebug(7029) << "Found a match ==> " << (*it) << endl;
+          return true;
+         }
      }
 
-#if QT_VERSION < 300
-     if (cnre.match(host.lower()) >= 0) return true;
-#else
-     if (cnre.exactMatch(host.lower())) return true;
-#endif
+     return false;
   } else {
      int err = 0;
 #if QT_VERSION < 300
@@ -108,11 +130,10 @@ bool KSSLPeerInfo::certMatchesAddress() {
 #endif
      cns.setAutoDelete(true);
 
-     /*
+
      kdDebug(7029) << "The original ones were: " << d->host->nodeName()
                    << " and: " << certinfo.getValue("CN").latin1()
                    << endl;
-     */
 
      for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
         if ((*x).address()->isCoreEqual(d->host)) {
@@ -123,4 +144,41 @@ bool KSSLPeerInfo::certMatchesAddress() {
 
 #endif
   return false;
+}
+
+void KSSLPeerInfo::extractDomains(const QString &fqdn, QStringList &domains)
+{
+    domains.clear();
+
+    // If fqdn is an IP address, then only use
+    // the entire IP address to find a match! (DA)
+    if (fqdn[0] >= '0' && fqdn[0] <= '9') {
+       domains.append(fqdn);
+       return;
+    }
+
+    QStringList partList = QStringList::split('.', fqdn, false);
+
+    if (partList.count())
+        partList.remove(partList.begin()); // Remove hostname
+
+    while(partList.count()) {
+       if (partList.count() == 1)
+         break; // We only have a TLD left.
+
+       if (partList.count() == 2) {
+          // If this is a TLD, we should stop. (e.g. co.uk)
+          // We assume this is a TLD if it ends with .xx.yy or .x.yy
+          if (partList[0].length() <= 2 && partList[1].length() == 2)
+             break; // This is a TLD.
+       }
+
+       QString domain = partList.join(".");
+       domains.append(domain);
+       partList.remove(partList.begin());
+    }
+
+    // Add the entire FQDN at the end of the
+    // list for fqdn == CN checks
+    domains.append(fqdn);
 }

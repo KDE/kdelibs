@@ -24,7 +24,7 @@
 class KSSL;
 
 #include <qglobal.h>
-#include <qstring.h>
+#include <qstringlist.h>
 #include <ksslcertificate.h>
 
 class KSSLPeerInfoPrivate;
@@ -47,6 +47,7 @@ protected:
 
   KSSLCertificate m_cert;
   void setPeerAddress(KInetSocketAddress &x);
+  void extractDomains(const QString &fqdn, QStringList &domains);
 
 private:
   KSSLPeerInfoPrivate *d;
