@@ -20,6 +20,7 @@
 
 #include <qpopupmenu.h>
 
+
 #include <kstdaccel.h>
 #include <kcompletion.h>
 #include <klocale.h>
@@ -28,9 +29,6 @@ KCompletionBase::KCompletionBase()
 {
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobalSettings::completionMode();
-
-    // Initialize the pointer to the completion object.
-    m_pCompObj = 0;
 
     // Initialize the popup menu
     m_pCompletionMenu = 0;
@@ -64,20 +62,16 @@ KCompletionBase::KCompletionBase()
 
 KCompletionBase::~KCompletionBase()
 {
-    if( m_bAutoDelCompObj )
+    if( m_bAutoDelCompObj && m_pCompObj)
     {
-	    // We need to use a QGaurdedPtr at some point here
-	    // since we dish the completion pointer out where
-	    // someone might accidentally delete it!
         delete m_pCompObj;
-        m_pCompObj = 0;
     }
     delete m_pCompletionMenu;
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
 {
-    if ( m_pCompObj == 0 )
+    if ( !m_pCompObj )
     {
         setCompletionObject( new KCompletion(), hsig );
         // Set automatic deletion of completion object to true
@@ -92,7 +86,7 @@ void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
     m_pCompObj = compObj;
     m_bAutoDelCompObj = false;
     setHandleSignals( hsig );
-    m_bEmitSignals = ( m_pCompObj != 0 ); // emit signals if comp object exists
+    m_bEmitSignals = ( !m_pCompObj.isNull() ); // emit signals if comp object exists
 }
 
 void KCompletionBase::setHandleSignals( bool handle )
@@ -106,8 +100,11 @@ void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
     m_iCompletionMode = mode;
     // Always sync up KCompletion mode with ours as long as we
     // are performing completions.
-    if( m_pCompObj != 0 && m_iCompletionMode != KGlobalSettings::CompletionNone )
+    if(  m_pCompObj &&
+    	 m_iCompletionMode != KGlobalSettings::CompletionNone )
+    {
         m_pCompObj->setCompletionMode( m_iCompletionMode );
+    }
 }
 
 bool KCompletionBase::setKeyBinding( KeyBindingType item, int key )
@@ -158,7 +155,7 @@ void KCompletionBase::insertCompletionItems( QObject* parent, const char* member
 
 void KCompletionBase::insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index )
 {
-    if( m_bShowModeChanger && m_iCompletionID == -1 && parent != 0 && m_pCompObj != 0 )
+    if( m_bShowModeChanger && m_iCompletionID == -1 && parent != 0 && m_pCompObj )
     {
         if( m_pCompletionMenu == 0 )
             m_pCompletionMenu = new QPopupMenu(); //Create the popup menu if not present

@@ -25,6 +25,7 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qguardedptr.h>
 
 #include <kglobalsettings.h>
 
@@ -821,7 +822,7 @@ private:
     // Stores the completion mode locally.
     KGlobalSettings::Completion m_iCompletionMode;
     // Pointer to Completion object.
-    KCompletion* m_pCompObj;
+    QGuardedPtr<KCompletion> m_pCompObj;
     // Pointer to a completion popupmenu.
     QPopupMenu* m_pCompletionMenu;
     // Pointer for future binary compatabilty.
