@@ -381,6 +381,15 @@ public:
     bool autoSaveSettings() const;
 
     /**
+     * @return the group used for setting-autosaving.
+     * Only meaningful if setAutoSaveSettings() was called.
+     * This can be useful for forcing a save or an apply, e.g. before and after
+     * using KEditToolbar.
+     * @since 3.2
+     */
+    QString autoSaveGroup() const;
+
+    /**
      * Read settings for statusbar, menubar and toolbar from their respective
      * groups in the config file and apply them.
      *
