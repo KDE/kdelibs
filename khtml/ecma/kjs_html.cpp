@@ -1409,7 +1409,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputAccept:          return getString(input.accept());
     case InputAccessKey:       return getString(input.accessKey());
     case InputAlign:           return getString(input.align());
-    case InputAlt:             return getString(input.alt());
+    case InputAlt:             return String(input.alt());
     case InputChecked:         return Boolean(input.checked());
     case InputDisabled:        return Boolean(input.disabled());
     case InputMaxLength:       return Number(input.maxLength());
@@ -1652,7 +1652,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
     case ImageAlign:           return getString(image.align());
-    case ImageAlt:             return getString(image.alt());
+    case ImageAlt:             return String(image.alt());
     case ImageBorder:          return String(image.getBorder());
     case ImageComplete:        return Boolean(static_cast<DOM::HTMLImageElementImpl*>( image.handle() )->complete());
     case ImageHeight:          return Number(image.height());
@@ -1708,7 +1708,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLAppletElement applet = element;
     switch (token) {
     case AppletAlign:           return getString(applet.align());
-    case AppletAlt:             return getString(applet.alt());
+    case AppletAlt:             return String(applet.alt());
     case AppletArchive:         return getString(applet.archive());
     case AppletCode:            return getString(applet.code());
     case AppletCodeBase:        return getString(applet.codeBase());
@@ -1733,7 +1733,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLAreaElement area = element;
     switch (token) {
     case AreaAccessKey:       return getString(area.accessKey());
-    case AreaAlt:             return getString(area.alt());
+    case AreaAlt:             return String(area.alt());
     case AreaCoords:          return getString(area.coords());
     // Group everything that needs href
     case AreaHref:
@@ -1932,7 +1932,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ElementId:
     return String(element.id()); // getString is wrong here. Other browsers return empty string if no id specified.
   case ElementTitle:
-    return getString(element.title());
+    return String(element.title());
   case ElementLang:
     return getString(element.lang());
   case ElementDir:
@@ -2004,8 +2004,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (node.elementId() == ID_A)
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
-  if (node.elementId() == ID_APPLET)
-  {
+  else if (node.elementId() == ID_APPLET) {
     DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(node.handle());
     QStringList qargs;
     QString retvalue;
@@ -2015,6 +2014,10 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
         QString str("[object APPLET ref=");
         return UString(str + retvalue + QString("]"));
     }
+  } else if (node.elementId() == ID_IMG) {
+    DOM::HTMLImageElement image(node);
+    if (!image.alt().isEmpty())
+      return UString(image.alt()) + " " + DOMElement::toString(exec);
   }
   return DOMElement::toString(exec);
 }

@@ -1,3 +1,9 @@
+2003-10-10  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_html.cpp: title and alt attributes should never be null
+
+	* ecma/kjs_html.cpp (toString): make use of alt attribute if set
+
 2003-10-09  Dirk Mueller  <dmuell@gmx.net>
 
 	* ecma/kjs_dom.cpp (putValueProperty): don't scroll layer when there is is nothing
