@@ -204,6 +204,20 @@ namespace Keramik
 		int m_count;
 		bool m_horizontal;
 	};
+
+	class SpinBoxPainter : public TilePainter
+	{
+	public:
+		SpinBoxPainter() : TilePainter( "spinbox" ) {};
+		virtual ~SpinBoxPainter() {};
+
+	protected:
+		virtual unsigned int columns() const { return 3; }
+		virtual unsigned int rows() const { return 1; }
+		virtual TileMode columnMode( unsigned int ) const;
+		virtual TileMode rowMode( unsigned int ) const { return Scaled; }
+		virtual QString tileName( unsigned int column, unsigned int row ) const;
+	};
 };
 
 #endif

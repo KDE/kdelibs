@@ -228,4 +228,14 @@ QString ScrollBarPainter::name( bool horizontal )
 	return QString( "scrollbar-" ) + ( horizontal ? "hbar" : "vbar" );
 }
 
+TilePainter::TileMode SpinBoxPainter::columnMode( unsigned int column ) const
+{
+	return column == 1 ? Scaled : Fixed;
+}
+
+QString SpinBoxPainter::tileName( unsigned int column, unsigned int ) const
+{
+	return QString::number( column + 1 );
+}
+
 // vim: ts=4 sw=4 noet

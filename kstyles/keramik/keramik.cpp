@@ -1104,14 +1104,14 @@ void KeramikStyle::drawControl( ControlElement element,
 				p->fillRect( main, cg.background().light() );
 			// Are we a menu item separator?
 
+			p->fillRect( bar, cg.mid() );
+
 			if ( mi->isSeparator() )
 			{
 				p->setPen( cg.shadow() );
 				p->drawLine( main.x() + 1, main.y(), main.width() - 1, main.y() );
 				break;
 			}
-
-			p->fillRect( bar, cg.mid() );
 
 			QRect cr = visualRect( QRect( x + 2, y + 2, checkcol - 1, h - 4 ), r );
 			// Do we have an icon?
@@ -1332,10 +1332,15 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			QRect br = visualRect( querySubControlMetrics( CC_SpinWidget, widget, SC_SpinWidgetButtonField ), widget );
 			if ( controls & SC_SpinWidgetButtonField )
 			{
-				QString name( "spinbox" );
-				if ( active & SC_SpinWidgetUp ) name += "-pressed-up";
-				else if ( active & SC_SpinWidgetDown ) name += "-pressed-down";
-				Keramik::ScaledPainter( name ).draw( p, br );
+				Keramik::SpinBoxPainter().draw( p, br );
+				if ( active & SC_SpinWidgetUp )
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-up" ).draw( p, br.x(), br.y(), br.width(), br.height() / 2 );
+				else
+					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y(), br.width(), br.height() / 2 );
+				if ( active & SC_SpinWidgetDown )
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 );
+				else
+					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
