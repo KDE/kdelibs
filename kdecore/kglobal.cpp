@@ -59,6 +59,9 @@ KInstance *KGlobal::instance()
 KLocale	*KGlobal::locale()
 {	
     if( _locale == 0 ) {
+	if (!_instance)
+	   return 0;
+
         // will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
     }

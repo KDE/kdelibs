@@ -29,11 +29,17 @@ class QTime;
 class QDateTime;
 class KConfig;
 
-/*
-  #ifndef klocale
-  #define klocale KApplication::getKApplication()->getLocale()
-  #endif
-*/
+#ifndef I18N_NOOP
+#define I18N_NOOP(x) (x)
+#endif
+
+/**
+ *  i18n is the function that does everything you need to translate
+ *  a string. You just wrap around every user visible string a i18n
+ *  call to get a QString with the string in the user's prefered
+ *  language. 
+ **/
+QString i18n(const char *text);
 
 /**
   *

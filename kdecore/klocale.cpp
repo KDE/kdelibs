@@ -1000,7 +1000,6 @@ QString i18n(const char* text) {
   register KLocale *instance = KGlobal::locale();
   if (instance)
      return instance->translate(text);
-  debug("there is no KLocale instance, but i18n usage has been attempted.");
 #endif
   return text;
 }

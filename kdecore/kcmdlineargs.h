@@ -19,10 +19,6 @@
 #ifndef _KCMDLINEARGS_H_
 #define _KCMDLINEARGS_H_
 
-#ifndef I18N_NOOP
-#define I18N_NOOP(x) (x)
-#endif
-
 #include <qlist.h>
 #include <qstring.h>
 
