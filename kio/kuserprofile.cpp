@@ -243,7 +243,8 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 
 KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, bool needApp )
 {
-    return preferredService( _serviceType, needApp ? "Application" : QString::null );
+    static const QString& app_str = KGlobal::staticQString("Application");
+    return preferredService( _serviceType, needApp ? app_str : QString::null );
 }
 
 KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, const QString & _genericServiceType )
