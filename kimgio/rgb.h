@@ -27,20 +27,25 @@ void kimgio_rgb_write(QImageIO *);
 class RLEData : public QMemArray<uchar> {
 public:
 	RLEData() {}
-	RLEData(const uchar *d, uint l) { duplicate(d, l); }
+	RLEData(const uchar *d, uint l, uint o) : m_offset(o) { duplicate(d, l); }
 	bool operator<(const RLEData&) const;
 	void write(QDataStream& s);
-	void print(QString) const;	// FIXME
+	void print(QString) const;				// TODO remove
+	uint offset() { return m_offset; }
+private:
+	uint			m_offset;
 };
 
 
 class RLEMap : public QMap<RLEData, uint> {
 public:
-	RLEMap() : m_counter(0) {}
+	RLEMap() : m_counter(0), m_offset(0) {}
 	uint insert(const uchar *d, uint l);
 	QPtrVector<RLEData> vector();
+	void setBaseOffset(uint o) { m_offset = o; }
 private:
 	uint			m_counter;
+	uint			m_offset;
 };
 
 

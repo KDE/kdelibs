@@ -14,7 +14,7 @@
  *     mapmode != NORMAL (e.g. dithered); Images with 16 bit
  *     precision or more than 4 layers are stripped down.
  * writing:
- *     Run Length Encoded (RLE) files  (no shared patterns yet)
+ *     Run Length Encoded (RLE)
  *
  * Please report if you come across rgb/rgba/sgi/bw files that aren't
  * recognized. Also report applications that can't deal with images
@@ -267,7 +267,13 @@ bool SGIImage::readImage(QImage& img)
 		for (uint o = 0; o < m_numrows; o++)
 			if (m_starttab[o] + m_lengthtab[o] > m_data.size())
 				return false;
-	return readData(img);
+
+	if (!readData(img)) {
+		kdDebug(399) << "image corrupt" << endl;
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -296,16 +302,17 @@ bool RLEData::operator<(const RLEData& b) const
 
 uint RLEMap::insert(const uchar *d, uint l)
 {
-	RLEData data = RLEData(d, l);
+	RLEData data = RLEData(d, l, m_offset);
 	Iterator it = find(data);
-	if (it == end())
-		return QMap<RLEData, uint>::insert(data, m_counter++).data();
+	if (it != end())
+		return it.data();
 
-	return it.data();
+	m_offset += l;
+	return QMap<RLEData, uint>::insert(data, m_counter++).data();
 }
 
 
-// FIXME for debugging purposes
+// TODO remove; for debugging purposes only
 void RLEData::print(QString desc) const
 {
 	QString s = desc + ": ";
@@ -440,15 +447,18 @@ bool SGIImage::writeImage(QImage& img)
 
 	m_numrows = m_ysize * m_zsize;
 	m_starttab = new Q_UINT32[m_numrows];
+	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
 
-	if (!writeData(img)) {
-		kdDebug(399) << "writing error" << endl;
+	if (!writeData(img)) {			// FIXME misleading name
+		kdDebug(399) << "this can't happen" << endl;
 		return false;
 	}
 
 	kdDebug(399) << "number of generated scanlines: " << m_rlemap.size() << endl;
 
 	QPtrVector<RLEData> v = m_rlemap.vector();
+#if 0
+	//*** lazy RLE (no shared scanlines) ***
 
 	// write start table
 	uint offset = 512 + m_numrows * 2 * sizeof(Q_UINT32);
@@ -463,6 +473,20 @@ bool SGIImage::writeImage(QImage& img)
 	// write data
 	for (i = 0; i < m_numrows; i++)
 		v[m_starttab[i]]->write(m_stream);
+#else
+	// *** RLE with shared scanlines (GIMP calls it "aggressive") ***
+
+	// write start table
+	for (i = 0; i < m_numrows; i++)
+		m_stream << v[m_starttab[i]]->offset();
+	// write length table
+	for (i = 0; i < m_numrows; i++)
+		m_stream << Q_UINT32(v[m_starttab[i]]->size());
+
+	// write data
+	for (i = 0; i < v.size(); i++)
+		v[i]->write(m_stream);
+#endif
 
 	return true;
 }
