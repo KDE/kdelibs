@@ -54,7 +54,7 @@ class KPixmap : public QPixmap
 {
 public:
         enum ColorMode { Auto, Color, Mono, LowColor, WebColor };
-        enum GradientMode { Horizontal, Vertical, Diagonal, Pyramidal };
+        enum GradientMode { Horizontal, Vertical, Diagonal };
 
 	/**
 	 * Creates a null pixmap
