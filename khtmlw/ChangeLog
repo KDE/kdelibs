@@ -1,3 +1,8 @@
+1998-12-08  Alex Zepeda  <garbanzo@hooked.net>
+
+	* html.cpp (parseBody): Initialize KCharsetConversionResult *r to zero
+	so as to avoid warnings.
+
 1998-11-30  Alex Zepeda  <garbanzo@hooked.net>
 
 	* html.cpp, html.h: Implement a scroll blob thingy a la SO5 && MSIE.

@@ -2288,7 +2288,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		   QList<KCharsetConversionResult> rl=
 		           charsetConverter->multipleConvert(str);
 		   debugM("OK\n");
-		   KCharsetConversionResult *r;
+		   KCharsetConversionResult *r=0;
 		   for(r=rl.first();r;r=rl.next()){ 
 		        debugM("Getting result string...");
 		      	char *str1=r->copy();
