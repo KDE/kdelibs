@@ -9,7 +9,7 @@
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
-    //initializing that checkSettings() actually does something
+    //initializing so that checkSettings() actually does something
     m_bUseSingle = !KGlobalSettings::singleClick();
     checkSettings();
     oldCursor = viewport()->cursor();
@@ -21,7 +21,7 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     checkSettings();
 
     connect( this, SIGNAL( executed( QIconViewItem * ) ),
-	     this, SLOT( slotTestExecute( QIconViewItem * ) ) );
+	     this, SLOT( slotExecute( QIconViewItem * ) ) );
 
     m_pCurrentItem = 0L;
 
@@ -113,7 +113,7 @@ void KIconView::slotAutoSelect()
 	r.setHeight( currentItem()->y() - m_pCurrentItem->y() + currentItem()->height() );
       r = r.normalize();
 
-      //Check for each item wether it is within the rectangle. 
+      //Check for each item whether it is within the rectangle. 
       //If yes, select it
       for( QIconViewItem* i = firstItem(); i; i = i->nextItem() ) {
 	if( i->intersects( r ) ) {
