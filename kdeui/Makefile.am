@@ -58,7 +58,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kpanelextension.h kcompletionbox.h ksqueezedtextlabel.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
-		kstringvalidator.h
+		kstringvalidator.h kaccelmanager.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -97,11 +97,12 @@ libkdeui_la_SOURCES = \
 		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp \
                 kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp \
-		kstringvalidator.cpp kactivelabel.cpp
+		kstringvalidator.cpp kactivelabel.cpp kaccelmanager.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
-		kdepackages.h kdeui-doc.h kshortcutdialog.h kxmlguifactory_p.h
+		kdepackages.h kdeui-doc.h kshortcutdialog.h kxmlguifactory_p.h \
+		kaccelmanager_private.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)
