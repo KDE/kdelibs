@@ -35,6 +35,9 @@
 
 
 /**
+   THIS CLASS IS PROVIDED FOR COMPATIBILITY ONLY. IT MAY DISSAPPEAR SOON IN KDE-2.0.
+   USE KWINMODULE IN LIBKDECORE INSTEAD.
+   
  * The class KWMModuleApplication is the base class for KDE
  * windowmanager modules. It mainly informs a module about all
  * currently managed windows and changes to them (via Qt
@@ -62,7 +65,7 @@ public:
   /**
      if you inherit KWMModuleApplication and overload x11EventFilter,
      be sure to call its x11EventFilter in your x11EventFilter:
-     
+
            if (KWMModuleApplication::x11EventFilter(XEvent *))
                return True;
   */
