@@ -72,46 +72,31 @@ public:
 	KPixmap(const QPixmap& pix);
 
 	/**
-	 * Fills the pixmap with a color blend running from color ca to
-	 * color cb.
-
-         * If upDown is true the blend will run from the top to the
-	 * bottom of the pixmap. If upDown is false the blend will run
-	 * from the right to the left of the pixmap.
-
-         * By default, the blend will use 3 colors on 8 bpp displays,
-         * and unlimited colors at higher dislay depths. For 8bpp displays
-         * ncols specifies an alternative number of colors to use. 
+	 * This function is obsolete. Use KPixmapEffect::gradient() now.
 	 */
 	void gradientFill( QColor ca, QColor cb, bool upDown = true, 
                            int ncols = 3 );
 
         /**
-         * Fills the pixmap with a gradient running from color ca to
-         * color cb in the specified direction.
-         *
-	 * By default, the blend will use 3 colors on 8 bpp displays,
-         * and unlimited colors at higher dislay depths. For 8bpp displays
-         * ncols specifies an alternative number of colors to use. 
+	 * This function is obsolete. Use KPixmapEffect::gradient() now.
          */
         void gradientFill(QColor ca, QColor cb, GradientMode direction,
                           int ncols = 3);
 
 	/**
-	 * Fills the pixmap with a two color pattern, specified by the
-	 * pattern bits in pattern[], the color ca to be used for the
-	 * background and the color cb to be used for the foreground.
+	 * This function is obsolete. Use KPixmapEffect::pattern() now.
 	 */
 	void patternFill( QColor ca, QColor cb, uint pattern[8] );
 
 	/**
-	 * Fills the pixmap with a grey colored map that is colored 
-	 * between the two specified colors so that the first color 
-	 * matches white and the second color matched black. If the
-	 * specified map hasn't either white or black, the most bright
-	 * (or most dark) color is used instead.
+	 * This function is obsolete. Use KPixmapEffect::pattern() now.
 	 **/
 	void mapFill( QColor ca, QColor cb, const QString& map );
+
+	/**
+	 * Tiles a pixmap into this one.
+	 */
+	void tile(const QPixmap &pm);
 
 	/** 
 	 * Converts an image and sets this pixmap. Returns true if

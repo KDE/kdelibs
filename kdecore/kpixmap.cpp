@@ -200,6 +200,9 @@ void KPixmap::gradientFill(QColor , QColor , bool , int )
 
 void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 {
+    warning("KPixmap: patternFill(QColor, QColor, unsigned) is obsolete");
+    warning("KPixmap: use KPixmapEffect::pattern(KPixmap&, QColor, QColor, unsigned)");
+
     QPixmap tile( 8, 8 );
     tile.fill( cb );
 	
@@ -253,6 +256,9 @@ static const char *default_map[] = {
 
 void KPixmap::mapFill( QColor ca, QColor cb, const QString& map )
 {
+    warning("KPixmap: mapFill(QColor, QColor, QString) is obsolete");
+    warning("KPixmap: use KPixmapEffect::pattern(KPixmap&, QColor, QColor, QImage)");
+
     QString filename = map;
     if (map.at(0) != '/')
 	filename = locate("data", "kdisplay/maps/" + map);
@@ -292,6 +298,22 @@ void KPixmap::mapFill( QColor ca, QColor cb, const QString& map )
     
     convertFromImage(*img, 0);
     delete img;
+}
+
+void KPixmap::tile(const QPixmap &pm)
+{
+    int x, y;
+    for (y=0; y<height(); y += pm.height())
+	for (x=0; x<width(); x += pm.width())
+	    bitBlt(this, x, y, &pm, 0, 0, pm.width(), pm.height());
+
+    if (pm.mask() != 0L) {
+	QBitmap bm(width(), height());
+	for (y=0; y<height(); y += pm.height())
+	    for (x=0; x<width(); x += pm.width())
+		bitBlt(&bm, x, y, pm.mask(), 0, 0, pm.width(), pm.height());
+	setMask(bm);
+    }
 }
 
 bool KPixmap::load( const QString& fileName, const char *format,
