@@ -153,7 +153,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     // User tries to overwrite a file with itself ?
     if ( _mode & M_OVERWRITE_ITSELF ) {
         QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
-                                       "Do you want to rename it instead?" ).arg( KStringHandler::csqueeze( d->src,100 ) ), this );
+                                       "Please enter a new file name:" ).arg( KStringHandler::csqueeze( d->src,100 ) ), this );
+        d->b1->setText(i18n("C&ontinue"));
         d->m_pLayout->addWidget( lb );
     }
     else if ( _mode & M_OVERWRITE ) {
