@@ -38,7 +38,7 @@ class Part1 : public KReadOnlyPart
 {
   Q_OBJECT
 public:
-  Part1();
+  Part1( QWidget * parentWidget );
   virtual ~Part1();
 
 protected:
@@ -54,7 +54,7 @@ class Part2 : public KPart
 {
   Q_OBJECT
 public:
-  Part2();
+  Part2( QWidget * parentWidget );
   virtual ~Part2();
 
 protected:

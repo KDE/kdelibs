@@ -21,8 +21,10 @@ Shell::Shell()
 
   m_builder->setXMLFile( "example_shell.rc" );
 
-  m_part1 = new Part1();
-  m_part2 = new Part2();
+  m_splitter = new QSplitter( this );
+
+  m_part1 = new Part1(m_splitter);
+  m_part2 = new Part2(m_splitter);
 
   QActionCollection *coll = m_builder->actionCollection();
 
@@ -38,14 +40,12 @@ Shell::Shell()
   connect( m_manager, SIGNAL( activePartChanged( KPart *, KPart * ) ),
            this, SLOT( slotActivePartChanged( KPart *, KPart * ) ) );
   
-  m_splitter = new QSplitter( this );
-
   setView( m_splitter );
 
   m_splitter->show();
   
-  m_part1->embed( m_splitter );
-  m_part2->embed( m_splitter );
+  //m_part1->embed( m_splitter );
+  //m_part2->embed( m_splitter );
 
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
@@ -82,12 +82,12 @@ void Shell::resizeEvent( QResizeEvent * )
   m_splitter->setGeometry( 0, 0, width(), height() );
 }
 
-Part1::Part1()
+Part1::Part1( QWidget * parentWidget )
  : KReadOnlyPart( "Part1" )
 {
   //  m_box = new QVBox;
   //QBoxLayout *box = new QBoxLayout( this, QBoxLayout::TopToBottom );
-  m_edit = new QMultiLineEdit( 0L );
+  m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
   //box->addWidget( m_edit );
 
@@ -129,10 +129,10 @@ QString Part1::configFile() const
   return KXMLGUIFactory::readConfigFile( "part1.rc" );
 }
 
-Part2::Part2()
+Part2::Part2( QWidget * parentWidget )
  : KPart( "Part2" )
 {
-  setWidget( new QWidget );
+  setWidget( new QWidget( parentWidget, "Part2Widget" ) );
 }
 
 Part2::~Part2()
