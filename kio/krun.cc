@@ -11,6 +11,7 @@
 
 #include <kurl.h>
 #include <kapp.h>
+#include <kdebug.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 
