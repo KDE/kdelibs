@@ -31,7 +31,9 @@
 #include <dom_exception.h>
 
 #include "kjs_binding.h"
+#include "kjs_dom.h"
 #include "kjs_html.h"
+#include "kjs_text.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
 
@@ -176,6 +178,46 @@ DOM::Node KJS::toNode(const KJSO& obj)
   return n;
 }
 
+KJSO KJS::getDOMNode(DOM::Node n)
+{
+  if (n.isNull())
+    return Null();
+
+  switch (n.nodeType()) {
+    case DOM::Node::ELEMENT_NODE:
+      if (static_cast<DOM::Element>(n).isHTMLElement())
+        return new HTMLElement(static_cast<DOM::HTMLElement>(n));
+      else
+        return new DOMElement(static_cast<DOM::Element>(n));
+    case DOM::Node::ATTRIBUTE_NODE:
+      return new DOMAttr(static_cast<DOM::Attr>(n));
+    case DOM::Node::TEXT_NODE:
+    case DOM::Node::CDATA_SECTION_NODE:
+      return new DOMText(static_cast<DOM::Text>(n));
+    case DOM::Node::ENTITY_REFERENCE_NODE:
+      return new DOMNode(n);
+    case DOM::Node::ENTITY_NODE:
+      return new DOMEntity(static_cast<DOM::Entity>(n));
+    case DOM::Node::PROCESSING_INSTRUCTION_NODE:
+      return new DOMProcessingInstruction(static_cast<DOM::ProcessingInstruction>(n));
+    case DOM::Node::COMMENT_NODE:
+      return new DOMCharacterData(static_cast<DOM::CharacterData>(n));
+    case DOM::Node::DOCUMENT_NODE:
+      if (static_cast<DOM::Document>(n).isHTMLDocument())
+        return new HTMLDocument(static_cast<DOM::HTMLDocument>(n));
+      else
+        return new DOMDocument(static_cast<DOM::Document>(n));
+    case DOM::Node::DOCUMENT_TYPE_NODE:
+      return new DOMDocumentType(static_cast<DOM::DocumentType>(n));
+    case DOM::Node::DOCUMENT_FRAGMENT_NODE:
+      return new DOMNode(n);
+    case DOM::Node::NOTATION_NODE:
+      return new DOMNotation(static_cast<DOM::Notation>(n));
+    default:
+      return new DOMNode(n);
+  }
+}
+
 bool NodeObject::equals(const KJSO& other) const
 {
   if (other.derivedFrom("Node")) {
@@ -183,4 +225,20 @@ bool NodeObject::equals(const KJSO& other) const
     return toNode() == otherNode->toNode();
   }
   return false;
+}
+
+KJSO KJS::getDOMNamedNodeMap(DOM::NamedNodeMap m)
+{
+  if (m.isNull())
+    return Null();
+  else
+    return new DOMNamedNodeMap(m);
+}
+
+KJSO KJS::getString(DOM::DOMString s)
+{
+  if (s.isNull())
+    return Null();
+  else
+    return String(s);
 }

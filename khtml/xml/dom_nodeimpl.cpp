@@ -35,6 +35,7 @@
 #include "rendering/render_object.h"
 #include <qstring.h>
 #include <qrect.h>
+#include <iostream.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
@@ -63,7 +64,7 @@ NodeImpl::~NodeImpl()
 
 DOMString NodeImpl::nodeValue() const
 {
-  return 0; // ### spec says to raise exception here
+  return 0;
 }
 
 void NodeImpl::setNodeValue( const DOMString & )
@@ -215,21 +216,21 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
         {
             int lattrs = 0;
             ElementImpl *el = (ElementImpl*)this;
-            Attribute attr;
-            AttributeList attrs = el->getAttributes();
-            unsigned long lmap = attrs.length();
+            AttrImpl *attr;
+            NamedNodeMapImpl *attrs = static_cast<NamedNodeMapImpl*>(el->attributes());
+            unsigned long lmap = attrs->length();
             for( uint j=0; j<lmap; j++ )
             {
-                attr = *attrs[j];
-                unsigned long lname = attr.name().length();
-                unsigned long lvalue = attr.value().length();
+                attr = static_cast<AttrImpl*>(attrs->item(i));
+                unsigned long lname = attr->name().length();
+                unsigned long lvalue = attr->value().length();
                 while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
                     increaseStringLength( htmlText, currentLength, offset, stdInc);
                 memcpy(htmlText+offset+i+lattrs+1, &SPACE, 2);                 // prints a space
-                memcpy(htmlText+offset+i+lattrs+2, attr.name().stringPtr(), lname*2);
+                memcpy(htmlText+offset+i+lattrs+2, attr->name().stringPtr(), lname*2);
                 memcpy(htmlText+offset+i+lattrs+lname+2, &EQUALS, 2);          // prints =
                 memcpy(htmlText+offset+i+lattrs+lname+3, &QUOTE, 2);           // prints "
-                memcpy(htmlText+offset+i+lattrs+lname+4, attr.value().stringPtr(), lvalue*2);
+                memcpy(htmlText+offset+i+lattrs+lname+4, attr->value().stringPtr(), lvalue*2);
                 memcpy(htmlText+offset+i+lattrs+lname+lvalue+4, &QUOTE, 2);    // prints "
                 lattrs += lname + lvalue + 4;
             }
@@ -426,37 +427,48 @@ NodeImpl *NodeBaseImpl::lastChild() const
 NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 {
     checkReadOnly();
-    if(!checkChild(id(), newChild->id()))
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild()))
+	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     if(!refChild)
 	return appendChild(newChild);
 
-    // ### check for DocumentFragment
-
     checkSameDocument(newChild);
-    checkIsChild(refChild);
     checkNoOwner(newChild);
+    checkIsChild(refChild);
 
-    // if already in the tree, remove it first!
-    NodeImpl *newParent = newChild->parentNode();
-    if(newParent)
-        newParent->removeChild( newChild );
-
-    // seems ok, lets's insert it.
+    bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
+    NodeImpl *nextChild;
+    NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
     NodeImpl *prev = refChild->previousSibling();
+    while (child) {
+	nextChild = isFragment ? child->nextSibling() : 0;
 
-    if (prev)
-	prev->setNextSibling(newChild);
-    else
-	_first = newChild;
-    refChild->setPreviousSibling(newChild);
-    newChild->setParent(this);
-    newChild->setPreviousSibling(prev);
-    newChild->setNextSibling(refChild);
-    if (attached())
-      newChild->attach(document->view());
+	checkNoOwner(child);
+	if(!childAllowed(child))
+	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+		
+	// if already in the tree, remove it first!
+	NodeImpl *newParent = child->parentNode();
+	if(newParent)
+	    newParent->removeChild( child );
+
+	// seems ok, lets's insert it.
+	if (prev)
+	    prev->setNextSibling(child);
+	else
+	    _first = child;
+	refChild->setPreviousSibling(child);
+	child->setParent(this);
+	child->setPreviousSibling(prev);
+	child->setNextSibling(refChild);
+	if (attached())
+	    child->attach(document->view());
+	
+	prev = child;
+	child = nextChild;
+    }
 
     // ### set style in case it's attached
     applyChanges();
@@ -467,36 +479,55 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
 {
     checkReadOnly();
+    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild()))
+	throw DOMException(DOMException::NOT_FOUND_ERR);
     checkSameDocument(newChild);
     checkIsChild(oldChild);
     checkNoOwner(newChild);
-    if(!checkChild(id(), newChild->id()))
+
+    bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
+    NodeImpl *nextChild;
+    NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
+
+    // make sure we will be able to insert the first node before we go removing the old one
+    checkNoOwner(isFragment ? newChild->firstChild() : newChild);
+    if(!childAllowed(isFragment ? newChild->firstChild() : newChild))
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
-    // if already in the tree, remove it first!
-    NodeImpl *newParent = newChild->parentNode();
-    if(newParent)
-        newParent->removeChild( newChild );
-
-    // seems ok, lets's insert it.
 
     NodeImpl *prev = oldChild->previousSibling();
     NodeImpl *next = oldChild->nextSibling();
-
-    if (prev) prev->setNextSibling(newChild);
-    if (next) next->setPreviousSibling(newChild);
-    if(_first == oldChild) _first = newChild;
-    if(_last == oldChild) _last = newChild;
-
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+    if (m_render)
+	m_render->removeChild(oldChild->renderer());
 
-    newChild->setParent(this);
-    newChild->setPreviousSibling(prev);
-    newChild->setNextSibling(next);
-    if (attached())
-      newChild->attach(document->view());
+    while (child) {
+	nextChild = isFragment ? child->nextSibling() : 0;
+
+	checkNoOwner(child);
+	if(!childAllowed(child))
+	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	
+	// if already in the tree, remove it first!
+	NodeImpl *newParent = child->parentNode();
+	if(newParent)
+	    newParent->removeChild( child );
+
+	// seems ok, lets's insert it.
+	if (prev) prev->setNextSibling(child);
+	if (next) next->setPreviousSibling(child);
+	if(!prev) _first = child;
+	if(!next) _last = child;
+
+	child->setParent(this);
+	child->setPreviousSibling(prev);
+	child->setNextSibling(next);
+	if (attached())
+	    child->attach(document->view());
+	prev = child;
+	child = nextChild;
+    }
 
     // ### set style in case it's attached
     applyChanges();
@@ -531,33 +562,47 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
 
 NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
 {
-    kdDebug(6010) << "NodeBaseImpl::appendChild( " << newChild << " );" <<endl;
+//    kdDebug(6010) << "NodeBaseImpl::appendChild( " << newChild << " );" <<endl;
     checkReadOnly();
+    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild()))
+	throw DOMException(DOMException::NOT_FOUND_ERR);
     checkSameDocument(newChild);
     checkNoOwner(newChild);
-    if(!checkChild(id(), newChild->id()))
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
-    // if already in the tree, remove it first!
-    NodeImpl *newParent = newChild->parentNode();
-    if(newParent)
-        newParent->removeChild( newChild );
+    bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
+    NodeImpl *nextChild;
+    NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
-    // lets append it
-    newChild->setParent(this);
+    while (child) {
+	nextChild = isFragment ? child->nextSibling() : 0;
 
-    if(_last)
-    {
-	newChild->setPreviousSibling(_last);
-	_last->setNextSibling(newChild);
-	_last = newChild;
+	checkNoOwner(child);
+	if(!childAllowed(child))
+	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	
+	// if already in the tree, remove it first!
+	NodeImpl *newParent = child->parentNode();
+	if(newParent)
+	    newParent->removeChild( child );
+		
+	// lets append it
+	child->setParent(this);
+
+	if(_last)
+	{
+	    child->setPreviousSibling(_last);
+	    _last->setNextSibling(child);
+	    _last = child;
+	}
+	else
+	{
+	    _first = _last = child;
+	}
+	if (attached())
+		child->attach(document->view());
+		
+	child = nextChild;
     }
-    else
-    {
-	_first = _last = newChild;
-    }
-    if (attached())
-      newChild->attach(document->view());
 
     applyChanges();
     // ### set style in case it's attached
@@ -629,12 +674,17 @@ void NodeBaseImpl::checkIsChild( NodeImpl *oldChild )
 	throw DOMException(DOMException::NOT_FOUND_ERR);
 }
 
+bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
+{
+    return checkChild(id(), newChild->id());
+}
+
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 {
     // do not add applyChanges here! This function is only used during parsing
 
     // short check for consistency with DTD
-    if(!checkChild(id(), newChild->id()))
+    if(!childAllowed(newChild))
     {
         //kdDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
@@ -770,31 +820,33 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
 
 
 
-TagNodeListImpl::TagNodeListImpl(DocumentImpl *doc, const DOMString &t )
+TagNodeListImpl::TagNodeListImpl(NodeImpl *n, const DOMString &t )
   : tagName(t)
 {
-    refDoc= doc;
-    refDoc->ref();
+    refNode = n;
+    refNode->ref();
+    allElements = (t == "*");
 }
 
 TagNodeListImpl::~TagNodeListImpl()
 {
-    refDoc->deref();
+    refNode->deref();
 }
 
 unsigned long TagNodeListImpl::length() const
 {
-    return recursiveLength( refDoc->documentElement() );
+    return recursiveLength( refNode );
 }
 
 NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 {
-    return recursiveItem( refDoc->documentElement(), index );
+    return recursiveItem( refNode, index );
 }
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return !strcasecmp(testNode->nodeName(),tagName);
+    return ((allElements && testNode->nodeType() == Node::ELEMENT_NODE) ||
+            !strcasecmp(testNode->nodeName(),tagName));
 }
 
 

@@ -32,6 +32,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_style.h"
 #include "misc/htmlhashes.h"
+#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -189,7 +190,7 @@ AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
 
 }
 
-AttrImpl::AttrImpl(khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element) : NodeImpl(doc)
+AttrImpl::AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element) : NodeImpl(doc)
 {
     _name = attr->n;
     if (_name) _name->ref();
@@ -239,8 +240,17 @@ NodeImpl *AttrImpl::nextSibling() const
 
 NodeImpl *AttrImpl::cloneNode ( bool /*deep*/ )
 {
-    // ###
-    return 0;
+    AttrImpl *newImpl = new AttrImpl();
+    newImpl->_name = _name ? _name->copy() : 0;
+    if (newImpl->_name) newImpl->_name->ref();
+    newImpl->_value = _value ? _value->copy() : 0;
+    if (newImpl->_value) newImpl->_value->ref();
+    newImpl->attrId = attrId;
+    newImpl->document = document;
+    newImpl->_specified = _specified;
+    newImpl->_element = 0; // can't have two attributes with the same name/id attached to an element
+
+    return newImpl;
 }
 
 bool AttrImpl::deleteMe()
@@ -364,12 +374,7 @@ NodeImpl *ElementImpl::cloneNode ( bool deep )
     newImpl->setFirstChild(0);
     newImpl->setLastChild(0);
 
-    // ### clone namedAttrMap and all attributes too
-/*    newImpl->attributeMap = attributeMap;
-    unsigned int mapLength = newImpl->attributeMap.length();
-    unsigned int i;
-    for (i = 0; i < mapLength; i++)
-	newImpl->parseAttribute(newImpl->attributeMap[i]);*/
+    newImpl->namedAttrMap->fromNamedAttrMapImpl(namedAttrMap);
 
     if(deep)
     {
@@ -415,12 +420,9 @@ AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr )
     return namedAttrMap->removeAttr(oldAttr);
 }
 
-NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &/*name*/ )
+NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
 {
-    // ### TODO: make NodeList able to handle NodeList with specific tag
-    // i.e. with constructor which takes another argument (the tag)
-    //return new NodeListImpl(this, name);
-    return 0;
+    return new TagNodeListImpl( this, name );
 }
 
 void ElementImpl::normalize()
@@ -511,12 +513,6 @@ void ElementImpl::applyChanges(bool top)
     }
 }
 
-const AttributeList ElementImpl::getAttributes()
-{
-    return attributeMap;
-}
-
-
 // -------------------------------------------------------------------------
 
 NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *e) : element(e)
@@ -530,7 +526,7 @@ NamedAttrMapImpl::~NamedAttrMapImpl()
     clearAttrs();
 }
 
-void NamedAttrMapImpl::fromAttributeList(AttributeList list)
+void NamedAttrMapImpl::fromAttributeList(const AttributeList list)
 {
     if (!element)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
@@ -549,6 +545,24 @@ void NamedAttrMapImpl::fromAttributeList(AttributeList list)
     }
     // used only during parsing - we don't call applyChanges() here
 
+}
+
+void NamedAttrMapImpl::fromNamedAttrMapImpl(const NamedAttrMapImpl *other)
+{
+    // clone all attributes in the other map, but attach to our element
+    if (!element)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+	
+    clearAttrs();
+    len = other->len;
+    attrs = new AttrImpl* [len];
+    uint i;
+    for (i = 0; i < len; i++) {
+	attrs[i] = static_cast<AttrImpl*>(other->attrs[i]->cloneNode(false));
+	attrs[i]->_element = element;
+	element->parseAttribute(attrs[i]);
+    }
+    element->applyChanges();
 }
 
 unsigned long NamedAttrMapImpl::length() const {

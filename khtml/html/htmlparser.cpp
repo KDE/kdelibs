@@ -994,7 +994,10 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_TEXT:
 	n = new TextImpl(document, t->text);
 	break;
-
+    case ID_COMMENT:
+	n = new CommentImpl(document, t->text);
+	break;
+	
     default:
 	kdDebug( 6035 ) << "Unknown tag " << t->id << "!" << endl;
     }

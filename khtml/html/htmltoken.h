@@ -148,11 +148,11 @@ public:
     unsigned int length() const;
 
     // returns -1 if not found
-    int find(const DOMString &name);
-    int find(ushort id);
+    int find(const DOMString &name) const;
+    int find(ushort id) const;
 
-    DOMString operator [] (const DOMString &name);
-    Attribute *operator [] (uint index);
+    DOMString operator [] (const DOMString &name) const;
+    Attribute *operator [] (uint index) const;
 
     void remove(DOMString name);
     void remove(uint index);

@@ -64,6 +64,15 @@ namespace KJS {
    * Convert an object to a Node. Returns a null Node if not possible.
    */
   DOM::Node toNode(const KJSO&);
+  /**
+   *  Get a KJSO Node object of the correct type
+   */
+  KJSO getDOMNode(DOM::Node n);
+  KJSO getDOMNamedNodeMap(DOM::NamedNodeMap m);
+  /**
+   *  Get a String object, or Null() if s is null
+   */
+  KJSO getString(DOM::DOMString s);
 
 }; // namespace
 

@@ -94,6 +94,11 @@ unsigned long NamedNodeMap::length() const
     return 0;
 }
 
+bool NamedNodeMap::isNull()
+{
+    return (map == 0);
+}
+
 // ---------------------------------------------------------------------------
 
 Node::Node()

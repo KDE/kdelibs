@@ -29,18 +29,14 @@ using namespace KJS;
 
 KJSO Navigator::tryGet(const UString &p) const
 {
-  UString str;
-
   if (p == "appCodeName")
-    str = "Mozilla";
+    return String("Mozilla");
   else if (p == "appName")
-    str = "Konqueror";
+    return String("Konqueror");
   else if (p == "appVersion")
-    str = "4.0 (X11; Konqueror; Unix)";
+    return String("4.0 (X11; Konqueror; Unix)");
   else if (p == "userAgent")
-    str = "Mozilla/4.0 (X11; Konqueror; Unix)";
+    return String("Mozilla/4.0 (X11; Konqueror; Unix)");
   else
     return Undefined();
-
-  return String(str);
 }

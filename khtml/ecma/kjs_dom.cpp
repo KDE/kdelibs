@@ -34,31 +34,31 @@ KJSO DOMNode::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "nodeName")
-    result = String(node.nodeName());
+    result = getString(node.nodeName());
   else if (p == "nodeValue")
-    result = String(node.nodeValue());
+    result = getString(node.nodeValue());
   else if (p == "nodeType")
     result = Number((unsigned long)node.nodeType());
   else if (p == "parentNode")
-    result = DOMNode::getDOMNode(node.parentNode());
+    result = getDOMNode(node.parentNode());
   else if (p == "childNodes")
     result = new DOMNodeList(node.childNodes());
   else if (p == "firstChild")
-    result = DOMNode::getDOMNode(node.firstChild());
+    result = getDOMNode(node.firstChild());
   else if (p == "lastChild")
-    result = DOMNode::getDOMNode(node.lastChild());
+    result = getDOMNode(node.lastChild());
   else if (p == "previousSibling")
-    result = DOMNode::getDOMNode(node.previousSibling());
+    result = getDOMNode(node.previousSibling());
   else if (p == "nextSibling")
-    result = DOMNode::getDOMNode(node.nextSibling());
+    result = getDOMNode(node.nextSibling());
   else if (p == "attributes")
-    result = new DOMNamedNodeMap(node.attributes());
+    result = getDOMNamedNodeMap(node.attributes());
 //  else if (p == "namespaceURI") // new for DOM2 - not yet in khtml
-//    result = String(node.namespaceURI());
+//    result = getString(node.namespaceURI());
 //  else if (p == "prefix") // new for DOM2 - not yet in khtml
-//    result = String(node.prefix());
+//    result = getString(node.prefix());
 //  else if (p == "localName") // new for DOM2 - not yet in khtml
-//    result = String(node.localName());
+//    result = getString(node.localName());
   else if (p == "ownerDocument")
     result = new DOMDocument(node.ownerDocument());
   // methods
@@ -94,63 +94,6 @@ void DOMNode::tryPut(const UString &p, const KJSO& v)
 //  }
 }
 
-KJSO DOMNode::getDOMNode(DOM::Node n)
-{
-//  unsigned short nodeType = n.nodeType();
-/*  if (nodeType == DOM::Node::ELEMENT_NODE) {
-    DOM::Element element; // can't use static_cast here because of constructor :(
-    element = n;
-    if (element.isHTMLElement())
-      return new HTMLElement(n);
-    else
-      return new DOMElement(element);
-  }
-  else if (nodeType == DOM::Node::TEXT_NODE)
-    return new DOMText(n);
-  else if (nodeType == DOM::Node::COMMENT_NODE)
-    return new DOMCharacterData(n);
-  else {
-    return new DOMNode(n);
-  }*/
-
-  switch (n.nodeType()) {
-    case DOM::Node::ELEMENT_NODE:
-      if (static_cast<DOM::Element>(n).isHTMLElement())
-        return new HTMLElement(static_cast<DOM::HTMLElement>(n));
-      else
-        return new DOMElement(static_cast<DOM::Element>(n));
-    case DOM::Node::ATTRIBUTE_NODE:
-      return new DOMAttr(static_cast<DOM::Attr>(n));
-    case DOM::Node::TEXT_NODE:
-    case DOM::Node::CDATA_SECTION_NODE:
-      return new DOMText(static_cast<DOM::Text>(n));
-    case DOM::Node::ENTITY_REFERENCE_NODE:
-      return new DOMNode(n);
-    case DOM::Node::ENTITY_NODE:
-      return new DOMEntity(static_cast<DOM::Entity>(n));
-    case DOM::Node::PROCESSING_INSTRUCTION_NODE:
-      return new DOMProcessingInstruction(static_cast<DOM::ProcessingInstruction>(n));
-    case DOM::Node::COMMENT_NODE:
-      return new DOMCharacterData(static_cast<DOM::CharacterData>(n));
-    case DOM::Node::DOCUMENT_NODE:
-      if (static_cast<DOM::Document>(n).isHTMLDocument())
-        return new HTMLDocument(static_cast<DOM::HTMLDocument>(n));
-      else
-        return new DOMDocument(static_cast<DOM::Document>(n));
-    case DOM::Node::DOCUMENT_TYPE_NODE:
-      return new DOMDocumentType(static_cast<DOM::DocumentType>(n));
-    case DOM::Node::DOCUMENT_FRAGMENT_NODE:
-      return new DOMNode(n);
-    case DOM::Node::NOTATION_NODE:
-      return new DOMNotation(static_cast<DOM::Notation>(n));
-    default:
-      return new DOMNode(n);
-  }
-
-
-
-}
-
 
 Completion DOMNodeFunc::tryExecute(const List &args)
 {
@@ -160,19 +103,19 @@ Completion DOMNodeFunc::tryExecute(const List &args)
     result = Boolean(node.hasChildNodes());
   else if (id == CloneNode) {
     Boolean b = args[0].toBoolean();
-    result = DOMNode::getDOMNode(node.cloneNode(b.value()));
+    result = getDOMNode(node.cloneNode(b.value()));
   } else {
     DOM::Node n1 = toNode(args[0]);
     if (id == AppendChild) {
-      result = DOMNode::getDOMNode(node.appendChild(n1));
+      result = getDOMNode(node.appendChild(n1));
     } else if (id == RemoveChild) {
-      result = DOMNode::getDOMNode(node.removeChild(n1));
+      result = getDOMNode(node.removeChild(n1));
     } else {
       DOM::Node n2 = toNode(args[1]);
       if (id == InsertBefore)
-	result = DOMNode::getDOMNode(node.insertBefore(n1, n2));
+	result = getDOMNode(node.insertBefore(n1, n2));
       else
-	result = DOMNode::getDOMNode(node.replaceChild(n1, n2));
+	result = getDOMNode(node.replaceChild(n1, n2));
     }
   }
   return Completion(Normal, result);
@@ -200,7 +143,7 @@ Completion DOMNodeListFunc::tryExecute(const List &args)
   KJSO result;
 
   if (id == Item)
-    result = DOMNode::getDOMNode(list.item(args[0].toNumber().intValue()));
+    result = getDOMNode(list.item(args[0].toNumber().intValue()));
   return Completion(Normal, result);
 }
 
@@ -210,13 +153,13 @@ KJSO DOMAttr::tryGet(const UString &p) const
 {
   KJSO result;
   if (p == "name") {
-    result = String(attr.name()); }
+    result = getString(attr.name()); }
   else if (p == "specified")
     result = Boolean(attr.specified());
   else if (p == "value")
-    result = String(attr.value());
+    result = getString(attr.value());
 //  else if (p == "ownerElement") // new for DOM2 - not yet in khtml
-//    rseult = DOMNode::getDOMNode(attr.ownerElement());
+//    rseult = getDOMNode(attr.ownerElement());
   else {
     KJSO tmp(new DOMNode(attr));
     result = tmp.get(p);
@@ -243,11 +186,11 @@ KJSO DOMDocument::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "doctype")
-    return new DOMDocumentType(doc.doctype());
+    return getDOMNode(doc.doctype());
   if (p == "implementation")
     return new DOMDOMImplementation(doc.implementation());
   else if (p == "documentElement")
-    return new DOMElement(doc.documentElement());
+    return getDOMNode(doc.documentElement());
   // methods
   else if (p == "createElement")
     return new DOMDocFunction(doc, DOMDocFunction::CreateElement);
@@ -308,26 +251,26 @@ Completion DOMDocFunction::tryExecute(const List &args)
     result = new DOMElement(doc.createElement(s));
     break;
   case CreateDocumentFragment:
-    result = DOMNode::getDOMNode(doc.createDocumentFragment());
+    result = getDOMNode(doc.createDocumentFragment());
     break;
   case CreateTextNode:
     result = new DOMText(doc.createTextNode(s));
     break;
   case CreateComment:
-    result = DOMNode::getDOMNode(doc.createComment(s));
+    result = getDOMNode(doc.createComment(s));
     break;
   case CreateCDATASection:
     result = new DOMText(doc.createCDATASection(s));  /* TODO: okay ? */
     break;
   case CreateProcessingInstruction:
-    result = DOMNode::getDOMNode(doc.createProcessingInstruction(args[0].toString().value().string(),
+    result = getDOMNode(doc.createProcessingInstruction(args[0].toString().value().string(),
                                                                  args[1].toString().value().string()));
     break;
   case CreateAttribute:
     result = new DOMAttr(doc.createAttribute(s));
     break;
   case CreateEntityReference:
-    result = DOMNode::getDOMNode(doc.createEntityReference(args[0].toString().value().string()));
+    result = getDOMNode(doc.createEntityReference(args[0].toString().value().string()));
     break;
   case GetElementsByTagName:
     result = new DOMNodeList(doc.getElementsByTagName(s));
@@ -353,7 +296,7 @@ KJSO DOMElement::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "tagName")
-    result = String(element.tagName());
+    result = getString(element.tagName());
   else if (p == "getAttribute")
     return new DOMElementFunction(element, DOMElementFunction::GetAttribute);
   else if (p == "setAttribute")
@@ -404,7 +347,7 @@ Completion DOMElementFunction::tryExecute(const List &args)
 
   switch(id) {
     case GetAttribute:
-      result = String(element.getAttribute(args[0].toString().value().string()));
+      result = getString(element.getAttribute(args[0].toString().value().string()));
       break;
     case SetAttribute:
       element.setAttribute(args[0].toString().value().string(),args[1].toString().value().string());
@@ -415,13 +358,13 @@ Completion DOMElementFunction::tryExecute(const List &args)
       result = Undefined();
       break;
     case GetAttributeNode:
-      result = DOMNode::getDOMNode(element.getAttributeNode(args[0].toString().value().string()));
+      result = getDOMNode(element.getAttributeNode(args[0].toString().value().string()));
       break;
     case SetAttributeNode:
-      result = DOMNode::getDOMNode(element.setAttributeNode(DOMNode(KJS::toNode(args[0])).toNode()));
+      result = getDOMNode(element.setAttributeNode(DOMNode(KJS::toNode(args[0])).toNode()));
       break;
     case RemoveAttributeNode:
-      result = DOMNode::getDOMNode(element.removeAttributeNode(DOMNode(KJS::toNode(args[0])).toNode()));
+      result = getDOMNode(element.removeAttributeNode(DOMNode(KJS::toNode(args[0])).toNode()));
       break;
     case GetElementsByTagName:
       result = new DOMNodeList(element.getElementsByTagName(args[0].toString().value().string()));
@@ -484,17 +427,17 @@ KJSO DOMDocumentType::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "name")
-    result = String(type.name());
+    result = getString(type.name());
 // ###  else if (p == "entities")
-//    result = new DOMNamedNodeMap(type.entities());
+//    result = getDOMNamedNodeMap(type.entities());
 // ###  else if (p == "notations")
-//    result = new DOMNamedNodeMap(type.notations());
+//    result = getDOMNamedNodeMap(type.notations());
 //  else if (p == "publicId") // new for DOM2 - not yet in khtml
-//    result = String(type.publicId());
+//    result = getString(type.publicId());
 //  else if (p == "systemId") // new for DOM2 - not yet in khtml
-//    result = String(type.systemId());
+//    result = getString(type.systemId());
 //  else if (p == "internalSubset") // new for DOM2 - not yet in khtml
-//    result = String(type.internalSubset());
+//    result = getString(type.internalSubset());
   else {
     KJSO tmp(new DOMNode(type));
     return tmp.get(p);
@@ -543,17 +486,17 @@ Completion DOMNamedNodeMapFunction::tryExecute(const List &args)
 
   switch(id) {
     case GetNamedItem:
-      result = DOMNode::getDOMNode(map.getNamedItem(args[0].toString().value().string()));
+      result = getDOMNode(map.getNamedItem(args[0].toString().value().string()));
       break;
     case SetNamedItem:
-      result = DOMNode::getDOMNode(map.setNamedItem(DOMNode(KJS::toNode(args[0])).toNode()));
+      result = getDOMNode(map.setNamedItem(DOMNode(KJS::toNode(args[0])).toNode()));
       break;
     case RemoveNamedItem:
-      result = DOMNode::getDOMNode(map.removeNamedItem(args[0].toString().value().string()));
+      result = getDOMNode(map.removeNamedItem(args[0].toString().value().string()));
       break;
     case Item:
       // ### add support for list[index] syntax
-      result = DOMNode::getDOMNode(map.item(args[0].toNumber().intValue()));
+      result = getDOMNode(map.item(args[0].toNumber().intValue()));
       break;
 /*    case GetNamedItemNS: // new for DOM2 - not yet in khtml
     case SetNamedItemNS: // new for DOM2 - not yet in khtml
@@ -571,9 +514,9 @@ KJSO DOMProcessingInstruction::tryGet(const UString &p) const
 {
   KJSO result;
   if (p == "target")
-    result = String(instruction.target());
+    result = getString(instruction.target());
   else if (p == "data")
-    result = String(instruction.data());
+    result = getString(instruction.data());
   else {
     KJSO tmp(new DOMNode(instruction));
     result = tmp.get(p);
@@ -598,9 +541,9 @@ KJSO DOMNotation::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "publicId")
-    result = String(notation.publicId());
+    result = getString(notation.publicId());
   else if (p == "systemId")
-    result = String(notation.systemId());
+    result = getString(notation.systemId());
   else {
     KJSO tmp(new DOMNode(notation));
     return tmp.get(p);
@@ -616,11 +559,11 @@ KJSO DOMEntity::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "publicId")
-    result = String(entity.publicId());
+    result = getString(entity.publicId());
   else if (p == "systemId")
-    result = String(entity.systemId());
+    result = getString(entity.systemId());
   else if (p == "notationName")
-    result = String(entity.notationName());
+    result = getString(entity.notationName());
   else {
     KJSO tmp(new DOMNode(entity));
     return tmp.get(p);

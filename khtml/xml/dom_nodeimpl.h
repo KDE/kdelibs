@@ -320,6 +320,8 @@ protected:
     void checkNoOwner( NodeImpl *other );
     // check for being child:
     void checkIsChild( NodeImpl *oldchild );
+    // find out if a node is allowed to be our child
+    virtual bool childAllowed( NodeImpl *newChild );
 };
 
 // --------------------------------------------------------------------------
@@ -364,7 +366,7 @@ protected:
 class TagNodeListImpl : public NodeListImpl
 {
 public:
-    TagNodeListImpl( DocumentImpl *doc, const DOMString &t );
+    TagNodeListImpl( NodeImpl *n, const DOMString &t );
 
     virtual ~TagNodeListImpl();
 
@@ -375,8 +377,9 @@ public:
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 
-    DocumentImpl *refDoc;
+    NodeImpl *refNode;
     DOMString tagName;
+    bool allElements;
 };
 
 

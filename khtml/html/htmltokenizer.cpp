@@ -50,6 +50,7 @@
 using namespace khtml;
 
 static const QChar commentStart [] = { '<','!','-','-' };
+static const QChar commentEnd [] = { '-','-','>' };
 static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>' };
 static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>' };
 static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>' };
@@ -192,8 +193,8 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
 void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
-    // We are inside of the <script> or <style> tag. Look for the end tag
-    // which is either </script> or </style>,
+    // Wee are instide a <script>, <style> or comment. Look for the end tag
+    // which is either </script>, </style> or -->
     // otherwise print out every received character
 
     kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
@@ -219,6 +220,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    ++src;
 	    scriptCode[ scriptCodeSize ] = 0;
 	    scriptCode[ scriptCodeSize + 1 ] = 0;
+	    if (comment) currToken->id = ID_COMMENT; /// ###
 	    if (script)
 	    {
 	        /* Parse scriptCode containing <script> info */
@@ -246,22 +248,28 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		currToken->id = ID_SCRIPT + ID_CLOSE_TAG;
 	    else if(style)
 		currToken->id = ID_STYLE + ID_CLOSE_TAG;
+	    else if (comment)
+		currToken->id = ID_COMMENT + ID_CLOSE_TAG;
 	    else
 		currToken->id = ID_LISTING + ID_CLOSE_TAG;
 	    processToken();
-            script = style = listing = false;
+            script = style = listing = comment = false;
 	    return; // Finished parsing script/style/listing	
         }
-        // Find out wether we see a </script> tag without looking at
+        // Find out wether we see an end tag without looking at
         // any other then the current character, since further characters
         // may still be on their way thru the web!
         else if ( searchCount > 0 )
         {
 	    QChar cmp = src[0];
-	    if ( cmp.lower() == searchFor[ searchCount ] )
+	    if (comment && searchCount == 2 && src[0] == '-') { // Watch out for '--->'
+		scriptCode[ scriptCodeSize++ ] = '-';
+		++src;
+	    }
+	    else if ( cmp.lower() == searchFor[ searchCount ] )
 	    {
-	        searchBuffer[ searchCount ] = src[0];
-	        searchCount++;
+		searchBuffer[ searchCount ] = src[0];
+		searchCount++;
 	        ++src;
 	    }
 	    // We were wrong => print all buffered characters and the current one;
@@ -275,11 +283,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	        searchCount = 0;
 	    }
         }
-        // Is this perhaps the start of the </script> or </style> tag?
-        else if ( src[0] == '<' )
+        // Is this perhaps the start of the </script> or </style> tag, or --> (end of comment)?
+        else if ( src[0] == '<' || src[0] == '-' )
         {
 	    searchCount = 1;
-	    searchBuffer[ 0 ] = '<';
+	    searchBuffer[ 0 ] = src[0];
 	    ++src;
         }
         else
@@ -301,7 +309,8 @@ void HTMLTokenizer::parseStyle(DOMStringIt &src)
 
 void HTMLTokenizer::parseComment(DOMStringIt &src)
 {
-    while ( src.length() )
+    parseListing(src);
+/*    while ( src.length() )
     {
 	// Look for '-->'
 	if ( src[0] == '-' )
@@ -322,7 +331,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
 	    searchCount = 0;
 	}
         ++src;
-    }
+    }*/
 }
 
 void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
@@ -551,11 +560,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			    kdDebug( 6036 ) << "Found comment" << endl;
 #endif
 			    // Found '<!--' sequence
-			    comment = true;
+			    ++src;
 			    dest = buffer; // ignore the previous part of this tag
-			    tag = NoTag;
+			    comment = true;
 			    searchCount = 0;
+			    searchFor = commentEnd;
+			    scriptCode = new QChar[ 1024 ];
+			    scriptCodeSize = 0;
+			    scriptCodeMaxSize = 1024;
 			    parseComment(src);
+			
 			    return; // Finished parsing tag!
 			}
 			*dest = curChar.lower();
@@ -1227,7 +1241,7 @@ void HTMLTokenizer::processToken()
 {
     if ( dest > buffer )
     {
-	if(currToken->id)
+	if(currToken->id && currToken->id != ID_COMMENT)
 	    kdDebug( 6036 ) << "Error in processToken!!!" << endl;
 /*
 	if(!pre && dest - buffer == 1 && *buffer == ' ')
@@ -1237,7 +1251,8 @@ void HTMLTokenizer::processToken()
 	}
 */
         currToken->text = DOMString( buffer, dest-buffer);
-	currToken->id = ID_TEXT;
+        if (currToken->id != ID_COMMENT)
+	    currToken->id = ID_TEXT;
     }
     else if(!currToken->id)
     {

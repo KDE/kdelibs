@@ -139,6 +139,8 @@ public:
      */
     Node item ( unsigned long index );
 
+    bool isNull();
+
 protected:
     NamedNodeMap( NodeImpl *i);
 

@@ -128,6 +128,9 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+
+protected:
+    virtual bool childAllowed( NodeImpl *newChild );
 };
 
 }; //namespace

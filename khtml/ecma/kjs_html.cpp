@@ -141,13 +141,13 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   KJSO result;
 
   if (p == "title")
-    result = String(doc.title());
+    result = getString(doc.title());
   else if (p == "referrer")
-    result = String(doc.referrer());
+    result = getString(doc.referrer());
   else if (p == "domain")
-    result = String(doc.domain());
+    result = getString(doc.domain());
   else if (p == "URL")
-    result = String(doc.URL());
+    result = getString(doc.URL());
   else if (p == "body")
     result = new HTMLElement(doc.body());
   else if (p == "images")
@@ -161,7 +161,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "anchors")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
   else if (p == "cookie")
-    result = String(doc.cookie());
+    result = getString(doc.cookie());
   else if (p == "open")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Open);
   else if (p == "close")
@@ -213,79 +213,79 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
   switch (element.elementId()) {
     case ID_HTML: {
       DOM::HTMLHtmlElement html = element;
-      if      (p == "version")         return String(html.version());
+      if      (p == "version")         return getString(html.version());
     }
     break;
     case ID_HEAD: {
       DOM::HTMLHeadElement head = element;
-      if      (p == "profile")         return String(head.profile());
+      if      (p == "profile")         return getString(head.profile());
     }
     break;
     case ID_LINK: {
       DOM::HTMLLinkElement link = element;
       if      (p == "disabled")        return Boolean(link.disabled());
-      else if (p == "charset")         return String(link.charset());
-      else if (p == "href")            return String(link.href());
-      else if (p == "hreflang")        return String(link.hreflang());
-      else if (p == "media")           return String(link.media());
-      else if (p == "rel")             return String(link.rel());
-      else if (p == "rev")             return String(link.rev());
-      else if (p == "target")          return String(link.target());
-      else if (p == "type")            return String(link.type());
+      else if (p == "charset")         return getString(link.charset());
+      else if (p == "href")            return getString(link.href());
+      else if (p == "hreflang")        return getString(link.hreflang());
+      else if (p == "media")           return getString(link.media());
+      else if (p == "rel")             return getString(link.rel());
+      else if (p == "rev")             return getString(link.rev());
+      else if (p == "target")          return getString(link.target());
+      else if (p == "type")            return getString(link.type());
     }
     break;
     case ID_TITLE: {
       DOM::HTMLTitleElement title = element;
-      if (p == "text")                 return String(title.text());
+      if (p == "text")                 return getString(title.text());
     }
     break;
     case ID_META: {
       DOM::HTMLMetaElement meta = element;
-      if      (p == "content")         return String(meta.content());
-      else if (p == "httpEquiv")       return String(meta.httpEquiv());
-      else if (p == "name")            return String(meta.name());
-      else if (p == "scheme")          return String(meta.scheme());
+      if      (p == "content")         return getString(meta.content());
+      else if (p == "httpEquiv")       return getString(meta.httpEquiv());
+      else if (p == "name")            return getString(meta.name());
+      else if (p == "scheme")          return getString(meta.scheme());
     }
     break;
     case ID_BASE: {
       DOM::HTMLBaseElement base = element;
-      if      (p == "href")            return String(base.href());
-      else if (p == "target")          return String(base.target());
+      if      (p == "href")            return getString(base.href());
+      else if (p == "target")          return getString(base.target());
     }
     break;
     case ID_ISINDEX: {
       DOM::HTMLIsIndexElement isindex = element;
-      if      (p == "form")            return DOMNode::getDOMNode(isindex.form()); // type HTMLFormElement
-      else if (p == "prompt")          return String(isindex.prompt());
+      if      (p == "form")            return getDOMNode(isindex.form()); // type HTMLFormElement
+      else if (p == "prompt")          return getString(isindex.prompt());
     }
     break;
     case ID_STYLE: {
       DOM::HTMLStyleElement style = element;
       if      (p == "disabled")        return Boolean(style.disabled());
-      else if (p == "media")           return String(style.media());
-      else if (p == "type")            return String(style.type());
+      else if (p == "media")           return getString(style.media());
+      else if (p == "type")            return getString(style.type());
     }
     break;
     case ID_BODY: {
       DOM::HTMLBodyElement body = element;
-      if      (p == "aLink")           return String(body.aLink());
-      else if (p == "background")      return String(body.background());
-      else if (p == "bgColor")         return String(body.bgColor());
-      else if (p == "link")            return String(body.link());
-      else if (p == "text")            return String(body.text());
-      else if (p == "vLink")           return String(body.vLink());
+      if      (p == "aLink")           return getString(body.aLink());
+      else if (p == "background")      return getString(body.background());
+      else if (p == "bgColor")         return getString(body.bgColor());
+      else if (p == "link")            return getString(body.link());
+      else if (p == "text")            return getString(body.text());
+      else if (p == "vLink")           return getString(body.vLink());
     }
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       if      (p == "elements")        return new HTMLCollection(form.elements()); // type HTMLCollection
       else if (p == "length")          return Number((unsigned long)form.length());
-      else if (p == "name")            return String(form.name());
-      else if (p == "acceptCharset")   return String(form.acceptCharset());
-      else if (p == "action")          return String(form.action());
-      else if (p == "enctype")         return String(form.enctype());
-      else if (p == "method")          return String(form.method());
-      else if (p == "target")          return String(form.target());
+      else if (p == "name")            return getString(form.name());
+      else if (p == "acceptCharset")   return getString(form.acceptCharset());
+      else if (p == "action")          return getString(form.action());
+      else if (p == "enctype")         return getString(form.enctype());
+      else if (p == "method")          return getString(form.method());
+      else if (p == "target")          return getString(form.target());
       // methods
       else if (p == "submit")          return new HTMLElementFunction(element,HTMLElementFunction::Submit);
       else if (p == "reset")           return new HTMLElementFunction(element,HTMLElementFunction::Reset);
@@ -293,15 +293,15 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
-      if      (p == "type")            return String(select.type());
+      if      (p == "type")            return getString(select.type());
       else if (p == "selectedIndex")   return Number((unsigned long)select.selectedIndex());
-      else if (p == "value")           return String(select.value());
+      else if (p == "value")           return getString(select.value());
       else if (p == "length")          return Number((unsigned long)select.length());
-      else if (p == "form")            return DOMNode::getDOMNode(select.form()); // type HTMLFormElement
+      else if (p == "form")            return getDOMNode(select.form()); // type HTMLFormElement
       else if (p == "options")         return new HTMLCollection(select.options()); // type HTMLCollection
       else if (p == "disabled")        return Boolean(select.disabled());
       else if (p == "multiple")        return Boolean(select.multiple());
-      else if (p == "name")            return String(select.name());
+      else if (p == "name")            return getString(select.name());
       else if (p == "size")            return Number((unsigned long)select.size());
       else if (p == "tabIndex")        return Number((unsigned long)select.tabIndex());
       // methods
@@ -314,41 +314,41 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_OPTGROUP: {
       DOM::HTMLOptGroupElement optgroup = element;
       if      (p == "disabled")        return Boolean(optgroup.disabled());
-      else if (p == "label")           return String(optgroup.label());
+      else if (p == "label")           return getString(optgroup.label());
     }
     break;
     case ID_OPTION: {
       DOM::HTMLOptionElement option = element;
-      if      (p == "form")            return DOMNode::getDOMNode(option.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(option.form()); // type HTMLFormElement
       else if (p == "defaultSelected") return Boolean(option.defaultSelected());
-      else if (p == "text")            return String(option.text());
+      else if (p == "text")            return getString(option.text());
       else if (p == "index")           return Number((unsigned long)option.index());
       else if (p == "disabled")        return Boolean(option.disabled());
-      else if (p == "label")           return String(option.label());
+      else if (p == "label")           return getString(option.label());
       else if (p == "selected")        return Boolean(option.selected());
-      else if (p == "value")           return String(option.value());
+      else if (p == "value")           return getString(option.value());
     }
     break;
     case ID_INPUT: {
       DOM::HTMLInputElement input = element;
-      if      (p == "defaultValue")    return String(input.defaultValue());
+      if      (p == "defaultValue")    return getString(input.defaultValue());
       else if (p == "defaultChecked")  return Boolean(input.defaultChecked());
-      else if (p == "form")            return DOMNode::getDOMNode(input.form()); // type HTMLFormElement
-      else if (p == "accept")          return String(input.accept());
-      else if (p == "accessKey")       return String(input.accessKey());
-      else if (p == "align")           return String(input.align());
-      else if (p == "alt")             return String(input.alt());
+      else if (p == "form")            return getDOMNode(input.form()); // type HTMLFormElement
+      else if (p == "accept")          return getString(input.accept());
+      else if (p == "accessKey")       return getString(input.accessKey());
+      else if (p == "align")           return getString(input.align());
+      else if (p == "alt")             return getString(input.alt());
       else if (p == "checked")         return Boolean(input.checked());
       else if (p == "disabled")        return Boolean(input.disabled());
       else if (p == "maxLength")       return Number((unsigned long)input.maxLength());
-      else if (p == "name")            return String(input.name());
+      else if (p == "name")            return getString(input.name());
       else if (p == "readOnly")        return Boolean(input.readOnly());
-      else if (p == "size")            return String(input.size());
-      else if (p == "src")             return String(input.src());
+      else if (p == "size")            return getString(input.size());
+      else if (p == "src")             return getString(input.src());
       else if (p == "tabIndex")        return Number((unsigned long)input.tabIndex());
-      else if (p == "type")            return String(input.type());
-      else if (p == "useMap")          return String(input.useMap());
-      else if (p == "value")           return String(input.value());
+      else if (p == "type")            return getString(input.type());
+      else if (p == "useMap")          return getString(input.useMap());
+      else if (p == "value")           return getString(input.value());
       // methods
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
@@ -358,17 +358,17 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_TEXTAREA: {
       DOM::HTMLTextAreaElement textarea = element;
-      if      (p == "defaultValue")    return String(textarea.defaultValue());
-      else if (p == "form")            return DOMNode::getDOMNode(textarea.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return String(textarea.accessKey());
+      if      (p == "defaultValue")    return getString(textarea.defaultValue());
+      else if (p == "form")            return getDOMNode(textarea.form()); // type HTMLFormElement
+      else if (p == "accessKey")       return getString(textarea.accessKey());
       else if (p == "cols")            return Number((unsigned long)textarea.cols());
       else if (p == "disabled")        return Boolean(textarea.disabled());
-      else if (p == "name")            return String(textarea.name());
+      else if (p == "name")            return getString(textarea.name());
       else if (p == "readOnly")        return Boolean(textarea.readOnly());
       else if (p == "rows")            return Number((unsigned long)textarea.rows());
       else if (p == "tabIndex")        return Number((unsigned long)textarea.tabIndex());
-      else if (p == "type")            return String(textarea.type());
-      else if (p == "value")           return String(textarea.value());
+      else if (p == "type")            return getString(textarea.type());
+      else if (p == "value")           return getString(textarea.value());
       // methods
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
@@ -377,45 +377,45 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_BUTTON: {
       DOM::HTMLButtonElement button = element;
-      if      (p == "form")            return DOMNode::getDOMNode(button.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return String(button.accessKey());
+      if      (p == "form")            return getDOMNode(button.form()); // type HTMLFormElement
+      else if (p == "accessKey")       return getString(button.accessKey());
       else if (p == "disabled")        return Boolean(button.disabled());
-      else if (p == "name")            return String(button.name());
+      else if (p == "name")            return getString(button.name());
       else if (p == "tabIndex")        return Number((unsigned long)button.tabIndex());
-      else if (p == "type")            return String(button.type());
-      else if (p == "value")           return String(button.value());
+      else if (p == "type")            return getString(button.type());
+      else if (p == "value")           return getString(button.value());
     }
     break;
     case ID_LABEL: {
       DOM::HTMLLabelElement label = element;
-      if      (p == "form")            return DOMNode::getDOMNode(label.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return String(label.accessKey());
-      else if (p == "htmlFor")         return String(label.htmlFor());
+      if      (p == "form")            return getDOMNode(label.form()); // type HTMLFormElement
+      else if (p == "accessKey")       return getString(label.accessKey());
+      else if (p == "htmlFor")         return getString(label.htmlFor());
     }
     break;
     case ID_FIELDSET: {
       DOM::HTMLFieldSetElement fieldSet = element;
-      if      (p == "form")            return DOMNode::getDOMNode(fieldSet.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(fieldSet.form()); // type HTMLFormElement
     }
     break;
     case ID_LEGEND: {
       DOM::HTMLLegendElement legend = element;
-      if      (p == "form")            return DOMNode::getDOMNode(legend.form()); // type HTMLFormElement
-      else if (p == "accessKey")       return String(legend.accessKey());
-      else if (p == "align")           return String(legend.align());
+      if      (p == "form")            return getDOMNode(legend.form()); // type HTMLFormElement
+      else if (p == "accessKey")       return getString(legend.accessKey());
+      else if (p == "align")           return getString(legend.align());
     }
     break;
     case ID_UL: {
       DOM::HTMLUListElement uList = element;
       if      (p == "compact")         return Boolean(uList.compact());
-      else if (p == "type")            return String(uList.type());
+      else if (p == "type")            return getString(uList.type());
     }
     break;
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
       if      (p == "compact")         return Boolean(oList.compact());
       else if (p == "start")           return Number((unsigned long)oList.start());
-      else if (p == "type")            return String(oList.type());
+      else if (p == "type")            return getString(oList.type());
     }
     break;
     case ID_DL: {
@@ -435,29 +435,29 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_LI: {
       DOM::HTMLLIElement li = element;
-      if      (p == "type")            return String(li.type());
+      if      (p == "type")            return getString(li.type());
       else if (p == "value")           return Number((unsigned long)li.value());
     }
     break;
     case ID_DIV: {
       DOM::HTMLDivElement div = element;
-      if      (p == "align")           return String(div.align());
+      if      (p == "align")           return getString(div.align());
     }
     break;
     case ID_P: {
       DOM::HTMLParagraphElement paragraph = element;
-      if      (p == "align")           return String(paragraph.align());
+      if      (p == "align")           return getString(paragraph.align());
     }
     break;
     case ID_H1: { // ### H2, H3 ,H4 ,H5 ,H6
       DOM::HTMLHeadingElement heading = element;
-      if      (p == "align")           return String(heading.align());
+      if      (p == "align")           return getString(heading.align());
     }
     break;
     case ID_BLOCKQUOTE:
     case ID_Q: {
       DOM::HTMLQuoteElement quote = element;
-      if      (p == "cite")            return String(quote.cite());
+      if      (p == "cite")            return getString(quote.cite());
     }
     case ID_PRE: {
       DOM::HTMLPreElement pre = element;
@@ -466,52 +466,52 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_BR: {
       DOM::HTMLBRElement br = element;
-      if      (p == "clear")           return String(br.clear());
+      if      (p == "clear")           return getString(br.clear());
     }
     break;
     case ID_BASEFONT: {
       DOM::HTMLBaseFontElement baseFont = element;
-      if      (p == "color")           return String(baseFont.color());
-      else if (p == "face")            return String(baseFont.face());
-      else if (p == "size")            return String(baseFont.size());
+      if      (p == "color")           return getString(baseFont.color());
+      else if (p == "face")            return getString(baseFont.face());
+      else if (p == "size")            return getString(baseFont.size());
     }
     break;
     case ID_FONT: {
       DOM::HTMLFontElement font = element;
-      if      (p == "color")           return String(font.color());
-      else if (p == "face")            return String(font.face());
-      else if (p == "size")            return String(font.size());
+      if      (p == "color")           return getString(font.color());
+      else if (p == "face")            return getString(font.face());
+      else if (p == "size")            return getString(font.size());
     }
     break;
     case ID_HR: {
       DOM::HTMLHRElement hr = element;
-      if      (p == "align")           return String(hr.align());
+      if      (p == "align")           return getString(hr.align());
       else if (p == "noShade")         return Boolean(hr.noShade());
-      else if (p == "size")            return String(hr.size());
-      else if (p == "width")           return String(hr.width());
+      else if (p == "size")            return getString(hr.size());
+      else if (p == "width")           return getString(hr.width());
     }
     break;
     case ID_INS:
     case ID_DEL: {
       DOM::HTMLModElement mod = element;
-      if      (p == "cite")            return String(mod.cite());
-      else if (p == "dateTime")        return String(mod.dateTime());
+      if      (p == "cite")            return getString(mod.cite());
+      else if (p == "dateTime")        return getString(mod.dateTime());
     }
     break;
     case ID_A: {
       DOM::HTMLAnchorElement anchor = element;
-      if      (p == "accessKey")       return String(anchor.accessKey());
-      else if (p == "charset")         return String(anchor.charset());
-      else if (p == "coords")          return String(anchor.coords());
-      else if (p == "href")            return String(anchor.href());
-      else if (p == "hreflang")        return String(anchor.hreflang());
-      else if (p == "name")            return String(anchor.name());
-      else if (p == "rel")             return String(anchor.rel());
-      else if (p == "rev")             return String(anchor.rev());
-      else if (p == "shape")           return String(anchor.shape());
+      if      (p == "accessKey")       return getString(anchor.accessKey());
+      else if (p == "charset")         return getString(anchor.charset());
+      else if (p == "coords")          return getString(anchor.coords());
+      else if (p == "href")            return getString(anchor.href());
+      else if (p == "hreflang")        return getString(anchor.hreflang());
+      else if (p == "name")            return getString(anchor.name());
+      else if (p == "rel")             return getString(anchor.rel());
+      else if (p == "rev")             return getString(anchor.rev());
+      else if (p == "shape")           return getString(anchor.shape());
       else if (p == "tabIndex")        return Number((unsigned long)anchor.tabIndex());
-      else if (p == "target")          return String(anchor.target());
-      else if (p == "type")            return String(anchor.type());
+      else if (p == "target")          return getString(anchor.target());
+      else if (p == "type")            return getString(anchor.type());
       // methods
       else if (p == "blur")            return new HTMLElementFunction(element,HTMLElementFunction::Blur);
       else if (p == "focus")           return new HTMLElementFunction(element,HTMLElementFunction::Focus);
@@ -519,113 +519,113 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_IMG: {
       DOM::HTMLImageElement image = element;
-      if      (p == "lowSrc")          return String(image.lowSrc());
-      else if (p == "name")            return String(image.name());
-      else if (p == "align")           return String(image.align());
-      else if (p == "alt")             return String(image.alt());
-      else if (p == "border")          return String(image.border());
-      else if (p == "height")          return String(image.height());
-      else if (p == "hspace")          return String(image.hspace());
+      if      (p == "lowSrc")          return getString(image.lowSrc());
+      else if (p == "name")            return getString(image.name());
+      else if (p == "align")           return getString(image.align());
+      else if (p == "alt")             return getString(image.alt());
+      else if (p == "border")          return getString(image.border());
+      else if (p == "height")          return getString(image.height());
+      else if (p == "hspace")          return getString(image.hspace());
       else if (p == "isMap")           return Boolean(image.isMap());
-      else if (p == "longDesc")        return String(image.longDesc());
-      else if (p == "src")             return String(image.src());
-      else if (p == "useMap")          return String(image.useMap());
-      else if (p == "vspace")          return String(image.vspace());
-      else if (p == "width")           return String(image.width());
+      else if (p == "longDesc")        return getString(image.longDesc());
+      else if (p == "src")             return getString(image.src());
+      else if (p == "useMap")          return getString(image.useMap());
+      else if (p == "vspace")          return getString(image.vspace());
+      else if (p == "width")           return getString(image.width());
     }
     break;
     case ID_OBJECT: {
       DOM::HTMLObjectElement object = element;
-      if      (p == "form")            return DOMNode::getDOMNode(object.form()); // type HTMLFormElement
-      else if (p == "code")            return String(object.code());
-      else if (p == "align")           return String(object.align());
-      else if (p == "archive")         return String(object.archive());
-      else if (p == "border")          return String(object.border());
-      else if (p == "codeBase")        return String(object.codeBase());
-      else if (p == "codeType")        return String(object.codeType());
-      else if (p == "data")            return String(object.data());
+      if      (p == "form")            return getDOMNode(object.form()); // type HTMLFormElement
+      else if (p == "code")            return getString(object.code());
+      else if (p == "align")           return getString(object.align());
+      else if (p == "archive")         return getString(object.archive());
+      else if (p == "border")          return getString(object.border());
+      else if (p == "codeBase")        return getString(object.codeBase());
+      else if (p == "codeType")        return getString(object.codeType());
+      else if (p == "data")            return getString(object.data());
       else if (p == "declare")         return Boolean(object.declare());
-      else if (p == "height")          return String(object.height());
-      else if (p == "hspace")          return String(object.hspace());
-      else if (p == "name")            return String(object.name());
-      else if (p == "standby")         return String(object.standby());
+      else if (p == "height")          return getString(object.height());
+      else if (p == "hspace")          return getString(object.hspace());
+      else if (p == "name")            return getString(object.name());
+      else if (p == "standby")         return getString(object.standby());
       else if (p == "tabIndex")        return Number((unsigned long)object.tabIndex());
-      else if (p == "type")            return String(object.type());
-      else if (p == "useMap")          return String(object.useMap());
-      else if (p == "vspace")          return String(object.vspace());
-      else if (p == "width")           return String(object.width());
+      else if (p == "type")            return getString(object.type());
+      else if (p == "useMap")          return getString(object.useMap());
+      else if (p == "vspace")          return getString(object.vspace());
+      else if (p == "width")           return getString(object.width());
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return DOMNode::getDOMNode(object.contentDocument()); // type Document
+//        return getDOMNode(object.contentDocument()); // type Document
     }
     break;
     case ID_PARAM: {
       DOM::HTMLParamElement param = element;
-      if      (p == "name")            return String(param.name());
-      else if (p == "type")            return String(param.type());
-      else if (p == "value")           return String(param.value());
-      else if (p == "valueType")       return String(param.valueType());
+      if      (p == "name")            return getString(param.name());
+      else if (p == "type")            return getString(param.type());
+      else if (p == "value")           return getString(param.value());
+      else if (p == "valueType")       return getString(param.valueType());
     }
     break;
     case ID_APPLET: {
       DOM::HTMLAppletElement applet = element;
-      if      (p == "align")           return String(applet.align());
-      else if (p == "alt")             return String(applet.alt());
-      else if (p == "archive")         return String(applet.archive());
-      else if (p == "code")            return String(applet.code());
-      else if (p == "codeBase")        return String(applet.codeBase());
-      else if (p == "height")          return String(applet.height());
-      else if (p == "hspace")          return String(applet.hspace());
-      else if (p == "name")            return String(applet.name());
-      else if (p == "object")          return String(applet.object());
-      else if (p == "vspace")          return String(applet.vspace());
-      else if (p == "width")           return String(applet.width());
+      if      (p == "align")           return getString(applet.align());
+      else if (p == "alt")             return getString(applet.alt());
+      else if (p == "archive")         return getString(applet.archive());
+      else if (p == "code")            return getString(applet.code());
+      else if (p == "codeBase")        return getString(applet.codeBase());
+      else if (p == "height")          return getString(applet.height());
+      else if (p == "hspace")          return getString(applet.hspace());
+      else if (p == "name")            return getString(applet.name());
+      else if (p == "object")          return getString(applet.object());
+      else if (p == "vspace")          return getString(applet.vspace());
+      else if (p == "width")           return getString(applet.width());
     }
     break;
     case ID_MAP: {
       DOM::HTMLMapElement map = element;
       if      (p == "areas")           return new HTMLCollection(map.areas()); // type HTMLCollection
-      else if (p == "name")            return String(map.name());
+      else if (p == "name")            return getString(map.name());
     }
     break;
     case ID_AREA: {
       DOM::HTMLAreaElement area = element;
-      if      (p == "accessKey")       return String(area.accessKey());
-      else if (p == "alt")             return String(area.alt());
-      else if (p == "coords")          return String(area.coords());
-      else if (p == "href")            return String(area.href());
+      if      (p == "accessKey")       return getString(area.accessKey());
+      else if (p == "alt")             return getString(area.alt());
+      else if (p == "coords")          return getString(area.coords());
+      else if (p == "href")            return getString(area.href());
       else if (p == "noHref")          return Boolean(area.noHref());
-      else if (p == "shape")           return String(area.shape());
+      else if (p == "shape")           return getString(area.shape());
       else if (p == "tabIndex")        return Number((unsigned long)area.tabIndex());
-      else if (p == "target")          return String(area.target());
+      else if (p == "target")          return getString(area.target());
     }
     break;
     case ID_SCRIPT: {
       DOM::HTMLScriptElement script = element;
-      if      (p == "text")            return String(script.text());
-      else if (p == "htmlFor")         return String(script.htmlFor());
-      else if (p == "event")           return String(script.event());
-      else if (p == "charset")         return String(script.charset());
+      if      (p == "text")            return getString(script.text());
+      else if (p == "htmlFor")         return getString(script.htmlFor());
+      else if (p == "event")           return getString(script.event());
+      else if (p == "charset")         return getString(script.charset());
       else if (p == "defer")           return Boolean(script.defer());
-      else if (p == "src")             return String(script.src());
-      else if (p == "type")            return String(script.type());
+      else if (p == "src")             return getString(script.src());
+      else if (p == "type")            return getString(script.type());
     }
     break;
     case ID_TABLE: {
       DOM::HTMLTableElement table = element;
-      if      (p == "caption")         return DOMNode::getDOMNode(table.caption()); // type HTMLTableCaptionElement
-      else if (p == "tHead")           return DOMNode::getDOMNode(table.tHead()); // type HTMLTableSectionElement
-      else if (p == "tFoot")           return DOMNode::getDOMNode(table.tFoot()); // type HTMLTableSectionElement
+      if      (p == "caption")         return getDOMNode(table.caption()); // type HTMLTableCaptionElement
+      else if (p == "tHead")           return getDOMNode(table.tHead()); // type HTMLTableSectionElement
+      else if (p == "tFoot")           return getDOMNode(table.tFoot()); // type HTMLTableSectionElement
       else if (p == "rows")            return new HTMLCollection(table.rows()); // type HTMLCollection
       else if (p == "tBodies")         return new HTMLCollection(table.tBodies()); // type HTMLCollection
-      else if (p == "align")           return String(table.align());
-      else if (p == "bgColor")         return String(table.bgColor());
-      else if (p == "border")          return String(table.border());
-      else if (p == "cellPadding")     return String(table.cellPadding());
-      else if (p == "cellSpacing")     return String(table.cellSpacing());
-      else if (p == "frame")           return String(table.frame());
-      else if (p == "rules")           return String(table.rules());
-      else if (p == "summary")         return String(table.summary());
-      else if (p == "width")           return String(table.width());
+      else if (p == "align")           return getString(table.align());
+      else if (p == "bgColor")         return getString(table.bgColor());
+      else if (p == "border")          return getString(table.border());
+      else if (p == "cellPadding")     return getString(table.cellPadding());
+      else if (p == "cellSpacing")     return getString(table.cellSpacing());
+      else if (p == "frame")           return getString(table.frame());
+      else if (p == "rules")           return getString(table.rules());
+      else if (p == "summary")         return getString(table.summary());
+      else if (p == "width")           return getString(table.width());
       // methods
       else if (p == "createTHead")     return new HTMLElementFunction(element,HTMLElementFunction::CreateTHead);
       else if (p == "deleteTHead")     return new HTMLElementFunction(element,HTMLElementFunction::DeleteTHead);
@@ -639,27 +639,27 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_CAPTION: {
       DOM::HTMLTableCaptionElement tableCaption;
-      if      (p == "align")           return String(tableCaption.align());
+      if      (p == "align")           return getString(tableCaption.align());
     }
     break;
     case ID_COL: {
       DOM::HTMLTableColElement tableCol = element;
-      if      (p == "align")           return String(tableCol.align());
-      else if (p == "ch")              return String(tableCol.ch());
-      else if (p == "chOff")           return String(tableCol.chOff());
+      if      (p == "align")           return getString(tableCol.align());
+      else if (p == "ch")              return getString(tableCol.ch());
+      else if (p == "chOff")           return getString(tableCol.chOff());
       else if (p == "span")            return Number((unsigned long)tableCol.span());
-      else if (p == "vAlign")          return String(tableCol.vAlign());
-      else if (p == "width")           return String(tableCol.width());
+      else if (p == "vAlign")          return getString(tableCol.vAlign());
+      else if (p == "width")           return getString(tableCol.width());
     }
     break;
     case ID_THEAD:
     case ID_TBODY:
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
-      if      (p == "align")           return String(tableSection.align());
-      else if (p == "ch")              return String(tableSection.ch());
-      else if (p == "chOff")           return String(tableSection.chOff());
-      else if (p == "vAlign")          return String(tableSection.vAlign());
+      if      (p == "align")           return getString(tableSection.align());
+      else if (p == "ch")              return getString(tableSection.ch());
+      else if (p == "chOff")           return getString(tableSection.chOff());
+      else if (p == "vAlign")          return getString(tableSection.vAlign());
       else if (p == "rows")            return new HTMLCollection(tableSection.rows()); // type HTMLCollection
       // methods
       else if (p == "insertRow")       return new HTMLElementFunction(element,HTMLElementFunction::InsertRow);
@@ -671,11 +671,11 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       if      (p == "rowIndex")        return Number((unsigned long)tableRow.rowIndex());
       else if (p == "sectionRowIndex") return Number((unsigned long)tableRow.sectionRowIndex());
       else if (p == "cells")           return new HTMLCollection(tableRow.cells()); // type HTMLCollection
-      else if (p == "align")           return String(tableRow.align());
-      else if (p == "bgColor")         return String(tableRow.bgColor());
-      else if (p == "ch")              return String(tableRow.ch());
-      else if (p == "chOff")           return String(tableRow.chOff());
-      else if (p == "vAlign")          return String(tableRow.vAlign());
+      else if (p == "align")           return getString(tableRow.align());
+      else if (p == "bgColor")         return getString(tableRow.bgColor());
+      else if (p == "ch")              return getString(tableRow.ch());
+      else if (p == "chOff")           return getString(tableRow.chOff());
+      else if (p == "vAlign")          return getString(tableRow.vAlign());
       // methods
       else if (p == "insertCell")       return new HTMLElementFunction(element,HTMLElementFunction::InsertCell);
       else if (p == "deleteCell")       return new HTMLElementFunction(element,HTMLElementFunction::DeleteCell);
@@ -685,56 +685,56 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_TD: {
       DOM::HTMLTableCellElement tableCell = element;
       if      (p == "cellIndex")       return Number((unsigned long)tableCell.cellIndex());
-      else if (p == "abbr")            return String(tableCell.abbr());
-      else if (p == "align")           return String(tableCell.align());
-      else if (p == "axis")            return String(tableCell.axis());
-      else if (p == "bgColor")         return String(tableCell.bgColor());
-      else if (p == "ch")              return String(tableCell.ch());
-      else if (p == "chOff")           return String(tableCell.chOff());
+      else if (p == "abbr")            return getString(tableCell.abbr());
+      else if (p == "align")           return getString(tableCell.align());
+      else if (p == "axis")            return getString(tableCell.axis());
+      else if (p == "bgColor")         return getString(tableCell.bgColor());
+      else if (p == "ch")              return getString(tableCell.ch());
+      else if (p == "chOff")           return getString(tableCell.chOff());
       else if (p == "colSpan")         return Number((unsigned long)tableCell.colSpan());
-      else if (p == "headers")         return String(tableCell.headers());
-      else if (p == "height")          return String(tableCell.height());
+      else if (p == "headers")         return getString(tableCell.headers());
+      else if (p == "height")          return getString(tableCell.height());
       else if (p == "noWrap")          return Boolean(tableCell.noWrap());
       else if (p == "rowSpan")         return Number((unsigned long)tableCell.rowSpan());
-      else if (p == "scope")           return String(tableCell.scope());
-      else if (p == "vAlign")          return String(tableCell.vAlign());
-      else if (p == "width")           return String(tableCell.width());
+      else if (p == "scope")           return getString(tableCell.scope());
+      else if (p == "vAlign")          return getString(tableCell.vAlign());
+      else if (p == "width")           return getString(tableCell.width());
     }
     break;
     case ID_FRAMESET: {
       DOM::HTMLFrameSetElement frameSet = element;
-      if      (p == "cols")            return String(frameSet.cols());
-      else if (p == "rows")            return String(frameSet.rows());
+      if      (p == "cols")            return getString(frameSet.cols());
+      else if (p == "rows")            return getString(frameSet.rows());
     }
     break;
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
-      if (p == "frameBorder")          return String(frameElement.frameBorder());
-      else if (p == "longDesc")        return String(frameElement.longDesc());
-      else if (p == "marginHeight")    return String(frameElement.marginHeight());
-      else if (p == "marginWidth")     return String(frameElement.marginWidth());
-      else if (p == "name")            return String(frameElement.name());
+      if (p == "frameBorder")          return getString(frameElement.frameBorder());
+      else if (p == "longDesc")        return getString(frameElement.longDesc());
+      else if (p == "marginHeight")    return getString(frameElement.marginHeight());
+      else if (p == "marginWidth")     return getString(frameElement.marginWidth());
+      else if (p == "name")            return getString(frameElement.name());
       else if (p == "noResize")        return Boolean(frameElement.noResize());
-      else if (p == "scrolling")       return String(frameElement.scrolling());
-      else if (p == "src")             return String(frameElement.src());
+      else if (p == "scrolling")       return getString(frameElement.scrolling());
+      else if (p == "src")             return getString(frameElement.src());
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return DOMNode::getDOMNode(frameElement.contentDocument()); // type Document
+//        return getDOMNode(frameElement.contentDocument()); // type Document
     }
     break;
     case ID_IFRAME: {
       DOM::HTMLIFrameElement iFrame = element;
-      if (p == "align")                return String(iFrame.align());
-      else if (p == "frameBorder")     return String(iFrame.frameBorder());
-      else if (p == "height")          return String(iFrame.height());
-      else if (p == "longDesc")        return String(iFrame.longDesc());
-      else if (p == "marginHeight")    return String(iFrame.marginHeight());
-      else if (p == "marginWidth")     return String(iFrame.marginWidth());
-      else if (p == "name")            return String(iFrame.name());
-      else if (p == "scrolling")       return String(iFrame.scrolling());
-      else if (p == "src")             return String(iFrame.src());
-      else if (p == "width")           return String(iFrame.width());
+      if (p == "align")                return getString(iFrame.align());
+      else if (p == "frameBorder")     return getString(iFrame.frameBorder());
+      else if (p == "height")          return getString(iFrame.height());
+      else if (p == "longDesc")        return getString(iFrame.longDesc());
+      else if (p == "marginHeight")    return getString(iFrame.marginHeight());
+      else if (p == "marginWidth")     return getString(iFrame.marginWidth());
+      else if (p == "name")            return getString(iFrame.name());
+      else if (p == "scrolling")       return getString(iFrame.scrolling());
+      else if (p == "src")             return getString(iFrame.src());
+      else if (p == "width")           return getString(iFrame.width());
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return DOMNode::getDOMNode(iFrame.contentDocument); // type Document
+//        return getDOMNode(iFrame.contentDocument); // type Document
     }
     break;
   }
@@ -755,7 +755,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     return tmp.get(p);
   }
 
-  return String(str);
+  return getString(str);
 }
 
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
@@ -846,25 +846,25 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_TABLE: {
       DOM::HTMLTableElement table = element;
       if (id == CreateTHead)
-        result = DOMNode::getDOMNode(table.createTHead());
+        result = getDOMNode(table.createTHead());
       else if (id == DeleteTHead) {
         table.deleteTHead();
         result = Undefined();
       }
       else if (id == CreateTFoot)
-        result = DOMNode::getDOMNode(table.createTFoot());
+        result = getDOMNode(table.createTFoot());
       else if (id == DeleteTFoot) {
         table.deleteTFoot();
         result = Undefined();
       }
       else if (id == CreateCaption)
-        result = DOMNode::getDOMNode(table.createCaption());
+        result = getDOMNode(table.createCaption());
       else if (id == DeleteCaption) {
         table.deleteCaption();
         result = Undefined();
       }
       else if (id == InsertRow)
-        result = DOMNode::getDOMNode(table.insertRow(args[0].toNumber().intValue()));
+        result = getDOMNode(table.insertRow(args[0].toNumber().intValue()));
       else if (id == DeleteRow) {
         table.deleteRow(args[0].toNumber().intValue());
         result = Undefined();
@@ -876,7 +876,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
       if (id == InsertRow)
-        result = DOMNode::getDOMNode(tableSection.insertRow(args[0].toNumber().intValue()));
+        result = getDOMNode(tableSection.insertRow(args[0].toNumber().intValue()));
       else if (id == DeleteRow) {
         tableSection.deleteRow(args[0].toNumber().value());
         result = Undefined();
@@ -886,7 +886,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
       if (id == InsertCell)
-        result = DOMNode::getDOMNode(tableRow.insertCell(args[0].toNumber().intValue()));
+        result = getDOMNode(tableRow.insertCell(args[0].toNumber().intValue()));
       else if (id == DeleteCell) {
         tableRow.deleteCell(args[0].toNumber().intValue());
         result = Undefined();
@@ -1235,7 +1235,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "vspace")          { object.setVspace(str); return; }
       else if (p == "width")           { object.setWidth(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return DOMNode::getDOMNode(object.contentDocument()); // type Document
+//        return getDOMNode(object.contentDocument()); // type Document
     }
     break;
     case ID_PARAM: {
@@ -1383,7 +1383,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "scrolling")       { frameElement.setScrolling(str); return; }
       else if (p == "src")             { frameElement.setSrc(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return DOMNode::getDOMNode(frameElement.contentDocument()); // type Document
+//        return getDOMNode(frameElement.contentDocument()); // type Document
     }
     break;
     case ID_IFRAME: {
@@ -1399,7 +1399,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "src")             { iFrame.setSrc(str); return; }
       else if (p == "width")           { iFrame.setWidth(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return DOMNode::getDOMNode(iFrame.contentDocument); // type Document
+//        return getDOMNode(iFrame.contentDocument); // type Document
     }
     break;
   }
@@ -1458,10 +1458,10 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 
   switch (id) {
     case Item:
-      result = DOMNode::getDOMNode(coll.item((unsigned long)args[0].toNumber().value()));
+      result = getDOMNode(coll.item((unsigned long)args[0].toNumber().value()));
       break;
     case NamedItem:
-      result = DOMNode::getDOMNode(coll.namedItem(args[0].toString().value().string()));
+      result = getDOMNode(coll.namedItem(args[0].toString().value().string()));
       break;
   }
 

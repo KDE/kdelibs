@@ -252,7 +252,7 @@ DocumentFragment::DocumentFragment(DocumentFragmentImpl *i) : Node(i)
 
 // ----------------------------------------------------------------------------
 
-DocumentType::DocumentType()
+DocumentType::DocumentType() : Node()
 {
 }
 
@@ -299,4 +299,3 @@ NamedNodeMap DocumentType::notations() const
     return NamedNodeMap();
     // ###
 }
-

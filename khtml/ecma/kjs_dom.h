@@ -40,7 +40,6 @@ namespace KJS {
     virtual DOM::Node toNode() const { return node; }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-    static KJSO getDOMNode(DOM::Node n);
   private:
     DOM::Node node;
   };

@@ -74,7 +74,7 @@ public:
     unsigned char attrId;
 protected:
     AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
-    AttrImpl(khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element);
+    AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element);
     AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc);
     AttrImpl(int _id, const DOMString &value, DocumentImpl *doc);
 
@@ -155,11 +155,7 @@ public:
     virtual void attach(KHTMLView *w);
     virtual void detach(); 
 
-    const khtml::AttributeList getAttributes();
-
 protected: // member variables
-
-    khtml::AttributeList attributeMap;
 
     NamedAttrMapImpl *namedAttrMap;
 
@@ -176,7 +172,8 @@ class NamedAttrMapImpl : public NamedNodeMapImpl
 public:
     NamedAttrMapImpl(ElementImpl *e);
     virtual ~NamedAttrMapImpl();
-    void fromAttributeList(khtml::AttributeList list);
+    void fromAttributeList(const khtml::AttributeList list);
+    void fromNamedAttrMapImpl(const NamedAttrMapImpl *other);
 
     unsigned long length() const;
 

@@ -39,7 +39,7 @@ Attr::Attr(const Attr &other) : Node(other)
 Attr::Attr( AttrImpl *_impl )
 {
     impl= _impl;
-    impl->ref();
+    if (impl) impl->ref();
 }
 
 Attr &Attr::operator = (const Node &other)

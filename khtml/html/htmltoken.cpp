@@ -188,7 +188,7 @@ unsigned int AttributeList::length() const
     return _len;
 }
 
-int AttributeList::find(const DOMString &name)
+int AttributeList::find(const DOMString &name) const
 {
     DOMString n = name.string().upper();
     int i = 0;
@@ -201,7 +201,7 @@ int AttributeList::find(const DOMString &name)
     return -1;
 }
 
-int AttributeList::find(ushort id)
+int AttributeList::find(ushort id) const
 {
     int i = 0;
     while( i<(int)_len )
@@ -214,14 +214,14 @@ int AttributeList::find(ushort id)
 }
 
 
-DOMString AttributeList::operator [] (const DOMString &name)
+DOMString AttributeList::operator [] (const DOMString &name) const
 {
     int i = find(name);
     if(i == -1) return 0;
     return value((uint) i);
 }
 
-Attribute *AttributeList::operator [] (uint index)
+Attribute *AttributeList::operator [] (uint index) const
 {
     if(index > _len) return 0;
     return _list+index;

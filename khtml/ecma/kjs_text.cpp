@@ -34,7 +34,7 @@ const TypeInfo DOMCharacterData::info = { "CharacterImp", HostType,
 KJSO DOMCharacterData::tryGet(const UString &p) const
 {
   if (p == "data")
-    return String(data.data());
+    return getString(data.data());
   else if (p == "length")
     return Number(data.length());
   else if (p == "substringData")
@@ -74,7 +74,7 @@ Completion DOMCharacterDataFunction::tryExecute(const List &args)
 
   switch(id) {
     case SubstringData:
-      result = String(data.substringData(args[0].toNumber().intValue(),args[1].toNumber().intValue()));
+      result = getString(data.substringData(args[0].toNumber().intValue(),args[1].toNumber().intValue()));
       break;
     case AppendData:
       data.appendData(args[0].toString().value().string());
@@ -127,7 +127,7 @@ Completion DOMTextFunction::tryExecute(const List &args)
 
   switch(id) {
     case SplitText:
-      result = DOMNode::getDOMNode(text.splitText(args[0].toNumber().intValue()));
+      result = getDOMNode(text.splitText(args[0].toNumber().intValue()));
       break;
     default:
       result = Undefined();

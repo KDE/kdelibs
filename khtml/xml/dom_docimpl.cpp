@@ -463,3 +463,10 @@ unsigned short DocumentFragmentImpl::nodeType() const
     return Node::DOCUMENT_FRAGMENT_NODE;
 }
 
+bool DocumentFragmentImpl::childAllowed( NodeImpl */*newChild*/ )
+{
+    return true;
+}
+
+
+
