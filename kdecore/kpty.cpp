@@ -413,19 +413,11 @@ void KPty::login(const char *user, const char *remotehost)
 # endif
 
     // Handle 64-bit time_t properly, where it may be larger
-    // than the integral type of ut_time. This if should be
-    // optimized away at runtime (since the arguments to !=
-    // are constants) and yield whichever version is right.
-    if (sizeof(time_t) != sizeof(l_struct.ut_time))
+    // than the integral type of ut_time. 
     {
         time_t ut_time_temp;
         time(&ut_time_temp);
-	l_struct.ut_time=0;
         l_struct.ut_time=ut_time_temp;
-    }
-    else
-    {
-	time(&l_struct.ut_time);
     }
 
     ::login(&l_struct);
