@@ -64,8 +64,7 @@ class SlaveInterfacePrivate;
    CMD_SYMLINK = 'Q', // 81
    CMD_SUBURL = 'R', // 82  Inform the slave about the url it is streaming on.
    CMD_MESSAGEBOXANSWER = 'S', // 83
-   CMD_RESUMEANSWER = 'T', // 84
-   CMD_DEL_AUTHORIZATION = 'U' // 85
+   CMD_RESUMEANSWER = 'T' // 84
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
@@ -108,7 +107,8 @@ class SlaveInterfacePrivate;
    MSG_NET_REQUEST,
    MSG_NET_DROP,
    MSG_NEED_SUBURL_DATA,
-   MSG_CANRESUME
+   MSG_CANRESUME,
+   MSG_AUTH_KEY
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -159,7 +159,7 @@ signals:
     ///////////
     // Info sent by the slave
     //////////
-    void metaData( const KIO::MetaData &);
+    void metaData( const KIO::MetaData & );
     void totalSize( unsigned long ) ;
     void processedSize( unsigned long ) ;
     void redirection( const KURL& ) ;
@@ -171,6 +171,7 @@ signals:
     void gettingFile( const QString & ) ; // ?
     void infoMessage( const QString & ) ;
     void connectFinished();
+    void authKey( const QString & );
 
 protected:
     /////////////////

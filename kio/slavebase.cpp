@@ -58,6 +58,7 @@ namespace KIO {
 class SlaveBasePrivate {
 public:
     QString slaveid;
+    int cachedAuthTimeout;
     bool resume:1;
     bool needSendCanResume:1;
 };
@@ -92,6 +93,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->slaveid += QString::number(getpid());
     d->resume = false;
     d->needSendCanResume = false;
+    d->cachedAuthTimeout = 0;
 }
 
 SlaveBase::~SlaveBase()
@@ -408,6 +410,12 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     m_pConnection->send( MSG_LIST_ENTRIES, data);
 }
 
+void SlaveBase::sendAuthKey( const QString& key )
+{
+    KIO_DATA << key;
+    m_pConnection->send( MSG_AUTH_KEY, data );
+}
+
 void SlaveBase::sigsegv_handler (int)
 {
     // Debug and printf should be avoided because they might
@@ -491,7 +499,7 @@ bool SlaveBase::openPassDlg( const QString& msg, QString& user, QString& passwd,
     {
         QDataStream stream( data, IO_ReadOnly );
         stream >> user >> passwd;
-        kdDebug(7019) << "Got " << user << ":" << passwd << endl;
+        kdDebug(7019) << "Got user=" << user << ", password=[hidden]" << endl;
         return true;
     }
     return false;
@@ -673,13 +681,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_NONE:
 	fprintf(stderr, "Got unexpected CMD_NONE!\n");
 	break;
-	case CMD_DEL_AUTHORIZATION: // TODO in slaveinterface
-	{
-	    QString key;
-	    stream >> key;
-	    delCachedAuthentication( key );
-	    break;
-	}
     default:
 	assert( 0 );
     }
@@ -946,11 +947,12 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
                                      const QString& realm,
                                      const QString& extra )
 {
+    QString auth_key = createAuthCacheKey( url );
+
     // Do not allow caching if: URL is malformed or user name is
     // empty or the password is null!!  Empty password is acceptable
     // but not a NULL one. This is mainly intended as a partial defense
     // against incorrect use (read:abuse) of calling this function.
-    QString auth_key = createAuthCacheKey( url );
     if( auth_key.isNull() || user.isEmpty() || passwd.isNull() )
         return false;
 
@@ -958,12 +960,11 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
         return false;
 
     KDEsuClient client;
-    bool isCached = false;
-
+    bool ok, isCached = false;
     kdDebug(7019) << "Attempting to cache Authentication for: " << auth_key << endl;
     if( !realm.isEmpty() )
     {
-        bool ok;
+
         QString stored_value;
         int count = client.getVar((auth_key + "-dupcount").utf8()).toInt( &ok );
         if( !ok ) { count = 0; }
@@ -1018,18 +1019,28 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             else
             {
                 // If it is not cached and not a duplicate entry,
-                // Simply append a "has Entry" flag.
+                // simply append a "hasEntry" flag since it must
+                // be a new entry...
                 kdDebug(7019) << "Adding a new \"hasEntry\" flag..." << endl;
-                client.setVar((auth_key+"-hasEntry").utf8(),
-                              "true", 0, auth_key.utf8());
+                client.setVar((auth_key+"-hasEntry").utf8(), "true", 0,
+                              auth_key.utf8());
+                // Inform the slave that we just got a new
+                // authorization key
+                sendAuthKey ( auth_key );
             }
         }
     }
     else
     {
-        QString u = QString::fromUtf8( client.getVar((auth_key + "-user").utf8()) );
-        if( u == user )
-            isCached = true;
+        ok = (client.getVar(( auth_key + "-hasEntry").utf8()) == "true");
+        if( !ok )
+        {
+            client.setVar((auth_key+"-hasEntry").utf8(), "true", 0,
+                          auth_key.utf8());
+            // Inform the slave that we just got a new
+            // authorization key
+            sendAuthKey ( auth_key );
+        }
     }
 
     // If we have a cached copy already, just update the
@@ -1042,7 +1053,8 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             if( e != extra )
             {
                 kdDebug(7019) << "Updating the \"extra\" value: " << extra << endl;
-                client.setVar( (auth_key + "-extra").utf8(), extra.utf8(), 0, auth_key.utf8() );
+                client.setVar((auth_key + "-extra").utf8(), extra.utf8(), 0,
+                              auth_key.utf8());
             }
         }
         return true;
@@ -1069,60 +1081,7 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
                       << "  Password= [hidden]" << endl
                       << "  Realm= " << realm << endl
                       << "  Extra= " << extra << endl;
-
-        // Nifty way to group passwords for automatic deletion later on ??
-        // We will use the supplied keys which are unique.  We also keep
-        // ref-count so that the group does not die a premature death!!
-        // That is it is only deleted when all applications using it are
-        // gone.  Or at least that is the plan.
-        setMetaData( "authGroupKey", auth_key );
         return true;
     }
     return false;
-}
-
-bool SlaveBase::registerCachedAuthKey( const QString& grpname )
-{
-    KDEsuClient client;
-    kdDebug(7019) << "Request to register cached Authentication for: " << grpname << endl;
-    if( pingCacheDaemon() && !client.getVar((grpname + "-hasEntry").utf8()).isEmpty() )
-    {
-      bool ok;
-      int count = client.getVar( (grpname + "-refcount").utf8() ).toInt( &ok );
-      if( ok )
-        client.setVar( (grpname + "-refcount").utf8(), QString("%1").arg(count+1).utf8(), 0, grpname.utf8() );
-      else
-        client.setVar( (grpname + "-refcount").utf8(), "2", 0, grpname.utf8() );
-      return true;
-    }
-    return false;
-}
-
-void SlaveBase::delCachedAuthentication( const QString& grpname )
-{
-    if( !pingCacheDaemon() )
-        return;
-
-    bool ok;
-    KDEsuClient client;
-    int count = client.getVar( (grpname + "-refcount").utf8() ).toInt( &ok );
-    // Test point though I know that this value is going to be an integer
-    kdDebug(7019) << "Attempting to delete cached Authentication for: " << grpname << endl;
-    if( ok )
-    {
-        if( count > 1 )
-        {
-            client.setVar((grpname + "-refcount").utf8(),
-                          QString("%1").arg( count - 1 ).utf8(), 0,
-                          grpname.utf8() );
-            kdDebug(7019) << "Key registered by multiple processes. "
-                          << "Decrementing reference count to: "
-                          << count-1 << endl;
-        }
-        else
-        {
-            kdDebug(7019) << "Last reference. Deleting the whole group..." << endl;
-            client.delGroup(grpname.utf8());
-        }
-    }
 }

@@ -209,6 +209,12 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         emit needSubURLData();
         break;
     }
+    case MSG_AUTH_KEY: {
+        stream >> str1;
+        kdDebug(7007) << "Got auth key: " << str1 << endl;
+        authKey( str1 );
+        break;
+    }
     default:
 	assert( 0 );
     }

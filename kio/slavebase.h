@@ -454,7 +454,8 @@ protected:
      *
      * @return        @p true on if successful, @p false otherwise
      */
-    bool openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName = false );
+    bool openPassDlg( const QString& msg, QString& user, QString& passwd,
+                      bool lockUserName = false );
 
     /**
      * Checks for cached authentication for the url given by @p url.
@@ -539,26 +540,11 @@ protected:
     QString createAuthCacheKey( const KURL& url );
 
     /**
-     * Deletes any cached keys for the given group.
+     * Sets the timeout for cached authentication entries.
      *
-     * @param grpname   group name for which cached Authentication is to be deleted.
+     * @parm sec timeout value in seconds
      */
-    void delCachedAuthentication( const QString& grpname );
-
-    /**
-     * Increments the reference count for application using the
-     * give authorization key.
-     *
-     * The reference counting is used by @ref delCachedAuthentication
-     * to determine when it is safe to delete the key from the cache.
-     *
-     * A call to this function will fail, i.e. return false, if there
-     * is no entry for the given @p groupname value and/or the cache
-     * deamon, @p kdesud, cannot be contacted.
-     *
-     * @return true if the registration succeeds.
-     */
-    bool registerCachedAuthKey(  const QString& grpname );
+    void setCachedAuthTimeout( int sec );
 
     /**
      * Used by the slave to check if it can connect
@@ -601,18 +587,22 @@ protected:
      */
     int waitForAnswer( int expected1, int expected2, QByteArray & data, int * pCmd = 0 );
 
-protected:
+    /**
+     * Internal function to transmit meta data to the application.
+     */
+    void sendMetaData();
+
+    /**
+     * Internal function to transmit authentication key to the application.
+     */
+    void sendAuthKey( const QString& key );
+
     /**
      * Name of the protocol supported by this slave
      */
     QCString mProtocol;
 
     Connection * m_pConnection;
-
-    /**
-     * Internal function to transmit meta data to the application.
-     */
-    void sendMetaData();
 
 private:
     UDSEntryList pendingListEntries;
