@@ -1157,6 +1157,8 @@ void KDockWidget::makeDockVisible()
     if ( !p->isVisible() ) p->show();
     p = p->parentWidget();
   }
+  if( parent() == 0L) // is undocked
+    dockBack();
   show();
 }
 
