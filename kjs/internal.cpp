@@ -27,6 +27,7 @@
 #include "kjs.h"
 #include "object.h"
 #include "types.h"
+#include "operations.h"
 #include "regexp.h"
 #include "nodes.h"
 #include "lexer.h"
@@ -139,8 +140,7 @@ KJSO NumberImp::toPrimitive(Type) const
 
 Boolean NumberImp::toBoolean() const
 {
-  bool b = !((val == 0) /* || (iVal() == N0) */ ||
-	     (val == NaN));
+  bool b = !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
 
   return Boolean(b);
 }

@@ -44,7 +44,7 @@
 extern int kjsyyparse();
 
 namespace KJS {
-    
+
   class GlobalImp : public ObjectImp {
   public:
     GlobalImp();
@@ -53,6 +53,7 @@ namespace KJS {
     void init();
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);
+    virtual bool hasProperty(const UString &p, bool recursive = true) const;
     Imp *filter;
   private:
     class GlobalInternal;
@@ -219,6 +220,13 @@ void GlobalImp::put(const UString &p, const KJSO& v)
     filter->put(p, v);
   else
     Imp::put(p, v);
+}
+
+bool GlobalImp::hasProperty(const UString &p, bool recursive) const
+{
+    if (p == "NaN" || p == "Infinity" || p == "undefined")
+	return true;
+    return (recursive && Imp::hasProperty(p, recursive));
 }
 
 CodeType GlobalFunc::codeType() const
