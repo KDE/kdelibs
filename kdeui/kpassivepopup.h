@@ -234,7 +234,7 @@ private:
 
     WId window;
     QWidget *msgView;
-    QBoxLayout *layout;
+    QBoxLayout *topLayout;
     int hideDelay;
     QTimer *hideTimer;
 
