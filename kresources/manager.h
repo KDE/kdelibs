@@ -143,7 +143,9 @@ class ResourceManager : private ManagerImplListener
       ActiveIterator it;
       it.mIt = mManager->resourceList()->begin();
       it.mList = mManager->resourceList();
-      if ( !(*it)->isActive() ) it++;
+      if ( it.mIt != mManager->resourceList()->end() ) {
+        if ( !(*it)->isActive() ) it++;
+      }
       return it;
     }
 
