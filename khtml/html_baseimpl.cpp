@@ -139,13 +139,14 @@ void HTMLBodyElementImpl::detach()
 
 void  HTMLBodyElementImpl::setPixmap( QPixmap *p )
 {
-    printf("setting bg pixmap\n");
     bgPixmap = p;
+    if(layouted())
+	static_cast<HTMLDocumentImpl *>(document)->print(this, true);    
 }
 
 void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
 {
-    bgPixmap = p;
+    setPixmap(p);
 }
 
 void HTMLBodyElementImpl::close()
