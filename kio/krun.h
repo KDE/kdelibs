@@ -214,19 +214,49 @@ protected:
   static pid_t run( const QString& _cmd );
 
   /**
-   * Sends a DCOP signal to Kicker's taskbar to indicate that an
-   * application has been started.
+   * Send a DCOP signal to indicate that an application has been started.
    *
-   * @param execName Name of the app binary.
-   * @param iconName Name of that app's mini icon.
-   * @param resName Application's res_name, usually equivalent to execName.
-   * @param pid PID of the KShellProcess that is executing the binary.
+   * If the translated name of the application is unavailable, the binary
+   * name may be used for the `name' parameter.
+   *
+   * If the name of the mini icon used for the application is unknown,
+   * QString::null may be passed for the `iconName' parameter.
+   *
+   * If the application does not comply with the NET_WM protocol (it does
+   * not set NET_WM_PID on a window at startup,) but you do know that it
+   * will set a specific string in WM_CLASS.res_name, then you may pass
+   * that name in the `resName' parameter.
+   *
+   * If the application is known to comply with the NET_WM protocol, pass
+   * true for the `compliant' parameter.
+   *
+   * Applications that are NET_WM compliant work perfectly with app-starting
+   * notification.
+   *
+   * Applications that are not NET_WM compliant but do set WM_CLASS.res_name
+   * will work almost correctly. The only side-effect of non-compliance is
+   * that in some uncommon cases the app-starting indication may end
+   * prematurely for this app, plus others starting in parallel which have
+   * specified the same WM_CLASS.res_name.
+   *
+   * Applications that are neither NET_WM compliant nor set WM_CLASS.res_name
+   * will still have app-starting notification. The side-effect is that
+   * for this app and any other non-compliant apps starting in parallel
+   * with this (which also do not set WM_CLASS.res_name), the app-start
+   * indication may end prematurely.
+   *
+   * @param name      Translated name of the app.
+   * @param iconName  Name of the app's mini icon.
+   * @param pid       PID of the running process.
+   * @param resName   Name that will be set in WM_CLASS.res_name on startup.
+   * @param compliant Application complies with the NET_WM protocol.
+   *
    */
   static void clientStarted(
-    const QString & execName,
+    const QString & name,
     const QString & iconName,
     pid_t pid,
-    const QString & binaryName,
+    const QString & resName,
     bool compliant);
 
   /**
