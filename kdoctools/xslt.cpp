@@ -337,7 +337,8 @@ static bool readCache( const QString &filename,
     char buffer[32000];
     int n;
     QCString text;
-    while ( ( n = fd->readBlock(buffer, 31900) ) )
+    // Also end loop in case of error, when -1 is returned
+    while ( ( n = fd->readBlock(buffer, 31900) ) > 0)
     {
         buffer[n] = 0;
         text += buffer;
@@ -347,6 +348,10 @@ static bool readCache( const QString &filename,
 
     output = QString::fromUtf8( text );
     delete fd;
+
+    if (n == -1)
+        return false;
+
     kdDebug( 7119 ) << "finished " << endl;
 
     return true;
