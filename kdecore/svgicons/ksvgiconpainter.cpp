@@ -1455,7 +1455,8 @@ void KSVGIconPainter::drawRectangle(double x, double y, double w, double h, doub
 
 		vec[i].code = ART_END;
 
-		res = art_bez_path_to_vec(vec, 0.25);
+		res = d->helper->art_bez_path_to_vec(vec, 0.25);
+		art_free(vec);
 		d->helper->drawVPath(res);
 	}
 	else
@@ -1538,7 +1539,8 @@ void KSVGIconPainter::drawEllipse(double cx, double cy, double rx, double ry)
 	temp[i].code = ART_END;
 
 	abp = art_bpath_affine_transform(temp, affine);
-	vec = art_bez_path_to_vec(abp, 0.25);
+	vec = d->helper->art_bez_path_to_vec(abp, 0.25);
+	art_free(abp);
 	// undo blowup
 	art_affine_scale(affine, 0.1, 0.1);
 	affine[4] = cx;
