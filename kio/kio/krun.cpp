@@ -473,10 +473,16 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
      result << "/bin/sh" << "-c" << cmd;
   }
 
+  KConfigGroupSaver gs(KGlobal::config(), "General");
+  QString terminal = KGlobal::config()->readEntry("TerminalApplication", "konsole");
+  
+  if (terminal == "konsole")
+    terminal += " -caption=%c %i %m";
+
   if (terminal_su)
   {
     QString cmd = result.join(" ");
-    result = breakup(QString("konsole -caption=%c %i %m %1 -e su %2 -c").arg(_service.terminalOptions()).arg(user));
+    result = breakup(QString("%1 %2 -e su %3 -c").arg(terminal).arg(_service.terminalOptions()).arg(user));
     for(QStringList::Iterator it = result.begin();
         it != result.end(); ++it)
     {
@@ -487,7 +493,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   else if (terminal_sh)
   {
      QStringList cmd = result;
-     result = breakup(QString("konsole -caption=%c %i %m %1 -e").arg(_service.terminalOptions()));
+     result = breakup(QString("%1 %2 -e").arg(terminal).arg(_service.terminalOptions()));
      for(QStringList::Iterator it = result.begin();
          it != result.end(); ++it)
      {
