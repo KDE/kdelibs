@@ -186,6 +186,26 @@ void KJavaAppletWidget::setWindow( WId w )
 }
 
 
+extern Atom qt_wm_state; // defined in qapplication_x11.cpp
+static bool wstate_withdrawn( WId winid )
+{
+    Atom type;
+    int format;
+    unsigned long length, after;
+    unsigned char *data;
+    int r = XGetWindowProperty( qt_xdisplay(), winid, qt_wm_state, 0, 2,
+				FALSE, AnyPropertyType, &type, &format,
+				&length, &after, &data );
+    bool withdrawn = TRUE;
+    if ( r == Success && data && format == 32 ) {
+	Q_UINT32 *wstate = (Q_UINT32*)data;
+	withdrawn  = (*wstate == WithdrawnState );
+	XFree( (char *)data );
+    }
+    return withdrawn;
+}
+
+
 void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
