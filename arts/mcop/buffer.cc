@@ -24,6 +24,7 @@
     */
 
 #include "buffer.h"
+#include "string.h"
 #include <cassert>
 
 using namespace std;
@@ -224,12 +225,19 @@ unsigned char Buffer::fromHexNibble(char c)
 	return 16;	// error
 }
 
+static int stringncmp(const string& s1, const string& s2, size_t n)
+{
+	// I don't know a way to implement that compliant to all STL string
+	// implementations (compare seems to work differently sometimes)
+	return strncmp(s1.c_str(),s2.c_str(),n);
+}
+
 bool Buffer::fromString(const string& data, const string& name)
 {
 	string start = name+":";
 	if(name == "") start = "";
 
-	if(data.compare(0,start.size(), start) != 0) return false;
+	if(stringncmp(data,start,start.size()) != 0) return false;
 	contents.clear();
 
 	string::const_iterator di = data.begin() + start.size();
