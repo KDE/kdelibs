@@ -68,6 +68,11 @@
 
 template class QPtrList<KBookmarkMenu>;
 
+#ifndef ENABLE_FINAL_USERS_SUCK_SUCK_SUCK
+#define ENABLE_FINAL_USERS_SUCK_SUCK_SUCK
+KBookmarkSettings* KBookmarkSettings::s_self = 0;
+#endif
+
 /********************************************************************
  *
  * KBookmarkMenu

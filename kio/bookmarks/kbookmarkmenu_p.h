@@ -182,6 +182,4 @@ public:
     }
 };
 
-KBookmarkSettings* KBookmarkSettings::s_self = 0;
-
 #endif
