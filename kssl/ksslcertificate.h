@@ -35,6 +35,8 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
+#include <qcstring.h>
+
 class QString;
 class QCString;
 class KSSL;
@@ -65,15 +67,25 @@ public:
                         Rejected };
 
   QString toString();
+
   QString getSubject() const;
+
   QString getIssuer() const;
+
   QString getNotBefore() const;
   QString getNotAfter() const;
+
   QDateTime getQDTNotBefore() const;
   QDateTime getQDTNotAfter() const;
-  // getSerialNumber() const;      <-- it's an ASN1Integer.  Yum.
+
+  QByteArray toDer();
+  QByteArray toPem();
+  QByteArray toNetscape();
+
+  // getSerialNumber() const;
   // getSignatureType() const;
   // get public key ??
+
   bool isValid();
   KSSLValidation validate();
   KSSLValidation revalidate();

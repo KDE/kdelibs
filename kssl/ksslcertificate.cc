@@ -474,3 +474,40 @@ return i18n("The certificate is invalid.");
 }
 
 
+QByteArray KSSLCertificate::toDer() {
+QByteArray qba;
+#ifdef HAVE_SSL
+      unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
+      // These should technically be unsigned char * but it doesn't matter
+      // for our purposes
+      char *cert = new char[certlen];
+      char *p = cert;
+      // FIXME: return code!
+      d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
+ 
+      // encode it into a QString
+      qba.setRawData(cert, certlen);
+      delete[] cert;
+#endif
+return qba;
+}
+
+
+
+QByteArray KSSLCertificate::toPem() {
+QByteArray qba;
+
+return qba;
+}
+
+
+
+QByteArray KSSLCertificate::toNetscape() {
+QByteArray qba;
+
+return qba;
+}
+
+
+
+
