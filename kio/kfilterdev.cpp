@@ -239,7 +239,7 @@ int KFilterDev::readBlock( char *data, uint maxlen )
             // We got that much data since the last time we went here
             uint outReceived = availOut - filter->outBufferAvailable();
             //kdDebug() << "avail_out = " << filter->outBufferAvailable() << " result=" << result << " outReceived=" << outReceived << endl;
-            if( availOut < filter->outBufferAvailable() );
+            if( availOut < filter->outBufferAvailable() )
                 kdWarning() << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
 
             // Move on in the output buffer
