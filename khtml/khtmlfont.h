@@ -98,7 +98,7 @@ private:
 	bool dirty;
 };
 
-inline HTMLFont::HTMLFont( const HTMLFont &f ) : font( f.font )
+inline HTMLFont::HTMLFont( const HTMLFont& f ) : font( f.font )
 {
 	textCol = f.textCol;
 	fsize = f.fsize;
@@ -106,7 +106,7 @@ inline HTMLFont::HTMLFont( const HTMLFont &f ) : font( f.font )
 	pointsize = f.pointsize;
 }
 
-inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
+inline const HTMLFont& HTMLFont::operator=( const HTMLFont& f )
 {
 	font = f.font;
 	textCol = f.textCol;
@@ -117,7 +117,7 @@ inline const HTMLFont &HTMLFont::operator=( const HTMLFont &f )
 	return *this;
 }
 
-inline bool HTMLFont::operator==( const HTMLFont &f )
+inline bool HTMLFont::operator==( const HTMLFont& f )
 {
 	return ( font.family() == f.font.family() &&
 		font.weight() == f.font.weight() &&
@@ -139,7 +139,7 @@ class HTMLFontManager
 public:
 	HTMLFontManager();
 
-	const HTMLFont *getFont( const HTMLFont &f );
+	const HTMLFont *getFont( const HTMLFont& f );
 
 private:
 	QList<HTMLFont> list;
