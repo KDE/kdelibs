@@ -203,7 +203,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                                            new KJavaServerMaintainer);
     }
     m_view = new CoverWidget (wparent);
-    QString classname, classid, codebase, khtml_codebase;
+    QString classname, classid, codebase, khtml_codebase, src_param;
     int width = -1;
     int height = -1;
     KJavaApplet * applet = m_view->appletWidget()->applet ();
@@ -232,9 +232,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                 //else if (name.lower()==QString::fromLatin1("classid"))
                     classid = value;
                 else if (name_lower == QString::fromLatin1("code") ||
-                         name_lower == QString::fromLatin1("java_code") ||
-                         name_lower == QString::fromLatin1("src"))
+                         name_lower == QString::fromLatin1("java_code"))
                     classname = value;
+                else if (name_lower == QString::fromLatin1("src"))
+                    src_param = value;
                 else if (name_lower == QString::fromLatin1("archive") ||
                          name_lower == QString::fromLatin1("java_archive") ||
                          name_lower.startsWith ("cache_archive"))
@@ -260,6 +261,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         else if (classname.isEmpty () && classid.startsWith ("java:"))
             classname = classid.mid(5);
     }
+    if (classname.isEmpty ())
+        classname = src_param;
+    else if (!src_param.isEmpty ())
+        applet->setParameter (QString ("SRC"), src_param);
     if (codebase.isEmpty ())
         codebase = khtml_codebase;
     if (baseurl.isEmpty ()) {
