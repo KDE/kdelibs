@@ -123,7 +123,7 @@
          "../common/dbl1hu.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1hu
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//HU"
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
 <![%l10n-id;[
@@ -240,7 +240,7 @@
          "../common/dbl1sl.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1sl
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//SL"
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
 <![%l10n-sv;[
