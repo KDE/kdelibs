@@ -599,7 +599,6 @@ void KMultiTabBarTab::updateState()
                         setFixedWidth(m_expandedSize);
 	}
 	QApplication::sendPostedEvents(0,QEvent::Paint | QEvent::Move | QEvent::Resize | QEvent::LayoutHint);
-	qApp->processEvents();
 	QApplication::flush();
 }
 
