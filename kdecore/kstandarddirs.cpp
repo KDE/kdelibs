@@ -1262,6 +1262,9 @@ static QStringList lookupProfiles(const QString &mapFile)
     }
 
     QCString user = pw->pw_name;
+    
+    gid_t sup_gids[512];
+    int sup_gids_nr = getgroups(512, sup_gids);
 
     KSimpleConfig mapCfg(mapFile, true);
     mapCfg.setGroup("Users");
@@ -1283,15 +1286,22 @@ static QStringList lookupProfiles(const QString &mapFile)
         // Check if user is in this group
         struct group *grp_ent = getgrnam(grp);
         if (!grp_ent) continue;
-
-        char ** members = grp_ent->gr_mem;
-        for(char * member; (member = *members); ++members)
+        int gid = grp_ent->gr_gid;
+        if (pw->pw_gid == gid)
         {
-            if (user == member)
+            // User is in this group --> add profiles
+            profiles += mapCfg.readListEntry(*it);
+        }
+        else
+        {
+            for(int i = 0; i < sup_gids_nr; i++)
             {
-                // User is in this group --> add profiles
-                profiles += mapCfg.readListEntry(*it);
-                break;
+                if (sup_gids[i] == gid)
+                {
+                    // User is in this group --> add profiles
+                    profiles += mapCfg.readListEntry(*it);
+                    break;
+                }
             }
         }
     }
