@@ -837,7 +837,22 @@ void KKeyDialog::commitChanges()
 	m_pKeyChooser->commitChanges();
 }
 
-int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings, bool bAllowLetterShortcuts  )
+int KKeyDialog::configure( KActionCollection* coll, QWidget* parent, bool bSaveSettings )
+{
+	return configure( coll, true, parent, bSaveSettings);
+}
+
+int KKeyDialog::configure( KAccel* keys, QWidget* parent, bool bSaveSettings )
+{
+	return configure( keys, true, parent, bSaveSettings);
+}
+
+int KKeyDialog::configure( KGlobalAccel* keys, QWidget* parent, bool bSaveSettings )
+{
+	return configure( keys, true, parent, bSaveSettings);
+}
+
+int KKeyDialog::configure( KAccel* keys, bool bAllowLetterShortcuts, QWidget *parent, bool bSaveSettings )
 {
 	KKeyDialog dlg( bAllowLetterShortcuts, parent );
 	dlg.m_pKeyChooser->insert( keys );
@@ -847,7 +862,7 @@ int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings, bo
 	return b;
 }
 
-int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettings, bool bAllowLetterShortcuts  )
+int KKeyDialog::configure( KGlobalAccel* keys, bool bAllowLetterShortcuts, QWidget *parent, bool bSaveSettings )
 {
 	KKeyDialog dlg( bAllowLetterShortcuts, parent );
 	dlg.m_pKeyChooser->insert( keys );
@@ -857,7 +872,7 @@ int KKeyDialog::configure( KGlobalAccel* keys, QWidget *parent, bool bSaveSettin
 	return b;
 }
 
-int KKeyDialog::configure( KActionCollection* coll, QWidget *parent, bool bSaveSettings, bool bAllowLetterShortcuts )
+int KKeyDialog::configure( KActionCollection* coll, bool bAllowLetterShortcuts, QWidget *parent, bool bSaveSettings )
 {
 	kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << bSaveSettings << " )" << endl;
 	KKeyDialog dlg( bAllowLetterShortcuts, parent );

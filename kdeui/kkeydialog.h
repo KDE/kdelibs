@@ -242,24 +242,43 @@ class KKeyDialog : public KDialogBase
 	 * shortcut settings will be active if the user presses OK.  If
 	 * @p bSaveSettings is true, the settings will also be saved back to
 	 * the *uirc file which they were intially read from.
-	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
-	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
-	static int configure( KActionCollection* coll, QWidget* parent = 0, bool bSaveSettings = true, bool bAllowLetterShortcuts = true );
+	static int configure( KActionCollection* coll, QWidget* parent = 0, bool bSaveSettings = true );
 
 	/**
 	 * This is an overloaded member function, provided for convenience.
 	 * It behaves essentially like the above function, except that settings
 	 * are saved to a *.rc file using KConfig.
 	 */
-	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true, bool bAllowLetterShortcuts = true );
+	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 
 	/**
 	 * This is an overloaded member function, provided for convenience.
 	 * It behaves essentially like the above function.
 	 */
-	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true, bool bAllowLetterShortcuts = true );
+	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
+
+
+	/**
+	 * This is an overloaded member function, provided for convenience.
+	 * It behaves essentially like the above function.
+	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
+	 *  keys ('A', '1', etc.) are not permissible shortcuts.
+	 */
+	static int configure( KActionCollection* coll, bool bAllowLetterShortcuts, QWidget* parent = 0, bool bSaveSettings = true ); // BCI: merge with bAllowLetterShortcuts = true
+
+	/**
+	 * This is an overloaded member function, provided for convenience.
+	 * It behaves essentially like the above function.
+	 **/
+	static int configure( KAccel* keys, bool bAllowLetterShortcuts, QWidget* parent = 0, bool bSaveSettings = true ); // BCI: merge with bAllowLetterShortcuts = true
+
+	/**
+	 * This is an overloaded member function, provided for convenience.
+	 * It behaves essentially like the above function.
+	 **/
+	static int configure( KGlobalAccel* keys, bool bAllowLetterShortcuts, QWidget* parent = 0, bool bSaveSettings = true ); // BCI: merge with bAllowLetterShortcuts = true
 
 	/**
 	 * @deprecated Obsolete.
