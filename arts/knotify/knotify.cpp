@@ -30,6 +30,14 @@
 
 #include <iostream.h>
 
+#ifdef HAVE_ARTS
+#include "qiomanager.h"
+#include "dispatcher.h"
+#include "soundserver.h"
+
+SimpleSoundServer *server;
+#endif
+
 class KNotifyEntryPrivate
 {
 public:
@@ -40,9 +48,6 @@ public:
   QString	i_s_message;
 };
 
-
-
-
 KApplication   *globalKapp;
 
 int main(int argc, char **argv)
@@ -52,6 +57,15 @@ int main(int argc, char **argv)
   if ( !kapp->dcopClient()->isAttached() ) {
     kapp->dcopClient()->registerAs("knotify",false);
   }
+#ifdef HAVE_ARTS
+  // setup mcop communication and connect to soundserver
+  QIOManager qiomanager;
+  Dispatcher dispatcher(&qiomanager);
+
+  server = SimpleSoundServer::_fromString("global:Arts_SimpleSoundServer");
+  if(!server)
+    cerr << "artsd not running - no sound notifications" << endl;
+#endif
   KNotify *l_dcop_notify = new KNotify();
 
   KNotifyEntry *l_event1 = new KNotifyEntry(KNotifyEntry::Messagebox				, i18n("Switched to Desktop 1"));
@@ -62,6 +76,11 @@ int main(int argc, char **argv)
   l_dcop_notify->registerNotification( (const char*)"Desktop3", l_event3);
   KNotifyEntry *l_event4 = new KNotifyEntry(KNotifyEntry::None					, i18n("Switched to Desktop 4"));
   l_dcop_notify->registerNotification( (const char*)"Desktop4", l_event4);
+  KNotifyEntry *l_event5 = new KNotifyEntry(KNotifyEntry::Sound					, i18n("Switched to Desktop 5"));
+#warning "(Stefan) - you probably need to change the path to the wav here"
+  l_event5->setSound(true,"/usr/share/sounds/KDE_Startup.wav");
+  l_dcop_notify->registerNotification( (const char*)"Desktop5", l_event5);
+
 
   
   int l_i_ret = globalKapp->exec();
@@ -154,11 +173,19 @@ void KNotify::processNotification(QString &val_s_event)
 }
 
 
+#ifdef HAVE_ARTS
+bool KNotify::notifyBySound( KNotifyEntry *ptr_event)
+{
+  if(server) server->play((const char *)ptr_event->p->i_s_soundFilename);
+  return true;
+}
+#else
 bool KNotify::notifyBySound( KNotifyEntry */*ptr_event*/)
 {
   cerr << "notifyBySound(): Not implemented\n";
   return true;
 }
+#endif
 
 bool KNotify::notifyByMessagebox( KNotifyEntry *ptr_event)
 {
