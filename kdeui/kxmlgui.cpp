@@ -26,6 +26,7 @@
 #include <qaction.h>
 #include <qfile.h>
 #include <kdebug.h>
+#include <qtextstream.h>
 
 /**
  * This structure is used to know to which servant certain actions belong. In addition we store
@@ -136,6 +137,22 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
   delete[] buffer;
 
   return text;
+}
+
+QString KXMLGUIFactory::documentToXML( const QDomDocument& doc )
+{
+  QString str;
+  QTextStream ts(&str, IO_WriteOnly);
+  ts << doc;
+  return str;
+}
+
+QString KXMLGUIFactory::elementToXML( const QDomElement& elem )
+{
+  QString str;
+  QTextStream ts(&str, IO_WriteOnly);
+  ts << elem;
+  return str;
 }
 
 KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder )

@@ -27,13 +27,9 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 
-#include <qtextstream.h>
 static void dump_xml(const QDomElement& elem)
 {
-    QString doc;
-    QTextStream ts(&doc, IO_WriteOnly);
-    ts << elem;
-    qDebug("%s", doc.latin1());
+  qDebug("%s", KXMLGUIFactory::elementToXML(elem).latin1());
 }
 
 class KXMLGUIClientPrivate

@@ -48,6 +48,9 @@ class KXMLGUIFactory
   // XXX move to somewhere else? (Simon)
   static QString readConfigFile( const QString &filename );
 
+  static QString documentToXML( const QDomDocument& doc );
+  static QString elementToXML( const QDomElement& elem );
+
   /**
    * Creates the GUI described by the QDomDocument of the client,
    * using the client's actions, and merges it with the previously
