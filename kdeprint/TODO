@@ -36,4 +36,7 @@ WISHES
 
 - extension of the print ioslave to view jobs (print:/jobs)
 
+- possibility to print whole screen or highlighted window
+  directly to printer?
+                                                         (-kp-)                                 
 - add a "Print" button to the IPP report dialog
