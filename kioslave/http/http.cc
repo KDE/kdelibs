@@ -2275,6 +2275,9 @@ bool HTTPProtocol::httpOpen()
     else
       header += "Connection: close\r\n";
 
+    if ( m_bPersistentProxyConnection )
+      header += "Proxy-Connection: Keep-Alive\r\n";
+
     if (!m_request.userAgent.isEmpty())
     {
         header += "User-Agent: ";
@@ -3418,10 +3421,14 @@ bool HTTPProtocol::readHeader()
         if ( getAuthorization() )
         {
            // for NTLM Authentication we have to keep the connection open!
-           if ( (Authentication == AUTH_NTLM) && (m_strAuthorization.length() > 4) )
+           if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 ) 
            {
              m_bKeepAlive = true;
              readBody( true );
+           }
+           else if (ProxyAuthentication == AUTH_NTLM && m_strProxyAuthorization.length() > 4)
+           {
+            readBody( true );
            }
            else
              httpCloseConnection();
@@ -4845,7 +4852,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
   }
 #endif
 #ifdef HAVE_LIBNTLM
-  else if ( strncasecmp( p, "NTLM", 4 ) == 0)
+  else if ( strncasecmp( p, "NTLM", 4 ) == 0 && m_bPersistentProxyConnection )
   {
     f = AUTH_NTLM;
     memcpy((void *)p, "NTLM", 4); // Correct for upper-case variations.
@@ -4996,7 +5003,9 @@ bool HTTPProtocol::getAuthorization()
 
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::getAuthorization: "
                  << "Current Response: " << m_responseCode << ", "
-                 << "Previous Response: " << m_prevResponseCode << endl;
+                 << "Previous Response: " << m_prevResponseCode << ", "
+                 << "Authentication: " << Authentication << ", "
+                 << "ProxyAuthentication: " << ProxyAuthentication << endl;
 
   if (m_request.bNoAuth)
   {
@@ -5014,7 +5023,7 @@ bool HTTPProtocol::getAuthorization()
   if (repeatFailure)
   {
     bool prompt = true;
-    if ( Authentication == AUTH_Digest )
+    if ( Authentication == AUTH_Digest || ProxyAuthentication == AUTH_Digest )
     {
       bool isStaleNonce = false;
       QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
@@ -5053,9 +5062,10 @@ bool HTTPProtocol::getAuthorization()
     }
 
 #ifdef HAVE_LIBNTLM
-    if ( Authentication == AUTH_NTLM )
+    if ( Authentication == AUTH_NTLM || ProxyAuthentication == AUTH_NTLM )
     {
       QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
+      kdDebug(7113) << "auth: " << auth << endl;
       if ( auth.length() > 4 )
       {
         prompt = false;
@@ -5886,7 +5896,7 @@ QString HTTPProtocol::proxyAuthenticationHeader()
       break;
 #ifdef HAVE_LIBNTLM
     case AUTH_NTLM:
-      header += createNTLMAuth( true );
+      if ( m_bFirstRequest ) header += createNTLMAuth( true );
       break;
 #endif
     case AUTH_None:
