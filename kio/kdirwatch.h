@@ -45,6 +45,9 @@ class KDirWatchPrivate;
   * If a watched directory gets deleted, @ref KDirwatch will remove it from
   * the list, and  emit the signal @ref deleted().
   *
+  * It's possible to watch a directory that doesn't exist yet.
+  * @ref KDirWatch will emit a @ref dirty() signal when it is created.
+  *
   * @short Class for watching directory changes.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
   */
