@@ -22,6 +22,8 @@ to ie. play a sound
 
 7	KPlayObjectFactory factory(d->server);
 8	playobj = factory.createPlayObject(file, true);
+
+9	playobj->object().play();
 <snap>
 
 Line:
@@ -38,9 +40,10 @@ Line:
 			 bool createBUS (specifies wheter to create a Synth_BUS_UPLINK or not,
 					 "false" is only interesting if you want to use EffectsStacks
 					 etc..., see Noatun)
-			
-That's it, with 8 LOC a full media player :)
+9	Play the file
 
+That's it, with 9 LOC a "full" media player :)
 
+Enjoy...
 Nikolas Zimmermann
 <wildfox@kde.org>

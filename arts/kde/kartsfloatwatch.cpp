@@ -21,7 +21,7 @@
     */
 
 #include "kwrapper.h"
-#include "kartsfloatwatch.h"
+#include "kartsfloatwatch.moc"
 #include "connect.h"
 
 using namespace Arts;
@@ -50,7 +50,7 @@ KArtsFloatWatch::KArtsFloatWatch(Arts::Object object, const char *stream,
 {
 	d = new KArtsFloatWatchPrivate();
 	d->proxy = KFloatWatchProxy::_from_base(new KFloatWatchProxy_impl(this));
-	connect(object, stream, d->proxy, "value");
+	Arts::connect(object, stream, d->proxy, "value");
 }
 
 KArtsFloatWatch::~KArtsFloatWatch()
