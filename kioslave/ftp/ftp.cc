@@ -79,7 +79,7 @@
 #define FTP_PASSWD  "anonymous@"
 
 //#undef  kdDebug
-//#define ENABLE_CAN_RESUME    
+#define ENABLE_CAN_RESUME    
 
 // JPF: somebody should find a better solution for this or move this to KIO
 // JPF: anyhow, in KDE 3.2.0 I found diffent MAX_IPC_SIZE definitions!
@@ -351,32 +351,36 @@ const char* Ftp::ftpResponse(int iOffset)
   // read the next line ...
   if(iOffset < 0)
   {  
-    bool bMore = false;
-    char match[4];
+    int  iMore = 0;
+    m_iRespCode = 0;
     
-    // if the server sends multiline responses (xxx-) we loop here until the
-    // last line is reached. Only data from the last line will be stored.
+    // If the server sends multiline responses "nnn-text" we loop here until
+    // a final "nnn text" line is reached. Only data from the final line will
+    // be stored. Some servers (OpenBSD) send a single "nnn-" followed by 
+    // optional lines that start with a space and a final "nnn text" line.
     do {
       int nBytes = m_control->textRead();
+      int iCode  = atoi(pTxt);
+      if(iCode > 0) m_iRespCode = iCode;
       
-      // we got a line, now check for multiline responses ...
-      if(nBytes < 4)
-        bMore = false;
-      else if(!bMore && pTxt[3] == '-') 
-      {
-        memcpy(match, pTxt, 3); match[3] = 32;
-        bMore = true;
-      }
-      else if(bMore && memcmp(match, pTxt, 4) == 0)
-        bMore = false;
-      if(!bMore)
-        break;
-      kdDebug(7102) << "    > " << pTxt << endl;
-  
-    } while(bMore);
+      // ignore lines starting with a space in multiline response
+      if(iMore != 0 && pTxt[0] == 32)
+        ;
+      // otherwise the line should start with "nnn-" or "nnn "
+      else if(nBytes < 4 || iCode < 100)
+        iMore = 0;
+      // we got a valid line, now check for multiline responses ...
+      else if(iMore == 0 && pTxt[3] == '-') 
+        iMore = iCode;
+      // "nnn " ends multiline mode ...
+      else if(iMore != 0 && (iMore != iCode || pTxt[3] != '-'))
+        iMore = 0;
+      
+      if(iMore != 0)
+         kdDebug(7102) << "    > " << pTxt << endl;
+    } while(iMore != 0);
     kdDebug(7102) << "resp> " << pTxt << endl;
     
-    m_iRespCode = atoi(pTxt);
     m_iRespType = (m_iRespCode > 0) ? m_iRespCode / 100 : 0;
   }
   
@@ -2370,7 +2374,7 @@ bool Ftp::ftpFolder(const QString& path, bool bReportError)
 {
   QString newPath = path;
   int iLen = newPath.length();
-  if(newPath[iLen-1] == '/') newPath.truncate(iLen-1);
+  if(iLen > 1 && newPath[iLen-1] == '/') newPath.truncate(iLen-1);
   
   //kdDebug(7102) << "ftpFolder: want '" << newPath << "' has '" << m_currentPath << "'" << endl;
   if(m_currentPath == newPath)
