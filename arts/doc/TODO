@@ -146,3 +146,7 @@ crash/hang).
   => Configuration
 
 - make extension dir runtime configurable (not only compiled in)
+
+  => Documentation & Web
+
+- make kdoc classtree available online
