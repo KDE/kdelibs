@@ -6,15 +6,15 @@
 //
 
 #include <stdlib.h>
+#include <stdio.h>
+
+#include <qdatetime.h>
+#include <qlabel.h>
 
 #include <kglobal.h>
 #include <klocale.h>
 #include <kapp.h>
 #include <kcharsets.h>
-#include <qlabel.h>
-#include <locale.h>
-#include <time.h>
-#include <stdio.h>
 
 #include "klocaletest.h"
 
@@ -56,46 +56,19 @@ void Test::createFields()
 
   QFont charset=KGlobal::locale()->charset();
   string+="Charset name: " + charset.rawName() + "\n";
-  string+="Locale categories: \n";
-  string+=showLocale("LC_MESSAGES");
-  string+=showLocale("LC_CTYPE");
-  string+=showLocale("LC_COLLATE");
-  string+=showLocale("LC_NUMERIC");
-  string+=showLocale("LC_MONETARY");
-  string+=showLocale("LC_TIME");
   string+="Localized date and time: ";
-
-  // Don't use Qt time & date functions. They are not localized!
-  char buffer[256];
-  time_t curtime;
-  struct tm *loctime;
-  /* Get the current time. */
-  curtime = time (NULL);
-  /* Convert it to local time representation. */
-  loctime = localtime (&curtime);
-  /* Print it out in a nice format. */
-  strftime (buffer, 256, "%c\n", loctime);
-  string+=buffer;
-  string+="Non-localized number: ";
-  sprintf(buffer,"%6.4f\n",3.141592);
-  string+=buffer;
-  string+="Localized number: ";
-  // localization of number representation is off by default
-  // [not anymore - David]
-  //KGlobal::locale()->enableNumericLocale(true);
-  sprintf(buffer,"%6.4f\n",3.141592);
-  string+=buffer;
-  // remeber of disabling numeric localization after use
-  // in no case localized number may be written to config file
-  // or other machine parsed code
-  //KGlobal::locale()->enableNumericLocale(false);
+  string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
+  string+="\nLocalized number: ";
+  string+=KGlobal::locale()->formatNumber(1234567.89);
+  string+="\nLocalized monetary numbers: ";
+  string+=KGlobal::locale()->formatMoney(1234567.89) + " / " +KGlobal::locale()->formatMoney(-1234567.89);
   // This will not work
   // but you can copy other *.mo file
-  string+="Some localized strings:\n";
-  string+=QString("Yes = ")+i18n("Yes")+"\n";
-  string+=QString("No = ")+i18n("No")+"\n";
-  string+=QString("Help = ")+i18n("Help")+"\n";
-  string+=QString("Cancel = ")+i18n("Cancel")+"\n";
+  string+="\nSome localized strings:\n";
+  string+=QString::fromLatin1("Yes = ")+i18n("Yes")+"\n";
+  string+=QString::fromLatin1("No = ")+i18n("No")+"\n";
+  string+=QString::fromLatin1("Help = ")+i18n("Help")+"\n";
+  string+=QString::fromLatin1("Cancel = ")+i18n("Cancel")+"\n";
   
   label=new QLabel(string,this,"Label");
   label->setGeometry(10,10,400,400);
@@ -114,5 +87,5 @@ int main( int argc, char ** argv )
 
   return a.exec();
 }
-#include "klocaletest.moc"
 
+#include "klocaletest.moc"
