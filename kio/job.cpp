@@ -1242,7 +1242,7 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMet
 	     Observer::self(), SLOT( slotCanResume( KIO::Job*, bool ) ) );
   }
     // Stat the dest
-    KIO::Job * job = KIO::stat( m_dest );
+    KIO::Job * job = KIO::stat( m_dest, false );
     kdDebug(7007) << "CopyJob:stating the dest " << m_dest.url() << endl;
     addSubjob(job);
 }
@@ -1314,7 +1314,7 @@ void CopyJob::startNextJob()
     if (it != m_srcList.end())
     {
         // First, stat the src
-        Job * job = KIO::stat( *it );
+        Job * job = KIO::stat( *it, false );
         kdDebug(7007) << "KIO::stat on " << (*it).url() << endl;
         state = STATE_STATING;
         addSubjob(job);
@@ -1497,7 +1497,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
 
                 // We need to stat the existing dir, to get its last-modification time
                 KURL existingDest( (*it).uDest );
-                Job * newJob = KIO::stat( existingDest );
+                Job * newJob = KIO::stat( existingDest, false );
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.url() << endl;
                 state = STATE_CONFLICT_CREATING_DIRS;
                 addSubjob(newJob);
@@ -1689,7 +1689,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 assert ( subjobs.isEmpty() );
                 // We need to stat the existing file, to get its last-modification time
                 KURL existingFile( (*it).uDest );
-                Job * newJob = KIO::stat( existingFile );
+                Job * newJob = KIO::stat( existingFile, false );
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingFile.url() << endl;
                 state = STATE_CONFLICT_COPYING_FILES;
                 addSubjob(newJob);
@@ -1848,7 +1848,13 @@ void CopyJob::copyNextFile()
                 bOverwrite = true;
 
         KIO::Job * newjob;
-        if ( !(*it).linkDest.isEmpty() ) // Copying a symlink
+        if ( !(*it).linkDest.isEmpty() &&
+             ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
+             ((*it).uSource.host() == (*it).uDest.host()) &&
+             ((*it).uSource.port() == (*it).uDest.port()) &&
+             ((*it).uSource.user() == (*it).uDest.user()) &&
+             ((*it).uSource.pass() == (*it).uDest.pass()))
+          // Copying a symlink - only on the same protocol/host/etc. (#5601)
         {
             bool bCancelAll = false;
             // The "source" is in fact what the existing link points to
@@ -2145,7 +2151,7 @@ void DeleteJob::startNextJob()
     if (it != m_srcList.end())
     {
         // Stat first
-        KIO::Job * job = KIO::stat( *it );
+        KIO::Job * job = KIO::stat( *it, false );
         //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).url() << endl;
         state = STATE_STATING;
         addSubjob(job);
