@@ -27,6 +27,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qpopupmenu.h>
+#include <qregexp.h>
 #include <qtimer.h>
 #include <qvbox.h>
 
