@@ -152,6 +152,7 @@ private slots:
     void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
     void spellCheckerCorrected( const QString &, const QString &, unsigned int );
     void spellCheckerFinished();
+    void toggleAutoSpellCheck();
 
 private:
     void posToRowCol( unsigned int pos, unsigned int &line, unsigned int &col );

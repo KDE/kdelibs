@@ -211,7 +211,7 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
     menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
     menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
 
-    if ( checkSpellingEnabled() && !isReadOnly() ) {
+    if ( !isReadOnly() ) {
 
         menu->insertSeparator();
         int id = menu->insertItem( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ),
@@ -219,6 +219,10 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 
         if( text().isEmpty() )
             menu->setItemEnabled( id, false );
+
+        id = menu->insertItem( i18n( "Auto Spell Check" ),
+                               this, SLOT( toggleAutoSpellCheck() ) );
+        menu->setItemChecked(id, d->checkSpellingEnabled);
     }
 
     return menu;
@@ -245,6 +249,11 @@ void KTextEdit::setPalette( const QPalette& palette )
     d->customPalette = ownPalette();
 }
 
+void KTextEdit::toggleAutoSpellCheck()
+{
+    setCheckSpellingEnabled( !d->checkSpellingEnabled );
+}
+
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
     if ( check == d->checkSpellingEnabled )
@@ -255,9 +264,13 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
     // off we should remove the old one.
 
     d->checkSpellingEnabled = check;
-    if ( hasFocus() )
-        d->highlighter = new KDictSpellingHighlighter( this );
-    else {
+    if ( check )
+    {
+        if (hasFocus())
+            d->highlighter = new KDictSpellingHighlighter( this );
+    }
+    else
+    {
         delete d->highlighter;
         d->highlighter = 0;
     }
