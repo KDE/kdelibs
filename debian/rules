@@ -167,7 +167,7 @@ binary-common:
 	dh_installman
 	dh_strip
 	dh_link
-	dh_compress -X.docbook -X.css -X-license -X.dcl -X.bz2
+	dh_compress -X.docbook -X.css -X-license -X.dcl -X.bz2 -X.tag
 	dh_fixperms
 	dh_makeshlibs -V
 	dh_installdeb
