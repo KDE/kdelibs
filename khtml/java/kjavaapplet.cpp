@@ -236,6 +236,11 @@ bool KJavaLiveConnect::call( const unsigned long objid, const QString & func, co
 
 void KJavaLiveConnect::unregister(const unsigned long objid)
 {
+    if (objid == 0) {
+        // typically a gc after a function call on the applet, 
+        // no need to send to the jvm
+        return;
+    }
     context->derefObject(applet, objid);
 }
 
