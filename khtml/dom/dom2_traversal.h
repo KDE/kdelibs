@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
- *
+ * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -22,12 +22,14 @@
  */
 #ifndef _dom2_traversal_h_
 #define _dom2_traversal_h_
+#include "dom_node.h"
+
 
 namespace DOM {
-
-class NodeFilter;
 class Node;
-
+class NodeFilter;
+class NodeImpl;
+ 
 /**
  * NodeIterators are used to step through a set of nodes, e.g. the set
  * of nodes in a NodeList, the document subtree governed by a
@@ -53,55 +55,7 @@ public:
     NodeIterator & operator = (const NodeIterator &other);
 
     ~NodeIterator();
-    /**
-     * These are the available values for the whatToShow parameter.
-     * They are the same as the set of possible types for Node, and
-     * their values are derived by using a bit position corresponding
-     * to the value of NodeType for the equivalent node type.
-     *
-     */
-    enum Constants for whatToShow {
-        SHOW_ALL = 0x0000FFFF,
-        SHOW_ELEMENT = 0x00000001,
-        SHOW_ATTRIBUTE = 0x00000002,
-        SHOW_TEXT = 0x00000004,
-        SHOW_CDATA_SECTION = 0x00000008,
-        SHOW_ENTITY_REFERENCE = 0x00000010,
-        SHOW_ENTITY = 0x00000020,
-        SHOW_PROCESSING_INSTRUCTION = 0x00000040,
-        SHOW_COMMENT = 0x00000080,
-        SHOW_DOCUMENT = 0x00000100,
-        SHOW_DOCUMENT_TYPE = 0x00000200,
-        SHOW_DOCUMENT_FRAGMENT = 0x00000400,
-        SHOW_NOTATION = 0x00000800
-    };
-
-    /**
-     * This attribute determines which node types are presented via
-     * the Iterator.
-     *
-     */
-    long whatToShow() const;
-
-    /**
-     * The filter used to screen nodes.
-     *
-     */
-    NodeFilter filter() const;
-
-    /**
-     * The value of this flag determines whether entity reference
-     * nodes are expanded. To produce a view of the document that has
-     * entity references expanded and does not expose the entity
-     * reference node itself, use the whatToShow flags to hide the
-     * entity reference node and set expandEntityReferences to true
-     * when creating the iterator. To produce a view of the document
-     * that has entity reference nodes but no entity expansion, use
-     * the whatToShow flags to show the entity reference node and set
-     * expandEntityReferences to true.
-     *
-     */
-    bool expandEntityReferences() const;
+    
 
     /**
      * Returns the next node in the set and advances the position of
@@ -133,6 +87,91 @@ public:
      *
      */
     Node previousNode (  );
+
+    void setWhatToShow(short _whatToShow);
+    void setFilter(NodeFilter *_filter);
+    void setExpandEntityReferences(bool value);
+
+    /**
+     * This function has to be called if you delete a node from the
+     * document tree and you want the Iterator to react if there
+     * are any changes concerning it.
+     */
+    void deleteNode(Node n);
+
+    void setReferenceNode(Node n);
+    short isAccepted(Node n);
+    Node getNextNode(Node n);
+    Node getPreviousNode(Node n);
+ protected:
+    /**
+     * These are the available values for the whatToShow parameter.
+     * They are the same as the set of possible types for Node, and
+     * their values are derived by using a bit position corresponding
+     * to the value of NodeType for the equivalent node type.
+     *
+     */
+    enum ShowCode {
+        SHOW_ALL = 0x0000FFFF,
+        SHOW_ELEMENT = 0x00000001,
+        SHOW_ATTRIBUTE = 0x00000002,
+        SHOW_TEXT = 0x00000004,
+        SHOW_CDATA_SECTION = 0x00000008,
+        SHOW_ENTITY_REFERENCE = 0x00000010,
+        SHOW_ENTITY = 0x00000020,
+        SHOW_PROCESSING_INSTRUCTION = 0x00000040,
+        SHOW_COMMENT = 0x00000080,
+        SHOW_DOCUMENT = 0x00000100,
+        SHOW_DOCUMENT_TYPE = 0x00000200,
+        SHOW_DOCUMENT_FRAGMENT = 0x00000400,
+        SHOW_NOTATION = 0x00000800
+    };
+
+    /**
+     * This attribute determines which node types are presented via
+     * the Iterator.
+     *
+     */
+    long whatToShow;
+
+    /**
+     * The filter used to screen nodes.
+     *
+     */
+    NodeFilter *filter;
+
+    /**
+     * The value of this flag determines whether entity reference
+     * nodes are expanded. To produce a view of the document that has
+     * entity references expanded and does not expose the entity
+     * reference node itself, use the whatToShow flags to hide the
+     * entity reference node and set expandEntityReferences to true
+     * when creating the iterator. To produce a view of the document
+     * that has entity reference nodes but no entity expansion, use
+     * the whatToShow flags to show the entity reference node and set
+     * expandEntityReferences to true.
+     *
+     */
+    bool expandEntityReferences;
+
+    /**
+     * Internal, not specified by the dom
+     * The value of this flag detirmines wheter the iterator is in front
+     * of the referenceNode or in the back of it. Gets set automaticly by
+     * the nextNode() and previousNode() functions.
+     */
+    bool inFront;
+    /**
+     * Internal, not specified by the dom
+     * The current referenceNode
+     */
+    Node referenceNode;
+
+    /**
+     * Internal, not specified by the dom
+     * The initial referenceNode for this Iterator
+     */
+    Node rootNode;
 };
 
 
@@ -169,7 +208,7 @@ public:
      * method:
      *
      */
-    enum Constants returned by acceptNode {
+    enum acceptNode {
         FILTER_ACCEPT = 1,
         FILTER_REJECT = 2,
         FILTER_SKIP = 3
@@ -217,7 +256,7 @@ class TreeWalker
 public:
     TreeWalker();
     TreeWalker(const TreeWalker &other);
-
+    
     TreeWalker & operator = (const TreeWalker &other);
 
     ~TreeWalker();
@@ -229,7 +268,7 @@ public:
      * the equivalent node type.
      *
      */
-    enum Constants for whatToShow {
+    enum ShowCode {
         SHOW_ALL = 0x0000FFFF,
         SHOW_ELEMENT = 0x00000001,
         SHOW_ATTRIBUTE = 0x00000002,
@@ -245,49 +284,12 @@ public:
         SHOW_NOTATION = 0x00000800
     };
 
-    /**
-     * This attribute determines which node types are presented via
-     * the TreeWalker.
-     *
-     */
-    long whatToShow() const;
-
-    /**
-     * The filter used to screen nodes.
-     *
-     */
-    NodeFilter filter() const;
-
-    /**
-     * The value of this flag determines whether entity reference
-     * nodes are expanded. To produce a view of the document that has
-     * entity references expanded and does not expose the entity
-     * reference node itself, use the whatToShow flags to hide the
-     * entity reference node and set expandEntityReferences to true
-     * when creating the iterator. To produce a view of the document
-     * that has entity reference nodes but no entity expansion, use
-     * the whatToShow flags to show the entity reference node and set
-     * expandEntityReferences to true.
-     *
-     */
-    bool expandEntityReferences() const;
-
-    /**
-     * The current node.
-     *
-     *  The value must not be null. Attempting to set it to null will
-     * raise a NOT_SUPPORTED_ERR exception. When setting a node, the
-     * whatToShow flags and any Filter associated with the TreeWalker
-     * are not checked. The currentNode may be set to any Node of any
-     * type.
-     *
-     */
-    Node currentNode() const;
+   
 
     /**
      * see @ref currentNode
      */
-    void setCurrentNode( const Node & );
+    void setCurrentNode( const Node _currentNode );
 
     /**
      * Moves to and returns the parent node of the current node. If
@@ -400,6 +402,65 @@ public:
      *
      */
     Node nextNode (  );
+
+    /**
+     * Sets which node types are to be presented via the TreeWalker
+     */
+    void setWhatToShow(long _whatToShow);
+    void setFilter(NodeFilter *_filter);
+    void setExpandEntityReferences(bool value);
+    Node getCurrentNode();
+
+    Node getParentNode(Node n);
+    Node getFirstChild(Node n);
+    Node getLastChild(Node n);
+    Node getPreviousSibling(Node n);
+    Node getNextSibling(Node n);
+
+    short isAccepted(Node n);
+    
+protected:
+    /**
+     * This attribute determines which node types are presented via
+     * the TreeWalker.
+     *
+     */
+    long whatToShow;
+
+    /**
+     * The filter used to screen nodes.
+     *
+     */
+    NodeFilter *filter;
+
+    /**
+     * The value of this flag determines whether entity reference
+     * nodes are expanded. To produce a view of the document that has
+     * entity references expanded and does not expose the entity
+     * reference node itself, use the whatToShow flags to hide the
+     * entity reference node and set expandEntityReferences to true
+     * when creating the iterator. To produce a view of the document
+     * that has entity reference nodes but no entity expansion, use
+     * the whatToShow flags to show the entity reference node and set
+     * expandEntityReferences to true.
+     *
+     * This is not implemented (allways true)
+     */
+    bool expandEntityReferences;
+
+    /**
+     * The current node.
+     *
+     *  The value must not be null. Attempting to set it to null will
+     * raise a NOT_SUPPORTED_ERR exception. When setting a node, the
+     * whatToShow flags and any Filter associated with the TreeWalker
+     * are not checked. The currentNode may be set to any Node of any
+     * type.
+     *
+     */
+    Node currentNode;
+
+    Node rootNode;
 };
 
 
