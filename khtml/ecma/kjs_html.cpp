@@ -129,7 +129,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
 
 const ClassInfo KJS::HTMLDocument::info =
   { "HTMLDocument", &DOMDocument::info, &HTMLDocumentTable, 0 };
-/* Source for HTMLDocumentTable. Use "make hashtables" to regenerate.
+/* Source for HTMLDocumentTable.
 @begin HTMLDocumentTable 31
   title			HTMLDocument::Title		DontDelete
   referrer		HTMLDocument::Referrer		DontDelete|ReadOnly
@@ -3038,7 +3038,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
 }
 
 // -------------------------------------------------------------------------
-/* Source for HTMLCollectionProtoTable. Use "make hashtables" to regenerate.
+/* Source for HTMLCollectionProtoTable.
 @begin HTMLCollectionProtoTable 3
   item		HTMLCollection::Item		DontDelete|Function 1
   namedItem	HTMLCollection::NamedItem	DontDelete|Function 1
@@ -3394,7 +3394,7 @@ Object ImageConstructorImp::construct(ExecState *exec, const List &)
 
 const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
 
-/* Source for ImageTable. Use "make hashtables" to regenerate.
+/* Source for ImageTable.
 @begin ImageTable 5
   src		Image::Src		DontDelete
   width		Image::Width		DontDelete|ReadOnly

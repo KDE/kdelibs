@@ -46,7 +46,7 @@
 using namespace KJS;
 
 // -------------------------------------------------------------------------
-/* Source for DOMNodeProtoTable. Use "make hashtables" to regenerate.
+/* Source for DOMNodeProtoTable.
 @begin DOMNodeProtoTable 13
   insertBefore	DOMNode::InsertBefore	DontDelete|Function 2
   replaceChild	DOMNode::ReplaceChild	DontDelete|Function 2
@@ -94,7 +94,7 @@ bool DOMNode::toBoolean(ExecState *) const
     return !node.isNull();
 }
 
-/* Source for DOMNodeTable. Use "make hashtables" to regenerate.
+/* Source for DOMNodeTable.
 @begin DOMNodeTable 53
   nodeName	DOMNode::NodeName	DontDelete|ReadOnly
   nodeValue	DOMNode::NodeValue	DontDelete
@@ -665,7 +665,7 @@ Value DOMNodeListProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 
 const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 
-/* Source for DOMAttrTable. Use "make hashtables" to regenerate.
+/* Source for DOMAttrTable.
 @begin DOMAttrTable 5
   name		DOMAttr::Name		DontDelete|ReadOnly
   specified	DOMAttr::Specified	DontDelete|ReadOnly
@@ -719,7 +719,7 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, i
 
 // -------------------------------------------------------------------------
 
-/* Source for DOMDocumentProtoTable. Use "make hashtables" to regenerate.
+/* Source for DOMDocumentProtoTable.
 @begin DOMDocumentProtoTable 23
   createElement   DOMDocument::CreateElement                   DontDelete|Function 1
   createDocumentFragment DOMDocument::CreateDocumentFragment   DontDelete|Function 1
@@ -751,7 +751,7 @@ IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeP
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
-/* Source for DOMDocumentTable. Use "make hashtables" to regenerate.
+/* Source for DOMDocumentTable.
 @begin DOMDocumentTable 4
   doctype         DOMDocument::DocType                         DontDelete|ReadOnly
   implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
@@ -961,7 +961,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 
 // -------------------------------------------------------------------------
 
-/* Source for DOMElementProtoTable. Use "make hashtables" to regenerate.
+/* Source for DOMElementProtoTable.
 @begin DOMElementProtoTable 17
   getAttribute		DOMElement::GetAttribute	DontDelete|Function 1
   setAttribute		DOMElement::SetAttribute	DontDelete|Function 2
@@ -985,7 +985,7 @@ IMPLEMENT_PROTOFUNC_DOM(DOMElementProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
-/* Source for DOMElementTable. Use "make hashtables" to regenerate.
+/* Source for DOMElementTable.
 @begin DOMElementTable 3
   tagName	DOMElement::TagName                         DontDelete|ReadOnly
   style		DOMElement::Style                           DontDelete|ReadOnly
@@ -1079,7 +1079,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
 // -------------------------------------------------------------------------
 
-/* Source for DOMDOMImplementationProtoTable. Use "make hashtables" to regenerate.
+/* Source for DOMDOMImplementationProtoTable.
 @begin DOMDOMImplementationProtoTable 5
   hasFeature		DOMDOMImplementation::HasFeature		DontDelete|Function 2
   createCSSStyleSheet	DOMDOMImplementation::CreateCSSStyleSheet	DontDelete|Function 2
@@ -1136,7 +1136,7 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
 
 const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, &DOMDocumentTypeTable, 0 };
 
-/* Source for DOMDocumentTypeTable. Use "make hashtables" to regenerate.
+/* Source for DOMDocumentTypeTable.
 @begin DOMDocumentTypeTable 6
   name			DOMDocumentType::Name		DontDelete|ReadOnly
   entities		DOMDocumentType::Entities	DontDelete|ReadOnly
@@ -1179,7 +1179,7 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
 
 // -------------------------------------------------------------------------
 
-/* Source for DOMNamedNodeMapProtoTable. Use "make hashtables" to regenerate.
+/* Source for DOMNamedNodeMapProtoTable.
 @begin DOMNamedNodeMapProtoTable 7
   getNamedItem		DOMNamedNodeMap::GetNamedItem		DontDelete|Function 1
   setNamedItem		DOMNamedNodeMap::SetNamedItem		DontDelete|Function 1
@@ -1261,7 +1261,7 @@ Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
 
 const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOMNode::info, &DOMProcessingInstructionTable, 0 };
 
-/* Source for DOMProcessingInstructionTable. Use "make hashtables" to regenerate.
+/* Source for DOMProcessingInstructionTable.
 @begin DOMProcessingInstructionTable 3
   target	DOMProcessingInstruction::Target	DontDelete|ReadOnly
   data		DOMProcessingInstruction::Data		DontDelete
@@ -1301,7 +1301,7 @@ void DOMProcessingInstruction::tryPut(ExecState *exec, const Identifier &propert
 
 const ClassInfo DOMNotation::info = { "Notation", &DOMNode::info, &DOMNotationTable, 0 };
 
-/* Source for DOMNotationTable. Use "make hashtables" to regenerate.
+/* Source for DOMNotationTable.
 @begin DOMNotationTable 2
   publicId		DOMNotation::PublicId	DontDelete|ReadOnly
   systemId		DOMNotation::SystemId	DontDelete|ReadOnly
@@ -1329,7 +1329,7 @@ Value DOMNotation::getValueProperty(ExecState *, int token) const
 
 const ClassInfo DOMEntity::info = { "Entity", &DOMNode::info, 0, 0 };
 
-/* Source for DOMEntityTable. Use "make hashtables" to regenerate.
+/* Source for DOMEntityTable.
 @begin DOMEntityTable 2
   publicId		DOMEntity::PublicId		DontDelete|ReadOnly
   systemId		DOMEntity::SystemId		DontDelete|ReadOnly
@@ -1446,7 +1446,7 @@ Value KJS::getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation
 // -------------------------------------------------------------------------
 
 const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, &NodeConstructorTable, 0 };
-/* Source for NodeConstructorTable. Use "make hashtables" to regenerate.
+/* Source for NodeConstructorTable.
 @begin NodeConstructorTable 11
   ELEMENT_NODE		DOM::Node::ELEMENT_NODE		DontDelete|ReadOnly
   ATTRIBUTE_NODE	DOM::Node::ATTRIBUTE_NODE		DontDelete|ReadOnly
@@ -1519,7 +1519,7 @@ Object KJS::getNodeConstructor(ExecState *exec)
 
 const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };
 
-/* Source for DOMExceptionConstructorTable. Use "make hashtables" to regenerate.
+/* Source for DOMExceptionConstructorTable.
 @begin DOMExceptionConstructorTable 15
   INDEX_SIZE_ERR		DOM::DOMException::INDEX_SIZE_ERR		DontDelete|ReadOnly
   DOMSTRING_SIZE_ERR		DOM::DOMException::DOMSTRING_SIZE_ERR	DontDelete|ReadOnly
