@@ -660,12 +660,16 @@ QCString KCModuleProxy::dcopName() const
 }
 
 QSize KCModuleProxy::sizeHint() const {
-	if(!d->isInitialized || !d->kcm)
+	if(!d->isInitialized || (!d->kcm && !d->embedWidget))
 		return QWidget::minimumSizeHint();
 	
 	QSize wSizeHint = QWidget::sizeHint();
 	QSize vSizeHint = d->view->sizeHint();
-	QSize rSizeHint = d->kcm->minimumSizeHint();
+	QSize rSizeHint;
+	if(d->embedWidget)
+		rSizeHint = d->embedWidget->minimumSizeHint();
+	else
+		rSizeHint = d->kcm->minimumSizeHint();
 	wSizeHint.setWidth(wSizeHint.width() - vSizeHint.width() + rSizeHint.width() );
 	wSizeHint.setHeight(wSizeHint.height() - vSizeHint.height() + rSizeHint.height() );
 	return wSizeHint;
