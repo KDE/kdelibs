@@ -24,8 +24,6 @@
 #define DO_SSL
 #endif
 
-#define DO_MD5
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -51,6 +49,7 @@
 #include <kssl.h>
 #endif
 
+#define DO_MD5
 #ifdef DO_MD5
 #include "extern_md5.h"
 #endif
@@ -1790,7 +1789,10 @@ bool HTTPProtocol::readHeader()
   {
     if ( m_responseCode == 401 || m_responseCode == 407 )
     {
-        http_closeConnection();  // Close the connection first
+        bool flag = m_bKeepAlive;
+        m_bKeepAlive = false;
+        http_close();  // Close the connection first
+        m_bKeepAlive = flag;
         return false;
     }
     m_bUnauthorized = false;
@@ -2050,43 +2052,43 @@ bool HTTPProtocol::sendBody()
     } while ( result > 0 );
   }
 
-   if ( result != 0 )
-   {
-     error( ERR_ABORTED, m_request.hostname );
-     return false;
-   }
+  if ( result != 0 )
+  {
+    error( ERR_ABORTED, m_request.hostname );
+    return false;
+  }
 
-   char c_buffer[64];
-   sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
-   kdDebug( 7113 ) << c_buffer << endl;
+  char c_buffer[64];
+  sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
+  kdDebug( 7113 ) << c_buffer << endl;
 
-   /*** Debugging code ***/
+/*
+   Debugging code...
    buffer = m_bufferList.first();
    for ( ; buffer != 0 ; buffer = m_bufferList.next() )
     kdDebug( 7113 ) << "POST Data: " << buffer->data() << endl;
+*/
 
-   bool sendOk;
-   sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
+  bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
+  if (!sendOk)
+  {
+    kdDebug(7103) << "Connection broken (sendBody(1))! (" << m_state.hostname << ")" << endl;
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    return false;
+  }
 
-   if (!sendOk)
-   {
-     kdDebug(7103) << "Connection broken (sendBody(1))! (" << m_state.hostname << ")" << endl;
-     error( ERR_CONNECTION_BROKEN, m_state.hostname );
-     return false;
-   }
-
-   buffer = m_bufferList.first();
-   for ( ; buffer != 0 ; buffer = m_bufferList.next() )
-   {
-     sendOk = (write(buffer->data(), buffer->size()) == (ssize_t) buffer->size());
-     if (!sendOk)
-     {
-       kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
-       error( ERR_CONNECTION_BROKEN, m_state.hostname );
-       return false;
-     }
-   }
-   return true;
+  buffer = m_bufferList.first();
+  for ( ; buffer != 0 ; buffer = m_bufferList.next() )
+  {
+    sendOk = (write(buffer->data(), buffer->size()) == (ssize_t) buffer->size());
+    if (!sendOk)
+    {
+      kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
+      error( ERR_CONNECTION_BROKEN, m_state.hostname );
+      return false;
+    }
+  }
+  return true;
 }
 
 void HTTPProtocol::http_close()
@@ -2709,7 +2711,7 @@ bool HTTPProtocol::readBody( )
   Local_MD5_CTX context;
   MD5Init(&context);
 #endif
-   
+
    if (m_iSize > -1)
     m_iBytesLeft = m_iSize - sz;
   else

@@ -14,9 +14,11 @@
 
 #include <errno.h>
 #include <stdio.h>
+
 #ifdef DO_SSL
 #include <kssl.h>
 #endif
+
 #include <unistd.h>
 #include <netdb.h>
 
