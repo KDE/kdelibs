@@ -55,7 +55,7 @@ public:
     KURLBarItem( KURLBar *parent, const KURL& url,
                  const QString& description = QString::null,
                  const QString& icon = QString::null,
-                 int group = KIcon::Panel, KURLBarItem *after = 0L );
+                 int group = KIcon::Panel );
     /**
      * Destroys the item
      */

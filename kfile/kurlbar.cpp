@@ -69,8 +69,7 @@ private:
 
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, const QString& description,
-                          const QString& icon, int group,
-                          KURLBarItem * /* after */ )
+                          const QString& icon, int group )
     : QListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( 0L ),
@@ -271,8 +270,8 @@ void KURLBar::setListBox( KURLBarListBox *view )
     m_listBox->setSelectionMode( KListBox::Single );
     QPalette pal = palette();
     QColor gray = pal.color( QPalette::Normal, QColorGroup::Mid );
-    pal.setColor( QPalette::Normal,     QColorGroup::Base, gray );
-    pal.setColor( QPalette::Inactive,   QColorGroup::Base, gray );
+    pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
+    pal.setColor( QPalette::Inactive, QColorGroup::Base, gray );
 
     setPalette( pal );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
@@ -667,9 +666,11 @@ bool KURLBarItemDialog::getInformation( bool allowGlobal, KURL& url,
         icon        = dialog->icon();
         appLocal    = dialog->applicationLocal();
 
+        delete dialog;
         return true;
     }
 
+    delete dialog;
     return false;
 }
 
@@ -708,11 +709,10 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         m_appLocal = new QCheckBox(i18n("&Only for this application"), box);
         m_appLocal->setChecked( appLocal );
         QWhatsThis::add( m_appLocal,
-                         i18n("Select this setting if you want this\n"
-                              "Quick Access entry only in Filedialogs\n"
-                              "of the current application.\n\n"
+                         i18n("Select this setting if you want the\n"
+                              "entry only for the current application.\n\n"
                               "Otherwise it will be available in all\n"
-                              "in all Filedialogs."));
+                              "in all applications."));
     }
     else
         m_appLocal = 0L;
