@@ -332,7 +332,9 @@ bool ReadOnlyPart::openURL( const KURL &url )
     KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
 
-    d->m_job = KIO::file_copy( m_url, m_file, 0600, true, false, d->m_showProgressInfo );
+    KURL destURL;
+    destURL.setPath( m_file );
+    d->m_job = KIO::file_copy( m_url, destURL, 0600, true, false, d->m_showProgressInfo );
     emit started( d->m_job );
     connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
     return true;
