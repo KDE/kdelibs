@@ -410,12 +410,11 @@ void ProcessingInstructionImpl::checkStyleSheet()
             else
             {
                 // ### some validation on the URL?
-	        // ### make sure doc->baseURL() is not empty?
 	        // ### FIXME charset
-	        if (m_cachedSheet)
-	        m_cachedSheet->deref(this);
-	        m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, QString::null);
-	        m_cachedSheet->ref( this );
+	        if (m_cachedSheet) m_cachedSheet->deref(this);
+                m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
+                if (m_cachedSheet)
+                    m_cachedSheet->ref( this );
             }
 
         }
