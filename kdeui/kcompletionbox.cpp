@@ -213,11 +213,25 @@ void KCompletionBox::popup()
 
 void KCompletionBox::show()
 {
+    resize( sizeHint() );
+
     if ( d->m_parent ) {
-        move( d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) ));
+	QRect screen = QApplication::desktop()->
+                       screenGeometry( QApplication::desktop()->
+                                       screenNumber( this ) );
+
+	QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
+       	int x = orig.x();
+	int y = orig.y();
+
+	if ( x + width() > screen.width() )
+	    x = screen.width() - width();
+	if (y + height() > screen.height() )
+	    y = y - height() - d->m_parent->height();
+
+        move( x, y);
         qApp->installEventFilter( this );
     }
-    resize( sizeHint() );
 
     // ### we shouldn't need to call this, but without this, the scrollbars
     // are pretty b0rked.
