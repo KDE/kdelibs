@@ -900,13 +900,18 @@ WebStyle::drawSliderGroove
  int h,
  const QColorGroup & g,
  QCOORD /* c */,
- Orientation /* o */
+ Orientation o
 )
 {
   p->save();
 
   p->setPen(QPen(g.dark(), 0, Qt::DotLine));
-  p->drawLine(x, y + h / 2, w, y + h / 2);
+
+  if( o == Qt::Horizontal )
+    p->drawLine(x, y + h / 2, w, y + h / 2);
+  else
+  if( o == Qt::Vertical )
+    p->drawLine(x + w / 2, y, x + w / 2, h);
 
   p->restore();
 }
@@ -938,7 +943,7 @@ WebStyle::drawSlider
  int w,
  int h,
  const QColorGroup & g,
- Orientation /* o */,
+ Orientation o,
  bool /* tickAbove */,
  bool /* tickBelow */
 )
@@ -951,7 +956,11 @@ WebStyle::drawSlider
 
   int sl = sliderLength();
 
-  p->drawEllipse(x, y + h / 2 - sl / 2, sl, sl);
+  if( o == Qt::Horizontal )
+    p->drawEllipse(x, y + h / 2 - sl / 2, sl, sl);
+  else
+  if( o == Qt::Vertical )
+    p->drawEllipse(x + w / 2 - sl / 2, y, sl, sl);
 
   p->restore();
 }
