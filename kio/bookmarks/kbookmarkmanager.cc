@@ -366,6 +366,79 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
     return result;
  }
 
+static QString pickUnusedTitle( KBookmarkGroup parentBookmark, 
+                                const QString &title, const QString &url 
+) {
+    // If this title is already used, we'll try to find something unused.
+    KBookmark ch = parentBookmark.first();
+    int count = 1;
+    QString uniqueTitle = title;
+    do
+    {
+        while ( !ch.isNull() )
+        {
+            if ( uniqueTitle == ch.text() )
+            {
+                // Title already used !
+                if ( url != ch.url().url() )
+                {
+                    uniqueTitle = title + QString(" (%1)").arg(++count);
+                    // New title -> restart search from the beginning
+                    ch = parentBookmark.first();
+                    break;
+                }
+                else
+                {
+                    // this exact URL already exists
+                    return QString::null;
+                }
+            }
+            ch = parentBookmark.next( ch );
+        }
+    } while ( !ch.isNull() );
+
+    return uniqueTitle;
+}
+
+KBookmarkGroup KBookmarkManager::addBookmarkDialog( 
+                     const QString & _url, const QString & _title,
+                     const QString & _parentBookmarkAddress 
+) {
+    KBookmarkManager *m_pManager = this;
+    QString url = _url;
+    QString title = _title;
+    QString parentBookmarkAddress = _parentBookmarkAddress;
+
+    if (url.isEmpty())
+    {
+        KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
+        return KBookmarkGroup();
+    }
+
+    if (title.isEmpty())
+        title = url;
+
+    if ( KBookmarkSettings::self()->m_advanced ) 
+    {
+        KBookmarkEditDialog dlg( title, url, m_pManager );
+        if ( dlg.exec() != KDialogBase::Accepted )
+            return KBookmarkGroup();
+        title = dlg.finalTitle();
+        url = dlg.finalUrl();
+        parentBookmarkAddress = dlg.finalAddress();
+    }
+
+    KBookmarkGroup parentBookmark;
+    parentBookmark = m_pManager->findByAddress( parentBookmarkAddress ).toGroup();
+    Q_ASSERT(!parentBookmark.isNull());
+
+    QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
+    if ( !uniqueTitle.isNull() )
+        parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
+
+    return parentBookmark;
+}
+
 void KBookmarkManager::emitChanged( KBookmarkGroup & group )
 {
     save();
