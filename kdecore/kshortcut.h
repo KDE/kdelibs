@@ -523,6 +523,17 @@ class KDECORE_EXPORT KKeySequence
 * A KShortcut object may also contain an alternate key which will also
 * activate the action it's associated to, as long as no other actions have
 * defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
+*
+* This can be used to add additional accelerators to a KAction.  For example,
+* the below code binds the escape key to the close action.
+*
+* \code
+*  KAction *closeAction = KStdAction::close( this, SLOT( close() ), actionCollection() );
+*  KShortcut closeShortcut = closeAction->shortcut();
+*  closeShortcut.append( KKey(Key_Escape));
+*  closeAction->setShortcut(closeShortcut);
+* \endcode
+* 
 */
 
 class KDECORE_EXPORT KShortcut
