@@ -387,8 +387,9 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
   }
 
   // Look in the static hashtable of properties
-  if (findPropertyHashEntry(propertyName))
-    return false; // No builtin property can be deleted
+  const HashEntry* entry = findPropertyHashEntry(propertyName);
+  if (entry && entry->attr & DontDelete)
+    return false; // this builtin property can't be deleted
   return true;
 }
 

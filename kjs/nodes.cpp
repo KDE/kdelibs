@@ -2942,7 +2942,7 @@ Completion FunctionBodyNode::execute(ExecState *exec)
 {
   /* TODO: workaround for empty body which I don't see covered by the spec */
   if (!source)
-    return Completion(ReturnValue, Undefined());
+    return Completion(Normal);
 
   source->processFuncDecl(exec);
 
