@@ -8,6 +8,8 @@
 #include <stdio.h>
 #ifndef __DECC__
 #include <inttypes.h>
+#else
+typedef long           int64_t;
 #endif
 
 
