@@ -64,14 +64,18 @@ void QTimeWatch::notify()
 namespace Arts {
 
 class HandleNotifications : public TimeNotify {
+	int level;
 public:
-	HandleNotifications()
+	HandleNotifications() : level(0)
 	{
 		Arts::Dispatcher::the()->ioManager()->addTimer(50, this);
 	}
 	void notifyTime()
 	{
+		assert(level == 0);
+		level++;
 		NotificationManager::the()->run();
+		level--;
 	}
 	virtual ~HandleNotifications()
 	{
