@@ -18,9 +18,6 @@ ifeq ($(ARCH),alpha)
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
-ifeq ($(ARCH),i386)
-  OBJPRELINK=--enable-objprelink
-endif
 
 tmp = $(shell pwd)/debian/kdelibs3
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
@@ -41,7 +38,7 @@ build-stamp:
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--disable-cups $(OBJPRELINK)
+	--disable-cups
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
@@ -55,7 +52,7 @@ alsa-stamp:
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
-		--includedir=/usr/include/kde $(OBJPRELINK)
+		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
 	$(MAKE) -C kdeprint/cups 
