@@ -4,11 +4,15 @@
 #
 #Format : number<tab>description
 
-125	kaccel (kdecore)
-126	kurl (kdecore)
-250	kfile (kdelibs)
-750	kspell (kdelibs)
+# kdelibs
+125	kaccel
+126	kurl
+250	kfile
+750	kspell
+1000	kparts
+1001	kparts (builder)
 
+# kdebase
 1202	konqueror
 1203	libkonq
 1204	kdesktop
@@ -17,6 +21,7 @@
 1401	khcclient (kdebase)
 1402	kmanbrowser (kdebase)
 1403	kinfobrowser (kdebase)
+
 1501	khexedit (kdeutils)
 1601	ark (kdeutils)
 1901	kfind (kdebase)
@@ -27,6 +32,7 @@
 
 5001	caitoo
 
+# libkio
 7001	kio (KDirWatch)
 7002	kio (KIOCache)
 7005	kio (Filter)
@@ -53,6 +59,7 @@
 7104	kcookiejar
 7105	kio_pop3
 
+# old stuff
 8000	corba
 8001	parts (corba)
 8002	partsui (corba)
