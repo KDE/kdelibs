@@ -454,44 +454,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
 
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
-  if ( shortName )
-    switch (day)
-      {
-      case 1:
-        return locale()->translate("Hebrew Calendar WeekDay 1 Short", "She");
-      case 2:
-        return locale()->translate("Hebrew Calendar WeekDay 2 Short", "Shl");
-      case 3:
-        return locale()->translate("Hebrew Calendar WeekDay 3 Short", "Rev");
-      case 4:
-        return locale()->translate("Hebrew Calendar WeekDay 4 Short", "Ham");
-      case 5:
-        return locale()->translate("Hebrew Calendar WeekDay 5 Short", "Shi");
-      case 6:
-        return locale()->translate("Hebrew Calendar WeekDay 6 Short", "Sab");
-      case 7:
-        return locale()->translate("Hebrew Calendar WeekDay 7 Short", "Ris");
-      }
-  else
-    switch ( day )
-      {
-      case 1:
-        return locale()->translate("Hebrew Calendar WeekDay 1 Long", "Yom Sheni");
-      case 2:
-        return locale()->translate("Hebrew Calendar WeekDay 2 Long", "Yom Shlishi");
-      case 3:
-        return locale()->translate("Hebrew Calendar WeekDay 3 Long", "Yom Revi`i");
-      case 4:
-        return locale()->translate("Hebrew Calendar WeekDay 4 Long", "Yom Hamishi");
-      case 5:
-        return locale()->translate("Hebrew Calendar WeekDay 5 Long", "Yom Shishi");
-      case 6:
-        return locale()->translate("Hebrew Calendar WeekDay 6 Long", "Sabbath");
-      case 7:
-        return locale()->translate("Hebrew Calendar WeekDay 7 Long", "Yom Rishon");
-      }
-
-  return QString::null;
+  return locale()->weekDayName(day, shortName);
 }
 
 // Ok
