@@ -134,9 +134,14 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
                     QObject* parent, const char* name )
- : QAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name ), kaccel(0)
+: QAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name ), kaccel(0)
 {
   d = new KActionPrivate;
+  
+  if ( parent && parent->inherits( "KActionCollection" ) )
+    setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
+  else
+    setIconSet( BarIcon( pix, KIconLoader::Small ) );
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
@@ -148,10 +153,17 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
 	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
- : QAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name ), kaccel(0)
+
+
+: QAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, receiver, slot, parent, name ), kaccel(0)
 {
   d = new KActionPrivate;
   d->m_iconName = pix;
+  
+  if ( parent && parent->inherits( "KActionCollection" ) )
+    setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
+  else
+    setIconSet( BarIcon( pix, KIconLoader::Small ) );
 }
 
 KAction::KAction( QObject* parent, const char* name )
@@ -340,11 +352,16 @@ KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int acce
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix, int accel,
 	       QObject* parent, const char* name )
-    : QToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+ : QToggleAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name )
 {
     locked = FALSE;
     checked = FALSE;
     locked2 = FALSE;
+    
+    if ( parent && parent->inherits( "KActionCollection" ) )
+      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
+    else
+      setIconSet( BarIcon( pix, KIconLoader::Small ) );
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
@@ -358,11 +375,16 @@ KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int acce
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix, int accel,
 			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
-    : QToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+ : QToggleAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, receiver, slot, parent, name )
 {
     locked = FALSE;
     checked = FALSE;
     locked2 = FALSE;
+    
+    if ( parent && parent->inherits( "KActionCollection" ) )
+      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
+    else
+      setIconSet( BarIcon( pix, KIconLoader::Small ) );
 }
 
 KToggleAction::KToggleAction( QObject* parent, const char* name )
@@ -532,7 +554,7 @@ KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
 
 KRadioAction::KRadioAction( const QString& text, const QString& pix, int accel,
 	                    QObject* parent, const char* name )
-: KToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+: KToggleAction( text, pix, accel, parent, name )
 {
 }
 
@@ -544,7 +566,7 @@ KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
 
 KRadioAction::KRadioAction( const QString& text, const QString& pix, int accel,
 			    const QObject* receiver, const char* slot, QObject* parent, const char* name )
-: KToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+: KToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
 }
 
@@ -586,9 +608,13 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int acce
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix, int accel,
 			      QObject* parent, const char* name )
-    : QSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+ : QSelectAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name )
 {
     m_lock = false;
+    if ( parent && parent->inherits( "KActionCollection" ) )
+      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
+    else
+      setIconSet( BarIcon( pix, KIconLoader::Small ) );
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
@@ -603,10 +629,15 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int acce
 KSelectAction::KSelectAction( const QString& text, const QString& pix, int accel,
 			      const QObject* receiver, const char* slot, QObject* parent,
 			      const char* name )
-    : QSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+ : QSelectAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, receiver, slot, parent, name )
 {
     connect( this, SIGNAL( activate() ), receiver, slot );
     m_lock = false;
+    
+    if ( parent && parent->inherits( "KActionCollection" ) )
+      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
+    else
+      setIconSet( BarIcon( pix, KIconLoader::Small ) );
 }
 
 KSelectAction::KSelectAction( QObject* parent, const char* name )
@@ -682,7 +713,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 	    if ( hasIconSet() )
 		id = menu->insertItem( iconSet(), text(), popupMenu(), -1, index );
 	    else
-		id = menu->insertItem( text(), popupMenu(), -1, index );     
+		id = menu->insertItem( text(), popupMenu(), -1, index );
 	}
 
 	menu->setItemEnabled( id, isEnabled() );
@@ -777,7 +808,7 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
 
 KListAction::KListAction( const QString& text, const QString& pix,
                             int accel, QObject* parent, const char* name )
-    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+ : KSelectAction( text, pix, accel, parent, name )
 {
     m_current = 0;
 }
@@ -796,7 +827,7 @@ KListAction::KListAction( const QString& text, const QString& pix,
                             int accel, const QObject* receiver,
                             const char* slot, QObject* parent,
 			                const char* name )
-    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+: KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     connect( this, SIGNAL(activated(int)), receiver, slot );
     m_current = 0;
@@ -871,7 +902,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QString& pix, int accel,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name),
+: KListAction( text, pix, accel, parent, name),
     m_maxItems( maxItems )
 {
     connect( this, SIGNAL( activated( const QString& ) ),
@@ -900,7 +931,7 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name),
+: KListAction( text, pix, accel, parent, name),
     m_maxItems( maxItems )
 {
     connect( this, SIGNAL( activated( const QString& ) ),
@@ -932,7 +963,7 @@ void KRecentFilesAction::setMaxItems( unsigned int maxItems )
 {
     QStringList lst       = items();
     unsigned int oldCount = lst.count();
-    
+
     // set new maxItems
     m_maxItems = maxItems;
 
@@ -942,7 +973,7 @@ void KRecentFilesAction::setMaxItems( unsigned int maxItems )
         // remove last item
         lst.remove( lst.last() );
     }
-    
+
     // set new list if changed
     if( lst.count() != oldCount )
         setItems( lst );
@@ -955,14 +986,14 @@ void KRecentFilesAction::addURL( const KURL& url )
 
     // remove file if already in list
     lst.remove( file );
-    
+
     // remove las item if already maxitems in list
     if( lst.count() == m_maxItems )
     {
         // remove last item
         lst.remove( lst.last() );
     }
-    
+
     // add file to list
     lst.prepend( file );
     setItems( lst );
@@ -991,7 +1022,7 @@ void KRecentFilesAction::loadEntries( KConfig* config )
     QString     key;
     QString     value;
     QStringList lst;
-    
+
     config->setGroup( "RecentFiles" );
 
     // read file list
@@ -1002,7 +1033,7 @@ void KRecentFilesAction::loadEntries( KConfig* config )
         if (!value.isNull())
             lst.append( value );
     }
-    
+
     // set file
     setItems( lst );
 }
@@ -1012,7 +1043,7 @@ void KRecentFilesAction::saveEntries( KConfig* config )
     QString     key;
     QString     value;
     QStringList lst = items();
-    
+
     config->setGroup( "RecentFiles" );
 
     // write file list
@@ -1057,7 +1088,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 
 KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
 	       QObject* parent, const char* name )
-    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+: KSelectAction( text, pix, accel, parent, name )
 {
     get_fonts( fonts );
     QSelectAction::setItems( fonts );
@@ -1075,7 +1106,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 
 KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
 			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
-    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+: KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     get_fonts( fonts );
     QSelectAction::setItems( fonts );
@@ -1132,7 +1163,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int 
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix, int accel,
 				  QObject* parent, const char* name )
-    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+: KSelectAction( text, pix, accel, parent, name )
 {
     init();
 }
@@ -1148,7 +1179,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix, int accel,
 				  const QObject* receiver, const char* slot, QObject* parent,
 				  const char* name )
-    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+: KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     init();
 }
@@ -1420,6 +1451,76 @@ void KActionSeparator::unplug( QWidget *widget )
 
   QActionSeparator::unplug( widget );
   return;
+}
+
+class KActionCollectionPrivate
+{
+public:
+  KActionCollectionPrivate()
+  {
+  }
+  ~KActionCollectionPrivate()
+  {
+  }
+  KInstance *m_instance;
+};
+
+KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )
+: QActionCollection( parent, name )
+{
+  d = new KActionCollectionPrivate;
+  setInstance( instance );
+}
+
+KActionCollection::KActionCollection( const KActionCollection &copy )
+: QActionCollection( copy )
+{
+  d = new KActionCollectionPrivate; 
+  setInstance( copy.instance() );
+}
+
+KActionCollection::~KActionCollection()
+{
+  delete d; 
+} 
+
+KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
+{
+  KActionCollection ret( *this );
+
+  QValueList<QAction *> actions = c.actions();
+  QValueList<QAction *>::ConstIterator it = actions.begin();
+  QValueList<QAction *>::ConstIterator end = actions.end();
+  for (; it != end; ++it )
+    ret.insert( *it );
+
+  return ret;
+}
+
+KActionCollection &KActionCollection::operator=( const KActionCollection &c )
+{
+  QActionCollection::operator=( c );  
+  setInstance( c.instance() );
+  return *this;
+} 
+
+KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
+{
+ QActionCollection::operator+=( c );
+ return *this;
+} 
+
+void KActionCollection::setInstance( KInstance *instance )
+{
+  if ( instance )
+    d->m_instance = instance;
+  else
+    d->m_instance = KGlobal::instance();
+}
+
+KInstance *KActionCollection::instance() const
+{
+  return d->m_instance; 
 }
 
 #include "kaction.moc"

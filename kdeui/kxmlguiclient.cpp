@@ -26,6 +26,7 @@
 #include <kinstance.h>
 #include <kstddirs.h>
 #include <kdebug.h>
+#include <kaction.h>
 
 static void dump_xml(const QDomElement& elem)
 {
@@ -50,7 +51,7 @@ public:
   KInstance *m_instance;
 
   QDomDocument m_doc;
-  QActionCollection m_actionCollection;
+  KActionCollection m_actionCollection;
   QMap<QString,QByteArray> m_containerStates;
   KXMLGUIFactory *m_factory;
   KXMLGUIClient *m_parent;
@@ -119,6 +120,7 @@ QString KXMLGUIClient::xmlFile() const
 void KXMLGUIClient::setInstance( KInstance *instance )
 {
   d->m_instance = instance;
+  d->m_actionCollection.setInstance( instance );
 }
 
 void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
@@ -442,7 +444,7 @@ void KXMLGUIClient::conserveMemory()
 
 void KXMLGUIClient::storeContainerStateBuffer( const QString &key, const QByteArray &data )
 {
-  if ( !key.isEmpty() ) 
+  if ( !key.isEmpty() )
     d->m_containerStates.replace( key, data );
 }
 
@@ -452,7 +454,7 @@ QByteArray KXMLGUIClient::takeContainerStateBuffer( const QString &key )
 
   if ( key.isEmpty() )
     return res;
-  
+
   QMap<QString,QByteArray>::Iterator it = d->m_containerStates.find( key );
   if ( it != d->m_containerStates.end() )
   {
@@ -465,13 +467,13 @@ QByteArray KXMLGUIClient::takeContainerStateBuffer( const QString &key )
 
 void KXMLGUIClient::setContainerStates( const QMap<QString,QByteArray> &states )
 {
-  d->m_containerStates = states; 
+  d->m_containerStates = states;
 }
 
 QMap<QString,QByteArray> KXMLGUIClient::containerStates() const
 {
-  return d->m_containerStates; 
-} 
+  return d->m_containerStates;
+}
 
 void KXMLGUIClient::setFactory( KXMLGUIFactory *factory )
 {

@@ -40,6 +40,8 @@ class KFontActionPrivate;
 class KFontSizeActionPrivate;
 class KActionMenuPrivate;
 class KActionSeparatorPrivate;
+class KActionCollectionPrivate;
+class KInstance;
 
 /**
  * The KAction class (and derived and super classes) provide a way to
@@ -147,7 +149,7 @@ class KActionSeparatorPrivate;
  *
  * Inserting your action into the collection is very simple.  To use a
  * previous example:
- * 
+ *
  * <pre>
  * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
  *                               KStdAccel::key(KStdAccel::New), this,
@@ -465,7 +467,7 @@ public:
      */
     bool isChecked() const;
 
-    virtual void setText(const QString &text) 
+    virtual void setText(const QString &text)
        { QToggleAction::setText(text); }   // nasty compilers...
 
 protected slots:
@@ -693,7 +695,7 @@ signals:
 
 protected:
     virtual void setCurrentItem( int id, int index );
-    
+
     virtual void setItems( int id, const QStringList &lst );
     	
     virtual void clear( int id );
@@ -894,7 +896,7 @@ public:
 
   unsigned int maxItems();
   void setMaxItems( unsigned int );
-  
+
   void addURL( const KURL& );
   void removeURL( const KURL& );
   void clearURLList();
@@ -1024,6 +1026,25 @@ public:
 
 private:
     KActionSeparatorPrivate *d;
+};
+
+class KActionCollection : public QActionCollection
+{
+  Q_OBJECT
+public:
+  KActionCollection( QObject *parent = 0, const char *name = 0, KInstance *instance = 0 );
+  KActionCollection( const KActionCollection &copy );
+  virtual ~KActionCollection();
+
+  KActionCollection operator+ (const KActionCollection& ) const;
+  KActionCollection& operator= (const KActionCollection& );
+  KActionCollection& operator+= (const KActionCollection& );
+
+  void setInstance( KInstance *instance );
+  KInstance *instance() const;
+
+private:
+  KActionCollectionPrivate *d;
 };
 
 #endif
