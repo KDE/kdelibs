@@ -110,7 +110,7 @@ availWidth    DontEnum|ReadOnly
 @end
 */
 
-static const struct HashEntry2 ecmaScreenTableEntries[] = {
+static const struct HashEntry ecmaScreenTableEntries[] = {
    { "availLeft", Screen::availLeft, DontEnum|ReadOnly, 0 },
    { 0, 0, 0, 0 },
    { "availTop", Screen::availTop, DontEnum|ReadOnly, 0 },
@@ -123,7 +123,7 @@ static const struct HashEntry2 ecmaScreenTableEntries[] = {
    { "availWidth", Screen::availWidth, DontEnum|ReadOnly, 0 }
 };
 
-static const struct HashTable2 ecmaScreenTable = { 2, 10, ecmaScreenTableEntries, 10 };
+static const struct HashTable ecmaScreenTable = { 2, 10, ecmaScreenTableEntries, 10 };
 
 const ClassInfo Screen::info = { "Screen", 0, 0, 0 };
 
