@@ -116,7 +116,6 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   case All:
     coll = doc.all();
     break;
-/*  ### document.open() and document.close() disabled for now because they cause crashes
   case Open:
     doc.open();
     result = Undefined();
@@ -125,7 +124,6 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     doc.close();
     result = Undefined();
     break;
-*/
   case Write:
   case WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
@@ -395,6 +393,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
       else if (p == "readOnly")        return Boolean(input.readOnly());
       else if (p == "size")            return getString(input.size());
       else if (p == "src")             return getString(input.src());
+      else if (p == "submit")          return new HTMLElementFunction(input.form(),HTMLElementFunction::Submit);
       else if (p == "tabIndex")        return Number(input.tabIndex());
       else if (p == "type")            return getString(input.type());
       else if (p == "useMap")          return getString(input.useMap());
@@ -1621,7 +1620,6 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
     before = element.options().item(u+1);
     element.remove(u);
   }
-
   // finally add the new element
   element.add(option, before);
 }
