@@ -12,17 +12,20 @@ KDesatWidget::KDesatWidget(QWidget *parent, const char *name)
 {
 
     image = QImage("testimage.png");
-    slide = new KDoubleNumInput("Desaturate: ", 
-						 0, 1, 0.1, 0.9, "","", 
-						 true, this, "desat");
-    connect(slide,SIGNAL(valueChanged(double)), this, SLOT(change(double)));
-    
+    slide = new KIntNumInput("Desaturate: ",
+			     0, 1000, 1, 700, "", 10,  
+			     true, this, "desat");
+    connect(slide,SIGNAL(valueChanged(int)), this, SLOT(change(int)));
+
     resize(image.width()*2, image.height() + slide->height());
     slide->setGeometry(0, image.height(), image.width()*2, slide->height());
 }
 
-void KDesatWidget::change(double) { repaint(); }
-    
+void KDesatWidget::change(int) { 
+    desat_value = slide->value() / 1000.;
+    repaint(); 
+}
+
 void KDesatWidget::paintEvent(QPaintEvent */*ev*/)
 {
     QTime time;
@@ -43,7 +46,7 @@ void KDesatWidget::paintEvent(QPaintEvent */*ev*/)
 
     // desaturated image
     it = time.elapsed();
-    image = KImageEffect::desaturate(image, slide->value());
+    image = KImageEffect::desaturate(image, desat_value);
     p.drawImage(image.width(), 0, image);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Horizontal";
@@ -59,3 +62,4 @@ int main(int argc, char **argv)
     return(app->exec());
 }
 
+#include "kdesattest.moc"

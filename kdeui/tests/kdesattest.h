@@ -13,17 +13,19 @@
 
 class KDesatWidget : public QWidget
 {
+Q_OBJECT
 public:
     KDesatWidget(QWidget *parent=0, const char *name=0);
 
 public slots:
-    void change(double);
+    void change(int);
 
 protected:
     void paintEvent(QPaintEvent *ev);
 private:
+    float desat_value;
     QImage image;
-    KDoubleNumInput *slide;
+    KIntNumInput *slide;
 };
 
 #endif
