@@ -1244,11 +1244,6 @@ bool TextAreaWidget::event( QEvent *e )
     return KTextEdit::event( e );
 }
 
-TextAreaWidget::~TextAreaWidget()
-{
-
-}
-
 // -------------------------------------------------------------------------
 
 RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
@@ -1287,7 +1282,7 @@ void RenderTextArea::calcMinMaxWidth()
     w->setTabStopWidth(8 * m.width(" "));
     QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
-                QMAX(element()->rows(), 1)*m.height() + w->frameWidth()*2 +
+                QMAX(element()->rows(), 1)*m.lineSpacing() + w->frameWidth()*4 +
                 (w->wordWrap() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );

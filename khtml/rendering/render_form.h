@@ -402,7 +402,6 @@ class TextAreaWidget : public KTextEdit
     Q_OBJECT
 public:
     TextAreaWidget(int wrap, QWidget* parent);
-    ~TextAreaWidget();
 
 protected:
     virtual bool event (QEvent *e );
