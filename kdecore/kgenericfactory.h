@@ -144,7 +144,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  * <pre>
  *     class MyPlugin : public KParts::Plugin
  *     {
- *         Q_OBJECT
+ *         Q_ OBJECT
  *     public:
  *         MyPlugin( QObject *parent, const char *name,
  *                   const QStringList &args );
@@ -219,7 +219,7 @@ protected:
  * <pre>
  *     class MyPlugin : public KParts::Plugin
  *     {
- *         Q_OBJECT
+ *         Q_ OBJECT
  *     public:
  *         MyPlugin( QObject *parent, const char *name,
  *                   const QStringList &args );
@@ -228,7 +228,7 @@ protected:
  *
  *     class MyDialogComponent : public KDialogBase
  *     {
- *         Q_OBJECT
+ *         Q_ OBJECT
  *     public:
  *         MyDialogComponent( QWidget *parentWidget, const char *name,
  *                            const QStringList &args );
@@ -306,7 +306,7 @@ protected:
  * <pre>
  *     class MyPlugin : public KParts::Plugin
  *     {
- *         Q_OBJECT
+ *         Q_ OBJECT
  *     public:
  *         MyPlugin( QObject *parent, const char *name,
  *                   const QStringList &args );
@@ -315,7 +315,7 @@ protected:
  *
  *     class MyDialogComponent : public KDialogBase
  *     {
- *         Q_OBJECT
+ *         Q_ OBJECT
  *     public:
  *         MyDialogComponent( QWidget *parentWidget, const char *name,
  *                            const QStringList &args );
