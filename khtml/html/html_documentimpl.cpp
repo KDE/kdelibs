@@ -312,6 +312,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
     //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
     // determines the parse mode for HTML
     // quite some hints here are inspired by the mozilla code.
+    int oldPMode = pMode;
 
     // default parsing mode is Loose
     pMode = Compat;
@@ -406,6 +407,9 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 //         kdDebug(6020) << " using compatibility parseMode" << endl;
 //     else
 //         kdDebug(6020) << " using transitional parseMode" << endl;
+
+    if ( pMode != oldPMode && styleSelector() )
+	recalcStyleSelector();
 }
 
 #include "html_documentimpl.moc"
