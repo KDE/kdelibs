@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.66  1999/10/10 08:18:58  bero
+// Code cleanup ((void) stuff)
+//
 // Revision 1.65  1999/10/08 22:49:18  bero
 // - Replace KTopLevelWidget with KTMainWindow where it's still used
 // - Disable ktopwidget.h
@@ -197,13 +200,13 @@ public:
 
   /**
    * Constructor.
-   * Toolbar will read global-config file for item Size higlight
+   * Toolbar will read global-config file for item Size highlight
    * option and button type. However, you can pass desired height.
    * If you specify height here, config value has no effect.
-   * Exception is if you set Icontext mode to 3 (icons under text) whic sets
+   * Exception is if you set Icontext mode to 3 (icons under text) which sets
    * size to minimum 40 pixels. For setting IconText mode, see
    * @ref #setIconText .
-   * Setting size in constructor is not recomended.
+   * Setting size in constructor is not recommended.
    */
   KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1);
 
@@ -218,7 +221,7 @@ public:
    * @ref highlighted  and
    * if toolbar is toggle button (@ref #setToggle ) @ref #toggled . Those
    * signals have id of a button that caused the signal.
-   * If you want to bound an popup to button, see  @ref #setButton
+   * If you want to bind a popup to button, see  @ref #setButton
    * @param index the position of the button. (-1 = at end).
    * @return Returns item index
    */
@@ -326,7 +329,7 @@ public:
   int insertLineSeparator(int index=-1);
 
   /**
-   * This function is deprecated and will be removed. Use @ref #insertWidget
+   * This function is @deprecated and will be removed. Use @ref #insertWidget
    * to insert anything.
    * Inserts frame with specified width. You can get
    * pointer to this frame with @ref #getFrame
@@ -380,7 +383,7 @@ public:
    *
    * Don't add delayed popups to buttons which have normal popups.
    *
-   * You may add popups wich are derived from QPopupMenu. You may
+   * You may add popups which are derived from QPopupMenu. You may
    * add popups that are already in menu bar or are submenus of other popups.
    */
   void setDelayedPopup (int id , QPopupMenu *_popup);
@@ -511,19 +514,19 @@ public:
    * </pre>
    * That way you can get access to other public methods
    * that @ref KToolBarButton provides. Using of this method is not
-   * recomended.
+   * recommended.
    */
   KToolBarButton * getButton (int id);
 
   /**
-   * Alignes item right.
+   * Aligns item to the right.
    * This works only if toolbar is set to full width.
    * @see #setFullWidth
    */
   void alignItemRight (int id, bool right = true);
 
   /**
-   * This function is deprecated and might be removed. Use @ref #insertWidget
+   * This function is @deprecated and might be removed. Use @ref #insertWidget
    * and @ref #getWidget instead.<br>
    * Returns pointer to inserted frame. Wrong ids are not tested.
    * Example:
@@ -579,6 +582,7 @@ public:
 
   /**
    * Obsolete! This function has been replaced by @ref setFullSize().
+   * @deprecated
    */
   void setFullWidth(bool flag = true);
 
@@ -614,7 +618,7 @@ public:
   /**
    * Returns position of toolbar
    */
-  BarPosition barPos() {return position;};
+  BarPosition barPos() {return position;}
 
   /**
    * This shows, hides, or toggles toolbar. If toolbar floats,
@@ -672,6 +676,7 @@ public:
    * toolbar can still be moved by @ref #setBarPos or by dragging.
    * This function is obsolete and do not use it. If you want to make
    * toolbar static use @ref enableMoving
+   * @deprecated
    */
   void enableFloating (bool arrrrrrgh);
 
