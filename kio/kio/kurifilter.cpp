@@ -66,6 +66,8 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
     m_bCheckForExecutables = data.m_bCheckForExecutables;
     d = new KURIFilterDataPrivate;
     d->abs_path = data.absolutePath();
+    d->typedString = data.typedString();
+    d->args = data.argsAndOptions();
 }
 
 KURIFilterData::~KURIFilterData()
