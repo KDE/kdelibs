@@ -52,16 +52,15 @@ public:
    QString proxy;
    QString modifiers;
    QString useragent;
-   static KProtocolManagerPrivate *globalRef;
 };
 
-KProtocolManagerPrivate *KProtocolManagerPrivate::globalRef = 0;
+static KProtocolManagerPrivate* d = 0;
 static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
                         :config(0), http_config(0), init_busy(false)
 {
-   globalRef = kpmpksd.setObject(globalRef, this);
+   kpmpksd.setObject(d, this);
 }
 
 KProtocolManagerPrivate::~KProtocolManagerPrivate()
@@ -70,7 +69,6 @@ KProtocolManagerPrivate::~KProtocolManagerPrivate()
    delete http_config;
 }
 
-static KProtocolManagerPrivate* d = 0;
 
 // DEFAULT USERAGENT STRING
 #define CFG_DEFAULT_UAGENT(X) \
@@ -79,8 +77,7 @@ QString("Mozilla/5.0 (compatible; Konqueror/%1.%2%3) (KHTML, like Gecko)") \
 
 void KProtocolManager::reparseConfiguration()
 {
-  delete d;
-  d = 0;
+  kpmpksd.destructObject();
 
   // Force the slave config to re-read its config...
   KIO::SlaveConfig::self()->reset ();
