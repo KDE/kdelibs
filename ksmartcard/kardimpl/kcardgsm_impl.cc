@@ -30,7 +30,7 @@ extern "C" {
 }
 
 KCardGsmImplementation::KCardGsmImplementation()
-  :KCardImplementation (KCARD_TYPE_PROCESSOR,"GSM","GSM"){
+  :KCardImplementation (KCARD_TYPE_PROCESSOR,KCARD_TYPE_GSM,KCARD_TYPE_GSM){
 
 	_errorMessage=QString::null;
 	_errno=0;
@@ -115,7 +115,7 @@ int KCardGsmImplementation::readBinary (QString & fileContent){
   }
   //_fileHeader.mid(6,2) is the file length coded in the file header
   //see 11.11 paragraph 9.2.1
-  readBinaryCommand += QString("00") + _fileHeader.mid(6,4);
+  readBinaryCommand += QString("0000") + _fileHeader.mid(6,2);
   
   _errno = _kcardreader->doCommand(readBinaryCommand,fileContent,status);
   
@@ -429,7 +429,7 @@ int KCardGsmImplementation::verifyCHV1  (const QString & CHV1){
   else if (status.left(2)!= "90" && status.left(2)!= "91") {
     
     _errorMessage= i18n("Error when verifying CHV1 ");
-    _errorMessage+=KCardGsmImplementation::getStatusString (status);
+    _errorMessage+=getStatusString (status);
     return -1;
 
   }

@@ -91,7 +91,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *   error explanation.
    */
   
-  QString   getResponse ()const ;
+  virtual QString   getResponse ()const ;
 
   /**
    *  Read a the content of a GSM card transparent file
@@ -106,7 +106,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  @see readBinary 
    */
 
-  int readBinary   (QString & fileContent);
+   virtual int readBinary   (QString & fileContent);
   
   /**
    *  Read a the content of a GSM card transparent file
