@@ -710,7 +710,7 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     xe = bounds.right();
     ye = bounds.bottom();
 
-    kdDebug(6000)<<"scrolling coords: x="<<x<<" y="<<y<<" width="<<xe-x<<" height="<<ye-y<<endl;
+    //kdDebug(6000)<<"scrolling coords: x="<<x<<" y="<<y<<" width="<<xe-x<<" height="<<ye-y<<endl;
 
     int deltax;
     int deltay;
@@ -827,7 +827,7 @@ bool KHTMLView::gotoLink(bool forward)
 	    if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
 	    else m_part->overURL(QString(), 0);
 
-	    kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
+	    //kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
 
 	    m_part->xmlDocImpl()->setFocusNode(nextTarget);
 	    emit m_part->nodeActivated(Node(nextTarget));
