@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2003 Leo Savernik <l.savernik@aon.at>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -79,8 +80,19 @@ public:
      */
     void setOrigFileName( const QCString & fileName );
 
+    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+    bool writeSymLink(const QString &name, const QString &target,
+    			const QString &user, const QString &group,
+    			mode_t perm, time_t atime, time_t mtime, time_t ctime);
     virtual bool writeDir( const QString& name, const QString& user, const QString& group );
+    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+    bool writeDir( const QString& name, const QString& user, const QString& group,
+    			mode_t perm, time_t atime, time_t mtime, time_t ctime );
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+    bool prepareWriting( const QString& name, const QString& user,
+    			const QString& group, uint size, mode_t perm,
+       			time_t atime, time_t mtime, time_t ctime );
     virtual bool doneWriting( uint size );
 
 protected:
@@ -106,11 +118,43 @@ private:
      * (normally, only the name has to be filled in before)
      * @param mode is expected to be 6 chars long, [uname and gname 31].
      */
-    void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
+    void fillBuffer( char * buffer, const char * mode, int size, time_t mtime,
+    		char typeflag, const char * uname, const char * gname );
+
+    /**
+     * @internal
+     * Writes an overlong name into a special longlink entry. Call this
+     * if the file name or symlink target (or both) are longer than 99 chars.
+     * @p buffer buffer at least 0x200 bytes big to be used as a write buffer
+     * @p name 8-bit encoded file name to be written
+     * @p typeflag specifying the type of the entry, 'L' for filenames or
+     *		'K' for symlink targets.
+     * @p uname user name
+     * @p gname group name
+     */
+    void writeLonglink(char *buffer, const QCString &name, char typeflag,
+			const char *uname, const char *gname);
+
+    Q_LONG readRawHeader(char *buffer);
+    bool readLonglink(char *buffer,QCString &longlink);
+    Q_LONG readHeader(char *buffer,QString &name,QString &symlink);
 
     QString m_filename;
 protected:
     virtual void virtual_hook( int id, void* data );
+    bool prepareWriting_impl(const QString& name, const QString& user,
+    			const QString& group, uint size, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime);
+    bool writeFile_impl(const QString& name, const QString& user,
+    			const QString& group, uint size, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime,
+       			const char* data);
+    bool writeDir_impl(const QString& name, const QString& user,
+    			const QString& group, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime );
+    bool writeSymLink_impl(const QString &name, const QString &target,
+    			const QString &user, const QString &group,
+    			mode_t perm, time_t atime, time_t mtime, time_t ctime);
 private:
     class KTarPrivate;
     KTarPrivate * d;

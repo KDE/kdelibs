@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2003 Leo Savernik <l.savernik@aon.at>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -139,6 +140,99 @@ void KTar::setOrigFileName( const QCString & fileName )
     static_cast<KFilterDev *>(device())->setOrigFileName( fileName );
 }
 
+Q_LONG KTar::readRawHeader(char *buffer) {
+  // Read header
+  Q_LONG n = device()->readBlock( buffer, 0x200 );
+  if ( n == 0x200 && buffer[0] != 0 ) {
+    // Make sure this is actually a tar header
+    if (strncmp(buffer + 257, "ustar", 5)) {
+      // The magic isn't there (broken/old tars), but maybe a correct checksum?
+      QCString s;
+
+      int check = 0;
+      for( uint j = 0; j < 0x200; ++j )
+        check += buffer[j];
+
+      // adjust checksum to count the checksum fields as blanks
+      for( uint j = 0; j < 8 /*size of the checksum field including the \0 and the space*/; j++ )
+        check -= buffer[148 + j];
+      check += 8 * ' ';
+
+      s.sprintf("%o", check );
+
+      // only compare those of the 6 checksum digits that mean something,
+      // because the other digits are filled with all sorts of different chars by different tars ...
+      if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() ) ) {
+        kdWarning(7041) << "KTar: invalid TAR file. Header is: " << QCString( buffer+257, 5 ) << endl;
+        return -1;
+      }
+    }/*end if*/
+  } else {
+    // reset to 0 if 0x200 because logical end of archive has been reached
+    if (n == 0x200) n = 0;
+  }/*end if*/
+  return n;
+}
+
+bool KTar::readLonglink(char *buffer,QCString &longlink) {
+  Q_LONG n = 0;
+  QIODevice *dev = device();
+  // read size of longlink from size field in header
+  // size is in bytes including the trailing null (which we ignore)
+  buffer[ 0x88 ] = 0; // was 0x87, but 0x88 fixes BR #26437
+  char *dummy;
+  const char* p = buffer + 0x7c;
+  while( *p == ' ' ) ++p;
+  int size = (int)strtol( p, &dummy, 8 );
+
+  longlink.resize(size);
+  size--;	// ignore trailing null
+  dummy = longlink.data();
+  int offset = 0;
+  while (size > 0) {
+    int chunksize = QMIN(size, 0x200);
+    n = dev->readBlock( dummy + offset, chunksize );
+    if (n == -1) return false;
+    size -= chunksize;
+    offset += 0x200;
+  }/*wend*/
+  // jump over the rest
+  int skip = 0x200 - (n % 0x200);
+  if (skip < 0x200) {
+    if (dev->readBlock(buffer,skip) != skip) return false;
+  }
+  return true;
+}
+
+Q_LONG KTar::readHeader(char *buffer,QString &name,QString &symlink) {
+  name.truncate(0);
+  symlink.truncate(0);
+  while (true) {
+    Q_LONG n = readRawHeader(buffer);
+    if (n != 0x200) return n;
+
+    // is it a longlink?
+    if (strcmp(buffer,"././@LongLink") == 0) {
+      char typeflag = buffer[0x9c];
+      QCString longlink;
+      readLonglink(buffer,longlink);
+      switch (typeflag) {
+        case 'L': name = QFile::decodeName(longlink); break;
+        case 'K': symlink = QFile::decodeName(longlink); break;
+      }/*end switch*/
+    } else {
+      break;
+    }/*end if*/
+  }/*wend*/
+
+  // if not result of longlink, read names directly from the header
+  if (name.isEmpty())
+    name = QFile::decodeName(buffer);
+  if (symlink.isEmpty())
+    symlink = QFile::decodeName(buffer + 0x9d);
+
+  return 0x200;
+}
 
 bool KTar::openArchive( int mode )
 {
@@ -158,56 +252,14 @@ bool KTar::openArchive( int mode )
     bool ende = false;
     do
     {
+        QString name;
+        QString symlink;
+
         // Read header
-        int n = dev->readBlock( buffer, 0x200 );
-        if ( n == 0x200 && buffer[0] != 0 )
+        Q_LONG n = readHeader(buffer,name,symlink);
+        if (n < 0) return false;
+        if (n == 0x200)
         {
-            // Make sure this is actually a tar header
-            if (strncmp(buffer + 257, "ustar", 5))
-            {
-                // The magic isn't there (broken/old tars), but maybe a correct checksum?
-                QCString s;
-
-                int check = 0;
-                for( uint j = 0; j < 0x200; ++j )
-                    check += buffer[j];
-
-                // adjust checksum to count the checksum fields as blanks
-                for( uint j = 0; j < 8 /*size of the checksum field including the \0 and the space*/; j++ )
-                    check -= buffer[148 + j];
-                check += 8 * ' ';
-
-                s.sprintf("%o", check );
-
-                // only compare those of the 6 checksum digits that mean something,
-                // because the other digits are filled with all sorts of different chars by different tars ...
-                if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() ) )
-                {
-                    kdWarning(7041) << "KTar: invalid TAR file. Header is: " << QCString( buffer+257, 5 ) << endl;
-                    return false;
-                }
-	    }
-
-            QString name( QString::fromLocal8Bit(buffer) );
-
-            // If filename is longer than 100 (0x64) chars, then tar uses ././@LongLink (David)
-            if ( name == "././@LongLink" )
-            {
-                // in this case, here's what happens (according to od -cx !)
-                // 1) the filename is stored in the next 512b buffer
-                n = dev->readBlock( buffer, 0x200 );
-                if ( n == 0x200 && buffer[0] != 0 )
-                {
-                    name = QString::fromLocal8Bit(buffer);
-                    // 2) read yet another 512b buffer, for permissions, time, size ...
-                    n = dev->readBlock( buffer, 0x200 );
-                    if (!( n == 0x200 && buffer[0] != 0 ))
-                        break;
-                }
-                else
-                    break;
-            }
-
             bool isdir = false;
             QString nm;
 
@@ -233,8 +285,6 @@ bool KTar::openArchive( int mode )
             // read user and group
             QString user( buffer + 0x109 );
             QString group( buffer + 0x129 );
-            // read symlink dest (if any)
-            QString symlink(buffer + 0x9d );
 
             // read time
             buffer[ 0x93 ] = 0;
@@ -244,7 +294,8 @@ bool KTar::openArchive( int mode )
 
             // read type flag
             char typeflag = buffer[ 0x9c ];
-            // '0' for files, '1' hard link, '2' symlink, '5' for directory (and 'L' for longlink)
+            // '0' for files, '1' hard link, '2' symlink, '5' for directory
+            // (and 'L' for longlink filenames, 'K' for longlink symlink targets)
             // and 'D' for GNU tar extension DUMPDIR
             if ( typeflag == '1' )
                 isdir = true;
@@ -343,6 +394,10 @@ bool KTar::closeArchive()
 
 bool KTar::writeDir( const QString& name, const QString& user, const QString& group )
 {
+    mode_t perm = 040755;
+    time_t the_time = time(0);
+    return writeDir(name,user,group,perm,the_time,the_time,the_time);
+#if 0
     if ( !isOpened() )
     {
         kdWarning(7041) << "KTar::writeDir: You must open the tar file before writing to it\n";
@@ -396,79 +451,23 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
 
     d->dirList.append( dirName ); // contains trailing slash
     return true; // TODO if wanted, better error control
+#endif
 }
 
 bool KTar::prepareWriting( const QString& name, const QString& user, const QString& group, uint size )
 {
-    if ( !isOpened() )
-    {
-        kdWarning(7041) << "KTar::prepareWriting: You must open the tar file before writing to it\n";
-        return false;
-    }
-
-    if ( !(mode() & IO_WriteOnly) )
-    {
-        kdWarning(7041) << "KTar::prepareWriting: You must open the tar file for writing\n";
-        return false;
-    }
-
-    // In some tar files we can find dir/./file => call cleanDirPath
-    QString fileName ( QDir::cleanDirPath( name ) );
-
-    /*
-      // Create toplevel dirs
-      // Commented out by David since it's not necessary, and if anybody thinks it is,
-      // he needs to implement a findOrCreate equivalent in writeDir.
-      // But as KTar and the "tar" program both handle tar files without
-      // dir entries, there's really no need for that
-      QString tmp ( fileName );
-      int i = tmp.findRev( '/' );
-      if ( i != -1 )
-      {
-      QString d = tmp.left( i + 1 ); // contains trailing slash
-      if ( !m_dirList.contains( d ) )
-      {
-      tmp = tmp.mid( i + 1 );
-      writeDir( d, user, group ); // WARNING : this one doesn't create its toplevel dirs
-      }
-      }
-    */
-
-    char buffer[ 0x201 ];
-    memset( buffer, 0, 0x200 );
-    if ( mode() & IO_ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
-
-    // If more than 100 chars, we need to use the LongLink trick
-    if ( fileName.length() > 99 )
-    {
-        strcpy( buffer, "././@LongLink" );
-        fillBuffer( buffer, "     0", fileName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
-        device()->writeBlock( buffer, 0x200 );
-
-        strncpy( buffer, QFile::encodeName(fileName), 0x200 );
-        buffer[0x200] = 0;
-        // write long name
-        device()->writeBlock( buffer, 0x200 );
-        // not even needed to reclear the buffer, tar doesn't do it
-    }
-    else
-    {
-        // Write name
-        strncpy( buffer, QFile::encodeName(fileName), 0x200 );
-        buffer[0x200] = 0;
-    }
-
-    fillBuffer( buffer, "100644", size, 0x30, user.local8Bit(), group.local8Bit() );
-
-    // Write header
-    return device()->writeBlock( buffer, 0x200 ) == 0x200;
+    mode_t dflt_perm = 0100644;
+    time_t the_time = time(0);
+    return prepareWriting(name,user,group,size,dflt_perm,
+    		the_time,the_time,the_time);
 }
 
 bool KTar::doneWriting( uint size )
 {
     // Write alignment
     int rest = size % 0x200;
-    if ( mode() & IO_ReadWrite ) d->tarEnd = device()->at() + (0x200 - rest); // Record our new end of archive
+    if ( mode() & IO_ReadWrite )
+        d->tarEnd = device()->at() + (rest ? 0x200 - rest : 0); // Record our new end of archive
     if ( rest )
     {
         char buffer[ 0x201 ];
@@ -504,7 +503,8 @@ struct posix_header
 */
 
 void KTar::fillBuffer( char * buffer,
-    const char * mode, int size, char typeflag, const char * uname, const char * gname )
+    const char * mode, int size, time_t mtime, char typeflag,
+    const char * uname, const char * gname )
 {
   // mode (as in stat())
   assert( strlen(mode) == 6 );
@@ -524,8 +524,8 @@ void KTar::fillBuffer( char * buffer,
   strcpy( buffer + 0x7c, s.data() );
   buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
-  // Dummy time
-  s.sprintf("%lo", static_cast<unsigned long>(time( 0 )) ); // OCT
+  // modification time
+  s.sprintf("%lo", static_cast<unsigned long>(mtime) ); // OCT
   s = s.rightJustify( 11, ' ' );
   strcpy( buffer + 0x88, s.data() );
   buffer[ 0x93 ] = ' '; // space-terminate (no null after)
@@ -567,6 +567,245 @@ void KTar::fillBuffer( char * buffer,
   strcpy( buffer + 0x94, s.data() );
 }
 
-void KTar::virtual_hook( int id, void* data )
-{ KArchive::virtual_hook( id, data ); }
+void KTar::writeLonglink(char *buffer, const QCString &name, char typeflag,
+	const char *uname, const char *gname) {
+  strcpy( buffer, "././@LongLink" );
+  int namelen = name.length() + 1;
+  fillBuffer( buffer, "     0", namelen, 0, typeflag, uname, gname );
+  device()->writeBlock( buffer, 0x200 );
+  int offset = 0;
+  while (namelen > 0) {
+    int chunksize = QMIN(namelen, 0x200);
+    memcpy(buffer, name.data()+offset, chunksize);
+    // write long name
+    device()->writeBlock( buffer, 0x200 );
+    // not even needed to reclear the buffer, tar doesn't do it
+    namelen -= chunksize;
+    offset += 0x200;
+  }/*wend*/	
+}
+
+bool KTar::prepareWriting(const QString& name, const QString& user,
+    			const QString& group, uint size, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime) {
+  return KArchive::prepareWriting(name,user,group,size,perm,atime,mtime,ctime);
+}
+
+bool KTar::prepareWriting_impl(const QString &name, const QString &user,
+    			const QString &group, uint size, mode_t perm,
+    			time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+    if ( !isOpened() )
+    {
+        kdWarning(7041) << "KTar::prepareWriting: You must open the tar file before writing to it\n";
+        return false;
+    }
+
+    if ( !(mode() & IO_WriteOnly) )
+    {
+        kdWarning(7041) << "KTar::prepareWriting: You must open the tar file for writing\n";
+        return false;
+    }
+
+    // In some tar files we can find dir/./file => call cleanDirPath
+    QString fileName ( QDir::cleanDirPath( name ) );
+
+    /*
+      // Create toplevel dirs
+      // Commented out by David since it's not necessary, and if anybody thinks it is,
+      // he needs to implement a findOrCreate equivalent in writeDir.
+      // But as KTar and the "tar" program both handle tar files without
+      // dir entries, there's really no need for that
+      QString tmp ( fileName );
+      int i = tmp.findRev( '/' );
+      if ( i != -1 )
+      {
+      QString d = tmp.left( i + 1 ); // contains trailing slash
+      if ( !m_dirList.contains( d ) )
+      {
+      tmp = tmp.mid( i + 1 );
+      writeDir( d, user, group ); // WARNING : this one doesn't create its toplevel dirs
+      }
+      }
+    */
+
+    char buffer[ 0x201 ];
+    memset( buffer, 0, 0x200 );
+    if ( mode() & IO_ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
+
+    // provide converted stuff we need lateron
+    QCString encodedFilename = QFile::encodeName(fileName);
+    QCString uname = user.local8Bit();
+    QCString gname = group.local8Bit();
+
+    // If more than 100 chars, we need to use the LongLink trick
+    if ( fileName.length() > 99 )
+        writeLonglink(buffer,encodedFilename,'L',uname,gname);
+
+    // Write (potentially truncated) name
+    strncpy( buffer, encodedFilename, 99 );
+    buffer[99] = 0;
+    // zero out the rest (except for what gets filled anyways)
+    memset(buffer+0x9d, 0, 0x200 - 0x9d);
+
+    QCString permstr;
+    permstr.sprintf("%o",perm);
+    permstr.rightJustify(6, ' ');
+    fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
+
+    // Write header
+    return device()->writeBlock( buffer, 0x200 ) == 0x200;
+}
+
+bool KTar::writeDir(const QString& name, const QString& user,
+    			const QString& group, mode_t perm,
+    			time_t atime, time_t mtime, time_t ctime) {
+  return KArchive::writeDir(name,user,group,perm,atime,mtime,ctime);
+}
+
+bool KTar::writeDir_impl(const QString &name, const QString &user,
+    			const QString &group, mode_t perm,
+    			time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+    if ( !isOpened() )
+    {
+        kdWarning(7041) << "KTar::writeDir: You must open the tar file before writing to it\n";
+        return false;
+    }
+
+    if ( !(mode() & IO_WriteOnly) )
+    {
+        kdWarning(7041) << "KTar::writeDir: You must open the tar file for writing\n";
+        return false;
+    }
+
+    // In some tar files we can find dir/./ => call cleanDirPath
+    QString dirName ( QDir::cleanDirPath( name ) );
+
+    // Need trailing '/'
+    if ( dirName.right(1) != "/" )
+        dirName += "/";
+
+    if ( d->dirList.contains( dirName ) )
+        return true; // already there
+
+    char buffer[ 0x201 ];
+    memset( buffer, 0, 0x200 );
+    if ( mode() & IO_ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
+
+    // provide converted stuff we need lateron
+    QCString encodedDirname = QFile::encodeName(dirName);
+    QCString uname = user.local8Bit();
+    QCString gname = group.local8Bit();
+    
+    // If more than 100 chars, we need to use the LongLink trick
+    if ( dirName.length() > 99 )
+        writeLonglink(buffer,encodedDirname,'L',uname,gname);
+
+    // Write (potentially truncated) name
+    strncpy( buffer, encodedDirname, 99 );
+    buffer[99] = 0;
+    // zero out the rest (except for what gets filled anyways)
+    memset(buffer+0x9d, 0, 0x200 - 0x9d);
+
+    QCString permstr;
+    permstr.sprintf("%o",perm);
+    permstr.rightJustify(6, ' ');
+    fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
+
+    // Write header
+    device()->writeBlock( buffer, 0x200 );
+    if ( mode() & IO_ReadWrite )  d->tarEnd = device()->at();
+
+    d->dirList.append( dirName ); // contains trailing slash
+    return true; // TODO if wanted, better error control
+}
+
+bool KTar::writeSymLink(const QString &name, const QString &target,
+    			const QString &user, const QString &group,
+    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
+  return KArchive::writeSymLink(name,target,user,group,perm,atime,mtime,ctime);
+}
+
+bool KTar::writeSymLink_impl(const QString &name, const QString &target,
+    			const QString &user, const QString &group,
+    			mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+    if ( !isOpened() )
+    {
+        kdWarning(7041) << "KTar::writeSymLink: You must open the tar file before writing to it\n";
+        return false;
+    }
+
+    if ( !(mode() & IO_WriteOnly) )
+    {
+        kdWarning(7041) << "KTar::writeSymLink: You must open the tar file for writing\n";
+        return false;
+    }
+
+    device()->flush();
+
+    // In some tar files we can find dir/./file => call cleanDirPath
+    QString fileName ( QDir::cleanDirPath( name ) );
+
+    char buffer[ 0x201 ];
+    memset( buffer, 0, 0x200 );
+    if ( mode() & IO_ReadWrite ) device()->at(d->tarEnd); // Go to end of archive as might have moved with a read
+
+    // provide converted stuff we need lateron
+    QCString encodedFilename = QFile::encodeName(fileName);
+    QCString encodedTarget = QFile::encodeName(target);
+    QCString uname = user.local8Bit();
+    QCString gname = group.local8Bit();
+
+    // If more than 100 chars, we need to use the LongLink trick
+    if (target.length() > 99)
+        writeLonglink(buffer,encodedTarget,'K',uname,gname);
+    if ( fileName.length() > 99 )
+        writeLonglink(buffer,encodedFilename,'L',uname,gname);
+
+    // Write (potentially truncated) name
+    strncpy( buffer, encodedFilename, 99 );
+    buffer[99] = 0;
+    // Write (potentially truncated) symlink target
+    strncpy(buffer+0x9d, encodedTarget, 99);
+    buffer[0x9d+99] = 0;
+    // zero out the rest
+    memset(buffer+0x9d+100, 0, 0x200 - 100 - 0x9d);
+
+    QCString permstr;
+    permstr.sprintf("%o",perm);
+    permstr.rightJustify(6, ' ');
+    fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
+
+    // Write header
+    bool retval = device()->writeBlock( buffer, 0x200 ) == 0x200;
+    if ( mode() & IO_ReadWrite )  d->tarEnd = device()->at();
+    return retval;
+}
+
+void KTar::virtual_hook( int id, void* data ) {
+  switch (id) {
+    case VIRTUAL_WRITE_SYMLINK: {
+      WriteSymlinkParams *params = reinterpret_cast<WriteSymlinkParams *>(data);
+      params->retval = writeSymLink_impl(*params->name,*params->target,
+        		*params->user,*params->group,params->perm,
+          		params->atime,params->mtime,params->ctime);
+      break;
+    }
+    case VIRTUAL_WRITE_DIR: {
+      WriteDirParams *params = reinterpret_cast<WriteDirParams *>(data);
+      params->retval = writeDir_impl(*params->name,*params->user,
+			*params->group,params->perm,
+          		params->atime,params->mtime,params->ctime);
+      break;
+    }
+    case VIRTUAL_PREPARE_WRITING: {
+      PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
+      params->retval = prepareWriting_impl(*params->name,*params->user,
+        		*params->group,params->size,params->perm,
+          		params->atime,params->mtime,params->ctime);
+      break;
+    }
+    default:
+      KArchive::virtual_hook( id, data );
+  }/*end switch*/
+}
 
