@@ -389,7 +389,6 @@ void KBookmarkMenu::slotAddBookmark()
   QString url = m_pOwner->currentURL();
   if (url.isEmpty())
   {
-    // AK - check this out, don't think it happens anymore???
     KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
     return;
   }
@@ -446,10 +445,6 @@ void KBookmarkMenu::slotAddBookmark()
       return;
     }
 
-    kdDebug(7043) << "DEBUG! addr == "  << dlg->finalAddress() 
-                       << ", url == "   << dlg->finalUrl() 
-                       << ", title == " << dlg->finalTitle() << endl;
-
     parentBookmark = m_pManager->findByAddress( dlg->finalAddress() ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
 
@@ -477,8 +472,6 @@ void KBookmarkMenu::slotBookmarkSelected()
 {
   //kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
-  //kdDebug(7043) << sender()->name() << endl;
-
   // The name of the action is the URL to open
   m_pOwner->openBookmarkURL( QString::fromUtf8(sender()->name()) );
 }
@@ -563,12 +556,12 @@ BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkMana
 
   vert->addWidget( new QLabel( "Name", m_main ) );
   m_title = new KLineEdit( m_main );
-  m_title->setText( url );
+  m_title->setText( title );
   vert->addWidget( m_title );
 
   vert->addWidget( new QLabel( "Location", m_main ) );
   m_url = new KLineEdit( m_main );
-  m_url->setText( title );
+  m_url->setText( url );
   vert->addWidget( m_url );
 
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
@@ -593,7 +586,7 @@ QString BookmarkEditDialog::finalTitle() { return m_title->text(); }
 
 void BookmarkEditDialog::slotInsertFolder()
 {
-  kdDebug(7043) << "BookmarkEditDialog::slotInsertFolder" << endl;
+  // kdDebug(7043) << "BookmarkEditDialog::slotInsertFolder" << endl;
   QString address = KBookmarkFolderTree::selectedAddress( m_folderTree ); 
   if ( address.isNull() ) return;
   KBookmarkGroup parentBookmark = m_mgr->findByAddress( address ).toGroup();
