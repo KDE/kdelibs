@@ -17,6 +17,7 @@
 
 #ifdef DO_SSL
 #include <kssl.h>
+#include <ksslcertificatecache.h>
 #endif
 
 #include <unistd.h>
@@ -400,6 +401,7 @@ protected:
   bool m_bUseSSL;
   KSSL m_ssl;
   QString m_ssl_ip;
+  KSSLCertificateCache m_sslcc;
 #endif
 
 };
