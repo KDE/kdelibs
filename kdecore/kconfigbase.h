@@ -22,6 +22,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.36  1999/11/15 20:37:59  koss
+// Added readDateTimeEntry() and writeEntry() for QDateTime type.
+// Not thoroughly checked yet. At least API is here.
+//
 // Revision 1.35  1999/11/05 19:48:58  ettrich
 // "Keys", not "Standard Keys", otherwise confiugrable keybindings in
 // KAccel are broken (it relies on KConfig's inheritance).
@@ -500,7 +504,7 @@ public:
   QString writeEntry( const QString& pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
-    { return writeEntry(pKey, QString(pValue), bPersistent, bGlobal, bNLS); }
+    { return writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
 
   /**
    * Write the key value pair.
