@@ -1452,7 +1452,6 @@ void KListView::activateAutomaticSelection()
    d->selectedUsingMouse=false;
    if (currentItem()!=0)
    {
-      selectAll(false);
       currentItem()->setSelected(true);
       currentItem()->repaint();
       emit selectionChanged();
