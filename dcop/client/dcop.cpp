@@ -296,6 +296,7 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
                 printf("\n");
         }
     }
+    return 0;
 }
 
 /**
