@@ -38,6 +38,7 @@
 #include "ecma/kjs_proxy.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "dom_nodeimpl.h"
 
 
 using namespace DOM;
@@ -1853,8 +1854,6 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 
 // ----------------------------------------------------------------------------
 
-// ### unused
-#if 0
 GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
     : NamedNodeMapImpl()
 {
@@ -1864,22 +1863,23 @@ GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
 
 GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 {
-    while (m_contents->count() > 0)
+    while (!m_contents->isEmpty())
         m_contents->take(0)->deref();
 
     delete m_contents;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &/*exceptioncode*/ ) const
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( NodeImpl::Id id, bool /*nsAware*/, DOMStringImpl* /*qName*/ ) const
 {
+    // ## do we need namespace support in this class?
     QPtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)
-        if (it.current()->nodeName() == name)
+        if (it.current()->id() == id)
             return it.current();
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::setNamedItem ( NodeImpl* /*arg*/, bool /*nsAware*/, DOMStringImpl* /*qName*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -1887,7 +1887,7 @@ Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &excepti
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::removeNamedItem ( NodeImpl::Id /*id*/, bool /*nsAware*/, DOMStringImpl* /*qName*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -1897,8 +1897,6 @@ Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int
 
 NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index ) const
 {
-    // ### check this when calling from javascript using -1 = 2^sizeof(int)-1
-    // (also for other similar methods)
     if (index >= m_contents->count())
         return 0;
 
@@ -1910,47 +1908,23 @@ unsigned long GenericRONamedNodeMapImpl::length(  ) const
     return m_contents->count();
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceURI,
-                                                     const DOMString &localName,
-                                                     int &/*exceptioncode*/ ) const
-{
-    NodeImpl::Id searchId = m_doc->tagId(namespaceURI.implementation(),
-                                                   localName.implementation(), true);
-
-    QPtrListIterator<NodeImpl> it(*m_contents);
-    for (; it.current(); ++it)
-        if (it.current()->id() == searchId)
-            return it.current();
-
-    return 0;
-}
-
-NodeImpl *GenericRONamedNodeMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &exceptioncode )
-{
-    // can't modify this list through standard DOM functions
-    // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
-    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    return 0;
-}
-
-NodeImpl *GenericRONamedNodeMapImpl::removeNamedItemNS( const DOMString &/*namespaceURI*/,
-                                                        const DOMString &/*localName*/,
-                                                        int &exceptioncode )
-{
-    // can't modify this list through standard DOM functions
-    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    return 0;
-}
-
 void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
 {
     // The spec says that in the case of duplicates we only keep the first one
-    int exceptioncode = 0;
-    if (getNamedItem(n->nodeName(),exceptioncode))
+    if (getNamedItem(n->id(), false, 0))
         return;
 
     n->ref();
     m_contents->append(n);
 }
 
-#endif
+NodeImpl::Id GenericRONamedNodeMapImpl::mapId(DOMStringImpl* namespaceURI,
+                                              DOMStringImpl* localName, bool readonly)
+{
+    if (!m_doc)
+	return 0;
+
+    return m_doc->getId(NodeImpl::ElementId,
+                        namespaceURI, 0, localName, readonly,
+                        false /*don't lookupHTML*/);
+}

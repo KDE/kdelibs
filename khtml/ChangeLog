@@ -1,3 +1,8 @@
+2004-01-22  David Faure  <faure@kde.org>
+
+	* xml/dom_nodeimpl.cpp (GenericRONamedNodeMapImpl): Implementation of
+	node map for entities and notations, required by some DOMTS Core 1 tests.
+
 2004-01-22  Waldo Bastian  <bastian@kde.org>
 
 	* html/htmlparser.cpp (class HTMLStackElem): ref and unref the nodes to avoid them beeing removed below us (#73112)

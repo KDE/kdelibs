@@ -85,7 +85,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& local
         int exceptioncode = 0;
         DOMString uri(atts.uri(i));
         DOMString qn(atts.qName(i));
-        DOMString val(atts.value(i));        
+        DOMString val(atts.value(i));
         newElement->setAttributeNS(uri, qn, val, exceptioncode);
         if (exceptioncode) // exception setting attributes
             return false;
@@ -266,9 +266,8 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
     EntityImpl *e = new EntityImpl(m_doc,name);
     // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
     e->addChild(m_doc->document()->createTextNode(new DOMStringImpl(value.unicode(), value.length())));
-// ### FIXME
-//     if (m_doc->document()->doctype())
-//         static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
+     if (m_doc->document()->doctype())
+         static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
     return true;
 }
 

@@ -530,8 +530,8 @@ public:
     ~DocumentTypeImpl();
 
     // DOM methods & attributes for DocumentType
-    NamedNodeMapImpl *entities() const { return m_entities; }
-    NamedNodeMapImpl *notations() const { return m_notations; }
+    NamedNodeMapImpl *entities() const;
+    NamedNodeMapImpl *notations() const;
 
     DOMString name() const { return m_qualifiedName; }
     DOMString publicId() const { return m_publicId; }
@@ -551,8 +551,8 @@ public:
 
 protected:
     DOMImplementationImpl *m_implementation;
-    NamedNodeMapImpl* m_entities;
-    NamedNodeMapImpl* m_notations;
+    mutable NamedNodeMapImpl* m_entities;
+    mutable NamedNodeMapImpl* m_notations;
 
     DOMString m_qualifiedName;
     DOMString m_publicId;

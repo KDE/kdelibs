@@ -75,6 +75,7 @@
 #include <kio/job.h>
 
 #include <stdlib.h>
+#include "dom_docimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -2347,6 +2348,24 @@ NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
     return 0;
+}
+
+NamedNodeMapImpl * DocumentTypeImpl::entities() const
+{
+    if ( !m_entities ) {
+        m_entities = new GenericRONamedNodeMapImpl( docPtr() );
+        m_entities->ref();
+    }
+    return m_entities;
+}
+
+NamedNodeMapImpl * DocumentTypeImpl::notations() const
+{
+    if ( !m_notations ) {
+        m_notations = new GenericRONamedNodeMapImpl( docPtr() );
+        m_notations->ref();
+    }
+    return m_notations;
 }
 
 #include "dom_docimpl.moc"

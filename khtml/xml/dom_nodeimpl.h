@@ -605,10 +605,9 @@ public:
     virtual bool isReadOnly() { return false; }
 };
 
-// ### fixme
-#if 0
 // Generic read-only NamedNodeMap implementation
-// You can add items using the internal function addItem()
+// Used for e.g. entities and notations in DocumentType.
+// You can add nodes using addNode
 class GenericRONamedNodeMapImpl : public NamedNodeMapImpl
 {
 public:
@@ -617,18 +616,16 @@ public:
 
     // DOM methods & attributes for NamedNodeMap
 
-    virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
-    virtual Node setNamedItem ( const Node &arg, int &exceptioncode );
-    virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode );
+    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const;
+    virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode );
+    virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode );
+
     virtual NodeImpl *item ( unsigned long index ) const;
     virtual unsigned long length(  ) const;
-    virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
-                                      int &exceptioncode ) const;
-    virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode );
-    virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
-                                         int &exceptioncode );
 
     // Other methods (not part of DOM)
+    virtual NodeImpl::Id mapId(DOMStringImpl* namespaceURI,
+                               DOMStringImpl* localName, bool readonly);
 
     virtual bool isReadOnly() { return true; }
 
@@ -638,7 +635,6 @@ protected:
     DocumentImpl* m_doc;
     QPtrList<NodeImpl> *m_contents;
 };
-#endif
 
 } //namespace
 #endif
