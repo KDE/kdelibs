@@ -129,10 +129,10 @@ class KHTMLToolTip : public QToolTip
 {
 public:
   KHTMLToolTip(KHTMLPart *part) : QToolTip(part->widget()), m_part(part) {};
-  
+
 protected:
   virtual void maybeTip(const QPoint &);
-  
+
 private:
   KHTMLPart *m_part;
 };
@@ -405,7 +405,7 @@ void KHTMLToolTip::maybeTip(const QPoint &)
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
                       GUIProfile prof )
-: KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
+: KParts::ReadOnlyPart( parent, name )
 {
     d = 0;
     KHTMLFactory::registerPart( this );
@@ -695,11 +695,11 @@ bool KHTMLPart::closeURL()
   d->m_workingURL = KURL();
 
   khtml::Cache::loader()->cancelRequests( m_url.url() );
-  
+
   // Stop any started redirections as well!! (DA)
   if ( d && d->m_redirectionTimer.isActive() )
     d->m_redirectionTimer.stop();
-  
+
   return true;
 }
 
@@ -778,6 +778,7 @@ KJSProxy *KHTMLPart::jScript()
 
 QVariant KHTMLPart::executeScript( const QString &script )
 {
+    //kdDebug() << "KHTMLPart::executeScript " << script << endl;
     return executeScript( DOM::Node(), script );
 }
 
@@ -1112,7 +1113,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
        d->m_settings->setCharset( d->m_charset );
        d->m_haveCharset = true;
        d->m_encoding = qData;
-    }    
+    }
 
     // Support for HTTP based meta-refresh
     qData = d->m_job->queryMetaData("meta-refresh");
@@ -1123,7 +1124,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
         int pos = qData.find( ';' );
         if ( pos == -1 )
             pos = qData.find( ',' );
-        
+
         if( pos == -1 )
         {
             delay = qData.toInt();
@@ -1178,7 +1179,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   if (job->error())
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
-    job->showErrorDialog();
+    job->showErrorDialog( /*d->m_view*/ ); // TODO show the error text in this part, instead.
     d->m_job = 0L;
     emit canceled( job->errorString() );
     // TODO: what else ?
