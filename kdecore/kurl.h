@@ -337,7 +337,7 @@ protected:
   void reset();
   void parse( const QString& _url );
   
-  static char hex2int( char _char );
+  static char hex2int( unsigned int  _char );
   
 private:
   QString m_strProtocol;

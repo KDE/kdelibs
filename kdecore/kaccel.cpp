@@ -707,7 +707,7 @@ QString keyToString( uint keyCode, bool i18_n )
 
 uint stringToKey(const QString& key)
 {
-//	debug("string to key %s\n", key.ascii());
+	debug("string to key %s\n", (char *)key.local8Bit());
 
 	if ( key.isNull() ) {
 		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");

@@ -118,7 +118,7 @@ void KURL::parse( const QString& _url )
   QChar x = buf[pos++];
   if ( x == '/' )
     goto Node9;
-  if ( !isalpha( (char)x ) )
+  if ( !isalpha( (int)x ) )
     goto NodeErr;
 
   // Node 2: Accept any amount of alphas
@@ -529,6 +529,7 @@ QString KURL::url( int _trailing ) const
     tmp = m_strPath;
   else
     tmp = path( _trailing );
+
   encode( tmp );
   u += tmp;
 
@@ -545,6 +546,7 @@ QString KURL::url( int _trailing ) const
   }
 
   return u;
+
 }
 
 KURL::List KURL::split( const KURL& _url )
@@ -566,7 +568,7 @@ KURL::List KURL::split( const QString& _url )
     // Continue with recursion ?
     if ( u.hasSubURL() )
     {
-      debug("Has SUB URL %s", u.ref().ascii() );
+      debug("Has SUB URL %s", (char *)(u.ref().local8Bit()) );
       tmp = u.ref();
       u.setRef( "" );
       lst.append( u );
@@ -714,7 +716,7 @@ void KURL::encode( QString& _url )
     return;
 
   // a worst case approximation
-  char *new_url = new char[ old_length * 3 + 1 ];
+  QChar *new_url = new QChar[ old_length * 3 + 1 ];
   int new_length = 0;
 
   // The (char)(QChar) casts below should use QChar::latin1() instead.
@@ -725,29 +727,29 @@ void KURL::encode( QString& _url )
     // according to RFC 1738,
     // 2.2. URL Character Encoding Issues (pp. 3-4)
     // Torben: Added the space characters
-    if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\ \n\t\r", (char)(QChar)_url[i]) )
+    if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\ \n\t\r", _url[i].unicode()) )
     {
       new_url[ new_length++ ] = '%';
 
-      char c = (char)(QChar)_url[ i ] / 16;
+      unsigned int c = _url[ i ].unicode() / 16;
       c += (c > 9) ? ('A' - 10) : '0';
       new_url[ new_length++ ] = c;
 
-      c = (char)(QChar)_url[ i ] % 16;
+      c = _url[ i ].unicode() % 16;
       c += (c > 9) ? ('A' - 10) : '0';
       new_url[ new_length++ ] = c;
 	
     }
     else
-      new_url[ new_length++ ] = (char)(QChar)_url[i];
+      new_url[ new_length++ ] = _url[i].unicode();
   }
 
   new_url[new_length] = 0;
-  _url = new_url;
+  _url = QString(new_url, new_length);
   delete [] new_url;
 }
 
-char KURL::hex2int( char _char )
+char KURL::hex2int( unsigned int _char )
 {
   if ( _char >= 'A' && _char <='F')
     return _char - 'A' + 10;
@@ -769,24 +771,24 @@ void KURL::decode( QString& _url )
   int new_length = 0;
 
   // make a copy of the old one
-  char *new_url = new char[ old_length + 1];
+  QChar *new_url = new QChar[ old_length + 1];
 
   // The (char)(QChar) casts below should use QChar::latin1() instead.
 
   int i = 0;
   while( i < old_length )
   {
-    char character = (char)(QChar)_url[ i++ ];
+    unsigned int character = _url[ i++ ].unicode();
     if ( character == '%' )
     {
-      character = hex2int( (char)(QChar)_url[i] ) * 16
-		+ hex2int( (char)(QChar)_url[i+1] );
+      character = hex2int( _url[i].unicode() ) * 16
+		+ hex2int( _url[i+1].unicode() );
       i += 2;
     }
     new_url [ new_length++ ] = character;
   }
   new_url [ new_length ] = 0;
-  _url = new_url;
+  _url = QString(new_url, new_length);;
   delete [] new_url;
 }
 
