@@ -60,6 +60,7 @@ class KNetwork::KSocketDevicePrivate
 {
 public:
   mutable QSocketNotifier *input, *output, *exception;
+  int af;
 
   inline KSocketDevicePrivate()
   {
@@ -137,8 +138,11 @@ bool KSocketDevice::setSocketOptions(int opts)
 	}
     }
 
-#ifdef IPV6_V6ONLY
+#if defined(IPV6_V6ONLY) && defined(AF_INET6)
+  if (d->af == AF_INET6)
     {
+      // don't try this on non-IPv6 sockets, or we'll get an error
+
       int on = opts & IPv6Only ? 1 : 0;
       if (setsockopt(m_sockfd, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&on, sizeof(on)) == -1)
 	{
@@ -147,6 +151,15 @@ bool KSocketDevice::setSocketOptions(int opts)
 	}
     }
 #endif
+
+   {
+     int on = opts & Broadcast ? 1 : 0;
+     if (setsockopt(m_sockfd, SOL_SOCKET, SO_BROADCAST, (char*)&on, sizeof(on)) == -1)
+       {
+	 setError(IO_UnspecifiedError, UnknownError);
+	 return false;		// error
+       }
+   }
 
   return true;			// all went well
 }
@@ -196,6 +209,7 @@ bool KSocketDevice::create(int family, int type, int protocol)
     }
 
   setSocketOptions(socketOptions());
+  d->af = family;
   return true;		// successfully created
 }
 

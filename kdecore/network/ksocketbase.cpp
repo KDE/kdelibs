@@ -103,6 +103,16 @@ bool KSocketBase::isIPv6Only() const
   return socketOptions() & IPv6Only;
 }
 
+bool KSocketBase::setBroadcast(bool enable)
+{
+  return setSocketOptions((socketOptions() & ~Broadcast) | (enable ? Broadcast : 0));
+}
+
+bool KSocketBase::broadcast() const
+{
+  return socketOptions() & Broadcast;
+}
+
 KSocketDevice* KSocketBase::socketDevice() const
 {
   if (d->device)
