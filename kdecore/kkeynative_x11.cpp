@@ -174,16 +174,8 @@ int KKeyNative::keyCodeQt() const
 	return 0;
 }
 
-uint KKeyNative::modX( KKey::ModFlag modFlag )
-{
-	return KKeyServer::modX( modFlag );
-}
-
-// Returns true if X has the Meta key assigned to a modifier bit
-// FIXME: use the settings in kdeglobals for Meta/Super/Hyper
-bool KKeyNative::keyboardHasWinKey()
-{
-	return KKeyServer::keyboardHasWinKey();
-}
+uint KKeyNative::modX( KKey::ModFlag modFlag ) { return KKeyServer::modX( modFlag ); }
+bool KKeyNative::keyboardHasWinKey()           { return KKeyServer::keyboardHasWinKey(); }
+uint KKeyNative::accelModMaskX()               { return KKeyServer::accelModMaskX(); }
 
 #endif // Q_WS_X11

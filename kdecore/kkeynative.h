@@ -66,6 +66,9 @@ class KKeyNative
 	// General query functions. //
 	static bool keyboardHasWinKey();
 	static uint modX( KKey::ModFlag modFlag );
+	/** Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
+	 * Win (if available). */
+	static uint accelModMaskX();
 
  private:
 	uint m_code, m_mod, m_sym;
