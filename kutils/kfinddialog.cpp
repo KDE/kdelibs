@@ -373,6 +373,7 @@ void KFindDialog::setHasCursor(bool hasCursor)
 
 void KFindDialog::setSupportsBackwardsFind( bool supports )
 {
+    // ########## Shouldn't this hide the checkbox instead?
     if (supports) d->m_enabled |= FindBackwards;
     else d->m_enabled &= ~FindBackwards;
     m_findBackwards->setEnabled( supports );
@@ -381,6 +382,7 @@ void KFindDialog::setSupportsBackwardsFind( bool supports )
 
 void KFindDialog::setSupportsCaseSensitiveFind( bool supports )
 {
+    // ########## This should hide the checkbox instead
     if (supports) d->m_enabled |= CaseSensitive;
     else d->m_enabled &= ~CaseSensitive;
     m_caseSensitive->setEnabled( supports );
@@ -389,6 +391,7 @@ void KFindDialog::setSupportsCaseSensitiveFind( bool supports )
 
 void KFindDialog::setSupportsWholeWordsFind( bool supports )
 {
+    // ########## This should hide the checkbox instead
     if (supports) d->m_enabled |= WholeWordsOnly;
     else d->m_enabled &= ~WholeWordsOnly;
     m_wholeWordsOnly->setEnabled( supports );
@@ -397,6 +400,7 @@ void KFindDialog::setSupportsWholeWordsFind( bool supports )
 
 void KFindDialog::setSupportsRegularExpressionFind( bool supports )
 {
+    // ########## This should hide the checkbox instead
     if (supports) d->m_enabled |= RegularExpression;
     else d->m_enabled &= ~RegularExpression;
     m_regExp->setEnabled( supports );

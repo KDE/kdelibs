@@ -104,6 +104,8 @@ public:
      */
     KFindDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
                  const QStringList &findStrings = QStringList(), bool hasSelection = false );
+    // KDE4: fix ambiguity with private constructor
+    // Maybe remove options (there's setOptions) and findStrings (setFindHistory) and hasSelection (setHasSelection)
 
     /**
      * Construct a non-modal find dialog
@@ -117,6 +119,7 @@ public:
      */
     KFindDialog( bool modal, QWidget *parent = 0, const char *name = 0, long options = 0,
                  const QStringList &findStrings = QStringList(), bool hasSelection = false );
+    // KDE4: consider simplifying
 
     /**
      * Destructor.
