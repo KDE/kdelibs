@@ -29,25 +29,25 @@
 #include <X11/Xlib.h>
 
 
-/** 
+/**
  * The class KWM allows usual X11 clients to get or modify window
  * properties and to interact with the windowmanager. It also offers
  * some high level functions to support the easy implementation of
- * session managment.  
+ * session managment.
  * @short class for interaction with the window- and sessionmanager
  * @author Matthias Ettrich (ettrich@kde.org)
  */
 class KWM {
 
 public:
-  
+
   /**
-   * Return all window properties needed to restore a window in 
+   * Return all window properties needed to restore a window in
    * a string. The string can be used as a command line argument
    * for the session management (See setWmCommand below).  */
   static QString getProperties(Window w);
 
-  /** 
+  /**
    * Apply properties from a property string to a window. This will
    * have an immediate effect if the window is already managed by the
    * window manager (that means it is either in Normal- or in
@@ -93,7 +93,7 @@ public:
    * support this, so you may have to run a standalone session manager
    * instead. Anyway, enabling session management does not harm in the
    * case a user does not run a session manager. He/she simply will
-   * not have session management, but all other functionality.  
+   * not have session management, but all other functionality.
    *
    * Note 3: PSEUDO SESSION MANAGEMENT
    * There is also another way to do pseudo session management:
@@ -119,7 +119,7 @@ public:
    * read only when the user logs out, so the last value will be
    * used. You can also set it to TRUE to indicate that the user will
    * certainly have some data loss. All these things may of course
-   * have no effect with other window- or session managers.  
+   * have no effect with other window- or session managers.
    *
    * Note 4: kwm also supports session management for toplevel windows
    * that are not mapped (and never have been mapped). This is very
@@ -133,7 +133,7 @@ public:
   static void enableSessionManagement(Window w);
 
 
-  /** 
+  /**
    * Store a shell command that can be used to restore the client.
    * This should be done as reaction on a WM_SAVE_YOURSELF client
    * message. setWmCommand also sets the WM_CLIENT_MACHINE property to
@@ -147,7 +147,7 @@ public:
    * author, etc...)  they should at least save their geometry
    * informations and call setUnsavedDataHint. This will indicate to
    * the session manager that the user might lose some data if he/she
-   * continues with the logout process. 
+   * continues with the logout process.
    *
    * The hint can be set or unset either in the response to
    * WM_SAVE_YOURSELF or anytime during runtime. Please make sure that
@@ -156,11 +156,11 @@ public:
    * Note: The hint has also effect for clients that are not session management
    * enabled or do not even do pseudo session management
    *
-   * Note 2: May have no effekt with other window- or session managers 
+   * Note 2: May have no effekt with other window- or session managers
    */
   static void setUnsavedDataHint(Window w, bool value);
 
-  /** 
+  /**
    * Set a mini icon for your application window. This icon may appear
    * in the window decoration as well as on taskbar buttons. Therefore
    * it should be very small (kwm for example will scale it to 14x14,
@@ -181,7 +181,7 @@ public:
   /**
    * Set a standard (large) icon for the application window. If you
    * are using Qt this should be almost aequivalent to a call to
-   * QWidget::setIcon(..)  
+   * QWidget::setIcon(..)
    */
   static void setIcon(Window w, const QPixmap &pm);
 
@@ -197,11 +197,11 @@ public:
    * windows. If you create them with Qt (new QWidget()->winId()) be
    * sure not to pass any parent.
    *
-   * Note: May have no effect with other window mangers 
+   * Note: May have no effect with other window mangers
    */
   static void setDockWindow(Window w);
 
-  /** 
+  /**
    *Some windows do not want to be decorated at all but should not be
    * override_redirect (for example toolbars which are dragged out of
    * their main window). This can be achieved with a simple call to
@@ -209,10 +209,10 @@ public:
    *
    * KWM understands the following values at present:
    *   noDecoration :      Not decorated at all
-   *   normalDecoration :  Normal decoration (transient windows with 
-   *                       dialog decoration, shaped windows not decorated 
+   *   normalDecoration :  Normal decoration (transient windows with
+   *                       dialog decoration, shaped windows not decorated
    *                       at all)
-   *                       
+   *
    *   tinyDecoration :    Tiny decoration (just a little frame)
    *
    * If your window does not want the focus, you can OR the decoration
@@ -221,21 +221,21 @@ public:
    *
    * Note: X11R6 does not offer a standard property or protocoll for
    * this purpose. So kwm uses a KDE specific property which may have
-   * no effect with other window managers.  
+   * no effect with other window managers.
    */
   static void setDecoration(Window w, long value);
-  
+
   enum {noDecoration = 0, normalDecoration = 1, tinyDecoration = 2,
 	noFocus = 256};
 
-  /** 
+  /**
    * Invokes the logout process (session management, logout dialog, ...)
    *
    * Note: May have no effect with other window mangers
    */
   static void logout();
 
-  /** 
+  /**
    * Clients who draw over other windows should call refreshScreen()
    * afterwards to force an ExposureEvent on all visible windows.
    * Also necessary after darkenScreen();
@@ -252,7 +252,7 @@ public:
    * Note: May have no effect with other window mangers
    */
   static void darkenScreen();
-  
+
   /**
    * Clients who manipulated the config file of the windowmanager
    * should call this afterwards
@@ -273,7 +273,7 @@ public:
 
 
   /**
-    * Raise/register/unregister sound events. The number of character in 
+    * Raise/register/unregister sound events. The number of character in
     * the event name is limited to 20.
     *
     Note: May have no effect with other window mangers
@@ -288,11 +288,11 @@ public:
   /**
    *************************************************************************
    *
-   * Functions below are probably only important for window manager modules 
+   * Functions below are probably only important for window manager modules
    *
    * DO NOT USE THEM WITH REGULAR CLIENTS
    *
-   ************************************************************************* 
+   *************************************************************************
    */
 
   /**
@@ -315,11 +315,11 @@ public:
    *
    * KDE_SOUND_EVENT             - a sound event
    * KDE_REGISTER_SOUND_EVENT    - registration of a new sound event
-   * KDE_UNREGISTER_SOUND_EVENT  - remove a registration 
+   * KDE_UNREGISTER_SOUND_EVENT  - remove a registration
    *
    * Please check out the KWMModuleApplication class which gives you easy
    * access to all these messages via Qt signals and slots. It also keeps
-   * automatically a list of windows in both stacking and creation order.  
+   * automatically a list of windows in both stacking and creation order.
    */
   static void setKWMModule(Window w);
   /**
@@ -330,7 +330,7 @@ public:
   /**
    * Note that there can only be one single KWMDockModule at the same
    * time.  The first one to come wins. The later can check the result
-   * with isKWMDockModule.  
+   * with isKWMDockModule.
    *
    * The KWMDockModule recieves two additional client messages:
    * KWM_MODULE_DOCKWIN_ADD
@@ -363,7 +363,7 @@ public:
    */
   static void switchToDesktop(int desk);
 
-  /** 
+  /**
    *Window region define the rectangle where windows can appear. A
    * window which can be fully maximized will exactly fill this
    * region. The regions are settable withing kwm to allow desktop
@@ -376,7 +376,7 @@ public:
     */
   static QRect getWindowRegion(int desk);
 
-  /** 
+  /**
    * At present the maximium number of desktops is limited to 32
    *
    * As with the window regions, kwm will store the following properties in
@@ -412,17 +412,17 @@ public:
 
   /**
    * The standard window title. If kwm runs, title() will return the
-   * title kwm uses. These titles are always unique.  
+   * title kwm uses. These titles are always unique.
    */
   static QString title(Window w);
 
-  /** 
+  /**
    *titleWithState is aequivalent to title(), but inside round brackets
-   * for iconified window 
+   * for iconified window
    */
   static QString titleWithState(Window w);
 
-  /** 
+  /**
    * if no miniicon is set, miniIcon() will return the standard
    * icon. The result will be scaled to (width, height) if it is
    * larger. Otherwise it will not be modified. If you do not specify
@@ -445,21 +445,26 @@ public:
     * Returns the virtual desktop on which the window is located.
     */
   static int desktop(Window w);
-  /** 
+  /**
     * Returns the geometry of a window. If including_frame is set,
     * then the geometry of kwm's decoration frame is returned. This
     * functions tries to work even for non-KDE-compliant window
     * managers. Anyway, since this is a bit weird in X the result
-    * cannot be guaranteed to be correct then.  
+    * cannot be guaranteed to be correct then.
     */
   static QRect geometry(Window w, bool including_frame = FALSE);
 
   /**
    * geometry restore is only defined for maximized window. It is the
-   * geometry a window will get when it is unmaximized.  
+   * geometry a window will get when it is unmaximized.
    */
   static QRect geometryRestore(Window w);
 
+  /**
+    * Returns the icon geometry of a window. 
+    */
+  static QRect iconGeometry(Window w);
+    
   /**
    * Is the window iconified?
    */
@@ -492,7 +497,7 @@ public:
    * Does the window have the focus?
    */
   static bool isActive(Window w);
-  
+
 
   /**
    * ***** SET WINDOW PROPERTIES *****
@@ -507,13 +512,17 @@ public:
    */
   static void moveToDesktop(Window w, int desk);
   /**
-   * Move a window to another virutal desktop
+   * Set the geometry of a window
    */
   static void setGeometry(Window w, const QRect &geom);
   /**
-   * Move a window to another virutal desktop
+   * Set the restore geometry (before maximize) of a window
    */
   static void setGeometryRestore(Window w, const QRect &geom);
+  /**
+   * Set the icon geometry of a window.
+   */
+  static void setIconGeometry(Window w, const QRect &geom);
   /**
    * Move a window to another geometric position
    */
@@ -537,15 +546,15 @@ public:
    */
   static void close(Window w);
 
-  /** 
+  /**
    *activate will deiconify the window, if is is iconified, or switch to
    * another desktop, if the window is there. Then the window is raised
    * and activated with activateInteral (see below)
    */
   static void activate(Window w);
 
-  /** 
-   * activateInternal will simply activate the window. Be carefull: you might 
+  /**
+   * activateInternal will simply activate the window. Be carefull: you might
    * run into trouble if the window is iconified or on another desktop!
    * You probably prefer activate (see above).
    */
@@ -560,7 +569,7 @@ public:
    */
   static void lower(Window w);
 
-  /**   
+  /**
    * if you like to swallow a mapped window ( == XReparentWindow)
    * you should call prepareForSwallowing before. This will set the
    * window to WithDrawnState (and also wait until the window achieved
@@ -587,7 +596,7 @@ public:
    * windowmanager though, you should better do it. Please keep in
    * mind that taking windows away from windowmanagers is a sensitive
    * topic. That means: Even prepareForSwallowing may fail with
-   * certain non-standard windowmanagers.  
+   * certain non-standard windowmanagers.
    *
    * Also note that all this stuff only affects toplevel
    * windows. Reparenting subwindows is no problem at all, since a
@@ -599,7 +608,7 @@ public:
     * title that should not be managed by the windowmanager. This is useful
     * to avoid flickering when a panel swallows legacy applications.
     * doNotManage(...) applies only for the first window which meets the
-    * criteria. 
+    * criteria.
     *
     * Note: May have no effect with other windowmanagers.
     */
@@ -609,7 +618,7 @@ public:
   /**
    * ***** CURRENT NAMES OF WINDOW OPERATION COMMANDS *****
    *
-   * For 100% consitancy of the desktop, clients which do window operations 
+   * For 100% consitancy of the desktop, clients which do window operations
    * should use these strings.
    */
   /**

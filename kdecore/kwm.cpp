@@ -46,7 +46,7 @@ static int _getprop(Window w, Atom a, Atom type, long len, unsigned char **p){
   int format;
   unsigned long n, extra;
   int status;
-  
+
   status = XGetWindowProperty(qt_xdisplay(), w, a, 0L, len, False, type, &real_type, &format, &n, &extra, p);
   if (status != Success || *p == 0)
     return -1;
@@ -58,12 +58,12 @@ static int _getprop(Window w, Atom a, Atom type, long len, unsigned char **p){
 
 static bool getSimpleProperty(Window w, Atom a, long &result){
   long *p = 0;
-  
+
   if (_getprop(w, a, a, 1L, (unsigned char**)&p) <= 0){
     kwm_error = TRUE;
     return FALSE;
   }
-  
+
   result = p[0];
   XFree((char *) p);
   kwm_error = FALSE;
@@ -77,12 +77,12 @@ static void setSimpleProperty(Window w, Atom a, long data){
 
 static bool getDoubleProperty(Window w, Atom a, long &result1, long &result2){
   long *p = 0;
-  
+
   if (_getprop(w, a, a, 2L, (unsigned char**)&p) <= 0){
     kwm_error = TRUE;
     return FALSE;
   }
-  
+
   result1 = p[0];
   result2 = p[1];
   XFree((char *) p);
@@ -100,7 +100,7 @@ static void setDoubleProperty(Window w, Atom a, long data1, long data2){
 
 static bool getQRectProperty(Window w, Atom a, QRect &rect){
   long *p = 0;
-  
+
   if (_getprop(w, a, a, 4L, (unsigned char**)&p) <= 0){
     kwm_error = TRUE;
     return FALSE;
@@ -122,7 +122,7 @@ static void setQRectProperty(Window w, Atom a, const QRect &rect){
 
 static bool getQStringProperty(Window w, Atom a, QString &str){
   unsigned char *p = 0;
-  
+
   if (_getprop(w, a, XA_STRING, 100L, (unsigned char**)&p) <= 0){
     kwm_error = TRUE;
     return FALSE;
@@ -136,7 +136,7 @@ static bool getQStringProperty(Window w, Atom a, QString &str){
 static void sendClientMessage(Window w, Atom a, long x){
   XEvent ev;
   long mask;
-  
+
   memset(&ev, 0, sizeof(ev));
   ev.xclient.type = ClientMessage;
   ev.xclient.window = w;
@@ -154,7 +154,7 @@ static void sendClientMessage(Window w, Atom a, long x){
 
 static void setQStringProperty(Window w, Atom a, const QString &str){
   XChangeProperty(qt_xdisplay(), w, a, XA_STRING, 8,
-		  PropModeReplace, (unsigned char *)(str.data()), 
+		  PropModeReplace, (unsigned char *)(str.data()),
 		  str.length()+1);
 }
 
@@ -179,7 +179,7 @@ QString KWM::getProperties(Window w){
   data[n++]=isMaximized(w)?1:0;
   data[n++]=isSticky(w)?1:0;
   data[n++]=getDecoration(w);
-  
+
   QString s;
   for (i=0;i<n;i++){
     s.setNum(data[i]);
@@ -188,7 +188,7 @@ QString KWM::getProperties(Window w){
       result.append("+");
   }
   return result;
-} 
+}
 
 QRect KWM::setProperties(Window w, const QString &props){
   int a;
@@ -289,7 +289,7 @@ void KWM::setMiniIcon(Window w, const QPixmap &pm){
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON", False);
   QPixmap *p = new QPixmap;
   *p = pm;
-  setDoubleProperty(w, a, (long) p->handle(), 
+  setDoubleProperty(w, a, (long) p->handle(),
 		    (long) (p->mask()?p->mask()->handle():None));
   delete p;
 }
@@ -306,7 +306,7 @@ void KWM::setIcon(Window w, const QPixmap &pm){
     hints->icon_mask = p->mask()->handle();
     hints->flags |= IconMaskHint;
   }
-  else 
+  else
     hints->flags &= ~IconMaskHint;
   XSetWMHints( qt_xdisplay(), w, hints );
   XFree(hints);
@@ -340,7 +340,7 @@ void KWM::refreshScreen(){
 void KWM::darkenScreen(){
   sendKWMCommand("darkenScreen");
 }
-  
+
 void KWM::configureWm(){
   sendKWMCommand("configure");
 }
@@ -375,8 +375,8 @@ void KWM::raiseSoundEvent(const QString &event){
   const char* s = event.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
-  
-  mask = SubstructureRedirectMask; 
+
+  mask = SubstructureRedirectMask;
 
   status = XSendEvent(qt_xdisplay(),
 		      qt_xrootwin(),
@@ -402,8 +402,8 @@ void KWM::registerSoundEvent(const QString &event){
   const char* s = event.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
-  
-  mask = SubstructureRedirectMask; 
+
+  mask = SubstructureRedirectMask;
 
   status = XSendEvent(qt_xdisplay(),
 		      qt_xrootwin(),
@@ -428,8 +428,8 @@ void KWM::unregisterSoundEvent(const QString &event){
   const char* s = event.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
-  
-  mask = SubstructureRedirectMask; 
+
+  mask = SubstructureRedirectMask;
 
   status = XSendEvent(qt_xdisplay(),
 		      qt_xrootwin(),
@@ -605,8 +605,8 @@ void KWM::sendKWMCommand(const QString &command){
   const char* s = command.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
-  
-  mask = SubstructureRedirectMask; 
+
+  mask = SubstructureRedirectMask;
 
   status = XSendEvent(qt_xdisplay(),
 		      qt_xrootwin(),
@@ -668,10 +668,10 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
     Window root;
     int x, y;
     unsigned int w = 0;
-    unsigned int h = 0; 
+    unsigned int h = 0;
     unsigned int border_w, depth;
     XGetGeometry(qt_xdisplay(), p,
-		 &root, 
+		 &root,
 		 &x, &y, &w, &h, &border_w, &depth);
     if (w > 0 && h > 0){
       QPixmap pm(w, h, depth);
@@ -685,7 +685,7 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
 		  0, 0, w, h, 0, 0);
 	pm.setMask(bm);
       }
-      if (width > 0 && height > 0 && (w > (unsigned int)width 
+      if (width > 0 && height > 0 && (w > (unsigned int)width
 				      || h > (unsigned int) height)){
 	// scale
 	QWMatrix m;
@@ -694,11 +694,11 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
       }
       else
 	result = pm;
-    }  
+    }
   }
   else {
     XWMHints *hints = XGetWMHints(qt_xdisplay(),  w);
-    if (hints && 
+    if (hints &&
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
@@ -712,7 +712,7 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
       if (trans != w)
 	return miniIcon(trans, width, height);
     }
-  }  
+  }
   return result;
 }
 
@@ -735,10 +735,10 @@ QPixmap KWM::icon(Window w, int width, int height){
     Window root;
     int x, y;
     unsigned int w = 0;
-    unsigned int h = 0; 
+    unsigned int h = 0;
     unsigned int border_w, depth;
     XGetGeometry(qt_xdisplay(), p,
-		 &root, 
+		 &root,
 		 &x, &y, &w, &h, &border_w, &depth);
     if (w > 0 && h > 0){
       QPixmap pm(w, h, depth);
@@ -752,7 +752,7 @@ QPixmap KWM::icon(Window w, int width, int height){
 		  0, 0, w, h, 0, 0);
 	pm.setMask(bm);
       }
-      if (width > 0 && height > 0 && (w > (unsigned int)width 
+      if (width > 0 && height > 0 && (w > (unsigned int)width
 				      || h > (unsigned int) height)){
 	// scale
 	QWMatrix m;
@@ -761,11 +761,11 @@ QPixmap KWM::icon(Window w, int width, int height){
       }
       else
 	result = pm;
-    }  
+    }
   }
   else {
     XWMHints *hints = XGetWMHints(qt_xdisplay(),  w);
-    if (hints && 
+    if (hints &&
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
@@ -831,6 +831,19 @@ QRect KWM::geometryRestore(Window w){
   if (!getQRectProperty(w, a, result)){
     result = geometry(w);
     setGeometryRestore(w, result);
+  }
+  return result;
+}
+QRect KWM::iconGeometry(Window w){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON_GEOMETRY", False);
+  QRect result;
+  if (!getQRectProperty(w, a, result)){
+      QRect geom = geometry(w);
+      result = QRect(geom.x()+geom.width()/2,
+		     geom.y()+geom.height()/2,
+		     0,0);
   }
   return result;
 }
@@ -920,6 +933,12 @@ void KWM::setGeometryRestore(Window w, const QRect &geom){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_GEOMETRY_RESTORE", False);
+  setQRectProperty(w, a, geom);
+}
+void KWM::setIconGeometry(Window w, const QRect &geom){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON_GEOMETRY", False);
   setQRectProperty(w, a, geom);
 }
 void KWM::move(Window w, const QPoint &pos){
@@ -1019,8 +1038,8 @@ void KWM::doNotManage(const QString& title){
   const char* s = title.data();
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
-  
-  mask = SubstructureRedirectMask; 
+
+  mask = SubstructureRedirectMask;
 
   status = XSendEvent(qt_xdisplay(),
 		      qt_xrootwin(),
