@@ -64,6 +64,7 @@ using namespace KJS;
   dispatchEvent		DOMNode::DispatchEvent	DontDelete|Function 1
 # IE extensions
   contains	DOMNode::Contains		DontDelete|Function 1
+  insertAdjacentHTML	DOMNode::InsertAdjacentHTML	DontDelete|Function 2
 # "DOM level 0" (from Gecko DOM reference; also in WinIE)
   item          DOMNode::Item           DontDelete|Function 1
 @end
@@ -495,6 +496,32 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 	    return Boolean(retval);
 	}
         return Undefined();
+    }
+    case DOMNode::InsertAdjacentHTML:
+    {
+      // see http://www.faqts.com/knowledge_base/view.phtml/aid/5756 
+      // and http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/insertAdjacentHTML.asp 
+      Range range = node.ownerDocument().createRange();
+
+      range.setStartBefore(node);
+
+      DocumentFragment docFrag = range.createContextualFragment(args[1].toString(exec).string());
+
+      DOMString where = args[0].toString(exec).string();
+
+      if (where == "beforeBegin" || where == "BeforeBegin")
+        node.parentNode().insertBefore(docFrag, node);
+      else if (where == "afterBegin" || where == "AfterBegin")
+        node.insertBefore(docFrag, node.firstChild());
+      else if (where == "beforeEnd" || where == "BeforeEnd")
+        return getDOMNode(exec, node.appendChild(docFrag));
+      else if (where == "afterEnd" || where == "AfterEnd")
+        if (!node.nextSibling().isNull())
+	  node.parentNode().insertBefore(docFrag, node.nextSibling());
+	else
+	  node.parentNode().appendChild(docFrag);
+
+      return Undefined();
     }
     case DOMNode::Item:
       return getDOMNode(exec, node.childNodes().item(static_cast<unsigned long>(args[0].toNumber(exec))));
