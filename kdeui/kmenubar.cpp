@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.53  1998/11/23 18:32:04  radej
+// sven: MACmode: runtime change works,
+//
 // Revision 1.52  1998/11/23 15:34:04  radej
 // sven: Nicer sysmenu button
 //
@@ -245,20 +248,6 @@ void KMenuBar::ContextCallback( int )
   highlight = false;
   transparent = false;
 
-  // Sven: move this to slotReadConfig and make sure it works in other
-  // direction too.
-  {
-      KConfig* config = kapp->getConfig();
-      KConfigGroupSaver saver(config, "Menubar");
-      if (config->readEntry("position") == "TopOfScreen") {
-	  int verticalOffset = config->readNumEntry("verticalOffset", 0);
-          standalone_menubar = TRUE;
-          Parent->installEventFilter(this); // to show menubar
-          //handle->removeEventFilter(this);
-          //handle->hide();
-      }
-  }
-
   setLineWidth( 0 );
 
   resize( Parent->width(), menu->height());
@@ -269,11 +258,6 @@ void KMenuBar::ContextCallback( int )
   mgr =0;
 
 }
-   // what is that?! we do not need to recreate before
-  // destroying.... (Matthias)
-//  if (position == Floating)
-//      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
-
 
 
 KMenuBar::~KMenuBar()
@@ -293,7 +277,6 @@ void KMenuBar::slotReadConfig ()
   bool _transparent;
 
   KConfig *config = kapp->getConfig();
-  config->setGroup(group);
   QString group = config->group();
   config->setGroup("Toolbar style");
   _highlight =config->readNumEntry("Highlighting", 1);
@@ -303,19 +286,42 @@ void KMenuBar::slotReadConfig ()
     highlight = _highlight;
 
   if (_transparent != transparent)
-    //debug ("Style = Motif");
     menu->setStyle(style()); //Uh!
 
-    menu->setFrameStyle(Panel | Raised);
+    if (position != Floating)
+  {
     // menu->setStyle(style()); TODO: port to real Styles
     menu->setMouseTracking(false);
     if (position != Floating || position == FloatingSystem)
-    //debug ("Style = Windows");
     menu->setStyle(style()); //Uh!
   }
-    menu->setFrameStyle(NoFrame);
+    if (position != Floating)
+  {
     // menu->setStyle(style()); TODO: port to real Styles
+  
+  config->setGroup("Menubar");
+      menu->setFrameStyle(NoFrame);
+  if (config->readEntry("position") == "TopOfScreen")
+
   config->setGroup("KDE");//CT as Sven asked
+  if (!standalone_menubar && macmode) //was not and now is
+  if (config->readEntry("macStyle") == "on") //CT as Sven asked
+    standalone_menubar = TRUE;
+    Parent->installEventFilter(this); // to show menubar
+    if (Parent->isVisible())
+    {
+      Parent->hide();
+      Parent->show();
+    }
+	  setMenuBarPos( FloatingSystem );
+  else if (standalone_menubar && !macmode) //was and now is not
+	  Parent->installEventFilter(this); // to show menubar
+    standalone_menubar = false;
+  }
+  else if (menuBarPos() == FloatingSystem && !macmode) //was and now is not
+  {
+    standalone_menubar = FALSE;
+    setMenuBarPos (lastPosition);
   }
   //else if was and now is - nothing;
   //else if was not and now is not - nothing;
@@ -438,11 +444,11 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         QString x,y;
         x.setNum(pos().x());
         y.setNum(pos().y()+height());
-        if (((QMouseEvent*)ev)->button() == LeftButton)
+        while (x.length()<4)
           x.prepend("0");
-        else
-          KWM::sendKWMCommand(QString("krootwm:go")+x+y);
-        return false;
+        while (y.length()<4)
+          y.prepend("0");
+        //if (((QMouseEvent*)ev)->button() == LeftButton)
           KWM::sendKWMCommand(QString("kpanel:go")+x+y);
       
         //  KWM::sendKWMCommand(QString("krootwm:go")+x+y);
