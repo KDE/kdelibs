@@ -20,11 +20,6 @@
 #include <config.h>
 
 #ifdef HAVE_DNOTIFY
-#undef _GNU_SOURCE
-#define _GNU_SOURCE
-#define __USE_GNU
-#define __USE_POSIX
-#define __USE_POSIX199309 
 #include <fcntl.h>
 #include <signal.h>
 #include <qintdict.h>
