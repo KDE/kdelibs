@@ -221,6 +221,13 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
       mTitleLabel->setMinimumWidth( r.width() );
     }
     mTitleList->append( title );
+
+    
+    if( mTitleList->count() == 1 )
+    {
+      showPage(0);
+    }
+
     return( page );
   }
 
