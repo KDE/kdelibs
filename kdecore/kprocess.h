@@ -66,6 +66,9 @@ class KProcessPrivate;
  *Since this signal is @em not emitted from within a UN*X
  *signal handler, arbitrary function calls can be made.
  *
+ *Be aware: When the KProcess objects gets destructed, the child
+ *process will be killed if it is still running!
+ *
  *@li  KProcess::Block -- The child process starts and the parent process
  *is suspended until the child process exits. (@em Really not recommended
  *for programs with a GUI.)
