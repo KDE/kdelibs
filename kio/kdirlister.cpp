@@ -334,7 +334,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       {
         if ( u == (*kit)->url() )
         {
-          kdDebug(7003) << "slotUpdateFinished : keeping " << name << endl;
+          //kdDebug(7003) << "slotUpdateFinished : keeping " << name << endl;
           (*kit)->mark();
           found = true;
           break;
@@ -345,7 +345,6 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 
       if ( found )
       {
-          kdDebug() << "KDirLister::slotUpdateResult Comparing KFileItems" << endl;
           assert(kit.current());
           // Check if something changed for this file
           if ( ! (*kit)->cmp( *item ) )
