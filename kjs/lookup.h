@@ -140,7 +140,7 @@ namespace KJS {
         return cachedVal;
 
       Value val = new FuncImp(exec, entry->value, entry->params);
-      const_cast<ThisImp *>(thisObj)->put(exec, propertyName, val, entry->attr);
+      const_cast<ThisImp *>(thisObj)->ObjectImp::put(exec, propertyName, val, entry->attr);
       return val;
     }
     return thisObj->getValue(exec, entry->value);
@@ -184,6 +184,18 @@ namespace KJS {
     thisObj->putValue(exec, entry->value, value, attr);
   }
 
+  /*
+   * List of things to do when porting an objectimp to the 'static hashtable' mechanism:
+   * - write the hashtable source, between @begin and @end
+   * - add a rule to build the .lut.h
+   * - include the .lut.h
+   * - mention the table in the classinfo (add a classinfo if necessary)
+   * - write/update the class enum (for the tokens)
+   * - turn get() into getValue(), put() into putValue(), using a switch and removing funcs
+   * - write get() and/or put() using a template method
+   * - cleanup old stuff (e.g. hasProperty)
+   * - compile, test, commit ;)
+   */
 }; // namespace
 
 #endif
