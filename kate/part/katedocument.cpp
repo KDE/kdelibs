@@ -2270,6 +2270,9 @@ bool KateDocument::openURL( const KURL &url )
 
     m_job = KIO::get ( url, false, isProgressInfoEnabled() );
 
+    // set text mode 
+    m_job->addMetaData ( "textmode", "true" );
+
     QWidget *w = widget ();
     if (!w && !m_views.isEmpty ())
       w = m_views.first();
