@@ -53,7 +53,7 @@ bool SlaveInterface::dispatch()
     QByteArray data;
 
     if (m_pConnection->read( &cmd, data ) == -1)
-	return false;
+      return false;
 
     return dispatch( cmd, data );
 }
@@ -219,7 +219,8 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         kdDebug(7007) << "Got auth-key:      " << key << endl
                       << "    group-key:     " << group << endl
                       << "    keep password: " << keep << endl;
-        authenticationKey( key, group, keep );
+        emit authenticationKey( key, group );
+        emit authorizationKey( key, group, keep );
         break;
     }
     default:

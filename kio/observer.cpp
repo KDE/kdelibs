@@ -203,6 +203,30 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
   m_uiserver->unmounting( job->progressId(), point );
 }
 
+bool Observer::openPassDlg( const QString& prompt, QString& user, 
+			    QString& pass, const QString& caption,
+			    const QString& comment, const QString& label,
+			    bool readOnly, bool* keep )
+{
+   AuthInfo info;
+   info.prompt = prompt;
+   info.username = user;
+   info.password = pass;
+   info.caption = caption;
+   info.comment = comment;
+   info.commentLabel = label;
+   info.readOnly = readOnly;
+   if ( keep )
+     info.keepPassword = (*keep);
+   bool result = openPassDlg ( info );
+   if ( result )
+   {
+     user = info.username;
+     pass = info.password;
+   }
+   return result; 
+}
+
 bool Observer::openPassDlg( KIO::AuthInfo& info )
 {
   kdDebug(7007) << "Observer::openPassDlg: User= " << info.username

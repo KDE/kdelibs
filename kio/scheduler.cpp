@@ -423,8 +423,8 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job)
                 SLOT(slotSlaveDied(KIO::Slave *)));
       connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                 SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
-      connect(slave,SIGNAL(authenticationKey(const QCString&, const QCString&, bool)),
-                SLOT(slotAuthenticationKey(const QCString&, const QCString&, bool)));
+      connect(slave,SIGNAL(authorizationKey(const QCString&, const QCString&, bool)),
+                SLOT(slotAuthorizationKey(const QCString&, const QCString&, bool)));
    }
    else
    {
@@ -466,9 +466,9 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     }
 }
 
-void Scheduler::slotAuthenticationKey( const QCString& key,
-                                       const QCString& group,
-                                       bool keep )
+void Scheduler::slotAuthorizationKey( const QCString& key,
+                                      const QCString& group,
+                                      bool keep )
 {
     AuthKey* auth_key = cachedAuthKeys.first();
     for( ; auth_key !=0 ; auth_key=cachedAuthKeys.next() )

@@ -134,7 +134,6 @@ public:
     void setProgressId( int id ) { m_progressId = id; }
     int progressId() const { return m_progressId; }
 
-
     // Send our answer to the MSG_RESUME (canResume) request
     // (to tell the "put" job whether to resume or not)
     void sendResumeAnswer( bool resume );
@@ -172,7 +171,24 @@ signals:
     void gettingFile( const QString & ) ; // ?
     void infoMessage( const QString & ) ;
     void connectFinished();
-    void authenticationKey( const QCString &, const QCString &, bool );
+
+    /**
+     * @deprecated.  Use @ref #authorizationKey instead.
+     *
+     * NOTE: Do not connect to both this and #authorizationKey.
+     * at the same time.
+     */
+    void authenticationKey( const QCString &, const QCString & );
+
+    /**
+     * Signal emitted whenever a new password is cached or a cached
+     * one is found for use in the io-slaves.
+     *
+     * @param key     token under which authorization is stored.
+     * @param group   group token under which authorization is stored.
+     * @param keep    if true, user requested password to be cached for entire KDE session.
+     */
+    void authorizationKey( const QCString & key, const QCString & grp, bool keep );
 
 protected:
     /////////////////
