@@ -3,12 +3,12 @@
 #define __normalktm_h__
 
 #include <kparts/part.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 class KAction;
 class QWidget;
 
-class Shell : public KTMainWindow
+class Shell : public KMainWindow
 {
   Q_OBJECT
 public:

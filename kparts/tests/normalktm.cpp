@@ -47,7 +47,7 @@ Shell::Shell()
   paQuit->setIconSet(QIconSet(BarIcon("exit")));
   paQuit->plug( pFile );
 
-  setView( m_splitter );
+  setCentralWidget( m_splitter );
   m_splitter->setMinimumSize( 400, 300 );
 
   m_splitter->show();
