@@ -119,7 +119,7 @@ KLibFactory* componentFactory()
 	if (!factory)
 	{
 		// nothing has been found, try to load directly the KGhostview part
-		factory = KLibLoader::self()->factory("kparts_kghostview");
+		factory = KLibLoader::self()->factory("libkghostviewpart");
 	}
 	return factory;
 }
