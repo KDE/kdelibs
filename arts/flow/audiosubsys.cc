@@ -22,20 +22,26 @@
     operating system kernel, whether or not that is in fact the case.
 
     */
-
-#include "audiosubsys.h"
-#include <assert.h>
-#ifdef linux
-#include <sys/soundcard.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
+
+#include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
+
+#ifdef HAVE_SYS_SOUNDCARD_H
+#include <sys/soundcard.h>
+#endif
+
+#include <assert.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#include "audiosubsys.h"
 
 #define DEVICE_NAME "/dev/dsp"
 
@@ -111,7 +117,7 @@ void AudioSubSystem::detachConsumer()
 int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
                          bool wantfullduplex)
 {
-#ifdef linux
+#ifdef HAVE_SYS_SOUNDCARD_H
 	int mode;
 
 	if(wantfullduplex)
@@ -268,7 +274,7 @@ int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
 	fullDuplex = wantfullduplex;
 	return audio_fd;
 #else
-	cerr << "Sorry: arts doesn't support sound I/O on non linux systems, yet";
+	cerr << "Sorry: arts doesn't support sound I/O on non Voxware-esque systems, yet";
 	return -1;
 #endif
 }
