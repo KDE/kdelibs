@@ -189,7 +189,7 @@ void KConfigTestView::writeButtonClicked()
   pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
   pInfoLabel2->setText( "Entry written" );
 
-  KASSERT( false, KDEBUG_INFO, 1, "Entry written: %d", 27 );
+  kDebugInfo( "Entry written: %d", 27 );
 }
 
 //
