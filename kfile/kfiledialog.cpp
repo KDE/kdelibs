@@ -320,6 +320,9 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     // the startdirectory twice. This must be fixed somehow else, tho.
     setSelection(d->url.url());
     ops->setView(KFile::Default);
+
+
+    coll->action( "back" )->setEnabled( false );
 }
 
 void KFileDialog::setLocationLabel(const QString& text)
