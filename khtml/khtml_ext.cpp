@@ -468,7 +468,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
       }
       if(!saved)
       {
-        KIO::Job *job = KIO::file_copy( url, destURL );
+        KIO::Job *job = KIO::copy( url, destURL );
 #if KDE_VERSION > 290
         job->setMetaData(metadata);
 #endif
