@@ -1222,15 +1222,6 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
         return 0;
     }
 
-    // Dispatch pre-removal mutation events
-    getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
-    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
-	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-	if (exceptioncode)
-	    return 0;
-    }
-
     dispatchChildRemovalEvents(oldChild,exceptioncode);
     if (exceptioncode)
         return 0;
