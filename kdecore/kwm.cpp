@@ -16,7 +16,11 @@
 #include <config.h>
 #endif
 
-/* this is needed for AIX and Solaris */
+#ifdef HAVE_SYSENT_H
+#include <sysent.h>
+#endif
+
+/* this is needed for AIX */
 #ifndef HAVE_GETDOMAINNAME
 extern "C" {
 int getdomainname (char *Name, int Namelen);
