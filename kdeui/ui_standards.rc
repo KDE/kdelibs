@@ -32,6 +32,8 @@
     <Separator/>
     <Action name="game_highscores"/>
     <Separator/>
+	<MergeLocal/>
+	<Separator/>
     <Action name="game_quit"/>
   </Menu>
   <Menu name="edit"><text>&amp;Edit</text>
