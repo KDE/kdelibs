@@ -263,6 +263,17 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
             scrolling = QScrollView::AlwaysOn;
         else if( strcasecmp( attr->value(), "no" ) == 0 )
             scrolling = QScrollView::AlwaysOff;
+        break;
+    case ATTR_ONLOAD:
+        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
+              ->setHTMLEventListener(EventImpl::LOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string()));
+        break;
+    case ATTR_ONUNLOAD:
+        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
+              ->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string()));
+        break;
 
     default:
         HTMLElementImpl::parseAttribute(attr);
