@@ -32,7 +32,6 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-#include <kdebug.h>
 #include <klibloader.h>
 #include <kmdcodec.h>
 #include <ktrader.h>
@@ -54,7 +53,7 @@ QString KSASLContext::chooseMethod (const QString &available, bool isBASE64)
 	QString operate_on;
 
 	if (isBASE64) {
-		operate_on = KBase64::decodeString(available.stripWhiteSpace().latin1());
+		operate_on = KCodecs::base64Decode(available.stripWhiteSpace());
 	} else {
 		operate_on = available.stripWhiteSpace();
 	}
@@ -97,7 +96,7 @@ QString KSASLContext::generateResponse (const QString &challenge, bool isBASE64,
 	}
 
 	if (isBASE64) {
-		decoded_challenge = KBase64::decodeString(challenge);
+		decoded_challenge = KCodecs::base64Decode(challenge);
 	} else {
 		decoded_challenge = challenge;
 	}
@@ -112,7 +111,7 @@ QString KSASLContext::generateResponse (const QString &challenge, bool isBASE64,
         more = module->property("more").toBool();
 
 	if (isBASE64) {
-		return KBase64::encodeString(return_value);
+		return KCodecs::base64Encode(return_value);
 	}
 
 	return return_value;
