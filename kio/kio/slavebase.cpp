@@ -51,6 +51,7 @@
 #include <ksocks.h>
 
 #include "slavebase.h"
+#include "kremoteencoding.h"
 
 #include "kio/slavebase.h"
 #include "kio/connection.h"
@@ -123,6 +124,7 @@ public:
     KIO::filesize_t totalSize;
     KIO::filesize_t sentListEntries;
     DCOPClient *dcopClient;
+    KRemoteEncoding *remotefile;
     time_t timeout;
     QByteArray timeoutData;
 };
@@ -224,6 +226,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     connectSlave(mAppSocket);
 
     d->dcopClient = 0;
+    d->remotefile = 0;
 }
 
 SlaveBase::~SlaveBase()
@@ -375,6 +378,13 @@ void SlaveBase::sendMetaData()
    mOutgoingMetaData.clear(); // Clear
 }
 
+KRemoteEncoding *SlaveBase::remoteEncoding()
+{
+   if (d->remotefile != 0)
+      return d->remotefile;
+
+   return d->remotefile = new KRemoteEncoding(metaData("Charset").latin1());
+}
 
 void SlaveBase::data( const QByteArray &data )
 {
@@ -973,6 +983,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_CONFIG:
         stream >> d->configData;
         KSocks::setConfig(d->config);
+	delete d->remotefile;
+	d->remotefile = 0;
         break;
     case CMD_GET:
     {

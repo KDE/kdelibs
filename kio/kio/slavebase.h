@@ -26,6 +26,7 @@
 #include <kio/authinfo.h>
 
 class DCOPClient;
+class KRemoteEncoding;
 
 namespace KIO {
 
@@ -289,6 +290,15 @@ public:
      * relevant for the current protocol and host.
      */
     KConfigBase* config();
+
+    /**
+     * Returns an object that can translate remote filenames into proper
+     * Unicode forms. This encoding can be set by the user.
+     *
+     * @since 3.3
+     */
+    KRemoteEncoding* remoteEncoding();
+    
 
     ///////////
     // Commands sent by the job, the slave has to
