@@ -33,6 +33,7 @@
 #include <qkeycode.h>
 #include <qwidcoll.h>
 #include <qpopupmenu.h>
+#include <qsessionmanager.h>
 
 #include <kapp.h>
 #include <kglobal.h>
@@ -48,6 +49,8 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
+#include <qlist.h>
+#include <qsessionmanager.h>
 #include <qtranslator.h>
 
 #include <sys/types.h>
@@ -99,12 +102,51 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
     return 0;
 }
 
+/*
+  Private data to make keeping binary compatibility easier
+ */
+class KApplicationPrivate
+{
+public:
+    KApplicationPrivate()
+    {
+    }
+    ~KApplicationPrivate()
+    {
+    }
+};
+
+// the help class for session management communication
+static QList<KSessionManaged>* sessionClients()
+{
+    static QList<KSessionManaged>* session_clients = 0L;
+    if ( !session_clients )
+	session_clients = new QList<KSessionManaged>;
+    return session_clients;
+}
+
+/*
+  Auxiliary function to calculate a a session config name used for the
+  instance specific config object.
+  Syntax:  "<appname>:<level>:<sessionId>"
+ */
+static int session_restore_level = 0;
+static QString getSessionConfigName()
+{
+  QString aSessionConfigName;
+  QTextOStream ts( &aSessionConfigName );
+  ts << qApp->name() << ":" << session_restore_level << ":" << qApp->sessionId();
+  return aSessionConfigName;
+}
 
 KApplication::KApplication( int& argc, char** argv, const QString& rAppName ) :
     QApplication( argc, argv )
 {
     if (!rAppName.isEmpty())
 	QApplication::setName(rAppName.ascii());
+
+    pAppData = new KApplicationPrivate;
+
     init();
     parseCommandLine( argc, argv );
 
@@ -137,6 +179,8 @@ void KApplication::init()
   XSetErrorHandler( kde_x_errhandler );
   XSetIOErrorHandler( kde_xio_errhandler );
 
+  connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
+
   // CC: install KProcess' signal handler
   // by creating the KProcController instance (if its not already existing)
   // This is handled be KProcess (stefh)
@@ -151,8 +195,6 @@ void KApplication::init()
 
   display = desktop()->x11Display();
 
-  WM_SAVE_YOURSELF = XInternAtom( display, "WM_SAVE_YOURSELF", False );
-  WM_PROTOCOLS = XInternAtom( display, "WM_PROTOCOLS", False );
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
@@ -171,10 +213,7 @@ void KApplication::init()
   installEventFilter( this );
 
   pSessionConfig = 0L;
-  bIsRestored = False;
-  bSessionManagement = False;
-  bSessionManagementUserDefined = False;
-  pTopWidget = 0L;
+  bSessionManagement = true;
 
   // register a communication window for desktop changes (Matthias)
   {
@@ -184,40 +223,117 @@ void KApplication::init()
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
 					PropModeReplace, (unsigned char *)&data, 1);
   }
-  aWmCommand = argv()[0];
 }
 
 KConfig* KApplication::getSessionConfig() {
   if (pSessionConfig)
     return pSessionConfig;
 
-  // create a instance specific config object
-  QString aSessionConfigName;
-  QString num;
-  int i = 0;
-  do {
-    i++;
-    num.setNum(i);
-    aSessionName = QString(name()) + "rc." + num;
-    aSessionConfigName = locateLocal("config", aSessionName);
-  } while (QFile::exists(aSessionConfigName));
+  // create an instance specific config object
+  pSessionConfig = new KConfig( getSessionConfigName(), false, false);
 
-  pSessionConfig = new KConfig(aSessionConfigName, false, false);
   return pSessionConfig;
 }
 
-void KApplication::enableSessionManagement(bool userdefined){
-  bSessionManagement = True;
-  bSessionManagementUserDefined = userdefined;
-  if (topWidget()){
-    KWM::enableSessionManagement(topWidget()->winId());
-  }
+
+KSessionManaged::KSessionManaged()
+{
+    sessionClients()->remove( this );
+    sessionClients()->append( this );
+}
+KSessionManaged::~KSessionManaged()
+{
+    sessionClients()->remove( this );
 }
 
-void KApplication::setWmCommand(const QString& s){
-  aWmCommand = s;
-  if (topWidget() && !bSessionManagement)
-    KWM::setWmCommand( topWidget()->winId(), aWmCommand);
+bool KSessionManaged::saveState(QSessionManager&)
+{
+    return TRUE;
+}
+
+bool KSessionManaged::commitData(QSessionManager&)
+{
+    return TRUE;
+}
+
+
+void KApplication::disableSessionManagement() {
+  bSessionManagement = True;
+}
+
+void KApplication::commitData( QSessionManager& sm )
+{
+    bool cancelled = false;
+    for (KSessionManaged* it = sessionClients()->first();
+	 it && !cancelled;
+	 it = sessionClients()->next() ) {
+	cancelled = !it->commitData( sm );
+    }
+    if ( cancelled )
+	sm.cancel();
+
+    if ( !bSessionManagement ) {
+	sm.setRestartHint( QSessionManager::RestartNever );
+	return;
+    }
+}
+
+void KApplication::saveState( QSessionManager& sm )
+{
+    static bool firstTime = FALSE;
+
+    if ( !bSessionManagement ) {
+	sm.setRestartHint( QSessionManager::RestartNever );
+	return;
+    }
+
+    if ( firstTime ) {
+	firstTime = FALSE;
+	return; // no need to save the state.
+    }
+
+
+    // remove former session config, we need a new one
+    if ( pSessionConfig ) {
+	delete pSessionConfig;
+	pSessionConfig = 0;
+    }
+
+    // increase restoration level, we are in a new lifecycle now
+    QFile file;
+    do {
+	session_restore_level++;
+	QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") +
+				 getSessionConfigName();
+	file.setName( aLocalFileName );
+    } while ( file.exists() );
+
+    // tell the session manager about our new lifecycle
+    QStringList restartCommand = sm.restartCommand();
+    QString restoreLevel;
+    restoreLevel.setNum( session_restore_level );
+    restartCommand << "-restore" << restoreLevel;
+    sm.setRestartCommand( restartCommand );
+
+    // finally: do session management
+    emit saveYourself();
+    bool cancelled = false;
+    for (KSessionManaged* it = sessionClients()->first();
+	 it && !cancelled;
+	 it = sessionClients()->next() ) {
+	cancelled = !it->saveState( sm );
+    }
+
+    // if we created a new session config object, register a proper discard command
+    if ( pSessionConfig ) {
+	pSessionConfig->sync();
+	QStringList discard;
+	discard  << ( QString("rm ")+file.name()); // only one argument  due to broken xsm
+	sm.setDiscardCommand( discard );
+    }
+
+    if ( cancelled )
+	sm.cancel();
 }
 
 QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
@@ -260,7 +376,7 @@ void KApplication::appHelpActivated()
 
 void KApplication::aboutKDE()
 {
-  QMessageBox about(i18n( "About KDE" ), 
+  QMessageBox about(i18n( "About KDE" ),
 		    i18n(
 			 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
 			 "a world-wide network of software engineers committed to\n"
@@ -268,7 +384,7 @@ void KApplication::aboutKDE()
 			 "Visit http://www.kde.org for more information on the KDE\n"
 			 "Project. Please consider joining and supporting KDE.\n\n"
 			 "Please report bugs at http://bugs.kde.org.\n"),
-		    QMessageBox::Information, 
+		    QMessageBox::Information,
 		    QMessageBox::Ok + QMessageBox::Default, 0, 0,
 		    0, "aboutkde");
   about.setButtonText(0, i18n("&OK"));
@@ -277,18 +393,19 @@ void KApplication::aboutKDE()
 
 void KApplication::aboutApp()
 {
+  QWidget* w = activeWindow();
   QString caption = i18n("About %1").arg(kapp->getCaption());
-  QMessageBox about(caption, aAppAboutString, QMessageBox::Information, 
-		   QMessageBox::Ok + QMessageBox::Default, 0, 0, 0, "aboutapp");
+  QMessageBox about(caption, aAppAboutString, QMessageBox::Information,
+		   QMessageBox::Ok + QMessageBox::Default, 0, 0, w, "aboutapp");
   about.setButtonText(0, i18n("&OK"));
   about.setIconPixmap(getIcon());
   about.exec();
 }
 
 
-void KApplication::aboutQt()
-{
-  //  QMessageBox::aboutQt( 0, getCaption() );
+void KApplication::aboutQt(){
+   //  QWidget* w = activeWindow();
+  //  QMessageBox::aboutQt( w, getCaption() );
 }
 
 
@@ -410,17 +527,12 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    aDummyString2 += argv[i+1];
 	    aDummyString2 += " ";
 	    break;
-	case restore: {
-	    aSessionName = argv[i+1];
-            QString aSessionConfigName = locateLocal("config", aSessionName);
-	    if (QFile::exists(aSessionConfigName))
-	    {
-	      // Open config file read-only
-	      pSessionConfig = new KConfig( aSessionConfigName, true, false);
-	      bIsRestored = True;
-	    }
-	}
-	break;
+	case restore:
+	    session_restore_level = QString( argv[i+1] ).toInt();
+	    delete pSessionConfig; // should be 0 anyway
+	    // create a new read-only session config for the restortation
+	    pSessionConfig = new KConfig( getSessionConfigName(), true, false);
+	    break;
 	case unknown:
 	    i++;
 	}
@@ -456,19 +568,6 @@ QPixmap KApplication::getMiniIcon() const
 }
 KApplication::~KApplication()
 {
-  // Remove session config file if we were restored from it.
-  if (bIsRestored && pSessionConfig) {
-    delete pSessionConfig;
-    pSessionConfig = 0;
-    bIsRestored = false;
-    QString aSessionConfigName = locateLocal("config", aSessionName);
-    QFile sessionFile( aSessionConfigName);
-    if (sessionFile.exists())
-    {
-      sessionFile.remove();
-    }
-  }
-
   removeEventFilter( this );
 
   delete smw;
@@ -485,6 +584,7 @@ KApplication::~KApplication()
   theKProcessController = 0;
   delete ctrl; // Stephan: "there can be only one" ;)
 
+  delete pAppData;
   KApp = 0;
 }
 
@@ -492,65 +592,6 @@ bool KApplication::x11EventFilter( XEvent *_event )
 {
   if ( _event->type == ClientMessage ) {
     XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
-
-    // session management
-    if( cme->message_type == WM_PROTOCOLS ) {
-      if( (Atom)(cme->data.l[0]) == WM_SAVE_YOURSELF ) {
-	//we want a new session config!
-	if (bIsRestored && pSessionConfig) {
-	  delete pSessionConfig;
-	  pSessionConfig = 0;
-	  bIsRestored = false;
-          QString aSessionConfigName = locateLocal("config", aSessionName);
-          QFile sessionFile( aSessionConfigName);
-          if (sessionFile.exists())
-	  {
-	    sessionFile.remove();
-	  }
-	}
-	
-	if (!topWidget() ||
-	    cme->window != topWidget()->winId()) {
-	  KWM::setWmCommand(cme->window, "");
-	  return true;
-	}
-	
-	emit saveYourself(); // give applications a chance to
-	// save their data
-	if (bSessionManagementUserDefined)
-	  KWM::setWmCommand( topWidget()->winId(), aWmCommand);
-	else {
-	
-	  if (pSessionConfig && !aSessionName.isEmpty()){
-	    QString aCommand = name();
-	    if (aCommand != argv()[0]){
-	      if (argv()[0][0]=='/')
-		aCommand = argv()[0];
-	      else {
-		char* s = new char[1024];
-		aCommand=(getcwd(s, 1024));
-		aCommand+="/";
-		delete [] s;
-		aCommand+=name();
-	      }
-	    }
-	    aCommand+=" -restore ";
-	    aCommand+=aSessionName;
-	    aCommand+=aDummyString2;
-	    KWM::setWmCommand( topWidget()->winId(),
-			       aCommand);
-	    pSessionConfig->sync();
-	  } else {
-	    QString aCommand = argv()[0];
-	    aCommand+=aDummyString2;
-	    KWM::setWmCommand( topWidget()->winId(),
-			       aCommand);
-	  }
-	}
-	
-	return true;
-      }
-    }
 
     // stuff for reconfiguring
     if ( cme->message_type == KDEChangeStyle ) {
@@ -730,7 +771,7 @@ void KApplication::readSettings(bool reparse)
 void KApplication::kdisplaySetPalette()
 {
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
-    
+
   KConfigBase* config;
   config  = kapp->getConfig();
   config->setGroup( "General" );
@@ -779,7 +820,7 @@ void KApplication::kdisplaySetPalette()
   colgrp.setColor( QColorGroup::ButtonText, buttonText);
 
   setPalette( QPalette( colgrp, disabledgrp, colgrp), true );
-    
+
   applyGUIStyle( WindowsStyle ); // to fix the palette again
   emit kdisplayPaletteChanged();
   emit appearanceChanged();
@@ -999,20 +1040,16 @@ bool checkAccess(const QString& pathname, int mode)
 
 void KApplication::setTopWidget( QWidget *topWidget )
 {
-  pTopWidget = topWidget;
   if (topWidget){
-    // set the specified icons
-    KWM::setIcon(topWidget->winId(), getIcon());
-    KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
-    // set a short icon text
-    // TODO: perhaps using .ascii() isn't right here as this may be seen by
-    // a user?
-    XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
-    if (bSessionManagement)
-      enableSessionManagement(bSessionManagementUserDefined);
-
-    if (!bSessionManagement)
-	KWM::setWmCommand( topWidget->winId(), aWmCommand);
+      // set the specified caption
+      topWidget->setCaption( getCaption() );
+      // set the specified icons
+      KWM::setIcon(topWidget->winId(), getIcon());
+      KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
+      // set a short icon text
+      // TODO: perhaps using .ascii() isn't right here as this may be seen by
+      // a user?
+      XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
   }
 }
 

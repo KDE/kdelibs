@@ -39,8 +39,10 @@ typedef unsigned long Atom;
 #include <qpixmap.h>
 class QPopupMenu;
 class QStrList;
-
+class KSessionManaged;
 #define kapp KApplication::getKApplication()
+
+class KApplicationPrivate;
 
 /**
 * Controls and provides information to all KDE applications.
@@ -87,7 +89,7 @@ public:
    *  handled by KApplication itself (i. e. '-icon') are already removed
    */
   int argc() const { return pArgc; }
-      
+
   /** A global event filter for KApplication.
 	* Filters out Ctrl-Shift-F12 for KDebug.
 	*/
@@ -128,28 +130,25 @@ public:
 	*	getSessionConfig() contains data saved by a session closedown.
 	* @see #getSessionConfig
 	*/
-  bool isRestored() const { return bIsRestored; }
+  bool isRestored() const { return QApplication::isSessionRestored(); }
 
   /**
-	* Enable session management.
-	* Session management will apply to the top widget.
+   * Disables session management for this application.
+   * Useful in case  your application is started by the inital "startkde" script.
+   */
+  void disableSessionManagement();
 
-	* @param userdefined  If this is True, the WmCommand can be
-	* defined with @ref #setWmCommand.  Note that you do not get an
-	* instance specific config object with @ref #getSessionConfig
-	* in this case!
-	*/
-  void enableSessionManagement(bool userdefined = false);
 
-  /**
-	* Set the WmCommand for the session manager.
-	*
-	* This has an effect if either session management is disabled (then it
-	* is used for pseudo session management) or if session management is
-	* enabled with userdefined=True.
-	* @see #enableSessionManagement
-	*/
-  void setWmCommand(const QString&);
+    /*
+      Reimplemented for internal purposes, mainly the highlevel
+      handling of session management with KSessionManaged.
+     */
+  void commitData( QSessionManager& sm );
+    /*
+      Reimplemented for internal purposes, mainly the highlevel
+      handling of session management with KSessionManaged.
+     */
+  void saveState( QSessionManager& sm );
 
 
   /**
@@ -175,17 +174,16 @@ public:
 	*/
   QPixmap getMiniIcon() const;
 
-  /** Sets the top widget of the application. This widget will
-    * be used for communication with the session manager.
-    * You must not call this function manually if you are using
-    * the KTopLevelWidget.
+  /** 
+      Makes @param topWidget a top widget of the application.
+      
+      This means bascially applying the right window caption and
+      icon. An application may have several top widgets. You don't
+      need to call this function manually when using KTMainWindow 
+      
+      @see #getIcon, #getCaption
     */
   void setTopWidget( QWidget *topWidget );
-
-  QWidget* topWidget() const
-    {
-      return pTopWidget;
-    }
 
   /**
    * Invoke the kdehelp HTML help viewer.
@@ -262,11 +260,6 @@ protected:
    */
   bool x11EventFilter( XEvent * );
 
-  /**
-   * Two X11 atoms used for session management
-   */
-  Atom WM_SAVE_YOURSELF;
-  Atom WM_PROTOCOLS;
 
   Display *display;
 
@@ -287,22 +280,14 @@ protected slots:
   void appHelpActivated();
 
 private:
-  void* pAppData; // don't touch this without Kalles permission
+  KApplicationPrivate* pAppData;
   KConfig* pSessionConfig; //instance specific application config object
-  QString aSessionName; // logical name of the instance specific config file
-  QWidget* pTopWidget;
   QString aCaption; // the name for the window title
-  QString aWmCommand; // for userdefined session management
-  void* dummy2; // do not use these without asking kalle@kde.org
-  void* dummy3;
-  void* dummy4;
   QString aAppAboutString; // The text for the about box
   QString aDummyString2; // do not touch
   QString aDummyString3; // do not touch
   QString aDummyString4; // do not touch
-  bool bIsRestored; // is the application restored from the session manager?
   bool bSessionManagement;
-  bool bSessionManagementUserDefined;
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
   KStyle *pKStyle; // A KDE style object if available (mosfet)
@@ -376,10 +361,10 @@ public:
 	* behavior. */
   void appearanceChanged();
 
-  /** Session management is about to close your application.
+  /** Session management asks you to save the state of your application.
 	*
 	* Connect to this signal in order to save your data. Do NOT
-	* manipulate the UI in that slot, it is blocked by kwm.
+	* manipulate the UI in that slot, it is blocked by the session manager.
 	*
 	* Use the @ref ::getSessionConfig KConfig object to store all
 	* your instance specific datas.
@@ -396,9 +381,13 @@ public:
 	* toplevel windows.  */
   void saveYourself();
 
-  /** Your application is killed. Either by kwm's killwindow function,
-	* xkill or (the usual case) by KDE's logout.
-	*/
+  /** Your application is killed. Either by your program itself, kwm's
+      killwindow function, xkill or (the usual case) by KDE's logout.
+
+      The signal is particularly useful if your application has to do some
+      last-second cleanups. Note that no user interaction is possible at
+      this state.
+   */
   void shutDown();
 
 
@@ -425,9 +414,35 @@ private:
         */
   bool checkAccess(const QString& pathname, int mode);
 
+
+
+/**
+*  Provides highlevel aceess to session management on a per-object base.
+*
+*  You don't need to do anything with this class when using KTMainWindow
+*
+* @short Highlevel access to session management.
+* @author Matthias Ettrich <ettrich@kde.org>
+*/
+class KSessionManaged 
+{
+public:
+    KSessionManaged();
+    ~KSessionManaged();
+    virtual bool saveState( QSessionManager& sm );
+    virtual bool commitData( QSessionManager& sm );
+};
+
+
+
 #endif
 
 // $Log$
+// Revision 1.100  1999/08/06 18:58:45  gehrmab
+//
+// * KApplication::argc()
+// * Fixed documentation of tempSaveName()
+//
 // Revision 1.99  1999/08/03 22:56:28  ettrich
 // removed some debug output (it was impossible to work with this),
 // some smaller cleanups, reintroduced support for local colos/fonts

@@ -25,6 +25,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
+#include <qtextstream.h>
 
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
@@ -919,7 +920,6 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
 				 bool bNLS )
 {
   QString aValue;
-  QString aCharset;
   UINT8 nFontBits = 0;
   // this mimics get_font_bits() from qfont.cpp
   if( rFont.italic() )
@@ -933,15 +933,14 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
   if( rFont.rawMode() )
     nFontBits = nFontBits | 0x20;
 
-  //printf("charset = %d\n", rFont.charSet());
-
+  QString aCharset = "default";
   if( rFont.charSet() != QFont::AnyCharSet )
-      aCharset.sprintf("%d", rFont.charSet());
-  else
-      aCharset = "default";
-  aValue.sprintf( "%s,%d,%d,%s,%d,%d", rFont.family().ascii(), rFont.pointSize(),
-		  rFont.styleHint(), aCharset.ascii(),
-		  rFont.weight(), nFontBits );
+      aCharset.setNum( rFont.charSet() );
+  
+  QTextIStream ts( &aValue );
+  ts << rFont.family() << "," << rFont.pointSize() << "," 
+     << rFont.styleHint() << "," << aCharset << "," << rFont.weight() << "," 
+     << nFontBits;
 
   return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
