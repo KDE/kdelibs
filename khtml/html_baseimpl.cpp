@@ -34,6 +34,9 @@ using namespace DOM;
 #include <stdio.h>
 #include <kurl.h>
 
+#include <qcursor.h>
+#include <qnamespace.h>
+
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
     : HTMLBlockElementImpl(doc), HTMLImageRequester()
 {
@@ -161,6 +164,8 @@ HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
 {
     view = 0;
     parentWidget = 0;
+
+    frameBorder = true;
 }
 
 HTMLFrameElementImpl::~HTMLFrameElementImpl()
@@ -203,6 +208,9 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 	break;
     }
     case ATTR_FRAMEBORDER:
+	if(attr->value() == "0")
+	    frameBorder = false;
+	break;
     case ATTR_MARGINWIDTH:
     case ATTR_MARGINHEIGHT:
     case ATTR_NORESIZE:
@@ -225,7 +233,9 @@ void HTMLFrameElementImpl::layout(bool)
     getAbsolutePosition(x, y);
     parentWidget->addChild(view, x, y);
     view->resize(width, descent);
-
+    if(!frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(_parent))->frameBorder()))
+	view->setFrameStyle(QFrame::NoFrame);
+    
     setLayouted();
 }
 
@@ -283,7 +293,7 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     cols = 0;
 
     frameborder = true;
-    border = 0;
+    border = 2;
     noresize = false;
 
     view = 0;
@@ -342,7 +352,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
     width = availableWidth;
 
     if(_parent->id() == ID_HTML && view)
-	descent = view->height();
+	descent = view->clipper()->height();
 
     int totalRows = 1;
     if(rows)
@@ -468,11 +478,11 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 	    e->setDescent(rowHeight[r]);
 	    if(deep)
 		e->layout();
-	    xPos += colWidth[c];
+	    xPos += colWidth[c] + border;
 	    child = child->nextSibling();
 	    if(!child) goto end;
 	}
-	yPos += rowHeight[r];
+	yPos += rowHeight[r] + border;
     }
 
  end:
@@ -514,6 +524,70 @@ void HTMLFrameSetElementImpl::close()
     if(layouted())
 	static_cast<HTMLDocumentImpl *>(document)->print(this, true);
 }
+
+bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
+				  int _tx, int _ty, DOMString &url)
+{
+    _x-=_tx;
+    _y-=_ty;
+
+    NodeImpl *child = _first;
+    while(child)
+    {
+	if(child->id() == ID_FRAMESET)
+	    if(child->mouseEvent( _x, _y, button, type, _tx, _ty, url)) return true;
+	child = child->nextSibling();
+    }
+
+    if(noresize) return true;
+    
+    if(type == MouseMove)
+    {
+	int horiz = -1;
+	int vert = -1;
+	
+	int totalRows = 1;
+	if(rows)
+	    totalRows = rows->count();
+	int totalCols = 1;
+	if(cols)
+	    totalCols = cols->count();
+
+	// check if we're over a horizontal or vertical boundary
+	int pos = 0;
+	for(int c = 0; c < totalCols; c++)
+	{
+	    pos += colWidth[c];
+	    if(_x >= pos && _x <= pos+border)
+	    {
+		horiz = c;
+		break;
+	    }
+	    pos += border;
+	}
+	pos = 0;
+	for(int r = 0; r < totalRows; r++)
+	{
+	    pos += rowHeight[r];
+	    if( _y >= pos && _y <= pos+border)
+	    {
+		vert = r;
+		break;
+	    }
+	    pos += border;
+	}
+
+	if(horiz != -1 && vert != -1)
+	    view->setCursor(Qt::sizeAllCursor);
+	else if( horiz != -1 )
+	    view->setCursor(Qt::splitHCursor);
+	else if( vert != -1 )
+	    view->setCursor(Qt::splitVCursor);
+	    
+    }
+
+}
+
 // -------------------------------------------------------------------------
 
 HTMLHeadElementImpl::HTMLHeadElementImpl(DocumentImpl *doc)
@@ -614,7 +688,7 @@ void HTMLHtmlElementImpl::layout(bool deep)
     }
 
     if(!child) return;
-    
+
     QTime qt;
     qt.start();
     child->layout(deep);

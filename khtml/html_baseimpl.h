@@ -96,6 +96,8 @@ protected:
     DOMString name;
     KHTMLWidget *view;
     KHTMLWidget *parentWidget;
+
+    bool frameBorder;
 };
 
 // -------------------------------------------------------------------------
@@ -122,6 +124,11 @@ public:
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
 
+    virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
+		     int _tx, int _ty, DOMString &url);
+
+    bool frameBorder() { return frameborder; }
+    
 protected:
     QList<Length> *rows;
     QList<Length> *cols;
@@ -129,7 +136,7 @@ protected:
     int *colWidth;
     bool *rowResize;
     bool *colResize;
-    
+
     // mozilla and other's use this in the frameset, although it's not standard html4
     bool frameborder;
     int border;

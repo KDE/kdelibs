@@ -63,6 +63,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
 
     kimgioRegister();
 
+    setCursor(arrowCursor);
     _isFrame = false;
     
     init();
@@ -74,13 +75,15 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, const c
     _parent     = _parent_browser;
     m_strFrameName       = name;
 
-  // initialize QScrollview
+  // Initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
 
     kimgioRegister();
 
+    setCursor(arrowCursor);
     _isFrame = true;
+    if(_parent) setURLCursor(_parent->urlCursor());
     
     init();
 }
@@ -267,9 +270,9 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     clear();
 
-    //emit scrollHorz( _x_offset );
-    //emit scrollVert( _y_offset );
-
+    m_iNextXOffset = _x_offset;
+    m_iNextYOffset = _y_offset;
+    
     // ###
     //stopParser();
     m_strURL = _url;
@@ -838,6 +841,8 @@ void KHTMLWidget::end()
   KURL u(m_strURL);
   if ( !u.htmlRef().isEmpty() )
       gotoAnchor( u.htmlRef() );
+  else 
+      setContentsPos( m_iNextXOffset, m_iNextYOffset );
 
 
   // Are all children complete now ?
@@ -1214,6 +1219,7 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
     {
 	if ( bIsTextSelected )
+
 	{
 	    debugM( "Text Selected\n" );
 	    emit textSelected( true );
@@ -1367,15 +1373,43 @@ bool KHTMLWidget::findTextNext( const QRegExp &/*exp*/ )
 
 void KHTMLWidget::saveState( QDataStream &stream )
 {
-  stream << url() << (Q_INT32)contentsX() << (Q_INT32)contentsY();
+    if(!document || !document->body()) return;
+
+    if(document->body()->id() == ID_FRAMESET)
+    {	
+	stream << (Q_UINT8)1;
+	// handling for framesets...
+	stream << url(); // need this to reconstruct the correct URL to show in the locationbar
+
+	// ###
+    }
+    else
+    {
+	stream << (Q_UINT8)0 << url() << (Q_INT32)contentsX() << (Q_INT32)contentsY();
+	// ### Fixme: handle forms....
+    }
 }
 
 void KHTMLWidget::restoreState( QDataStream &stream )
 {
-  QString u;
-  Q_INT32 xOfs, yOfs;
-  stream >> u >> xOfs >> yOfs;
-  openURL( u, false, xOfs, yOfs );
+    Q_UINT8 frameSet;
+    stream >> frameSet;
+
+    if(frameSet != 1)
+    {
+	QString u;
+	Q_INT32 xOfs, yOfs;
+	stream >> u >> xOfs >> yOfs;
+	openURL( u, false, xOfs, yOfs );
+    }
+    else
+    {
+	QString u;
+	stream >> u;
+	// handling for framesets...
+	// ###
+	openURL(u, false, 0, 0);
+    }
 }
 
 bool KHTMLWidget::isFrameSet()
