@@ -29,6 +29,7 @@
 
 #include <iostream>
 
+using namespace std;
 
 class PrintSignals : public QObject
 {
