@@ -472,14 +472,8 @@ rule_N=<action>,<referingURL_protocol>,<referingURL_host>,<referingURL_path>,<UR
 The following actions are supported:
 redirect - e.g. a html-page obtained via HTTP could redirect itself to file:/path/some-file. This
            is disabled by default but could be explicitly enabled for a specific HTTP host.
+           This also applies to links contained in html documents.
            Example: rule_1=redirect,http,myhost.acme.com,,file,,,true
-
-link     - e.g. a html-page obtained via HTTP could contain links to local files. By default 
-           clicking on such links results in a security error-dialog. One can however explicitly
-           allow such links for specific HTTP hosts.
-           Example: rule_1=link,http,myhost.acme.com,,file,,,true
-
-           IMPLEMENTATION NOTE: "link" is not yet fully implemented!!
 
 list     - This controls which directories can be browsed with KDE's file-dialogs. If a user
            should only be able to browse files under home directory one could use:
@@ -557,6 +551,26 @@ And to prevent a user from adding additional konsole profiles, one would add:
 [KDE Resource Restrictions][$i]
 data_konsole=false
 
+
+Control module restrictions
+===========================
+
+It is possible to restrict access to particular control modules.
+Although it is possible to remove control modules from the Control
+Center by editing the menu structure, such modules will then still
+be available to applications. A better way is to use the control
+module restrictions offered by KIOSK:
+
+[KDE Control Module Restrictions][$i]
+<menu-id>=false
+
+Some example menu-ids are:
+
+kde-display.desktop
+kde-proxy.desktop
+kde-screensaver.desktop
+
+See also kcmshell --list for a list of all the base names.
 
 Expansion of environment variables in KDE config files.
 =======================================================
