@@ -1157,8 +1157,9 @@ bool TextAreaWidget::event( QEvent *e )
 RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *element)
     : RenderFormElement(view, element)
 {
-    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view->viewport());
+    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
     setQWidget(edit, false);
+    edit->setMouseTracking(true); 
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
     connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));
