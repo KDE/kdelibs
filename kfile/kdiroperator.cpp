@@ -54,7 +54,7 @@ template class QDict<KFileViewItem>;
 
 KURL *KDirOperator::lastDirectory = 0; // to set the start path
 
-class KDirOperator::KDirOperatorPrivate 
+class KDirOperator::KDirOperatorPrivate
 {
 public:
     bool onlyDoubleClickSelectsFiles;
@@ -70,7 +70,7 @@ KDirOperator::KDirOperator(const KURL& url,
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
     d = new KDirOperatorPrivate;
     d->onlyDoubleClickSelectsFiles = false;
-    
+
     if (url.isEmpty()) // no dir specified -> current dir
       {
 	QString strPath = QDir::currentDirPath();
@@ -193,6 +193,7 @@ void KDirOperator::slotSimpleView()
 void KDirOperator::slotToggleHidden( bool show )
 {
     dir->setShowHiddenFiles( show );
+    rereadDir();
 }
 
 void KDirOperator::slotToggleMixDirsAndFiles()
@@ -1164,12 +1165,12 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 	progress->move(2, height() - progress->height() -2);
 }
 
-void KDirOperator::setOnlyDoubleClickSelectsFiles( bool enable ) 
+void KDirOperator::setOnlyDoubleClickSelectsFiles( bool enable )
 {
     d->onlyDoubleClickSelectsFiles = enable;
 }
 
-bool KDirOperator::onlyDoubleClickSelectsFiles() const 
+bool KDirOperator::onlyDoubleClickSelectsFiles() const
 {
     return d->onlyDoubleClickSelectsFiles;
 }
