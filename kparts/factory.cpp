@@ -31,8 +31,6 @@ using namespace KParts;
 Factory::Factory( QObject *parent, const char *name )
 : KLibFactory( parent, name )
 {
-  connect( this, SIGNAL( objectCreated( QObject * ) ),
-           this, SLOT( slotPartCreated( QObject * ) ) );
 }
 
 Factory::~Factory()
@@ -43,15 +41,4 @@ QObject *Factory::create( QObject *parent, const char *name, const char *classna
 {
   assert( parent->isWidgetType() );
   return createPart( (QWidget *)parent, name, parent, name, classname, args );
-} 
-
-void Factory::slotPartCreated( QObject * part )
-{
-  if (part)
-  {
-    assert( part->inherits("KParts::Part") ); // don't use KParts::Factory for something else than parts :)
-    Part * thePart = static_cast<Part*>(part);
-    KGlobal::locale()->insertCatalogue(thePart->instance()->instanceName());
-  }
 }
-

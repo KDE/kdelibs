@@ -54,12 +54,12 @@ public:
      *        <param name="name2" value="value2">
      *    </object>
      * </pre>
-     * This could result in a call to 
+     * This could result in a call to
      * <pre>
      *     createPart( parentWidget, name, parentObject, parentName, "Kparts::Part",
      *                 QStringList("name1="value1"", "name2="value2") );
      * </pre>
-     * 
+     *
      * @returns the newly created part.
      *
      * After creating thte part, you should emit objectCreated( part ),
@@ -69,9 +69,6 @@ public:
     virtual Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() ) = 0;
 
     virtual QObject *create( QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
-
-protected slots:
-    void slotPartCreated( QObject * part );
 };
 
 };

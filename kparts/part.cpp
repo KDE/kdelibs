@@ -93,8 +93,8 @@ void PartBase::setPartObject( QObject *obj )
 
 QObject *PartBase::partObject() const
 {
-  return m_obj; 
-} 
+  return m_obj;
+}
 
 void PartBase::setInstance( KInstance *inst )
 {
@@ -104,6 +104,7 @@ void PartBase::setInstance( KInstance *inst )
 void PartBase::setInstance( KInstance *inst, bool loadPlugins )
 {
   KXMLGUIClient::setInstance( inst );
+  KGlobal::locale()->insertCatalogue( inst->instanceName() );
   if ( loadPlugins )
     Plugin::loadPlugins( m_obj, instance() );
 }
