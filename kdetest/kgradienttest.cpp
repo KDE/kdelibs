@@ -5,73 +5,100 @@
 #include <qdatetime.h>
 #include <qstring.h>
 
+int cols = 3, rows = 3; // how many 
+
 void KGradientWidget::paintEvent(QPaintEvent *ev)
 {
     QTime time;
     int it, ft;
     QString say;
- 
-    pix.resize(width()/2, height()/3);
+
+    QColor ca = Qt::black, cb = Qt::blue;
+
+    int x = 0, y = 0;
+
+    pix.resize(width()/cols, height()/rows);
     QPainter p(this);
     p.setPen(Qt::white);
 
     // draw once, so that the benchmarking be fair :-)
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::Vertical);
+    pix.gradientFill(ca, cb, KPixmap::Vertical);
 
     // vertical
     time.start();
     it = time.elapsed();
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::Vertical);
+    pix.gradientFill(ca, cb, KPixmap::Vertical);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(0, 0, pix);
-    p.drawText(5, 15, say);
+    say.setNum( ft - it); say += " ms, Vertical";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5 + (x++)*width()/cols, 15+y*height()/rows, say); // augment x
 
     // horizontal
     it = time.elapsed();
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::Horizontal);
+    pix.gradientFill(ca, cb, KPixmap::Horizontal);
     ft = time.elapsed() ;
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(width()/2, 0, pix);
-    p.drawText(5+width()/2, 15, say);
+    say.setNum( ft - it); say += " ms, Horizontal";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
+    // elliptic
+    it = time.elapsed();
+    KPixmapEffect::advancedGradient(pix, ca, cb, 
+				    KPixmapEffect::EllipticGradient);
+    ft = time.elapsed() ;
+    say.setNum( ft - it); say += " ms, Elliptic";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
+
+    y++; // next row
+    x = 0; // reset the columns
 
     // diagonal
     it = time.elapsed();
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::Diagonal);
+    pix.gradientFill(ca, cb, KPixmap::Diagonal);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(0, height()/3, pix);
-    p.drawText(5, 15+height()/3, say);
-
-    debug ("get here?");
-
+    say.setNum( ft - it); say += " ms, Diagonal";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
     // crossdiagonal
     it = time.elapsed();
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::CrossDiagonal);
+    pix.gradientFill(ca, cb, KPixmap::CrossDiagonal);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(width()/2, height()/3, pix);
-    p.drawText(5+width()/2, 15+height()/3, say);
+    say.setNum( ft - it); say += " ms, CrossDiagonal";
+    p.drawPixmap(width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
+
+
+    y++; // next row
+    x = 0; // reset the columns
 
     // pyramidal
     it = time.elapsed();
-    KPixmapEffect::advancedGradient(pix, Qt::black, Qt::red, 
+    KPixmapEffect::advancedGradient(pix, ca, cb, 
 			 KPixmapEffect::PyramidGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(0, 2*height()/3, pix);
-    p.drawText(5, 15+2*height()/3, say);
+    say.setNum( ft - it); say += " ms, Pyramid";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/cols, 15+y*height()/rows, say);
 
     // rectangular
     it = time.elapsed();
-    KPixmapEffect::advancedGradient(pix, Qt::black, Qt::red, 
+    KPixmapEffect::advancedGradient(pix, ca, cb, 
 			 KPixmapEffect::RectangleGradient);
     ft = time.elapsed();
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(0+width()/2, 2*height()/3, pix);
-    p.drawText(5+width()/2, 15+2*height()/3, say);
+    say.setNum( ft - it); say += " ms, Rectangle";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
+
+    // crosspipe
+    it = time.elapsed();
+    KPixmapEffect::advancedGradient(pix, ca, cb, 
+			 KPixmapEffect::PipeCrossGradient);
+    ft = time.elapsed();
+    say.setNum( ft - it); say += " ms, PipeCross";
+    p.drawPixmap(x*width()/cols, y*height()/rows, pix);
+    p.drawText(5+(x++)*width()/rows, 15+y*height()/rows, say);
 
 }
 
@@ -79,7 +106,7 @@ int main(int argc, char **argv)
 {
     KApplication *app = new KApplication(argc, argv);
     KGradientWidget w;
-    w.resize(500, 750);
+    w.resize(250 * cols, 250 * rows);
     app->setMainWidget(&w);
     w.show();
     return(app->exec());
