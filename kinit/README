@@ -79,5 +79,6 @@ Disadvantages
 The process name of applications started via kdeinit is "kdeinit". This problem
 can be corrected to a degree by changing the application name as shown
 by 'ps'. However, applications like "killall" will only see "kdeinit" as 
-process name.
+process name. To workaround this, use "kdekillall", from kdesdk/scripts,
+for applications started via kdeinit.
 
