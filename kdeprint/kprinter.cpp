@@ -30,6 +30,7 @@
 #include <qpaintdevicemetrics.h>
 #include <qfile.h>
 #include <qtl.h>
+#include <qguardedptr.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
@@ -94,7 +95,7 @@ int KPrinterWrapper::qprinterMetric(int m) const
 class KPrinterPrivate
 {
 public:
-	KPrinterImpl	*m_impl;
+	QGuardedPtr<KPrinterImpl>	m_impl;
 	bool		m_restore;
 	bool		m_previewonly;
 	WId		m_parentId;
@@ -168,7 +169,8 @@ void KPrinter::loadSettings()
 
 void KPrinter::saveSettings()
 {
-	d->m_impl->saveOptions(d->m_options);
+	if (d->m_impl)
+		d->m_impl->saveOptions(d->m_options);
 
 	// save latest used printer to config file
 	KConfig	*conf = KGlobal::config();
