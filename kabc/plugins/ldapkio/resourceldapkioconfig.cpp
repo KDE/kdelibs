@@ -56,7 +56,7 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name
   QHBox *box = new QHBox( this );
   box->setSpacing( KDialog::spacingHint() );
   mEditButton = new QPushButton( i18n( "Edit Attributes..." ), box );
-  mCacheButton = new QPushButton( i18n( "Offline use..." ), box );
+  mCacheButton = new QPushButton( i18n( "Offline Use..." ), box );
 
   connect( mEditButton, SIGNAL( clicked() ), SLOT( editAttributes() ) );
   connect( mCacheButton, SIGNAL( clicked() ), SLOT( editCache() ) );
@@ -225,7 +225,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mMapCombo->insertItem( i18n( "Outlook" ) );
   connect( mMapCombo, SIGNAL( activated( int ) ), SLOT( mapChanged( int ) ) );
 
-  label = new QLabel( i18n( "RDN Prefix Attribute:" ), page );
+  label = new QLabel( i18n( "RDN prefix attribute:" ), page );
   layout->addWidget( label, 1, 0 );
   mRDNCombo = new KComboBox( page );
   layout->addWidget( mRDNCombo, 1, 1 );
@@ -316,7 +316,7 @@ OfflineDialog::OfflineDialog( int cachePolicy, const KURL &src, const QString &d
   new QRadioButton( i18n("Always use local copy"), mCacheGroup );
   mCacheGroup->setButton( cachePolicy );  
   
-  QPushButton *lcache = new QPushButton( i18n("Load into cache"), page );
+  QPushButton *lcache = new QPushButton( i18n("Load into Cache"), page );
   connect( lcache, SIGNAL( clicked() ), SLOT( loadCache() ) );
 }
 

@@ -1305,7 +1305,7 @@ void KApplication::dcopFailure(const QString &msg)
            kapp->mainWidget(),
            i18n("DCOP communications error (%1)").arg(kapp->caption()),
            msgStr,
-           i18n("OK")
+           i18n("&OK")
          );
      }
      else

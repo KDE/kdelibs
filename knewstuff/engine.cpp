@@ -290,15 +290,15 @@ void Engine::upload( Entry *entry )
       KMessageBox::information( mParentWidget, text, caption );
     } else {
       int result = KMessageBox::questionYesNo( mParentWidget, text, caption,
-                                               i18n("Upload Info..."),
-                                               i18n("Close") );
+                                               i18n("Upload Info"),
+                                               i18n("&Close") );
       if ( result == KMessageBox::Yes ) {
         kapp->invokeBrowser( noUploadUrl.url() );
       }
     }
   } else {
     int result = KMessageBox::questionYesNo( mParentWidget, text, caption,
-                                             i18n("Upload"), i18n("Cancel") );
+                                             i18n("&Upload"), i18n("&Cancel") );
     if ( result == KMessageBox::Yes ) {
       KURL destination = mUploadProvider->uploadUrl();
       destination.setFileName( fi.fileName() );
