@@ -72,7 +72,7 @@ public:
     virtual const char *renderName() const { return "RenderObject"; }
     virtual void printTree(int indent=0) const;
 
-    void setParent(RenderObject *parent) { m_containingBlock=0; m_parent = parent; }
+    void setParent(RenderObject *parent) { resetContainingBlock(); m_parent = parent; }
     RenderObject *parent() const { return m_parent; }
 
     RenderObject *previousSibling() const { return m_previous; }
@@ -343,6 +343,7 @@ public:
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
+    virtual void resetContainingBlock();
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

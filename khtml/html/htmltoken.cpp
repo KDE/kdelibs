@@ -119,8 +119,7 @@ AttributeList &AttributeList::operator = (const AttributeList &other )
     int i = 0;
     while(i < (int)_len)
     {
-	_list[i].setValue(other._list[i].val());
-	_list[i].id = other._list[i].id;
+	_list[i] = other._list[i];
 	i++;
     }
     return *this;

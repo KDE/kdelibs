@@ -628,7 +628,7 @@ unsigned int RenderText::width( int from, int len) const
     {
 	if(from == 0)
 	    w += borderLeft() + paddingLeft();
-	if(from + len == str->l)
+	if(from + len == int(str->l))
 	    w += borderRight() + paddingRight();
     }
 

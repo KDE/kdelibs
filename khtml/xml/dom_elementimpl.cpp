@@ -260,6 +260,33 @@ void ElementImpl::removeAttribute( const DOMString &name )
     applyChanges();
 }
 
+NodeImpl *ElementImpl::cloneNode ( bool deep )
+{
+    ElementImpl *newImpl = document->createElement(tagName());
+    if (!newImpl)
+      return 0;
+
+    newImpl->setParent(0);
+    newImpl->setFirstChild(0);
+    newImpl->setLastChild(0);
+
+    newImpl->attributeMap = attributeMap;
+    unsigned int mapLength = newImpl->attributeMap.length();
+    unsigned int i;
+    for (i = 0; i < mapLength; i++)
+	newImpl->parseAttribute(newImpl->attributeMap[i]);
+
+    if(deep)
+    {
+	NodeImpl *n;
+	for(n = firstChild(); n != lastChild(); n = n->nextSibling())
+	{
+	    newImpl->appendChild(n->cloneNode(deep));
+	}
+    }
+    return newImpl;
+}
+
 // pay attention to memory leaks here!
 AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
 {

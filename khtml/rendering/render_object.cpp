@@ -449,3 +449,12 @@ void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
     _x = _y = height = -1;
 }
 
+void RenderObject::resetContainingBlock()
+{
+    m_containingBlock = 0;
+
+    RenderObject *n;
+
+    for( n = m_first; n != 0; n = n->nextSibling() )
+	n->resetContainingBlock();
+}

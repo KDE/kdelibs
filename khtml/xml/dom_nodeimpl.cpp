@@ -421,6 +421,8 @@ NodeImpl *NodeBaseImpl::lastChild() const
 NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 {
     checkReadOnly();
+    if(!checkChild(id(), newChild->id()))
+	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
     if(!refChild)
 	return appendChild(newChild);
@@ -463,6 +465,8 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     checkSameDocument(newChild);
     checkIsChild(oldChild);
     checkNoOwner(newChild);
+    if(!checkChild(id(), newChild->id()))
+	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
     // if already in the tree, remove it first!
     NodeImpl *newParent = newChild->parentNode();
@@ -526,6 +530,8 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     checkReadOnly();
     checkSameDocument(newChild);
     checkNoOwner(newChild);
+    if(!checkChild(id(), newChild->id()))
+	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
     // if already in the tree, remove it first!
     NodeImpl *newParent = newChild->parentNode();

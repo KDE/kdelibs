@@ -915,6 +915,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    pos2 = str.find(',', pos);
 	    QString face = str.mid(pos, pos2-pos);
 	    face = face.stripWhiteSpace();
+	    if(face.length() == 0) break;
 	    if(face[0] == '\"') face.remove(0, 1);
 	    if(face[face.length()-1] == '\"') face = face.left(face.length()-1);
 	    //kdDebug( 6080 ) << "found face '" << face << "'" << endl;

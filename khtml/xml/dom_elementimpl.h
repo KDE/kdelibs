@@ -113,6 +113,7 @@ public:
 
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }
+    virtual NodeImpl *cloneNode ( bool deep );
 
     /**
      * override this in subclasses if you need to parse
