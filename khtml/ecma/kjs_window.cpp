@@ -1059,7 +1059,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
       result = Number(r);
     }
-    else if (args.size() >= 2 && Object::dynamicCast(v).implementsCall()) {
+    else if (args.size() >= 2 && v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
       Value func = args[0];
       int i = args[1].toInt32(exec);
 #if 0
