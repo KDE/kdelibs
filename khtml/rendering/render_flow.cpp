@@ -209,13 +209,11 @@ void RenderFlow::layout( bool deep )
     // floats for some reason
     if(oldWidth == m_width && layouted()) return;
 
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
     printf("%s(RenderFlow)::layout(%d) width=%d, layouted=%d\n", renderName(), deep, m_width, layouted());
     if(containingBlock() == static_cast<RenderObject *>(this))
     	printf("%s: containingBlock == this\n", renderName());
-//#endif
-
-    printf("this=%x\n", this);
+#endif
 
     if(m_width<=0) return;
     clearFloats();
@@ -225,7 +223,7 @@ void RenderFlow::layout( bool deep )
     m_height = 0;
     m_clearStatus = CNONE;
 
-    printf("childrenInline()=%d\n",childrenInline());
+//    printf("childrenInline()=%d\n",childrenInline());
     if(childrenInline())
 	layoutInlineChildren();
     else

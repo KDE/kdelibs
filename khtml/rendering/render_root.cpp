@@ -87,7 +87,7 @@ void RenderRoot::updateSize()
     layout(true);	
     if(m_height != oldHeight)
     {
-//    	printf("resizing %d,%d\n",m_width,m_height);
+    	printf("resizing %d,%d\n",m_width,m_height);
     	m_view->resizeContents(m_width,m_height);
 	repaint();
     }

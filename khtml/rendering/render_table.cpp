@@ -1120,8 +1120,8 @@ void RenderTable::calcRowHeight(int r)
 
 void RenderTable::layout(bool deep)
 {
-//    if (layouted())
-//   	return;
+    if (layouted())
+   	return;
 
     // ###
     deep = true;
@@ -1304,7 +1304,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 				  int _w, int _h, int _tx, int _ty)
 {
 
-    if(!layouted()) return;
+//    if(!layouted()) return;
     
     _tx += xPos();
     _ty += yPos();
@@ -1587,6 +1587,67 @@ void RenderTableCell::setContainingBlock()
 }
 
 
+void RenderTableCell::close()
+{
+    //printf("renderFlow::close()\n");
+    setParsing(false);
+    if(haveAnonymousBox())
+    {
+	m_last->close();
+	//printf("RenderFlow::close(): closing anonymous box\n");
+	setHaveAnonymousBox(false);
+    }
+
+    //if(m_last)
+    //    m_height += m_last->height() + m_last->marginBottom();
+    if(m_style->hasBorder())
+	m_height += borderBottom();
+    if(m_style->hasPadding())
+	m_height += paddingBottom();
+	
+    setMinMaxKnown(false);
+    calcMinMaxWidth();
+    setLayouted(false);
+
+    table->updateSize();
+
+#ifdef DEBUG_LAYOUT
+    printf("%s(RenderTableCell)::close() total height =%d\n", renderName(), m_height);
+#endif
+}
+
+
+void RenderTableCell::updateSize()
+{
+//    printf("%s(RenderBox)::updateSize()\n", renderName());
+
+    int oldMin = m_minWidth;
+    int oldMax = m_maxWidth;
+    setMinMaxKnown(false);
+    calcMinMaxWidth();
+    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
+    	m_maxWidth != oldMax)
+    {    	
+	setLayouted(false);
+	if(containingBlock() != this) containingBlock()->updateSize();
+    }
+    else if(!isInline() || isReplaced())
+    {
+	int oldHeight = m_height;
+	setLayouted(false);
+   	layout(true);	
+	if(m_height != oldHeight)
+	{
+	    if(containingBlock() != this) containingBlock()->updateSize();
+	} else {
+	    repaint();
+	}
+    }
+
+}
+
+
+
 void RenderTableCell::print(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
@@ -1595,7 +1656,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 #endif
 
     if (!layouted())
-    	return;
+  	return;
 
     _tx += m_x;
     _ty += m_y + cellTopExtra();

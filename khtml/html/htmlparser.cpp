@@ -1090,12 +1090,13 @@ void KHTMLParser::popOneBlock()
 	if(!block && current->renderer())
 	{
 	    // ### find a more efficient way...
-	    int absX, absY;
+	    // this does not really belong here. commenting out... -antti
+/*	    int absX, absY;
 	    current->renderer()->absolutePosition(absX, absY);
 	    int height = absY + current->renderer()->height() + 2*5; // 5==BORDER
 	    int docHeight = HTMLWidget->contentsHeight();
 	    if(height > docHeight)
-		HTMLWidget->resizeContents(HTMLWidget->contentsWidth(), height);
+		HTMLWidget->resizeContents(HTMLWidget->contentsWidth(), height);*/
 	}
 	else if(block == current)
 	{

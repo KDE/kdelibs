@@ -546,8 +546,10 @@ void KHTMLPart::end()
 
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
-  else
+  else if (d->m_view->contentsY()==0) // check that the view has not been moved by the use
+  {
     d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+  }
 
   if ( !d->m_redirectURL.isEmpty() )
   {

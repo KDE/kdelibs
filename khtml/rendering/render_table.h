@@ -371,6 +371,13 @@ public:
     virtual void print( QPainter* p, int x, int y,
 			int w, int h, int tx, int ty);
 
+    virtual void updateSize();
+    virtual void close();
+    
+    // lie position to outside observers
+    virtual int yPos() const { return m_y + _topExtra; } 
+    	
+    
 protected:
     RenderTable *table;
 
