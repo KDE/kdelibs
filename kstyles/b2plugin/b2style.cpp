@@ -313,13 +313,13 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     bool maxed = sb->maxValue() == sb->minValue();
     
     if ( controls & AddLine ) {
-        drawSBButton(p, addB, g);
+        drawSBButton(p, addB, g, activeControl == AddLine);
         drawArrow( p, horiz ? RightArrow : DownArrow,
                    activeControl == AddLine, addB.x()+4, addB.y()+4,
                    addB.width()-8, addB.height()-8, g, !maxed);
     }
     if ( controls & SubLine ) {
-        drawSBButton(p, subB, g);
+        drawSBButton(p, subB, g, activeControl == SubLine);
         drawArrow( p, horiz ? LeftArrow : UpArrow,
                    activeControl == SubLine, subB.x()+4, subB.y()+4,
                    subB.width()-8, subB.height()-8, g, !maxed);
@@ -699,7 +699,7 @@ void B2Style::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
 void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool)
 {
-    drawKMenuBar(p, x, y, w, h, g, NULL);
+    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
 }
 
 void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -713,23 +713,22 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 
     QFontMetrics fm(*font);
 
-    if(raised)
-    {
+    if(raised){
         int x2 = x+w;
         int y2 = y+h;
-
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
-
+ 
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
+ 
         p->setPen(g.dark());
         p->drawLine(x+1, y+1, x2-2, y+1);
         p->drawLine(x, y+2, x, y2-3);
         p->drawLine(x2-1, y+2, x2-1, y2-3);
         p->drawLine(x+1, y2-2, x2-2, y2-2);
-
-        p->setPen(g.light());
+ 
+        p->setPen(sunken ? g.mid() : g.light());
         p->drawLine(x+1, y+2, x2-2, y+2);
         p->drawLine(x+1, y+2, x+1, y2-3);
-        p->setPen(g.mid());
+        p->setPen(sunken ? g.light() : g.mid());
         p->drawLine(x2-2, y+3, x2-2, y2-3);
         p->drawLine(x+2, y2-3, x2-2, y2-3);
     }
