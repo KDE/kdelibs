@@ -847,7 +847,7 @@ void KLocale::aliasLocale(const char *text, long int index)
     aliases.insert(index, new QString(text));
 }
 
-QString KLocale::getLocale(const QString& ) const {
+QString KLocale::getLocale(const QString& ) {
     return "C";
 }
 
