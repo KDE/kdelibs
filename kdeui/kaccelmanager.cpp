@@ -395,7 +395,7 @@ QString KAccelString::accelerated() const
           if (m_accel != orig_accel) {
               result.insert(m_accel, "(!)&");
               if (m_accel < orig_accel)
-                  oa += 3;
+                  oa += 4;
           } else {
               result.insert(m_accel, "&");
               if (m_accel < orig_accel)
