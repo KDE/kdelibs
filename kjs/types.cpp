@@ -152,9 +152,11 @@ List::List()
   count++;
 #endif
 
-  static KJSO null = KJSO();
+  static KJSO *null = 0;
+  if (!null)
+     null = new KJSO();
 
-  hook = new ListNode(null, 0L, 0L);
+  hook = new ListNode(*null, 0L, 0L);
   hook->next = hook;
   hook->prev = hook;
 }

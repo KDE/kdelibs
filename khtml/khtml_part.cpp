@@ -379,7 +379,6 @@ KHTMLPart::~KHTMLPart()
 bool KHTMLPart::openURL( const KURL &url )
 {
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
-  static QString http_protocol = QString::fromLatin1( "http" );
 
   d->m_redirectionTimer.stop();
 
@@ -408,7 +407,7 @@ bool KHTMLPart::openURL( const KURL &url )
     return false;
 
   d->m_bReloading = args.reload;
-  if ( args.postData.size() > 0 && url.protocol() == http_protocol )
+  if ( (args.postData.size() > 0) && (url.protocol() == QString::fromLatin1( "http" )) )
       d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
   else
       d->m_job = KIO::get( url, args.reload, false );
@@ -1397,8 +1396,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   else
       hasTarget = true;
 
-  static QString javascript = QString::fromLatin1("javascript:");
-  if ( url.left(11) == javascript )
+  if ( url.left(11) == QString::fromLatin1("javascript:") )
   {
     executeScript( url.right( url.length() - 11) );
     return;
@@ -1878,26 +1876,21 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
 
-  static QString _top = QString::fromLatin1( "_top" );
-  static QString _self = QString::fromLatin1( "_self" );
-  static QString _parent = QString::fromLatin1( "_parent" );
-  static QString _blank = QString::fromLatin1( "_blank" );
-
   QString frameName = args.frameName.lower();
 
   if ( !frameName.isEmpty() )
   {
-    if ( frameName == _top )
+    if ( frameName == QString::fromLatin1( "_top" ) )
     {
       emit d->m_extension->openURLRequest( url, args );
       return;
     }
-    else if ( frameName == _blank )
+    else if ( frameName == QString::fromLatin1( "_blank" ) )
     {
       emit d->m_extension->createNewWindow( url, args );
       return;
     }
-    else if ( frameName == _parent )
+    else if ( frameName == QString::fromLatin1( "_parent" ) )
     {
       KParts::URLArgs newArgs( args );
       newArgs.frameName = QString::null;
@@ -1905,7 +1898,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       emit d->m_extension->openURLRequest( url, newArgs );
       return;
     }
-    else if ( frameName != _self )
+    else if ( frameName != QString::fromLatin1( "_self" ) )
     {
       khtml::ChildFrame *_frame = recursiveFrameRequest( url, args );
 
@@ -1921,7 +1914,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
   if ( child )
     requestObject( child, url, args );
-  else if ( frameName == _self ) // this is for embedded objects (via <object>) which want to replace the current document
+  else if ( frameName == QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
   {
     KParts::URLArgs newArgs( args );
     newArgs.frameName = QString::null;

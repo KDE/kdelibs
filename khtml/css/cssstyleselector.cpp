@@ -159,7 +159,10 @@ void CSSStyleSelector::loadDefaultStyle()
 
 #include <qmap.h>
 
+#if 0
+// WABA: Static objects are evil
 static QList<RenderStyle> lastStyles;
+#endif
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
