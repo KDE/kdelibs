@@ -1,21 +1,22 @@
 TEMPLATE	= app
 
+include( $(KDELIBS)/win/common.pro )
 
-include( $(QKW)/kwcommon.pro )
 
 #allow to select target independently from debug information
 kdebase_release:CONFIG -= console
 kdebase_release:CONFIG += windows
 kdebase_release:QMAKE_MAKEFILE = Makefile.release
 
-win32:LIBS += $$QKWLIB/dcop$$KDELIB_SUFFIX $$QKWLIB/kio$$KDELIB_SUFFIX
+
 
 
 TARGET		= kfiletreeviewtest
 
-win32:LIBS +=  $$QKWLIB/kdefx$$KDELIB_SUFFIX \
-  $$QKWLIB/kio$$KDELIB_SUFFIX \
-  $$QKWLIB/kparts$$KDELIB_SUFFIX
+win32:LIBS +=  $$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX \
+  $$KDELIBDESTDIR/kio$$KDELIB_SUFFIX \
+  $$KDELIBDESTDIR/kparts$$KDELIB_SUFFIX \
+  $$KDELIBDESTDIR/dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR/kio$$KDELIB_SUFFIX
 
 #INCLUDEPATH	+= $(QKW)/kdelibs/interfaces/kregexpeditor
 

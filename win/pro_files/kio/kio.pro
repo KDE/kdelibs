@@ -1,17 +1,14 @@
 TEMPLATE	= lib
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 # needed to export library classes:
 DEFINES += MAKE_KIO_LIB
 
-win32:LIBS += $$QKWLIB\kdecore$$KDELIB_SUFFIX $$QKWLIB\kdeui$$KDELIB_SUFFIX 
-win32:LIBS += $$QKWLIB\dcop$$KDELIB_SUFFIX $$QKWLIB\kdewin32$$KDELIB_SUFFIX
-win32:LIBS += $$QKWLIB\zlib.lib
-
-#system( moc kmimetypechooser.h -o moc/kmimetypechooser.moc )
-#system( moc kmimetyperesolver.h -o moc/kmimetyperesolver.moc )
-#system( kaccelprivate.h -o moc/kmimetyperesolver.moc )
+win32:LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdeui$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX \
+	win32:LIBS += $$KDELIBDESTDIR\zlib.lib
 
 system( bash kmoc kio kfile misc )
 
