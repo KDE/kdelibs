@@ -73,8 +73,8 @@ return 0;
 
 
 int KPCSC::reconnect() {
-	disconnect();
-return connect();
+  disconnect();
+  return connect();
 }
 
 
@@ -131,21 +131,22 @@ return res;
 
 
 KCardReader* KPCSC::getReader(QString x) {
-long rc;
-KCardReader *cr = NULL;
-long card;
-unsigned long protocol;
-
-	rc = SCardConnect(_ctx, x.local8Bit(), SCARD_SHARE_EXCLUSIVE,
-						SCARD_PROTOCOL_ANY,
-						&card, &protocol);
-
+  long rc;
+  KCardReader *cr = NULL;
+  SCARDHANDLE card;
+  unsigned long protocol;
+  
+  rc = SCardConnect(_ctx, x.local8Bit(), SCARD_SHARE_EXCLUSIVE,
+		    SCARD_PROTOCOL_ANY,
+		    &card, &protocol);
+  
 	if (rc == SCARD_S_SUCCESS) {
-		cr = new KCardReader;
-		cr->setCard(_ctx, x, card, protocol);
+	  cr = new KCardReader;
+	  cr->setCard(_ctx, x, card, protocol);
+	  
 	}
-
-return cr;
+	
+	return cr;
 }
 
 
