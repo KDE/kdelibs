@@ -183,7 +183,7 @@ build_link(const char *tmp_prefix, const char *kde_prefix)
   }
   tmp_buf[result] = '\0';  
   printf("Link points to \"%s\"\n", tmp_buf);
-  if (strcmp(tmp_buf, user_tmp_dir) != 0)
+  if (strncmp(tmp_buf, user_tmp_dir, strlen(user_tmp_dir)) != 0)
   {
      fprintf(stderr, "Error: \"%s\" points to \"%s\" instead of \"%s\".\n", kde_tmp_dir, tmp_buf, user_tmp_dir);
      unlink(kde_tmp_dir);
@@ -196,7 +196,7 @@ build_link(const char *tmp_prefix, const char *kde_prefix)
      return create_link(kde_tmp_dir, user_tmp_dir);
      return 1;
   }
-  result = check_tmp_dir(user_tmp_dir);
+  result = check_tmp_dir(tmp_buf);
   if (result == 0) return 0; /* Success */
   unlink(kde_tmp_dir);
   strcat(user_tmp_dir, "XXXXXX");
