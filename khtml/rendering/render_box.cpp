@@ -1046,7 +1046,7 @@ void RenderBox::calcAbsoluteVertical()
     if (hl.isFixed())
         ch = hl.value() + cb->paddingTop() + cb->paddingBottom()
 	     + cb->borderTop() + cb->borderBottom();
-    else if (cb->isCanvas())
+    else if (cb->isCanvas() || cb->isRoot())
         ch = cb->availableHeight();
     else
         ch = cb->height();

@@ -1,3 +1,9 @@
+2003-11-13  Zack Rusin  <zack@kde.org>
+
+	* rendering/render_box.cpp (calcAbsoluteVertical): fix the
+	computation  of the height for the percentage positioned elements
+	contained in the root
+
 2003-11-11  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_style.h (StyleBoxData>): fix SunProCC 
