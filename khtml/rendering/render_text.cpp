@@ -983,7 +983,7 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 	     l,
 	     b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow -1 : 0),
 	     BSLeft,
-	     oc, style()->color(), os, false, false,
+	     oc, style()->color(), os,
 	     (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
 	     (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : -ow),
 	     true);
@@ -995,7 +995,7 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 	     r + ow,
 	     b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow - 1 : 0),
 	     BSRight,
-	     oc, style()->color(), os, false, false,
+	     oc, style()->color(), os,
 	     (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
 	     (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : -ow),
 	     true);
@@ -1006,7 +1006,7 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 t - ow,
 		 QMIN(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
 		 t ,
-		 BSTop, oc, style()->color(), os, false, false,
+		 BSTop, oc, style()->color(), os,
 		 ow,
 		 (lastline.isValid() && tx+lastline.left()+1<r+ow ? -ow : ow),
 		 true);
@@ -1017,7 +1017,7 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 t - ow,
 		 r + ow,
 		 t ,
-		 BSTop, oc, style()->color(), os, false, false,
+		 BSTop, oc, style()->color(), os,
 		 (lastline.isValid() && l-ow < tx+lastline.right()+1 ? -ow : ow),
 		 ow,
 		 true);
@@ -1029,7 +1029,7 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 b,
 		 QMIN(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
 		 b + ow,
-		 BSBottom, oc, style()->color(), os, false, false,
+		 BSBottom, oc, style()->color(), os,
 		 ow,
 		 (nextline.isValid() && tx+nextline.left()+1<r+ow? -ow : ow),
 		 true);
@@ -1040,7 +1040,7 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 b,
 		 r + ow + 1,
 		 b + ow,
-		 BSBottom, oc, style()->color(), os, false, false,
+		 BSBottom, oc, style()->color(), os,
 		 (nextline.isValid() && l-ow < tx+nextline.right()+1? -ow : ow),
 		 ow,
 		 true);

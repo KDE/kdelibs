@@ -13,12 +13,12 @@ none, CSS_VAL_NONE
 hidden, CSS_VAL_HIDDEN
 dotted, CSS_VAL_DOTTED
 dashed, CSS_VAL_DASHED
-solid, CSS_VAL_SOLID
 double, CSS_VAL_DOUBLE
+solid, CSS_VAL_SOLID
+outset, CSS_VAL_OUTSET
+inset, CSS_VAL_INSET
 groove, CSS_VAL_GROOVE
 ridge, CSS_VAL_RIDGE
-inset, CSS_VAL_INSET
-outset, CSS_VAL_OUTSET
 caption, CSS_VAL_CAPTION
 icon, CSS_VAL_ICON
 menu, CSS_VAL_MENU

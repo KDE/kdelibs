@@ -208,7 +208,7 @@ int RenderObject::containingBlockHeight() const
 
 void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
                               BorderSide s, QColor c, const QColor& textcolor, EBorderStyle style,
-                              bool sb1, bool sb2, int adjbw1, int adjbw2, bool invalidisInvert)
+                              int adjbw1, int adjbw2, bool invalidisInvert)
 {
     int width = (s==BSTop||s==BSBottom?y2-y1:x2-x1);
 
@@ -246,47 +246,80 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
         {
-            int half = width/2;
-
             switch(s)
             {
-            case BSTop:
             case BSBottom:
-                p->drawLine(x1+half, (y1+y2)/2, x2-half, (y1+y2)/2);
-            case BSLeft:
+	      y1++;
+	      y2++;
+            case BSTop:
+                p->drawLine(x1, (y1+y2)/2, x2, (y1+y2)/2);
             case BSRight:
-                p->drawLine((x1+x2-1)/2, y1+half, (x1+x2-1)/2, y2-half);
+	      x1++;
+            case BSLeft:
+                p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
             }
-
         }
         break;
 
     case DOUBLE:
     {
-        p->setPen(Qt::NoPen);
-        p->setBrush(c);
-	// ### fix off-by-one-errors
         int third = (width+1)/3;
-        switch(s)
-        {
-        case BSTop:
-            p->drawRect(x1+QMAX(-adjbw1,0), y1      , x2-x1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0), third);
-            p->drawRect(x1+QMAX( adjbw1,0), y2-third, x2-x1-QMAX( adjbw1,0)-QMAX( adjbw2,0), third);
-            break;
-        case BSBottom:
-            p->drawRect(x1+QMAX( adjbw1,0)+1, y1      , x2-x1-QMAX( adjbw1,0)-QMAX( adjbw2,0)-1, third);
-            p->drawRect(x1+QMAX(-adjbw1,0)+1, y2-third, x2-x1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0)-1, third);
-            break;
-        case BSLeft:
-            p->drawRect(x1      , y1+QMAX(-adjbw1,0)+1, third, y2-y1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0)-1);
-            p->drawRect(x2-third, y1+QMAX( adjbw1,0)+1, third, y2-y1-QMAX( adjbw1,0)-QMAX( adjbw2,0)-1);
-            break;
-        case BSRight:
-            p->drawRect(x1      , y1+QMAX( adjbw1,0)+1, third, y2-y1-QMAX( adjbw1,0)-QMAX( adjbw2,0)-1);
-            p->drawRect(x2-third, y1+QMAX(-adjbw1,0)+1, third, y2-y1-QMAX(-adjbw1,0)-QMAX(-adjbw2,0)-1);
-            break;
-        }
 
+	if (adjbw1 == 0 && adjbw2 == 0)
+	{
+	    p->setPen(Qt::NoPen);
+	    p->setBrush(c);
+	    switch(s)
+	    {
+	    case BSTop:
+	    case BSBottom:
+	        p->drawRect(x1, y1      , x2-x1, third);
+		p->drawRect(x1, y2-third, x2-x1, third);
+		break;
+	    case BSLeft:
+	        p->drawRect(x1      , y1+1, third, y2-y1-1);
+		p->drawRect(x2-third, y1+1, third, y2-y1-1);
+		break;
+	    case BSRight:
+	        p->drawRect(x1      , y1+1, third, y2-y1-1);
+		p->drawRect(x2-third, y1+1, third, y2-y1-1);
+		break;
+	    }
+	}
+	else
+	{
+	    int adjbw1bigthird;
+	    if (adjbw1>0) adjbw1bigthird = adjbw1+1;
+	    else adjbw1bigthird = adjbw1 - 1;
+	    adjbw1bigthird /= 3;
+
+	    int adjbw2bigthird;
+	    if (adjbw2>0) adjbw2bigthird = adjbw2 + 1;
+	    else adjbw2bigthird = adjbw2 - 1;
+	    adjbw2bigthird /= 3;
+
+	  switch(s)
+	    {
+	    case BSTop:
+	      drawBorder(p, x1+QMAX((-adjbw1*2+1)/3,0), y1        , x2-QMAX((-adjbw2*2+1)/3,0), y1 + third, s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      drawBorder(p, x1+QMAX(( adjbw1*2+1)/3,0), y2 - third, x2-QMAX(( adjbw2*2+1)/3,0), y2        , s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      break;
+	    case BSLeft:
+	      drawBorder(p, x1        , y1+QMAX((-adjbw1*2+1)/3,0), x1+third, y2-QMAX((-adjbw2*2+1)/3,0), s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      drawBorder(p, x2 - third, y1+QMAX(( adjbw1*2+1)/3,0), x2      , y2-QMAX(( adjbw2*2+1)/3,0), s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      break;
+	    case BSBottom:
+	      drawBorder(p, x1+QMAX(( adjbw1*2+1)/3,0), y1      , x2-QMAX(( adjbw2*2+1)/3,0), y1+third, s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      drawBorder(p, x1+QMAX((-adjbw1*2+1)/3,0), y2-third, x2-QMAX((-adjbw2*2+1)/3,0), y2      , s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      break;
+	    case BSRight:
+            drawBorder(p, x1      , y1+QMAX(( adjbw1*2+1)/3,0), x1+third, y2-QMAX(( adjbw2*2+1)/3,0), s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	    drawBorder(p, x2-third, y1+QMAX((-adjbw1*2+1)/3,0), x2      , y2-QMAX((-adjbw2*2+1)/3,0), s, c, textcolor, SOLID, adjbw1bigthird, adjbw2bigthird);
+	      break;
+	    default:
+	      break;
+	    }
+	}
         break;
     }
     case RIDGE:
@@ -318,20 +351,20 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         switch (s)
 	{
 	case BSTop:
-	    drawBorder(p, x1+QMAX(-adjbw1  ,0)/2,  y1        , x2-QMAX(-adjbw2,0)/2, (y1+y2+1)/2, s, c, textcolor, s1, true, true, adjbw1bighalf, adjbw2bighalf);
-	    drawBorder(p, x1+QMAX( adjbw1+1,0)/2, (y1+y2+1)/2, x2-QMAX( adjbw2+1,0)/2,  y2        , s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
+	    drawBorder(p, x1+QMAX(-adjbw1  ,0)/2,  y1        , x2-QMAX(-adjbw2,0)/2, (y1+y2+1)/2, s, c, textcolor, s1, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, x1+QMAX( adjbw1+1,0)/2, (y1+y2+1)/2, x2-QMAX( adjbw2+1,0)/2,  y2        , s, c, textcolor, s2, adjbw1/2, adjbw2/2);
 	    break;
 	case BSLeft:
-            drawBorder(p,  x1        , y1+QMAX(-adjbw1  ,0)/2, (x1+x2+1)/2, y2-QMAX(-adjbw2,0)/2, s, c, textcolor, s1, true, true, adjbw1bighalf, adjbw2bighalf);
-	    drawBorder(p, (x1+x2+1)/2, y1+QMAX( adjbw1+1,0)/2,  x2        , y2-QMAX( adjbw2+1,0)/2, s, c, textcolor, s2, true, true, adjbw1/2, adjbw2/2);
+            drawBorder(p,  x1        , y1+QMAX(-adjbw1  ,0)/2, (x1+x2+1)/2, y2-QMAX(-adjbw2,0)/2, s, c, textcolor, s1, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, (x1+x2+1)/2, y1+QMAX( adjbw1+1,0)/2,  x2        , y2-QMAX( adjbw2+1,0)/2, s, c, textcolor, s2, adjbw1/2, adjbw2/2);
 	    break;
 	case BSBottom:
-	    drawBorder(p, x1+QMAX( adjbw1  ,0)/2,  y1        , x2-QMAX( adjbw2,0)/2, (y1+y2+1)/2, s, c, textcolor, s2, true, true, adjbw1bighalf, adjbw2bighalf);
-	    drawBorder(p, x1+QMAX(-adjbw1+1,0)/2, (y1+y2+1)/2, x2-QMAX(-adjbw2+1,0)/2,  y2        , s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
+	    drawBorder(p, x1+QMAX( adjbw1  ,0)/2,  y1        , x2-QMAX( adjbw2,0)/2, (y1+y2+1)/2, s, c, textcolor, s2,  adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, x1+QMAX(-adjbw1+1,0)/2, (y1+y2+1)/2, x2-QMAX(-adjbw2+1,0)/2,  y2        , s, c, textcolor, s1, adjbw1/2, adjbw2/2);
 	    break;
 	case BSRight:
-            drawBorder(p,  x1        , y1+QMAX( adjbw1  ,0)/2, (x1+x2+1)/2, y2-QMAX( adjbw2,0)/2, s, c, textcolor, s2, true, true, adjbw1bighalf, adjbw2bighalf);
-	    drawBorder(p, (x1+x2+1)/2, y1+QMAX(-adjbw1+1,0)/2,  x2        , y2-QMAX(-adjbw2+1,0)/2, s, c, textcolor, s1, true, true, adjbw1/2, adjbw2/2);
+            drawBorder(p,  x1        , y1+QMAX( adjbw1  ,0)/2, (x1+x2+1)/2, y2-QMAX( adjbw2,0)/2, s, c, textcolor, s2, adjbw1bighalf, adjbw2bighalf);
+	    drawBorder(p, (x1+x2+1)/2, y1+QMAX(-adjbw1+1,0)/2,  x2        , y2-QMAX(-adjbw2+1,0)/2, s, c, textcolor, s1, adjbw1/2, adjbw2/2);
 	    break;
 	}
         break;
@@ -344,17 +377,19 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case OUTSET:
         if(style == OUTSET && (s == BSBottom || s == BSRight))
             c = c.dark();
-
-        if(s == BSTop || s == BSLeft)
-            sb2 = true;
-        else
-            sb1 = true;
         /* nobreak; */
     case SOLID:
         QPointArray quad(4);
         p->setPen(Qt::NoPen);
         p->setBrush(c);
-        switch(s) {
+	ASSERT(x2>x1);
+	ASSERT(y2>y1);
+	if (adjbw1==0 && adjbw2 == 0)
+	  {
+            p->drawRect(x1,y1,x2-x1,y2-y1);
+	    return;
+	  }
+	switch(s) {
         case BSTop:
             quad.setPoints(4,
 			   x1+QMAX(-adjbw1,0), y1,
@@ -395,33 +430,65 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
 {
     const QColor& tc = style->borderTopColor();
-    const QColor& lc = style->borderLeftColor();
-    const QColor& rc = style->borderRightColor();
     const QColor& bc = style->borderBottomColor();
-    bool render_t = style->borderTopStyle() != BNONE && style->borderTopStyle() != BHIDDEN;
-    bool render_l = style->borderLeftStyle() != BNONE && style->borderLeftStyle() != BHIDDEN && begin;
-    bool render_r = style->borderRightStyle() != BNONE && style->borderRightStyle() != BHIDDEN && end;
-    bool render_b = style->borderBottomStyle() != BNONE && style->borderBottomStyle() != BHIDDEN;
 
-    if(render_r)
-        drawBorder(p, _tx + w - style->borderRightWidth(), _ty, _tx + w, _ty + h, BSRight, rc, style->color(),
-                   style->borderRightStyle(), render_t && tc != rc, render_b && bc != rc,
-                   style->borderTopWidth(), style->borderBottomWidth());
+    EBorderStyle& ts = style->borderTopStyle();
+    EBorderStyle& bs = style->borderBottomStyle();
+    EBorderStyle& ls = style->borderLeftStyle();
+    EBorderStyle& rs = style->borderRightStyle();
 
-    if(render_b)
-        drawBorder(p, _tx, _ty + h - style->borderBottomWidth(), _tx + w, _ty + h, BSBottom, bc, style->color(),
-                   style->borderBottomStyle(), render_l && lc != bc, render_r && rc != bc,
-                   begin ? style->borderLeftWidth() : 0, end ? style->borderRightWidth() : 0);
-
-    if(render_l)
-        drawBorder(p, _tx, _ty, _tx + style->borderLeftWidth(), _ty + h, BSLeft, lc, style->color(),
-                   style->borderLeftStyle(), render_t && tc != lc, render_b && bc != lc,
-                   style->borderTopWidth(), style->borderBottomWidth());
+    bool render_t = ts > BHIDDEN;
+    bool render_l = ls > BHIDDEN && begin;
+    bool render_r = rs > BHIDDEN && end;
+    bool render_b = bs > BHIDDEN;
 
     if(render_t)
-        drawBorder(p, _tx, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(),
-                   style->borderTopStyle(), render_l && lc != tc, render_r && rc != tc,
-                   begin ? style->borderLeftWidth() : 0, end ? style->borderRightWidth() : 0);
+        drawBorder(p, _tx, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
+                   (render_l && ls<=DOUBLE?style->borderLeftWidth():0),
+		   (render_r && rs<=DOUBLE?style->borderRightWidth():0));
+
+    if(render_b)
+        drawBorder(p, _tx, _ty + h - style->borderBottomWidth(), _tx + w, _ty + h, BSBottom, bc, style->color(), bs,
+                   (render_l && ls<=DOUBLE?style->borderLeftWidth():0),
+		   (render_r && rs<=DOUBLE?style->borderRightWidth():0));
+
+    if(render_l)
+    {
+	const QColor& lc = style->borderLeftColor();
+
+	bool ignore_top =
+	  (tc == lc) && 
+	  (ls <= OUTSET) &&
+	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
+
+	bool ignore_bottom =
+	  (bc == lc) &&
+	  (ls <= OUTSET) &&
+	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
+
+        drawBorder(p, _tx, _ty, _tx + style->borderLeftWidth(), _ty + h, BSLeft, lc, style->color(), ls,
+		   ignore_top?0:style->borderTopWidth(),
+		   ignore_bottom?0:style->borderBottomWidth());
+    }
+
+    if(render_r)
+    {
+	const QColor& rc = style->borderRightColor();
+
+	bool ignore_top =
+	  (tc == rc) && 
+	  (rs <= SOLID || rs == INSET) &&
+	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
+	
+	bool ignore_bottom =
+	  (bc == rc) &&
+	  (rs <= SOLID || rs == INSET) &&
+	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
+
+        drawBorder(p, _tx + w - style->borderRightWidth(), _ty, _tx + w, _ty + h, BSRight, rc, style->color(), rs,
+		   ignore_top?0:style->borderTopWidth(),
+		   ignore_bottom?0:style->borderBottomWidth());
+    }
 }
 
 void RenderObject::printOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style)
@@ -434,19 +501,19 @@ void RenderObject::printOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
     drawBorder(p, _tx-ow, _ty-ow, _tx, _ty+h+ow, BSLeft,
 	       QColor(oc), style->color(),
-               os, false, false, ow, ow, true);
+               os, ow, ow, true);
 
     drawBorder(p, _tx-ow, _ty-ow, _tx+w+ow, _ty, BSTop,
 	       QColor(oc), style->color(),
-	       os, false, false, ow, ow, true);
+	       os, ow, ow, true);
 
     drawBorder(p, _tx+w, _ty-ow, _tx+w+ow, _ty+h+ow, BSRight,
 	       QColor(oc), style->color(),
-	       os, false, false, ow, ow, true);
+	       os, ow, ow, true);
 
     drawBorder(p, _tx-ow, _ty+h, _tx+w+ow, _ty+h+ow, BSBottom,
 	       QColor(oc), style->color(),
-	       os, false, false, ow, ow, true);
+	       os, ow, ow, true);
 
 }
 

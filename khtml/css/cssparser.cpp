@@ -1373,7 +1373,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
 	  if (cssval) {
             int id = cssval->id;
-            if (id >= CSS_VAL_NONE && id <= CSS_VAL_OUTSET) {
+            if (id >= CSS_VAL_NONE && id <= CSS_VAL_RIDGE) {
 	      parsedValue = new CSSPrimitiveValueImpl(id);
             }
 	  }
