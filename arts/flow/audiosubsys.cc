@@ -283,7 +283,7 @@ bool AudioSubSystem::open(int& fd)
 	if(!d->audioIO)
 	{
 		_error = "unable to select '" + d->audioIOName + "' style audio I/O";
-		fd = -1;
+		audio_fd = fd = -1;
 		return false;
 	}
 
@@ -301,13 +301,13 @@ bool AudioSubSystem::open(int& fd)
 		assert(fragment_buffer == 0);
 		fragment_buffer = new char[_fragmentSize];
 
-		fd = d->audioIO->getParam(AudioIO::selectFD);
+		audio_fd = fd = d->audioIO->getParam(AudioIO::selectFD);
 		return true;
 	}
 	else
 	{
 		_error = d->audioIO->getParamStr(AudioIO::lastError);
-		fd = -1;
+		audio_fd = fd = -1;
 		return false;
 	}
 }
