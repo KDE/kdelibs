@@ -99,6 +99,7 @@ void HTMLBaseFontElement::setSize( const DOMString &value )
 // --------------------------------------------------------------------------
 
 HTMLCollection::HTMLCollection()
+  : impl(0)
 {
 }
 
