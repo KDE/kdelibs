@@ -50,9 +50,11 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent,
 
 void KColorButton::setColor( const QColor &c )
 {
-  col = c;
-  repaint( false );
-  emit changed(col);
+  if ( col != c ) {
+    col = c;
+    repaint( false );
+    emit changed( col );
+  }
 }
 
 void KColorButton::drawButtonLabel( QPainter *painter )
@@ -90,7 +92,6 @@ void KColorButton::dropEvent( QDropEvent *event)
   QColor c;
   if( KColorDrag::decode( event, c)) {
     setColor(c);
-    emit changed( c);
   }
 }
 
@@ -114,13 +115,10 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
 
 void KColorButton::chooseColor()
 {
-  if( KColorDialog::getColor( col, this ) == QDialog::Rejected )
-  {
-    return;
+  QColor c;
+  if( KColorDialog::getColor( c, this ) != QDialog::Rejected ) {
+    setColor( c );
   }
-
-  repaint( false );
-  emit changed( col );
 }
 
 #include "kcolorbutton.moc"
