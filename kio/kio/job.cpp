@@ -2220,6 +2220,7 @@ void CopyJob::createNextDir()
     else // we have finished creating dirs
     {
         state = STATE_COPYING_FILES;
+        m_processedFiles++; // Ralf wants it to start a 1, not 0
         copyNextFile();
     }
 }
