@@ -664,8 +664,18 @@ void B2Style::drawIndicator(QPainter *p, int x, int y, int w, int h,
                 g.brush(QColorGroup::Light));
 
     if(state != QButton::Off){
-        p->setPen(g.highlight());
-        p->drawPixmap(3, 3, xBmp);
+        if(state == QButton::On){
+            p->setPen(g.highlight());
+            p->drawPixmap(3, 3, xBmp);
+        }
+        else{
+            p->setPen(g.dark());
+            p->drawRect(x+2, y+2, w-4, h-4);
+            p->setPen(Qt::black);
+            p->drawLine(x+3, (y+h)/2-2, x+w-4, (y+h)/2-2);
+            p->drawLine(x+3, (y+h)/2, x+w-4, (y+h)/2);
+            p->drawLine(x+3, (y+h)/2+2, x+w-4, (y+h)/2+2);
+        }
     }
     
 }

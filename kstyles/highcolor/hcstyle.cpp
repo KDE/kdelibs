@@ -849,10 +849,20 @@ void HCStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
                 g.brush(QColorGroup::Light));
 
     if(state != QButton::Off){
-        p->setPen(g.highlight());
-        p->drawPixmap(3, 3, xBmp);
+        if(state == QButton::On){
+            p->setPen(g.highlight());
+            p->drawPixmap(3, 3, xBmp);
+        }
+        else{
+            p->setPen(g.dark());
+            p->drawRect(x+2, y+2, w-4, h-4);
+            p->setPen(Qt::black);
+            p->drawLine(x+3, (y+h)/2-2, x+w-4, (y+h)/2-2);
+            p->drawLine(x+3, (y+h)/2, x+w-4, (y+h)/2);
+            p->drawLine(x+3, (y+h)/2+2, x+w-4, (y+h)/2+2);
+        }
     }
-    
+
 }
 
 void HCStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int)
@@ -1059,11 +1069,11 @@ void HCStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
     }
     else{
         qDrawShadePanel(p, x, y, w, h, g, false, 1);
-		if(vSmall)
+        if(vSmall)
             drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-1);
-		else
+        else
             p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
-	}
+    }
 			
 }
 
