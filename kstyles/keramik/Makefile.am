@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -DQT_PLUGIN
 
-INCLUDES = -I$(top_srcdir)/kdefx -I$(top_builddir)/kstyles/keramik/ $(all_includes)
+INCLUDES = -I$(top_srcdir)/kdefx $(all_includes)
 # qembed's output needs that...
 KDE_CXXFLAGS = -UQT_NO_ASCII_CAST
 noinst_HEADERS = keramik.h pixmaploader.h keramikimage.h bitmaps.h gradients.h colorutil.h
