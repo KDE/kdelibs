@@ -1,6 +1,7 @@
 /*
  * This file is part of the KDE Libraries
- * Copyright (C) 2000 Timo Hummel (timo.hummel@sap.com)
+ * Copyright (C) 2000 Timo Hummel <timo.hummel@sap.com>
+ *                    Tom Braun <braunt@fh-konstanz.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,91 +30,74 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#include <kapp.h>
+#include <kdebug.h>
 
 #include "kcrash.h"
 
-static int CrashRecursionCounter;	// If a crash occurs in our crash handler procedure, we can handle it :)
-kdesignal_t emergencySaveFunction;
 
-// This function sets the function which should be called when the application crashes and the
+KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
+KCrash::HandlerType KCrash::_crashHandler = 0;
+
+
+// This function sets the function which should be called when the 
+// application crashes and the
 // application is asked to try to save its data.
 void
-setEmergencySaveFunction (kdesignal_t saveFunction)
+KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 {
-  if (saveFunction == KDE_SAVE_NONE)
-    {
-      emergencySaveFunction = KDE_SAVE_NONE;
-    }
-
-  emergencySaveFunction = saveFunction;
+  _emergencySaveFunction = saveFunction;
+  
+  /* 
+   * We need at least the default crash handler for 
+   * emergencySaveFunction to be called
+   */
+  if (_emergencySaveFunction && !_crashHandler)
+    _crashHandler = defaultCrashHandler;
 }
 
 
-// This function sets the function which should be responsible for the application crash handling.
-// Usually, this should be KDE_CRASH_INTERNAL.
+// This function sets the function which should be responsible for 
+// the application crash handling.
 
 void
-setCrashHandler (kdesignal_t crashHandler)
+KCrash::setCrashHandler (HandlerType handler)
 {
-  printf ("Trying to install kcrash handler...\n");
+  if (!handler)
+    signal (SIGSEGV, SIG_DFL);
 
-  if (crashHandler == KDE_CRASH_DEFAULT)
-    {
-      printf ("Installing the system's default bug handler...");
-      signal (SIGSEGV, SIG_DFL);
-      printf ("done.\n");
-      return;
-    }
+  signal (SIGSEGV, handler);
 
-  if (crashHandler == KDE_CRASH_INTERNAL)
-    {
-      printf ("Installing the KDE internal crash handler...");
-      signal (SIGSEGV, defaultCrashHandler);
-      printf ("done\n");
-      return;
-    }
-
-  printf ("Installing the application's crash handler...");
-  signal (SIGSEGV, crashHandler);
-  printf ("done.\n");
+  _crashHandler = handler;
 }
 
 void
-resetCrashRecursion (void)
-{
-  printf ("Crash recursion set to zero.\n");
-  CrashRecursionCounter = 0;
-}
-
-void
-defaultCrashHandler (int signal)
+KCrash::defaultCrashHandler (int signal)
 {
   // Handle possible recursions
+  static int crashRecursionCounter;
+#warning PLEASE: Someone should check if this static work
+#warning If this procedure crashes, what happens? Does it exit?
+#warning If not, please re-implement resetCrashRecursion,
+#warning add a new member variable to this class and 
+#warning remove the comment in kapp.cpp (resetCrashRecursion)
 
-  CrashRecursionCounter++;
+  crashRecursionCounter++;
 
-  if (CrashRecursionCounter < 2)
-    {
-     
-      // Check if 
-      if (emergencySaveFunction != KDE_SAVE_NONE)
-	{
-	  emergencySaveFunction (signal);
-	}
+  if (crashRecursionCounter < 2) {
+    if (_emergencySaveFunction) {
+      _emergencySaveFunction (signal);
     }
-
-  if (CrashRecursionCounter < 3)
-    {
-      printf ("Would start dr. konqi here\n");
-
+  }
+  
+  if (crashRecursionCounter < 3) {
       execlp ("drkonqi", "drkonqi", 
-              "--appname", kapp->name(),
+              "--appname", appName.latin1(),
+              "--apppath", appPath.latin1(),
               "--signal", QCString().sprintf("%d", signal).data(),
 	      NULL);
-    }
+  }
 
-  printf ("Unable to start dr. konqi\n");
+  kdDebug(0) << "Unable to start dr. konqi\n";
   exit (1);
 }
+
