@@ -221,15 +221,15 @@ void RenderTable::calcWidth()
         m_width = KMIN(short( availableWidth ),m_maxWidth);
     }
 
-    // restrict width to what we really have in case we flow around floats
+    // restrict width to what we really have
     // EXCEPT percent tables, which are still calculated as above
-    if ( flowAroundFloats() && widthType!=Percent ) {
-        availableWidth = cb->lineWidth( m_y );
+
+    availableWidth = cb->lineWidth( m_y );
+    if ( widthType != Percent )
         m_width = KMIN( short( availableWidth ), m_width );
-    }
 
     m_width = KMAX (m_width, m_minWidth);
-
+    
     // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;
     m_marginLeft=0;

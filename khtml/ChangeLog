@@ -1,3 +1,8 @@
+2005-03-04  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_table.cpp (calcWidth): always use lineWidth for
+        table margins calculation (#89900)
+
 2005-03-03  Germain Garand  <germain@ebooksfrance.org>
 
         * ecma/kjs_dom.cpp (getValueProperty/putValueProperty):
