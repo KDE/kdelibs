@@ -314,6 +314,7 @@ protected:
 private:
   class KFontDialogPrivate;
   KFontDialogPrivate *d;
+
 };
 
 #endif

@@ -1048,6 +1048,8 @@ private:
   bool buttonDownOnHandle;
 
   KToolBarPrivate *d;
+
+  virtual void setIconText(const QString& t) { QFrame::setIconText(t); }
 };
 
 #endif

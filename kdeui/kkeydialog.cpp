@@ -112,7 +112,6 @@ protected:
 
   void resizeEvent( QResizeEvent * );
   void paletteChange ( const QPalette & oldPalette );
-  void styleChange ( GUIStyle );
 
 private:
   class KSplitListPrivate;
@@ -260,14 +259,6 @@ void KSplitList::resizeEvent( QResizeEvent *e )
 {
   emit newWidth( width() );
   KListBox::resizeEvent( e );
-}
-
-void KSplitList::styleChange( GUIStyle )
-{
-  if( style() == MotifStyle )
-    setFrameStyle( QFrame::Panel | QFrame::Sunken );
-  else
-    setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
 }
 
 void KSplitList::paletteChange ( const QPalette & oldPalette )

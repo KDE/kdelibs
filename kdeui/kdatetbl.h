@@ -138,6 +138,8 @@ public:
 private:
   class KPopupFramePrivate;
   KPopupFramePrivate *d;
+
+  virtual void close() { QFrame::close(); }
 };
 
 /**

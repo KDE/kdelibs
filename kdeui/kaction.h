@@ -911,6 +911,8 @@ protected:
 private:
     class KSelectActionPrivate;
     KSelectActionPrivate *d;
+	
+	void slotActivated() { KAction::slotActivated(); }
 };
 
 class KListAction : public KSelectAction

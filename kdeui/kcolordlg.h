@@ -213,6 +213,8 @@ protected:
 private:
   class KPaletteTablePrivate;
   KPaletteTablePrivate *d;
+
+  virtual void setPalette(const QPalette& p) { QWidget::setPalette(p); }
 };
 
 
