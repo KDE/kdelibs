@@ -986,9 +986,11 @@ void RenderSelect::updateFromElement()
                         ->insertItem(item, listIndex);
                     item->setSelectable(false);
                 }
-                else
+                else {
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+		    static_cast<KComboBox*>(m_widget)->listBox()->item(listIndex)->setSelectable(false);
+		}
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
