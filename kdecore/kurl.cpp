@@ -19,7 +19,7 @@
 
 #include "kurl.h"
 
-#ifndef QT_ONLY
+#ifndef KDE_QT_ONLY
 #include <kdebug.h>
 #include <kglobal.h>
 #endif
@@ -1062,7 +1062,7 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
 
 void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 {
-#ifdef QT_ONLY
+#ifdef KDE_QT_ONLY
   QString fileProt = "file";
 #else
   static const QString & fileProt = KGlobal::staticQString( "file" );
@@ -1098,7 +1098,7 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
-#ifdef QT_ONLY
+#ifdef KDE_QT_ONLY
   QString fileProt = "file";
 #else
   static const QString & fileProt = KGlobal::staticQString( "file" );
