@@ -158,6 +158,10 @@ class KIntNumInput : public KNumInput
 public:
     /**
      * Constructor
+     * It constructs a QSpinBox that allows the input of integer numbers
+     * in the range of -INT_MAX to +INT_MAX. To set a descriptive label,
+     * use setLabel(). To enforce the value being in a range and optionally to
+     * attach a slider to it, use setRange().
      *
      * @param value  initial value for the control
      * @param base   numeric base used for display
@@ -169,7 +173,15 @@ public:
     /**
      * Constructor
      *
-     * @param below  appent KIntNumInput to the KNumInput chain
+     * the difference to the one above is the "below" parameter. It tells
+     * this instance that it is visually put below some other KNumInput widget.
+     * Note that these two KNumInput's need not to have the same parent widget
+     * or be in the same layout group.
+     * The effect is that it'll adjust it's layout in correspondence
+     * with the layout of the other KNumInput's (you can build an arbitary long
+     * chain).
+     *
+     * @param below  append KIntNumInput to the KNumInput chain
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
