@@ -814,7 +814,6 @@ void KIOJob::slotProcessedSize( unsigned long _bytes )
   }
 
   emit sigProcessedSize( m_id, _bytes );
-  kdebug( KDEBUG_INFO, 7007, "ProcessedSize %ld", _bytes );
 }
 
 
@@ -876,8 +875,6 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second )
   }
 
   emit sigSpeed( m_id, _bytes_per_second );
-
-  kdebug( KDEBUG_INFO, 7007, "Speed %ld", _bytes_per_second );
 }
 
 
