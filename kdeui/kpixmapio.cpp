@@ -31,12 +31,14 @@
 #include <X11/extensions/XShm.h>
 #endif
 
+#undef ID // Needed for --enable-final, some sources define ID to be something
+          // different...
+
 #ifdef __GNUC__
 #define ID __PRETTY_FUNCTION__ << ": "
 #else
 #define ID "KPixmapIO: "
 #endif
-
 
 // d pointer
 
@@ -144,7 +146,7 @@ KPixmapIO::KPixmapIO()
 	kdWarning(290) << "" << ID << ": red = " << d->ximage->red_mask 
 		<< ", green = " << d->ximage->green_mask 
 		<< ", blue = " << d->ximage->blue_mask << "\n";
-	kdWarning(290) << "" << ID << ": Please report to <jansen@kde.org>\n".
+	kdWarning(290) << "" << ID << ": Please report to <jansen@kde.org>\n";
     }
 #endif
 }
