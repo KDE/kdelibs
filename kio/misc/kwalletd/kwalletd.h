@@ -40,6 +40,9 @@ class KWalletD : public KDEDModule {
 		virtual ~KWalletD();
 
 	k_dcop:
+		// Is the wallet enabled?  If not, all open() calls fail.
+		virtual bool isEnabled() const;
+
 		// Open and unlock the wallet
 		virtual int open(const QString& wallet);
 
@@ -125,6 +128,8 @@ class KWalletD : public KDEDModule {
 		// Emit signals about closing wallets
 		void doCloseSignals(int,const QString&);
 		void emitFolderUpdated(const QString&, const QString&);
+		// Internal - close this wallet.
+		int closeWallet(KWallet::Backend *w, int handle, bool force);
 
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
@@ -132,7 +137,8 @@ class KWalletD : public KDEDModule {
 		KDirWatch *_dw;
 		int _failed;
 
-		bool _leaveOpen, _closeIdle, _launchManager;
+		bool _leaveOpen, _closeIdle, _launchManager, _enabled;
+		int _idleTime;
 };
 
 

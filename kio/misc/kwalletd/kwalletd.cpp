@@ -98,6 +98,10 @@ return rc;
 
 
 int KWalletD::open(const QString& wallet) {
+	if (!_enabled) { // guard
+		return -1;
+	}
+
 DCOPClient *dc = callingDcopClient();
 int rc = -1;
 bool brandNew = false;
@@ -266,7 +270,13 @@ KWallet::Backend *w = 0L;
 		}
 	}
 
+return closeWallet(w, handle, force);
+}
+
+
+int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 	if (w) {
+		const QString& wallet = w->walletName();
 		if (w->refCount() == 0 || force) {
 			invalidateHandle(handle);
 			_wallets.remove(handle);
@@ -730,7 +740,7 @@ void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 	QDataStream ds(data, IO_WriteOnly);
 	ds << wallet;
 	ds << folder;
-	emitDCOPSignal("folderUpdated(QString, QString)", data);
+	emitDCOPSignal("folderUpdated(QString,QString)", data);
 }
 
 
@@ -742,9 +752,27 @@ void KWalletD::emitWalletListDirty() {
 void KWalletD::reconfigure() {
 	KConfig cfg("kwalletrc");
 	cfg.setGroup("Wallet");
+	_enabled = cfg.readBoolEntry("Enabled", true);
 	_launchManager = cfg.readBoolEntry("Launch Manager", true);
 	_leaveOpen = cfg.readBoolEntry("Leave Open", false);
 	_closeIdle = cfg.readBoolEntry("Close When Idle", false);
+	_idleTime = cfg.readNumEntry("Idle Timeout", 10);
+
+	if (!_enabled) { // close all wallets
+		while (!_wallets.isEmpty()) { 
+			QIntDictIterator<KWallet::Backend> it(_wallets);
+			if (!it.current()) { // necessary?
+				break;
+			}
+			closeWallet(it.current(), it.currentKey(), true);
+		}
+	}
 }
+
+
+bool KWalletD::isEnabled() const {
+	return _enabled;
+}
+
 
 #include "kwalletd.moc"
