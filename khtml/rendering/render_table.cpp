@@ -1643,6 +1643,7 @@ RenderTableCell::RenderTableCell()
   rowimpl = 0;
   m_printSpecial=true;
   _topExtra = 0;
+  _bottomExtra = 0;
 }
 
 RenderTableCell::~RenderTableCell()
