@@ -61,7 +61,6 @@ KURL::List::List(const QStringList &list)
 KURL::KURL()
 {
   reset();
-  m_bIsMalformed = true;
 }
 
 KURL::KURL( const QString &_url )
@@ -162,7 +161,7 @@ void KURL::reset()
   m_strPath = QString::null;
   m_strRef_encoded = QString::null;
   m_strMalformed = QString::null;
-  m_bIsMalformed = false;
+  m_bIsMalformed = true;
   m_iPort = 0;
 }
 
