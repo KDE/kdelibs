@@ -355,6 +355,15 @@ void KLocale::initFormat()
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
 
+  _positiveSign = config->readEntry("PositiveSign");
+  if (_positiveSign.isNull())
+    _positiveSign = numentry.readEntry("PositiveSign");
+
+  config->readEntry("NegativeSign");
+  _negativeSign = config->readEntry("NegativeSign");
+  if (_negativeSign.isNull())
+    _negativeSign = numentry.readEntry("NegativeSign", "-");
+
   // Monetary
   KSimpleConfig monentry(locate("locale", "l10n/" + money + "/entry.desktop"), true);
   monentry.setGroup("KCM Locale");
@@ -370,15 +379,6 @@ void KLocale::initFormat()
   _monetaryThousandsSeparator = config->readEntry("MonetaryThousendSeparator");
   if (_monetaryThousandsSeparator.isNull())
     _monetaryThousandsSeparator = monentry.readEntry("MonetaryThousandsSeparator", ",");
-
-  _positiveSign = config->readEntry("PositiveSign");
-  if (_positiveSign.isNull())
-    _positiveSign = monentry.readEntry("PositiveSign");
-
-  config->readEntry("NegativeSign");
-  _negativeSign = config->readEntry("NegativeSign");
-  if (_negativeSign.isNull())
-    _negativeSign = monentry.readEntry("NegativeSign", "-");
 
   _fracDigits = config->readNumEntry("FractDigits", -1);
   if (_fracDigits == -1)
