@@ -415,8 +415,11 @@ void KJScriptImp::init()
   KJScriptImp::curr = this;
 
   if (!initialized) {
-    assert(Collector::current());
-    collector = Collector::current();
+    if (!Collector::current())
+      collector = Collector::init();
+    else
+      collector = Collector::current();
+    glob.init();
     con = new Context();
     initialized = true;
   } else

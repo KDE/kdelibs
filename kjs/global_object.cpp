@@ -53,12 +53,17 @@ private:
 };
 
 Global::Global()
-  : Object(new GlobalImp())
+  : Object(0)
 {
 }
 
 Global::~Global()
 {
+}
+
+void Global::init()
+{
+  rep = new GlobalImp();
 }
 
 Global Global::current()

@@ -403,6 +403,7 @@ namespace KJS {
   public:
     Global();
     virtual ~Global();
+    void init();
     static Global current();
     KJSO objectPrototype() const;
     KJSO functionPrototype() const;
