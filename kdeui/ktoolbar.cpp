@@ -1180,7 +1180,7 @@ void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
 
 void KToolBar::setText( const QString & txt )
 {
-    setLabel( txt + " ( " + kapp->caption() + " ) " );
+    setLabel( txt + " (" + kapp->caption() + ") " );
 }
 
 

@@ -38,9 +38,9 @@ using namespace KABC;
 
 static const KCmdLineOptions options[] =
 {
-  {"disable-autostart", I18N_NOOP("Disable automatic startup on login."), 0},
+  {"disable-autostart", I18N_NOOP("Disable automatic startup on login"), 0},
   {"o", 0, 0},
-  {"override", I18N_NOOP("Override existing entries."),"1"},
+  {"override", I18N_NOOP("Override existing entries"),"1"},
   KCmdLineLastOption
 };
 

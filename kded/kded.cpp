@@ -589,7 +589,7 @@ void KHostnameD::checkHostname()
 
 static KCmdLineOptions options[] =
 {
-  { "check", I18N_NOOP("Check Sycoca database only once."), 0 },
+  { "check", I18N_NOOP("Check Sycoca database only once"), 0 },
   KCmdLineLastOption
 };
 

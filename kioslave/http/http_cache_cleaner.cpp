@@ -56,7 +56,7 @@ static const char *version = "1.0.0";
 
 static const KCmdLineOptions options[] =
 {
-   {"clear-all", I18N_NOOP("Empty the cache."), 0},
+   {"clear-all", I18N_NOOP("Empty the cache"), 0},
    KCmdLineLastOption
 };
 
