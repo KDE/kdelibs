@@ -232,11 +232,10 @@ void KCursor::setAutoHideCursor( QWidget *w, bool enable,
     if ( enable ) {
         kp->start();
         w->setMouseTracking( true );
+        w->removeEventFilter( kp ); // safety
 
 	if ( !customEventFilter )
 	    w->installEventFilter( kp );
-	else // safety
-	    w->removeEventFilter( kp );
     }
 
     else {
