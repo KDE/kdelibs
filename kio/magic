@@ -381,12 +381,20 @@
 0	string		\<!doctype\ html	text/html
 0	string		\<!DOCTYPE\ html	text/html
 
+# Docbook
+0	string		\<!doctype\ book\ public\ "-//OASIS//DTD\ DocBook 	text/docbook
+# Hack: <?xml (with version but no encoding etc.) with a docbook mimetype afterwards.
+0       string          \<?xml
+>23	string		\<!doctype\ book\ public\ "-//OASIS//DTD\ DocBook 	text/docbook
+>23	string		\<!DOCTYPE\ book\ PUBLIC\ "-//OASIS//DTD\ DocBook 	text/docbook
+>23	string		\<!doctype\ book\ public\ "-//KDE//DTD\ DocBook 	text/docbook
+>23	string		\<!DOCTYPE\ book\ PUBLIC\ "-//KDE//DTD\ DocBook 	text/docbook
+
 # Extensible markup language (XML), a subset of SGML
 # from Marc Prud'hommeaux (marc@apocalypse.org)
 0       string          \<?xml          text/xml
 0       string          \<?XML          text/xml
 0       string          \<?Xml          text/xml
-
 
 
 #-----------------------------------------------------------------------------
