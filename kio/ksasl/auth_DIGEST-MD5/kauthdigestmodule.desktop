@@ -2,6 +2,11 @@
 Icon=
 InitialPreference=5
 Name=CramMD5Auth
+Name[cs]=Autorizace CramMD5
+Name[eo]=CramMD5-aŭtentigo
+Name[ro]=Autentificare CramMD5
+Name[sl]=CramMD5Overov.
+Name[sv]=CramMD5-autentisering
 ServiceTypes=KSASL/Module
 Type=Service
 X-KDE-Library=ksasl_auth_cram
