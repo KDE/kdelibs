@@ -34,7 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
-
+#include <sys/resource.h>
+                   
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -1577,6 +1578,24 @@ int main( int argc, char* argv[] )
        QCString newFile = DCOPClient::dcopServerFile();
        symlink(oldFile.data(), newFile.data());
        return 0;
+    }
+
+    struct rlimit limits; 
+     
+    int retcode = getrlimit(RLIMIT_NOFILE, &limits); 
+    if (!retcode) { 
+       if (limits.rlim_max > 512 && limits.rlim_cur < 512)
+       {
+          int cur_limit = limits.rlim_cur;
+          limits.rlim_cur = 512; 
+          retcode = setrlimit(RLIMIT_NOFILE, &limits); 
+
+          if (retcode != 0)
+          {
+             qWarning("dcopserver: Could not raise limit on number of open files.");
+             qWarning("dcopserver: Current limit = %d", cur_limit);
+          }
+       }
     }
 
     pipe(ready);
