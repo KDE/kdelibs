@@ -44,6 +44,8 @@
 #include "qlist.h"
 #include "qvbox.h"
 #include "qtooltip.h"
+#include "qbitmap.h"
+#include "qpixmapcache.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -102,6 +104,31 @@ static const char *unknown[] = {
     "......................####......"};
 
 static QPixmap *unknown_icon = 0;
+static QPixmap *qiv_buffer_pixmap = 0;
+
+static void qt_cleanup_qiv1()
+{
+    delete unknown_icon;
+    unknown_icon = 0;
+}
+
+static void qt_cleanup_qiv2()
+{
+    delete qiv_buffer_pixmap;
+    qiv_buffer_pixmap = 0;
+}
+
+static QPixmap *get_qiv_buffer_pixmap( const QSize &s )
+{
+    if ( !qiv_buffer_pixmap ) {
+	qiv_buffer_pixmap = new QPixmap( s );
+	qAddPostRoutine( qt_cleanup_qiv2 );
+	return qiv_buffer_pixmap;
+    }
+
+    qiv_buffer_pixmap->resize( s );
+    return qiv_buffer_pixmap;
+}
 
 /*****************************************************************************
  *
@@ -154,6 +181,7 @@ public:
     bool firstSizeHint;
     QIconViewToolTip *toolTip;
     bool showTips;
+    QPixmapCache maskCache;
 
     struct ItemContainer {
 	ItemContainer( ItemContainer *pr, ItemContainer *nx, const QRect &r )
@@ -834,8 +862,23 @@ void QIconViewItem::setPixmap( const QPixmap &icon, bool recalc, bool redraw )
 
     if ( recalc )
 	calcRect();
-    if ( redraw )
-	repaint();
+    if ( redraw ) {
+	if ( recalc ) {
+	    QRect oR = rect();
+	    calcRect();
+	    oR = oR.unite( rect() );
+
+	    if ( view ) {
+		if ( QRect( view->contentsX(), view->contentsY(),
+			    view->visibleWidth(), view->visibleHeight() ).
+		     intersects( oR ) )
+		    view->repaintContents( oR.x() - 1, oR.y() - 1,
+				       oR.width() + 2, oR.height() + 2, FALSE );
+	    }
+	} else {
+	    repaint();
+	}
+    }
 }
 
 /*!
@@ -1466,14 +1509,38 @@ void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     if ( view->itemTextPos() == QIconView::Bottom ) {
 	int w = ( pixmap() ? pixmap() : unknown_icon )->width();
 
-	if ( isSelected() )
-	    p->fillRect( pixmapRect( FALSE ), view->colorGroup().highlight() );
-	p->drawPixmap( x() + ( width() - w ) / 2, y(), *( pixmap() ? pixmap() : unknown_icon ) );
+	if ( isSelected() ) {
+	    QPixmap *pix = pixmap() ? pixmap() : unknown_icon;
+	    QPixmap *buffer = get_qiv_buffer_pixmap( pix->size() );
+	    QBitmap mask = view->mask( pix );
 
+	    QPainter p2( buffer );
+	    p2.fillRect( pix->rect(), Qt::white );
+	    p2.drawPixmap( 0, 0, *pix );
+	    p2.end();
+	    buffer->setMask( mask );
+	    p2.begin( buffer );
+#if defined(_WS_X11_)
+	    p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
+#else // in WIN32 Dense4Pattern doesn't work correctly (transparence problem), so work around it
+	    p2.setPen( cg.highlight() );
+	    for ( int i = 0; i < pix->width() / 2; ++i ) {
+		for ( int j = 0; j < pix->height(); ++j ) {
+		    p2.drawPoint( i * 2 + j % 2, j );
+		}
+	    }
+#endif	
+	    p2.end();
+	    QRect cr = pix->rect();
+	    p->drawPixmap( x() + ( width() - w ) / 2, y(), *buffer, 0, 0, cr.width(), cr.height() );
+	} else {
+	    p->drawPixmap( x() + ( width() - w ) / 2, y(), *( pixmap() ? pixmap() : unknown_icon ) );
+	}
+	
 	p->save();
 	if ( isSelected() ) {
-	    p->fillRect( textRect( FALSE ), view->colorGroup().highlight() );
-	    p->setPen( QPen( view->colorGroup().highlightedText() ) );
+	    p->fillRect( textRect( FALSE ), cg.highlight() );
+	    p->setPen( QPen( cg.highlightedText() ) );
 	} else if ( view->d->itemTextBrush != Qt::NoBrush )
 	    p->fillRect( textRect( FALSE ), view->d->itemTextBrush );
 
@@ -1486,18 +1553,33 @@ void QIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     } else {
 	int h = ( pixmap() ? pixmap() : unknown_icon )->height();
 
-	if ( isSelected() )
-	    p->fillRect( pixmapRect( FALSE ), view->colorGroup().highlight() );
-	p->drawPixmap( x() , y() + ( height() - h ) / 2, *( pixmap() ? pixmap() : unknown_icon ) );
+	if ( isSelected() ) {
+	    QPixmap *pix = pixmap() ? pixmap() : unknown_icon;
+	    QPixmap *buffer = get_qiv_buffer_pixmap( pix->size() );
+	    QBitmap mask = view->mask( pix );
+
+	    QPainter p2( buffer );
+	    p2.fillRect( pix->rect(), Qt::white );
+	    p2.drawPixmap( 0, 0, *pix );
+	    p2.end();
+	    buffer->setMask( mask );
+	    p2.begin( buffer );
+	    p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern ) );
+	    p2.end();
+	
+	    p->drawPixmap( x() , y() + ( height() - h ) / 2, *buffer );
+	} else {
+	    p->drawPixmap( x() , y() + ( height() - h ) / 2, *( pixmap() ? pixmap() : unknown_icon ) );
+	}
 
 	p->save();
 	if ( isSelected() ) {
-	    p->fillRect( textRect( FALSE ), view->colorGroup().highlight() );
-	    p->setPen( QPen( view->colorGroup().highlightedText() ) );
+	    p->fillRect( textRect( FALSE ), cg.highlight() );
+	    p->setPen( QPen( cg.highlightedText() ) );
 	} else if ( view->d->itemTextBrush != Qt::NoBrush )
 	    p->fillRect( textRect( FALSE ), view->d->itemTextBrush );
 
-	int align = Qt::AlignHCenter;
+	int align = Qt::AlignLeft;
 	if ( view->d->wordWrapIconText )
 	    align |= Qt::WordBreak;
 	p->drawText( textRect( FALSE ), align, view->d->wordWrapIconText ? itemText : tmpText );
@@ -1517,10 +1599,12 @@ void QIconViewItem::paintFocus( QPainter *p, const QColorGroup &cg )
     view->style().drawFocusRect( p, QRect( textRect( FALSE ).x(), textRect( FALSE ).y(),
 					   textRect( FALSE ).width(), textRect( FALSE ).height() ),
 				 cg, isSelected() ? &cg.highlight() : &cg.base(), isSelected() );
+#if 0
     view->style().drawFocusRect( p, QRect( pixmapRect( FALSE ).x(), pixmapRect( FALSE ).y(),
 					   pixmapRect( FALSE ).width(),
 					   pixmapRect( FALSE ).height() ),
-				 cg, isSelected() ? &cg.highlight() : &cg.base(), isSelected() );
+				 cg, &cg.base(), FALSE );	
+#endif
 }
 
 /*!
@@ -1646,7 +1730,7 @@ void QIconViewItem::checkRect()
     int y = itemRect.y();
     int w = itemRect.width();
     int h = itemRect.height();
-    
+
     bool changed = FALSE;
     if ( x < 0 ) {
 	x = 0;
@@ -1656,7 +1740,7 @@ void QIconViewItem::checkRect()
 	y = 0;
 	changed = TRUE;
     }
-    
+
     if ( changed )
 	itemRect.setRect( x, y, w, h );
 }
@@ -1966,6 +2050,7 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
 {
     if ( !unknown_icon ) {
 	unknown_icon = new QPixmap( unknown );
+	qAddPostRoutine( qt_cleanup_qiv1 );
     }
 
     d = new QIconViewPrivate;
@@ -3848,6 +3933,12 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     bool selectCurrent = TRUE;
 
     switch ( e->key() ) {
+    case Key_F2: {
+	if ( d->currentItem->renameEnabled() ) {
+	    d->currentItem->rename();
+	    return;
+	}
+    } break;
     case Key_Home: {
 	d->currInputString = QString::null;
 	if ( !d->firstItem )
@@ -3858,15 +3949,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	QIconViewItem *item = d->currentItem;
 	setCurrentItem( d->firstItem );
 
-	if ( d->selectionMode == Single ) {
-	    blockSignals( TRUE );
-	    item->setSelected( FALSE );
-	    blockSignals( FALSE );
-	    d->currentItem->setSelected( TRUE, TRUE );
-	} else {
-	    if ( e->state() & ShiftButton )
-		d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	}
+	handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
     } break;
     case Key_End: {
 	d->currInputString = QString::null;
@@ -3878,15 +3961,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	QIconViewItem *item = d->currentItem;
 	setCurrentItem( d->lastItem );
 
-	if ( d->selectionMode == Single ) {
-	    blockSignals( TRUE );
-	    item->setSelected( FALSE );
-	    blockSignals( FALSE );
-	    d->currentItem->setSelected( TRUE, TRUE );
-	} else {
-	    if ( e->state() & ShiftButton )
-		d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	}
+	handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
     } break;
     case Key_Right: {
 	d->currInputString = QString::null;
@@ -3899,15 +3974,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    item = d->currentItem;
 	    setCurrentItem( d->currentItem->next );
 
-	    if ( d->selectionMode == Single ) {
-		blockSignals( TRUE );
-		item->setSelected( FALSE );
-		blockSignals( FALSE );
-		d->currentItem->setSelected( TRUE, TRUE );
-	    } else {
-		if ( e->state() & ShiftButton )
-		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	    }
+	    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 	} else {
 	    item = d->firstItem;
 	    QRect r( 0, d->currentItem->y(), contentsWidth(), d->currentItem->height() );
@@ -3922,13 +3989,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 		    QIconViewItem *i = d->currentItem;
 		    setCurrentItem( item );
 		    item = i;
-		    if ( d->selectionMode == Single ) {
-			i->setSelected( FALSE );
-			d->currentItem->setSelected( TRUE, TRUE );
-		    } else {
-			if ( e->state() & ShiftButton )
-			d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-		    }
+		    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 		    break;
 		}
 	    }
@@ -3945,15 +4006,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    item = d->currentItem;
 	    setCurrentItem( d->currentItem->prev );
 
-	    if ( d->selectionMode == Single ) {
-		blockSignals( TRUE );
- 		item->setSelected( FALSE );
-		blockSignals( FALSE );
- 		d->currentItem->setSelected( TRUE, TRUE );
-	    } else {
-		if ( e->state() & ShiftButton )
-		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	    }
+	    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 	} else {
 	    item = d->lastItem;
 	    QRect r( 0, d->currentItem->y(), contentsWidth(), d->currentItem->height() );
@@ -3968,13 +4021,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 		    QIconViewItem *i = d->currentItem;
 		    setCurrentItem( item );
 		    item = i;
-		    if ( d->selectionMode == Single ) {
-			i->setSelected( FALSE );
-			d->currentItem->setSelected( TRUE, TRUE );
-		    } else {
-			if ( e->state() & ShiftButton )
-			    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-		    }
+		    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 		    break;
 		}
 	    }
@@ -3982,7 +4029,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     } break;
     case Key_Space: {
 	d->currInputString = QString::null;
-	if ( d->selectionMode == Single )
+	if ( d->selectionMode == Single)
 	    break;
 
 	d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
@@ -4010,15 +4057,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 		    QIconViewItem *i = d->currentItem;
 		    setCurrentItem( item );
 		    item = i;
-		    if ( d->selectionMode == Single ) {
-			blockSignals( TRUE );
-			i->setSelected( FALSE );
-			blockSignals( FALSE );
-			d->currentItem->setSelected( TRUE, TRUE );
-		    } else {
-			if ( e->state() & ShiftButton )
-			    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-		    }
+		    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 		    break;
 		}
 	    }
@@ -4029,13 +4068,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    item = d->currentItem;
 	    setCurrentItem( d->currentItem->next );
 
-	    if ( d->selectionMode == Single ) {
-		item->setSelected( FALSE );
-		d->currentItem->setSelected( TRUE, TRUE );
-	    } else {
-		if ( e->state() & ShiftButton )
-		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	    }
+	    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 	}
     } break;
     case Key_Up: {
@@ -4057,15 +4090,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 		    QIconViewItem *i = d->currentItem;
 		    setCurrentItem( item );
 		    item = i;
-		    if ( d->selectionMode == Single ) {
-			blockSignals( TRUE );
-			i->setSelected( FALSE );
-			blockSignals( FALSE );
-			d->currentItem->setSelected( TRUE, TRUE );
-		    } else {
-			if ( e->state() & ShiftButton )
-			    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-		    }
+		    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 		    break;
 		}
 	    }
@@ -4076,13 +4101,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    item = d->currentItem;
 	    setCurrentItem( d->currentItem->prev );
 
-	    if ( d->selectionMode == Single ) {
-		item->setSelected( FALSE );
-		d->currentItem->setSelected( TRUE, TRUE );
-	    } else {
-		if ( e->state() & ShiftButton )
-		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	    }
+	    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 	}
     } break;
     case Key_Next: {
@@ -4104,16 +4123,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
 	if ( ni ) {
 	    setCurrentItem( ni );
-	    if ( d->selectionMode == Single ) {
-		blockSignals( TRUE );
-		if ( item )
-		    item->setSelected( FALSE );
-		blockSignals( FALSE );
-		d->currentItem->setSelected( TRUE, TRUE );
-	    } else {
-		if ( e->state() & ShiftButton )
-		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	    }
+	    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 	}
     } break;
     case Key_Prior: {
@@ -4135,16 +4145,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
 	if ( ni ) {
 	    setCurrentItem( ni );
-	    if ( d->selectionMode == Single ) {
-		blockSignals( TRUE );
-		if ( item )
-		    item->setSelected( FALSE );
-		blockSignals( FALSE );
-		d->currentItem->setSelected( TRUE, TRUE );
-	    } else {
-		if ( e->state() & ShiftButton )
-		    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
-	    }
+	    handleItemChange( item, e->state() & ShiftButton, e->state() & ControlButton );
 	}
     } break;
     default:
@@ -4548,8 +4549,22 @@ void QIconView::findItemByName( const QString &text )
     d->inputTimer->start( 500, TRUE );
     d->currInputString += text.lower();
     QIconViewItem *item = findItem( d->currInputString );
-    if ( item )
+    if ( item ) {
 	setCurrentItem( item );
+	if ( d->selectionMode == Extended ) {
+	    bool changed = FALSE;
+	    blockSignals( TRUE );
+	    selectAll( FALSE );
+	    blockSignals( FALSE );
+	    if ( !item->selected && item->isSelectable() ) {
+		changed = TRUE;
+		item->selected = TRUE;
+		repaintItem( item );
+	    }
+	    if ( changed )
+		emit selectionChanged();
+	}
+    }
 }
 
 /*!
@@ -5043,6 +5058,45 @@ void QIconView::movedContents( int, int )
 	drawDragShapes( d->oldDragPos );
 	d->oldDragPos = QPoint( -1, -1 );
     }
+}
+
+void QIconView::handleItemChange( QIconViewItem *old, bool shift, bool control )
+{
+    if ( d->selectionMode == Single ) {
+	blockSignals( TRUE );
+	if ( old )
+	    old->setSelected( FALSE );
+	blockSignals( FALSE );
+	d->currentItem->setSelected( TRUE, TRUE );
+    } else if ( d->selectionMode == Extended ) {
+	if ( control ) {
+	    // nothing
+	} else if ( shift ) {
+	    if ( old && !old->selected && old->isSelectable() ) {
+		old->selected = TRUE;
+		repaintItem( old );
+	    }
+	    d->currentItem->setSelected( TRUE, TRUE );
+	} else {
+	    blockSignals( TRUE );
+	    selectAll( FALSE );
+	    blockSignals( FALSE );
+	    d->currentItem->setSelected( TRUE, TRUE );
+	}
+    } else {
+	if ( shift )
+	    d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+    }
+}
+
+QBitmap QIconView::mask( QPixmap *pix ) const
+{
+    QBitmap m;
+    if ( d->maskCache.find( QString::number( pix->serialNumber() ), m ) )
+	return m;
+    m = pix->createHeuristicMask();
+    d->maskCache.insert( QString::number( pix->serialNumber() ), m );
+    return m;
 }
 
 #include "qiconview.moc"

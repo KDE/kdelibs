@@ -37,6 +37,7 @@
 #include <qlist.h>
 #include <qdragobject.h>
 #include <qstringlist.h>
+#include <qbitmap.h>
 #endif // QT_H
 
 class QIconView;
@@ -93,11 +94,8 @@ class Q_EXPORT QIconDrag : public QDragObject
     Q_OBJECT
     friend class QIconView;
     friend class QIconViewPrivate;
-    friend struct IconDragItem;
-    struct Item;
-    friend struct Item;
 
-public: // #### this really shouldn't be public, but some compilers don't get it when it is private....
+private:
     struct IconDragItem
     {
 	IconDragItem();
@@ -124,6 +122,8 @@ public: // #### this really shouldn't be public, but some compilers don't get it
 	bool operator== ( const QIconDrag::Item& ) const;
 #endif
     };
+
+    friend struct Item;
 
 public:
     QIconDrag( QWidget * dragSource, const char* name = 0 );
@@ -242,7 +242,7 @@ private:
     void renameItem();
     void cancelRenameItem();
     void checkRect();
-    
+
     QIconView *view;
     QString itemText, itemKey;
     QString tmpText;
@@ -467,12 +467,14 @@ private:
     virtual void drawDragShapes( const QPoint &pnt );
     virtual void initDragEnter( QDropEvent *e );
     void findItemByName( const QString &text );
+    void handleItemChange( QIconViewItem *old, bool shift, bool control );
 
     int calcGridNum( int w, int x ) const;
     QIconViewItem *rowBegin( QIconViewItem *item ) const;
     void updateItemContainer( QIconViewItem *item );
     void appendItemContainer();
     void rebuildContainers();
+    QBitmap mask( QPixmap *pix ) const;
 
     QIconViewPrivate *d;
 
