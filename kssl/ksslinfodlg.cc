@@ -184,32 +184,40 @@ QScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
     QFrame *frame = new QFrame(result);
     QGridLayout *grid = new QGridLayout(frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
     grid->setAutoAdd(true);
+    QLabel *label;
     if (!(tmp = cert.getValue("O")).isEmpty()) {
-        new QLabel(i18n("Organization:"), frame);
+        label = new QLabel(i18n("Organization:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, frame);
     }
     if (!(tmp = cert.getValue("OU")).isEmpty()) {
-        new QLabel(i18n("Organizational Unit:"), frame);
+        label = new QLabel(i18n("Organizational Unit:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, frame);
     }
     if (!(tmp = cert.getValue("L")).isEmpty()) {
-        new QLabel(i18n("Locality:"), frame);
+        label = new QLabel(i18n("Locality:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, frame);
     }
     if (!(tmp = cert.getValue("ST")).isEmpty()) {
-        new QLabel(i18n("State:"), frame);
+        label = new QLabel(i18n("State:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, frame);
     }
     if (!(tmp = cert.getValue("C")).isEmpty()) {
-        new QLabel(i18n("Country:"), frame);
+        label = new QLabel(i18n("Country:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, frame);
     }
     if (!(tmp = cert.getValue("CN")).isEmpty()) {
-        new QLabel(i18n("Common Name:"), frame);
+        label = new QLabel(i18n("Common Name:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, frame);
     }
     if (!(tmp = cert.getValue("Email")).isEmpty()) {
-        new QLabel(i18n("EMail:"), frame);
+        label = new QLabel(i18n("EMail:"), frame);
+        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         KURLLabel *mail = new KURLLabel(tmp, tmp, frame);
         connect(mail, SIGNAL(leftClickedURL(const QString &)), SLOT(mailClicked(const QString &)));
     }
