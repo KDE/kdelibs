@@ -138,6 +138,7 @@ void KCModuleContainer::addModule( const QString& module )
 		return;
 
 	KCModuleProxy* proxy = new KCModuleProxy( module, false, d->tabWidget, module.latin1());
+	allModules.append( proxy );
 
 	d->tabWidget->addTab( proxy, QIconSet(KGlobal::iconLoader()->loadIcon( proxy->moduleInfo().icon(), KIcon::Desktop)),
 			/* QT eats ampersands for dinner. But not this time. */
