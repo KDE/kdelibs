@@ -87,7 +87,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     // initialize QScrollview
 
     enableClipper(true);
-    
+
     viewport()->setMouseTracking(true);
     //viewport()->setBackgroundMode(PaletteBase);
     viewport()->setBackgroundMode(NoBackground);
@@ -226,7 +226,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	    paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
 	}
     }
-    
+
         QTime qt;
         qt.start();
 
@@ -262,7 +262,7 @@ void KHTMLView::layout(bool force)
     if( m_part->docImpl() ) {
 	DOM::HTMLDocumentImpl *document = m_part->docImpl();
 
-	khtml::RenderObject* root = document->renderer();
+	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 
 	NodeImpl *body = document->body();
 	if(body && body->id() == ID_FRAMESET) {
@@ -287,9 +287,9 @@ void KHTMLView::layout(bool force)
 	    //	    qt.start();
 
 	    root->layout();
-            
-	    int rw = root->width()+root->marginLeft()+root->marginRight();
-	    int rh = root->height()+root->marginTop()+root->marginBottom();
+
+	    int rw = root->docWidth();
+	    int rh = root->docHeight();
 
 	    resizeContents(rw, rh);
 

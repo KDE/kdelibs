@@ -52,6 +52,9 @@ public:
     virtual void updateHeight();
     virtual void close();
 
+    int docHeight() const;
+    int docWidth() const;
+    
     QScrollView *view();
 
     virtual void repaint();

@@ -279,22 +279,21 @@ void RenderFlow::layout()
 	}
     }
 
-    if(specialObjects)
-    {
+    layoutSpecialObjects();
+    
+    setLayouted();
+}
+    
+void RenderFlow::layoutSpecialObjects() 
+{    
+    if(specialObjects) {
 	SpecialObject* r;	
 	QListIterator<SpecialObject> it(*specialObjects);
 	for ( ; (r = it.current()); ++it )
     	    if (r->type == SpecialObject::Positioned)
-	    {
 		r->node->layout();			
-	    }
 	specialObjects->sort();
     }
-
-    //kdDebug(6040) << "renderFlow::height=" << m_height << endl;
-
-    setLayouted();
-    //kdDebug( 6040 ) << renderName() << " " << this << "::layout() elapsed" << t.elapsed() << endl;
 }
 
 void RenderFlow::layoutBlockChildren()

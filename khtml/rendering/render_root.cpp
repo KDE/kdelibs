@@ -31,13 +31,13 @@ RenderRoot::RenderRoot(KHTMLView *view)
 {
     m_view = view;
     // try to contrain the width to the views width
-    m_minWidth = view->frameWidth();
+    m_minWidth = view->visibleWidth();
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
-
+    m_height = view->visibleHeight();
+    
     m_positioned=true; // to 0,0 :)
     printingMode = false;
-    updateCount = 0;
 
     selectionStart = 0;
     selectionEnd = 0;
@@ -91,31 +91,10 @@ void RenderRoot::layout()
     }
     RenderFlow::layout();
 
-    int contentsHeight = m_view->visibleHeight();
+    m_height = m_view->visibleHeight();
     //kdDebug(0) << "visibleHeight = " << contentsHeight << endl;
 
-    if (firstChild())
-    {
-	int margins = firstChild()->marginTop() + firstChild()->marginBottom();
-	contentsHeight -= margins;
-	
-    	int h;
-    	h = firstChild()->lowestPosition();
-	if (h>m_height)
-	    m_height=h;
-    	if (firstChild()->firstChild())
-    	{
-    	    h = firstChild()->firstChild()->lowestPosition();
-    	    if (h>m_height)
-	    	m_height=h;
-    	}
-	//kdDebug(0) << "height = " << m_height << " content = " << contentsHeight << endl;
-	if (m_height < contentsHeight)
-	    m_height = contentsHeight;
-	firstChild()->setHeight(m_height);
-	m_height += margins;
-    } else
-    	m_height = contentsHeight;
+    layoutSpecialObjects();
 
     //kdDebug(0) << "root: height = " << m_height << endl;
 }
@@ -172,14 +151,12 @@ void RenderRoot::updateHeight()
     if (parsing())
     {
 	if (!updateTimer.isNull() && updateTimer.elapsed()<1000) {
-	    updateCount++;
 	    return;
 	} else
 	    updateTimer.start();	
     }
-    updateCount = 0;
 
-    int oldHeight = m_height;
+    int oldHeight = docHeight();
 
     m_view->layout(true);
 
@@ -188,10 +165,10 @@ void RenderRoot::updateHeight()
     if(parsing())
 	updateTimer.start();
 
-    if(m_height != oldHeight || m_height == m_view->visibleHeight())
+    if(docHeight() != oldHeight || docHeight() < m_view->visibleHeight())
     {
 //    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
-    	m_view->resizeContents(m_width,m_height);    	
+    	m_view->resizeContents(docWidth(), docHeight());    	
     }
     m_view->repaintContents(0,0,1000000,1000000);	//sync repaint!
 }
@@ -293,3 +270,26 @@ QRect RenderRoot::viewRect() const
     else return QRect();
 }
 
+int RenderRoot::docHeight() const
+{
+    int h = m_view->visibleHeight();
+    if(m_first) {
+	int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
+	if( m_first->lowestPosition() > dh ) 
+	    dh = m_first->lowestPosition();
+	if( dh > h )
+	    h = dh;
+    }
+    return h;
+}
+
+int RenderRoot::docWidth() const
+{
+    int w = m_view->visibleWidth();
+    if(m_first) {
+	int dw = m_first->width() + m_first->marginLeft() + m_first->marginRight();
+	if( dw > w )
+	    w = dw;
+    }
+    return w;
+}    
