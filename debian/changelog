@@ -1,10 +1,10 @@
-kdelibs (4:2.1-20010111-1) unstable; urgency=low
+kdelibs (4:2.1-20010115-1) unstable; urgency=low
  
    * more upstream bug fixes
    * a ton of documentation updates
    * move away from suidregister
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 11 Jan 2001 13:39:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 15 Jan 2001 01:00:00 -0700
 
 kdelibs (4:2.1-20010109-1) unstable; urgency=low
  
