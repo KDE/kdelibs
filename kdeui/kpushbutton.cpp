@@ -60,8 +60,10 @@ void KPushButton::mousePressEvent( QMouseEvent *e )
 
 void KPushButton::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( !m_dragEnabled )
-	return QPushButton::mouseMoveEvent( e );
+    if ( !m_dragEnabled ) {
+	QPushButton::mouseMoveEvent( e );
+	return;
+    }
 
     if ( (e->state() & LeftButton) &&
 	 (e->pos() - startPos).manhattanLength() >
