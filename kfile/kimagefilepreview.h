@@ -40,6 +40,7 @@ class KImageFilePreview : public KPreviewWidgetBase
 
 	public slots:
 		virtual void showPreview(const KURL &url);
+		virtual void clearPreview();
 
 	protected slots:
 		void showPreview() { showPreview( currentURL, true ); }

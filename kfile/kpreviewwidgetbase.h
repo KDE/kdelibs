@@ -50,7 +50,7 @@ public:
      *
      * @param parent The KFileDialog this preview widget is going to be used in
      */
-    KPreviewWidgetBase(QWidget *parent, const char *name=0) 
+    KPreviewWidgetBase(QWidget *parent, const char *name=0)
         : QWidget(parent,name) {}
 
 public slots:
@@ -61,6 +61,13 @@ public slots:
      * @param url The URL of the currently selected file.
      */
     virtual void showPreview(const KURL &url) = 0;
+
+    /**
+     * Reimplement this to clear the preview. This is called when e.g. the
+     * selection is cleared or when multiple selections exist, or the directory
+     * is changed.
+     */
+    virtual void clearPreview() = 0;
 
 };
 

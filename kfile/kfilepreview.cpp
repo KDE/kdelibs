@@ -54,9 +54,9 @@ void KFilePreview::init( KFileView *view )
     left = 0L;
     setFileView( view );
 
-    preview=new QWidget((QSplitter*)this, "preview");
-    QString tmp=i18n("Sorry, no preview available.");
-    QLabel *l=new QLabel(tmp, preview);
+    preview = new QWidget((QSplitter*)this, "preview");
+    QString tmp = i18n("Sorry, no preview available.");
+    QLabel *l = new QLabel(tmp, preview);
     l->setMinimumSize(l->sizeHint());
     l->move(10, 5);
     preview->setMinimumWidth(l->sizeHint().width()+20);
@@ -82,8 +82,10 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
     left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 
     if(w!=0L) {
-        connect(this, SIGNAL(showPreview(const KURL &)),
-                w, SLOT(showPreview(const KURL &)));
+        connect(this, SIGNAL( showPreview(const KURL &) ),
+                w, SLOT( showPreview(const KURL &) ));
+        connect( this, SIGNAL( clearPreview() ),
+                w, SLOT( clearPreview() ));
     }
     else {
         preview->hide();
@@ -106,7 +108,7 @@ void KFilePreview::insertSorted(KFileViewItem *tfirst, uint counter)
         left->updateNumbers( it );
         updateNumbers( it );
     }
-    
+
     left->insertSorted( tfirst, counter );
     setFirstItem( left->firstItem() );
 }
@@ -130,8 +132,7 @@ void KFilePreview::sortReversed()
 void KFilePreview::clearView()
 {
     left->clearView();
-    if(preview)
-        emit showPreview( KURL() );
+    emit clearPreview();
 }
 
 void KFilePreview::updateView(bool b)
@@ -148,6 +149,9 @@ void KFilePreview::updateView(const KFileViewItem *i)
 
 void KFilePreview::removeItem(const KFileViewItem *i)
 {
+    if ( left->isSelected( i ) )
+        emit clearPreview();
+
     left->removeItem(i);
     KFileView::removeItem( i );
 }
@@ -161,6 +165,7 @@ void KFilePreview::clear()
 void KFilePreview::clearSelection()
 {
     left->clearSelection();
+    emit clearPreview();
 }
 
 bool KFilePreview::isSelected( const KFileViewItem *i ) const
@@ -188,7 +193,7 @@ void KFilePreview::highlightFile(const KFileViewItem* item) {
         if ( items->count() == 1 )
             emit showPreview( items->getFirst()->url() );
         else
-            emit showPreview( KURL() );
+            emit clearPreview();
     }
 
     sig->highlightFile(item);

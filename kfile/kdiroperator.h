@@ -493,6 +493,7 @@ protected:
     /**
      * Checks if there support from @ref KIO::PreviewJob for the currently
      * shown files, taking @ref mimeFilter() and @ref nameFilter() into account
+     * Enables/disables the preview-action accordingly.
      */
     bool checkPreviewSupport();
 
@@ -637,6 +638,15 @@ protected slots:
     void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
 
     /**
+     * @returns true if we are in directory-only mode, that is, no files are
+     * shown.
+     */
+    bool dirOnlyMode() const {
+        return ( (myMode & KFile::Directory) &&
+                 (myMode & (KFile::File | KFile::Files)) == 0 );
+    }
+
+    /**
      * @p internal
      */
     // ### make private
@@ -647,6 +657,23 @@ protected slots:
      * completion( match )
      */
     void slotCompletionMatch(const QString& match);
+
+signals:
+    void urlEntered(const KURL& );
+    void updateInformation(int files, int dirs);
+    void completion(const QString&);
+    void finishedLoading();
+
+    /**
+     * Emitted whenever the current fileview is changed, either by an explicit
+     * call to @ref setView() or by the user selecting a different view thru
+     * the GUI.
+     */
+    void viewChanged( KFileView * newView );
+
+    void fileHighlighted(const KFileViewItem*);
+    void dirActivated(const KFileViewItem*);
+    void fileSelected(const KFileViewItem*);
 
 private:
     /**
@@ -667,6 +694,12 @@ private:
     KCompletion myDirCompletion;
     bool myCompleteListDirty;
     QDir::SortSpec mySorting;
+
+    /**
+     * Checks whether we preview support is available for the current
+     * mimetype/namefilter
+     */
+    bool checkPreviewInternal() const;
 
     /**
       * takes action on the new location. If it's a directory, change
@@ -720,23 +753,6 @@ private:
     KToggleAction *separateDirsAction;
 
     KActionCollection *myActionCollection;
-
-signals:
-    void urlEntered(const KURL& );
-    void updateInformation(int files, int dirs);
-    void completion(const QString&);
-    void finishedLoading();
-
-    /**
-     * Emitted whenever the current fileview is changed, either by an explicit
-     * call to @ref setView() or by the user selecting a different view thru
-     * the GUI.
-     */
-    void viewChanged( KFileView * newView );
-
-    void fileHighlighted(const KFileViewItem*);
-    void dirActivated(const KFileViewItem*);
-    void fileSelected(const KFileViewItem*);
 
 private slots:
     void slotDetailedView();

@@ -120,7 +120,8 @@ int main(int argc, char **argv)
                                     KFile::LocalOnly) );
         QStringList filter;
         filter << "text/plain" << "text/html" << "image/png";
-        dlg.setMimeFilter( filter );
+        dlg.setFilter( "*.kdevelop" );
+//        dlg.setMimeFilter( filter );
 //    KMimeType::List types;
 //    types.append( KMimeType::mimeType( "text/plain" ) );
 //    types.append( KMimeType::mimeType( "text/html" ) );

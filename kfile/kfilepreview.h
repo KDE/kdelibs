@@ -86,6 +86,7 @@ public:
 
 signals:
     void showPreview(const KURL &);
+    void clearPreview();
 
 protected slots:
     void activatedMenu(const KFileViewItem*);

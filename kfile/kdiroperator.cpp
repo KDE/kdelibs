@@ -476,8 +476,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     // for the end, it happens quite often, I guess.
     text = text.stripWhiteSpace();
     // if the argument is no URL (the check is quite fragil) and it's
-    // no absolut path, we add the current directory to get a correct
-    // url
+    // no absolute path, we add the current directory to get a correct url
     if (text.find(':') < 0 && text[0] != '/')
         text.insert(0, dir->url());
 
@@ -701,7 +700,6 @@ void KDirOperator::clearFilter()
 void KDirOperator::setNameFilter(const QString& filter)
 {
     dir->setNameFilter(filter);
-    checkPreviewSupport();
 }
 
 void KDirOperator::setMimeFilter( const QStringList& mimetypes )
@@ -713,19 +711,25 @@ void KDirOperator::setMimeFilter( const QStringList& mimetypes )
 bool KDirOperator::checkPreviewSupport()
 {
     KRadioAction *previewAction = static_cast<KRadioAction*>( myActionCollection->action( "preview" ));
-    if ( !previewAction )
-        return false;
 
+    bool hasPreviewSupport = false;
     KConfig *kc = KGlobal::config();
     KConfigGroupSaver cs( kc, ConfigGroup );
-    if ( !kc->readBoolEntry( "Show Default Preview", true ) ) {
-        previewAction->setEnabled( false );
-        previewAction->setChecked( false );
-        return false;
-    }
+    if ( kc->readBoolEntry( "Show Default Preview", true ) )
+        hasPreviewSupport = checkPreviewInternal();
 
+    previewAction->setEnabled( hasPreviewSupport );
+    return hasPreviewSupport;
+}
+
+bool KDirOperator::checkPreviewInternal() const
+{
     bool enable = false;
     QStringList supported = KIO::PreviewJob::supportedMimeTypes();
+    // no preview support for directories?
+    if ( dirOnlyMode() && supported.findIndex( "inode/directory" ) == -1 )
+        return false;
+        
     QStringList mimeTypes = dir->mimeFilters();
     QStringList nameFilter = QStringList::split( " ", dir->nameFilter() );
 
@@ -743,7 +747,6 @@ bool KDirOperator::checkPreviewSupport()
 
                 QStringList result = mimeTypes.grep( r );
                 if ( !result.isEmpty() ) { // matches! -> we want previews
-                    previewAction->setEnabled( true );
                     return true;
                 }
             }
@@ -771,7 +774,6 @@ bool KDirOperator::checkPreviewSupport()
                 for ( ; it2 != supported.end(); ++it2 ) {
                     r.setPattern( *it2 );
                     if ( r.match( mime ) != -1 ) {
-                        previewAction->setEnabled( true );
                         return true;
                     }
                 }
@@ -779,7 +781,6 @@ bool KDirOperator::checkPreviewSupport()
         }
     }
 
-    previewAction->setEnabled( enable );
     return enable;
 }
 
@@ -801,8 +802,11 @@ void KDirOperator::setView( KFile::FileView view )
             view = KFile::Simple;
 
         separateDirs = KFile::isSeparateDirs( (KFile::FileView) defaultView );
-        preview=( (defaultView & KFile::PreviewInfo) == KFile::PreviewInfo ||
-                  (defaultView & KFile::PreviewContents) == KFile::PreviewContents );
+        preview = ( (defaultView & KFile::PreviewInfo) == KFile::PreviewInfo ||
+                    (defaultView & KFile::PreviewContents) == 
+                    KFile::PreviewContents ) 
+                  && myActionCollection->action("preview")->isEnabled();
+
         if ( preview ) { // instantiates KImageFilePreview and calls setView()
             viewKind = view;
             slotDefaultPreview();
@@ -915,16 +919,15 @@ void KDirOperator::connectView(KFileView *view)
     if ( reverseAction->isChecked() != fileView->isReversed() )
         fileView->sortReversed();
 
-     if ( myMode & KFile::Directory &&
-	  (myMode & (KFile::File | KFile::Files) == 0 ))
+    if ( dirOnlyMode() )
          fileView->setViewMode(KFileView::Directories);
-     else {
-         fileView->setViewMode(KFileView::All);
-     }
-     if ( myMode & KFile::Files )
-	 fileView->setSelectionMode( KFile::Extended );
-     else
-	 fileView->setSelectionMode( KFile::Single );
+    else {
+        fileView->setViewMode(KFileView::All);
+    }
+    if ( myMode & KFile::Files )
+        fileView->setSelectionMode( KFile::Extended );
+    else
+        fileView->setSelectionMode( KFile::Single );
 
     dir->listDirectory();
 
@@ -945,8 +948,7 @@ void KDirOperator::setMode(KFile::Mode m)
 
     myMode = m;
 
-    dir->setDirOnlyMode( myMode & KFile::Directory &&
-			 !(myMode & (KFile::File | KFile::Files)) );
+    dir->setDirOnlyMode( dirOnlyMode() );
 
     // reset the view with the different mode
     setView( static_cast<KFile::FileView>(viewKind) );
@@ -1148,7 +1150,7 @@ void KDirOperator::setupActions()
 
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("View"), this, "view menu" );
-    shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn", 
+    shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn",
                                     0, this, "short view" );
     detailedAction = new KRadioAction( i18n("Detailed View"), "view_detailed",
                                        0, this, "detailed view" );
@@ -1304,15 +1306,15 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     else
         defaultView |= KFile::Simple;
     if ( kc->readBoolEntry( QString::fromLatin1("Separate Directories"),
-                             DefaultMixDirsAndFiles ) )
+                            DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
     else {
         // we want KFileDialog to have a preview by default. Other apps
         // using KDirOperator shouldn't get it by default, but an extra
         // method for that would be overkill. So we have this nice lil hacklet.
         KFileDialog *kfd = dynamic_cast<KFileDialog*>( topLevelWidget() );
-        if ( kc->readBoolEntry( QString::fromLatin1("Show Preview"),
-                                kfd != 0L ))
+
+        if ( kc->readBoolEntry(QString::fromLatin1("Show Preview"), kfd != 0L))
             defaultView |= KFile::PreviewContents;
     }
 
@@ -1389,8 +1391,12 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
         if ( separateDirsAction->isEnabled() )
             kc->writeEntry( QString::fromLatin1("Separate Directories"),
                             separateDirsAction->isChecked() );
-        kc->writeEntry( QString::fromLatin1("Show Preview"),
-          ((KRadioAction*)myActionCollection->action("preview"))->isChecked());
+
+        KRadioAction *previewAction = static_cast<KRadioAction*>(myActionCollection->action("preview"));
+        if ( previewAction->isEnabled() ) {
+            bool hasPreview = previewAction->isChecked();
+            kc->writeEntry( QString::fromLatin1("Show Preview"), hasPreview );
+        }
     }
 
     kc->writeEntry( QString::fromLatin1("Show hidden files"),

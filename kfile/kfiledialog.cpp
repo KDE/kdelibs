@@ -143,6 +143,10 @@ struct KFileDialogPrivate
     // directories
     bool keepLocation;
 
+    // the KDirOperators view is set in KFileDialog::show(), so to avoid
+    // setting it again and again, we have this nice little boolean :)
+    bool hasView;
+    
     // The file class used for KRecentDirs
     QString fileClass;
 };
@@ -158,6 +162,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
     d->keepLocation = false;
+    d->hasView = false;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
     d->okButton = new QPushButton( i18n("&OK"), d->mainWidget );
@@ -373,10 +378,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     delete kc;
 
     setSelection(d->url.url());
-    ops->setView(KFile::Default);
-
-
-    ops->clearHistory();
 }
 
 KFileDialog::~KFileDialog()
@@ -1469,8 +1470,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 }
 
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
-                                     QWidget *parent,
-                                     const QString& caption)
+                             QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
@@ -1487,6 +1487,12 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
 
 void KFileDialog::show()
 {
+    if ( !d->hasView ) { // delayed view-creation
+        ops->setView(KFile::Default);
+        ops->clearHistory();
+        d->hasView = true;
+    }
+
     KDialogBase::show();
 }
 

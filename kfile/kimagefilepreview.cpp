@@ -79,14 +79,14 @@ void KImageFilePreview::showPreview( const KURL& url )
 
 void KImageFilePreview::showPreview( const KURL &url, bool force )
 {
+    if ( url.isMalformed() ) {
+        clearPreview();
+        return;
+    }
+
     if ( url != currentURL || force )
     {
-        imageLabel->clear();
-        if ( m_job ) {
-            m_job->kill();
-            m_job = 0L;
-        }
-
+        clearPreview();
 	currentURL = url;
 
 	if ( !url.isMalformed() && (autoMode || force) )
@@ -152,6 +152,17 @@ void KImageFilePreview::slotResult( KIO::Job *job )
 {
     if ( job == m_job )
         m_job = 0L;
+}
+
+void KImageFilePreview::clearPreview()
+{
+    if ( m_job ) {
+        m_job->kill();
+        m_job = 0L;
+    }
+
+    imageLabel->clear();
+    currentURL = KURL();
 }
 
 #include "kimagefilepreview.moc"
