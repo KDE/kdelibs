@@ -206,7 +206,8 @@ KCModule * KCModuleProxy::realModule() const
 
 		d->view->addChild( d->kcm );
 		d->kcm->resize(d->kcm->minimumSizeHint());
-		d->view->resize(d->kcm->size());
+		// FIXME: WTF?  Bug# 96117.
+		// d->view->resize(d->kcm->size());
 		const_cast<KCModuleProxy*>(this)->setMinimumSize(d->view->size());
 
 		if ( !d->rootInfo && /* If it's already done */
