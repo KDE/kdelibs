@@ -29,7 +29,7 @@ class KAppletData;
 /**
 * KDE Panel Applet class
 *
-* This class implements panel applets
+* This class implements panel applets.
 *
 * @author Matthias Ettrich <ettrich@kde.org>
 * @short KDE Panel Applet class
@@ -41,56 +41,64 @@ public:
     enum Stretch{Fixed=0, Small, Medium, Large, Huge};
     
     /**
-       Constructs a KApplet widget just like any other widget.
-   */
+     * Construct a KApplet widget just like any other widget.
+     **/
     KApplet( QWidget* parent = 0, const char* name = 0 );
 
 
     /**
-       Destructor
-    */
+     * Destructor
+     **/
     ~KApplet();
 
     /**
-       Initializes the applet according to the passed command line
-       parameters
-
-       Evalutates some command line arguments, docks into the
-       respective applet container and eventually call
-       setupGeometry().
-     */
+     * Initialize the applet according to the passed command line
+     * parameters
+     *
+     * Evalutate some command line arguments, dock into the
+     * respective applet container and eventually call
+     * @ref setupGeometry().
+     **/
     void init( int& argc, char ** argv );
 
     /**
-       Sets up the applets geometry. This function needs to be
-       reimplemented by subclasses.
-
-       @param orientation is the applets orientation, either Qt::Horizontal
-       or Qt::Vertical
-       @param width and
-       @param height define the size of the applet.
-
-       The size parameter is meant as a hint in case an applet
-       supports different look&feels depending on the target size. Of
-       course, an applet could do these things in resizeEvent(), but
-       this way it's more convinient.
-
-       The applet container that will embed this applet will resize it
-       to the standard size of its applets. If your applet needs more
-       space, ensure to set a proper minimum size with
-       QWidget::setMinimumWidth() or QWidget::setMinimumHeight()
-       depending on the applets orientation.
-
-       Keep in mind that setupGeometry() may be called several times
-       during a life-cycle of your applet, for example when the applet
-       container is resized, moved or changes orientation.
-     */
+     * Set up the applet's geometry. This function needs to be
+     * reimplemented by subclasses.
+     *
+     * @param orientation The applet's orientation, either @p Qt::Horizontal
+     * or @p Qt::Vertical.
+     * @param width Width of the applet.
+     * @param height Height of the applet.
+     *
+     * The size parameter is meant as a hint in case an applet
+     * supports different look&feels depending on the target size. Of
+     * course, an applet could do these things in @ref resizeEvent(), but
+     * this way it's more convenient.
+     *
+     * The applet container that will embed this applet will resize itself
+     * to the standard size of its applets. If your applet needs more
+     * space, ensure to set a proper minimum size with
+     * @ref QWidget::setMinimumWidth() or @ref QWidget::setMinimumHeight()
+     * depending on the applets orientation.
+     *
+     * Keep in mind that @ref setupGeometry() may be called several times
+     * during a life-cycle of your applet, for example when the applet
+     * container is resized, moved or changes orientation.
+     **/
     virtual void setupGeometry( Orientation orientation, int width, int height );
 
-
+    /**
+     * Set the applet to be fixed size or stretchable (and to what size).
+     **/
     void setStretch(Stretch size);
+    /**
+     * @returns Integer of type @p Stretch indicating whether the applet is fixed size or stretchable (and to what size).
+     **/
     Stretch stretch(){return s;}
     
+    /**
+     * @return A suggested size for the applet.
+     **/
     QSize sizeHint() const;
 
     

@@ -28,14 +28,15 @@
 
 class QColor;
 /** 
-* KLed displays a round  or rectangular light emmitting diode.
+* Display a round  or rectangular light emmitting diode.
 *
-* It is configurable to 5 colors, the 2 on/off states and .
+* It is configurable to 5 colors, the 2 on/off states and 3 styles (or
+*  "looks");
 *
 * It may display itself in a performant flat view, a round view with
 * light spot or a round view sunken in the screen.
 *
-* @short A round led widget
+* @short A round LED widget.
 * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
 */
 
@@ -46,8 +47,8 @@ class KLed : public QWidget
     public:
 
   /**
-   * Status of the light is on/off
-   * @short led on/off
+   * Status of the light is on/off.
+   * @short LED on/off.
    */
   enum State { Off, On, NoOfStates };
   
@@ -58,33 +59,34 @@ class KLed : public QWidget
   enum Shape { NoShape, Rectangular, Circular, NoOfShapes=Circular };
   
   /**
-   * Displays a flat, round or sunken led.
-   * Displaying the led flat is less time and color consuming,
+   * Display a flat, round or sunken LED.
+   *
+   * Displaying the LED flat is less time and color consuming,
    * but not so nice to see.
    *
-   * The sunken led itself is (for shure) smaller than the round led
+   * The sunken LED itself is (certainly) smaller than the round LED
    * because of the 3 shading circles and is
-   * most time consuming. Makes sense for led > 15x15 pixels.
+   * most time consuming. Makes sense for LED > 15x15 pixels.
    *
-   * timings:
+   * @sect Timings:
    * ( AMD K5/133, Diamond Stealth 64 PCI Graphics, widgetsize 29x29 )
-   *  - flat approx. 0.7 msec per paint 
-   *  - round approx. 2.9 msec per paint
-   *  - sunken approx. 3.3 msec per paint
+   *  @li flat approx. 0.7 msec per paint 
+   *  @li round approx. 2.9 msec per paint
+   *  @li sunken approx. 3.3 msec per paint
    *
-   * The widget will be updated the next repaining event.
-   * @short led look
+   * The widget will be updated on the next repaining event.
+   * @short LED look.
    */
   enum Look  { NoLook, Flat, Raised, Sunken, NoOfLooks=Sunken };
 
   /**
    * Constructor with the ledcolor, the parent widget, and the name.
    *
-   * The State will be defaulted On and the Look round
+   * The State will be defaulted On and the Look round.
    *
-   * @param ledcolor initializes with Color
-   * @param parent   will be handed over to QWidget
-   * @param name     will be handed over to QWidget
+   * @param ledcolor Initial color of the LED.
+   * @param parent   Will be handed over to QWidget.
+   * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
   KLed(const QColor &col=Qt::green, QWidget *parent=0, const char *name=0);
@@ -93,103 +95,113 @@ class KLed : public QWidget
    * Constructor with the ledcolor, ledstate, ledlook,
    * the parent widget, and the name.
    *
-   * Differs from above only in the parameters, which configure all settings
+   * Differs from above only in the parameters, which configure all settings.
    *
-   * @param ledcolor initializes with Color
-   * @param state    sets the State
-   * @param look     sets the Look
-   * @param parent   will be handed over to QWidget
-   * @param name     will be handed over to QWidget
+   * @param ledcolor Initial color of the LED.
+   * @param state    Sets the State.
+   * @param look     Sets the Look.
+   * @param parent   Will be handed over to QWidget.
+   * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
   KLed(const QColor& col, KLed::State st, KLed::Look look, KLed::Shape shape, 
        QWidget *parent=0, const char *name=0);
 
   /**
-   * Hands back the current state of the widget (on/off)
-   * see enum State
-   * @short returns led state
+   * Hand back the current state of the widget (on/off).
+   *
+   * @see State
+   * @short Returns LED state.
    */
   State state() const;
 
   /**
-   * Hands back the color of the widget
-   * see enum Color
-   * @short returns led color
+   * Hand back the color of the widget
+   *
+   * @see Color
+   * @short Returns LED color.
    */
   const QColor color() const;
 
   /**
-   * Hands back the look of the widget
-   * see enum Look
-   * @short returns led look
+   * Hand back the look of the widget.
+   *
+   * @see Look
+   * @short Returns LED look.
    */
    Look look() const;
 
   /**
-   * sets the state of the widget to On or Off.
-   * The widget will be painted immediately.
-   * see also: on(), off(), toggle(), toggleState()
+   * Sets the state of the widget to On or Off.
    *
-   * @param state the led state on or off
-   * @short set led state
+   * The widget will be painted immediately.
+   * @see on() off() toggle() toggleState()
+   *
+   * @param state The LED state: on or off.
+   * @short Set LED state.
    */
   void setState( State state );
   
   /** Set the shape. */
   void setShape(Shape s);
   /**
-   * toggles the state of the led from Off to On and vice versa.
+   * Toggle the state of the LED from Off to On and vice versa.
+   *
    * The widget will be repainted when returning to the main
    * event loop.
-   * @short toggles led on->off / off->on
+   * @short Toggles LED on->off / off->on.
    */
   void toggleState();
 
   /**
-   * Sets the color of the widget.
-   * The widget calls the update method, so it will
+   * Set the color of the widget.
+   *
+   * The widget calls the update() method, so it will
    * be updated when entering the main event loop.
    *
-   * see also: enum Color
+   * @see Color
    *
-   * @param color new Color of the led
-   * @short sets the led color
+   * @param color New color of the LED.
+   * @short Sets the LED color.
    */
   void setColor(const QColor& color);
 
   /**
-   * Sets the look of the widget.
-   * the look may be flat, round or sunken.
-   * The widget calls the update method, so it will
+   * Set the look of the widget.
+   *
+   * The look may be flat, round or sunken.
+   * The widget calls the update() method, so it will
    * be updated when entering the main event loop.
    *
-   * see also: enum Look
+   * @see Look
    *
-   * @param look new look of the led
-   * @short sets led look
+   * @param look New look of the LED.
+   * @short Sets LED look.
    */
   void setLook( Look look );
 
   public slots:
 
     /**
-     * toggles the state of the led from Off to On an vice versa.
+     * Toggle the state of the led from Off to On or vice versa.
+     *
      * The widget repaints itself immediately.
      */
     void toggle();
 
   /**
-   * sets the state of the widget to On.
+   * Sets the state of the widget to On.
+   *
    * The widget will be painted immediately.
-   * see off(), toggle(), toggleState(), setState()
+   * @see off() toggle() toggleState() setState()
    */  
   void on();
 
   /**
-   * sets the state of the widget to Off.
+   * Sets the state of the widget to Off.
+   *
    * The widget will be painted immediately.
-   * see also: on(), toggle(), toggleState(), setState()
+   * @see on() toggle() toggleState() setState()
    */
   void off();
 

@@ -56,46 +56,65 @@ class QToolButton;
 class KDateValidator;
 class KDateTable;
 
-/** Widget for selecting dates. 
-
-    Different from the
-    previous versions, it now emits two types of signals, either
-    dateSelected() or dateEntered() (see documentation for both
-    signals). 
-
-    A line edit has been added in the newer versions to allow the user 
-    to select a date directly by entering numbers like 19990101
-    or 990101. 
-
-    @version $Id$
-    @author Tim Gilman, Mirko Sucker
-*/
+/**
+ *  Widget for selecting dates. 
+ * 
+ *     Different from the
+ *     previous versions, it now emits two types of signals, either
+ *     @ref dateSelected() or @ref dateEntered() (see documentation for both
+ *     signals). 
+ * 
+ *     A line edit has been added in the newer versions to allow the user 
+ *     to select a date directly by entering numbers like 19990101
+ *     or 990101. 
+ * 
+ *     @version $Id$
+ *     @author Tim Gilman, Mirko Sucker
+ **/
 class KDatePicker: public QFrame {
   Q_OBJECT
 public:
-  /** The usual constructor, the given date will be displayed 
+  /** The usual constructor.  The given date will be displayed 
    * initially.
-   */
+   **/
   KDatePicker(QWidget *parent=0, 
 	      QDate=QDate::currentDate(), 
 	      const char *name=0);
-  /** The destructor. */
+  /**
+   * The destructor. 
+   **/
   virtual ~KDatePicker();
+
   /** The size hint for KDatePickers. The size hint recommends the
-      minimum size of the widget so that all elements may be placed
-      without clipping. This sometimes looks ugly, so when using the
-      size hint, try adding 28 to each of the reported numbers of
-      pixels. */
+   *   minimum size of the widget so that all elements may be placed
+   *  without clipping. This sometimes looks ugly, so when using the
+   *  size hint, try adding 28 to each of the reported numbers of
+   *  pixels.
+   **/
   QSize sizeHint() const; 
-  /** Set the date. Returns false and does not change anything 
-      if the date given is invalid. */
+
+  /** Set the date.
+   *
+   *  @returns @p false and does not change anything 
+   *      if the date given is invalid. 
+   **/
   bool setDate(const QDate&);
-  /** Get the date. */
+
+  /** 
+   * Retrieve the date.
+   **/
   const QDate& getDate();
-  /** Enable or disable the widget. */
+
+  /** 
+   * Enable or disable the widget. 
+   **/
   void setEnabled(bool);
-  /** Set the font size of the widgets elements. */
+
+  /** 
+   * Set the font size of the widgets elements. 
+   **/
   void setFontSize(int);
+
   /// the month names
   static QString *Month[12];
 protected:

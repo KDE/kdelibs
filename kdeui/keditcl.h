@@ -117,13 +117,20 @@ signals:
 };
 
 
-///
+/**
+ * A simple text editor for the KDE project.
+ *
+ * @author Bernd Johannes Wuebben <wuebben@math.cornell.edu>, Waldo Bastian <bastian@kde.org>
+ **/
+
 class KEdit : public QMultiLineEdit
 {
     Q_OBJECT
 
 public:
-
+    /**
+     * The usual constructor.
+     **/
     KEdit (QWidget *_parent=NULL, const char *name=NULL);
 
     ~KEdit();
@@ -144,7 +151,7 @@ public:
 	   OPEN_INSERT 		= 4 };
 
     /**
-     * Inserts text from the text stream into the edit widget
+     * Insert text from the text stream into the edit widget.
      **/
     void insertText(QTextStream *);
 
@@ -153,102 +160,113 @@ public:
      **/
     void saveText(QTextStream *);
 
-    /// Returns the currently marked text.
-    /** Returns the currently marked text.
+    /** 
+     * Retrieve the currently marked text.
      */
     QString 	markedText();
 
-    /// Lets the user select a font and sets the font of the textwidget.
-    /** Lets the user select a font and sets the font of the textwidget to that
-        selected font.
-    */
+    /**
+     *  Let the user select a font and set the font of the textwidget to that
+     * selected font.
+     **/
     void 	selectFont();
 
-    /// Presents a search dialog to the user
-    /** Presents a search dialog to the user
-     */
+    /** 
+     * Present a search dialog to the user
+     **/
     void 	search();
 
-    /// Repeats the last search specified on the search dialog.
-    /** Repeasts the last search specified on the search dialog. If the user
-        hasn't searched for anything until now, this method will simply return
-	without doing anything.
-    */
+    /** 
+     * Repeat the last search specified on the search dialog.
+     *
+     *  If the user hasn't searched for anything until now, this method
+     *   will simply return without doing anything.
+     **/
     int 	repeatSearch();
 
-    /// Presents a Search and Replace Dialog to the User.
-    /**  Presents a Search and Replace Dialog to the User.
-     */
+    /**  
+     * Present a Search and Replace Dialog to the user.
+     **/
     void 	replace();
 
     /** 
-     * Presents a "Goto Line" dialog to the User
+     * Present a "Goto Line" dialog to the user.
      */
     void 	doGotoLine();
 
     /**
-     * Cleans up redundant whitespace from selected text.
+     * Clean up redundant whitespace from selected text.
      */
     void        cleanWhiteSpace();
 
     /**
-     * @return true if the document has been modified;.
+     * @return @p true if the document has been modified.
      */
     bool 	isModified();
 
-    /** Sets the modification status of the document. 
-     *  true = Modified, false = UNMODIFIED. 
+    /**
+     * Set the modification status of the document. 
+     *  @true = Modified, @false = UNMODIFIED. 
      *  This can be used to test whether the document needs to be saved.
      **/
     void 	setModified( bool = true);
 
-    /// Install a Popup Menue for KEdit.
-    /** Install a Popup Menue for KEdit. The Popup Menu will be activated on
-        a right mouse button press event.
+    /**
+     * Install a context menu for KEdit.
+     *
+     *  The Popup Menu will be activated on a right mouse button press event.
      */
     void 	installRBPopup( QPopupMenu* );
 
-    /// Return the current Line number
-	  /** Returns the current line number, that is the line the cursor is on.
-	   */
+    /**
+     * Retrieve the current line number.
+     *
+     * The current line is the line the cursor is on.
+     **/
     int 	currentLine();
 
-    /// Returns the current Column number
-	  /** This returns the actual column number the cursor is on. This call differs
-	    from QMultiLineEdit::getCursorPosition in that it returns the actual cursor
-	    position and not the character position. Use currentLine() and currentColumn()
-	    if you want to display the current line or column in the status bar for
-	    example.
-	    */
+    /** 
+     * Retrieve the actual column number the cursor is on.
+     *
+     *  This call differs
+     *    from @ref QMultiLineEdit::getCursorPosition() in that it returns the actual cursor
+     *    position and not the character position. Use @ref currentLine() and @ref currentColumn()
+     *    if you want to display the current line or column in the status bar for
+     *    example.
+     */
     int 	currentColumn();
 
 
     /**
-     * Start spellchecking mode
+     * Start spellchecking mode.
      */
     void spellcheck_start(); 
 
     /**
-     * Exit spellchecking mode
+     * Exit spellchecking mode.
      */
     void spellcheck_stop();    
 
 signals:
-    /** This signal is emitted if the user dropped a Url over the text editor
-      * QMultiLineEdit widget. Note that the user can drop also Text on it, but
+    /** This signal is emitted if the user dropped a URL over the text editor
+      * QMultiLineEdit widget.
+      *
+      *  Note that the user can drop also Text on it, but
       * this is already handled internally by QMultiLineEdit.
       */
     void        gotUrlDrop(QDropEvent* e);
 
-    /** This signal is emitted whenever the cursor position changed.
-      * Use this in conjunction with currentLine(), currentColumn()
-      * if you need to know the cursor position.
-      */
+    /** This signal is emitted whenever the cursor position changes.
+     *
+     * Use this in conjunction with @ref currentLine(), @ref currentColumn()
+     * if you need to know the cursor position.
+     */
     void 	CursorPositionChanged();
 
     /** This signal is emitted if the user toggles from overwrite to insert mode.
-      * He can do so by pressing the "Insert" Button on a PC keyboard.
-      */
+     *
+     * The user can do so by pressing the "Insert" button on a PC keyboard.
+     */
     void 	toggle_overwrite_signal();
 
 public slots:

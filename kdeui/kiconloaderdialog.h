@@ -187,32 +187,40 @@ class KIconLoaderButton : public QPushButton
     Q_OBJECT
 public:
     /**
-     * Creates a new button.
+     * Create a new button.
      */
-    KIconLoaderButton( QWidget *_widget );
-    KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_widget );
+    KIconLoaderButton( QWidget *_parent );
+    /**
+     * Create a new button.
+     *
+     * @param _icon_loader The @ref KIconLoader which should be used by
+     *  this button.
+     */
+    KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_parent );
     ~KIconLoaderButton();
 
     /**
-     * Sets the resource type for locating icon pixmaps and reloads
-     * the icon, if a name has already been given. The default
-     * resource type is "toolbar".
+     * Set the resource type for locating icon pixmaps and reload
+     * the icon, if a name has already been given. 
      *
-     * @param _resType is a resource type known to @ref KStandardDirs.
+     * The default resource type is "toolbar".
+     *
+     * @param _resType A resource type known to @ref KStandardDirs.
      */
     void setIconType(const QString& _resType);
+
     /**
-     * Set the buttons icon.
+     * Set the button's icon.
      *
-     * @param _icon is a parameter as usually passed to @ref KIconLoader.
+     * @param _icon A parameter as usually passed to @ref KIconLoader.
      */
     void setIcon( const QString& _icon );
     /**
-     * @return the name of the icon without path.
+     * @return The name of the icon without path.
      */
     const QString icon() { return iconStr; }
     /**
-     * @return a reference to the icon loader dialog used.
+     * @return A reference to the icon loader dialog used.
      */
     KIconLoaderDialog* iconLoaderDialog() { return loaderDialog; }
 
@@ -221,7 +229,7 @@ public slots:
 
 signals:
     /**
-     * Emitted if the icons has changed.
+     * Emitted if the icon has changed.
      */
     void iconChanged( const QString& icon );
 

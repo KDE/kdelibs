@@ -11,33 +11,35 @@
 #include <qrangecontrol.h>
 
 /** 
-* KProgress is derived from QFrame and QRangeControl, so you can use all 
-* the methods from those classes. The only difference is that setValue(int) 
-* is now made a slot, so you can connect stuff to it. 
-*
-* None of the constructors take line step and page step as arguments, 
-* so by default they're set to 1 and 10 respectively.
-*
-* The Blocked style ignores the textEnabled() setting and displays
-* no text, since it looks truly ugly and there are other reasons. Signal 
-* percentageChanged(int) is emmitted whenever the value changes so you
-* can setup a different widget to display percentage and connect the
-* signal to it. 
-*
-* @short A Progress indicator widget
-* @author Martynas Kunigelis
-* @version $Id$
-*/
+ * Stylized progress bar.
+ *
+ * KProgress is derived from @ref QFrame and @ref QRangeControl, so you can use all 
+ * the methods from those classes. The only difference is that @ref setValue(int) 
+ * is now made a slot, so you can connect stuff to it. 
+ *
+ * None of the constructors take line step and page step as arguments, 
+ * so by default they're set to 1 and 10 respectively.
+ *
+ * The Blocked style ignores the @ref textEnabled() setting and displays
+ * no text, since it looks truly ugly (and for other reasons). Signal 
+ * @ref percentageChanged(int) is emitted whenever the value changes so you
+ * can set up a different widget to display the current percentage complete
+ * and connect the signal to it. 
+ *
+ * @short A Progress indicator widget
+ * @author Martynas Kunigelis
+ * @version $Id$
+ */
 class KProgress : public QFrame, public QRangeControl {
 	Q_OBJECT
 public:
   /** 
-  * Possible values for orientation 
+  * Possible values for orientation.
   */
   enum Orientation { Horizontal, Vertical };
 
   /** 
-  * Possible values for bar style. 
+  * Possible values for bar style.
   *
   * Solid means one continuous progress bar, Blocked means a 
   * progress bar made up of several blocks. 
@@ -55,18 +57,20 @@ public:
   KProgress(Orientation, QWidget *parent=0, const char *name=0);
 
   /** 
-  * Construct a KProgress bar with minimum, maximum and initial value. 
+  * Construct a KProgress bar with minimum, maximum and initial values.
   */
-	KProgress(int minValue, int maxValue, int value, Orientation, 
-				QWidget *parent=0, const char *name=0);
+  KProgress(int minValue, int maxValue, int value, Orientation, 
+	    QWidget *parent=0, const char *name=0);
 	
   /** 
-  * Destructor 
-  */
+   * Destructor 
+   */
   ~KProgress();
 	
   /** 
-  * Set the progress bar style. Allowed values are Solid and Blocked. 
+  * Set the progress bar style.
+  *
+  * Allowed values are @p Solid and @p Blocked. 
   */
   void setBarStyle(BarStyle style);  
 	
@@ -82,14 +86,14 @@ public:
 
   /** 
   * Set the orientation of the progress bar. 
-  * Allowed values are Horizonzal and Vertical. 
+  * Allowed values are @p Horizonzal and @p Vertical. 
   */
   void setOrientation(Orientation);
 
   /**
-  * If this is set to TRUE, the progress text will be displayed.
-  *
-  */
+   * If this is set to @p true, the progress text will be displayed.
+   *
+   */
   void setTextEnabled(bool);
 	
   /** 
@@ -113,13 +117,13 @@ public:
   Orientation orientation() const;
 
   /**
-  * Returns TRUE if progress text will be displayed, FALSE otherwise.
+  * @return @p true if progress text will be displayed, @p false otherwise.
   */
   bool textEnabled() const;
 
   /**
-   * Returns the recommended width for vertical progress bars or
-   * the recommended height for vertical progress bars
+   * Retrieve the recommended width for vertical progress bars or
+   * the recommended height for horizontal progress bars
    */
   virtual QSize sizeHint() const;
 
@@ -136,15 +140,25 @@ public:
   void setFormat(const QString & format);
 
   /**
-   * @return the current format for printing status text.
+   * @return The current format for printing status text.
    */
   QString format() const;
 			
 public slots:
-	void setValue(int);
-	void advance(int);
+	/**
+	 * Set the current value of the progress bar (0%-100%).
+	 **/
+	  void setValue(int);
+
+        /**
+	 * Advance the progress bar by @p prog.
+	 **/
+	void advance(int prog);
 	
 signals:
+	/**
+	 * Emitted when the state of the progress bar changes.
+	 **/
 	void percentageChanged(int);
 	
 protected:

@@ -27,19 +27,19 @@ class QLayoutItem;
 #include <qdialog.h>
 
 /**
- * Dialog with extended modeless support and and methods for KDE standard
+ * Dialog with extended modeless support and methods for KDE standard
  * compliance.
  *
  * If the dialog is modeless and has a parent, the default keybindings 
  * (escape = reject(), enter = accept() etc.) are disabled.
  *
- * The marginHint() and spacingHint() sizes shall be used whenever you layout
+ * The @ref marginHint() and @ref spacingHint() sizes shall be used whenever you layout
  * the interior of a dialog. One special note. If you make your own action
  * buttons (Ok, Cancel etc), the space beteween the buttons shall be 
- * spacingHint(), while the space above, below, to right and to the left shall
- * be marginHint(). If you add a separator line above the buttons, there 
- * shall be a marginHint() between the buttons and the separator and a 
- * marginHint() above the separator as well.
+ * @ref spacingHint(), while the space above, below, to right and to the left shall
+ * be @ref marginHint(). If you add a separator line above the buttons, there 
+ * shall be a @ref marginHint() between the buttons and the separator and a 
+ * @ref marginHint() above the separator as well.
  *
  * @author Thomas Tanghus <tanghus@earthling.net>, Espen Sand <espensa@online.no>
  * @version 0.1.2
@@ -51,55 +51,53 @@ class KDialog : public QDialog
   public:
 
     /**
-     * Constructor. Takes the same arguments as QDialog.
+     * Constructor. 
+     *
+     * Takes the same arguments as @ref QDialog.
      */
     KDialog(QWidget *parent = 0, const char *name = 0, 
 	    bool modal = false, WFlags f = 0);
 
     /**
-     * Returns the number of pixels you shall use between a 
+     * Return the number of pixels you shall use between a 
      * dialog edge and the outermost widget(s) according to the KDE standard.
-     */
+     **/
     static int marginHint( void );
 
     /**
-     * Returns the number of pixels you shall use between 
+     * Return the number of pixels you shall use between 
      * widgets inside a dialog according to the KDE standard.
      */
     static int spacingHint( void );
 
     /**
-     * Resizes every layout manager used in w and its nested children.  
+     * Resize every layout manager used in @p widget and its nested children.
      *
-     * @param margin The new layout margin
-     *
-     * @param margin The new layout spacing
-     *
+     * @param margin The new layout margin.
+     * @param margin The new layout spacing.
      */
-    static void resizeLayout( QWidget *w, int margin, int spacing );
+    static void resizeLayout( QWidget *widget, int margin, int spacing );
 
     /**
-     * Reszies every layout associated with 'lay' and its children. 
+     * Reszie every layout associated with @p lay and its children. 
      *
      * @param margin The new layout margin
-     *
      * @param margin The new layout spacing
-     *
      */
     static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
 
   public slots:
     /**
-     * Makes a KDE compliant caption.
+     * Make a KDE compliant caption.
      * 
-     * @param caption Your caption. DO NOT include the application name
+     * @param caption Your caption. @bf Do @bf not include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
      */
     virtual void setCaption( const QString &caption );
 
     /**
-     * Makes a plain caption without any modifications.
+     * Make a plain caption without any modifications.
      * 
      * @param caption Your caption. This is the string that will be 
      * displayed in the window title.

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1999/05/26 09:38:27  mkoch
+ * kdocify kdeui
+ *
  * Revision 1.6  1999/05/10 12:59:09  kulow
  * applied 90% of Hans's patch and tried to fix other stuff. Some classes
  * (KAccel is a good example - libkab is even worse) mix string types so
@@ -68,7 +71,7 @@ enum TextAlignment
 };
 
 /**
- * A label class that supports displaying hyperlinks
+ * A label class that supports displaying an active hyperlink.
  *
  * KURLLabel is a drop-in replacement for QLabel that handles text
  * in a fashion similar to how an HTML widget handles hyperlinks.  The
@@ -92,7 +95,7 @@ enum TextAlignment
  * In this example, the text "My homepage" would be displayed
  * as blue, underlined text.  When the mouse passed over it, 
  * it would "glow" red.  When the user clicks on the text, the
- * signal leftClickedURL() would be emitted with "http://www.home.com/~me"
+ * signal @ref leftClickedURL() would be emitted with "http://www.home.com/~me"
  * as its argument.
  *
  * @short A drop-in replacement for QLabel that displays hyperlinks.
@@ -104,7 +107,9 @@ class KURLLabel : public QLabel
 	Q_OBJECT
 public:
 	/**
-	 * Constructor.  Use this exactly like you would QLabel.
+	 * Constructor.
+	 *
+	 *  Use this exactly like you would QLabel.
 	 */
 	KURLLabel(QWidget *parent=0, const char *name=0, WFlags f=0);
 
@@ -114,130 +119,151 @@ public:
 	virtual ~KURLLabel();
 
 	/**
-	 * Returns the URL.  This will be the same as <CODE>text()</CODE> if 
-	 * @ref #setURL is not used.
+	 * Retreive the URL. 
 	 *
-	 * @return the URL.
+	 * This will be the same as @ref text() if 
+	 * @ref setURL() is not used.
+	 *
+	 * @return The URL.
 	 */
 	const QString url() const;
 
 	/**
-	 * Returns the current text.
+	 * Retrieve the current text.
 	 *
-	 * @see #setText
+	 * @see setText()
 	 *
-	 * @return the current text.
+	 * @return The current text.
 	 */
 	const QString text() const;
 
 	/**
-	 * Returns the current pixmap.
+	 * Retrieve the current pixmap.
 	 *
-	 * @see #setPixmap
+	 * @see setPixmap()
 	 *
-	 * @return the current pixmap.
+	 * @return The current pixmap.
 	 */
 	const QPixmap* pixmap() const;
 
 	/**
-	 * Returns the recommended size for this label
+	 * Retrieve the recommended size for this label.
 	 */
 	QSize sizeHint() const;
   
         /**
-	 * Enables or disables "transparent mode". If transparent mode 
+	 * Enable or disable "transparent mode".
+	 *
+	 * If transparent mode 
 	 * is enabled, the label copies its own background from its 
 	 * parent widget so that it seems to be transparent.
 	 * Transparent mode is disabled by default.
-	 * Please note that the method does not repaint the widget, 
-	 * changes take effect on the next repainting.
-	 * Transparent widgets do (currently) not work if there is another 
+	 * Please note that the method does not repaint the widget.
+	 * Changes take effect on the next repainting.
+	 * Transparent widgets do not (currently) work if there is another 
 	 * widget (a frame, for example) layered between this widget and its
 	 * parent in Z-order.
 	 */
          void setTransparentMode(bool state);
 public slots:
 	/**
-	 * Turn on or off the "glow" feature.  When this is on, the
+	 * Turn on or off the "glow" feature. 
+	 *
+	 * When this is on, the
 	 * text will switch to the selected color whenever the mouse
-	 * passes over it.  By default, it is <EM>on</EM>.
+	 * passes over it.  By default, it is @bf on.
 	 */
 	void setGlow(bool glow = true);
 
 	/**
-	 * Turn on or off the "float" feature.  This feature is very
+	 * Turn on or off the "float" feature.
+	 *
+	 *  This feature is very
 	 * similar to the "glow" feature in that the color of the
 	 * label switches to the selected color when the cursor passes
 	 * over it.  In addition, underlining is turned on for as
 	 * long as the mouse is overhead.  Note that if "glow" and
 	 * underlining are both already turned on, this feature
-	 * will have no visible effect.  By default, it is <EM>off</EM>.
+	 * will have no visible effect.  By default, it is @bf off.
 	 */
 	void setFloat(bool do_float = true);
 
 	/**
-	 * Turn on or off the custom cursor feature.  When this is on, the
+	 * Turn on or off the custom cursor feature.
+	 *
+	 *  When this is on, the
 	 * cursor will change to a custom cursor (default is a "pointing
 	 * hand") whenever the cursor passes over the label.  By default,
-	 * it is <EM>on</EM>
+	 * it is @bf on.
 	 */
 	void setUseCursor(bool use_cursor, const QCursor* cursor = 0);
 
 	/**
-	 * Turn on or off the tool tip feature.  When this is on, the
+	 * Turn on or off the tool tip feature.
+	 *
+	 *  When this is on, the
 	 * URL will be displayed as a tooltip whenever the mouse passes
-	 * passes over it.  By default, it is <EM>off</EM>.
+	 * passes over it.  By default, it is @bf off.
 	 */
 	void setUseTips(bool tips = true);
 
 	/**
 	 * Specifies what text to display when tooltips are turned on.
+	 *
 	 * If this is not used, the tip will default to the URL.
 	 *
-	 * @see #setUseTips
+	 * @see setUseTips()
 	 */
 	void setTipText(const QString& tip);
 
 	/**
-	 * Set the text alignment
+	 * Set the text alignment.
 	 */
 	void setTextAlignment(TextAlignment align);
 
 	/**
-	 * Turn on or off the underlining.  When this is on, the
-	 * text will be underlined.  By default, it is <EM>on</EM>
+	 * Turn on or off the underlining.
+	 *
+	 *  When this is on, the
+	 * text will be underlined.  By default, it is @bf on.
 	 */
 	void setUnderline(bool underline = true);
 
 	/**
-	 * Set the highlight color.  This is the default foreground
-	 * color (non-selected).  By default, it is <EM>blue</EM>.
+	 * Set the highlight color.
+	 *
+	 * This is the default foreground
+	 * color (non-selected).  By default, it is @bf blue.
 	 */
 	void setHighlightedColor(const QColor& highcolor);
 
 	/**
 	 * This is an overloaded version for convenience.
 	 *
-	 * @see #setHighlightedColor
+	 * @see setHighlightedColor()
 	 */
 	void setHighlightedColor(const QString& highcolor);
 	
 	/**
-	 * Set the selected color.  This is the color the text will change
+	 * Set the selected color.
+	 *
+	 * This is the color the text will change
 	 * to when either a mouse passes over it and "glow" mode is on or
-	 * when it is selected (clicked).  By default, it is <EM>read</EM>
+	 * when it is selected (clicked).  By default, it is @bf red.
 	 */
 	void setSelectedColor(const QColor& selcolor);
 
 	/**
-	 * This is an overloaded version for convenience.
+	 * This is an overloaded versionfor convenience.
 	 *
-	 * @see #setSelectedColor
+	 * @see setSelectedColor()
 	 */
 	void setSelectedColor(const QString& selcolor);
 	
 	/**
-	 * Set the background color.  By default, it is set to the
+	 * Set the background color.
+	 *
+	 *  By default, it is set to the
 	 * KDE background color.
 	 */
 	void setBackgroundColor(const QColor& bgcolor);
@@ -245,49 +271,55 @@ public slots:
 	/**
 	 * This is an overloaded version for convenience.
 	 *
-	 * @see #setBackgroundColor
+	 * @see setBackgroundColor()
 	 */
 	void setBackgroundColor(const QString& bgcolor);
 
 	/**
-	 * Sets the font for the label.
+	 * Set the font for the label.
 	 */
 	void setFont(const QFont& font);
 
 	/**
-	 * Sets the label contents to <EM>text</EM>
+	 * Set the label contents to @p text.
 	 *
-	 * @see #text
+	 * @see text()
 	 */
 	void setText(const QString& text);
 
 	/**
-	 * Sets the pixmap.  Unlike QLabel, this can co-exist with 
-	 * @ref #setText.  It cannot be used along with @ref #setMovie,
+	 * Set the pixmap.
+	 *
+	 * Unlike QLabel, this can co-exist with 
+	 * @ref setText().  It cannot be used along with @ref setMovie(),
 	 * however.
 	 *
-	 * @see #pixmap
+	 * @see pixmap()
 	 */
 	void setPixmap(const QPixmap& pixmap);
 
 	/**
-	 * Sets the "alt" pixmap.  This pixmap will be displayed when the
-	 * cursor passes over the label.  The effect is similar to the
-	 * trick done with 'onMouseOver' with javascript.
+	 * Set the "alt" pixmap. 
 	 *
-	 * @see #altPixmap
+	 * This pixmap will be displayed when the
+	 * cursor passes over the label.  The effect is similar to the
+	 * trick done with 'onMouseOver' in javascript.
+	 *
+	 * @see altPixmap()
 	 */
 	void setAltPixmap(const QPixmap& pixmap);
 
 	/**
-	 * Sets the movie.  Cannot be used with @ref #setPixmap 
+	 * Set the movie.
+	 *
+	 *  Cannot be used with @ref setPixmap ()
 	 *
 	 * @see #movie
 	 */
 	void setMovie(const QMovie& movie);
 
 	/**
-	 * Sets the URL for this label to <EM>url</EM>
+	 * Sets the URL for this label to @p url.
 	 *
 	 * @see #url
 	 */

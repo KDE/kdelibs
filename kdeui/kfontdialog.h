@@ -52,13 +52,13 @@ class KFontChooser : public QWidget
   
 public:
   /**
-   * Constructor.  Creates a new font picker dialog.
+   * Constructor.  Create a new font picker dialog.
    *
    * @param parent The parent widget.
    * @param name The widget name.
    * @param onlyFixedFonts only display fonts which have fixed-width
    *        character sizes.
-   * @param fontList a list of fonts to display, in XLFD format.  If
+   * @param fontList A list of fonts to display, in XLFD format.  If
    *        no list is formatted, the internal KDE font list is used.
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
@@ -71,11 +71,11 @@ public:
 	       bool makeFrame = true, int visibleListSize=8 );
 
   /**
-   * Sets the currently selected font in the chooser.
+   * Set the currently selected font in the chooser.
    * 
    * @param font The font to select.
-   * @param onlyFixed readjust the font list to display only fixed
-   *        width fonts if true, or vice-versa
+   * @param onlyFixed Readjust the font list to display only fixed
+   *        width fonts if @p true, or vice-versa.
    */
   void setFont( const QFont &font, bool onlyFixed = false );
 
@@ -86,12 +86,12 @@ public:
   QFont font() { return selFont; }
   
   /**
-   * @return The current text in the sample text input area
+   * @return The current text in the sample text input area.
    */
   QString sampleText() { return sampleEdit->text(); }
 
   /**
-   * Sets the sample text. Normally you should not change this 
+   * Set the sample text. Normally you should not change this 
    * text, but it can be better to do this if the default text is
    * too large for the edit area when using the default font of your
    * application.
@@ -104,20 +104,20 @@ public:
   }
 
   /**
-   * This function converts a QFont into the corresponding X Logical Font 
-   * Description.
+   * Convert a @ref QFont into the corresponding X Logical Font 
+   * Description (XLFD).
    *
-   * @param theFont the font to convert.
-   * @return a string representing the given font in XLFD format.
+   * @param theFont The font to convert.
+   * @return A string representing the given font in XLFD format.
    */
   static QString getXLFD( const QFont &theFont )
     { return theFont.rawName(); }
 
   /**
-   * Constructs a list of font strings that matches the pattern.
+   * Construct a list of font strings that matches the pattern.
    * 
-   * @param list The list is returned here
-   * @param pattern The font pattern
+   * @param list The list is returned here.
+   * @param pattern The font pattern.
    */
   static void getFontList( QStringList &list, const char *pattern );
 

@@ -23,9 +23,11 @@
 #include <qtextbrowser.h>
 
 /**
- * This class provides an extended QTextBrowser. By default it will
+ * An extended @ref QTextBrowser.
+ *
+ * By default it will
  * invoke the system mailer or the system browser when a link is
- * activated, or it can emit the signal @ref urlClick or @ref mailClick
+ * activated, or it can emit the signal @ref urlClick() or @ref mailClick()
  * when a link is activated.
  *
  * @short Extended QTextBrowser.
@@ -43,21 +45,21 @@ class KTextBrowser : public QTextBrowser
      *
      * @param parent Parent of the widget.
      * @param name Widget name.
-     * @param notifyClick True causes signals to be emitted.
+     * @param notifyClick @p true causes signals to be emitted.
      */
     KTextBrowser( QWidget *parent=0, const char *name=0,
 		  bool notifyClick=false );
 
     /**
-     * Destructor
+     * Destructor.
      */
     ~KTextBrowser( void );
 
     /**
-     * Decides whether a click on a link should be handled internally
+     * Decide whether a click on a link should be handled internally
      * or if a signal should be emitted.
      *
-     * @param notifyClick True causes signals to be emitted.
+     * @param notifyClick @p true causes signals to be emitted.
      */
     void setNotifyClick( bool notifyClick );
 
@@ -79,14 +81,16 @@ class KTextBrowser : public QTextBrowser
     /**
      * Emitted when a mail link has been activated and the widget has
      * been configured to emit the signal.
-     * @param name The destination name. It is QString::null at the moment.
+     *
+     * @param name The destination name. It is @ref QString::null at the moment.
      * @param address The destination address.
      */
     void mailClick( const QString &name, const QString &address );
 
     /**
-     * Emitted if @ref mailClick is not emitted and the widget has been
+     * Emitted if @ref mailClick() is not emitted and the widget has been
      * configured to emit the signal.
+     *
      * @param url The destination address.
      */
     void urlClick( const QString &url );

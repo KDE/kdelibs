@@ -17,9 +17,9 @@
 
 //////////////////////////////////////////////////////////////////////////////
 /**
- * This class simplifies the use of KAccel and KKeyDialog with menus.
+ * Simplify the use of @ref KAccel and @ref KKeyDialog with menus.
  *
- * It also  provides for the changing of menu item shortcuts by
+ * It also provides for the changing of menu item shortcuts by
  * typing the key when the menu item is selected. 
  *
  * The exact method of setting shortcuts is the subject of some debate,
@@ -27,10 +27,10 @@
  * hit will change the shortcut.
  * The Delete key removes the accelerator associated with the menu item.
  *
- * Previously: the quote key was only required for keys that
- * are used for menu accellerators
+ * Previously: The quote key was only required for keys that
+ * are used for menu accelerators.
  *
- * Usage:
+ * @sect Usage:
  <pre>
  *  keys = new KAccel(this);
  *
@@ -41,12 +41,12 @@
  * keys->readSettings();
  </pre>
  *
- * Calling the KKeyDialog
+ * Calling the KKeyDialog:
  <pre>
  * KKeyDialog::configureKeys( keys ); 
  </pre>
  *
- * On exit you need
+ * On exit you need:
  <pre>
  * keys->writeSettings();
  </pre>
@@ -59,49 +59,76 @@ class KAccelMenu : public QPopupMenu
 
 public:
   /**
-   *   KAccelMenu constructor
-   *   Arguments:
-   *   @param k the Kacccel object associated with this menu
+   *   KAccelMenu constructor.
+   *
+   *   @param k the @ref KAccel object associated with this menu
    **/
   KAccelMenu(KAccel *k, QWidget * parent=0, const char * name=0 );
 
   /**
-   * Destructor
+   * Destructor.
    **/
   ~KAccelMenu();
 
   /**
-   *  Insert a menu item with accelerator
-   *  Arguments:
+   *  Insert a menu item with accelerator.
    *
-   *  @param pixmap image attached to menu item
-   *  @param text  the interationalized version of the menu item text
-   *  @param action the untranslated version of the menu item text
-   *  @param receiver object with action slot
-   *  @param member menu item action slot
-   *  @param accel the accelerator in text format
+   *  @param pixmap Image attached to menu item.
+   *  @param text  The interationalized version of the menu item text.
+   *  @param action The untranslated version of the menu item text.
+   *  @param receiver Object with action slot.
+   *  @param member Menu item action slot.
+   *  @param accel The accelerator in text format.
    *
+   * @return Id of the menu item.
    **/
 
   int insItem (const QPixmap & pixmap, const char* text,
 	       const char * action, const QObject * receiver,
 	       const char * member, const char * accel = 0);
 
+  /**
+   *  Insert a menu item with accelerator.
+   *
+   *  @param text  The interationalized version of the menu item text.
+   *  @param action The untranslated version of the menu item text.
+   *  @param receiver Object with action slot.
+   *  @param member Menu item action slot.
+   *  @param accel The accelerator in text format.
+   *
+   * @return Id of the menu item.
+   **/
   int insItem (const char* text, const char * action,
 	       const QObject * receiver,
 	       const char * member, const char * accel = 0);
 
   /**
    *   Insert a menu item with a standard accelerator
-   *   Arguments:
    *
-   *   The same as above apart from
-   *   @param accel code for a standard accelerator
-   */
+   *  @param pixmap Image attached to menu item.
+   *  @param text  The interationalized version of the menu item text.
+   *  @param action The untranslated version of the menu item text.
+   *  @param receiver Object with action slot.
+   *  @param member Menu item action slot.
+   *  @param accel code for a standard accelerator
+   *
+   *  @return Id of the menu item.
+   **/
   int insItem ( const QPixmap & pixmap, const char * text,
 		const char * action, const QObject * receiver,
 		const char * member, KAccel::StdAccel accel );
 
+  /**
+   *   Insert a menu item with a standard accelerator
+   *
+   *  @param text  The interationalized version of the menu item text.
+   *  @param action The untranslated version of the menu item text.
+   *  @param receiver Object with action slot.
+   *  @param member Menu item action slot.
+   *  @param accel code for a standard accelerator
+   *
+   *  @return Id of the menu item.
+   **/
   int insItem ( const char * text,  const char * action,
 		const QObject * receiver,
 		const char * member, KAccel::StdAccel accel );

@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1999/12/11 17:20:36  antlarr
+ * Changed the QStringList questionYesNo method name to questionYesNoList
+ * Also reimplemented the original questionYesNo to call questionYesNoList with
+ * an empty list which reduces the sources and keeps the look
+ * I've changed the only two places that used this to reflect the changes:
+ * the KMessageBox test and Konqueror
+ *
  * Revision 1.8  1999/11/27 21:30:47  antlarr
  * Added a new questionYesNo which displays a "question" dialog with a listbox
  * to show information to the user (see the mail in kde-core-devel for more info)
@@ -68,7 +75,7 @@ class QWidget;
 class QStringList;
 
  /** 
-  * Easy MessageBox Dialog. 
+  * Easy message dialog box. 
   *
   * Provides convenience functions for some i18n'ed standard dialogs.
   *
@@ -80,7 +87,7 @@ class KMessageBox
 public:
  enum { Ok = 1, Cancel = 2, Yes = 3, No = 4, Continue = 5 };
  /**
-  * Displays a simple "question" dialog. 
+  * Display a simple "question" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -107,7 +114,7 @@ public:
                           const QString &buttonYes = QString::null,  
                           const QString &buttonNo = QString::null);
  /**
-  * Displays a "question" dialog with a listbox to show information to the user 
+  * Display a "question" dialog with a listbox to show information to the user 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -139,7 +146,7 @@ public:
                           const QString &buttonYes = QString::null,
                           const QString &buttonNo = QString::null);
  /**
-  * Displays a "warning" dialog. 
+  * Display a "warning" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -152,7 +159,7 @@ public:
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
   *
-  * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
+  * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed.
   *
   * To be used for questions "Shall I update your configuration?"
@@ -167,7 +174,7 @@ public:
                          const QString &buttonNo = QString::null);
 
  /**
-  * Displays a "warning" dialog. 
+  * Display a "warning" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -179,8 +186,8 @@ public:
   *
   * The second button always has the text "Cancel".
   *
-  * @return  'Continue' is returned if the Continue-button is pressed. 
-  *          'Cancel' is returned if the Cancel-button is pressed.
+  * @return  @p Continue is returned if the Continue-button is pressed. 
+  *          @p Cancel is returned if the Cancel-button is pressed.
   *
   * To be used for questions like "You are about to Print. Are you sure?"
   * the continueButton should then be labeled "Print".
@@ -193,7 +200,7 @@ public:
                          const QString &buttonContinue);
 
  /**
-  * Displays a Yes/No/Cancel "warning" dialog. 
+  * Display a Yes/No/Cancel "warning" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -206,8 +213,8 @@ public:
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
   *
-  * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
-  *          if the No-button is pressed. 'Cancel' is retunred if the Cancel-
+  * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
+  *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
   *          button is pressed.
   *
   * To be used for questions "Do you want to save your changes?"
@@ -225,7 +232,7 @@ public:
                                 const QString &buttonNo = QString::null);
 
  /**
-  * Displays an "Error" dialog. 
+  * Display an "Error" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -243,7 +250,7 @@ public:
    *
    * The default button is "&OK". Pressing "Esc" selects the OK-button.
    *
-   * NOTE: The ok button will always have the i18n'ed text '&OK'.
+   * NOTE: The OK button will always have the i18n'ed text '&OK'.
    */
    
   static void error(QWidget *parent, 
@@ -251,7 +258,7 @@ public:
                     const QString &caption = QString::null);
 
  /**
-  * Displays an "Sorry" dialog. 
+  * Display an "Sorry" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -276,7 +283,7 @@ public:
                     const QString &caption = QString::null);
 
  /**
-  * Displays an "Information" dialog. 
+  * Display an "Information" dialog. 
   *
   * @param parent  If parent is 0, then the message box becomes an 
   *                application-global modal dialog box. If parent is a
@@ -291,12 +298,12 @@ public:
   *
   *
   * Your program wants to tell the user something.
-  * To be used for things like 
+  * To be used for things like:
   * "Your bookmarks have been rearranged."
   *
   * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
-  *  NOTE: The ok button will always have the i18n'ed text '&OK'.
+  *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
    
   static void information(QWidget *parent, 
@@ -305,13 +312,13 @@ public:
                           const QString &dontShowAgainName = QString::null);
 
   /**
-   * Enables all messages which have been turned off with the
-   * "dontShowAgainName" feature of the information dialog.
+   * Enable all messages which have been turned off with the
+   * @p dontShowAgainName feature of the information dialog.
    */
   static void enableAllMessages();
   
   /**
-   * Displays an "About" dialog. 
+   * Display an "About" dialog. 
    *
    * @param parent  If parent is 0, then the message box becomes an 
    *                application-global modal dialog box. If parent is a
@@ -321,7 +328,7 @@ public:
    *                the title. The default title is i18n("About <appname>").
    *
    *
-   * Your program wants to show some general informations about the application
+   * Your program wants to show some general information about the application
    * like the authors's names and email addresses.
    *
    * The default button is "&OK". 

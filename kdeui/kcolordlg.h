@@ -161,25 +161,25 @@ private:
 };
 
 /** 
- * Color selection dialog
+ * Color selection dialog.
  *
-Features:
-
-@li Colour selection from a standard system palette.
-@li Colour selection from a Palette of H vs S and V selectors (similar to windoze).
-@li Direct input of HSV or RGB values.
-@li Saving of custom colors
-
-Simplest use:
-
-<pre>
-	QColor myColor;
-	int result = KColorDialog::getColor( myColor );
-        if ( result == KColorDialog::Accepted )
-           ...
-</pre>
-
- */
+ * @sect Features:
+ * 
+ * @li Colour selection from a standard system palette.
+ * @li Colour selection from a Palette of H vs S and V selectors (similar to windoze).
+ * @li Direct input of HSV or RGB values.
+ * @li Saving of custom colors
+ * 
+ * @sect Simplest use:
+ * 
+ * <pre>
+ * 	QColor myColor;
+ * 	int result = KColorDialog::getColor( myColor );
+ *         if ( result == KColorDialog::Accepted )
+ *            ...
+ * </pre>
+ * 
+ **/
 class KColorDialog : public KDialogBase
 {
   Q_OBJECT
@@ -193,19 +193,19 @@ class KColorDialog : public KDialogBase
 
     /** 
      * Retrieve the currently selected color. 
-     */
+     **/
     QColor color() { return selColor; }
   
     /**
      * This is probably the function you are looking for.
      * Just call this to pop up dialog get the selected color.
-     * returns result().
+     * returns @ref result().
      */
     static int getColor( QColor &theColor, QWidget *parent=0L );
 
   public slots:
     /** 
-     * Preselect a color 
+     * Preselect a color.
      */
     void setColor( const QColor &col );
 

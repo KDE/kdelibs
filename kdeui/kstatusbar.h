@@ -96,16 +96,20 @@ signals:
 };
 
 /**
- *  KStatusBar is widget for displaying status messages. You can insert
- *  text labels or custom widgets. Managing of items is internal. KStatusBar
- *  resizes itself, but positioning is left to KTMainWindow (or to you, if
- *  you don't use KTMainWindow).
+ *  Display status messages.
  *
- *  Special type of item is a message, a temporary text-message or custom
+ *  You can insert
+ *  text labels or custom widgets. Their geometry is Managed internally.
+ *  KStatusBar
+ *  resizes itself, but positioning is left to @ref KTMainWindow (or to you, if
+ *  you don't use @ref KTMainWindow).
+ *
+ *  A special type of item is a message which is a temporary text-message
+ *  or custom
  *  widget which is displayed on top of other items in full-width. Messages
- *  are visible for specified time, or until you call slot clear().
+ *  are visible for specified time, or until you call the slot @ref clear().
  *
- *  STILL UNIMPLEMENTED:
+ *  @sect STILL UNIMPLEMENTED:
  *
  *  It is also possible to replace one item by another, keeping the same
  *  size and position.
@@ -119,42 +123,62 @@ class KStatusBar : public QFrame
     
 public:
 
+  /**
+   * Possible states of the status bar.
+   **/
   enum BarStatus{ Toggle, Show, Hide };
+  /**
+   * Possible positions of the status bar.
+   **/
   enum Position{ Top, Left, Bottom, Right, Floating };
+  /**
+   * Ways to inset widgets.
+   **/
   enum InsertOrder{ LeftToRight, RightToLeft };
 
   /**
-   *  Constructs KStatusBar object.
+   *  Construct KStatusBar object.
    */
   KStatusBar( QWidget* parent = 0L, const char* name = 0L );
 
   /**
-   *  Destructor. Deletes all internal objects.
+   *  Destructor.
+   *
+   *  Deletes all internal objects.
    */
   ~KStatusBar();
 
   /**
-   *  Insert text label into the status bar. When inserting the item send the
+   *  Insert text label into the status bar.
+   * 
+   *  When inserting the item send the
    *  longest text you expect to go into the field as the first argument.
    *  The field is sized to accomodate this text. However, the last field
    *  inserted is always stretched to fit the window width.
    *
-   *  @see #insertWidget
+   *  @see insertWidget()
    */
   int insertItem( const QString& text, int ID );
 
   /**
-   *  Insert custom widget into the status bar. The widget must have statusbar
-   *  as parent. The size is the width of the widget. However, the last item
+   *  Insert custom widget into the status bar.
+   *
+   *  The widget must have this statusbar
+   *  as it's parent. The size is the width of the widget.
+   *  However, the last item
    *  inserted is always stretched to fit the window width.
    *
-   *  @see #insertItem
+   *  @see insertItem()
    */
   int insertWidget( QWidget* _widget, int size, int id );
 
   /**
-   *  Removes item id. If that was your custom widget it's hidden
+   *  Remove an item.
+   *
+   *  If @p id corresponds to your custom widget, then it's hidden
    *  but not deleted.
+   *
+   * @param id The item to remove.
    */
   void removeItem( int id );
 
@@ -176,112 +200,137 @@ public:
   void replaceItem( int _id, QWidget *new_widget );
   
   /**
-   *  Change the text in a status bar field. The field is not resized !!!
-   *  Usefull only for labels.
+   *  Change the text in a status bar field.
+   *
+   *  The field is not resized!
+   *  This is useful only for labels.
    */
   void changeItem( const QString& text, int id );
 
   /** 
+   * Change the order of widget insertion.
+   *
    *  If order is KStatusBar::LeftToRight the fields are inserted from left
-   *  to right, in particular the last field ist streched to the right
+   *  to right, in particular the last field is streched to the right
    *  border of the window. If order is KStatusBar::RightToLeft the fields
    *  are inserted from the right.
    */
   void setInsertOrder( InsertOrder order );
 
   /**
-   *  Sets the alignment of a field. By default all fields are aligned left.
-   *  Usefull only for labels.
+   *  Sets the alignment of a field.
+   *
+   *  By default all fields are aligned left.
+   *  Useful only for labels.
    *
    *  Valid values for align are:
    *
-   *  @li AlignLeft aligns to the left border. 
-   *  @li AlignRight aligns to the right border. 
-   *  @li AlignHCenter aligns horizontally centered. 
-   *  @li AlignTop aligns to the top border. 
-   *  @li AlignBottom aligns to the bottom border. 
-   *  @li AlignVCenter aligns vertically centered 
-   *  @li AlignCenter (= AlignHCenter | AlignVCenter)
+   *  @li AlignLeft Aligns to the left border. 
+   *  @li AlignRight Aligns to the right border. 
+   *  @li AlignHCenter Aligns horizontally centered. 
+   *  @li AlignTop Aligns to the top border. 
+   *  @li AlignBottom Aligns to the bottom border. 
+   *  @li AlignVCenter Aligns vertically centered 
+   *  @li AlignCenter Same as @p AlignHCenter @p | @p AlignVCenter
    */
   void setAlignment( int id, int align );
 
   /**
-   *  Sets the Height of the StatusBar. Default height is computed from
+   *  Set the height of the StatusBar.
+   *
+   *  Default height is computed from
    *  default font height.
    */
   void setHeight( int );
 
   /**
-   *  Sets the border width of the status bar seperators and frame.
+   *  Set the border width of the status bar seperators and frame.
    */
   void setBorderWidth( int );
 
   /**
-   *  Enable disable status bar. You can get the same effect with show
-   *  or hide, but if you do that the signal @ref #moved won't be emitted.
+   *  Enable/ disable status bar.
+   *
+   *  You can get the same effect with @ref @QWidget::show()
+   *  or @ref QWidget::hide(), but if you do that the signal
+   *  @ref moved() won't be emitted.
    */
   bool enable( BarStatus stat );
 
   /**
-   *  Hides all items and displays temporary text message in whole statusbar.
-   *  Message will be removed (and old items redisplayed) after time (in ms).
-   *  If time is 0 (default) message will remain untill you call @ref #clear.
-   *  You can remove the message by calling @ref #clear any time.
+   *  Hide all items and display temporary text message over entire statusbar.
+   *
+   *  The message will be removed (and old items redisplayed) after a time @p time has elapsed (in ms).
+   *  If @p time is 0 (default) the message will remain until you call
+   * @ref clear().
+   *  You can remove the message by calling @ref clear() at any time.
    */
   void message( const QString& text, int time = 0 );
 
   /**
-   *  Hides all items and displays temporary custom widget in whole statusbar.
-   *  Widget must have statusbar for it's parent.
-   *  Widget will be removed (and old items redisplayed) after time (in ms).
-   *  If time is 0 (default) widget will remain untill you call @ref #clear.
-   *  You can remove the message by calling @ref #clear any time. Upon
-   *  @ref #clear your widget will be hidden, not deleted.
+   *  Hide all items and display temporary custom widget over entire statusbar.
+   *
+   *  The widget must have this statusbar as its parent.
+   *  The widget will be removed (and old items redisplayed) after time @p time has elapsed (in ms).
+   *  If @p time is 0 (default) widget will remain until you call @ref clear().
+   *  You can remove the message by calling @ref clear() any time. Upon
+   *  calling @ref clear() your widget will be hidden, not deleted.
    */
   void message( QWidget* wiiidget, int time = 0 );
 
   /**
-   *  SizeHint. For now returns height() and width().
+   * For now returns @ref QWidget::height() and @ref QWidget::width().
    */
   QSize sizeHint() const;
 
+  /**
+   * Retrieve a statusbar item.
+   * @internal
+   **/
   KStatusBarItem *item( int id );
   
 public slots:
 
   /**
-   *  Clears the message (if any), and shows back old
-   *  state. This method is slot, you can connect to it. Does nothing if
-   *  @ref #message was not called before. Message is hidden, not deleted.
-   *  If message was your custom widget you have to clean it up.
+   *  Clear the message (if any), and return to regular state.
+   *
+   *  This method is a slot so you can connect to it. It does nothing if
+   *  @ref message() was not called before. 
+   *  If the message was your custom widget it will be hidden but not deleted, so you have to clean it up.
    */
   void clear();
    
 signals:
 
   /**
-   *  Emits when mouse is pressed over label id. Connect to this signal
-   *  if you want to notice mouse press events. If you want to catch this
-   *  signal for your custom widgets, they must not catch mouse press
+   *  Emitted when mouse is pressed over statusbar item @p id.
+   *
+   *  Connect to this signal
+   *  if you want to respond to mouse press events. If you want to catch this
+   *  signal for your custom widgets, the widgets must not catch mouse press
    *  events.
    */
   void pressed( int );
 
   /**
-   *  Emits when mouse is released over item id. Conect to
-   *  this signal if you want to receive mouse click. If you want to catch
-   *  this signal for your custom widgets, they must not catch mouse release
+   *  Emitted when mouse is released over statusbar item @p id.
+   *
+   * Connect to
+   *  this signal if you want to respond to mouse clicks. If you want to catch
+   *  this signal for your custom widgets, the widgets must not catch mouse release
    *  events.
    */
   void released( int );
 
   /**
-   *  Emits when toolbar changes its position (not implemented!), or when
-   *  item is removed from toolbar. This is normaly connected to
-   *  @ref KTMainWindow::updateRects.
+   *  Emitted when statusbar changes its position (not implemented!), or when
+   *  item is removed from statusbar.
+   *
+   *  This is normaly connected to
+   *  @ref KTMainWindow::updateRects().
    *  If you subclass @ref KTMainWindow and reimplement
-   *  @ref KTMainWindow::resizeEvent or
-   *  @ref KTMainWindow::updateRects, be sure to connect to
+   *  @ref KTMainWindow::resizeEvent() or
+   *  @ref KTMainWindow::updateRects(), be sure to connect to
    *  this signal.
    */
   void moved();

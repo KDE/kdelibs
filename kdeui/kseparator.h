@@ -24,25 +24,44 @@
 
 /**
  * Standard horizontal or vertical separator.
+ *
  * @author Michael Roth <mroth@wirlweb.de>
  * @version $Id$
 */
 class KSeparator : public QFrame
 {
-   public:
-      KSeparator(QWidget* parent=0, const char* name=0, WFlags f=0);
-      KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
-		      WFlags f=0);
-      
-      int orientation() const;
-
-      /**
-       * Set the orientation of the separator. Possible values are VLine
-       * and HLine.
-       */
-      void setOrientation(int);
-      
-      virtual QSize sizeHint() const;
+ public:
+  /**
+   * Constructor.
+   **/
+  KSeparator(QWidget* parent=0, const char* name=0, WFlags f=0);
+  /**
+   * Constructor.
+   *
+   * @param orientation Set the orientation of the separator.
+   * Possible values are HLine and VLine.
+   **/
+  KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
+	     WFlags f=0);
+  
+  /**
+   * Retreive the orientation of the separator.
+   *
+   * Possible values are VLine and HLine.
+   **/
+  int orientation() const;
+  
+  /**
+   * Set the orientation of the separator.
+   *
+   * Possible values are VLine and HLine.
+   */
+  void setOrientation(int);
+  
+  /**
+   * The recommended height (width) for a horizontal (vertical) separator.
+   **/
+  virtual QSize sizeHint() const;
 };
 
 

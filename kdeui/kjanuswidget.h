@@ -83,22 +83,22 @@ class KJanusWidget : public QWidget
   public:
 
     /** 
-     * Constructore wher you specify the face.
+     * Constructor where you specify the face.
      * 
      * @param parent Parent of the widget.
      * @param name Widget name.
      * @param int face The kind of dialog, Use TreeList, Tabbed, Plain or
-     * Swallow
+     * Swallow.
      */
     KJanusWidget( QWidget *parent=0, const char *name=0, int face=Plain );
 
     /**
-     * Destructor
+     * Destructor.
      */
     ~KJanusWidget( void );
 
     /**
-     * Raises the page which was added by @ref addPage. If you want to display
+     * Raises the page which was added by @ref addPage(). If you want to display
      * the third page, specify 2.
      *
      * @parame index The index of the page you want to raise.
@@ -106,30 +106,30 @@ class KJanusWidget : public QWidget
     bool showPage( int index );
 
     /**
-     * Returns the index of the page that are currentlt displayed.
+     * Retrieve the index of the page that are currently displayed.
      *
      * @return The index or -1 of the face is not TreeList or Tabbed
      */
     int  activePageIndex( void ) const;
 
     /**
-     * Return true if the widget was properly created. Use this to verify 
-     * that no memory allocation failed.
+     * @return @p true if the widget was properly created. 
      *
-     * @return true if widget is valid.
+     * Use this to verify 
+     * that no memory allocation failed.
      */
     bool isValid( void ) const;
 
     /**
-     * Returns the face type
+     * Retrieve the face type.
      *
      * @return The face type.
      */
     int face( void ) const;
 
     /**
-     * Returns the minimum size that must be made available for the widget
-     * so that uis can be displayed properly
+     * Retrieve the minimum size that must be made available for the widget
+     * so that UIs can be displayed properly
      *
      * @return The minimum size.
      */
@@ -144,7 +144,7 @@ class KJanusWidget : public QWidget
     virtual QSize sizeHint( void ) const;
 
     /**
-     * Returns the empty widget that is available in Plain mode.
+     * Retrieve the empty widget that is available in Plain mode.
      *
      * @return The widget or 0 if the face in not Plain.
      */
@@ -163,7 +163,9 @@ class KJanusWidget : public QWidget
     QFrame *addPage(const QString &item,const QString &header=QString::null);
 
     /**
-     * Defines the widget to be swallowed. This method can be used several 
+     * Define the widget to be swallowed. 
+     *
+     * This method can be used several 
      * times. Only the latest defined widget will be shown.
      *
      * @param widget The widget to be swallowed. If 0, then an empty rectangle
@@ -173,7 +175,7 @@ class KJanusWidget : public QWidget
 
   public slots:
     /**
-     * Gives the keyboard input focus to the widget 
+     * Give the keyboard input focus to the widget.
      */
     virtual void setFocus( void ); 
 

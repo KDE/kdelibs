@@ -20,6 +20,10 @@
 
 //$Id$
 //$Log$
+//Revision 1.32  1999/12/26 19:02:59  shausman
+//- make insertSeparator() return the id of the separator instead of
+//  returning void
+//
 //Revision 1.31  1999/12/13 22:44:37  kulow
 //put some #ifdef __GNUC__ around the #warning
 //removed the -DQT2_WORKAROUND. Sven says KMenubar is rewritten to be based
@@ -114,17 +118,19 @@ protected:
 
 
 /**
- * Floatable menu bar. It can be set to float, Top, or Bottom
- * of KTMainWindow. It can be used without KTMainWindow, but
+ * Floatable menu bar.
+ *
+ * It can be set to float, Top, or Bottom
+ * of @ref KTMainWindow. It can be used without @ref KTMainWindow, but
  * then you should maintain items (toolbars, menubar, statusbar)
  * yourself.
  *
- * Interface is the same as QMenuBar, except that you can't
+ * The interface is the same as @ref QMenuBar except that you can't
  * add pixmaps.
  *
- * If you want to add other methods for 100% compatibility with QMenuBar
+ * If you want to add other methods for 100% compatibility with @ref QMenuBar
  * just add those methods, and pass all arguments ot menu bar.
- * see kmenubar.cpp for details. It is extremly simple.
+ * See kmenubar.cpp for details. It is extremly simple.
  * @author Sven Radej <sven@kde.org>
  */
 class KMenuBar : public QFrame
@@ -139,51 +145,59 @@ class KMenuBar : public QFrame
    enum menuPosition{Top, Bottom, Floating, Flat, FloatingSystem};
 
    /**
-    * Argument for enable().
+    * Argument for @ref enable().
     */
    enum BarStatus{ Toggle, Show, Hide };
 
    /**
     * Constructor. For all details about inserting items see
-    * @ref QMenuBar
+    * @ref QMenuBar.
     */
    KMenuBar( QWidget *parent=0, const char *name=0);
 
    /**
-    * Destructor. Embeds menubar back if floating. Delete menubar
-    * in your destructor or closeEvent for 100% safety
+    * Destructor. 
+    *
+    * Embed menubar back if floating. Delete menubar
+    * in your destructor or closeEvent() for 100% safety.
     */
    ~KMenuBar();
 
    /**
-    * Enable or disable moving. This only disables user moving
-    * menubar can be moved with @ref #setMenuBarPos .
+    * Enable or disable moving.
+    *
+    * This only disables user moving.
+    * The menubar can still be moved with @ref setMenuBarPos().
     */
    void enableMoving(bool flag = TRUE);
 
    /**
-    * Returns menubar position.
+    * Retrieve menubar position.
     */
    menuPosition menuBarPos() {return position;};
 
    /**
-    * Enables/disables floating.
+    * Enable/disable floating.
     */
    void enableFloating(bool flag = TRUE);
 
    /**
-    * Sets position. Can be used when floating or moving is disabled.
+    * Set menubar position. 
+    *
+    * Can be used when floating or moving is disabled.
     */
    void setMenuBarPos(menuPosition mpos);
 
    /**
-    * Sets title for floating menu bar. Default is Main widget title.
+    * Set title for floating menu bar. Default is main widget title.
     */
    void setTitle(const QString&_title) {title = _title;};
 
    /**
-    * Enable disable status bar. You can get the same effect with show
-    * or hide, but if you do that the signal @ref #moved won't be emitted.
+    * Enable/disable status bar.
+    *
+    *  You can get the same effect with show
+    * or hide, but if you do that the signal @ref moved() won't be emitted.
     */
    bool enable( BarStatus stat );
 
@@ -196,7 +210,7 @@ class KMenuBar : public QFrame
    QSize sizeHint() const;
 
    /**
-    * The rest is standard QMenuBar interface. See Qt docs for
+    * The rest is standard @ref QMenuBar interface. See Qt docs for
     * details.
     */
    virtual uint count();

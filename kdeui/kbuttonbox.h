@@ -33,7 +33,7 @@
  *
  * @author Mario Weilguni <mweilguni@sime.com>
  * @version $Id$
- */
+ **/
 class KButtonBox : public QWidget {
 
   Q_OBJECT
@@ -41,9 +41,11 @@ public:
   enum { VERTICAL = 1, HORIZONTAL = 2 };
 
   /**
-    * Creates an empty container for buttons. If _orientation is 
-    * KButtonBox::VERTICAL, the buttons inserted with @see addButton
-    * are layouted from top to bottom, otherwise they are layouted 
+    * Create an empty container for buttons.
+    *
+    *  If @p _orientation is 
+    * @p KButtonBox::VERTICAL, the buttons inserted with @ref addButton()
+    * are laid out from top to bottom, otherwise they are laid out
     * from left to right.
     */
   KButtonBox(QWidget *parent, int _orientation = HORIZONTAL, 
@@ -64,17 +66,21 @@ public:
   virtual void resizeEvent(QResizeEvent *);
 
   /**
-    * Adds a new @ref QPushButton.  If noexpand is FALSE, the width
+    * Add a new @ref QPushButton.  
+    *
+    * @param noexpand If @p noexpand is @p false, the width
     * of the button is adjusted to fit the other buttons (the maximum
-    * of all buttons is taken). If noexpand is TRUE, the width of this
+    * of all buttons is taken). If @p noexpand @p true, the width of this
     * button will be set to the minimum width needed for the given text).
     *
-    * @return a pointer to the new button.
+    * @return A pointer to the new button.
     */
   QPushButton *addButton(const QString& text, bool noexpand = FALSE);
 
   /**
-    * This adds a stretch to the buttonbox. @ref QBoxLayout for details.
+    * Add a stretch to the buttonbox. 
+    *
+    * @see QBoxLayout for details.
     * Can be used to separate buttons (i.e. if you add the buttons "OK",
     * "Cancel", add a stretch and then add the button "Help", "OK" and
     * "Cancel" will be left-aligned (or top-aligned for vertical) while
@@ -83,7 +89,7 @@ public:
   void addStretch(int scale = 1);
 
   /**
-    * This function must be called ONCE after all buttons have been
+    * This function must be called @bf once after all buttons have been
     * inserted. It will start layout control.
     */
   void layout();

@@ -191,11 +191,11 @@ private:
 };
 
 /**
- * The KKeyChooser widget is used for configuring dictionaries of key/action
+ * Configure dictionaries of key/action
  * associations for KAccel and KGlobalAccel.
  *
  * The class takes care of all aspects of configuration, including handling key
- * conflicts internally. Connect to the allDefault slot if you want to set all
+ * conflicts internally. Connect to the @ref allDefault() slot if you want to set all
  * configurable keybindings to their default values.
  * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
  * @see KKeyDialog
@@ -211,6 +211,11 @@ public:
 
   enum { NoKey = 1, DefaultKey, CustomKey };
 	
+  /**
+   * Constructor.
+   *
+   * @param aKeyDict A dictionary (@ref QDict) of key definitons.
+   **/
   KKeyChooser( QDict<KKeyEntry>* aKeyDict, QWidget* parent = 0,
 	       bool check_against_std_keys = false );
   ~KKeyChooser();
@@ -219,12 +224,20 @@ public:
   QDictIterator<KKeyEntry>* aKeyIt;
 
 signals:
-
+  /**
+   * Emitted when a key definition has been changed.
+   **/
   void keyChange();
 
 public slots:
 
+    /**
+     * Set all keys to their default values (bindings).
+     **/
   void allDefault();
+  /** 
+   * Synchronize the viewed split list with the currently used key codes.
+   **/
   void listSync();
 
 protected slots:

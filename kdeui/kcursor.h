@@ -20,6 +20,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1998/11/30 00:12:56  granroth
+ * Updated KCursor to mimic all of Qt's cursors.  It would be a good idea
+ * for all apps to start using, say "KCursor::arrowCursor" instead of just
+ * "arrowCursor" so that when we have themes, the code won't have to change.
+ *
  * Revision 1.1  1998/11/28 06:30:59  granroth
  * Added KCursor -- a simple wrapper around QCursor allowing for "themable"
  * cursors.  Currently, it only supports a 'handCursor'.
@@ -47,79 +52,83 @@ class KCursor
 {
 public:
 	/**
-	 * Constructor.  Does not do anything so far
-	 */
+	 * Constructor.  
+	 *
+	 * Does not do anything so far.
+	 **/
 	KCursor();
 
 	/**
-	 * Static function returning the proper hand cursor according to
-	 * the current GUI style.
+	 * Retrieve the proper hand cursor according to
+	 * the current GUI style (static function).
 	 */
 	static QCursor handCursor();
 
 	/**
-	 * Static function returning the proper arrow cursor according to
-	 * the current GUI style.
+	 * Retrieve the proper arrow cursor according to
+	 * the current GUI style (static function).
 	 */
 	static QCursor arrowCursor();
 
 	/**
-	 * Static function returning the proper up arrow cursor according to
-	 * the current GUI style.
+	 * Retrieve the proper up arrow cursor according to
+	 * the current GUI style (static function).
 	 */
 	static QCursor upArrowCursor();
 
 	/**
-	 * Static function returning the proper cross-hair cursor according to
-	 * the current GUI style.
+	 * Retrieve the proper cross-hair cursor according to
+	 * the current GUI style (static function).
 	 */
 	static QCursor crossCursor();
 
 	/**
-	 * Static function returning the proper hourglass cursor according to
-	 * the current GUI style.
+	 * Retrieve the proper hourglass cursor according to
+	 * the current GUI style (static function).
 	 */
 	static QCursor waitCursor();
 
 	/**
-	 * Static function returning the proper text cursor according to
-	 * the current GUI style.
+	 * Retrieve the proper text cursor according to
+	 * the current GUI style (static function).
 	 */
 	static QCursor ibeamCursor();
 
 	/**
-	 * Static function returning the proper vertical resize cursor
-	 * according to the current GUI style.
+	 * Retrieve the proper vertical resize cursor
+	 * according to the current GUI style (static function).
 	 */
 	static QCursor sizeVerCursor();
 
 	/**
-	 * Static function returning the proper horizontal resize cursor
-	 * according to the current GUI style.
+	 * Retrieve the proper horizontal resize cursor
+	 * according to the current GUI style (static function).
 	 */
 	static QCursor sizeHorCursor();
 
 	/**
-	 * Static function returning the proper diagonal resize (/) cursor
-	 * according to the current GUI style.
+	 * Retrieve the proper diagonal resize (/) cursor
+	 * according to the current GUI style (static function).
 	 */
 	static QCursor sizeBDiagCursor();
 
 	/**
-	 * Static function returning the proper diagonal resize (\) cursor
-	 * according to the current GUI style.
+	 * Retrieve the proper diagonal resize (\) cursor
+	 * according to the current GUI style (static function).
 	 */
 	static QCursor sizeFDiagCursor();
 
 	/**
-	 * Static function returning the proper all directions resize cursor
-	 * according to the current GUI style.
+	 * Retrieve the proper all-directions resize cursor
+	 * according to the current GUI style (static function).
 	 */
 	static QCursor sizeAllCursor();
 
 	/**
-	 * Static function returning a blank or invisible cursor
+	 * Retrieve a blank or invisible cursor (static function).
 	 */
 	static QCursor blankCursor();
 };
 #endif // _KCURSOR_H
+
+

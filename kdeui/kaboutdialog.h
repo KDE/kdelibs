@@ -224,6 +224,7 @@ class KAboutContributor : public QFrame
 
 /**
  * KAboutWidget is the main widget for KAboutDialog.
+ *
  * It has a minimum size set.
  */
 class KAboutWidget : public QWidget
@@ -294,8 +295,10 @@ protected:
 };
 
 /**
- * KAboutDialog is a @ref KDialogBase with predefined main widget.
- * Being a KDialogBase it uses your application wide settings for KDialogBase
+ * A @ref KDialogBase with predefined main widget.
+ *
+ * Being a @ref KDialogBase it uses your application wide settings
+ * for @ref KDialogBase
  * objects (base frame tiles, main frame tiles etc).
  * To use it, simply create a KAboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
@@ -344,11 +347,21 @@ class KAboutDialog : public KDialogBase
   public:
     /**
      * The standard Qt constructor (Constructor I).
+     *
+     * Add components with the methods:
+     *  @ref setLogo(), @ref setAuthor(), @ref setMaintainer(), 
+     *   @ref addContributor(), or @ref setVersion().
+     * The dialog will be laid out automatically.
      */
     KAboutDialog( QWidget *parent=0, const char *name=0, bool modal=true );
 
    /**
     * The extended constructor. (Constructor II).
+    *
+    * Add components with the methods:
+    *  @ref setTitle(), @ref setImage(), @ref setImageBackgroundColor(), 
+    *  @ref setImageFrame(), @ref setProduct(), @ref addTextPage(), 
+    *  @ref addContainerPage(), @ref addContainer(), or @ref addPage().
     *
     * @param dialogLayout Use a mask of @ref LayoutType flags.
     * @param caption The dialog caption. The text you specify is prepended
@@ -375,24 +388,28 @@ class KAboutDialog : public KDialogBase
 		  const QString &user3 = QString::null );
 
   /**
-   * Adjust the dialog. You can call this method after you have set up all
-   * the contents but it is not required. It is done automaticaly when
-   * @ref show is executed.
+   * Adjust the dialog. 
+   *
+   * You can call this method after you have set up all
+   * the contents but it is not required. It is done automatically when
+   * @ref show() is executed.
    */
   void adjust();
 
   /**
-   * Use this method to make a modless (modal = false in constructor)
-   * visible. If you reimplmement this method make sure you run it
-   * in the new method (i.e., KAboutDialog::show()). Reimplemented
-   * from &ref KDialogBase.
+   * Make a modeless (modal = false in constructor) dialog visible.
+   *
+   * If you reimplmement this method make sure you run it
+   * in the new method (i.e., @ref show()). Reimplemented
+   * from @ref KDialogBase.
    */
   virtual void show( void );
 
   /**
-   * Use this method to make a modless (modal = false in constructor)
-   * visible. If you reimplmement this method make sure you run it
-   * in the new method (i.e., KAboutDialog::show( parent )).
+   * Make a modless (modal = false in constructor) dialog visible.
+   *
+   * If you reimplmement this method make sure you run it
+   * in the new method (i.e., @ref show( parent )).
    *
    * @param centerParent Center the dialog with respect to this widget.
    */
@@ -400,7 +417,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Sets a title (not caption) in the uppermost area of the dialog
+   * Set a title (not caption) in the uppermost area of the dialog
    *
    * @param title Title string.
    */
@@ -408,8 +425,8 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Defines an image to be shown in the dialog. The position is dependent
-   * on the dialogLayout in the constructor
+   * Define an image to be shown in the dialog. The position is dependent
+   * on the @p dialogLayout in the constructor
    *
    * @param fileName Path to image file.
    */
@@ -417,7 +434,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * The image has a minimum size, but is centered within a an area if the
+   * The image has a minimum size, but is centered within an area if the
    * dialog box is enlarged by the user. You set the background color
    * of the area with this method.
    *
@@ -427,22 +444,22 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Enables or disables a frame around the image. The frame is by default
-   * enables in the constructor
+   * Enable or disable a frame around the image. The frame is, by default,
+   * enabled in the constructor
    *
-   * @param state True enables the frame
+   * @param state A value of @p true enables the frame
    */
   void setImageFrame( bool state );
 
   /**
    * (Constructor II only)
-   * Prints the application name, KDE version, author, a copyright sign
+   * Print the application name, KDE version, author, a copyright sign
    * and a year string. To the left of the text the standard application
    * icon is displayed.
    *
-   * @param appName The application name
-   * @param version Application version
-   * @param author One or more authors
+   * @param appName The application name.
+   * @param version Application version.
+   * @param author One or more authors.
    * @param year A string telling when the application was made.
    */
   void setProduct( const QString &appName, const QString &version,
@@ -450,40 +467,43 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Adds a text page to a tab box. The text can be regular text or
-   * rich text. The rich text can contain urls and mail links
+   * Add a text page to a tab box. The text can be regular text or
+   * rich text. The rich text can contain URLs and mail links.
    *
-   * @param title Tab name
-   * @param text The text to display
-   * @param richText Set this to True if 'text' is rich text.
-   * @param numLines The text area height will be ajusted so that this
-   *        is the minimum lines of text that are visible.
+   * @param title Tab name.
+   * @param text The text to display.
+   * @param richText Set this to @p true if 'text' is rich text.
+   * @param numLines The text area height will be adjusted so that this
+   *        is the minimum number of lines of text that are visible.
+   * @return The frame which contains the page.
    */
   QFrame *addTextPage( const QString &title, const QString &text,
                        bool richText=false, int numLines=10 );
 
   /**
    * (Constructor II only)
-   * Adds a container to a tab box. You can add text and images to a
+   * Add a container to a tab box. You can add text and images to a
    * container.
    *
-   * @param title Tab name
+   * @param title Tab name.
    * @param childAlignment Specifies how the clildren of the container are
    *        aligned with respect to the container.
    * @param innerAlignment Specifies how the clildren are aligned with
    *        respect to each other.
+   * @return The new container.
    */
   KAboutContainer *addContainerPage( const QString &title,
     int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
 
   /**
    * (Constructor II only)
-   * Adds a container. You can add text and images to a container.
+   * Add a container. You can add text and images to a container.
    *
    * @param childAlignment Specifies how the clildren of the container are
    *        aligned with respect to the container.
    * @param innerAlignment Specifies how the clildren are aligned with
    *        respect to each other.
+   * @return The new container.
    */
   KAboutContainer *addContainer( int childAlignment, int innerAlignment );
 
@@ -492,6 +512,7 @@ class KAboutDialog : public KDialogBase
    * Adds an empty page to a tab box.
    *
    * @param title Tab name
+   * @return The new page.
    */
   QFrame *addPage( const QString &title );
 
@@ -504,14 +525,14 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor I only)
-   * Set the authors name and email address.
+   * Set the author's name and email address.
    */
   void setAuthor(const QString& name, const QString& email,
 		 const QString& url, const QString& work);
 
   /**
    * (Constructor I only)
-   * Set the maintainers name and email address.
+   * Set the maintainer's name and email address.
    */
   void setMaintainer(const QString& name, const QString& email,
 		     const QString& url, const QString& work);
@@ -530,8 +551,8 @@ class KAboutDialog : public KDialogBase
   void setVersion(const QString& name);
 
   /**
-   * Creates a modal dialog with an image in the upper area with an
-   * url link below.
+   * Creates a modal dialog with an image in the upper area with a
+   * URL link below.
    */
   static void imageURL( QWidget *parent, const QString &caption,
 			  const QString &path, const QColor &imageColor,
