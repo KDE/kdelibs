@@ -1358,6 +1358,7 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
     if (mResizeCol)
     {
       mResizeCol = FALSE;
+      mMouseCol = -1;
       setCursor(arrowCursor);
     }
   }
