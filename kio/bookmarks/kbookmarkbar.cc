@@ -216,18 +216,6 @@ void KBookmarkBar::slotBookmarkSelected()
     m_pOwner->openBookmarkURL( sender()->property("url").toString() );
 }
 
-static bool fillinButtonInfo(KToolBarButton* &b, KToolBar* &tb, KAction* &a, QPoint pos)
-{
-    QWidget *c = a->container(0);
-    b = dynamic_cast<KToolBarButton*>(c->childAt(pos));
-    if (b && a->isPlugged(c, b->id()))
-    {
-        tb = dynamic_cast<KToolBar*>(c);
-        return true;
-    }
-    return false;
-}
-
 static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
                            KToolBarButton* &b, KToolBar* &tb, KAction* &a, int &index)
 {
@@ -238,8 +226,14 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     for (; (*it); ++it )
     {
         a = (*it);
-        if (found = fillinButtonInfo(b, tb, a, pos))
+        QWidget *c = a->container(0);
+        b = dynamic_cast<KToolBarButton*>(c->childAt(pos));
+        if (b && a->isPlugged(c, b->id()))
+        {
+            tb = dynamic_cast<KToolBar*>(c);
+            found = true;
             break;
+        }
     }
     /*
     if (found)
@@ -248,12 +242,13 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
         QRect r = b->geometry();
         if (pos.x() <= ((r.left() + r.right())/2) && index > 0)
         {
-            index--;
+            QPoint p(r.topLeft());
+            p.setX(p.x() - 5);
+            --it;
             a = (*it);
-            // TODO lookup in reverse
-            found = fillinButtonInfo(b, tb, a, pos);
+            found = fillinButtonInfo(b, tb, a, p);
             Q_ASSERT(found);
-            index = tb->itemIndex(b->id());
+            // index = tb->itemIndex(b->id());
         }
     }
     */
