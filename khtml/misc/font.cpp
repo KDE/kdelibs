@@ -82,7 +82,7 @@ int Font::width(const QString &str) const
     return 0;
 }
 
-void Font::drawText(QPainter *p, int x, int y, const QString &str, bool complex = false) const
+void Font::drawText(QPainter *p, int x, int y, const QString &str, bool complex) const
 {
 }
 
