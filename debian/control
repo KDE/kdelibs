@@ -29,8 +29,8 @@ Description: KDE core library documentation
 Package: kdelibs3-dev
 Architecture: any
 Section: devel
-Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< ${Source-Version})
-Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
+Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.0.1-0)
+Depends: kdelibs3 (>= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev | xlib6g-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, libaudiofile-dev, jade, sgml-base, docbook, docbook-stylesheets
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc, kdoc
 Provides: kdelibs-dev
