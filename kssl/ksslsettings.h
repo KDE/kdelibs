@@ -34,6 +34,11 @@ public:
   bool sslv3();
   bool tlsv1();
 
+  bool warnOnEnter() { return m_bWarnOnEnter; }
+  bool warnOnUnencrypted() { return m_bWarnOnUnencrypted; }
+  bool warnOnLeave() { return m_bWarnOnLeave; }
+  bool warnOnMixed() { return m_bWarnOnMixed; }
+
   QString getCipherList();
 
   void load();

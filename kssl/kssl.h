@@ -42,7 +42,17 @@ public:
 
   bool reconfig();
   void setAutoReconfig(bool ar);
+
+  /**
+   * Set a new KSSLSettings instance as the settings.
+   * This deletes the current instance of KSSLSettings.
+   */
   bool setSettings(KSSLSettings *settings);
+  /**
+   * @return the current settings instance
+   * One is built by the constructor, so this will never return 0L.
+   */
+  KSSLSettings * settings() { return m_cfg; }
 
   int connect(int sock);
 
