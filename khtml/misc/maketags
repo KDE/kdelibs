@@ -22,7 +22,6 @@
 #----------------------------------------------------------------------------
 #
 #  KDE HTML Widget -- Script to generate htmltags.c and htmltags.h
-#  $Id$
 #
 open IN, "htmltags.in"
   or die "Can't open in\n";
@@ -66,7 +65,11 @@ close out;
 print header "\n#endif\n";
 close header;
 
-system("/bin/sh", "-c", "gperf -a -L 'ANSI-C' -D -E -C -l -o -t -k '*' -NfindTag -Hhash_tag -Wwordlist_tag htmltags.gperf > htmltags.c");
+my $result = system("/bin/sh", "-c", "gperf -a -L 'ANSI-C' -D -E -C -l -o -t -k '*' -NfindTag -Hhash_tag -Wwordlist_tag htmltags.gperf > htmltags.c");
+if ($result) {
+  unlink "htmltags.c";
+  exit $result;
+}
 
 open(OUT, ">>htmltags.c");
 print OUT "\n\nstatic const char * const tagList[] = {\n";
@@ -86,5 +89,3 @@ print OUT "DOMString getTagName(unsigned short id)\n{\n";
 print OUT "    if(id > ID_CLOSE_TAG*2) id = ID_CLOSE_TAG+1;\n";
 print OUT "    return DOMString(tagList[id]);\n";
 print OUT "};\n";
-
-
