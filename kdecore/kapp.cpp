@@ -1687,6 +1687,11 @@ void KApplication::propagateSettings(SettingsCategory arg)
     QApplication::setAutoCopyToClipboard(b);
 #endif
 
+#ifdef QT_AUTO_COPY_TO_CLIPBOARD
+    b = config->readBoolEntry("AutoCopyToClipboard", false);
+    QApplication::setAutoCopyToClipboard(b);
+#endif
+
     emit settingsChanged(arg);
 }
 
