@@ -46,8 +46,8 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
-#if defined Q_WS_QX11 && ! defined K_WS_QTONLY
-#include <netwm.h> // schroder
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <netwm.h>
 #endif
 
 #include <stdlib.h>
@@ -270,7 +270,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
     assert ( !kapp->geometryArgument().isNull() );
     assert ( d->care_about_geometry );
 
-#if defined Q_WS_QX11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifndef Q_WS_QWS
     // FIXME: (E) Implement something similar for Qt Embedded (or decide we don't need it)
     int x, y;
@@ -519,7 +519,7 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 void KMainWindow::setPlainCaption( const QString &caption )
 {
     QMainWindow::setCaption( caption );
-#if defined Q_WS_QX11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifndef Q_WS_QWS
     NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
     info.setName( caption.utf8().data() );
