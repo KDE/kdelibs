@@ -17,22 +17,6 @@ int gethostname (char *Name, int Namelen);
 #endif  
 
 /*
- * This is an ugly little hack incase someone uses the inline keyword,
- * in a straight C file with AIX's xlc.
- */
-#ifdef __cplusplus
-#ifdef inline
-#undef inline
-#endif
-#endif
-:wq
-#ifndef __AIX32
-#ifndef __cplusplus
-#define inline __inline
-#endif
-#endif
-
-/*
  * jpeg.h needs HAVE_BOOLEAN, when the system uses boolean in system
  * headers and I'm too lazy to write a configure test as long as only
  * unixware is related
