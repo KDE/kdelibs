@@ -176,6 +176,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
     for (it = list.fromLast(); it != list.end(); it--) {
 
+      kdDebug() << "Parsing " << *it << endl;
       QFile aConfigFile( *it );
       // we can already be sure that this file exists
       aConfigFile.open( IO_ReadOnly );
