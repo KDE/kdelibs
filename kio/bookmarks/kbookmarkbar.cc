@@ -90,11 +90,8 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 {
     m_lstSubMenus.setAutoDelete( true );
 
-    if ( KBookmarkSettings::self()->m_advanced )
-    {
-        m_toolBar->setAcceptDrops( true );
-        m_toolBar->installEventFilter( this ); // for drops
-    }
+    m_toolBar->setAcceptDrops( true );
+    m_toolBar->installEventFilter( this ); // for drops
 
     dptr()->m_actions.setAutoDelete( true );
 
@@ -317,6 +314,7 @@ static QString handleToolbarDragMoveEvent(
         // FIXME - here we want to get the 
         // parent address of the bookmark 
         // bar itself and return that + "/0"
+        p->m_sepIndex = 0;
         goto skipact; 
     }
     else // (!b)
@@ -408,9 +406,6 @@ void KBookmarkBar::slotRMBActionRemove( int val )
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
 { RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
 
-void KBookmarkBar::slotRMBActionOpen( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
-
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
     if (dptr()->m_readOnly)
@@ -433,6 +428,7 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
             KPopupMenu *pm = new KPopupMenu;
             rmbSelf(this)->fillContextMenu( pm, dptr()->m_highlightedAddress, 0 );
             emit aboutToShowContextMenu( rmbSelf(this)->atAddress( dptr()->m_highlightedAddress ), pm );
+            rmbSelf(this)->fillContextMenu2( pm, dptr()->m_highlightedAddress, 0 );
             pm->popup( pt );
             mev->accept();
         }

@@ -115,7 +115,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     connect( _parentMenu, SIGNAL( aboutToShow() ),
              SLOT( slotAboutToShow() ) );
 
-    if ( KBookmarkSettings::self()->m_advanced )
+    if ( KBookmarkSettings::self()->m_contextmenu )
     {
       (void) _parentMenu->contextMenu();
       connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
@@ -255,27 +255,50 @@ void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int
 
   int id;
 
+  // binner:
+  // "Add Bookmark Here" when pointing at a bookmark looks strange and if you
+  // call it you have to close and reopen the menu to see an entry was added?
+  //
+  // TODO rename these, but, message freeze... umm...
+
   if (bookmark.isGroup()) {
     id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
-    contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
-    contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
   }
   else
   {
-    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
-    contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Copy Link Location" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
-    contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Open Bookmark" ), recv, SLOT(slotRMBActionOpen(int)) );
-    contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
   }
-  id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
-  contextMenu->setItemParameter( id, val );
+}
+
+void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, int val )
+{
+  KBookmark bookmark = atAddress(address);
+
+  int id;
+
+  if (bookmark.isGroup()) {
+    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
+    contextMenu->setItemParameter( id, val );
+    contextMenu->insertSeparator();
+    id = contextMenu->insertItem( i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
+    contextMenu->setItemParameter( id, val );
+    contextMenu->insertSeparator();
+    id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
+    contextMenu->setItemParameter( id, val );
+  }
+  else
+  {
+    id = contextMenu->insertItem( i18n( "Copy Link Location" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
+    contextMenu->setItemParameter( id, val );
+    contextMenu->insertSeparator();
+    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
+    contextMenu->setItemParameter( id, val );
+    contextMenu->insertSeparator();
+    id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
+    contextMenu->setItemParameter( id, val );
+  }
 }
 
 void RMB::slotRMBActionEditAt( int val )
@@ -352,14 +375,19 @@ void RMB::slotRMBActionRemove( int val )
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
   if (invalid(val)) { hidePopup(); return; }
 
+  KBookmark bookmark = atAddress( s_highlightedAddress );
+  bool folder = bookmark.isGroup();
+
   if (KMessageBox::warningYesNo(
-          m_parentMenu, "Are you sure you wish to remove this bookmark?",
-          "Bookmark Removal", i18n("Remove"), i18n("Cancel"))
+          m_parentMenu, 
+          folder ? i18n("Are you sure you wish to remove this bookmark folder?")
+                 : i18n("Are you sure you wish to remove this bookmark?"),
+          folder ? i18n("Bookmark Folder Removal")
+                 : i18n("Bookmark Removal"), 
+          i18n("Remove"), i18n("Cancel"))
         != KMessageBox::Yes
      )
     return;
-
-  KBookmark bookmark = atAddress( s_highlightedAddress );
 
   KBookmarkGroup parentBookmark = atAddress( m_parentAddress ).toGroup();
   parentBookmark.deleteBookmark( bookmark );
@@ -370,7 +398,7 @@ void RMB::slotRMBActionRemove( int val )
 
 void RMB::slotRMBActionCopyLocation( int val )
 {
-  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
+  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionCopyLocation" << s_highlightedAddress << endl;
   if (invalid(val)) { hidePopup(); return; }
 
   KBookmark bookmark = atAddress( s_highlightedAddress );
@@ -380,17 +408,6 @@ void RMB::slotRMBActionCopyLocation( int val )
     kapp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
                                 QClipboard::Clipboard );
   }
-}
-
-void RMB::slotRMBActionOpen( int val )
-{
-  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
-  if (invalid(val)) { hidePopup(); return; }
-
-  KBookmark bookmark = atAddress( s_highlightedAddress );
-  Q_ASSERT(!bookmark.isGroup());
-
-  m_pOwner->openBookmarkURL( bookmark.url().url() );
 }
 
 void RMB::hidePopup() {
@@ -403,8 +420,10 @@ void RMB::hidePopup() {
 
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
 {
-  RMB::begin_rmb_action(this); rmbSelf(this)->fillContextMenu(contextMenu, address, val);
-  emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu );
+  RMB::begin_rmb_action(this); 
+  rmbSelf(this)->fillContextMenu(contextMenu, address, val);
+  emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu);
+  rmbSelf(this)->fillContextMenu2(contextMenu, address, val);
 }
 
 void KBookmarkMenu::slotRMBActionEditAt( int val )
@@ -421,9 +440,6 @@ void KBookmarkMenu::slotRMBActionRemove( int val )
 
 void KBookmarkMenu::slotRMBActionCopyLocation( int val )
 { RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
-
-void KBookmarkMenu::slotRMBActionOpen( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 {
@@ -556,7 +572,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     addEditBookmarks();
 
-    if ( m_bAddBookmark && !KBookmarkSettings::self()->m_advanced )
+    if ( m_bAddBookmark && !KBookmarkSettings::self()->m_advancedaddbookmark )
       addNewFolder();
   }
 
@@ -661,7 +677,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     if ( m_parentMenu->count() > 0 )
       m_parentMenu->insertSeparator();
 
-    if ( KBookmarkSettings::self()->m_advanced )
+    if ( KBookmarkSettings::self()->m_quickactions )
     {
       KActionMenu * actionMenu = new KActionMenu( i18n("Quick Actions"), m_actionCollection, 0L );
       fillContextMenu( actionMenu->popupMenu(), m_parentAddress, 1 );

@@ -369,7 +369,17 @@ void KBookmark::updateAccessMetadata()
     domtext = get_or_create_text(item);
     domtext.setData(QString::number(timet));
 
-    // still to do - time_modified
+    item = cd_or_create(subnode, "visit_count"); // TODO use spec'ed name
+    domtext = get_or_create_text(item);
+    QString countStr = domtext.data();
+    bool ok;
+    int currentCount = countStr.toInt(&ok);
+    if (!ok)
+        currentCount = 0;
+    currentCount++;
+    domtext.setData(QString::number(currentCount));
+
+    // TODO - for 3.3 - time_modified
 }
 
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)

@@ -154,6 +154,8 @@ public:
      */
     void emitChanged( KBookmarkGroup & group );
 
+    void emitConfigChanged();
+
     /**
      * @return true if the NS bookmarks should be dynamically shown
      *         in the toplevel kactionmenu
@@ -241,6 +243,8 @@ k_dcop:
      * a small change (new bookmark or new folder).
      */
     ASYNC notifyChanged( QString groupAddress );
+
+    ASYNC notifyConfigChanged();
 
 signals:
     /**

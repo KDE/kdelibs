@@ -182,7 +182,9 @@ public:
 class KBookmarkSettings 
 {
 public:
-  bool m_advanced;
+  bool m_advancedaddbookmark;
+  bool m_contextmenu;
+  bool m_quickactions;
   bool m_filteredtoolbar;
   static KBookmarkSettings *s_self;
   static void readSettings();
@@ -197,12 +199,12 @@ public:
   bool invalid( int val );
   KBookmark atAddress(const QString & address);
   void fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val );
+  void fillContextMenu2( QPopupMenu* contextMenu, const QString & address, int val );
   void slotRMBActionEditAt( int val );
   void slotRMBActionProperties( int val );
   void slotRMBActionInsert( int val );
   void slotRMBActionRemove( int val );
   void slotRMBActionCopyLocation( int val );
-  void slotRMBActionOpen( int val );
   void hidePopup();
 public:
   QObject *recv;

@@ -85,7 +85,6 @@ public slots:
      */
     void slotRMBActionRemove( int );
     void slotRMBActionInsert( int );
-    void slotRMBActionOpen( int );
     void slotRMBActionCopyLocation( int );
     void slotRMBActionEditAt( int );
     void slotRMBActionProperties( int );

@@ -97,6 +97,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
     }
     
     connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
+    connectDCOPSignal(0, objId(), "bookmarkConfigChanged()", "notifyConfigChanged()", false);
 }
 
 KBookmarkManager::~KBookmarkManager()
@@ -435,7 +436,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
     if ( title.isEmpty() )
         title = url;
 
-    if ( KBookmarkSettings::self()->m_advanced ) 
+    if ( KBookmarkSettings::self()->m_advancedaddbookmark) 
     {
         KBookmarkEditDialog dlg( title, url, this, KBookmarkEditDialog::InsertionMode );
         if ( dlg.exec() != KDialogBase::Accepted )
@@ -473,6 +474,11 @@ void KBookmarkManager::emitChanged( KBookmarkGroup & group )
     //emit changed( group );
 }
 
+void KBookmarkManager::emitConfigChanged()
+{
+    emitDCOPSignal("bookmarkConfigChanged()", QByteArray());
+}
+
 void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
 {
     if (!m_update) return;
@@ -488,6 +494,13 @@ void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
     KBookmarkGroup tbGroup = toolbar();
     if (!tbGroup.isNull() && !tbGroup.groupAddress().isEmpty())
         emit changed( tbGroup.groupAddress(), caller );
+}
+
+void KBookmarkManager::notifyConfigChanged() // DCOP call
+{
+    kdDebug() << "reloaded bookmark config!" << endl;
+    KBookmarkSettings::self()->readSettings();
+    parse(); // reload, and thusly recreate the menus
 }
 
 void KBookmarkManager::notifyChanged( QString groupAddress ) // DCOP call
@@ -656,7 +669,13 @@ void KBookmarkSettings::readSettings()
 {
    KConfig config("kbookmarkrc", false, false);
    config.setGroup("Bookmarks");
-   s_self->m_advanced = config.readBoolEntry("AdvancedAddBookmark", false);
+
+   // add bookmark dialog usage - no reparse
+   s_self->m_advancedaddbookmark = config.readBoolEntry("AdvancedAddBookmarkDialog", false);
+
+   // these three alter the menu, therefore all need a reparse
+   s_self->m_contextmenu = config.readBoolEntry("ContextMenuActions", true);
+   s_self->m_quickactions = config.readBoolEntry("QuickActionSubmenu", false);
    s_self->m_filteredtoolbar = config.readBoolEntry("FilteredToolbar", false);
 }
 
