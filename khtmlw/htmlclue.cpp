@@ -2800,18 +2800,19 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	// add a separator
 	else if ( obj->isSeparator() )
 	{
-	    if ( obj->getAscent() > a )
-		a = obj->getAscent();
-
-	    if ( obj->getDescent() > d )
-		d = obj->getDescent();
-
 	    obj->setXPos( w );
 
 	    // skip a space at the start of a line
 	    if ( w != lmargin )
+	    {
 		w += obj->getWidth();
+	        if ( obj->getAscent() > a )
+	            a = obj->getAscent();
 
+	    	if ( obj->getDescent() > d )
+		    d = obj->getDescent();
+	    }
+	    
 	    obj = obj->next();
 	}
 	// a left or right aligned object is not added in this line.  It

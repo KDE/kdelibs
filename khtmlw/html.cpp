@@ -2159,8 +2159,18 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
             }
 	}
 
-	HTMLVSpace *vs = new HTMLVSpace( 1, clear );
-
+	HTMLVSpace *vs; 
+	if (vspace_inserted)
+	{
+		vs = new HTMLVSpace( 
+				HTMLFont::pointSize( settings->fontBaseSize ),
+				clear 
+			);
+	}
+	else
+	{
+		vs = new HTMLVSpace(0, clear);
+	}
 	if (flow == 0)
 	{
 	    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
@@ -2168,8 +2178,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    _clue->append( flow );
 	}
 	flow->append( vs );
-
-	vspace_inserted = false;
+	vspace_inserted = true;
     }
     else if ( strncmp(str, "b", 1 ) == 0 )
     {
