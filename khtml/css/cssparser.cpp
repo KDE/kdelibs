@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
@@ -971,7 +971,7 @@ public:
 
     bool matchFontFamily( QString *ffamily )
     {
-#if CSS_DEBUG
+#ifdef CSS_DEBUG
     kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl;
 #endif
       QStringList t;
