@@ -905,7 +905,7 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
   gl->addWidget (l, 1, 2);
 
   if (isDir)
-    l = new QLabel( i18n("Enter"), gb );
+    l = new QLabel( i18n("Enter directory", "Enter"), gb );
   else
     l = new QLabel( i18n("Exec"), gb );
   // GJ: Add space between normal and special modes
