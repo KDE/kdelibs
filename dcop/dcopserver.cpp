@@ -786,7 +786,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 
 int main( int argc, char* argv[] )
 {
-
+    
   // check if we are already running
   QCString fName(::getenv("HOME"));
   fName += "/.DCOPserver";
@@ -795,17 +795,18 @@ int main( int argc, char* argv[] )
     exit(0);
   }
 
-  QApplication a( argc, argv );
+  QApplication a( argc, argv, FALSE ); // FALSE since we do not need X
+  
   InstallIOErrorHandler();
   DCOPServer server;
 
-	QApplication::flushX();
+  QApplication::flushX();
   if (fork() > 0)
     exit(0); // I am the parent
 
   setsid();
 
-	QApplication::flushX();
+  QApplication::flushX();
   if (fork() > 0)
     exit(0); // get rid of controlling terminal
 
