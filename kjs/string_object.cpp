@@ -239,8 +239,17 @@ Completion StringProtoFunc::execute(const List &args)
   case Match:
   case Search:
     u = s.value();
-    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass) {
+    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass)
       s2 = a0.get("source").toString();
+    else if (a0.isA(StringType))
+      s2 = a0.toString();
+    else
+    {
+      printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
+      result = Undefined(); // No idea what to do here
+      break;
+    }
+    {
       RegExp reg(s2.value());
       UString mstr = reg.match(u, -1, &pos);
       if (id == Search) {
@@ -253,10 +262,6 @@ Completion StringProtoFunc::execute(const List &args)
       }
       /* TODO return an array, with the matches, etc. */
       result = String(mstr);
-    } else
-    {
-      printf("Match/Search. Argument is not a RegExp - returning Undefined\n");
-      result = Undefined(); // No idea what to do here
     }
     break;
   case Replace:
