@@ -305,3 +305,28 @@ The root items are not shown in a tree fashion by default. to get this,
 use QListView::setDecorativeRoot(true). 
 
 Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
+
+/////////////////////////////////////////////////////////////////////////
+// * KMsgBox
+
+KMsgBox has been superceded by QMessageBox.  Most of the original
+concerns with QMessageBox which lead to KMsgBox's creation have been
+resolved in Qt 2.0.  Here are the things you need to be concerned with
+when porting:
+
+- KMsgBox had return codes starting with 1 for the first button, 2 for
+  the second, and so on.  QMessageBox is 0-based, and thus the first
+  button will have a return code of 0.
+- Do not use QMessageBox::message.  It is deprecated.  Use 
+  QMessageBox::info for bits of information, QMessageBox::warning when
+  something has failed but the program will continue to work fine, and
+  as a last resort, use QMessageBox::critical when very bad errors have
+  occurred.
+- You cannot rely on QMessageBox to i18n text for the buttons.  Therefore,
+  a simple information text box with an OK button should be coded as 
+  follows:
+
+  QMessageBox::information(this, i18n("Information"),
+	 	i18n("This is the text that will appear"
+		     " in the message box."), i18n("&OK"));
+
