@@ -156,4 +156,25 @@ public:
   static QString selectedAddress( QListView* );
 };
 
+class KXBELBookmarkImporter : public QObject, private KBookmarkGroupTraverser
+{
+    Q_OBJECT
+public:
+    KXBELBookmarkImporter( const QString & fileName );
+    ~KXBELBookmarkImporter() {}
+    void parse();
+signals:
+    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
+    void newFolder( const QString & text, bool open, const QString & additionalInfo );
+    void newSeparator();
+    void endFolder();
+private:
+    virtual void visit(const KBookmark &);
+    virtual void visitEnter(const KBookmarkGroup &);
+    virtual void visitLeave(const KBookmarkGroup &);
+protected:
+    QString m_fileName;
+    KBookmarkManager *m_manager;
+};
+
 #endif

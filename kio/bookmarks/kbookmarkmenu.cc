@@ -789,6 +789,36 @@ void KBookmarkMenuNSImporter::openNSBookmarks()
   openBookmarks( KNSBookmarkImporter::netscapeBookmarksFile(), "netscape" );
 }
 
+KXBELBookmarkImporter::KXBELBookmarkImporter( const QString & fileName ) 
+   : m_fileName(fileName)
+{
+   m_manager = KBookmarkManager::managerForFile(m_fileName);
+}
+
+void KXBELBookmarkImporter::parse() 
+{
+   KBookmarkGroup root = m_manager->root();
+   traverse(root);
+}
+
+void KXBELBookmarkImporter::visit(const KBookmark &bk) 
+{
+  if (bk.isSeparator()) 
+    emit newSeparator();
+  else 
+    emit newBookmark(bk.text(), bk.url().url().utf8(), "");
+}
+
+void KXBELBookmarkImporter::visitEnter(const KBookmarkGroup &grp)
+{
+  emit newFolder(grp.text(), false, "");
+}
+   
+void KXBELBookmarkImporter::visitLeave(const KBookmarkGroup &)
+{
+  emit endFolder();
+}
+
 void KBookmarkMenuNSImporter::openBookmarks( const QString location, const QString &type )
 {
   mstack.push(m_menu);
@@ -803,6 +833,12 @@ void KBookmarkMenuNSImporter::openBookmarks( const QString location, const QStri
     KNSBookmarkImporter importer( location );
     connectToImporter(importer);
     importer.parseNSBookmarks(true);
+  }
+  else if (type == "xbel")
+  {
+    KXBELBookmarkImporter importer( location );
+    connectToImporter(importer);
+    importer.parse();
   }
 }
 
