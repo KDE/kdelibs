@@ -55,7 +55,7 @@ namespace KJS {
   public:
     WindowFunc(const Window *w, int i) : window(w), id(i) { };
     Completion tryExecute(const List &);
-    enum { Alert, Confirm, Open, SetTimeout };
+    enum { Alert, Confirm, Prompt, Open, SetTimeout };
     static void setStatusBarText(KHTMLPart *, const QString &);
   private:
     const Window *window;

@@ -18,6 +18,7 @@
  */
 
 #include <qtimer.h>
+#include <qinputdialog.h>
 #include <dom_string.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -44,6 +45,8 @@ KJSO Window::tryGet(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
     return Function(new WindowFunc(this, WindowFunc::Confirm));
+  else if (p == "prompt")
+    return Function(new WindowFunc(this, WindowFunc::Prompt));
   else if (p == "open")
     return Function(new WindowFunc(this, WindowFunc::Open));
   else if (p == "setTimeout")
@@ -83,7 +86,7 @@ void Window::installTimeout(const UString &handler, int t)
 Completion WindowFunc::tryExecute(const List &args)
 {
   KJSO result;
-  QString str;
+  QString str, str2;
   int i;
 
   KHTMLView *widget = window->widget;
@@ -100,6 +103,14 @@ Completion WindowFunc::tryExecute(const List &args)
     i = KMessageBox::warningYesNo(widget, str, "JavaScript",
 				  i18n("OK"), i18n("Cancel"));
     result = Boolean((i == KMessageBox::Yes));
+    break;
+  case Prompt:
+    if (args.size() >= 2)
+      str2 = QInputDialog::getText("Konqueror: Prompt", str,
+				   args[1].toString().value().qstring());
+    else
+      str2 = QInputDialog::getText("Konqueror: Prompt", str);
+    result = String(UString((UChar*)str2.unicode(), str2.length()));
     break;
   case Open:
   {
