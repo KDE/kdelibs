@@ -1262,13 +1262,22 @@ void KTabListBox::paintEvent(QPaintEvent*)
       paint.setWorldMatrix(matrix, FALSE);
       paint.setClipRect(clipR);
       colList[colShowList[i]]->paint(&paint);
-      qDrawShadePanel(&paint, 0, 0, w, labelHeight, 
-			KTabListBoxInherited::colorGroup());
+      qDrawShadeLine(&paint, w, 0, w, labelHeight,
+                     KTabListBoxInherited::colorGroup());
     }
     else colList[colShowList[i]]->hideCheckButton();
     matrix.translate(w, 0);
     x += w;
   }
+  paint.resetXForm();
+  paint.setClipping (false);
+  if ( style() == MotifStyle )
+    qDrawShadePanel(&paint, 0, 0, width(), height(),
+                    KTabListBoxInherited::colorGroup(), false, 1);
+  else
+    qDrawShadeRect (&paint, 0, 0, width(), height(),
+                    KTabListBoxInherited::colorGroup(), true, 1);
+
   paint.end();  
 }
 
