@@ -542,11 +542,16 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 
 	// Detect width and height
 	QDomElement rootElement = rootNode.toElement();
+
+	d->width = width;
+
 	if(rootElement.hasAttribute("width"))
 		d->width = d->helper->toPixel(rootElement.attribute("width"), true);
 	else
 		d->width = d->helper->toPixel("100%", true);
-	
+
+	d->height = height;
+
 	if(rootElement.hasAttribute("height"))
 		d->height = d->helper->toPixel(rootElement.attribute("height"), false);
 	else
@@ -562,16 +567,16 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	if(rootElement.hasAttribute("viewBox"))
 	{
 		QStringList points = QStringList::split(' ', rootElement.attribute("viewBox").simplifyWhiteSpace());
-		
+
 		float w = points[2].toFloat();
 		float h = points[3].toFloat();
-		
+
 		double vratiow = d->width / w;
 		double vratioh = d->height / h;
 
 		d->painter->worldMatrix()->scale(vratiow, vratioh);
 	}
-	
+
 	// Fit into 'width' and 'height'
 	// FIXME: Use an aspect ratio
 	double ratiow = width / d->width;
