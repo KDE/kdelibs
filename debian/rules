@@ -107,6 +107,7 @@ binary-arch:  build
 	cp debian/libarts.override debian/tmp/usr/share/lintian/overrides/libarts
 	cp debian/libarts-alsa.override debian/libarts-alsa/usr/share/lintian/overrides/libarts-alsa
 	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
+	cp debian/libkmid.override debian/libkmid/usr/share/lintian/overrides/libkmid
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
