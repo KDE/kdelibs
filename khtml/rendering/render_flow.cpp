@@ -861,7 +861,7 @@ void RenderFlow::calcMinMaxWidth()
 		    noBreak = false;
 		}
 		else	
-		{
+		{	
 		    int w = child->minWidth();
 		    if(inlineMin < w) inlineMin = w;
 		    w = child->maxWidth();

@@ -56,14 +56,14 @@ void RenderImage::setPixmap( const QPixmap &p )
     // Image dimensions have been changed, recalculate layout
     //kdDebug(300) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
-    {
-	//kdDebug(300) << "Image: newSize" << endl;
+    {	
+//    	kdDebug(300) << "Image: newSize" << p.width() << endl;
 	pixmap = p;
 	setLayouted(false);
 	setMinMaxKnown(false);
 	layout();
 	// the updateSize() call should trigger a repaint too
-	containingBlock()->updateSize();
+	updateSize();	
 	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
     }
     else
@@ -153,11 +153,11 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 
 void RenderImage::calcMinMaxWidth()
 {
-    if(minMaxKnown()) return;
+//    if(minMaxKnown()) return;
 #ifdef DEBUG_LAYOUT
     kdDebug(300) << "Image::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
-    setMinMaxKnown();
+//    setMinMaxKnown();
 
     // contentWidth
     Length w = m_style->width();
@@ -192,8 +192,10 @@ void RenderImage::calcMinMaxWidth()
 	    // NO! Images don't scale unless told to. Ever.  -AKo
 	    //if(availableWidth < width) width = availableWidth;
 	    m_minWidth = m_width;
-	    //kdDebug(300) << "IMG Width changed, width=" << width << endl;
+	    // kdDebug(300) << "IMG Width changed, width=" << m_width << endl;
 	}
+	else
+	    m_minWidth = m_width;
     }
     m_maxWidth = m_minWidth;
 

@@ -1540,19 +1540,17 @@ void RenderTableCell::calcMinMaxWidth()
     kdDebug(300) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    if(minMaxKnown()) return;
+    //if(minMaxKnown()) return;
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
 
     RenderFlow::calcMinMaxWidth();
-//    m_minWidth+=table->cellPadding()*2;
-//    m_maxWidth+=table->cellPadding()*2;
 
     if(nWrap && m_style->width().type!=Fixed) m_minWidth = m_maxWidth;
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
-        table->addColInfo(this);
+        table->addColInfo(this);	
 
 }
 
