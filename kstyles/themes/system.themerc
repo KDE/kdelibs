@@ -226,17 +226,21 @@ Name=System
 Name[cs]=Systém
 Name[eo]=Sistemo
 Name[fi]=Järjestelmä
+Name[fr]=Système
 Name[hu]=Rendszer
 Name[ja]=システム
+Name[ro]=Sistem
 Name[sl]=Sistem
 Comment=System themed style
 Comment[cs]=Systémové téma
 Comment[de]=System-Design
 Comment[eo]=Sistema stilo kun temoj
 Comment[fi]=Järjestelmän teemoitetty tyyli
+Comment[fr]=Style Système avec thème
 Comment[hu]=Rendszer téma stílus
 Comment[ja]=システムテーマスタイル
 Comment[no]=System-stil med tema
+Comment[ro]=Stil sistem cu temă
 Comment[sl]=Sistemski tematski slog
 
 [General]

@@ -151,17 +151,21 @@ Name[cs]=Mramor
 Name[de]=Marmor
 Name[eo]=Marmoro
 Name[fi]=Marmori
+Name[fr]=Marbre
 Name[hu]=Márvány
 Name[ja]=マーブル
+Name[ro]=Marmură
 Name[sl]=Frnikola
 Comment=Light marble themed style
 Comment[cs]=Téma světlého mramoru
 Comment[de]=Helles Marmordesign
 Comment[eo]=Hela marmoro
 Comment[fi]=Vaalealla marmorilla teemoitetty tyyli
+Comment[fr]=Style avec thème marbre clair
 Comment[hu]=Halvány márvány téma stílus
 Comment[ja]=ライトマーブルテーマスタイル
 Comment[no]=Lettmarble-stil med tema
+Comment[ro]=Stil temă marmură luminoasă
 Comment[sl]=Tematski slog svetlih frnikol
 
 [General]

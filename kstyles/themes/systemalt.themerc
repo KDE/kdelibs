@@ -230,6 +230,7 @@ Name[fi]=Järjestelmä-Sarja
 Name[hu]=Rendszer-sorozat
 Name[ja]=システムシリーズ
 Name[no]=System-serier
+Name[ro]=Serii de sistem
 Name[sl]=Sistemske vrste
 Comment=System Style 001
 Comment[cs]=Systémový styl 001
@@ -239,6 +240,7 @@ Comment[fi]=Järjestelmän tyyli 001
 Comment[hu]=Rendszer stílus 001
 Comment[ja]=システムスタイル001
 Comment[no]=System-stil 001
+Comment[ro]=Stil sistem 001
 Comment[sl]=Sistemski slog 001
 ScrollBarExtent=14
 
