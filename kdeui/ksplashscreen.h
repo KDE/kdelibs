@@ -17,9 +17,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qglobal.h>
-#if QT_VERSION >= 0x030200
-
 #ifndef KSPLASHSCREEN_H
 #define KSPLASHSCREEN_H
 
@@ -63,4 +60,3 @@ public:
 
 #endif //KSPLASHSCREEN_H
 
-#endif

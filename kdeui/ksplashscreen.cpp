@@ -17,9 +17,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qglobal.h>
-#if QT_VERSION >= 0x030200
-
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
@@ -39,5 +36,3 @@ KSplashScreen::~KSplashScreen()
 }
 
 #include "ksplashscreen.moc"
-
-#endif
