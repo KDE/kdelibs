@@ -707,6 +707,15 @@ void KIOJob::slotFinished()
 
 void KIOJob::slotError( int _errid, const char *_txt )
 {
+  if ( _errid == ERR_WARNING )
+  {
+    //this is very tricky, because we rely on the slots connected to sigError
+    //to check that this is only a warning on continue to proceed normally.
+    //otherwise we might run into trouble...
+    emit sigError( m_id, _errid, _txt );
+    return;
+  }
+
   IOJob::slotError( _errid, _txt );
   
   // If someone tries to delete us because we emitted sigError
