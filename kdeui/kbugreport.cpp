@@ -76,11 +76,11 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
   tmpLabel = new QLabel( QString::fromLatin1(kapp->name()), parent );
   glay->addWidget( tmpLabel, 1, 1 );
 
-  // Version : TODO : take it from the future kdelibs class containing it
+  // Version
   tmpLabel = new QLabel( i18n("Version : "), parent );
   glay->addWidget( tmpLabel, 2, 0 );
-  const KAboutData * aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
-  if (aboutData) m_strVersion = aboutData->version();
+  m_aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
+  if (m_aboutData) m_strVersion = m_aboutData->version();
    else m_strVersion = "no version set (programmer error!)";
   m_strVersion += QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
   m_version = new QLabel( m_strVersion, parent );
@@ -218,7 +218,8 @@ void KBugReport::slotOk( void )
   {
     QString msg = i18n(""
       "Couldn't send the bug report.\n"
-      "Hmmm, submit a bug report manually, sorry...");
+      "Hmmm, submit a bug report manually, sorry...\n"
+      "See http://bugs.kde.org/ for instructions.");
     KMessageBox::error(this, msg );
     return;
   }
@@ -252,18 +253,21 @@ QString KBugReport::text()
       m_lineedit->text();
 }
 
-#define RECIPIENT "submit@bugs.kde.org"
-
 bool KBugReport::sendBugReport()
 {
   QString command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") ) + QString::fromLatin1(" -oi -t");
   bool needHeaders = true;
+
+  QString recipient ( m_aboutData ? 
+    m_aboutData->bugAddress() :
+    QString::fromLatin1("submit@bugs.kde.org") );
+
   if ( command.isNull() )
   {
     command = QString::fromLatin1("mail -s \x22");
     command.append(m_subject->text());
     command.append(QString::fromLatin1("\x22 "));
-    command.append(QString::fromLatin1(RECIPIENT));
+    command.append(recipient);
     needHeaders = false;
   }
 
@@ -278,7 +282,7 @@ bool KBugReport::sendBugReport()
   if (needHeaders)
   {
     textComplete += QString::fromLatin1("From: ") + m_from->text() + '\n';
-    textComplete += QString::fromLatin1("To: " RECIPIENT "\n");
+    textComplete += QString::fromLatin1("To: ") + recipient + '\n';
     textComplete += QString::fromLatin1("Subject: ") + m_subject->text() + '\n';
   }
   textComplete += '\n'; // end of headers
