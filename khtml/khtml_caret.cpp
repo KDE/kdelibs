@@ -277,7 +277,7 @@ static InlineFlowBox* generateDummyFlowBox(RenderArena *arena, RenderFlow *cb,
  * @param cb block which to create the flow for.
  * @return the constructed flow.
  */
-static RenderFlow* generateDummyBlock(RenderArena *arena, RenderObject *cb)
+static RenderFlow* generateDummyBlock(RenderArena */*arena*/, RenderObject *cb)
 {
     // ### will fail if positioned
   RenderFlow *result = RenderFlow::createFlow(cb->element(), cb->style(), cb->renderArena());
