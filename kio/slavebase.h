@@ -602,6 +602,11 @@ protected:
      * @param group     the authorization group-key matched or created
      */
     void sendAuthenticationKey( const QCString&, const QCString& );
+   
+    /*
+     * @deprecated.  Added only for BC with KDE 2.0 
+     */
+    void delCachedAuthentication( const QString& ) {};
 
     /**
      * Name of the protocol supported by this slave
