@@ -1608,7 +1608,7 @@ public:
      * created with that name.
      */
     KToggleToolBarAction( const char* toolBarName, const QString& text,
-                          QObject* parent = 0, const char* name = 0 );
+                          KActionCollection* parent, const char* name );
     virtual ~KToggleToolBarAction();
 
     virtual int plug( QWidget*, int index = -1 );

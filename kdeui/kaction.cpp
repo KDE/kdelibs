@@ -2611,7 +2611,7 @@ KPopupMenu *KToolBarPopupAction::popupMenu() const
 ////////
 
 KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
-         const QString& text, QObject* parent, const char* name )
+         const QString& text, KActionCollection* parent, const char* name )
   : KToggleAction( text, KShortcut(), parent, name )
   , m_toolBarName( toolBarName )
   , m_toolBar( 0L )
