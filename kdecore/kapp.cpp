@@ -18,8 +18,9 @@
 	*/
 
 // $Id$
-// Revision 1.87  1998/01/27 20:17:01  kulow
+//
 // $Log$
+// Revision 1.87  1998/01/27 20:17:01  kulow
 // applied patch by Kalle to make invokeHTMLHelp use the locale setting.
 //
 // Revision 1.86  1998/01/25 20:35:48  kulow
@@ -126,6 +127,7 @@
 //           Introduced new registration model
 //
 // Revision 1.60  1997/10/16 11:35:24  kulow
+// readded my yesterday bugfixes. I hope, I have not forgotten one.
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
 //
@@ -153,6 +155,8 @@
 //
 // Revision 1.52  1997/10/11 19:25:32  ettrich
 // Matthias: mainWidget -> topWidget for SM
+//
+// Revision 1.51  1997/10/10 22:36:21  ettrich
 // Matthias: fixed an async reply problem with invokeHTMLHelp
 //
 // Revision 1.50  1997/10/10 22:09:17  ettrich
@@ -264,6 +268,8 @@ void KApplication::init()
 	aGlobalAppConfigName = "";
   aGlobalAppConfigFile.close();
 
+  
+  // now for the local app config file
   QString aConfigName;
   char* pHome;
   if( (pHome = getenv( "HOME" )) )
@@ -625,9 +631,12 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		  aSessionConfigName += argv[i+1];
 		}
 		if (QFile::exists(aSessionConfigName)){
+		  QFile aConfigFile(aSessionConfigName);
 		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
 		  if( bSuccess ){
 			aConfigFile.close();
+			pSessionConfig = new KConfig(0L, aSessionConfigName);
+			if (pSessionConfig){
 			  bIsRestored = True;
 			}
 		  }
@@ -1023,9 +1032,11 @@ void KApplication::readSettings()
 	// this default is Qt darkGrey
   str = config->readEntry( "InactiveTitleTextColor", "#808080" );
   inactiveTextColor.setNamedColor( str );
-  int num = config->readNumEntry( "Charset",-1 );
-  if ( num>=0 )
-	generalFont.setCharSet((QFont::CharSet)num);
+
+	// this default is Qt darkBlue
+  str = config->readEntry( "ActiveTitleBarColor", "#000080" );
+  activeTitleColor.setNamedColor( str );
+
 	// this default is Qt white
   str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
   activeTextColor.setNamedColor( str );

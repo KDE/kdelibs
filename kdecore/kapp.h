@@ -17,8 +17,9 @@
     Boston, MA 02111-1307, USA.
 */
 // $Id$
-// Revision 1.41  1998/01/06 22:54:29  kulow
+//
 // $Log$
+// Revision 1.41  1998/01/06 22:54:29  kulow
 // fixed my new macro. I guess, this way it's better
 //
 // Revision 1.40  1998/01/06 21:22:47  kulow
@@ -100,6 +101,7 @@
 //
 // A short documentation is in kapp.h, more docs will follow.
 //
+// Revision 1.21  1997/09/19 16:28:42  mark
 // MD: Implemented reading of the colour scheme contrast variable. This allows
 // you to choose the highlights and lowlights used to draw widgets and has been
 // part of the colour scheme specification for some time
@@ -127,7 +129,7 @@ class KCharsets;
 //#endif
 
 #include <drag.h>
-* @version $Id$
+
 #include <qapp.h>
 #include <qfile.h>
 #include <qpopmenu.h>
@@ -249,7 +251,14 @@ public:
 	* Return a standard help menu
 	*
 	* @param bAboutQtMenu If true, there is a menu entry for About Qt
-  
+	* @return a standard help menu
+	*/
+  QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
+							 
+
+  /**
+    * Get an iconloader for the application. If it does not yet exist,
+    * create one.
     * @return a pointer to the Iconloader of the application
     * @see KIconLoader
     */
@@ -585,6 +594,7 @@ protected:
   Atom KDEChangeStyle;
 
   /// Current application object.
+  static KApplication *KApp;
 
  private slots:
  void appHelpActivated();
