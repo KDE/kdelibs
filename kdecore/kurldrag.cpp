@@ -22,7 +22,13 @@
 #include <qdragobject.h>
 #include <qfont.h>
 
-QUriDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+{
+    return newDrag( urls, QMap<QString, QString>(), dragSource, name );
+}
+
+KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+                              QWidget* dragSource, const char * name )
 {
     QStrList uris;
     KURL::List::ConstIterator uit = urls.begin();
@@ -31,7 +37,7 @@ QUriDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
         uris.append( (*uit).url(0, 106).latin1() ); // 106 is mib enum for utf8 codec
-    return new KURLDrag( uris, dragSource, name );
+    return new KURLDrag( uris, metaData, dragSource, name );
 }
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
@@ -41,6 +47,32 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     for (QStrListIterator it(lst); *it; ++it)
       uris.append(KURL(*it, 106)); // 106 is mib enum for utf8 codec
     return ret;
+}
+
+bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QString>& metaData )
+{
+    if ( decode( e, uris ) ) // first decode the URLs (see above)
+    {
+        QByteArray ba = e->encodedData( "application/x-kio-metadata" );
+        if ( ba.size() )
+        {
+            QString s = ba.data();
+            QStringList l = QStringList::split( "$@@$", s );
+            QStringList::ConstIterator it = l.begin();
+            bool readingKey = true; // true, then false, then true, etc.
+            QString key;
+            for ( ; it != l.end(); ++it ) {
+                if ( readingKey )
+                    key = *it;
+                else
+                    metaData.replace( key, *it );
+                readingKey = !readingKey;
+            }
+            Q_ASSERT( readingKey ); // an odd number of items would be, well, odd ;-)
+        }
+        return true; // Success, even if no metadata was found
+    }
+    return false; // Couldn't decode the URLs
 }
 
 #ifdef Q_WS_QWS
@@ -60,6 +92,8 @@ const char * KURLDrag::format( int i ) const
         return "text/uri-list";
     else if ( i == 1 )
         return "text/plain";
+    else if ( i == 2 )
+        return "application/x-kio-metadata";
     else return 0;
 }
 
@@ -77,6 +111,20 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         QCString s = uris.join( "\n" ).local8Bit();
         a.resize( s.length() + 1 ); // trailing zero
         memcpy( a.data(), s.data(), s.length() + 1 );
+    }
+    else if ( mimetype == "application/x-kio-metadata" )
+    {
+        QString s;
+        QMap<QString,QString>::ConstIterator it;
+        for( it = m_metaData.begin(); it != m_metaData.end(); ++it )
+        {
+            s += it.key();
+            s += "$@@$";
+            s += it.data();
+            s += "$@@$";
+        }
+	a.resize( s.length() + 1 );
+	memcpy( a.data(), s.latin1(), a.size() );
     }
     return a;
 }

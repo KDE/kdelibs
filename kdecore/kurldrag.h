@@ -30,8 +30,11 @@ class QMimeSource;
  * The reason is : QUriDrag (and the XDND/W3C standards) expect URLs to
  * be encoded in UTF-8 (unicode), but KURL uses the current locale
  * by default.
- * The other reason for using this class is that it exports text/plain
- * (for dropping/pasting into lineedits, mails etc.)
+ * The other reasons for using this class are:
+ * - it exports text/plain (for dropping/pasting into lineedits, mails etc.)
+ * - it has support for metadata, shipped as part of the dragobject
+ * This is important, for instance to set a correct HTTP referrer (some websites
+ * require it for downloading e.g. an image).
  *
  * To create a drag object, use KURLDrag::newDrag with a list of KURLs.
  * To decode a drop, use KURLDrag::decode or QUriDrag::decodeLocalFiles.
@@ -45,13 +48,36 @@ public:
    * and the list of urls is converted to UTF-8 before being passed
    * to QUriDrag.
    */
-  static QUriDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
+  static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
+
+  /**
+   * Constructs an object to drag the list of URLs in urls.
+   * This version also includes metadata
+   */
+  static KURLDrag * newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+                             QWidget* dragSource = 0, const char * name = 0 );
+
+  /**
+   * Meta-data to associate with those URLs (to be used after newDrag)
+   * @see KIO::TransferJob etc.
+   * This is an alternative way of setting the metadata:
+   * either use the constructor to pass it all at once, or use
+   * drag->metaData()["key"] = data;
+   */
+  QMap<QString, QString> &metaData() { return m_metaData; }
 
   /**
    * Convenience method that decodes the contents of @p e
    * into a list of KURLs.
    */
   static bool decode( const QMimeSource *e, KURL::List &urls );
+
+  /**
+   * Convenience method that decodes the contents of @p e
+   * into a list of KURLs and a set of metadata.
+   * You should be using this one, if possible.
+   */
+  static bool decode( const QMimeSource *e, KURL::List &urls, QMap<QString,QString>& metaData );
 
 #ifdef Q_WS_QWS
   /**
@@ -65,14 +91,16 @@ protected:
   /**
    * Protected constructor - use @ref newDrag
    */
-  KURLDrag( const QStrList & urls, QWidget * dragSource, const char* name ) :
-    QUriDrag( urls, dragSource, name ), m_urls( urls ) {}
+  KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
+            QWidget * dragSource, const char* name ) :
+      QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ) {}
 
   virtual const char * format( int i ) const;
   virtual QByteArray encodedData( const char* mime ) const;
 
 private:
   QStrList m_urls;
+  QMap<QString,QString> m_metaData;
 };
 
 #endif
