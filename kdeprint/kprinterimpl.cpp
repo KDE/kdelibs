@@ -32,7 +32,7 @@
 
 #include <qfile.h>
 #include <qregexp.h>
-#include <qinputdialog.h>
+#include <kinputdialog.h>
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kapplication.h>
@@ -391,7 +391,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 				while (done == 0)
 				{
 					bool	ok(false);
-					QString	targetMime = QInputDialog::getItem(
+					QString	targetMime = KInputDialog::getItem(
 						i18n("Select MIME Type"),
 						i18n("Select the target format for the conversion:"),
 						inputMimeTypes, 0, false, &ok);
