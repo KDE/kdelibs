@@ -95,7 +95,7 @@ void KFileBookmarkHandler::importOldBookmarks( const QString& path,
     m_importStream = 0L;
 }
 
-void KFileBookmarkHandler::slotNewBookmark( const QString& text,
+void KFileBookmarkHandler::slotNewBookmark( const QString& /*text*/,
                                             const QCString& url,
                                             const QString& additionalInfo )
 {
