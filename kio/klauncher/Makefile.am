@@ -34,3 +34,6 @@ klauncher_SOURCES = dummy.cpp
 METASOURCES = AUTO
 
 noinst_HEADERS = klauncher.h
+
+dummy.cpp:
+	echo > dummy.cpp

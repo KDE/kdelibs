@@ -22,3 +22,6 @@ kcookiejar_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 servicesdir = $(kde_servicesdir)
 services_DATA = kcookiejar.desktop
+
+dummy.cpp:
+	echo > dummy.cpp
