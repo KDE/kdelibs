@@ -52,7 +52,7 @@ static const KCmdLineOptions options[] =
   { 0,0,0 }
 };
 
-static void crashHandler( int sig )
+static void crashHandler( int  )
 {
 #ifdef SIGABRT
     signal (SIGABRT, SIG_DFL);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     KScreenSaver *target;
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-	
+
     if (args->isSet("setup"))
     {
        QDialog *dlg = kss_setup();
