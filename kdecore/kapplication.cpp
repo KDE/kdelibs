@@ -696,9 +696,11 @@ void KApplication::init(bool GUIenabled)
   KConfig* config = KGlobal::config();
   d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
   // For brain-dead configurations where the user's local config file is not writable.
-  // We use kdialog to warn the user, so we better not generate warnings from 
-  // kdialog itself.
-  if (qstrcmp(name(), "kdialog") != 0)
+  // * We use kdialog to warn the user, so we better not generate warnings from 
+  //   kdialog itself.
+  // * Don't warn if we run with a read-only $HOME
+  QCString readOnly = getenv("KDE_HOME_READONLY");
+  if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
   {
     KConfigGroupSaver saver(config, "KDE Action Restrictions");
     if (config->readBoolEntry("warn_unwritable_config",TRUE))
