@@ -1865,11 +1865,13 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
 
 QString KHTMLPart::selectedText() const
 {
+  bool hasNewLine = true;
   QString text;
   DOM::Node n = d->m_selectionStart;
   while(!n.isNull()) {
       if(n.nodeType() == DOM::Node::TEXT_NODE) {
         QString str = n.nodeValue().string();
+        hasNewLine = false;
         if(n == d->m_selectionStart && n == d->m_selectionEnd)
           text = str.mid(d->m_startOffset, d->m_endOffset - d->m_startOffset);
         else if(n == d->m_selectionStart)
@@ -1883,9 +1885,13 @@ QString KHTMLPart::selectedText() const
         // This is our simple HTML -> ASCII transformation:
         unsigned short id = n.elementId();
         switch(id) {
+          case ID_BR:
+            text += "\n";
+            hasNewLine = true;
+            break;
+
           case ID_TD:
           case ID_TH:
-          case ID_BR:
           case ID_HR:
           case ID_OL:
           case ID_UL:
@@ -1895,12 +1901,10 @@ QString KHTMLPart::selectedText() const
           case ID_DT:
           case ID_PRE:
           case ID_BLOCKQUOTE:
-            text += "\n";
-            break;
           case ID_DIV:
-            // Empty divs have no height. Check div isn't empty.
-            if ( !n.firstChild().isNull() )
-                text += "\n";
+            if (!hasNewLine)
+               text += "\n";
+            hasNewLine = true;
             break;
           case ID_P:
           case ID_TR:
@@ -1910,7 +1914,10 @@ QString KHTMLPart::selectedText() const
           case ID_H4:
           case ID_H5:
           case ID_H6:
-            text += "\n\n";
+            if (!hasNewLine)
+               text += "\n";
+            text += "\n";
+            hasNewLine = true;
             break;
         }
       }
@@ -1920,11 +1927,54 @@ QString KHTMLPart::selectedText() const
       while( next.isNull() && !n.parentNode().isNull() ) {
         n = n.parentNode();
         next = n.nextSibling();
+        unsigned short id = n.elementId();
+        switch(id) {
+          case ID_TD:
+          case ID_TH:
+          case ID_HR:
+          case ID_OL:
+          case ID_UL:
+          case ID_LI:
+          case ID_DD:
+          case ID_DL:
+          case ID_DT:
+          case ID_PRE:
+          case ID_BLOCKQUOTE:
+          case ID_DIV:
+            if (!hasNewLine)
+               text += "\n";
+            hasNewLine = true;
+            break;
+          case ID_P:
+          case ID_TR:
+          case ID_H1:
+          case ID_H2:
+          case ID_H3:
+          case ID_H4:
+          case ID_H5:
+          case ID_H6:
+            if (!hasNewLine)
+               text += "\n";
+            text += "\n";
+            hasNewLine = true;
+            break;
+        }
       }
 
       n = next;
     }
-    return text;
+    int start = 0;
+    int end = text.length();
+
+    // Strip leading LFs
+    while ((start < end) && (text[start] == '\n'))
+       start++;
+
+    // Strip excessive trailing LFs
+    while ((start < (end-1)) && (text[end-1] == '\n') && (text[end-2] == '\n'))
+       end--;
+       
+    return text.mid(start, end-start);
 }
 
 bool KHTMLPart::hasSelection() const
