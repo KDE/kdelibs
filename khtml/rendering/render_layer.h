@@ -250,5 +250,5 @@ protected:
     bool m_zOrderListsDirty;
 };
 
-}; // namespace
+} // namespace
 #endif

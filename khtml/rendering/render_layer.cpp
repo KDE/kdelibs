@@ -1134,3 +1134,5 @@ void RenderLayer::collectLayers(QPtrVector<RenderLayer>*& posBuffer, QPtrVector<
             child->collectLayers(posBuffer, negBuffer);
     }
 }
+
+#include "render_layer.moc"
