@@ -129,7 +129,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   nameLayout->addWidget( mNameCombo );
   connect( mNameCombo, SIGNAL( activated( int ) ), SLOT( updateEntryView() ) );
 
-  newButton = new QPushButton( i18n("New Argl List"), this );
+  newButton = new QPushButton( i18n("New List"), this );
   nameLayout->addWidget( newButton );
   connect( newButton, SIGNAL( clicked() ), SLOT( newList() ) );
 
