@@ -245,7 +245,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	{
 		m_printers->clear();
 		QPtrListIterator<KMPrinter>	it(*plist);
-		int 	defindex(-1);
+		int 	defsoft(-1), defhard(-1), defsearch(-1);
 		bool	sep(false);
 		for (;it.current();++it)
 		{
@@ -255,10 +255,14 @@ void KPrintDialog::initialize(KPrinter *printer)
 				m_printers->insertItem(QString::fromLatin1("--------"));
 			}
 			m_printers->insertItem(SmallIcon(it.current()->pixmap(),0,(it.current()->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),it.current()->name());
-			if ((it.current()->isSoftDefault() && defindex == -1) || it.current()->name() == printer->searchName())
-				defindex = m_printers->count()-1;
+			if (it.current()->isSoftDefault())
+				defsoft = m_printers->count()-1;
+			if (it.current()->isHardDefault())
+				defhard = m_printers->count()-1;
+			if (it.current()->name() == printer->searchName())
+				defsearch = m_printers->count()-1;
 		}
-		if (defindex == -1) defindex = 0;
+		int	defindex = (defsearch != -1 ? defsearch : (defsoft != -1 ? defsoft : QMAX(defhard,0)));
 		m_printers->setCurrentItem(defindex);
 		slotPrinterSelected(defindex);
 	}

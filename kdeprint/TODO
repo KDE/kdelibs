@@ -26,12 +26,7 @@
 - have a look at new CUPS feature (1.2.0) for exporting PPD drivers
   through samba-2.2 (see cupsaddsmb).
 
-- make use of KLocale::pageSize() to get default page size
-
 - allow the use of KPrinter object without the need for the print
   dialog: should use then default printer with default settings.
 
 - add the possibility to view a printjob file (if possible)
-
-- redesign the CUPS config wizard to get a more consistent and cleaner
-  interface (inspired by PrintPro interface)

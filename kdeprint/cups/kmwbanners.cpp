@@ -34,10 +34,15 @@ QStringList defaultBanners()
 {
 	QStringList	bans;
 	QPtrList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
-	if (list && list->count() > 0 && KMFactory::self()->manager()->completePrinter(list->getFirst()))
+	if (list && list->count() > 0)
 	{
-		QString	s = list->getFirst()->option("kde-banners-supported");
-		bans = QStringList::split(',',s,false);
+		QPtrListIterator<KMPrinter>	it(*list);
+		for (;it.current() && !it.current()->isPrinter(); ++it) ;
+		if (it.current() && KMFactory::self()->manager()->completePrinter(it.current()))
+		{
+			QString	s = list->getFirst()->option("kde-banners-supported");
+			bans = QStringList::split(',',s,false);
+		}
 	}
 	if (bans.count() == 0)
 		bans.append("none");

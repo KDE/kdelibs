@@ -22,6 +22,7 @@
 #include "kpgeneralpage.h"
 #include "driver.h"
 #include "kmprinter.h"
+#include "kprinter.h"
 
 #include <qcombobox.h>
 #include <qlabel.h>
@@ -246,6 +247,11 @@ void KPGeneralPage::initialize()
 		// PageSize
 		for (int i=1;i<DEFAULT_SIZE;i+=2)
 			m_pagesize->insertItem(i18n(default_size[i]));
+		// set default page size using locale settings
+		QString	psname = pageSizeToPageName((KPrinter::PageSize)(KGlobal::locale()->pageSize()));
+		int index = findOption(default_size, DEFAULT_SIZE, psname);
+		if (index >= 0)
+			m_pagesize->setCurrentItem(index);
 		// MediaType
 		for (int i=1;i<DEFAULT_TYPE;i+=2)
 			m_papertype->insertItem(i18n(default_type[i]));

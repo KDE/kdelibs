@@ -54,3 +54,10 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 
 25/09/2001 Michael Goffioul <goffioul@imec.be>
   * CUPS plugin: made the new configuration wizard as default one.
+  * other QList -> QPtrList fixes (commited to CVS)
+  * Avoid to call plugin functions "completePrinter<xxx>" for pseudo
+    printers (to not confuse the CUPS daemon for example)
+  * Improved how the default printer is selected in print dialog to
+    work in any cases
+  * General: make use of KLocale::pageSize() to determine the default
+    page size (used for example for pseudo printers and classes)

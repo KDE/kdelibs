@@ -251,7 +251,8 @@ void KMMainView::slotTimer()
 void KMMainView::slotPrinterSelected(KMPrinter *p)
 {
 	m_current = p;
-	if (p) KMFactory::self()->manager()->completePrinter(p);
+	if (p && !p->isSpecial())
+		KMFactory::self()->manager()->completePrinter(p);
 	m_printerpages->setPrinter(p);
 
 	// update actions state (only if toolbar enabled, workaround for toolbar

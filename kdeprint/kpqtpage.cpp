@@ -156,7 +156,8 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	slotNupChanged(0);
 	for (int i=0; i<KPrinter::NPageSize-1; i++)
 		m_pagesize->insertItem(i18n(page_sizes[i].text));
-	m_pagesize->setCurrentItem(findIndex(KPrinter::A4));	// default to A4
+	// default page size to locale settings
+	m_pagesize->setCurrentItem(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
 
 	if (!KMFactory::self()->filterManager()->checkFilter("psnup"))
 		m_nupbox->setEnabled(false);
