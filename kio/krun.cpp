@@ -92,27 +92,40 @@ void KRun::shellQuote( QString &_str )
 bool KRun::run( const KService& _service, const KURL::List& _urls )
 {
   kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
+  if (!_urls.isEmpty())
+    kdDebug(7010) << "First url " << _urls.first().url() << endl;
   QString miniicon = _service.icon();
   QString exec = _service.exec();
   QString error;
   int /*pid_t*/ pid;
+
   // First try using startServiceByDesktopPath, since that one benefits from kdeinit.
-  if ( KApplication::startServiceByDesktopPath( _service.desktopEntryPath(), _urls.toStringList(), 0L, 0L, &pid ) == 0 )
+  // But only if we don't need kfmexec (i.e. url is local, or app supports remote urls)
+  bool b_local_app = ( exec.find( "%u" ) == -1 && exec.find( "%U" ) == -1 );
+  bool b_local_files = true;
+  KURL::List::ConstIterator it = _urls.begin();
+  for( ; it != _urls.end(); ++it )
+    if ( !(*it).isLocalFile() )
+      b_local_files = false;
+
+  if ( !b_local_app || b_local_files )
   {
-    //kdDebug(7010) << "startServiceByDesktopPath worked fine!" << endl;
-    // App-starting notification
-    clientStarted( binaryName(exec), miniicon, pid);
-    return true;
+    if (KApplication::startServiceByDesktopPath( _service.desktopEntryPath(),
+          _urls.toStringList(), 0L, 0L, &pid ) == 0 )
+    {
+      kdDebug(7010) << "startServiceByDesktopPath worked fine!" << endl;
+      // App-starting notification
+      clientStarted( binaryName(exec), miniicon, pid);
+      return true;
+    }
   }
-  else
-  {
-    // Fall back on normal running
-    QString name = _service.name();
-    QString icon = _service.icon();
-    bool ret = run( _service.exec(), _urls, name, icon, miniicon );
-    //kdDebug(7010) << "KRun::run returned " << ret << endl;
-    return ret;
-  }
+
+  // Fall back on normal running
+  QString name = _service.name();
+  QString icon = _service.icon();
+  bool ret = run( _service.exec(), _urls, name, icon, miniicon );
+  kdDebug(7010) << "KRun::run returned " << ret << endl;
+  return ret;
 }
 
 bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
@@ -158,7 +171,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 
   QString exec = _exec;
   bool b_local_app = false;
-  if ( exec.find( "%u" ) == -1 )
+  if ( exec.find( "%u" ) == -1 && exec.find( "%U" ) == -1 )
     b_local_app = true;
 
   // Did the user forget to append something like '%f' ?
