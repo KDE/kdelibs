@@ -410,9 +410,10 @@ QString KAccelString::accelerated() const
 
       if (m_accel != orig_accel && orig_accel >= 0)
           result.insert(oa, "(&&)");
-  } else
-       result.insert(m_accel, "&");
-
+  } else {
+    if (m_accel >= 0)
+      result.insert(m_accel, "&");
+  }
   return result;
 }
 
