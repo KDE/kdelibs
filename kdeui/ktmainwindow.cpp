@@ -36,6 +36,9 @@
 #include <klocale.h>
 #include <kstddirs.h>
 
+#include <stdlib.h>
+#include <ctype.h>
+
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
 static bool no_query_exit = false;
 static KTLWSessionManaged* ksm = 0;
@@ -417,6 +420,14 @@ void KTMainWindow::savePropertiesInternal( KConfig *config, int number )
 	    break;
 	}
 	toolKey.setNum(n);
+	QMainWindow::ToolBarDock dock;
+	int index;
+	bool nl;
+	int offset;
+	getLocation( toolbar, dock, index, nl, offset );
+	entryList.append( QString::number( index ) );
+	entryList.append( nl ? QString::fromLatin1( "TRUE" ) : QString::fromLatin1( "FALSE" ) );
+	entryList.append( QString::number( offset ) );
 	toolKey.prepend(QString::fromLatin1("ToolBar"));
 	config->writeEntry(toolKey, entryList, ';');
 	entryList.clear();
@@ -495,27 +506,32 @@ bool KTMainWindow::readPropertiesInternal( KConfig *config, int number )
 	else
 	    toolbar->enable(KToolBar::Hide);
 
+	QMainWindow::ToolBarDock dock = Top;
+	int index = 0, offset = -1;
+	bool nl = FALSE;
+	
 	entry = entryList.next();
 	if (entry == QString::fromLatin1("Top"))
-	    toolbar->setBarPos(KToolBar::Top);
+	    dock = Top;
 	else if (entry == QString::fromLatin1("Bottom"))
-	    toolbar->setBarPos(KToolBar::Bottom);
+	    dock = Bottom;
 	else if (entry == QString::fromLatin1("Left"))
-	    toolbar->setBarPos(KToolBar::Left);
+	    dock = Left;
 	else if (entry == QString::fromLatin1("Right"))
-	    toolbar->setBarPos(KToolBar::Right);
+	    dock = Right;
 	else if (entry == QString::fromLatin1("Floating"))
-#if 0 // #### no floating at the moment
-	    {
-		toolbar->setBarPos(KToolBar::Floating);
-		entry=entryList.next();
-		//### 		toolbar->setGeometry(KWM::setProperties(toolbar->winId(), entry));
-		toolbar->updateRects(TRUE);
-		toolbar->show();
-	    }
-#endif
+	    dock = Top; // TornOff;
 	if (showtoolbar)
 	    toolbar->enable(KToolBar::Show);
+	
+	if ( entryList.count() > 2 ) {
+	    entry = entryList.next();
+	    index = atoi( entry );
+	    nl = ( QString( entry ).lower() == QString::fromLatin1( "true" ) ) ? TRUE : FALSE;
+	    offset = atoi( entry );
+	    moveToolBar( toolbar, dock, index, nl, offset );
+	}
+	toolbar->setBarPos( (KToolBar::BarPosition)dock );
 	n++; // next toolbar
 	entryList.clear();
     }
