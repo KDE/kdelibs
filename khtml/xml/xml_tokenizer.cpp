@@ -213,10 +213,11 @@ void XMLHandler::exitText()
 	m_currentNode = m_currentNode->parentNode();
 }
 
-bool XMLHandler::attributeDecl(const QString &/*eName*/, const QString &/*aName*/, const QString &/*type*/,
-                               const QString &/*valueDefault*/, const QString &/*value*/)
+bool XMLHandler::attributeDecl(const QString &eName, const QString &aName, const QString &type,
+                               const QString &valueDefault, const QString &value)
 {
-    // ### insert into DOM?
+    // qt's xml parser (as of 2.2.3) does not currently give us values for type, valueDefault and
+    // value. When it does, we can store these somewhere and have default attributes on elements
     return true;
 }
 

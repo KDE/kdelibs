@@ -1038,17 +1038,17 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &/*exceptioncode*/ )
+NodeImpl *GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
-    // ### raise NO_MODIFICATION_ALLOWED_ERR
+    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &/*exceptioncode*/ )
+NodeImpl *GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
-    // ### raise NO_MODIFICATION_ALLOWED_ERR
+    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
 

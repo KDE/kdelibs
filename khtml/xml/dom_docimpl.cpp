@@ -87,10 +87,12 @@ DOMImplementationImpl::~DOMImplementationImpl()
 
 bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMString &version )
 {
-    // no valid implementation at the moment... ;-)
-    if(feature == "HTML" && version == "1") return true;
-
-    return false;
+    QString lower = feature.string().lower();
+    if ((lower == "html" || lower == "xml") &&
+        (version == "1.0" || version == "" || version.isNull()))
+	return true;
+    else
+	return false;
 }
 
 // ------------------------------------------------------------------------
@@ -618,7 +620,9 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 
 AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 {
-    return new AttrImpl(this, name);
+    AttrImpl *attr = new AttrImpl(this, name);
+    attr->setValue("");
+    return attr;
 }
 
 AttrImpl *DocumentImpl::createAttributeNS( const DOMString &/*_namespaceURI*/, const DOMString &/*_qualifiedName*/ )

@@ -95,7 +95,8 @@ void CharacterDataImpl::appendData( const DOMString &arg )
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    _parent->setChanged(true);
+    if (_parent)
+	_parent->setChanged(true);
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg, int &exceptioncode )

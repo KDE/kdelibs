@@ -945,13 +945,15 @@ AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr, int &exceptioncode )
     return 0;
 }
 
-NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name, int &/*exceptioncode*/ )
+NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name, int &exceptioncode )
 {
     if (element)
 	element->checkReadOnly();
 
-    if (!attrs)
+    if (!attrs) {
+ 	exceptioncode = DOMException::NOT_FOUND_ERR;
 	return 0;
+    }
 
     uint i;
     int found = -1;
@@ -959,8 +961,10 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name, int &/*exce
 	if (!strcasecmp(attrs[i]->name(),name))
 	    found = i;
     }
-    if (found < 0)
+    if (found < 0) {
+ 	exceptioncode = DOMException::NOT_FOUND_ERR;
 	return 0;
+    }
 
     AttrImpl *ret = attrs[found];
     ret->_element = 0;
