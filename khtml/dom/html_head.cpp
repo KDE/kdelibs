@@ -380,7 +380,8 @@ void HTMLScriptElement::setDefer( bool _defer )
 DOMString HTMLScriptElement::src() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    return s.length() ? impl->getDocument()->completeURL(s.string()) : s;
 }
 
 void HTMLScriptElement::setSrc( const DOMString &value )
