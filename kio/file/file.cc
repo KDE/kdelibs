@@ -613,7 +613,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 void FileProtocol::stat( const QString & path )
 {
     struct stat buff;
-    if ( ::stat( path, &buff ) == -1 ) {
+    if ( ::lstat( path, &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, path );
 	return;
     }
