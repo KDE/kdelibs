@@ -52,6 +52,8 @@ class KCModulePrivate;
  *   }
  * </pre>
  *
+ * See kdebase/kcontrol/README for more detailed documentation. 
+ *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
  */
 
