@@ -30,6 +30,10 @@
 BODY { background-color: rgb(255,255,255);
        font-family: Helvetica, Arial, sans-serif; /* or just generic font? */
        color: rgb(0,0,0);
+       margin-top: 1.5em;
+       margin-left: 1.5em;
+       margin-bottom: 1.5em;
+       margin-right: 1em; 
 }
 
 :link { color: rgb(170,0,0); 
@@ -42,6 +46,8 @@ TABLE.screen { border-style: none;
                table-layout: auto; /* 100%? */
                color: rgb(0,0,0); /* should be inherited */
                }
+
+P { text-align: justify; }
 
 /* Same as previous block, but more general (previous is HTML only)
    Not all browsers understand this yet.
