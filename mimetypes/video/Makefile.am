@@ -1,4 +1,4 @@
-data_DATA = 	avi.kdelnk mpeg.kdelnk mov.kdelnk
+data_DATA = 	mpeg.kdelnk quicktime.kdelnk x-msvideo.kdelnk
 
 datadir = $(kde_mimedir)/video
 
