@@ -274,7 +274,7 @@ Context::Context(CodeType type, Context *callingContext,
 	thisVal = glob.imp();
       break;
     case HostCode:
-      if (thisV->type() == ObjectType)
+      if (thisV->type() >= ObjectType)
 	thisVal = thisV;
       else
 	thisVal = glob.imp();
