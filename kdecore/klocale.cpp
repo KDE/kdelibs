@@ -170,12 +170,9 @@ KLocale::KLocale( const QString& _catalogue )
       KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
       chset = config->readEntry(QString::fromLatin1("Charset"), QString::fromLatin1("unicode"));
     }
-    QString catalogue;
-
-    if (_catalogue.isNull())
-      catalogue = kapp->name();
-    else
-      catalogue = _catalogue;
+    QString catalogue = _catalogue.isNull()
+        ? QString::fromLatin1(kapp->name())
+        : _catalogue;
 
     catalogues = new QStrList(true);
 
@@ -236,9 +233,9 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     if (g_lang && g_lang[0]!=0) // LANG value is set and is not ""
       languages = g_lang;
     else
-      languages = "C";
+      languages = 'C';
   } else
-    languages = languages + QString::fromLatin1(":C");
+    languages.append(QString::fromLatin1(":C"));
 
   QString ln,ct,chrset;
 
