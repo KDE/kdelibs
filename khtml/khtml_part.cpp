@@ -88,6 +88,7 @@ using namespace DOM;
 #include <kfileitem.h>
 #include <kurifilter.h>
 #include <kstatusbar.h>
+#include <kurllabel.h>
 
 #include <qclipboard.h>
 #include <qfile.h>
@@ -1125,10 +1126,12 @@ void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
 void KHTMLPart::setPageSecurity( PageSecurity sec )
 {
   if ( sec != NotCrypted && !d->m_statusBarIconLabel && !parentPart() ) {
-    d->m_statusBarIconLabel = new QLabel( d->m_statusBarExtension->statusBar() );
+    d->m_statusBarIconLabel = new KURLLabel( d->m_statusBarExtension->statusBar() );
     d->m_statusBarIconLabel->setFixedHeight( instance()->iconLoader()->currentSize(KIcon::Small) );
     d->m_statusBarIconLabel->setSizePolicy(QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
+    d->m_statusBarIconLabel->setUseCursor( false );
     d->m_statusBarExtension->addStatusBarItem( d->m_statusBarIconLabel, 0, false );
+    connect( d->m_statusBarIconLabel, SIGNAL( leftClickedURL() ), SLOT( slotSecurity() ) );
   }
   QString iconName;
   switch (sec)  {

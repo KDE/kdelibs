@@ -46,6 +46,7 @@
 
 class KPopupMenu;
 class KSelectAction;
+class KURLLabel;
 
 namespace KIO
 {
@@ -207,7 +208,7 @@ public:
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
-  QLabel* m_statusBarIconLabel;
+  KURLLabel* m_statusBarIconLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
