@@ -130,8 +130,8 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
   Use locateLocal to get the path of a writable file. For instance,
   KApplication::localconfigdir()+filename is now locateLocal( "config", filename ),
   but for most cases, simply using KGlobal::config() is enough, if you're happy
-  with saving the application's configuration into appnamerc. locateLocal should be
-  reserved for finding/creating a config file with a different name.<P>
+  with saving the application's configuration into appnamerc, or
+  KSimpleConfig cfg("anothercfgfile") to create a config file with another name.<P>
 
   generalFont() and fixedFont() are deprecated and will be removed soon.
   Please use KGlobalSettings::generalFont() and KGlobalSettings::fixedFont() instead.<P>
