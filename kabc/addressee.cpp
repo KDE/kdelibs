@@ -456,7 +456,7 @@ QString Addressee::carPhoneLabel()
 
 QString Addressee::isdnLabel()
 {
-  return i18n("Isdn");
+  return i18n("ISDN");
 }
 
 
