@@ -2070,7 +2070,7 @@ void CopyJob::deleteNextDir()
 
 void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
-  kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
+  //kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
   m_fileProcessedSize = data_size;
 
   if ( m_processedSize + m_fileProcessedSize > m_totalSize )
@@ -2079,7 +2079,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
     kdDebug(7007) << "Adjusting m_totalSize to " << (unsigned int) m_totalSize << endl;
     emit totalSize( this, m_totalSize ); // safety
   }
-  kdDebug(7007) << "emit processedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
+  //kdDebug(7007) << "emit processedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
