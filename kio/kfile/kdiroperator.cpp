@@ -37,7 +37,7 @@
 #include <kdialog.h>
 #include <kdialogbase.h>
 #include <kdirlister.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kpopupmenu.h>
@@ -380,13 +380,13 @@ void KDirOperator::slotToggleIgnoreCase()
 
 void KDirOperator::mkdir()
 {
-    KLineEditDlg dlg(i18n("Create new directory in:") +
+    bool ok;
+    QString dir = KInputDialog::getText( i18n( "New Directory" ),
+        i18n( "Create new directory in:" ) +
                      QString::fromLatin1( "\n" ) + /* don't break i18n now*/
-                     url().prettyURL(), i18n("New Directory"), this);
-    dlg.setCaption(i18n("New Directory"));
-    if (dlg.exec()) {
-      mkdir( dlg.text(), true );
-    }
+                     url().prettyURL(), i18n("New Directory"), &ok, this);
+    if (ok)
+      mkdir( dir, true );
 }
 
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
