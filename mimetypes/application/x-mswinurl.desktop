@@ -1,0 +1,8 @@
+[Desktop Entry]
+ncoding=UTF-8
+Type=MimeType
+MimeType=text/x-mswinurl
+Patterns=*.url;*.URL;
+Icon=html
+Comment=Internet Shortcut
+Comment[de]=Internet Adresse

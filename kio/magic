@@ -740,6 +740,11 @@
 0	string		Core\002	application/x-core # Alpha COFF format core dump (Digital UNIX)
 
 #------------------------------------------------------------------------------
+# Win95 InternetShortcut (URL): (Helge Deller <deller@gmx.de>):
+#
+1	string	InternetShortcut	application/x-mswinurl
+
+#------------------------------------------------------------------------------
 # amigaos:  file(1) magic for AmigaOS binary formats:
 
 #
