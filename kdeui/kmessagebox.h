@@ -825,9 +825,18 @@ public:
 
   /**
    * Enable all messages which have been turned off with the
-   * @p dontShowAgainName feature of the information dialog.
+   * @p dontShowAgainName feature.
    */
   static void enableAllMessages();
+
+  /**
+   * Re-enable a specific @p dontShowAgainName messages that had 
+   * previously been turned off.
+   * @see saveDontShowAgainYesNo()
+   * @see saveDontShowAgainContinue()
+   * @since 3.2
+   */
+  static void enableMessage(const QString &dontShowAgainName);
 
   /**
    * Display an "About" dialog.
@@ -974,6 +983,7 @@ public:
      * @param result is set to the result (Yes or No) that was chosen the last
      * time the message box was shown. Only meaningful, if the message box
      * should not be shown.
+     * @since 3.2
      */
     static bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                    ButtonCode &result);
@@ -982,6 +992,7 @@ public:
      * shown.
      * @param dontShowAgainName the name that identify the message box. If
      * empty, true is always returned.
+     * @since 3.2
      */
     static bool shouldBeShownContinue(const QString &dontShowAgainName);
 
@@ -991,6 +1002,7 @@ public:
      * empty, this method does nothing.
      * @param result the value (Yes or No) that should be used as the result
      * for the message box.
+     * @since 3.2
      */
     static void saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                        ButtonCode result);
@@ -1000,11 +1012,14 @@ public:
      * again.
      * @param dontShowAgainName the name that identify the message box. If
      * empty, this method does nothing.
+     * @since 3.2
      */
     static void saveDontShowAgainContinue(const QString &dontShowAgainName);
 
     /**
-     * @internal used by kdialog utility
+     * Use @p cfg for all settings related to the dontShowAgainName feature.
+     * If @p cfg is 0 (default) KGlobal::config() will be used.
+     * @since 3.2
      */    
     static void setDontShowAskAgainConfig(KConfig* cfg);
 private:

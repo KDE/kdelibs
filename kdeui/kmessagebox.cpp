@@ -856,7 +856,7 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
 void
 KMessageBox::enableAllMessages()
 {
-   KConfig *config = KGlobal::config();
+   KConfig *config = againConfig ? againConfig : KGlobal::config();
    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
    if (!config->hasGroup(grpNotifMsgs))
       return;
@@ -869,7 +869,21 @@ KMessageBox::enableAllMessages()
 
    configMap::Iterator it;
    for (it = map.begin(); it != map.end(); ++it)
-      config->writeEntry( it.key(), true);
+      config->deleteEntry( it.key() );
+   config->sync();
+}
+
+void
+KMessageBox::enableMessage(const QString &dontShowAgainName)
+{
+   KConfig *config = againConfig ? againConfig : KGlobal::config();
+   QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+   if (!config->hasGroup(grpNotifMsgs))
+      return;
+
+   KConfigGroupSaver saver( config, grpNotifMsgs );
+
+   config->deleteEntry(dontShowAgainName);
    config->sync();
 }
 
