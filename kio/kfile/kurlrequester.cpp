@@ -89,10 +89,14 @@ public:
     }
 
     void setText( const QString& text ) {
+    QWidget *w = combo ? (QWidget *) combo : (QWidget *) edit;
+	bool blocked = w->signalsBlocked();
+	w->blockSignals( true );
 	if ( combo )
 	    combo->setEditText( text );
 	else
 	    edit->setText( text );
+	w->blockSignals( blocked );
     }
 
     void connectSignals( QObject *receiver ) {
@@ -221,7 +225,7 @@ void KURLRequester::init()
 
 void KURLRequester::setURL( const QString& url )
 {
-    bool hasLocalPrefix = (url.left(5) == QString::fromLatin1("file:"));
+    bool hasLocalPrefix = (url.startsWith("file:"));
 
     if ( !myShowLocalProt && hasLocalPrefix )
 	d->setText( url.mid( 5, url.length()-5 ));
