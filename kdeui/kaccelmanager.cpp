@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include <qobjectlist.h>
+#include <qapplication.h>
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qarray.h>
@@ -86,7 +87,6 @@ private:
 
   static void manageMenuBar(QMenuBar *mbar, Item *item);
   static void manageTabBar(QTabBar *bar, Item *item);
-  static void manageWidgetStack(QWidgetStack *stack, Item *item);
 
   static void calculateAccelerators(Item *item, QString &used);
 
@@ -135,6 +135,10 @@ void KAcceleratorManagerPrivate::Item::addChild(Item *item)
 
 void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
+/*    widget = qApp->activeWindow();
+    if ( !widget )
+        return;
+*/
   if (widget->inherits("QPopupMenu"))
   {
     // create a popup accel manager that can deal with dynamic menues
@@ -159,8 +163,9 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
   // collect the contents
   KAccelStringList contents;
-  for (Item *it = item->m_children->first(); it != 0; it = item->m_children->next())
-    contents << it->m_content;
+  for (Item *it = item->m_children->first(); it != 0; it = item->m_children->next()) {
+      contents << it->m_content;
+  }
 
   // find the right accelerators
   KAccelManagerAlgorithm::findAccelerators(contents, used);
@@ -195,31 +200,28 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
   }
 
   // calculate the accelerators for the children
-  for (Item *it = item->m_children->first(); it != 0; it = item->m_children->next())
-    if (it->m_children)
-      calculateAccelerators(it, used);
+  for (Item *it = item->m_children->first(); it != 0; it = item->m_children->next()) {
+      if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ))
+          calculateAccelerators(it, used);
+  }
 }
 
 
 void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 {
   QObjectList *childList = widget->queryList("QWidget", 0, false, false);
-  QObjectListIt it(*childList);
-  for ( ; it.current(); ++it)
+  for ( QObject *it = childList->first(); it; it = childList->next() )
   {
-    QWidget *w = static_cast<QWidget*>(*it);
+    QWidget *w = static_cast<QWidget*>(it);
+
+    if ( !w->isVisibleTo( widget ) )
+        continue;
 
     // first treat the special cases
 
     if (w->inherits("QTabBar"))
     {
       manageTabBar(static_cast<QTabBar*>(w), item);
-      continue;
-    }
-
-    if (w->inherits("QWidgetStack"))
-    {
-      manageWidgetStack(static_cast<QWidgetStack*>(w), item);
       continue;
     }
 
@@ -236,58 +238,44 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
       continue;
     }
 
+    if (w->inherits("QComboBox") || w->inherits("QLineEdit"))
+        continue;
+
     // now treat 'ordinary' widgets
-    if ((w->inherits("QButton") || w->inherits("QLabel")) && w->isFocusEnabled())
+    if (w->isFocusEnabled() || w->inherits("QLabel") || w->inherits("QGroupBox"))
     {
       QString content;
       QVariant variant = w->property("text");
       if (variant.isValid())
-        content = variant.toString();
-      else
+          content = variant.toString();
+
+      if (content.isEmpty())
       {
-        variant = w->property("title");
-        if (variant.isValid())
-	  content = variant.toString();
+          variant = w->property("title");
+          if (variant.isValid())
+              content = variant.toString();
       }
 
       if (!content.isEmpty())
       {
-        Item *i = new Item;
-        i->m_widget = w;
+          Item *i = new Item;
+          i->m_widget = w;
 
-        // put some more weight on the usual action elements
-        int weight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
-        if (w->inherits("QPushButton") || w->inherits("QCheckBox") || w->inherits("QRadioButton") || w->inherits("QLabel"))
-          weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
+          // put some more weight on the usual action elements
+          int weight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
+          if (w->inherits("QPushButton") || w->inherits("QCheckBox") || w->inherits("QRadioButton") || w->inherits("QLabel"))
+              weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
-        // don't put weight on group boxes, as usally the contents are more important
-        if (w->inherits("QGroupBox"))
-          weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
+          // don't put weight on group boxes, as usally the contents are more important
+          if (w->inherits("QGroupBox"))
+              weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
 
-        i->m_content = KAccelString(content, weight);
-        item->addChild(i);
+          i->m_content = KAccelString(content, weight);
+          item->addChild(i);
       }
     }
 
     traverseChildren(w, item);
-  }
-  delete childList;
-}
-
-
-void KAcceleratorManagerPrivate::manageWidgetStack(QWidgetStack *stack, Item *item)
-{
-  QObjectList *childList = stack->queryList("QWidget", 0, false, false);
-  QObjectListIt it(*childList);
-  for ( ; it.current(); ++it)
-  {
-    QWidget *w = static_cast<QWidget*>(*it);
-
-    Item *_it = new Item;
-    item->addChild(_it);
-    _it->m_widget = w;
-
-    traverseChildren(w, _it);
   }
   delete childList;
 }
@@ -372,6 +360,8 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
 {
     bool accel = true;
 
+    orig_accel = m_pureText.find("(&&)");
+    m_pureText.replace(orig_accel, 4, "");
     orig_accel = m_pureText.find("(!)&");
     if (orig_accel != -1) {
         m_pureText.replace(orig_accel, 4, "&");
