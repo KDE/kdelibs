@@ -462,13 +462,18 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     {
        if (partList.count() == 1)
          break; // We only have a TLD left.
-       if (partList.count() == 2)
+       if ((partList.count() == 2) && (partList[1].length() == 2))
        {
           // If this is a TLD, we should stop. (e.g. co.uk)
           // We assume this is a TLD if it ends with .xx.yy or .x.yy
-          if ((partList[0].length() <= 2) &&
-              (partList[1].length() == 2))
+          if (partList[0].length() <= 2)
              break; // This is a TLD.
+             
+          // Catch some TLDs that we miss with the previous check
+          // e.g. com.au, org.uk, mil.co
+          QCString t = partList[0].lower().utf8();
+          if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil")) 
+              break;
        }
        QString domain = partList.join(".");
        _domains.append("." + domain);
