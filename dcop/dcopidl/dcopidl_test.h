@@ -17,6 +17,11 @@ class Test2;
 typedef QMap<KIO::Job *, KIODownload> KIODownloadMap;
 class Test3;
 
+/**
+ * This is a stupid comment that might help 
+ * geiseri at some point in the near future.
+ * @ref blah di blah
+ **/
 class Test : public MyNamespace::MyParentClass, virtual public DCOPObject,
              public QValueList<QString>
 {
@@ -46,6 +51,10 @@ k_dcop:
     virtual DCOPRef getObject( int num );
     virtual int getNumPages();
     virtual DCOPRef getPage( int num );
+    /** 
+     * a function comment
+     * @see blah di blah also
+     **/
     int getPageOfObj( int obj );
     void setCell( const int& point = 3 );
     QValueList<DCOPRef> getWindows();
@@ -75,7 +84,7 @@ public:
     void yadda();
 };
 
-#endif // end
+#endif // end of line comment
 
 /* Test for line numbers */
 
