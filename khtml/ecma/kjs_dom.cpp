@@ -106,7 +106,11 @@ bool DOMNode::toBoolean(ExecState *) const
   prefix	DOMNode::Prefix		DontDelete
   localName	DOMNode::LocalName	DontDelete|ReadOnly
   ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
-#
+# Event handlers
+# IE also has: onactivate, onbefore*, oncontextmenu, oncontrolselect, oncut,
+# ondeactivate, ondrag*, ondrop, onfocusin, onfocusout, onhelp, onmousewheel,
+# onmove*, onpaste, onpropertychange, onreadystatechange, onresizeend/start,
+# onselectionchange, onstop
   onabort	DOMNode::OnAbort		DontDelete
   onblur	DOMNode::OnBlur			DontDelete
   onchange	DOMNode::OnChange		DontDelete

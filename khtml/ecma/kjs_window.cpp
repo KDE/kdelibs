@@ -230,6 +230,10 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   captureEvents	Window::CaptureEvents	DontDelete|Function 0
   print		Window::Print		DontDelete|Function 0
 # Warning, when adding a function to this object you need to add a case in Window::get
+# Event handlers
+# IE also has: onactivate, onbefore/afterprint, onbeforedeactivate/unload, oncontrolselect,
+# ondeactivate, onhelp, onmovestart/end, onresizestart/end, onscroll.
+# It doesn't have onabort, onchange, ondragdrop (but NS has that last one).
   onabort	Window::Onabort		DontDelete
   onblur	Window::Onblur		DontDelete
   onchange	Window::Onchange	DontDelete
