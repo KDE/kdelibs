@@ -55,7 +55,7 @@ class KInstance
      *  @return the about data of this instance
      *  Warning, can be 0L
      */
-    KAboutData *aboutData() const;
+    const KAboutData *aboutData() const;
 
     /**
      * @return the instance name

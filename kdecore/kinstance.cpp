@@ -71,7 +71,7 @@ KIconLoader *KInstance::iconLoader() const
     return _iconLoader;
 }
 
-KAboutData * KInstance::aboutData() const
+const KAboutData * KInstance::aboutData() const
 {
     return _aboutData;
 }
