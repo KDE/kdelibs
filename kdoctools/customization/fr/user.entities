@@ -98,8 +98,8 @@
 <!ENTITY traducteurChristopheLefebvre  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheLefebvre  '<othercredit role="reviewer"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurAnneMarieMahfouf   '<othercredit role="translator"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurAnneMarieMahfouf   '<othercredit role="reviewer"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurAnneMarieMahfouf   '<othercredit role="translator"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>annemarie.mahfouf@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurAnneMarieMahfouf   '<othercredit role="reviewer"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>annemarie.mahfouf@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurPatrickMichelon   '<othercredit role="translator"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPatrickMichelon   '<othercredit role="reviewer"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -164,7 +164,7 @@
 <!ENTITY EquipeKDE         'l&apos;équipe française &kde;<email>doc@kde-france.org</email>'>
 <!ENTITY GoneriLeBouder    'Gonéri Le Bouder <email>goneri@gnuart.org</email>'>
 <!ENTITY ChristopheLefebvre 'Christophe Lefebvre <email>clefebvre@netcourrier.com</email>'>
-<!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>a-m.mahfouf@lineone.net</email>'>
+<!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>annemarie.mahfouf@free.fr</email>'>
 <!ENTITY PatrickMichelon  'Patrick Michelon <email>patrick.michelon@free.fr</email>'>
 <!ENTITY Pierre-EmmanuelMuller 'Pierre-Emmanuel Müller <email>pem@levillage.org</email>'>
 <!ENTITY CedricPasteur 'Cédric Pasteur <email>cedric.pasteur@free.fr</email>'>
