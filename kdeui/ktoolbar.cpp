@@ -754,7 +754,10 @@ void KToolBar::removeItem (int id)
 {
     Id2WidgetMap::Iterator it = id2widget.find( id );
     if ( it == id2widget.end() )
+    {
+        kdDebug(220) << "KToolBar::removeItem item " << id << " not found" << endl;
         return;
+    }
     QWidget * w = (*it);
     id2widget.remove( id );
     widget2id.remove( w );
@@ -988,6 +991,9 @@ void KToolBar::setFlat (bool flag)
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Minimized );
     else
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Top );
+    // And remember to save the new look later
+    if ( parentWidget()->inherits( "KMainWindow" ) )
+        static_cast<KMainWindow *>(parentWidget())->setSettingsDirty();
 }
 
 
