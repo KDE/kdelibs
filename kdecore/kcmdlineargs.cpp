@@ -105,6 +105,7 @@ char **KCmdLineArgs::argv = 0;
 char *KCmdLineArgs::mCwd = 0;
 const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
+bool KCmdLineArgs::ignoreUnknown = false;
 
 //
 // Static functions
@@ -116,6 +117,14 @@ KCmdLineArgs::init(int _argc, char **_argv, const char *_appname,
 {
    init(_argc, _argv,
         new KAboutData(_appname, _appname, _version, _description, noKApp));
+}
+
+void
+KCmdLineArgs::initIgnore(int _argc, char **_argv, const char *_appname )
+{
+   init(_argc, _argv,
+        new KAboutData(_appname, _appname, "unknown", "KDE Application", false));
+   ignoreUnknown = true;
 }
 
 void
@@ -400,6 +409,8 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
 
    if (!args || !result)
    {
+      if (ignoreUnknown)
+         return;
       enable_i18n();
       usage( i18n("Unknown option '%1'.").arg(_opt));
    }
@@ -408,6 +419,8 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled)
    {
       if (!enabled)
       {
+         if (ignoreUnknown)
+            return;
          enable_i18n();
          usage( i18n("Unknown option '%1'.").arg(_opt));
       }
@@ -518,6 +531,8 @@ KCmdLineArgs::parseAllArgs()
          // Check whether appOptions allows these arguments
          if (!allowArgs)
          {
+            if (ignoreUnknown)
+               continue;
             enable_i18n();
             usage( i18n("Unexpected argument '%1'.").arg( argv[i]));
          }

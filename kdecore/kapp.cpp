@@ -222,7 +222,10 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     setName(rAppName);
 
     init(GUIenabled);
-    parseCommandLine( argc, argv );
+
+    KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
+
+    parseCommandLine( );
 }
 
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
@@ -253,7 +256,8 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
     setName(rAppName);
 
     init(GUIenabled);
-    parseCommandLine( argc, argv );
+    KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
+    parseCommandLine( );
 }
 
 int KApplication::xioErrhandler()
@@ -616,74 +620,6 @@ void KApplication::dcopFailure(const QString &msg)
   }
 }
 
-void KApplication::parseCommandLine( int& argc, char** argv )
-{
-    enum parameter_code { unknown = 0, caption, icon, miniicon, dcopserver };
-    const char* parameter_strings[] = { "-caption", "-icon", "-miniicon", "-dcopserver", 0 };
-
-    QString parsingString = " ";
-    int i = 1;
-    parameter_code parameter;
-    while( i < argc ) {
-        parameter = unknown;
-
-        for ( int p = 0 ; parameter_strings[p]; p++)
-            if ( !strcmp( argv[i], parameter_strings[p]) ) {
-                parameter = static_cast<parameter_code>(p + 1);
-                break;
-            }
-
-        if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
-            argc -= 1;
-            break; // jump out of the while loop
-        }
-
-        switch (parameter) {
-        case caption:
-            aCaption = argv[i+1];
-            parsingString += parameter_strings[caption-1];
-            parsingString += " \"";
-            parsingString += argv[i+1];
-            parsingString += "\" ";
-            break;
-        case icon:
-            if (argv[i+1][0] == '/')
-                aIconPixmap = QPixmap(argv[i+1]);
-            else
-                aIconPixmap = DesktopIcon(argv[i+1]);
-            if (aMiniIconPixmap.isNull())
-                aMiniIconPixmap = SmallIcon(argv[i+1]);
-            parsingString += parameter_strings[icon-1];
-            parsingString += " ";
-            parsingString += argv[i+1];
-            parsingString += " ";
-            break;
-        case miniicon:
-            aMiniIconPixmap = SmallIcon(argv[i+1]);
-            parsingString += parameter_strings[miniicon-1];
-            parsingString += " ";
-            parsingString += argv[i+1];
-            parsingString += " ";
-            break;
-        case dcopserver:
-            dcopClient()->setServerAddress(argv[i+1]);
-            break;
-        case unknown:
-            i++;
-        }
-
-        if ( parameter != unknown ) { // remove arguments
-
-            for( int j = i;  j < argc-2; j++ )
-                argv[j] = argv[j+2];
-
-            argc -=2 ;
-        }
-
-    }
-    pArgc = argc;
-}
-
 static const KCmdLineOptions qt_options[] =
 {
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'"), 0},
@@ -809,6 +745,7 @@ QPixmap KApplication::miniIcon() const
   }
   return aMiniIconPixmap;
 }
+
 KApplication::~KApplication()
 {
   // cleanup in the library loader: destruct all factories and unload the libraries (Simon)

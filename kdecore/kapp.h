@@ -83,25 +83,6 @@ public:
   enum CaptionLayout { CaptionAppLast=1, CaptionAppFirst, CaptionNoApp };
 
   /**
-   * Constructor. Parses command-line arguments.
-   *
-   * @param rAppName application name. Will be used for finding the
-   * associated message files and icon files, and as the default
-   * registration name for DCOP. This is a mandatory parameter.
-   *
-   * @param allowStyles Set to false to disable the loading on plugin based
-   * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with @p allowStyles set to false
-   * that normally runs in the background but under special circumstances
-   * displays widgets call @ref enableStyles() before displaying any widgets.
-   *
-   * @param GUIenabled Set to false to disable all GUI stuff. This implies
-   * no styles either.
-   */
-  KApplication(int& argc, char** argv,
-              const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
-
-  /**
    * This constructor takes aboutData and command line
    *  arguments from @ref KCmdLineArgs.
    *
@@ -140,19 +121,32 @@ public:
                bool allowStyles=true, bool GUIenabled=true);
 
   /**
+   * @depreciated
+   *
+   * Constructor. Parses command-line arguments.
+   *
+   * @param rAppName application name. Will be used for finding the
+   * associated message files and icon files, and as the default
+   * registration name for DCOP. This is a mandatory parameter.
+   *
+   * @param allowStyles Set to false to disable the loading on plugin based
+   * styles. This is only useful to applications that do not display a GUI
+   * normally. If you do create an application with @p allowStyles set to false
+   * that normally runs in the background but under special circumstances
+   * displays widgets call @ref enableStyles() before displaying any widgets.
+   *
+   * @param GUIenabled Set to false to disable all GUI stuff. This implies
+   * no styles either.
+   */
+  KApplication(int& argc, char** argv,
+              const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
+
+  /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
   static void addCmdLineOptions();
 
   virtual ~KApplication();
-
-  /** Retrieve the number of command line arguments, i. e. the length
-   *  of the array @ref KApplication::argv().
-   *
-   * In this array, the arguments
-   *  handled by @ref KApplication itself (ex., '-icon') are already removed
-   */
-  int argc() const { return pArgc; }
 
   /**
    * Retrieve the current application object.
@@ -566,7 +560,6 @@ private:
 
   void init( bool GUIenabled );
 
-  void parseCommandLine( int&, char** ); // search for special KDE arguments
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
 
 public:
@@ -768,6 +761,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.178  2000/08/01 12:12:56  hausmann
+// - install an Ice IO error handler in the constructor, deinstall it in the
+//   destructor and make the handler emit the shutdown() signal right before
+//   calling the previously installed handler
+//
 // Revision 1.177  2000/07/21 18:26:10  waba
 // WABA: Added disablesStyles() for completeness
 //

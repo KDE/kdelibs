@@ -531,6 +531,22 @@ private:
    */
   void load( QDataStream &);
 
+  /**
+   * @internal for KApplication only
+   *
+   * Initialize class.
+   *
+   * This function should be called as the very first thing in
+   *  your application.
+   * @param argc As passed to @p main(...).
+   * @param argv As passed to @p main(...).
+   * @param appname The untranslated name of your application. This should
+   *                match with @p argv[0].
+   *
+   * This function makes KCmdLineArgs ignore all unknown options as well as
+   * all arguments.
+   */
+  static void initIgnore(int _argc, char **_argv, const char *_appname);
 
   static void printQ(const QString &msg);
   
@@ -547,6 +563,7 @@ private:
   static int argc; // The original argc
   static char **argv; // The original argv
   static bool parsed; // Whether we have parsed the arguments since calling init
+  static bool ignoreUnknown; // Ignore unknown options and arguments
   static char *mCwd; // Current working directory. Important for KUnqiueApp!  
 
   KCmdLineArgsPrivate *d;
