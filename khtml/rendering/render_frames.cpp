@@ -676,33 +676,33 @@ void RenderPartObject::updateWidget()
               url = embed->url;
               serviceType = embed->serviceType;
           }
-          else {
-              serviceType = objbase->serviceType;
-              if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
+          serviceType = objbase->serviceType;
+          if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
-                  // We have a clsid, means this is activex (Niko)
-                  serviceType = "application/x-activex-handler";
+              // We have a clsid, means this is activex (Niko)
+              serviceType = "application/x-activex-handler";
 
-                  if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
-                      // It is ActiveX, but the nsplugin system handling
-                      // should also work, that's why we don't override the
-                      // serviceType with application/x-activex-handler
-                      // but let the KTrader in khtmlpart::createPart() detect
-                      // the user's preference: launch with activex viewer or
-                      // with nspluginviewer (Niko)
-                      serviceType = "application/x-shockwave-flash";
-                  }
-                  else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
-                      serviceType = "audio/x-pn-realaudio-plugin";
-                  else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) ||
-                          objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
-                      serviceType = "application/x-java-applet";
-
-                  else
-                      kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
-
-                  // TODO: add more plugins here
+              if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+                  // It is ActiveX, but the nsplugin system handling
+                  // should also work, that's why we don't override the
+                  // serviceType with application/x-activex-handler
+                  // but let the KTrader in khtmlpart::createPart() detect
+                  // the user's preference: launch with activex viewer or
+                  // with nspluginviewer (Niko)
+                  serviceType = "application/x-shockwave-flash";
               }
+              else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+                  //if we support -plugin suffixes
+                  //serviceType = "audio/x-pn-realaudio-plugin";
+                  serviceType = "audio/x-pn-realaudio";
+              else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) ||
+                      objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
+                  serviceType = "application/x-java-applet";
+
+              else
+                  kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
+
+              // TODO: add more plugins here
           }
       }
       if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
