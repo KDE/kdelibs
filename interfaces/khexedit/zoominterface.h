@@ -23,30 +23,36 @@ namespace KHE
 {
 
 /**
- *  An interface for linear zooming
+ * @short A simple interface for zooming
  *
- * @author Friedrich W. H. Kossebau Friedrich.W.H@Kossebau.de
+ * This interface enables abstract linear zooming. 
+ * It operates in sizes of font point size.
+ *
+ * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @see createBytesEditWidget(), zoomInterface()
+ * @since 3.2
  */
 class ZoomInterface
 {
   public:
-   // static const char *Name = "KHE::ZoomInterface";
-
-  public:
     /** enlarges the display
-      * @param PointInc increment to the display size, in font point size
+      * @param PointInc increment to the display size (in font point size)
       */
     virtual void zoomIn( int PointInc ) = 0;
-    /** increases the display size by an arbitrary value */
+    /** increases the display size by an arbitrary value, usually 1 font point 
+      * @see zoomOut()
+      */
     virtual void zoomIn() = 0;
     /** makes the display smaller
-      * @param PointDec decrement to the display size, in font point size
+      * @param PointDec decrement to the display size (in font point size)
       */
     virtual void zoomOut( int PointDec ) = 0;
-    /** decreases the display size by an arbitrary value */
+    /** decreases the display size by an arbitrary value, usually 1 font point 
+      * @see zoomIn()
+      */
     virtual void zoomOut() = 0;
     /** sets the display size
-      * @param PointSize new display size, in font point size
+      * @param PointSize new display size (in font point size)
       */
     virtual void zoomTo( int PointSize ) = 0;
     /** resets the display to the default size */
@@ -54,6 +60,12 @@ class ZoomInterface
 };
 
 
+/** tries to get the zoom interface of t   
+  * @return a pointer to the interface, otherwise 0
+  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @see ZoomInterface
+  * @since 3.2
+*/
 template<class T>
 ZoomInterface *zoomInterface( T *t )
 {
@@ -66,4 +78,3 @@ ZoomInterface *zoomInterface( T *t )
 }
 
 #endif
-

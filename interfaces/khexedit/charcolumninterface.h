@@ -24,12 +24,12 @@ namespace KHE
 {
 
 /**
- *  An interface for the access to the text column of a hex edit widget
+ * @short A simple interface for the access to the text column of a hex edit widget
  *
- * @author Friedrich W. H. Kossebau Friedrich.W.H@Kossebau.de
- *
+ * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+ * @see createBytesEditWidget()
+ * @since 3.2
  */
-
 class TextColumnInterface
 {
   public:
@@ -38,7 +38,7 @@ class TextColumnInterface
     {
       /** the coding of your shell */
       LocalEncoding=0,
-      /** ASCII encoding, also known as Latin1 */
+      /** extended ASCII encoding, also known as Latin1 */
       ISO8859_1Encoding=1,
       /** don't use; not implemented: the most common EBCDIC codepage */
       CECP1047Encoding=2,
@@ -47,34 +47,51 @@ class TextColumnInterface
     };
 
   public: // set methods
-    /** sets whether "unprintable" chars (>32) should be displayed in the text column
+    /** sets whether "unprintable" chars (value<32) should be displayed in the text column
       * with their corresponding character.
       * @param SU
-      * returns true if there was a change
+      * @see showUnprintable()
       */
     virtual void setShowUnprintable( bool SU = true ) = 0;
     /** sets the substitute character for "unprintable" chars
-      * returns true if there was a change
+      * @param SC new character
+      * @see substituteChar()
       */
     virtual void setSubstituteChar( QChar SC ) = 0;
     /** sets the encoding of the text column. Default is KHE::LocalEncoding.
-      * If the encoding is not available the format will not be changed. */
-    virtual void setEncoding( KEncoding C )    = 0;
+      * If the encoding is not available the format will not be changed. 
+      * @param C the new encoding
+      * @see encoding()
+      */
+    virtual void setEncoding( KEncoding C ) = 0;
 
 
   public: // get methods
-    /** returns true if "unprintable" chars (>32) are displayed in the text column
+    /** returns true if "unprintable" chars (value<32) are displayed in the text column
       * with their corresponding character, default is false
+      * @return @c true if displayed, @c false otherwise
+      * @see setShowUnprintable()
       */
     virtual bool showUnprintable() const = 0;
-    /** returns the actually used substitute character for "unprintable" chars, default is '.' */
+    /** returns the actually used substitute character for "unprintable" chars, 
+      * default is '.' 
+      * @return the char
+      * @see setSubstituteChar()
+      */
     virtual QChar substituteChar() const = 0;
-    /** */
+    /** 
+      * @see setEncoding()
+      */
     virtual KEncoding encoding()   const = 0;
 };
 
 
-/** tries to get the textcolumn interface of t */
+/** tries to get the textcolumn interface of t 
+  * @return a pointer to the interface, otherwise 0
+  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
+  * @see TextColumnInterface
+  * @since 3.2
+  */
 template<class T>
 TextColumnInterface *textColumnInterface( T *t )
 {
@@ -87,4 +104,3 @@ TextColumnInterface *textColumnInterface( T *t )
 }
 
 #endif
-
