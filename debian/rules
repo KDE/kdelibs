@@ -85,13 +85,6 @@ binary-arch:  build
 
 # Below here is fairly generic really
 
-test:
-	touch $$( ls -1 debian/kdelibs0g/usr/X11R6/lib/lib* | grep -E lib.*\.so\.[^\.]*$$ )
-
 binary:		binary-indep binary-arch
 
-checkroot:
-	$(checkdir)
-	test root = "`whoami`"
-
-.PHONY: binary binary-arch binary-indep clean checkroot
+.PHONY: binary binary-arch binary-indep clean
