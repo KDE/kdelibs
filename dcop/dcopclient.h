@@ -221,7 +221,7 @@ class DCOPClient : public QObject
    *
    * This allows a server to queue requests.
    *
-   * NOTE: Should be called from inside proces(...) only!
+   * NOTE: Should be called from inside process(...) only!
    */
   DCOPClientTransaction *beginTransaction( );
   
