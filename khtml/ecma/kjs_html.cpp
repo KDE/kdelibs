@@ -196,7 +196,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "all")
     return new HTMLDocFunction(doc, HTMLDocFunction::All);
   else if (p == "cookie")
-    return getString(doc.cookie());
+    return String(doc.cookie());
   else if (p == "open")
     return new HTMLDocFunction(doc, HTMLDocFunction::Open);
   else if (p == "close")
