@@ -72,9 +72,9 @@ Event::~Event()
 Event &Event::operator = (const Event &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }

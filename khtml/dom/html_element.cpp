@@ -51,6 +51,7 @@ HTMLElement &HTMLElement::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if (!ohandle || !ohandle->isHTMLElement()) {
+        if (impl) impl->deref();
 	impl = 0;
 	return *this;
     }

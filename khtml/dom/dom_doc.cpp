@@ -57,9 +57,9 @@ DOMImplementation::DOMImplementation(DOMImplementationImpl *i)
 DOMImplementation &DOMImplementation::operator = (const DOMImplementation &other)
 {
     if ( impl != other.impl ) {
-    if (impl) impl->deref();
-    impl = other.impl;
-    if (impl) impl->ref();
+        if (impl) impl->deref();
+        impl = other.impl;
+        if (impl) impl->ref();
     }
     return *this;
 }
@@ -187,11 +187,11 @@ Document &Document::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != DOCUMENT_NODE) {
+        if (!ohandle || ohandle->nodeType() != DOCUMENT_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
@@ -439,12 +439,12 @@ DocumentFragment &DocumentFragment::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != DOCUMENT_FRAGMENT_NODE) {
-	    if ( impl ) impl->deref();
-	impl = 0;
-	} else {
-    Node::operator =(other);
-	}
+        if (!ohandle || ohandle->nodeType() != DOCUMENT_FRAGMENT_NODE) {
+            if ( impl ) impl->deref();
+            impl = 0;
+        } else {
+            Node::operator =(other);
+        }
     }
     return *this;
 }
@@ -483,11 +483,11 @@ DocumentType &DocumentType::operator = (const Node &other)
 {
     NodeImpl* ohandle = other.handle();
     if ( impl != ohandle ) {
-    if (!ohandle || ohandle->nodeType() != DOCUMENT_TYPE_NODE) {
+        if (!ohandle || ohandle->nodeType() != DOCUMENT_TYPE_NODE) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-    Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;

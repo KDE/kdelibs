@@ -52,9 +52,9 @@ NamedNodeMap::NamedNodeMap(NamedNodeMapImpl *i)
 NamedNodeMap &NamedNodeMap::operator = (const NamedNodeMap &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -149,9 +149,9 @@ Node::Node( NodeImpl *i )
 Node &Node::operator = (const Node &other)
 {
     if(impl != other.impl) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -453,9 +453,9 @@ NodeList::NodeList(const NodeListImpl *i)
 NodeList &NodeList::operator = (const NodeList &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }

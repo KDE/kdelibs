@@ -63,9 +63,9 @@ HTMLDocument &HTMLDocument::operator = (const Node &other)
 	DocumentImpl *d = static_cast<DocumentImpl *>(other.handle());
 	if(!d->isHTMLDocument()) {
 	    if ( impl ) impl->deref();
-	impl = 0;
+            impl = 0;
 	} else {
-	Node::operator =(other);
+            Node::operator =(other);
 	}
     }
     return *this;
