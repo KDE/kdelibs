@@ -66,7 +66,7 @@ void KURLComboBox::init( Mode mode )
 
 QStringList KURLComboBox::urls() const
 {
-    static QString fileProt = QString::fromLatin1("file:");
+    static const QString &fileProt = KGlobal::staticQString("file:");
     QStringList list;
     QString url;
     for ( int i = firstItemIndex; i < count(); i++ ) {

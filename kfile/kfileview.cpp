@@ -311,7 +311,7 @@ void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 
 int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) const
 {
-    static QString dirup = QString::fromLatin1("..");
+    static const QString &dirup = KGlobal::staticQString("..");
     bool bigger = true;
     bool keepFirst = false;
     bool dirsFirst = ((mySorting & QDir::DirsFirst) == QDir::DirsFirst);

@@ -559,7 +559,7 @@ void KFileDialog::multiSelectionChanged()
 	return;
     }
 
-    static QString begin = QString::fromLatin1(" \"");
+    static const QString &begin = KGlobal::staticQString(" \"");
     KFileViewItemListIterator it ( *list );
     QString text;
     while ( (item = it.current()) ) {
@@ -1073,7 +1073,7 @@ KURL::List& KFileDialog::parseSelectedURLs() const
 
     d->urlList.clear();
     if ( d->filenames.contains( '/' )) { // assume _one_ absolute filename
-	static QString prot = QString::fromLatin1(":/");
+	static const QString &prot = KGlobal::staticQString(":/");
 	KURL u;
 	if ( d->filenames.find( prot ) != -1 )
 	    u = d->filenames;
@@ -1164,7 +1164,7 @@ QStringList KFileDialog::selectedFiles() const
 	// FIXME: check for local files?
 
 	static QRegExp r( QString::fromLatin1( "\"" ) );
-	static QString empty = QString::fromLatin1("");
+	static const QString &empty = KGlobal::staticQString("");
 	QTextStream t( &(d->filenames), IO_ReadOnly );
 	while ( !t.eof() ) {
 	    t >> name;

@@ -236,7 +236,7 @@ bool KFileReader::match(const QString& name) const
 
 bool KFileReader::filterEntry(KFileViewItem *i)
 {
-    static QString up = QString::fromLatin1("..");
+    static const QString &up = KGlobal::staticQString("..");
     if (i->name() == up)
 	return !root;
 
