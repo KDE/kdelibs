@@ -57,11 +57,12 @@ class KDirLister : public QObject, public KDirNotify
   Q_OBJECT
 public:
   /**
-   * Create a directory lister
+   * Create a directory lister.
    */
   KDirLister( bool _delayedMimeTypes = false );
+
   /**
-   * Destroy the directory lister
+   * Destroy the directory lister.
    */
   virtual ~KDirLister();
 
@@ -71,21 +72,30 @@ public:
    * @param _showDotFiles whether to return the "hidden" files
    * @param _keep if true the previous directories aren't forgotten
    * (they are still watched by kdirwatch and their items are kept in
-   * m_lstFileItems)
+   * m_lstFileItems). This is useful for e.g. a treeview.
    *
    * The @ref newItems() signal may be emitted more than once to supply you
    * with KFileItems, up until the signal @ref completed() is emitted
-   * (and isFinished() returns true).
+   * (and @ref isFinished() returns true).
    */
   virtual void openURL( const KURL& _url, bool _showDotFiles, bool _keep = false );
 
   /**
    * Stop listing all directories currently being listed.
+   *
+   * Emits @ref canceled() if there was at least one job running.
+   * Emits @ref canceled( const KURL& ) for each stopped job if
+   * there are at least two dirctories being watched by KDirLister.
    */
   virtual void stop();
 
   /**
    * Stop listing the given directory.
+   *
+   * Emits @ref canceled() if the killed job was the last running one.
+   * Emits @ref canceled( const KURL& ) for the killed job if
+   * there are at least two directories being watched by KDirLister.
+   * No signal is emitted if there was no job running for @p _url.
    * @param _url the directory URL
    */
   void stop( const KURL& _url );
@@ -93,7 +103,8 @@ public:
   /**
    * @return the url used by this instance to list the files, with _keep == true,
    *         this is the first url opened (in e.g. a treeview this is the root).
-   * It might be different from the one we gave, if there was a redirection.
+   * It might be different from the one given with @ref openURL() or @ref setURL(),
+   * if there was a redirection.
    */
   virtual const KURL & url() const { return m_url; }
 
@@ -107,12 +118,13 @@ public:
   virtual bool setURL( const KURL& url );
 
   /**
-   * Update @p url.
+   * Update @p _dir.
    * The current implementation calls it automatically for
    * local files, using KDirWatch (if autoUpdate() is true), but it might be
    * useful to force an update manually.
+   * @param _dir the directory URL
    */
-  virtual void updateDirectory( const KURL& dir );
+  virtual void updateDirectory( const KURL& _dir );
 
   /**
    * Convenience method. Starts loading the current directory, e.g. set via
@@ -144,7 +156,7 @@ public:
 
   /**
    * Changes the "is viewing dot files" setting.
-   * Calls updateDirectory() if setting changed
+   * Calls @ref updateDirectory() if setting changed
    */
   virtual void setShowingDotFiles( bool _showDotFiles );
 
@@ -307,12 +319,30 @@ signals:
    */
   void started( const QString& _url );
 
-  /** Tell the view that listing is finished */
+  /**
+   * Tell the view that listing is finished. There are no jobs running anymore.
+   */
   void completed();
+
+  /**
+   * Tell the view that the listing of the directory @p _url is finished.
+   * There might be other running jobs left.
+   * This signal is only emitted if KDirLister is watching more than one directory.
+   * @param _url the directory URL
+   */
   void completed( const KURL& _url );
 
-  /** Tell the view that user canceled the listing */
+  /**
+   * Tell the view that the user canceled the listing. No running jobs are left.
+   */
   void canceled();
+
+  /**
+   * Tell the view that the listing of the directory @p _url was canceled.
+   * There might be other running jobs left.
+   * This signal is only emitted if KDirLister is watching more than one directory.
+   * @param _url the directory URL
+   */
   void canceled( const KURL& _url );
 
   /**
