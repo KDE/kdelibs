@@ -31,6 +31,27 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include "main.h"
 
+int isIntType( const QString& t)
+{
+  if ((t == "signed int")
+      || (t == "unsigned int")
+      || (t == "signed short int")
+      || (t == "signed long int")
+      || (t == "signed short int")
+      || (t == "unsigned short int")
+      || (t == "unsigned long int")
+      || (t == "unsigned short int")
+      || (t == "unsigned int")
+      || (t == "int")
+      || (t == "long int")
+      || (t == "short int")
+      || (t == "char")
+      || (t == "signed char")
+      || (t == "unsigned char"))
+    return 1;
+  return 0;
+}
+
 /**
  * Writes the stub implementation
  */
@@ -196,8 +217,12 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << "    setStatus( CallSucceeded );" << endl;
 		    } else {
 		
-			if ( result != "void" )
-			    str << "    " << result << " result;" << endl;
+			if ( result != "void" ) {
+			    str << "    " << result << " result";
+			    if (isIntType( result ))
+				str << " = 0";
+			    str << ";" << endl;
+			}
 
 			str << "    if ( !dcopClient()  ) {"<< endl;
 			str << "\tsetStatus( CallFailed );" << endl;
