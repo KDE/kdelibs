@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="17">
+<kpartgui name="khtmlpart" version="18">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
   <Action name="saveBackground" />
@@ -13,6 +13,7 @@
   <Separator />
   <Action name="find" />
   <Action name="findNext" />
+  <Action name="findPrevious" />
   <Action name="findAheadText" />
   <Action name="findAheadLink" />
  </Menu>

@@ -376,6 +376,11 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "Find the next occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
+  d->m_paFindPrev = KStdAction::findPrev( this, SLOT( slotFindPrev() ), actionCollection(), "findPrevious" );
+  d->m_paFindPrev->setWhatsThis( i18n( "Find previous<p>"
+				       "Find the previous occurrence of the text that you "
+				       "have found using the <b>Find Text</b> function" ) );
+
   KAction* ft = new KAction( "Find Text As You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
       actionCollection(), "findAheadText");
   KAction* fl = new KAction( "Find Links As You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
@@ -385,6 +390,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   {
       d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
       d->m_paFindNext->setShortcut( KShortcut() ); // avoid clashes
+      d->m_paFindPrev->setShortcut( KShortcut() ); // avoid clashes
       ft->setShortcut( KShortcut());
       fl->setShortcut( KShortcut());
   }
@@ -2846,6 +2852,19 @@ void KHTMLPart::slotFindNext()
   static_cast<KHTMLPart *>( part )->findTextNext();
 }
 
+void KHTMLPart::slotFindPrev()
+{
+  KParts::ReadOnlyPart *part = currentFrame();
+  if (!part)
+    return;
+  if (!part->inherits("KHTMLPart") )
+  {
+      kdError(6000) << "slotFindNext: part is a " << part->className() << ", can't do a search into it" << endl;
+      return;
+  }
+  static_cast<KHTMLPart *>( part )->findTextNext( true ); // reverse
+}
+
 void KHTMLPart::slotFindDone()
 {
   // ### remove me
@@ -2951,8 +2970,13 @@ void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFi
   }
 }
 
-// New method
 bool KHTMLPart::findTextNext()
+{
+  return findTextNext( false );
+}
+
+// New method
+bool KHTMLPart::findTextNext( bool reverse )
 {
   if (!d->m_find)
   {
@@ -2989,6 +3013,10 @@ bool KHTMLPart::findTextNext()
     }
   } else
     options = d->m_lastFindState.options;
+  if( reverse )
+    options = options ^ KFindDialog::FindBackwards;
+  if( d->m_find->options() != options )
+    d->m_find->setOptions( options );
 
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
