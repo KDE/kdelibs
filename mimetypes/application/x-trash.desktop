@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-trash
-Icon=trash
+Icon=recycled
 Patterns=*~;*%;*.bak;*.old;*.sik;
-Comment=Trash file
+Comment=Backup file
 Comment[ca]=Fitxer de la paperera
 Comment[cs]=Záložní soubor
 Comment[de]=Datei in Papierkorb
@@ -11,6 +11,7 @@ Comment[eo]=Rubujo-dosiero
 Comment[fi]=Varmuuskopio
 Comment[fr]=Fichier à supprimer
 Comment[hu]=Szemét
+Comment[it]=File da cestinare
 Comment[ja]=ごみファイル
 Comment[no]=Søppelfil
 Comment[no_NY]=Søppelfil
