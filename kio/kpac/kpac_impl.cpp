@@ -21,6 +21,7 @@
  */
 
 #include <stdlib.h>
+#include <time.h>
 
 #include <qfile.h>
 
@@ -30,6 +31,8 @@
 #include <kjs/object.h>
 #include <kjs/types.h>
 #include <kio/netaccess.h>
+#include <ksimpleconfig.h>
+#include <kstddirs.h>
 
 #include "kproxybindings.h"
 #include "kpac_impl.h"
@@ -62,6 +65,7 @@ QString KPACImpl::proxyForURL(const KURL &url)
         QStringList proxies = QStringList::split(';', retval->toString().value().qstring());
         if (!proxies.count())
             return QString::null;
+        KSimpleConfig blackList(locate("tmp", "badproxies"));
         for (QStringList::ConstIterator it = proxies.begin(); it != proxies.end(); ++it)
         {
             QString proxy = (*it).simplifyWhiteSpace();
@@ -69,7 +73,14 @@ QString KPACImpl::proxyForURL(const KURL &url)
             {
                 int p = proxy.find(':');
                 if (p >= 0)
-                    return proxy.mid(p + 1).stripWhiteSpace();
+                {
+                    proxy = proxy.mid(p + 1).stripWhiteSpace();
+                    time_t badMark = blackList.readNumEntry(proxy);
+                    if (badMark < time(0) + 1800)
+                        return proxy;
+                    else if (badMark)
+                        blackList.deleteEntry(proxy, false);
+                }
             }
             break;
         }
@@ -111,6 +122,12 @@ bool KPACImpl::setConfig(const KURL &url)
     f.close();
     KIO::NetAccess::removeTempFile(tempFile);
     return m_configRead;
+}
+
+void KPACImpl::badProxy(const QString &proxy)
+{
+    KSimpleConfig blackList(locate("tmp", "badproxies"));
+    blackList.writeEntry(proxy, time(0));
 }
 
 extern "C"

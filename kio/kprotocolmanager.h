@@ -165,7 +165,7 @@ public:
    */
   static QString proxyFor( const QString& /* protocol */);
 
-  /*
+  /**
    * Returns the Proxy server address for a given URL
    * If automatic proxy configuration is configured, @ref KPAC
    * is used to determine the proxy server, otherwise the return
@@ -176,7 +176,13 @@ public:
    */
   static QString proxyForURL( const KURL& /* url */ );
 
-  /*
+  /**
+   * Marks this proxy as bad (down). It will not be used for the
+   * next 30 minutes. (The script may supply an alternate proxy)
+   */
+  static void badProxy( const QString & /* proxy */ );
+
+  /**
    * Returns whether a proxy config script is being used
    *
    * @returns true if a proxy config script is used

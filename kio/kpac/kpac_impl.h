@@ -35,6 +35,7 @@ public:
     virtual ~KPACImpl();
     virtual QString proxyForURL(const KURL &url);
     virtual bool setConfig(const KURL &url);
+    virtual void badProxy(const QString &proxy);
 
 private:
     KJScript *m_kjs;

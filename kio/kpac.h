@@ -41,6 +41,13 @@ public:
      * the config has not been downloaded.
      */
     virtual bool setConfig(const KURL &url) = 0;
+    /**
+     * Marks @p proxy as down. If the config script returns
+     * alternative proxies or allows a direct connection
+     * as fallback, this proxy will not be returned for
+     * a while.
+     */
+    virtual void badProxy(const QString &proxy) = 0;
 };
 
 #endif

@@ -237,6 +237,12 @@ QString KProtocolManager::proxyForURL( const KURL &url )
     return proxyFor( url.protocol() );
 }
 
+void KProtocolManager::badProxy( const QString &proxy )
+{
+  if ( _pac ) // don't load KPAC here if it isn't already
+    _pac->badProxy( proxy );
+}
+
 bool KProtocolManager::hasProxyConfigScript()
 {
     return pac() != 0;
