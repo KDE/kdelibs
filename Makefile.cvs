@@ -2,13 +2,16 @@ all:
 	@echo "This Makefile is only for the CVS repository"
 	@echo "I will delete it before making the distribution"
 	@echo ""
+	cat acinclude.m4.in libtool.m4.in > acinclude.m4
 	aclocal 
 	autoheader
 	automake
 	autoconf
 
 dist:
-	@aclocal ;\
+	@cat acinclude.m4.in libtool.m4.in > acinclude.m4
+	rm acinclude.m4.in libtool.m4.in
+	aclocal ;\
 	autoheader ;\
 	automake --foreign --include-deps ;\
 	autoconf ;\
