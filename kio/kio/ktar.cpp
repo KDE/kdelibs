@@ -526,7 +526,7 @@ void KTar::fillBuffer( char * buffer,
   buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
   // Dummy time
-  s.sprintf("%lo", time( 0 ) ); // OCT
+  s.sprintf("%lo", static_cast<unsigned long>(time( 0 )) ); // OCT
   s = s.rightJustify( 11, ' ' );
   strcpy( buffer + 0x88, s.data() );
   buffer[ 0x93 ] = ' '; // space-terminate (no null after)
