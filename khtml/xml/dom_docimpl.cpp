@@ -106,7 +106,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_loadingSheet = false;
     m_sheet = 0;
     m_elemSheet = 0;
-    tokenizer = 0;
+    m_tokenizer = 0;
     m_doctype = new DocumentTypeImpl(this);
     m_doctype->ref();
     m_implementation = new DOMImplementationImpl();
@@ -130,7 +130,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_loadingSheet = false;
     m_sheet = 0;
     m_elemSheet = 0;
-    tokenizer = 0;
+    m_tokenizer = 0;
     m_doctype = new DocumentTypeImpl(this);
     m_doctype->ref();
     m_implementation = new DOMImplementationImpl();
@@ -152,8 +152,8 @@ DocumentImpl::~DocumentImpl()
     delete m_docLoader;
     if (m_elemSheet )
 	m_elemSheet->deref();
-    if (tokenizer)
-	delete tokenizer;
+    if (m_tokenizer)
+	delete m_tokenizer;
     m_doctype->deref();
     m_implementation->deref();
     delete m_paintDeviceMetrics;
@@ -728,9 +728,9 @@ void DocumentImpl::setPaintDevice( QPaintDevice *dev )
 void DocumentImpl::open(  )
 {
     clear();
-    tokenizer = createTokenizer();
-    connect(tokenizer,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
-    tokenizer->begin();
+    m_tokenizer = createTokenizer();
+    connect(m_tokenizer,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
+    m_tokenizer->begin();
 }
 
 void DocumentImpl::close(  )
@@ -741,20 +741,20 @@ void DocumentImpl::close(  )
     if (m_render)
         m_render->close();
 
-    if(tokenizer) delete tokenizer;
-    tokenizer = 0;
+    if(m_tokenizer) delete m_tokenizer;
+    m_tokenizer = 0;
 }
 
 void DocumentImpl::write( const DOMString &text )
 {
-    if(tokenizer)
-        tokenizer->write(text.string());
+    if(m_tokenizer)
+        m_tokenizer->write(text.string());
 }
 
 void DocumentImpl::write( const QString &text )
 {
-    if(tokenizer)
-        tokenizer->write(text);
+    if(m_tokenizer)
+        m_tokenizer->write(text);
 }
 
 void DocumentImpl::writeln( const DOMString &text )
@@ -765,14 +765,14 @@ void DocumentImpl::writeln( const DOMString &text )
 
 void DocumentImpl::finishParsing (  )
 {
-    if(tokenizer)
-        tokenizer->finish();
+    if(m_tokenizer)
+        m_tokenizer->finish();
 }
 
 void DocumentImpl::clear()
 {
-    if(tokenizer) delete tokenizer;
-    tokenizer = 0;
+    if(m_tokenizer) delete m_tokenizer;
+    m_tokenizer = 0;
 
     // #### clear tree
 }

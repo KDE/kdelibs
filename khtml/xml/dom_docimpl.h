@@ -185,6 +185,7 @@ public:
 
     CSSStyleSheetImpl* elementSheet();
     virtual Tokenizer *createTokenizer();
+    Tokenizer *tokenizer() { return m_tokenizer; }
 
     QPaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
     QPaintDevice *paintDevice() const { return m_paintDevice; }
@@ -256,7 +257,7 @@ protected:
 
     khtml::DocLoader *m_docLoader;
     bool visuallyOrdered;
-    Tokenizer *tokenizer;
+    Tokenizer *m_tokenizer;
     DOMString url;
     DocumentTypeImpl *m_doctype;
     DOMImplementationImpl *m_implementation;
