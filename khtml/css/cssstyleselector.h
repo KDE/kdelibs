@@ -153,9 +153,16 @@ namespace khtml
 	    AppliesPseudo,
 	    Invalid
 	};
+
+        struct SelectorCache {
+            SelectorState state;
+            int props_size;
+            int *props;
+        };
+            
 	unsigned int selectors_size;
 	DOM::CSSSelector **selectors;
-	SelectorState *selectorState;
+	SelectorCache *selectorCache;
 	
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;

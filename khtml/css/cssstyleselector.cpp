@@ -82,9 +82,9 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
 
     selectors = 0;
-    selectorState = 0;
+    selectorCache = 0;
     properties = 0;
-    
+
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
     QList<StyleSheetImpl> authorStyleSheets = doc->authorStyleSheets();
@@ -93,7 +93,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 	authorStyle->append(it.current());
 
     buildLists();
-    
+
 //     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
@@ -195,40 +195,60 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
-    //memset( selectorState, 0, sizeof( SelectorState ) * selectors_size );
 #if 1
     // try to sort out most style rules as early as possible.
     int id = e->id();
-    CSSSelector **sel = selectors;
-    SelectorState *sel_state = selectorState;
-    while ( *sel ) {
-	int tag = (*sel)->tag;
-	if ( id != tag && tag != -1 )
-	    *sel_state = Invalid;
+    for ( unsigned int i = 0; i < selectors_size; i++ ) {
+	int tag = selectors[i]->tag;
+	if ( id == tag || tag == -1 ) {
+            checkSelector( i, e );
+
+	    if ( selectorCache[i].state == Applies ) {
+		//qDebug("adding property" );
+                for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
+                    for ( unsigned int j = 0; j < selectorCache[i].props[p+1]; ++j )
+                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
+	    } else if ( selectorCache[i].state == AppliesPseudo ) {
+                for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
+                    for ( unsigned int j = 0; j < selectorCache[i].props[p+1]; ++j )
+                        static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
+            }
+        }
 	else
-	    *sel_state = Unknown;
-	++sel;
-	++sel_state;
+	    selectorCache[i].state = Invalid;
     }
-#endif
-    
+#else
+    // try to sort out most style rules as early as possible.
+    int id = e->id();
+    for ( unsigned int i = 0; i < selectors_size; i++ ) {
+	int tag = selectors[i]->tag;
+	if ( id != tag && tag != -1 )
+	    selectorCache[i].state = Invalid;
+	else
+	    selectorCache[i].state = Unknown;
+    }
+
     //qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
-    
+
     CSSOrderedProperty **prop = properties;
     while ( *prop ) {
 	unsigned int selIndex = (*prop)->selector;
-	if ( selectorState[selIndex] != Invalid ) {
-	    if ( selectorState[selIndex] == Unknown )
+        SelectorState selstate = selectorCache[selIndex].state;
+	if ( selstate != Invalid ) {
+	    if ( selstate == Unknown )
 		checkSelector( selIndex, e );
-	    if ( selectorState[selIndex] == Applies ) {
-		//qDebug("adding property" );	    
+
+            selstate = selectorCache[selIndex].state;
+	    if ( selstate == Applies ) {
+		//qDebug("adding property" );
 		static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( *prop );
-	    } else if ( selectorState[selIndex] == AppliesPseudo )
+	    } else if ( selstate == AppliesPseudo )
 		static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append( *prop );
 	}
 	++prop;
     }
-    
+#endif
+
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
     if(e->styleRules()) propsToApply->append( e->styleRules(), 0, 0, Inline, InlineImportant );
@@ -237,14 +257,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     pseudoProps->sort();
 
     RenderStyle* style = new RenderStyle();
-    if(e->parentNode())
-    {
+    if(e->parentNode()) {
         assert(e->parentNode()->style() != 0);
         style->inheritFrom(e->parentNode()->style());
     }
 
     //qDebug("applying properties, count=%d", propsToApply->count() );
-    
+
     if ( propsToApply->count() != 0 ) {
 	CSSOrderedProperty *ordprop = propsToApply->first();
 	while( ordprop ) {
@@ -274,28 +293,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     delete propsToApply;
     delete pseudoProps;
-    
-#if 0
-    bool found = false;
-    if(!styleElementCache) styleElementCache = new QList<RenderStyle>;
-    for(RenderStyle* hashedStyle = styleElementCache->first(); hashedStyle; hashedStyle = styleElementCache->next())
-        if(*hashedStyle == *style) {
-            styleElementCache->prepend(styleElementCache->take());
-            delete style;
-            style = hashedStyle;
-            found = true;
-            break;
-        }
-
-    if(!found) {
-        if(styleElementCache->count() > 15) {
-            styleElementCache->getLast()->deref();
-            styleElementCache->removeLast();
-        }
-        styleElementCache->append(style);
-        style->ref();
-    }
-#endif
 
     return style;
 }
@@ -307,10 +304,10 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     selectorDynamicState = StyleSelector::None;
     lastSelectorPart = true;
     NodeImpl *n = e;
-    
-    selectorState[ selIndex ] = Invalid;
+
+    selectorCache[ selIndex ].state = Invalid;
     CSSSelector *sel = selectors[ selIndex ];
-    
+
     // first selector has to match
     if(!checkOneSelector(sel, e)) return;
 
@@ -366,9 +363,9 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     if ((selectorDynamicState & dynamicState) != selectorDynamicState)
 	return;
     if ( dynamicPseudo != RenderStyle::NOPSEUDO )
-	selectorState[selIndex] = AppliesPseudo;
+	selectorCache[selIndex].state = AppliesPseudo;
     else
-	selectorState[ selIndex ] = Applies;
+	selectorCache[ selIndex ].state = Applies;
     //qDebug( "selector %d applies", selIndex );
     //selectors[ selIndex ]->print();
     return;
@@ -529,7 +526,11 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 void CSSStyleSelector::clearLists()
 {
     if ( selectors ) delete [] selectors;
-    if ( selectorState ) delete [] selectorState;
+    if ( selectorCache ) {
+        for ( unsigned int i = 0; i < selectors_size; i++ )
+            if ( selectorCache[i].props )
+                delete [] selectorCache[i].props;
+    }
     if ( properties ) {
 	CSSOrderedProperty **prop = properties;
 	while ( *prop ) {
@@ -539,15 +540,15 @@ void CSSStyleSelector::clearLists()
     }
     selectors = 0;
     properties = 0;
+    selectorCache = 0;
 }
-    
+
 
 void CSSStyleSelector::buildLists()
 {
     clearLists();
-    
     // collect all selectors and Properties in lists. Then transer them to the array for faster lookup.
-    
+
     QList<CSSSelector> selectorList;
     CSSOrderedPropertyList propertyList;
 
@@ -555,7 +556,7 @@ void CSSStyleSelector::buildLists()
     if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
     if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
 
-    selectors_size = selectorList.count() + 1;
+    selectors_size = selectorList.count();
     selectors = new CSSSelector *[selectors_size];
     CSSSelector *s = selectorList.first();
     CSSSelector **sel = selectors;
@@ -564,9 +565,13 @@ void CSSStyleSelector::buildLists()
 	s = selectorList.next();
 	++sel;
     }
-    *sel = 0;
 
-    selectorState = new SelectorState[selectors_size];
+    selectorCache = new SelectorCache[selectors_size];
+    for ( unsigned int i = 0; i < selectors_size; i++ ) {
+        selectorCache[i].state = Unknown;
+        selectorCache[i].props_size = 0;
+        selectorCache[i].props = 0;
+    }
 
     // presort properties. Should make the sort() calls in styleForElement faster.
     propertyList.sort();
@@ -580,6 +585,35 @@ void CSSStyleSelector::buildLists()
 	++prop;
     }
     *prop = 0;
+
+    // This algorithm sucks badly. but hey, its performance shouldn't matter much ( Dirk )
+    for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
+        prop = properties;
+        int len = 0;
+        int offset = 0;
+        bool matches = false;
+        for ( unsigned int p = 0; p < properties_size-1; ++p ) {
+            if ( matches != ( properties[p]->selector == sel ) ) {
+                if ( matches ) {
+                    int* newprops = new int[selectorCache[sel].props_size+2];
+                    for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
+                        newprops[i] = selectorCache[sel].props[i];
+                    newprops[selectorCache[sel].props_size] = offset;
+                    newprops[selectorCache[sel].props_size+1] = len;
+                    delete selectorCache[sel].props;
+                    selectorCache[sel].props = newprops;
+                    selectorCache[sel].props_size += 2;
+                    matches = false;
+                }
+                else {
+                    matches = true;
+                    offset = p;
+                    len = 0;
+                }
+            }
+            ++len;
+        }
+    }
 }
 
 
@@ -675,7 +709,7 @@ int CSSOrderedPropertyList::compareItems(QCollection::Item i1, QCollection::Item
         - static_cast<CSSOrderedProperty *>(i2)->position;
 }
 
-void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity, 
+void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 				    Source regular, Source important )
 {
     QList<CSSProperty> *values = decl->values();
@@ -685,10 +719,10 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
     {
         CSSProperty *prop = values->at(i);
 	Source source = regular;
-        
+
 	if( prop->m_bImportant ) source = important;
 	if( prop->nonCSSHint ) source = NonCSSHint;
-	
+
 	bool first = false;
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
@@ -766,13 +800,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
         if(!primitiveValue) return;
-	
+
 	/* We can do this because the tokens in cssparser are ordered the
 	 * same way as the enums of EBackgroundRepeat
 	 */
-	
+
 	EBackgroundRepeat r(EBackgroundRepeat(primitiveValue->getIdent() - CSS_VAL_REPEAT));
-        
+
 // 	EBackgroundRepeat r = REPEAT;
 //         switch(primitiveValue->getIdent())
 //         {
@@ -843,7 +877,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	/* We can do this because the tokens in cssparser are ordered the
 	 * same way as the enums of EBorderStyle
 	 */
-	
+
 	EBorderStyle s(EBorderStyle(primitiveValue->getIdent() - CSS_VAL_NONE));
 
 //         EBorderStyle s = BNONE;
@@ -974,7 +1008,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    EDisplay d;
 	    if ( id == CSS_VAL_NONE) {
 	      d = NONE;
-	    } else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_COMPACT || 
+	    } else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_COMPACT ||
 			id == CSS_VAL_MARKER ) {
 		// these are not supported at the moment, so we just ignore them.
 		return;
@@ -2116,7 +2150,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(primitiveValue->getIdent())
         {
 	    khtml::ETextAlign align(ETextAlign(primitiveValue->getIdent() - CSS_VAL_LEFT));
-	    
+
 //             khtml::ETextAlign align;
 //             switch(primitiveValue->getIdent())
 //             {
@@ -2133,7 +2167,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 //             default:
 //                 return;
 //             }
-	    
+
             style->setTextAlign(align);
             return;
         }
