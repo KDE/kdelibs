@@ -26,7 +26,7 @@
 
 /**
  * If you have a pixmap containing several items (icons), you can use this
- * class to split get the coordinates of each item.
+ * class to get the coordinates of each item.
  *
  * For example, if you have a pixmap with 25 items and you want to get the
  * 4th item as a pixmap (every item being 20x10 pixels):
