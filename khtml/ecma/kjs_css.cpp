@@ -110,6 +110,11 @@ KJSO DOMCSSStyleDeclaration::tryGet(const UString &p) const
   else if (p == "parentRule" )
     return Undefined(); // ###
   else {
+    bool ok;
+    long unsigned int u = p.toULong(&ok);
+    if (ok)
+      return getString(DOM::CSSStyleDeclaration(styleDecl).item(u));
+
     DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
     DOM::DOMString v = styleDecl2.getPropertyValue(DOM::DOMString(jsNameToProp(p)));
     if (!v.isNull())
@@ -262,6 +267,12 @@ KJSO DOMStyleSheetList::tryGet(const UString &p) const
     return Number(styleSheetList.length());
   else if (p == "item")
     return new DOMStyleSheetListFunc(styleSheetList,DOMStyleSheetListFunc::Item);
+
+  bool ok;
+  long unsigned int u = p.toULong(&ok);
+  if (ok)
+    return getDOMStyleSheet(DOM::StyleSheetList(styleSheetList).item(u));
+
   return DOMObject::tryGet(p);
 }
 
@@ -311,6 +322,11 @@ KJSO DOMMediaList::tryGet(const UString &p) const
     return new DOMMediaListFunc(list,DOMMediaListFunc::DeleteMedium);
   else if (p == "appendMedium")
     return new DOMMediaListFunc(list,DOMMediaListFunc::AppendMedium);
+
+  bool ok;
+  long unsigned int u = p.toULong(&ok);
+  if (ok)
+    return getString(list.item(u));
 
   return DOMObject::tryGet(p);
 }
@@ -423,6 +439,11 @@ KJSO DOMCSSRuleList::tryGet(const UString &p) const
     return Number(cssRuleList.length());
   else if (p == "item")
     return new DOMCSSRuleListFunc(cssRuleList,DOMCSSRuleListFunc::Item);
+
+  bool ok;
+  long unsigned int u = p.toULong(&ok);
+  if (ok)
+    return getDOMCSSRule(DOM::CSSRuleList(cssRuleList).item(u));
 
   return DOMObject::tryGet(p);
 }
@@ -845,6 +866,11 @@ KJSO DOMCSSValueList::tryGet(const UString &p) const
     return Number(valueList.length());
   else if (p == "item")
     return new DOMCSSValueListFunc(valueList,DOMCSSValueListFunc::Item);
+
+  bool ok;
+  long unsigned int u = p.toULong(&ok);
+  if (ok)
+    return getDOMCSSValue(valueList.item(u));
 
   return DOMCSSValue::tryGet(p);
 };

@@ -127,13 +127,15 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
 {
     m_lstChildren = new QList<StyleBaseImpl>;
     m_doc = 0;
+    m_implicit = false;
 }
 
-CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
+CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
     : StyleSheetImpl(parentNode, href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
     m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
+    m_implicit = _implicit;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
@@ -141,6 +143,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
 {
     m_lstChildren = new QList<StyleBaseImpl>;
     m_doc = 0;
+    m_implicit = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
@@ -154,6 +157,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
         rule->setParent(this);
     }
     m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
+    m_implicit = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -167,6 +171,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
         rule->setParent(this);
     }
     m_doc  = 0;
+    m_implicit = false;
 }
 
 CSSStyleSheetImpl::~CSSStyleSheetImpl()
@@ -299,8 +304,7 @@ khtml::DocLoader *CSSStyleSheetImpl::docLoader()
 
 // ---------------------------------------------------------------------------------------------
 
-StyleSheetListImpl::StyleSheetListImpl(StyleSheetImpl *parentSheet)
-    : StyleListImpl(parentSheet)
+StyleSheetListImpl::StyleSheetListImpl()
 {
 }
 
@@ -310,14 +314,39 @@ StyleSheetListImpl::~StyleSheetListImpl()
 
 unsigned long StyleSheetListImpl::length() const
 {
-    //###
+    // hack so implicit BODY stylesheets don't get counted here
+    unsigned long l = 0;
+    QListIterator<StyleSheetImpl> it(styleSheets);
+    for (; it.current(); ++it) {
+        if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit())
+            l++;
+    }
+    return l;
+}
+
+StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
+{
+    unsigned long l = 0;
+    QListIterator<StyleSheetImpl> it(styleSheets);
+    for (; it.current(); ++it) {
+        if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit()) {
+            if (l == index)
+                return it.current();
+            l++;
+        }
+    }
     return 0;
 }
 
-StyleSheetImpl *StyleSheetListImpl::item( unsigned long /*index*/ )
+void StyleSheetListImpl::add(StyleSheetImpl *sheet)
 {
-    //###
-    return 0;
+    if (!styleSheets.containsRef(sheet))
+	styleSheets.append(sheet);
+}
+
+void StyleSheetListImpl::remove(StyleSheetImpl *sheet)
+{
+    styleSheets.removeRef(sheet);
 }
 
 

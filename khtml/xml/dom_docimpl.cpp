@@ -132,6 +132,8 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl( new DocumentPtr() )
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
     m_listenerTypes = 0;
+    m_styleSheets = new StyleSheetListImpl();
+    m_styleSheets->ref();
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
@@ -160,6 +162,8 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
     m_listenerTypes = 0;
+    m_styleSheets = new StyleSheetListImpl();
+    m_styleSheets->ref();
 }
 
 DocumentImpl::~DocumentImpl()
@@ -184,6 +188,7 @@ DocumentImpl::~DocumentImpl()
         delete [] m_elementNames;
     }
     m_defaultView->deref();
+    m_styleSheets->deref();
 }
 
 const DOMString DocumentImpl::nodeName() const
@@ -485,8 +490,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 
 StyleSheetListImpl *DocumentImpl::styleSheets()
 {
-    // ### implement for xml
-    return 0;
+    return m_styleSheets;
 }
 
 
@@ -1440,6 +1444,21 @@ CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl */*elt*/, DO
 {
     return 0; // ###
 }
+
+void DocumentImpl::registerStyleSheet(StyleSheetImpl *sheet)
+{
+    m_styleSheets->add(sheet);
+    setChanged(true);
+    applyChanges(true,true);
+}
+
+void DocumentImpl::deregisterStyleSheet(StyleSheetImpl *sheet)
+{
+    m_styleSheets->remove(sheet);
+    setChanged(true);
+    applyChanges(true,true);
+}
+
 
 // ----------------------------------------------------------------------------
 

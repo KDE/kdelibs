@@ -82,6 +82,7 @@ public:
 
     // overload from HTMLElementImpl
     virtual void attach();
+    virtual void detach();
     virtual void parseAttribute(AttrImpl *attr);
 
     // from CachedObjectClient
@@ -164,6 +165,9 @@ public:
     bool isLoading() const;
     virtual void sheetLoaded();
     void reparseSheet();
+
+    virtual void attach();
+    virtual void detach();
 
 protected:
     StyleSheetImpl *m_sheet;

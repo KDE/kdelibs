@@ -378,6 +378,8 @@ KJSO DOMDocument::tryGet(const UString &p) const
     return getDOMAbstractView(doc.defaultView());
   else if (p == "createEvent")
     return new DOMDocFunction(doc, DOMDocFunction::CreateEvent);
+  else if (p == "styleSheets")
+    return getDOMStyleSheetList(doc.styleSheets());
   else if (p == "getOverrideStyle")
     return new DOMDocFunction(doc, DOMDocFunction::GetOverrideStyle);
 

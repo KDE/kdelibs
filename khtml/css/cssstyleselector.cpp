@@ -87,8 +87,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
-    QList<StyleSheetImpl> authorStyleSheets = doc->authorStyleSheets();
-    QListIterator<StyleSheetImpl> it(authorStyleSheets);
+    QListIterator<StyleSheetImpl> it(doc->styleSheets()->styleSheets);
     for (; it.current(); ++it)
 	authorStyle->append(it.current());
 

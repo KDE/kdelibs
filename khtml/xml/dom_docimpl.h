@@ -184,7 +184,7 @@ public:
     DOMString baseURL() const;
 
     // from cachedObjectClient
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
 
     CSSStyleSheetImpl* elementSheet();
     virtual Tokenizer *createTokenizer();
@@ -263,6 +263,8 @@ public:
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
+    void registerStyleSheet(StyleSheetImpl *sheet);
+    void deregisterStyleSheet(StyleSheetImpl *sheet);
 
 signals:
     virtual void finishedParsing();
@@ -277,7 +279,6 @@ private:
     ElementImpl *notabindex(DOM::ElementImpl *cur, bool forward);
     ElementImpl *intabindex(DOM::ElementImpl *cur, bool forward);
     ElementImpl *tabindexzero(DOM::ElementImpl *cur, bool forward);
-
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
@@ -312,6 +313,7 @@ protected:
     AbstractViewImpl *m_defaultView;
 
     unsigned short m_listenerTypes;
+    StyleSheetListImpl *m_styleSheets;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

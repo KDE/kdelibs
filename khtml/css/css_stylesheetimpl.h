@@ -84,7 +84,7 @@ protected:
 class CSSStyleSheetImpl : public StyleSheetImpl
 {
 public:
-    CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOM::DOMString href = 0);
+    CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOM::DOMString href = 0, bool _implicit = false);
     CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOM::DOMString href = 0);
     CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOM::DOMString href  = 0);
     // clone from a cached version of the sheet
@@ -110,23 +110,28 @@ public:
     virtual void checkLoaded();
     khtml::DocLoader *docLoader();
     DocumentImpl *doc() { return m_doc; }
+    bool implicit() { return m_implicit; }
 protected:
     DocumentImpl *m_doc;
+    bool m_implicit;
 };
 
 // ----------------------------------------------------------------------------
 
-class StyleSheetListImpl : public StyleListImpl
+class StyleSheetListImpl : public DomShared
 {
 public:
-    StyleSheetListImpl(StyleSheetImpl *sheet);
-
+    StyleSheetListImpl();
     virtual ~StyleSheetListImpl();
-
-    virtual bool isStyleSheetList() { return true; }
 
     unsigned long length() const;
     StyleSheetImpl *item ( unsigned long index );
+
+    void add(StyleSheetImpl *sheet);
+    void remove(StyleSheetImpl *sheet);
+
+public:
+    QList<StyleSheetImpl> styleSheets;
 };
 
 // ----------------------------------------------------------------------------

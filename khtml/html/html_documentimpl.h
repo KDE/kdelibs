@@ -65,8 +65,6 @@ public:
     virtual Tokenizer *createTokenizer();
     NodeListImpl *getElementsByName ( const DOMString &elementName );
 
-    virtual StyleSheetListImpl *styleSheets();
-
     virtual void detach();
 
     virtual bool childAllowed( NodeImpl *newChild );

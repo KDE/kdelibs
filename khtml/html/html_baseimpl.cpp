@@ -109,8 +109,9 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     {
         //kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
         if(!m_styleSheet) {
-            m_styleSheet = new CSSStyleSheetImpl(this);
+            m_styleSheet = new CSSStyleSheetImpl(this,0,true);
             m_styleSheet->ref();
+            getDocument()->registerStyleSheet(m_styleSheet);
         }
         QString aStr = "a:link { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr);
@@ -124,8 +125,9 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_VLINK:
     {
         if(!m_styleSheet) {
-            m_styleSheet = new CSSStyleSheetImpl(this);
+            m_styleSheet = new CSSStyleSheetImpl(this,0,true);
             m_styleSheet->ref();
+            getDocument()->registerStyleSheet(m_styleSheet);
         }
         QString aStr = "a:visited { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr);
@@ -188,6 +190,14 @@ bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, Mo
 	ev->innerNode = this;
     return !inside;
 }
+
+void HTMLBodyElementImpl::detach()
+{
+    if (m_styleSheet)
+	getDocument()->deregisterStyleSheet(m_styleSheet);
+    HTMLElementImpl::detach();
+}
+
 
 // -------------------------------------------------------------------------
 

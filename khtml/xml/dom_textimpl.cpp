@@ -101,8 +101,6 @@ void CharacterDataImpl::appendData( const DOMString &arg )
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    if (_parent)
-        _parent->setChanged(true);
 
     dispatchModifiedEvent(oldStr);
     oldStr->deref();
@@ -176,6 +174,9 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
 
 void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
+    // ### fixme (?) - hack so STYLE elements reparse their stylesheet when text changes
+    if (_parent)
+        _parent->setChanged(true);
     if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
 	return;
 

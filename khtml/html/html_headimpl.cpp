@@ -141,7 +141,20 @@ void HTMLLinkElementImpl::attach()
         }
     }
     HTMLElementImpl::attach();
+
+    StyleSheetImpl *s = sheet();
+    if (s)
+	ownerDocument()->registerStyleSheet(s);
 }
+
+void HTMLLinkElementImpl::detach()
+{
+    StyleSheetImpl *s = sheet();
+    if (s)
+	ownerDocument()->deregisterStyleSheet(s);
+    HTMLElementImpl::detach();
+}
+
 
 void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 {
@@ -162,14 +175,18 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr)
 {
 //    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
     if( m_sheet ) return;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
-    m_sheet->parseString(sheet);
+    m_sheet->parseString(sheetStr);
     m_loading = false;
+
+    StyleSheetImpl *s = sheet();
+    if (s)
+	ownerDocument()->registerStyleSheet(s);
 
     if(!isLoading()) sheetLoaded();
 }
@@ -365,7 +382,7 @@ NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
 
 void HTMLStyleElementImpl::setChanged(bool b)
 {
-    // TextImpl sets it's parent to be changed when appendData() is called (hack)
+    // TextImpl sets it's parent to be changed when appendData() or similar is called (hack)
     // ### make this work properly in all situations
     if (b) {
         reparseSheet();
@@ -399,10 +416,28 @@ void HTMLStyleElementImpl::reparseSheet()
 
     kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
 
-    if(m_sheet) m_sheet->deref();
+    if(m_sheet) {
+	ownerDocument()->deregisterStyleSheet(m_sheet);
+	m_sheet->deref();
+    }
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
     m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
+    ownerDocument()->registerStyleSheet(m_sheet);
+}
+
+void HTMLStyleElementImpl::attach()
+{
+    if (m_sheet)
+	ownerDocument()->registerStyleSheet(m_sheet);
+    HTMLElementImpl::attach();
+}
+
+void HTMLStyleElementImpl::detach()
+{
+    if (m_sheet)
+	ownerDocument()->deregisterStyleSheet(m_sheet);
+    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------

@@ -142,13 +142,6 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
     return new NameNodeListImpl( documentElement(), elementName );
 }
 
-StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
-{
-    // ### implement for html
-    return 0;
-}
-
-
 // --------------------------------------------------------------------------
 // not part of the DOM
 // --------------------------------------------------------------------------
