@@ -470,12 +470,10 @@ QString KConfigBase::readPathEntry( const QString& pKey, const QString& pDefault
 
 QString KConfigBase::readPathEntry( const char *pKey, const QString& pDefault ) const
 {
-  // get around const'ness.
-  KConfigBase *that = const_cast<KConfigBase *>(this);
-  bool bExpandSave = bExpand;
-  that->bExpand = true;
+  const bool bExpandSave = bExpand;
+  bExpand = true;
   QString aValue = readEntry( pKey, pDefault );
-  that->bExpand = bExpandSave;
+  bExpand = bExpandSave;
   return aValue;
 }
 

@@ -1089,7 +1089,7 @@ protected:
 
   bool bLocaleInitialized;
   bool bReadOnly;           // currently only used by KSimpleConfig
-  bool bExpand;             // whether dollar expansion is used
+  mutable bool bExpand;     // whether dollar expansion is used
   bool bCheckGroup;         // Flag whether to check group status
 
   KConfigBasePrivate *d;
