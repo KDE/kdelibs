@@ -96,12 +96,12 @@ void Dialog::initConnections()
              SLOT(slotMisspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
-    connect( d->ui->m_suggestions , SIGNAL( doubleClicked (QListViewItem *, const QPoint &, int ) ),
+    connect( d->ui->m_suggestions, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)),
              SLOT( slotReplaceWord() ) );
-    connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotFinished() ) );
-    connect( this, SIGNAL( cancelClicked() ),this, SLOT( slotCancel() ) );
-    connect( d->ui->m_replacement ,  SIGNAL( returnPressed () ), this, SLOT( slotReplaceWord()) );
-    connect( d->ui->m_autoCorrect, SIGNAL( clicked()),
+    connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
+    connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
+    connect( d->ui->m_replacement, SIGNAL(returnPressed()), this, SLOT(slotReplaceWord()) );
+    connect( d->ui->m_autoCorrect, SIGNAL(clicked()),
              SLOT(slotAutocorrect()) );
     // button use by kword/kpresenter
     // hide by default
@@ -142,12 +142,16 @@ void Dialog::slotFinished()
 {
     kdDebug()<<"void Dialog::slotFinished() \n";
     emit stop();
+    //FIXME: should we emit done here?
+    emit done( d->checker->filter()->buffer() );
+    accept();
 }
 
 void Dialog::slotCancel()
 {
     kdDebug()<<"void Dialog::slotCancel() \n";
     emit cancel();
+    reject();
 }
 
 QString Dialog::originalBuffer() const
@@ -264,6 +268,7 @@ void Dialog::slotDone()
 {
     kdDebug()<<"Dialog done!"<<endl;
     emit done( d->checker->filter()->buffer() );
+    accept();
 }
 
 }

@@ -219,6 +219,9 @@ QString Filter::context() const
     else
         context = QString( "...%1..." )
                   .arg( m_buffer.mid(  m_currentPosition - 20, len ) );
+
+    context = context.replace( '\n', ' ' );
+
     return context;
 }
 
