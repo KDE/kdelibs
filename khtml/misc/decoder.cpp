@@ -48,6 +48,8 @@ Decoder::~Decoder()
 void Decoder::setEncoding(const char *_encoding)
 {
     enc = _encoding;
+    if(enc.isNull() || enc.isEmpty())
+	enc = "iso8859-1";
     m_codec = QTextCodec::codecForName(enc);
     if(!m_codec) {
 	if(!strcmp(_encoding, "windows-1252"))
