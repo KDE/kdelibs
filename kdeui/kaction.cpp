@@ -119,11 +119,12 @@ KAction::KAction( const QString& text, int accel, QObject* parent,
 {
     d = new KActionPrivate;
 
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection )
+	m_parentCollection->insert( this );
+
     setAccel( accel );
     setText( text );
-
-    if ( parent && parent->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent )->insert( this );
 }
 
 KAction::KAction( const QString& text, int accel, const QObject* receiver,
@@ -132,11 +133,12 @@ KAction::KAction( const QString& text, int accel, const QObject* receiver,
 {
     d = new KActionPrivate;
 
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection )
+	m_parentCollection->insert( this );
+
     setAccel( accel );
     setText( text );
-
-    if ( parent && parent->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent )->insert( this );
 
     if ( receiver )
     connect( this, SIGNAL( activated() ), receiver, slot );
@@ -148,12 +150,13 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 {
     d = new KActionPrivate;
 
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection )
+	m_parentCollection->insert( this );
+
     setAccel( accel );
     setText( text );
     setIconSet( pix );
-
-    if ( parent && parent->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent )->insert( this );
 }
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
@@ -162,12 +165,13 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 {
     d = new KActionPrivate;
 
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection )
+	m_parentCollection->insert( this );
+
     setText( text );
     setAccel( accel );
     setIcon( pix );
-
-    if ( parent && parent->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent )->insert( this );
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
@@ -177,12 +181,13 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 {
     d = new KActionPrivate;
 
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection )
+	m_parentCollection->insert( this );
+
     setAccel( accel );
     setText( text );
     setIconSet( pix );
-
-    if ( parent && parent->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent )->insert( this );
 
     if ( receiver )
       connect( this, SIGNAL( activated() ), receiver, slot );
@@ -195,12 +200,13 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 {
     d = new KActionPrivate;
 
+    m_parentCollection = parentCollection();
+    if ( m_parentCollection )
+	m_parentCollection->insert( this );
+
     setAccel( accel );
     setText( text );
     setIcon( pix );
-
-    if ( parent && parent->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent )->insert( this );
 
     if ( receiver )
       connect( this, SIGNAL( activated() ), receiver, slot );
@@ -210,12 +216,14 @@ KAction::KAction( QObject* parent, const char* name )
  : QObject( parent, name )
 {
     d = new KActionPrivate;
+    m_parentCollection = parentCollection();
 }
 
 KAction::~KAction()
 {
-    if ( parent() && parent()->inherits("KActionCollection") )
-        static_cast<KActionCollection*>( parent() )->take( this );
+    // ### Do we really need this? KActionCollection catches QChildEvent, no? (Simon)
+    //    if ( m_parentCollection )
+    //	m_parentCollection->take( this );
 
     delete d; d = 0;
 }
@@ -258,10 +266,9 @@ void KAction::setAccel( int a )
 {
   d->m_accel = a;
 
-  KActionCollection *coll = parentCollection();
-  if (coll)
+  if ( m_parentCollection )
   {
-    KKeyEntryMap& keys = coll->keyMap();
+    KKeyEntryMap& keys = m_parentCollection->keyMap();
     if (keys.contains(name())) {
         keys[name()].aCurrentKeyCode = a;
     }
@@ -352,8 +359,6 @@ QString KAction::statusText() const
 
 int KAction::plug( QWidget *w, int index )
 {
-  KActionCollection *p = parentCollection();
-
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
@@ -380,8 +385,8 @@ int KAction::plug( QWidget *w, int index )
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    if ( p )
-      p->connectHighlight( menu, this );
+    if ( m_parentCollection )
+      m_parentCollection->connectHighlight( menu, this );
 
     return d->m_containers.count() - 1;
   }
@@ -415,8 +420,8 @@ int KAction::plug( QWidget *w, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    if ( p )
-      p->connectHighlight( bar, this );
+    if ( m_parentCollection )
+      m_parentCollection->connectHighlight( bar, this );
 
     return containerCount() - 1;
   }
@@ -426,7 +431,6 @@ int KAction::plug( QWidget *w, int index )
 
 void KAction::unplug( QWidget *w )
 {
-  KActionCollection *p = parentCollection();
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
@@ -435,8 +439,8 @@ void KAction::unplug( QWidget *w )
     {
       menu->removeItem( itemId( i ) );
       removeContainer( i );
-      if ( p )
-        p->disconnectHighlight( menu, this );
+      if ( m_parentCollection )
+        m_parentCollection->disconnectHighlight( menu, this );
     }
   }
   else if ( w->inherits( "KToolBar" ) )
@@ -449,8 +453,8 @@ void KAction::unplug( QWidget *w )
     {
       bar->removeItem( itemId( idx ) );
       removeContainer( idx );
-      if ( p )
-        p->disconnectHighlight( bar, this );
+      if ( m_parentCollection )
+        m_parentCollection->disconnectHighlight( bar, this );
     }
 
     return;
@@ -517,10 +521,9 @@ void KAction::setText( const QString& text )
   for( int i = 0; i < len; ++i )
     setText( i, text );
 
-  KActionCollection *coll = parentCollection();
-  if (coll)
+  if ( m_parentCollection )
   {
-    KKeyEntryMap& keys = coll->keyMap();
+    KKeyEntryMap& keys = m_parentCollection->keyMap();
     keys[name()].descr = plainText();
   }
 }
@@ -566,9 +569,8 @@ void KAction::setIcon( const QString &icon )
   // We used to use SmallIcon for this, but that's wrong since the
   // Small group may *not* be 16x16 and we *need* 16x16
   KInstance *instance;
-  KActionCollection *coll = parentCollection();
-  if ( coll )
-    instance = coll->instance();
+  if ( m_parentCollection )
+    instance = m_parentCollection->instance();
   else
     instance = KGlobal::instance();
   setIconSet( SmallIcon( icon, 16, KIcon::DefaultState, instance ) );
@@ -748,7 +750,7 @@ void KAction::slotDestroyed()
 int KAction::findContainer( const QWidget* widget ) const
 {
   int pos = 0;
-  QValueList<KActionPrivate::Container>::Iterator it = d->m_containers.begin();
+  QValueList<KActionPrivate::Container>::ConstIterator it = d->m_containers.begin();
   while( it != d->m_containers.end() )
   {
     if ( (*it).m_representative == widget || (*it).m_container == widget )
@@ -2117,9 +2119,9 @@ int KActionMenu::plug( QWidget* widget, int index )
     else
     {
       KInstance *instance;
-      KActionCollection *coll = parentCollection();
-      if ( coll )
-        instance = coll->instance();
+
+      if ( m_parentCollection )
+        instance = m_parentCollection->instance();
       else
         instance = KGlobal::instance();
 

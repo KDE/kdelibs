@@ -504,6 +504,9 @@ protected:
        * for backwards compatibility. depreceated!
        */
     int menuId( int i ) { return itemId( i ); }
+
+    KActionCollection *m_parentCollection;
+
 signals:
     void activated();
     void enabled( bool );
