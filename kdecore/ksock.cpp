@@ -1,6 +1,9 @@
 /*
  * $Id$
  * $Log$
+ * Torben: Supports UNIX domain sockets now.
+ *
+ * Revision 1.15  1998/01/18 14:39:03  kulow
  * reverted the changes, Jacek commited.
  * Only the RCS comments were affected, but to keep them consistent, I
  * thought, it's better to revert them.
@@ -62,7 +65,39 @@
  * Part of the KDE Project.
  * Kalle: new stopsign.xpm
  * 			KConfig: environment variables are resolved in readEntry()
+ * 			(meaning you can write() an entry with an environment
+ * 			variable and read it back in, and the value gets properly
+ * 			expanded).
+ * 			Fixed three bugs in ksock.cpp
  * 			Added KFloater
+ * 			Added KCombo
+ * 			Added KLineEdit
+ * 			New KToolbar
+ * 			New KToplevelWidget
+ *
+ * Revision 1.4  1997/05/30 20:04:38  kalle
+ * Kalle:
+ * 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
+ * 		Better Alpha support
+ *
+ * Revision 1.3  1997/05/09 15:10:11  kulow
+ * Coolo: patched ltconfig for FreeBSD
+ * removed some stupid warnings
+ *
+ * Revision 1.2  1997/04/28 06:57:46  kalle
+ * Various widgets moved from apps to libs
+ * Added KSeparator
+ * Several bugs fixed
+ * Patches from Matthias Ettrich
+ * Made ksock.cpp more alpha-friendly
+ * Removed XPM-Loading from KPixmap
+ * Reaping zombie KDEHelp childs
+ * WidgetStyle of KApplication objects configurable via kdisplay
+ */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "ksock.moc"
   sock( -1 ), readNotifier( NULL ), writeNotifier( NULL )

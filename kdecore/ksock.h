@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Torben: Supports UNIX domain sockets now.
+ *
+ * Revision 1.12  1998/01/18 14:39:05  kulow
  * reverted the changes, Jacek commited.
  * Only the RCS comments were affected, but to keep them consistent, I
  * thought, it's better to revert them.
@@ -42,38 +45,8 @@
  * Source imported
  *
  * Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
-#include <stdio.h>
-#include <errno.h>
-#ifdef STDC_HEADERS
-#include <stdlib.h>
-#include <string.h>
-#else
-#error Declare functions needed from stdlib.h and string.h
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#else
-#error Declare functions needed from unistd.h
-#endif
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include <sys/time.h>
+//#include <sys/types.h>
  *
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <fcntl.h>
-#include <signal.h>
  * Revision 1.4  1997/01/15 20:34:14  kalle
  * merged changes from 0.52
  *
@@ -85,7 +58,7 @@
 * A TCP/IP client socket. You can connect this socket to any internet address. 
 *
 * The socket gives you three signals: When ready for reading/writing or 
-*
+* if the connection is broken.  Using socket() you get a file descriptor
 * which you can use with usual unix commands like write(..) or read(...). 
 * If you have already such a socket identifier you can construct a KSocket
 * on this identifier. 
