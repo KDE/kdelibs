@@ -28,7 +28,7 @@ int main(int argc, char** argv)
       pix=logo;
       about.setLogo(pix);
     } else {
-      debug("main: No logo loaded.");
+      qDebug("main: No logo loaded.");
     }
   if(bg.load("background_1.png"))
     {
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
       //about.showBaseFrameTile(true);
     } else {
-      debug("main: No tile loaded.");
+      qDebug("main: No tile loaded.");
     }
 //    about.setButtonOKText
 //      ("Cl&ose", "Close this dialog.",

@@ -152,22 +152,22 @@ void TopLevel::slotSwitchMode( int id )
   switch( id ) {
   case TopLevel::NoSelection:
     m_pIconView->setSelectionMode( KIconView::NoSelection );
-    m_pListView->setSelectionMode( KListView::NoSelection );
+    m_pListView->setSelectionMode( QListView::NoSelection );
     m_pListBox->setSelectionMode( KListBox::NoSelection );
     break;
   case TopLevel::Single:
     m_pIconView->setSelectionMode( KIconView::Single );
-    m_pListView->setSelectionMode( KListView::Single );
+    m_pListView->setSelectionMode( QListView::Single );
     m_pListBox->setSelectionMode( KListBox::Single );
     break;
   case TopLevel::Multi:
     m_pIconView->setSelectionMode( KIconView::Multi );
-    m_pListView->setSelectionMode( KListView::Multi );
+    m_pListView->setSelectionMode( QListView::Multi );
     m_pListBox->setSelectionMode( KListBox::Multi );
     break;
   case TopLevel::Extended:
     m_pIconView->setSelectionMode( KIconView::Extended );
-    m_pListView->setSelectionMode( KListView::Extended );
+    m_pListView->setSelectionMode( QListView::Extended );
     m_pListBox->setSelectionMode( KListBox::Extended );
     break;
   default:

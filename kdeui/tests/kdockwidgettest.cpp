@@ -107,7 +107,7 @@ DockApplication::DockApplication( const char* name )
 
   setGeometry(200, 100, 500, 300);
 
-  debug("load config");
+  qDebug("load config");
   readDockConfig();
 
   updateButton();
@@ -115,7 +115,7 @@ DockApplication::DockApplication( const char* name )
 
 DockApplication::~DockApplication()
 {
-  debug("Close & store config");
+  qDebug("Close & store config");
   writeDockConfig();
 }
 

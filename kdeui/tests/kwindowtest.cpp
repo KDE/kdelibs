@@ -389,7 +389,7 @@ testWindow::~testWindow ()
   if (menuBar)
   delete menuBar;
 
-  debug ("kwindowtest finished");
+  qDebug ("kwindowtest finished");
 }
 
 void testWindow::beFixed()

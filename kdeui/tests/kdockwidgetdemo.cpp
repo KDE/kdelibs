@@ -83,7 +83,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
 :QDialog(0L,name,true)
 {
   KConfig* config = kapp->config();
-  config->setGroup( QString("SFileDialogData:") + name );
+  config->setGroup( QString::fromLatin1("SFileDialogData:") + name );
   if ( initially == QString::null ){
     initially = config->readEntry( "InitiallyDir", QDir::currentDirPath() );
   }
@@ -155,7 +155,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   connect( dockManager, SIGNAL(setDockDefaultPos(KDockWidget*)), this, SLOT(setDockDefaultPos(KDockWidget*)));
   setCaption("Open File");
   resize(550,450);
-  debug("read config");
+  qDebug("read config");
   dockManager->readConfig( 0L , name );
 }
 
@@ -171,7 +171,7 @@ SFileDialog::~SFileDialog()
   config->setGroup( QString("SFileDialogData:") + name() );
   config->writeEntry( "Bookmarks", fd->getBookmark() );
 
-  debug("write config");
+  qDebug("write config");
   dockManager->writeConfig( 0L , name() );
 }
 
@@ -774,18 +774,20 @@ int main(int argc, char* argv[]) {
 #if 0
   SFileDialog* openfile = new SFileDialog();
   openfile->exec();
-  debug( openfile->fileName() );
-#endif
-
-#if 1
-  debug ( SFileDialog::getOpenFileName( QString::null, "All (*)", "DockWidget Demo", "dialog1" ) );
+  qDebug( openfile->fileName() );
 #endif
 
 #if 0
-  QStringList s = SFileDialog::getOpenFileNames( QString::null, "All (*)", "DockWidget Demo", "dialog1" );
-	QStringList::Iterator it = s.begin();
-	for ( ; it != s.end(); ++it ){
-    debug( *it );
+  qDebug ( SFileDialog::getOpenFileName( QString::null, QString::fromLatin1("All (*)"),
+                                         QString::fromLatin1("DockWidget Demo"), "dialog1" ) );
+#endif
+
+#if 1
+  QStringList s = SFileDialog::getOpenFileNames( QString::null, QString::fromLatin1("All (*)"),
+                                                QString::fromLatin1("DockWidget Demo"), "dialog1" );
+  QStringList::Iterator it = s.begin();
+  for ( ; it != s.end(); ++it ){
+    qDebug( (*it).local8Bit().data() );
   }
 #endif
   return 0;
