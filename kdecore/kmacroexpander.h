@@ -22,6 +22,7 @@
 #ifndef _KMACROEXPANDER_H
 #define _KMACROEXPANDER_H
 
+#include <qstringlist.h>
 #include <qstring.h>
 #include <qmap.h>
 
@@ -79,10 +80,15 @@ public:
      *  substitution was possible. Note that macros will have been processed
      *  up to the point where the error occured. An unmatched closing paren
      *  or brace outside any shell construct is @em not an error (unlike in
-     *  the end-user functions in the KMacroExpander namespace), but still
-     *  prematurely terminates processing.
+     *  the function below), but still prematurely terminates processing.
      */
     bool expandMacrosShellQuote( QString &str, uint &pos );
+
+    /**
+     * Same as above, but always starts at position 0, and unmatched closing
+     * parens and braces are treated as errors.
+     */
+    bool expandMacrosShellQuote( QString &str );
 
     /**
      * Set the macro escape character.
@@ -104,12 +110,13 @@ protected:
      * the substitution value for it if so.
      * @param str the input string
      * @param pos the offset within @p str
-     * @param len return value: the number of chars to substitute with @p ret,
-     *  i.e., the determined macro length
      * @param ret return value: the string to substitute for the macro
-     * @return true if a valid macro was found and substitution should be performed
+     * @return if greater than zero, the number of chars at @p pos in @p str
+     *  to substitute with @p ret (i.e., a valid macro was found). if less
+     *  than zero, subtract this value from @p pos (to skip a macro, i.e.,
+     *  substitute it with itself). zero requests no special action.
      */
-    virtual bool expandPlainMacro( const QString &str, uint pos, uint &len, QString &ret ) = 0;
+    virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
 
     /**
      * This function is called every time the escape char is found if it is
@@ -119,12 +126,13 @@ protected:
      * @param str the input string
      * @param pos the offset within @p str. Note that this is the position of
      *  the occurence of the escape char
-     * @param len return value: the number of chars to substitute with @p ret,
-     *  i.e., the determined total macro length
      * @param ret return value: the string to substitute for the macro
-     * @return true if a valid macro was found and substitution should be performed
+     * @return if greater than zero, the number of chars at @p pos in @p str
+     *  to substitute with @p ret (i.e., a valid macro was found). if less
+     *  than zero, subtract this value from @p pos (to skip a macro, i.e.,
+     *  substitute it with itself). zero requests no special action.
      */
-    virtual bool expandEscapedMacro( const QString &str, uint pos, uint &len, QString &ret ) = 0;
+    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
 
 private:
     QChar escapechar;
@@ -238,6 +246,22 @@ namespace KMacroExpander {
      * \endcode
      */
     QString expandMacrosShellQuote( const QString &str, const QMap<QString,QString> &map, QChar c = '%' );
+
+    /**
+     * Same as above, except that the macros expand to string lists that
+     * are simply join(" ")ed together.
+     */
+    QString expandMacros( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
+    QString expandMacros( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
+
+    /*
+     * Same as above, except that the macros expand to string lists.
+     * If the macro appears inside a quoted string, the list is simply
+     * join(" ")ed together; otherwise every element expands to a separate
+     * quoted string.
+     */
+    QString expandMacrosShellQuote( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
+    QString expandMacrosShellQuote( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
 };
 
 #endif /* _KMACROEXPANDER_H */

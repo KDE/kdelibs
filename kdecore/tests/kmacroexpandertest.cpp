@@ -13,11 +13,10 @@ bool check(QString txt, QString s, QString a, QString b)
      a = QString::null;
   if (b.isEmpty())
      b = QString::null;
-  if (a == b) {
-    kdDebug() << txt << " (" << s << ") : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
-  }
+  if (a == b)
+    kdDebug() << txt << " (" << s << ") : '" << a << "' - ok" << endl;
   else {
-    kdDebug() << txt << " (" << s << ") : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    kdDebug() << txt << " (" << s << ") : got '" << a << "' but expected '" << b << "' - KO!" << endl;
     exit(1);
   }
   return true;
@@ -26,8 +25,20 @@ bool check(QString txt, QString s, QString a, QString b)
 int main(int argc, char *argv[])
 {
   KApplication app(argc,argv,"kmacroexpandertest",false,false);
-
   QString s;
+
+  QMap<QChar,QStringList> map1;
+  map1.insert('n', "Restaurant \"Chew It\"");
+  QStringList li;
+  li << "element1" << "'element2'";
+  map1.insert('l', li);
+
+  s = "text %l %n text";
+  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, map1), "text element1 'element2' Restaurant \"Chew It\" text");
+  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map1), "text 'element1' ''\\''element2'\\''' 'Restaurant \"Chew It\"' text");
+  s = "text \"%l %n\" text";
+  check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map1), "text \"element1 'element2' Restaurant \\\"Chew It\\\"\" text");
+
   QMap<QChar,QString> map;
   map.insert('a', "%n");
   map.insert('f', "filename.txt");
@@ -80,6 +91,6 @@ int main(int argc, char *argv[])
   s = "Title: %foo-%file-%url-%name-%";
   check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: %n-filename.txt-http://www.kde.org/index.html-Restaurant \"Chew It\"-%");
 
-  printf("\nTest OK !\n");
+  printf("\nTest OK!\n");
 }
 
