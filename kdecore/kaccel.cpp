@@ -495,7 +495,7 @@ bool KAccel::insertItem( const QString& sLabel, const QString& sAction,
 // Used in kdeutils/kjots
 bool KAccel::insertStdItem( KStdAccel::StdAccel id, const QString& sLabel )
 {
-	KAccelAction* pAction = d->insert( KStdAccel::action( id ), sLabel, QString::null,
+	KAccelAction* pAction = d->insert( KStdAccel::name( id ), sLabel, QString::null,
 		KStdAccel::shortcutDefault3( id ), KStdAccel::shortcutDefault4( id ),
 		0, 0 );
 	if( pAction )
