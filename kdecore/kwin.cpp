@@ -407,6 +407,9 @@ void KWin::deIconifyWindow( WId win, bool animation )
 
 void KWin::appStarted()
 {
+  if (!kapp->dcopClient()->isAttached())
+    kapp->dcopClient()->attach();
+
   QByteArray params;
   QDataStream d(params, IO_WriteOnly);
 
@@ -417,7 +420,8 @@ void KWin::appStarted()
   else
     d << getpid();
 
-  kapp->dcopClient()->send("kicker", "TaskbarApplet", "clientMapped(pid_t)", params);
+  // Argh. Where did clientMapped() go ?
+  kapp->dcopClient()->send("kicker", "TaskbarApplet", "clientDied(pid_t)", params);
 }
 
 // Fix for --enable-final. This gets defined at the top of this file.
