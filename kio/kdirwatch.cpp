@@ -17,7 +17,8 @@
 */
 
 #include <qtimer.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
+#include <qfile.h>
 #include <qsocketnotifier.h>
 
 #include <kapp.h>
@@ -100,16 +101,16 @@ void KDirWatch::addDir( const QString& _path )
     return;
   }
 
-  stat( path.ascii(), &statbuff );
+  stat( QFile::encodeName(path), &statbuff );
   Entry e;
   e.m_clients = 1;
   e.m_ctime = statbuff.st_ctime;
 
 #ifdef USE_FAM
   if (use_fam) {
-    FAMMonitorDirectory(&fc, path.ascii(), &(e.fr), 0);
+    FAMMonitorDirectory(&fc, QFile::encodeName(path), &(e.fr), 0);
     //    qDebug("KDirWatch added %s -> FAMReq %d", 
-    //	   path.ascii(),  FAMREQUEST_GETREQNUM(&(e.fr)) );
+    //	   QFile::encodeName(path),  FAMREQUEST_GETREQNUM(&(e.fr)) );
   }
 #endif
 
@@ -164,7 +165,7 @@ void KDirWatch::removeDir( const QString& _path )
   if (use_fam) {
     FAMCancelMonitor(&fc, &((*it).fr) );
     //    qDebug("KDirWatch deleted: %s (FAMReq %d)", 
-    //	   path.ascii(),  FAMREQUEST_GETREQNUM(&((*it).fr)) );
+    //	   QFile::encodeName(path),  FAMREQUEST_GETREQNUM(&((*it).fr)) );
   }
 #endif
 
@@ -214,7 +215,7 @@ bool KDirWatch::restartDirScan( const QString& _path )
   if ( it == m_mapDirs.end() )
     return false;
 
-  stat( path.ascii(), &statbuff );
+  stat( QFile::encodeName(path), &statbuff );
   (*it).m_ctime = statbuff.st_ctime;
 
 #ifdef USE_FAM
@@ -260,7 +261,7 @@ void KDirWatch::resetList( bool skippedToo )
   {
     if ( (*it).m_ctime != NO_NOTIFY || skippedToo )
     {
-      stat( it.key().ascii(), &statbuff );
+      stat( QFile::encodeName(it.key()), &statbuff );
       (*it).m_ctime = statbuff.st_ctime;
     }
   }
@@ -273,7 +274,7 @@ void KDirWatch::slotRescan()
   QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
   for( ; it != m_mapDirs.end(); ++it )
   {
-    if ( stat( it.key().ascii(), &statbuff ) == -1 )
+    if ( stat( QFile::encodeName(it.key()), &statbuff ) == -1 )
     {
       kdDebug(7001) << "Deleting " << it.key() << endl;
       emit deleted( it.key() );
