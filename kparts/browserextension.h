@@ -568,6 +568,11 @@ signals:
    */
   void mouseOverInfo( const KFileItem* item );
 
+  /**
+   * Ask the hosting applicaiton to add a new Mozilla Sidebar entry.
+   */
+  void addMozillaSidebar(const KURL &url, const QString& name);
+
 private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
