@@ -54,24 +54,7 @@ QString LdapObject::toString() const
   for ( LdapAttrMap::ConstIterator it = attrs.begin(); it != attrs.end(); ++it ) {
     QString attr = it.key();
     for ( LdapAttrValue::ConstIterator it2 = (*it).begin(); it2 != (*it).end(); ++it2 ) {
-      if ( attr == "jpegPhoto" ) {
-        QByteArray buf = *it2;
-#if 0
-        qDebug( "Trying to load image from buf with size %d", (*it2).size() );
-        QPixmap pix;
-        pix.loadFromData( buf, "JPEG" );
-        qDebug( "Image loaded successfully" );
-        QLabel* l = new QLabel( 0 );
-        QFile f( "tmp.jpg" );
-        f.open( IO_WriteOnly );
-        f.writeBlock( buf );
-        f.close();
-        //l->setPixmap( QPixmap("tmp.jpg") );
-        //l->show();
-#endif
-      } else {
-        result += QString("%1: %2\n").arg(attr).arg(QString::fromUtf8( *it2, (*it2).size() ));
-      }
+      result += QString::fromUtf8( LDIF::assembleLine( attr, *it2, 76 ) ) + "\n";
     }
   }
 

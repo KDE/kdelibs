@@ -84,7 +84,8 @@ namespace KABC {
       /** Gets the password. Kconfig widget name: kcfg_ldappassword */
       QString password() const { return mPassword->text(); }
     
-      /** Sets the bind dn. Useful for SASL proxy auth. 
+      /** 
+       * Sets the bind dn. Useful for SASL proxy auth. 
        * Kconfig widget name: kcfg_ldapbinddn 
        */
       void setBindDN( const QString &binddn ) { mBindDN->setText( binddn ); }
@@ -93,7 +94,7 @@ namespace KABC {
       
       /** Sets the SASL realm. Kconfig widget name: kcfg_ldaprealm */
       void setRealm( const QString &realm ) { mRealm->setText( realm ); }
-      /** Gets the SASL realm. Kconfig widget name: kcfg_ldaprealm*/
+      /** Gets the SASL realm. Kconfig widget name: kcfg_ldaprealm */
       QString realm() const { return mRealm->text(); }
       
       /** Sets the host name. Kconfig widget name: kcfg_ldaphost */
@@ -229,7 +230,7 @@ namespace KABC {
 
       QString mErrorMsg;
       bool mCancelled;
-      KProgressDialog *prog;
+      KProgressDialog *mProg;
     
       class LDAPConfigWidgetPrivate;
       LDAPConfigWidgetPrivate *d;

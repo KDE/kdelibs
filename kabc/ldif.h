@@ -55,6 +55,9 @@ namespace KABC {
     static QCString assembleLine( const QString &fieldname, 
       const QCString &value, uint linelen=0, bool url=false );
     
+    static QCString assembleLine( const QString &fieldname, 
+      const QString &value, uint linelen=0, bool url=false );
+      
     /**
      * Splits one line from an LDIF file to attribute and value components.
      * @returns true if value is an URL, false otherwise

@@ -63,6 +63,8 @@ QCString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
       }
     }
     
+    if ( value.size() == 0 ) safe = true;
+    
     if( safe ) {
       result = fieldname.utf8() + ": " + QCString( value.data(), value.size()+1 );
     } else {
@@ -92,12 +94,18 @@ QCString LDIF::assembleLine( const QString &fieldname, const QCString &value,
   
 }
 
+QCString LDIF::assembleLine( const QString &fieldname, const QString &value, 
+  uint linelen, bool url )
+{
+  return assembleLine( fieldname, value.utf8(), linelen, url );
+}
+
 bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &value )
 {
   int position;
   QByteArray tmp;
 
-//  kdDebug(7125) << "kio_ldap_splitLine line: " << QString::fromUtf8(line) << endl;
+//  kdDebug(7125) << "splitLine line: " << QString::fromUtf8(line) << endl;
   
   position = line.find( ":" );
   if ( position == -1 ) {
@@ -115,6 +123,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   if ( line.length() > ( position + 1 ) && line[ position + 1 ] == ':' ) {
     // String is BASE64 encoded -> decode it now.
     fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
+    if ( line.length() <= ( position + 3 ) ) {
+      value.resize( 0 );
+      return false;
+    }
     tmp.setRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
     KCodecs::base64Decode( tmp, value );
     tmp.resetRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
@@ -124,6 +136,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   if ( line.length() > ( position + 1 ) && line[ position + 1 ] == '<' ) {
     // String is an URL.
     fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
+    if ( line.length() <= ( position + 3 ) ) {
+      value.resize( 0 );
+      return false;
+    }
     tmp.setRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
     value = tmp.copy();
     tmp.resetRawData( &line.data()[ position + 3 ], line.length() - position - 3 );
@@ -131,6 +147,10 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   }
 
   fieldname = QString::fromUtf8(line.left( position ).lower().stripWhiteSpace());
+  if ( line.length() <= ( position + 2 ) ) {
+    value.resize( 0 );
+    return false;
+  }
   tmp.setRawData( &line.data()[ position + 2 ], line.length() - position - 2 );
   value = tmp.copy();
   tmp.resetRawData( &line.data()[ position + 2 ], line.length() - position - 2 );
@@ -138,7 +158,8 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
 
 }
 
-LDIF::ParseVal LDIF::processLine() {
+LDIF::ParseVal LDIF::processLine() 
+{
   
   if ( mIsComment ) return None;
   

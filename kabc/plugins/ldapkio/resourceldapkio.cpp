@@ -52,7 +52,7 @@ class ResourceLDAPKIO::ResourceLDAPKIOPrivate
     bool mTLS,mSSL,mSubTree;
     QString mResultDn;
     Addressee mAddr;
-    AddressBook::Iterator mSaveIt;
+    Resource::Iterator mSaveIt;
     bool mSASL;
     QString mMech;
     QString mRealm, mBindDN;
@@ -175,8 +175,8 @@ QCString ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, b
 {
   QCString tmp;
   if ( !attr.isEmpty() ) {
-    if ( mod ) tmp += LDIF::assembleLine("replace", attr.utf8()) + "\n";
-    tmp += LDIF::assembleLine( attr, value.utf8() ) + "\n";
+    if ( mod ) tmp += LDIF::assembleLine( "replace", attr ) + "\n";
+    tmp += LDIF::assembleLine( attr, value ) + "\n";
     if ( mod ) tmp += "-\n"; 
   }
   return ( tmp );
@@ -189,32 +189,43 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   QString dn;
   QByteArray data;
   
-  switch ( d->mRDNPrefix ) {
-    case 1:
+  if ( olddn.isEmpty() ) {
+    switch ( d->mRDNPrefix ) {
+      case 1:
+        dn = mAttributes[ "uid" ] + "=" + addr.uid() + "," +mDn;
+        break;
+      case 0:
+      default:  
+        dn = mAttributes[ "commonName" ] + "=" + addr.assembledName() + "," +mDn;
+        break;
+    }
+  } else {
+    if ( olddn.startsWith( mAttributes[ "uid" ] ) ) {
       dn = mAttributes[ "uid" ] + "=" + addr.uid() + "," +mDn;
-      break;
-    case 0:
-    default:  
+    } else if ( olddn.startsWith( mAttributes[ "commonName" ] ) ) {
       dn = mAttributes[ "commonName" ] + "=" + addr.assembledName() + "," +mDn;
-      break;
+    } else {
+      dn = olddn;
+    }
   }
+  
   kdDebug() << "AddresseeToLDIF: dn: '" << dn << "' olddn: '" << olddn << "'" << endl;
   if ( !olddn.isEmpty() && olddn.lower() != dn.lower() ) {
-    tmp = LDIF::assembleLine("dn", olddn.utf8()) + "\n";
+    tmp = LDIF::assembleLine( "dn", olddn ) + "\n";
     tmp += "changetype: modrdn\n";
-    tmp += LDIF::assembleLine("newrdn", dn.section( ',', 0, 0 ).utf8()) + "\n";
+    tmp += LDIF::assembleLine( "newrdn", dn.section( ',', 0, 0 ) ) + "\n";
     tmp += "deleteoldrdn: 1\n";
     dn = dn.section( ',', 0, 0 ) + "," + olddn.section( ',' , 1 );
   }
   
   bool mod = !olddn.isEmpty();
-  tmp += "\n" + LDIF::assembleLine("dn", dn.utf8()) + "\n";
+  tmp += "\n" + LDIF::assembleLine( "dn", dn ) + "\n";
   if ( mod ) tmp += "changetype: modify\n";
   if ( !mod ) {
     tmp += "objectClass: top\n";
     QStringList obclass = QStringList::split( ',', mAttributes[ "objectClass" ] );
     for ( QStringList::iterator it = obclass.begin(); it != obclass.end(); it++ ) {
-      tmp += LDIF::assembleLine("objectClass", (*it).utf8()) + "\n";
+      tmp += LDIF::assembleLine( "objectClass", *it ) + "\n";
     }
   }
   
@@ -231,9 +242,9 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   
   if ( !mAttributes[ "mail" ].isEmpty() ) {
     if ( mod ) tmp += 
-      LDIF::assembleLine("replace", mAttributes[ "mail" ].utf8()) + "\n";
+      LDIF::assembleLine( "replace", mAttributes[ "mail" ] ) + "\n";
     if ( mailIt != emails.end() ) {
-      tmp += LDIF::assembleLine(mAttributes[ "mail" ], (*mailIt).utf8()) + "\n";
+      tmp += LDIF::assembleLine( mAttributes[ "mail" ], *mailIt ) + "\n";
       mailIt ++;
     }
     if ( mod && mAttributes[ "mail" ] != mAttributes[ "mailAlias" ] ) tmp += "-\n"; 
@@ -241,10 +252,9 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
     
   if ( !mAttributes[ "mailAlias" ].isEmpty() ) {
     if ( mod && mAttributes[ "mail" ] != mAttributes[ "mailAlias" ] ) tmp += 
-      LDIF::assembleLine("replace", mAttributes[ "mailAlias" ].utf8()) + "\n";
+      LDIF::assembleLine( "replace", mAttributes[ "mailAlias" ] ) + "\n";
     for ( ; mailIt != emails.end(); ++mailIt ) {
-      tmp += LDIF::assembleLine(mAttributes[ "mailAlias" ].utf8(), 
-        (*mailIt).utf8()) + "\n" ;
+      tmp += LDIF::assembleLine( mAttributes[ "mailAlias" ], *mailIt ) + "\n" ;
     }
     if ( mod ) tmp += "-\n";
   }
@@ -256,7 +266,7 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
     addr.photo().data().save( &buffer, "JPEG" );
     
     if ( mod ) tmp += 
-      LDIF::assembleLine("replace", mAttributes[ "jpegPhoto" ].utf8()) + "\n";
+      LDIF::assembleLine( "replace", mAttributes[ "jpegPhoto" ] ) + "\n";
     tmp += LDIF::assembleLine( mAttributes[ "jpegPhoto" ], pic, 76 ) + "\n";
     if ( mod ) tmp += "-\n";
   }
@@ -555,7 +565,7 @@ bool ResourceLDAPKIO::save( Ticket* )
 {
   kdDebug(7125) << "ResourceLDAPKIO save" << endl;
   
-  d->mSaveIt = addressBook()->begin();
+  d->mSaveIt = begin();
   KIO::Job *job = KIO::put( d->mLDAPUrl, -1, true, false, false );
   connect( job, SIGNAL( dataReq( KIO::Job*, QByteArray& ) ),
     this, SLOT( saveData( KIO::Job*, QByteArray& ) ) );
@@ -575,7 +585,7 @@ bool ResourceLDAPKIO::save( Ticket* )
 bool ResourceLDAPKIO::asyncSave( Ticket* )
 {
   kdDebug(7125) << "ResourceLDAPKIO asyncSave" << endl;
-  d->mSaveIt = addressBook()->begin();
+  d->mSaveIt = begin();
   KIO::Job *job = KIO::put( d->mLDAPUrl, -1, true, false, false );
   connect( job, SIGNAL( dataReq( KIO::Job*, QByteArray& ) ),
     this, SLOT( saveData( KIO::Job*, QByteArray& ) ) );
@@ -606,12 +616,10 @@ void ResourceLDAPKIO::saveResult( KIO::Job *job )
 
 void ResourceLDAPKIO::saveData( KIO::Job*, QByteArray& data )
 {
-  
-  while ( d->mSaveIt != addressBook()->end() &&
-         ((*d->mSaveIt).resource() != this || 
-         !(*d->mSaveIt).changed()) ) d->mSaveIt++;
+  while ( d->mSaveIt != end() &&
+       !(*d->mSaveIt).changed() ) d->mSaveIt++;
 
-  if (d->mSaveIt == addressBook()->end()) {
+  if ( d->mSaveIt == end() ) {
     kdDebug(7125) << "ResourceLDAPKIO endData" << endl;
     data.resize(0);
     return;

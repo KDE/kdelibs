@@ -65,6 +65,7 @@ namespace KABC {
   bool addresseeToLDIF( const Addressee &addr, QString &str );
 
   /**
+   * @deprecated
    * Obsoleted - please use LDIF::assembleLine()
    * Returns a LDIF compatible string representing a given field/value pair.
    * If necessary, the value parameter will be base64encoded and split into multiple.
@@ -75,7 +76,7 @@ namespace KABC {
    * @param allowEncode Set to false if you wish no encoding of the value.
    * @since 3.2
    */
-  QString makeLDIFfieldString( QString field, QString value, bool allowEncode = true );
+  QString makeLDIFfieldString( QString field, QString value, bool allowEncode = true ) KDE_DEPRECATED;
 
 
 

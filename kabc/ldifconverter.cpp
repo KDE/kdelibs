@@ -69,7 +69,7 @@ static void ldif_out( QTextStream &t, QString formatStr, QString value )
   if ( value.isEmpty() )
     return;
 
-  QCString txt = LDIF::assembleLine( formatStr, value.utf8(), 72 );
+  QCString txt = LDIF::assembleLine( formatStr, value, 72 );
 
   // write the string
   t << QString::fromUtf8(txt) << "\n";

@@ -51,6 +51,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
   mAnonymous = mSimple = mSASL = mSecNO = mSecTLS = mSecSSL = 0;
   mEditButton =  mQueryMech = 0;
   mMech = 0;      
+  mProg = 0;
       
   if ( flags & W_USER ) {  
     label = new QLabel( i18n( "User:" ), this );
@@ -116,13 +117,15 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
   if ( flags & W_DN ) {
     label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
     mDn = new KLineEdit( this, "kcfg_ldapdn" );
-    QPushButton *dnquery = new QPushButton( i18n( "Query server" ), this );
-  
+    
     mainLayout->addWidget( label, 6, 0 );
     mainLayout->addMultiCellWidget( mDn, 6, 6, 1, 1 );
-    mainLayout->addMultiCellWidget( dnquery, 6, 6, 2, 3 );
-    
-    connect( dnquery, SIGNAL( clicked() ), SLOT( mQueryDNClicked() ) );
+    //without host query doesn't make sense
+    if ( mHost ) {
+      QPushButton *dnquery = new QPushButton( i18n( "Query server" ), this );
+      connect( dnquery, SIGNAL( clicked() ), SLOT( mQueryDNClicked() ) );
+      mainLayout->addMultiCellWidget( dnquery, 6, 6, 2, 3 );
+    }  
   }
 
   if ( flags & W_FILTER ) {
@@ -163,19 +166,20 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
     mMech->insertItem( "GSSAPI" );
     mMech->insertItem( "PLAIN" );
   
-    mQueryMech = new QPushButton( i18n( "Query server" ), authbox );
+    //without host query doesn't make sense
+    if ( mHost ) {
+      mQueryMech = new QPushButton( i18n( "Query server" ), authbox );
+      connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
+    }
+      
     mainLayout->addMultiCellWidget( authbox, 9, 10, 0, 3 );
       
     connect( mAnonymous, SIGNAL( stateChanged(int) ), SLOT( setAnonymous(int) ) );
     connect( mSimple, SIGNAL( stateChanged(int) ), SLOT( setSimple(int) ) );
     connect( mSASL, SIGNAL( stateChanged(int) ), SLOT( setSASL(int) ) );
-  
-    connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
     
     mAnonymous->setChecked( true );
   }
-
-  prog = NULL;
 }
 
 LdapConfigWidget::~LdapConfigWidget() 
@@ -198,7 +202,7 @@ void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
   do {
     ret = mLdif.nextItem();
     if ( ret == LDIF::Item && mLdif.attr().lower() == mAttr ) {
-      prog->progressBar()->advance( 1 );
+      mProg->progressBar()->advance( 1 );
       mQResult.push_back( QString::fromUtf8( mLdif.val(), mLdif.val().size() ) );
     }
   } while ( ret != LDIF::MoreData );
@@ -213,7 +217,7 @@ void LdapConfigWidget::loadResult( KIO::Job* job)
     mErrorMsg = "";
 
   mCancelled = false;
-  prog->close();
+  mProg->close();
 }
 
 void LdapConfigWidget::sendQuery()
@@ -223,14 +227,14 @@ void LdapConfigWidget::sendQuery()
   mQResult.clear();
   mCancelled = true;
 
-  _url.setProtocol( mSecSSL->isChecked() ? "ldaps" : "ldap" );
-  _url.setHost( mHost->text() );
-  _url.setPort( mPort->value() );
+  _url.setProtocol( ( mSecSSL && mSecSSL->isChecked() ) ? "ldaps" : "ldap" );
+  if ( mHost ) _url.setHost( mHost->text() );
+  if ( mPort ) _url.setPort( mPort->value() );
   _url.setDn( "" );
   _url.setAttributes( mAttr );
   _url.setScope( LDAPUrl::Base );
-  _url.setExtension( "x-ver", QString::number( mVer->value() ) );
-  if ( mSecTLS->isChecked() ) _url.setExtension( "x-tls", "" );
+  if ( mVer ) _url.setExtension( "x-ver", QString::number( mVer->value() ) );
+  if ( mSecTLS && mSecTLS->isChecked() ) _url.setExtension( "x-tls", "" );
   
   kdDebug(7125) << "sendQuery url: " << _url.prettyURL() << endl;
   mLdif.startParsing();
@@ -241,13 +245,13 @@ void LdapConfigWidget::sendQuery()
   connect( job, SIGNAL( result( KIO::Job* ) ),
     this, SLOT( loadResult( KIO::Job* ) ) );
 
-  if ( prog == NULL )
-    prog = new KProgressDialog( this, 0, i18n("LDAP query"), _url.prettyURL(), true );
+  if ( mProg == NULL )
+    mProg = new KProgressDialog( this, 0, i18n("LDAP query"), _url.prettyURL(), true );
   else
-    prog->setLabel( _url.prettyURL() );    
-  prog->progressBar()->setValue( 0 );
-  prog->progressBar()->setTotalSteps( 1 );
-  prog->exec();
+    mProg->setLabel( _url.prettyURL() );    
+  mProg->progressBar()->setValue( 0 );
+  mProg->progressBar()->setTotalSteps( 1 );
+  mProg->exec();
   if ( mCancelled ) {
     kdDebug(7125) << "query cancelled!" << endl;
     job->kill( true );
