@@ -641,13 +641,13 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
   KSimpleConfig cfg( _url.path(), true );
   
-  if ( !cfg.hasGroup( "Menu" ) )
-    return result;
-  
-  cfg.setGroup( "Menu" );
+  cfg.setDesktopGroup();
 
-  QStringList keys = cfg.readListEntry( "Menus" );
-  
+  if ( !cfg.hasKey( "Actions" ) )
+    return result;
+
+  QStringList keys = cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
+ 
   if ( keys.count() == 0 )
     return result;
 
@@ -658,7 +658,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
     kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", (*it).ascii() );
 
     QString group = *it;
-    group.prepend( "Menu::" );
+    group.prepend( "Desktop Action " );
 
     bool bInvalidMenu = false;
 
