@@ -337,7 +337,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
 
 pid_t KRun::runCommand( QString cmd )
 {
-  return KRun::runCommand( cmd, binaryName( cmd, false /*keep path*/ ), QString::null );
+  return KRun::runCommand( cmd, QString::null, QString::null );
 }
 
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
@@ -345,20 +345,71 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
   KShellProcess * proc = new KShellProcess;
   *proc << cmd;
+  return runCommandInternal( proc, binaryName( cmd, false ), execName, iconName );
+}
+
+pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
+    const QString &execName_P, const QString & iconName_P )
+{
+  QString bin = binaryName( binName, false );
+  QString execName = execName_P;
+  QString iconName = iconName_P;
   KStartupInfoId id;
-  id.initId();
-  id.setupStartupEnv();
-  pid_t pid = KProcessRunner::run( proc, execName, id );
-  KStartupInfoData data;
-  data.addPid( pid );
-  data.setHostname();
-  data.setBin( binaryName( execName, true ));
-  data.setName( cmd );
-  if( !iconName.isEmpty())
+  // Find service, if any
+  KService::Ptr service = 0;
+  if( bin[0] == '/' ) // Full path
+      service = new KService( bin );
+  else
+      service = KService::serviceByDesktopName( bin );
+  bool startup_notify = false;
+  QCString wmclass;
+  if( service != NULL )
+  {
+      if( service->property( "X-KDE-StartupNotify" ).isValid())
+      {
+          startup_notify = service->property( "X-KDE-StartupNotify" ).toBool();
+          wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
+      }
+      else // non-compliant app ( .desktop file )
+      {
+          if( service->mapNotify()) // for old .desktop files
+          { // ok, wmclass is equal to binary name
+              startup_notify = true;
+              wmclass = "";
+          }
+          else if( service->type() == "Application" )
+          {
+              startup_notify = true; // doesn't have .desktop entries needed
+              wmclass = "0";         // start as non-compliant
+          }
+      }
+  }
+  if( startup_notify )
+  {
+      id.initId();
+      id.setupStartupEnv();
+      if( execName.isEmpty())
+          execName = service->name();
+      if( iconName.isEmpty())
+          iconName = service->icon();
+      KStartupInfoData data;
+      data.setHostname();
+      data.setBin( binaryName( binName, true ));
+      data.setName( execName );
       data.setIcon( iconName );
-  data.setDesktop( KWin::currentDesktop());
-  KStartupInfo::sendStartup( id, data );
-  KStartupInfo::resetStartupEnv();
+      if( !wmclass.isEmpty())
+          data.setWMClass( wmclass );
+      data.setDesktop( KWin::currentDesktop());
+      KStartupInfo::sendStartup( id, data );
+  }
+  pid_t pid = KProcessRunner::run( proc, binaryName( binName, true ), id );
+  if( startup_notify )
+  {
+      KStartupInfoData data;
+      data.addPid( pid );
+      KStartupInfo::sendChange( id, data );
+      KStartupInfo::resetStartupEnv();
+  }
   return pid;
 }
 
@@ -396,19 +447,7 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
     for( ; it != _urls.end(); ++it )
         *proc << (*it).url();
 
-    KStartupInfoId id;
-    id.initId();
-    id.setupStartupEnv();
-    pid_t pid = KProcessRunner::run(proc, QString::null, id);
-    KStartupInfoData data;
-    data.addPid( pid );
-    data.setHostname();
-    data.setBin( binaryName( app, true ));
-    data.setName( app );
-    data.setDesktop( KWin::currentDesktop());
-    KStartupInfo::sendStartup( id, data );
-    KStartupInfo::resetStartupEnv();
-    return pid;
+    return runCommandInternal( proc, binaryName( app, false ), "", "" );
   }
   else
   {
@@ -422,18 +461,7 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
         *proc << app;
         *proc << (*it).url();
 
-        KStartupInfoId id;
-        id.initId();
-        id.setupStartupEnv();
-        retval = KProcessRunner::run(proc, QString::null, id);
-        KStartupInfoData data;
-        data.addPid( retval );
-        data.setHostname();
-        data.setBin( binaryName( app, true ));
-        data.setName( app );
-        data.setDesktop( KWin::currentDesktop());
-        KStartupInfo::sendStartup( id, data );
-        KStartupInfo::resetStartupEnv();
+        retval = runCommandInternal( proc, binaryName( app, false ), "", "" );
     }
 
     return retval;
@@ -862,7 +890,13 @@ KProcessRunner::slotProcessExited(KProcess * p)
       kapp->deref();
     }
   }
-  KStartupInfo::sendFinish( id_ );
+  if( !id_.none())
+  {
+      KStartupInfoData data; 
+      data.addPid( pid()); // announce this pid for the startup notification has finished
+      data.setHostname();
+      KStartupInfo::sendFinish( id_, data );
+  }
   delete this;
 }
 

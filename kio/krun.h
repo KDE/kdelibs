@@ -253,6 +253,9 @@ protected:
    *                   if false, it will be returned with the path.
    */
   static QString binaryName( const QString & execLine, bool removePath = true );
+  
+  static pid_t runCommandInternal( KProcess* poc, const QString& binName,
+      const QString& execName, const QString& iconName );
 };
 
 /**

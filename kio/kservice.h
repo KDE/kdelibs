@@ -182,7 +182,7 @@ public:
   QStringList keywords() const { return m_lstKeywords; }
 
   /**
-   * Returns whether map notification should be used with this service.
+   * @deprecated Don't use
    */
   bool mapNotify() const { return m_mapNotify; }
 
@@ -343,6 +343,6 @@ private:
   bool m_bValid;
   QStringList m_lstKeywords;
   QString m_strInit;
-  bool m_mapNotify;
+  bool m_mapNotify; // obsolete
 };
 #endif

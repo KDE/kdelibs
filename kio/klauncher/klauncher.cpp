@@ -637,8 +637,18 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    request->pid = 0;
    request->status = KLaunchRequest::Launching;
    request->transaction = 0; // No confirmation is send
-   request->startup_id = startup_id;
    request->envs = envs;
+   // Find service, if any
+   KService::Ptr service = 0;
+   if (name[0] == '/') // Full path
+      service = new KService(name);
+   else
+      service = KService::serviceByDesktopName(name);
+   if (service != NULL)
+       request->startup_id = send_service_startup_info( service,
+           startup_id, QValueList< QCString >());
+   else
+       request->startup_id = "0"; // no .desktop file, no startup info
    requestStart(request);
    // We don't care about this request any longer....
    requestDone(request);
@@ -760,9 +770,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    request->pid = 0;
    request->transaction = 0;
    request->envs = envs;
-   request->startup_id = service->mapNotify() ? startup_id : QCString( "0" );
-   if( request->startup_id != "0" )
-       request->startup_id = send_service_startup_info( service, request->startup_id, envs );
+   request->startup_id = send_service_startup_info( service, startup_id, envs );
 
    // Request will be handled later.
    if (!blind && !autoStart)
@@ -777,15 +785,26 @@ QCString
 KLauncher::send_service_startup_info( KService::Ptr service, const QCString& startup_id,
     const QValueList<QCString> &envs )
 {
-    if( !service->mapNotify() || startup_id == "0" )
+    if( startup_id == "0" )
         return "0";
+    QCString wmclass;
+    if( service->property( "X-KDE-StartupNotify" ).isValid())
+    {
+        if( !service->property( "X-KDE-StartupNotify" ).toBool())
+            return "0";
+        wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
+    }
+    else // non-compliant app ( .desktop file )
+    {
+        if( service->mapNotify()) // old .desktop files
+            wmclass = "";
+        else if( service->type() != "Application" )
+            return "0";
+        else
+            wmclass = "0";
+    }
     KStartupInfoId id;
     id.initId( startup_id );
-    KStartupInfoData data;
-    data.setName( service->name());
-    data.setIcon( service->icon());
-    // TODO compliance
-    // the rest will be sent by kdeinit
     const char* dpy = NULL;
     for( QValueList<QCString>::ConstIterator it = envs.begin();
          it != envs.end();
@@ -795,6 +814,12 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
     Display* disp = XOpenDisplay( dpy );
     if( disp == NULL )
         return id.id();
+    KStartupInfoData data;
+    data.setName( service->name());
+    data.setIcon( service->icon());
+    if( !wmclass.isEmpty())
+        data.setWMClass( wmclass );
+    // the rest will be sent by kdeinit
     KStartupInfo::sendStartupX( disp, id, data );
     XCloseDisplay( disp );
     return id.id();

@@ -8,6 +8,7 @@ Name[bg]=Програма
 Name[br]=Arload
 Name[bs]=Program
 Name[ca]=Aplicacions
+Name[cs]=Aplikace
 Name[da]=Program
 Name[de]=Anwendung
 Name[el]=Εφαρμογή
@@ -28,6 +29,7 @@ Name[lt]=Programa
 Name[lv]=Aplikācija
 Name[mi]=Utauta
 Name[mk]=Апликација
+Name[mt]=Programm
 Name[nl]=Applicatie
 Name[no]=Applikasjon
 Name[no_NY]=Program
@@ -61,4 +63,7 @@ Type=QString
 
 [PropertyDef::X-KDE-WMClass]
 Type=QString
+
+[PropertyDef::X-KDE-StartupNotify]
+Type=bool
 
