@@ -565,11 +565,12 @@ void KRun::killJob()
 }
 
 /****************/
-void KFileManager::openFileManagerWindow( const char *_url )
+bool KFileManager::openFileManagerWindow( const char *_url )
 {
   QString cmd = "kfmclient openURL ";
   cmd += _url;
   system( cmd.ascii() );
+  return true; // assume kfmclient succeeded
 }
 
 const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )

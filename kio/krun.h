@@ -187,7 +187,11 @@ public:
   KFileManager() { pFileManager = this; } ;
   virtual ~KFileManager() {} ;
 
-  virtual void openFileManagerWindow( const char *_url );
+  /**
+   * Opens a file manager window for _url
+   * @returns true if the operation succeeded
+   */
+  virtual bool openFileManagerWindow( const char *_url );
   
   static KFileManager * getFileManager() { 
     if (!pFileManager)
