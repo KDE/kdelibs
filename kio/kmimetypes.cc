@@ -360,12 +360,12 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
     bool isempty = false;
     DIR *dp = 0L;
     struct dirent *ep;
-    dp = opendir( u.path() );
+    dp = opendir( _url.path() );
     if ( dp )
     {
       ep=readdir( dp );
       ep=readdir( dp );      // ignore '.' and '..' dirent
-      if ( readdir( dp ) == 0L ) // third file is NULL entry -> empty directory
+      if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
 	isempty = true;
       // if third file is .directory and no fourth file -> empty directory
       if (!isempty && !strcmp(ep->d_name, ".directory"))
