@@ -14,15 +14,20 @@ artsinclude_HEADERS = soundserver.h soundserver.idl kmedia2.h kmedia2.idl \
 ####### libsoundserver_idl, libkmedia2_idl (idl files as library)
 
 lib_LTLIBRARIES = libkmedia2_idl.la libsoundserver_idl.la \
-						libartswavplayobject.la
+						libartswavplayobject.la libkmedia2.la
 
 libsoundserver_idl_la_LIBADD = libkmedia2_idl.la \
                           $(top_builddir)/arts/flow/libartsflow_idl.la
 libsoundserver_idl_la_LDFLAGS = -no-undefined
 libsoundserver_idl_la_SOURCES = soundserver.cc
+
 libkmedia2_idl_la_SOURCES = kmedia2.cc
-libkmedia2_idl_la_LIBADD  = $(top_builddir)/arts/mcop/libmcop.la
+libkmedia2_idl_la_LIBADD  = $(top_builddir)/arts/flow/libartsflow.la
 libkmedia2_idl_la_LDFLAGS = -no-undefined
+
+libkmedia2_la_SOURCES = fileinputstream_impl.cc stdoutwriter_impl.cc
+libkmedia2_la_LIBADD  = libkmedia2_idl.la $(FLOWLIBS)
+libkmedia2_la_LDFLAGS = -no-undefined
 
 libartswavplayobject_la_SOURCES = wavplayobject_impl.cc
 libartswavplayobject_la_LIBADD  = $(top_builddir)/arts/mcop/libmcop.la \
@@ -64,7 +69,7 @@ kmedia2.cc: kmedia2.h soundserver.h
 kmedia2.mcoptype: kmedia2.h
 kmedia2.mcopclass: kmedia2.h
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
-	$(MCOPIDL) -t $(top_srcdir)/arts/soundserver/kmedia2.idl
+	$(MCOPIDL) -t $(MCOPINC) $(top_srcdir)/arts/soundserver/kmedia2.idl
 
 
 artsversion.h: artsversion-new.h
@@ -87,9 +92,13 @@ artswrapper.o: $(srcdir)/artswrapper.c
 			$(srcdir)/artswrapper.c
 
 
+mcopclass_UNCONDITIONAL = FileInputStream.mcopclass
+
 mcopclassdir = $(libdir)/mcop/Arts
 if HAVE_WAVSUPPORT
-mcopclass_DATA = WavPlayObject.mcopclass
+mcopclass_DATA = WavPlayObject.mcopclass $(mcopclass_UNCONDITIONAL)
+else
+mcopclass_DATA = $(mcopclass_UNCONDITIONAL)
 endif
 
 install-exec-local: install-binPROGRAMS
