@@ -130,7 +130,7 @@ void KHTMLFind::slotEditRegExp()
 
   assert( m_editorDialog );
   
-  KRegExpDialogInterface *iface = dynamic_cast<KRegExpDialogInterface *>( m_editorDialog );
+  KRegExpEditorInterface *iface = dynamic_cast<KRegExpEditorInterface *>( m_editorDialog );
   assert( iface );
 
   iface->setRegExp( getText() );
