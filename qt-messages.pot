@@ -1,186 +1,185 @@
-#: attic/qtmultilineedit.cpp:2130
+#: attic/qtmultilineedit.cpp:2129
 msgid "Undo"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2131
+#: attic/qtmultilineedit.cpp:2130
 msgid "Redo"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2134
+#: attic/qtmultilineedit.cpp:2133
 msgid "Cut"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2135
+#: attic/qtmultilineedit.cpp:2134
 msgid "Copy"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2136
+#: attic/qtmultilineedit.cpp:2135
 msgid "Paste"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2138
+#: attic/qtmultilineedit.cpp:2137
 msgid "Paste special..."
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2160
-#: widgets/qtextedit.cpp:4268
+#: attic/qtmultilineedit.cpp:2140 widgets/qlineedit.cpp:2307
+#: widgets/qlineedit2.cpp:2333 widgets/qtextedit.cpp:5235
 msgid "Clear"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2163
-#: widgets/qlineedit.cpp:2165 widgets/qtextedit.cpp:4272
-#: widgets/qtextedit.cpp:4274
+#: attic/qtmultilineedit.cpp:2142 widgets/qlineedit.cpp:2310
+#: widgets/qlineedit.cpp:2312 widgets/qlineedit2.cpp:2336
+#: widgets/qlineedit2.cpp:2338 widgets/qtextedit.cpp:5239
+#: widgets/qtextedit.cpp:5241
 msgid "Select All"
 msgstr ""
 
-#: dialogs/qdialog.cpp:429
+#: dialogs/qdialog.cpp:430
 msgid "What's This?"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:166
+#: dialogs/qfontdialog.cpp:167
 msgid "&Font"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:174
+#: dialogs/qfontdialog.cpp:175
 msgid "Font st&yle"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:182 workspace/qworkspace.cpp:255
-#: workspace/qworkspace.cpp:269
+#: dialogs/qfontdialog.cpp:183 workspace/qworkspace.cpp:305
+#: workspace/qworkspace.cpp:319
 msgid "&Size"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:186
+#: dialogs/qfontdialog.cpp:187
 msgid "Effects"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:188
+#: dialogs/qfontdialog.cpp:189
 msgid "Stri&keout"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:190
+#: dialogs/qfontdialog.cpp:191
 msgid "&Underline"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:196
+#: dialogs/qfontdialog.cpp:197
 msgid "&Color"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:200
+#: dialogs/qfontdialog.cpp:201
 msgid "Sample"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:214
+#: dialogs/qfontdialog.cpp:215
 msgid "Scr&ipt"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:289 dialogs/qinputdialog.cpp:155
-#: dialogs/qmessagebox.cpp:1385 dialogs/qtabdialog.cpp:194
-#: dialogs/qtabdialog.cpp:1063
+#: dialogs/qfontdialog.cpp:290 dialogs/qinputdialog.cpp:148
+#: dialogs/qmessagebox.cpp:1361 dialogs/qtabdialog.cpp:195
+#: dialogs/qtabdialog.cpp:1064
 msgid "OK"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:289 dialogs/qtabdialog.cpp:703
+#: dialogs/qfontdialog.cpp:290 dialogs/qtabdialog.cpp:704
 msgid "Apply"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:300 dialogs/qinputdialog.cpp:157
-#: dialogs/qprogressdialog.cpp:250 dialogs/qtabdialog.cpp:847
-#: sql/qsqlmanager_p.cpp:892
+#: dialogs/qfontdialog.cpp:301 dialogs/qinputdialog.cpp:150
+#: dialogs/qprogressdialog.cpp:251 dialogs/qtabdialog.cpp:848
 msgid "Cancel"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:300 widgets/qtitlebar.cpp:113
-#: workspace/qworkspace.cpp:1078
+#: dialogs/qfontdialog.cpp:301 widgets/qtitlebar.cpp:113
+#: workspace/qworkspace.cpp:1445
 msgid "Close"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:411
+#: dialogs/qfontdialog.cpp:417
 msgid "Select Font"
-msgstr ""
-
-#: dialogs/qmessagebox.cpp:414
-msgid ""
-"_: QMessageBox\n"
-"OK"
 msgstr ""
 
 #: dialogs/qmessagebox.cpp:415
 msgid ""
 "_: QMessageBox\n"
-"Cancel"
+"OK"
 msgstr ""
 
 #: dialogs/qmessagebox.cpp:416
 msgid ""
 "_: QMessageBox\n"
-"&Yes"
+"Cancel"
 msgstr ""
 
 #: dialogs/qmessagebox.cpp:417
 msgid ""
 "_: QMessageBox\n"
-"&No"
+"&Yes"
 msgstr ""
 
 #: dialogs/qmessagebox.cpp:418
 msgid ""
 "_: QMessageBox\n"
-"&Abort"
+"&No"
 msgstr ""
 
 #: dialogs/qmessagebox.cpp:419
 msgid ""
 "_: QMessageBox\n"
-"&Retry"
+"&Abort"
 msgstr ""
 
 #: dialogs/qmessagebox.cpp:420
 msgid ""
 "_: QMessageBox\n"
+"&Retry"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:421
+msgid ""
+"_: QMessageBox\n"
 "&Ignore"
 msgstr ""
 
-#: dialogs/qmessagebox.cpp:550
+#: dialogs/qmessagebox.cpp:537
 msgid ""
 "<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
-"toolkit for cross-platform GUI &amp; application development.</p><p>Qt "
-"provides single-source portability across Windows 95/98/NT4/ME/2000, "
-"Mac&nbsp;OS&nbsp;X, Linux, Solaris, HP-UX and many other versions of Unix "
-"with X11.<br>Qt is also available for embedded devices.</p><p>Qt is a "
-"Trolltech product. See <tt>http://www.trolltech.com/qt/</tt> for more "
-"information.</p>"
+"toolkit for multiplatform GUI &amp; application development.</p><p>Qt "
+"provides single-source portability across MS&nbsp;Windows, "
+"Mac&nbsp;OS&nbsp;X, Linux, and all major commercial Unix variants.<br>Qt is "
+"also available for embedded devices.</p><p>Qt is a Trolltech product. See "
+"<tt>http://www.trolltech.com/qt/</tt> for more information.</p>"
 msgstr ""
 
-#: dialogs/qtabdialog.cpp:748
+#: dialogs/qtabdialog.cpp:749
 msgid "Help"
 msgstr ""
 
-#: dialogs/qtabdialog.cpp:795
+#: dialogs/qtabdialog.cpp:796
 msgid "Defaults"
 msgstr ""
 
-#: dialogs/qwizard.cpp:183
+#: dialogs/qwizard.cpp:184
 msgid "&Cancel"
 msgstr ""
 
-#: dialogs/qwizard.cpp:184
+#: dialogs/qwizard.cpp:185
 msgid "< &Back"
 msgstr ""
 
-#: dialogs/qwizard.cpp:185
+#: dialogs/qwizard.cpp:186
 msgid "&Next >"
 msgstr ""
 
-#: dialogs/qwizard.cpp:186
+#: dialogs/qwizard.cpp:187
 msgid "&Finish"
 msgstr ""
 
-#: dialogs/qwizard.cpp:187
+#: dialogs/qwizard.cpp:188
 msgid "&Help"
 msgstr ""
 
-#: kernel/qapplication.cpp:2383
+#: kernel/qapplication.cpp:2554
 msgid ""
 "_: QT_LAYOUT_DIRECTION\n"
 "Translate this string to the string 'LTR' in left-to-right languages or to "
@@ -188,522 +187,751 @@ msgid ""
 "widget layout."
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1135
+#: kernel/qfontdatabase.cpp:1153
 msgid ""
 "_: QFont\n"
 "Latin"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1138
+#: kernel/qfontdatabase.cpp:1156
 msgid ""
 "_: QFont\n"
 "Greek"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1141
+#: kernel/qfontdatabase.cpp:1159
 msgid ""
 "_: QFont\n"
 "Cyrillic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1144
+#: kernel/qfontdatabase.cpp:1162
 msgid ""
 "_: QFont\n"
 "Armenian"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1147
+#: kernel/qfontdatabase.cpp:1165
 msgid ""
 "_: QFont\n"
 "Georgian"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1150
+#: kernel/qfontdatabase.cpp:1168
 msgid ""
 "_: QFont\n"
 "Runic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1153
+#: kernel/qfontdatabase.cpp:1171
 msgid ""
 "_: QFont\n"
 "Ogham"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1156
+#: kernel/qfontdatabase.cpp:1174
 msgid ""
 "_: QFont\n"
 "Hebrew"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1159
+#: kernel/qfontdatabase.cpp:1177
 msgid ""
 "_: QFont\n"
 "Arabic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1162
+#: kernel/qfontdatabase.cpp:1180
 msgid ""
 "_: QFont\n"
 "Syriac"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1165
+#: kernel/qfontdatabase.cpp:1183
 msgid ""
 "_: QFont\n"
 "Thaana"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1168
+#: kernel/qfontdatabase.cpp:1186
 msgid ""
 "_: QFont\n"
 "Devanagari"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1171
+#: kernel/qfontdatabase.cpp:1189
 msgid ""
 "_: QFont\n"
 "Bengali"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1174
+#: kernel/qfontdatabase.cpp:1192
 msgid ""
 "_: QFont\n"
 "Gurmukhi"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1177
+#: kernel/qfontdatabase.cpp:1195
 msgid ""
 "_: QFont\n"
 "Gujarati"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1180
+#: kernel/qfontdatabase.cpp:1198
 msgid ""
 "_: QFont\n"
 "Oriya"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1183
+#: kernel/qfontdatabase.cpp:1201
 msgid ""
 "_: QFont\n"
 "Tamil"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1186
+#: kernel/qfontdatabase.cpp:1204
 msgid ""
 "_: QFont\n"
 "Telugu"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1189
+#: kernel/qfontdatabase.cpp:1207
 msgid ""
 "_: QFont\n"
 "Kannada"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1192
+#: kernel/qfontdatabase.cpp:1210
 msgid ""
 "_: QFont\n"
 "Malayalam"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1195
+#: kernel/qfontdatabase.cpp:1213
 msgid ""
 "_: QFont\n"
 "Sinhala"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1198
+#: kernel/qfontdatabase.cpp:1216
 msgid ""
 "_: QFont\n"
 "Thai"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1201
+#: kernel/qfontdatabase.cpp:1219
 msgid ""
 "_: QFont\n"
 "Lao"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1204
+#: kernel/qfontdatabase.cpp:1222
 msgid ""
 "_: QFont\n"
 "Tibetan"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1207
+#: kernel/qfontdatabase.cpp:1225
 msgid ""
 "_: QFont\n"
 "Myanmar"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1210
+#: kernel/qfontdatabase.cpp:1228
 msgid ""
 "_: QFont\n"
 "Khmer"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1213
+#: kernel/qfontdatabase.cpp:1231
 msgid ""
 "_: QFont\n"
 "Han"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1216
+#: kernel/qfontdatabase.cpp:1234
 msgid ""
 "_: QFont\n"
 "Hiragana"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1219
+#: kernel/qfontdatabase.cpp:1237
 msgid ""
 "_: QFont\n"
 "Katakana"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1222
+#: kernel/qfontdatabase.cpp:1240
 msgid ""
 "_: QFont\n"
 "Hangul"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1225
+#: kernel/qfontdatabase.cpp:1243
 msgid ""
 "_: QFont\n"
 "Bopomofo"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1228
+#: kernel/qfontdatabase.cpp:1246
 msgid ""
 "_: QFont\n"
 "Yi"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1231
+#: kernel/qfontdatabase.cpp:1249
 msgid ""
 "_: QFont\n"
 "Ethiopic"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1234
+#: kernel/qfontdatabase.cpp:1252
 msgid ""
 "_: QFont\n"
 "Cherokee"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1237
+#: kernel/qfontdatabase.cpp:1255
 msgid ""
 "_: QFont\n"
 "Canadian Aboriginal"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1240
+#: kernel/qfontdatabase.cpp:1258
 msgid ""
 "_: QFont\n"
 "Mongolian"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1244
+#: kernel/qfontdatabase.cpp:1262
 msgid ""
 "_: QFont\n"
 "Currency Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1248
+#: kernel/qfontdatabase.cpp:1266
 msgid ""
 "_: QFont\n"
 "Letterlike Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1252
+#: kernel/qfontdatabase.cpp:1270
 msgid ""
 "_: QFont\n"
 "Number Forms"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1256
+#: kernel/qfontdatabase.cpp:1274
 msgid ""
 "_: QFont\n"
 "Mathematical Operators"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1260
+#: kernel/qfontdatabase.cpp:1278
 msgid ""
 "_: QFont\n"
 "Technical Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1264
+#: kernel/qfontdatabase.cpp:1282
 msgid ""
 "_: QFont\n"
 "Geometric Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1268
+#: kernel/qfontdatabase.cpp:1286
 msgid ""
 "_: QFont\n"
 "Miscellaneous Symbols"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1272
+#: kernel/qfontdatabase.cpp:1290
 msgid ""
 "_: QFont\n"
 "Enclosed and Square"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1276
+#: kernel/qfontdatabase.cpp:1294
 msgid ""
 "_: QFont\n"
 "Braille"
 msgstr ""
 
-#: kernel/qfontdatabase.cpp:1280
+#: kernel/qfontdatabase.cpp:1298
 msgid ""
 "_: QFont\n"
 "Unicode"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:78
+#: kernel/qkeysequence.cpp:88
 msgid ""
 "_: QAccel\n"
 "Space"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:79
+#: kernel/qkeysequence.cpp:89
 msgid ""
 "_: QAccel\n"
 "Esc"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:80
+#: kernel/qkeysequence.cpp:90
 msgid ""
 "_: QAccel\n"
 "Tab"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:81
+#: kernel/qkeysequence.cpp:91
 msgid ""
 "_: QAccel\n"
 "Backtab"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:82
+#: kernel/qkeysequence.cpp:92
 msgid ""
 "_: QAccel\n"
 "Backspace"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:83
+#: kernel/qkeysequence.cpp:93
 msgid ""
 "_: QAccel\n"
 "Return"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:84
+#: kernel/qkeysequence.cpp:94
 msgid ""
 "_: QAccel\n"
 "Enter"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:85
+#: kernel/qkeysequence.cpp:95
 msgid ""
 "_: QAccel\n"
 "Ins"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:86
+#: kernel/qkeysequence.cpp:96
 msgid ""
 "_: QAccel\n"
 "Del"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:87
+#: kernel/qkeysequence.cpp:97
 msgid ""
 "_: QAccel\n"
 "Pause"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:88
+#: kernel/qkeysequence.cpp:98
 msgid ""
 "_: QAccel\n"
 "Print"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:89
+#: kernel/qkeysequence.cpp:99
 msgid ""
 "_: QAccel\n"
 "SysReq"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:90
+#: kernel/qkeysequence.cpp:100 kernel/qkeysequence.cpp:132
 msgid ""
 "_: QAccel\n"
 "Home"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:91
+#: kernel/qkeysequence.cpp:101
 msgid ""
 "_: QAccel\n"
 "End"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:92
+#: kernel/qkeysequence.cpp:102
 msgid ""
 "_: QAccel\n"
 "Left"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:93
+#: kernel/qkeysequence.cpp:103
 msgid ""
 "_: QAccel\n"
 "Up"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:94
+#: kernel/qkeysequence.cpp:104
 msgid ""
 "_: QAccel\n"
 "Right"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:95
+#: kernel/qkeysequence.cpp:105
 msgid ""
 "_: QAccel\n"
 "Down"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:96
+#: kernel/qkeysequence.cpp:106
 msgid ""
 "_: QAccel\n"
 "PgUp"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:97
+#: kernel/qkeysequence.cpp:107
 msgid ""
 "_: QAccel\n"
 "PgDown"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:98
+#: kernel/qkeysequence.cpp:108
 msgid ""
 "_: QAccel\n"
 "CapsLock"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:99
+#: kernel/qkeysequence.cpp:109
 msgid ""
 "_: QAccel\n"
 "NumLock"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:100
+#: kernel/qkeysequence.cpp:110
 msgid ""
 "_: QAccel\n"
 "ScrollLock"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:191 kernel/qkeysequence.cpp:260
+#: kernel/qkeysequence.cpp:111
+msgid ""
+"_: QAccel\n"
+"Menu"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:112
+msgid ""
+"_: QAccel\n"
+"Help"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:115
+msgid ""
+"_: QAccel\n"
+"Back"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:116
+msgid ""
+"_: QAccel\n"
+"Forward"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:117
+msgid ""
+"_: QAccel\n"
+"Stop"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:118
+msgid ""
+"_: QAccel\n"
+"Refresh"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:119
+msgid ""
+"_: QAccel\n"
+"Volume Down"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:120
+msgid ""
+"_: QAccel\n"
+"Volume Mute"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:121
+msgid ""
+"_: QAccel\n"
+"Volume Up"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:122
+msgid ""
+"_: QAccel\n"
+"Bass Boost"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:123
+msgid ""
+"_: QAccel\n"
+"Bass Up"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:124
+msgid ""
+"_: QAccel\n"
+"Bass Down"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:125
+msgid ""
+"_: QAccel\n"
+"Treble Up"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:126
+msgid ""
+"_: QAccel\n"
+"Treble Down"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:127
+msgid ""
+"_: QAccel\n"
+"Media Play"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:128
+msgid ""
+"_: QAccel\n"
+"Media Stop"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:129
+msgid ""
+"_: QAccel\n"
+"Media Previous"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:130
+msgid ""
+"_: QAccel\n"
+"Media Next"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:131
+msgid ""
+"_: QAccel\n"
+"Media Record"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:133
+msgid ""
+"_: QAccel\n"
+"Favorites"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:134
+msgid ""
+"_: QAccel\n"
+"Search"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:135
+msgid ""
+"_: QAccel\n"
+"Standby"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:136
+msgid ""
+"_: QAccel\n"
+"Open URL"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:137
+msgid ""
+"_: QAccel\n"
+"Launch Mail"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:138
+msgid ""
+"_: QAccel\n"
+"Launch Media"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:139
+msgid ""
+"_: QAccel\n"
+"Launch (0)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:140
+msgid ""
+"_: QAccel\n"
+"Launch (1)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:141
+msgid ""
+"_: QAccel\n"
+"Launch (2)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:142
+msgid ""
+"_: QAccel\n"
+"Launch (3)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:143
+msgid ""
+"_: QAccel\n"
+"Launch (4)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:144
+msgid ""
+"_: QAccel\n"
+"Launch (5)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:145
+msgid ""
+"_: QAccel\n"
+"Launch (6)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:146
+msgid ""
+"_: QAccel\n"
+"Launch (7)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:147
+msgid ""
+"_: QAccel\n"
+"Launch (8)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:148
+msgid ""
+"_: QAccel\n"
+"Launch (9)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:149
+msgid ""
+"_: QAccel\n"
+"Launch (A)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:150
+msgid ""
+"_: QAccel\n"
+"Launch (B)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:151
+msgid ""
+"_: QAccel\n"
+"Launch (C)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:152
+msgid ""
+"_: QAccel\n"
+"Launch (D)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:153
+msgid ""
+"_: QAccel\n"
+"Launch (E)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:154
+msgid ""
+"_: QAccel\n"
+"Launch (F)"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:398 kernel/qkeysequence.cpp:427
 msgid "Ctrl"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:198 kernel/qkeysequence.cpp:270
+#: kernel/qkeysequence.cpp:405 kernel/qkeysequence.cpp:437
 msgid "Alt"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:201 kernel/qkeysequence.cpp:280
+#: kernel/qkeysequence.cpp:408 kernel/qkeysequence.cpp:447
+msgid "Meta"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:411 kernel/qkeysequence.cpp:452
 msgid "Shift"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:269 kernel/qkeysequence.cpp:279
-#: kernel/qkeysequence.cpp:306
+#: kernel/qkeysequence.cpp:436 kernel/qkeysequence.cpp:446
+#: kernel/qkeysequence.cpp:451 kernel/qkeysequence.cpp:487
 msgid "+"
 msgstr ""
 
-#: kernel/qkeysequence.cpp:287
+#: kernel/qkeysequence.cpp:464
 #, c-format
 msgid "F%1"
 msgstr ""
 
-#: kernel/qnetworkprotocol.cpp:888
+#: kernel/qnetworkprotocol.cpp:899
 msgid "Operation stopped by the user"
 msgstr ""
 
-#: sql/qdatatable.cpp:262
+#: sql/qdatatable.cpp:272
 msgid "True"
 msgstr ""
 
-#: sql/qdatatable.cpp:263
+#: sql/qdatatable.cpp:273
 msgid "False"
 msgstr ""
 
-#: sql/qdatatable.cpp:709
+#: sql/qdatatable.cpp:781
 msgid "Insert"
 msgstr ""
 
-#: sql/qdatatable.cpp:710
+#: sql/qdatatable.cpp:782
 msgid "Update"
 msgstr ""
 
-#: sql/qdatatable.cpp:711
+#: sql/qdatatable.cpp:783
 msgid "Delete"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:883
-msgid "Delete this record?"
-msgstr ""
-
-#: sql/qsqlmanager_p.cpp:884 sql/qsqlmanager_p.cpp:890
-#: sql/qsqlmanager_p.cpp:926
-msgid "Yes"
-msgstr ""
-
-#: sql/qsqlmanager_p.cpp:885 sql/qsqlmanager_p.cpp:891
-#: sql/qsqlmanager_p.cpp:927
-msgid "No"
-msgstr ""
-
-#: sql/qsqlmanager_p.cpp:889
-msgid "Save edits?"
-msgstr ""
-
-#: sql/qsqlmanager_p.cpp:924
-msgid "Confirm"
-msgstr ""
-
-#: sql/qsqlmanager_p.cpp:925
-msgid "Cancel your edits?"
-msgstr ""
-
-#: widgets/qheader.cpp:1378 widgets/qheader.cpp:1380
+#: widgets/qheader.cpp:1485 widgets/qheader.cpp:1487
 #, c-format
 msgid "%1"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2152 widgets/qtextedit.cpp:4256
+#: widgets/qlineedit.cpp:2299 widgets/qlineedit2.cpp:2324
+#: widgets/qtextedit.cpp:5223
 msgid "&Undo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2153 widgets/qtextedit.cpp:4257
+#: widgets/qlineedit.cpp:2300 widgets/qlineedit2.cpp:2325
+#: widgets/qtextedit.cpp:5224
 msgid "&Redo"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2156 widgets/qtextedit.cpp:4262
+#: widgets/qlineedit.cpp:2303 widgets/qlineedit2.cpp:2329
+#: widgets/qtextedit.cpp:5229
 msgid "Cu&t"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2157 widgets/qtextedit.cpp:4263
+#: widgets/qlineedit.cpp:2304 widgets/qlineedit2.cpp:2330
+#: widgets/qtextedit.cpp:5230
 msgid "&Copy"
 msgstr ""
 
-#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:4265
+#: widgets/qlineedit.cpp:2305 widgets/qlineedit2.cpp:2331
+#: widgets/qtextedit.cpp:5232
 msgid "&Paste"
 msgstr ""
 
-#: widgets/qmainwindow.cpp:2124
+#: widgets/qmainwindow.cpp:2204
 msgid "Line up"
 msgstr ""
 
-#: widgets/qmainwindow.cpp:2126
+#: widgets/qmainwindow.cpp:2206
 msgid "Customize..."
 msgstr ""
 
@@ -723,7 +951,7 @@ msgstr ""
 msgid "Normalize"
 msgstr ""
 
-#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1054
+#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1421
 msgid "Minimize"
 msgstr ""
 
@@ -731,47 +959,51 @@ msgstr ""
 msgid "Maximize"
 msgstr ""
 
-#: widgets/qwhatsthis.cpp:443
+#: widgets/qtoolbar.cpp:691
+msgid "More..."
+msgstr ""
+
+#: widgets/qwhatsthis.cpp:452
 msgid "What's this?"
 msgstr ""
 
-#: workspace/qworkspace.cpp:253
+#: workspace/qworkspace.cpp:303
 msgid "&Restore"
 msgstr ""
 
-#: workspace/qworkspace.cpp:254 workspace/qworkspace.cpp:268
+#: workspace/qworkspace.cpp:304 workspace/qworkspace.cpp:318
 msgid "&Move"
 msgstr ""
 
-#: workspace/qworkspace.cpp:256
+#: workspace/qworkspace.cpp:306
 msgid "Mi&nimize"
 msgstr ""
 
-#: workspace/qworkspace.cpp:257
+#: workspace/qworkspace.cpp:307
 msgid "Ma&ximize"
 msgstr ""
 
-#: workspace/qworkspace.cpp:260 workspace/qworkspace.cpp:276
+#: workspace/qworkspace.cpp:310 workspace/qworkspace.cpp:326
 msgid "&Close"
 msgstr ""
 
-#: workspace/qworkspace.cpp:270
+#: workspace/qworkspace.cpp:320
 msgid "Stay on &Top"
 msgstr ""
 
-#: workspace/qworkspace.cpp:274 workspace/qworkspace.cpp:1245
+#: workspace/qworkspace.cpp:324 workspace/qworkspace.cpp:1612
 msgid "Sh&ade"
 msgstr ""
 
-#: workspace/qworkspace.cpp:844 workspace/qworkspace.cpp:998
+#: workspace/qworkspace.cpp:1176 workspace/qworkspace.cpp:1355
 msgid "%1 - [%2]"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1066
+#: workspace/qworkspace.cpp:1433
 msgid "Restore Down"
 msgstr ""
 
-#: workspace/qworkspace.cpp:1243
+#: workspace/qworkspace.cpp:1610
 msgid "&Unshade"
 msgstr ""
 
@@ -913,4 +1145,3 @@ msgid ""
 "_: QXml\n"
 "error in the text declaration of an external entity"
 msgstr ""
-
