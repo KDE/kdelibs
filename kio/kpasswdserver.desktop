@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+Name=KDED Password Module
+Comment=Password Caching support
+ServiceTypes=KDEDModule
+X-KDE-ModuleType=Library
+X-KDE-Library=kpasswdserver
+X-KDE-FactoryName=kpasswdserver
+X-KDE-Kded-autoload=false
+X-KDE-Kded-load-on-demand=true
