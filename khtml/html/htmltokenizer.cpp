@@ -717,10 +717,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
 
                 curchar = src[0].latin1();
-                if( ((curchar >= 'a') && (curchar <= 'z')) ||
-                    ((curchar >= 'A') && (curchar <= 'Z')) ||
-                    ((curchar >= '0') && (curchar <= '9')) ||
-                    curchar == '/' )
+                if( curchar != ' ' && curchar != '>' ) 
                 {
                     // this is faster than QChar::lower()
                     if((curchar >= 'A') && (curchar <= 'Z'))
