@@ -158,12 +158,25 @@ void KBookmarkMenu::slotAboutToShow()
 
 QString KBookmarkMenu::contextMenuItemAddress()
 {
+  // calc parentgroup size
+  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+  Q_ASSERT(!parentBookmark.isNull());
+  int length = 0;
+  for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) ) 
+     length++;
+
+  // find relative position
   int idx = 0 - (KPopupMenu::contextMenuFocusItem() - m_parentMenu->idAt(0));
-  // hack - remove the first few items when root menu
-  //        breaks if toolbar is == root menu, then offsets are wrong
-  if (m_parentAddress.isEmpty())
-     idx = idx - 4;
-  return QString("%1/%2").arg(m_parentAddress).arg(idx);
+
+  // take into account the menu items and seperator in main bookmarks menu
+  if ( (m_parentMenu->count() - length) == 4 )
+    idx = idx - 4;
+
+  // bounds checks
+  if ( idx >= 0 && idx <= length )
+    return QString("%1/%2").arg(m_parentAddress).arg(idx);
+  else 
+    return QString::null;
 }
 
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
@@ -445,7 +458,9 @@ void KBookmarkMenu::slotAddBookmark()
     } while ( !ch.isNull() );
     parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
 
-  } else {
+  } 
+  else 
+  {
     BookmarkEditDialog *dlg = new BookmarkEditDialog( title, url, m_pManager );
     int ret = dlg->exec();
 
