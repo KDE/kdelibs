@@ -732,6 +732,7 @@ void RenderPartObject::updateWidget()
 
 void RenderPartObject::close()
 {
+  updateWidget();
   layout();
 
   RenderPart::close();
