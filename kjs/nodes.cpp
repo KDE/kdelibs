@@ -2025,7 +2025,9 @@ Completion DoWhileNode::execute(ExecState *exec)
     // bail out on error
     KJS_CHECKEXCEPTION
 
+    exec->context().imp()->seenLabels()->pushIteration();
     c = statement->execute(exec);
+    exec->context().imp()->seenLabels()->popIteration();
     if (!((c.complType() == Continue) && ls.contains(c.target()))) {
       if ((c.complType() == Break) && ls.contains(c.target()))
         return Completion(Normal, value);
@@ -2082,7 +2084,9 @@ Completion WhileNode::execute(ExecState *exec)
     if (!b)
       return Completion(Normal, value);
 
+    exec->context().imp()->seenLabels()->pushIteration();
     c = statement->execute(exec);
+    exec->context().imp()->seenLabels()->popIteration();
     if (c.isValueCompletion())
       value = c.value();
 
@@ -2147,7 +2151,9 @@ Completion ForNode::execute(ExecState *exec)
     // bail out on error
     KJS_CHECKEXCEPTION
 
+    exec->context().imp()->seenLabels()->pushIteration();
     Completion c = statement->execute(exec);
+    exec->context().imp()->seenLabels()->popIteration();
     if (c.isValueCompletion())
       cval = c.value();
     if (!((c.complType() == Continue) && ls.contains(c.target()))) {
@@ -2244,7 +2250,9 @@ Completion ForInNode::execute(ExecState *exec)
     KJS_CHECKEXCEPTION
     ref.putValue(exec, String(name.ustring()));
 
+    exec->context().imp()->seenLabels()->pushIteration();
     c = statement->execute(exec);
+    exec->context().imp()->seenLabels()->popIteration();
     if (c.isValueCompletion())
       retval = c.value();
 
@@ -2278,10 +2286,15 @@ Completion ContinueNode::execute(ExecState *exec)
   KJS_BREAKPOINT;
 
   Value dummy;
-  return exec->context().imp()->seenLabels()->contains(ident) ?
-    Completion(Continue, dummy, ident) :
-    Completion(Throw,
-	       throwError(exec, SyntaxError, "Label not found in containing block"));
+
+  if (ident.isEmpty() && !exec->context().imp()->seenLabels()->inIteration())
+    return Completion(Throw,
+		      throwError(exec, SyntaxError, "continue used outside of iteration statement"));
+  else if (!ident.isEmpty() && !exec->context().imp()->seenLabels()->contains(ident))
+    return Completion(Throw,
+		      throwError(exec, SyntaxError, "Label not found in containing block"));
+  else
+    return Completion(Continue, dummy, ident);
 }
 
 // ----------------------------- BreakNode ------------------------------------
@@ -2292,10 +2305,16 @@ Completion BreakNode::execute(ExecState *exec)
   KJS_BREAKPOINT;
 
   Value dummy;
-  return exec->context().imp()->seenLabels()->contains(ident) ?
-    Completion(Break, dummy, ident) :
-    Completion(Throw,
-	       throwError(exec, SyntaxError, "Label not found in containing block"));
+
+  if (ident.isEmpty() && !exec->context().imp()->seenLabels()->inIteration() &&
+      !exec->context().imp()->seenLabels()->inSwitch())
+    return Completion(Throw,
+		      throwError(exec, SyntaxError, "break used outside of iteration or switch statement"));
+  else if (!ident.isEmpty() && !exec->context().imp()->seenLabels()->contains(ident))
+    return Completion(Throw,
+		      throwError(exec, SyntaxError, "Label not found in containing block"));
+  else
+    return Completion(Break, dummy, ident);
 }
 
 // ----------------------------- ReturnNode -----------------------------------
@@ -2614,7 +2633,9 @@ Completion SwitchNode::execute(ExecState *exec)
 
   Value v = expr->evaluate(exec);
   KJS_CHECKEXCEPTION
+  exec->context().imp()->seenLabels()->pushSwitch();
   Completion res = block->evalBlock(exec,v);
+  exec->context().imp()->seenLabels()->popSwitch();
 
   if ((res.complType() == Break) && ls.contains(res.target()))
     return Completion(Normal, res.value());

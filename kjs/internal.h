@@ -158,7 +158,7 @@ namespace KJS {
    */
   class LabelStack {
   public:
-    LabelStack(): tos(0L) {}
+    LabelStack(): tos(0L), iterationDepth(0), switchDepth(0) {}
     ~LabelStack();
 
     LabelStack(const LabelStack &other);
@@ -177,6 +177,15 @@ namespace KJS {
      * Removes from the stack the last pushed id (what else?)
      */
     void pop();
+
+    void pushIteration() { iterationDepth++; }
+    void popIteration() { iterationDepth--; }
+    bool inIteration() const { return (iterationDepth > 0); }
+
+    void pushSwitch() { switchDepth++; }
+    void popSwitch() { switchDepth--; }
+    bool inSwitch() const { return (switchDepth > 0); }
+
   private:
     struct StackElem {
       Identifier id;
@@ -185,6 +194,8 @@ namespace KJS {
 
     StackElem *tos;
     void clear();
+    int iterationDepth;
+    int switchDepth;
   };
 
 
