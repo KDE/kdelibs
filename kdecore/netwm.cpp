@@ -733,10 +733,10 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
     p->desktop_names[desktop - 1] = nstrdup(desktopName);
 
     unsigned int i, proplen,
-	num = ((p->number_of_desktops < p->desktop_names.size()) ?
+	num = ((p->number_of_desktops > p->desktop_names.size()) ?
 	       p->number_of_desktops : p->desktop_names.size());
     for (i = 0, proplen = 0; i < num; i++)
-	proplen += (p->desktop_names[i] != 0 ? strlen(p->desktop_names[i]) : 1 ) + 1;
+	proplen += (p->desktop_names[i] != 0 ? strlen(p->desktop_names[i])+1 : 1 );
 
     char *prop = new char[proplen], *propp = prop;
 
