@@ -46,8 +46,6 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    virtual void calcMinMaxWidth();
-
     virtual void printObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
 
     virtual void layout();

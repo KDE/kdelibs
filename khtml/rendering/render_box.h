@@ -44,8 +44,6 @@ public:
     virtual const char *renderName() const { return "RenderBox"; }
 
     virtual void setStyle(RenderStyle *style);
-    virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
-
     virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
                        int _tx, int _ty);
 

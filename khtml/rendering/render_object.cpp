@@ -33,6 +33,7 @@
 #include "render_list.h"
 #include "render_style.h"
 #include "render_root.h"
+#include "render_hr.h"
 #include "misc/loader.h"
 
 #include <kdebug.h>
@@ -62,6 +63,9 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
     case RUN_IN:
     case COMPACT:
     case MARKER:
+        break;
+    case KONQ_RULER:
+        o = new RenderHR();
         break;
     case TABLE:
     case INLINE_TABLE:
@@ -715,15 +719,15 @@ short RenderObject::verticalPositionHint() const
     if ( va == LENGTH ) {
 	return -style()->verticalAlignLength().width( lineHeight() );
     }
-    if ( !parent()->isInline() ) 
+    if ( !parent()->isInline() )
 	return 0;
     int vpos = parent()->verticalPositionHint();
     // ### don't allow elements nested inside text-top to have a different valignment. it completely fucks up the
     // algorithm.
-    if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom ) 
+    if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom )
 	return vpos;
     QFont f = parent()->style()->font();
-    
+
     if ( va == SUB )
 	vpos += f.pixelSize()/5 + 1;
     else if ( va == SUPER )

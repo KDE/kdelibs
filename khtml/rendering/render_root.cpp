@@ -78,7 +78,8 @@ void RenderRoot::calcWidth()
 void RenderRoot::calcMinMaxWidth()
 {
     RenderFlow::calcMinMaxWidth();
-    if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
+
+    m_maxWidth = m_minWidth;
 }
 
 //#define SPEED_DEBUG
@@ -123,11 +124,6 @@ void RenderRoot::layout()
 #endif
 
     //kdDebug(0) << "root: height = " << m_height << endl;
-}
-
-QScrollView *RenderRoot::view()
-{
-    return m_view;
 }
 
 bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)

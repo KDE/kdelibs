@@ -1347,7 +1347,6 @@ void RenderTable::layout()
 
     setCellWidths();
 
-
     // ### collapse caption margin, left, right
     if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM)
     {
@@ -1808,7 +1807,6 @@ bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 short RenderTableCell::baselinePosition() const
 {
     RenderObject *o = firstChild();
-    RenderObject *last = o;
     int offset = paddingTop();
     if ( !o ) return offset;
     while ( o->firstChild() ) {
@@ -1854,10 +1852,10 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
         || (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
-    
+
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
-#endif    
+#endif
 }
 
 

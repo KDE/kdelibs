@@ -146,15 +146,21 @@ void RenderBox::setPos( int xPos, int yPos )
 {
     m_x = xPos; m_y = yPos;
 #if 1
-    if(containsWidget() && (m_x != xPos || m_y != yPos))
+    if(m_x != xPos || m_y != yPos)
     {
-        int x,y;
-        absolutePosition(x,y);
+        bool cw = containsWidget();
+        if ( !cw && parent() && parent()->containsWidget() )
+            cw = true;
 
-        // propagate position change to childs
-        for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
-            if(child->isWidget())
-                static_cast<RenderWidget*>(child)->placeWidget(x+child->xPos(),y+child->yPos());
+        if ( cw ) {
+            int x,y;
+            absolutePosition(x,y);
+
+            // propagate position change to childs
+            for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
+                if(child->isWidget())
+                    static_cast<RenderWidget*>(child)->placeWidget(x+child->xPos(),y+child->yPos());
+            }
         }
     }
 #endif
@@ -229,7 +235,8 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     else
         mh = QMIN(_h,h);
 
-    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    if ( !root()->printingMode() )
+        printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
         printBorder(p, _tx, _ty, w, h, style());
@@ -267,21 +274,21 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
         } else {
             cw = w;
-            cx = _tx;   
+            cx = _tx;
             sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
         }
-         
+
         if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
             ch = pixh;
-            cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);    
+            cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);
         } else {
             ch = h;
-            cy = _ty;   
+            cy = _ty;
             sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
         }
 
-        
-        
+
+
         if( !sptr->backgroundAttachment() ) {
             QRect r = viewRect();
             //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
@@ -352,20 +359,6 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     {
         xPos = yPos = 0;
         return false;
-    }
-}
-
-void RenderBox::addChild(RenderObject *newChild, RenderObject *beforeChild)
-{
-    RenderContainer::addChild(newChild, beforeChild);
-
-    if(newChild->isWidget())
-    {
-        RenderObject* o = this;
-        while(o) {
-            o->setContainsWidget();
-            o = o->parent();
-        }
     }
 }
 
@@ -501,34 +494,12 @@ void RenderBox::calcWidth()
     }
     else
     {
-        Length w = style()->width();
-        if (isReplaced())
-        {
-            if(w.isVariable())
-            {
-                Length h = style()->height();
-                if(intrinsicHeight() > 0 && (h.isFixed() || h.isPercent()))
-                {
-                    int myh = h.width(containingBlockHeight());
-                    int iw = (int)((((double)(myh))/((double) intrinsicHeight()))*((double)intrinsicWidth()));
-                    w = Length(iw, Fixed);
-                }
-                else
-                    w = Length(intrinsicWidth(), Fixed);
-            }
-            else if(!w.isFixed())
-            {
-                RenderObject* cb = containingBlock();
-                if(cb->isBody())
-                    while(cb && !cb->isRoot())
-                        cb = cb->parent();
+        Length w;
+        if ( isReplaced () )
+            w = Length( static_cast<RenderReplaced*>( this )->calcReplacedWidth(), Fixed );
+        else
+            w = style()->width();
 
-                if(cb)
-                    w = Length(w.width(cb->contentWidth()), Fixed);
-                else
-                    w = Length(intrinsicWidth(), Fixed);
-            }
-        }
 
         Length ml = style()->marginLeft();
         Length mr = style()->marginRight();
@@ -565,8 +536,7 @@ void RenderBox::calcWidth()
 //          kdDebug( 6040 ) <<  m_width <<"," << cw <<"," <<
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 
-            if (isFloating())
-            {
+            if (isFloating()) {
                 calcMinMaxWidth();
                 if(m_width > m_maxWidth) m_width = m_maxWidth;
             }
@@ -608,9 +578,9 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
              (ml.type != Variable &&
                 containingBlock()->style()->textAlign() == KONQ_CENTER) )
         {
-            m_marginLeft = (cw - m_width)/2; 
+            m_marginLeft = (cw - m_width)/2;
             if (m_marginLeft<0) m_marginLeft=0;
-            m_marginRight = cw - m_width - m_marginLeft;           
+            m_marginRight = cw - m_width - m_marginLeft;
         }
         else if (mr.type == Variable)
         {
@@ -645,40 +615,12 @@ void RenderBox::calcHeight()
         calcAbsoluteVertical();
     else
     {
-        Length h = style()->height();
-        if (isReplaced())
-        {
-            if(h.isVariable())
-            {
-                Length w = style()->width();
-                if(intrinsicWidth() > 0 && (w.isFixed() || w.isPercent()))
-                {
-                    int myw = w.width(containingBlockWidth());
-                    int ih = (int) ((((double)(myw))/((double)intrinsicWidth()))*((double)intrinsicHeight()));
-                    h = Length(ih, Fixed);
-                }
-                else
-                    h = Length(intrinsicHeight(), Fixed);
+        Length h;
+        if ( isReplaced() )
+            h = Length( static_cast<RenderReplaced*>( this )->calcReplacedHeight(), Fixed );
+        else
+            h = style()->height();
 
-            }
-            else if(!h.isFixed())
-            {
-                RenderObject* cb = containingBlock();
-                if(cb->isBody())
-                {
-                    while(cb && !cb->isRoot())
-                        cb = cb->parent();
-
-                    if(cb)
-                        h = Length(h.width(static_cast<RenderRoot*>(cb)->view()->visibleHeight()), Fixed);
-                    else
-                        h = Length(intrinsicHeight(), Fixed);
-                }
-                else
-                    h = Length(h.width(cb->contentHeight()), Fixed);
-            }
-        }
-        
         calcVerticalMargins();
 
         // for tables, calculate margins only
@@ -686,10 +628,8 @@ void RenderBox::calcHeight()
             return;
 
         if (h.isFixed())
-            m_height = QMAX (h.value + borderTop() + paddingTop()
-                + borderBottom() + paddingBottom() , m_height);
-        else if (h.isPercent())
-        {
+            m_height = QMAX (h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom() , m_height);
+        else if (h.isPercent()) {
 	    Length ch = containingBlock()->style()->height();
             if (ch.isFixed())
                 m_height = QMAX (h.width(ch.value) + borderTop() + paddingTop()
@@ -889,9 +829,8 @@ void RenderBox::calcAbsoluteVertical()
         ch = hl.value + containingBlock()->paddingTop()
              + containingBlock()->paddingBottom();
     else
-        ch = containingBlock()->contentHeight()+ containingBlock()->paddingTop()
-             + containingBlock()->paddingBottom();
-    
+        ch = containingBlock()->height();
+
     if(!style()->top().isVariable())
         t = style()->top().width(ch);
     if(!style()->bottom().isVariable())

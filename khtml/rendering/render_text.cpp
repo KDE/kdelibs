@@ -121,27 +121,23 @@ void TextSlave::printDecoration( QPainter *p, int _tx, int _ty, int deco)
 
 void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
-    
+
     int topExtra = p->borderTop() + p->paddingTop();
     int bottomExtra = p->borderBottom() + p->paddingBottom();
 
     _tx += m_x;
     _ty += m_y + m_baseline - pt->fontMetrics().ascent() - topExtra;
-    
+
     int width = m_width;
 
     // the height of the decorations is:  topBorder + topPadding + fm.height() + bottomPadding + bottomBorder
     int height = pt->fontMetrics().height() + topExtra + bottomExtra;
-    
-    if( begin ) {
-	int leftExtra = p->paddingLeft() + p->borderLeft();
-	_tx -= leftExtra;
-	width += leftExtra;
-    }
 
-    if ( end ) {
+    if( begin )
+	_tx -= p->paddingLeft() + p->borderLeft();;
+
+    if ( end )
         width += p->paddingRight() + p->borderRight();
-    }
 
     QColor c = style->backgroundColor();
     CachedImage *i = style->backgroundImage();

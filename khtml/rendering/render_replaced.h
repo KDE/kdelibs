@@ -40,6 +40,11 @@ public:
 
     virtual bool isRendered() const { return true; }
 
+    short calcReplacedWidth() const;
+    int   calcReplacedHeight() const;
+
+    virtual void calcMinMaxWidth();
+
     virtual void print( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
     virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty) = 0;

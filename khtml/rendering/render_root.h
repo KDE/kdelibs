@@ -54,7 +54,7 @@ public:
     int docHeight() const;
     int docWidth() const;
 
-    QScrollView *view();
+    KHTMLView *view() const { return m_view; }
 
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h);

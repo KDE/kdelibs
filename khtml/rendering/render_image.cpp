@@ -259,46 +259,31 @@ void RenderImage::printObject(QPainter *p, int /*x*/, int /*y*/, int /*w*/, int 
         printOutline(p, _tx, _ty, width(), height(), style());
 }
 
-void RenderImage::calcMinMaxWidth()
-{
-    if(minMaxKnown())
-        return;
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "Image::calcMinMaxWidth() known=" << minMaxKnown() << endl;
-#endif
-    short oldwidth = m_width;
-    calcWidth();
-
-    if(m_width != oldwidth)
-        resizeCache = QPixmap();
-
-    m_maxWidth = m_minWidth = m_width;
-    setMinMaxKnown();
-}
-
 void RenderImage::layout()
 {
-    if(layouted())
-        return;
+    if(layouted()) return;
 
-    if(!minMaxKnown())
-        calcMinMaxWidth();
-
+    short oldwidth = m_width;
     int oldheight = m_height;
+
+    // minimum height
+    m_height = image && image->isErrorImage() ? intrinsicHeight() : 0;
+
+    calcWidth();
     calcHeight();
 
-    if(oldheight != m_height)
+    if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
-    setLayouted();
+    // ### this shouldn't be necessary
+    if ( oldwidth == m_width && oldheight == m_height )
+        setLayouted();
 }
 
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     CachedImage *new_image = docLoader->requestImage(url, baseUrl);
-    if(new_image && new_image != image)
-    {
+    if(new_image && new_image != image) {
         if(image) image->deref(this);
         image = new_image;
         image->ref(this);

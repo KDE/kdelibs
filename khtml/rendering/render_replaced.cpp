@@ -51,6 +51,109 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
+short RenderReplaced::calcReplacedWidth() const
+{
+    Length w = style()->width();
+    short width;
+    switch( w.type ) {
+    case Variable:
+    {
+        Length h = style()->height();
+        int ih = intrinsicHeight();
+        if ( ih > 0 && ( h.isPercent() || h.isFixed() ) )
+            width = ( ( h.isPercent() ? calcReplacedHeight() : h.value )*intrinsicWidth() ) / ih;
+        else
+            width = intrinsicWidth();
+        break;
+    }
+    case Percent:
+    {
+        bool doIEhack = true;
+        const RenderObject* o = this;
+        while ( o->parent() ) {
+            if ( o->isTable() ) {
+                doIEhack = false;
+                break;
+            }
+            o = o->parent();
+        }
+        if ( doIEhack )
+            width = static_cast<const RenderRoot*>(o)->view()->visibleWidth();
+            width = containingBlockWidth();
+        break;
+    }
+    case Fixed:
+        width = w.value;
+        break;
+    default:
+        width = intrinsicWidth();
+        break;
+    };
+
+    return width;
+}
+
+int RenderReplaced::calcReplacedHeight() const
+{
+    Length h = style()->height();
+    short height;
+    switch( h.type ) {
+    case Variable:
+    {
+        Length w = style()->width();
+        int iw = intrinsicWidth();
+        if( iw > 0 && ( w.isFixed() || w.isPercent() ))
+            height = (( w.isPercent() ? calcReplacedWidth() : w.value ) * intrinsicHeight()) / iw;
+        else
+            height = intrinsicHeight();
+    }
+    break;
+    case Percent:
+    {
+        bool doIEhack = true;
+        const RenderObject* o = this;
+        while ( o->parent() ) {
+            if ( o->isTable() ) {
+                doIEhack = false;
+                break;
+            }
+            o = o->parent();
+        }
+        if ( doIEhack )
+            height = h.minWidth(static_cast<const RenderRoot*>( o)->view()->visibleHeight() );
+    }
+    break;
+    case Fixed:
+        height = h.value;
+        break;
+    default:
+        height = intrinsicHeight();
+    };
+
+    return height;
+}
+
+void RenderReplaced::calcMinMaxWidth()
+{
+    if(minMaxKnown()) return;
+
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
+#endif
+
+    int width = calcReplacedWidth();
+
+    if ( style()->width().isPercent() || style()->height().isPercent() ) {
+        m_minWidth = 0;
+        m_maxWidth = width;
+    }
+    else {
+        m_minWidth = m_maxWidth = width;
+        setMinMaxKnown();
+    }
+}
+
+// -----------------------------------------------------------------------------
 
 RenderWidget::RenderWidget(QScrollView *view)
         : RenderReplaced()
