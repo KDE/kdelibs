@@ -47,7 +47,10 @@ public:
     {}
 
     // wee use this one for the streaming operators
-    Data() {};
+    Data() {
+        if ( this == null )
+            delete const_cast<KFileMimeTypeInfo::ItemInfo*>( mimeTypeInfo );
+    };
 
     const KFileMimeTypeInfo::ItemInfo*  mimeTypeInfo;
     // mimeTypeInfo has the key, too, but only for non-variable ones
@@ -73,10 +76,9 @@ KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
 
-        // ### fix (small memory leak)
         KFileMimeTypeInfo::ItemInfo* info = new KFileMimeTypeInfo::ItemInfo();
-        Data* d = new Data(info, QString::null, QVariant());
-        null = sd_KFileMetaInfoItemData.setObject( d );
+        null = new Data(info, QString::null, QVariant());
+        sd_KFileMetaInfoItemData.setObject( null );
     }
     return null;
 }
@@ -762,7 +764,7 @@ void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
     // set prefix and suffix
     switch (unit)
     {
-        case KFileMimeTypeInfo::Seconds:         
+        case KFileMimeTypeInfo::Seconds:
             item->m_suffix = i18n("s"); break;
 
         case KFileMimeTypeInfo::MilliSeconds:
@@ -788,10 +790,10 @@ void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
 
         case KFileMimeTypeInfo::DotsPerInch:
             item->m_suffix = i18n("dpi"); break;
-            
+
         case KFileMimeTypeInfo::BitsPerPixel:
             item->m_suffix = i18n("bpp"); break;
-            
+
         case KFileMimeTypeInfo::Hertz:
             item->m_suffix = i18n("bpp");
     }
@@ -955,7 +957,7 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
         QStringList mimeTypes = (*it)->serviceTypes();
         QStringList::ConstIterator it2 = mimeTypes.begin();
         for ( ; it2 != mimeTypes.end(); ++it2 )
-            if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() && 
+            if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() &&
                  *it2 != kfilePlugin ) // also in serviceTypes()
                 allMimeTypes.append( *it2 );
     }
@@ -979,7 +981,10 @@ public:
     {}
 
     // wee use this one for the streaming operators
-    Data() {};
+    Data() {
+        if ( this == null )
+            delete mimeTypeInfo;
+    };
 
     QString                             name;
     QMap<QString, KFileMetaInfoItem>    items;
@@ -1262,12 +1267,9 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-
-        // ### fix (small memory leak)
-        KFileMimeTypeInfo* info = new KFileMimeTypeInfo();
-        Data* d = new Data(QString::null);
-        d->mimeTypeInfo = info;
-        null = sd_KFileMetaInfoGroupData.setObject( d );
+        null = new Data(QString::null);
+        null->mimeTypeInfo = new KFileMimeTypeInfo();
+        sd_KFileMetaInfoGroupData.setObject( null );
     }
     return null;
 }
