@@ -157,6 +157,8 @@ static const KCmdLineOptions options[] =
 {
   { "a", 0, 0 },
   { "addressbook", "Standard address book", 0 },
+  { "d", 0, 0 },
+  { "diraddressbook", "Standard address book directory resource", 0 },
   { "+identifier", "Identifier of resource to be locked, e.g. filename", 0 },
   { 0, 0, 0 }
 };
@@ -184,6 +186,13 @@ int main(int argc,char **argv)
       std::cerr << "Ignoring resource identifier" << std::endl;
     }
     identifier = StdAddressBook::fileName(); 
+  }
+
+  if ( args->isSet( "diraddressbook" ) ) {
+    if ( args->count() == 1 ) {
+      std::cerr << "Ignoring resource identifier" << std::endl;
+    }
+    identifier = StdAddressBook::directoryName(); 
   }
 
   LockWidget mainWidget( identifier );
