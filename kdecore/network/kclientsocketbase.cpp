@@ -58,8 +58,7 @@ KClientSocketBase::KClientSocketBase(QObject *parent, const char *name)
 KClientSocketBase::~KClientSocketBase()
 {
   close();
-  if (d)
-    delete d;
+  delete d;
 }
 
 KClientSocketBase::SocketState KClientSocketBase::state() const
