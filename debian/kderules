@@ -72,13 +72,13 @@ sub docwanted {
 	/debian/ or /INSTALL/ and return 0 ;
 	/COPYING/ and return ;
 	if ( (! /CVS/ )
-	and ( /^[A-Z]*$/ or /README/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
+	and ( /^[A-Z]*$/ or /README/ or /docs/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
 	or /TODO/ or /kdedoc/ or /Header/ or /Documentation/ or /Tutorial/ ) )
 	{	push @docs, "$File::Find::dir/$_" ;
 	}
 }
 
-$pwd = cwd();
+$pwd = './';
 
 find(\&docwanted, $pwd);
 if ($pwd =~ ?^(.*/)build_([^/]*)$?) {
@@ -92,8 +92,8 @@ if (! -d "debian/tmp/usr/doc/$package") {
 	mkdir("-p", "debian/tmp/usr/doc/$package") ;
 }
 
-if (! -d "debian/tmp/usr/X11R6/include/X11/pixmaps") {
-       mkdir("-p", "debian/tmp/usr/X11R6/include/X11/pixmaps");
+if (! -d "debian/tmp/usr/share/kde/pixmaps") {
+       mkdir("-p", "debian/tmp/usr/share/kde/pixmaps");
 }
 
 if (@docs) {
@@ -168,7 +168,7 @@ foreach $file (@lnkfiles) {
 	($prog,)=split / /, $kdelnk{"Exec"} ;
 	if (! defined($type{$prog})) {
 		open MENUIN, ">>debian/menu.in" ;
-		print MENUIN "$prog x11 SECTION\n";
+		print MENUIN "$prog x11 Apps\Misc\n";
 		close MENUIN;
 		next ;
 	}
@@ -183,8 +183,8 @@ foreach $file (@lnkfiles) {
 		if (! -f "debian/tmp/usr/share/icons/$icon" ) {
                    $icon="";
 	        } else {
-	          system("/usr/bin/X11/convert -map /usr/X11R6/include/X11/pixmaps/cmap.xpm debian/tmp/usr/share/icons/$icon debian/tmp/usr/X11R6/include/X11/pixmaps/$icon");
-	  	  $icon="/usr/X11R6/include/X11/pixmaps/" . $icon ;
+	          system("/usr/bin/X11/convert -map /usr/X11R6/include/X11/pixmaps/cmap.xpm debian/tmp/usr/share/icons/$icon debian/tmp/usr/share/kde/pixmaps/$icon");
+	  	  $icon="/usr/share/kde/pixmaps/" . $icon ;
                }
 	}
 	($kdelnk=$file) =~ s/^.*tmp// ;

@@ -1,4 +1,27 @@
-kdelibs (4:1.1.1-19990424-1) unstable; urgency=low
+kdelibs (5:1.1.1-1) unstable; urgency=low
+
+  * Official 1.1.1 version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon,  3 May 1999 07:05:56 -0500
+
+kdelibs (4:1.1.1-19990501-2) unstable; urgency=low
+
+  * Fixing some compiling issues
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat,  1 May 1999 22:05:56 -0500
+
+kdelibs (4:1.1.1-19990501-1) unstable; urgency=low
+
+  * Rebuilding package from ground up
+  * Moving everything out of X11R6
+  * Fixed problem with kderules perl script
+  * Rebuilding rules file
+  * Adding a -doc package and moving all usr/doc files into it
+  * Compiling against glibc2.1 and qt1.44
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat,  1 May 1999 09:05:56 -0500
+
+(4:1.1.1-19990424-1) unstable; urgency=low
 
   * new upstream version for KDE 1.1.1
 

@@ -26,14 +26,14 @@ $(BUILDDIR)/build-stamp:
 	kde_mimedir=/usr/share/mimelnk \
 	kde_toolbardir=/usr/share/toolbar \
 	kde_wallpaperdir=/usr/share/wallpapers \
-	kde_bindir=/usr/X11R6/bin \
+	kde_bindir=/usr/bin \
 	kde_partsdir=/usr/lib/parts \
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
 	../configure --prefix=/usr --enable-debug \
 	--disable-rpath \
 	--includedir=/usr/include/kde \
-	--libdir=/usr/X11R6/lib  
+	--libdir=/usr/lib  
 	
 	make -C $(BUILDDIR)
 
@@ -45,7 +45,7 @@ debian-clean:
 
 clean: debian-clean
 	-rm -rf $(BUILDDIR)
-	dh_clean -k
+	dh_clean 
 
 binary-indep:	build
 	dh_testdir
@@ -70,11 +70,11 @@ binary-arch:  build
 	   kde_mimedir="`pwd`/debian/tmp/usr/share/mimelnk" \
 	   kde_toolbardir="`pwd`/debian/tmp/usr/share/toolbar" \
 	   kde_wallpaperdir="`pwd`/debian/tmp/usr/share/wallpaper" \
-	   kde_bindir="`pwd`/debian/tmp/usr/X11R6/bin" \
+	   kde_bindir="`pwd`/debian/tmp/usr/bin" \
 	   kde_partsdir="`pwd`/debian/tmp/usr/lib/parts" \
 	   kde_confdir="`pwd`/debian/tmp/etc/kde" \
 	   includedir=`pwd`/debian/tmp/usr/include/kde \
-	   libdir=`pwd`/debian/tmp/usr/X11R6/lib install 
+	   libdir=`pwd`/debian/tmp/usr/lib install 
 
 	perl -w debian/kderules 
 	dh_movefiles 
