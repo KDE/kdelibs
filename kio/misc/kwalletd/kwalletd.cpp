@@ -127,6 +127,7 @@ int KWalletD::open(const QString& wallet) {
 			}
 		}
 
+		QCString appid = dc->senderId();
 		if (rc == -1) {
 			if (_wallets.count() > 20) {
 				kdDebug() << "Too many wallets open." << endl;
@@ -136,11 +137,11 @@ int KWalletD::open(const QString& wallet) {
 			KWallet::Backend *b = new KWallet::Backend(wallet);
 			KPasswordDialog *kpd;
 			if (KWallet::Backend::exists(wallet)) {
-				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(dc->senderId()).arg(wallet), false);
+				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet), false);
 				brandNew = true;
 				kpd->setButtonOKText(i18n("&Open"));
 			} else {
-				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(dc->senderId()).arg(wallet), false);
+				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(appid).arg(wallet), false);
 				kpd->setButtonOKText(i18n("&Create"));
 			}
 
@@ -165,7 +166,7 @@ int KWalletD::open(const QString& wallet) {
 			}
 			_wallets.insert(rc = generateHandle(), b);
 			_passwords[wallet] = p;
-			_handles[dc->senderId()].append(rc);
+			_handles[appid].append(rc);
 			b->ref();
 			delete kpd;
 			QByteArray data;
@@ -181,13 +182,24 @@ int KWalletD::open(const QString& wallet) {
 		} else {
 			int response = KMessageBox::Yes;
 			
-			if (_openPrompt && !_handles[dc->senderId()].contains(rc) && !implicitAllow(wallet, dc->senderId())) {
-				response = KMessageBox::questionYesNo(0L, i18n("The application '%1' has requested access to the open wallet '%2'. Do you wish to permit this?").arg(dc->senderId()).arg(wallet), i18n("KDE Wallet Service"));
+			if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
+				response = KMessageBox::questionYesNoCancel(0L, i18n("The application '%1' has requested access to the open wallet '%2'.").arg(appid).arg(wallet), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
 			}
 
-			if (response == KMessageBox::Yes) {
-				_handles[dc->senderId()].append(rc);
+			if (response == KMessageBox::Yes || response == KMessageBox::No) {
+				_handles[appid].append(rc);
 			 	_wallets.find(rc)->ref();
+				if (response == KMessageBox::No) {
+					KConfig cfg("kwalletrc");
+					cfg.setGroup("Auto Allow");
+					QStringList apps = cfg.readListEntry(wallet);
+					if (!apps.contains(appid)) {
+						apps += appid;
+						_implicitAllowMap[wallet] += appid;
+						cfg.writeEntry(wallet, apps);
+						cfg.sync();
+					}
+				}
 			} else {
 				return -1;
 			}
