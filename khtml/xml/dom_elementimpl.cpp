@@ -439,22 +439,22 @@ void ElementImpl::createDecl( )
     m_styleDecls->setStrictParsing( getDocument()->parseMode() == DocumentImpl::Strict );
 }
 
-void ElementImpl::dispatchAttrRemovalEvent(AttributeImpl *attr)
+void ElementImpl::dispatchAttrRemovalEvent(AttributeImpl * /*attr*/)
 {
     if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
 	return;
     //int exceptioncode = 0;
-//     dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
-// 		  attr->value(), getDocument()->attrName(attr->id()),MutationEvent::REMOVAL),exceptioncode);
+    //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
+    //attr->value(), getDocument()->attrName(attr->id()),MutationEvent::REMOVAL),exceptioncode);
 }
 
-void ElementImpl::dispatchAttrAdditionEvent(AttributeImpl *attr)
+void ElementImpl::dispatchAttrAdditionEvent(AttributeImpl * /*attr*/)
 {
     if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
 	return;
-   // int exceptioncode = 0;
-//     dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
-//                                         attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
+   //int exceptioncode = 0;
+   //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
+   //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
 }
 
 #ifndef NDEBUG
