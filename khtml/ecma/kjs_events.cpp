@@ -413,8 +413,7 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
   case OffsetY: // MSIE extension
   {
     DOM::Node node = event.target();
-    if ( node.handle() && node.handle()->ownerDocument() )
-      node.handle()->getDocument()->updateRendering();
+    node.handle()->getDocument()->updateRendering();
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
     int x = static_cast<DOM::MouseEvent>(event).clientX();
     int y = static_cast<DOM::MouseEvent>(event).clientY();

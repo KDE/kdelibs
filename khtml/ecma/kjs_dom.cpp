@@ -233,8 +233,7 @@ Value DOMNode::getValue(ExecState *exec, int token) const
     // make sure our rendering is up to date before
     // we allow a query on these attributes.
     // ### how often does it fall into the final else case ?
-    if ( node.handle() && node.handle()->ownerDocument() )
-      node.handle()->getDocument()->updateRendering();
+    node.handle()->getDocument()->updateRendering();
 
     switch (token) {
     case OffsetLeft:
