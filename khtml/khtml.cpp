@@ -132,7 +132,10 @@ void KHTMLWidget::init()
   cache = new KHTMLCache(this);
   defaultSettings = new HTMLSettings;
   settings = 0;
-  _width = width()- SCROLLBARWIDTH - 10;
+
+  _marginWidth = 5;
+  _marginHeight = 5;
+  _width = width()- SCROLLBARWIDTH - 2*marginWidth();
 }
 
 void KHTMLWidget::clear()
@@ -900,7 +903,7 @@ void KHTMLWidget::layout()
 	    return;
 	}
 
-	int w = width() - SCROLLBARWIDTH - 10;
+	int w = width() - SCROLLBARWIDTH - 2*marginWidth();
 
 	if(w < _width-5 || w > _width + 10)
 	{
@@ -916,7 +919,7 @@ void KHTMLWidget::layout()
     }
     else
     {
-	_width = width() - SCROLLBARWIDTH - 10;
+	_width = width() - SCROLLBARWIDTH - 2*marginWidth();
     }
 }
 

@@ -261,7 +261,6 @@ void HTMLDocumentImpl::layout( bool deep )
 
     if(_first)
     {
-
 	_first->setPos(0, 0);
 	_first->setDescent(view->height());
 	setAvailableWidth(width);
@@ -273,6 +272,10 @@ void HTMLDocumentImpl::layout( bool deep )
 
 void HTMLDocumentImpl::setAvailableWidth(int w) {
     if(w != -1) width = w;
+
+    if(_first) 
+	_first->setAvailableWidth(w);
+#if 0
     if(bodyElement)
     {
 	bodyElement->calcMinMaxWidth();
@@ -281,6 +284,7 @@ void HTMLDocumentImpl::setAvailableWidth(int w) {
     	bodyElement->setAvailableWidth(tw);
 //    	printf("Doc:setAvailableWidth %d %d\n",width, tw);
     }
+#endif
 }
 
 

@@ -27,8 +27,7 @@
 #include "dtd.h"
 #include "html_elementimpl.h"
 #include "khtmlio.h"
-
-#define BORDER 5
+#include "qscrollview.h"
 
 class KHTMLWidget;
 
@@ -53,11 +52,9 @@ public:
     virtual void parseAttribute(Attribute *);
 
     virtual void close();
-    	
-//    virtual void layout(bool);  // just use BlockElement layout instead
 
-    void attach(KHTMLWidget *);
-    void detach();
+    virtual void attach(KHTMLWidget *);
+    virtual void detach();
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * );
 
@@ -98,6 +95,9 @@ protected:
     KHTMLWidget *parentWidget;
 
     bool frameBorder;
+    int marginWidth;
+    int marginHeight;
+    QScrollView::ScrollBarMode scrolling;
 };
 
 // -------------------------------------------------------------------------
@@ -128,7 +128,7 @@ public:
 		     int _tx, int _ty, DOMString &url);
 
     bool frameBorder() { return frameborder; }
-    
+
 protected:
     QList<Length> *rows;
     QList<Length> *cols;
@@ -190,8 +190,10 @@ public:
 
     virtual void layout(bool);
 
+    virtual void attach(KHTMLWidget *);
+
 protected:
-    int width;
+    KHTMLWidget *view;
 };
 
 }; //namespace

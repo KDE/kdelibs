@@ -80,49 +80,6 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 }
 
 
-#if 0
-void HTMLBodyElementImpl::layout(bool deep)
-{
-    width = availableWidth;
-#ifdef DEBUG_LAYOUT
-    printf("%s(BodyElement)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
-#endif
-
-    if(!width) return;
-
-    // Block elements usually just have descent.
-    // ascent != 0 will give a separation.
-    ascent = 0;
-    descent = 0;
-
-    NodeImpl *child = firstChild();
-    while( child != 0 )
-    {
-#if 0 //###
-	if(child->isAligned())
-	{
-	}
-	else
-#endif
-	if(child->isInline())
-	{
-	    child = calcParagraph(child);
-	}
-	else
-	{
-	    child->setYPos(descent);
-	    if(deep)
-		child->layout(deep);
-	    descent += child->getDescent();
-	    child = child->nextSibling();
-	}
-    }
-
-    setLayouted();
-}
-
-#endif
-
 void HTMLBodyElementImpl::attach(KHTMLWidget *)
 {
     if(bgURL.length())
@@ -166,6 +123,9 @@ HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
     parentWidget = 0;
 
     frameBorder = true;
+    marginWidth = -1;
+    marginHeight = -1;
+    scrolling = QScrollView::Auto;
 }
 
 HTMLFrameElementImpl::~HTMLFrameElementImpl()
@@ -208,14 +168,26 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 	break;
     }
     case ATTR_FRAMEBORDER:
-	if(attr->value() == "0")
+	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
 	    frameBorder = false;
 	break;
     case ATTR_MARGINWIDTH:
+	marginWidth = attr->val()->toInt();
+	break;
     case ATTR_MARGINHEIGHT:
+	marginHeight = attr->val()->toInt();
+	break;
     case ATTR_NORESIZE:
-    case ATTR_SCROLLING:
 	// ####
+	break;
+    case ATTR_SCROLLING:
+	if( strcasecmp( attr->value(), "auto" ) == 0 )
+	    scrolling = QScrollView::Auto;
+	else if( strcasecmp( attr->value(), "yes" ) == 0 )
+	    scrolling = QScrollView::AlwaysOn;
+	else if( strcasecmp( attr->value(), "no" ) == 0 )
+	    scrolling = QScrollView::AlwaysOff;
+
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -233,9 +205,7 @@ void HTMLFrameElementImpl::layout(bool)
     getAbsolutePosition(x, y);
     parentWidget->addChild(view, x, y);
     view->resize(width, descent);
-    if(!frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(_parent))->frameBorder()))
-	view->setFrameStyle(QFrame::NoFrame);
-    
+
     setLayouted();
 }
 
@@ -265,6 +235,14 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
 #endif
     w->addChild(view, x, y);
     view->resize(width, descent);
+
+    if(!frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(_parent))->frameBorder()))
+	view->setFrameStyle(QFrame::NoFrame);
+    view->setVScrollBarMode(scrolling);
+    view->setHScrollBarMode(scrolling);
+    if(marginWidth != -1) view->setMarginWidth(marginWidth);
+    if(marginHeight != -1) view->setMarginHeight(marginHeight);
+    
     view->show();
     printf("adding frame\n");
 
@@ -328,7 +306,7 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
 	cols = attr->val()->toLengthList();
 	break;
     case ATTR_FRAMEBORDER:
-	if(attr->value() == "0" || attr->value() == "no")
+	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
 	    frameborder = false;
 	break;
     case ATTR_NORESIZE:
@@ -540,7 +518,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
     }
 
     if(noresize) return true;
-    
+
     if(type == MouseMove)
     {
 	int horiz = -1;
@@ -583,7 +561,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	    view->setCursor(Qt::splitHCursor);
 	else if( vert != -1 )
 	    view->setCursor(Qt::splitVCursor);
-	    
+	
     }
 
 }
@@ -615,6 +593,7 @@ ushort HTMLHeadElementImpl::id() const
 HTMLHtmlElementImpl::HTMLHtmlElementImpl(DocumentImpl *doc)
     : HTMLPositionedElementImpl(doc)
 {
+    view = 0;
 }
 
 HTMLHtmlElementImpl::~HTMLHtmlElementImpl()
@@ -637,33 +616,18 @@ NodeImpl *HTMLHtmlElementImpl::addChild(NodeImpl *child)
     printf("%s(HTML)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
 #endif
 
+    child->setAvailableWidth(availableWidth);
     if(child->id() == ID_FRAMESET)
     {
-	child->setAvailableWidth(availableWidth);
-	KHTMLWidget *w = (KHTMLWidget *)static_cast<HTMLDocumentImpl *>(document)
-	    ->HTMLWidget();
-	if(w)
-	    child->setDescent(w->height());
+	KHTMLWidget *w = (KHTMLWidget *)static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
+	if(w) child->setDescent(w->height());
     }
-    else
-    {
-	child->setAvailableWidth(availableWidth - 2*BORDER);
-	child->setXPos(BORDER);
-	child->setYPos(BORDER);
-    }
+
     return NodeBaseImpl::addChild(child);
 }
 
 void HTMLHtmlElementImpl::getAbsolutePosition(int &xPos, int &yPos)
 {
-#if 0
-    NodeImpl *child = _first;
-    while(child && child->id() != ID_BODY && child->id() != ID_FRAMESET)
-	child = child->nextSibling();
-    if(child && child->id() == ID_BODY)
-	xPos = BORDER, yPos = BORDER;
-    else
-#endif
 	xPos = 0, yPos = 0;
 }
 
@@ -683,8 +647,8 @@ void HTMLHtmlElementImpl::layout(bool deep)
 	child = child->nextSibling();
     if(child && child->id() == ID_BODY)
     {
-	child->setXPos(BORDER);
-	child->setYPos(BORDER);
+	child->setXPos(view->marginWidth());
+	child->setYPos(view->marginHeight());
     }
 
     if(!child) return;
@@ -695,9 +659,13 @@ void HTMLHtmlElementImpl::layout(bool deep)
     printf("TIME: layout() dt=%d\n",qt.elapsed());
 
     ascent = 0;
-    descent = child->getHeight();
+    descent = child->getHeight() + 2*view->marginHeight();
 
     setLayouted();
 }
 
+void HTMLHtmlElementImpl::attach(KHTMLWidget *w)
+{
+    view = w;
+}
 

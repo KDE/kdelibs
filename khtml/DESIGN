@@ -9,19 +9,19 @@ screen:
 
 Stage 1.: The Tokenizer.
 Stage 2.: The HTML-Parser
-Stage 3.: The HTML-Layout  
+Stage 3.: The HTML-Layout
 
 The Tokenizer
 =============
 
 The tokenizer is located in khtmltokenizer.cpp. The tokenizer uses the contents
-of a HTML-file as input and breaks this contents up in a linked list of 
+of a HTML-file as input and breaks this contents up in a linked list of
 tokens. The tokenizer recognizes HTML-entities and HTML-tags. Text between
 begin- and end-tags is handled distinctly for several tags. The distinctions
 are in the way how spaces, linefeeds, HTLM-entities and other tags are
-handled. 
+handled.
 
-Example I: 
+Example I:
 Normally linefeeds are treated like spaces. However, inside a <pre> tag
 linefeeds are preserved.
 
@@ -84,7 +84,7 @@ When the minimum size is known it compared against the actual available
 screen-size. If the minimum size is less than the available
 screen-size the available screen size will be used as the maximum screen
 size. If the minimum size is greater than the available size the minimum
-size is used as the maximum screen size. In that case, if configured, a 
+size is used as the maximum screen size. In that case, if configured, a
 horizontal scrollbar will be added to be able to scroll.
 
 -----------------------------------------------------------------------------
@@ -96,7 +96,7 @@ DOM
 
 khtml does now use DOM Level1 (see http://www.w3.org for details) for holding
 documents. Although the dom implementation isn't finished yet, it's already
-quite useable. The DOM is implemented as classes with automatic memory 
+quite useable. The DOM is implemented as classes with automatic memory
 management. We have internal classes (the *Impl classes) holding the data
 of the DOM, but the programmer uses "pointer" classes to these internal ones.
 The implementations hold a reference count of how many "pointer"/API instances
@@ -107,26 +107,12 @@ The dom_* files implement the core DOM, the html_* files the html DOM.
 As I focused on html, all classes in the core DOM used only for XML are not
 implemented.
 
-HTMLLine
-========
+Paragraphs
+==========
 
 Every BlockElements goes through it's children during layout. Once it
 encounters an inline element, it starts a paragraph. All inline elements
-(and it's children) are scanned until it encounters the next BlockElement. 
-Text and inline elements are put together, and a line breaking algoritm 
+(and it's children) are scanned until it encounters the next BlockElement.
+Text and inline elements are put together, and a line breaking algoritm
 decides, when to start a new line.
-
-HTMLBodyElement
-===============
-
-Each frame in a HTMLDocument has a body, represented by the
-HTMLBodyElement. This element holds a pointer to a HTMLScrollview, into
-which the contents of the body is rendered.
-
-HTMLPaintedElement
-==================
-
-This is the base class for all renderable HTML ELements. These are basically
-all block level elements. Block level elements take care of rendering their
-inline contents.
 

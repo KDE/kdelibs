@@ -425,6 +425,19 @@ public:
      */
     int jobId() const { return m_jobId; }
 
+    /**
+     * set a margin in x direction
+     */
+    void setMarginWidth(int x) { _marginWidth = x; }
+    int marginWidth() { return _marginWidth; }
+
+    /**
+     * set a margin in y direction
+     */
+    void setMarginHeight(int y) { _marginHeight = y; }
+    int marginHeight() { return _marginHeight; }
+
+
 public slots:
     virtual void slotStop();
     virtual void slotReload();
@@ -725,6 +738,9 @@ private:
     bool _jScriptEnabled;
 
     KJSWorld *jscript;
+
+    int _marginWidth;
+    int _marginHeight;
 };
 
 #endif
