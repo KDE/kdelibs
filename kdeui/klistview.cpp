@@ -1017,7 +1017,7 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem *parent,
         insertmarker = QRect (0, 0, viewport()->width(), d->mDropVisualizerWidth/2);
     else
     {
-        int level;
+        int level = 0;
         if (after)
         {
             QListViewItem* it = 0L;
