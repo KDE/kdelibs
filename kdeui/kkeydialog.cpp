@@ -831,7 +831,7 @@ void KKeyChooser::setKey( int keyCode )
 
    if( keyCode < 0x1000  && !d->bAllowLetterShortcuts ) {
 	QString s = i18n( 	"In order to use the '%1' key as a shortcut,\n"
-				"it must combine with the\n"
+				"it must be combined with the\n"
 				"Meta, Alt, Ctrl, and/or Shift keys." ).arg(QChar(keyCode));
 	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 	return;
