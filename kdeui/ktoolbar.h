@@ -371,7 +371,7 @@ public:
      * Insert a line separator into the toolbar with the given id.
      * Returns the separator's index
      */
-    int insertLineSeparator( int index = -1, int id = -1 ); // ### KDE 3.0: BCI: merge
+    int insertLineSeparator( int index = -1, int id = -1 ); 
 
     /**
    * Insert a user-defined widget.  The widget @p must have this
