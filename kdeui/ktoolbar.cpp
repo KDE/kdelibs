@@ -1097,10 +1097,24 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     //kdDebug(220) << name() << "                writing index " << index << endl;
     KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
     // don't save if there's only one toolbar
-    if ( !kmw || kmw->toolBarIterator().count() > 1 )
-      config->writeEntry("Index", index);
+
+    // Don't use kmw->toolBarIterator() because you might 
+    // mess up someone else's iterator.  Make the list on your own
+    QPtrList<KToolBar> toolbarList;
+    QPtrList<QToolBar> lst;
+    for ( int i = (int)QMainWindow::DockUnmanaged; i <= (int)DockMinimized; ++i ) {
+        lst = kmw->toolBars( (ToolBarDock)i );
+        for ( QToolBar *tb = lst.first(); tb; tb = lst.next() ) {
+            if ( !tb->inherits( "KToolBar" ) )
+                continue;
+            toolbarList.append( (KToolBar*)tb );
+        }
+    }
+    QPtrListIterator<KToolBar> toolbarIterator( toolbarList );
+    if ( !kmw || toolbarIterator.count() > 1 )
+        config->writeEntry("Index", index);
     else
-      config->revertToDefault("Index");
+        config->revertToDefault("Index");
    
     if(!config->hasDefault("Offset") && offset() == d->OffsetDefault )
       config->revertToDefault("Offset");
