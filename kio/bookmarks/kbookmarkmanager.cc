@@ -424,16 +424,25 @@ void KBookmarkOwner::openBookmarkURL( const QString& url )
 void KBookmarkOwner::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-class KBookmarkMap {
+
+class KBookmarkGroupMonkey {
+protected:
+    virtual ~KBookmarkGroupMonkey() { ; }
+    void swing(const KBookmarkGroup &);
+    virtual void enterGroup(const KBookmarkGroup &) { ; }
+    virtual void sawItem(const KBookmark &) { ; }
+    virtual void exitGroup() { ; }
+};
+
+class KBookmarkMap : public KBookmarkGroupMonkey {
 public:
     KBookmarkMap( KBookmarkManager * );
     void update();
+    virtual void enterGroup(const KBookmarkGroup &) { ; }
+    virtual void sawItem(const KBookmark &);
+    virtual void exitGroup() { ; }
     QValueList<KBookmark> find( const KURL &url ) const;
 private:
-    void crawl();
-    void enterGroup(const KBookmarkGroup &group) { ; }
-    void exitGroup() { ; }
-    void sawItem(const KBookmark &);
     typedef QValueList<KBookmark> KBookmarkList;
     QMap<QString, KBookmarkList> m_bk_map;
     KBookmarkManager *m_manager;
@@ -448,7 +457,8 @@ KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) {
 void KBookmarkMap::update()
 {
     m_bk_map.clear();
-    crawl();
+    KBookmarkGroup root = m_manager->root();
+    swing(root);
 }
 
 void KBookmarkMap::sawItem(const KBookmark &bk) {
@@ -458,11 +468,10 @@ void KBookmarkMap::sawItem(const KBookmark &bk) {
     }
 }
 
-void KBookmarkMap::crawl()
+void KBookmarkGroupMonkey::swing(const KBookmarkGroup &root)
 {
     // non-recursive bookmark iterator
     QPtrStack<KBookmarkGroup> stack;
-    KBookmarkGroup root = m_manager->root();
     stack.push(&root);
     KBookmark bk = stack.current()->first();
     for (;;) {
