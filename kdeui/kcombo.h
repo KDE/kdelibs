@@ -22,7 +22,7 @@
 //			the first item in the listbox to start with.
 
 class KCombo : public QFrame {
-	Q_OBJECT;
+	Q_OBJECT
 
 public:
 	KCombo( QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
