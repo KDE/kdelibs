@@ -112,6 +112,16 @@ public:
   virtual KConfigBase::ConfigState getConfigState() const
     { return KConfigBase::NoAccess; }
 
+  /**
+   * @return the filename as passed to the constructor.
+   */
+  QString filename() const { return fileName; }
+  
+  /**
+   * @return the resource type as passed to the constructor.
+   */
+  QString resource() const { return resType; }
+
 protected:
   KConfigBase *pConfig;
 
