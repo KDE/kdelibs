@@ -180,6 +180,15 @@ public:
    */
   KXMLGUIBuilder *clientBuilder() const;
 
+  /**
+   * Force this client to re-read its XML resource file.  This is
+   * intended to be used when you know that the resource file has
+   * changed and you will soon be rebuilding the GUI.  It has no
+   * useful effect with non-KParts GUIs, so don't bother using it
+   * unless your app is component based.
+   */
+  void reloadXML();
+
 protected:
   /**
    * Set the instance (@ref KInstance) for this part.

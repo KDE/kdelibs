@@ -119,6 +119,11 @@ QString KXMLGUIClient::xmlFile() const
   return d->m_xmlFile;
 }
 
+void KXMLGUIClient::reloadXML()
+{
+  setXMLFile( d->m_xmlFile );
+}
+
 void KXMLGUIClient::setInstance( KInstance *instance )
 {
   d->m_instance = instance;
