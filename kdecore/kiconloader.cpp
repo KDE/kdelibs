@@ -36,6 +36,7 @@
 #include <kiconeffect.h>
 
 #include <sys/types.h>
+#include <stdlib.h>	//for abs
 #include <dirent.h>
 
 
