@@ -764,7 +764,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
-    kdDebug(7019) << "SlaveBase::openPassDlg window-id= " << windowId << endl;
+    kdDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
 
     (void) dcopClient(); // Make sure to have a dcop client.
 

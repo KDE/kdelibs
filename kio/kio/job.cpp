@@ -154,6 +154,8 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
 
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
+
+    job->setWindow( m_window );
 }
 
 void Job::removeSubjob( Job *job )
