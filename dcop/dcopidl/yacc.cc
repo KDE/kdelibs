@@ -157,9 +157,9 @@ static const short yyrhs[] = {    32,
 static const short yyrline[] = { 0,
     81,    87,    91,    97,   101,   107,   113,   122,   126,   130,
    137,   141,   145,   149,   156,   165,   171,   180,   184,   191,
-   195,   202,   208,   214,   220,   229,   233,   237,   244,   250,
-   256,   262,   268,   277,   280,   283,   286,   289,   292,   295,
-   301,   307,   313,   319
+   195,   202,   208,   214,   220,   229,   233,   237,   244,   251,
+   257,   263,   269,   278,   281,   284,   287,   290,   293,   296,
+   302,   311,   317,   323
 };
 #endif
 
@@ -269,7 +269,7 @@ static const short yycheck[] = {    44,
     -1,    -1,    -1,    -1,    -1,    -1,    -1,    51
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/opt/local/share/bison.simple"
+#line 3 "/usr/share/bison.simple"
 /* This file comes from bison-1.27.  */
 
 /* Skeleton output parser for bison,
@@ -483,7 +483,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 216 "/opt/local/share/bison.simple"
+#line 216 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -998,12 +998,13 @@ case 29:
 #line 245 "yacc.yy"
 {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
-		*tmp = tmp->arg( *(yyvsp[-1]._str) ).arg( *(yyvsp[-3]._str) );
+		*tmp = tmp->arg( *(yyvsp[-1]._str) );
+		*tmp = tmp->arg( *(yyvsp[-3]._str) );
 		yyval._str = tmp;		
 	  ;
     break;}
 case 30:
-#line 251 "yacc.yy"
+#line 252 "yacc.yy"
 {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\"/>");
 		*tmp = tmp->arg( *(yyvsp[-1]._str) ).arg( *(yyvsp[-2]._str) );
@@ -1011,7 +1012,7 @@ case 30:
 	  ;
     break;}
 case 31:
-#line 257 "yacc.yy"
+#line 258 "yacc.yy"
 {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\"/>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) ).arg( *(yyvsp[-4]._str) ).arg( *(yyvsp[-2]._str) );
@@ -1019,7 +1020,7 @@ case 31:
 	  ;
     break;}
 case 32:
-#line 263 "yacc.yy"
+#line 264 "yacc.yy"
 {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) ).arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-3]._str) );
@@ -1027,7 +1028,7 @@ case 32:
 	  ;
     break;}
 case 33:
-#line 269 "yacc.yy"
+#line 270 "yacc.yy"
 {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) ).arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-3]._str) );
@@ -1035,50 +1036,53 @@ case 33:
 	  ;
     break;}
 case 34:
-#line 278 "yacc.yy"
+#line 279 "yacc.yy"
 {
 	  ;
     break;}
 case 35:
-#line 281 "yacc.yy"
+#line 282 "yacc.yy"
 {
 	  ;
     break;}
 case 36:
-#line 284 "yacc.yy"
+#line 285 "yacc.yy"
 {
 	  ;
     break;}
 case 37:
-#line 287 "yacc.yy"
+#line 288 "yacc.yy"
 {
 	  ;
     break;}
 case 38:
-#line 290 "yacc.yy"
+#line 291 "yacc.yy"
 {
 	  ;
     break;}
 case 39:
-#line 293 "yacc.yy"
+#line 294 "yacc.yy"
 {
 	  ;
     break;}
 case 40:
-#line 296 "yacc.yy"
+#line 297 "yacc.yy"
 {
 	  ;
     break;}
 case 41:
-#line 302 "yacc.yy"
+#line 303 "yacc.yy"
 {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
-		*tmp = tmp->arg( *(yyvsp[-7]._str) ).arg( *(yyvsp[-8]._str) ).arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-3]._str) );
+		*tmp = tmp->arg( *(yyvsp[-7]._str) );
+		*tmp = tmp->arg( *(yyvsp[-8]._str) );
+		*tmp = tmp->arg( *(yyvsp[-5]._str) );
+		*tmp = tmp->arg( *(yyvsp[-3]._str) );
 		yyval._str = tmp;
 	  ;
     break;}
 case 42:
-#line 308 "yacc.yy"
+#line 312 "yacc.yy"
 {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *(yyvsp[-7]._str) ).arg( *(yyvsp[-8]._str) ).arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-3]._str) );
@@ -1086,7 +1090,7 @@ case 42:
 	  ;
     break;}
 case 43:
-#line 314 "yacc.yy"
+#line 318 "yacc.yy"
 {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-6]._str) ).arg( *(yyvsp[-3]._str) ).arg( *(yyvsp[-1]._str) );
@@ -1094,7 +1098,7 @@ case 43:
 	  ;
     break;}
 case 44:
-#line 320 "yacc.yy"
+#line 324 "yacc.yy"
 {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
 		*tmp = tmp->arg( *(yyvsp[-5]._str) ).arg( *(yyvsp[-6]._str) ).arg( *(yyvsp[-3]._str) ).arg( *(yyvsp[-1]._str) );
@@ -1103,7 +1107,7 @@ case 44:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 542 "/opt/local/share/bison.simple"
+#line 542 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1323,7 +1327,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 327 "yacc.yy"
+#line 331 "yacc.yy"
 
 
 void dcopidlParse( const char *_code )

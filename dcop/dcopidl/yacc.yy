@@ -244,7 +244,8 @@ param
 	: T_CONST T_IDENTIFIER T_AMPERSAND T_IDENTIFIER default
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
-		*tmp = tmp->arg( *($4) ).arg( *($2) );
+		*tmp = tmp->arg( *($4) );
+		*tmp = tmp->arg( *($2) );
 		$$ = tmp;		
 	  }
 	| T_IDENTIFIER T_IDENTIFIER default
@@ -301,7 +302,10 @@ function
 	: T_VIRTUAL return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
 	  {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
-		*tmp = tmp->arg( *($3) ).arg( *($2) ).arg( *($5) ).arg( *($7) );
+		*tmp = tmp->arg( *($3) );
+		*tmp = tmp->arg( *($2) );
+		*tmp = tmp->arg( *($5) );
+		*tmp = tmp->arg( *($7) );
 		$$ = tmp;
 	  }
 	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
