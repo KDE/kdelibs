@@ -882,7 +882,8 @@ void RangeImpl::surroundContents( const Node &newParent )
     DocumentFragment fragment = extractContents();
     insertNode( newParent );
     // BIC: to avoid this const_cast newParent shouldn't be const
-    (const_cast<Node>(newParent)).appendChild( fragment );
+    //(const_cast<Node>(newParent)).appendChild( fragment );
+    ((Node)(newParent)).appendChild( fragment );
     selectNode( newParent );
     
     
