@@ -51,7 +51,7 @@ using namespace DOM;
 #include "kcssprop.c"
 #include "kcssvalues.c"
 
-int getPropertyID(const char *tagStr, int len)
+int DOM::getPropertyID(const char *tagStr, int len)
 {
     const struct props *propsPtr = findProp(tagStr, len);
     if (!propsPtr)
