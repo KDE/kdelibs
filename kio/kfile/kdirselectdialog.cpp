@@ -19,9 +19,11 @@
 
 #include <qdir.h>
 #include <qlayout.h>
+#include <qpopupmenu.h>
 #include <qstringlist.h>
 #include <qvaluestack.h>
 
+#include <kactionclasses.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
@@ -95,6 +97,10 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     connect( d->urlCombo, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotComboTextChanged( const QString& ) ));
 
+    m_contextMenu = new QPopupMenu( this );
+    m_showHiddenFiles = new KToggleAction ( i18n( "Show Hidden Directories" ), 0, this,
+                                        SLOT( slotShowHiddenFilesToggled() ), this);
+    m_showHiddenFiles->plug(m_contextMenu);
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
     if ( localOnly && !d->startURL.isLocalFile() )
@@ -114,6 +120,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     connect( m_treeView, SIGNAL( currentChanged( QListViewItem * )),
              SLOT( slotCurrentChanged() ));
+    connect( m_treeView, SIGNAL( contextMenu( KListView *, QListViewItem *, const QPoint & )),
+             SLOT( slotContextMenu( KListView *, QListViewItem *, const QPoint & )));
 
     connect( d->urlCombo, SIGNAL( activated( const QString& )),
              SLOT( slotURLActivated( const QString& )));
@@ -319,7 +327,7 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
 KFileTreeBranch * KDirSelectDialog::createBranch( const KURL& url )
 {
     QString title = url.isLocalFile() ? url.path() : url.prettyURL();
-    KFileTreeBranch *branch = view()->addBranch( url, title, true );
+    KFileTreeBranch *branch = view()->addBranch( url, title, m_showHiddenFiles->isChecked() );
     branch->setChildRecurse( false );
     view()->setDirOnlyMode( branch, true );
 
@@ -350,6 +358,25 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
     }
 }
 
+void KDirSelectDialog::slotContextMenu( KListView *, QListViewItem *, const QPoint& pos )
+{
+    m_contextMenu->popup( pos );
+}
+
+void KDirSelectDialog::slotShowHiddenFilesToggled()
+{
+    KURL currentURL = url();
+
+    d->comboLocked = true;
+    view()->removeBranch( d->branch );
+    d->comboLocked = false;
+
+    KURL root = d->startURL;
+    root.setPath( "/" );
+    d->branch = createBranch( root );
+
+    setCurrentURL( currentURL );
+}
 
 // static
 KURL KDirSelectDialog::selectDirectory( const QString& startDir,
