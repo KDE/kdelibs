@@ -60,30 +60,45 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
     QColorGroup colorGrp( Qt::black, Qt::black, QColor(220,220,220), QColor(100,100,100),
     Qt::gray, Qt::black, Qt::black );
 
-    int l = m_width;
     int xp = _tx;
 
     RenderObject *prev = m_previous;
     while(prev && !prev->isFlow())
 	prev = prev->previousSibling();
-    if(prev)
+    if(prev && static_cast<RenderFlow *>(prev)->floatBottom() > prev->height() )
 	xp += static_cast<RenderFlow *>(prev)->leftOffset( prev->height() );
 
 
     int yp = _ty ;
 
+    //kdDebug() << "tx = " << xp << " m_width = " << m_width << " length = " << length << endl;
+    
+    switch(m_style->textAlign()) {
+    case LEFT:
+	break;
+    case RIGHT:
+	xp += m_width - length;
+	break;
+    case JUSTIFY:
+    case CENTER:
+    case KONQ_CENTER:
+	//kdDebug() << "centered" << endl;
+	xp += (m_width - length)/2;
+	break;
+    }
+    
     int lw = size/2;
 
     if ( shade )
     {
         if(size < 2) size = 2, lw = 1;
-        qDrawShadePanel( p, xp, yp, l, size,
+        qDrawShadePanel( p, xp, yp, length, size,
                 colorGrp, true, lw, 0 );
     }
     else
     {
         if(size < 1) size = 1;
-        p->fillRect( xp, yp, l, size, Qt::black );
+        p->fillRect( xp, yp, length, size, Qt::black );
     }
 }
 
@@ -91,8 +106,8 @@ void RenderHR::layout()
 {
     calcMinMaxWidth();
     m_height = size+2;
-    if (m_width==0)
-    	m_width = containingBlockWidth();
+    if( length == 0 )
+	length = m_width;
     calcHeight();
     setLayouted(true);
 }
@@ -102,7 +117,10 @@ void RenderHR::calcMinMaxWidth()
     // contentWidth
     Length w = m_style->width();
 
+    // a bit hacky....
     calcWidth();
+    length = m_width;
+    m_width = intrinsicWidth();
 
     switch(w.type)
     {

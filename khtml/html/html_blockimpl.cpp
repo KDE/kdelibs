@@ -85,8 +85,13 @@ void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+    {
+	DOMString v = attr->value();
+	if ( strcasecmp( attr->value(), "center" ) == 0 )
+	    v = "konq-center";
+	addCSSProperty(CSS_PROP_TEXT_ALIGN, v, false);
 	break;
+    }
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -120,13 +125,7 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     switch( attr->attrId )
     {
     case ATTR_ALIGN:
-	if ( strcasecmp( attr->value(), "left" ) == 0 )
-	    halign = LEFT;
-	else if ( strcasecmp( attr->value(), "right" ) == 0 )
-	    halign = RIGHT;
-	else if ( strcasecmp( attr->value(), "center" ) == 0 )
-	    halign = CENTER;
-	break;
+	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
     case ATTR_SIZE:
 	size = attr->value().toInt();		
 	break;

@@ -100,7 +100,7 @@
       SUP             { position: relative; top: -0.5em; }
 
       S, STRIKE, DEL  { text-decoration: line-through }
-      HR              { margin-top: 5px; margin-bottom: 5px }
+      HR              { margin-top: 5px; margin-bottom: 5px; text-align: konq-center; }
 
       OL, UL, DIR,
       MENU, DD        { margin-left: 40px }	

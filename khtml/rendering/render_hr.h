@@ -62,6 +62,7 @@ protected:
 
     bool shade;
     short size;
+    int length;
 };
 
 
