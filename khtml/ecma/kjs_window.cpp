@@ -614,35 +614,37 @@ Value Window::get(ExecState *exec, const UString &p) const
   return Undefined();
 }
 
-void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
+void Window::put(ExecState* exec, const UString &propertyName, const Value &value, int attr)
 {
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
   // If yes, save time and jump directly to ObjectImp.
-  if ( attr != None && attr != DontDelete )
+  if ( (attr != None && attr != DontDelete)
+       // Same thing if we have a local override (e.g. "var location")
+       || ( ObjectImp::getDirect(propertyName) && isSafeScript(exec)) )
   {
-    ObjectImp::put( exec, p, v, attr );
+    ObjectImp::put( exec, propertyName, value, attr );
     return;
   }
 
-  const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
+  const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
   if (entry)
   {
 #ifdef KJS_VERBOSE
-    kdDebug(6070) << "Window::put " << p.qstring() << endl;
+    kdDebug(6070) << "Window::put " << propertyName.qstring() << endl;
 #endif
     switch( entry->value ) {
     case Status: {
-      String s = v.toString(exec);
+      String s = value.toString(exec);
       m_part->setJSStatusBarText(s.value().qstring());
       return;
     }
     case DefaultStatus: {
-      String s = v.toString(exec);
+      String s = value.toString(exec);
       m_part->setJSDefaultStatusBarText(s.value().qstring());
       return;
     }
     case _Location: {
-      QString str = v.toString(exec).qstring();
+      QString str = value.toString(exec).qstring();
       KHTMLPart* p = Window::retrieveActive(exec)->m_part;
       if ( p )
         m_part->scheduleRedirection(0, p->htmlDocument().
@@ -651,106 +653,106 @@ void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
     }
     case Onabort:
       if (isSafeScript(exec))
-        setListener(exec, DOM::EventImpl::ABORT_EVENT,v);
+        setListener(exec, DOM::EventImpl::ABORT_EVENT,value);
       return;
     case Onblur:
       if (isSafeScript(exec))
-        setListener(exec, DOM::EventImpl::BLUR_EVENT,v);
+        setListener(exec, DOM::EventImpl::BLUR_EVENT,value);
       return;
     case Onchange:
       if (isSafeScript(exec))
-        setListener(exec, DOM::EventImpl::CHANGE_EVENT,v);
+        setListener(exec, DOM::EventImpl::CHANGE_EVENT,value);
       return;
     case Onclick:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,value);
       return;
     case Ondblclick:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,value);
       return;
     case Ondragdrop:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT,value);
       return;
     case Onerror:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT,value);
       return;
     case Onfocus:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::FOCUS_EVENT,v);
+        setListener(exec,DOM::EventImpl::FOCUS_EVENT,value);
       return;
     case Onkeydown:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT,value);
       return;
     case Onkeypress:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT,value);
       return;
     case Onkeyup:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT,value);
       return;
     case Onload:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::LOAD_EVENT,v);
+        setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
       return;
     case Onmousedown:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT,v);
+        setListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT,value);
       return;
     case Onmousemove:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::MOUSEMOVE_EVENT,v);
+        setListener(exec,DOM::EventImpl::MOUSEMOVE_EVENT,value);
       return;
     case Onmouseout:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::MOUSEOUT_EVENT,v);
+        setListener(exec,DOM::EventImpl::MOUSEOUT_EVENT,value);
       return;
     case Onmouseover:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::MOUSEOVER_EVENT,v);
+        setListener(exec,DOM::EventImpl::MOUSEOVER_EVENT,value);
       return;
     case Onmouseup:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::MOUSEUP_EVENT,v);
+        setListener(exec,DOM::EventImpl::MOUSEUP_EVENT,value);
       return;
     case Onmove:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_MOVE_EVENT,v);
+        setListener(exec,DOM::EventImpl::KHTML_MOVE_EVENT,value);
       return;
     case Onreset:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::RESET_EVENT,v);
+        setListener(exec,DOM::EventImpl::RESET_EVENT,value);
       return;
     case Onresize:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::RESIZE_EVENT,v);
+        setListener(exec,DOM::EventImpl::RESIZE_EVENT,value);
       return;
     case Onselect:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::SELECT_EVENT,v);
+        setListener(exec,DOM::EventImpl::SELECT_EVENT,value);
       return;
     case Onsubmit:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::SUBMIT_EVENT,v);
+        setListener(exec,DOM::EventImpl::SUBMIT_EVENT,value);
       return;
     case Onunload:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::UNLOAD_EVENT,v);
+        setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
       return;
     case Name:
       if (isSafeScript(exec))
-        m_part->setName( v.toString(exec).qstring().local8Bit().data() );
+        m_part->setName( value.toString(exec).qstring().local8Bit().data() );
       return;
     default:
       break;
     }
   }
   if (isSafeScript(exec))
-    ObjectImp::put(exec, p, v, attr);
+    ObjectImp::put(exec, propertyName, value, attr);
 }
 
 bool Window::toBoolean(ExecState *) const
@@ -844,7 +846,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     Object err = Error::create(exec,TypeError);
     exec->setException(err);
     return err;
-  } 
+  }
   Window *window = static_cast<Window *>(thisObj.imp());
   Value result;
   QString str, str2;
@@ -1455,7 +1457,7 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     Object err = Error::create(exec,TypeError);
     exec->setException(err);
     return err;
-  } 
+  }
   Location *location = static_cast<Location *>(thisObj.imp());
   KHTMLPart *part = location->part();
   if (part) {
@@ -1530,7 +1532,7 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     Object err = Error::create(exec,TypeError);
     exec->setException(err);
     return err;
-  } 
+  }
   History *history = static_cast<History *>(thisObj.imp());
   KParts::BrowserExtension *ext = history->part->browserExtension();
 
