@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=audio/prs.sid
+Icon=sound
+Patterns=*.sid;*.SID;*.psid;*.PSID
+Comment=C64 SID Music
+Comment[de]=C64 SID-Musik
