@@ -183,21 +183,21 @@ DOMString HTMLDocument::cookie() const
     QDataStream stream(params, IO_WriteOnly);
     stream << URL().string();
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-				  "findCookies(QString)", params, replyType, reply)) {
+				  "findDOMCookies(QString)", params, replyType, reply)) {
 	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
 	 return 0;
     }
-    
+
     QDataStream stream2(reply, IO_ReadOnly);
     if(replyType != "QString") {
-	 kdError(6010) << "DCOP function findCookies(...) returns " 
+	 kdError(6010) << "DCOP function findDOMCookies(...) returns "
 		       << replyType << ", expected QString" << endl;
 	 return 0;
     }
- 
+
     QString result;
     stream2 >> result;
-    return DOMString(result); 
+    return DOMString(result);
 }
 
 void HTMLDocument::setCookie( const DOMString & value )
