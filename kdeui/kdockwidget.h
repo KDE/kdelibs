@@ -722,6 +722,9 @@ protected:
   /// @since 3.1
   QWidget *latestKDockContainer();
 
+  /// @since 3.2
+  void setFormerBrotherDockWidget(KDockWidget *);
+
 signals:
   /**
    *@since 3.2
