@@ -2,6 +2,7 @@ kdelibs (4:2.2.2-7) unstable; urgency=low
 
   * Break out bin files from kdelibs3 so that we can interoperate with
     kdelibs4 easily.
+  * Fix deviceman.cc (Closes: #124132)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 14 Dec 2001 18:28:00 -0700
 
