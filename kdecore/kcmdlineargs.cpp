@@ -605,7 +605,10 @@ KCmdLineArgs::parseAllArgs()
 		 if ( !authors.isEmpty() ) {
                      QString authorlist;
 		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
-			 authorlist += QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n";
+			 QString email;
+			 if ( !(*it).emailAddress().isEmpty() )
+				 email = " <" + (*it).emailAddress() + ">";
+			 authorlist += QString("    ") + (*it).name() + email + "\n";
 		     }
 		     printQ( i18n("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
 		 }
