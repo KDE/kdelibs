@@ -62,7 +62,8 @@ class KConfig;
 typedef QList<QWidget> WidgetList;
 
 /**
- * An abstract base clase for all dockwidget headers. See the class description of KDockWidgetHeader!
+ * An abstract base clase for all dockwidget headers (and member of the dockwidget class set).
+ * See the class description of @ref KDockWidgetHeader!
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -97,7 +98,8 @@ public:
 };
 
 /**
- * An abstract class for all dockwidget drag-panels of a dockwidget. See the class description of KDockWidgetHeaderDrag!
+ * An abstract class for all dockwidget drag-panels of a dockwidgets (and member of the dockwidget class set).
+ * See the class description of @ref KDockWidgetHeaderDrag!
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -132,8 +134,9 @@ private:
 };
 
 /**
- * This special widget is the panel one can grip with the mouse. The widget for dragging, so to speak.
- * Usually it is located in the KDockWidgetHeader. 
+ * This special widget is the panel one can grip with the mouses (and member of the dockwidget class set).
+ * The widget for dragging, so to speak.
+ * Usually it is located in the @ref KDockWidgetHeader. 
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -168,7 +171,7 @@ protected:
 };
 
 /**
- * The header (additional bar) for a KDockWidget.
+ * The header (additional bar) for a @ref KDockWidget s (and member of the dockwidget class set).
  * It have got the buttons located there. And it is for recording and reading the button states.
  * More or less a minor helper class for the dockwidget class set.
  *
@@ -236,8 +239,9 @@ protected:
 };
 
 /**
- * It just hides the special implementation of a dockwidget tab group. An abstraction what it is currently.
- * In general it is like QTabWidget but is more useful for the dockwidget class set.  
+ * It just hides the special implementation of a dockwidget tab groups (and is member of the dockwidget class set). 
+ * An abstraction what it is currently.
+ * In general it is like @ref QTabWidget but is more useful for the dockwidget class set.  
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -260,7 +264,7 @@ public:
 };
 
 /**
- * Floatable widget that can be dragged around with the mouse und encapsulate the actual widget.
+ * Floatable widget that can be dragged around with the mouse und encapsulate the actual widgets (and member of the dockwidget class set).
  *
  * You just grip the double-lined panel, tear it off its parent widget,
  * drag it somewhere and let it loose. Depending on the position where you leave it, the dockwidget
@@ -518,7 +522,7 @@ private:
 };
 
 /**
- * The manager that knows all dockwidgets and handles the dock process.
+ * The manager that knows all dockwidgets and handles the dock process (and member of the dockwidget class set).
  * More or less a helper class for the KDockWidget class set but of interest for some functionality
  * that can be called within a @ref KDockMainWindow or a @ref KDockWidget .
  *
@@ -546,8 +550,8 @@ public:
    * <LI>a control list for menu items concerning to menus provided by the dockmanager</LI>
    * <LI>Some state variables are set</LI></UL>
    *
-   * @ param mainWindow the main window controlled by this
-   * @ param name the internal QOject name
+   * @param mainWindow the main window controlled by this
+   * @param name the internal QOject name
    */
   KDockManager( QWidget* mainWindow, const char* name = 0L );
 
@@ -652,9 +656,7 @@ private slots:
 private:
 
   /**
-   *
-   *
-   *
+   * A data structure containing data about every dockwidget that is under control.
    */
   struct MenuDockData
   {
@@ -794,7 +796,7 @@ private:
 };
 
 /**
- * A special kind of @ref KTMainWindow that is able to have dockwidget child widgets.
+ * A special kind of @ref KTMainWindow that is able to have dockwidget child widgets (and member of the dockwidget class set).
  *
  * The main widget should be a @ref KDockWidget where other @ref KDockWidget can be docked to
  * the left, right, top, bottom or to the middle.

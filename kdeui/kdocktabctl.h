@@ -46,7 +46,8 @@ struct KDockTabCtl_Private;
 struct KDockTabBar_Private;
 
 /**
- * The actual tab bar. This class is covered by its manager, @ref KDockTabCtl.
+ * The actual tab bar for dockwidgets  (and member of the dockwidget class set). 
+ * This class is covered by its manager, @ref KDockTabCtl.
  * It provides some set/get methods and managment
  * methods like insert, remove, activate for tab widgets.
  *
@@ -262,7 +263,8 @@ private:
 };
 
 /**
- * The draw helper for the @ref KDockTabBar. Minor importance for application programmers.
+ * The draw helper for the @ref KDockTabBar (and member of the dockwidget class set).
+ * Minor importance for application programmers who uses the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
@@ -312,8 +314,8 @@ protected:
 };
 
 /**
- * A manager for a single @ref KDockTabBar. The @ref KDockWidget class ever use this class instead of 
- * accessing the KDockTabBar directly.
+ * A manager for a single @ref KDockTabBar  (and member of the dockwidget class set).
+ * The @ref KDockWidget class ever use this class instead of accessing the KDockTabBar directly.
  *
  * For some reasons it's more practical for the Dockwidget class set than @ref QTabBar or @ref KTabBar .
  *
