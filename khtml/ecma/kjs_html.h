@@ -35,16 +35,6 @@ class HTMLElement;
 
 namespace KJS {
 
-  class HTMLDocFunction : public DOMFunction {
-  public:
-    HTMLDocFunction(ExecState *exec, DOM::HTMLDocument d, int i, int len);
-    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-  private:
-    DOM::HTMLDocument doc;
-    int id;
-  };
-
   class HTMLDocument : public DOMDocument {
   public:
     HTMLDocument(ExecState *exec, DOM::HTMLDocument d) : DOMDocument(exec, d) { }
@@ -58,6 +48,7 @@ namespace KJS {
            Images, Applets, Links, Forms, Anchors, All, Open, Close,
            Write, WriteLn, GetElementsByName,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified, Height, Width, Dir };
+    DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }
   };
 
   class HTMLElement : public DOMElement {
@@ -91,10 +82,15 @@ namespace KJS {
     HTMLCollection(ExecState *exec, DOM::HTMLCollection c);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List&args);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
+    virtual bool implementsCall() const { return true; }
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     enum { Item, NamedItem, Tags };
     Value getNamedItems(ExecState *exec, const UString &propertyName) const;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
     DOM::HTMLCollection toCollection() const { return collection; }
   protected:
     DOM::HTMLCollection collection;

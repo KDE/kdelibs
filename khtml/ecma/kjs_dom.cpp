@@ -483,6 +483,9 @@ bool DOMNodeList::hasProperty(ExecState *exec, const UString &p, bool recursive)
 
 Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMNodeList::tryGet " << p.ascii() << endl;
+#endif
   Value result;
 
   if (p == "length")
@@ -517,6 +520,35 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
   }
 
   return result;
+}
+
+// Need to support both get and call, so that list[0] and list(0) work.
+Value DOMNodeList::call(ExecState *exec, Object &thisObj, const List &args)
+{
+  // This code duplication is necessary, DOMNodeList isn't a DOMFunction
+  Value val;
+  try {
+    val = tryCall(exec, thisObj, args);
+  }
+  // pity there's no way to distinguish between these in JS code
+  catch (...) {
+    Object err = Error::create(exec, GeneralError, "Exception from DOMNodeList");
+    exec->setException(err);
+  }
+  return val;
+}
+
+Value DOMNodeList::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  Q_ASSERT( thisObj.imp() == this ); // tell me if this is triggered (David)
+  UString s = args[0].toString(exec);
+  bool ok;
+  unsigned int u = s.toULong(&ok);
+  if (ok)
+    return getDOMNode(exec,list.item(u));
+
+  kdWarning() << "KJS::DOMNodeList::tryCall " << s.qstring() << " not implemented" << endl;
+  return Undefined();
 }
 
 DOMNodeListFunc::DOMNodeListFunc(ExecState *exec, int i, int len)

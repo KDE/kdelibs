@@ -48,53 +48,11 @@ using namespace KJS;
 
 QPtrDict<KJS::HTMLCollection> htmlCollections;
 
-KJS::HTMLDocFunction::HTMLDocFunction(ExecState *exec, DOM::HTMLDocument d, int i, int len)
-  : DOMFunction(), doc(d), id(i)
+IMPLEMENT_PROTOFUNC(HTMLDocFunction)
+
+Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value protect(this);
-  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
-}
-
-Value KJS::HTMLDocFunction::tryGet(ExecState *exec, const UString &p) const
-{
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLDocFunction::tryGet id=" << id << " p=" << p.qstring() << endl;
-#endif
-  // Support for document.images.length,
-  // document.all.<index>, document.all['<index>'], etc.
-  // document.all.<name>, document.all['<name>'], etc.
-  DOM::HTMLCollection coll;
-
-  switch (id) {
-  case HTMLDocument::Images:
-    coll = doc.images();
-    break;
-  case HTMLDocument::Applets:
-    coll = doc.applets();
-    break;
-  case HTMLDocument::Links:
-    coll = doc.links();
-    break;
-  case HTMLDocument::Forms:
-    coll = doc.forms();
-    break;
-  case HTMLDocument::Anchors:
-    coll = doc.anchors();
-    break;
-  case HTMLDocument::All:  // IE specific, not part of the DOM
-    coll = doc.all();
-    break;
-  default:
-    return Undefined();
-  }
-
-  Object tmp(new KJS::HTMLCollection(exec, coll));
-
-  return tmp.get(exec, p);
-}
-
-Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
-{
+  DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
   String s;
   DOM::HTMLElement element;
   DOM::HTMLCollection coll;
@@ -145,40 +103,6 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
     return getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
   }
 
-  // retrieve element from collection. Either by name or indexed.
-  if (id == HTMLDocument::Images || id == HTMLDocument::Applets || id == HTMLDocument::Links ||
-      id == HTMLDocument::Forms || id == HTMLDocument::Anchors || id == HTMLDocument::All) {
-    // i.e. support for document.images('<name>'), document.all(<index>) etc.
-    bool ok;
-    UString s = args[0].toString(exec);
-    unsigned int u = s.toULong(&ok);
-    if (ok) {
-      element = coll.item(u);
-      return getDOMNode(exec,element);
-    }
-    else {
-      if (args.size() == 1) {
-        HTMLCollection c(exec,coll);
-        return c.getNamedItems(exec,s);
-      }
-      else if (args.size() >= 1) // the second arg, if set, is the index of the item we want
-      {
-        unsigned int u = args[1].toString(exec).toULong(&ok);
-        if (ok)
-        {
-          DOM::DOMString pstr = s.string();
-          DOM::Node node = coll.namedItem(pstr);
-          while (!node.isNull()) {
-            if (!u)
-              return getDOMNode(exec,node);
-            node = coll.nextNamedItem(pstr);
-            --u;
-          }
-        }
-      }
-    }
-  }
-
   return Undefined();
 }
 
@@ -193,12 +117,12 @@ const ClassInfo KJS::HTMLDocument::info =
   body			HTMLDocument::Body		DontDelete
   location		HTMLDocument::Location		DontDelete
   cookie		HTMLDocument::Cookie		DontDelete
-  images		HTMLDocument::Images		DontDelete|Function 0
-  applets		HTMLDocument::Applets		DontDelete|Function 0
-  links			HTMLDocument::Links		DontDelete|Function 0
-  forms			HTMLDocument::Forms		DontDelete|Function 0
-  anchors		HTMLDocument::Anchors		DontDelete|Function 0
-  all			HTMLDocument::All		DontDelete|Function 0
+  images		HTMLDocument::Images		DontDelete|ReadOnly
+  applets		HTMLDocument::Applets		DontDelete|ReadOnly
+  links			HTMLDocument::Links		DontDelete|ReadOnly
+  forms			HTMLDocument::Forms		DontDelete|ReadOnly
+  anchors		HTMLDocument::Anchors		DontDelete|ReadOnly
+  all			HTMLDocument::All		DontDelete|ReadOnly
   open			HTMLDocument::Open		DontDelete|Function 0
   close			HTMLDocument::Close		DontDelete|Function 0
   write			HTMLDocument::Write		DontDelete|Function 1
@@ -269,24 +193,23 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Cookie:
       return String(doc.cookie());
     case Images:
+      return getHTMLCollection(exec,doc.images());
     case Applets:
+      return getHTMLCollection(exec,doc.applets());
     case Links:
+      return getHTMLCollection(exec,doc.links());
     case Forms:
+      return getHTMLCollection(exec,doc.forms());
     case Anchors:
+      return getHTMLCollection(exec,doc.anchors());
     case All:
+      return getHTMLCollection(exec,doc.all());
     case Open:
     case Close:
     case Write:
     case WriteLn:
     case GetElementsByName:
-      //return lookupOrCreateFunction<HTMLDocFunction,HTMLDocument>( exec, propertyName, this, entry );
-      // Modified copy of lookupOrCreateFunction because the ctor needs 'doc'
-      ValueImp * cachedVal = ObjectImp::getDirect(propertyName);
-      if (cachedVal)
-        return cachedVal;
-      Value val = new HTMLDocFunction(exec, doc, entry->value, entry->params);
-      const_cast<HTMLDocument *>(this)->ObjectImp::put(exec, propertyName, val, entry->attr);
-      return val;
+      return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
     }
   }
   // Look for overrides
@@ -1759,10 +1682,10 @@ DEFINE_PROTOTYPE("HTMLCollection", HTMLCollectionProto)
 IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
 IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 
-//const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
+const ClassInfo HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
 HTMLCollection::HTMLCollection(ExecState *exec, DOM::HTMLCollection c)
-  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) { }
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
 
 HTMLCollection::~HTMLCollection()
 {
@@ -1780,6 +1703,9 @@ bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p, bool re
 
 Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
+#endif
   if (propertyName == "length")
     return Number(collection.length());
   else if (propertyName == "selectedIndex" &&
@@ -1800,7 +1726,6 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) 
     if (!proto.isNull() && proto.hasProperty(exec,propertyName))
       return proto.get(exec,propertyName);
 
-
     // name or index ?
     bool ok;
     unsigned int u = propertyName.toULong(&ok);
@@ -1811,6 +1736,58 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) 
     else
       return getNamedItems(exec,propertyName);
   }
+}
+
+// HTMLCollections are strange objects, they support both get and call,
+// so that document.forms.item(0) and document.forms(0) both work.
+Value KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &args)
+{
+  // This code duplication is necessary, HTMLCollection isn't a DOMFunction
+  Value val;
+  try {
+    val = tryCall(exec, thisObj, args);
+  }
+  // pity there's no way to distinguish between these in JS code
+  catch (...) {
+    Object err = Error::create(exec, GeneralError, "Exception from HTMLCollection");
+    exec->setException(err);
+  }
+  return val;
+}
+
+Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &thisObj, const List &args)
+{
+  Q_ASSERT( thisObj.imp() == this ); // tell me if this is triggered (David)
+  if (args.size() == 1) {
+    // support for document.all(<index>) etc.
+    bool ok;
+    UString s = args[0].toString(exec);
+    unsigned int u = s.toULong(&ok);
+    if (ok) {
+      DOM::Element element = collection.item(u);
+      return getDOMNode(exec,element);
+    }
+    // support for document.images('<name>') etc.
+    return getNamedItems(exec,s);
+  }
+  else if (args.size() >= 1) // the second arg, if set, is the index of the item we want
+  {
+    bool ok;
+    UString s = args[0].toString(exec);
+    unsigned int u = args[1].toString(exec).toULong(&ok);
+    if (ok)
+    {
+      DOM::DOMString pstr = s.string();
+      DOM::Node node = collection.namedItem(pstr);
+      while (!node.isNull()) {
+        if (!u)
+          return getDOMNode(exec,node);
+        node = collection.nextNamedItem(pstr);
+        --u;
+      }
+    }
+  }
+  return Undefined();
 }
 
 Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propertyName) const
@@ -1838,15 +1815,32 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 
 Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  DOM::HTMLCollection coll = static_cast<HTMLCollection *>(thisObj.imp())->toCollection();
+  DOM::HTMLCollection coll = static_cast<KJS::HTMLCollection *>(thisObj.imp())->toCollection();
 
   switch (id) {
   case KJS::HTMLCollection::Item:
     return getDOMNode(exec,coll.item(args[0].toUInt32(exec)));
   case KJS::HTMLCollection::Tags:
   {
-    DOM::HTMLElement e = coll.base();
-    return getDOMNodeList(exec, e.getElementsByTagName(args[0].toString(exec).string()));
+    DOM::DOMString tagName = args[0].toString(exec).string();
+    DOM::NodeList list;
+    // getElementsByTagName exists in Document and in Element, pick up the right one
+    if ( coll.base().nodeType() == DOM::Node::DOCUMENT_NODE )
+    {
+      DOM::Document doc = coll.base();
+      list = doc.getElementsByTagName(tagName);
+#ifdef KJS_VERBOSE
+      kdDebug() << "KJS::HTMLCollectionProtoFunc::tryCall document.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
+#endif
+    } else
+    {
+      DOM::Element e = coll.base();
+      list = e.getElementsByTagName(tagName);
+#ifdef KJS_VERBOSE
+      kdDebug() << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
+#endif
+    }
+    return getDOMNodeList(exec, list);
   }
   case KJS::HTMLCollection::NamedItem:
     return static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec,args[0].toString(exec).string());

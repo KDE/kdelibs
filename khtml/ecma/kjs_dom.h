@@ -76,6 +76,9 @@ namespace KJS {
     ~DOMNodeList();
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    virtual Value call(ExecState *exec, Object &thisObj, const List&args);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
+    virtual bool implementsCall() const { return true; }
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
