@@ -96,10 +96,13 @@ PartManager::PartManager( QWidget *topLevel, QObject *parent, const char *name )
 
 PartManager::~PartManager()
 {
-  QPtrListIterator<QWidget> it( d->m_managedTopLevelWidgets );
-  for (; it.current(); ++it )
+  for ( QPtrListIterator<QWidget> it( d->m_managedTopLevelWidgets );
+        it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
                 this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
+
+  for ( QPtrListIterator<Part> it( d->m_parts ); it.current(); ++it )
+      it.current()->setManager( 0 );
 
   // core dumps ... setActivePart( 0L );
   qApp->removeEventFilter( this );
