@@ -325,12 +325,12 @@ public:
 
 			if(m_dashes.length() > 0)
 			{
-				QRegExp reg("[a-zA-Z,(; ]");
+				QRegExp reg("[, ]");
 				QStringList dashList = QStringList::split(reg, m_dashes);
 
 				double *dashes = new double[dashList.count()];
 				for(unsigned int i = 0; i < dashList.count(); i++)
-					dashes[i] = dashList[i].toDouble();
+					dashes[i] = m_painter->toPixel(dashList[i], true);
 
 				ArtVpathDash dash;
 				dash.offset = m_dashOffset;
