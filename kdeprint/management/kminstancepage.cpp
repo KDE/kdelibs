@@ -38,6 +38,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
+#include <kdebug.h>
 
 KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 : QWidget(parent,name)
@@ -47,11 +48,11 @@ KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 	m_toolbar = new KToolBar(this);
 	m_printer = 0;
 
+	initActions();
+
 	m_toolbar->setOrientation(Qt::Vertical);
 	m_toolbar->setIconText(KToolBar::IconTextRight);
 	m_toolbar->setMovingEnabled(false);
-
-	initActions();
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 0);
 	main_->addWidget(m_view);
