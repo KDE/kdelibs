@@ -919,6 +919,11 @@ void KApplication::enableStyles()
     }
 }
 
+void KApplication::disableStyles()
+{
+    useStyles = false;
+}
+
 void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     /* Hey, we actually do stuff here now :)
      * The widgetStyle key is used as a style string. If it matches a
@@ -1183,9 +1188,12 @@ void KApplication::kdisplaySetFont()
 
 void KApplication::kdisplaySetStyle()
 {
-    applyGUIStyle(WindowsStyle);
-    emit kdisplayStyleChanged();
-    emit appearanceChanged();
+    if (useStyles)
+    {
+        applyGUIStyle(WindowsStyle);
+        emit kdisplayStyleChanged();
+        emit appearanceChanged();
+    }
 }
 
 

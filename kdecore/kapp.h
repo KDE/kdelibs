@@ -466,8 +466,15 @@ public:
    *  @p allowStyles set to @p false.
    */
   void enableStyles();
-
-
+  
+  /**
+   * Disable style plugins.
+   *
+   * Current style plugins do not get unloaded. 
+   *
+   * This is only usefull when used in combination with @ref enableStyles.
+   */
+  void disableStyles();
 
   /**
    *  Install widget filter as global X11 event filter.
@@ -755,6 +762,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.176  2000/07/20 20:07:36  hoelzer
+// Inced version number.
+//
 // Revision 1.175  2000/07/19 02:34:59  matz
 // add a *Private pointer to the remaining classes, that were not only used
 // as namespace, and where a need for reimplementation is even remotely
