@@ -51,6 +51,7 @@ struct KIconLoaderPrivate
 {
     QString dbgString;
     QStringList appDirs;
+    QStringList extensions;
 };
 
 /*
@@ -68,13 +69,13 @@ struct KIconGroup
 KIconLoader::KIconLoader(QString appname)
 {
     d = new KIconLoaderPrivate;
-    KConfig *config = KGlobal::config();
     mpEffect = new KIconEffect;
-
     mpDirs = KGlobal::dirs();
-    config->setGroup("Icons");
-    mTheme = config->readEntry("Theme");
-    mpGroups = new KIconGroup[12];
+    mpGroups = new KIconGroup[8];
+    KConfig *config = KGlobal::config();
+
+    d->extensions += ".png";
+    d->extensions += ".xpm";
 
     QStringList groups;
     groups += "Desktop";
@@ -98,16 +99,10 @@ KIconLoader::KIconLoader(QString appname)
 	                "hicolor not found!\nBig trouble!\n";
 	return;
     }
-    
-    if (!mThemeList.contains(mTheme))
-    {
-	if (QPixmap::defaultDepth() > 8)
-	    mTheme = "hicolor";
-	else
-	    mTheme = "locolor";
-    }
+
+    mTheme = KIconTheme::current();
     KIconTheme *root = new KIconTheme(mTheme);
-    if ((root->depth() == 32) && (QPixmap::defaultDepth() < 16))
+    if ((root->depth() == 32) && !(QPixmap::defaultDepth() > 8))
     {
 	kdDebug(264) << "Using theme locolor instead of " << mTheme 
 		     << " because display depth is too small.\n";
@@ -293,9 +288,16 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
 KIcon KIconLoader::iconPath2(QString name, int size)
 {
     KIcon icon;
-    icon = iconPath2(name, size, KIcon::MatchExact, mpThemeRoot);
-    if (!icon.isValid())
-	icon = iconPath2(name, size, KIcon::MatchBest, mpThemeRoot);
+    QStringList::Iterator it;
+    for (it=d->extensions.begin(); it!=d->extensions.end(); it++)
+    {
+	icon = iconPath2(name + *it, size, KIcon::MatchExact, mpThemeRoot);
+	if (icon.isValid())
+	    break;
+	icon = iconPath2(name + *it, size, KIcon::MatchBest, mpThemeRoot);
+	if (icon.isValid())
+	    break;
+    }
     return icon;
 }
 
@@ -323,15 +325,37 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     if (mpThemeRoot == 0L)
 	return pix;
 
+    QString key;
+    if (name.at(0) == '/')
+    {
+	if (path_store != 0L)
+	    *path_store = name;
+	key = "$kico_a_";
+	key += name;
+	if (QPixmapCache::find(key, pix))
+	    return pix;
+	pix.load(name);
+	QPixmapCache::insert(key, pix);
+	return pix;
+    }
+
     // Special case for "User" icons.
     if (group == KIcon::User)
     {
+	key = "$kico_u_";
+	key += name;
+	bool inCache = QPixmapCache::find(key, pix);
+	if (inCache && (path_store == 0L))
+	    return pix;
 	QString path = iconPath(name, KIcon::User, canReturnNull);
 	if (path.isEmpty())
 	    return pix;
-	pix.load(path);
 	if (path_store != 0L)
 	    *path_store = path;
+	if (inCache)
+	    return pix;
+	pix.load(path);
+	QPixmapCache::insert(key, pix);
 	return pix;
     }
 
@@ -347,14 +371,8 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     }
     if ((size == 0) && (group < 0))
     {
-	kdDebug(264) << "No size nor group specified!\n";
+	kdDebug(264) << "Neither size nor group specified!\n";
 	group = 0;
-    }
-
-    if (name.at(0) == '/')
-    {
-	pix.load(name);
-	return pix;
     }
     QString ext = name.right(4);
     if ((ext == ".png") || (ext == ".xpm"))
@@ -369,10 +387,10 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
 	size = mpGroups[group].size;
     }
 
-    QString key = "$kico_";
-    key += name;
-    key += "_";
+    key = "$kico_";
     key += QString().setNum((int) size);
+    key += "_";
+    key += name;
     bool inCache = QPixmapCache::find(key, pix);
     if (inCache && (path_store == 0L))
 	return pix;
@@ -403,7 +421,7 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     if (img.isNull())
 	return pix;
 
-    // Scale the icon if necessary
+    // Scale the icon and apply effects if necessary
     if ((icon.type == KIcon::Scalable) && (size != img.width()))
     {
 	img = img.smoothScale(size, size);
@@ -412,8 +430,6 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     {
 	img = mpEffect->doublePixels(img);
     }
-
-    // Apply effects
     if (group >= 0)
     {
 	img = mpEffect->apply(img, group, state);

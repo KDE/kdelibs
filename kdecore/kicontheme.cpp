@@ -59,7 +59,6 @@ private:
     int mMinSize, mMaxSize;
 
     QString mDir;
-    QStringList mExtensions;
 };
 
 
@@ -314,8 +313,6 @@ KIconThemeDir::KIconThemeDir(QString dir, KConfigBase *config)
 {
     mbValid = false;
     mDir = dir;
-    mExtensions += ".png";
-    mExtensions += ".xpm";
     mSize = config->readNumEntry("Size");
     if (mSize == 0)
 	return;
@@ -356,17 +353,11 @@ QString KIconThemeDir::iconPath(QString name)
 {
     if (!mbValid)
 	return QString::null;
-    QFileInfo fi;
-    QString file;
-    QStringList::Iterator it;
-    for (it=mExtensions.begin(); it!=mExtensions.end(); it++)
-    {
-	file = mDir + "/" + name + *it;
-	fi.setFile(file);
-	if (fi.exists())
-	    break;
-    }
-    return fi.exists() ? file : QString::null;
+    QString file = mDir + "/" + name;
+    QFileInfo fi(file);
+    if (fi.exists())
+	return file;
+    return QString::null;
 }
 
 QStringList KIconThemeDir::iconList()
