@@ -40,7 +40,6 @@
 
 #include <qevent.h>
 #include "khtmlview.h"
-#include "htmlattrs.h"
 #include <html_element.h>
 #include <html_documentimpl.h>
 #include "khtml_part.h"
@@ -321,7 +320,7 @@ void Window::put(const UString &p, const KJSO &v)
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
-      static_cast<HTMLDocumentImpl *>(part->htmlDocument().handle())->setOnload(s.string());
+      static_cast<DOM::HTMLDocumentImpl *>(part->htmlDocument().handle())->setOnload(s.string());
     }
   } else
     Imp::put(p, v);
