@@ -1,12 +1,13 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=C headers
+Comment[br]=Restr reollin C
 Comment[ca]=Capçaleres C
 Comment[cs]=Hlavièkový soubor jazyka C
 Comment[de]=C Header
 Comment[es]=Cabecera C
 Comment[fi]=C -otsikot
-Comment[fr]=Fichier d'entête C
+Comment[fr]=Fichier d'en-tête C
 Comment[hr]=C datoteke sa zaglavljima
 Comment[is]=C skilgreiningar
 Comment[it]=Header C
