@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.59  1998/12/16 01:40:22  ettrich
+// yet another bugfix (don't worry, didn't effect any yet-existing program)
+//
 // Revision 1.58  1998/12/16 01:27:12  ettrich
 // fixed slightly broken macstyle removal
 //
@@ -179,7 +182,8 @@ static QPixmap* miniGo = 0;
 /*************************************************************/
 
   title = 0;
-
+KMenuBar::KMenuBar(QWidget *parent, const char *name)
+  
 {
   Parent = parent;        // our father
   oldWFlags = getWFlags();
@@ -663,42 +667,45 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	return; // Ignore positioning of Mac menubar
     }
 
-        lastPosition = position;
-        position = mpos;
-        oldX = x();
-        oldY = y();
-        oldWFlags = getWFlags();
-	QPoint p = mapToGlobal(QPoint(0,0));
-	parentOffset = pos();
-        hide();
-        recreate(0, 0,
-                 p, FALSE);
- 	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-        if (mpos == FloatingSystem)
-	    KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar | KWM::noFocus);
-	else
-	    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
-	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
-	setCaption(""); // this triggers a qt bug
-	if (title){
-	  setCaption(title);
-	}
-	else {
-	  QString s = Parent->caption();
-	  s.append(" [menu]");
-	  setCaption(s);
-	}
-        setFrameStyle( NoFrame);
-        if (mpos == FloatingSystem)
-        {
-          if (style() == MotifStyle)
-            menu->setFrameStyle(Panel | Raised);
-          else
-            menu->setFrameStyle(WinPanel | Raised) ;
-        }
-        else
-          menu->setFrameStyle( NoFrame) ;
-        context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
+  if (position != mpos)
+   {
+     if (mpos == Floating || mpos == FloatingSystem)
+      {
+	  if ( mpos == FloatingSystem) 
+	  position = mpos;
+	  oldX = x();
+	  oldY = y();
+	  if ( mpos == FloatingSystem && position == Floating)
+	      lastPosition = Top;
+	  else
+	      oldWFlags = getWFlags();
+	  QPoint p = mapToGlobal(QPoint(0,0));
+	  parentOffset = pos();
+	  hide();
+	  recreate(0, 0,
+		   p, FALSE);
+	  XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
+	  if (mpos == FloatingSystem)
+	      KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar | KWM::noFocus);
+	  if (title){
+	      KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
+	  }
+	  else {
+	  setCaption(""); // this triggers a qt bug
+	  if (!title.isNull()){
+	      setCaption(title);
+	  } else {
+	      QString s = Parent->caption();
+	      s.append(" [menu]");
+	      setCaption(s);
+	  }
+	  setFrameStyle( NoFrame);
+	  if (mpos == FloatingSystem)
+	      {
+		  if (style() == MotifStyle)
+		      menu->setFrameStyle(Panel | Raised);
+		  else
+	  context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
 	  else
 	      menu->setFrameStyle( NoFrame) ;
 	  context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
@@ -709,11 +716,11 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	if (mpos == FloatingSystem) {
 	    QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
 	    setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(), // check panel top
-	    
+			heightForWidth(r.width()));
 	    int dim = fontMetrics().height();
 	    if (!miniGo)
 		miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
-	    show(); 
+	
 	    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
 	    if (!px.isNull())
 		*miniGo = px;
