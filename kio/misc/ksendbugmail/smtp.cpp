@@ -16,8 +16,8 @@ SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
     hostPort = port;
     timeOut = timeout * 1000;
 
-    senderAddress = "user@host.ext";
-    recipientAddress = "user@host.ext";
+    senderAddress = "user@example.net";
+    recipientAddress = "user@example.net";
     messageSubject = "(no subject)";
     messageBody = "empty";
     messageHeader = "";
@@ -34,7 +34,7 @@ SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 
 
     if(domainName.isEmpty())
-        domainName = "somemachine.nowhere.org";
+        domainName = "somemachine.example.net";
 
     kdDebug() << "SMTP object created" << endl;
 
