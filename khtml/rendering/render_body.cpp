@@ -24,6 +24,7 @@
 #include "render_root.h"
 #include "html/html_baseimpl.h"
 #include "xml/dom_docimpl.h"
+#include "khtmlview.h"
 
 #include <qpainter.h>
 #include <qscrollview.h>
