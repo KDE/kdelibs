@@ -743,7 +743,7 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 {
     assert( item != 0L );
 
-    return matchesMimeFilter( item->mimetype() );
+    return matchesMimeFilter( item->mimeTypePtr()->name() );
 }
 
 bool KDirLister::matchesFilter(const QString& name) const
