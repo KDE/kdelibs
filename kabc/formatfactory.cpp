@@ -68,7 +68,7 @@ FormatFactory::FormatFactory()
     config.setGroup( "Plugin" );
     QString type = config.readEntry( "Type" );
     info->library = config.readEntry( "X-KDE-Library" );
-	
+
     config.setGroup( "Misc" );
     info->nameLabel = config.readEntry( "Name" );
     info->descriptionLabel = config.readEntry( "Comment", i18n( "No description available." ) );
@@ -85,7 +85,7 @@ FormatFactory::~FormatFactory()
 QStringList FormatFactory::formats()
 {
   QStringList retval;
-	
+
   // make sure 'vcard' is the first entry
   retval << "vcard";
 

@@ -43,11 +43,19 @@ extern "C"
 ResourceDir::ResourceDir( const KConfig *config )
     : Resource( config )
 {
-  QString path = config->readEntry( "FilePath" );
-  mFormatName = config->readEntry( "FileFormat" );
+  QString path;
+
+  if ( config ) {
+     path = config->readEntry( "FilePath" );
+     mFormatName = config->readEntry( "FileFormat" );
+  } else {
+    path = StdAddressBook::directoryName();
+    mFormatName = "vcard";
+  }
+
 
   FormatFactory *factory = FormatFactory::self();
-  FormatPlugin *mFormat = factory->format( mFormatName );
+  mFormat = factory->format( mFormatName );
 
   if ( !mFormat ) {
     mFormatName = "vcard";
@@ -109,7 +117,6 @@ bool ResourceDir::doOpen()
 
   bool ok = mFormat->checkFormat( &file );
   file.close();
-
   return ok;
 }
 
@@ -147,7 +154,7 @@ bool ResourceDir::load()
 bool ResourceDir::save( Ticket *ticket )
 {
   kdDebug(5700) << "ResourceDir::save(): '" << mPath << "'" << endl;
-  
+
   AddressBook::Iterator it;
   bool ok = true;
 
