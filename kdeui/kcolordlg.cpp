@@ -663,43 +663,40 @@ void KColorDialog::slotAddToCustom()
 void KColorDialog::readSettings()
 {
 	QColor col;
-	QString str, key;
+	QString key;
 
-	// use a global config file
-	KConfig config;
+	KConfig* config = kapp->getConfig();
 
-	config.setGroup( "Custom Colors");
+	QString oldgroup = config->group();
+	config->setGroup( "Custom Colors");
 
 	for ( int i = 0; i < custColorCells->numCells(); i++ )
 	{
 		key.sprintf( "Color%d", i );
-		str = config.readEntry( key );
-		if ( !str.isNull() )
-			col.setNamedColor( str );
-		else
-			col = lightGray;
+		col = config->readColorEntry( key, &lightGray );
 		custColorCells->setColor( i, col );
 	}
+	config->setGroup( oldgroup );
 }
 
 void KColorDialog::writeSettings()
 {
 	QColor color;
-	QString str, key;
+	QString key;
 
-	// use a global config file
-	KConfig config;
+	KConfig* config = kapp->getConfig();
 
-	config.setGroup( "Custom Colors");
+	QString oldgroup = config->group();
+	config->setGroup( "Custom Colors");
 
 	for ( int i = 0; i < custColorCells->numCells(); i++ )
 	{
 		color = custColorCells->color( i );
 		key.sprintf( "Color%d", i );
-		str.sprintf("#%02x%02x%02x", color.red(), color.green(), color.blue());
-		config.writeEntry( key, str );
-		str.detach();
+		config->writeEntry( key, color );
 	}
+
+	config->setGroup( oldgroup );
 }
 
 void KColorDialog::setRgbEdit()
