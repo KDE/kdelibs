@@ -715,7 +715,7 @@ public:
   /**
    * Finds the next occurrence of the string or expression.
    * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
-   * @DEPRECATED, use findText( str, options, parent, findDialog )
+   * @deprecated, use findText( str, options, parent, findDialog )
    */
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
 
@@ -750,7 +750,7 @@ public:
 
   /**
    * Return the text the user has marked.  This is guaranteed to be valid xml,
-   * and to contain the <html> and <body> tags.
+   * and to contain the \<html> and \<body> tags.
    *
    * FIXME probably should make virtual for 4.0 ?
    * 
@@ -839,7 +839,7 @@ public:
   /**
    * Returns the @p Node currently under the mouse.
    *
-   * The returned node may be a shared node (e. g. an <area> node if the
+   * The returned node may be a shared node (e. g. an \<area> node if the
    * mouse is hovering over an image map).
    */
   DOM::Node nodeUnderMouse() const;
@@ -849,7 +849,7 @@ public:
    *
    * The returned node is always the node that is physically under the mouse
    * pointer (irrespective of logically overlying elements like, e. g.,
-   * <area> on image maps).
+   * \<area> on image maps).
    * @since 3.3
    */
   DOM::Node nonSharedNodeUnderMouse() const;
