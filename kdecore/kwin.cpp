@@ -462,6 +462,7 @@ QRect KWin::edgeClientArea()
     qDebug(
       "KWin::edgeClientArea(): Could not communicate with kwin using DCOP"
     );
+    retval = QApplication::desktop()->geometry();
   }
 
   else {
