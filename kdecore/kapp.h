@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.55  1998/09/01 20:21:16  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
 // Revision 1.54  1998/08/22 20:02:35  kulow
 // make kdecore have nicer output, when compiled with -Weffc++ :)
 //
@@ -171,9 +175,9 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING 1.0pre
-#define KDE_VERSION_MAJOR 0
-#define KDE_VERSION_MINOR 99
+#define KDE_VERSION_STRING "1.1pre"
+#define KDE_VERSION_MAJOR 1
+#define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 1
 
 #include <kconfig.h>
