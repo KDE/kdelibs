@@ -54,7 +54,7 @@ public:
     virtual bool isAttributeNode() const { return true; }
 
     DOMString name() const;
-    bool specified() const { return _specified; }
+    bool specified() const { return m_specified; }
 
     virtual DOMString value() const;
     virtual void setValue( const DOMString &v );
@@ -71,7 +71,6 @@ public:
     virtual bool deleteMe();
     DOMStringImpl *val() { return _value; }
 
-    unsigned char attrId;
 protected:
     AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
     AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element);
@@ -80,12 +79,12 @@ protected:
 
     void setName(const DOMString &n);
 
-    bool _specified;
-
     DOMStringImpl *_name;
     DOMStringImpl *_value;
 
     ElementImpl *_element;
+public:
+    unsigned char attrId;
 
 };
 

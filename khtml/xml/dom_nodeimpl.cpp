@@ -47,10 +47,20 @@ const QChar NodeImpl::EQUALS = '=';
 const QChar NodeImpl::QUOTE = '"';
 
 NodeImpl::NodeImpl(DocumentImpl *doc)
+    : document(doc),
+      m_render(0),
+      m_complexText( false ),
+      m_hasEvents( false ),
+      m_hasId( false ),
+      m_hasClass( false ),
+      m_hasStyle( false ),
+      m_hasTooltip( false ),
+      m_pressed( false ),
+      m_mouseInside( false ),
+      m_attached( false ),
+      m_changed( false ),
+      m_specified( false )
 {
-  document = doc;
-  flags = 0;
-  m_render = 0;
 }
 
 NodeImpl::~NodeImpl()
@@ -319,7 +329,7 @@ void NodeImpl::setChanged(bool b)
 {
     if (b && !changed() && document)
 	document->changedNodes.append(this);
-    b ? flags|=Changed : flags&=~Changed;
+    m_changed = b;
 }
 
 //--------------------------------------------------------------------

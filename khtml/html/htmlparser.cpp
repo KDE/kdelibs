@@ -1033,6 +1033,8 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 // text
     case ID_TEXT:
         n = new TextImpl(document, t->text);
+	if (t->complexText )
+	    n->setComplexText(true);
         break;
     case ID_COMMENT:
 #ifdef COMMENTS_IN_DOM

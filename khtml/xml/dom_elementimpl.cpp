@@ -44,41 +44,38 @@ using namespace khtml;
  * parsed DOMString and have no child-nodes.
  */
 
-AttrImpl::AttrImpl() : NodeImpl(0)
+AttrImpl::AttrImpl() 
+    : NodeImpl(0),
+      _name( 0 ),
+      _value( 0 ),
+      _element(0),
+      attrId(0)
 {
-    _specified = false;
-    _element = 0;
-
-    _name = 0;
-    _value = 0;
-    attrId = 0;
 }
 
 
-AttrImpl::AttrImpl(DocumentImpl *doc, const DOMString &name) : NodeImpl(doc)
+AttrImpl::AttrImpl(DocumentImpl *doc, const DOMString &name) 
+    : NodeImpl(doc),
+      _name( 0 ),
+      _value( 0 ),
+      _element(0),
+      attrId(0)
 {
-    _specified = false;
-    _element = 0;
-
-    attrId = 0;
-    _name = 0;
     setName(name);
-    _value = 0;
 }
 
-AttrImpl::AttrImpl(DocumentImpl *doc, int id) : NodeImpl(doc) // ### change parameter id to _id
+AttrImpl::AttrImpl(DocumentImpl *doc, int id) 
+    : NodeImpl(doc),
+      _name( 0 ),
+      _value( 0 ),
+      _element(0),
+      attrId(id)
 {
-    _specified = false;
-    _element = 0;
-
-    _name = 0;
-    _value = 0;
-    attrId = id;
 }
 
 AttrImpl::AttrImpl(const AttrImpl &other) : NodeImpl(other.ownerDocument())
 {
-    _specified = other.specified();
+    m_specified = other.specified();
     _element = other._element;
     _name = other._name;
     if (_name) _name->ref();
@@ -89,7 +86,7 @@ AttrImpl::AttrImpl(const AttrImpl &other) : NodeImpl(other.ownerDocument())
 
 AttrImpl &AttrImpl::operator = (const AttrImpl &other)
 {
-    _specified = other.specified();
+    m_specified = other.specified();
     document = other.ownerDocument();
     _element = other._element;
 
@@ -159,7 +156,7 @@ void AttrImpl::setValue( const DOMString &v )
     if (_value) _value->deref();
     _value = v.implementation();
     if (_value) _value->ref();
-    _specified = true;
+    m_specified = true;
 
     if (_element) {
 	_element->parseAttribute(this);
@@ -177,7 +174,7 @@ AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
 		   DocumentImpl *doc, bool specified) : NodeImpl(doc)
 {
     _element = 0;
-    _specified = specified;
+    m_specified = specified;
 
     attrId = 0;
     _name = 0;
@@ -195,7 +192,7 @@ AttrImpl::AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl 
     if (_value) _value->ref();
     attrId = attr->id;
     _element = element;
-    _specified = 1;
+    m_specified = 1;
 
 }
 
@@ -207,7 +204,7 @@ AttrImpl::AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *
     _value = value.implementation();
     if (_value) _value->ref();
     _element = 0;
-    _specified = 1;
+    m_specified = 1;
 }
 
 AttrImpl::AttrImpl(int _id, const DOMString &value, DocumentImpl *doc) : NodeImpl(doc)
@@ -217,7 +214,7 @@ AttrImpl::AttrImpl(int _id, const DOMString &value, DocumentImpl *doc) : NodeImp
   _value = value.implementation();
   if (_value) _value->ref();
   _element = 0;
-  _specified = false;
+  m_specified = false;
 }
 
 NodeImpl *AttrImpl::parentNode() const

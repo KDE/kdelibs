@@ -419,7 +419,7 @@ RangeImpl *DocumentImpl::createRange()
     return new RangeImpl(this);
 }
 
-NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
+NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long whatToShow,
                                     NodeFilterImpl *filter, bool entityReferenceExpansion)
 {
  // ###

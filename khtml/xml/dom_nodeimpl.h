@@ -155,54 +155,26 @@ public:
     // for LINK and STYLE
     virtual void sheetLoaded() {}
 
-    enum SpecialFlags {
-	Layouted    = 0x0001,
-        /*          = 0x0002,*/
-	/*          = 0x0004,*/
-	MinMaxKnown = 0x0008,
-	HasEvents   = 0x0010,
-	HasID       = 0x0020,
-	HasClass    = 0x0040,
-	HasStyle    = 0x0080,
-	HasTooltip  = 0x0100,
-	Pressed     = 0x0200,
-	MouseInside = 0x0400,
-	Attached    = 0x0800,
-	Changed     = 0x1000
-    };
-    bool layouted()    { return (flags & Layouted);    }
-    bool minMaxKnown() { return (flags & MinMaxKnown); }
-    bool hasEvents()   { return (flags & HasEvents);   }
-    bool hasID()       { return (flags & HasID);       }
-    bool hasClass()    { return (flags & HasClass);    }
-    bool hasStyle()    { return (flags & HasStyle);    }
-    bool hasTooltip()  { return (flags & HasTooltip);  }
-    bool pressed()     { return (flags & Pressed);     }
-    bool mouseInside() { return (flags & MouseInside); }
-    bool attached()    { return (flags & Attached);    }
-    bool changed()     { return (flags & Changed);     }
-    void setLayouted(bool b=true)
-	{ b ? flags|=Layouted : flags&=~Layouted; }
-    void setMinMaxKnown(bool b=true)
-	{ b ? flags|=MinMaxKnown : flags&=~MinMaxKnown; }
-    void setHasEvents(bool b=true)
-	{ b ? flags|=HasEvents : flags&=~HasEvents; }
-    void setHasID(bool b=true)
-	{ b ? flags|=HasID : flags&=~HasID; }
-    void setHasClass(bool b=true)
-	{ b ? flags|=HasClass : flags&=~HasClass; }
-    void setHasStyle(bool b=true)
-	{ b ? flags|=HasStyle : flags&=~HasStyle; }
-    void setHasTooltip(bool b=true)
-	{ b ? flags|=HasTooltip : flags&=~HasTooltip; }
-    void setPressed(bool b=true)
-	{ b ? flags|=Pressed : flags&=~Pressed; }
-    void setMouseInside(bool b=true)
-	{ b ? flags|=MouseInside : flags&=~MouseInside; }
-    void setAttached(bool b=true)
-	{ b ? flags|=Attached : flags&=~Attached; }
-    virtual void setChanged(bool b=true);
-//	{ b ? flags|=Changed : flags&=~Changed; }
+    bool hasEvents() const  { return m_hasEvents; }
+    bool hasID() const      { return m_hasId; }
+    bool hasClass() const   { return m_hasClass; }
+    bool hasStyle() const   { return m_hasStyle; }
+    bool hasTooltip() const { return m_hasTooltip; }
+    bool pressed() const    { return m_pressed; }
+    bool mouseInside() const { return m_mouseInside; }
+    bool attached() const   { return m_attached; }
+    bool changed() const    { return m_changed; }
+    bool complexText() const { return m_complexText; }
+    void setComplexText(bool b=true) { m_complexText = b; }
+    void setHasEvents(bool b=true) { m_hasEvents = b; }
+    void setHasID(bool b=true) { m_hasId = b; }
+    void setHasClass(bool b=true) { m_hasClass = b; }
+    void setHasStyle(bool b=true) { m_hasStyle = b; }
+    void setHasTooltip(bool b=true) { m_hasTooltip = b; }
+    void setPressed(bool b=true) { m_pressed = b; }
+    void setMouseInside(bool b=true) { m_mouseInside = b; }
+    void setAttached(bool b=true) { m_attached = b; }
+    virtual void setChanged(bool b=true); 
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
@@ -230,8 +202,18 @@ public:
 
 protected:
     DocumentImpl *document;
-    unsigned short flags;
     khtml::RenderObject *m_render;
+    bool m_complexText : 1;
+    bool m_hasEvents : 1;
+    bool m_hasId : 1;
+    bool m_hasClass : 1;
+    bool m_hasStyle : 1;
+    bool m_hasTooltip : 1;
+    bool m_pressed : 1;
+    bool m_mouseInside : 1;
+    bool m_attached : 1;
+    bool m_changed : 1;
+    bool m_specified : 1; // used in AttrImpl. Accessor functions there
 private:
     static const QChar LESSTHAN;
     static const QChar MORETHAN;
