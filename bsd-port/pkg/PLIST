@@ -61,6 +61,7 @@ include/kmisc.h
 include/kmsgbox.h
 include/knewpanner.h
 include/kpanner.h
+include/kpixmap.h
 include/kpopmenu.h
 include/kpreview.h
 include/kprocctrl.h
@@ -82,6 +83,7 @@ include/ktabctl.h
 include/ktablistbox.h
 include/ktmainwindow.h
 include/ktoolbar.h
+include/ktoolboxmgr.h
 include/ktopwidget.h
 include/ktreelist.h
 include/kurl.h
@@ -119,6 +121,7 @@ share/locale/da/charset
 share/locale/de/LC_MESSAGES/kde.mo
 share/locale/de/charset
 share/locale/el/LC_MESSAGES/kde.mo
+share/locale/en_UK/LC_MESSAGES/kde.mo
 share/locale/es/LC_MESSAGES/kde.mo
 share/locale/fi/LC_MESSAGES/kde.mo
 share/locale/fi/charset
@@ -139,6 +142,7 @@ share/locale/ro/charset
 share/locale/ru/LC_MESSAGES/kde.mo
 share/locale/ru/charset
 share/locale/sk/LC_MESSAGES/kde.mo
+share/locale/sl/LC_MESSAGES/kde.mo
 share/locale/sv/LC_MESSAGES/kde.mo
 share/locale/zh_GB2312/LC_MESSAGES/kde.mo
 share/locale/zh_TW_Big5/LC_MESSAGES/kde.mo
