@@ -54,7 +54,7 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
     if(m_lstValues) delete m_lstValues;
 }
 
-DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyName )
+DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &/*propertyName*/ )
 {
     // ###
     return 0;
@@ -70,7 +70,7 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 {
     if(!m_lstValues) return 0;
 
-    int i = 0;
+    unsigned int i = 0;
     while(i < m_lstValues->count())
     {
 	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->value();
@@ -90,7 +90,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int id)
 {
     if(!m_lstValues) return 0;
 
-    int i = 0;
+    unsigned int i = 0;
     while(i < m_lstValues->count())
     {
 	if(id == m_lstValues->at(i)->m_id)
@@ -116,7 +116,7 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
 {
     if(!m_lstValues) return false;
 
-    int i = 0;
+    unsigned int i = 0;
     while(i < m_lstValues->count())
     {
 	if(propertyID == m_lstValues->at(i)->m_id ) return m_lstValues->at(i)->m_bImportant;
@@ -169,7 +169,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 
     props->setAutoDelete(false);
 
-    int i = 0;
+    unsigned int i = 0;
     if(!m_lstValues) m_lstValues = new QList<CSSProperty>;
     while(i < props->count())
     {
@@ -220,7 +220,7 @@ unsigned long CSSStyleDeclarationImpl::length() const
     return m_lstValues->count();
 }
 
-DOMString CSSStyleDeclarationImpl::item( unsigned long index )
+DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ )
 {
     // ###
     //return m_lstValues->at(index);
@@ -240,12 +240,12 @@ DOM::DOMString CSSStyleDeclarationImpl::cssText() const
     // ###
 }
 
-void CSSStyleDeclarationImpl::setCssText(DOM::DOMString str)
+void CSSStyleDeclarationImpl::setCssText(DOM::DOMString /*str*/)
 {
     // ###
 }
 
-bool CSSStyleDeclarationImpl::parseString( const DOMString &string )
+bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/ )
 {
     return false;
     // ###
@@ -269,7 +269,7 @@ DOM::DOMString CSSValueImpl::cssText() const
     // ###
 }
 
-void CSSValueImpl::setCssText(DOM::DOMString str)
+void CSSValueImpl::setCssText(DOM::DOMString /*str*/)
 {
     // ###
 }
@@ -427,7 +427,7 @@ unsigned short CSSPrimitiveValueImpl::valueType() const
     return CSSValue::CSS_PRIMITIVE_VALUE;
 }
 
-bool CSSPrimitiveValueImpl::parseString( const DOMString &string )
+bool CSSPrimitiveValueImpl::parseString( const DOMString &/*string*/ )
 {
     // ###
     return false;

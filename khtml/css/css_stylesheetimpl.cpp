@@ -200,8 +200,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
 CSSStyleSheetImpl::~CSSStyleSheetImpl()
 {
     // m_lstChildren is deleted in StyleListImpl
-    if (m_docLoader)
-	delete m_docLoader;
+    delete m_docLoader;
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
