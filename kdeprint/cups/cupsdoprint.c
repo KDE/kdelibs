@@ -59,17 +59,17 @@ static char * shell_quote(const char *s)
 {
    char *result;
    char *p;
-   p = result = malloc(strlen(s)*5+3);
+   p = result = malloc(strlen(s)*4+3);
    *p++ = '\'';
    while(*s)
    {
      if (*s == '\'')
      {
         *p++ = '\'';
-        *p++ = '"';
-        *p++ = *s++;
-        *p++ = '"';
+        *p++ = '\\';
         *p++ = '\'';
+        *p++ = '\'';
+	s++;
      }
      else
      {
