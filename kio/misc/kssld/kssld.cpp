@@ -93,6 +93,7 @@ public:
   KSSLCertificateCache::KSSLCertificatePolicy policy;
   bool permanent;
   QDateTime expires;
+  QStringList hosts;
   KSSLCNode() { cert = NULL; policy = KSSLCertificateCache::Unknown; 
                 permanent = true; }
   ~KSSLCNode() { if (cert) delete cert; }
@@ -112,6 +113,7 @@ void KSSLD::cacheSaveToDisk() {
       cfg->writeEntry("Policy", node->policy);
       cfg->writeEntry("Expires", node->expires);
       cfg->writeEntry("Permanent", node->permanent);
+      cfg->writeEntry("Hosts", node->hosts);
       // Also write the chain
       QStringList qsl;
       QPtrList<KSSLCertificate> cl = node->cert->chain().getChain();
@@ -175,6 +177,7 @@ void KSSLD::cacheLoadDefaultPolicies() {
                 cfg->readNumEntry("Policy");
     n->permanent = cfg->readBoolEntry("Permanent");
     n->expires = cfg->readDateTimeEntry("Expires");
+    n->hosts = cfg->readListEntry("Hosts");
     newCert->chain().setChain(cfg->readListEntry("Chain"));
     certList.append(n); 
   }
@@ -241,7 +244,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCertificate(K
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
-        continue;
+        return KSSLCertificateCache::Unknown;
       }
       certList.remove(node);
       certList.prepend(node);
@@ -281,7 +284,7 @@ bool KSSLD::cacheSeenCertificate(KSSLCertificate cert) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
-        continue;
+        return false;
       }
       certList.remove(node);
       certList.prepend(node);
@@ -301,7 +304,7 @@ bool KSSLD::cacheIsPermanent(KSSLCertificate cert) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
         delete node;
-        continue;
+        return false;
       }
       certList.remove(node);
       certList.prepend(node);
@@ -383,6 +386,71 @@ bool KSSLD::cacheModifyByCertificate(KSSLCertificate cert,
   }
   return false;
 }
+
+
+QStringList KSSLD::cacheGetHostList(KSSLCertificate cert) {
+  KSSLCNode *node;
+
+  for (node = certList.first(); node; node = certList.next()) {
+    if (cert == *(node->cert)) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
+        certList.remove(node);
+        cfg->deleteGroup(node->cert->getSubject());
+        delete node;
+        return QStringList();
+      }
+      certList.remove(node);
+      certList.prepend(node);
+      return node->hosts;
+    }
+  }
+  return QStringList();
+}
+
+
+bool KSSLD::cacheAddHost(KSSLCertificate cert, QString host) {
+  KSSLCNode *node;
+
+  for (node = certList.first(); node; node = certList.next()) {
+    if (cert == *(node->cert)) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
+        certList.remove(node);
+        cfg->deleteGroup(node->cert->getSubject());
+        delete node;
+        return false;
+      }
+      certList.remove(node);
+      certList.prepend(node);
+      node->hosts << host;
+      return true;
+    }
+  }
+  return false;
+}
+
+
+bool KSSLD::cacheRemoveHost(KSSLCertificate cert, QString host) {
+  KSSLCNode *node;
+
+  for (node = certList.first(); node; node = certList.next()) {
+    if (cert == *(node->cert)) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
+        certList.remove(node);
+        cfg->deleteGroup(node->cert->getSubject());
+        delete node;
+        return false;
+      }
+      certList.remove(node);
+      certList.prepend(node);
+      node->hosts.remove(host);
+      return true;
+    }
+  }
+  return false;
+}
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////
 

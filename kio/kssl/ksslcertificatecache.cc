@@ -273,6 +273,64 @@ return false;
 }
 
 
+QStringList KSSLCertificateCache::getHostList(KSSLCertificate& cert) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << cert;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "cacheGetHostList(KSSLCertificate)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "QStringList") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        QStringList drc;
+        retStream >> drc;
+	return drc;
+     }
+return QStringList();
+}
+
+
+bool KSSLCertificateCache::addHost(KSSLCertificate& cert, QString& host) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << cert << host;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "cacheAddHost(KSSLCertificate,QString)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "bool") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        bool drc;
+        retStream >> drc;
+        return drc;
+     }
+
+return false;
+}
+
+
+bool KSSLCertificateCache::removeHost(KSSLCertificate& cert, QString& host) {
+     QByteArray data, retval;
+     QCString rettype;
+     QDataStream arg(data, IO_WriteOnly);
+     arg << cert << host;
+     bool rc = d->dcc->call("kded", "kssld",
+                            "cacheRemoveHost(KSSLCertificate,QString)",
+                            data, rettype, retval);
+
+     if (rc && rettype == "bool") {
+        QDataStream retStream(retval, IO_ReadOnly);
+        bool drc;
+        retStream >> drc;
+        return drc;
+     }
+
+return false;
+}
+
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p) {
   s << (Q_UINT32)p;
@@ -286,6 +344,8 @@ QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePol
   p = (KSSLCertificateCache::KSSLCertificatePolicy) pd;
   return s;
 }
+
+
 
 
 

@@ -75,6 +75,12 @@ k_dcop:
                                 bool permanent,
                                 QDateTime expires);
 
+  QStringList cacheGetHostList(KSSLCertificate cert);
+
+  bool cacheAddHost(KSSLCertificate cert, QString host);
+
+  bool cacheRemoveHost(KSSLCertificate cert, QString host);
+
   /* Certificate Authorities */
   bool caRegenerate();
 

@@ -683,6 +683,7 @@ int TCPSlaveBase::verifyCertificate()
     QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
     bool _IPmatchesCN = false;
     int result;
+    bool doAddHost = false;
 
    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
 	   d->militantSSL = false;
@@ -726,6 +727,10 @@ int TCPSlaveBase::verifyCertificate()
    }
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
+   if (!_IPmatchesCN && !d->militantSSL) {  // force this if the user wants it
+      if (d->cc->getHostList(pc).contains(d->host))
+         _IPmatchesCN = true;
+   }
 
    kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
@@ -741,6 +746,7 @@ int TCPSlaveBase::verifyCertificate()
 	 if (d->militantSSL) {
 	       return -1;
 	 }
+
          if (cp == KSSLCertificateCache::Unknown ||
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
@@ -749,8 +755,12 @@ int TCPSlaveBase::verifyCertificate()
             permacache = d->cc->isPermanent(pc);
          }
 
-         // Precondition: cp is one of Reject, Accept or Prompt
+         if (!_IPmatchesCN && cp == KSSLCertificateCache::Accept) {
+            cp = KSSLCertificateCache::Prompt;
+            ksv = KSSLCertificate::Ok;
+         }
 
+         // Precondition: cp is one of Reject, Accept or Prompt
          switch (cp) {
          case KSSLCertificateCache::Accept:
            rc = 1;
@@ -801,6 +811,7 @@ int TCPSlaveBase::verifyCertificate()
                 setMetaData("ssl_action", "accept");
                 rc = 1;
                 cp = KSSLCertificateCache::Accept;
+                doAddHost = true;
                    result = messageBox( WarningYesNo,
                                   i18n("Would you like to accept this "
                                        "certificate forever without "
@@ -830,6 +841,7 @@ int TCPSlaveBase::verifyCertificate()
 
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
+      if (doAddHost) d->cc->addHost(pc, d->host);
       // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
@@ -882,6 +894,7 @@ int TCPSlaveBase::verifyCertificate()
              if (result == KMessageBox::Yes) {
                rc = 1;
                setMetaData("ssl_action", "accept");
+               d->cc->addHost(pc, d->host);
              } else {
                rc = -1;
                setMetaData("ssl_action", "reject");
@@ -920,6 +933,7 @@ int TCPSlaveBase::verifyCertificate()
              setMetaData("ssl_action", "accept");
              rc = 1;
              cp = KSSLCertificateCache::Accept;
+             d->cc->addHost(pc, d->host);
                 result = messageBox( WarningYesNo,
                                i18n("Would you like to accept this "
                                     "certificate forever without "

@@ -18,14 +18,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// WARNING: THIS CODE IS INCOMPLETE AND MAY CHANGE WITHOUT NOTICE
-
 #ifndef _INCLUDE_KSSLCCACHE_H
 #define _INCLUDE_KSSLCCACHE_H
 
-class QString;
 class KSSLCertificate;
-#include <qcstring.h>
+#include <qstring.h>
+#include <qstringlist.h>
 #include <qdatetime.h>
 
 
@@ -77,6 +75,10 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
                            KSSLCertificateCache::KSSLCertificatePolicy policy,
                            bool permanent,
                            QDateTime& expires);
+
+  QStringList getHostList(KSSLCertificate& cert);
+  bool addHost(KSSLCertificate& cert, QString& host);
+  bool removeHost(KSSLCertificate& cert, QString& host);
 
   void reload();
 
