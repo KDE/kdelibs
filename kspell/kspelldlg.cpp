@@ -6,8 +6,6 @@
 #include "kspelldlg.h"
 #include "version.h"
 
-#define NLS(s) i18n(s)
-
 KSpellDlg::KSpellDlg (QWidget *, const char *name,
 		      char *ID):
   QWidget (0, name, WStyle_DialogBorder)
@@ -37,7 +35,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	  new QPushButton( this, "PushButton_7" );
 	tmpQPushButtonRA->setGeometry( 430, 80, 100, 30 );
 	connect( tmpQPushButtonRA, SIGNAL(clicked()), SLOT(replaceAll()) );
-	tmpQPushButtonRA->setText( NLS("Replace All") );
+	tmpQPushButtonRA->setText( i18n("Replace All") );
 	tmpQPushButtonRA->setAutoRepeat( FALSE );
 	tmpQPushButtonRA->setAutoResize( FALSE );
 	layout->addWidget (tmpQPushButtonRA, 1, 3);
@@ -57,7 +55,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	QLabel* tmpQLabel;
 	tmpQLabel = new QLabel( this, "Label_1" );
 	tmpQLabel->setGeometry( 10, 10, 100, 30 );
-	tmpQLabel->setText( NLS("Misspelled Word:") );
+	tmpQLabel->setText( i18n("Misspelled Word:") );
 	tmpQLabel->setAlignment( 290 );
 	//	tmpQLabel->setMargin( -1 );
 	//
@@ -67,7 +65,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 
 	tmpQLabel = new QLabel( this, "Label_2" );
 	tmpQLabel->setGeometry( 10, 50, 100, 30 );
-	tmpQLabel->setText( NLS("Replacement:") );
+	tmpQLabel->setText( i18n("Replacement:") );
 	tmpQLabel->setAlignment( 290 );
 	//	tmpQLabel->setMargin( -1 );
 	//
@@ -76,7 +74,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 
 	tmpQLabel = new QLabel( this, "Label_3" );
 	tmpQLabel->setGeometry( 10, 80, 100, 30 );
-	tmpQLabel->setText( NLS("Suggestions:") );
+	tmpQLabel->setText( i18n("Suggestions:") );
 	tmpQLabel->setAlignment( 290 );
 	//	tmpQLabel->setMargin( -1 );
 	//
@@ -87,7 +85,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_1" );
 	tmpQPushButton->setGeometry( 320, 120, 100, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(ignore()) );
-	tmpQPushButton->setText( NLS("Ignore") );
+	tmpQPushButton->setText( i18n("Ignore") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//
@@ -98,7 +96,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_2" );
 	tmpQPushButton->setGeometry( 430, 120, 100, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(ignoreAll()) );
-	tmpQPushButton->setText( NLS("Ignore All") );
+	tmpQPushButton->setText( i18n("Ignore All") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//
@@ -109,7 +107,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	QPushButton *tmpQPushButtonR = new QPushButton( this, "PushButton_3" );
 	tmpQPushButtonR->setGeometry( 320, 80, 100, 30 );
 	connect( tmpQPushButtonR, SIGNAL(clicked()), SLOT(replace()) );
-	tmpQPushButtonR->setText( NLS("Replace") );
+	tmpQPushButtonR->setText( i18n("Replace") );
 	tmpQPushButtonR->setAutoRepeat( FALSE );
 	tmpQPushButtonR->setAutoResize( FALSE );
 	//
@@ -119,7 +117,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_4" );
 	tmpQPushButton->setGeometry( 320, 160, 100, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(add()) );
-	tmpQPushButton->setText( NLS("Add") );
+	tmpQPushButton->setText( i18n("Add") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//
@@ -130,7 +128,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_5" );
 	tmpQPushButton->setGeometry( 430, 160, 100, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(help()) );
-	tmpQPushButton->setText( NLS("Help") );
+	tmpQPushButton->setText( i18n("Help") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//!!
@@ -142,7 +140,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_6" );
 	tmpQPushButton->setGeometry( 430, 200, 100, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(cancel()) );
-	tmpQPushButton->setText( NLS("Cancel") );
+	tmpQPushButton->setText( i18n("Cancel") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//
@@ -165,7 +163,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_8" );
 	tmpQPushButton->setGeometry( 320, 200, 100, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(stop()) );
-	tmpQPushButton->setText( NLS("Stop") );
+	tmpQPushButton->setText( i18n("Stop") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	//children->append (tmpQPushButton);

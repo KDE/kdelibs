@@ -11,8 +11,6 @@
 
 #include "ksconfig.h"
 
-#define NLS(s) i18n(s)
-
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 {  
   setNoRootAffix (_ksc.noRootAffix());
@@ -65,7 +63,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	cb1 = new QCheckBox( this, "CheckBox_1" );
 	cb1->setGeometry( 30, 40, 320, 30 );
 	connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
-	cb1->setText( NLS("Create Root/Affix combinations not in the dictionary") );
+	cb1->setText( i18n("Create Root/Affix combinations not in the dictionary") );
 	cb1->setAutoRepeat( FALSE );
 	cb1->setAutoResize( FALSE );
 	layout->addMultiCellWidget (cb1, 0, 0, 0, 5);
@@ -74,7 +72,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	cb2 = new QCheckBox( this, "CheckBox_3" );
 	cb2->setGeometry( 30, 80, 320, 30 );
 	connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
-	cb2->setText( NLS("Consider run-together words as spelling errors") );
+	cb2->setText( i18n("Consider run-together words as spelling errors") );
 	cb2->setAutoRepeat( FALSE );
 	cb2->setAutoResize( FALSE );
 	layout->addMultiCellWidget (cb2, 1, 1, 0, 5);
@@ -85,18 +83,18 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	  dictgroup->setFrameStyle (QFrame::NoFrame);
 	  //layout->addWidget (dictgroup,rdictgroup,0);
 	  
-	dictlistbutton=new QRadioButton (NLS("Language:"),this);
+	dictlistbutton=new QRadioButton (i18n("Language:"),this);
 	connect (dictlistbutton, SIGNAL (toggled(bool)),
 		 this, SLOT (sDictionary(bool)));
 	layout->addWidget (dictlistbutton,rdictlist,0);
 	*/
 
-	dictlist=new QLabel (NLS("Dictionary"),this);
+	dictlist=new QLabel (i18n("Dictionary"),this);
 	dictlist->setMinimumSize (dictlist->sizeHint());
 	layout->addWidget (dictlist,rdictlist,0);
 
 	/* No alternate now -- is this needed?
-	dicteditbutton=new QRadioButton (NLS("Alternate Dictionary"),this);
+	dicteditbutton=new QRadioButton (i18n("Alternate Dictionary"),this);
 	connect (dicteditbutton, SIGNAL (toggled(bool)),
 		 this, SLOT (sPathDictionary(bool)));
 	layout->addWidget (dicteditbutton,rdictedit,0);
@@ -119,7 +117,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	/*	
 	tmpQLabel = new QLabel( this, "Label_1" );
 	tmpQLabel->setGeometry( 20, 120, 120, 30 );
-	tmpQLabel->setText( NLS("Language:"));
+	tmpQLabel->setText( i18n("Language:"));
 	tmpQLabel->setAlignment( 290 );
 	tmpQLabel->setMargin( -1 );
 	layout->addWidget (tmpQLabel, 3, 1);
@@ -130,7 +128,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	/*
 	tmpQLabel = new QLabel( this, "Label_2" );
 	//tmpQLabel->setGeometry( 30, 160, 120, 30 );
-	tmpQLabel->setText( NLS("Personal dictionary:") );
+	tmpQLabel->setText( i18n("Personal dictionary:") );
 	//	tmpQLabel->setAlignment( 290 );
 	tmpQLabel->setAlignment( AlignLeft );
 	tmpQLabel->setMargin( -1 );
@@ -139,15 +137,15 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	*/
 
 	tmpQLabel = new QLabel( this, "Label_2" );
-	tmpQLabel->setText( NLS("Encoding:") );
+	tmpQLabel->setText( i18n("Encoding:") );
 	tmpQLabel->setAlignment( AlignLeft );
 	tmpQLabel->setMargin( -1 );
 	layout->addWidget (tmpQLabel, rencoding, 0);
 	tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
 
 	encodingcombo = new QComboBox (FALSE, this);
-	encodingcombo->insertItem (NLS("Latin1"));
-	encodingcombo->insertItem (NLS("7-Bit/ASCII"));
+	encodingcombo->insertItem (i18n("Latin1"));
+	encodingcombo->insertItem (i18n("7-Bit/ASCII"));
 	encodingcombo->setMinimumSize (encodingcombo->sizeHint());
 	connect (encodingcombo, SIGNAL (activated(int)), this,
 		 SLOT (sChangeEncoding(int)));
@@ -174,7 +172,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	browsebutton1=new QPushButton;
 	browsebutton1 = new QPushButton( this, "PushButton_1" );
 	connect( browsebutton1, SIGNAL(clicked()), SLOT(sBrowseDict()) );
-	browsebutton1->setText( NLS("Browse...") );
+	browsebutton1->setText( i18n("Browse...") );
 	browsebutton1->setAutoRepeat( FALSE );
 	browsebutton1->setAutoResize( FALSE );
 	layout->addWidget (browsebutton1, rdictedit, 6);
@@ -188,7 +186,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	tmpQPushButton->setGeometry( 460, 160, 70, 30 );
 	tmpQPushButton->setMinimumWidth(tmpQPushButton->sizeHint().width());
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sBrowsePDict()) );
-	tmpQPushButton->setText( NLS("Browse...") );
+	tmpQPushButton->setText( i18n("Browse...") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	layout->addWidget (tmpQPushButton, rpersdict, 6);
@@ -211,7 +209,7 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 	tmpQPushButton = new QPushButton( this, "PushButton_3" );
 	tmpQPushButton->setGeometry( 460, 210, 70, 30 );
 	connect( tmpQPushButton, SIGNAL(clicked()), SLOT(sHelp()) );
-	tmpQPushButton->setText( NLS("Help") );
+	tmpQPushButton->setText( i18n("Help") );
 	tmpQPushButton->setAutoRepeat( FALSE );
 	tmpQPushButton->setAutoResize( FALSE );
 	////
@@ -291,32 +289,32 @@ bool KSpellConfig::interpret (QString &fname, QString &lname,
   if (fname=="english")
     {
       lname="en";
-      hname=NLS("English");
+      hname=i18n("English");
     }
 
   else if (fname=="espa~nol")
     {
       lname="sp";
-      hname=NLS("Spanish");
+      hname=i18n("Spanish");
     }
 
   else if (fname=="deutsch")
     {
       lname="de";
-      hname=NLS("German");
+      hname=i18n("German");
     }
 
   else if (fname=="portuguesb" ||
 	   fname=="br")
     {
       lname="br";
-      hname=NLS("Brazilian Portuguese");
+      hname=i18n("Brazilian Portuguese");
     }
   
   else
     {
       lname="";
-      hname=NLS("Unknown");
+      hname=i18n("Unknown");
     }
 
   //We have explicitly chosen English as the default here.
@@ -347,7 +345,7 @@ void KSpellConfig::fillInDialog (void)
       
       langfnames->append("");
       //      langnames->append("ISpell Default");
-      dictcombo->insertItem (NLS("ISpell Default"));
+      dictcombo->insertItem (i18n("ISpell Default"));
 
       QFileInfo dir ("/usr/lib/ispell");
       if (!dir.exists() || !dir.isDir())

@@ -72,8 +72,8 @@ public:
    *  this list with the document being edited to facilitate quicker
    *  future spellchecking.
    */
-  inline void setNoRootAffix (bool);
-  inline void setRunTogether(bool);
+  void setNoRootAffix (bool);
+  void setRunTogether(bool);
   void setDictionary (const char *);
   void setDictFromList (bool dfl);
   //  void setPersonalDict (const char *);
