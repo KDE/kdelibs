@@ -66,48 +66,48 @@ class KPluginSelector;
  */
 class KCDPluginPage : public KCModule
 {
-	Q_OBJECT
-	public:
-		/**
-		 * Standart KCModule constructor. Automatically creates the the
-		 * KPluginSelector widget.
-		 */
-		KCDPluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+    Q_OBJECT
+    public:
+        /**
+         * Standart KCModule constructor. Automatically creates the the
+         * KPluginSelector widget.
+         */
+        KCDPluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
 
-		/**
-		 * Standart KCModule constructor. Automatically creates the the
-		 * KPluginSelector widget.
-		 */
-		KCDPluginPage( KInstance * instance, QWidget * parent = 0, const QStringList & args = QStringList() );
+        /**
+         * Standart KCModule constructor. Automatically creates the the
+         * KPluginSelector widget.
+         */
+        KCDPluginPage( KInstance * instance, QWidget * parent = 0, const QStringList & args = QStringList() );
 
-		~KCDPluginPage();
+        ~KCDPluginPage();
 
-		/**
-		 * @return a reference to the KPluginSelector.
-		 */
-		KPluginSelector * pluginSelector();
+        /**
+         * @return a reference to the KPluginSelector.
+         */
+        KPluginSelector * pluginSelector();
 
-		/**
-		 * Load the state of the plugins (selected or not) from the KPluginInfo
-		 * objects. For KParts plugins everything should work automatically. For
-		 * your own type of plugins you might need to reimplement the
-		 * KPluginInfo::pluginLoaded() method. If that doesn't fit your needs
-		 * you can also reimplement this method.
-		 */
-		virtual void load();
+        /**
+         * Load the state of the plugins (selected or not) from the KPluginInfo
+         * objects. For KParts plugins everything should work automatically. For
+         * your own type of plugins you might need to reimplement the
+         * KPluginInfo::pluginLoaded() method. If that doesn't fit your needs
+         * you can also reimplement this method.
+         */
+        virtual void load();
 
-		/**
-		 * Save the state of the plugins to KConfig objects
-		 */
-		virtual void save();
-		virtual void defaults();
+        /**
+         * Save the state of the plugins to KConfig objects
+         */
+        virtual void save();
+        virtual void defaults();
 
-	private:
-		class KCDPluginPagePrivate;
-		KCDPluginPagePrivate * d;
+    private:
+        class KCDPluginPagePrivate;
+        KCDPluginPagePrivate * d;
 };
 
-// vim: sw=4 ts=4 noet
+// vim: sw=4 sts=4 et
 
 #endif // KCDPLUGINPAGE_H
 
