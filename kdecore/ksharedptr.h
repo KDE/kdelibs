@@ -83,11 +83,15 @@ private:
  * Can be used to control the lifetime of an object that has derived
  * KShared. As long a someone holds a KSharedPtr on some KShared
  * object it won't become deleted but is deleted once its reference
- * count is 0.  This struct emulates C++ pointers perfectly. So just
- * use it like a simple C++ pointer.
+ * count is 0.  This struct emulates C++ pointers virtually perfectly.
+ * So just use it like a simple C++ pointer.
  *
  * KShared and KSharedPtr are preferred over QShared / QSharedPtr
  * since they are more safe.
+ *
+ * WARNING: Please note that this class template provides an implicit
+ * conversion to T*. Do *not* change this pointer or the pointee (don't
+ * call delete on it, for instance) behind KSharedPtr's back.
  *
  * @author Waldo Bastian <bastian@kde.org>
  * @version $Id$
