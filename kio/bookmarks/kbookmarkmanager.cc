@@ -80,7 +80,7 @@ KBookmarkManager::~KBookmarkManager()
         s_pSelf->removeRef( this );
 }
 
-void KBookmarkManager::setUpdate(bool update)
+void KBookmarkManager::setUpdate( bool update )
 {
     m_update = update;
 }
@@ -401,9 +401,18 @@ void KBookmarkManager::slotEditBookmarks()
     proc.start(KProcess::DontCare);
 }
 
+void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
+{
+    KProcess proc;
+    proc << QString::fromLatin1("keditbookmarks") 
+         << QString::fromLatin1("--address") << address
+         << m_bookmarksFile;
+    proc.start(KProcess::DontCare);
+}
+
 ///////
 
-void KBookmarkOwner::openBookmarkURL(const QString& url)
+void KBookmarkOwner::openBookmarkURL( const QString& url )
 {
   (void) new KRun(url);
 }

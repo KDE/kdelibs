@@ -171,6 +171,7 @@ public:
 
 public slots:
     void slotEditBookmarks();
+    void slotEditBookmarksAtAddress( const QString& address );
 
 public:
 k_dcop:
