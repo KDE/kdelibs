@@ -906,6 +906,8 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << (void *)this << ": adding overhanging floats offset=" << offset << " child=" << child << endl;
 #endif
+    if ( !flow->specialObjects )
+        return;
 
     // we have overhanging floats
     if(!specialObjects) {
