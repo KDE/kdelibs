@@ -268,7 +268,7 @@
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY krfb	"<application>Desktop Sharing</application>">
 <!ENTITY krita	"<application>Krita</application>">
-<!ENTITY kruler	"<application>KRuler</application>">
+<!ENTITY kruler	"<application>KDE Screen Ruler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
 <!ENTITY kscd	"<application>KsCD</application>">
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">

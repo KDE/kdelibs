@@ -119,3 +119,8 @@ PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
 
 PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
        "obsolete/kdex-412-10.dtd"
+
+-- DocBook 4.1 KDE Variant V1.0 --
+
+PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
+       "obsolete/kdex-412-10.dtd"
