@@ -34,6 +34,7 @@ void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, KToolBarPos type,
                             QBrush *fill)
 {
+#if QT_VERSION < 300
     bool horizontal = type != Left && type != Right;
     int stipple_height;
     
@@ -71,14 +72,17 @@ void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
             stipple_height+=3;
         }
     }
+#endif
 }
 
 void KStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g, KToolBarPos pos,
                           QBrush *)
 {
+#if QT_VERSION < 300
     if(pos != Floating)
         qDrawShadePanel(p, x, y, w, h, g , false, 1);
+#endif
 }
 
 void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
@@ -88,6 +92,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
                                 const QPixmap *pixmap,
                                 QFont *font, QWidget *)
 {
+#if QT_VERSION < 300
     if ( sunken )
         qDrawWinButton(p, x, y, w, h, g, true );
     else if ( raised )
@@ -192,19 +197,23 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
             qDrawArrow (p, DownArrow, WindowsStyle, false, w-5, h-5,
                         0, 0, g, false);
     }
+#endif
 }
 
 void KStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g, bool, QBrush *fill)
 {
+#if QT_VERSION < 300
     QBrush brush = fill ? *fill : g.brush(QColorGroup::Background);
     qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
+#endif
 }
 
 void KStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool active, QMenuItem *mi,
                            QBrush *)
 {
+#if QT_VERSION < 300
     QColor btext = g.buttonText();
     if(active)
         qDrawShadePanel(p, x, y, w, h, g, false, 1);
@@ -213,17 +222,22 @@ void KStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                    AlignCenter|ShowPrefix|DontClip|SingleLine,
                                    g, mi->isEnabled(), mi->pixmap(), mi->text(),
                                    -1, &btext );;
+#endif
 }
 
 void KStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, QBrush *fill)
 {
+#if QT_VERSION < 300
     p->fillRect(x, y, w, h, fill ? *fill : g.brush(QColorGroup::Highlight));
+#endif
 }
 
 void KStyle::getKProgressBackground(const QColorGroup &g, QBrush &bg)
 {
+#if QT_VERSION < 300
     bg = g.brush(QColorGroup::Base);
+#endif
 }
 
 
@@ -236,6 +250,7 @@ void KStyle::drawKickerHandle(QPainter *, int, int, int, int,
 void KStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QBrush *)
 {
+#if QT_VERSION < 300
     if (h > w){
         for(y+= 2; y < h - 2; y++)
         {
@@ -265,7 +280,7 @@ void KStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
             p->drawPoint(x, 4);
         }
     }
-        
+#endif        
 }
 
 void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
@@ -273,6 +288,7 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
                                   const QString &text, bool sunken,
                                   QPixmap *pixmap, QBrush *)
 {
+#if QT_VERSION < 300
   int x2 = x + w - 1;
   int y2 = y + h - 1;
 
@@ -355,6 +371,7 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
       s
     );
   }
+#endif
 }
 
 void KStyle::getKickerBackground(int, int, Orientation,
