@@ -329,14 +329,16 @@ bool KAccelBase::updateConnections()
 			bNonUnique = true;
 		// If this key is requested by more than one action,
 		else if( i < rgKeys.size() - 1 && key == rgKeys[i+1].key ) {
-			kdDebug(125) << "key = " << key.key().toStringInternal()
-				<< " action1 = " << info.pAction->name()
-				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name() << endl;
 			// If multiple actions requesting this key
 			//  have the same priority as the first one,
 			if( info.iVariation == rgKeys[i+1].iVari && info.iSeq == rgKeys[i+1].iSeq )
 				bNonUnique = true;
 
+			kdDebug(125) << "key conflict = " << key.key().toStringInternal()
+				<< " action1 = " << info.pAction->name()
+				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name() 
+				<< " non-unique = " << bNonUnique << endl;
+			
 			// Skip over the other records with this same key.
 			while( i < rgKeys.size() - 1 && key == rgKeys[i+1].key )
 				i++;
@@ -478,7 +480,8 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 					// TODO: make this more efficient where possible.
 					if( m_mapKeyToAction[key].pAction != pAction
 					    && m_mapKeyToAction[key].pAction != 0 ) {
-						kdDebug(125) << "Key conflict: call updateConnections()" << endl;
+						kdDebug(125) << "Key conflict: call updateConnections():" 
+							<< " key = " << key.key().toStringInternal() << endl;
 						return updateConnections();
 					}
 				}
