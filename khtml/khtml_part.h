@@ -595,6 +595,7 @@ public:
 
   QStringList frameNames() const;
 
+  // ### KDE 3.0: remove leading const
   const QList<KParts::ReadOnlyPart> frames() const;
 
   /**
