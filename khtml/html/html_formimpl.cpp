@@ -1166,8 +1166,11 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         // ignore to avoid that javascript can change a type field to file
         break;
     case ATTR_VALUE:
+        if (m_value.isNull()) // We only need to setChanged if the form is looking
+            setChanged();     // at the default value right now.
+        break;
     case ATTR_CHECKED:
-        // these are the defaults, don't change them
+        // WebCore has m_defaultChecked and m_useDefaultChecked code here....
         break;
     case ATTR_MAXLENGTH:
     {
@@ -1246,7 +1249,6 @@ void HTMLInputElementImpl::attach()
         else
             m_type = TEXT;
 
-        if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
         if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
             QString value = m_value.string();
             // remove newline stuff..
@@ -1433,7 +1435,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
 void HTMLInputElementImpl::reset()
 {
-    setValue(getAttribute(ATTR_VALUE));
+    setValue(DOMString());
     setChecked(getAttribute(ATTR_CHECKED) != 0);
 }
 
@@ -1450,9 +1452,16 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
 DOMString HTMLInputElementImpl::value() const
 {
-    if(m_value.isNull())
-        return (m_type == CHECKBOX || m_type ==RADIO) ?
-            DOMString("on") : DOMString("");
+    if ( m_type == CHECKBOX || m_type == RADIO ) {
+        if ( m_value.isNull() )
+            return DOMString("on");
+    }
+
+    // It's important *not* to fall back to the value attribute for file inputs,
+    // because that would allow a malicious web page to upload files by setting the
+    // value attribute in markup.
+    if (m_value.isNull() && m_type != FILE)
+        return getAttribute(ATTR_VALUE);
 
     return m_value;
 }
