@@ -19,6 +19,7 @@
 #define __kbookmark_h
 
 #include <qstring.h>
+#include <qvaluelist.h>
 #include <kurl.h>
 #include <qdom.h>
 
@@ -229,6 +230,11 @@ public:
      * @internal
      */
     QDomElement findToolbar() const;
+
+    /**
+     * @return the list of urls of bookmarks at top level of the group
+     */
+    QValueList<KURL> groupUrlList() const;
 
 protected:
     QDomElement nextKnownTag( QDomElement start, bool goNext ) const;

@@ -210,6 +210,18 @@ QDomElement KBookmarkGroup::findToolbar() const
     return QDomElement();
 }
 
+QValueList<KURL> KBookmarkGroup::groupUrlList() const
+{
+    QValueList<KURL> urlList;
+    for ( KBookmark bm = first(); !bm.isNull(); bm = next(bm) )
+    {
+        if ( bm.isSeparator() || bm.isGroup() )
+           continue;
+        urlList << bm.url();
+    }
+    return urlList;
+}
+
 //////
 
 bool KBookmark::isGroup() const
