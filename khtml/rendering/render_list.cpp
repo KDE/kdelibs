@@ -409,8 +409,8 @@ void RenderListMarker::calcMinMaxWidth()
       	int l = (number % 24);
 
 	if (l>16) {l++;} // Skip GREEK SMALL LETTER FINAL SIGMA
- 	
-   	item = (QChar) (945 + l);
+
+   	item = QChar(945 + l);
     	for (int i = 0; i < (number / 24); i++) {
        	    item += QString::fromLatin1("'");
     	}
@@ -418,11 +418,11 @@ void RenderListMarker::calcMinMaxWidth()
      }
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        item = toLetter( val, 97 ); // 97: LATIN SMALL LETTER A
+        item = toLetter( val, 'a' );
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        item = toLetter( val, 65 ); // 65: LATIN CAPITAL LETTER A
+        item = toLetter( val, 'A' );
         break;
     case LNONE:
         break;
