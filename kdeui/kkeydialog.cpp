@@ -320,6 +320,10 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   connect( d->pList, SIGNAL(currentChanged(QListViewItem*)),
            SLOT(slotListItemSelected(QListViewItem*)) );
 
+  // handle double clicking an item
+  connect ( d->pList, SIGNAL ( doubleClicked ( QListViewItem *, const QPoint &, int ) ),
+                       SLOT ( slotListItemDoubleClicked ( QListViewItem *, const QPoint &, int ) ) );
+
   //
   // CREATE CHOOSE KEY GROUP
   //
@@ -569,6 +573,15 @@ void KKeyChooser::allDefault()
 void KKeyChooser::slotListItemSelected( QListViewItem* )
 {
 	updateButtons();
+}
+
+void KKeyChooser::slotListItemDoubleClicked ( QListViewItem *, const QPoint & , int )
+{
+
+  KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
+  if( pItem != NULL && pItem->isConfigurable())
+      d->pbtnShortcut->captureShortcut ( );
+
 }
 
 void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
