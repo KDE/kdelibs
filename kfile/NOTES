@@ -6,11 +6,7 @@ Rewrite
 To Add
 ======
 
-Better filters
 Mime Mappings?
-Icons?
-Name Completion
-
 
 Filter= ( Mime Type | shell glob list )
 Mime Type -> shell glob list
