@@ -56,6 +56,8 @@ debian/tmp/usr/lib/kde3/kio_file.la
 debian/tmp/usr/lib/kde3/kio_file.so
 debian/tmp/usr/lib/kde3/kio_ftp.la
 debian/tmp/usr/lib/kde3/kio_ftp.so
+debian/tmp/usr/lib/kde3/kio_ghelp.la
+debian/tmp/usr/lib/kde3/kio_ghelp.so
 debian/tmp/usr/lib/kde3/kio_help.la
 debian/tmp/usr/lib/kde3/kio_help.so
 debian/tmp/usr/lib/kde3/kio_http.la
