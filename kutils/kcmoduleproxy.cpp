@@ -639,28 +639,6 @@ QCString KCModuleProxy::dcopName() const
 	return d->dcopName;
 }
 
-QSize KCModuleProxy::sizeHint() const
-{
-
-	if(!d->isInitialized || (!d->kcm && !d->embedWidget))
-		return QWidget::sizeHint();
-	
-	QSize wSizeHint = QWidget::sizeHint();
-	QSize rSizeHint;
-
-	if(d->embedWidget)
-		rSizeHint = d->embedWidget->minimumSizeHint();
-	else
-		rSizeHint = d->kcm->minimumSizeHint();
-
-	if(d->rootInfo)
-		rSizeHint += d->rootInfo->minimumSizeHint();
-
-	wSizeHint.setWidth(wSizeHint.width() + rSizeHint.width() );
-	wSizeHint.setHeight(wSizeHint.height() + rSizeHint.height() );
-	return wSizeHint;
-}
-
 void KCModuleProxy::emitQuickHelpChanged()
 {
 	emit quickHelpChanged();
