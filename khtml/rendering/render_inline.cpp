@@ -259,37 +259,30 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     block->setMinMaxKnown(false);
 }
 
-void RenderInline::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                      int _tx, int _ty, PaintAction paintAction)
-{
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-}
-
-void RenderInline::paintObject(QPainter *p, int _x, int _y,
-                             int _w, int _h, int _tx, int _ty, PaintAction paintAction)
+void RenderInline::paint(PaintInfo& i,
+                      int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
     //    kdDebug( 6040 ) << renderName() << "(RenderInline) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
-    if ( paintAction == PaintActionElementBackground )
+    if ( i.phase == PaintActionElementBackground )
         return;
 
     // let the children their backgrounds
-    if ( paintAction == PaintActionChildBackgrounds )
-        paintAction = PaintActionChildBackground;
+    PaintAction oldphase = i.phase;
+    if ( i.phase == PaintActionChildBackgrounds )
+        i.phase = PaintActionChildBackground;
 
-    paintLineBoxBackgroundBorder(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+    paintLineBoxBackgroundBorder(i, _tx, _ty);
 
-    RenderObject *child = firstChild();
-    while(child != 0)
-    {
+    for( RenderObject *child = firstChild(); child; child = child->nextSibling())
         if(!child->layer() && !child->isFloating())
-            child->paint(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-        child = child->nextSibling();
-    }
+            child->paint(i, _tx, _ty);
 
-    paintLineBoxDecorations(p, _x, _y, _w, _h, _tx, _ty, paintAction);
+    paintLineBoxDecorations(i, _tx, _ty);
+
+    i.phase = oldphase;
 }
 
 void RenderInline::calcMinMaxWidth()

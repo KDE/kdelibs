@@ -52,14 +52,8 @@ public:
 
     virtual void repaint(bool immediate=false);
     virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
-    virtual void paint(QPainter *, int x, int y, int w, int h, int tx, int ty,
-			PaintAction paintAction);
-    void paintObject(QPainter *p, int _x, int _y,
-                     int _w, int _h, int _tx, int _ty, PaintAction paintAction);
-
-    virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
-                                     int _w, int _h, int _tx, int _ty);
-
+    virtual void paint(PaintInfo&, int tx, int ty);
+    virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection(bool doRepaint=true);
     virtual RenderObject *selectionStart() const { return m_selectionStart; }

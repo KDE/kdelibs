@@ -199,11 +199,21 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::paintObject(QPainter *p, int /*_x*/, int _y, int /*_w*/,
-int /*_h*/, int _tx, int _ty, PaintAction paintAction)
+void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty) 
 {
-     if (paintAction != PaintActionForeground)
+     if (paintInfo.phase != PaintActionForeground)
          return;
+
+    // not visible or not even once layouted?
+    if (style()->visibility() != VISIBLE || m_y <=  -500000)  return;
+
+    _tx += m_x;
+    _ty += m_y;
+
+    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top())) return;
+
+    if(shouldPaintBackgroundOrBorder())
+        paintBoxDecorations(paintInfo, _tx, _ty);
 
     int cWidth = contentWidth();
     int cHeight = contentHeight();
@@ -225,7 +235,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
         {
             if ( !berrorPic ) {
                 //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
-                qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
+                qDrawShadePanel( paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                                  KApplication::palette().inactive(), true, 1 );
             }
             QPixmap const* pix = i ? &i->pixmap() : 0;
@@ -233,17 +243,17 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
             {
                 QRect r(pix->rect());
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), *pix, r );
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), *pix, r );
             }
             if(!alt.isEmpty()) {
                 QString text = alt.string();
-                p->setFont(style()->font());
-                p->setPen( style()->color() );
+                paintInfo.p->setFont(style()->font());
+                paintInfo.p->setPen( style()->color() );
                 int ax = _tx + leftBorder + leftPad + 2;
                 int ay = _ty + topBorder + topPad + 2;
                 const QFontMetrics &fm = style()->fontMetrics();
                 if (cWidth>5 && cHeight>=fm.height())
-                    p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
+                    paintInfo.p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
             }
         }
     }
@@ -282,11 +292,11 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
                 if(resizeCache.size() != s)
                     resizeCache.resize(s);
 
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad),
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad),
                                resizeCache, scaledrect );
             }
             else
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), resizeCache );
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), resizeCache );
         }
         else
         {
@@ -306,7 +316,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
 
 
 //             p->drawPixmap( offs.x(), y, pix, rect.x(), rect.y(), rect.width(), rect.height() );
-             p->drawPixmap(offs, pix, rect);
+             paintInfo.p->drawPixmap(offs, pix, rect);
 
         }
     }
@@ -327,14 +337,14 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
 	if (draw) {
     	    // setting the brush origin is important for compatibility,
 	    // don't touch it unless you know what you're doing
-    	    p->setBrushOrigin(_tx, _ty - _y);
-            p->fillRect(_tx, _ty, width(), height(),
+    	    paintInfo.p->setBrushOrigin(_tx, _ty - paintInfo.r.y());
+            paintInfo.p->fillRect(_tx, _ty, width(), height(),
 		    QBrush(style()->palette().active().highlight(),
 		    Qt::Dense4Pattern));
 	}
     }
     if(style()->outlineWidth())
-        paintOutline(p, _tx, _ty, width(), height(), style());
+        paintOutline(paintInfo.p, _tx, _ty, width(), height(), style());
 }
 
 void RenderImage::layout()

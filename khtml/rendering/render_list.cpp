@@ -306,10 +306,9 @@ void RenderListMarker::setStyle(RenderStyle *s)
 }
 
 
-void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                             int _tx, int _ty, PaintAction paintAction)
+void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    if (paintAction != PaintActionForeground)
+    if (paintInfo.phase != PaintActionForeground)
         return;
 
     if (style()->visibility() != VISIBLE)  return;
@@ -317,18 +316,13 @@ void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
     _tx += m_x;
     _ty += m_y;
 
-    if((_ty > _y + _h) || (_ty + m_height < _y))
+    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()))
         return;
 
     if(shouldPaintBackgroundOrBorder())
-        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+        paintBoxDecorations(paintInfo, _tx, _ty);
 
-    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
-}
-
-void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
-				   int _tx, int _ty, PaintAction paintAction)
-{
+    QPainter* p = paintInfo.p;
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
@@ -365,15 +359,15 @@ void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
     }
 
 
-    bool isPrinting = (p->device()->devType() == QInternal::Printer);
+    bool isPrinting = (paintInfo.p->device()->devType() == QInternal::Printer);
     if (isPrinting)
     {
-        if (_ty < _y)
+        if (_ty < paintInfo.r.y())
         {
             // This has been painted already we suppose.
             return;
         }
-        if (_ty + m_height + paddingBottom() + borderBottom() >= _y+_h)
+        if (_ty + m_height + paddingBottom() + borderBottom() > paintInfo.r.bottom())
         {
             RenderCanvas *rootObj = canvas();
             if (_ty < rootObj->truncatedAt())
@@ -558,12 +552,12 @@ end:
     setMinMaxKnown();
 }
 
-short RenderListMarker::lineHeight(bool b) const
+short RenderListMarker::lineHeight(bool /*b*/) const
 {
     return height();
 }
 
-short RenderListMarker::baselinePosition(bool b) const
+short RenderListMarker::baselinePosition(bool /*b*/) const
 {
     return height();
 }

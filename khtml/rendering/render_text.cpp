@@ -826,21 +826,29 @@ short RenderText::rightmostPosition() const
     return 0;
 }
 
-void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
-                      int tx, int ty, PaintAction paintAction)
+
+void RenderText::paint( PaintInfo& pI, int tx, int ty)
 {
-//kdDebug(6040) << "RenderText::paintObject: phase: " << paintAction << endl;
-    Q_UNUSED(paintAction);
+    if (pI.phase != PaintActionForeground || style()->visibility() != VISIBLE)
+        return;
+
+    int s = m_lines.count() - 1;
+    if ( s < 0 ) return;
+
+    // ### incorporate padding/border here!
+    if ( ty + m_lines[0]->m_y > pI.r.bottom() + 64 ) return;
+    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < pI.r.top() ) return;
+
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
-    InlineTextBox f(0, y-ty);
+    InlineTextBox f(0, pI.r.top()-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to paint
-    bool isPrinting = (p->device()->devType() == QInternal::Printer);
+    bool isPrinting = (pI.p->device()->devType() == QInternal::Printer);
     if(si >= 0)
     {
         // Move up until out of area to be painted
-        while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h, m_lineHeight))
+        while(si > 0 && m_lines[si-1]->checkVerticalPoint(pI.r.y(), ty, pI.r.height(), m_lineHeight))
             si--;
 
         // Now calculate startPos and endPos, for painting selection.
@@ -883,13 +891,13 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    if (isPrinting)
 	    {
                 int lh = lineHeight( false ) + paddingBottom() + borderBottom();
-                if (ty+s->m_y < y)
+                if (ty+s->m_y < pI.r.y())
                 {
                    // This has been painted already we suppose.
                    continue;
                 }
 
-                if (ty+lh+s->m_y > y+h)
+                if (ty+lh+s->m_y > pI.r.bottom())
                 {
                    RenderCanvas *rootObj = canvas();
                    if (ty+s->m_y < rootObj->truncatedAt())
@@ -902,19 +910,19 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
             int d = _style->textDecorationsInEffect();
 
-            if(_style->font() != p->font()) {
-                p->setFont(_style->font());
-	    }
+            if(_style->font() != pI.p->font())
+                pI.p->setFont(_style->font());
+
 	    //has to be outside the above if because of small caps.
 	    font = &_style->htmlFont();
 
-            if(_style->color() != p->pen().color())
-                p->setPen(_style->color());
+            if(_style->color() != pI.p->pen().color())
+                pI.p->setPen(_style->color());
 
 	    if (s->m_len > 0) {
 	        if (!haveSelection) {
 	            //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
-		    font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
+		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 	        }
 		else {
@@ -926,16 +934,16 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     if (paintSelectedTextSeparately) {
 #endif
                         if (sPos >= ePos)
-                            font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline,
+                            font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                            str->s, str->l, s->m_start, s->m_len,
                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
                         else {
                             if (sPos-1 >= 0)
-                                font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                             str->l, s->m_start, s->m_len,
                                             s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
                             if (ePos < s->m_len)
-                                font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                             str->l, s->m_start, s->m_len,
                                             s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
                         }
@@ -946,7 +954,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                         if (selectionColor != p->pen().color())
                             p->setPen(selectionColor);
 
-                        font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
+                        font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                        str->l, s->m_start, s->m_len,
                                        s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, sPos, ePos);
                     }
@@ -954,9 +962,9 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 }
 	    }
 
-            if (d != TDNONE && paintAction == PaintActionForeground) {
-                p->setPen(_style->color());
-                s->paintDecoration(p, font, tx, ty, d);
+            if (d != TDNONE && pI.phase == PaintActionForeground) {
+                pI.p->setPen(_style->color());
+                s->paintDecoration(pI.p, font, tx, ty, d);
             }
 
             if (haveSelection) {
@@ -965,7 +973,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		int ePos = kMin( endPos - offset, int( s->m_len ) );
                 //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
-		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos, d);
+		    s->paintSelection(font, this, pI.p, _style, tx, ty, sPos, ePos, d);
 
             }
             if(renderOutline) {
@@ -998,32 +1006,16 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 #endif
 
-        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y-ow, ty, h, m_lineHeight));
+        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(pI.r.y()-ow, ty, pI.r.height(), m_lineHeight));
 
         if(renderOutline)
 	  {
 	    linerects.append(new QRect(minx, outlinebox_y, maxx-minx, m_lineHeight));
 	    linerects.append(new QRect());
 	    for (unsigned int i = 1; i < linerects.count() - 1; i++)
-                paintTextOutline(p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
+                paintTextOutline(pI.p, tx, ty, *linerects.at(i-1), *linerects.at(i), *linerects.at(i+1));
 	  }
     }
-}
-
-void RenderText::paint( QPainter *p, int x, int y, int w, int h,
-                      int tx, int ty, PaintAction paintAction)
-{
-    if (paintAction != PaintActionForeground || style()->visibility() != VISIBLE)
-        return;
-
-    int s = m_lines.count() - 1;
-    if ( s < 0 ) return;
-
-    // ### incorporate padding/border here!
-    if ( ty + m_lines[0]->m_y > y + h ) return;
-    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight < y ) return;
-
-    paintObject(p, x, y, w, h, tx, ty, paintAction);
 }
 
 void RenderText::calcMinMaxWidth()

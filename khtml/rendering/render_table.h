@@ -96,8 +96,7 @@ public:
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
-    virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintAction);
+    virtual void paint( PaintInfo&, int tx, int ty);
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
@@ -245,8 +244,7 @@ public:
 	return (*(grid[row].row))[col];
     }
 
-    virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, PaintAction paintAction);
+    virtual void paint( PaintInfo& i, int tx, int ty);
 
     int numRows() const { return grid.size(); }
     int getBaseline(int row) {return grid[row].baseLine;}
@@ -345,8 +343,7 @@ public:
     void setCellTopExtra(int p) { _topExtra = p; }
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
-    virtual void paint( QPainter* p, int x, int y,
-                        int w, int h, int tx, int ty, PaintAction paintAction);
+    virtual void paint( PaintInfo& i, int tx, int ty);
 
     virtual void close();
 
@@ -377,8 +374,7 @@ public:
 	{ m_percentageHeight = h; }
 
 protected:
-    virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
-                                     int _w, int _h, int _tx, int _ty);
+    virtual void paintBoxDecorations(PaintInfo& p, int _tx, int _ty);
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
 

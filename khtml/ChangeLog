@@ -1,3 +1,10 @@
+2004-02-24  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_object.h (class RenderObject): introduce a PaintInfo
+	struct that contains the information necessary for all those paint..() methods.
+	Requires much less parameters to pass and is therefore faster. While being
+	at it, eliminate the unnecessary virtual method paintObject.
+
 2004-02-23  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_inline.cpp: check if the containingBlock is displayed 

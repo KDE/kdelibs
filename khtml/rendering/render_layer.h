@@ -145,7 +145,7 @@ public:
     int horizontalScrollbarHeight();
     void moveScrollbarsAside();
     void positionScrollbars(const QRect &damageRect);
-    void paintScrollbars(QPainter* p, const QRect& damageRect);
+    void paintScrollbars(RenderObject::PaintInfo& pI);
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
     void updateScrollPositionFromScrollbars();

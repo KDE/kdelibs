@@ -501,8 +501,7 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
     }
 }
 
-void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
-                                             int _w, int _h, int _tx, int _ty, int xOffsetOnLine)
+void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _tx, int _ty, int xOffsetOnLine)
 {
 
     // Move x/y to our coordinates.
@@ -512,12 +511,12 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
     int w = width();
     int h = height();
 
-    int my = kMax(_ty,_y);
+    int my = kMax(_ty, pI.r.y());
     int mh;
-    if (_ty<_y)
-        mh= kMax(0,h-(_y-_ty));
+    if (_ty<pI.r.y())
+        mh= kMax(0,h-(pI.r.y()-_ty));
     else
-        mh = kMin(_h,h);
+        mh = kMin(pI.r.height(),h);
 
     // You can use p::first-line to specify a background. If so, the root line boxes for
     // a line may actually have to paint a background.
@@ -527,7 +526,7 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
         bool hasBackgroundImage = bg && (bg->pixmap_size() == bg->valid_rect().size()) &&
                                   !bg->isTransparent() && !bg->isErrorImage();
         if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
-            object()->paintBackgroundExtended(p, styleToUse->backgroundColor(),
+            object()->paintBackgroundExtended(pI.p, styleToUse->backgroundColor(),
                                               bg, my, mh, _tx, _ty, w, h,
                                               borderLeft(), borderRight());
         else {
@@ -542,24 +541,24 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
             for (InlineRunBox* curr = this; curr; curr = curr->nextLineBox())
                 totalWidth += curr->width();
             QRect clipRect(_tx, _ty, width(), height());
-            clipRect = p->xForm(clipRect);
-            p->save();
+            clipRect = pI.p->xForm(clipRect);
+            pI.p->save();
 #ifdef APPLE_CHANGES
-            p->addClip(clipRect);
+            pI.p->addClip(clipRect);
 #else
-            p->setClipRect( clipRect );
+            pI.p->setClipRect( clipRect );
 #endif
-            object()->paintBackgroundExtended(p, object()->style()->backgroundColor(),
+            object()->paintBackgroundExtended(pI.p, object()->style()->backgroundColor(),
                                               object()->style()->backgroundImage(), my, mh, startX, _ty,
                                               totalWidth, h,
                                               borderLeft(), borderRight());
-            p->restore();
+            pI.p->restore();
         }
 
         // :first-line cannot be used to put borders on a line. Always paint borders with our
         // non-first-line style.
         if (parent() && object()->style()->hasBorder())
-            object()->paintBorder(p, _tx, _ty, w, h, object()->style(), includeLeftEdge(), includeRightEdge());
+            object()->paintBorder(pI.p, _tx, _ty, w, h, object()->style(), includeLeftEdge(), includeRightEdge());
     }
 }
 
@@ -581,8 +580,7 @@ static bool shouldDrawDecoration(RenderObject* obj)
     return shouldDraw;
 }
 
-void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
-                                     int _w, int _h, int _tx, int _ty)
+void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _ty)
 {
     // Now paint our text decorations. We only do this if we aren't in quirks mode (i.e., in
     // almost-strict mode or strict mode).
@@ -605,16 +603,16 @@ void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
         if (!parent())
             object()->getTextDecorationColors(deco, underline, overline, linethrough);
         if (deco & UNDERLINE) {
-            p->setPen(underline);
-            p->drawLine(_tx, _ty+m_baseline, _tx+w, _ty+m_baseline );
+            pI.p->setPen(underline);
+            pI.p->drawLine(_tx, _ty+m_baseline, _tx+w, _ty+m_baseline );
         }
         if (deco & OVERLINE) {
-            p->setPen(overline);
-            p->drawLine(_tx, _ty, _tx+w, _ty );
+            pI.p->setPen(overline);
+            pI.p->drawLine(_tx, _ty, _tx+w, _ty );
         }
         if (deco & LINE_THROUGH) {
-            p->setPen(linethrough);
-            p->drawLine(_tx, _ty+2*m_baseline/3, _tx+w, _ty+2*m_baseline/3 );
+            pI.p->setPen(linethrough);
+            pI.p->drawLine(_tx, _ty+2*m_baseline/3, _tx+w, _ty+2*m_baseline/3 );
         }
     }
 }
