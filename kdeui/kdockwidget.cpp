@@ -1504,6 +1504,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
   nameList.first();
   while ( nameList.current() ){
     QString oname = nameList.current();
+    c->setGroup( group );
     QString type = c->readEntry( oname + ":type" );
     obj = 0L;
 
@@ -1539,6 +1540,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
         }
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.latin1() );
+  				c->setGroup( group );
           tab->setVisiblePage( c->readNumEntry( oname+":curTab" ) );
         }
       }
@@ -1551,6 +1553,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj->applyToWidget( 0L );
       obj->setGeometry(r);
 
+  		c->setGroup( group );
       if ( c->readBoolEntry( oname + ":visible" ) ){
         obj->QWidget::show();
       }
@@ -1573,6 +1576,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
 
+  	c->setGroup( group );
     QString mv = c->readEntry( "Main:view" );
     if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
       KDockWidget* mvd  = getDockWidgetFromName( mv );
@@ -1580,12 +1584,14 @@ void KDockManager::readConfig( KConfig* c, QString group )
       mvd->show();
       dmain->setView( mvd );
     }
+  	c->setGroup( group );
     QString md = c->readEntry( "Main:dock" );
     if ( !md.isEmpty() && getDockWidgetFromName( md ) ){
       KDockWidget* mvd  = getDockWidgetFromName( md );
       dmain->setMainDockWidget( mvd );
     }
   } else {
+  	c->setGroup( group );
     QString mv = c->readEntry( "Main:view" );
     if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
       KDockWidget* mvd  = getDockWidgetFromName( mv );
@@ -1595,6 +1601,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
   
   }
 
+  c->setGroup( group );
   QRect mr = c->readRectEntry("Main:Geometry");
   main->setGeometry(mr);
   if ( isMainVisible ) main->show();
