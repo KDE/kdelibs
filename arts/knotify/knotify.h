@@ -48,7 +48,7 @@ k_dcop:
 	void setVolume( int volume );
 
 protected:
-	bool notifyBySound(const QString &sound);
+	bool notifyBySound(const QString &sound, const QString &appname);
 	bool notifyByMessagebox(const QString &text, int level);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);

@@ -252,7 +252,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
     // emit event
     if ( present & KNotifyClient::Sound ) // && QFile(sound).isReadable()
-        notifyBySound( sound );
+        notifyBySound( sound, fromApp );
 
     if ( present & KNotifyClient::PassivePopup )
         notifyByPassivePopup( text, fromApp);
@@ -271,7 +271,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 }
 
 
-bool KNotify::notifyBySound( const QString &sound )
+bool KNotify::notifyBySound( const QString &sound, const QString &appname )
 {
     if (sound.isEmpty()) {
 	return false;
@@ -279,8 +279,13 @@ bool KNotify::notifyBySound( const QString &sound )
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
     QString soundFile(sound);
-    if ( !sound.isEmpty() && QFileInfo(sound).isRelative() )
-	soundFile = locate( "sound", sound );
+    if ( QFileInfo(sound).isRelative() )
+    {
+        QString search = QString("%1/sounds/%2").arg(appname).arg(sound);
+        soundFile = KGlobal::instance()->dirs()->findResource("data", search);
+        if ( soundFile.isEmpty() )
+            soundFile = locate( "sound", sound );
+    }
     if ( soundFile.isEmpty() )
         return false;
 
