@@ -30,7 +30,7 @@ KStepStyle::KStepStyle()
     :KStyle()
 {
     setButtonDefaultIndicatorWidth(4);
-    setScrollBarExtent(19);
+    setScrollBarExtent(20);
 }
 
 KStepStyle::~KStepStyle()
@@ -148,12 +148,13 @@ void KStepStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  *fill)
 {
     drawButton(p, x, y, w, h, nextGrp, sunken, fill);
-    int deco_y = (h-6)/2;
-    drawButton(p, x + w-16, y + deco_y, 10, 6, nextGrp, false, fill);
+    int deco_y = (h-8)/2;
+    QBrush oldBrush = p->brush();
+    QPen oldPen = p->pen();
     p->setPen(g.mid());
-    p->drawLine( x+w-6, y+deco_y+6, x+w-15, y+deco_y+6);
-    p->drawLine( x+w-6, y+deco_y+1, x+w-6, y+deco_y+6);
-
+    p->fillRect(x + w-13, y + deco_y + 2, 9, 6, g.brush(QColorGroup::Mid));
+    p->setPen(oldPen);
+    drawButton(p, x + w-15, y + deco_y, 9, 6, nextGrp, false, fill);
 }
 
 QRect KStepStyle::comboButtonRect(int x, int y, int w, int h){
@@ -171,7 +172,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 {
     int sliderMin, sliderMax, sliderLength, buttonDim;
     QRect add, sub, addPage, subPage, slider;
-    int addX, addY, subX, subY;
+    int addX, addY, subX, subY, subPageX, offsetX, offsetY;
     bool horizontal = sb->orientation() == QScrollBar::Horizontal;
     int len = (horizontal) ? sb->width() : sb->height();
     int extent = (horizontal) ? sb->height() : sb->width();
@@ -184,98 +185,66 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     int sliderEnd = sliderStart + sliderLength;
 
     if(horizontal){
-        subY = addY = (extent - buttonDim)/2;
-        subX = 1;
-        addX = buttonDim;
-        sub.setRect(subX, subY, buttonDim, buttonDim);
-        add.setRect(addX, addY, buttonDim, buttonDim);
-        subPage.setRect(buttonDim*2, 0, sliderStart-1, extent);
-        addPage.setRect(sliderEnd, 0, len-sliderEnd, extent);
-        slider.setRect(sliderStart, 0, sliderLength, extent);
+        offsetY = (extent - buttonDim)/2;
+        subX = 2;
+        addX = subX + buttonDim + 1;
+        subPageX = addX + buttonDim + 1;
+        sub.setRect(2, offsetY, buttonDim, buttonDim);
+        add.setRect(addX, offsetY, buttonDim, buttonDim);
+        subPage.setRect(subPageX, offsetY, sliderStart-1, extent-4);
+        addPage.setRect(sliderEnd, offsetY, len-sliderEnd-2, extent-4);
+        slider.setRect(sliderStart, offsetY, sliderLength, extent-4);
     }
     else{
-        subX = addX = (extent - buttonDim)/2;
-        subY = len - (buttonDim*2);
-        addY = len - buttonDim-1;
-        sub.setRect(subX, subY, buttonDim, buttonDim);
-        add.setRect(addX, addY, buttonDim, buttonDim);
-        subPage.setRect(0, 1, extent, sliderStart-1);
-        addPage.setRect(0, sliderEnd, extent, subY-sliderEnd);
-        slider.setRect(0, sliderStart, extent, sliderLength);
+        offsetX = (extent - buttonDim)/2;
+        addY = len - buttonDim - 2;
+        subY = addY - buttonDim - 1;
+        sub.setRect(offsetX, subY, buttonDim, buttonDim);
+        add.setRect(offsetX, addY, buttonDim, buttonDim);
+        subPage.setRect(offsetX, 2, extent-4, sliderStart-2);
+        addPage.setRect(offsetX, sliderEnd, extent-4, subY-sliderEnd-1);
+        slider.setRect(offsetX, sliderStart, extent-4, sliderLength);
     }
 
     if(controls & AddLine){
         if(add.isValid()){
-            p->setPen(g.mid());
-            p->drawRect(add);
-            qDrawShadePanel(p, add.x()+1, add.y()+1, add.width()-2,
-                            add.height()-2, nextGrp, activeControl == AddLine, 1,
-                            &nextGrp.brush(QColorGroup::Background));
+            drawButton(p, add.x(), add.y(), add.width(), add.height(), 
+                            nextGrp, activeControl == AddLine);
             drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
-                             add.x()+4, add.y()+4, add.width()-8, nextGrp);
+                             add.x()+3, add.y()+3, add.width()-7, nextGrp);
         }
     }
+    
     if(controls & SubLine){
         if(sub.isValid()){
-            p->setPen(g.mid());
-            p->drawRect(sub);
-            qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
-                            sub.height()-2, nextGrp, activeControl == SubLine, 1,
-                            &nextGrp.brush(QColorGroup::Background));
+            drawButton(p, sub.x(), sub.y(), sub.width(), sub.height(), 
+                            nextGrp, activeControl == SubLine);
             drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, 
-                            sub.x()+4, sub.y()+4, sub.width()-8, nextGrp);
+                            sub.x()+3, sub.y()+3, sub.width()-7, nextGrp);
         }
     }
-    if((controls & SubPage)){
-        drawStepBarGroove(p, subPage, sb, g);
-    }
-    if((controls & AddPage)){
-        drawStepBarGroove(p, addPage, sb, g);
-    }
+    
+    if((controls & SubPage))
+        p->fillRect(subPage, g.brush(QColorGroup::Mid));
+        
+    if((controls & AddPage))
+        p->fillRect(addPage, g.brush(QColorGroup::Mid));
+        
     if(controls & Slider){
         if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
-            if(horizontal){
-                p->setPen(Qt::black);
-                p->drawLine(slider.x(), slider.y(), slider.right(), slider.y());
-                p->drawLine(slider.x(), slider.bottom(), slider.right(), slider.bottom());
-                p->setPen(g.mid());
-                p->drawLine(slider.x(), slider.y()+1, slider.right(), slider.y()+1);
-                p->drawLine(slider.x(), slider.bottom()-1, slider.right(), slider.bottom()-1);
-                drawButton(p, slider.x(), slider.y()+2, slider.width(),
-                           slider.height()-4, nextGrp);
-            }
-            else{
-                p->setPen(Qt::black);
-                p->drawLine(slider.x(), slider.y(), slider.x(), slider.bottom());
-                p->drawLine(slider.right(), slider.y(), slider.right(), slider.bottom());
-                p->setPen(g.mid());
-                p->drawLine(slider.x()+1, slider.y(), slider.x()+1, slider.bottom());
-                p->drawLine(slider.right()-1, slider.y(), slider.right()-1, slider.bottom());
-                drawButton(p, slider.x()+2, slider.y(), slider.width()-4,
+            if(horizontal)
+                drawButton(p, slider.x(), slider.y(), slider.width(),
                            slider.height(), nextGrp);
-            }
+            else
+                drawButton(p, slider.x(), slider.y(), slider.width(),
+                           slider.height(), nextGrp);
             if(slider.width() > 8 && slider.height() > 8)
                 drawStepBarCircle(p, slider.x(), slider.y(), slider.width(),
                                   slider.height(), nextGrp);
         }
     }
-}
-
-void KStepStyle::drawStepBarGroove(QPainter *p, QRect r, const QWidget *w,
-                                   const QColorGroup &g)
-{
-    // dont draw over black lines or it flickers
-    if(r.left() == 0)
-        r.setLeft(1);
-    if(r.top() == 0)
-        r.setTop(1);
-    if(r.right() == w->width()-1)
-        r.setRight(w->width()-2);
-    if(r.bottom() == w->height()-1)
-        r.setBottom(w->height()-2);
-    p->fillRect(r, g.brush(QColorGroup::Mid));
     p->setPen(Qt::black);
-    p->drawRect(0, 0, w->width(), w->height());
+    p->drawRect(0, 0, sb->width(), sb->height());
 }
 
 void KStepStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
@@ -288,16 +257,16 @@ void KStepStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
     int extent = (horizontal) ? sb->height() : sb->width();
 
     if(len > (extent - 1)*2)
-        buttonDim = extent-2;
+        buttonDim = extent - 4;
     else
         buttonDim = len/2 - 1;
 
     if(horizontal)
-        sliderMin = buttonDim*2;
+        sliderMin = buttonDim*2 + 4;
     else
-        sliderMin = 1;
+        sliderMin = 2;
 
-    maxlen = len - buttonDim*2 - 1;
+    maxlen = len - buttonDim*2 - 6;
     sliderLength = (sb->pageStep()*maxlen) / (sb->maxValue() -
         sb->minValue() + sb->pageStep());
 
@@ -500,41 +469,43 @@ void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
 }
 
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
-                                  int y, int size, const QColorGroup &g)
-{        
-    QPointArray a;
-    int x2=x+size-1, y2=y+size-1;
-    switch (type){
-    case Qt::UpArrow:
-        if (size%2 == 1)
-          a.setPoints(4, x,y2, x2,y2, x+size/2,y, x,y2);
-        else
-          a.setPoints(5, x,y2, x2,y2, x+size/2,y, x+size/2-1,y, x,y2);
-        break;
-    case Qt::DownArrow:
-        if (size%2 == 1)
-          a.setPoints(4, x,y, x2,y, x+size/2,y2, x,y);
-        else
-          a.setPoints(5, x,y, x2,y, x+size/2,y2, x+size/2-1,y2, x,y);
-        break;
-    case Qt::LeftArrow:
-        if (size%2 == 1)
-          a.setPoints(4, x2,y, x2,y2, x,y+size/2, x2,y);
-        else 
-          a.setPoints(5, x2,y, x2,y2, x,y+size/2, x,y+size/2-1, x2,y);
-        break;
-    default:
-        if (size%2 == 1)
-          a.setPoints(4, x,y, x,y2, x2,y+size/2, x,y);
-        else
-          a.setPoints(5, x,y, x,y2, x2,y+size/2, x2,y+size/2-1, x,y);
-        break;
-    }
+                                  int y, int base, const QColorGroup &g)
+{       
     QBrush oldBrush = p->brush();
     QPen oldPen = p->pen();
     p->setBrush(g.brush(QColorGroup::Dark));
     p->setPen(g.dark());
-    p->drawPolygon(a);
+    
+    int x2=x+base-1, y2=y+base-1; 
+    int i=0, j=0;
+    
+    switch (type){
+    case Qt::UpArrow:
+        do {
+          p->drawLine(x+i/2, y2-j, x2-i/2, y2-j);
+          i++; j++;
+        } while (j<base);
+      break;
+    case Qt::DownArrow:
+        do {
+          p->drawLine(x+i/2, y+j, x2-i/2, y+j);
+          i++; j++;
+        } while (j<base);
+        break;
+    case Qt::LeftArrow:
+        do {
+          p->drawLine(x2-j, y+i/2, x2-j, y2-i/2);
+          i++; j++;
+        } while (j<base);
+        break;
+    default:
+        do {
+          p->drawLine(x+j, y+i/2, x+j, y2-i/2);
+          i++; j++;
+        } while (j<base);
+        break;
+    }
+
     p->setBrush(oldBrush);
     p->setPen(oldPen);
 }

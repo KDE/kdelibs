@@ -94,8 +94,6 @@ protected:
                            const QColorGroup &g);
     void drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x, int y,
                            int size, const QColorGroup &g);
-    void drawStepBarGroove(QPainter *p, QRect r, const QWidget *w,
-                           const QColorGroup &g);
 private:
     QColorGroup nextGrp;
     QPalette oldPopupPal;
