@@ -72,7 +72,6 @@ protected:
     KHTMLView *m_view;
 
     QTime updateTimer;
-    int updateCount;
 
     RenderObject* selectionStart;
     RenderObject* selectionEnd;

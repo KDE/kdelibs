@@ -221,16 +221,16 @@ void RenderFlow::layout()
 
     int oldWidth = m_width;
 
-    calcWidth();        
-    
+    calcWidth();
+
 //    kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
 //            << m_width << ","<< layouted() << "," << isAnonymousBox() << endl;
 
     if (specialObjects==0)
     	if (oldWidth == m_width && layouted() && !isAnonymousBox()
-	    && !containsPositioned() && !isPositioned()) return;  
-    
-        
+	    && !containsPositioned() && !isPositioned()) return;
+
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout() width=" << m_width << ", layouted=" << layouted() << endl;
     if(containingBlock() == static_cast<RenderObject *>(this))
@@ -327,13 +327,13 @@ void RenderFlow::layoutBlockChildren()
     if(isTableCell())
 	prevMargin = -firstChild()->marginTop();
 	
-    QTime t;
-    t.start();
-    
+    //QTime t;
+    //t.start();
+
     while( child != 0 )
     {
-    	kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
-        kdDebug( 6040 ) << t.elapsed() << endl;
+    	//kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+        //kdDebug( 6040 ) << t.elapsed() << endl;
 	// ### might be some layouts are done two times... FIX that.
 	
     	if (child->isPositioned())
@@ -344,7 +344,7 @@ void RenderFlow::layoutBlockChildren()
 	    continue;
 	} else if ( child->isReplaced() )
 	    child->layout();
-	    
+	
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
@@ -1015,7 +1015,7 @@ void RenderFlow::close()
     {
 	calcMinMaxWidth();
     }*/
-            
+
 calcMinMaxWidth();
 
     if(containingBlockWidth() < m_minWidth && m_parent)
