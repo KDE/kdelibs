@@ -616,6 +616,11 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
     int cw = width();
     int ch = height();
     int sw = bar ? bar->style().pixelMetric(QStyle::PM_ScrollBarExtent) - 1 : 0;
+    int bl = m_object->borderLeft();
+    int br = m_object->borderRight();
+    int bt = m_object->borderTop();
+    int bb = m_object->borderBottom();
+    bool clip2 = bar && ((bl != 0) | (br != 0) | (bt != 0) | (bb != 0));
 
     // paint our background
     if (!selectionOnly) {
@@ -624,11 +629,12 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 	renderer()->paint(p, x, y, w, h,
 			  tx - renderer()->xPos(), ty - renderer()->yPos(),
 			  PaintActionBackground);
-	if (bar)
+	if (clip2)
 	    restoreClip(p);
     }
-    if (bar)
-	setClip(p, QRect(tx, ty, w - (m_vBar ? sw : 0) , h - (m_hBar ? sw : 0)));
+    if (clip2)
+	setClip(p, QRect(tx + bl, ty + bt,
+			 w - bl - br - (m_vBar ? sw : 0) , h - bt - bb - (m_hBar ? sw : 0)));
 
     uint count = zOrderList->count();
     for (uint i = 0; i < count; i++) {
@@ -639,12 +645,17 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 	l->convertToLayerCoords(this, xOff, yOff);
 
 	bool lclip = r->style()->overflow() != OVISIBLE;
-	int lcw = l->width();
-	int lch = l->height();
-	QScrollBar *lbar = l->m_hBar;
+	cw = l->width();
+	ch = l->height();
+	bar = l->m_hBar;
 	if (!m_hBar)
-	    lbar = l->m_vBar;
-	sw = lbar ? lbar->style().pixelMetric(QStyle::PM_ScrollBarExtent) -1 : 0;
+	    bar = l->m_vBar;
+	sw = bar ? bar->style().pixelMetric(QStyle::PM_ScrollBarExtent) -1 : 0;
+	bl = r->borderLeft();
+	br = r->borderRight();
+	bt = r->borderTop();
+	bb = r->borderBottom();
+	bool clip2 = bar && ((bl != 0) | (br != 0) | (bt != 0) | (bb != 0));
 
 	l->positionScrollbars(tx + xOff, ty + yOff);
 	if (l != this && !l->hasAutoZIndex()) {
@@ -657,15 +668,16 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 	    } else {
 		if (l != this) {
 		    if (lclip)
-			setClip(p, QRect(tx + xOff, ty + yOff, lcw, lch));
+			setClip(p, QRect(tx + xOff, ty + yOff, cw, ch));
 		    r->paint(p, x, y, w, h,
 			     tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionBackground);
-		    if (lbar)
+		    if (clip2)
 			restoreClip(p);
 		}
-		if (lbar)
-		    setClip(p, QRect(tx + xOff, ty + yOff,
-				     lcw - (l->m_vBar ? sw : 0) , lch - (l->m_hBar ? sw : 0)));
+		if (clip2)
+		    setClip(p, QRect(tx + xOff + bl, ty + yOff + bt,
+				     cw - bl - bt - (l->m_vBar ? sw : 0) ,
+				     ch - bt - bb - (l->m_hBar ? sw : 0)));
 		r->paint(p, x, y, w, h,
 			 tx + xOff - r->xPos(), ty + yOff - r->yPos(), PaintActionFloat);
 		r->paint(p, x, y, w, h,
