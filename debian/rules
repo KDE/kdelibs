@@ -23,7 +23,8 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa
+	--includedir=/usr/include/kde --without-ssl --without-alsa \
+	--with-sgml-cat=/etc/sgml
 
 	make
 
