@@ -1,9 +1,13 @@
+2004-10-19  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_box.{h,cpp}: Merge min,max-height fixes
+
 2004-10-19  Germain Garand  <germain@ebooksfrance.org>
 
         finish merge of static position for positioned objects
 
         * css/cssstyleselector.cpp (adjustRenderStyle): remember our original display
-        * rendering/bidi.cpp (appendRun): include positioned objects with static X/Y, 
+        * rendering/bidi.cpp (appendRun): include positioned objects with static X/Y,
         now that we use those.
         (findNextLineBreak): adjust static position
 

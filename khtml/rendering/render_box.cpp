@@ -823,69 +823,141 @@ void RenderBox::calcHeight()
         calcAbsoluteVertical();
     else
     {
-        Length h;
-        if ( isReplaced() && !isBlockFlow() && !isInlineBlockOrInlineTable() )
-            h = Length( calcReplacedHeight(), Fixed );
-        else
-            h = style()->height();
-
         calcVerticalMargins();
 
-        // for tables, calculate margins only
+        // For tables, calculate margins only
         if (isTable())
             return;
 
-        if (!h.isVariable())
-        {
-            int fh=-1;
-            if (h.isFixed())
-                fh = h.value() + borderTop() + paddingTop() + borderBottom() + paddingBottom();
-            else if (h.isPercent()) {
-                // Handle a common case: nested 100% height <div>s.
-                // This is kind of a one-off hack rather than doing it right.
-                // Makes dbaron's z-index root bg testcases work. Bad dave. - dwh
-                RenderBlock* cb = containingBlock();
-                Length ch = containingBlock()->style()->height();
-                while (cb && !cb->isTableCell() && ch.isPercent() && ch.value() == 100) {
-                    cb = cb->containingBlock();
-                    ch = cb->style()->height();
-                }
+        Length h;
+        bool treatAsReplaced = isReplaced() && !isInlineBlockOrInlineTable();
+        bool checkMinMaxHeight = false;
 
-                if (cb->isCanvas()) {
-                    // Don't allow this to affect the canvas' m_height member variable, since this
-                    // can get called while the canvas is still laying out its kids.
-                    // e.g., <html style="height:100%">etc. -dwh
-                    int oldHeight = cb->height();
-                    static_cast<RenderCanvas*>(cb)->calcHeight();
-                    fh = h.width(cb->height()) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
-                    cb->setHeight(oldHeight);
-                }
-                else if (ch.isFixed())
-                    fh = h.width(ch.value()) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
-            }
-            if (fh!=-1)
-            {
-                if (fh<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
-                    setOverhangingContents();
+        if ( treatAsReplaced )
+            h = Length( calcReplacedHeight(), Fixed );
+        else {
+            h = style()->height();
+            checkMinMaxHeight = true;
+        }
 
-                m_height = fh;
-            }
+        int height;
+        if (checkMinMaxHeight) {
+            height = calcHeightUsing(style()->height());
+            int minH = calcHeightUsing(style()->minHeight());
+            int maxH = style()->maxHeight().value() == UNDEFINED ? height : calcHeightUsing(style()->maxHeight());
+            height = kMin(maxH, height);
+            height = kMax(minH, height);
+        }
+        else
+            // The only times we don't check min/max height are when a fixed length has
+            // been given as an override.  Just use that.
+            height = h.value() + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+
+        if (height<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
+            setOverhangingContents();
+
+        m_height = height;
+    }
+
+    // Unfurling marquees override with the furled height.
+    if (style()->overflow() == OMARQUEE && m_layer && m_layer->marquee() &&
+        m_layer->marquee()->isUnfurlMarquee() && !m_layer->marquee()->isHorizontal()) {
+        m_layer->marquee()->setEnd(m_height);
+        m_height = kMin(m_height, m_layer->marquee()->unfurlPos());
+    }
+
+}
+
+int RenderBox::calcHeightUsing(const Length& h)
+{
+    if (!h.isVariable()) {
+        int height = -1;
+        if (h.isFixed())
+            height = h.value();
+        else if (h.isPercent())
+            height = calcPercentageHeight(h);
+        if (height != -1) {
+            height += borderTop() + paddingTop() + borderBottom() + paddingBottom();
+            return height;
         }
     }
+    return m_height;
+}
+
+int RenderBox::calcPercentageHeight(const Length& height)
+{
+    int result = -1;
+    RenderBlock* cb = containingBlock();
+    // Table cells violate what the CSS spec says to do with heights.  Basically we
+    // don't care if the cell specified a height or not.  We just always make ourselves
+    // be a percentage of the cell's current content height.
+    if (cb->isTableCell()) {
+        result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
+        if (result == 0)
+            return -1;
+        // It is necessary to use the border-box to match WinIE's broken
+        // box model.  This is essential for sizing inside
+        // table cells using percentage heights.
+        result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
+        result = kMax(0, result);
+    }
+
+    // Otherwise we only use our percentage height if our containing block had a specified
+    // height.
+    else if (cb->style()->height().isFixed())
+        result = cb->style()->height().value();
+    else if (cb->style()->height().isPercent())
+        // We need to recur and compute the percentage height for our containing block.
+        result = cb->calcPercentageHeight(cb->style()->height());
+    else if (cb->isCanvas() || (cb->isBody() && style()->htmlHacks())) {
+        // Don't allow this to affect the block' m_height member variable, since this
+        // can get called while the block is still laying out its kids.
+        int oldHeight = cb->height();
+        cb->calcHeight();
+        result = cb->contentHeight();
+        cb->setHeight(oldHeight);
+    }
+    if (result != -1) {
+        result = height.width(result);
+    }
+    return result;
 }
 
 short RenderBox::calcReplacedWidth() const
 {
-    Length w = style()->width();
+    int width = calcReplacedWidthUsing(Width);
+    int minW = calcReplacedWidthUsing(MinWidth);
+    int maxW = style()->maxWidth().value() == UNDEFINED ? width : calcReplacedWidthUsing(MaxWidth);
 
-    switch( w.type() ) {
+    if (width > maxW)
+        width = maxW;
+
+    if (width < minW)
+        width = minW;
+
+    return width;
+}
+
+int RenderBox::calcReplacedWidthUsing(WidthType widthType) const
+{
+    Length w;
+    if (widthType == Width)
+        w = style()->width();
+    else if (widthType == MinWidth)
+        w = style()->minWidth();
+    else
+        w = style()->maxWidth();
+
+    switch (w.type()) {
     case Fixed:
         return w.value();
     case Percent:
     {
         const int cw = containingBlockWidth();
-        if (cw > 0)
-            return w.minWidth(cw);
+        if (cw > 0) {
+            int result = w.minWidth(cw);
+            return result;
+        }
     }
     // fall through
     default:
@@ -895,10 +967,31 @@ short RenderBox::calcReplacedWidth() const
 
 int RenderBox::calcReplacedHeight() const
 {
-    const Length& h = style()->height();
+    int height = calcReplacedHeightUsing(Height);
+    int minH = calcReplacedHeightUsing(MinHeight);
+    int maxH = style()->maxHeight().value() == UNDEFINED ? height : calcReplacedHeightUsing(MaxHeight);
+
+    if (height > maxH)
+        height = maxH;
+
+    if (height < minH)
+        height = minH;
+
+    return height;
+}
+
+int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
+{
+    Length h;
+    if (heightType == Height)
+        h = style()->height();
+    else if (heightType == MinHeight)
+        h = style()->minHeight();
+    else
+        h = style()->maxHeight();
     switch( h.type() ) {
     case Percent:
-        return availableHeight();
+        return availableHeightUsing(h);
     case Fixed:
         return h.value();
     default:
@@ -908,8 +1001,11 @@ int RenderBox::calcReplacedHeight() const
 
 int RenderBox::availableHeight() const
 {
-    Length h = style()->height();
+    return availableHeightUsing(style()->height());
+}
 
+int RenderBox::availableHeightUsing(const Length& h) const
+{
     if (h.isFixed())
         return h.value();
 
@@ -926,7 +1022,7 @@ int RenderBox::availableHeight() const
     }
 
     if (h.isPercent())
-        return h.width(containingBlock()->availableHeight());
+       return h.width(containingBlock()->availableHeight());
 
     return containingBlock()->availableHeight();
 }
