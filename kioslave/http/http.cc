@@ -335,19 +335,29 @@ void HTTPProtocol::resetSessionSettings()
 void HTTPProtocol::setHost( const QString& host, int port,
                             const QString& user, const QString& pass )
 {
-  kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
-
   // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
     m_davHostOk = m_davHostUnsupported = false;
 
-  m_request.hostname = host;
-  m_request.pretty_hostname = KIDNA::toUnicode(host);
+  // is it an IPv6 address?
+  if (host.find(':') == -1)
+    {
+      m_request.hostname = host;
+      m_request.encoded_hostname = KIDNA::toAscii(host);
+    }
+  else
+    {
+      m_request.hostname = host;
+      m_request.encoded_hostname = '[' + host + ']';
+    }
   m_request.port = (port == 0) ? m_iDefaultPort : port;
   m_request.user = user;
   m_request.passwd = pass;
 
   m_bIsTunneled = false;
+
+  kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << m_request.hostname << 
+    " (" << m_request.encoded_hostname << ")" <<endl;
 }
 
 bool HTTPProtocol::checkRequestURL( const KURL& u )
@@ -459,7 +469,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           if ( !m_request.bErrorPage )
           {
             kdDebug(7113) << "(" << m_pid << ") Sending an error message!" << endl;
-            error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.prettyHost() );
+            error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
             return false;
           }
 
@@ -1735,7 +1745,7 @@ void HTTPProtocol::httpCheckConnection()
 
   // Let's update our current state
   m_state.hostname = m_request.hostname;
-  m_state.pretty_hostname = m_request.pretty_hostname;
+  m_state.encoded_hostname = m_request.encoded_hostname;
   m_state.port = m_request.port;
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
@@ -1759,7 +1769,7 @@ bool HTTPProtocol::httpOpenConnection()
     kdDebug(7113) << "(" << m_pid << ") Connecting to proxy server: "
                   << proxy_host << ", port: " << proxy_port << endl;
 
-    infoMessage( i18n("Connecting to %1...").arg(m_state.pretty_hostname) );
+    infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
 
     setConnectTimeout( m_proxyConnTimeout );
 
@@ -1803,19 +1813,19 @@ bool HTTPProtocol::httpOpenConnection()
       switch ( connectResult() )
       {
         case IO_LookupError:
-          errMsg = m_state.pretty_hostname;
+          errMsg = m_state.hostname;
           errCode = ERR_UNKNOWN_HOST;
           break;
         case IO_TimeOutError:
-          errMsg = i18n("Connection was to %1 at port %2").arg(m_state.pretty_hostname).arg(m_state.port);
+          errMsg = i18n("Connection was to %1 at port %2").arg(m_state.hostname).arg(m_state.port);
           errCode = ERR_SERVER_TIMEOUT;
           break;
         default:
           errCode = ERR_COULD_NOT_CONNECT;
           if (m_state.port != m_iDefaultPort)
-            errMsg = i18n("%1 (port %2)").arg(m_state.pretty_hostname).arg(m_state.port);
+            errMsg = i18n("%1 (port %2)").arg(m_state.hostname).arg(m_state.port);
           else
-            errMsg = m_state.pretty_hostname;
+            errMsg = m_state.hostname;
       }
       error( errCode, errMsg );
       return false;
@@ -1928,25 +1938,14 @@ bool HTTPProtocol::httpOpen()
     // We send a HTTP 1.0 header since some proxies refuse HTTP 1.1 and we don't
     // need any HTTP 1.1 capabilities for CONNECT - Waba
     header = QString("CONNECT %1:%2 HTTP/1.0"
-                     "\r\n").arg( m_request.hostname).arg(m_request.port);
+                     "\r\n").arg( m_request.encoded_hostname).arg(m_request.port);
 
     // Identify who you are to the proxy server!
     if (!m_request.userAgent.isEmpty())
         header += "User-Agent: " + m_request.userAgent + "\r\n";
 
     /* Add hostname information */
-    header += "Host: ";
-    if (m_state.hostname.find(':') != -1)
-    {
-      // This is an IPv6 (not hostname)
-      header += '[';
-      header += m_state.hostname;
-      header += ']';
-    }
-    else
-    {
-      header += m_state.hostname;
-    }
+    header += "Host: " + m_state.encoded_hostname;
 
     if (m_state.port != m_iDefaultPort)
       header += QString(":%1").arg(m_state.port);
@@ -2165,18 +2164,7 @@ bool HTTPProtocol::httpOpen()
 
 
     /* support for virtual hosts and required by HTTP 1.1 */
-    header += "Host: ";
-    if (m_state.hostname.find(':') != -1)
-    {
-      // This is an IPv6 (not hostname)
-      header += '[';
-      header += m_state.hostname;
-      header += ']';
-    }
-    else
-    {
-      header += m_state.hostname;
-    }
+    header += "Host: " + m_state.encoded_hostname;
 
     if (m_state.port != m_iDefaultPort)
       header += QString(":%1").arg(m_state.port);
@@ -2327,7 +2315,7 @@ bool HTTPProtocol::httpOpen()
     {
        kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen: sendOk==false."
                         " Connnection broken !" << endl;
-       error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
+       error( ERR_CONNECTION_BROKEN, m_state.hostname );
        return false;
     }
   }
@@ -2337,7 +2325,7 @@ bool HTTPProtocol::httpOpen()
   if ( moreData || davData )
     res = sendBody();
 
-  infoMessage(i18n("%1 contacted. Waiting for reply...").arg(m_request.pretty_hostname));
+  infoMessage(i18n("%1 contacted. Waiting for reply...").arg(m_request.hostname));
 
   return res;
 }
@@ -2374,7 +2362,7 @@ bool HTTPProtocol::readHeader()
         // Error, delete cache entry
         kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
                       << "Could not access cache to obtain mimetype!" << endl;
-        error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
+        error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
 
@@ -2388,7 +2376,7 @@ bool HTTPProtocol::readHeader()
         // Error, delete cache entry
         kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
                       << "Could not access cached data! " << endl;
-        error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
+        error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
 
@@ -2450,7 +2438,7 @@ bool HTTPProtocol::readHeader()
   if (!waitForResponse(m_remoteRespTimeout))
   {
      // No response error
-     error( ERR_SERVER_TIMEOUT , m_state.pretty_hostname );
+     error( ERR_SERVER_TIMEOUT , m_state.hostname );
      return false;
   }
   
@@ -2481,7 +2469,7 @@ bool HTTPProtocol::readHeader()
     }
 
     kdDebug(7113) << "HTTPProtocol::readHeader: Connection broken !" << endl;
-    error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
 
@@ -3540,11 +3528,11 @@ bool HTTPProtocol::sendBody()
 
   if ( result < 0 )
   {
-    error( ERR_ABORTED, m_request.pretty_hostname );
+    error( ERR_ABORTED, m_request.hostname );
     return false;
   }
 
-  infoMessage( i18n( "Sending data to %1" ).arg( m_request.pretty_hostname ) );
+  infoMessage( i18n( "Sending data to %1" ).arg( m_request.hostname ) );
 
   QString size = QString ("Content-Length: %1\r\n\r\n").arg(length);
   kdDebug( 7113 ) << "(" << m_pid << ")" << size << endl;
@@ -3555,7 +3543,7 @@ bool HTTPProtocol::sendBody()
   {
     kdDebug( 7113 ) << "(" << m_pid << ") Connection broken when sending "
                     << "content length: (" << m_state.hostname << ")" << endl;
-    error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
 
@@ -3566,7 +3554,7 @@ bool HTTPProtocol::sendBody()
   {
     kdDebug(7113) << "(" << m_pid << ") Connection broken when sending message body: ("
                   << m_state.hostname << ")" << endl;
-    error( ERR_CONNECTION_BROKEN, m_state.pretty_hostname );
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
 
@@ -3891,13 +3879,13 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     if ( (m_iSize > 0) && (m_iSize != NO_SIZE)) {
        totalSize(m_iSize);
        infoMessage( i18n( "Retrieving %1 from %2...").arg(KIO::convertSize(m_iSize))
-         .arg( m_request.pretty_hostname ) );
+         .arg( m_request.hostname ) );
     }
     else
        totalSize ( 0 );
   }
   else
-    infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.pretty_hostname ) );
+    infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.hostname ) );
 
   if (m_request.bCachedRead)
   {
@@ -4018,7 +4006,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       // Oh well... log an error and bug out
       kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1 sz=" << (int)sz
                     << " Connnection broken !" << endl;
-      error(ERR_CONNECTION_BROKEN, m_state.pretty_hostname);
+      error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
     }
 
@@ -4712,7 +4700,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
       info.verifyPath = false;
       info.digestInfo = m_strAuthorization;
       info.commentLabel = i18n( "Site:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.pretty_hostname );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
     }
   }
   else if ( m_responseCode == 407 )
@@ -4729,7 +4717,7 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
       info.verifyPath = false;
       info.digestInfo = m_strProxyAuthorization;
       info.commentLabel = i18n( "Proxy:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.prettyHost() );
+      info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
     }
   }
 }
@@ -4748,7 +4736,7 @@ bool HTTPProtocol::getAuthorization()
      if (m_request.bErrorPage)
         errorPage();
      else
-        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.").arg(m_request.pretty_hostname));
+        error( ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.").arg(m_request.hostname));
      return false;
   }
 

@@ -76,7 +76,7 @@ public:
     }
     
     QString hostname;
-    QString pretty_hostname;
+    QString encoded_hostname;
     short unsigned int port;
     QString user;
     QString passwd;
@@ -122,7 +122,7 @@ public:
     }
     
     QString hostname;
-    QString pretty_hostname;
+    QString encoded_hostname;
     short unsigned int port;
     QString user;
     QString passwd;
