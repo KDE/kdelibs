@@ -1413,7 +1413,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
 
   QString u = m_strProtocol;
   if (!u.isEmpty())
-     u += ":";
+    u += ":";
 
   if ( hasHost() )
   {
@@ -1430,17 +1430,17 @@ QString KURL::url( int _trailing, int encoding_hint ) const
     }
     if ( m_iUriMode == URL )
     {
-    bool IPv6 = (m_strHost.find(':') != -1);
-    if (IPv6)
-       u += '[' + m_strHost + ']';
-    else
-       u += encodeHost(m_strHost, true, encoding_hint);
-    if ( m_iPort != 0 ) {
-      QString buffer;
-      buffer.sprintf( ":%u", m_iPort );
-      u += buffer;
+      bool IPv6 = (m_strHost.find(':') != -1);
+      if (IPv6)
+        u += '[' + m_strHost + ']';
+      else
+        u += encodeHost(m_strHost, true, encoding_hint);
+      if ( m_iPort != 0 ) {
+        QString buffer;
+        buffer.sprintf( ":%u", m_iPort );
+        u += buffer;
+      }
     }
-  }
     else
     {
       u += m_strHost;
@@ -1448,7 +1448,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
   }
 
   if ( m_iUriMode == URL )
-  u += encodedPathAndQuery( _trailing, false, encoding_hint );
+    u += encodedPathAndQuery( _trailing, false, encoding_hint );
   else
     u += m_strPath;
 
