@@ -2,7 +2,7 @@
  * This file is part of the KDE project
  *
  * Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
- * Copyright (C) 2003 Stephan Kulow (coolo@kde.org)
+ * Copyright (C) 2003,2004 Stephan Kulow (coolo@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,17 +22,13 @@
  */
 
 #include <stdlib.h>
-#include <kapplication.h>
-#include <qfile.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <sys/resource.h>
 #include <unistd.h>
-// to be able to delete a static protected member pointer in kbrowser...
-// just for memory debugging
-#define protected public
-#undef protected
 
+#include <kapplication.h>
+#include <qfile.h>
 #include "test_regression.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -420,7 +416,6 @@ int main(int argc, char *argv[])
         }
     }
 
-
     // create widgets
     KHTMLFactory *fac = new KHTMLFactory();
     KMainWindow *toplevel = new KMainWindow();
@@ -770,7 +765,7 @@ QPixmap RegressionTest::outputPixmap()
 {
     int ew = m_part->view()->contentsWidth();
     int eh = m_part->view()->contentsHeight();
-    QPixmap paintBuffer(ew,eh);
+    QPixmap paintBuffer(ew, eh, -1, QPixmap::NoOptim );
 
     QPainter* tp = new QPainter;
     tp->begin( &paintBuffer );
@@ -783,32 +778,32 @@ QPixmap RegressionTest::outputPixmap()
     return paintBuffer;
 }
 
-bool RegressionTest::pixmapsSame( const QPixmap &lhs, const QPixmap &rhs )
+bool RegressionTest::pixmapsSame( const QImage &lhsi, const QPixmap &rhs )
 {
-    if ( lhs.width() != rhs.width() || lhs.height() != rhs.height() ) {
-        kdDebug() << "dimensions different " << lhs.size() << " " << rhs.size() << endl;
+    if ( lhsi.width() != rhs.width() || lhsi.height() != rhs.height() ) {
+        kdDebug() << "dimensions different " << lhsi.size() << " " << rhs.size() << endl;
         return false;
     }
 
-    QImage lhsi = lhs.convertToImage();
-    QImage rhsi = rhs.convertToImage();
+    QImage rhsi = rhs.convertToImage().convertDepth( 32 );
     int bytes = lhsi.bytesPerLine();
     if ( bytes != rhsi.bytesPerLine() ) {
         kdDebug() << "different number of bytes per line\n";
         return false;
     }
 
-    for ( int i = 0; i < lhs.height(); ++i )
+    for ( int y = 0; y < lhsi.height(); ++y )
     {
-        if ( memcmp( lhsi.scanLine( i ), rhsi.scanLine( i ), bytes ) ) {
-            for ( int x = 0; x < rhs.width(); ++x ) {
-                if ( lhsi.pixel ( x, i ) != rhsi.pixel( x, i ) ) {
-                    kdDebug() << "pixel (" << x << ", " << i << ") is different " << QColor( lhsi.pixel ( x, i ) ) << " " << QColor( rhsi.pixel ( x, i ) ) << endl;
+        if ( memcmp( lhsi.scanLine( y ), rhsi.scanLine( y ), bytes ) ) {
+            for ( int x = 0; x < rhsi.width(); ++x ) {
+                if ( lhsi.pixel ( x, y ) != rhsi.pixel( x, y ) ) {
+                    kdDebug() << "pixel (" << x << ", " << y << ") is different " << QColor( lhsi.pixel ( x, y ) ) << " " << QColor( rhsi.pixel ( x, y ) ) << endl;
                     return false;
                 }
             }
         }
     }
+
     kdDebug() << "pixmaps are the same\n";
     return true;
 }
@@ -875,7 +870,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
-        outputPixmap().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG");
+        outputPixmap().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 100);
     } else {
         // compare with output file
         if ( m_known_failures & DomFailure)
@@ -885,12 +880,12 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
-#if 0
-        QPixmap baseline;
+#if 1
+        QImage baseline;
         baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
         QPixmap output = outputPixmap();
         if ( !pixmapsSame( baseline, output ) ) {
-            output.save(m_baseDir + "/output/" + filename + "-dump.png","PNG");
+            output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 100);
         }
 #endif
     }
