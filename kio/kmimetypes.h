@@ -46,22 +46,25 @@ public:
   virtual ~KMimeType();
   
   /**
-   * @param _url may be empty.
-   * @returns the path to the icon associated with this MIME type.
+   * Return the filename of the icon associated with the mimetype.
+   * The arguments are unused, but provided so that KMimeType derived classes
+   * can use them (e.g. KFolderType uses the URL to return one out of 2 icons)
+   * @return the path to the icon associated with this MIME type.
    */
   virtual QString icon( const QString& , bool ) const { return m_strIcon; }
   /**
-   * this function differs from the above only in that a KURL may be
+   * This function differs from the above only in that a KURL may be
    * provided instead of a QString for convenience.
    */
   virtual QString icon( const KURL& , bool ) const { return m_strIcon; }
   /**
-   * @param _url may be 0L
-   * @returns the descriptive comment associated with the MIME type, if any.
+   * The arguments are unused, but provided so that KMimeType derived classes
+   * can use them.
+   * @return the descriptive comment associated with the MIME type, if any.
    */
   virtual QString comment( const QString&, bool ) const { return m_strComment; }
   /**
-   * this function differs from the above only in that a KURL may be
+   * This function differs from the above only in that a KURL may be
    * provided instead of a QString for convenience.
    */
   virtual QString comment( const KURL&, bool ) const { return m_strComment; }
@@ -71,6 +74,9 @@ public:
    */
   virtual QString mimeType() const { return m_strName; }
   
+  /**
+   * @return the list of patterns associated to the MIME Type
+   */
   virtual const QStringList& patterns() const { return m_lstPatterns; }
   
   /** 
