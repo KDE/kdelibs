@@ -77,6 +77,7 @@
 7021	kbuildsycoca
 7022	kurifilter
 7023	kurifilter (plugins)
+7024	kio (UIServer)
 
 # 710x	are for kioslaves
 7101	kio_file
