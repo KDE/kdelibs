@@ -22,6 +22,9 @@
 #include <kaction.h>
 #include <kfilepreview.h>
 #include <kfilepreview.moc>
+#include <klocale.h>
+
+#include <qlabel.h>
 
 #include "config-kfile.h"
 

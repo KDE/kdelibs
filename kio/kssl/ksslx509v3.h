@@ -17,7 +17,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
 #ifndef _KSSLX509V3_H
 #define _KSSLX509V3_H
 
@@ -30,17 +30,17 @@ friend class KSSLCertificatePrivate;
 public:
   ~KSSLX509V3();
 
-  bool certTypeCA();
-  bool certTypeSSLCA();
-  bool certTypeEmailCA();
-  bool certTypeCodeCA();
-  bool certTypeSSLClient();
-  bool certTypeSSLServer();
-  bool certTypeNSSSLServer();
-  bool certTypeSMIME();
-  bool certTypeSMIMEEncrypt();
-  bool certTypeSMIMESign();
-  bool certTypeCRLSign();
+  bool certTypeCA()const;
+  bool certTypeSSLCA()const;
+  bool certTypeEmailCA()const;
+  bool certTypeCodeCA()const;
+  bool certTypeSSLClient()const;
+  bool certTypeSSLServer()const;
+  bool certTypeNSSSLServer()const;
+  bool certTypeSMIME()const;
+  bool certTypeSMIMEEncrypt()const;
+  bool certTypeSMIMESign()const;
+  bool certTypeCRLSign()const;
 
 private:
   class KSSLX509V3Private;

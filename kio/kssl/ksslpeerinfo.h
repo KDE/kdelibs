@@ -42,8 +42,8 @@ public:
   void setPeerHost(QString host = QString::null);
 
   void reset();
-  
- 
+
+
 protected:
   KSSLPeerInfo();
 

@@ -31,7 +31,7 @@
 class KZipFileEntry;
 /**
  *   This class implements a kioslave to acces ZIP files from KDE.
- *   You can use it in IO_ReadOnly or in IO_WriteOnly mode, and it 
+ *   You can use it in IO_ReadOnly or in IO_WriteOnly mode, and it
  *   behaves just as expected.
  *   It can also be used in IO_ReadWrite mode, in this case one can
  *   append files to an existing zip archive. when you append new files, which
@@ -81,13 +81,13 @@ public:
      * Null if you used the QIODevice constructor.
      * @return the zip's file name, or null if a QIODevice is used
      */
-    QString fileName() { return m_filename; }
+    QString fileName()const { return m_filename; }
 
     /**
      * Describes the Zip's compression type.
      */
     enum Compression { NoCompression = 0,     ///< Uncompressed.
-		       DeflateCompression = 1 ///< Deflate compression method. 
+		       DeflateCompression = 1 ///< Deflate compression method.
     };
 
 
@@ -120,7 +120,7 @@ public:
     virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data ); // BC: remove reimplementation for KDE-4.0
 
     /**
-     * Alternative method for writing: call prepareWriting(), then feed the data 
+     * Alternative method for writing: call prepareWriting(), then feed the data
      * in small chunks using @ref writeData(), and call doneWriting() when done.
      * @param name can include subdirs e.g. path/to/the/file
      * @param user the user owning the file

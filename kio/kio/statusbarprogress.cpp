@@ -19,10 +19,13 @@
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qwidgetstack.h>
+#include <qpushbutton.h>
+#include <qlabel.h>
 
 #include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kprogress.h>
 
 #include "jobclasses.h"
 #include "statusbarprogress.h"

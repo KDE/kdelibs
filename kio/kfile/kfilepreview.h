@@ -23,7 +23,6 @@
 #ifndef _KFILEPREVIEW_H
 #define _KFILEPREVIEW_H
 
-#include <kfileview.h>
 #include <kfileitem.h>
 #include <kfilepreview.h>
 #include <kfileiconview.h>
@@ -34,10 +33,7 @@
 #include <qwidget.h>
 
 #include <qstring.h>
-#include <qlabel.h>
 
-#include <klocale.h>
-#include <kdebug.h>
 #include <kurl.h>
 
 /*!

@@ -19,15 +19,13 @@
 #ifndef __statusbarprogress_h__
 #define __statusbarprogress_h__
 
-#include <qlabel.h>
-#include <qpushbutton.h>
-
-#include <kprogress.h>
-
 #include "progressbase.h"
 
 class QWidgetStack;
 class QBoxLayout;
+class QPushButton;
+class QLabel;
+class KProgress;
 
 namespace KIO {
 

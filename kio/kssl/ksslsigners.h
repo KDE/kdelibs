@@ -38,7 +38,7 @@ public:
              bool email,
              bool code);
 
-  bool addCA(QString cert,
+  bool addCA(const QString &cert,
              bool ssl,
              bool email,
              bool code);
@@ -47,25 +47,25 @@ public:
 
   bool useForSSL(KSSLCertificate& cert);
 
-  bool useForSSL(QString subject);
+  bool useForSSL(const QString &subject);
 
   bool useForEmail(KSSLCertificate& cert);
 
-  bool useForEmail(QString subject);
+  bool useForEmail(const QString &subject);
 
   bool useForCode(KSSLCertificate& cert);
 
-  bool useForCode(QString subject);
+  bool useForCode(const QString &subject);
 
   bool remove(KSSLCertificate& cert);
 
-  bool remove(QString subject);
+  bool remove(const QString &subject);
 
   QStringList list();
 
-  QString getCert(QString subject);
+  QString getCert(const QString &subject);
 
-  bool setUse(QString subject, bool ssl, bool email, bool code);
+  bool setUse(const QString &subject, bool ssl, bool email, bool code);
 
 private:
   class KSSLSignersPrivate;

@@ -114,7 +114,7 @@ QRegExp rx;
 		// First make sure that there are at least two valid parts
 		// after the wildcard (*).
 		QStringList parts = QStringList::split('.', cn, false);
-    
+
 		while(parts.count() > 2)
 			parts.remove(parts.begin());
 
@@ -130,7 +130,7 @@ QRegExp rx;
 		// foo.example.com but not bar.foo.example.com
 		// (ie. they must have the same number of parts)
 		if (QRegExp(cn, false, true).exactMatch(d->peerHost) &&
-		    QStringList::split('.', cn, false).count() == 
+		    QStringList::split('.', cn, false).count() ==
 		    QStringList::split('.', d->peerHost, false).count())
 			return true;
 
