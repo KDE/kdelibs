@@ -8,6 +8,10 @@ set -e
 case "$1" in
     install)
       if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
+        if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
+          rm -rf /etc/kde2/applnk > /dev/null 2>&1
+          mv /usr/share/applnk /etc/kde2/applnk > /dev/null 2>&1
+        fi
         rm -rf /usr/share/applnk > /dev/null 2>&1
       fi
     ;;

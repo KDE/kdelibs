@@ -1,8 +1,26 @@
+kdelibs (4:2.0-20001011-0) unstable; urgency=low
+ 
+  * more upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 11 Oct 2000 03:45:00 -0700
+                                                                                
+kdelibs (4:2.0-20001009-3) unstable; urgency=low
+ 
+  * more upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 10 Oct 2000 17:00:00 -0700
+                                                                                
+kdelibs (4:2.0-20001009-2) unstable; urgency=low
+ 
+  * more upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 10 Oct 2000 00:00:00 -0700
+                                                                                
 kdelibs (4:2.0-20001009-0) unstable; urgency=low
  
-  * KDE 2.0
+  * KDE 2.0 RC2
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Oct 2000 00:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Oct 2000 08:00:00 -0700
                                                                                 
 kdelibs (4:2.0-20001006-4) unstable; urgency=low
  
