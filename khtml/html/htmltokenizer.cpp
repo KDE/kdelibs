@@ -107,7 +107,6 @@ void HTMLTokenizer::begin()
     startTag = false;
     tquote = NoQuote;
     searchCount = 0;
-    title = false;
     charEntity = false;
 }
 
@@ -508,7 +507,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		// we remove additional quotes directly following the
 		// end of the quoted section. Helps with bad html as
 		// <tag attr="value"" nextattr="..." ...>
-		while(src.length() > 1 && 
+		while(src.length() > 1 &&
 		      (src[1] == '\'' || src[1] == '\"'))
 		    ++src;
 	    }
@@ -883,10 +882,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		else if ( tagID == ID_TEXTAREA )
 		{
 		    textarea = beginTag;
-		}
-		else if ( tagID == ID_TITLE )
-		{
-		    title = beginTag;
 		}
 		else if ( tagID == ID_SCRIPT )
 		{

@@ -164,9 +164,6 @@ protected:
     // Flag to say that we are just parsing an attribute
     bool parseAttr;
 
-    // Are we in a <title> ... </title> block
-    bool title;
-
     // Are we in a <pre> ... </pre> block
     bool pre;
 
