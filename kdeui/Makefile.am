@@ -23,7 +23,9 @@ INCLUDES= -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES)
 EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -version-info 3:0  
+libkdeui_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0  
+# we should get this to work when libtool 1.3 is released
+# libkdeui_la_LIBADD = ../kdecore/libkdecore.la $(LIB_QT)
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \
