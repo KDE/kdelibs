@@ -139,6 +139,8 @@ class KLibWrapPrivate;
  */
 class KLibLoader : public QObject
 {
+    friend class KLibrary;
+
     Q_OBJECT
 public:
     /**
