@@ -77,11 +77,23 @@ KJSO *DOMDocument::get(const CString &p) const
 {
   KJSO *result;
 
-  fprintf(stderr, "DOMDocument::get(%s)\n", p.ascii());
-
   // look in base class (Document)
   Ptr tmp = new DOMNode(doc);
   result = tmp->get(p);
+
+  return result;
+}
+
+KJSO *DOMElement::get(const CString &p) const
+{
+  KJSO *result;
+
+  if (p == "tagName")
+    result = new KJSString(element.tagName());
+  else {
+    Ptr tmp = new DOMNode(element);
+    return tmp->get(p);
+  }
 
   return result;
 }

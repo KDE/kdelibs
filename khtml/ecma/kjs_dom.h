@@ -63,6 +63,7 @@ namespace KJS {
   class DOMElement : public HostObject {
   public:
     DOMElement(DOM::Element e) : element(e) { }
+    virtual KJSO *get(const CString &p) const;
   private:
     DOM::Element element;
   };

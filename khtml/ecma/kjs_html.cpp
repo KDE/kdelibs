@@ -175,8 +175,10 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
     str = element.dir();
   else if (p == "className")
     str = element.className();
-  else
-    return new KJSUndefined();
+  else {
+    Ptr tmp = new DOMElement(element);
+    return tmp->get(p);
+  }
 
   return new KJSString(str);
 }
