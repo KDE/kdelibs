@@ -719,7 +719,7 @@ void DCOPServer::removeConnection( void* data )
 	IceConn iceConn = conn->waitingForReply.take(0);
 	if (iceConn) {
 	    DCOPConnection* target = clients.find( iceConn );
-	    qWarning("DCOP aborting call from '%s' to '%s'", target->appId.data(), conn->appId.data() );
+	    qWarning("DCOP aborting call from '%s' to '%s'", target ? target->appId.data() : "<unknown>" , conn->appId.data() );
 	    QByteArray reply;
 	    DCOPMsg *pMsg;
 	    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
@@ -735,7 +735,7 @@ void DCOPServer::removeConnection( void* data )
 	IceConn iceConn = conn->waitingForDelayedReply.take();
 	if (iceConn) {
 	    DCOPConnection* target = clients.find( iceConn );
-	    qWarning("DCOP aborting (delayed) call from '%s' to '%s'", target->appId.data(), conn->appId.data() );
+	    qWarning("DCOP aborting (delayed) call from '%s' to '%s'", target ? target->appId.data() : "<unknown>", conn->appId.data() );
 	    QByteArray reply;
 	    DCOPMsg *pMsg;
 	    IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
