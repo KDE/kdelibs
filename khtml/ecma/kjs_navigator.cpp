@@ -164,9 +164,9 @@ KJSO Navigator::get(const UString &p) const
     return String((userAgent.find(QString::fromLatin1("Win"),0,false)==-1) ?
            QString::fromLatin1("X11") : QString::fromLatin1("Win32"));
   } else if (p == "plugins") {
-      return KJSO(new Plugins());
-  } else if (p == "mimetypes") {
       kdDebug() << "navigator.plugins" << endl;
+      return KJSO(new Plugins());
+  } else if (p == "mimeTypes") {
       return KJSO(new MimeTypes());
   } else
     return Undefined();
@@ -196,6 +196,8 @@ PluginBase::PluginBase()
             plugin->file = c.readEntry("file");
             plugin->desc = c.readEntry("description");
 
+            //kdDebug() << "plugin : " << plugin->name << " - " << plugin->desc << endl;
+
             plugins->append( plugin );
 
             // get mime types from string
@@ -210,6 +212,7 @@ PluginBase::PluginBase()
 
                 token = tokens.begin();
                 mime->type = (*token).lower();
+                //kdDebug() << "mime->type=" << mime->type << endl;
                 ++token;
 
                 mime->suffixes = *token;
@@ -283,8 +286,10 @@ KJSO MimeTypes::get(const UString &p) const
         if( ok && i<mimes->count() )
             return KJSO( new MimeType( mimes->at(i) ) );
 
-        // plugin[name]
+        // mimeTypes[name]
+        //kdDebug() << "MimeTypes[" << p.ascii() << "]" << endl;
         for ( MimeTypeInfo *m=mimes->first(); m!=0; m=mimes->next() ) {
+            //kdDebug() << "m->type=" << m->type.ascii() << endl;
             if ( m->type==p )
                 return KJSO( new MimeType( m ) );
         }
@@ -312,8 +317,12 @@ KJSO Plugin::get(const UString &p) const
         // plugin[#]
         bool ok;
         unsigned int i = p.toULong(&ok);
+        //kdDebug() << "Plugin::get plugin[" << i << "]" << endl;
         if( ok && i<m_info->mimes.count() )
+        {
+            //kdDebug() << "returning mimetype " << m_info->mimes.at(i)->type << endl;
             return KJSO( new MimeType( m_info->mimes.at(i) ) );
+        }
 
         // plugin["name"]
         for ( PluginBase::MimeTypeInfo *m=m_info->mimes.first();
