@@ -348,7 +348,7 @@ void KDialogBase::makeRelay()
   if( mTile != 0 )
   {
     connect( mTile, SIGNAL(pixmapChanged()), this, SLOT(updateBackground()) );
-    connect( kapp, SIGNAL(aboutToQuit()), mTile, SLOT(cleanup()) );
+    connect( qApp, SIGNAL(aboutToQuit()), mTile, SLOT(cleanup()) );
   }
 }
 
@@ -1006,7 +1006,8 @@ void KDialogBase::setIconListAllVisible( bool state )
 void KDialogBase::slotHelp()
 {
   emit helpClicked();
-  kapp->invokeHelp( mAnchor, mHelpApp );
+  if ( kapp ) // may be null when used inside designer
+      kapp->invokeHelp( mAnchor, mHelpApp );
 }
 
 
