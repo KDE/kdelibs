@@ -354,7 +354,20 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
   
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( !p )
+  {
+    // FIXME: The bgpixmap should use the cache too...
+    if ( !bgPixmapURL.isEmpty() )
+    {
+	// Did the background image arrive ?
+	if ( strcmp( bgPixmapURL, _url ) == 0 )
+	{
+	    bgPixmap.load( _filename );					
+	    bgPixmapURL = 0;
+	    scheduleUpdate( true );
+	}
+    }    
     return;
+  }
 
   assert( !p->m_buffer.isOpen() );
   
