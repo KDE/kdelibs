@@ -163,10 +163,6 @@ int AudioIONull::getParam(AudioParam p)
 				return bytes;
 			break;
 
-		case selectFD:
-				return -1;
-			break;
-
 		default:
 				return param(p);
 			break;

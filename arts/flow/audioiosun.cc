@@ -417,9 +417,6 @@ int AudioIOSun::getParam(AudioParam p)
 		 */
 		return 12;
 
-    case selectFD:
-		return -1;
-
     default:
 		return param(p);
     }

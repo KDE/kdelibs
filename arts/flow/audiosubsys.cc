@@ -490,7 +490,10 @@ void AudioSubSystem::read(void *buffer, int size)
 			select_timeout.tv_usec = selectabs % 1000000;
 
 			FD_ZERO(&readfds);
-			FD_SET(audio_fd,&readfds);
+
+			// if no audio_fd (-1) given, do a pure 50ms sleep
+			if(audio_fd >= 0)
+				FD_SET(audio_fd,&readfds);
 
 			rc = select(audio_fd+1,&readfds,NULL,NULL,&select_timeout);
 		} while(rc == -1 && errno == EINTR);

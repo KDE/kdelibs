@@ -230,9 +230,6 @@ int AudioIONAS::getParam(AudioParam p)
 	case canWrite:
 		return freeBytes;
 		
-	case selectFD:
-		return -1;
-		
 	default:
 		return param(p);
 	}

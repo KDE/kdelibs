@@ -45,7 +45,19 @@ AudioIO::~AudioIO()
 
 int& AudioIO::param(AudioParam param)
 {
-	return d->paramMap[param];
+	/*
+	 * returns d->paramMap[param], initializes new elements with -1 (for those
+	 * parameters not handled explicitely by the derived AudioIO* class).
+	 */
+
+	map<AudioIO::AudioParam, int>::iterator pi = d->paramMap.find(param);
+	if(pi == d->paramMap.end())
+	{
+		int& result = d->paramMap[param];
+		result = -1;
+		return result;
+	}
+	else return pi->second;
 }
 
 string& AudioIO::paramStr(AudioParam param)

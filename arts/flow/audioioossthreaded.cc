@@ -511,10 +511,6 @@ int AudioIOOSSThreaded::getParam(AudioParam p)
 			return writerQueue.freeChunks() * writerQueue.chunkSize();
 			break;
 
-		case selectFD:
-			return -1 /* audio_fd */;
-			break;
-
 		case autoDetect:
 			/* It compiles, but Posix Threads don't work everywhere */
 			return 4;
