@@ -5,8 +5,8 @@ You can see the difference by checking daemon's name: Apple's one (the correct o
 Howl's one is named 'mDNSResponder'.
 
 1) download mDNSResponder 
- - from Apple site (http://www.opensource.apple.com/darwinsource/tarballs/apsl/mDNSResponder-87.tar.gz)
- - or you can get tarball from: http://helios.et.put.poznan.pl/~jstachow/pub/mDNSResponder-87.tar.gz
+ - from Apple site (http://www.opensource.apple.com/darwinsource/tarballs/apsl/mDNSResponder-98.tar.gz)
+ - or you can get tarball from: http://helios.et.put.poznan.pl/~jstachow/pub/mDNSResponder-98.tar.gz
     (for those who don't like registration)
 
 2) compile and install
