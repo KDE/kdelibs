@@ -260,7 +260,6 @@ void KTipDialog::showOnStart(bool on)
     setShowOnStart(on);
 }
 
-
 void KTipDialog::setShowOnStart(bool on)
 {
     KConfigGroup config(kapp->config(), "TipOfDay");
@@ -268,4 +267,25 @@ void KTipDialog::setShowOnStart(bool on)
     config.sync();
 }
 
+bool KTipDialog::eventFilter(QObject *o, QEvent *e)
+{
+	if (o == _tipText && e->type()== QEvent::KeyPress &&
+		(((QKeyEvent *)e)->key() == Key_Return ||
+		((QKeyEvent *)e)->key() == Key_Space ))
+		accept();
+		    
+	// If the user presses Return or Space, we close the dialog as if the
+	// default button was pressed even if the KTextBrowser has the keyboard
+	// focus. This could have the bad side-effect that the user cannot use the
+	// keyboard to open urls in the KTextBrowser, so we just let it handle
+	// the key event _additionally_. (Antonio)
+
+	return QWidget::eventFilter( o, e );
+}
+				
+void KTipDialog::virtual_hook( int id, void* data )
+{
+	KDialog::virtual_hook( id, data );
+}
+				
 #include "ktip.moc"

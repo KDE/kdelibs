@@ -142,6 +142,10 @@ public:
      */
     static void setShowOnStart(bool show);
 
+protected:
+    bool eventFilter(QObject *, QEvent *);
+    virtual void virtual_hook( int id, void* data );
+
 private slots:
     void nextTip();
     void prevTip();
