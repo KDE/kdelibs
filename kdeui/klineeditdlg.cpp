@@ -18,6 +18,7 @@
 */
 #include <config.h>
 
+#include <qvalidator.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qlabel.h>
@@ -44,7 +45,9 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
   edit = new KLineEdit( plainPage(), 0L );
   edit->setMinimumWidth(edit->sizeHint().width() * 3);
-  connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
+  //  connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
+  connect( edit, SIGNAL(textChanged(const QString&)),
+	   SLOT(slotTextChanged(const QString&)) );
   topLayout->addWidget( edit, 1 );
 
   connect( this, SIGNAL(user1Clicked()), this, SLOT(slotClear()) );
@@ -127,15 +130,31 @@ void KLineEditDlg::slotClear()
     edit->setText(QString::null);
 }
 
+void KLineEditDlg::slotTextChanged(const QString &text)
+{
+  bool on;
+  if ( edit->validator() ) {
+    QString str = edit->text();
+    int index = edit->cursorPosition();
+    on = ( edit->validator()->validate( str, index )
+	   == QValidator::Acceptable );
+  } else {
+    on = !text.isEmpty();
+  }
+  enableButtonOK( on );
+}
+
 QString KLineEditDlg::text() const
 {
     return edit->text();
 }
 
 QString KLineEditDlg::getText(const QString &_text, const QString& _value,
-                              bool *ok, QWidget *parent )
+                              bool *ok, QWidget *parent, QValidator *_validator )
 {
     KLineEditDlg dlg(_text, _value, parent );
+    dlg.lineEdit()->setValidator( _validator );
+    dlg.slotTextChanged( _value ); // trigger validation
 
     bool ok_ = dlg.exec() == QDialog::Accepted;
     if ( ok )
@@ -147,10 +166,12 @@ QString KLineEditDlg::getText(const QString &_text, const QString& _value,
 
 QString KLineEditDlg::getText(const QString &_caption, const QString &_text,
                               const QString& _value,
-                              bool *ok, QWidget *parent )
+                              bool *ok, QWidget *parent, QValidator *_validator )
 {
     KLineEditDlg dlg( _text, _value, parent );
     dlg.setCaption( _caption );
+    dlg.lineEdit()->setValidator( _validator );
+    dlg.slotTextChanged( _value ); // trigger validation
 
     bool ok_ = dlg.exec() == QDialog::Accepted;
     if ( ok )
