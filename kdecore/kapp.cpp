@@ -163,7 +163,7 @@ void KApplication::init()
   }
 
   // try to read a global application file
-  QString aGlobalAppConfigName = locate( "config", appName() + "rc" );
+  QString aGlobalAppConfigName = kde_configdir() + "/" + name() + "rc";
 
   // try to open read-only
   bool bSuccess = !::access(aGlobalAppConfigName.ascii(), R_OK);
