@@ -221,28 +221,18 @@ void KBookmarkBar::slotBookmarkSelected()
 static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
                            KToolBarButton* &b, KToolBar* &tb, KAction* &a, int &index)
 {
-    QPtrListIterator<KAction> it( actions );
     kdDebug(7043) << "pos() == " << pos << endl;
     bool found = false;
 
     // search for a toolbarbutton at pos
+    KToolBar *ttb = dynamic_cast<KToolBar*>(actions.first()->container(0));
+    Q_ASSERT(ttb);
+    b = dynamic_cast<KToolBarButton*>(ttb->childAt(pos));
 
-    // assumption that .first() c + b are consistant with 
-    // rest of collection can be made as its non hierchical
-    // and only one bookmarks bar is used. possibly more can
-    // exist though, so, this should be fixed somehow at some
-    // point in the future.
+    QPtrListIterator<KAction> it( actions );
     for (; (*it); ++it )
-    {
-        a = (*it);
-        QWidget *c = a->container(0);
-        b = dynamic_cast<KToolBarButton*>(c->childAt(pos));
-        if (found = (b && a->isPlugged(c, b->id())), found)
-        {
-            tb = dynamic_cast<KToolBar*>(c);
+        if (found = (b && (*it)->isPlugged(ttb, b->id())), found)
             break;
-        }
-    }
 
     // no button found
     // TODO - this possibly happens on short toolbars,
@@ -250,41 +240,46 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     if (!found)
         return false;
 
-    index = tb->itemIndex(b->id());
+    index = ttb->itemIndex(b->id());
     QRect r = b->geometry();
     kdDebug(7043) << "found " << b << " at " << r << " with index " << index << endl;
     kdDebug(7043) << "id was == " << b->id() << endl;
 
     // if in 0th position or in second half of button then we are done
     if (pos.x() > ((r.left() + r.right())/2) || index == 0)
+    {
+        a = (*it);
+        tb = ttb;
         return true;
+    }
 
     index--;
     // we have the index now work out the rest
-    int id = tb->idAt(index);
+    int id = ttb->idAt(index);
     kdDebug(7043) << "id for prev index == " << id << endl;
 
     // don't drop on our own seperator, 
     // if found we are already prev anyway
     if (id == -9999) // fixme
+    {
+        index++;
         return false;
+    }
 
-    b = tb->getButton(id);
+    b = ttb->getButton(id);
     Q_ASSERT(id == b->id());
     it.toFirst();
     kdDebug(7043) << "searching for id == " << id << endl;
     found = false;
     for (; (*it); ++it )
-    {
-        a = (*it);
-        QWidget *c = a->container(0);
-        if (found = a->isPlugged(c, id), found)
+        if (found = (*it)->isPlugged(ttb, id), found)
             break;
-    }
     // this case is probably bad, umm... assert?
     if (!found)
         return false;
-    index = tb->itemIndex(id);
+    a = (*it);
+    tb = ttb;
+    index = ttb->itemIndex(id);
     kdDebug(7043) << "new index = " << index << endl;
     return found;
 }
