@@ -35,6 +35,9 @@ namespace KJS {
     int filled;
     void** mem;
     CollectorBlock *prev, *next;
+#ifdef KJS_DEBUG_MEM
+    static int count;
+#endif
   };
 
 }; // namespace
@@ -49,12 +52,18 @@ CollectorBlock::CollectorBlock(int s)
 {
   mem = new void*[size];
   memset(mem, 0, size * sizeof(void*));
+#ifdef KJS_DEBUG_MEM
+  count++;
+#endif
 }
 
 CollectorBlock::~CollectorBlock()
 {
   delete [] mem;
   mem = 0L;
+#ifdef KJS_DEBUG_MEM
+  count--;
+#endif
 }
 
 CollectorBlock* Collector::root = 0L;
@@ -62,6 +71,7 @@ CollectorBlock* Collector::currentBlock = 0L;
 unsigned long Collector::filled = 0;
 unsigned long Collector::softLimit = KJS_MEM_INCREMENT;
 #ifdef KJS_DEBUG_MEM
+int CollectorBlock::count = 0;
 bool Collector::collecting = false;
 #endif
 
@@ -97,7 +107,7 @@ void* Collector::allocate(size_t s)
     block = block->next;
 
   if (block->filled >= block->size) {
-#ifdef KJS_DEBUG_MEM
+#if defined(KJS_DEBUG_MEM) && defined(KJS_VERBOSE)
     printf("allocating new block of size %d\n", block->size);
 #endif
     CollectorBlock *tmp = new CollectorBlock(BlockSize);
@@ -127,14 +137,14 @@ void* Collector::allocate(size_t s)
 void Collector::collect()
 {
 #ifdef KJS_DEBUG_MEM
-  printf("collecting %d objects total\n", Imp::count);
+  printf("collecting: %d objects, %lu allocated, %d blocks\n", Imp::count, filled, CollectorBlock::count);
   collecting = true;
 #endif
 
   // MARK: first set all ref counts to 0 ....
   CollectorBlock *block = root;
   while (block) {
-#ifdef KJS_DEBUG_MEM
+#if defined(KJS_DEBUG_MEM) && defined(KJS_VERBOSE)
     printf("cleaning block filled %d out of %d\n", block->filled, block->size);
 #endif
     Imp **r = (Imp**)block->mem;
@@ -181,6 +191,10 @@ void Collector::collect()
 	del++;
       }
     }
+#if defined(KJS_DEBUG_MEM) && defined(KJS_VERBOSE)
+    if (del)
+	printf("deleted %d objects\n", del);
+#endif
     filled -= del;
     block->filled -= del;
     block = block->next;
@@ -207,5 +221,47 @@ void Collector::collect()
 
 #ifdef KJS_DEBUG_MEM
   collecting = false;
+  printf("remaining: %d objects, %lu allocated, %d blocks\n", Imp::count, filled, CollectorBlock::count);
+  printf("memory: %d KJS objects, %d Lists, softlimit=%lu\n", KJSO::count, List::count, softLimit);
 #endif
 }
+
+#ifdef KJS_DEBUG_MEM
+
+namespace KJS {
+  // This must be kept in sync with object.cpp
+  struct Property {
+    UString name;
+    Imp *object;
+    int attribute;
+    Property *next;
+  };
+};
+
+
+void Collector::dumpObjects()
+{
+  printf("dumping: %ld objects in %d blocks\n", filled, CollectorBlock::count);
+  CollectorBlock *block = root;
+  while (block) {
+    Imp **r = (Imp**)block->mem;
+    assert(r);
+    for (int i = 0; i < block->size; i++, r++)
+      if (*r) {
+        Imp *o = *r;
+	printf(" object at %p, refcount=%d, prototype at %p%s\n", o, o->refcount,
+	  o->prototype(), (o->gcAllowed() ? "" : " (no GC)"));
+	const TypeInfo *info = o->typeInfo();
+	if (info)
+	  printf("  - typeinfo '%s' (%d)\n",info->name,info->type);
+	Property *p = o->prop;
+	while (p) {
+	  printf("  - property '%s' at %p\n",p->name.ascii(),p->object);
+	  p = p->next;
+	}
+      }
+    block = block->next;
+  }
+  printf("dumping: finished\n");
+}
+#endif

@@ -53,10 +53,10 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 {
   if (listener.implementsCall() && static_cast<Window*>(win.imp())->part() ) {
     KJScript *scr = static_cast<Window*>(win.imp())->part()->jScript()->jScript();
+    scr->init(); // set a valid current interpreter
     List args;
     args.append(getDOMEvent(evt));
 
-    scr->init(); // set a valid current interpreter
     KJSO thisVal = getDOMNode(evt.currentTarget());
     List *scope = 0;
     if (thisVal.type() != NullType)

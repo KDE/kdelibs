@@ -34,8 +34,12 @@
 // collection to happen more often, and disable the softLimit increase &
 // out-of-memory testing code in Collector::allocate()
 
+#ifndef KJS_MEM_LIMIT
 #define KJS_MEM_LIMIT 500000
+#endif
+#ifndef KJS_MEM_INCREMENT
 #define KJS_MEM_INCREMENT 1000
+#endif
 
 #include <stdlib.h>
 
@@ -73,6 +77,10 @@ namespace KJS {
     static int size() { return filled; }
 
 #ifdef KJS_DEBUG_MEM
+    /**
+     * @internal
+     */
+    static void dumpObjects();
     /**
      * @internal
      */
