@@ -513,6 +513,15 @@ KSSLCertificateHome::KSSLAuthAction aa;
         ai.keepPassword = false;
         qds << ai;
 
+        if (!d->dcc) {
+           d->dcc = new DCOPClient;
+           d->dcc->attach();
+           if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+              KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                      QStringList() );
+           }
+        }
+
         bool rc = d->dcc->call("kio_uiserver", "UIServer",
                                    "openPassDlg(KIO::AuthInfo)",
                                    authdata, rettype, authval);
