@@ -24,7 +24,7 @@
 // $Id$
 
 #undef DECODE_DEBUG
-#define DECODE_DEBUG
+//#define DECODE_DEBUG
 
 #include "decoder.h"
 using namespace khtml;
