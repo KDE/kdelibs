@@ -229,7 +229,7 @@ void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
 {
     if(!m_styleDecls) m_styleDecls = createDecl( document );
-    m_styleDecls->setLengthProperty(id, value, false, true);
+    m_styleDecls->setLengthProperty(id, stripAttributeGarbage( value ), false, true);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
@@ -398,6 +398,27 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
     if ( !ec )
 	return true;
     return false;
+}
+
+DOMString HTMLElementImpl::stripAttributeGarbage( const DOMString &value )
+{
+    QChar *ch = value.unicode();
+    QChar *endP = ch + value.length();
+    for ( ; ch != endP; ++ch )
+    {
+        if ( ( *ch < '0' || *ch > '9' ) &&
+             *ch != '.' &&
+             *ch != '%' &&
+             *ch != ' ' &&
+             *ch != '*' )
+        {
+            DOMString res = value;
+            res.split( ch - value.unicode() );
+            return res;
+        }
+    }
+
+    return value;
 }
 
 // -------------------------------------------------------------------------
