@@ -242,7 +242,7 @@ QString KFileItem::linkDest() const
     if ( n != -1 )
     {
       buf[ n ] = 0;
-      return QString( buf );
+      return QString::fromLocal8Bit( buf );
     }
   }
   return QString::null;
