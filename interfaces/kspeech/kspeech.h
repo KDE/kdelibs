@@ -29,7 +29,7 @@
  *
  * kspeech - the KDE Text-to-Speech API.
  *
- * @version 1.0 Draft 9
+ * @version 1.0 Draft 10
  *
  * @since KDE 3.4
  *
@@ -158,6 +158,14 @@
      dcop kttsd KSpeech startText 0
    @endverbatim
  *
+ * You can combine the setText and startText commands into a single command.
+ *
+   @verbatim
+     dcop kttsd KSpeech sayText <text> <talker>
+   @endverbatim
+ *
+ * @since KDE 3.5
+ *
  * To stop speaking and rewind to the beginning of the text.
  *
    @verbatim
@@ -215,6 +223,18 @@
              cout << "Starting KTTSD failed with message " << error << endl;
      }
    @endverbatim
+ *
+ * If you want to detect if KTTSD is installed without starting it, use this code.
+ *
+   @verbatim
+     KTrader::OfferList offers = KTrader::self()->query("DCOP/Text-to-Speech", "Name == 'KTTSD'");
+     if (offers.count() > 0)
+     {
+       // KTTSD is installed.
+     }
+   @endverbatim
+ *
+ * Typically, you would do this to hide a menu item or button if KTTSD is not installed.
  *
  * 4.  Make calls to KTTSD in your code.
  *
@@ -587,6 +607,32 @@
  * methods is @e not parsed into sentences.  For this reason, applications
  * should @e not send long messages with these methods.
  *
+ * Sentence Boundary Detection is implemented as a plugin SBD filter.  See
+ * @ref filters for more information.
+ *
+ * @section filters Filters
+ *
+ * Users may specify filters in the kttsmgr GUI.  Filters are plugins that modify the text
+ * to be spoken or change other characteristics of jobs.  Currently, the following filter plugins
+ * are available:
+ *
+ *   - String Replacer.  Permits users to substitute for mispoken words, or vocalize chat
+ *     emoticons.
+ *   - XML Transformer.  Given a particular XML or XHTML format, permits conversion of the
+ *     XML to SSML (Speech Synthesis Markup Language) using XSLT (XML Style Language - Transforms)
+ *     stylesheets.
+ *   - Talker Chooser.  Permits users to redirect jobs from one configured Talker to another
+ *     based on the contents of the job or application that sent it.
+ *
+ * Additional plugins may be available in the future.
+ *
+ * In additional to these regular filters, KTTS also implements Sentence Boundary Detection (SBD)
+ * as a plugin filter.  See @ref sentenceparsing for more information.
+ *
+ * Regular filters are applied to Warnings, Messages, and Text jobs.  SBD filters are
+ * only applied to regular Text jobs; they are not applied to Warnings and Messages.  Screen
+ * Reader Outputs are never filtered.
+ *
  * @section authors Authors
  *
  * @author José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
@@ -744,6 +790,36 @@ class KSpeech : virtual public DCOPObject {
         * @see startText
         */
         virtual uint setText(const QString &text, const QString &talker) = 0;
+
+        /**
+        * Say a plain text job.  This is a convenience method that
+        * combines @ref setText and @ref startText into a single call.
+        * @param text           The message to be spoken.
+        * @param talker         Code for the talker to do the speaking.  Example "en".
+        *                       If NULL, defaults to the user's default plugin.
+        *                       If no plugin has been configured for the specified Talker code,
+        *                       defaults to the closest matching talker.
+        * @return               Job number.
+        *
+        * Plain text is parsed into individual sentences using the current sentence delimiter.
+        * Call @ref setSentenceDelimiter to change the sentence delimiter prior to
+        * calling setText.
+        * Call @ref getTextCount to retrieve the sentence count after calling setText.
+        *
+        * The text may contain speech mark language, such as Sable, JSML, or SSML,
+        * provided that the speech plugin/engine support it.  In this case,
+        * sentence parsing follows the semantics of the markup language.
+        *
+        * The job is marked speakable.
+        * If there are other speakable jobs preceeding this one in the queue,
+        * those jobs continue speaking and when finished, this job will begin speaking.
+        * If there are no other speakable jobs preceeding this one, it begins speaking.
+        *
+        * @see getTextCount
+        *
+        * @since KDE 3.5
+        */
+        virtual uint sayText(const QString &text, const QString &talker) = 0;
 
         /**
         * Adds another part to a text job.  Does not start speaking the text.
@@ -951,7 +1027,7 @@ class KSpeech : virtual public DCOPObject {
         * the job stops speaking, and if the next job in the queue is speakable, it
         * begins speaking.
         *
-        * Depending upon the speech engine and plugin used, speeking may not stop immediately
+        * Depending upon the speech engine and plugin used, speech may not stop immediately
         * (it might finish the current sentence).
         */
         virtual ASYNC stopText(uint jobNum=0) = 0;
@@ -971,7 +1047,7 @@ class KSpeech : virtual public DCOPObject {
         * stops speaking.  Note that if the next job in the queue is speakable, it does
         * not start speaking as long as this job is paused.
         *
-        * Depending upon the speech engine and plugin used, speeking may not stop immediately
+        * Depending upon the speech engine and plugin used, speech may not stop immediately
         * (it might finish the current sentence).
         *
         * @see resumeText
