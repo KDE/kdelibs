@@ -54,11 +54,11 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
 	    this, SLOT(evaluate(const QString &)));
 }
 
-void KJSWorld::evaluate(const QString &s)
+void KJSWorld::evaluate(const QString &code)
 {
-  fprintf(stderr, "KJSWorld::evaluate(%s)\n", s.ascii());
+  fprintf(stderr, "KJSWorld::evaluate(%s)\n", code.ascii());
 
-  lexer = new KJSLexer(s);
+  lexer = new KJSLexer(code);
 
   int parseError = yyparse();
 

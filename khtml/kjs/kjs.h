@@ -33,12 +33,29 @@ namespace KJS {
   class ProgramNode;
 };
 
+/**
+ * @short ECMAScript interpreter
+ *
+ * This library implements ECMAScript. Currently its main aim is to add
+ * JavaScript support to KHTMLWidget.
+ */
 class KJSWorld : public QObject {
   Q_OBJECT
 public:
+  /**
+   * Create a new ECMAScript interpreter. You can later ask it to interprete
+   * code by pass it via @ref #evaluate.
+   * @param w is pointing to the KHTMLWidget you wish the script to operate on.
+   */
   KJSWorld(KHTMLWidget *w);
 public slots:
-  void evaluate(const QString &);
+  /**
+   * Asks the interpreter to evaluate a piece of code. If called more than
+   * once the state (global variables, functions etc.) will be preserved
+   * between each call.
+   * @param code is a string containing the code to be executed.
+   */
+  void evaluate(const QString &code);
 private:
   KHTMLWidget *htmlw;
 
