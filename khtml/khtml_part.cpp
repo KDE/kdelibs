@@ -350,15 +350,15 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   if ( prof == BrowserViewGUI ) {
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n(
-                  "Increase Font Sizes" ), "viewmag+", "CTRL++;CTRL+=", this,
+                  "Increase Font" ), "viewmag+", "CTRL++;CTRL+=", this,
               SLOT( slotIncZoomFast() ), actionCollection(), "incFontSizes" );
-      d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
+      d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font<p>"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
       d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n(
-                  "Decrease Font Sizes" ), "viewmag-", CTRL + Key_Minus, this,
+                  "Decrease Font" ), "viewmag-", CTRL + Key_Minus, this,
               SLOT( slotDecZoomFast() ), actionCollection(), "decFontSizes" );
-      d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
+      d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font<p>"
                                                 "Make the font in this window smaller. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
   }
