@@ -942,8 +942,11 @@ void KApplication::kdisplaySetPalette()
   colgrp.setColor( QColorGroup::HighlightedText, highlightedText);
   colgrp.setColor( QColorGroup::Button, button);
   colgrp.setColor( QColorGroup::ButtonText, buttonText);
+  colgrp.setColor(QColorGroup::Midlight, background.light(110));
+  
   disabledgrp.setColor( QColorGroup::Button, button);
   disabledgrp.setColor( QColorGroup::ButtonText, buttonText);
+  disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
 
   QPalette newPal(colgrp, disabledgrp, colgrp);
   setPalette(newPal, true );
