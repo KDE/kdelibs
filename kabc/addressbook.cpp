@@ -338,11 +338,15 @@ Addressee::List AddressBook::findByName( const QString &name )
 Addressee::List AddressBook::findByEmail( const QString &email )
 {
   Addressee::List results;
+  QStringList mailList;
 
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
-    if ( email == (*it).preferredEmail() ) {
-      results.append( *it );
+    mailList = (*it).emails();    
+    for ( QStringList::Iterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
+      if ( email == (*ite) ) {
+        results.append( *it );
+      }
     }
   }
 
