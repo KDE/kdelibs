@@ -917,6 +917,8 @@ void KTMainWindow::createGUI( const QString &xmlfile )
     conserveMemory();
 
     setUpdatesEnabled( true );
+
+    updateRects();
 }
 
 #include "ktmainwindow.moc"
