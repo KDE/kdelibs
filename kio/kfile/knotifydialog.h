@@ -25,7 +25,7 @@
 #include <kinstance.h>
 #include <kglobal.h>
 
-#include <knotifywidgetbase.h>
+#include "knotifywidgetbase.h"
 
 class QShowEvent;
 
