@@ -140,3 +140,31 @@
 - further work on CSL
 - C language binding, based on glib
 - mcopidl code generation for C
+
+## FlowSystem changes:
+
+It would be nice if the flowsystem became more "detached" from the normal
+operation, making it ideally runnable in one or more thread dedicated for
+audio processing.
+
+Flowsystem transactions:
+
+   these group operation like: starting, stopping, connecting, disconnecting,
+   ... to transactions which will later (asynchronously) executed by the
+   flowsystem
+
+Example: problematic assertion
+
+   assert(done[i] <= samples);    /* synthschedule.cc:998 */
+
+   the problem with the assertion here is this - suppose some object reacts
+   in a way on some signal that will lead to the creation of new objects,
+   then those will get into the flowsystem, and we can't ultimately say
+   anything about how far these have been calculated so far
+
+   extremely problematic in this context are so-called call-ins, that is
+   you do calculateBlock, and during this, the dispatcher mainloop gets
+   called for some reason (I hope that this does not happen currently) -
+   if that would hypothetically happen, then there the whole flowsystem
+   could get restructured (because i.e. ordinary midi events could be
+   processed)
