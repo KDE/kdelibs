@@ -20,7 +20,7 @@
 
     */
 
-#include "kwrapper.h"
+#include "artskde.h"
 #include "kartsfloatwatch.moc"
 #include "connect.h"
 
