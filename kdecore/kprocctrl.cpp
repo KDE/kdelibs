@@ -118,11 +118,18 @@ void KProcessController::slotDoHousekeeping(int )
 
   // read pid and status from the pipe.
 
-  int len = sizeof(pid_t) + sizeof(int);
+  int len = sizeof(pid_t) + sizeof(int), errcnt = 0;
   unsigned char buf[sizeof(pid_t) + sizeof(int)];
-  while (bytes_read < len) {
+  while (bytes_read < len && errcnt < 50) {
       int r = ::read(fd[0], buf + bytes_read, len - bytes_read);
       if (r > 0) bytes_read += r;
+      else if (r < 0) errcnt++;
+  }
+  if (errcnt >= 50) {
+	fprintf(stderr,
+	       "Error: Max. error count for pipe read "
+               "exceed in KProcessController::slotDoHousekeeping\n");
+	return;           // it makes no sense to continue here!
   }
   if (bytes_read != len) {
 	fprintf(stderr,
