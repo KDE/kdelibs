@@ -19,7 +19,7 @@
 
 INCLUDES = $(all_includes)
 
-LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
+AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kfstest kurlrequestertest kfiletreeviewtest \
                  kopenwithtest kdirselectdialogtest kicondialogtest \

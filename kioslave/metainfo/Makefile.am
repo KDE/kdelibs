@@ -2,7 +2,7 @@
 ## Makefile.am of kdebase/kioslave/metainfo
 
 INCLUDES = $(all_includes)
-LDFLAGS = $(all_libraries) $(KDE_RPATH)
+AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 METASOURCES = AUTO
 
 kde_module_LTLIBRARIES = kio_metainfo.la
