@@ -711,17 +711,6 @@ void RenderBox::calcVerticalMargins()
     m_marginBottom = bm.minWidth(cw);
 }
 
-void RenderBox::dump(QTextStream *stream, QString ind) const
-{
-    *stream << " pos(" << m_x << "," << m_y << ")"
-	    << " size(" << m_width << "," << m_height << ")"
-	    << " margins(" << m_marginTop << "," << m_marginBottom
-	    << "," << m_marginLeft << "," << m_marginRight << ")"
-	    << " min/maxwidth=" << m_minWidth << "-" << m_maxWidth;
-
-    RenderContainer::dump(stream,ind);
-}
-
 void RenderBox::calcAbsoluteHorizontal()
 {
     const int AUTO = -666666;

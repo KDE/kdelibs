@@ -407,7 +407,6 @@ protected:
     int _topExtra;
     int _bottomExtra;
     bool nWrap;
-    bool _implicitCell:1;
 
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }

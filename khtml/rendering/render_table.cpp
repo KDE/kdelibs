@@ -1687,40 +1687,25 @@ void RenderTable::recalcCells()
 
 void RenderTable::dump(QTextStream *stream, QString ind) const
 {
-
-
-// ###    RenderTableCell ***cells;
-// ###    QVector<ColInfoLine> colInfos;
-
-    *stream << ind << "maxColSpan = " << maxColSpan << endl;
-
-// ###    QArray<int> columnPos;
-// ###    QArray<int> colMaxWidth;
-// ###    QArray<int> colMinWidth;
-// ###    QArray<khtml::LengthType> colType;
-// ###    QArray<int> colValue;
-// ###    QArray<int> rowHeights;
-// ###    QArray<int> rowBaselines;
-// ###    QArray<int> actColWidth;
-
     *stream << " totalColInfos=" << totalColInfos;
     *stream << " totalCols=" << totalCols;
     *stream << " totalRows=" << totalRows;
-    *stream << " totalPercent=" << totalPercent;
-    *stream << " totalRelative=" << totalRelative;
 
-// ###    RenderTableCaption *tCaption;
-// ###    RenderTableSection *head;
-// ###    RenderTableSection *foot;
-// ###    RenderTableSection *firstBody;
+    if (tCaption)
+	*stream << " tCaption";
+    if (head)
+	*stream << " head";
+    if (foot)
+	*stream << " foot";
 
+    if (collapseBorders)
+	*stream << " collapseBorders";
+
+// ###    RenderTableCell ***cells;
+// ###    QVector<ColInfoLine> colInfos;
 // ###    Frame frame;
 // ###    Rules rules;
-
 // ###    RenderTableCol *_oldColElem;
-
-    *stream << " spacing=" << spacing;
-    *stream << " collapseBorders=" << collapseBorders;
 
     RenderFlow::dump(stream,ind);
 }
@@ -1892,7 +1877,6 @@ RenderTableCell::RenderTableCell()
   setSpecialObjects(true);
   _topExtra = 0;
   _bottomExtra = 0;
-  _implicitCell = false;
 }
 
 RenderTableCell::~RenderTableCell()
@@ -2083,11 +2067,7 @@ void RenderTableCell::dump(QTextStream *stream, QString ind) const
     *stream << " rSpan=" << rSpan;
     *stream << " cSpan=" << cSpan;
     *stream << " _id=" << _id;
-    *stream << " rowHeight=" << rowHeight;
-    *stream << " _topExtra=" << _topExtra;
-    *stream << " _bottomExtra=" << _bottomExtra;
     *stream << " nWrap=" << nWrap;
-    *stream << " _implicitCell=" << _implicitCell;
 
     RenderFlow::dump(stream,ind);
 }
@@ -2101,6 +2081,9 @@ RenderTableCol::RenderTableCol()
     setInline(true);   // our object is not Inline
 
     _span = 1;
+    _currentCol = 0;
+    _startCol = 0;
+    _id = 0;
 }
 
 RenderTableCol::~RenderTableCol()

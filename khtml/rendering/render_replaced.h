@@ -60,8 +60,6 @@ public:
     
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
-    virtual void dump(QTextStream *stream, QString ind = "") const;
-
 private:
     short m_intrinsicWidth;
     short m_intrinsicHeight;

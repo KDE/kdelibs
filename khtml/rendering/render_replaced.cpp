@@ -200,15 +200,6 @@ void RenderReplaced::position(int x, int y, int, int, int, bool, bool)
     m_y = y + marginTop();
 }
 
-void RenderReplaced::dump(QTextStream *stream, QString ind) const
-{
-    *stream << " intrinsicWidth=" << m_intrinsicWidth
-	    << " intrinsicHeight=" << m_intrinsicHeight;
-
-    RenderBox::dump(stream,ind);
-}
-
-
 // -----------------------------------------------------------------------------
 
 RenderWidget::RenderWidget(QScrollView *view)

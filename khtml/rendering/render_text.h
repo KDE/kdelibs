@@ -190,8 +190,6 @@ public:
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     QFontMetrics metrics(bool firstLine) const;
 
-    virtual void dump(QTextStream *stream, QString ind = "") const;
-    
 protected:
     void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 

@@ -1530,27 +1530,21 @@ void RenderFlow::dump(QTextStream *stream, QString ind) const
     if (m_pre) { *stream << " pre"; }
     if (firstLine) { *stream << " firstLine"; }
 
-/*
-###
-    if(specialObjects)
+    if(specialObjects && !specialObjects->isEmpty())
     {
-	*stream << endl;
+	*stream << " special(";
         QListIterator<SpecialObject> it(*specialObjects);
         SpecialObject *r;
+	bool first = true;
         for ( ; (r = it.current()); ++it )
         {
-            *stream << ind << "special: " << r->node->renderName() << endl;
-            *stream << ind << "    startY = " << r->startY << endl;
-            *stream << ind << "    endY = " << r->endY << endl;
-	    // ### Type type
-            *stream << ind << "    left = " << r->left << endl;
-            *stream << ind << "    width = " << r->width << endl;
-            *stream << ind << "    count = " << r->count << endl;
-            *stream << ind << "    noPaint = " << r->noPaint << endl;
+            if (!first)
+		*stream << ",";
+            *stream << r->node->renderName();
+	    first = false;
         }
-	*stream << ind;
+	*stream << ")";
     }
-*/
 
     // ### EClear m_clearStatus
 

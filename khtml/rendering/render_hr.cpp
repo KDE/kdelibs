@@ -154,7 +154,6 @@ void RenderHR::calcMinMaxWidth()
 
 void RenderHR::dump(QTextStream *stream, QString ind) const
 {
-    *stream << " length=" << m_length;
     if (hr_shade)
 	*stream << " hr_shade";
 

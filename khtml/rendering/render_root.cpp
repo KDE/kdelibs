@@ -398,14 +398,6 @@ void RenderRoot::clearSelection()
 
 }
 
-void RenderRoot::dump(QTextStream *stream, QString ind) const
-{
-    *stream << " rootWidth=" << m_rootWidth
-	    << " rootHeight=" << m_rootHeight;
-
-    RenderFlow::dump(stream,ind);
-}
-
 void RenderRoot::selectionStartEnd(int& spos, int& epos)
 {
     spos = selectionStartPos;

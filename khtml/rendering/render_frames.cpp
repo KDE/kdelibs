@@ -565,40 +565,15 @@ bool RenderFrameSet::canResize( int _x, int _y, DOM::NodeImpl::MouseEventType ty
 
 void RenderFrameSet::dump(QTextStream *stream, QString ind) const
 {
+  *stream << " totalrows=" << m_frameset->totalRows();
+  *stream << " totalcols=" << m_frameset->totalCols();
 
-// ###  m_rows;
-// ###  m_cols;
-
-// ### remove \ns
-  if (m_rowHeight)
-    *stream << ind << "m_rowHeight = " << *m_rowHeight << endl;
-
-  int i;
-  *stream << ind << "row heights ";
+  uint i;
   for (i = 0; i < m_frameset->totalRows(); i++)
-    *stream << m_rowHeight[i] << " ";
-  *stream << endl;
+    *stream << " hSplitvar(" << i << ")=" << m_hSplitVar[i];
 
-  *stream << ind << "col widths ";
   for (i = 0; i < m_frameset->totalCols(); i++)
-    *stream << m_colWidth[i] << " ";
-  *stream << endl;
-
-  *stream << ind << "m_hSplitVar ";
-  for (i = 0; i < m_frameset->totalRows(); i++)
-    *stream << m_hSplitVar[i] << " ";
-  *stream << endl;
-
-  *stream << ind << "m_vSplitVar ";
-  for (i = 0; i < m_frameset->totalCols(); i++)
-    *stream << m_vSplitVar[i] << " ";
-  *stream << endl;
-
-  *stream << ind << "m_hSplit = " << m_hSplit << endl;
-  *stream << ind << "m_vSplit = " << m_vSplit << endl;
-  *stream << ind << "m_hSplitPos = " << m_hSplitPos << endl;
-  *stream << ind << "m_vSplitPos = " << m_vSplitPos << endl;
-  *stream << ind << "m_resizing = " << m_resizing << endl;
+    *stream << " vSplitvar(" << i << ")=" << m_vSplitVar[i];
 
   RenderBox::dump(stream,ind);
 }

@@ -951,17 +951,6 @@ QFontMetrics RenderText::metrics(bool firstLine) const
     return *fm;
 }
 
-void RenderText::dump(QTextStream *stream, QString ind) const
-{
-    *stream << " str=\"" << DOMString(str).string().ascii() << "\"";
-
-    *stream << " lineHeight=" << m_lineHeight
-	    << " minWidth=" << m_minWidth
-	    << " maxWidth=" << m_maxWidth;
-
-    RenderObject::dump(stream,ind);
-}
-
 void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
 {
   int ow = style()->outlineWidth();

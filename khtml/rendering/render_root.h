@@ -71,8 +71,6 @@ public:
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
     virtual void setHeight( int height ) { m_rootHeight = m_height = height; }
 
-    virtual void dump(QTextStream *stream, QString ind = "") const;
-
 protected:
 
     virtual void selectionStartEnd(int& spos, int& epos);

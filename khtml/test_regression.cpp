@@ -71,6 +71,7 @@
 #include "dom/dom_doc.h"
 #include "misc/loader.h"
 #include "ecma/kjs_dom.h"
+#include "ecma/kjs_window.h"
 
 using namespace khtml;
 using namespace DOM;
@@ -171,6 +172,8 @@ KJSO KHTMLPartObject::get(const UString &p) const
 {
     if (p == "document")
 	return getDOMNode(m_part->document());
+    else if (p == "window")
+	return Window::retrieveWindow(m_part);
 
     return HostImp::get(p);
 }
