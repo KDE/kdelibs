@@ -6,4 +6,5 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 <!ENTITY kcontrolcenter "<application>Centro de Controlo &kde;</application>">
-<!ENTITY pex "por exemplo">
+<!ENTITY pex "por exemplo"> <!-- English: &eg; -->
+<!ENTITY ed "é dizer" >    <!-- English: &ie; -->
