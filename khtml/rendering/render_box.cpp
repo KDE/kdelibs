@@ -431,12 +431,17 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 
 void RenderBox::repaint(bool immediate)
 {
-    if ( isInline() && !isReplaced() ) {
-	parent()->repaint(immediate);
-    } else {
-	// kdDebug( 6040 ) << this << " repaint! inline=" << isInline() << endl;
-	int ow = style() ? style()->outlineWidth() : 0;
-	repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
+    int ow = style() ? style()->outlineWidth() : 0;
+    if( isInline() && !isReplaced() )
+    {
+	RenderObject* p = parent();
+	while( p && p->isInline() && !p->isReplaced() )
+	    p = p->parent();
+        p->repaintRectangle( -ow, -ow, p->overflowWidth()+ow*2, p->overflowHeight()+ow*2, immediate);
+    }
+    else
+    {
+        repaintRectangle( -ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
     }
 }
 
