@@ -79,10 +79,8 @@
 0       string          ID3             audio/x-mp3
 
 # OGG files
-# Detects Ogg Vorbis compressed audio files.
-# Needs to be adapted to only detect Vorbis files, not all Ogg files,
-# but whether this is possible, I don't know.
 0       string          OggS            application/x-ogg
+>103    string          vorbis          audio/x-ogg-vorbis
 
 #------------------------------------------------------------------------------
 # KSysV stuff: logfiles and packages belonging to KSysV
