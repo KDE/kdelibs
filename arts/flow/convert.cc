@@ -228,6 +228,44 @@ void Arts::convert_mono_float_16le(unsigned long samples, float *from, unsigned 
 	}	
 }
 
+void Arts::convert_stereo_2float_i8(unsigned long samples, float *left, float *right, unsigned char *to)
+{
+	float *end = left+samples;
+	long syn;
+
+	while(left < end)
+	{
+		syn = (int)((*left++)*127+128);
+
+		if(syn < 0) syn = 0;					/* clipping */
+		if(syn > 255) syn = 255;
+
+		*to++ = syn;
+
+		syn = (int)((*right++)*127+128);
+
+		if(syn < 0) syn = 0;					/* clipping */
+		if(syn > 255) syn = 255;
+
+		*to++ = syn;
+	}	
+}
+
+void Arts::convert_mono_float_8(unsigned long samples, float *from, unsigned char *to)
+{
+	float *end = from+samples;
+
+	while(from < end)
+	{
+		long syn = (int)((*from++)*127+128);
+
+		if(syn < 0) syn = 0;					/* clipping */
+		if(syn > 255) syn = 255;
+
+		*to++ = syn;
+	}	
+}
+
 unsigned long Arts::uni_convert_stereo_2float(
 		unsigned long samples,		// number of required samples
 		unsigned char *from,		// buffer containing the samples

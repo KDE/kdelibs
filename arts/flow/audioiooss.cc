@@ -98,6 +98,7 @@ bool AudioIOOSS::open()
 	int& _fragmentSize = param(fragmentSize);
 	int& _fragmentCount = param(fragmentCount);
 	int& _samplingRate = param(samplingRate);
+	int& _format = param(format);
 
 	int mode;
 
@@ -139,8 +140,9 @@ bool AudioIOOSS::open()
 	artsdebug("device capabilities: revision%d %s",
 					device_caps & DSP_CAP_REVISION, caps.c_str());
 
-	int format = AFMT_S16_LE;  
-	if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &format)==-1)  
+	int requestedFormat = (_format == 8)?AFMT_U8:AFMT_S16_LE;
+	int gotFormat = requestedFormat;
+	if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &gotFormat)==-1)  
 	{
 		_error = "SNDCTL_DSP_SETFMT failed - ";
 		_error += strerror(errno);
@@ -149,13 +151,36 @@ bool AudioIOOSS::open()
 		return false;
 	}  
 
-	if (format != AFMT_S16_LE)  
+	if (_format && (gotFormat != requestedFormat))
 	{  
-		_error = "Can't set 16bit (AFMT_S16_LE) playback";
+		char details[80];
+		sprintf(details," (_format = %d, asked driver to give %d, got %d)",
+			_format, requestedFormat, gotFormat);
+
+		_error = "Can't set playback format";
+		_error += details;
 
 		close();
 		return false;
-	} 
+	}
+
+	if(gotFormat == AFMT_U8)
+		_format = 8;
+	else if(gotFormat == AFMT_S16_LE)
+		_format = 16;
+	else
+	{
+		char details[80];
+		sprintf(details," (_format = %d, asked driver to give %d, got %d)",
+			_format, requestedFormat, gotFormat);
+
+		_error = "unknown format given by driver";
+		_error += details;
+
+		close();
+		return false;
+	}
+
 
 	int stereo=-1;     /* 0=mono, 1=stereo */
 

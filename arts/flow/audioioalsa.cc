@@ -132,6 +132,21 @@ bool AudioIOALSA::open()
 	int& _fragmentCount = param(fragmentCount);
 	int& _samplingRate = param(samplingRate);
 	int& _direction = param(direction);
+	int& _format = param(format);
+
+	/*
+	 * initialize format - TODO: implement fallback (i.e. if no format given,
+	 * it should try 16bit first, then fall back to 8bit
+	 */
+	if(_format == 8)
+	{
+		m_format = SND_PCM_SFMT_U8;
+	}
+	else
+	{
+    	m_format = SND_PCM_SFMT_S16_LE;
+		_format = 16;
+	}
 
 	/* open pcm device */
 	int mode = SND_PCM_OPEN_NONBLOCK;

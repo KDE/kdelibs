@@ -50,7 +50,8 @@ public:
 /* the following has to be supported */
 		samplingRate = 1,	/* usually 4000..48000 (Hz) */
 		channels = 2,		/* usually 1 (mono) or 2 (stereo) */
-		encoding = 3,		/*	16 = 16bit signed little endian
+		format = 3,			/*	8  = 8bit unsigned
+							 *  16 = 16bit signed little endian
 							 *	17 = 16bit signed big endian */
 
 /* the following -can- be supported (value=-1 if they are not) */

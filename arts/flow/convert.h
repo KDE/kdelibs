@@ -103,6 +103,13 @@ void convert_mono_float_16le(unsigned long samples,
 void convert_stereo_2float_i16le(unsigned long samples,
 			float *left, float *right, unsigned char *to);
 
+void convert_mono_float_8(unsigned long samples,
+			float *from, unsigned char *to);
+
+void convert_stereo_2float_i8(unsigned long samples,
+			float *left, float *right, unsigned char *to);
+
+
 /*
  * This practical routine picks the right conversion routine for given
  * parameters and makes boundary checks

@@ -223,8 +223,7 @@ int main(int argc, char **argv)
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 	if(cfgFullDuplex)	 AudioSubSystem::the()->fullDuplex(cfgFullDuplex);
 	if(cfgDeviceName)	 AudioSubSystem::the()->deviceName(cfgDeviceName);
-	if(cfgBits && cfgBits != 16)
-		arts_warning("configuring bits != 16 not yet supported");
+	if(cfgBits)			 AudioSubSystem::the()->format(cfgBits);
 
 	if(!AudioSubSystem::the()->check())
 	{

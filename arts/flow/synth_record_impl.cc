@@ -50,6 +50,7 @@ protected:
 	unsigned char *inblock;
 	unsigned long maxsamples;
 	unsigned long channels;
+	int format;
 
 public:
 	/*
@@ -60,6 +61,7 @@ public:
 		as = AudioSubSystem::the();
 
 		channels = as->channels();
+		format = as->format();
 		maxsamples = 0;
 		inblock = 0;
 
@@ -97,13 +99,24 @@ public:
 
 		assert(channels);
 
-		as->read(inblock,channels * 2 * samples);
+		as->read(inblock,channels * (format/8) * samples);
 
-		if(channels == 1)
-			convert_mono_16le_float(samples,inblock,left);
+		if(format == 8)
+		{
+			if(channels == 1)
+				convert_mono_8_float(samples,inblock,left);
 
-		if(channels == 2)
-			convert_stereo_i16le_2float(samples,inblock,left,right);
+			if(channels == 2)
+				convert_stereo_i8_2float(samples,inblock,left,right);
+		}
+		else
+		{
+			if(channels == 1)
+				convert_mono_16le_float(samples,inblock,left);
+
+			if(channels == 2)
+				convert_stereo_i16le_2float(samples,inblock,left,right);
+		}
 	}
 
 	/**

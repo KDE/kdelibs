@@ -143,6 +143,9 @@ public:
 	void channels(int channels);
 	int channels();
 
+	void format(int format);
+	int format();
+
 	void fullDuplex(bool newFullDuplex);
 	bool fullDuplex();
 

@@ -248,6 +248,22 @@ int AudioSubSystem::channels()
 	return d->audioIO->getParam(AudioIO::channels);
 }
 
+void AudioSubSystem::format(int format)
+{
+	initAudioIO();
+	if(!d->audioIO) return;
+
+	d->audioIO->setParam(AudioIO::format, format);
+}
+
+int AudioSubSystem::format()
+{
+	initAudioIO();
+	if(!d->audioIO) return 0;
+
+	return d->audioIO->getParam(AudioIO::format);
+}
+
 void AudioSubSystem::fullDuplex(bool fullDuplex)
 {
 	initAudioIO();
@@ -286,9 +302,6 @@ bool AudioSubSystem::open(int& fd)
 		audio_fd = fd = -1;
 		return false;
 	}
-
-	int encoding = 16;
-	d->audioIO->setParam(AudioIO::encoding, encoding);
 
 	if(d->audioIO->open())
 	{

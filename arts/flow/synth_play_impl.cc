@@ -69,6 +69,7 @@ protected:
 	unsigned char *outblock;
 	unsigned long maxsamples;
 	unsigned long channels;
+	int format;
 
 	bool retryOpen;
 public:
@@ -80,6 +81,8 @@ public:
 		as = AudioSubSystem::the();
 
 		channels = as->channels();
+		format = as->format();
+		arts_debug("audio format is %d bits", format);
 		maxsamples = 0;
 		outblock = 0;
 		retryOpen = false;
@@ -176,13 +179,24 @@ public:
 		assert(channels);
 
 		if(channels == 1)
-			convert_mono_float_16le(samples,invalue_left,outblock);
-
-		if(channels == 2)
-			convert_stereo_2float_i16le(samples,invalue_left,invalue_right,
+		{
+			if(format == 8)
+				convert_mono_float_8(samples,invalue_left,outblock);
+			else
+				convert_mono_float_16le(samples,invalue_left,outblock);
+		}
+		else if(channels == 2)
+		{
+			if(format == 8)
+				convert_stereo_2float_i8(samples,invalue_left,invalue_right,
 													outblock);
+			else
+				convert_stereo_2float_i16le(samples,invalue_left,invalue_right,
+													outblock);
+		}
+		else arts_warning("channels != 1 && channels != 2?");
 
-		as->write(outblock,channels * 2 * samples);
+		as->write(outblock,channels * (format / 8) * samples);
 	}
 
 	/**
