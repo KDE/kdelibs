@@ -1,5 +1,5 @@
 Source: kdelibs4
-Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
+Build-Depends: automake, autoconf, libtool, debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
 Build-Depends-Indep: kdoc, qt3-doc
 Build-Conflicts: nas-lib
 Section: libs
@@ -123,7 +123,7 @@ Package: kdelibs4-doc
 Architecture: all
 Section: doc
 Replaces: kdelibs-doc
-Suggests: kdelibs4-dev, libqt3-dev, kdoc
+Suggests: kdelibs4-dev, libqt3-dev, libqt3-mt-dev, kdoc
 Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
@@ -133,7 +133,7 @@ Package: kdelibs4-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev
-Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.0-1), qt3-tools (>= 2:3.0.0-1), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
+Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 Recommends: kdelibs4-cups (= ${Source-Version})
 Conflicts: kdelibs2g-dev, kdelibs-dev
 Suggests: kdelibs4-doc, kdoc, libxml2-dev, libxslt1-dev
