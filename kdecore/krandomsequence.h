@@ -75,7 +75,7 @@ public:
    * Get the next number from the pseudo-random sequence
    *
    * @return a pseudo-random integer value between [0, max[
-   * with 0 < max <= 1.000.000
+   * with 0 <= max < 1.000.000
    */
   unsigned long getLong(unsigned long max); 
 
