@@ -34,6 +34,11 @@
 
 #include "kproxybindings.h"
 
+// e.g. Solaris doesn't have that, but uses -1 for inet_addr() error-handling
+#ifndef INADDR_NONE
+#define INADDR_NONE -1
+#endif
+
 using namespace KJS;
 
 QString UString::qstring() const
