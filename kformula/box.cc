@@ -486,8 +486,8 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
   if ( f_ )
       f = *f_;
   QPen oldPen = p.pen();
-  if ( fc )
-      oldPen = QPen( *fc );
+  //if ( fc )
+  //    oldPen = QPen( *fc );
   
   p.setFont(lastFont);
   if ( fc )
@@ -533,11 +533,9 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
     break;
 
   case SYMBOL:
-      if ( fc )
-	  p.setBrush( *fc );
-      else
-	  p.setBrush( Qt::black );
-      drawSymbol(p, (SymbolType)(text[0].unicode()), fontsize, x, y);
+    p.setBrush( p.pen().color() );
+    drawSymbol(p, (SymbolType)(text[0].unicode()), fontsize, x, y);
+    p.setBrush(Qt::NoBrush);
     break;
 
   case PLUS:
@@ -553,16 +551,16 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
     break;
 
   case TIMES: //just draw the filled dot
-    p.setBrush( oldPen.color() );
+    p.setBrush( p.pen().color() );
     p.drawEllipse(x + relx, y + rely - DOTSIZE / 2, DOTSIZE, DOTSIZE);
     p.setBrush( Qt::NoBrush );
     break;
 
   case SLASH:
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      p.setPen(QPen(oldPen.color(), 2));
+      p.setPen(QPen(p.pen().color(), 2));
     else
-      p.setPen(QPen(oldPen.color(), 1));  // mainly for the printer
+      p.setPen(QPen(p.pen().color(), 1));  // mainly for the printer
 
     p.drawLine(x + relx, rect.bottom() + y,
 	       x + relx + rect.height() / 2, rect.top() + y);
@@ -573,9 +571,9 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
 
   case DIVIDE: //draw the bar whose thickness depends on fontsize
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      p.setPen(QPen(oldPen.color(), 2));
+      p.setPen(QPen(p.pen().color(), 2));
     else
-      p.setPen(QPen(oldPen.color(), 1));  // mainly for the printer
+      p.setPen(QPen(p.pen().color(), 1));  // mainly for the printer
 
     p.drawLine(rect.left() + x, y + rely + 2,
 	       rect.right() + x, y + rely + 2);
@@ -595,7 +593,7 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
     tmp.moveBy(b2x, b2y);
     i = QMIN((SPACE + tmp.height()) / 2, SPACE * 8);
 
-    p.setPen(QPen(oldPen.color(), 1));
+    p.setPen(QPen(p.pen().color(), 1));
 
     //The overline:
     p.drawLine(x + tmp.left() - SPACE, tmp.top() + y - SPACE,
@@ -605,13 +603,13 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
     p.drawLine(x + tmp.left() - SPACE, tmp.top() + y - SPACE,
 	       x + tmp.left() + 1 - SPACE - i * 2 / 3, rect.bottom() + y);
 
-    p.setPen(QPen(oldPen.color(), 2));
+    p.setPen(QPen(p.pen().color(), 2));
 
     //The falling diagonal ("\"):
     p.drawLine(x + tmp.left() - SPACE - i * 2 / 3, rect.bottom() + y,
            x + tmp.left() - SPACE - i, tmp.center().y() + y);
 
-    p.setPen(QPen(oldPen.color(), 1));
+    p.setPen(QPen(p.pen().color(), 1));
 
     //The little tail:
     p.drawLine(x + tmp.left() - SPACE - i, tmp.center().y() + y,
@@ -623,7 +621,7 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
     break;
 
   case PAREN: //the parentheses are ellipse arcs.
-    p.setPen(QPen(oldPen.color(), 2));
+    p.setPen(QPen(p.pen().color(), 2));
 
     p.drawArc(SPACE / 2 + rect.left() + x, rect.top() + y,
 	      b2x * 2, rect.height(),
@@ -637,9 +635,9 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
 
   case ABS:
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      p.setPen(QPen(oldPen.color(), 2));
+      p.setPen(QPen(p.pen().color(), 2));
     else
-      p.setPen(QPen(oldPen.color(), 1));
+      p.setPen(QPen(p.pen().color(), 1));
 
     p.drawLine(rect.left() + x + 2, rect.top() + y,
 	       rect.left() + x + 2, rect.bottom() + y);
@@ -652,9 +650,9 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
 
   case BRACKET:
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      { p.setPen(QPen(oldPen.color(), 2)); i = 1; }
+      { p.setPen(QPen(p.pen().color(), 2)); i = 1; }
     else
-      { p.setPen(QPen(oldPen.color(), 1)); i = 0; }
+      { p.setPen(QPen(p.pen().color(), 1)); i = 0; }
 
     //i is whether to offset the top line one pixel lower
 
@@ -858,31 +856,31 @@ void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
 
   case PRODUCT:
     size = size * 6 / 5;
-    p.setPen(QPen(Qt::black, size / 8));
+    p.setPen(QPen(p.pen().color(), size / 8));
     p.drawLine(x, y - size / 2, x + size, y - size / 2);
     p.drawLine(x, y + size / 2, x + size / 2 - size / 8,
 	       y + size / 2);
     p.drawLine(x + size / 2 + size / 8, y + size / 2,
 	       x + size, y + size / 2);
-    p.setPen(QPen(Qt::black, size / 6));
+    p.setPen(QPen(p.pen().color(), size / 6));
     p.drawLine(x + size / 4 - size / 16, y - size / 2,
 	       x + size / 4 - size / 16, y + size / 2);
     p.drawLine(x + size - size / 4 + size / 16, y - size / 2,
 	       x + size - size / 4 + size / 16, y + size / 2);
-    p.setPen(QPen());
+    p.setPen(QPen(p.pen().color(), 1));
 
     return; // don't draw a polygon
 
     break;
 
   case ARROW:
-    p.setPen(QPen(Qt::black, size / 8));
+    p.setPen(QPen(p.pen().color(), size / 8));
     p.drawLine(x, y, x + size, y);
     p.drawLine(x + size - size / 16, y,
 	       x + size - size / 16 - size / 4, y - size / 4);
     p.drawLine(x + size - size / 16, y,
 	       x + size - size / 16 - size / 4, y + size / 4);
-    p.setPen(QPen());
+    p.setPen(QPen(p.pen().color(), 1));
 
     return; //don't draw a polygon
 
@@ -892,7 +890,6 @@ void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
   a.translate(x, y);
 
   p.drawPolygon(a);
-  p.setBrush(Qt::NoBrush);
 
   return;
 }
