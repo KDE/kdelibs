@@ -20,6 +20,7 @@
     Boston, MA 02111-1307, USA.
     */
 
+
 #ifndef INCLUDE_MENUITEM_DEF
 #define INCLUDE_MENUITEM_DEF
 #endif
@@ -102,15 +103,4 @@ void KMenuBar::leaveEvent(QEvent *ev)
     QMenuBar::leaveEvent(ev);
 }
 
-bool KMenuBar::enable( BarStatus stat )
-{
-  bool mystat = isVisible();
-  if ( (stat == Toggle && mystat) || stat == Hide )
-    hide();
-  else
-    show();
-  return ( isVisible() == mystat );
-}
-
 #include "kmenubar.moc"
-

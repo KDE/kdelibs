@@ -20,8 +20,11 @@
     Boston, MA 02111-1307, USA.
 */
 
-//$Id:$
-//$Log:$
+//$Id$
+//$Log$
+//Revision 1.34  2000/01/14 00:15:25  radej
+//sven: New kmenubar. Inherits QMenuBar, not movable.
+//
 
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
@@ -35,20 +38,19 @@
  * @ref QStyle.
  *
  * @author Daniel "Mosfet" Duley.
- * @version $Id:$
+ * @version $Id$
 */
+
 class KMenuBar : public QMenuBar
 {
     Q_OBJECT
     
 public:
 
-    enum BarStatus{ Toggle, Show, Hide };
-  
     KMenuBar (QWidget *parent=0, const char *name=0)
         : QMenuBar(parent, name){mouseActive = false;}
     ~KMenuBar (){;}
-    bool enable (BarStatus stat);
+
 protected:
     void drawContents(QPainter *p);
     void enterEvent(QEvent *ev);
