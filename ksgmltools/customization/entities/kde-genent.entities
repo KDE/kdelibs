@@ -103,6 +103,7 @@
 <!ENTITY AIX	"<trademark>AIX</trademark>">
 <!ENTITY aktion	"<application>AKtion</application>">
 <!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY ark    "<application>Ark</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY CD	"<acronym>CD</acronym>">
@@ -134,14 +135,17 @@
 <!ENTITY katomic	"<application>KAtomic</application>">
 <!ENTITY kbiff	"<application>KBiff</application>">
 <!ENTITY kblackbox	"<application>KBlackbox</application>">
+<!ENTITY kcalc  "<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>kcharselect</application>">
 <!ENTITY kcontrol	"<application>KControl</application>">
 <!ENTITY kcron	"<application>Kcron</application>">
 <!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kde	"<acronym>KDE</acronym>">
+<!ENTITY kdebugdialog	"<application>KDebugDialog</application>">
 <!ENTITY kdepasswd	"<application>kdepasswd</application>">
 <!ENTITY kdesktop	"<application>KDesktop</application>">
 <!ENTITY kdessh	"<application>kdessh</application>">
+<!ENTITY kdesu  "<application>KDE su</application>">
 <!ENTITY kdf	"<application>kdf</application>">
 <!ENTITY kdm	"<application>kdm</application>">
 <!ENTITY kdvi	"<application>kdvi</application>">
@@ -229,6 +233,7 @@
 <!ENTITY MTU	"<acronym>MTU</acronym>">
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
+<!ENTITY noatun "<application>Noatun</application>">
 <!ENTITY Pixie	"<application>Pixie</application>">
 <!ENTITY PalmPilot      '<product><trademark>PalmPilot<trademark></product>'>
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
