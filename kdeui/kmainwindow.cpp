@@ -27,6 +27,7 @@
 #include <qobjectlist.h>
 
 #include <kaccel.h>
+#include <kaction.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -435,6 +436,10 @@ void KMainWindow::appHelpActivated( void )
     mHelpMenu->appHelpActivated();
 }
 
+void KMainWindow::slotStateChanged(const QString &newstate)
+{
+  stateChanged(newstate);
+}
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {

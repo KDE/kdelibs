@@ -431,6 +431,13 @@ public slots:
     void appHelpActivated( void );
 
     /**
+     * Apply a state change
+     *
+     * Enable and disable actions as defined in the XML rc file
+     */
+    virtual void slotStateChanged(const QString &newstate);
+
+    /**
      * @internal. Used for the auto-save-settings feature.
      */
     void setSettingsDirty();

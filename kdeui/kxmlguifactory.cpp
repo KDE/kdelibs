@@ -673,6 +673,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
     // some often used QStrings
     static const QString &tagAction = KGlobal::staticQString( "action" );
     static const QString &tagMerge = KGlobal::staticQString( "merge" );
+    static const QString &tagState = KGlobal::staticQString( "state" );
     static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
     static const QString &attrGroup = KGlobal::staticQString( "group" );
 
@@ -835,6 +836,10 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
             d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
             calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt,
                               ignoreDefaultMergingIndex );
+        }
+        else if ( tag == tagState )
+        {
+          processStateElement( e );
         }
         else if ( containerTags.findIndex( tag ) != -1 )
         {
@@ -1336,5 +1341,43 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUIContainerNode *node )
     for (; childIt.current(); ++childIt )
         unplugActionListRecursive( childIt.current() );
 }
+
+void KXMLGUIFactory::processStateElement( const QDomElement &element )
+{
+  QString stateName = element.attribute( "name" );
+
+  if ( !stateName || !stateName.length() ) return;
+
+  QDomElement e = element.firstChild().toElement();
+
+  for (; !e.isNull(); e = e.nextSibling().toElement() ) {
+    QString tagName = e.tagName().lower();
+    
+    if ( tagName != "enable" && tagName != "disable" )
+      continue;
+    
+    bool processingActionsToEnable = (tagName == "enable");
+
+    // process action names
+    QDomElement actionEl = e.firstChild().toElement();
+
+    for (; !actionEl.isNull(); actionEl = actionEl.nextSibling().toElement() ) {
+      if ( actionEl.tagName().lower() != "action" ) continue;
+
+      QString actionName = actionEl.attribute( "name" );
+      if ( !actionName || !actionName.length() ) return;
+
+      if ( processingActionsToEnable )
+        m_client->addStateActionEnabled( stateName, actionName );
+      else
+        m_client->addStateActionDisabled( stateName, actionName );
+
+    }
+
+  }
+  
+  
+}
+
 
 #include "kxmlguifactory.moc"

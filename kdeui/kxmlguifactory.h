@@ -174,6 +174,8 @@ class KXMLGUIFactory : public QObject
   void plugActionListRecursive( KXMLGUIContainerNode *node );
   void unplugActionListRecursive( KXMLGUIContainerNode *node );
 
+  void processStateElement( const QDomElement &element );
+
   KXMLGUIClient *m_client;
   KXMLGUIBuilder *m_builder;
 

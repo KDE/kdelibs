@@ -772,3 +772,55 @@ void KXMLGUIClient::storeActionProperties( QDomDocument &doc, const ActionProper
       action.setAttribute( attrIt.key(), attrIt.data() );
   }
 }
+
+void KXMLGUIClient::addStateActionEnabled(const QString& state,
+                                          const QString& action)
+{
+  StateChange stateChange = getActionsToChangeForState(state);
+  
+  stateChange.actionsToEnable.append( action );
+
+  m_actionsStateMap.replace( state, stateChange );
+}
+
+
+void KXMLGUIClient::addStateActionDisabled(const QString& state,
+                                           const QString& action)
+{
+  StateChange stateChange = getActionsToChangeForState(state);
+  
+  stateChange.actionsToDisable.append( action );
+
+  m_actionsStateMap.replace( state, stateChange );
+}
+
+
+KXMLGUIClient::StateChange KXMLGUIClient::getActionsToChangeForState(const QString& state)
+{
+  return m_actionsStateMap[state];
+}
+
+
+void KXMLGUIClient::stateChanged(const QString &newstate)
+{
+  StateChange stateChange = getActionsToChangeForState(newstate);
+
+  // Enable actions which need to be enabled...
+  //
+  for ( QStringList::Iterator it = stateChange.actionsToEnable.begin();
+        it != stateChange.actionsToEnable.end(); ++it ) {
+
+    KAction *action = actionCollection()->action((*it).latin1());
+    if (action) action->setEnabled(true);
+  }
+
+  // and disable actions which need to be disabled...
+  //
+  for ( QStringList::Iterator it = stateChange.actionsToDisable.begin();
+        it != stateChange.actionsToDisable.end(); ++it ) {
+
+    KAction *action = actionCollection()->action((*it).latin1());
+    if (action) action->setEnabled(false);
+  }
+    
+}

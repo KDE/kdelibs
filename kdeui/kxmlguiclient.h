@@ -187,6 +187,19 @@ public:
 
   static QString findMostRecentXMLFile( const QStringList &files, QString &doc );
 
+  void addStateActionEnabled(const QString& state, const QString& action);
+
+  void addStateActionDisabled(const QString& state, const QString& action);
+
+
+  struct StateChange
+  {
+    QStringList actionsToEnable;
+    QStringList actionsToDisable;
+  };
+
+  StateChange getActionsToChangeForState(const QString& state);
+  
 protected:
   /**
    * Sets the instance (@ref KInstance) for this part.
@@ -235,6 +248,8 @@ protected:
    */
   virtual void conserveMemory();
 
+  virtual void stateChanged(const QString &newstate);
+
 private:
   struct DocStruct
   {
@@ -255,6 +270,9 @@ private:
   static void storeActionProperties( QDomDocument &doc, const ActionPropertiesMap &properties );
 
   static QString findVersionNumber( const QString &_xml );
+
+  // Actions to enable/disable on a state change
+  QMap<QString,StateChange> m_actionsStateMap;
 
   KXMLGUIClientPrivate *d;
 };
