@@ -23,113 +23,20 @@
 #include <qstringlist.h>
 #include <qasciidict.h>
 #include <qptrlist.h>
+#include <qmetaobject.h>
 #include <kglobal.h>
 
 #include <stdlib.h> // For backwards compatibility
 
 class KInstance;
 class QTimer;
+class KLibFactory;
 class KLibFactoryPrivate;
 class KLibLoaderPrivate;
 class KLibraryPrivate;
 
 #define KDE_EXPORT_COMPONENT_FACTORY( libname, factory ) \
     extern "C" { void *init_##libname() { return new factory; } };
-
-/**
- * If you develop a library that is to be loaded dynamically at runtime, then
- * you should provide a function that returns a pointer to your factory like this:
- * <pre>
- * extern "C"
- * {
- *   void* init_libkspread()
- *   {
- *     return new KSpreadFactory;
- *   }
- * };
- * </pre>
- * You should especially see that the function must follow the naming pattern
- * "init_libname".
- *
- * In the constructor of your factory you should create an instance of @ref KInstance
- * like this:
- * <pre>
- *     s_global = new KInstance( "kspread" );
- * </pre>
- * This @ref KInstance is compareable to @ref KGlobal used by normal applications.
- * It allows you to find ressource files (images, XML, sound etc.) belonging
- * to the library.
- *
- * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
- * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory()
- * function.
- *
- * The KLibFactory is used to create the components, the library has to offer.
- * The factory of KSpread for example will create instances of KSpreadDoc,
- * while the Konqueror factory will create KonqView widgets.
- * All objects created by the factory must be derived from @ref QObject, since @ref QObject
- * offers type safe casting.
- *
- * KLibFactory is an abstract class. Reimplement the @ref
- * createObject() method to give it functionality.
- *
- * @author Torben Weis <weis@kde.org>
- */
-class KLibFactory : public QObject
-{
-    Q_OBJECT
-public:
-    /**
-     * Create a new factory.
-     */
-    KLibFactory( QObject* parent = 0, const char* name = 0 );
-    virtual ~KLibFactory();
-
-    /**
-     * Creates a new object. The returned object has to be derived from
-     * the requested classname.
-     *
-     * It is valid behavior to create different kinds of objects
-     * depending on the requested @p classname. For example a koffice
-     * library may usually return a pointer to KoDocument.  But
-     * if asked for a "QWidget", it could create a wrapper widget,
-     * that encapsulates the Koffice specific features.
-     *
-     * create() automatically emits a signal @ref objectCreated to tell
-     * the library about its newly created object.  This is very
-     * important for reference counting, and allows unloading the
-     * library automatically once all its objects have been destroyed.
-     */
-
-     QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
-
-signals:
-    /**
-     * Emitted in @ref create
-     */
-    void objectCreated( QObject *obj );
-
-
-protected:
-
-    /**
-     * Creates a new object. The returned object has to be derived from
-     * the requested classname.
-     *
-     * It is valid behavior to create different kinds of objects
-     * depending on the requested @p classname. For example a koffice
-     * library may usually return a pointer to KoDocument.  But
-     * if asked for a "QWidget", it could create a wrapper widget,
-     * that encapsulates the Koffice specific features.
-     *
-     * This function is called by @ref create()
-     */
-    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
-
-
-private:
-    KLibFactoryPrivate *d;
-};
 
 /**
  * @short Represents a dynamically loaded library.
@@ -311,6 +218,117 @@ private:
     static KLibLoader* s_self;
 
     KLibLoaderPrivate *d;
+};
+
+/**
+ * If you develop a library that is to be loaded dynamically at runtime, then
+ * you should provide a function that returns a pointer to your factory like this:
+ * <pre>
+ * extern "C"
+ * {
+ *   void* init_libkspread()
+ *   {
+ *     return new KSpreadFactory;
+ *   }
+ * };
+ * </pre>
+ * You should especially see that the function must follow the naming pattern
+ * "init_libname".
+ *
+ * In the constructor of your factory you should create an instance of @ref KInstance
+ * like this:
+ * <pre>
+ *     s_global = new KInstance( "kspread" );
+ * </pre>
+ * This @ref KInstance is compareable to @ref KGlobal used by normal applications.
+ * It allows you to find ressource files (images, XML, sound etc.) belonging
+ * to the library.
+ *
+ * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
+ * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory()
+ * function.
+ *
+ * The KLibFactory is used to create the components, the library has to offer.
+ * The factory of KSpread for example will create instances of KSpreadDoc,
+ * while the Konqueror factory will create KonqView widgets.
+ * All objects created by the factory must be derived from @ref QObject, since @ref QObject
+ * offers type safe casting.
+ *
+ * KLibFactory is an abstract class. Reimplement the @ref
+ * createObject() method to give it functionality.
+ *
+ * @author Torben Weis <weis@kde.org>
+ */
+class KLibFactory : public QObject
+{
+    Q_OBJECT
+public:
+    /**
+     * Create a new factory.
+     */
+    KLibFactory( QObject* parent = 0, const char* name = 0 );
+    virtual ~KLibFactory();
+
+    /**
+     * Creates a new object. The returned object has to be derived from
+     * the requested classname.
+     *
+     * It is valid behavior to create different kinds of objects
+     * depending on the requested @p classname. For example a koffice
+     * library may usually return a pointer to KoDocument.  But
+     * if asked for a "QWidget", it could create a wrapper widget,
+     * that encapsulates the Koffice specific features.
+     *
+     * create() automatically emits a signal @ref objectCreated to tell
+     * the library about its newly created object.  This is very
+     * important for reference counting, and allows unloading the
+     * library automatically once all its objects have been destroyed.
+     */
+
+     QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
+
+     template <class T>
+     static T *create( const char *libraryName, QObject *parent = 0, const char *name = 0, 
+	        const QStringList &args = QStringList() )
+     {
+	 KLibFactory *factory = KLibLoader::self()->factory( libraryName );
+	 if ( !factory )
+	     return 0;
+
+	 QObject *obj = factory->create( parent, name, T::staticMetaObject()->className(),
+		                         args );
+	 T *res = dynamic_cast<T *>( obj );
+	 if ( !res )
+	     delete obj;
+	 return res;
+     }
+
+signals:
+    /**
+     * Emitted in @ref create
+     */
+    void objectCreated( QObject *obj );
+
+
+protected:
+
+    /**
+     * Creates a new object. The returned object has to be derived from
+     * the requested classname.
+     *
+     * It is valid behavior to create different kinds of objects
+     * depending on the requested @p classname. For example a koffice
+     * library may usually return a pointer to KoDocument.  But
+     * if asked for a "QWidget", it could create a wrapper widget,
+     * that encapsulates the Koffice specific features.
+     *
+     * This function is called by @ref create()
+     */
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
+
+
+private:
+    KLibFactoryPrivate *d;
 };
 
 #endif
