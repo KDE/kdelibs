@@ -42,11 +42,11 @@ public:
     m_selectedPart = 0;
     m_selectedWidget = 0;
     m_bAllowNestedParts = false;
+    m_bIgnoreScrollBars = false;
   }
   ~PartManagerPrivate()
   {
   }
-
 
   Part * m_activePart;
   QWidget *m_activeWidget;
@@ -61,6 +61,8 @@ public:
   bool m_bAllowNestedParts;
 
   QList<QWidget> m_managedTopLevelWidgets;
+
+  bool m_bIgnoreScrollBars;
 };
 
 };
@@ -109,6 +111,16 @@ bool PartManager::allowNestedParts() const
   return d->m_bAllowNestedParts;
 }
 
+void PartManager::setIgnoreScrollBars( bool ignore )
+{
+  d->m_bIgnoreScrollBars = ignore; 
+} 
+
+bool PartManager::ignoreScrollBars() const
+{
+  return d->m_bIgnoreScrollBars; 
+} 
+
 bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 {
 
@@ -137,6 +149,9 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( !d->m_managedTopLevelWidgets.containsRef( w->topLevelWidget() ) )
       return false;
 
+    if ( d->m_bIgnoreScrollBars && w->inherits( "QScrollBar" ) )
+      return false;
+    
     part = findPartFromWidget( w, pos );
     if ( part ) // We found a part whose widget is w
     {

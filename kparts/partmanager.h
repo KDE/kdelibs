@@ -50,6 +50,7 @@ class PartManager : public QObject
   Q_ENUMS( SelectionPolicy )
   Q_PROPERTY( SelectionPolicy selectionPolicy READ selectionPolicy WRITE setSelectionPolicy )
   Q_PROPERTY( bool allowNestedParts READ allowNestedParts WRITE setAllowNestedParts )
+  Q_PROPERTY( bool ignoreScrollBars READ ignoreScrollBars WRITE setIgnoreScrollBars )
 public:
   // the default policy of a PartManager is Direct!
   enum SelectionPolicy { Direct, TriState };
@@ -84,7 +85,24 @@ public:
    * the tree is activated.
    */
   void setAllowNestedParts( bool allow );
+  /**
+   * @see setAllowNestedParts
+   */
   bool allowNestedParts() const;
+
+  /**
+   * Specify whether the partmanager should ignore mouse click events for
+   * scrollbars or not. If the partmanager ignores them, then clicking on the
+   * scrollbars of a non-active/non-selected part will not change the selection
+   * or activation state.
+   *
+   * The default value is false (read: scrollbars are NOT ignored).
+   */
+  void setIgnoreScrollBars( bool ignore );
+  /**
+   * @see setIgnoreScrollBars
+   */
+  bool ignoreScrollBars() const;
 
   /**
    * @internal
