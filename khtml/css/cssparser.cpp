@@ -945,7 +945,7 @@ public:
 
     bool matchNameFamily( QString *ffamily )
     {
-#if CSS_DEBUG
+#ifdef CSS_DEBUG
       kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;
 #endif
       bool matched = false;
@@ -971,7 +971,7 @@ public:
 
     bool matchFontFamily( QString *ffamily )
     {
-if CSS_DEBUG
+#if CSS_DEBUG
     kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl;
 #endif
       QStringList t;
