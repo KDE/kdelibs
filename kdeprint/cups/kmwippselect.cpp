@@ -85,7 +85,7 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 		ipp_attribute_t	*attr = req.first();
 		while (attr)
 		{
-			if (strcmp(attr->name,"printer-name") == 0)
+			if (attr->name && strcmp(attr->name,"printer-name") == 0)
 				m_list->insertItem(SmallIcon("kdeprint_printer"),QString::fromLatin1(attr->values[0].string.text));
 			attr = attr->next;
 		}

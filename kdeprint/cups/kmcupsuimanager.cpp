@@ -49,6 +49,7 @@
 #include "cupsinfos.h"
 
 #include <klocale.h>
+#include <kdebug.h>
 
 KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name)
 : KMUiManager(parent,name)
@@ -98,7 +99,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 		ipp_attribute_t	*attr = req.first();
 		while (attr)
 		{
-			if (strcmp(attr->name,"device-uri") == 0)
+			if (attr->name && strcmp(attr->name,"device-uri") == 0)
 			{
 				if (strncmp(attr->values[0].string.text,"socket",6) == 0) backend->enableBackend(KMWizard::TCP,true);
 				else if (strncmp(attr->values[0].string.text,"parallel",8) == 0) backend->enableBackend(KMWizard::Local,true);
