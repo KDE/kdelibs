@@ -854,11 +854,6 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		case PM_DockWindowFrameWidth:
 			return 1;
 	
-		// PROGRESSBAR
-		// ------------------------------------------------------------------------
-		case PM_ProgressBarChunkWidth:
-			return 1;
-
 		// GENERAL
 		// ------------------------------------------------------------------------
 		case PM_MaximumDragDistance:
