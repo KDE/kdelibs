@@ -275,7 +275,7 @@ k_dcop:
   /*
    * Show an SSL Certificate Selection Dialog
    */
-  KSSLCertDlgRet showSSLCertDialog(const QStringList& certList);
+  KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList);
 
 protected slots:
 

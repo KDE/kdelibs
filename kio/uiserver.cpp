@@ -859,13 +859,14 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
    // Don't delete kid!!
 }
 
-KSSLCertDlgRet UIServer::showSSLCertDialog(const QStringList& certList)
+KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList)
 {
    KSSLCertDlgRet rc;
    rc.ok = false;
    if (!certList.isEmpty()) {
       KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
       kcd->setup(certList);
+      kcd->setHost(host);
       kdDebug(7024) << "Showing SSL certificate dialog" << endl;
       kcd->exec();
       rc.ok = true;

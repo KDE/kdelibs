@@ -243,6 +243,8 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
     if ( d->block != ks.blockingMode() )
         ks.setBlockingMode( d->block );
 
+    m_iPort=port;
+
     if (m_bIsSSL && !d->useSSLTunneling) {
         if ( !doSSLHandShake( sendError ) )
             return false;
@@ -257,7 +259,6 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
         CloseDescriptor();
         return false;
     }
-    m_iPort=port;
 
     return true;
 }
@@ -451,9 +452,10 @@ KSSLCertificateHome::KSSLAuthAction aa;
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
+     arg << d->host+":"+QString::number(m_iPort);
      arg << certs;
      bool rc = d->dcc->call("kio_uiserver", "UIServer",
-                               "showSSLCertDialog(QStringList)",
+                               "showSSLCertDialog(QString, QStringList)",
                                data, rettype, retval);
 
      if (rc && rettype == "KSSLCertDlgRet") {
