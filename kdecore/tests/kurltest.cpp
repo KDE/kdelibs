@@ -10,6 +10,7 @@
 #include <qtextcodec.h>
 #include <qdatastream.h>
 #include <assert.h>
+#include <kcmdlineargs.h>
 
 static bool check(QString txt, QString a, QString b)
 {
@@ -34,7 +35,8 @@ extern void qt_set_locale_codec( QTextCodec *codec );
 int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();
-  KApplication app(argc,argv,"kurltest",false,false);
+  KCmdLineArgs::init( argc, argv, "kurltest", 0, 0, 0, 0 );
+  KApplication app( false, false );
 
   KURL::List lst;
 
