@@ -1,13 +1,36 @@
+/*
+  This file is part of the KDE libraries
+  Copyright (c) 1999 Matthias Elter <elter@kde.org>
+  Copyright (c) 1999 Mosfet <mosfet@kde.org>
+ 
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
+*/
+
 #ifndef INCLUDE_MENUITEM_DEF
 #define INCLUDE_MENUITEM_DEF
 #endif
 
 #include <qmenudata.h>
-#include "coldions.h"
-#include <kapp.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
+
+#include <kapp.h>
+
+#include "coldions.h"
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
@@ -175,10 +198,37 @@ void ColdIonsStyle::drawButtonMask(QPainter *p, int x, int y, int w, int h)
 }
 
 void ColdIonsStyle::drawButton(QPainter *p, int x, int y, int w, int h,
-                             const QColorGroup &cg, bool sunken,
-                             const QBrush *fill)
+                            const QColorGroup &g, bool sunken,
+                            const QBrush *fill)
 {
-    drawBevelButton(p, x, y, w, h, cg, sunken, fill);
+    QPen oldPen = p->pen();
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+
+    if(!sunken){
+        p->fillRect(x+1, y+1, w-2, h-2,
+                    fill ? *fill : g.brush(QColorGroup::Button));
+        p->setPen(g.light());
+        p->drawLine(x, y, x2-1, y);
+        p->drawLine(x, y, x, y2-1);
+        //p->setPen(g.mid());
+        //p->drawLine(x+1, y2-1, x2-1, y2-1);
+        //p->drawLine(x2-1, y+1, x2-1, y2-1);
+        p->setPen(g.dark());
+        p->drawLine(x, y2, x2, y2);
+        p->drawLine(x2, y, x2, y2);
+    }
+    else{
+        p->fillRect(x+1, y+1, w-2, h-2,
+                    fill ? *fill : g.brush(QColorGroup::Mid));
+        p->setPen(g.dark());
+        p->drawLine(x, y, x2-1, y);
+        p->drawLine(x, y, x, y2-1);
+        p->setPen(g.light());
+        p->drawLine(x, y2, x2, y2);
+        p->drawLine(x2, y, x2, y2);
+    }
+    p->setPen(oldPen);
 }
 
 QRect ColdIonsStyle::buttonRect(int x, int y, int w, int h)
@@ -233,17 +283,16 @@ void ColdIonsStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
                        fill ? fill : &g.brush(QColorGroup::Button));
 }
 
-
-void ColdIonsStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, bool)
+void ColdIonsStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &cg, QBrush *)
 {
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
+    drawButton(p, x, y, w, h, cg, false);
 }
 
-void ColdIonsStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, QBrush *fill)
+void ColdIonsStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &cg, bool)
 {
-    p->fillRect(x, y, w, h, fill ? *fill : g.brush(QColorGroup::Background));
+    drawButton(p, x, y, w, h, cg, false);
 }
 
 void ColdIonsStyle::drawLightShadeRect(QPainter *p, int x, int y, int w, int h,
@@ -260,26 +309,28 @@ void ColdIonsStyle::drawLightShadeRect(QPainter *p, int x, int y, int w, int h,
                 g.brush(QColorGroup::Background));
 }
     
-
 void ColdIonsStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool,
-                                 QBrush *fill)
+                                 QBrush *)
 {
-    qDrawShadeRect(p, x, y, w, h, g, false, 1, 0,
-                   fill ? fill : &g.brush(QColorGroup::Background));
-    if(h > w){
-        x += 2;
-        y += 3;
-        w = 5;
-        h = 9;
+  drawButton(p, x, y, w, h, g, false, &g.brush(QColorGroup::Mid));
+
+  if(h > w)
+    {
+      x += 2;
+      y += 3;
+      w = 5;
+      h = 9;
     }
-    else{
-        x += 3;
-        y += 2;
-        w = 9;
-        h = 5;
+  else
+    {
+      x += 3;
+      y += 2;
+      w = 9;
+      h = 5;
     }
-    drawLightShadeRect(p, x, y, w, h, g, &g.brush(QColorGroup::Mid));
+
+  drawButton(p, x, y, w, h, g, false, &g.brush(QColorGroup::Midlight));
 }
 
 void ColdIonsStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
@@ -306,8 +357,8 @@ void ColdIonsStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      const QString& btext, const QPixmap *pixmap,
                                      QFont *font)
 {
-    int x2 = x+w-1;
-    int y2 = y+h-1;
+  int x2 = x+w-1;
+  int y2 = y+h-1;
 
     if (sunken)
       {
@@ -526,15 +577,21 @@ QSize ColdIonsStyle::indicatorSize() const
 }
 
 void ColdIonsStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, int state, bool down,
-                                bool)
+                               const QColorGroup &cg, int state, bool down, bool)
 {
-    drawButton(p, x, y, w, h, g, down);
+    drawButton(p, x, y, w, h, cg, down);
     if(state != QButton::Off){
-        p->setPen(g.dark());
-        p->drawPixmap(4, 2, *checkFill);
-        p->setPen(Qt::black);
-        p->drawPixmap(4, 2, *checkOutline);
+        QPen oldPen = p->pen();
+	p->setPen(cg.light());
+        p->drawLine(x+5, y+6, x+5, y+10);
+        p->drawLine(x+5, y+10, x+w-4, y+3);
+        p->setPen(cg.dark());
+        p->drawLine(x+5, y+11, x+w-4, y+4);
+        p->drawLine(x+6, y+6, x+6, y+7);
+        p->setPen(cg.mid());
+        p->drawLine(x+6, y+11, x+w-4, y+5);
+        p->drawLine(x+6, y+8, x+7, y+7);
+        p->setPen(oldPen);
     }
 }
 
@@ -544,8 +601,8 @@ QSize ColdIonsStyle::exclusiveIndicatorSize() const
 }
 
 void ColdIonsStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
-                                         int h, const QColorGroup &g, bool on,
-                                         bool down, bool)
+                                        int h, const QColorGroup &cg, bool on,
+                                        bool down, bool)
 {
     static QCOORD circle_dark[] = {5,1, 6,1, 7,1, 8,1, 9,1, 10,1,
     3,2, 4,2,
@@ -589,27 +646,27 @@ void ColdIonsStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     static QCOORD fill_lines[] = {6,3, 9,3, 3,6, 3,9, 12,6, 12,9, 6,12, 9,12};
 
     QPen oldPen = p->pen();
-    p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
+    p->fillRect( x, y, w, h, cg.brush(QColorGroup::Background));
     QPointArray a( QCOORDARRLEN(circle_dark), circle_dark );
     a.translate( x, y );
-    p->setPen(Qt::black);
+    p->setPen(cg.dark() );
     p->drawPoints( a );
     a.setPoints( QCOORDARRLEN(circle_mid), circle_mid );
     a.translate( x, y );
-    p->setPen(g.mid());
+    p->setPen(cg.mid() );
     p->drawPoints( a );
     a.setPoints( QCOORDARRLEN(circle_light), circle_light );
     a.translate( x, y );
-    p->setPen(g.light() );
+    p->setPen(cg.light() );
     p->drawPoints( a );
-
     if(on || down){
-        p->setPen(down ? g.mid() : Qt::black);
+        if(down)
+            p->setPen(cg.mid());
         a.setPoints(QCOORDARRLEN(fill_lines), fill_lines);
         a.translate(x,y);
         p->drawLineSegments(a);
-        p->fillRect(4, 4, 8, 8, (down)? g.brush(QColorGroup::Mid) :
-                    QBrush(Qt::black, SolidPattern));
+        p->fillRect(4, 4, 8, 8, (down)? cg.brush(QColorGroup::Mid) :
+                    cg.brush(QColorGroup::Light));
     }
     p->setPen(oldPen);
 }
