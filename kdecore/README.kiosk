@@ -405,6 +405,14 @@ lineedit_text_completion
           when typing. When a single account is shared by multiple people you
           may wish to disable this out of privacy concerns.
 
+Screensaver related:
+opengl_screensavers
+	- defines whether OpenGL screensavers are allowed to be used.
+
+manipulatescreen_screensavers
+	- defines whether screensavers that manipulate an image of the screen
+	  (e.g. moving chunks of the screen around) are allowed to be used.
+
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent
 the user from executing "custom .desktop files". The first way would be to
