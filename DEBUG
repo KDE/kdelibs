@@ -115,7 +115,7 @@ a crash you are just in time to start your debugger.
 
 First lets attach gdb to an application that hasn't crashed (yet).
 
-You start with finding the process of the appplication with e.g. "ps -aux":
+You start with finding the process of the application with e.g. "ps -aux":
 
 > ps -aux | grep kedit 
 bastian  21570 15.1  6.8 13740 8800 pts/6    S    15:34   0:01 kedit

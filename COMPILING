@@ -26,7 +26,7 @@ Preparations
 Before you start you must decide two things:
 
 1) Where do you want to have Qt installed? Qt is a bit lame in that it 
-basically installs itselfs in its own source-tree, but symlinks are your 
+basically installs itself in its own source-tree, but symlinks are your 
 friend. E.g you could link /usr/local/lib/qt3 to where you keep your Qt 
 source. Qt libs then end up in /usr/local/lib/qt3/lib.
 

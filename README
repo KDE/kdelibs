@@ -31,7 +31,7 @@ Here is an alphabetical list:
 
 * kab
     OBSOLETE, see kabc: Used to be the address book library, but now only
-    used to conver kab-Addressbooks into kabc format.
+    used to convert kab-Addressbooks into kabc format.
 
 * kabc
     The address book library.
@@ -56,7 +56,7 @@ Here is an alphabetical list:
     Library with pixmap effects.
 
 * kdeprint
-    The very versatily printing subsystem of KDE.
+    The very versatile printing subsystem of KDE.
 
 * kdesu
     Library for password entering and handling
@@ -229,7 +229,7 @@ they normally don't have access (e.g. KDE on AIX) to.
 So, here are some tips on bug reporting:
 
 * make sure your bug is due to KDE ... and not due to a packaging problem of
-  your Linux distrubutor. For example, most "I can not install the XYZ.rpm"
+  your Linux distributor. For example, most "I can not install the XYZ.rpm"
   problem are due to packaging issues. Refer with such questions to your
   Linux Distributor and his appropriate mailing list or bug reporting tool.
 
