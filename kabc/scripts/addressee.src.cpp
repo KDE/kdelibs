@@ -49,12 +49,21 @@ struct Addressee::AddresseeData : public KShared
   bool changed  :1;
 };
 
+Addressee::AddresseeData* Addressee::shared_null = 0;
+
+Addressee::AddresseeData* Addressee::makeSharedNull()
+{
+  Addressee::shared_null = new AddresseeData;
+  shared_null->_KShared_ref(); //just in case (we should add KSD)
+  shared_null->empty = true;
+  shared_null->changed = false;
+  shared_null->resource = 0;
+  return shared_null;
+}
+
 Addressee::Addressee()
 {
-  mData = new AddresseeData;
-  mData->empty = true;
-  mData->changed = false;
-  mData->resource = 0;
+  mData = shared_null ? shared_null : makeSharedNull();
 }
 
 Addressee::~Addressee()
@@ -72,17 +81,18 @@ Addressee &Addressee::operator=( const Addressee &a )
   return (*this);
 }
 
-Addressee Addressee::copy()
-{
-  Addressee a;
-  *(a.mData) = *mData;
-  return a;
-}
-
 void Addressee::detach()
 {
-  if ( mData.count() == 1 ) return;
-  *this = copy();
+  if ( mData.data() == shared_null ) {
+    mData = new AddresseeData;
+    mData->empty = true;
+    mData->changed = false;
+    mData->resource = 0;
+    return;
+  } else if ( mData.count() == 1 ) return;
+
+  AddresseeData data = *mData;
+  mData = new AddresseeData( data );
 }
 
 bool Addressee::operator==( const Addressee &a ) const

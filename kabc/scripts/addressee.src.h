@@ -366,11 +366,13 @@ class Addressee
 	  bool changed() const;
 
   private:
-    Addressee copy();
     void detach();
 
     struct AddresseeData;
     mutable KSharedPtr<AddresseeData> mData;
+  private:
+    static AddresseeData* shared_null;
+    static AddresseeData* makeSharedNull();
 };
 
 QDataStream &operator<<( QDataStream &, const Addressee & );
