@@ -335,7 +335,9 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     combo->setInsertionPolicy(policy);
     if (!tooltiptext.isNull())
         QToolTip::add( combo, tooltiptext );
-    connect ( combo, signal, receiver, slot );
+
+    if ( signal && receiver && slot )
+        connect ( combo, signal, receiver, slot );
     return index;
 }
 
@@ -363,7 +365,9 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
         combo->setMinimumWidth( size );
     if (!tooltiptext.isNull())
         QToolTip::add( combo, tooltiptext );
-    connect ( combo, signal, receiver, slot );
+
+    if ( signal && receiver && slot )
+        connect ( combo, signal, receiver, slot );
     return index;
 }
 
