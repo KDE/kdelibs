@@ -27,6 +27,7 @@
 #define HTML_TABLEIMPL_H
 
 #include <qcolor.h>
+#include <qvector.h>
 
 #include "dtd.h"
 #include "html_elementimpl.h"
@@ -133,8 +134,10 @@ public:
     void addCell( HTMLTableCellElementImpl *cell );
     void endTable();
     void  addColInfo(HTMLTableCellElementImpl *cell);
-    void addColInfo(int _startCol, int _colSpan,
-		    int _minSize, int _maxSize, Length _width);
+
+    void addColInfo(int _startCol, int _colSpan, 
+		    int _minSize, int _maxSize, Length _width,
+		    HTMLTableCellElementImpl* _cell);
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
@@ -177,14 +180,29 @@ protected:
      * There is always 1 default ColInfo entry which stretches across the
      * entire table.
      */
-    typedef struct ColInfo_struct
+    struct ColInfo
     {
-	int     startCol;
-	int     colSpan;
-	int     minSize;
-	int     prefSize;
-	Length  width;     // width as predefined by attributes
-    } ColInfo_t;
+    	ColInfo()
+	{
+	    min=0;
+	    max=0;
+    	    type=Undefined;
+	    value=0;
+	    minCell=0;
+	    maxCell=0;
+	}
+	void update();
+	
+    	int     span;
+	int     start;	
+	int     min;
+	int     max;
+	HTMLTableCellElementImpl* minCell;
+	HTMLTableCellElementImpl* maxCell;
+	LengthType 	type;
+	int 	value;    
+    };
+    
 
     // this function is used in case <col> or <colgroup> elements are defined
     // table layout can be done incrementally in this case
@@ -196,24 +214,18 @@ protected:
     // calculates the height of each row
     void calcRowHeights();
 
-    //
-    // A small set of helper functions for spreading width across columns
-    void addColMinWidth(int k, int delta);
-    void addColsMinWidthEqual(int kol, int span, int tooAdd);
-    void addColsMinWidthVar(int kol, int span, int tooAdd, int varCount);
-    int addColsMinWidthNonVar(int kol, int span, int tooAdd, int fixedCount);
-    void addColsMinWidthNonFix(int kol, int span, int tooAdd, int nonFixedCount);
-    void addColsMaxWidthEqual(int kol, int span, int tooAdd);
-    void addColsMaxWidthVar(int kol, int span, int tooAdd, int varCount);
-
-    void setCells( unsigned int r, unsigned int c,
-		   HTMLTableCellElementImpl *cell );
+    void setCells( unsigned int r, unsigned int c, HTMLTableCellElementImpl *cell );
     void addRows( int num );
     void addColumns( int num );
     // ### need to provide some delete* methods too...
 
     HTMLTableCellElementImpl ***cells;
-    //QArray<ColInfo_t> colInfo;
+    
+    QVector<QVector<ColInfo> > colInfos;
+
+    void calcColMinMax();
+    void spreadSpanMinMax(int col, int span, int min, int max, LengthType type);
+    
     int maxColSpan;
 
     QArray<int> columnPos;
@@ -231,6 +243,8 @@ protected:
     unsigned int row;
     unsigned int totalRows;
     unsigned int allocRows;
+    
+    int maxSpan;
 
     HTMLTableCaptionElementImpl *tCaption;
     HTMLTableColElementImpl *cols;
@@ -445,6 +459,7 @@ public:
     virtual void layout(bool deep = false);
 
     virtual VAlign vAlign();
+    virtual HAlign hAlign();
 
 protected:
     int _row;
@@ -509,6 +524,15 @@ public:
 
 };
 
+
+inline void
+HTMLTableElementImpl::ColInfo::update()
+{
+    min = minCell->getMinWidth();
+    max = maxCell->getMaxWidth();
+}
+
 }; //namespace
 
 #endif
+

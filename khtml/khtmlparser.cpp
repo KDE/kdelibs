@@ -395,7 +395,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_HEAD:
 	    // we can get here only if the element is not allowed in head.
 	    // This means the body starts here...
-	    popBlock(ID_HEAD);
+	    // popBlock(ID_HEAD);
+	    ignore = true;
 	    break;
 	case ID_BODY:
 	    ignore = true;

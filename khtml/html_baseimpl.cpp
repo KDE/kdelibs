@@ -149,6 +149,7 @@ void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
 void HTMLBodyElementImpl::close()
 {
     printf("BODY:close\n");
+    calcMinMaxWidth();
     setLayouted(false);
     _parent->updateSize();
 }

@@ -225,6 +225,8 @@ void HTMLElementImpl::setAvailableWidth(int w)
     NodeImpl *child = firstChild();
     while(child != 0)
     {
+    	if (child->getMinWidth() > availableWidth)
+	    printf("ERROR: %d too narrow availableWidth\n",id());
 	child->setAvailableWidth(availableWidth);
 	child = child->nextSibling();
     }
@@ -894,7 +896,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	if (elemPAlign!=HNone)
 	    align = elemPAlign;
 	else
-	    align = halign;
+	    align = hAlign();
 
 
 	// accumulate until we have enough to fill the line

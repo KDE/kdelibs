@@ -275,7 +275,7 @@ void HTMLDocumentImpl::setAvailableWidth(int w) {
     if(w != -1) width = w;
     if(bodyElement)
     {
-//	bodyElement->calcMinMaxWidth();
+	bodyElement->calcMinMaxWidth();
     	int tw = width > bodyElement->getMinWidth() ? width :
 	    bodyElement->getMinWidth();
     	bodyElement->setAvailableWidth(tw);
@@ -306,7 +306,7 @@ void HTMLDocumentImpl::updateSize()
     	int oldw = width;
 	int oldh = height;
 	
-    	layout(true);	
+    	layout(true);		
 	
 	if(width != oldw || height != oldh)
 	{
@@ -317,7 +317,7 @@ void HTMLDocumentImpl::updateSize()
 	    }
 	}
 	if (view)	
-	    view->viewport()->repaint(true);
+	   view->viewport()->repaint(true);
     }
 }
 
