@@ -1262,10 +1262,7 @@ void KHTMLPart::popupMenu( const QString &url )
       mode = S_IFDIR;
   }
 
-  KXMLGUIClient *client = 0;
-
-  if ( !url.isEmpty() )
-    client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, u );
+  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, url.isEmpty() ? KURL() : u );
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
 
@@ -1612,27 +1609,17 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   setInstance( khtml->instance() );
 
-  d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
-				   actionCollection(), "savelinkas" );
-  /*
-  DOM::NodeImpl node = khtml->htmlView()->nodeUnderMouse();
-  if ( !node.isNull() )
-  {
-    if ( node.nodeType() == ID_IMG )
-    {
-      d->m_imageURL = KURL( d->m_khtml->url(), static_cast<DOM::HTMLElement>( node ).src() );
-      d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
-				        actionCollection(), "saveimageas" );
-    }
-  }
-  */
+  if ( !url.isEmpty() )
+    d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
+ 				     actionCollection(), "savelinkas" );
   DOM::Element e;
   e = khtml->nodeUnderMouse();
-  if ( !e.isNull() && e.nodeType() == ID_IMG )
+  
+  if ( !e.isNull() && e.getAttribute( ATTR_ID ) == ID_IMG )
   {
-      d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
-      d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
-				        actionCollection(), "saveimageas" );
+    d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
+    d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
+				      actionCollection(), "saveimageas" );
   }
 
   setXML( doc );
@@ -1660,7 +1647,6 @@ void KHTMLPopupGUIClient::saveURL( const QString &caption, const KURL &url )
 {
   KFileDialog *dlg = new KFileDialog( QString::null, QString::null, d->m_khtml->widget(), "filedia", true );
 
-  //  dlg->setCaption( i18n( "Save Link As" ) );
   dlg->setCaption( caption );
 
   dlg->setSelection( url.filename() );
