@@ -29,7 +29,6 @@ class QDropEvent;
 class QPushButton;
 class QCheckBox;
 class QRadioButton;
-class QLineEdit;
 class QTextStream;
 class KHistoryCombo;
 class KIntNumInput;
@@ -89,7 +88,6 @@ protected:
 private:
     QCheckBox *sensitive;
     QCheckBox *direction;
-    QLineEdit *value; // FIXME: remove, unused
 
     class KEdFindPrivate;
     KEdFindPrivate *d;
@@ -127,8 +125,6 @@ public:
      */
     KHistoryCombo *replaceCombo() const;
 
-    QLineEdit 	*value; // FIXME: remove, unused
-    QLineEdit 	*replace_value; // FIXME: remove, unused
     bool 	case_sensitive();
     bool 	get_direction();
 
