@@ -5,6 +5,22 @@
 #include <qstringlist.h>
 #include <qmap.h>
 
+/**
+ * This class is useful if you want to know which protocols
+ * KDE supports. In addition you can query lots of informations
+ * about a certain protocol. KProtocolManager scans the *.desktop
+ * files of all installed kioslaves to get this information.
+ *
+ * In addition KProtocolManager has a heap of static functions that
+ * allow you to read an write IO related KDE settings. These contain
+ * proxies, resuming, timeouts.
+ *
+ * However, please notice that these settings apply to all applications.
+ * That means that the proxy, timeouts etc. are saved in the users config
+ * file and NOT in the config file of the application.
+ *
+ * @author: Torben Weis
+ */
 class KProtocolManager
 {
 public:
@@ -26,18 +42,18 @@ public:
   bool supportsMoving( const QString& _protocol ) const;
 
   QStringList protocols() const;
-  
-  int readTimeout() const;
-  bool markPartial() const;
-  int minimumKeepSize() const;
-  bool autoResume() const;
-  bool persistentConnections() const;
-  QString remoteFileProtocol() const;
- 
-  bool useProxy() const;
-  QString ftpProxy() const;
-  QString httpProxy() const;
-  QString noProxyFor() const;
+
+  static int readTimeout();
+  static bool markPartial();
+  static int minimumKeepSize();
+  static bool autoResume();
+  static bool persistentConnections();
+  static QString remoteFileProtocol();
+
+  static bool useProxy();
+  static QString ftpProxy();
+  static QString httpProxy();
+  static QString noProxyFor();
 
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
@@ -47,7 +63,7 @@ public:
    * For opposite case see @ref #setReadTimeoutNoResume
    *
    */
-  void setReadTimeout( int _time );
+  static void setReadTimeout( int _time );
 
   /**
    * Set this flag if you want slaves to add extension .PART to all files during transfer.
@@ -57,7 +73,7 @@ public:
    * Default value is false - don't add extension.
    *
    */
-  void setMarkPartial( bool _mode );
+  static void setMarkPartial( bool _mode );
 
   /**
    * Set the minimum size for keepenig of interrupted transfer
@@ -68,7 +84,7 @@ public:
    * Default value is 5000 bytes
    *
    */
-  void setMinimumKeepSize( int _size );
+  static void setMinimumKeepSize( int _size );
 
   /**
    * Set this flag if you want slaves to automatically resume files without
@@ -77,7 +93,7 @@ public:
    * Default value is false - don't resume automaticaly.
    *
    */
-  void setAutoResume( bool _mode );
+  static void setAutoResume( bool _mode );
 
   /**
    * Set this flag if you want slaves to have persistent connections ( ftp )
@@ -85,7 +101,7 @@ public:
    * Default value is true - keep persistent connections
    *
    */
-  void setPersistentConnections( bool _mode );
+  static void setPersistentConnections( bool _mode );
 
   /**
    * Set a protocol which should be used for remote "file"-URLs
@@ -93,15 +109,15 @@ public:
    * Default value is empty: Pass hostname as part of path.
    *
    * Example:
-   * With "setRemoteFileProtocol("smb"), the URL 
-   *    "file://atlas/dfaure" 
+   * With "setRemoteFileProtocol("smb"), the URL
+   *    "file://atlas/dfaure"
    * will be converted to
    *    "smb://atlas/dfaure"
    *
    * File URLs without a hostname are not affected.
    *
    */
-  void setRemoteFileProtocol( const QString &remoteFileProtocol );
+  static void setRemoteFileProtocol( const QString &remoteFileProtocol );
 
   /**
    * Set this flag if you want use proxies
@@ -109,34 +125,34 @@ public:
    * Default value is false - don't use proxies.
    *
    */
-  void setUseProxy( bool _mode );
+  static void setUseProxy( bool _mode );
 
   /**
    * Set the proxy for ftp transfer
    *
    */
-  void setFtpProxy( const QString& _proxy );
+  static void setFtpProxy( const QString& _proxy );
 
   /**
    * Set the proxy for http transfer
    *
    */
-  void setHttpProxy( const QString& _proxy );
+  static void setHttpProxy( const QString& _proxy );
 
 
   /**
    * Set the URL's for which we should not use proxy
    *
    */
-  void setNoProxyFor( const QString& _noproxy );
+  static void setNoProxyFor( const QString& _noproxy );
 
 
-  static KProtocolManager& self() { 
+  static KProtocolManager& self() {
     if ( ! s_pManager )
       s_pManager = new KProtocolManager;
     return *s_pManager;
   }
-  
+
 protected:
   KProtocolManager();
 
@@ -163,7 +179,7 @@ private:
   typedef QMap<QString,Protocol>::Iterator Iterator;
   typedef QMap<QString,Protocol>::ConstIterator ConstIterator;
   Map m_protocols;
-  
+
   static KProtocolManager *s_pManager;
 };
 

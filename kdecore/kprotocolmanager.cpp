@@ -16,7 +16,7 @@ KProtocolManager* KProtocolManager::s_pManager = 0L;
 KProtocolManager::KProtocolManager()
 {
   ASSERT( !s_pManager );
-  
+
   s_pManager = this;
 
   QStringList list = KGlobal::dirs()->findDirs("config", "protocols");
@@ -30,7 +30,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
   if (!dir.exists())
     return;
   QStringList p = dir.entryList();
-    
+
   QStringList::Iterator e;
   for( e = p.begin(); e != p.end(); e++ )
   {
@@ -39,12 +39,12 @@ void KProtocolManager::scanConfig( const QString& _dir )
 
     KSimpleConfig config( _dir + "/" + *e, true );
     config.setGroup( "Protocol" );
-  
+
     Protocol p;
     QString exec = config.readEntry( "exec" );
     if (!exec.isEmpty())
 	p.executable = locate("exe", exec);
-    else 
+    else
 	p.executable = "";
     p.isSourceProtocol = config.readBoolEntry( "source", true );
     p.supportsReading = config.readBoolEntry( "reading", false );
@@ -73,7 +73,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
       p.outputType = T_STREAM;
     else
       p.outputType = T_NONE;
-    
+
     QString name = config.readEntry( "protocol" );
 
     m_protocols.insert( name, p );
@@ -84,11 +84,11 @@ bool KProtocolManager::isSourceProtocol( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().isSourceProtocol;
 }
 
@@ -96,11 +96,11 @@ bool KProtocolManager::isFilterProtocol( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return !it.data().isSourceProtocol;
 }
 
@@ -113,11 +113,11 @@ bool KProtocolManager::supportsListing( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsListing;
 }
 
@@ -125,11 +125,11 @@ QStringList KProtocolManager::listing( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return QStringList();
   }
-  
+
   return it.data().listing;
 }
 
@@ -137,11 +137,11 @@ bool KProtocolManager::supportsReading( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsReading;
 }
 
@@ -149,11 +149,11 @@ bool KProtocolManager::supportsWriting( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsWriting;
 }
 
@@ -161,11 +161,11 @@ bool KProtocolManager::supportsMakeDir( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsMakeDir;
 }
 
@@ -173,11 +173,11 @@ bool KProtocolManager::supportsDeleting( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsDeleting;
 }
 
@@ -185,11 +185,11 @@ bool KProtocolManager::supportsLinking( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsLinking;
 }
 
@@ -197,23 +197,23 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
-  
+
   return it.data().supportsMoving;
 }
 
 QStringList KProtocolManager::protocols() const
 {
   QStringList res;
-  
+
   ConstIterator it = m_protocols.begin();
   ConstIterator end = m_protocols.end();
   for (; it != end; ++it )
     res.append( it.key() );
-    
+
   return res;
 }
 
@@ -221,11 +221,11 @@ QString KProtocolManager::executable( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return QString::null;
   }
-  
+
   return it.data().executable;
 }
 
@@ -233,11 +233,11 @@ KProtocolManager::Type KProtocolManager::inputType( const QString& _protocol ) c
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return T_NONE;
   }
-  
+
   return it.data().inputType;
 }
 
@@ -245,78 +245,78 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
-  {    
+  {
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
     return T_NONE;
   }
-  
+
   return it.data().outputType;
 }
 
-int KProtocolManager::readTimeout() const
+int KProtocolManager::readTimeout()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( QString::null );
   return config.readNumEntry( "ReadTimeout", 15 ); // 15 seconds
 }
 
-bool KProtocolManager::markPartial() const
+bool KProtocolManager::markPartial()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( QString::null );
   return config.readBoolEntry( "MarkPartial", true );
 }
 
-int KProtocolManager::minimumKeepSize() const
+int KProtocolManager::minimumKeepSize()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( QString::null );
-  return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytey
+  return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 byte
 }
 
-bool KProtocolManager::autoResume() const
+bool KProtocolManager::autoResume()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( QString::null );
   return config.readBoolEntry( "AutoResume", false );
 }
 
-bool KProtocolManager::persistentConnections() const
+bool KProtocolManager::persistentConnections()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( QString::null );
   return config.readBoolEntry( "PersistentConnections", true );
 }
 
-bool KProtocolManager::useProxy() const
+bool KProtocolManager::useProxy()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
   return config.readBoolEntry( "UseProxy", false );
 }
 
-QString KProtocolManager::ftpProxy() const
+QString KProtocolManager::ftpProxy()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
   return config.readEntry( "FtpProxy" );
 }
 
-QString KProtocolManager::httpProxy() const
+QString KProtocolManager::httpProxy()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
   return config.readEntry( "HttpProxy" );
 }
 
-QString KProtocolManager::noProxyFor() const
+QString KProtocolManager::noProxyFor()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
   return config.readEntry( "NoProxyFor" );
 }
 
-QString KProtocolManager::remoteFileProtocol() const
+QString KProtocolManager::remoteFileProtocol()
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( QString::null );
