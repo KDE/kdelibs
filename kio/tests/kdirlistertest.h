@@ -71,12 +71,12 @@ public slots:
    {
       cout << "*** deleteItem: " << item->url().prettyURL().local8Bit() << endl;
    }
-   void itemsFilteredByMime( const KFileItemList& items )
+   void itemsFilteredByMime( const KFileItemList&  )
    {
       cout << "*** itemsFilteredByMime: " << endl;
       // TODO
    }
-   void refreshItems( const KFileItemList& items )
+   void refreshItems( const KFileItemList&  )
    {
       cout << "*** refreshItems: " << endl;
       // TODO

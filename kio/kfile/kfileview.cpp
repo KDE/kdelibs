@@ -140,7 +140,7 @@ void KFileView::addItemList(const KFileItemList& list)
 #endif
 }
 
-void KFileView::insertItem( KFileItem *item )
+void KFileView::insertItem( KFileItem * )
 {
 }
 
@@ -360,11 +360,11 @@ KActionCollection * KFileView::actionCollection() const
     return d->actions;
 }
 
-void KFileView::readConfig( KConfig *kc, const QString& group )
+void KFileView::readConfig( KConfig *, const QString&  )
 {
 }
 
-void KFileView::writeConfig( KConfig *kc, const QString& group )
+void KFileView::writeConfig( KConfig *, const QString& )
 {
 }
 

@@ -685,7 +685,7 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 ///////////////////////////////////////////////////////////////////
 
 
-void KFileTreeViewToolTip::maybeTip( const QPoint &point )
+void KFileTreeViewToolTip::maybeTip( const QPoint & )
 {
 #if 0
     QListViewItem *item = m_view->itemAt( point );
