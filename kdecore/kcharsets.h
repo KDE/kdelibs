@@ -104,12 +104,12 @@ public:
      * change the font's family for this purpose, but care is taken to find
      * a family which is as close as possible to the font given.
      */
-    void setQFont(QFont &f, QFont::CharSet charset = QFont::Unicode);
+    void setQFont(QFont &f, QFont::CharSet charset = QFont::Unicode) const;
 
     /**
      * overloaded member function. Provided for convenience.
      */
-    void setQFont(QFont &f, QString charset);
+    void setQFont(QFont &f, QString charset) const;
 
 
     /**
@@ -139,21 +139,21 @@ public:
     /**
      * does the given font family have a unicode encoding?
      */
-    bool hasUnicode(QString family);
+    bool hasUnicode(QString family) const;
     /**
      * does given font exist with a unicode encoding?
      */
-    bool hasUnicode(QFont &font);
+    bool hasUnicode(QFont &font) const;
 
     enum FixedType { FixedUnknown, Fixed, Proportional }; 
     enum WeightType { WeightUnknown, Medium, Bold };
     enum SlantType { SlantUnknown, Normal, Italic };
 
 protected:
-    KFontStructList getFontList(KFontStruct mask);
-    QString xCharsetName(QFont::CharSet);
-    QFont::CharSet nameToID(QString name);
-    QFont::CharSet xNameToID(QString name);
+    KFontStructList getFontList(KFontStruct mask) const;
+    QString xCharsetName(QFont::CharSet) const;
+    QFont::CharSet nameToID(QString name) const;
+    QFont::CharSet xNameToID(QString name) const;
 
 };
 

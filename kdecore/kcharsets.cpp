@@ -276,15 +276,15 @@ QStringList KCharsets::availableCharsetNames(QString family)
 
 QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
 {
-    QFontInfo fi(f);
-    QFont f = _f;
+    QFontInfo fi(_f);
 
     // unicode can display any char...
-    if (fi.charSet() == QFont::Unicode) return f;
+    if (fi.charSet() == QFont::Unicode) return _f;
 
     // here comes the work...
     // we look at the range the char is in, and try charsets which can
     // map the char...
+    QFont f = _f;
     int uc = c.unicode();
 
     if( uc < 0xff ) // 8859-1
@@ -303,11 +303,11 @@ QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
     return f;
 }
 
-void KCharsets::setQFont(QFont &f, QString charset)
+void KCharsets::setQFont(QFont &f, QString charset) const
 {
     setQFont(f, nameToID(charset));
 }
-void KCharsets::setQFont(QFont &f, QFont::CharSet charset)
+void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 {
     KFontStruct mask;
     KFontStructList list;
@@ -384,7 +384,7 @@ bool KCharsets::isAvailable(QFont::CharSet charset)
 }
 
 
-KFontStructList KCharsets::getFontList(KFontStruct mask)
+KFontStructList KCharsets::getFontList(KFontStruct mask) const
 {
  
     char **fontNames;
@@ -473,7 +473,7 @@ QFont::CharSet KCharsets::charsetForLocale()
     return nameToID(KGlobal::locale()->charset()); 
 }
 
-bool KCharsets::hasUnicode(QString family)
+bool KCharsets::hasUnicode(QString family) const
 {
     KFontStruct fs;
     fs.family = family;
@@ -482,13 +482,13 @@ bool KCharsets::hasUnicode(QString family)
     return !l.isEmpty();
 }
 
-bool KCharsets::hasUnicode(QFont &font)
+bool KCharsets::hasUnicode(QFont &font) const
 {
     return hasUnicode(font.family());
 }
 
 
-QString KCharsets::xCharsetName(QFont::CharSet charSet)
+QString KCharsets::xCharsetName(QFont::CharSet charSet) const
 {
     switch( charSet )
     {
@@ -538,7 +538,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet)
     return "*-*";
 }
 
-QFont::CharSet KCharsets::nameToID(QString name)
+QFont::CharSet KCharsets::nameToID(QString name) const
 {
     name = name.lower();
 
@@ -579,7 +579,7 @@ QString KCharsets::name(QFont::CharSet c)
 }
  
 
-QFont::CharSet KCharsets::xNameToID(QString name)
+QFont::CharSet KCharsets::xNameToID(QString name) const
 {
     name = name.lower();
     
