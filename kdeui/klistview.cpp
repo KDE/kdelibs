@@ -996,7 +996,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     }
     if (dropHighlighter())
     {
-      QRect tmpRect = drawItemHighlighter(0, d->afterItemDrop);
+      QRect tmpRect = drawItemHighlighter(0, itemAt( vp ));
       if (tmpRect != d->mOldDropHighlighter)
       {
         cleanItemHighlighter();
@@ -1339,7 +1339,7 @@ QRect KListView::drawItemHighlighter(QPainter *painter, QListViewItem *item)
   if (item)
   {
     r = itemRect(item);
-    r.setLeft(r.left()+(item->depth()+1)*treeStepSize());
+    r.setLeft(r.left()+(item->depth()+(rootIsDecorated() ? 1 : 0))*treeStepSize());
     if (painter)
       style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(),
                             QStyle::Style_FocusAtBorder, colorGroup().highlight());
