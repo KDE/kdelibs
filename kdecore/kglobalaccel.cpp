@@ -122,7 +122,7 @@ uint KGlobalAccel::count() const
 	return aKeyDict.count();
 }
 
-uint KGlobalAccel::currentKey( const QString& action ) const
+int KGlobalAccel::currentKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -132,7 +132,7 @@ uint KGlobalAccel::currentKey( const QString& action ) const
 		return pEntry->aCurrentKeyCode;
 }
 
-uint KGlobalAccel::defaultKey( const QString& action ) const
+int KGlobalAccel::defaultKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -157,7 +157,7 @@ QString KGlobalAccel::findKey( int key ) const
 	aKeyIt.toFirst();
 #define pE aKeyIt.current()
 	while ( pE ) {
-		if ( (unsigned int)key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
+		if ( key == pE->aCurrentKeyCode ) return aKeyIt.currentKey();
 		++aKeyIt;
 	}
 #undef pE
@@ -229,7 +229,7 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 	return true;
 }
 
-bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uint keyCode,
+bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, int keyCode,
 					   bool configurable )
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
@@ -255,7 +255,7 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uin
 bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
 					   const QString& keyCode, bool configurable )
 {
-	uint iKeyCode = KAccel::stringToKey( keyCode );
+	int iKeyCode = KAccel::stringToKey( keyCode );
 	return insertItem(descr, action, iKeyCode, configurable);
 }
 
@@ -553,7 +553,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 
 /*****************************************************************************/
 
-uint keyToXMod( uint keyCode )
+uint keyToXMod( int keyCode )
 {
 	uint mod = 0;
 	
@@ -569,7 +569,7 @@ uint keyToXMod( uint keyCode )
 	return mod;
 }
 
-uint keyToXSym( uint keyCode )
+uint keyToXSym( int keyCode )
 {
 	char *toks[4], *next_tok;
         char sKey[100];

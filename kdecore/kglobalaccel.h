@@ -31,12 +31,12 @@ class KGlobalAccelPrivate;
 /**
  * Returns the X key modifier for the key code keyCode.
  */	
-uint keyToXMod( uint keyCode );
+uint keyToXMod( int keyCode );
 
 /**
  * Returns the X key sym for the key code keyCode.
  */	
-uint keyToXSym( uint keyCode );
+uint keyToXSym( int keyCode );
 
 /**
  * The KGlobalAccel class handles global keyboard accelerators, allowing a
@@ -130,13 +130,13 @@ class KGlobalAccel : public QObject
 	* action, or zero if either the action name cannot be found or the current
 	* key is set to no key.
 	*/
-	uint currentKey( const QString& action ) const;
+	int currentKey( const QString& action ) const;
 
 	/**
 	* Returns the default key code of the accelerator item with the action name
 	* action, or zero if the action name cannot be found.
 	*/
-	uint defaultKey( const QString& action) const;
+	int defaultKey( const QString& action) const;
 	
 	/**
 	 * Disconnects an accelerator item from a function in another object.
@@ -176,7 +176,7 @@ class KGlobalAccel : public QObject
 	 * 	
 	 */
 	bool insertItem( const QString& descr, const QString& action,
-			 uint defaultKeyCode,
+			 int defaultKeyCode,
 			 bool configurable = true );
 	
 	 /**
