@@ -38,23 +38,23 @@
 
 void KIconLoader::initPath()
 {
-  KStandardDirs* dirs = library->dirs();
-
-  dirs->addResourceType("toolbar",
-			KStandardDirs::kde_default("data") +
-			appname + "/pics/");
-
-  dirs->addResourceType("icon",
-			KStandardDirs::kde_default("data") +
-			appname + "/pics/");
-  
-  dirs->addResourceType("toolbar",
-			KStandardDirs::kde_default("data") +
-			appname + "/toolbar/");
+    KStandardDirs* dirs = library->dirs();
+    
+    dirs->addResourceType("toolbar",
+			  KStandardDirs::kde_default("data") +
+			  appname + "/pics/");
+    
+    dirs->addResourceType("icon",
+			  KStandardDirs::kde_default("data") +
+			  appname + "/pics/");
+    
+    dirs->addResourceType("toolbar",
+			  KStandardDirs::kde_default("data") +
+			  appname + "/toolbar/");
 }
 
 KIconLoader::KIconLoader( KConfig *conf, const QString &app_name ) :
-  config(conf), appname(app_name)
+    config(conf), appname(app_name)
 {
     library = KGlobal::instance();
     iconType = "toolbar";
@@ -62,7 +62,7 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name ) :
 }
 
 KIconLoader::KIconLoader( const KInstance* _library)
-  : library(_library)
+    : library(_library)
 {
     config = library->config();
     appname = library->instanceName();
@@ -103,7 +103,9 @@ QPixmap KIconLoader::reloadIcon ( const QString& name )
     return loadInternal( name, false );
 }
 
-QPixmap KIconLoader::loadApplicationIcon ( const QString& name, Size size, QString* path_store, bool canReturnNull )
+QPixmap KIconLoader::loadApplicationIcon ( const QString& name, 
+					   Size size, QString* path_store, 
+					   bool canReturnNull )
 {
     if (name.at(0) == '/')
 	return loadInternal(name);
@@ -172,28 +174,28 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, Size size, QStri
 
 QString KIconLoader::iconPath( const QString& name, bool always_valid)
 {
-  if (name.at(0) == '/') // we can't do anything with an absolute path than returning
-    return name;
-
-  QString full_path;
-  if (!name.isEmpty()) {
-    QString path = name;
-
-    if (path.right(4) == ".xpm") {
-      path.truncate(path.length() - 4);
-      warning("stripping .xpm from icon %s", name.ascii());
+    if (name.at(0) == '/') // we can't do anything with an absolute path than returning
+	return name;
+    
+    QString full_path;
+    if (!name.isEmpty()) {
+	QString path = name;
+	
+	if (path.right(4) == ".xpm") {
+	    path.truncate(path.length() - 4);
+	    warning("stripping .xpm from icon %s", name.ascii());
+	}
+	full_path = locate(iconType, path + ".png", library);
+	if (full_path.isNull())
+	    full_path = locate(iconType, path + ".xpm", library );
+	
+	if (full_path.isNull())
+	    full_path = locate(iconType, path, library);
     }
-    full_path = locate(iconType, path + ".png", library);
-    if (full_path.isNull())
-      full_path = locate(iconType, path + ".xpm", library );
-
-    if (full_path.isNull())
-      full_path = locate(iconType, path, library);
-  }
-  if (full_path.isNull() && always_valid)
-    full_path = locate(iconType, "unknown.png", library);
-
-  return full_path;
+    if (full_path.isNull() && always_valid)
+	full_path = locate(iconType, "unknown.png", library);
+    
+    return full_path;
 }
 
 QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
@@ -224,7 +226,7 @@ void KIconLoader::addPath( QString path )
 
 QPixmap BarIcon(const QString& pixmap , const KInstance* library )
 {
-  return library->iconLoader()->loadIcon(pixmap, false);
+    return library->iconLoader()->loadIcon(pixmap, false);
 }
 
 #include "kiconloader.moc"
