@@ -56,7 +56,7 @@ static bool check(const QString& txt, QString a, QString b)
 int main(int argc, char *argv[])
 {
     KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init(argc,argv,"testtrash", 0, 0, 0, 0);
+    KCmdLineArgs::init(argc,argv,"jobtest", 0, 0, 0, 0);
     KApplication app;
 
     JobTest test;

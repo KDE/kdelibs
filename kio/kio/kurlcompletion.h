@@ -84,15 +84,15 @@ public:
 	/**
 	 * Sets the current directory (used as base for completion).
 	 * Default = $HOME.
-	 * @param dir the current directory
+	 * @param dir the current directory, either as a path or URL
 	 */
-	virtual void setDir(const QString &dir); // TODO KDE4: use KURL
+	virtual void setDir(const QString &dir);
 
 	/**
-	 * Returns the current directory.
-	 * @return the current directory
+	 * Returns the current directory, as it was given in setDir
+	 * @return the current directory (path or URL)
 	 */
-	virtual QString dir() const; // TODO KDE4: use KURL
+	virtual QString dir() const;
 
 	/**
 	 * Check whether asynchronous completion is in progress.
@@ -154,7 +154,8 @@ public:
 	 * local files, i.e. returns back the original string for non-local
 	 * urls.
 	 * @param text the text to process
-	 * @return the result of the operation
+	 * @return the path or URL resulting from this operation. If you
+         * want to convert it to a KURL, use KURL::fromPathOrURL.
 	 */
 	QString replacedPath( const QString& text );
 
@@ -214,13 +215,13 @@ private:
 	void init();
 
 	void setListedURL(int compl_type /* enum ComplType */,
-	                  QString dir = QString::null,
-	                  QString filter = QString::null,
+	                  const QString& dir = QString::null,
+	                  const QString& filter = QString::null,
 	                  bool no_hidden = false );
 
 	bool isListedURL( int compl_type /* enum ComplType */,
-	                  QString dir = QString::null,
-	                  QString filter = QString::null,
+	                  const QString& dir = QString::null,
+	                  const QString& filter = QString::null,
 	                  bool no_hidden = false );
 
 protected:
