@@ -20,7 +20,8 @@
 
     */
 
-
+#ifndef _arts_convert_h
+#define _arts_convert_h
 
 /*
  * BC - Status (2000-09-30): conversion functions
@@ -129,3 +130,5 @@ unsigned long uni_convert_stereo_2float(
 	);
 
 };
+
+#endif
