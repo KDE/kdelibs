@@ -128,7 +128,7 @@ namespace KJS {
     void setCurrentLine(int lineno, bool doCenter = true);
 
   signals:
-    int lineDoubleClicked(int lineno);
+    void lineDoubleClicked(int lineno);
 
   protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
