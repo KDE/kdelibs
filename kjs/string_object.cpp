@@ -202,17 +202,13 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
       reg = imp->regExp();
     }
-    else if (a0.isA(StringType))
-    {
-      reg = new RegExp(a0.toString(exec), RegExp::None);
-    }
     else
-    {
-#ifndef NDEBUG
-      printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
-#endif
-      result = Undefined();
-      break;
+    { /*
+       *  ECMA 15.5.4.12 String.prototype.search (regexp) 
+       *  If regexp is not an object whose [[Class]] property is "RegExp", it is
+       *  replaced with the result of the expression new RegExp(regexp).
+       */
+      reg = new RegExp(a0.toString(exec), RegExp::None);
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( reg, u );
