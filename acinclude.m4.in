@@ -67,12 +67,16 @@ AC_DEFUN(AC_CREATE_KFSSTND,
 [
 AC_MSG_CHECKING(for KDE paths)
 AC_REQUIRE([AC_CHECK_RPATH])
+AC_REQUIRE([AC_CHECK_BOOL])
 AC_CACHE_VAL(kde_cv_all_paths,
 [
 AC_LANG_CPLUSPLUS
 cat > conftest.$ac_ext <<EOF
-#include <kapp.h>
 #include <stdio.h>
+#include "confdefs.h"
+#include "config.h.bot"
+#include <kapp.h>
+
 int main() {
 printf("kde_htmldir=\"%s\"\n", KApplication::kde_htmldir().data());
 printf("kde_appsdir=\"%s\"\n", KApplication::kde_appsdir().data());
@@ -90,7 +94,7 @@ printf("kde_partsdir=\"%s\"\n", KApplication::kde_partsdir().data());
 }
 EOF
 
-ac_link='/bin/sh ./libtool ${CXX-g++} -o conftest $CXXFLAGS $all_includes $CPPFLAGS $LDFLAGS $all_libraries conftest.$ac_ext $LIBS -lkdecore -lqt -lXext -lX11 $LIBSOCKET -rpath $kde_libraries -rpath $qt_libraries 1>&5'
+ac_link='/bin/sh ./libtool --mode=link ${CXX-g++} -o conftest $CXXFLAGS $all_includes $CPPFLAGS $LDFLAGS $all_libraries conftest.$ac_ext $LIBS -lkdecore -lqt -lXext -lX11 $LIBSOCKET -rpath $kde_libraries -rpath $qt_libraries 1>&5'
 
 if AC_TRY_EVAL(ac_link) && test -s conftest 
 then
@@ -102,6 +106,7 @@ else
   AC_MSG_ERROR([I can not run a little KDE program to test the environment.
 Look at config.log for details. If you are not able to fix them, please contact me.])
 fi
+
 rm -fr conftest*
 AC_LANG_CPLUSPLUS
 if test "$kde_have_all_paths" = "yes"; then
