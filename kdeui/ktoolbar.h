@@ -120,6 +120,9 @@ public:
 
   /**
    * Constructor.
+   * This constructor is used by the XML-GUI. If you use it, you need
+   * to call QMainWindow::addToolBar to specify the position of the toolbar.
+   * So it's simpler to use the other constructor.
    *
    * The toolbar will read in various global config settings for
    * things like icon size and text position, etc.  However, some of
@@ -129,10 +132,28 @@ public:
    * @param parent      The standard toolbar parent (usually a
    *                    @ref KMainWindow)
    * @param name        The standard internal name
-   * @param _honor_mode If true, then global settings for IconSize
-   *                    and IconText will be honored
+   * @param honor_style If true, then global settings for IconSize and IconText will be honored
+   * @param readConfig  whether to apply the configuration (global and application-specific)
    */
     KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+
+  /**
+   * Constructor for non-XML-GUI applications.
+   *
+   * The toolbar will read in various global config settings for
+   * things like icon size and text position, etc.  However, some of
+   * the settings will be honored only if @ref #_honor_mode is set to
+   * true.  All other toolbars will be IconOnly and use Medium icons.
+   *
+   * @param parentWindow The window that should be the parent of this toolbar
+   * @param dock        The position of the toolbar. Usually QMainWindow::Top.
+   * @param newLine     If true, start a new line in the dock for this toolbar.
+   * @param name        The standard internal name
+   * @param honor_style If true, then global settings for IconSize and IconText will be honored
+   * @param readConfig  whether to apply the configuration (global and application-specific)
+   */
+    KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock /*= QMainWindow::Top*/, bool newLine = false,
+              const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
 
     virtual ~KToolBar();
 

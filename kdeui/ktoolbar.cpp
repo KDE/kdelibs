@@ -165,13 +165,21 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 
-KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
+KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool readConfig )
     : QToolBar( QString::fromLatin1( name ),
       parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0,
       parent, FALSE,
       name ? name : "mainToolBar")
 {
-    init( readConfig, b );
+    init( readConfig, honorStyle );
+}
+
+KToolBar::KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
+    : QToolBar( QString::fromLatin1( name ),
+      parentWindow, dock, newLine,
+      name ? name : "mainToolBar")
+{
+    init( readConfig, honorStyle );
 }
 
 KToolBar::~KToolBar()
