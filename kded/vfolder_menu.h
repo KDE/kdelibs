@@ -240,9 +240,9 @@ private:
   void registerFile(const QString &file);
 
   /**
-   * Fill m_usedAppsDict with all applications found in menu
+   * Fill m_usedAppsDict with all applications from @p items
    */
-  void markUsedApplications(VFolderMenu::SubMenu *menu);
+  void markUsedApplications(QDict<KService> *items);
 
   /**
    * Register @p directory

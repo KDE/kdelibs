@@ -1290,6 +1290,8 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                   track(m_trackId, m_currentMenu->name, &(m_currentMenu->items), &(m_currentMenu->excludeItems), &items, "Before <Include>");
                includeItems(&(m_currentMenu->items), &items);
                excludeItems(&(m_currentMenu->excludeItems), &items);
+               markUsedApplications(&items);
+
                if (m_track)
                   track(m_trackId, m_currentMenu->name, &(m_currentMenu->items), &(m_currentMenu->excludeItems), &items, "After <Include>");
 
@@ -1460,13 +1462,9 @@ VFolderMenu::layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout)
 }
 
 void
-VFolderMenu::markUsedApplications(VFolderMenu::SubMenu *menu)
+VFolderMenu::markUsedApplications(QDict<KService> *items)
 {
-   for(VFolderMenu::SubMenu *subMenu = menu->subMenus.first(); subMenu; subMenu = menu->subMenus.next())
-   {
-      markUsedApplications(subMenu);
-   }
-   for(QDictIterator<KService> it(menu->items); it.current(); ++it)
+   for(QDictIterator<KService> it(*items); it.current(); ++it)
    {
       m_usedAppsDict.replace(it.current()->menuId(), it.current());
    }
@@ -1503,8 +1501,6 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
       }
       if (pass == 1)
       {
-         markUsedApplications(m_rootMenu);
-
          buildApplicationIndex(true);
       }
       if (pass == 2)
