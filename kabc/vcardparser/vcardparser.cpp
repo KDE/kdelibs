@@ -123,33 +123,46 @@ VCard::List VCardParser::parseVCards( const QString& text )
 QString VCardParser::createVCards( const VCard::List& list )
 {
   QString text;
+  QString textLine;
+  QString encodingType;
+  QStringList idents;
+  QStringList params;
+  QStringList values;
+  QStringList::ConstIterator identIt;
+  QStringList::Iterator paramIt;
+  QStringList::Iterator valueIt;
 
+  VCardLine::List lines;
+  VCardLine::List::Iterator lineIt;
   VCard::List::ConstIterator cardIt;
 
+  bool hasEncoding;
+
+  
   // iterate over the cards
   for ( cardIt = list.begin(); cardIt != list.end(); ++cardIt ) {
     text.append( "BEGIN:VCARD\r\n" );
 
-    QStringList idents = (*cardIt).identifiers();
-    QStringList::ConstIterator identIt;
+    idents = (*cardIt).identifiers();
     for ( identIt = idents.begin(); identIt != idents.end(); ++identIt ) {
       VCard card = (*cardIt);
-      VCardLine::List lines = card.lines( (*identIt) );
-      VCardLine::List::Iterator lineIt;
+      lines = card.lines( (*identIt) );
 
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
         if ( !(*lineIt).value().asString().isEmpty() ) {
-          QString textLine;
+          textLine = (*lineIt).identifier().upper();
 
-          textLine.append( (*lineIt).identifier().upper() );
-
-          QStringList params = (*lineIt).parameterList();
+          params = (*lineIt).parameterList();
+          hasEncoding = false;
           if ( params.count() > 0 ) { // we have parameters
-            QStringList::Iterator paramIt;
             for ( paramIt = params.begin(); paramIt != params.end(); ++paramIt ) {
-              QStringList values = (*lineIt).parameters( *paramIt );
-              QStringList::Iterator valueIt;
+              if ( (*paramIt) == "encoding" ) {
+                hasEncoding = true;
+                encodingType = (*lineIt).parameter( "encoding" ).lower();
+              }
+
+              values = (*lineIt).parameters( *paramIt );
               for ( valueIt = values.begin(); valueIt != values.end(); ++valueIt ) {
                 textLine.append( ";" + (*paramIt).upper() );
                 if ( !(*valueIt).isEmpty() )
@@ -158,14 +171,13 @@ QString VCardParser::createVCards( const VCard::List& list )
             }
           }
 
-          params = (*lineIt).parameterList();
-          if ( params.contains( "encoding" ) ) { // have to encode the data
+          if ( hasEncoding ) { // have to encode the data
             QByteArray input, output;
             input.setRawData( (*lineIt).value().asByteArray(),
                               (*lineIt).value().asByteArray().count() );
-            if ( (*lineIt).parameter( "encoding" ).lower() == "b" )
+            if ( encodingType == "b" )
               KCodecs::base64Decode( input, output );
-            else if ( (*lineIt).parameter( "encoding" ).lower() == "quoted-printable" )
+            else if ( encodingType == "quoted-printable" )
               KCodecs::quotedPrintableDecode( input, output );
             textLine.append( ":" + QString( output ) );
           } else

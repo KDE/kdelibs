@@ -35,8 +35,11 @@ class VCardLine
     VCardLine();
     VCardLine( const QString &identifier );
     VCardLine( const QString &identifier, const QVariant &value );
+    VCardLine( const VCardLine& );
 
     ~VCardLine();
+
+    VCardLine& operator=( const VCardLine& );
 
     /**
      * Sets the identifier of this line e.g. UID, FN, CLASS
@@ -81,7 +84,7 @@ class VCardLine
     QString parameter( const QString& param ) const;
 
   private:
-    QMap< QString, QStringList > mParamMap;
+    QMap< QString, QStringList > *mParamMap;
     QString mIdentifier;
     QVariant mValue;
 

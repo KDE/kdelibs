@@ -21,41 +21,92 @@
 #include "vcard.h"
 
 VCard::VCard()
+  : mLineMap( 0 )
 {
+}
+
+VCard::VCard( const VCard& vcard )
+  : mLineMap( 0 )
+{
+  if ( vcard.mLineMap ) {
+    if ( !mLineMap )
+      mLineMap = new QMap<QString, QValueList<VCardLine> >;
+
+    *mLineMap = *(vcard.mLineMap);
+  } else {
+    delete mLineMap;
+    mLineMap = 0;
+  }
 }
 
 VCard::~VCard()
 {
+  delete mLineMap;
+  mLineMap = 0;
+}
+
+VCard& VCard::operator=( const VCard& vcard )
+{
+  if ( &vcard == this )
+    return *this;
+
+  if ( vcard.mLineMap ) {
+    if ( !mLineMap )
+      mLineMap = new QMap<QString, QValueList<VCardLine> >;
+
+    *mLineMap = *(vcard.mLineMap);
+  } else {
+    delete mLineMap;
+    mLineMap = 0;
+  }
+
+  return *this;
 }
 
 void VCard::clear()
 {
-  mLineMap.clear();
+  if ( mLineMap )
+    mLineMap->clear();
 }
 
 QStringList VCard::identifiers() const
 {
-  return mLineMap.keys();
+  if ( !mLineMap )
+    return QStringList();
+  else
+    return mLineMap->keys();
 }
 
 void VCard::addLine( const VCardLine& line )
 {
-  mLineMap[ line.identifier() ].append( line );
+  if ( !mLineMap )
+    mLineMap = new QMap<QString, QValueList<VCardLine> >;
+
+  (*mLineMap)[ line.identifier() ].append( line );
 }
 
 VCardLine::List VCard::lines( const QString& identifier )
 {
-  return mLineMap[ identifier.lower() ];
+  if ( !mLineMap )
+    return VCardLine::List();
+  else
+    return (*mLineMap)[ identifier.lower() ];
 }
 
 VCardLine VCard::line( const QString& identifier )
 {
-  return mLineMap[ identifier.lower() ][ 0 ];
+  if ( !mLineMap )
+    return VCardLine();
+  else
+    return (*mLineMap)[ identifier.lower() ][ 0 ];
 }
 
 void VCard::setVersion( Version version )
 {
-  mLineMap.erase( "version" );
+  if ( !mLineMap )
+    mLineMap = new QMap<QString, QValueList<VCardLine> >;
+  else
+    mLineMap->erase( "version" );
 
   VCardLine line;
   line.setIdentifier( "version" );
@@ -64,12 +115,15 @@ void VCard::setVersion( Version version )
   if ( version == v3_0 )
     line.setIdentifier( "3.0" );
 
-  mLineMap[ "version" ].append( line );
+  (*mLineMap)[ "version" ].append( line );
 }
 
 VCard::Version VCard::version() const
 {
-  VCardLine line = mLineMap[ "version" ][ 0 ];
+  if ( !mLineMap )
+    return v3_0;
+
+  VCardLine line = (*mLineMap)[ "version" ][ 0 ];
   if ( line.value() == "2.1" )
     return v2_1;
   else

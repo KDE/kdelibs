@@ -34,7 +34,11 @@ class VCard
     enum Version { v2_1, v3_0 };
 
     VCard();
+    VCard( const VCard& );
+
     ~VCard();
+
+    VCard& operator=( const VCard& );
 
     /**
      * Removes all lines from the vCard.
@@ -73,7 +77,7 @@ class VCard
     Version version() const;
 
   private:
-    QMap< QString, VCardLine::List > mLineMap;
+    QMap< QString, VCardLine::List > *mLineMap;
 
     class VCardPrivate;
     VCardPrivate *d;

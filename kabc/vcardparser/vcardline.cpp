@@ -21,22 +21,65 @@
 #include "vcardline.h"
 
 VCardLine::VCardLine()
+  : mParamMap( 0 )
 {
 }
 
 VCardLine::VCardLine( const QString &identifier )
+  : mParamMap( 0 )
 {
   mIdentifier = identifier.lower();
 }
 
 VCardLine::VCardLine( const QString &identifier, const QVariant &value )
+  : mParamMap( 0 )
 {
   mIdentifier = identifier.lower();
   mValue = value;
 }
 
+VCardLine::VCardLine( const VCardLine& line )
+  : mParamMap( 0 )
+{
+  if ( line.mParamMap ) {
+    if ( !mParamMap )
+      mParamMap = new QMap<QString, QStringList>;
+
+    *mParamMap = *(line.mParamMap);
+  } else {
+    delete mParamMap;
+    mParamMap = 0;
+  }
+
+  mValue = line.mValue;
+  mIdentifier = line.mIdentifier;
+}
+
 VCardLine::~VCardLine()
 {
+  delete mParamMap;
+  mParamMap = 0;
+}
+
+VCardLine& VCardLine::operator=( const VCardLine& line )
+{
+  if ( &line == this )
+    return *this;
+
+  if ( line.mParamMap ) {
+    if ( !mParamMap )
+      mParamMap = new QMap<QString, QStringList>;
+
+    *mParamMap = *(line.mParamMap);
+  } else {
+    delete mParamMap;
+    mParamMap = 0;
+  }
+
+  mValue = line.mValue;
+  mIdentifier = line.mIdentifier;
+
+  return *this;
 }
 
 void VCardLine::setIdentifier( const QString& identifier )
@@ -61,23 +104,34 @@ QVariant VCardLine::value() const
 
 QStringList VCardLine::parameterList() const
 {
-  return mParamMap.keys();
+  if ( !mParamMap )
+    return QStringList();
+  else
+    return mParamMap->keys();
 }
 
 void VCardLine::addParameter( const QString& param, const QString& value )
 {
-  QValueList<QString> &list = mParamMap[ param ];
+  if ( !mParamMap )
+    mParamMap = new QMap<QString, QStringList>;
 
+  QStringList &list = (*mParamMap)[ param ];
   if ( list.find( value ) == list.end() ) // not included yet
     list.append( value );
 }
 
 QStringList VCardLine::parameters( const QString& param ) const
 {
-  return mParamMap[ param ];
+  if ( !mParamMap )
+    return QStringList();
+  else
+    return (*mParamMap)[ param ];
 }
 
 QString VCardLine::parameter( const QString& param ) const
 {
-  return mParamMap[ param ][ 0 ];
+  if ( !mParamMap )
+    return QString::null;
+  else
+    return (*mParamMap)[ param ][ 0 ];
 }
