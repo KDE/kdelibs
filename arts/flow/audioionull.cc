@@ -90,6 +90,8 @@ bool AudioIONull::open()
 	int& _fragmentSize = param(fragmentSize);
 	int& _fragmentCount = param(fragmentCount);
 	int& _samplingRate = param(samplingRate);
+	int& _format = param(format);
+	_format = 16;
 
 	/*
 	 * don't allow unreasonable large fragmentSize/Count combinations,
