@@ -47,14 +47,14 @@ public:
     {
 	kapp->installX11EventFilter( this );
     }
-    
+
 protected:
     bool x11Event( XEvent * e )
     {
 	return accel->x11EventFilter( e );
     }
-    
-    
+
+
 private:
     KGlobalAccel* accel;
 };
@@ -542,9 +542,11 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
 	XSync(qt_xdisplay(), false);
-	connect( this, SIGNAL( activated() ), pE->receiver, pE->member);
-	emit activated();
-	disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member );
+	if ( !QWidget::keyboardGrabber() ) {
+	    connect( this, SIGNAL( activated() ), pE->receiver, pE->member);
+	    emit activated();
+	    disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member );
+	}
 
 #undef pE
 	return true;
