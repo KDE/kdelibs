@@ -21,6 +21,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2000/06/03 01:04:42  gehrmab
+ * * Made drawing routines available for overriding
+ * * Added a parent/name constructor
+ * * Propertyfication
+ *
  * Revision 1.13  2000/05/08 19:38:49  sschiman
  * Calling setColor before setting up the private data is a bad idea ;-)
  *
@@ -45,7 +50,7 @@
  *
  * Revision 1.9  1999/11/11 16:08:15  antlarr
  * Fixed some bugs.
- * Added the possibility to draw a sunk rectangle as the "old" KLedLamp did. 
+ * Added the possibility to draw a sunk rectangle as the "old" KLedLamp did.
  *
  * Revision 1.8  1999/11/01 22:03:15  dmuell
  * fixing all kinds of compile warnings
@@ -81,9 +86,9 @@
 
 
 
-class KLed::KLedPrivate 
+class KLed::KLedPrivate
 {
-  friend KLed; 
+  friend KLed;
 
   int dark_factor;
   QColor offcolor;
@@ -111,7 +116,7 @@ KLed::KLed(const QColor& col, QWidget *parent, const char *name)
     led_state(On),
     led_look(Raised),
     led_shape(Circular)
-{  
+{
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
@@ -120,13 +125,13 @@ KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   //setShape(Circular);
 }
 
-KLed::KLed(const QColor& col, KLed::State state, 
+KLed::KLed(const QColor& col, KLed::State state,
 	   KLed::Look look, KLed::Shape shape, QWidget *parent, const char *name )
   : QWidget(parent, name),
     led_state(state),
     led_look(look),
     led_shape(shape)
-{  
+{
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
@@ -147,10 +152,10 @@ KLed::paintEvent(QPaintEvent *)
   switch(led_shape)
     {
     case Rectangular:
-      switch (led_look) 
+      switch (led_look)
 	{
 	case Sunken :
-	  paintRectFrame(false); 
+	  paintRectFrame(false);
 	  break;
 	case Raised :
 	  paintRectFrame(true);
@@ -163,7 +168,7 @@ KLed::paintEvent(QPaintEvent *)
 	}
       break;
     case Circular:
-      switch (led_look) 
+      switch (led_look)
 	{
 	case Flat   :
 	  paintFlat();
@@ -174,7 +179,7 @@ KLed::paintEvent(QPaintEvent *)
 	case Sunken :
 	  paintSunken();
 	  break;
-	default: 
+	default:
 	  qWarning("%s: in class KLed: no KLed::Look set",kapp->argv()[0]);
 	}
       break;
@@ -190,14 +195,14 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
   QPainter p(this);
   int w=width(), h=height();
 
-  // round the ellipse 
+  // round the ellipse
   if (w > h)
     w = h;
   else if (h > w)
     h = w;
 
   QColor c;
-  
+
   // draw light grey upper left circle
   c.setRgb(0xCFCFCF);
   p.setPen(c);
@@ -238,7 +243,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
   QPainter p(this);
   int x, y, w=width(), h=height();
 
-  // round the ellipse 
+  // round the ellipse
   if (w > h)
     w = h;
   else if (h > w)
@@ -289,8 +294,10 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
   w*=2;
   w/=3;
   h=w;
-  
+
   // now draw the bright spot on the led
+  if ( w == 0 )
+      w = 1;
   int light_quote = (100*3/w)+100;
   while (w) {
     c = c.light(light_quote);
@@ -307,7 +314,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     x++; y++; w--;h--;
   }
 
-  /* 
+  /*
    * ?? what's this use for ??
   QPainter p(this);
   KPixmap pix;
@@ -331,7 +338,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
   //int x=this->x(), y=this->y(), w=width(), h=height();
   int x=0, y=0, w=width(), h=height();
 
-  // round the ellipse 
+  // round the ellipse
   if (w > h)
     w = h;
   else if (h > w)
@@ -408,7 +415,9 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
   w/=3;
   h=w;
 
-  // now draw the bright spot on the led  
+  // now draw the bright spot on the led
+  if ( w == 0 )
+      w = 1;
   int light_quote = (100*3/w)+100;
   while (w) {
     c = c.light(light_quote);
@@ -426,7 +435,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
   }
 }
 
-void 
+void
 KLed::paintRect()
 {
   QPainter painter(this);
@@ -436,7 +445,7 @@ KLed::paintRect()
   int w=width();
   int h=height();
   // -----
-  switch(led_state) 
+  switch(led_state)
   {
   case On:
     painter.setBrush(lightBrush);
@@ -454,10 +463,10 @@ KLed::paintRect()
       painter.drawLine(i, 1, i, h-1);
     break;
   default: break;
-  } 
+  }
 }
 
-void 
+void
 KLed::paintRectFrame(bool raised)
 {
   QPainter painter(this);
@@ -478,7 +487,7 @@ KLed::paintRectFrame(bool raised)
       painter.drawLine(w-1, 1, w-1, h-1);
       painter.fillRect(1, 1, w-2, h-2,
        		       (led_state==On)? lightBrush : darkBrush);
-    } else { 
+    } else {
       painter.setPen(black);
       painter.drawRect(0,0,w,h);
       painter.drawRect(0,0,w-1,h-1);
@@ -491,8 +500,8 @@ KLed::paintRectFrame(bool raised)
 
 KLed::State
 KLed::state() const
-{ 
-  return led_state; 
+{
+  return led_state;
 }
 
 KLed::Shape
@@ -503,20 +512,20 @@ KLed::shape() const
 
 const QColor
 KLed::color() const
-{ 
-  return led_color; 
+{
+  return led_color;
 }
 
 KLed::Look
 KLed::look() const
-{ 
-  return led_look; 
+{
+  return led_look;
 }
 
 void
 KLed::setState( State state )
 {
-  if (led_state != state) 
+  if (led_state != state)
     {
       led_state = state;
       update();
@@ -543,11 +552,11 @@ KLed::setShape(KLed::Shape s)
 
 void
 KLed::setColor(const QColor& col)
-{ 
+{
   if(led_color!=col) {
     led_color = col;
     d->offcolor = col.dark(d->dark_factor);
-    update(); 
+    update();
   }
 }
 
@@ -561,7 +570,7 @@ KLed::setDarkFactor(int darkfactor)
   }
 }
 
-int 
+int
 KLed::darkFactor() const
 {
   return d->dark_factor;
@@ -570,7 +579,7 @@ KLed::darkFactor() const
 void
 KLed::setLook( Look look )
 {
-  if(led_look!=look) 
+  if(led_look!=look)
     {
       led_look = look;
       update();
@@ -579,20 +588,20 @@ KLed::setLook( Look look )
 
 void
 KLed::toggle()
-{ 
-  toggleState(); 
+{
+  toggleState();
 }
 
 void
 KLed::on()
-{ 
-  setState(On); 
+{
+  setState(On);
 }
 
 void
 KLed::off()
-{ 
-  setState(Off); 
+{
+  setState(Off);
 }
 
 #include "kled.moc"
