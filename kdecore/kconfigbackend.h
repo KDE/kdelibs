@@ -258,8 +258,21 @@ protected:
    */
   bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
 
+  /** Get the entry map.
+   *
+   * @param map the entries will be stored in this object.
+   * @param bGlobal Specifies whether to get only entries which
+   *        are marked as belonging to the global KDE config file.
+   *        If this is false, it skips those entries.
+   * @param mergeFile if not null, the dirty entries for this file will
+   * be merged.
+   *
+   * @return Whether there will be some entries left for writting to other
+   * files.
+   */
   bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
 
+  /** Write the entries in @e aTempMap to the file stream.*/
   void writeEntries(FILE *pStream, const KEntryMap &aTempMap);
 
 protected:
