@@ -214,7 +214,6 @@ AddressBook::AddressBook()
   d->mErrorHandler = 0;
   d->mConfig = 0;
   d->mManager = new KRES::Manager<Resource>( "contact" );
-  d->mManager->readConfig();
 }
 
 AddressBook::AddressBook( const QString &config )
@@ -242,11 +241,13 @@ bool AddressBook::load()
 
   KRES::Manager<Resource>::ActiveIterator it;
   bool ok = true;
-  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
+    (*it)->setAddressBook( this );
     if ( !(*it)->load() ) {
       error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
       ok = false;
     }
+  }
 
   // mark all addressees as unchanged
   Addressee::List::Iterator addrIt;
