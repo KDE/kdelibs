@@ -407,9 +407,11 @@ static QPixmap *drawImage(QImage *image, int width, int height,
 		bitBlt(pixmap, x2[xx], y2[yy], &nimage[yy][xx],
 		       0, 0, w2[xx], h2[yy], Qt::CopyROP);
 
-		if (mask)
-		    bitBlt(&bm, x2[xx], y2[yy], &(nimage[yy][xx].createAlphaMask()),
+		if (mask) {
+                    QImage am = nimage[yy][xx].createAlphaMask();
+		    bitBlt(&bm, x2[xx], y2[yy], &am,
 			   0, 0, w2[xx], h2[yy], Qt::CopyROP);
+                }
 	    }
 	}
 
