@@ -243,19 +243,19 @@ void
 KDatePicker::selectMonthClicked()
 {
   int month;
-  KPopupFrame popup;
-  KDateInternalMonthPicker picker(fontsize, &popup);
+  KPopupFrame* popup = new KPopupFrame(this);
+  KDateInternalMonthPicker* picker = new KDateInternalMonthPicker(fontsize, popup);
   // -----
-  picker.resize(picker.sizeHint());
-  popup.setMainWidget(&picker);
-  picker.setFocus();
-  connect(&picker, SIGNAL(closeMe(int)), &popup, SLOT(close(int)));
-  if(popup.exec(selectMonth->mapToGlobal(QPoint(0, selectMonth->height()))))
+  picker->resize(picker->sizeHint());
+  popup->setMainWidget(picker);
+  picker->setFocus();
+  connect(picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)));
+  if(popup->exec(selectMonth->mapToGlobal(QPoint(0, selectMonth->height()))))
     {
       QDate date;
       int day;
       // -----
-      month=picker.getResult();
+      month=picker->getResult();
       date=table->getDate();
       day=date.day();
       // ----- construct a valid date in this month:
@@ -266,24 +266,25 @@ KDatePicker::selectMonthClicked()
     } else {
       kapp->beep();
     }
+  delete popup;  
 }
 
 void
 KDatePicker::selectYearClicked()
 {
   int year;
-  KPopupFrame popup;
-  KDateInternalYearSelector picker(fontsize, &popup);
+  KPopupFrame* popup = new KPopupFrame(this);
+  KDateInternalYearSelector* picker = new KDateInternalYearSelector(fontsize, popup);
   // -----
-  picker.resize(picker.sizeHint());
-  popup.setMainWidget(&picker);
-  connect(&picker, SIGNAL(closeMe(int)), &popup, SLOT(close(int)));
-  if(popup.exec(selectYear->mapToGlobal(QPoint(0, selectMonth->height()))))
+  picker->resize(picker->sizeHint());
+  popup->setMainWidget(picker);
+  connect(picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)));
+  if(popup->exec(selectYear->mapToGlobal(QPoint(0, selectMonth->height()))))
     {
       QDate date;
       int day;
       // -----
-      year=picker.getYear();
+      year=picker->getYear();
       date=table->getDate();
       day=date.day();
       // ----- construct a valid date in this month:
@@ -294,6 +295,7 @@ KDatePicker::selectYearClicked()
     } else {
       kapp->beep();
     }
+  delete popup;  
 }
 
 void
