@@ -253,7 +253,7 @@ public:
     * @deprecated
     * You should convert any calls to this method to use the one
     * above, by adding in the program name to be used for display
-    * purposes. Do not forget to mark it for translation using I18_NOOP.
+    * purposes. Do not forget to mark it for translation using I18N_NOOP.
     */
   static void init(int _argc, char **_argv,
                    const char *_appname, const char *_description,

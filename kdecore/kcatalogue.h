@@ -40,7 +40,7 @@ public:
    * Constructor.
    *
    * @param name The name of the catalog
-   * @param name The language of this catalog
+   * @param language The language of this catalog
    */
   explicit KCatalogue(const QString & name = QString::null, const QString & language = QString::null);
 
@@ -72,7 +72,7 @@ public:
    * @return The language of the catalog
    */
   QString language() const;
-  
+
   /**
    * Returns the plural type for the catalog. This type is based on the language of the catalog
    and is cached for performance.
@@ -80,15 +80,15 @@ public:
    * @return The plural type for the catalog
    */
   int pluralType() const;
-  
+
   /**
-   * Sets the plural type for the catalog. The caller has probably looked it up in a kdelibs.mo-catalog 
+   * Sets the plural type for the catalog. The caller has probably looked it up in a kdelibs.mo-catalog
    * for the appropriate language
    *
    * @return The plural type for the catalog
    */
   void setPluralType( int pluralType );
-  
+
 
   /**
    * Retrieves a translation of the specified message id.
