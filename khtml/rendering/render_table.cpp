@@ -47,17 +47,14 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
 {
 
     tCaption = 0;
-    head = 0;
-    foot = 0;
-    firstBody = 0;
-
-    m_maxWidth = 0;
-
+    head = foot = firstBody = 0;
     tableLayout = 0;
 
     rules = None;
     frame = Void;
     has_col_elems = false;
+    spacing = 0;
+    padding = 0;
     needSectionRecalc = false;
 
     columnPos.resize( 2 );
@@ -1236,7 +1233,6 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         if( last && last->isAnonymousBox() && last->isTableCell() )
             cell = static_cast<RenderTableCell *>(last);
         else {
-	    kdDebug( 6040 ) << "creating anonymous table cell" << endl;
 	    cell = new RenderTableCell(0 /* anonymous object */);
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
