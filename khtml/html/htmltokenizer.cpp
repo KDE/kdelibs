@@ -1060,7 +1060,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 scriptSrc = scriptSrcCharset = "";
                 if ( currToken.attrs ) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
-                        scriptSrc = a->value().string();
+                        scriptSrc = a->value().string().stripWhiteSpace();
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
                         scriptSrcCharset = a->value().string();
                     a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
