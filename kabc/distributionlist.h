@@ -21,6 +21,8 @@
 #ifndef KABC_DISTRIBUTIONLIST_H
 #define KABC_DISTRIBUTIONLIST_H
 
+#include <kdirwatch.h>
+
 #include "addressbook.h"
 
 namespace KABC {
@@ -166,6 +168,49 @@ class DistributionListManager
     AddressBook *mAddressBook;
 
     QPtrList<DistributionList> mLists;
+};
+
+/**
+  @short Watchdog for distribution lists
+ 
+  This class provides a @ref changed() signal that i emitted when the
+  distribution lists has changed in some way.
+
+  Exapmle:
+  
+  <pre>
+  KABC::DistributionListWatcher *watchdog = KABC::DistributionListWatcher::self()
+
+  connect( watchdog, SIGNAL( changed() ), SLOT( doSomething() ) );
+  </pre>
+*/
+
+class DistributionListWatcher : public QObject
+{
+  Q_OBJECT
+  
+  public:
+    /**
+     * Returns the watcher object.
+     */
+    static DistributionListWatcher *self();
+    
+
+  signals:
+    /**
+     * This signal is emmitted whenever the distribution lists has
+     * changed (if a list was added or removed, when a list was
+     * renamed or the entries of the list changed).
+     */
+    void changed();
+
+  protected:
+    DistributionListWatcher();
+    ~DistributionListWatcher();
+
+  private:
+    static DistributionListWatcher* mSelf;
+    KDirWatch *mDirWatch;
 };
 
 }

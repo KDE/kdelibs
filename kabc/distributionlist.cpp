@@ -218,3 +218,32 @@ bool DistributionListManager::save()
   
   return true;
 }
+
+DistributionListWatcher* DistributionListWatcher::mSelf = 0;
+
+DistributionListWatcher::DistributionListWatcher()
+ : QObject( 0, "DistributionListWatcher" )
+{
+  mDirWatch = new KDirWatch;
+  mDirWatch->addFile( locateLocal( "data", "kabc/distlists" ) );
+  
+  connect( mDirWatch, SIGNAL( dirty( const QString& ) ), SIGNAL( changed() ) );
+  mDirWatch->startScan();
+}
+
+DistributionListWatcher::~DistributionListWatcher()
+{
+  delete mDirWatch;
+  mDirWatch = 0;
+}
+
+DistributionListWatcher *DistributionListWatcher::self()
+{
+  if ( !mSelf )
+    mSelf = new DistributionListWatcher();
+
+  return mSelf;
+}
+
+#include "distributionlist.moc"
+

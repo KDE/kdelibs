@@ -284,9 +284,6 @@ class AddressBook : public QObject
     */
     void addressBookUnlocked( AddressBook * );
 
-  protected slots:
-    void distributionListChanged();
-
   protected:
     void deleteRemovedAddressees();
     void setStandardResource( Resource * );
