@@ -18,8 +18,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qptrdict.h>
-
 #include <khtmlview.h>
 #include <xml/dom2_eventsimpl.h>
 #include <rendering/render_object.h>
@@ -38,14 +36,6 @@
 #include "kjs_dom.lut.h"
 
 using namespace KJS;
-
-// ### This cache should be in the Window object (i.e. per part)
-// and all nodes should be marked by the window, so that the GC can't
-// delete bindings that have been created (thus losing any custom-set properties)
-QPtrDict<DOMNode> nodes(1021);
-QPtrDict<DOMNamedNodeMap> namedNodeMaps;
-QPtrDict<DOMNodeList> nodeLists;
-QPtrDict<DOMDOMImplementation> domImplementations;
 
 // -------------------------------------------------------------------------
 /* Source for DOMNodeProtoTable. Use "make hashtables" to regenerate.
@@ -85,7 +75,7 @@ DOMNode::DOMNode(Object proto, DOM::Node n)
 
 DOMNode::~DOMNode()
 {
-  nodes.remove(node.handle());
+  ScriptInterpreter::forgetDOMObject(node.handle());
 }
 
 bool DOMNode::toBoolean(ExecState *) const
@@ -469,7 +459,7 @@ const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
 DOMNodeList::~DOMNodeList()
 {
-  nodeLists.remove(list.handle());
+  ScriptInterpreter::forgetDOMObject(list.handle());
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'length' and 'item'
@@ -930,7 +920,7 @@ DOMDOMImplementation::DOMDOMImplementation(ExecState *exec, DOM::DOMImplementati
 
 DOMDOMImplementation::~DOMDOMImplementation()
 {
-  domImplementations.remove(implementation.handle());
+  ScriptInterpreter::forgetDOMObject(implementation.handle());
 }
 
 Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -1027,7 +1017,7 @@ DOMNamedNodeMap::DOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
 
 DOMNamedNodeMap::~DOMNamedNodeMap()
 {
-  namedNodeMaps.remove(map.handle());
+  ScriptInterpreter::forgetDOMObject(map.handle());
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'length'
@@ -1188,10 +1178,11 @@ Value DOMEntity::getValue(ExecState *, int token) const
 
 Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 {
-  DOMNode *ret = 0;
+  DOMObject *ret = 0;
   if (n.isNull())
     return Null();
-  if ((ret = nodes[n.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(n.handle())))
     return ret;
 
   switch (n.nodeType()) {
@@ -1238,49 +1229,52 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
     default:
       ret = new DOMNode(exec, n);
   }
-  nodes.insert(n.handle(),ret);
+  interp->putDOMObject(n.handle(),ret);
 
   return ret;
 }
 
 Value KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
 {
-  DOMNamedNodeMap *ret;
+  DOMObject *ret;
   if (m.isNull())
     return Null();
-  else if ((ret = namedNodeMaps[m.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(m.handle())))
     return ret;
   else {
     ret = new DOMNamedNodeMap(exec, m);
-    namedNodeMaps.insert(m.handle(),ret);
+    interp->putDOMObject(m.handle(),ret);
     return ret;
   }
 }
 
 Value KJS::getDOMNodeList(ExecState *exec, DOM::NodeList l)
 {
-  DOMNodeList *ret;
+  DOMObject *ret;
   if (l.isNull())
     return Null();
-  else if ((ret = nodeLists[l.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(l.handle())))
     return ret;
   else {
     ret = new DOMNodeList(exec, l);
-    nodeLists.insert(l.handle(),ret);
+    interp->putDOMObject(l.handle(),ret);
     return ret;
   }
 }
 
 Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 {
-  DOMDOMImplementation *ret;
+  DOMObject *ret;
   if (i.isNull())
     return Null();
-  else if ((ret = domImplementations[i.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(i.handle())))
     return ret;
   else {
     ret = new DOMDOMImplementation(exec, i);
-    domImplementations.insert(i.handle(),ret);
+    interp->putDOMObject(i.handle(),ret);
     return ret;
   }
 }

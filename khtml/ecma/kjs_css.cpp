@@ -1178,7 +1178,7 @@ const ClassInfo DOMRect::info = { "Rect", 0, &DOMRectTable, 0 };
 */
 DOMRect::~DOMRect()
 {
-  rects.remove(rect.handle());
+  ScriptInterpreter::forgetDOMObject(rect.handle());
 }
 
 Value DOMRect::tryGet(ExecState *exec, const UString &p) const
@@ -1194,16 +1194,17 @@ Value DOMRect::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec,p);
 }
 
-Value KJS::getDOMRect(ExecState *, DOM::Rect r)
+Value KJS::getDOMRect(ExecState *exec, DOM::Rect r)
 {
-  DOMRect *ret;
+  DOMObject *ret;
   if (r.isNull())
     return Null();
-  else if ((ret = rects[r.handle()]))
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  if ((ret = interp->getDOMObject(r.handle())))
     return ret;
   else {
     ret = new DOMRect(r);
-    rects.insert(r.handle(),ret);
+    interp->putDOMObject(r.handle(),ret);
     return ret;
   }
 }

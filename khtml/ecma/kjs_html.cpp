@@ -2711,7 +2711,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
     if (next.isNull()) // single item
     {
 #ifdef KJS_VERBOSE
-      //kdDebug(6070) << "returning single node" << endl;
+      kdDebug(6070) << "returning single node" << endl;
 #endif
       return getDOMNode(exec,node);
     }
@@ -2724,13 +2724,13 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
         next = collection.nextNamedItem(pstr);
       } while (!next.isNull());
 #ifdef KJS_VERBOSE
-      //kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
+      kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif
       return new DOMNamedNodesCollection(exec,nodes);
     }
   }
 #ifdef KJS_VERBOSE
-  //kdDebug(6070) << "not found" << endl;
+  kdDebug(6070) << "not found" << endl;
 #endif
   return Undefined();
 }

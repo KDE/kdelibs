@@ -20,7 +20,7 @@
 
 #include "kjs_binding.h"
 #include "kjs_dom.h"
-
+#include <kjs/internal.h> // for InterpreterImp
 #include <dom_exception.h>
 #include <dom2_events.h>
 #include <dom2_range.h>
@@ -132,6 +132,29 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
   }
   return val;
 }
+
+void ScriptInterpreter::forgetDOMObject( void* objectHandle )
+{
+  InterpreterImp *first = InterpreterImp::firstInterpreter();
+  if (first) {
+    InterpreterImp *scr = first;
+    do {
+      static_cast<ScriptInterpreter *>(scr->interpreter())->deleteDOMObject( objectHandle );
+      scr = scr->nextInterpreter();
+    } while (scr != first);
+  }
+}
+
+void ScriptInterpreter::mark()
+{
+  Interpreter::mark();
+  kdDebug(6070) << "ScriptInterpreter::mark marking " << m_domObjects.count() << " DOM objects" << endl;
+  QPtrDictIterator<DOMObject> it( m_domObjects );
+  for( ; it.current(); ++it )
+    it.current()->mark();
+}
+
+//////
 
 UString::UString(const QString &d)
 {

@@ -24,6 +24,7 @@
 #include <kjs/interpreter.h>
 #include <dom/dom_node.h>
 #include <qvariant.h>
+#include <qptrdict.h>
 #include <kurl.h>
 #include <kjs/lookup.h>
 
@@ -74,16 +75,34 @@ namespace KJS {
   /**
    * We inherit from Interpreter, to save a pointer to the HTML part
    * that the interpreter runs for.
+   * The interpreter also stores the DOM object - >KJS::DOMObject cache.
    */
   class ScriptInterpreter : public Interpreter
   {
   public:
     ScriptInterpreter( const Object &global, KHTMLPart* part )
-      : Interpreter( global ), m_part( part )
+      : Interpreter( global ), m_part( part ), m_domObjects(1021)
       {}
+    virtual ~ScriptInterpreter() {}
+
+    DOMObject* getDOMObject( void* objectHandle ) const {
+      return m_domObjects[objectHandle];
+    }
+    void putDOMObject( void* objectHandle, DOMObject* obj ) {
+      m_domObjects.insert( objectHandle, obj );
+    }
+    bool deleteDOMObject( void* objectHandle ) {
+      return m_domObjects.remove( objectHandle );
+    }
+    // Static method. Makes all interpreters forget about the object
+    static void forgetDOMObject( void* objectHandle );
+
+    // Mark objects in the DOMObject cache.
+    virtual void mark();
     KHTMLPart* part() const { return m_part; }
   private:
     KHTMLPart* m_part;
+    QPtrDict<DOMObject> m_domObjects;
   };
 
   /**
@@ -126,7 +145,7 @@ namespace KJS {
    */
   template <class ThisImp, class ParentImp>
   inline Value DOMObjectLookupGetValue(ExecState *exec, const UString &propertyName,
-                           const HashTable* table, const ThisImp* thisObj)
+                                       const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
@@ -144,8 +163,8 @@ namespace KJS {
    */
   template <class ThisImp, class ParentImp>
   inline void DOMObjectLookupPut(ExecState *exec, const UString &propertyName,
-                             const Value& value, int attr,
-                             const HashTable* table, ThisImp* thisObj)
+                                 const Value& value, int attr,
+                                 const HashTable* table, ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
@@ -157,7 +176,7 @@ namespace KJS {
 #ifdef KJS_VERBOSE
       fprintf(stderr,"Attempt to change value of readonly property '%s'\n",propertyName.ascii());
 #else
-      ; // do nothing
+    ; // do nothing
 #endif
     else
       thisObj->putValue(exec, entry->value, value, attr);
