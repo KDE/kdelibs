@@ -136,6 +136,7 @@ public:
      * @see setShowLocalProtocol
      */
     bool showLocalProtocol() const { return myShowLocalProt; }
+    // ## KDE4: there's no reason to keep this, it should always be false
 
     /**
      * @returns a pointer to the filedialog
@@ -194,6 +195,13 @@ public slots:
      * // TODO KDE4: Use KURL instead
      */
     void setURL( const QString& url );
+
+    /**
+     * Sets the url in the lineedit to @p url.
+     * @since 3.4
+     * // TODO KDE4: rename to setURL
+     */
+    void setKURL( const KURL& url );
 
     /**
      * Sets the caption of the file dialog.

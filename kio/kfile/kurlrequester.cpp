@@ -184,7 +184,7 @@ KURLRequester::KURLRequester( const QString& url, QWidget *parent,
 {
     d = new KURLRequesterPrivate;
     init();
-    setURL( url );
+    setKURL( KURL::fromPathOrURL( url ) );
 }
 
 
@@ -238,6 +238,7 @@ void KURLRequester::setURL( const QString& url )
     }
     else
     {
+        // ### This code is broken (e.g. for paths with '#')
         if ( url.startsWith("file://") )
             d->setText( url.mid( 7 ) );
         else if ( url.startsWith("file:") )
@@ -245,6 +246,14 @@ void KURLRequester::setURL( const QString& url )
         else
             d->setText( url );
     }
+}
+
+void KURLRequester::setKURL( const KURL& url )
+{
+    if ( myShowLocalProt )
+        d->setText( url.url() );
+    else
+        d->setText( url.pathOrURL() );
 }
 
 void KURLRequester::setCaption( const QString& caption )
@@ -259,13 +268,12 @@ QString KURLRequester::url() const
     return d->url();
 }
 
-
 void KURLRequester::slotOpenDialog()
 {
-    KURL newurl;    
-    if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) || 
+    KURL newurl;
+    if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
-         (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) && 
+         (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) &&
          (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
     {
         newurl = KDirSelectDialog::selectDirectory(url(), d->fileDialogMode & KFile::LocalOnly);
@@ -274,7 +282,7 @@ void KURLRequester::slotOpenDialog()
             return;
         }
     }
-    else 
+    else
     {
       emit openFileDialog( this );
 
@@ -285,23 +293,16 @@ void KURLRequester::slotOpenDialog()
           if ( KProtocolInfo::supportsListing( u ) )
               dlg->setSelection( u.url() );
       }
-  
+
       if ( dlg->exec() != QDialog::Accepted )
       {
           return;
       }
-                
+
       newurl = dlg->selectedURL();
-    }   
-    
-    if ( newurl.isLocalFile() )
-    {
-        setURL( newurl.path() );
     }
-    else
-    {
-        setURL( newurl.prettyURL() );
-    }
+
+    setKURL( newurl );
     emit urlSelected( d->url() );
 }
 
@@ -356,7 +357,7 @@ void KURLRequester::setShowLocalProtocol( bool b )
 	return;
 
     myShowLocalProt = b;
-    setURL( url() );
+    setKURL( url() );
 }
 
 void KURLRequester::clear()
@@ -377,9 +378,8 @@ KComboBox * KURLRequester::comboBox() const
 void KURLRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
-    KURL u;
-    u = KURL( KURL( QDir::currentDirPath() + '/' ), url() );
-    (static_cast<KURLDragPushButton *>( myButton))->setURL( u );
+    KURL u( KURL( QDir::currentDirPath() + '/' ), url() );
+    (static_cast<KURLDragPushButton *>( myButton ))->setURL( u );
 }
 
 KPushButton * KURLRequester::button() const
