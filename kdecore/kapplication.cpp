@@ -1806,8 +1806,9 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KIntNumInput", "value" );
     kdeMap->insert( "KDoubleNumInput", "value" );
     //#if QT_VERSION < 0x030300
-      // Temp til fixed in QT then enable ifdef with the correct version num
+      // Temp til fixed in QT then enable ifdef with the correct version number
       kdeMap->insert( "QRadioButton", "checked" );
+      kdeMap->insert( "QTabBar", "currentTab" );
     //#endif
     QSqlPropertyMap::installDefaultMap( kdeMap );
 #endif
