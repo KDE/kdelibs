@@ -282,7 +282,7 @@ public:
      */
     virtual bool isFile() const { return true; }
 
-    void copyTo(const QString& dest);
+    void copyTo(const QString& dest) const;
 
 private:
     int m_pos; // TODO use Q_LONG in KDE-4.0
@@ -331,7 +331,7 @@ public:
      */
     virtual bool isDirectory() const { return true; }
 
-    void copyTo(const QString& dest, bool recursive = true);
+    void copyTo(const QString& dest, bool recursive = true) const;
 
 private:
     QDict<KArchiveEntry> m_entries;

@@ -291,7 +291,7 @@ QIODevice *KArchiveFile::device() const
     return new KLimitedIODevice( archive()->device(), m_pos, m_size );
 }
 
-void KArchiveFile::copyTo(const QString& dest)
+void KArchiveFile::copyTo(const QString& dest) const
 {
   QFile f( dest + "/"  + name() );
   f.open( IO_ReadWrite | IO_Truncate );
@@ -372,7 +372,7 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
   m_entries.insert( entry->name(), entry );
 }
 
-void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy )
+void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
 {
   QDir root;
 
@@ -397,8 +397,8 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy )
   dirNameStack.push( dest ); // ... with given path
   do {
     curDir = dirStack.pop();
-    root.mkdir(curDirName);
     curDirName = dirNameStack.pop();
+    root.mkdir(curDirName);
 
     dirEntries = curDir->entries();
     for ( it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
