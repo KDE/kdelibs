@@ -31,8 +31,8 @@ include_HEADERS = kfiledialog.h kfilebookmark.h  \
 	kfileiconview.h krecentdocument.h kfileview.h \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
-	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h
-#	kfiletreeview.h kfiletreeviewitems.h
+	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h \
+	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h kdirselectdialog.h
 
 noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h 
 
@@ -44,9 +44,8 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp \
-	kurlbar.cpp
-#	kfiletreeview.cpp kfiletreeviewitems.cpp
-#	kdirselect.cpp kdirselectdialog.cpp
+	kurlbar.cpp \
+	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp kdirselectdialog.cpp
 
 EXTRA_DIST = NOTES
 

@@ -22,8 +22,7 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kio -I$
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kfstest kurlrequestertest kfiletreeviewtest \
-                 kopenwithtest
-#                 kdirselectdialogtest
+                 kopenwithtest kdirselectdialogtest
 
 # noinst_HEADERS = 
 
@@ -34,5 +33,5 @@ kurlrequestertest_SOURCES = kurlrequestertest.cpp
 kfstest_SOURCES = kfstest.cpp
 kfiletreeviewtest_SOURCES = kfiletreeviewtest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
-# kdirselectdialogtest_SOURCES = kdirselectdialogtest.cpp
+kdirselectdialogtest_SOURCES = kdirselectdialogtest.cpp
 
