@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <assert.h>
 
 KPart::KPart( const char* name )
     : QObject( 0L, name ), m_collection( this )

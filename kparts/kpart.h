@@ -61,8 +61,6 @@ protected:
      */
     virtual void setXMLFile( const QString & file );
 
-    virtual QString readConfigFile( const QString& filename ) const;
-
     KPartHost * m_host; // Couldn't keep the QGuardedPtr here (because KPartHost isn't a QObject anymore) (David)
 
 private slots:
