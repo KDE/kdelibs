@@ -548,17 +548,16 @@ uint keyToXSym( uint keyCode )
 {
 	char *toks[4], *next_tok;
 	int nb_toks = 0;
-	char sKey[200];
 
 	uint keysym = 0;
 	QString s = keyToString( keyCode);
 	
-	strncpy(sKey, (const char*)s.data(), 200);
-	
 	if ( s.isEmpty() ) return keysym;
-	
-	next_tok = strtok( sKey, "+" );
-	
+
+	char *buffer = strdup( s.ascii() );
+	next_tok = strtok( buffer, "+" );
+	delete [] buffer;
+
 	if ( next_tok == 0L ) return 0;
 	
 	do {
