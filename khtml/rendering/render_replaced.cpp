@@ -93,7 +93,6 @@ void RenderWidget::slotWidgetDestructed()
 
 void RenderWidget::setStyle(RenderStyle *style)
 {
-    assert(!deleted);
     RenderReplaced::setStyle(style);
     if(m_widget) m_widget->setFont(m_style->font());
 }

@@ -438,6 +438,14 @@ void RenderObject::updateSize()
 
 void RenderObject::setStyle(RenderStyle *style)
 {
+    // reset style flags
+    m_floating = false;
+    m_positioned = false;
+    m_relPositioned = false;
+    m_printSpecial = false;
+    m_inline = true;
+    m_visible = true;
+
     // deletion of styles is handled by the DOM elements
     m_style = style;
 
@@ -447,10 +455,14 @@ void RenderObject::setStyle(RenderStyle *style)
 
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
         m_printSpecial = true;
-
+    else
+	m_printSpecial = false;
+    
     if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
-        m_visible = false;
-
+	m_visible = false;
+    else 
+	m_visible = true;
+    
     setMinMaxKnown(false);
     setLayouted(false);
 }
