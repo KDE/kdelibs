@@ -38,7 +38,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest
 
-noinst_HEADERS = kdatepicktestdlg.h \
+noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h kstatusbartest.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
@@ -47,7 +47,7 @@ noinst_HEADERS = kdatepicktestdlg.h \
 		kdualcolortest.h khashtest.h
 
 METASOURCES = kconfigtest.moc \
-	kcontainertest.moc kdatepicktestdlg.moc \
+	kcontainertest.moc \
 	kiconloadertestmain.moc kledtest.moc \
 	klocaletest.moc knuminputtest.moc \
 	kprocesstest.moc krulertest.moc \
@@ -65,7 +65,7 @@ kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE)
 kcontainertest_SOURCES = kcontainertest.cpp
-kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp
+kdatepicktest_SOURCES = kdatepicktest.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kformulatest_SOURCES = kformulatest.cpp
 kformulatest_LDADD = $(LIB_KFORMULA)
