@@ -24,6 +24,23 @@
 #include <qobject.h>
 #include <qstrlist.h>
 
+/**
+ * This class is mostly of internal use. You probably don't need it :)
+ *
+ * It provides an automatic synchronization of the X11 Clipboard and Selection
+ * buffers. It connects to the selectionChanged() and dataChanged() signals of 
+ * QClipboard and copies the buffer's contents to the other buffer, if configured.
+ * 
+ * Additionally to keeping them in sync, there is the option to automatically copy
+ * the clipboard buffer to the selection buffer, when your application sets the
+ * clipboard buffer. That is the default behavior in KDE.
+ *
+ * If you don't want any synchronizing or implicit copying, you can disable this
+ * with the methods below.
+ *
+ * @short Allowing to automatically synchronize the X11 Clipboard and Selection buffers.
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ */
 class KClipboard : public QObject
 {
     Q_OBJECT
@@ -31,32 +48,60 @@ class KClipboard : public QObject
 public:
     enum Mode { Clipboard = 1, Selection = 2 };
 
+    /**
+     * @returns the KClipboard singleton object.
+     */
     static KClipboard *self();
 
+    /**
+     * Configures KClipboard to synchronize the Clipboard and Selection buffers
+     * whenever one changes.
+     *
+     * Default is false.
+     * @see #isSynchronizing
+     */
     static void setSynchronizing( bool sync )
     {
         s_sync = sync;
     }
+
+    /**
+     * @returns whether Clipboard and Selection will be synchronized upon changes.
+     * @see #setSynchronizing
+     */
     static bool isSynchronizing()
     {
         return s_sync;
     }
 
+    /**
+     * Configures KClipboard to copy the Clipboard buffer to the Selection buffer
+     * whenever the Clipboard changes. 
+     *
+     * Default is true.
+     * @see #implicitSelection
+     */
     static void setImplicitSelection( bool enable )
     {
         s_implicitSelection = enable;
     }
+
+    /**
+     * @returns whether the Clipboard buffer will be copied to the Selection buffer
+     * upon changes.
+     * @ee #setImplicitSelection
+     */
     static bool implicitSelection()
     {
         return s_implicitSelection;
     }
 
-protected slots:
-    void slotSelectionChanged();
-    void slotClipboardChanged();
-
 protected:
     ~KClipboard();
+
+private slots:
+    void slotSelectionChanged();
+    void slotClipboardChanged();
 
 private:
     KClipboard( QObject *parent = 0, const char *name = 0L );
