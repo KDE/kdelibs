@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
-                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
                  2000 Stefan Schimanski <1Stein@gmx.de>
 
    This library is free software; you can redistribute it and/or
@@ -620,21 +620,6 @@ void KHistoryCombo::addToHistory( const QString& item )
     if ( item.isEmpty() || (count() > 0 && item == text(0) ))
         return;
 
-    int last;
-    QString rmItem;
-
-    bool useComp = useCompletion();
-    while ( count() >= maxCount() && count() > 0 ) {
-        // remove the last item, as long as we are longer than maxCount()
-        // remove the removed item from the completionObject if it isn't
-        // anymore available at all in the combobox.
-        last = count() - 1;
-        rmItem = text( last );
-        removeItem( last );
-        if ( useComp && !contains( rmItem ) )
-            completionObject()->removeItem( rmItem );
-    }
-
     // remove all existing items before adding
     if ( !duplicatesEnabled() ) {
         for ( int i = 0; i < count(); i++ ) {
@@ -648,6 +633,21 @@ void KHistoryCombo::addToHistory( const QString& item )
         insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item, 0);
     else
         insertItem( item, 0 );
+
+    int last;
+    QString rmItem;
+
+    bool useComp = useCompletion();
+    while ( count() > maxCount() && count() > 0 ) {
+        // remove the last item, as long as we are longer than maxCount()
+        // remove the removed item from the completionObject if it isn't
+        // anymore available at all in the combobox.
+        last = count() - 1;
+        rmItem = text( last );
+        removeItem( last );
+        if ( useComp && !contains( rmItem ) )
+            completionObject()->removeItem( rmItem );
+    }
 
     if ( useComp )
 	completionObject()->addItem( item );
