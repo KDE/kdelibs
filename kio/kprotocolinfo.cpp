@@ -58,6 +58,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_determineMimetypeFromExtension = config.readBoolEntry( "determineMimetypeFromExtension", true );
   m_icon = config.readEntry( "Icon", "mime_empty" );
   m_config = config.readEntry( "config", m_name );
+  m_maxSlaves = config.readNumEntry( "maxInstances", 1);
 
   QString tmp = config.readEntry( "input" );
   if ( tmp == "filesystem" )
@@ -106,7 +107,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsDeleting >> i_supportsLinking
         >> i_supportsMoving 
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config;
+        >> m_config >> m_maxSlaves;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -162,7 +163,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config;
+        << m_config << m_maxSlaves;
 }
 
 
@@ -360,6 +361,18 @@ QString KProtocolInfo::config( const QString& _protocol )
   }
 
   return QString("kio_%1rc").arg(prot->m_config);
+}
+
+int KProtocolInfo::maxSlaves( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
+    return 1;
+  }
+
+  return prot->m_maxSlaves;
 }
 
 QString KProtocolInfo::defaultMimetype( const QString& _protocol )

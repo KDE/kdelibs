@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kprotocolmanager.h>
+#include <kprotocolinfo.h>
 #include <assert.h>
 #include <kstaticdeleter.h>
 #include <kdesu/client.h>
@@ -80,8 +81,10 @@ public:
 class KIO::Scheduler::ProtocolInfo
 {
 public:
-    ProtocolInfo() : maxSlaves(3), skipCount(0)
-    { joblist.setAutoDelete(false); }
+    ProtocolInfo() : maxSlaves(1), skipCount(0)
+    { 
+       joblist.setAutoDelete(false); 
+    }
 
     QPtrList<SimpleJob> joblist;
     SlaveList activeSlaves;
@@ -106,6 +109,8 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
     {
         info = new ProtocolInfo;
         info->protocol = protocol;
+        info->maxSlaves = KProtocolInfo::maxSlaves( protocol );
+
         insert(protocol, info);
     }
     return info;

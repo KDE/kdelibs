@@ -146,6 +146,10 @@ public:
    */
   static QString config( const QString& protocol );
 
+  /**
+   * @returns the soft limit on the number of slaves for this protocol.
+   */
+  static int maxSlaves( const QString& protocol );
 
   static bool determineMimetypeFromExtension( const QString &protocol );
 
@@ -176,6 +180,7 @@ protected:
   bool m_canCopyFromFile;
   bool m_canCopyToFile;
   QString m_config;
+  int m_maxSlaves;
 };
 
 #endif

@@ -11,3 +11,4 @@ deleting=true
 linking=true
 moving=true
 Icon=mime_empty
+maxInstances=4
