@@ -136,7 +136,9 @@ void KFileReader::setURL(const KURL& url)
 	    if (test) {
 		closedir(test);
 		if ( myAutoUpdate ) {
-		    myDirWatch->removeDir( oldurl.path() );
+                    if (oldurl.isLocalFile()) {
+                        myDirWatch->removeDir( oldurl.path() );
+                    }
 		    myDirWatch->addDir( path() );
 		}
 	    }
@@ -144,7 +146,7 @@ void KFileReader::setURL(const KURL& url)
     } else {
 	readable = true; // what else can we say?
 
-        if ( myAutoUpdate ) {
+        if ( myAutoUpdate && oldurl.isLocalFile()) {
 	    myDirWatch->removeDir( oldurl.path() );
 	}
     }
@@ -180,7 +182,7 @@ void KFileReader::setAutoUpdate( bool b )
     if ( b == myAutoUpdate )
 	return;
 
-    myAutoUpdate = b && isLocalFile();
+    myAutoUpdate = b;
 
     if ( myAutoUpdate ) {
 	if ( !myDirWatch ) {
@@ -194,14 +196,15 @@ void KFileReader::setAutoUpdate( bool b )
 	connect( myUpdateTimer, SIGNAL( timeout() ),
 		 this, SLOT( slotDirUpdate() ));
 
-	
-	myDirWatch->addDir( path() );
+	if (isLocalFile())
+           myDirWatch->addDir( path() );
 	myDirWatch->startScan();
     }
     else {
 	disconnect( myDirWatch, SIGNAL( dirty(const QString&)),
 		    this, SLOT( slotDirDirty(const QString&)) );
-	myDirWatch->removeDir( path() );
+        if (isLocalFile())
+           myDirWatch->removeDir( path() );
     }
 }
 
