@@ -1298,6 +1298,14 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             if (e == e->getDocument()->documentElement())
                 return true;
             break;
+        case CSSSelector::PseudoLang: {
+            DOMString value = e->getAttribute(ATTR_LANG);
+            if (value.isNull()) return false;
+            QString langAttr = value.string();
+            QString langSel = sel->string_arg.string();
+//            kdDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
+            return langAttr.startsWith(langSel);
+        }
         case CSSSelector::PseudoNot: {
             // check the simple selector
             for (CSSSelector* subSel = sel->simpleSelector; subSel;
@@ -1325,7 +1333,6 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    assert(false);
 	    break;
         case CSSSelector::PseudoContains:
-        case CSSSelector::PseudoLang:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
 	    break;
