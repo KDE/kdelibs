@@ -502,7 +502,10 @@ void KURLCompletion::init()
 
 void KURLCompletion::setDir(const QString &dir)
 {
-	d->cwd = dir;
+	if ( dir.startsWith( QString("file:") ) )
+	  d->cwd = dir.mid(5);
+	else
+	  d->cwd = dir;
 }
 
 QString KURLCompletion::dir() const
@@ -861,6 +864,23 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 		return false;
 
 	QString dir = url.dir();
+
+        if (url.url()[0] == '.')
+        {
+           if (url.url().length() == 1)
+           {
+	      *match =
+		 ( completionMode() == KGlobalSettings::CompletionMan )? "." : ".."; 
+              return true;
+           }
+           if (url.url().length() == 2 && url.url()[1]=='.')
+           {
+              *match="..";
+              return true;
+           }
+        }
+        
+        kdDebug() << "fileCompletion " << url.url() << ":" << dir << endl;
 
 	dir = unescape( dir ); // remove escapes
 
