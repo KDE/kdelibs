@@ -21,7 +21,7 @@
  */
 // -------------------------------------------------------------------------
 //#define DEBUG
-#define DEBUG_LAYOUT
+//#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 //#define FLOAT_DEBUG
 
@@ -1539,16 +1539,6 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);
     return inBox;
-}
-
-short RenderFlow::intrinsicWidth() const
-{
-    return RenderBox::intrinsicWidth();
-}
-
-int RenderFlow::intrinsicHeight() const
-{
-    return RenderBox::intrinsicHeight();
 }
 
 #ifndef NDEBUG
