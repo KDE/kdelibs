@@ -69,6 +69,7 @@ void Arts::Debug::info(const char *fmt, ...)
 	{
     	va_list ap;
     	va_start(ap, fmt);
+		fprintf(stderr,"%s ", arts_debug_prefix);
     	(void) vfprintf(stdout, fmt, ap);
 		fprintf(stdout,"\n");
 		fflush(stdout);
