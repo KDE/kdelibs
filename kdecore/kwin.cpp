@@ -243,9 +243,10 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
     if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
 	QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
 	img.setAlphaBuffer( TRUE );
-	if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) )
+	if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) && !img.isNull() )
 	    img = img.smoothScale( width, height );
-	result.convertFromImage( img );
+	if ( !img.isNull() )
+	    result.convertFromImage( img );
 	return result;
     }
 
@@ -282,62 +283,54 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 			  0, 0, w, h, 0, 0);
 		pm.setMask(bm);
 	    }
-	    if ( scale && width > 0 && height > 0 &&
+	    if ( scale && width > 0 && height > 0 && !pm.isNull() && 
 		 ( (int) w != width || (int) h != height) ){
 		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
 	    } else {
 		result = pm;
 	    }
 	}
-
-	}
+    }
 	
-	// Try to load the icon from the classhint if the app didn't specify
-	// its own:
-	if( result.isNull() )
-	{
-		int iconWidth;
+    // Try to load the icon from the classhint if the app didn't specify
+    // its own:
+    if( result.isNull() ) {
+	int iconWidth;
 			
-		// Since width can be any arbitrary size, but the icons cannot,
-		// take the nearest value for best results (ignoring 22 pixel
-		// icons as they don't exist for apps):
-		if( width < 24 )
-			iconWidth = 16;
-		else if( width < 40 )
-			iconWidth = 32;
-		else
-			iconWidth = 48;
+	    // Since width can be any arbitrary size, but the icons cannot,
+	    // take the nearest value for best results (ignoring 22 pixel
+	    // icons as they don't exist for apps):
+	if( width < 24 )
+	    iconWidth = 16;
+	else if( width < 40 )
+	    iconWidth = 32;
+	else
+	    iconWidth = 48;
 			
-		XClassHint	hint;
-    if( XGetClassHint( qt_xdisplay(), win, &hint ) )
-		{
-			QString className = hint.res_class;
+	XClassHint	hint;
+	if( XGetClassHint( qt_xdisplay(), win, &hint ) ) {
+	    QString className = hint.res_class;
 
-    	QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(
-													className.lower(), KIcon::Small, iconWidth,
-													KIcon::DefaultState, 0, true );
-			if( scale && !pm.isNull() )
-				result.convertFromImage(
-													pm.convertToImage().smoothScale( width, height ) );
-			else
-				result = pm;
+	    QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.lower(), KIcon::Small, iconWidth,
+								      KIcon::DefaultState, 0, true );
+	    if( scale && !pm.isNull() )
+		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+	    else
+		result = pm;
 
-		}
-
-		// If the icon is still a null pixmap, load the 'xapp' icon
-		// as a last resort:
-    if ( result.isNull() )
-		{
-    	QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(
-													"xapp", KIcon::Small, iconWidth,
-													KIcon::DefaultState, 0, true );
-			if( scale )
-				result.convertFromImage(
-													pm.convertToImage().smoothScale( width, height ) );
-			else
-				result = pm;
-		}
 	}
+
+	// If the icon is still a null pixmap, load the 'xapp' icon
+	// as a last resort:
+	if ( result.isNull() ) {
+	    QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(  "xapp", KIcon::Small, iconWidth,
+								       KIcon::DefaultState, 0, true );
+	    if( scale && !pm.isNull() )
+		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
+	    else
+		result = pm;
+	}
+    }
     return result;
 }
 
