@@ -239,6 +239,7 @@ KUniqueApplication::start()
      ::exit(exitCode);
      break;
   }
+  return false; // make insure++ happy
 }
 
 
