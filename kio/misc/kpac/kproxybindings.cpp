@@ -338,19 +338,19 @@ bool KProxyFunc::checkRange(int value, int min, int max) const
 
 void KProxyFunc::init(ExecState *exec, Object &global)
 {
-    global.put(exec,"ProxyConfig", global);
-    global.put(exec,"isPlainHostName",new KProxyFunc(KProxyFunc::IsPlainHostName));
-    global.put(exec,"dnsDomainIs",new KProxyFunc(KProxyFunc::DNSDomainIs));
-    global.put(exec,"localHostOrDomainIs",new KProxyFunc(KProxyFunc::LocalHostOrDomainIs));
-    global.put(exec,"isResolvable",new KProxyFunc(KProxyFunc::IsResolvable));
-    global.put(exec,"isInNet",new KProxyFunc(KProxyFunc::IsInNet));
-    global.put(exec,"dnsResolve",new KProxyFunc(KProxyFunc::DNSResolve));
-    global.put(exec,"myIpAddress",new KProxyFunc(KProxyFunc::MyIPAddress));
-    global.put(exec,"dnsDomainLevels",new KProxyFunc(KProxyFunc::DNSDomainLevels));
-    global.put(exec,"shExpMatch",new KProxyFunc(KProxyFunc::ShExpMatch));
-    global.put(exec,"weekdayRange",new KProxyFunc(KProxyFunc::WeekdayRange));
-    global.put(exec,"dateRange",new KProxyFunc(KProxyFunc::DateRange));
-    global.put(exec,"timeRange",new KProxyFunc(KProxyFunc::TimeRange));
+    global.put(exec, "ProxyConfig", global);
+    global.put(exec, "isPlainHostName", Object(new KProxyFunc(KProxyFunc::IsPlainHostName)));
+    global.put(exec, "dnsDomainIs", Object(new KProxyFunc(KProxyFunc::DNSDomainIs)));
+    global.put(exec, "localHostOrDomainIs", Object(new KProxyFunc(KProxyFunc::LocalHostOrDomainIs)));
+    global.put(exec, "isResolvable", Object(new KProxyFunc(KProxyFunc::IsResolvable)));
+    global.put(exec, "isInNet", Object(new KProxyFunc(KProxyFunc::IsInNet)));
+    global.put(exec, "dnsResolve", Object(new KProxyFunc(KProxyFunc::DNSResolve)));
+    global.put(exec, "myIpAddress", Object(new KProxyFunc(KProxyFunc::MyIPAddress)));
+    global.put(exec, "dnsDomainLevels", Object(new KProxyFunc(KProxyFunc::DNSDomainLevels)));
+    global.put(exec, "shExpMatch", Object(new KProxyFunc(KProxyFunc::ShExpMatch)));
+    global.put(exec, "weekdayRange", Object(new KProxyFunc(KProxyFunc::WeekdayRange)));
+    global.put(exec, "dateRange", Object(new KProxyFunc(KProxyFunc::DateRange)));
+    global.put(exec, "timeRange", Object(new KProxyFunc(KProxyFunc::TimeRange)));
 }
 
 // vim: ts=4 sw=4 et
