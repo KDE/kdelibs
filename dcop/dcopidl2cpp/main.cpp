@@ -3,12 +3,51 @@
 #include <qtextstream.h>
 #include <qstring.h>
 
+#include <string.h>
+#include <stdio.h>
+
+void usage()
+{
+    fprintf( stderr, "kidl [ --no-skel | --no-stub ] file\n" );
+}
+
 int main( int argc, char** argv )
 {
-    QFile in( argv[1] );
+    if ( argc < 2 || argc > 3 )
+    {
+	usage();
+	exit(1);
+    }
+
+    int argpos = 1;
+    bool generate_skel = TRUE;
+    bool generate_stub = TRUE;
+
+    if ( strcmp( argv[argpos], "--no-skel" ) == 0 )
+    {
+	generate_skel = FALSE;
+	if ( argc != 3 )
+        {
+	    usage();
+	    exit(1);
+	}
+	argpos++;
+    }
+    else if ( strcmp( argv[argpos], "--no-stub" ) == 0 )
+    {
+	generate_stub = FALSE;
+	if ( argc != 3 )
+        {
+	    usage();
+	    exit(1);
+	}
+	argpos++;
+    }
+
+    QFile in( argv[argpos] );
     if ( !in.open( IO_ReadOnly ) )
     {
-	qDebug("Could not read %s", argv[1] );
+	qDebug("Could not read %s", argv[argpos] );
 	exit(1);
     }
     QDomDocument doc( &in );
@@ -16,11 +55,13 @@ int main( int argc, char** argv )
     QDomElement de = doc.documentElement();
     ASSERT( de.tagName() == "DCOP-IDL" );
 	
-    QString basename( argv[1] );
+    QString basename( argv[argpos] );
     int pos = basename.findRev( "." );
     if ( pos != -1 )
 	basename = basename.left( pos );
 
+    if ( generate_skel )
+    {
     /**
      * Write the skeleton
      */
@@ -43,7 +84,7 @@ int main( int argc, char** argv )
 	    if ( e.tagName() == "CLASS" )
 	    {
 		// Write constructor
-		str << e.attribute("name") << "::" << e.attribute("name") << "( const QString& _id )" << endl;
+		/* str << e.attribute("name") << "::" << e.attribute("name") << "( const QCString& _id )" << endl;
 		str << "\t: ";
 		QDomElement k = e.firstChild().toElement();
 		bool first_super = TRUE;
@@ -60,11 +101,11 @@ int main( int argc, char** argv )
 		}
 		str << endl;
 		str << "{" << endl;
-		str << "}" << endl << endl;;
+		str << "}" << endl << endl;; */
 		
 		// Write dispatcher
 		str << "bool " << e.attribute("name");
-		str << "::process(const QString &fun, const QByteArray &data, QByteArray &replyData)" << endl;
+		str << "::process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)" << endl;
 		str << "{" << endl;
 
 		QDomElement s = e.firstChild().toElement();
@@ -72,15 +113,27 @@ int main( int argc, char** argv )
 	        {
 		    if ( s.tagName() == "FUNC" )
 		    {
-			str << "\tif ( fun == \"" << s.attribute("name") << "\" )" << endl;
 			QDomElement r = s.firstChild().toElement();
 			ASSERT( r.tagName() == "RET" );
 			QString ret = r.attribute("type");
-			// str << "\t" << r.attribute("type") << " _ret_";
-			
-			str << "\t{" << endl;
 			r = r.nextSibling().toElement();
 			QDomElement args = r;
+
+			QString funcname = s.attribute("name");
+			funcname += "(";
+			bool first = TRUE;
+			QDomElement f = args;
+			for( ; !f.isNull(); f = f.nextSibling().toElement() )
+		        {
+			    if ( !first )
+				funcname += ",";
+			    funcname += f.attribute("type");
+			}
+			funcname += ")";
+			
+			str << "\tif ( fun == \"" << funcname << "\" )" << endl;
+			
+			str << "\t{" << endl;
 			if ( !args.isNull() )
 		        {
 			    str << "\t\tQDataStream str( data, IO_ReadOnly );" << endl;
@@ -93,6 +146,7 @@ int main( int argc, char** argv )
 			    str << "\t\tstr >> " << r.attribute("name") << ";" << endl;
 			}
 
+			str << "\t\treplyType = \"" << ret << "\";" << endl;
 			if ( ret == "void" )
 			    str << "\t\t" << s.attribute("name") << "(";
 			else
@@ -101,12 +155,13 @@ int main( int argc, char** argv )
 			    str << "\t\tout << " << s.attribute("name") << "(";
 			}
 			
-			bool first = TRUE;
+			first = TRUE;
 			for( ; !args.isNull(); args = args.nextSibling().toElement() )
 		        {
 			    if ( !first )
 				str << ", ";
 			    str << args.attribute("name");
+			    first = FALSE;
 			}
 			
 			str << " );" << endl;
@@ -136,11 +191,15 @@ int main( int argc, char** argv )
 
     skel.close();
 
+    }
+
+    if ( generate_stub )
+    {
     /**
      * Write the stubs header
      */
     QFile stub( basename + "_stub.h" );
-    b = stub.open( IO_WriteOnly );
+    bool b = stub.open( IO_WriteOnly );
     if ( !b )
     {
 	qDebug("Could not write to %s", ( basename + "_stub.cpp" ).latin1() );
@@ -207,7 +266,7 @@ int main( int argc, char** argv )
 			    str << endl;
 			    str << "{" << endl;
 			    str << "public:" << endl;
-			    str << "\t" << e.attribute("name") << "_stub( const QString& app, const QString& id );" << endl;
+			    str << "\t" << e.attribute("name") << "_stub( const QCString& app, const QCString& id );" << endl;
 			}
 			
 			if ( s.tagName() == "FUNC" )
@@ -291,7 +350,7 @@ int main( int argc, char** argv )
 	    {
 		// Write constructor
 		str << e.attribute("name") << "_stub::" << e.attribute("name") << "_stub"
-		    << "( const QString& _app, const QString& _id )" << endl;
+		    << "( const QCString& _app, const QCString& _id )" << endl;
 		str << "\t: ";
 		QDomElement k = e.firstChild().toElement();
 		bool first_super = TRUE;
@@ -365,6 +424,7 @@ int main( int argc, char** argv )
 			
 			str << "\tQByteArray snd;" << endl;
 			str << "\tQByteArray rcv;" << endl;
+			str << "\tQCString _type_;" << endl;
 			str << "\t{" << endl;
 			r = r.nextSibling().toElement();
 			QDomElement args = r;
@@ -380,10 +440,23 @@ int main( int argc, char** argv )
 			}
 
 			str << "\t}" << endl;
+
+			QString funcname( s.attribute("name") );
+			funcname += "(";
+			first = TRUE;
+			for( ; !args.isNull(); args = args.nextSibling().toElement() )
+		        {
+			    if ( !first )
+				funcname += ",";
+			    funcname += args.attribute("type");
+			}
+			funcname += ")";
 			
-			str << "\tkapp->dcopClient()->call( app(), obj(), \"" << s.attribute("name") << "\",";
-			str << " snd, rcv );" << endl;
+			str << "\tkapp->dcopClient()->call( app(), obj(), \"" << funcname << "\",";
+			str << " snd, _type_, rcv );" << endl;
 			
+			str << "\tASSERT( _type_ == \"" << ret << "\" );" << endl;
+						    
 			if ( ret != "void" )
 		        {
 			    str << "\tQDataStream out( rcv, IO_ReadOnly );"  << endl;
@@ -399,6 +472,8 @@ int main( int argc, char** argv )
     }
 
     s2.close();
+
+    }
 
     return 0;
 }
