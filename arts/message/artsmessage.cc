@@ -74,11 +74,11 @@ int main(int argc, char **argv) {
 	}
 
 	if (args->isSet("w")) {
-		KMessageBox::sorry(0, msg, i18n("Warning"), true);
+		KMessageBox::sorry(0, msg, i18n("Warning"));
 	} else if (args->isSet("i")) {
-		KMessageBox::information(0, msg, i18n("Informational"), "ShowInfoMessages", true);
+		KMessageBox::information(0, msg, i18n("Informational"), "ShowInfoMessages");
 	} else {
-		KMessageBox::error(0, msg, i18n("Error"), true);
+		KMessageBox::error(0, msg, i18n("Error"));
 	}
 	
 	return 0;
