@@ -170,7 +170,7 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
            rc = verifyCertificate();
            if (rc != 1) {
               CloseDescriptor();
-	      error( ERR_COULD_NOT_CONNECT, host);
+	      //error( ERR_COULD_NOT_CONNECT, host);
               return false;
            }
         } else setMetaData("ssl_in_use", "FALSE");
