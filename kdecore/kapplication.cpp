@@ -1941,7 +1941,7 @@ QPalette KApplication::createApplicationPalette()
 QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ )
 {
     QColor kde31Background( 238, 238, 230 );
-    QColor kde31Beige( 103,141,178 );
+    QColor kde34Blue( 103,141,178 );
 
     QColor kde31Button;
     if ( QPixmap::defaultDepth() > 8 )
@@ -1956,7 +1956,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     QColor foreground = config->readColorEntry( "foreground", &black );
     QColor button = config->readColorEntry( "buttonBackground", &kde31Button );
     QColor buttonText = config->readColorEntry( "buttonForeground", &foreground );
-    QColor highlight = config->readColorEntry( "selectBackground", &kde31Beige );
+    QColor highlight = config->readColorEntry( "selectBackground", &kde34Blue );
     QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor baseText = config->readColorEntry( "windowForeground", &black );
