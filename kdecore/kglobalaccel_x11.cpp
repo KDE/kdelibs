@@ -212,17 +212,28 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	CodeMod codemod;
 	codemod.code = pEvent->xkey.keycode;
 	codemod.mod = pEvent->xkey.state & (g_keyModMaskXAccel | KKeyServer::MODE_SWITCH);
-	
+
 	// If numlock is active and a keypad key is pressed, XOR the SHIFT state.
 	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
 	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
 		// TODO: what's the xor operator in c++?
 		uint sym = XKeycodeToKeysym( qt_xdisplay(), codemod.code, 0 );
+		// If this is a keypad key,
 		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
-			if( codemod.mod & KKeyServer::modXShift() )
-				codemod.mod &= ~KKeyServer::modXShift();
-			else
-				codemod.mod |= KKeyServer::modXShift();
+			switch( sym ) {
+				// Leave the following keys unaltered
+				// FIXME: The proper solution is to see which keysyms don't change when shifted.
+				case XK_KP_Multiply:
+				case XK_KP_Add:
+				case XK_KP_Subtract:
+				case XK_KP_Divide:
+					break;
+				default:
+					if( codemod.mod & KKeyServer::modXShift() )
+						codemod.mod &= ~KKeyServer::modXShift();
+					else
+						codemod.mod |= KKeyServer::modXShift();
+			}
 		}
 	}
 
