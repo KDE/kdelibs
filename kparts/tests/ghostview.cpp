@@ -10,6 +10,8 @@
 #include <qwidget.h>
 #include <qdir.h>
 
+#include <ktrader.h>
+
 #include "ghostview.h"
 
 Shell::Shell()
@@ -21,21 +23,49 @@ Shell::Shell()
 
   KAction * paQuit = new KAction( "&Quit" , "exit", 0, this, SLOT( close() ), actionCollection(), "file_quit" );
 
-  // Try to find libkghostview
-  KLibFactory *factory = KLibLoader::self()->factory( "libkghostview" );
-  if (factory)
+  // Try to find a postscript component first
+  KTrader::OfferList offers = KTrader::self()->query("application/postscript", "('KParts/ReadOnlyPart' in ServiceTypes) or ('Browser/View' in ServiceTypes)");
+
+  KLibFactory *factory = 0;
+  m_gvpart = 0;
+  KTrader::OfferList::Iterator it(offers.begin());
+  for( ; it != offers.end(); ++it)
   {
-    // Create the part
-    m_gvpart = (KParts::ReadOnlyPart *)factory->create( this, "kgvpart",
-               "KParts::ReadOnlyPart" );
-    // Set the main widget
-    setView( m_gvpart->widget() );
-    // Integrate its GUI
-    createGUI( m_gvpart );
+    KService::Ptr ptr = (*it);
+
+    factory = KLibLoader::self()->factory( ptr->library() );
+    if (factory)
+    {
+      m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
+      setView( m_gvpart->widget() );
+      // Integrate its GUI
+      createGUI( m_gvpart );
+
+      break;
+    }
   }
-  else
+
+  // if we couldn't find a component with the trader, try the
+  // kghostview library directly.  if this ever happens, then something
+  // is seriously screwed up, though -- the kghostview component
+  // should be picked up by the trader
+  if (!m_gvpart)
   {
-     KMessageBox::error(this, "No libkghostview found !");
+    factory = KLibLoader::self()->factory( "libkghostview" );
+    if (factory)
+    {
+      // Create the part
+      m_gvpart = (KParts::ReadOnlyPart *)factory->create( this, "kgvpart",
+                 "KParts::ReadOnlyPart" );
+      // Set the main widget
+      setView( m_gvpart->widget() );
+      // Integrate its GUI
+      createGUI( m_gvpart );
+    }
+    else
+    {
+       KMessageBox::error(this, "No libkghostview found !");
+    }
   }
   // Set a reasonable size
   resize( 600, 350 );
