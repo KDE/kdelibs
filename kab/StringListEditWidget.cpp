@@ -37,7 +37,8 @@ StringListEditWidget::StringListEditWidget(QWidget* parent, const char* name)
   buttonDelete->setPixmap(erase);
   // TODO: loadApplicationMiniIcon is a very bad hack in this situation
   // as application icons like x.xpm are not what should be used in widgets
-  buttonNew->setPixmap(KGlobal::iconLoader()->loadApplicationMiniIcon("x.xpm"));
+  buttonNew->setPixmap(KGlobal::iconLoader()->
+		       loadApplicationIcon("x", KIconLoader::Small));
   QToolTip::add(buttonNew, i18n("Add a new string"));
   QToolTip::add(buttonUp, i18n("Move this string up"));
   QToolTip::add(buttonDown, i18n("Move this string down"));

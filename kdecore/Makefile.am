@@ -19,7 +19,7 @@
 
 INCLUDES = $(all_includes)
 
-SUBDIRS = tests
+SUBDIRS = . tests
 
 lib_LTLIBRARIES = libkdecore.la
 

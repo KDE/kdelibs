@@ -569,14 +569,15 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    else
 		aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1] );
 	    if (aMiniIconPixmap.isNull())
-		aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
+		aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1], KIconLoader::Small);
 	    aDummyString2 += parameter_strings[icon-1];
 	    aDummyString2 += " ";
 	    aDummyString2 += argv[i+1];
 	    aDummyString2 += " ";
 	    break;
 	case miniicon:
-	    aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
+	    aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1], 
+							    KIconLoader::Small);
 	    aDummyString2 += parameter_strings[miniicon-1];
 	    aDummyString2 += " ";
 	    aDummyString2 += argv[i+1];
@@ -620,7 +621,7 @@ QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( QString(name()) + ".xpm" );
+      that->aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( instanceName() );
   }
   return aMiniIconPixmap;
 }

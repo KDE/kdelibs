@@ -29,7 +29,7 @@
 #include "kconfig.h"
 #include "kinstance.h"
 
-static const char* types[] = {"html", "icon", "mini", "apps", "sound",
+static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "cgi", "config", "exe",
 			      "toolbar", "wallpaper", "lib", 0};
@@ -155,7 +155,7 @@ QString KStandardDirs::findResourceDir( const QString& type,
     }
 
 #ifndef NDEBUG
-    if(type != "locale")
+    if(false && type != "locale")
       debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
             filename.ascii(), type.ascii());
 #endif
@@ -462,8 +462,6 @@ QString KStandardDirs::kde_default(const QString& type) {
 	return "share/doc/HTML/";
     if (type == "icon")
 	return "share/icons/";
-    if (type == "mini")
-	return "share/icons/mini/";
     if (type == "config")
 	return "share/config/";
     if (type == "toolbar")
@@ -566,11 +564,11 @@ void KStandardDirs::addKDEDefaults()
 	tokenize(kdedirList, kdedirs, ":");
     else {
 	QString kdedir = getenv("KDEDIR");
-	if (kdedir.isEmpty())
-	    kdedir = KDEDIR;
-	kdedirList.append(kdedir);
+	if (!kdedir.isEmpty())
+	  kdedirList.append(kdedir);
     }
 
+    kdedirList.append(KDEDIR);
     addPrefix(localkdedir());
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
@@ -582,7 +580,6 @@ void KStandardDirs::addKDEDefaults()
 	addResourceType(types[index], kde_default(types[index]));
 	index++;
     }
-    addResourceType("icon", "share/icons/locolor/"); // HACK
 
 }
 
