@@ -1248,6 +1248,12 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
 
 // colors || inherit
+    case CSS_PROP_OUTLINE_COLOR:
+	// outline has "invert" as additional keyword.
+	if ( value == "invert" ) {
+	    parsedValue = new CSSPrimitiveValueImpl( QColor(INVERT_COLOR) );
+	    break;
+	}
     case CSS_PROP_BACKGROUND_COLOR:
     case CSS_PROP_BORDER_TOP_COLOR:
     case CSS_PROP_BORDER_RIGHT_COLOR:
@@ -1255,7 +1261,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BORDER_LEFT_COLOR:
     case CSS_PROP_COLOR:
     case CSS_PROP_TEXT_DECORATION_COLOR:
-    case CSS_PROP_OUTLINE_COLOR:
     {
         value = value.stripWhiteSpace();
         //kdDebug(6080) << "parsing color " << value << endl;
@@ -1496,6 +1501,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BORDER_RIGHT:
     case CSS_PROP_BORDER_BOTTOM:
     case CSS_PROP_BORDER_LEFT:
+	case CSS_PROP_OUTLINE:
     {
 #ifdef CSS_DEBUG
         kdDebug(6080) << "parsing border property" << endl;
@@ -1511,7 +1517,8 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE, CSS_PROP_BORDER_LEFT_COLOR };
         const int properties_border_right[3] = {
             CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE, CSS_PROP_BORDER_RIGHT_COLOR };
-
+	const int properties_outline[3] = 
+	{ CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE, CSS_PROP_OUTLINE_WIDTH };
         if(propId == CSS_PROP_BORDER)
             properties = properties_border;
         else if(propId == CSS_PROP_BORDER_TOP)
@@ -1522,6 +1529,8 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             properties = properties_border_left;
         else if(propId == CSS_PROP_BORDER_RIGHT)
             properties = properties_border_right;
+        else if(propId == CSS_PROP_OUTLINE)
+            properties = properties_outline;
         else return false;
 
         return parseShortHand(curP, endP, properties, 3, important, propList);
@@ -1597,7 +1606,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION, CSS_PROP_LIST_STYLE_IMAGE };
         return 	parseShortHand(curP, endP, properties, 3, important, propList);
       }
-    case CSS_PROP_OUTLINE:
     case CSS_PROP_PAUSE:
         break;
 #ifdef CSS_DEBUG

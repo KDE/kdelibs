@@ -229,6 +229,7 @@ public:
     LengthBox margin;
     LengthBox padding;
     BorderData border;
+    BorderValue outline;
 };
 
 
@@ -612,6 +613,11 @@ public:
     EBorderStyle    borderBottomStyle() const {  return surround->border.bottom.style; }
     const QColor &  	    borderBottomColor() const {  return surround->border.bottom.color; }
 
+    unsigned short  outlineWidth() const
+    { if(surround->outline.style == BNONE) return 0; return surround->outline.width; }
+    EBorderStyle    outlineStyle() const {  return surround->outline.style; }
+    const QColor &  	    outlineColor() const {  return surround->outline.color; }
+
     EOverflow overflow() const { return _overflow; }
     EVisiblity visiblity() const { return _visiblity; }
     EVerticalAlign verticalAlign() const { return _vertical_align; }
@@ -705,6 +711,9 @@ public:
     void setBorderBottomWidth(unsigned short v) {  SET_VAR(surround,border.bottom.width,v) }
     void setBorderBottomStyle(EBorderStyle v)   {  SET_VAR(surround,border.bottom.style,v) }
     void setBorderBottomColor(const QColor & v) {  SET_VAR(surround,border.bottom.color,v) }
+    void setOutlineWidth(unsigned short v) {  SET_VAR(surround,outline.width,v) }
+    void setOutlineStyle(EBorderStyle v)   {  SET_VAR(surround,outline.style,v) }
+    void setOutlineColor(const QColor & v) {  SET_VAR(surround,outline.color,v) }
 
     void setOverflow(EOverflow v) { _overflow = v; }
     void setVisiblity(EVisiblity v) { _visiblity = v; }

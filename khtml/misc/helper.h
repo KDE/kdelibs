@@ -28,6 +28,8 @@ class QPainter;
 #include <qfontmetrics.h>
 #include <qfont.h>
 
+#define INVERT_COLOR 0x00010101
+
 namespace khtml
 {
     void setNamedColor(QColor &color, const QString &name);

@@ -101,10 +101,6 @@ HR  {
         margin-right: 1px; /* will be overwritten by ALIGN */
 } 
  
-PRE { 
-	display: block;
-}
-  
 MAP { 
 	display: block;
 } 
@@ -406,6 +402,7 @@ SAMP {
 }
       
 PRE { 
+	display: block;
 	font-family: monospace; 
 	white-space: pre; 
 }
@@ -458,9 +455,7 @@ acronym {
 	font-style: italic;
 }
 
-/* ### 
       :focus          { outline: thin dotted invert }
-*/
 
 /* ### :before is not supported at the moment
       BR:before       { content: "\n" }

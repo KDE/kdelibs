@@ -627,6 +627,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_RIGHT_STYLE:
     case CSS_PROP_BORDER_BOTTOM_STYLE:
     case CSS_PROP_BORDER_LEFT_STYLE:
+    case CSS_PROP_OUTLINE_STYLE:
     {
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
@@ -644,6 +645,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 return;
             case CSS_PROP_BORDER_LEFT_STYLE:
                 style->setBorderLeftStyle(e->parentNode()->style()->borderLeftStyle());
+		case CSS_PROP_OUTLINE_STYLE:
+		                    style->setOutlineStyle(e->parentNode()->style()->outlineStyle());
+
                 return;
             }
         }
@@ -684,6 +688,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             style->setBorderBottomStyle(s); return;
         case CSS_PROP_BORDER_LEFT_STYLE:
             style->setBorderLeftStyle(s); return;
+	    case CSS_PROP_OUTLINE_STYLE:
+		style->setOutlineStyle(s); return;
         default:
             return;
         }
@@ -1013,7 +1019,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         return;
     }
 
-    case CSS_PROP_OUTLINE_STYLE:
     case CSS_PROP_OVERFLOW:
     case CSS_PROP_PAGE:
     case CSS_PROP_PAGE_BREAK_AFTER:
@@ -1246,6 +1251,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             case CSS_PROP_COLOR:
                 style->setColor(e->parentNode()->style()->color()); break;
             case CSS_PROP_OUTLINE_COLOR:
+		style->setOutlineColor(e->parentNode()->style()->outlineColor()); break;
             default:
                 // ###
                 break;
@@ -1275,8 +1281,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_PROP_TEXT_DECORATION_COLOR:
             style->setTextDecorationColor(col); break;
         case CSS_PROP_OUTLINE_COLOR:
-            // ###
-        default:
+	    style->setOutlineColor(col); break;
+	    default:
             return;
         }
         return;
@@ -1335,7 +1341,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             case CSS_PROP_BORDER_LEFT_WIDTH:
                 style->setBorderLeftWidth(e->parentNode()->style()->borderLeftWidth()); break;
             case CSS_PROP_OUTLINE_WIDTH:
-                // ###
+                style->setOutlineWidth(e->parentNode()->style()->outlineWidth()); break;
             default:
                 // ###
                 break;
@@ -1377,7 +1383,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             style->setBorderLeftWidth(width);
             break;
         case CSS_PROP_OUTLINE_WIDTH:
-            // ###
+	    style->setOutlineWidth(width);
             break;
         default:
             return;
