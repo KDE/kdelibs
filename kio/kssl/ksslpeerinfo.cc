@@ -31,7 +31,7 @@
 #include <kextsock.h>
 #include <netsupp.h>
 #ifndef Q_WS_WIN //TODO kresolver not ported
-#include "kresolver.h"
+#include "network/kresolver.h"
 #endif
 
 #include "ksslx509map.h"
