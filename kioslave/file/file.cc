@@ -192,7 +192,7 @@ void FileProtocol::get( const KURL& url )
 
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work).
-    KMimeType::Ptr mt = KMimeType::findByURL( url.path(), buff.st_mode, true /* local URL */ );
+    KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
 
     KIO::filesize_t processed_size = 0;
@@ -534,17 +534,19 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 
     totalSize( buff_src.st_size );
 
-    off_t processed_size = 0;
+    KIO::filesize_t processed_size = 0;
     char buffer[ MAX_IPC_SIZE ];
     int n;
 #ifdef USE_SENDFILE
-    bool use_sendfile=true;
+    bool use_sendfile=buff_src.st_size < 0x7FFFFFFF;
 #endif
     while( 1 )
     {
 #ifdef USE_SENDFILE
        if (use_sendfile) {
-            n = ::sendfile( dest_fd, src_fd, &processed_size, MAX_IPC_SIZE );
+            off_t sf = processed_size;
+            n = ::sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
+            processed_size = sf;
             if ( n == -1 && errno == EINVAL ) { //not all filesystems support sendfile()
                 kdDebug(7101) << "sendfile() not supported, falling back " << endl;
                 use_sendfile = false;
