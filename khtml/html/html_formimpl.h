@@ -144,7 +144,7 @@ public:
     void onChange();
 
     bool disabled() const { return m_disabled; }
-    void setDisabled(bool _disabled) { m_disabled = _disabled; }
+    void setDisabled(bool _disabled);
 
     virtual bool isSelectable() const;
     virtual bool isEnumeratable() const { return false; }

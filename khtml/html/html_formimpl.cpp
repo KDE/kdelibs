@@ -516,7 +516,7 @@ void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_NAME:
         break;
     case ATTR_DISABLED:
-        m_disabled = attr->val() != 0;
+        setDisabled( attr->val() != 0 );
         break;
     case ATTR_READONLY:
         m_readOnly = attr->val() != 0;
@@ -591,6 +591,15 @@ void HTMLGenericFormElementImpl::onSelect()
 void HTMLGenericFormElementImpl::onChange()
 {
     dispatchHTMLEvent(EventImpl::CHANGE_EVENT,true,false);
+}
+
+void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
+{
+    if ( m_disabled != _disabled ) {
+        m_disabled = _disabled;
+        if ( m_render && m_render->isWidget() && m_render->layouted() )
+            static_cast<RenderWidget *>(m_render)->m_widget->setEnabled( !m_disabled );
+    }
 }
 
 void HTMLGenericFormElementImpl::setFocus(bool received)
