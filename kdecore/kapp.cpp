@@ -169,33 +169,17 @@ KConfig* KApplication::getSessionConfig() {
     return pSessionConfig;
 
   // create a instance specific config object
-  QString aConfigName = locateLocal("config", QString(name())+"rc");
-
   QString aSessionConfigName;
   QString num;
   int i = 0;
   do {
     i++;
     num.setNum(i);
-    aSessionConfigName = aConfigName + "." + num;
+    aSessionName = QString(name()) + "rc." + num;
+    aSessionConfigName = locateLocal("config", aSessionName);
   } while (QFile::exists(aSessionConfigName));
-  QFile aConfigFile(aSessionConfigName);
 
-  bool bSuccess;
-  if ( ! checkAccess( aConfigFile.name(), W_OK ) )
-    bSuccess = false;
-  else {
-    bSuccess = aConfigFile.open( IO_ReadWrite );
-  }
-  if( bSuccess ){
-    chown(aConfigFile.name().ascii(), getuid(), getgid());
-    aConfigFile.close();
-    // Open config-file read/write
-    pSessionConfig = new KConfig(aSessionConfigName, false, false);
-    aSessionName = name();
-    aSessionName += "rc.";
-    aSessionName += num;
-  }
+  pSessionConfig = new KConfig(aSessionConfigName, false, false);
   return pSessionConfig;
 }
 
