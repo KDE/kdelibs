@@ -598,7 +598,7 @@ TextEventImpl::~TextEventImpl()
 
 bool TextEventImpl::checkModifier(unsigned long modifierArg)
 {
-  return ((m_modifier && modifierArg) == modifierArg);
+  return ((m_modifier & modifierArg) == modifierArg);
 }
 
 void TextEventImpl::initTextEvent(const DOMString &typeArg,
