@@ -22,17 +22,17 @@
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qobjectlist.h>
-#include <kwin.h>
 
 #ifndef NO_KDE2
- #include <kapp.h>
- #include <kconfig.h>
- #include <ktoolbar.h>
- #include <kpopupmenu.h>
+#include <kapp.h>
+#include <kconfig.h>
+#include <ktoolbar.h>
+#include <kpopupmenu.h>
+#include <kwin.h>
 #else
- #include <qapplication.h>
- #include <qtoolbar.h>
- #include <qpopupmenu.h>
+#include <qapplication.h>
+#include <qtoolbar.h>
+#include <qpopupmenu.h>
 #endif
 
 #define DOCK_CONFIG_VERSION "0.0.5"
@@ -392,7 +392,9 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 
   if ( !s ){
     move(p);
+#ifndef NO_KDE2    
     KWin::setType( winId(), NET::Tool );
+#endif    
   }
   updateHeader();
 }
