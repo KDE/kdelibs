@@ -162,7 +162,8 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     for( QStringList::Iterator it = entries.begin();
          it != entries.end(); it++ )
     {
-        classes += ":";
+        if( !classes.isEmpty() )
+            classes += ":";
         classes += dir.absFilePath( *it );
     }
     p->setClasspath( classes );
