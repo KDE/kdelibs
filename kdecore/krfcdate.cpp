@@ -114,61 +114,101 @@ KRFCDate::parseDate(const QString &_date)
      const char *dateString = _date.latin1();
      int day = 0;
      char monthStr[4];
-     int month = 0;
+     int month = -1;
      int year = 0;
      int hour = 0;
      int minute = 0;
      int second = 0;
 
-     while(*dateString && !isdigit(*dateString))
+     // Strip leading space
+     while(*dateString && isspace(*dateString))
+     	dateString++;
+
+     // Strip weekday
+     while(*dateString && !isdigit(*dateString) && !isspace(*dateString))
+     	dateString++;
+
+     // Strip trailing space
+     while(*dateString && isspace(*dateString))
      	dateString++;
 
      if (!*dateString)
      	return result;  // Invalid date
 
+     if (isalpha(*dateString))
+     {
+        // ' Nov 5 1994 18:15:30 GMT'
+        // Strip leading space
+        while(*dateString && isspace(*dateString))
+           dateString++;
+
+        for(int i=0; i < 3;i++)
+        {
+           if (!*dateString || (*dateString == '-') || isspace(*dateString))
+              return result;  // Invalid date
+           monthStr[i] = tolower(*dateString++);
+        }
+        monthStr[3] = '\0';
+
+        newPosStr = (char*)strstr(haystack, monthStr);
+
+        if (!newPosStr)
+           return result;  // Invalid date
+
+        month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
+
+        if ((month < 0) || (month > 11))
+           return result;  // Invalid date
+
+        while (*dateString && isalpha(*dateString))
+           dateString++; // Skip rest of month-name
+     }
+
      // ' 09-Nov-99 23:12:40 GMT'
+     // ' 5 1994 18:15:30 GMT'
      day = strtol(dateString, &newPosStr, 10);
      dateString = newPosStr;
 
      if ((day < 1) || (day > 31))
-     	return result; // Invalid date;
+         return result; // Invalid date;
+
      if (!*dateString)
-     	return result;  // Invalid date
+        return result;  // Invalid date
 
-     if (*dateString == '-')
+     while(*dateString && (isspace(*dateString) || (*dateString == '-')))
      	dateString++;
 
-     while(*dateString && isspace(*dateString))
-     	dateString++;
-
-     for(int i=0; i < 3;i++)
+     if (month == -1)
      {
-         if (!*dateString || (*dateString == '-') || isspace(*dateString))
+        for(int i=0; i < 3;i++)
+        {
+           if (!*dateString || (*dateString == '-') || isspace(*dateString))
               return result;  // Invalid date
-         monthStr[i] = tolower(*dateString++);
+           monthStr[i] = tolower(*dateString++);
+        }
+        monthStr[3] = '\0';
+        
+        newPosStr = (char*)strstr(haystack, monthStr);
+
+        if (!newPosStr)
+           return result;  // Invalid date
+
+        month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
+
+        if ((month < 0) || (month > 11))
+           return result;  // Invalid date
+           
+        while (*dateString && isalpha(*dateString))
+           dateString++; // Skip rest of month-name
+           
      }
-     monthStr[3] = '\0';
-
-     newPosStr = (char*)strstr(haystack, monthStr);
-
-     if (!newPosStr)
-     	return result;  // Invalid date
-
-     month = (newPosStr-haystack)/3; // Jan=00, Feb=01, Mar=02, ..
-
-     if ((month < 0) || (month > 11))
-     	return result;  // Invalid date
-
-     while(*dateString && (*dateString != '-') && !isspace(*dateString))
-     	dateString++;
-
-     if (!*dateString)
-     	return result;  // Invalid date
 
      // '-99 23:12:40 GMT'
-     if ((*dateString != '-') && !isspace(*dateString))
+     while(*dateString && (isspace(*dateString) || (*dateString == '-')))
+     	dateString++;
+
+     if (!*dateString || !isdigit(*dateString))
      	return result;  // Invalid date
-     dateString++;
 
      // '99 23:12:40 GMT'
      year = strtol(dateString, &newPosStr, 10);
@@ -237,9 +277,32 @@ KRFCDate::parseDate(const QString &_date)
      // don't fail if the time zone is missing, some
      // broken mail-/news-clients omit the time zone
      if (*dateString) {
+        if ((strncasecmp(dateString, "gmt", 3) == 0) ||
+            (strncasecmp(dateString, "utc", 3) == 0))
+        {
+           dateString += 3;
+           while(*dateString && isspace(*dateString))
+              dateString++;
+        }
 
         if ((*dateString == '+') || (*dateString == '-')) {
            offset = strtol(dateString, &newPosStr, 10);
+           if (offset < 30)
+           {
+              dateString = newPosStr;
+              
+              offset = offset * 100;
+              
+              if (*dateString && *(dateString+1))
+              {
+                 dateString++;
+                 int minutes = strtol(dateString, &newPosStr, 10);
+                 if (offset > 0)
+                    offset += minutes;
+                 else
+                    offset -= minutes;
+              }
+           }
 
            if ((offset < -9959) || (offset > 9959))
               return result; // Invalid date
