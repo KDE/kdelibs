@@ -321,7 +321,7 @@ QHBox *KJanusWidget::addHBoxPage( const QString &itemName,
   return addHBoxPage(items, header, pixmap);
 }
 
-QGrid *KJanusWidget::addGridPage( int n, QGrid::Direction dir,
+QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
 				  const QStringList &items,
 				  const QString &header,
 				  const QPixmap &pixmap )
@@ -340,7 +340,7 @@ QGrid *KJanusWidget::addGridPage( int n, QGrid::Direction dir,
 }
 
 
-QGrid *KJanusWidget::addGridPage( int n, QGrid::Direction dir,
+QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
 				  const QString &itemName,
 				  const QString &header,
 				  const QPixmap &pixmap )

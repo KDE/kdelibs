@@ -606,7 +606,7 @@ class KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QGrid *addGridPage( int n, QGrid::Direction dir, 
+    QGrid *addGridPage( int n, Orientation dir, 
 			const QString &itemName, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -623,7 +623,7 @@ class KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    QGrid *addGridPage( int n, QGrid::Direction dir, 
+    QGrid *addGridPage( int n, Orientation dir, 
 			const QStringList &items, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -699,7 +699,7 @@ class KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.
      */
-    QGrid *makeGridMainWidget( int n, QGrid::Direction dir );
+    QGrid *makeGridMainWidget( int n, Orientation dir );
 
 
     /**

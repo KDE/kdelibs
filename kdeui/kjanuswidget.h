@@ -326,7 +326,7 @@ class KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual QGrid *addGridPage( int n, QGrid::Direction dir,
+    virtual QGrid *addGridPage( int n, Orientation dir,
 			const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
@@ -343,7 +343,7 @@ class KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be 
      * removed (you can re-add a page with the same name later.
      **/
-    virtual QGrid *addGridPage( int n, QGrid::Direction dir,
+    virtual QGrid *addGridPage( int n, Orientation dir,
 			const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );

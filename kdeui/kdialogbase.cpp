@@ -1211,7 +1211,7 @@ QHBox *KDialogBase::addHBoxPage( const QStringList &items,
 }
 
 
-QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir,
+QGrid *KDialogBase::addGridPage( int n, Orientation dir,
 				 const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
@@ -1219,7 +1219,7 @@ QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir,
 						 pixmap) );
 }
 
-QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir,
+QGrid *KDialogBase::addGridPage( int n, Orientation dir,
 				 const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
@@ -1279,7 +1279,7 @@ QHBox *KDialogBase::makeHBoxMainWidget()
 }
 
 
-QGrid *KDialogBase::makeGridMainWidget( int n, QGrid::Direction dir )
+QGrid *KDialogBase::makeGridMainWidget( int n, Orientation dir )
 {
   if( mJanus != 0 || mMainWidget != 0 )
   {
