@@ -35,7 +35,7 @@ extern "C" {
   {
     KJS::KJSGlobal *global = KJScript::global();
     KHTMLWidget *w = (KHTMLWidget*) arg;
-    global->put("document", new KJS::HTMLDocument(w), KJS::DontEnum, true);
+    global->put("document", zeroRef(new KJS::HTMLDocument(w->htmlDocument())));
 
     return 0;
   }
@@ -60,7 +60,6 @@ KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
 {
   KJSO *result;
   Ptr v, n;
-  DOM::HTMLDocument doc = htmlw->htmlDocument();
   
   switch (id) {
   case IDDocWrite:
@@ -78,11 +77,12 @@ KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
 
 KJSO *KJS::HTMLDocument::get(const CString &p) const
 {
-  DOM::HTMLDocument doc = htmlw->htmlDocument();
   KJSO *result;
 
   if (p == "title")
     result = new KJSString(doc.title());
+  else if (p == "referrer")
+    result = new KJSString(doc.referrer());
   else if (p == "domain")
     result = new KJSString(doc.domain());
   else if (p == "URL")
@@ -94,28 +94,66 @@ KJSO *KJS::HTMLDocument::get(const CString &p) const
   else if (p == "links")
     result = new HTMLCollection(doc.links());
   else if (p == "write")
-    result = new HTMLDocFunction(htmlw, IDDocWrite);
-  else {
-    fprintf(stderr, "Doc::get('%s') [undefined]\n", p.ascii());
+    result = new HTMLDocFunction(doc, IDDocWrite);
+  else if (p == "cookie")
+    result = new KJSString(doc.cookie());
+  else
     result = new KJSUndefined();
-  }
 
   return result;
 }
 
+void HTMLDocument::put(const CString &p, KJSO *v, int)
+{
+  Ptr s;
+  if (p == "title") {
+    s = toString(v);
+    doc.setTitle(s->sVal().string());
+  } else if (p == "cookie") {
+    s = toString(v);
+    doc.setCookie(s->sVal().string());
+  }
+}
+
 KJSO *KJS::HTMLElement::get(const CString &p) const
 {
-  if (p == "valueOf")
+  DOM::DOMString str;
+
+  if (p == "id")
+    str = element.id();
+  else if (p == "title")
+    str = element.title();
+  else if (p == "lang")
+    str = element.lang();
+  else if (p == "dir")
+    str = element.dir();
+  else if (p == "className")
+    str = element.className();
+  else
     return new KJSUndefined();
 
-  return new KJSUndefined();
+  return new KJSString(str);
+}
+
+void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
+{
+  Ptr s = toString(v);
+  DOM::DOMString str = s->sVal().string();
+
+  if (p == "id")
+    element.setId(str);
+  else if (p == "title")
+    element.setTitle(str);
+  else if (p == "lang")
+    element.setLang(str);
+  else if (p == "dir")
+    element.setDir(str);
+  else if (p == "className")
+    element.setClassName(str);
 }
 
 KJSO *KJS::HTMLCollection::get(const CString &p) const
 {
-  if (p == "valueOf")
-    return new KJSUndefined();
-
   if (p == "length")
     return new KJSNumber(collection.length());
 

@@ -568,3 +568,8 @@ KJSO *HostObject::get(const CString &p) const
 {
   return new KJSUndefined();
 }
+
+void HostObject::put(const CString &p, KJSO *v, int attr)
+{
+  cout << "Ignoring put() in HostObject" << endl;
+}

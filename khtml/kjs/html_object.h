@@ -33,25 +33,27 @@ namespace KJS {
 
   class HTMLDocFunction : public KJSInternalFunction {
   public:
-    HTMLDocFunction(KHTMLWidget *w, int i) : htmlw(w), id(i) { };
+    HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
     KJSO *execute(KJSContext *);
   private:
-    KHTMLWidget *htmlw;
+    DOM::HTMLDocument doc;
     int id;
   };
 
   class HTMLDocument : public HostObject {
   public:
-    HTMLDocument(KHTMLWidget *w) : htmlw(w) { }
+    HTMLDocument(DOM::HTMLDocument d) : doc(d) { }
     virtual KJSO *get(const CString &p) const;
+    virtual void put(const CString &p, KJSO *v, int attr = None);
   private:
-    KHTMLWidget *htmlw;
+    DOM::HTMLDocument doc;
   };
 
   class HTMLElement : public HostObject {
   public:
     HTMLElement(DOM::HTMLElement e) : element(e) { }
     virtual KJSO *get(const CString &p) const;
+    virtual void put(const CString &p, KJSO *v, int attr = None);
   private:
     DOM::HTMLElement element;
   };

@@ -80,23 +80,23 @@ KJSMath::KJSMath()
   put("SQRT2", sqrt(2), attr);
 #endif
 
-  put("abs", new KJSMathFunc(IDAbs), attr, true);
-  put("acos", new KJSMathFunc(IDACos), attr, true);
-  put("asin", new KJSMathFunc(IDASin), attr, true);
-  put("atan", new KJSMathFunc(IDATan), attr, true);
-  put("atan2", new KJSMathFunc(IDATan2), attr, true);
-  put("ceil", new KJSMathFunc(IDCeil), attr, true);
-  put("cos", new KJSMathFunc(IDCos), attr, true);
-  put("exp", new KJSMathFunc(IDExp), attr, true);
-  put("floor", new KJSMathFunc(IDFloor), attr, true);
-  put("log", new KJSMathFunc(IDLog), attr, true);
-  put("max", new KJSMathFunc(IDMax), attr, true);
-  put("min", new KJSMathFunc(IDMin), attr, true);
-  put("random", new KJSMathFunc(IDRandom), attr, true);
-  put("round", new KJSMathFunc(IDRound), attr, true);
-  put("sin", new KJSMathFunc(IDSin), attr, true);
-  put("sqrt", new KJSMathFunc(IDSqrt), attr, true);
-  put("tan", new KJSMathFunc(IDTan), attr, true);
+  put("abs", zeroRef(new KJSMathFunc(IDAbs)), attr);
+  put("acos", zeroRef(new KJSMathFunc(IDACos)), attr);
+  put("asin", zeroRef(new KJSMathFunc(IDASin)), attr);
+  put("atan", zeroRef(new KJSMathFunc(IDATan)), attr);
+  put("atan2", zeroRef(new KJSMathFunc(IDATan2)), attr);
+  put("ceil", zeroRef(new KJSMathFunc(IDCeil)), attr);
+  put("cos", zeroRef(new KJSMathFunc(IDCos)), attr);
+  put("exp", zeroRef(new KJSMathFunc(IDExp)), attr);
+  put("floor", zeroRef(new KJSMathFunc(IDFloor)), attr);
+  put("log", zeroRef(new KJSMathFunc(IDLog)), attr);
+  put("max", zeroRef(new KJSMathFunc(IDMax)), attr);
+  put("min", zeroRef(new KJSMathFunc(IDMin)), attr);
+  put("random", zeroRef(new KJSMathFunc(IDRandom)), attr);
+  put("round", zeroRef(new KJSMathFunc(IDRound)), attr);
+  put("sin", zeroRef(new KJSMathFunc(IDSin)), attr);
+  put("sqrt", zeroRef(new KJSMathFunc(IDSqrt)), attr);
+  put("tan", zeroRef(new KJSMathFunc(IDTan)), attr);
 }
 
 KJSO* KJSMathFunc::execute(KJSContext *context)

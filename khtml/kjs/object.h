@@ -70,7 +70,7 @@ public:
   KJSPrototype *prototype() const { return proto; }
   virtual KJSO *get(const CString &p) const;
   bool hasProperty(const CString &p, bool recursive = true) const;
-  void put(const CString &p, KJSO *v, int attr = None, bool z = false);
+  virtual void put(const CString &p, KJSO *v, int attr = None);
   void put(const CString &p, double d, int attr = None);
   void put(const CString &p, int i, int attr = None);
   void put(const CString &p, unsigned int u, int attr = None);
@@ -401,6 +401,7 @@ private:
   public:
     Type type() const { return Host; }
     virtual KJSO *get(const CString &p) const;
+    virtual void put(const CString &p, KJSO *v, int attr = None);
   };
 
 };
