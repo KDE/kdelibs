@@ -1180,6 +1180,7 @@ bool HTTPProtocol::readHeader()
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
+  int proxyAuthCount = 1;
   char buffer[4097];
   bool cont = false;
   bool cacheValidated = false; // Revalidation was successfull
@@ -1491,7 +1492,10 @@ bool HTTPProtocol::readHeader()
 
     // check for proxy-based authentication
     else if (strncasecmp(buffer, "Proxy-Authenticate:", 19) == 0) {
-      configAuth(trimLead(buffer + 19), true);
+      if ( proxyAuthCount++ > 1 )
+        configAuth(trimLead(buffer + 19), true, false);
+      else
+        configAuth(trimLead(buffer + 19), true);
     }
 
     // content?
@@ -1576,6 +1580,14 @@ bool HTTPProtocol::readHeader()
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
   } while (len && (gets(buffer, sizeof(buffer)-1)));
+
+  // If we do not support the requested authentication method...
+  if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
+       (m_responseCode == 407 && Authentication == AUTH_None) )
+  {
+    error( ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!" );
+    return false;
+  }
 
   // Fixup expire date for clock drift.
   if (expireDate && (expireDate <= dateHeader))
@@ -1843,7 +1855,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   }
 }
 
-void HTTPProtocol::configAuth( const char *p, bool b )
+void HTTPProtocol::configAuth( const char *p, bool b, bool firstCall )
 {
   HTTP_AUTH f;
   const char *strAuth = p;
@@ -1856,26 +1868,9 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   }
   else if (strncasecmp (p, "Digest", 6) ==0 )
   {
-    p += 6;
     f = AUTH_Digest;
+    p += 6;
     strAuth = p;
-  }
-  else if (strncasecmp (p, "NTLM", 4) == 0)
-  {
-    // NT Authentification sheme. not yet implemented
-    // we try to ignore it. maybe we return later here
-    // with a Basic or Digest authentification request
-    // and then it should be okay.
-    // i.e. NT IIS sends
-    // WWW-Authentification: NTLM\r\n
-    // WWW-Authentification: Basic\r\n
-    return;
-  }
-  else if (strncasecmp (p, "Negotiate", 9) == 0)
-  {
-    // Another strange thing from IIS. Found on http://www.lottorush.com.
-    kdWarning(7103) << "Unsupported Authorization type requested : Negotiate" << endl;
-    return;
   }
   else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0)
   {
@@ -1885,9 +1880,10 @@ void HTTPProtocol::configAuth( const char *p, bool b )
   }
   else
   {
-    kdWarning(7103) << "Invalid Authorization type requested" << endl;
-    kdWarning(7103) << "Buffer: " << p << endl;
-    error( ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!" );
+    kdWarning(7103) << "Unsupported or invalid authorization type requested" << endl;
+    kdWarning(7103) << "Request Authorization: " << p << endl;
+    if ( firstCall && b )
+      ProxyAuthentication = AUTH_None;
     return;
   }
 
