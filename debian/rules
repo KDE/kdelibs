@@ -170,8 +170,8 @@ binary-arch:  build install
 	-chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
 	-chmod 4755 debian/libarts/usr/bin/artswrapper
 	-chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
-	-chmod 755 debian/kdelibs3//usr/share/apps/kconf_update/useragent.pl \
-		debian/kdelibs3//usr/share/apps/kconf_update/proxytype.pl
+	-chmod 755 debian/kdelibs3/usr/share/apps/kconf_update/useragent.pl \
+		debian/kdelibs3/usr/share/apps/kconf_update/proxytype.pl
 	dh_makeshlibs -V
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
