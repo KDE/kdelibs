@@ -501,7 +501,7 @@ void HTMLFrameSetElementImpl::detach()
 {
     if(attached())
         // ### send the event when we actually get removed from the doc instead of here
-        dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+        getDocument()->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
     HTMLElementImpl::detach();
 }
