@@ -358,34 +358,24 @@ void KURL::setFileName( const QString& _txt )
   else
     tmp = _txt;
   
-  if ( m_strPath.isEmpty() )
+  QString path = m_strPath;
+  if ( path.isEmpty() )
+    path = "/";
+  else
   {
-    m_strPath = "/";
-    m_strPath += tmp;
-    cleanPath();
-    return;
-  }    
-  
-  if ( m_strPath.right(1) == "/")
-  {
-    m_strPath += tmp;
-    cleanPath();
-    return;
+    int lastSlash = path.findRev( '/' );
+    if ( lastSlash == -1)
+    {
+      // The first character is not a '/' ???
+      // This looks strange ...
+      path = "/";
+    }
+    else if ( path.right(1) != "/" )
+      path.truncate( lastSlash+1 ); // keep the "/"
   }
-  
-  i = m_strPath.findRev( '/' );
-  // If ( i == -1 ) => The first character is not a '/' ???
-  // This looks strange ...
-  if ( i == -1 )
-  {
-    m_strPath = "/";
-    m_strPath += tmp;
-    cleanPath();
-    return;
-  }
-  
-  m_strPath.truncate( i+1 ); // keep the "/"
-  m_strPath += tmp;
+
+  path += tmp;
+  setEncodedPathAndQuery( path );
   cleanPath();
 }
 
@@ -435,7 +425,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
   else
   { 
     m_strPath = _txt.left( pos );
-    m_strQuery_encoded = _txt + pos + 1;
+    m_strQuery_encoded = _txt.data() + pos + 1;
   }
 
   decode( m_strPath );
