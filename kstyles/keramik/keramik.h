@@ -119,12 +119,15 @@ public slots:
 	void updateProgressPos();
 
 protected:
+	bool isSizeConstrainedCombo(const QComboBox* combo) const;
+
 	///Configuration settings
 	bool highlightLineEdits;
 	bool animateProgressBar;
 	bool highlightScrollBar;
 
 protected:
+	mutable bool forceSmallMode;
 	mutable bool maskMode;   //Ugly round trip flag to permit masking with little code;
 	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
 

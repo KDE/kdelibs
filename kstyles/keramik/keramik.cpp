@@ -277,8 +277,9 @@ KeramikStyle::KeramikStyle()
 	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),
 		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), customScrollMode(false), kickerMode(false)
 {
-	hoverWidget = 0;
-	progAnimShift = 0;
+	forceSmallMode = false;
+	hoverWidget    = 0;
+	progAnimShift  = 0;
 
 	QSettings settings;
 
@@ -609,12 +610,13 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 			int  name;
 
-			if ( w <= smallButMaxW || h <= smallButMaxH )
+			if ( w <= smallButMaxW || h <= smallButMaxH || forceSmallMode)
 			{
 				if (sunken)
 					name = keramik_pushbutton_small_pressed;
 				else
 					name =  keramik_pushbutton_small;
+				forceSmallMode = false;
 			}
 			else
 			{
@@ -1862,6 +1864,18 @@ void KeramikStyle::drawControlMask( ControlElement element,
 	maskMode = false;
 }
 
+bool KeramikStyle::isSizeConstrainedCombo(const QComboBox* combo) const
+{
+	if (combo->width() >= 80)
+		return false;
+	int suggestedWidth = combo->sizeHint().width();
+	
+	if (combo->width() - suggestedWidth < -5)
+		return true;
+
+	return false;
+}
+
 void KeramikStyle::drawComplexControl( ComplexControl control,
                                          QPainter *p,
                                          const QWidget *widget,
@@ -1881,6 +1895,8 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		{
 			bool toolbarMode = false;
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
+			bool compact     = isSizeConstrainedCombo(cb);
+			
 			QPixmap * buf = 0;
 			QPainter* p2 = p;
 
@@ -1906,47 +1922,79 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			}
 
 
-			if ( br.width() >= 28 && br.height() > 20 ) br.addCoords( 0, -2, 0, 0 );
+			if ( br.width() >= 28 && br.height() > 20 && !compact )
+				br.addCoords( 0, -2, 0, 0 );
+				
+			//When in compact mode, we force the shadow-less bevel mode,
+			//but that also alters height and not just width.
+			//readjust height to fake the other metrics (plus clear 
+			//the other areas, as appropriate). The automasker
+			//will take care of the overall shape.
+			if ( compact )
+			{
+				forceSmallMode = true;
+				br.setHeight( br.height() - 2);
+				p->fillRect ( r.x(), r.y() + br.height(), r.width(), 2, cg.background());
+			}
+				
+				
 			if ( controls & SC_ComboBoxFrame )
 			{
 				if (toolbarMode)
-				{
 					toolbarBlendWidget = widget;
-				}
 
 				if ( widget == hoverWidget )
 					flags |= Style_MouseOver;
-
+					
 				drawPrimitive( PE_ButtonCommand, p2, br, cg, flags );
 
 				toolbarBlendWidget = 0;
 			}
 
 			// don't draw the focus rect etc. on the mask
-			if ( cg.button() == color1 && cg.background() == color0 ) break;
+			if ( cg.button() == color1 && cg.background() == color0 )
+				break;
 
 			if ( controls & SC_ComboBoxArrow )
 			{
-				if ( active ) flags |= Style_On;
+				if ( active )
+					flags |= Style_On;
+					
+				QRect ar = querySubControlMetrics( CC_ComboBox, widget,
+													 SC_ComboBoxArrow );
+				if (!compact)
+				{
+					ar.setWidth(ar.width()-13);
+					QRect rr = visualRect( QRect( ar.x(), ar.y() + 4,
+							loader.size(keramik_ripple ).width(), ar.height() - 8 ),
+							widget );
 
-				QRect ar = querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxArrow );
-				ar.setWidth(ar.width()-13);
+					ar = visualRect( QRect( ar.x() + loader.size( keramik_ripple ).width() + 4, ar.y(), 
+											11, ar.height() ), 
+									widget );
 
-				QRect rr = visualRect( QRect( ar.x(), ar.y() + 4, loader.size(
-keramik_ripple ).width(), ar.height() - 8 ), widget );
-
-				ar = visualRect( QRect( ar.x() + loader.size( keramik_ripple ).width() +
-4, ar.y(), 11, ar.height() ), widget );
-
-				QPointArray a;
-
-				a.setPoints(QCOORDARRLEN(keramik_combo_arrow), keramik_combo_arrow);
-
-				a.translate( ar.x() + ar.width() / 2, ar.y() + ar.height() / 2 );
-				p2->setPen( cg.buttonText() );
-				p2->drawLineSegments( a );
-
-				Keramik::ScaledPainter( keramik_ripple ).draw( p2, rr, cg.button(), Qt::black, disabled, Keramik::TilePainter::PaintFullBlend );
+					QPointArray a;
+	
+					a.setPoints(QCOORDARRLEN(keramik_combo_arrow), keramik_combo_arrow);
+	
+					a.translate( ar.x() + ar.width() / 2, ar.y() + ar.height() / 2 );
+					p2->setPen( cg.buttonText() );
+					p2->drawLineSegments( a );
+	
+					Keramik::ScaledPainter( keramik_ripple ).draw( p2, rr, cg.button(), Qt::black, disabled, Keramik::TilePainter::PaintFullBlend );
+				}
+				else //Size-constrained combo -- loose the ripple.
+				{
+					ar.setWidth(ar.width() - 7);
+					ar = visualRect( QRect( ar.x(), ar.y(), 11, ar.height() ), widget);
+					QPointArray a;
+	
+					a.setPoints(QCOORDARRLEN(keramik_combo_arrow), keramik_combo_arrow);
+	
+					a.translate( ar.x() + ar.width() / 2, ar.y() + ar.height() / 2 );
+					p2->setPen( cg.buttonText() );
+					p2->drawLineSegments( a );
+				}
 			}
 
 			if ( controls & SC_ComboBoxEditField )
@@ -1963,6 +2011,8 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				else if ( cb->hasFocus() )
 				{
 					QRect re = QStyle::visualRect(subRect(SR_ComboBoxFocusRect, cb), widget);
+					if ( compact )
+						re.addCoords( 3, 3, 0, -3 );
 					p2->fillRect( re, cg.brush( QColorGroup::Highlight ) );
 					drawPrimitive( PE_FocusRect, p2, re, cg,
 					Style_FocusAtBorder, QStyleOption( cg.highlight() ) );
@@ -2410,15 +2460,29 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 	{
 		case CC_ComboBox:
 		{
-			int arrow = 11 + loader.size( keramik_ripple ).width();
+			int arrow;
+			bool compact = false;
+			if ( isSizeConstrainedCombo(static_cast<const QComboBox*>(widget) ) ) //### constant
+				compact = true;
+				
+			if ( compact )
+				arrow = 11;
+			else
+				arrow = 11 + loader.size( keramik_ripple ).width();
+				
 			switch ( subcontrol )
 			{
 				case SC_ComboBoxArrow:
-					return QRect( widget->width() - arrow - 14, 0, arrow+13, widget->height() );
+					if ( compact )
+						return QRect( widget->width() - arrow - 7, 0, arrow + 6, widget->height() );
+					else
+						return QRect( widget->width() - arrow - 14, 0, arrow + 13, widget->height() );
 
 				case SC_ComboBoxEditField:
 				{
-					if ( widget->width() < 36 || widget->height() < 22 )
+					if ( compact )
+						return QRect( 2, 4, widget->width() - arrow - 2 - 7, widget->height() - 8 );
+					else if ( widget->width() < 36 || widget->height() < 22 )
 						return QRect( 4, 3, widget->width() - arrow - 20, widget->height() - 6 );
 					else if ( static_cast< const QComboBox* >( widget )->editable() )
 						return QRect( 8, 4, widget->width() - arrow - 26, widget->height() - 11 );
