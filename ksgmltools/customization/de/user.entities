@@ -13,7 +13,7 @@
 <!ENTITY zb     "<abbrev>z.B.</abbrev>" -- eg -->
 <!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" -- kde help -->
 <!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" -- khelpcenter -->
-<!ENTITY k-cc "<application>KDE-Kontrollzentrum</application>" --kcc -->
-<!ENTITY k-de "K-Arbeitsumgebung" -- kde -->
+<!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" -- kcc -->
+<!ENTITY kde "K-Arbeitsumgebung" -- kde -->
 
 
