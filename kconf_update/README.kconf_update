@@ -1,6 +1,6 @@
 README kconf_update
 
-Version: 1.0
+Version: 1.1
 Author: Waldo Bastian <bastian@kde.org>, <bastian@suse.com>
 
 What it does
@@ -65,16 +65,32 @@ will not be applied again.
 File=<oldfile>,<newfile>
 File=<oldfile>
 
-Specifies that configuration information is read from <oldfile> and written 
+Specifies that configuration information is read from <oldfile> and written
 to <newfile>. If you only specify <oldfile>, the information is read from
 as well as written to <oldfile>.
 
 Script=<script>[,<interpreter>]
 
 All entries from <oldfile> are piped into <script>. The output of script
-is used as new entries for <newfile>. Existing entries can be deleted by 
-adding lines with "# DELETE [group]key" in the output of the script. 
+is used as new entries for <newfile>. Existing entries can be deleted by
+adding lines with "# DELETE [group]key" in the output of the script.
 To delete a whole group use "# DELETEGROUP [group]".
+
+<script> should be installed into $(kde_datadir)/kconf_update, or
+kconf_update will not be able to find it. It is not portable to install
+binary applications in $kde_datadir, so you have to stick with interpreted
+scripts like sh or perl scripts. From KDE 3.2 onwards it's also possible
+to install kconf_update applications in $(kde_bindir)/kconf_update_bin,
+which opens the door to kconf_update applications that are written in C++
+and use Qt's powerful string API instead.
+
+A workaround for KDE 3.1.x and older is to install a .sh script in
+$(kde_datadir) that contains a simple exec:
+
+    exec "`kde-config --prefix`/bin/kconf_update_bin/my_update_app"
+
+This is equivalent to what KDE 3.2 can do directly, but of course the .upd
+file now points to the .sh script instead of the binary application.
 
 If Script was issued after a "Group" command the behaviour is slightly
 different:
@@ -173,6 +189,41 @@ Then it takes all keys in the "UserAgent" group of the file "kioslaverc"
 and moves then to the "UserAgent" group in the "kio_httprc" file.
 
 Finally it removes the entire "KDE" group in the kioslaverc file.
+
+
+Debugging and testing
+=====================
+
+If you are developing a kconf_update script and want to test or debug it you
+need to make sure kconf_update runs again after each of your changes. There
+are a number of ways to achieve this.
+
+The easiest is to not install the kconf_update script in the first place, but
+manually call it through a pipe. If you want to test the update script for
+your application KHello's config file khellorc, you can test by using
+
+    cat ~/.kde/share/config/khellorc | khello_conf_update.sh
+
+(assuming khello_conf_update.sh is the kconf_update script and ~/.kde is your
+$KDEHOME). This is easier than making install everytime, but has the obvious
+downside that you need to 'parse' your script's output yourself instead of
+letting kconf_update do it and check the resulting output file.
+
+After 'make install' the kconf_update script is run by kded, but it does so
+only once. This is of course the idea behind it, but while developing it can
+be a problem. You can increase the revision number for each subsequent run
+of 'make install' to force a new kconf_update run, but there's a better
+approach that doesn't skyrocket the version number for a mediocre debug
+session.
+
+kded doesn't really ignore scripts that it has already run right away.
+Instead it checks the affected config file every time a .upd file is added
+or changed. The reason it still doesn't run again on your config file lies
+in the traces kconf_update leaves behind: it adds a special config group
+'[$Version]' with a key 'update_info'. This key lists all kconf_update
+scripts that have already been run on this config file. Just remove your
+file's entry, 'make install', and kconf_update will happily run your script
+again, without you having to increase the version number.
 
 Have fun,
 Waldo
