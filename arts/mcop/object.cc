@@ -596,15 +596,17 @@ FlowSystem Object_skel::_flowSystem()
 
 void Object_skel::_release()
 {
-	assert(_refCnt > 0);
+	arts_return_if_fail(_refCnt > 0);
+
 	_refCnt--;
-	if((_refCnt+_remoteSendCount) == 0) _destroy();
+	if(_refCnt == 0) _destroy();
 }
 
 void Object_skel::_copyRemote()
 {
 	// cout << "_copyRemote();" << endl;
 
+	_copy();
 	_remoteSendCount++;
 	_remoteSendUpdated = true;
 }
@@ -634,12 +636,10 @@ void Object_skel::_useRemote()
 	if(_remoteSendCount == 0)
 	{
 		arts_warning("_useRemote without prior _copyRemote() - this might fail sometimes");
+		_copyRemote();
 	}
-	else
-	{
-		_remoteSendCount--;
-	}
-	_refCnt++;
+
+	_remoteSendCount--;
 	_remoteUsers.push_back(conn);
 }
 
@@ -658,7 +658,11 @@ void Object_base::_cancelCopyRemote()
 	{
 		arts_warning("_cancelCopyRemote without prior _copyRemote() - this might fail sometimes");
 	}
-	else _skel()->_remoteSendCount--;
+	else
+	{
+		_skel()->_remoteSendCount--;
+		_release();
+	}
 }
 
 void Object_skel::_disconnectRemote(Connection *conn)
@@ -700,11 +704,16 @@ void Object_skel::_referenceClean()
 		}
 		else
 		{
+			int rcount = _remoteSendCount;
+
 			arts_debug("_referenceClean: found unused object marked by "
 			           "_copyRemote => releasing");
-			_remoteSendCount = 0;
-			_refCnt++;
-			_release();
+
+			while(rcount--)
+			{
+				_remoteSendCount--;
+				_release();
+			}
 		}
 		/* warning: object may be gone here */
 	}
@@ -1143,7 +1152,8 @@ bool Object_stub::_error()
 
 void Object_stub::_release()
 {
-	assert(_refCnt > 0);
+	arts_return_if_fail(_refCnt > 0);
+
 	_refCnt--;
 	if(_refCnt == 0)
 	{

@@ -529,7 +529,7 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 
 				// perform the request
 				Object_skel *object = objectPool[objectID];
-				object->_copyInternal();
+				object->_copy();
 				object->_dispatch(buffer,result,methodID);
 				object->_release();
 
@@ -578,7 +578,7 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 
 				// perform the request
 				Object_skel *object = objectPool[objectID];
-				object->_copyInternal();
+				object->_copy();
 				object->_dispatch(buffer,methodID);
 				object->_release();
 
