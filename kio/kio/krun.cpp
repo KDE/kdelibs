@@ -530,7 +530,8 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 
 pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFiles )
 {
-  if (!KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
+  if (!_service.desktopEntryPath().isEmpty() &&
+      !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
      KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
      return 0;
