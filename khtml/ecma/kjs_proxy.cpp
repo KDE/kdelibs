@@ -75,6 +75,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
   QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
 		    const DOM::Node &n)
   {
+    script->init(); // set a valid current interpreter
     KJS::KJSO thisNode = n.isNull() ?
 			 KJS::Global::current().prototype() : getDOMNode(n);
 
