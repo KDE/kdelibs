@@ -17,11 +17,16 @@
 */
 #include <config.h>
 #include <qclipboard.h>
+#include <qwidgetlist.h>
+#include <qwidget.h>
 #include "kapp.h"
 #include "klibloader.h"
 #include "kglobal.h"
 #include "kstddirs.h"
 #include "kdebug.h"
+
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 template class QAsciiDict<KLibrary>;
 
@@ -138,25 +143,25 @@ KLibrary::~KLibrary()
 {
     kdDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
     if ( m_timer && m_timer->isActive() )
-      m_timer->stop();
+	m_timer->stop();
 
     // If any object is remaining, delete
     if ( m_objs.count() > 0 )
-    {
-      QListIterator<QObject> it( m_objs );
-      for ( ; it.current() ; ++it )
-      {
-        kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << endl;
-        disconnect( it.current(), SIGNAL( destroyed() ),
-                    this, SLOT( slotObjectDestroyed() ) );
-      }
-      m_objs.setAutoDelete(true);
-      m_objs.clear();
-    }
+	{
+	    QListIterator<QObject> it( m_objs );
+	    for ( ; it.current() ; ++it )
+		{
+		    kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << endl;
+		    disconnect( it.current(), SIGNAL( destroyed() ),
+				this, SLOT( slotObjectDestroyed() ) );
+		}
+	    m_objs.setAutoDelete(true);
+	    m_objs.clear();
+	}
 
     if ( m_factory ) {
-      kdDebug(150) << " ... deleting the factory " << m_factory << endl;
-      delete m_factory;
+	kdDebug(150) << " ... deleting the factory " << m_factory << endl;
+	delete m_factory;
     }
 
     // WABA: *HACK*
@@ -167,7 +172,19 @@ KLibrary::~KLibrary()
 
     // Well.. let's do something more subtle... convert the clipboard context
     // to text. That should be safe as it only uses objects defined by Qt.
-    kapp->clipboard()->setText(kapp->clipboard()->text());
+    
+    QWidgetList *widgetlist = QApplication::topLevelWidgets();
+    QWidget *co = widgetlist->first();
+    while (co) {
+	if (qstrcmp(co->name(), "internal clipboard owner") == 0) {
+	    if (XGetSelectionOwner(co->x11Display(), XA_PRIMARY) == co->winId())
+		kapp->clipboard()->setText(kapp->clipboard()->text());
+	    
+	    break;
+	}
+       
+	co = widgetlist->next();
+    }
 
     if (!d->do_not_unload && getenv("KDE_NOUNLOAD")==NULL) {
         if (getenv("KDE_DLCLOSE") != NULL)
