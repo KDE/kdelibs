@@ -897,7 +897,7 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke, bool keypress )
     // Pressing and releasing a key should generate keydown, keypress and keyup events
     // Holding it down should generated keydown, keypress (repeatedly) and keyup events
     if( !keypress && _ke->isAutoRepeat())
-        return true; // filter out
+        return false; // filter out
     DOM::NodeImpl* keyNode = m_part->xmlDocImpl()->focusNode();
     QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
                 _ke->text(),
