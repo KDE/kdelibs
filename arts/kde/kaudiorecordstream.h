@@ -9,7 +9,7 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -38,7 +38,7 @@ namespace Arts { class StereoEffectStack; }
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
 */
-class ARTS_EXPORT KAudioRecordStream : public QObject
+class KDE_ARTS_EXPORT KAudioRecordStream : public QObject
 {
 	Q_OBJECT
 

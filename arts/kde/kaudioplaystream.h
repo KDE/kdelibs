@@ -39,7 +39,7 @@ class KAudioPlayStreamPrivate;
  * @since 3.2
 */
 
-class ARTS_EXPORT KAudioPlayStream : public QObject {
+class KDE_ARTS_EXPORT KAudioPlayStream : public QObject {
    Q_OBJECT
 public:
 	/**

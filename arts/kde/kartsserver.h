@@ -34,7 +34,7 @@
  * artsd on KDE startup, but at the very least there will always be third
  * party PlayObjects that will crash.  So, this is necessary.
  */
-class ARTS_EXPORT KArtsServer : public QObject
+class KDE_ARTS_EXPORT KArtsServer : public QObject
 {
 Q_OBJECT
 

@@ -35,7 +35,7 @@ class QString;
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class ARTS_EXPORT KAudioManagerPlay
+class KDE_ARTS_EXPORT KAudioManagerPlay
 {
 	public:
 		KAudioManagerPlay( KArtsServer * server, const QString & title = QString::null );
@@ -49,7 +49,7 @@ class ARTS_EXPORT KAudioManagerPlay
 		/**
 		 * return true if this == 0 or amanPlay().isNull()
 		 *
-		 * in essence, ((KDE::PlayObject*)0)->isNull() will not 
+		 * in essence, ((KDE::PlayObject*)0)->isNull() will not
 		 * crash
 		 **/
 		bool isNull() const;

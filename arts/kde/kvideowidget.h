@@ -18,7 +18,7 @@
 #include <kxmlguiclient.h>
 
 
-class ARTS_EXPORT KVideoWidget : public QWidget, virtual public KXMLGUIClient
+class KDE_ARTS_EXPORT KVideoWidget : public QWidget, virtual public KXMLGUIClient
 {
 Q_OBJECT
 
@@ -70,7 +70,7 @@ signals:
      * use mouseButtonPressed( int type, const QPoint & ) instead.
      */
     void rightButtonPressed( const QPoint & );
-    
+
 private:
     void init(void);
     QWidget *fullscreenWidget;
