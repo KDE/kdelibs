@@ -253,7 +253,7 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 	resize( 400, 350 );
 }
 
-int KKeyDialog::configureKeys( KAccel *keys )
+int KKeyDialog::configureKeys( KAccel *keys, bool save_settings )
 {
 	QDict<KKeyEntry> dict = keys->keyDict();
    
@@ -264,11 +264,13 @@ int KKeyDialog::configureKeys( KAccel *keys )
 
 	if( retcode ) {
 		keys->setKeyDict( dict );
+		if (save_settings)
+		  keys->writeSettings();
 	}
     return retcode;
 }
 
-int KKeyDialog::configureKeys( KGlobalAccel *keys )
+int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings )
 {
 	QDict<KKeyEntry> dict = keys->keyDict();
    
@@ -279,6 +281,8 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys )
 
 	if( retcode ) {
 		keys->setKeyDict( dict );
+		if (save_settings)
+		  keys->writeSettings();
 	}
     return retcode;
 }

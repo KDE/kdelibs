@@ -126,16 +126,22 @@ protected:
  * to the dialog. For example you could use KAccel and KKeyDialog like this
  *
  * KAccel keys;
- * keys.insertStdItem( KAccel::Print );
+ *
  * keys.insertItem( "Zoom in", "+" );
  * 
- * keys.connectItem( keys.stdAction( KAccel::Print ), SLOT( print() ) );
+ * keys.connectItem( KAccel::Print, SLOT( print() ) );
  * keys.connectItem( "Zoom in", SLOT( zoomIn() ) );
  *
  * keys.readSettings();
  *
  * if( KKeyDialog::configureKeys( &keys ) ) {
- *		keys.writeSettings();
+ *		...
+ *	}
+ *
+ * This will also implicitely save the settings. If you don't want this, you can call
+ *
+ * if( KKeyDialog::configureKeys( &keys, false ) ) { // do not save settings
+ *		...
  *	}
  *
  */
@@ -148,8 +154,8 @@ public:
 		    bool check_against_std_keys = false);
 	~KKeyDialog() {};
 
-	static int configureKeys( KAccel *keys );
-	static int configureKeys( KGlobalAccel *keys );
+	static int configureKeys( KAccel *keys, bool save_settings = true  );
+	static int configureKeys( KGlobalAccel *keys,  bool save_settings = true );
 	
 private:
 	QPushButton *bDefaults, *bOk, *bCancel, *bHelp;
