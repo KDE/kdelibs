@@ -28,7 +28,7 @@
 #include "regexp.h"
 
 namespace KJS {
-
+  class ExecState;
   class RegExpPrototypeImp : public ObjectImp {
   public:
     RegExpPrototypeImp(ExecState *exec,
@@ -75,6 +75,7 @@ namespace KJS {
 
     Value get(ExecState *exec, const UString &p) const;
     int ** registerRegexp( const RegExp* re, const UString& s );
+    Value arrayOfMatches(ExecState *exec, const UString &result) const;
   private:
     UString lastString;
     int *lastOvector;

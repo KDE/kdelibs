@@ -168,6 +168,20 @@ int **RegExpObjectImp::registerRegexp( const RegExp* re, const UString& s )
   return &lastOvector;
 }
 
+Value RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) const
+{
+  List list;
+  // The returned array contains 'result' as first item, followed by the list of matches
+  list.append(String(result));
+  if ( lastOvector )
+    for ( uint i = 1 ; i < lastNrSubPatterns + 1 ; ++i )
+    {
+      UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
+      list.append(String(substring));
+    }
+  return exec->interpreter()->builtinArray().construct(exec, list);
+}
+
 Value RegExpObjectImp::get(ExecState *, const UString &p) const
 {
   if (p[0] == '$' && lastOvector)

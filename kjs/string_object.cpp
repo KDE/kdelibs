@@ -204,7 +204,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 #ifndef NDEBUG
       printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
 #endif
-      result = Undefined(); // No idea what to do here
+      result = Undefined();
       break;
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
@@ -221,13 +221,11 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         result = Null();
         break;
       }
-      /* TODO return an array, with the matches, etc. */
-      result = String(mstr);
+      result = regExpObj->arrayOfMatches(exec,mstr);
     }
   }
     break;
   case Replace:
-    // TODO: this is just a hack to get the most common cases going
     u = s;
     if (a0.type() == ObjectType && a0.toObject(exec).inherits(&RegExpImp::info)) {
       RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
@@ -241,6 +239,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       int **ovector = regExpObj->registerRegexp( reg, u );
       int lastIndex = 0;
       u3 = a1.toString(exec); // replacement string
+      // This is either a loop (if global is set) or a one-way (if not).
       do {
         UString mstr = reg->match(u, lastIndex, &pos, ovector);
         len = mstr.size();
