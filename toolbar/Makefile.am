@@ -11,7 +11,7 @@ data_DATA = back.xpm bottom.xpm contents.xpm \
 	tick.xpm rightjust.xpm start.xpm\
 	top.xpm up.xpm viewmag+.xpm \
 	viewmag-.xpm viewmag.xpm \
-	viewzoom.xpm stop.xpm spellcheck.xpm
+	viewzoom.xpm stop.xpm spellcheck.xpm search.xpm
 
 datadir = $(kde_toolbardir)
 
@@ -27,5 +27,5 @@ EXTRA_DIST = back.xpm bottom.xpm contents.xpm \
 	tick.xpm rightjust.xpm start.xpm\
 	top.xpm up.xpm viewmag+.xpm \
 	viewmag-.xpm viewmag.xpm \
-	viewzoom.xpm stop.xpm spellcheck.xpm
+	viewzoom.xpm stop.xpm spellcheck.xpm search.xpm
 
