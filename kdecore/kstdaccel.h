@@ -160,13 +160,20 @@ public:
    */
   static bool isEqual(QKeyEvent* /*ev*/, int /*key*/);
 
-  static uint key(StdAccel);
+  /**
+   * Return the keybinding for @p accel.
+   */
+  static uint key(StdAccel accel);
 
   static QString action(StdAccel);
   static QString description(StdAccel);
 
-private:
-  static uint defaultKey(StdAccel);
+  /**
+   * @internal
+   * Return the hardcoded default keybinding for @p accel.
+   * This does not take into account the user's configuration.
+   */
+  static uint defaultKey(StdAccel accel);
 };
 
 #endif
