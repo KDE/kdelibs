@@ -2065,6 +2065,8 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KColorButton", "color" );
     kdeMap->insert( "KComboBox", "currentItem" );
     kdeMap->insert( "KDatePicker", "date" );
+    kdeMap->insert( "KDateWidget", "date" );
+    kdeMap->insert( "KDateTimeWidget", "dateTime" );
     kdeMap->insert( "KEditListBox", "currentItem" );
     kdeMap->insert( "KFontCombo", "family" );
     kdeMap->insert( "KFontRequester", "font" );

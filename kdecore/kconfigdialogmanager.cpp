@@ -99,6 +99,8 @@ void KConfigDialogManager::init(bool trackChanges)
 
     changedMap.insert( "KColorButton", SIGNAL(changed(const QColor &)));
     changedMap.insert( "KDatePicker", SIGNAL(dateSelected (QDate)));
+    changedMap.insert( "KDateWidget", SIGNAL(changed (QDate)));
+    changedMap.insert( "KDateTimeWidget", SIGNAL(valueChanged (const QDateTime &)));
     changedMap.insert( "KEditListBox", SIGNAL(changed()));
     changedMap.insert( "KListBox", SIGNAL(selectionChanged()));
     changedMap.insert( "KLineEdit", SIGNAL(textChanged(const QString &)));
