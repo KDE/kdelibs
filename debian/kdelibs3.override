@@ -85,35 +85,6 @@ kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license.gz
 
 # this is a hack in order to provide ssl support via a seperate package
 # and without having to build 2 totally seperate kdelibs packages
-kdelibs3: ldconfig-symlink-referencing-wrong-file usr/lib/libkssl.so.2 -> libkssl.so.2.0.0 instead of libkssl-nossl.so.2.0.0
-kdelibs3: ldconfig-symlink-missing-for-shlib usr/lib/kde2/kio_https-nossl.so kio_https.so
 
 # these are modules
-kdelibs3: shlib-missing-in-control-file kded usr/lib/kded.so
-kdelibs3: shlib-missing-in-control-file ksgistyle usr/lib/ksgistyle.so
-kdelibs3: shlib-missing-in-control-file libkssl usr/lib/libkssl-nossl.so.2.0.0
-kdelibs3: shlib-missing-in-control-file klauncher usr/lib/klauncher.so
-kdelibs3: shlib-missing-in-control-file basicstyle usr/lib/basicstyle.so
-kdelibs3: shlib-missing-in-control-file klegacystyle usr/lib/klegacystyle.so
-kdelibs3: shlib-missing-in-control-file kio_http_cache_cleaner usr/lib/kio_http_cache_cleaner.so
-kdelibs3: shlib-missing-in-control-file kstepstyle usr/lib/kstepstyle.so
-kdelibs3: shlib-missing-in-control-file kjs_html usr/lib/kjs_html.so
-kdelibs3: shlib-missing-in-control-file hcstyle usr/lib/hcstyle.so
-kdelibs3: shlib-missing-in-control-file kbuildsycoca usr/lib/kbuildsycoca.so
-kdelibs3: shlib-missing-in-control-file kstephighcolor usr/lib/kstephighcolor.so
-kdelibs3: shlib-missing-in-control-file kcookiejar usr/lib/kcookiejar.so
-kdelibs3: shlib-missing-in-control-file b3style usr/lib/b3style.so
-kdelibs3: shlib-missing-in-control-file knotify usr/lib/knotify.so
-kdelibs3: shlib-missing-in-control-file dcopserver usr/lib/dcopserver.so
-kdelibs3: shlib-missing-in-control-file libkhtmlimage usr/lib/libkhtmlimage.so
-kdelibs3: shlib-missing-in-control-file kimg_xview usr/lib/kde2/kimg_xview.so
-kdelibs3: shlib-missing-in-control-file kio_file usr/lib/kde2/kio_file.so
-kdelibs3: shlib-missing-in-control-file kio_http usr/lib/kde2/kio_http.so
-kdelibs3: shlib-missing-in-control-file kimg_eps usr/lib/kde2/kimg_eps.so
-kdelibs3: shlib-missing-in-control-file kimg_g3 usr/lib/kde2/kimg_g3.so
-kdelibs3: shlib-missing-in-control-file kimg_ico usr/lib/kde2/kimg_ico.so
-kdelibs3: shlib-missing-in-control-file kimg_tiff usr/lib/kde2/kimg_tiff.so
-kdelibs3: shlib-missing-in-control-file kimg_krl usr/lib/kde2/kimg_krl.so
-kdelibs3: shlib-missing-in-control-file kio_ftp usr/lib/kde2/kio_ftp.so
-kdelibs3: shlib-missing-in-control-file kio_https usr/lib/kde2/kio_https-nossl.so
-kdelibs3: shlib-missing-in-control-file kio_uiserver usr/lib/kio_uiserver.so
+

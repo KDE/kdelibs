@@ -19,7 +19,7 @@ build-stamp:
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
-	./configure $(configkde) --with-distribution="$$version" \
+	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl
 
 	make
@@ -96,7 +96,6 @@ binary-arch:  build
 # libraries not starting with lib are modules
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
 	dh_movefiles -pkdelibs3-dev $$list usr/include/kde usr/lib/lib*.a
-	install -d debian/tmp/usr/share/icons/locolor/16x16/apps/
 	-rm -rf debian/tmp/usr/share/apps/kssl
 	mv debian/tmp/usr/lib/kde2/kio_https.so debian/tmp/usr/lib/kde2/kio_https-nossl.so
 	mv debian/tmp/usr/lib/kde2/kio_https.la debian/tmp/usr/lib/kde2/kio_https-nossl.la
