@@ -50,7 +50,7 @@ char *k_dcgettext (const char* __domainname, const char* __msgid,
 char *k_bindtextdomain (const char* __domainname,
 			const char* __dirname);
 
-#define SYSTEM_MESSAGES "kdelibs"
+static const char * const SYSTEM_MESSAGES = "kdelibs";
 
 static const char *maincatalogue = 0;
 
@@ -789,7 +789,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
 }
 
 /**
- * helper method to read integers
+ * helper function to read integers
  * @param str
  * @param pos the position to start at. It will be updated when we parse it.
  * @return the integer read in the string, or -1 if no string
@@ -1066,7 +1066,7 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime, bool shortfmt, bool 
     .arg( formatTime( pDateTime.time(), includeSeconds ) );
 }
 
-// #### HPB: This will be merged with the method about in KDE 3
+// #### HPB: This will be merged with the method above in KDE 3
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
   return formatDateTime(pDateTime, true);
