@@ -181,7 +181,7 @@ void CupsAddSmb::checkActionStatus()
 			m_status = true;
 			break;
 		case Copy:
-			m_status = (m_buffer.count() == 1);
+			m_status = (m_buffer.count() <= 1);
 			break;
 		case MkDir:
 			m_status = (m_buffer.count() == 1 || m_buffer[1].find("ERRfilexists") != -1);
