@@ -195,6 +195,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
             break;
         case NONE:
             kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
+	    break;
         }
     }
 

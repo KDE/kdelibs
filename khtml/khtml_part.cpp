@@ -933,11 +933,11 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
-  kdDebug( 6050 ) << "slotData: " << data.size() << endl;
+    //kdDebug( 6050 ) << "slotData: " << data.size() << endl;
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
-    kdDebug( 6050 ) << "begin!" << endl;
+      //kdDebug( 6050 ) << "begin!" << endl;
     d->m_bParsing = true;
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
@@ -951,11 +951,11 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 
     // When the first data arrives, the metadata has just been made available
 
-    kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata." << endl;
+    //kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata." << endl;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-    kdDebug() << "SSL in use ? " << d->m_ssl_in_use << endl;
+    //kdDebug() << "SSL in use ? " << d->m_ssl_in_use << endl;
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
-    kdDebug() << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
+    //kdDebug() << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
 
@@ -992,12 +992,12 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
      d->m_workingURL = KURL();
   }
 
-  kdDebug( 6050 ) << "slotRestoreData: " << data.size() << endl;
+  //kdDebug( 6050 ) << "slotRestoreData: " << data.size() << endl;
   write( data.data(), data.size() );
 
   if (data.size() == 0)
   {
-     kdDebug( 6050 ) << "slotRestoreData: <<end of data>>" << endl;
+      //kdDebug( 6050 ) << "slotRestoreData: <<end of data>>" << endl;
      // End of data.
      if ( d->m_bParsing )
      {
@@ -1018,7 +1018,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     checkCompleted();
     return;
   }
-  kdDebug( 6050 ) << "slotFinished" << endl;
+  //kdDebug( 6050 ) << "slotFinished" << endl;
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
@@ -1216,7 +1216,7 @@ void KHTMLPart::checkCompleted()
       return;
 
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
-  kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
+  //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
   if ( requests > 0 )
     return;
 
@@ -1233,7 +1233,7 @@ void KHTMLPart::checkCompleted()
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
   }
 
-  kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
   if ( !d->m_redirectURL.isEmpty() )
   {
     return; // We don't emit completed as long as we have a redirection pending.
@@ -1304,7 +1304,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 
 void KHTMLPart::slotRedirect()
 {
-  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
+    //kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
 
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
@@ -1315,7 +1315,7 @@ void KHTMLPart::slotRedirect()
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
 {
   // the slave told us that we got redirected
-  kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
+    //kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
 
   emit d->m_extension->setLocationBarURL( url.prettyURL() );
 
@@ -1628,8 +1628,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
   KURL u = completeURL( url );
   QString com;
 
-  if ( KHTMLFactory::vLinks()->contains( u ) )
-      kdDebug( 6000 ) << "Ah, " << u.prettyURL() << " has been visited some time ago" << endl;
+//   if ( KHTMLFactory::vLinks()->contains( u ) )
+//       kdDebug( 6000 ) << "Ah, " << u.prettyURL() << " has been visited some time ago" << endl;
 
   KMimeType::Ptr typ = KMimeType::findByURL( u );
 
@@ -1742,7 +1742,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   KURL cURL = completeURL( url );
 
-  kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
+  //kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
 
   KURL::List *vlinks = KHTMLFactory::vLinks();
   if ( !vlinks->contains( cURL ) )
@@ -1838,23 +1838,23 @@ void KHTMLPart::slotSaveDocument()
 
 void KHTMLPart::slotSecurity()
 {
-  kdDebug( 6050 ) << "Meta Data:" << endl
-                  << d->m_ssl_peer_cert_subject
-                  << endl
-                  << d->m_ssl_peer_cert_issuer
-                  << endl
-                  << d->m_ssl_cipher
-                  << endl
-                  << d->m_ssl_cipher_desc
-                  << endl
-                  << d->m_ssl_cipher_version
-                  << endl
-                  << d->m_ssl_good_from
-                  << endl
-                  << d->m_ssl_good_until
-                  << endl
-                  << d->m_ssl_cert_state
-                  << endl;
+//   kdDebug( 6050 ) << "Meta Data:" << endl
+//                   << d->m_ssl_peer_cert_subject
+//                   << endl
+//                   << d->m_ssl_peer_cert_issuer
+//                   << endl
+//                   << d->m_ssl_cipher
+//                   << endl
+//                   << d->m_ssl_cipher_desc
+//                   << endl
+//                   << d->m_ssl_cipher_version
+//                   << endl
+//                   << d->m_ssl_good_from
+//                   << endl
+//                   << d->m_ssl_good_until
+//                   << endl
+//                   << d->m_ssl_cert_state
+//                   << endl;
 
   KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget());
   if (d->m_ssl_in_use) {
@@ -1943,14 +1943,14 @@ void KHTMLPart::updateActions()
 bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                               const QStringList &params )
 {
-  kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
+//  kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
   if (url.isEmpty())
     return false;
   FrameIt it = d->m_frames.find( frameName );
   if ( it == d->m_frames.end() )
   {
     khtml::ChildFrame child;
-    kdDebug( 6050 ) << "inserting new frame into frame map" << endl;
+//    kdDebug( 6050 ) << "inserting new frame into frame map" << endl;
     child.m_name = frameName;
     it = d->m_frames.append( child );
   }
@@ -1986,7 +1986,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 {
   if ( child->m_bPreloaded )
   {
-      kdDebug() << "requestObject preload" << endl;
+//      kdDebug() << "requestObject preload" << endl;
     if ( child->m_frame && child->m_part )
       child->m_frame->setWidget( child->m_part->widget() );
 
@@ -2021,7 +2021,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
 {
-  kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
+//  kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
 
   // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
   // by an emitting frame part (emit openURLRequest( blahurl, ... ) . A few lines below we delete the part
@@ -2055,8 +2055,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
     if ( child->m_bFrame )
       partManager()->addPart( part );
-    else
-        kdDebug() << "AH! NO FRAME!!!!!" << endl;
+//     else
+//         kdDebug() << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
 
@@ -2113,7 +2113,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
-  kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
+//  kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
   return child->m_part->openURL( url );
 }
 
@@ -2421,7 +2421,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
-  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
+//  kdDebug( 6050 ) << "KHTMLPart::saveState saving URL " << m_url.url() << endl;
 
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
@@ -2503,9 +2503,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   d->m_bComplete = false;
 
-  kdDebug( 6050 ) << "restoreStakte() docState.count() = " << docState.count() << endl;
-  kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
-  kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
+//   kdDebug( 6050 ) << "restoreStakte() docState.count() = " << docState.count() << endl;
+//   kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
+//   kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
   if (d->m_cacheId == old_cacheId)
   {
@@ -2530,7 +2530,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     {
       khtml::ChildFrame *child = &(*fIt);
 
-      kdDebug( 6050 ) <<  *fNameIt  << " ---- " <<  *fServiceTypeIt << endl;
+//      kdDebug( 6050 ) <<  *fNameIt  << " ---- " <<  *fServiceTypeIt << endl;
 
       if ( child->m_name != *fNameIt || child->m_serviceType != *fServiceTypeIt )
       {
@@ -2585,7 +2585,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       newChild.m_name = *fNameIt;
       newChild.m_serviceName = *fServiceNameIt;
 
-      kdDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt << endl;
+//      kdDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt << endl;
 
       FrameIt childFrame = d->m_frames.append( newChild );
 
@@ -2610,7 +2610,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.yOffset = yOffset;
     args.docState = docState;
     d->m_extension->setURLArgs( args );
-    kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
+//    kdDebug( 6050 ) << "in restoreState : calling openURL for " << u.url() << endl;
     if (!KHTMLPageCache::self()->isValid(d->m_cacheId))
        openURL( u );
     else
@@ -2879,7 +2879,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
               khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
               if(r) {
                   drag = new QImageDrag( r->pixmap().convertToImage() , d->m_view->viewport() );
-                  kdDebug(0) << " creating image drag " << endl;
+//                  kdDebug(0) << " creating image drag " << endl;
                   p = KMimeType::mimeType("image/*")->pixmap(KIcon::Desktop);
               }
           }
@@ -2887,10 +2887,10 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     if ( !p.isNull() )
       drag->setPixmap(p);
-    else
-      kdDebug( 6000 ) << "null pixmap" << endl;
+//     else
+//       kdDebug( 6000 ) << "null pixmap" << endl;
 
-    kdDebug(0) << "drag = " << drag;
+//    kdDebug(0) << "drag = " << drag;
 
     stopAutoScroll();
     if(drag)
@@ -3019,7 +3019,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
        url = splitUrlTarget(d->m_strSelectedURL);
        target = "_blank";
      }
-     kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
+//     kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
 
      // Visual action effect, over text links
      if ( !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE )
@@ -3033,7 +3033,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
        int vx, vy;
        view()->contentsToViewport( x, y, vx, vy );
        QRect r ( vx, vy, firstSlave->m_width, firstSlave->m_height );
-       kdDebug( 6000 ) << " x=" << r.x() << " y=" << r.y() << " width=" << r.width() << " height=" << r.height() << endl;
+//       kdDebug( 6000 ) << " x=" << r.x() << " y=" << r.y() << " width=" << r.width() << " height=" << r.height() << endl;
        KIconEffect::visualActivate( view()->viewport(), r );
      }
      else if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
@@ -3301,31 +3301,39 @@ bool KHTMLPart::checkLinkSecurity(KURL linkURL)
 
 void KHTMLPart::slotPartRemoved( KParts::Part *part )
 {
-    kdDebug(6050) << "KHTMLPart::slotPartRemoved " << part << endl;
+//    kdDebug(6050) << "KHTMLPart::slotPartRemoved " << part << endl;
     if ( part == d->m_activeFrame )
         d->m_activeFrame = 0L;
 }
 
 void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 {
-    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged part=" << part << endl;
+//    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged part=" << part << endl;
     if ( part == this )
     {
         kdDebug() << "strange error! we activated ourselves" << endl;
         assert( false );
         return;
     }
-    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged d->m_activeFrame=" << d->m_activeFrame << endl;
+//    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged d->m_activeFrame=" << d->m_activeFrame << endl;
     if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
         QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
-        frame->setLineWidth( frame->style().defaultFrameWidth() );
+        if (frame->frameStyle() != QFrame::NoFrame)
+        {
+           frame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken);
+           frame->repaint();
+        }
     }
     d->m_activeFrame = part;
     if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
         QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
-        frame->setLineWidth( frame->lineWidth() + 2 );
+        if (frame->frameStyle() != QFrame::NoFrame)
+        {
+           frame->setFrameStyle( QFrame::StyledPanel | QFrame::Plain);
+           frame->repaint();
+        }
         kdDebug(6050) << "new active frame " << d->m_activeFrame << endl;
     }
     updateActions();
