@@ -1840,6 +1840,16 @@ bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs 
   return true;
 }
 
+void KHTMLPart::setDNDEnabled( bool b )
+{
+  d->m_view->setDNDEnabled( b ); 
+}
+
+bool KHTMLPart::dndEnabled() const
+{
+  return d->m_view->dndEnabled(); 
+} 
+
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {

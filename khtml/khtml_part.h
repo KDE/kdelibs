@@ -118,16 +118,20 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class khtml::RenderPartObject;
   friend class KJS::WindowFunc;
   friend class KHTMLPartBrowserExtension;
+  Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript );
+  Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE enableJava );
+  Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE autoloadImages );
+  Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled );
 public:
   /**
    * Constructs a new KHTMLPart.
-   * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data 
+   * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data
    * (DOM document), and the KHTMLView, derived from @ref QScrollview, in which the document content is
-   * rendered in. You can specify two different parent objects for a KHTMLPart, one parent for the 
-   * KHTMLPart document and on parent for the KHTMLView. If the second @p parent argument is 0L, then 
+   * rendered in. You can specify two different parent objects for a KHTMLPart, one parent for the
+   * KHTMLPart document and on parent for the KHTMLView. If the second @p parent argument is 0L, then
    * @p parentWidget is used as parent for both objects, the part and the view.
    */
-  KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0, 
+  KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0,
              QObject *parent = 0, const char *name = 0 );
 
   KHTMLPart( KHTMLView *view, QObject *parent = 0, const char *name = 0 );
@@ -174,6 +178,9 @@ public:
 
   KJSProxy *jScript();
   void executeScript( const QString &script );
+
+  void setDNDEnabled( bool b );
+  bool dndEnabled() const;
 
   /**
    * Enable/disable Java applet support.
