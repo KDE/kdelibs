@@ -12,7 +12,7 @@ kdesu_HEADERS = defaults.h client.h process.h kdesu_pty.h kcookie.h su.h ssh.h s
 
 install-data-local:
 	-rm -f $(DESTDIR)$(includedir)/kdesu/pty.h
-	ln -s $(DESTDIR)$(includedir)/kdesu/kdesu_pty.h $(DESTDIR)$(includedir)/kdesu/pty.h
+	ln -s kdesu_pty.h $(DESTDIR)$(includedir)/kdesu/pty.h
 uninstall-local:
 	-rm -f $(DESTDIR)$(includedir)/kdesu/pty.h
 
