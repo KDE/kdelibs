@@ -643,7 +643,8 @@ bool KHTMLPart::openURL( const KURL &url )
     m_url = url;
     emit started( 0L );
 
-    gotoAnchor( url.encodedHtmlRef() );
+    if ( !gotoAnchor( url.encodedHtmlRef()) )
+       gotoAnchor( url.htmlRef() );
 
     d->m_bComplete = true;
     d->m_doc->setParsing(false);
@@ -1547,7 +1548,8 @@ void KHTMLPart::slotFinishedParsing()
   d->m_view->restoreScrollBar();
 
   if ( !m_url.encodedHtmlRef().isEmpty() )
-    gotoAnchor( m_url.encodedHtmlRef() );
+    if ( !gotoAnchor( m_url.encodedHtmlRef()) )
+       gotoAnchor( m_url.htmlRef() );
 
   checkCompleted();
 }
@@ -1856,7 +1858,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   anchors->deref();
 
   if(!n) {
-      kdDebug(6050) << "KHTMLPart::gotoAnchor no node found" << endl;
+      kdDebug(6050) << "KHTMLPart::gotoAnchor node '" << name << "' not found" << endl;
       return false;
   }
 
