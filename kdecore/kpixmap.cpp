@@ -27,7 +27,6 @@
 #include <qbitmap.h>
 #include <qcolor.h>
 
-#include <dither.h>
 #include <stdlib.h>
 #include <kstddirs.h>
 #include "kpixmap.h"
