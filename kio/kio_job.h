@@ -17,6 +17,19 @@ class KIOCopyProgressDlg;
 class QSocketNotifier;
 class QDialog;
 
+/** 
+* This is main class for doing IO operations.
+*
+* Use this class if you need to do any file transfer using various transfer protocols.
+*
+* Simply create new instance of this class, connect your custom slots to KIOJob signals and then call methods like copy, get, mount etc.
+*
+* KIOJob by default shows progress dialog for these opreations ( this feature can be turned off ).
+*
+* KIOJob emits signals for almost all events that happen during transfer. Utilize these for more sophisticated control over transfer. The most important are @ref #sigFinished and @ref #sigError
+*
+* @short A main class for doing IO operations.
+*/ 
 class KIOJob : public QObject, public IOJob
 {
   Q_OBJECT
@@ -32,9 +45,47 @@ public:
    * to turn it off at all.
    */
   void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
+
+
+  /**
+   * Enable or disable progress dialogs. Dialogs are enabled per default.
+   * Call this before you call any other command ( like copy etc. )
+   * @see #showGUI #hideGUI
+   */
   void enableGUI( bool _mode ) { m_bGUI = _mode; }
-  void setCacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
+
+  /**
+   * This flags determines, whether progress dialogs will start iconified or no.
+   * Default value is normal mode ( not iconified ).
+   * Call this before you call any other command ( like copy etc. )
+   * @see #iconifyGUI
+   */
+  void startIconified( bool _mode ) { m_bStartIconified = _mode; }
   
+  /**
+   * Allows hiding dialogs from the program. Doesn't care whether GUI is enabled.
+   */
+  void hideGUI();
+
+  /**
+   * Allows showing dialogs from the program. Doesn't care whether GUI is enabled.
+   */
+  void showGUI();
+
+  /**
+   * Allows iconifying dialogs from the program. Doesn't care whether GUI is enabled.
+   */
+  void iconifyGUI();
+
+  /**
+   * This flags determines, whether KIOJob should cache slaves into the pool.
+   * Default mode is yes - cache to pool.
+   * When slave is done it is cached for next use. This also means, that it is kept in memory.
+   *
+   * Set this flag to false if you don't want this behaviour.
+   */
+  void cacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
+
   virtual bool copy( list<string>& _source, const char *_dest );
   virtual bool copy( QStrList& _source, const char *_dest );
   virtual bool copy( const char* _source, const char *_dest );
@@ -86,9 +137,52 @@ public:
   /**
    * Stops the current action ( that means kills any running servers associated with
    * this job and deletes itself ignoring wether auto-delete mode is on or off.
+   * @param quiet whether to emit sigCanceled or not. Default is yes.
    */
-  virtual void kill();
+  virtual void kill( bool quiet = false );
   
+  /**
+   * Set this flag if you want slaves to add extension .PART to all files during transfer.
+   * This extension will be removed when file is transfered.
+   *
+   * This is a better way to discern finished transfers in case of transfer errors.
+   * Default value is false - don't add extension.
+   *
+   * NOT YET IMPLEMENTED !!!
+   */
+  static void setMarkPartial( bool _mode );
+  
+  /**
+   * Sets timeout for connecting to the server.
+   * This applies to ftp and http connections.
+   * If after this timeout slave still can't connect, it's stopped with alarm command.
+   *
+   * NOT YET IMPLEMENTED !!!
+   */
+  static void setConnectTimeout( int _timeout );
+
+  /**
+   * Sets timeout for read operations. This applies to ftp and http connections.
+   * If after this timeout read doesn't finish reading packet, read operation is
+   * stopped with alarm command and starts reading again.
+   * This value is used if remote server supports resuming.
+   * For opposite case see @ref #setReadTimeoutNoResume
+   *
+   * NOT YET IMPLEMENTED !!!
+   */
+  static void setReadTimeout( int _timeout );
+
+  /**
+   * Sets timeout for read operations. This applies to ftp and http connections.
+   * If after this timeout read doesn't finish reading packet, read operation is
+   * stopped with alarm command and starts reading again.
+   * This value is used if remote server does not support resuming.
+   * For opposite case see @ref #setReadTimeout
+   *
+   * NOT YET IMPLEMENTED !!!
+   */
+  static void setReadTimeoutNoResume( int _timeout );
+
   /**
    * Call this before you use any other function of this class and before you create
    * an instance of this class.
@@ -99,12 +193,39 @@ public:
   static QString findDeviceMountPoint( const char *_device, const char *_file = "/etc/mtab" );
 
 signals:
+
   void sigError( int id, int _errid, const char *_txt );
+
+  /**
+   * This job has finished
+   * @param id is identification number for this job ( Needed if you use more jobs )
+   */
   void sigFinished( int id );
+
+  /**
+   * This job has been canceled
+   */
+  void sigCanceled( int id );
+
   void sigListEntry( int id, UDSEntry& _entry );
   void sigMimeType( int id, const char *_mimetype );
+
+  /**
+   * The saved file has been renamed
+   * @param _new is a new name of saved file ( Usually from rename dialog )
+   */
   void sigRenamed( int id, const char *_new );
+
+  /**
+   * Emited when the copying has been started
+   * @param _from is a source name
+   * @param _to is a destination name
+   */
   void sigCopying(int id, const char *_from, const char *_to );
+
+  /**
+   * This job can / cannot be resumed
+   */
   void sigCanResume( int id, bool _resume );
 
   /**
@@ -116,19 +237,46 @@ signals:
   void sigIsDirectory( int id );
   void sigIsFile( int id );
   
+  /**
+   * Current speed of transfer in bytes per second
+   */
   void sigSpeed( int id, unsigned long _bytes_per_second );
+
+  /**
+   * Total size of transfer ( counted recursively in case of directories )
+   */
   void sigTotalSize( int id, unsigned long _bytes );
+
+  /**
+   * Total number of files in this transfer ( counted recursively )
+   */
   void sigTotalFiles( int id, unsigned long _files );
+
+  /**
+   * Total number of directories in this transfer ( counted recursively )
+   */
   void sigTotalDirs( int id, unsigned long _dirs );
+
+  /**
+   * Already processed size in bytes
+   */
   void sigProcessedSize( int id, unsigned long _bytes );
+
+  /**
+   * Number of already transfered files
+   */
   void sigProcessedFiles( int id, unsigned long _files );
+
+  /**
+   * Number of already transfered directories
+   */
   void sigProcessedDirs( int id, unsigned long _dirs );
 
 protected slots:
   /**
    * Connected to the socket notifier
    *
-   * @ref #see m_pNotifier
+   * @ref #m_pNotifier
    */
   virtual void slotDispatch( int );
 
@@ -159,6 +307,8 @@ protected:
   
   bool m_bAutoDelete;
   bool m_bGUI;
+  bool m_bStartIconified;
+
   bool m_bCacheToPool;
   
   KIOCopyProgressDlg* m_pCopyProgressDlg;
@@ -167,6 +317,14 @@ protected:
   Slave* m_pSlave;
   QSocketNotifier* m_pNotifier;
   string m_strSlaveProtocol;
+
+  unsigned long m_iTotalSize;
+  unsigned long m_iTotalFiles;
+  unsigned long m_iTotalDirs;
+  unsigned long m_iProcessedSize;
+  bool m_bCanResume;
+  string m_strFrom;
+  string m_strTo;
 
   /**
    * Used in @ref #preget

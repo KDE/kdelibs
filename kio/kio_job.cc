@@ -8,6 +8,7 @@
 
 #include <k2url.h>
 #include <kapp.h>
+#include <kwm.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -41,7 +42,13 @@ KIOJob::KIOJob() : QObject(), IOJob( 0L )
   
   m_bAutoDelete = true;
   m_bGUI = true;
+  m_bStartIconified = false;
   m_bCacheToPool = true;
+
+  m_iTotalSize = 0;
+  m_iTotalFiles = 0;
+  m_iTotalDirs = 0;
+  m_iProcessedSize = 0;
 
   m_pCopyProgressDlg = 0L;
   m_pDialog = 0L;
@@ -79,8 +86,11 @@ KIOJob* KIOJob::find( int _id )
   return it->second;
 }
 
-void KIOJob::kill()
+void KIOJob::kill( bool quiet )
 {
+  if ( !quiet )
+    emit sigCanceled( m_id );
+
   clean();
   
   // Time to die ...
@@ -121,6 +131,42 @@ void KIOJob::clean()
     m_pSlave = 0L;
   }   
 }
+
+
+// close progress dialog if it exists
+void KIOJob::hideGUI() {
+  if ( m_pCopyProgressDlg ){
+    delete m_pCopyProgressDlg;
+    m_pCopyProgressDlg = 0L;
+    m_bGUI = false;
+  }
+}
+
+
+// open progress dialog if it exists, otherwise create it
+void KIOJob::showGUI() {
+  if (! m_pCopyProgressDlg ){
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
+
+    m_pCopyProgressDlg->copyingFile( m_strFrom.c_str(), m_strTo.c_str() );
+    m_pCopyProgressDlg->totalSize( m_iTotalSize );
+    m_pCopyProgressDlg->totalFiles( m_iTotalFiles );
+    m_pCopyProgressDlg->totalDirs( m_iTotalDirs );
+    m_pCopyProgressDlg->processedSize( m_iProcessedSize );
+  }
+
+  m_bGUI = true;
+}
+
+
+// iconify progress dialog if it exists
+void KIOJob::iconifyGUI() {
+  if ( !m_pCopyProgressDlg )
+    return;
+
+  KWM::setIconify( m_pCopyProgressDlg->winId(), true );
+}
+
 
 bool KIOJob::mount( bool _ro, const char *_fstype, const char* _dev, const char *_point )
 {
@@ -183,8 +229,7 @@ bool KIOJob::copy( const char *_source, const char *_dest )
   
   if ( m_bGUI )
   {
-    m_pCopyProgressDlg = new KIOCopyProgressDlg( this );
-    m_pCopyProgressDlg->show();
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
   }
   
   return IOJob::copy( _source, _dest );
@@ -238,8 +283,7 @@ bool KIOJob::copy( list<string>& _source, const char *_dest )
   
   if ( m_bGUI )
   {
-    m_pCopyProgressDlg = new KIOCopyProgressDlg( this );
-    m_pCopyProgressDlg->show();
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
   }
   
   return IOJob::copy( _source, _dest );
@@ -266,8 +310,7 @@ bool KIOJob::testDir( const char *_url )
 
   if ( m_bGUI )
   {
-    m_pCopyProgressDlg = new KIOCopyProgressDlg( this );
-    m_pCopyProgressDlg->show();
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
   }
 
   return IOJob::testDir( _url );
@@ -294,8 +337,7 @@ bool KIOJob::get( const char *_url )
 
   if ( m_bGUI )
   {
-    m_pCopyProgressDlg = new KIOCopyProgressDlg( this );
-    m_pCopyProgressDlg->show();
+    m_pCopyProgressDlg = new KIOCopyProgressDlg( this, m_bStartIconified );
   }
 
   return IOJob::get( _url );
@@ -497,7 +539,9 @@ void KIOJob::slotCanResume( bool _resume )
 
 void KIOJob::slotTotalSize( unsigned long _bytes )
 {
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
+  m_iTotalSize = _bytes;
+  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE || m_cmd == CMD_GET )
+       && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalSize( _bytes );
   
   emit sigTotalSize( m_id, _bytes );
@@ -506,6 +550,7 @@ void KIOJob::slotTotalSize( unsigned long _bytes )
 
 void KIOJob::slotTotalFiles( unsigned long _files )
 {
+  m_iTotalFiles = _files;
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalFiles( _files );
 
@@ -515,6 +560,7 @@ void KIOJob::slotTotalFiles( unsigned long _files )
 
 void KIOJob::slotTotalDirs( unsigned long _dirs )
 {
+  m_iTotalDirs = _dirs;
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalDirs( _dirs );
 
@@ -524,7 +570,9 @@ void KIOJob::slotTotalDirs( unsigned long _dirs )
 
 void KIOJob::slotProcessedSize( unsigned long _bytes )
 {
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
+  m_iProcessedSize = _bytes;
+  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE || m_cmd == CMD_GET )
+       && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedSize( _bytes );
 
   emit sigProcessedSize( m_id, _bytes );
@@ -559,7 +607,8 @@ void KIOJob::slotScanningDir( const char *_dir )
 
 void KIOJob::slotSpeed( unsigned long _bytes_per_second )
 {
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_GET ) && m_pCopyProgressDlg )
+  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE || m_cmd == CMD_GET )
+       && m_pCopyProgressDlg )
     m_pCopyProgressDlg->speed( _bytes_per_second );
 
   emit sigSpeed( m_id, _bytes_per_second );
@@ -568,7 +617,10 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second )
 
 void KIOJob::slotCopyingFile( const char *_from, const char *_to )
 {
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  m_strFrom = _from;
+  m_strTo = _to;
+
+  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE ) && m_pCopyProgressDlg )
     m_pCopyProgressDlg->copyingFile( _from, _to );
 
   emit sigCopying( m_id, _from, _to );
@@ -612,6 +664,8 @@ void KIOJob::slotRedirection( const char *_url )
 
 void KIOJob::slotCancel()
 {
+  emit sigCanceled( m_id );
+
   clean();
   
   if ( m_bAutoDelete )
@@ -709,6 +763,27 @@ QDialog* KIOJob::createDialog( const char *_text )
   return dlg;
 }
 
+
+void KIOJob::setConnectTimeout( int _timeout ) {
+  ProtocolManager::self()->setConnectTimeout( _timeout );
+}
+
+
+void KIOJob::setReadTimeout( int _timeout ) {
+  ProtocolManager::self()->setReadTimeout( _timeout );
+}
+
+
+void KIOJob::setReadTimeoutNoResume( int _timeout ) {
+  ProtocolManager::self()->setReadTimeoutNoResume( _timeout );
+}
+
+
+void KIOJob::setMarkPartial( bool _mode ) {
+  ProtocolManager::self()->setMarkPartial( _mode );
+}
+
+
 /***************************************************************
  *
  * KIOSlavePool
@@ -764,7 +839,7 @@ KIOSlavePool* KIOSlavePool::self()
 
 /***************************************************************
  *
- * Utilitie functions
+ * Utility functions
  *
  ***************************************************************/
 
