@@ -896,6 +896,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
   lineNum = new KIntNumInput( 1, page);
   lineNum->setLabel(i18n("Goto Line:"), AlignVCenter | AlignLeft);
 //  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
+  lineNum->setRange(1, 99999, 1, false);
   topLayout->addWidget( lineNum );
 
   topLayout->addStretch(10);
