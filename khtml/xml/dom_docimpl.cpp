@@ -45,6 +45,7 @@
 
 #include "rendering/render_root.h"
 #include "rendering/render_replaced.h"
+#include "rendering/render_arena.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -188,7 +189,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     return doc;
 }
 
-CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl *media,
+CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* /*title*/, DOMStringImpl *media,
                                                               int &/*exceptioncode*/)
 {
     // ### TODO : title should be set, and media could have wrong syntax, in which case we should
@@ -287,6 +288,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_windowEventListeners.setAutoDelete(true);
 
     m_inStyleRecalc = false;
+    m_pendingStylesheets = 0;
 }
 
 DocumentImpl::~DocumentImpl()
@@ -588,7 +590,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 // form elements
 // ### FIXME: we need a way to set form dependency after we have made the form elements
     case ID_FORM:
-            n = new HTMLFormElementImpl(docPtr());
+            n = new HTMLFormElementImpl(docPtr(), false);
         break;
     case ID_BUTTON:
             n = new HTMLButtonElementImpl(docPtr());
@@ -649,8 +651,6 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 
 // formatting elements (block)
     case ID_DIV:
-        n = new HTMLDivElementImpl(docPtr());
-        break;
     case ID_BLOCKQUOTE:
     case ID_P:
     case ID_H1:
@@ -1455,6 +1455,11 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(this);
         d->setCookie(content);
     }
+    else if (strcasecmp(equiv, "default-style") == 0) {
+        // HTML 4.0 14.3.2
+        m_preferredStylesheetSet = content;
+        updateStyleSelector();
+    }
 }
 
 bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent *ev )
@@ -1744,6 +1749,22 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
     return m_styleSheets;
 }
 
+DOMString DocumentImpl::selectedStylesheetSet() const
+{
+    if (!view()) return DOMString();
+
+    return view()->part()->d->m_sheetUsed;
+}
+
+void DocumentImpl::setSelectedStylesheetSet(const DOMString& s)
+{
+    // this code is evil
+    if (view() && view()->part()->d->m_sheetUsed != s.string()) {
+        view()->part()->d->m_sheetUsed = s.string();
+        updateStyleSelector();
+    }
+}
+
 void DocumentImpl::updateStyleSelector()
 {
     recalcStyleSelector();
@@ -1961,7 +1982,7 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
     }
 }
 
-CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl */*elt*/, DOMStringImpl */*pseudoElt*/)
+CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl* /*elt*/, DOMStringImpl* /*pseudoElt*/)
 {
     return 0; // ###
 }

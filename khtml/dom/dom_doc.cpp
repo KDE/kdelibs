@@ -35,7 +35,7 @@
 
 #include <kdebug.h>
 
-using namespace DOM;
+namespace DOM {
 
 DOMImplementation::DOMImplementation()
 {
@@ -388,7 +388,7 @@ AbstractView Document::defaultView() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return ((DocumentImpl *)impl)->defaultView();
+    return static_cast<DocumentImpl*>(impl)->defaultView();
 }
 
 StyleSheetList Document::styleSheets() const
@@ -396,7 +396,31 @@ StyleSheetList Document::styleSheets() const
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    return ((DocumentImpl *)impl)->styleSheets();
+    return static_cast<DocumentImpl*>(impl)->styleSheets();
+}
+
+DOMString Document::preferredStylesheetSet()
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<DocumentImpl*>(impl)->preferredStylesheetSet();
+}
+
+DOMString Document::selectedStylesheetSet()
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<DocumentImpl*>(impl)->selectedStylesheetSet();
+}
+
+void Document::setSelectedStylesheetSet(const DOMString& s)
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    static_cast<DocumentImpl*>(impl)->setSelectedStylesheetSet(s);
 }
 
 
@@ -551,3 +575,4 @@ DOMString DocumentType::internalSubset() const
     return static_cast<DocumentTypeImpl*>(impl)->internalSubset();
 }
 
+} // namespace

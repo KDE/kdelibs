@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,8 +21,8 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
+
 #ifndef _DOM_DocumentImpl_h_
 #define _DOM_DocumentImpl_h_
 
@@ -48,6 +49,7 @@ namespace khtml {
     class CSSStyleSelector;
     class DocLoader;
     class CSSStyleSelectorList;
+    class RenderArena;
 }
 
 namespace DOM {
@@ -293,6 +295,11 @@ public:
 
     StyleSheetListImpl* styleSheets();
 
+    DOMString preferredStylesheetSet() const { return m_preferredStylesheetSet; }
+    DOMString selectedStylesheetSet() const;
+    void setSelectedStylesheetSet(const DOMString&);
+    void setPreferredStylesheetSet(const DOMString& s) { m_preferredStylesheetSet = s; }
+
     QStringList availableStyleSheets() const;
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
@@ -434,7 +441,10 @@ protected:
     bool m_inStyleRecalc;
 
     DOMString m_title;
+    DOMString m_preferredStylesheetSet;
+
     int m_decoderMibEnum;
+    int m_pendingStylesheets;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

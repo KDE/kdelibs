@@ -744,6 +744,15 @@ public:
     StyleSheetList styleSheets() const;
 
     /**
+     * CSS3 mechanism for selecting alternate stylesheets using the DOM.
+     * Might change without further notice.
+     */
+
+    DOMString preferredStylesheetSet();
+    DOMString selectedStylesheetSet();
+    void setSelectedStylesheetSet(const DOMString& aString);
+
+    /**
      * @return The KHTML view widget of this document.
      */
     KHTMLView *view() const;
