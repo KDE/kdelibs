@@ -4,4 +4,4 @@ Type=MimeType
 MimeType=application/x-deb
 Icon=deb
 Patterns=*.deb;*.DEB;
-Comment=Debian Package - AR Archive format
+Comment=Debian Package
