@@ -903,6 +903,16 @@ void KMD5::hexDigest(QCString& s)
             m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
 }
 
+QCString KMD5::base64Digest()
+{
+    QByteArray ba(16);
+
+    finalize();
+    memcpy(ba.data(), m_digest, 16);
+    return KCodecs::base64Encode(ba);
+}
+
+
 void KMD5::init()
 {
     d = 0;

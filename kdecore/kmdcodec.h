@@ -497,7 +497,7 @@ public:
 
   /**
    * Returns the value of the calculated message digest in
-   * a hexcidecimal representation.
+   * a hexadecimal representation.
    */
   QCString hexDigest ();
 
@@ -505,6 +505,12 @@ public:
    * @overload
    */
   void hexDigest(QCString&);
+
+  /**
+   * Returns the value of the calculated message digest in
+   * a base64-encoded representation.
+   */
+  QCString base64Digest ();
 
   /**
    * returns true if the calculated digest for the given
