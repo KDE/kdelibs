@@ -6,4 +6,4 @@ while(<>)
 }
 printf ("# DELETE UseProxy\n");
 $proxytype = $useproxy ? ($usepac ? 2 : 1) : 0;
-print "ProxyType=$proxytype\n";
+print "ProxyType=$proxytype\n" if $proxytype;
