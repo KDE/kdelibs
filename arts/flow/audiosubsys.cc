@@ -232,13 +232,7 @@ int AudioSubSystem::open()
 	 */
 	int device_caps;
 	if(ioctl(audio_fd,SNDCTL_DSP_GETCAPS,&device_caps) == -1)
-	{
-		_error = "SNDCTL_DSP_GETCAPS failed - ";
-		_error += strerror(errno);
-
-		close();
-		return -1;
-	}
+            device_caps=0;
 
 	artsdebug("device capabilities: ");
 	artsdebug("revision%d ",device_caps & DSP_CAP_REVISION);
