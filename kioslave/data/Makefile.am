@@ -4,9 +4,6 @@ kde_module_LTLIBRARIES = kio_data.la
 
 INCLUDES = $(all_includes)
 
-
-LDFLAGS =   
-
 kio_data_la_METASOURCES=AUTO
 
 kio_data_la_SOURCES = data.cpp 
