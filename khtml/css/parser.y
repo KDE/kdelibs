@@ -117,8 +117,12 @@ static int cssyylex( YYSTYPE *yylval ) {
 %expect 12
 
 %token S SGML_CD
+
 %token INCLUDES
 %token DASHMATCH
+%token BEGINSWITH
+%token ENDSWITH
+%token CONTAINS
 
 %token <string> STRING
 
@@ -140,21 +144,22 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %token IMPORTANT_SYM
 
+%token <val> QEMS
 %token <val> EMS
 %token <val> EXS
-%token <val> PXS,
-%token <val> CMS,
-%token <val> MMS,
-%token <val> INS,
-%token <val> PTS,
-%token <val> PCS,
-%token <val> DEGS,
-%token <val> RADS,
-%token <val> GRADS,
+%token <val> PXS
+%token <val> CMS
+%token <val> MMS
+%token <val> INS
+%token <val> PTS
+%token <val> PCS
+%token <val> DEGS
+%token <val> RADS
+%token <val> GRADS
 %token <val> MSECS
-%token <val> SECS,
-%token <val> HERZ,
-%token <val> KHERZ,
+%token <val> SECS
+%token <val> HERZ
+%token <val> KHERZ
 %token <string> DIMEN
 %token <val> PERCENTAGE
 %token <val> NUMBER
@@ -619,7 +624,16 @@ match:
 	$$ = CSSSelector::List;
     }
     | DASHMATCH {
-	$$ = CSSSelector::Hyphen; /* ### ??? */
+	$$ = CSSSelector::Hyphen;
+    }
+    | BEGINSWITH {
+	$$ = CSSSelector::Begin;
+    }
+    | ENDSWITH {
+	$$ = CSSSelector::End;
+    }
+    | CONTAINS {
+	$$ = CSSSelector::Contain;
     }
     ;
 
@@ -804,6 +818,7 @@ unary_term:
   | HERZ maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_HZ; }
   | KHERZ maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_KHZ; }
   | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
+  | QEMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = Value::Q_EMS; }
   | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
   | DIMEN maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_DIMENSION }
     ;

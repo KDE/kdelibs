@@ -30,6 +30,9 @@ range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|
 "-->"                   {yyTok = SGML_CD; return yyTok;}
 "~="                    {yyTok = INCLUDES; return yyTok;}
 "|="                    {yyTok = DASHMATCH; return yyTok;}
+"^="                    {yyTok = BEGINSWITH; return yyTok;}
+"$="                    {yyTok = ENDSWITH; return yyTok;}
+"*="                    {yyTok = CONTAINS; return yyTok;}
 
 {string}                {yyTok = STRING; return yyTok;}
 
@@ -49,6 +52,7 @@ range           \?{1,6}|{h}(\?{0,5}|{h}(\?{0,4}|{h}(\?{0,3}|{h}(\?{0,2}|{h}(\??|
 "!"{w}"important"         {yyTok = IMPORTANT_SYM; return yyTok;}
 
 {num}em                 {yyTok = EMS; return yyTok;}
+{num}__qem              {yyTok = QEMS; return yyTok;} /* quirky ems */
 {num}ex                 {yyTok = EXS; return yyTok;}
 {num}px                 {yyTok = PXS; return yyTok;}
 {num}cm                 {yyTok = CMS; return yyTok;}

@@ -348,6 +348,9 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     case CSSPrimitiveValue::CSS_PERCENTAGE:
 	b = (unitflags & FPercent);
 	break;
+    case Value::Q_EMS:
+	if ( strict )
+	    break;
     case CSSPrimitiveValue::CSS_EMS:
     case CSSPrimitiveValue::CSS_EXS:
     case CSSPrimitiveValue::CSS_PX:
@@ -1073,6 +1076,9 @@ bool CSSParser::parseValue( int propId, bool important )
 	    // qDebug(" new value: value=%.2f, unit=%d", value->fValue, value->unit );
 	    parsedValue = new CSSPrimitiveValueImpl( value->fValue,
 						     (CSSPrimitiveValue::UnitTypes) value->unit );
+	} else if ( value->unit >= Value::Q_EMS ) {
+	    // qDebug(" new quirks value: value=%.2f, unit=%d", value->fValue, value->unit );
+	    parsedValue = new CSSQuirkPrimitiveValueImpl( value->fValue, CSSPrimitiveValue::CSS_EMS );
 	}
 	valueList->next();
     }
@@ -1570,6 +1576,8 @@ int DOM::CSSParser::lex( void *_yylval ) {
     case IMPORTANT_SYM:
 	break;
 
+    case QEMS:
+	length--;
     case GRADS:
 	length--;
     case DEGS:
