@@ -604,7 +604,7 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
 	forbiddenTags[ID_A]--;
 	break;
     case ID_PRE:
-	forbiddenTags[ID_IMG]--;
+	//forbiddenTags[ID_IMG]--;
 	forbiddenTags[ID_OBJECT]--;
 	forbiddenTags[ID_EMBED]--;
 	forbiddenTags[ID_APPLET]--;
