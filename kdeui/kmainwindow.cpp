@@ -65,6 +65,7 @@ public:
     KMainWindowInterface *m_interface;
     KDEPrivate::ToolBarHandler *toolBarHandler;
     QTimer* settingsTimer;
+    KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
 };
 
@@ -226,6 +227,7 @@ void KMainWindow::initKMainWindow(const char *name)
     d->kaccel = actionCollection()->kaccel();
     d->toolBarHandler = 0;
     d->settingsTimer = 0;
+    d->showStatusBarAction = NULL;
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -687,6 +689,15 @@ bool KMainWindow::isStandardToolBarMenuEnabled() const
     return ( d->toolBarHandler != 0 );
 }
 
+void KMainWindow::createStandardStatusBarAction(){
+  if(!d->showStatusBarAction){
+    d->showStatusBarAction = KStdAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
+    connect(d->showStatusBarAction, SIGNAL(toggled(bool)), statusBar(), SLOT(setShown(bool)));
+    if(internalStatusBar())
+      d->showStatusBarAction->setChecked(!internalStatusBar()->isHidden());
+  }
+}
+
 bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 {
     if ( number == 1 )
@@ -728,12 +739,12 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         entryList.clear();
         i = config->readListEntry (QString::fromLatin1("StatusBar"), entryList, ';');
         entry = entryList.first();
-        if (entry == QString::fromLatin1("Disabled")){
-          sb->hide();
-        }
-        else{
-            sb->show();
-	}
+        if (entry == QString::fromLatin1("Disabled"))
+           sb->hide();
+        else
+           sb->show();
+	if(d->showStatusBarAction)
+	   d->showStatusBarAction->setChecked(!sb->isHidden());
     }
 
     QMenuBar* mb = internalMenuBar();

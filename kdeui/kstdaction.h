@@ -463,14 +463,18 @@ namespace KStdAction
 					KActionCollection* parent, const char *name = 0 );
 
 	/**
-	* @obsolete. toolbar actions are created automatically now in the Settings menu. Don't use this anymore
+	* @obsolete. toolbar actions are created automatically now in the 
+	* Settings menu. Don't use this anymore.
+	* See: @ref KMainWindow::createStandardStatusBarAction()
 	* Show/Hide the primary toolbar.
 	* @since 3.1
 	*/
 	KToggleAction *showToolbar(const QObject *recvr, const char *slot,
 					KActionCollection* parent, const char *name = 0 );
 	/**
-	* @obsolete. toolbar actions are created automatically now in the Settings menu. Don't use this anymore
+	* @obsolete. toolbar actions are created automatically now in the
+	* Settings menu. Don't use this anymore.
+	* See: @ref KMainWindow::setStandardToolBarMenuEnabled(bool);
 	* Show/Hide the primary toolbar.
 	*/
 	KToggleToolBarAction *showToolbar(const char* toolBarName,

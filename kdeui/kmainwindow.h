@@ -449,6 +449,30 @@ public:
     /// @since 3.1
     bool isStandardToolBarMenuEnabled() const;
 
+    
+    /**
+     * Sets whether KMainWindow should provide a menu that allows showing/hiding
+     * of the statusbar ( using @ref KToggleStatusBarAction ).
+     *
+     * The menu / menu item is implemented using xmlgui. It will be inserted
+     * in your menu structure in the 'Settings' menu.
+     *
+     * Note that you should enable this feature before calling createGUI()
+     * ( or similar ).
+     * 
+     * If an application maintians the action on its own (i.e. never calls
+     * this function) a connection needs to be made to let KMainWindow 
+     * know when that status (hiden/shown) of the statusbar has changed.
+     * For example:
+     * connect(action, SIGNAL(activated()),
+     *         kmainwindow, SLOT(setSettingsDirty()));
+     * Otherwise the status (hidden/show) of the statusbar might not be saved
+     * by KMainWindow.
+     * @since 3.2
+     */
+    void createStandardStatusBarAction();
+
+
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
      * @since 3.1
