@@ -1,4 +1,4 @@
-AC_DEFUN([AC_FIND_LIBEXR],
+AC_DEFUN(AC_FIND_LIBEXR,
 [
 AC_REQUIRE([KDE_CHECK_EXTRA_LIBS])
 AC_REQUIRE([AC_FIND_ZLIB])
@@ -11,49 +11,62 @@ AC_CACHE_VAL(ac_cv_libexr,
   AC_MSG_CHECKING([for OpenEXR libraries])
 
   if test "$PKG_CONFIG" = "no" ; then
+     AC_MSG_RESULT(no)
      echo "*** The pkg-config script could not be found. Make sure it is"
      echo "*** in your path, or set the PKG_CONFIG environment variable"
      echo "*** to the full path to pkg-config."
      echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
   else
-     kde_save_LIBS="$LIBS"
-     LIBS="$LIBS $all_libraries $USER_LDFLAGS -lIlmImf -lImath -lHalf -lIex $LIBZ -lm"
-     AC_LANG_SAVE
-     AC_LANG_CPLUSPLUS
-     kde_save_CXXFLAGS="$CXXFLAGS"
-     EXR_FLAGS=`$PKG_CONFIG --cflags OpenEXR`
-     CXXFLAGS="$CXXFLAGS $all_includes $USER_INCLUDES $EXR_FLAGS"
-
-    AC_TRY_LINK(dnl
-        [
-        #include <ImfRgbaFile.h>
-        ],
-        [
-        using namespace Imf;
-        RgbaInputFile file ("dummy");
-        return 0;
-        ],
-        eval "ac_cv_libexr='-lIlmImf -lImath -lHalf -lIex $LIBZ -lm'",
-        eval "ac_cv_libexr=no"
-    )
-    LIBS="$kde_save_LIBS"
-    CXXFLAGS="$kde_save_CXXFLAGS"
-    AC_LANG_RESTORE
-    ])dnl
-    if eval "test ! \"`echo $ac_cv_libexr`\" = no"; then
-        AC_DEFINE_UNQUOTED(HAVE_EXR, 1, [Define if you have OpenEXR])
-        LIB_EXR="$ac_cv_libexr"
-        AC_MSG_RESULT($ac_cv_libexr)
-    else
+     if !(`$PKG_CONFIG --exists OpenEXR`) ; then
         AC_MSG_RESULT(no)
-        LIB_EXR=""
-    fi
+        echo "*** pkg-config installed, but no OpenEXR Libraries were found ***"
+	echo "*** Install OpenEXR package (from http:///www.openexr.org)"
+ 	echo "*** if you want EXR image format support"
+     else
+        if !(`$PKG_CONFIG --atleast-version="1.1.1" OpenEXR`) ; then
+           AC_MSG_RESULT(no)
+           echo "*** OpenEXR libraries were found, but at least version 1.1.0 is required ***"
+	   echo "*** Install newer OpenEXR package (from http:///www.openexr.org)"
+ 	   echo "*** if you want EXR image format support"
+        else
+           kde_save_LIBS="$LIBS"
+           LIBS="$LIBS $all_libraries $USER_LDFLAGS $LIBZ `pkg-config --libs OpenEXR`"
+           AC_LANG_SAVE
+           AC_LANG_CPLUSPLUS
+           kde_save_CXXFLAGS="$CXXFLAGS"
+           EXR_FLAGS=`$PKG_CONFIG --cflags OpenEXR`
+           CXXFLAGS="$CXXFLAGS $all_includes $USER_INCLUDES $EXR_FLAGS"
+
+           AC_TRY_LINK(dnl
+               [
+               #include <ImfRgbaFile.h>
+               ],
+               [
+               using namespace Imf;
+               RgbaInputFile file ("dummy");
+               return 0;
+               ],
+               eval "ac_cv_libexr='$LIBZ `pkg-config --libs OpenEXR`'",
+               eval "ac_cv_libexr=no"
+           )
+           LIBS="$kde_save_LIBS"
+           CXXFLAGS="$kde_save_CXXFLAGS"
+           AC_LANG_RESTORE
+           ])dnl
+           if eval "test ! \"`echo $ac_cv_libexr`\" = no"; then
+               AC_DEFINE_UNQUOTED(HAVE_EXR, 1, [Define if you have OpenEXR])
+               LIB_EXR="$ac_cv_libexr"
+               AC_MSG_RESULT($ac_cv_libexr)
+           else
+               AC_MSG_RESULT(no)
+               LIB_EXR=""
+           fi
+        fi
+     fi
   fi
   AC_SUBST(LIB_EXR)
   AC_SUBST(EXR_FLAGS)
 ])
-
-
 
 AC_FIND_TIFF
 AC_FIND_JPEG

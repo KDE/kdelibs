@@ -12,8 +12,9 @@ endif
 if include_EXR_MODULES
 KIMGIO_EXR_MODULES=kimg_exr.la
 KIMGIO_EXR_DATAFILES=exr.kimgio
-KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 endif
+
+KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
 	         $(KIMGIO_TIFF_MODULES) kimg_ico.la $(KIMGIO_JP2_MODULES) \
