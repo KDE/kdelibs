@@ -1118,7 +1118,7 @@ void TCPSlaveBase::setRealHost( const QString& realHost )
     // proxy to regular SSL connection! If so tell that
     // to the SSL module!
     if ( !d->realHost.isEmpty() && realHost.isEmpty() )
-      d->kssl->setProxy(false, realHost);
+      d->kssl->setPeerHost(realHost);
 
     d->realHost = realHost;
 }
@@ -1130,7 +1130,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     if ( !d->realHost.isNull() )
     {
       kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
-      d->kssl->setProxy(true, d->realHost);
+      d->kssl->setPeerHost(d->realHost);
     }
 
     d->kssl->reInitialize();

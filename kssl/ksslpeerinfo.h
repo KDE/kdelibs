@@ -37,16 +37,14 @@ public:
 
   KSSLCertificate& getPeerCertificate();
   bool certMatchesAddress();
-  QString getPeerAddress();
 
-  void setProxying(bool active, QString realHost = QString::null);
+  void setPeerHost(QString host = QString::null);
   
  
 protected:
   KSSLPeerInfo();
 
   KSSLCertificate m_cert;
-  void setPeerAddress(KInetSocketAddress &x);
   void extractDomains(const QString &fqdn, QStringList &domains);
 
 private:

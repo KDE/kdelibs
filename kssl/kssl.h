@@ -88,7 +88,7 @@ public:
   // DEPRECATED
   void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null);
 
-  void setProxy(bool active, QString realHost = QString::null);
+  void setPeerHost(QString realHost = QString::null);
 
   int connect(int sock);
 
@@ -112,7 +112,7 @@ private:
   KSSLPrivate *d;
 
   void setConnectionInfo();
-  void setPeerInfo(int sock);
+  void setPeerInfo();
   bool setVerificationLogic();
 };
 

@@ -33,11 +33,9 @@
 
 class KSSLPeerInfoPrivate {
 public:
-  KSSLPeerInfoPrivate() : host(NULL), proxying(false) {}
-  ~KSSLPeerInfoPrivate() { if (host) delete host; }
-  KInetSocketAddress *host;
-  bool proxying;
-  QString proxyHost;
+  KSSLPeerInfoPrivate() {}
+  ~KSSLPeerInfoPrivate() { }
+  QString peerHost;
 };
 
 
@@ -54,30 +52,20 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
   return m_cert;
 }
 
-void KSSLPeerInfo::setProxying(bool active, QString realHost) {
-	d->proxying = active;
-	d->proxyHost = realHost;
+void KSSLPeerInfo::setPeerHost(QString realHost) {
+	d->peerHost = realHost;
 }
-
-void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& addr) {
-  if (!d->host)
-    d->host = new KInetSocketAddress(addr);
-  else
-    (*d->host) = addr;
-}
-
 
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
   KSSLX509Map certinfo(m_cert.getSubject());
   QString cn = certinfo.getValue("CN");
 
-  if (d->proxying) {
     QStringList domains;
 
-    kdDebug(7029) << "Matching CN=" << cn << " to " << d->proxyHost << endl;
+    kdDebug(7029) << "Matching CN=" << cn << " to " << d->peerHost << endl;
 
-    extractDomains(d->proxyHost, domains);
+    extractDomains(d->peerHost, domains);
     QStringList::Iterator it = domains.begin();
     for (; it != domains.end(); it++)
     {
@@ -91,59 +79,8 @@ bool KSSLPeerInfo::certMatchesAddress() {
         return true;
       }
     }
+#endif
     return false;
-  }
-
-
-  if (cn.startsWith("*")) {   // stupid wildcard cn
-     QString host, port;
-     QStringList domains;
-
-     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0)
-        host = d->host->nodeName();
-
-     kdDebug(7029) << "Matching CN=" << cn << " to " << host << endl;
-
-     extractDomains( host, domains );
-     QStringList::Iterator it = domains.begin();
-
-     for (; it != domains.end(); it++)
-     {
-        int match = cn.findRev(*it, -1, false);
-        kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
-                      << ", host.length= " << (*it).length() << endl;
-
-        if (match > -1 && ((match + (*it).length()) == cn.length()))
-        {
-          kdDebug(7029) << "Found a match ==> " << (*it) << endl;
-          return true;
-         }
-     }
-
-     return false;
-  } else {
-     int err = 0;
-#if QT_VERSION < 300
-     QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
-#else
-     QPtrList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
-#endif
-     cns.setAutoDelete(true);
-
-
-     kdDebug(7029) << "The original ones were: " << d->host->nodeName()
-                   << " and: " << certinfo.getValue("CN").latin1()
-                   << endl;
-
-     for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
-        if ((*x).address()->isCoreEqual(d->host)) {
-           return true;
-        }
-     }
-  }
-
-#endif
-  return false;
 }
 
 void KSSLPeerInfo::extractDomains(const QString &fqdn, QStringList &domains)

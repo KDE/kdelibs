@@ -64,7 +64,6 @@ public:
 
   bool lastInitTLS;
   KSSLCertificate::KSSLValidation m_cert_vfy_res;
-  bool proxying;
   QString proxyPeer;
 
 #ifdef HAVE_SSL
@@ -81,7 +80,6 @@ KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
-  d->proxying = false;
 #ifdef HAVE_SSL  
   d->m_ssl = NULL;
 #endif  
@@ -261,7 +259,7 @@ int KSSL::connect(int sock) {
   rc = d->kossl->SSL_connect(d->m_ssl);
   if (rc == 1) {
     setConnectionInfo();
-    setPeerInfo(sock);
+    setPeerInfo();
     kdDebug(7029) << "KSSL connected OK" << endl;
   } else {
     kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
@@ -367,24 +365,12 @@ void KSSL::setConnectionInfo() {
 }
 
 
-void KSSL::setPeerInfo(int sock) {
+void KSSL::setPeerInfo() {
 #ifdef HAVE_SSL
-  if (!d->proxying) {
-    ksockaddr_in sa;
-    ksocklen_t nl = sizeof(ksockaddr_in);
-    int rc = KSocks::self()->getpeername(sock, (sockaddr *)&sa, &nl);
-
-    if (rc != -1) {
-      QString haddr;
-      KInetSocketAddress x(&sa, nl);
-      m_pi.setPeerAddress(x);
-    }
-  } else {
-    m_pi.setProxying(true, d->proxyPeer);
-  }
+  m_pi.setPeerHost(d->proxyPeer);
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
   STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
-  if (xs) xs = sk_X509_dup(xs);
+  if (xs) xs = sk_X509_dup(xs);   // Leak? 
   m_pi.m_cert.setChain((void *)xs);
 #endif
 }
@@ -395,8 +381,7 @@ KSSLConnectionInfo& KSSL::connectionInfo() {
 }
 
 
-void KSSL::setProxy(bool active, QString realHost) {
-   d->proxying = active;
+void KSSL::setPeerHost(QString realHost) {
    d->proxyPeer = realHost;
 }
 

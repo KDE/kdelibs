@@ -264,17 +264,16 @@ void HTTPProtocol::resetSessionSettings()
   if ( m_bUseCache )
     cleanCache();
 
+  setRealHost( m_request.hostname );
   // Deal with HTTP tunneling
   if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
   {
     // Tell parent class about the real hostname
-    setRealHost( m_request.hostname );
     setEnableSSLTunnel( true );
   }
   else
   {
     // Should never be needed! Being overcautious!
-    setRealHost( QString::null );
     setEnableSSLTunnel( false );
   }
 
