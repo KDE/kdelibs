@@ -88,6 +88,15 @@ public:
    */
   virtual void sync(bool bMerge = true) = 0;
 
+  /**
+   * change the filenames associated with this back end.  You should
+   * probably reparse your config info after doing this.
+   */
+  void changeFileNames(const QString &_globalFileName, 
+		       const QString &_localFileName,
+		       bool _useKderc) 
+    { aGlobalFileName = _globalFileName; aLocalFileName = _localFileName;
+    useKderc = _useKderc; }
 
 protected:
   KConfigBase *pConfig;
