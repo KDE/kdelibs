@@ -36,6 +36,13 @@
 
 #include "kicondialog.h"
 
+class KIconCanvas::KIconCanvasPrivate
+{
+  public:
+    KIconCanvasPrivate() { m_bLoading = false; }
+    ~KIconCanvasPrivate() {}
+    bool m_bLoading;
+};
 
 /*
  * KIconCanvas: Iconview for the iconloader dialog.
@@ -44,6 +51,7 @@
 KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
     : KIconView(parent, name)
 {
+    d = new KIconCanvasPrivate;
     mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
@@ -57,6 +65,8 @@ KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
 KIconCanvas::~KIconCanvas()
 {
     delete mpTimer;
+    delete d;
+    delete d;
 }
 
 void KIconCanvas::loadFiles(QStringList files)
@@ -64,6 +74,7 @@ void KIconCanvas::loadFiles(QStringList files)
     clear();
     mFiles = files;
     mpTimer->start(0, true);
+    d->m_bLoading = false;
 }
 
 void KIconCanvas::slotLoadFiles()
@@ -72,12 +83,15 @@ void KIconCanvas::slotLoadFiles()
     emit startLoading(mFiles.count());
     QApplication::setOverrideCursor(waitCursor);
 
+    d->m_bLoading = true;
     int i;
     QStringList::ConstIterator it;
     for (it=mFiles.begin(), i=0; it!=mFiles.end(); it++, i++)
     {
 	emit progress(i);
 	kapp->processEvents();
+        if ( !d->m_bLoading ) // user clicked on a button that will load another set of icons
+            break;
 	QImage img;
 	img.load(*it);
 	if (img.isNull())
@@ -104,6 +118,7 @@ void KIconCanvas::slotLoadFiles()
     }
 
     QApplication::restoreOverrideCursor();
+    d->m_bLoading = false;
     emit finished();
     setResizeMode(Adjust);
 }

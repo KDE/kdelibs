@@ -30,9 +30,6 @@ class QRadioButton;
 class KProgress;
 class KIconLoader;
 
-class KIconCanvasData;
-class KIconDialogData;
-class KIconButtonData;
 
 
 /**
@@ -68,7 +65,8 @@ private:
     QStringList mFiles;
     QTimer *mpTimer;
     KIconLoader *mpLoader;
-    KIconCanvasData *d;
+    class KIconCanvasPrivate;
+    KIconCanvasPrivate *d;
 };
 
 
@@ -124,7 +122,8 @@ private:
     KProgress *mpProgress;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
-    KIconDialogData *d;
+    class KIconDialogPrivate;
+    KIconDialogPrivate *d;
 };
 
 
@@ -172,7 +171,8 @@ private:
     QString mIcon;
     KIconDialog *mpDialog;
     KIconLoader *mpLoader;
-    KIconButtonData *d;
+    class KIconButtonPrivate;
+    KIconButtonPrivate *d;
 };
 
 
