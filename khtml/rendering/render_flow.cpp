@@ -1250,7 +1250,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             RenderObject *anonBox = beforeChild->parent();
             KHTMLAssert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
 
-            static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
+	    if ( anonBox->childrenInline() )
+		static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
             beforeChild = beforeChild->parent();
 
             RenderObject *child;
@@ -1282,7 +1283,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // inline children into anonymous block boxes
     if ( m_childrenInline && !newChild->isInline() && !newChild->isSpecial() )
     {
-        makeChildrenNonInline(beforeChild);
+	if ( m_childrenInline )
+	    makeChildrenNonInline(beforeChild);
         if (beforeChild) {
             beforeChild = beforeChild->parent();
             KHTMLAssert(beforeChild->parent() == this);
@@ -1346,8 +1348,9 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         if (style()->display() == INLINE)
         {
             setInline(false); // inline can't contain blocks
-            if (parent() && parent()->isFlow()) {
-                static_cast<RenderFlow*>(parent())->makeChildrenNonInline();
+	    RenderObject *p = parent();
+            if (p && p->isFlow() && p->childrenInline() ) {
+                static_cast<RenderFlow*>(p)->makeChildrenNonInline();
             }
         }
     }
@@ -1365,25 +1368,23 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
 {
     KHTMLAssert(!box2Start || box2Start->parent() == this);
 
-    if (!m_childrenInline)
-        return;
-
     m_childrenInline = false;
 
     RenderObject *child = firstChild();
     RenderObject *next;
-    RenderObject *boxFirst = firstChild();
-    RenderObject *boxLast = firstChild();
+    RenderObject *boxFirst = 0;
+    RenderObject *boxLast = 0;
     while (child) {
         next = child->nextSibling();
 
         if (child->isInline()) {
+	    if ( !boxFirst )
+		boxFirst = child;
             boxLast = child;
         }
 
-        if ((!child->isInline() && boxFirst != child) ||
-            (!next && (boxFirst->isInline())) ||
-            child == box2Start) {
+        if ( boxFirst && 
+	     ( !child->isInline() || !next || child == box2Start ) ) {
             // Create a new anonymous box containing all children starting from boxFirst
             // and up to (but not including) boxLast, and put it in place of the children
             RenderStyle *newStyle = new RenderStyle();
@@ -1420,7 +1421,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
         setInline(false);
         if (parent()->isFlow()) {
             KHTMLAssert(parent()->childrenInline());
-            static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
+	    static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
         }
     }
     setLayouted(false);
