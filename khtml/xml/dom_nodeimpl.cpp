@@ -239,8 +239,8 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
             for( uint j=0; j<lmap; j++ )
             {
                 attr = static_cast<AttrImpl*>(attrs->item(i,exceptioncode));
-		if(attr)
-		{
+		//if(attr) // Workaround, no fix yet (niko)
+		//{
             	    unsigned long lname = attr->name().length();
 	    	    unsigned long lvalue = attr->value().length();
     	    	    while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
@@ -252,7 +252,7 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
             	    memcpy(htmlText+offset+i+lattrs+lname+4, attr->value().stringPtr(), lvalue*2);
             	    memcpy(htmlText+offset+i+lattrs+lname+lvalue+4, &QUOTE, 2);    // prints "
             	    lattrs += lname + lvalue + 4;
-		}
+		//}
             }
             offset += lattrs;
         }
