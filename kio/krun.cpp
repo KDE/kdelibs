@@ -473,6 +473,23 @@ void KRun::init()
     foundMimeType( mime->name() );
     return;
   }
+  else if ( KProtocolManager::self().isHelperProtocol( m_strURL.protocol() ) ) {
+    kdDebug(7010) << "Helper protocol" << endl;
+
+    emit finished();
+
+    KURL::List urls;
+    urls.append( m_strURL );
+    run( KProtocolManager::self().exec( m_strURL.protocol() ),
+	 urls );
+
+    kdDebug(7010) << "Launched helper:" << endl;
+
+    if ( m_bAutoDelete )
+      delete this;
+
+    return;
+  }
 
   // Did we already get the information that it is a directory ?
   if ( S_ISDIR( m_mode ) )

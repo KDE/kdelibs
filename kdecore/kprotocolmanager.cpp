@@ -62,6 +62,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     Protocol p;
     p.exec = config.readEntry( "exec" );
     p.isSourceProtocol = config.readBoolEntry( "source", true );
+    p.isHelperProtocol = config.readBoolEntry( "helper", true );
     p.supportsReading = config.readBoolEntry( "reading", false );
     p.supportsWriting = config.readBoolEntry( "writing", false );
     p.supportsMakeDir = config.readBoolEntry( "makedir", false );
@@ -129,6 +130,18 @@ bool KProtocolManager::isFilterProtocol( const QString& _protocol ) const
   }
 
   return !it.data().isSourceProtocol;
+}
+
+bool KProtocolManager::isHelperProtocol( const QString& _protocol ) const
+{
+  ConstIterator it = m_protocols.find( _protocol );
+  if ( it == m_protocols.end() )
+  {
+    kdError(7008) << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  return it.data().isHelperProtocol;
 }
 
 bool KProtocolManager::isKnownProtocol( const QString& _protocol ) const

@@ -58,6 +58,7 @@ public:
   Type outputType( const QString& protocol ) const;
   QStringList listing( const QString& protocol ) const;
   bool isSourceProtocol( const QString& protocol ) const;
+  bool isHelperProtocol( const QString& protocol ) const;
   bool isFilterProtocol( const QString& protocol ) const;
   bool isKnownProtocol( const QString& protocol ) const;
   bool supportsListing( const QString& protocol ) const;
@@ -219,6 +220,7 @@ private:
     Type outputType;
     QStringList listing;
     bool isSourceProtocol;
+    bool isHelperProtocol;
     bool supportsListing;
     bool supportsReading;
     bool supportsWriting;
