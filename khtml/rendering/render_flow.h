@@ -100,7 +100,7 @@ protected:
 
     void layoutBlockChildren( bool relayoutChildren );
     void layoutInlineChildren();
-    void layoutSpecialObjects();
+    void layoutSpecialObjects( bool relayoutChildren );
 
 public:
     int floatBottom() const;

@@ -276,15 +276,14 @@ void RenderFlow::layout()
 	m_height += borderBottom() + paddingBottom();
     }
 
-    if ( relayoutChildren )
-	layoutSpecialObjects();
+    layoutSpecialObjects( relayoutChildren );
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
 
     setLayouted();
 }
 
-void RenderFlow::layoutSpecialObjects()
+void RenderFlow::layoutSpecialObjects( bool relayoutChildren )
 {
     if(specialObjects) {
 	//kdDebug( 6040 ) << renderName() << " " << this << "::layoutSpecialObjects() start" << endl;
@@ -293,9 +292,10 @@ void RenderFlow::layoutSpecialObjects()
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
             if (r->type == SpecialObject::Positioned) {
-//		kdDebug(6040) << renderName() << " relayouting positioned object" << endl;
-		r->node->setLayouted( false );
-// 		if ( !r->node->layouted() )
+		if ( relayoutChildren ) {
+		    r->node->setLayouted( false );
+		}
+		if ( !r->node->layouted() )
 		    r->node->layout();
 	    }
         }

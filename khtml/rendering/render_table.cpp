@@ -1315,9 +1315,9 @@ void RenderTable::layout()
     if ( !colWidthKnown || oldWidth != m_width )
 	calcColWidth();
     
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight() << endl;
-//#endif
+#endif
 
 
     setCellWidths();
@@ -1360,7 +1360,8 @@ void RenderTable::layout()
     //kdDebug(0) << "table height: " << m_height << endl;
 
     // table can be containing block of positioned elements.
-    layoutSpecialObjects();
+    // ### only pass true if width or height changed.
+    layoutSpecialObjects( true );
 
     setLayouted();
 
@@ -1468,9 +1469,9 @@ void RenderTable::layoutRows(int yoff)
             default:
                 break;
             }
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
             kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
-//#endif
+#endif
             cell->setCellTopExtra( te );
             cell->setCellBottomExtra( rHeight - cell->height() - te);
 
