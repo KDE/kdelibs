@@ -132,6 +132,8 @@ KLauncher::KLauncher(int _kdeinitSocket)
    dcopClient()->setNotifications( true );
    connect(dcopClient(), SIGNAL( applicationRegistered( const QCString &)),
            this, SLOT( slotAppRegistered( const QCString &)));
+   dcopClient()->connectDCOPSignal( "DCOPServer", "", "terminateKDE()",
+                                    objId(), "terminateKDE()", false );
 
    QString prefix = locateLocal("socket", "klauncher");
    KTempFile domainname(prefix, QString::fromLatin1(".slave-socket"));
@@ -267,7 +269,17 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       IdleSlave *slave;
       for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
           slave->reparseConfiguration();
+      replyType = "void";
       return true;
+   }
+   else if (fun == "terminateKDE()")
+   {
+      kdDebug() << "KLauncher::process ---> terminateKDE" << endl;
+      klauncher_header request_header;
+      request_header.cmd = LAUNCHER_TERMINATE_KDE;
+      request_header.arg_length = 0;
+      write(kdeinitSocket, &request_header, sizeof(request_header));
+      destruct(0);
    }
    if (KUniqueApplication::process(fun, data, replyType, replyData))
    {
