@@ -33,6 +33,9 @@ class QConstString;
 
 namespace KJS {
 
+  class UCharReference;
+  class UString;
+
   /**
    * @short Unicode character.
    *
@@ -56,18 +59,20 @@ namespace KJS {
      * @param u 16 bit Unicode value
      */ 
     UChar(unsigned short u) : hi(u & 0xff00), lo(u & 0x00ff) { }
+    UChar(const UCharReference &c);
+    /**
+     * @return The higher byte of the character.
+     */
+    unsigned char high() const { return hi; }
+    /**
+     * @return The lower byte of the character.
+     */
+    unsigned char low() const { return lo; }
     /**
      * @return the 16 bit Unicode value of the character
      */
     unsigned short unicode() const { return hi << 8 | lo; }
-    /**
-     * The higher byte of the character.
-     */
-    unsigned char hi;
-    /**
-     * The lower byte of the character.
-     */
-    unsigned char lo;
+  public:
     /**
      * @return The character converted to lower case.
      */
@@ -80,6 +85,32 @@ namespace KJS {
      * A static instance of UChar(0).
      */
     static UChar null;
+  private:
+    friend UCharReference;
+    friend UString;
+    friend bool operator==(const UChar &c1, const UChar &c2);
+    unsigned char hi;
+    unsigned char lo;
+  };
+
+  /**
+   * @short Dynamic reference to a string character.
+   */
+  class UCharReference {
+    friend UString;
+    UCharReference(UString *s, unsigned int off) : str(s), offset(off) { }
+  public:
+    UCharReference& operator=(char c) { return operator=(UChar(c)); }
+    UCharReference& operator=(UChar c);
+    unsigned short unicode() const { return ref().unicode(); }
+    unsigned char& low() const { return ref().lo; }
+    unsigned char& high() const { return ref().hi; }
+    UChar toLower() const { return ref().toLower(); }
+    UChar toUpper() const  { return ref().toUpper(); }
+  private:
+    UChar& ref() const;
+    UString *str;
+    int offset;
   };
 
   /**
@@ -104,14 +135,12 @@ namespace KJS {
     char *data;
   };
 
-  class UString;
-
   /**
    * @short Unicode string class
    */
   class UString {
     friend bool operator==(const UString&, const UString&);
-    friend KJScript;
+    friend UCharReference;
     /**
      * @internal
      */
@@ -167,7 +196,8 @@ namespace KJS {
     bool isEmpty() const { return (!rep->len); }
     bool is8Bit() const;
     int size() const { return rep->size(); }
-    UChar &operator[](int pos) const;
+    UChar operator[](int pos) const;
+    UCharReference operator[](int pos);
 
     double toDouble() const;
     int find(const UString &f, int pos = 0) const;
@@ -176,6 +206,7 @@ namespace KJS {
     static UString null;
   private:
     void attach(Rep *r);
+    void detach();
     void release();
     Rep *rep;
   };

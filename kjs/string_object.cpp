@@ -197,7 +197,7 @@ Completion StringProtoFunc::execute(const List &args)
       d = NaN;
     else {
       UChar c = s.value()[pos];
-      d = (c.hi << 8) + c.lo;
+      d = (c.high() << 8) + c.low();
     }
     result = Number(d);
     break;

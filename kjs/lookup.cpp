@@ -60,7 +60,7 @@ unsigned int Lookup::hash(const UChar *c, unsigned int len)
 {
   unsigned int val = 0;
   for (unsigned int i = 0; i < len; i++, c++)
-    val += c->lo;
+    val += c->low();
 
   return val;
 }

@@ -114,6 +114,11 @@ UString::Rep UString::Rep::null = { 0, 0, 1 };
 UString UString::null;
 static char *statBuffer = 0L;
 
+UChar::UChar(const UCharReference &c)
+  : hi(c.high()), lo(c.low())
+{
+}
+
 UChar UChar::toLower() const
 {
   if (islower(lo) && hi == 0)
@@ -128,6 +133,23 @@ UChar UChar::toUpper() const
     return *this;
 
   return UChar(0, toupper(lo));
+}
+
+UCharReference& UCharReference::operator=(UChar c)
+{
+  str->detach();
+  if (offset < str->rep->len)
+    *(str->rep->dat + offset) = c;
+  /* TODO: lengthen string ? */
+  return *this;
+}
+
+UChar& UCharReference::ref() const
+{
+  if (offset < str->rep->len)
+    return *(str->rep->dat + offset);
+  else
+    return UChar::null;
 }
 
 UString::Rep *UString::Rep::create(UChar *d, int l)
@@ -294,12 +316,18 @@ bool UString::is8Bit() const
   return true;
 }
 
-UChar &UString::operator[](int pos) const
+UChar UString::operator[](int pos) const
 {
   if (pos >= size())
     return UChar::null;
 
   return ((UChar *)data())[pos];
+}
+
+UCharReference UString::operator[](int pos)
+{
+  /* TODO: boundary check */
+  return UCharReference(this, pos);
 }
 
 double UString::toDouble() const
@@ -412,6 +440,17 @@ void UString::attach(Rep *r)
 {
   rep = r;
   rep->ref();
+}
+
+void UString::detach()
+{
+  if (rep->rc > 1) {
+    int l = size();
+    UChar *n = new UChar[l];
+    memcpy(n, data(), l * sizeof(UChar));
+    release();
+    rep = Rep::create(n, l);
+  }
 }
 
 void UString::release()
