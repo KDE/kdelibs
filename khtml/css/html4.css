@@ -18,7 +18,7 @@
       OBJECT, OL, P,
       UL, APPLET,
       CENTER, DIR,
-      HR, MENU, PRE   { display: block }
+      HR, MENU, PRE, MAP   { display: block }
       LI              { display: list-item }
       HEAD            { display: none }
       SCRIPT         { display: none }
@@ -129,7 +129,7 @@
       INPUT[type="password"],
       TEXTAREA { font-family: monospace }
       INPUT[type="hidden"] {display: none }
-      OPTION, OPTGROUP, MAP  { display: none }
+      OPTION, OPTGROUP, AREA  { display: none }
 
       /* An example of style for HTML 4.0's ABBR/ACRONYM elements */
 
