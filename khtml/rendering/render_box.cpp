@@ -504,7 +504,8 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
 	if ( diff > 0 ) {
 	    cy += diff;
 	    sy += diff;
-	    sy %= pixh;
+	    if (pixh)
+		sy %= pixh;
 	    ch -= diff;
 	}
 	ch = kMin( ch, clipy + cliph - cy );
