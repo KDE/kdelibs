@@ -62,8 +62,9 @@ class KGlobalAccel : public QObject
 	bool isEnabled();
 	
 	/**
-	 * Checks whether the accelerators are enabled.
-	 * @return true if the KGlobalAccel is enabled
+	 * Enables or disables the KGlobalAccel
+	 * @param bEnabled true if the KGlobalAccel should be enabled, false if it
+	 *  should be disabled.
 	 */
 	void setEnabled( bool bEnabled );
 
