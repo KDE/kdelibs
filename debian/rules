@@ -129,7 +129,7 @@ binary-arch:  build
 	-cp admin/debianrules debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
 	dh_installman
-	dh_movefiles -a
+	dh_movefiles -a --sourcedir=debian/kdelibs3
 	-rm -rf debian/kdelibs3/usr/share/apps/kssl
 	mv debian/kdelibs3/usr/lib/kde2/kio_https.so debian/kdelibs3/usr/lib/kde2/kio_https-nossl.so
 	mv debian/kdelibs3/usr/lib/kde2/kio_https.la debian/kdelibs3/usr/lib/kde2/kio_https-nossl.la
