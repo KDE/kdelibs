@@ -41,7 +41,7 @@ namespace KIO {
    * Net Transparency.
    *
    * NetAccess allows you to do simple file operation (load, save,
-   * copy, delete..) without working with KIO::Job directly.
+   * copy, delete...) without working with KIO::Job directly.
    * Whereas a KIO::Job is asynchronous, meaning that the
    * developer has to connect slots for it, KIO::NetAccess provides
    * synchronous downloads and uploads, as well as temporary file
@@ -221,7 +221,7 @@ public:
     static bool dircopy( const KURL& src, const KURL& target ) KDE_DEPRECATED; // KDE4: merge
 
     /**
-     * Overloaded method, which takes a list of source urls
+     * Overloaded method, which takes a list of source URLs
      */
     static bool dircopy( const KURL::List& src, const KURL& target, QWidget* window = 0L );
 
@@ -242,7 +242,7 @@ public:
     /**
      * Tests whether a URL exists.
      *
-     * @param url the url we are testing
+     * @param url the URL we are testing
      * @param source if true, we want to read from that URL.
      *               If false, we want to write to it.
      * IMPORTANT: see documentation for KIO::stat for more details about this.
@@ -295,7 +295,7 @@ public:
     static bool stat(const KURL& url, KIO::UDSEntry & entry) KDE_DEPRECATED;
 
     /**
-     * Deletes a file or a directory in an synchronous way.
+     * Deletes a file or a directory in a synchronous way.
      *
      * This is a convenience function for KIO::del
      * (it saves creating a slot and testing for the job result).
@@ -311,7 +311,10 @@ public:
     static bool del( const KURL & url, QWidget* window );
 
     /**
-     * @deprecated. Use the function above instead.
+     * @deprecated. Use the function above instead. Passing NULL as the
+     *             additional argument will give the same behaviour, but 
+     *             you should try to identify a suitable parent widget
+     *             if at all possible.
      */
     static bool del( const KURL & url ) KDE_DEPRECATED;
 
@@ -332,12 +335,15 @@ public:
     static bool mkdir( const KURL & url, QWidget* window, int permissions = -1 );
 
     /**
-     * @deprecated. Use the function above instead.
+     * @deprecated. Use the function above instead. Passing NULL as the
+     *             additional argument will give the same behaviour, but 
+     *             you should try to identify a suitable parent widget
+     *             if at all possible.
      */
     static bool mkdir( const KURL & url, int permissions = -1 ) KDE_DEPRECATED;
 
     /**
-     * Executes a remote process via the fish ioslave in a synchrounous way.
+     * Executes a remote process via the fish ioslave in a synchronous way.
      *
      * @param url The remote machine where the command should be executed.
      *            e.g. fish://someuser\@somehost:sshport/
@@ -381,7 +387,10 @@ public:
     static QString mimetype( const KURL & url, QWidget* window );
 
     /**
-     * @deprecated. Use the function above instead.
+     * @deprecated. Use the function above instead. Passing NULL as the
+     *             additional argument will give the same behaviour, but 
+     *             you should try to identify a suitable parent widget
+     *             if at all possible.
      */
     static QString mimetype( const KURL & url ) KDE_DEPRECATED;
 
