@@ -63,7 +63,7 @@ khtmlw has been replaced with khtml.
 
   The API is almost the same and it simplifies exisiting code a bit,
   so give it a try. If you need more functionality, please contact
-  me (Dirk A. Mueller <dmuell@gmx.net>).
+  me (Dirk A. Mueller <mueller@kde.org>).
 
   The additional class KDoubleNumInput gives you the same look&feel,
   but allows to edit floating point numbers.
@@ -531,15 +531,15 @@ helpMenu() has been moved to KTMainWindow from KApplication (kapp).
 Both the "About KDE" and the "About <Application>" dialog boxes
 are now modeless. "About KDE" is a completely new widget.
 
-If you in the toplevel window (that is derived from KTMainWindow) 
-have used "kapp->helpMenu( bool, QString )" to get the help menu 
-you must now change to "helpMenu( QString )". The QString defaults 
+If you in the toplevel window (that is derived from KTMainWindow)
+have used "kapp->helpMenu( bool, QString )" to get the help menu
+you must now change to "helpMenu( QString )". The QString defaults
 to QString::null so it is sufficient to write helpMenu()
 
 The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
-have all been removed. If you need direct access to these or need 
-access to a help menu in a class that is not derived from 
-KTMainWindow then allocate an instance of the new class KHelpMenu. 
+have all been removed. If you need direct access to these or need
+access to a help menu in a class that is not derived from
+KTMainWindow then allocate an instance of the new class KHelpMenu.
 See KDE 2.0 API reference or khelpmenu.h (kdeui) for additional info.
 
 Espen Sand <espen@kde.org>
@@ -547,15 +547,12 @@ Espen Sand <espen@kde.org>
 ////////////////////////////////////////////////////////////////////////
 // * KPixmap, KPixmapEffect
 
-KPixmap::gradientFill, KPixmap::patternFill, KPixmap::tile and 
-KPixmap::mapFill have been moved to KPixmapEffect, which is now part 
+KPixmap::gradientFill, KPixmap::patternFill, KPixmap::tile and
+KPixmap::mapFill have been moved to KPixmapEffect, which is now part
 of libkdeui. 
 
+KPixmap::tile() has been renamed to KPixmapEffects::createTile(). 
 
-
-
-
-
-
+Dirk A. Mueller <mueller@kde.org>
 
 
