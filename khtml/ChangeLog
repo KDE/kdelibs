@@ -1,3 +1,21 @@
+2005-02-13  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_block.{cpp,h} (paintObject): Added parameter to only
+	paint the block's outline on demand.
+	
+	* rendering/render_flow.cpp (repaint): Fix repaint rectangle to also
+	encompass the top and bottom overflow of the root inline box.
+	
+	* rendering/render_line.{cpp,h} (InlineBox::root): Ported over from
+	WebCore. Returns the root inline box of this box.
+	
+	* rendering/render_table.{cpp,h} (RenderTableCell::repaintRectangle):
+	Use full height of table cell, otherwise outline won't be fully
+	repainted.
+	(RenderTableCell::paint): Paint outline of table cells explicitly,
+	and keep the underlying render block from painting it itself.
+	(RenderTableCell::paintObject): Removed. Nowhere used anymore.
+
 2005-02-13  Harri Porten  <porten@kde.org>
 
         * xml/dom2_eventsimpl.*: updated virtual key codes to a more recent
