@@ -183,10 +183,11 @@ static int check_ipv6_stack()
   return 2;			// how can we check?
 # else
   int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
+  if (fd == -1)
+     return 2;
+     
   ::close(fd);
-
-  // if fd was -1, then the call failed -- IPv6 not available
-  return fd == -1 ? 2 : 1;
+  return 1;
 # endif
 }
 #endif
