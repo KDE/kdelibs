@@ -4,12 +4,44 @@ This package was debianized by Andreas Jellinghaus <aj@debian.org>.
 Thanks to Brandon Mitchell <bhmit1@mail.wm.edu> for his work on the
 libc5 version.
 
-It was downloaded from ftp.kde.org
-/pub/kde/unstable/CVS/snapshots/current kdelibs-*.tar.gz
+It was downloaded via cvs from cvs.kde.org
 
 Copyright:
 
 See */AUTHORS for authors.
+
+---
+
+The libraries themselves have been covered (since Saturday, June 21st, 1997)
+by the GNU Library General Public License (LGPL).  Any other programs (such as
+the examples) are covered by the GNU General Public License (GPL).  All the
+gory details for the LGPL reside in COPYING.LIB, and for the GPL reside in
+COPYING.
+ 
+Various parts are also covered under a BSD style license, detailed in
+COPYING.BSD.  Currently, code covered under such license is copyrighted by
+Theo de Raadt.
+ 
+When in doubt, check the individual file, they should all have license
+headings and other identifying marks.    
+
+---
+
+All libraries that are in aRts are LGPL. 95% of all aRts code is in the
+libraries, including the whole MCOP and ArtsFlow stuff. So you can use that
+wherever you like. This also allows you writing plugins and not open up the
+source, if you want that.
+ 
+There are a few programs (such as artsd), these are GPLd. As there have been
+different opinions, whether or not linking GPLd programs and Qt is legal, I
+also added an explicite notice which allows that, additional to the GPL.
+ 
+    Permission is also granted to link this program with the Qt
+    library, treating Qt like a library that normally accompanies the
+    operating system kernel, whether or not that is in fact the case.   
+
+
+---
 
 June 1997) by the GNU Library General License Version 2 or later (at
 your option). Please see the file COPYING.LIB for more information.      
@@ -54,4 +86,6 @@ copy of the GNU General Public License along with this program; if
 not, write to the Free Software Foundation, Inc, 59 Temple Place - 
 Suite 330, Boston, MA 02111-1307, USA.
 
+--
 
+Please see /usr/share/common-licenses/ for each individual license.

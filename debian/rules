@@ -29,16 +29,13 @@ $(BUILDDIR)/build-stamp:
 debian-clean:
 	dh_testdir
 	-rm -f $(BUILDDIR)/build-stamp
+	dh_clean
 
 clean: debian-clean
 	-rm -rf $(BUILDDIR)
-	-rm -f debian/debiandirs
+	-rm -f debian/debiandirs debian/undocumented 
 	if test -d CVS; then \
 	  make -f admin/Makefile.common cvs-clean ;\
-	else \
-	  -rm -rf $(BUILDDIR) ;\
-	  -rm -rf debian/debiandirs ;\
-	  dh_clean ; \
 	fi
 
 binary-indep:	build
