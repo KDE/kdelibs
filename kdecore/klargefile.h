@@ -20,6 +20,24 @@
 #ifndef _KDE_LARGEFILE_H_
 #define _KDE_LARGEFILE_H_
 
+/**
+ * This file defines portable defines for large file support.
+ * To use this you must compile your code with _LARGEFILE64_SOURCE 
+ * defined and use the KDE_xxx defines instead of the normal
+ * C functions and structures.
+ *
+ * Please note that not every platform supports 64 bit file structures,
+ * in that case the normal 32 bit functions will be used.
+ *
+ * @see http://www.suse.de/~aj/linux_lfs.html 
+ * @see http://ftp.sas.com/standards/large.file/xopen/x_open.05Mar96.html
+ *
+ * KDE makes use of the "Transitional Extensions" since we can not ensure
+ * that all modules and libraries used by KDE will be compiled with
+ * 64-bit support. 
+ * (A.3.2.3 Mixed API and Compile Environments within a Single Process)
+ */
+
 #include <unistd.h>
 
 #ifdef _LFS64_LARGEFILE
