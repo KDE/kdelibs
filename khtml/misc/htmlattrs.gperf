@@ -21,6 +21,7 @@ archive, ATTR_ARCHIVE
 axis, ATTR_AXIS
 background, ATTR_BACKGROUND
 bgcolor, ATTR_BGCOLOR
+bgproperties, ATTR_BGPROPERTIES
 border, ATTR_BORDER
 bordercolor, ATTR_BORDERCOLOR
 cellpadding, ATTR_CELLPADDING
