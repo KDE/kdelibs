@@ -144,10 +144,10 @@ public:
 	int setAccel( const char *action, int accel );
 	int accel( const char *action ) const;
 
-#if 0
-	virtual void writeConfig( KConfigBase& );
-	virtual void readConfig( const KConfigBase& );
-#endif
+	virtual void writeConfig( KConfigBase&, 
+				QString group = "ActionConfig" );
+	virtual bool readConfig( KConfigBase&, 
+				QString group = "ActionConfig" );
 
 protected slots:
 

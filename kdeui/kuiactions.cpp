@@ -8,6 +8,7 @@
 #include<assert.h>
 #include<qaccel.h>
 
+#include<kconfigbase.h>
 #include"kuiactions.h"
 
 KUIActions::KUIActions( QWidget *parent )
@@ -140,5 +141,27 @@ void KUIActions::removeAccel( KAction *action )
 	_accel->removeItem( id );
 	action->setAccelId( -1 );
 }
+
+bool KUIActions::readConfig( KConfigBase& cfg, QString grp )
+{
+	KConfigGroupSaver oldgrp( &cfg, grp );
+
+	KActionIterator iter = iterator();
+
+	for( ; iter.current(); ++iter ) {
+		iter.current()->readConfig( cfg );
+	}
+}
+
+void KUIActions::writeConfig( KConfigBase& cfg, QString grp )
+{
+	KConfigGroupSaver oldgrp( &cfg, grp );
+	KActionIterator iter = iterator();
+
+	for( ; iter.current(); ++iter ) {
+		iter.current()->writeConfig( cfg );
+	}
+}
+
 
 #include "kuiactions.moc"
