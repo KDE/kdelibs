@@ -56,11 +56,6 @@ public class KJASAppletStub extends Frame
         windowName = _windowName;
         loader     = _loader;
 
-        // fix the applet name
-        int idx = appletName.indexOf(".class");
-        if (idx > 0) {
-            appletName = appletName.substring(0, idx);
-        }
         String fixedClassName = _className;
         if (_className.endsWith(".class") || _className.endsWith(".CLASS"))
         {
