@@ -8,7 +8,7 @@
 #include <qwidget.h>
 
 class KURL;
-class KIOJob;
+class KIO::Job;
 
 
 /**
@@ -19,17 +19,17 @@ class KIOJob;
 * All slots are implemented as pure virtual methods.
 *
 * All custom IO progress dialog should inherit this class.
-* Add your GUI code to the constructor and implmement those virtual
+* Add your GUI code to the constructor and implemement those virtual
 * methods which you need in order to display progress.
 *
-* E.g. @ref #KIOLittleProgressDialog only implements @ref #slotTotalSize,
+* E.g. @ref #KIOStatusbarProgress only implements @ref #slotTotalSize,
 * @ref #slotPercent and @ref slotSpeed.
 *
 * Custom progress dialog will be used like this :
 * <pre>
 * // create a dialog
-* MyCustomProgressDlg *customProgress;
-* customProgress = new MyCustomProgressDlg();
+* MyCustomProgress *customProgress;
+* customProgress = new MyCustomProgress();
 * ...
 * // create KIOJob and set the progress
 * KIOJob* job;
@@ -55,7 +55,7 @@ public:
   KIOProgressBase( QWidget *parent = 0L );
   ~KIOProgressBase() {}
 
-  virtual void setJob( KIOJob * );
+  virtual void setJob( KIO::Job * );
   virtual void clean() {}
 
   /**
@@ -93,7 +93,7 @@ protected:
   void closeEvent( QCloseEvent * );
   void Connect();
 
-  KIOJob* m_pJob;
+  KIO::Job* m_pJob;
 
   /**
    * This variable controls wether the dialog should be deleted or only cleaned when
@@ -111,20 +111,24 @@ protected:
 
 protected slots:
 
-    virtual void slotTotalSize( int, unsigned long ) {}
-    virtual void slotTotalFiles( int, unsigned int ) {}
-    virtual void slotTotalDirs( int, unsigned int ) {}
-    virtual void slotPercent( int, unsigned long ) {}
-    virtual void slotProcessedSize( int, unsigned long ) {}
-    virtual void slotProcessedFiles( int, unsigned int ) {}
-    virtual void slotProcessedDirs( int, unsigned int ) {}
-    virtual void slotScanningDir( int, const KURL& ) {}
-    virtual void slotSpeed( int, unsigned long ) {}
-    virtual void slotCopyingFile( int, const KURL&, const KURL& ) {}
-    virtual void slotMakingDir( int, const KURL& ) {}
-    virtual void slotGettingFile( int, const KURL& ) {}
-    virtual void slotDeletingFile( int, const KURL& ) {}
-    virtual void slotCanResume( int, bool ) {}
+  virtual void slotTotalSize( KIO::Job*, unsigned long ) {}
+  virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
+  virtual void slotTotalDirs( KIO::Job*, unsigned long ) {}
+
+  virtual void slotProcessedSize( KIO::Job*, unsigned long ) {}
+  virtual void slotProcessedFiles( KIO::Job*, unsigned long ) {}
+  virtual void slotProcessedDirs( KIO::Job*, unsigned long ) {}
+
+  virtual void slotSpeed( KIO::Job*, unsigned long ) {}
+  virtual void slotPercent( KIO::Job*, unsigned long ) {}
+
+  virtual void slotCopyingFile( KIO::Job*, const KURL&, const KURL& ) {}
+  virtual void slotDeletingFile( KIO::Job*, const KURL& ) {}
+  virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
+
+  virtual void slotCanResume( KIO::Job*, bool ) {}
+
+//     virtual void slotGettingFile( KIO::Job*, const KURL& ) {}
 
 };
 

@@ -1,8 +1,8 @@
 // $Id$
 
-#include <kwm.h>
+#include <kwin.h>
 
-#include "job.h"
+#include "jobclasses.h"
 #include "progressbase.h"
 
 KIOProgressBase::KIOProgressBase( QWidget *parent )
@@ -13,34 +13,40 @@ KIOProgressBase::KIOProgressBase( QWidget *parent )
 
 
 void KIOProgressBase::Connect() {
-  connect( m_pJob, SIGNAL( sigSpeed( int, unsigned long ) ),
-	   SLOT( slotSpeed( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalSize( int, unsigned long ) ),
-	   SLOT( slotTotalSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigTotalFiles( int, unsigned int ) ),
-	   SLOT( slotTotalFiles( int, unsigned int ) ) );
-  connect( m_pJob, SIGNAL( sigTotalDirs( int, unsigned int ) ),
-	   SLOT( slotTotalDirs( int, unsigned int ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedSize( int, unsigned long ) ),
-	   SLOT( slotProcessedSize( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigPercent( int, unsigned long ) ),
-	   SLOT( slotPercent( int, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedFiles( int, unsigned int ) ),
-	   SLOT( slotProcessedFiles( int, unsigned int ) ) );
-  connect( m_pJob, SIGNAL( sigProcessedDirs( int, unsigned int ) ),
-	   SLOT( slotProcessedDirs( int, unsigned int ) ) );
-  connect( m_pJob, SIGNAL( sigCopying( int, const KURL& , const KURL& ) ),
-	   SLOT( slotCopyingFile( int, const KURL&, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( sigScanningDir( int, const KURL& ) ),
-	   SLOT( slotScanningDir( int, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( sigMakingDir( int, const KURL& ) ),
-	   SLOT( slotMakingDir( int, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( sigGettingFile( int, const KURL& ) ),
-	   SLOT( slotGettingFile( int, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( sigDeletingFile( int, const KURL& ) ),
-	   SLOT( slotDeletingFile( int, const KURL& ) ) );
-  connect( m_pJob, SIGNAL( sigCanResume( int, bool ) ),
- 	   SLOT( slotCanResume( int, bool ) ) );
+  connect( m_pJob, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+
+  connect( m_pJob, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+
+  connect( m_pJob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( sigPercent( KIO::Job*, unsigned long ) ),
+	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+
+  connect( m_pJob, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+  connect( m_pJob, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
+	   SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
+
+  connect( m_pJob, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
+	   SLOT( slotCopyingFile( KIO::Job*, const KURL&, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
+	   SLOT( slotMovingFile( KIO::Job*, const KURL&, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( deletingFile( KIO::Job*, const KURL& ) ),
+	   SLOT( slotDeletingFile( KIO::Job*, const KURL& ) ) );
+  connect( m_pJob, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
+ 	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
+
+//   connect( m_pJob, SIGNAL( sigGettingFile( KIO::Job*, const KURL& ) ),
+// 	   SLOT( slotGettingFile( KIO::Job*, const KURL& ) ) );
+
+  connect( m_pJob, SIGNAL( canResume( KIO::Job*, bool ) ),
+ 	   SLOT( slotCanResume( KIO::Job*, bool ) ) );
 }
 
 
@@ -60,7 +66,7 @@ void KIOProgressBase::refill() {
     break;
 
   case KIOProtocol::CMD_MKDIR:
-    slotMakingDir( m_pJob->m_id, m_pJob->m_strTo );
+    slotCreatingDir( m_pJob->m_id, m_pJob->m_strTo );
     break;
 
   case KIOProtocol::CMD_GET:
@@ -68,18 +74,18 @@ void KIOProgressBase::refill() {
     break;
   }
 
-  slotTotalSize( m_pJob->m_id, m_pJob->m_iTotalSize );
-  slotTotalFiles( m_pJob->m_id, m_pJob->m_iTotalFiles );
-  slotTotalDirs( m_pJob->m_id, m_pJob->m_iTotalDirs );
+  slotTotalSize( m_pJob, m_pJob->m_iTotalSize );
+  slotTotalFiles( m_pJob, m_pJob->m_iTotalFiles );
+  slotTotalDirs( m_pJob, m_pJob->m_iTotalDirs );
 
-  slotPercent( m_pJob->m_id, m_pJob->m_iPercent );
+  slotPercent( m_pJob, m_pJob->m_iPercent );
 
   if ( m_pJob->m_iTotalDirs > 1 ) {
-    slotProcessedDirs( m_pJob->m_id, m_pJob->m_iProcessedDirs );
+    slotProcessedDirs( m_pJob, m_pJob->m_iProcessedDirs );
   }
 
   if ( m_pJob->m_iTotalFiles > 1 ) {
-    slotProcessedFiles( m_pJob->m_id, m_pJob->m_iProcessedFiles );
+    slotProcessedFiles( m_pJob, m_pJob->m_iProcessedFiles );
   }
 
   slotSpeed( m_pJob->m_id, m_pJob->m_iSpeed );
