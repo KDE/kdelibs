@@ -1,3 +1,7 @@
+2003-12-27  Luis Pedro Coelho <luis@luispedro.org>
+
+        * misc/loader.cpp : Discard items from cache if they have the wrong type (#68181)
+
 2003-12-20  Koos Vriezen  <koos.vriezen@xs4all.nl>
 
         * html_objectimpl.cpp (attach): Check KImageIO::typeForMime first if RenderImage

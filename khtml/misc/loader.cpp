@@ -1416,6 +1416,14 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
     }
 
     CachedObject *o = cache->find(kurl.url());
+    if ( o && o->type() != CachedObject::CSSStyleSheet ) {
+#ifdef CACHE_DEBUG
+	    kdDebug( 6060 ) << "An object for " << kurl.url() << " was present, but was not a stylesheet. Removing it." << endl;
+#endif
+	    removeCacheEntry( o );
+	    o = 0;
+    }
+
     if(!o)
     {
 #ifdef CACHE_DEBUG
@@ -1427,8 +1435,6 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
     }
 
     o->setExpireDate(_expireDate, true);
-
-    assert(o->type() == CachedObject::CSSStyleSheet);
 
     moveToFront(o);
 
@@ -1472,6 +1478,13 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
     }
 
     CachedObject *o = cache->find(kurl.url());
+    if ( o && o->type() != CachedObject::Script ) {
+#ifdef CACHE_DEBUG
+	    kdDebug( 6060 ) << "An object for " << kurl.url() << " was present, but was not a script. Removing it." << endl;
+#endif
+	    removeCacheEntry( o );
+	    o = 0;
+    }
     if(!o)
     {
 #ifdef CACHE_DEBUG
@@ -1483,8 +1496,6 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
     }
 
     o->setExpireDate(_expireDate, true);
-
-    assert(o->type() == CachedObject::Script);
 
     moveToFront(o);
     if ( dl ) {
