@@ -952,7 +952,7 @@ void KFilePropsPlugin::applyChanges()
 
   kdDebug(250) << "KFilePropsPlugin::applyChanges" << endl;
 
-  if (nameArea->isA("QLineEdit"))
+  if (nameArea->inherits("QLineEdit"))
   {
     QString n = KIO::encodeFileName(((QLineEdit *) nameArea)->text());
     // Remove trailing spaces (#4345)
