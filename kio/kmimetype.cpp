@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <kprotocolmanager.h>
 #include <kio/global.h>
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
@@ -187,7 +188,12 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       // Try to find it out by looking at the filename
       KMimeType * mime = KServiceTypeFactory::self()->findFromPattern( fileName );
       if ( mime )
-         return KMimeType::Ptr( mime );
+      {
+        // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
+        if ( KProtocolManager::self().mimetypeFastMode( _url.protocol(), mime->name() ) &&
+             KProtocolManager::self().patternFastMode( _url.protocol(), fileName ) )
+          return KMimeType::Ptr( mime );
+      }
 
       // Another filename binding, hardcoded, is .desktop:
       if ( fileName.right(8) == ".desktop" )

@@ -135,6 +135,24 @@ bool NetAccess::delInternal( const KURL & url )
   return bJobOK;
 }
 
+QString NetAccess::mimetypeInternal( const KURL & url )
+{
+  bJobOK = true; // success unless further error occurs
+  m_mimetype = "unknown";
+  KIO::Job * job = KIO::mimetype( url );
+  connect( job, SIGNAL( result (KIO::Job *) ),
+           this, SLOT( slotResult (KIO::Job *) ) );
+  connect( job, SIGNAL( mimetype (KIO::Job *, const QString &type) ),
+           this, SLOT( slotMimetype (KIO::Job *, const QString &type) ) );
+  qApp->enter_loop();
+  return m_mimetype;
+}
+
+void NetAccess::slotMimetype( KIO::Job *, const QString & type  )
+{
+  m_mimetype = type;
+}
+
 void NetAccess::slotResult( KIO::Job * job )
 {
   bJobOK = !job->error();

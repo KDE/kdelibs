@@ -127,10 +127,23 @@ public:
      * Delete a file or a directory in an synchronous way
      * This is a convenience function for KIO::del
      * (it saves creating a slot and testing for the job result)
-     * @param src the file or directory to delete
+     * @param url the file or directory to delete
      * @return true on success, false on failure
      */
     static bool del( const KURL & url );
+
+    /**
+     * Determines the mimetype of a given URL.
+     * This is a convenience function for KIO::mimetype.
+     * You should call this only when really necessary.
+     * KMimeType::findByURL can determine extension a lot faster, but less reliably
+     * for remote files. Only when findByURL returns unknown (application/octet-stream)
+     * then this one should be used.
+     *
+     * @param url the URL whose mimetype we are interested in
+     * @return the mimetype name
+     */
+    static QString mimetype( const KURL & url );
 
 protected:
     /** Private constructor */
@@ -141,13 +154,16 @@ protected:
     bool copyInternal(const KURL& src, const KURL& target);
     bool existsInternal(const KURL & url);
     bool delInternal(const KURL & url);
+    QString mimetypeInternal(const KURL & url);
+    QString m_mimetype;
     /** List of temporary files */
     static QStringList* tmpfiles;
     /** Whether the download succeeded or not */
     bool bJobOK;
 
 protected slots:
-    virtual void slotResult( KIO::Job * job );
+    void slotResult( KIO::Job * job );
+    void slotMimetype( KIO::Job * job, const QString & type );
 };
 
 };

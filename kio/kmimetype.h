@@ -184,7 +184,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    * VERY IMPORTANT : don't store the result in a KMimeType * !
    */
   static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
-			       bool _is_local_file = false, bool _fast_mode = false );
+                        bool _is_local_file = false, bool _fast_mode = false );
 
   /**
    * Get all the mimetypes. Useful for showing the list of
