@@ -19,7 +19,7 @@
 */
 
 #include <kstdaccel.h>
-#include "kcompletionbase.h"
+#include <kcompletion.h>
 
 
 KCompletionBase::KCompletionBase()
@@ -57,11 +57,25 @@ KCompletionBase::~KCompletionBase()
         delete m_pCompObj;
 }
 
-KCompletion* KCompletionBase::completionObject()
+KCompletion* KCompletionBase::completionObject( bool hsig )
 {
     if ( m_pCompObj == 0 )
-        setCompletionObject( new KCompletion() );
+        setCompletionObject( new KCompletion(), hsig );
     return m_pCompObj;
+}
+
+void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
+{
+    m_pCompObj = compObj;
+    m_bAutoDelCompObj = false;
+    setHandleSignals( hsig );
+    m_bEmitSignals = ( m_pCompObj != 0 ); // emit signals if comp object exists
+}
+
+void KCompletionBase::setHandleSignals( bool handle )
+{
+    connectSignals( handle );
+    m_bHandleSignals = handle;
 }
 
 void KCompletionBase::setCompletionMode( KGlobal::Completion mode )
