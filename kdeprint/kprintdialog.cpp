@@ -248,7 +248,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
  						" your intended \"poster\" or \"pamphlet\" layout"
 						" looks like you expected, without wasting paper first. It"
 						" also lets you cancel the job if something looks wrong. "
-						" <p><b>Note:</b> The preview feature (and therefor this checkbox) "
+						" <p><b>Note:</b> The preview feature (and therefore this checkbox) "
 						" is only visible for printjobs created from inside KDE applications. "
 						" If you start kprinter from the commandline, or if you use kprinter "
 						" as a print command for non-KDE applications (like Acrobat Reader, "

@@ -143,7 +143,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 			" </qt>" );
 	QString whatsThisGeneralOrientationLabel = i18n( " <qt> "
 			" <b>Selection of image orientation:</b> Orientation of the printed "
-                        " page mage on your paper is controlled by the radio buttons. By default, "
+                        " page image on your paper is controlled by the radio buttons. By default, "
                         " the orientation is <em>Portrait</em> "
                         " <p>You can select 4 alternatives: "
                         " <ul> "
