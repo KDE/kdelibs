@@ -522,17 +522,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
             return false;
             break;
-        case ID_LI:
-            e = new HTMLUListElementImpl(document);
-            e->addCSSProperty(CSS_PROP_MARGIN_LEFT, "0pt");
-            e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, CSS_VAL_INSIDE);
-            // only try to insert <LI> when <UL> succeeds.
-            // helps for <html><head><ul><li></html>
-            if(insertNode(e)) {
-                insertNode(n);
-                return true;
-            }
-            break;
 
             // the following is a hack to move non rendered elements
             // outside of tables.
