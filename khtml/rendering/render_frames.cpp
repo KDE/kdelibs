@@ -33,6 +33,7 @@
 #include <kdebug.h>
 
 #include <qlabel.h>
+#include <qstringlist.h>
 
 #include <assert.h>
 #include <kdebug.h>
@@ -465,42 +466,45 @@ RenderPartObject::~RenderPartObject()
 void RenderPartObject::close()
 {
   QString url = m_obj->url;
-  
+
   if(m_obj) {
 
-  if((url.isEmpty() || url.isNull()) && m_obj->classId.contains("D27CDB6E-AE6D-11cf-96B8-444553540000")) {
-      // Flash. Have to find the url in the param elements...
-    NodeImpl *child = m_obj->firstChild();
-    while ( child )
-      {
-	if ( child->id() == ID_PARAM )
-	  {
-	    HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
-
-	    if ( p->name().lower() == "src" )
-	      url = p->value();
+      if(m_obj->serviceType.isEmpty() || m_obj->serviceType.isNull()) {
+	  if(m_obj->classId.contains("D27CDB6E-AE6D-11cf-96B8-444553540000")) {
+	      // Flash. set the mimetype
+	      m_obj->serviceType = "application/x-shockwave-flash";
 	  }
+	  // add more plugins here
+      }	
+      if((url.isEmpty() || url.isNull())) {
+	  // look for a SRC attribute in the params
+          NodeImpl *child = m_obj->firstChild();
+	  while ( child ) {
+	      if ( child->id() == ID_PARAM ) {
+		  HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-	child = child->nextSibling();
+		  if ( p->name().lower() == "src" )
+		      url = p->value();
+	      }
+	      child = child->nextSibling();
+	  }
       }
-  }
-#if 0
-  NodeImpl *child = m_obj->firstChild();
-  while ( child )
-  {
-    if ( child->id() == ID_PARAM )
-    {
-      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+      
+      // add all <param>'s to the QStringList argument of the part
+      QStringList params;
+      NodeImpl *child = m_obj->firstChild();
+      while ( child ) {
+	  if ( child->id() == ID_PARAM ) {
+	      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-      if ( p->name() == "width" )
-        m_width = p->value().toInt();
-      else if ( p->name() == "height" )
-        m_height = p->value().toInt();
-    }
-
-    child = child->nextSibling();
-  }
-#endif
+	      QString aStr = p->name();
+	      aStr += "=\"";
+	      aStr += p->value();
+	      aStr += "\"";
+	      params.append(aStr);
+	  }
+	  child = child->nextSibling();
+      }
   }
   if ( url.isEmpty() )
     return; //ooops (-:
