@@ -46,7 +46,7 @@ int KMidSimpleAPI::kMidInit(void)
   kMid.midi->initManager();
   if (!kMid.midi->ok()) return 1;
 
-  kMid.pctlsmID=shmget(getpid(),sizeof(PlayerController),0666 | IPC_CREAT);
+  kMid.pctlsmID=shmget(getpid(),sizeof(PlayerController),0600 | IPC_CREAT);
   if (kMid.pctlsmID==-1) return 1;
   kMid.pctl=(PlayerController *)shmat(kMid.pctlsmID,NULL,0);
   if (kMid.pctl==NULL) return 1;

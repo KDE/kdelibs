@@ -350,7 +350,7 @@ void KPixmapIO::destroyShmSegment()
 void KPixmapIO::createShmSegment(int size)
 {
     destroyShmSegment();
-    d->shminfo->shmid = shmget(IPC_PRIVATE, size, IPC_CREAT|0777);
+    d->shminfo->shmid = shmget(IPC_PRIVATE, size, IPC_CREAT|0600);
     if (d->shminfo->shmid < 0)
     {
 	kdWarning(290) << "Could not get shared memory segment.\n";

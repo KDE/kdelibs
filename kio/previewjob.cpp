@@ -412,7 +412,7 @@ void PreviewJob::createThumbnail( QString pixPath )
             shmdt((char*)d->shmaddr);
             shmctl(d->shmid, IPC_RMID, 0);
         }
-        d->shmid = shmget(IPC_PRIVATE, d->width * d->height * 4, IPC_CREAT|0777);
+        d->shmid = shmget(IPC_PRIVATE, d->width * d->height * 4, IPC_CREAT|0600);
         if (d->shmid != -1)
         {
             d->shmaddr = static_cast<uchar *>(shmat(d->shmid, 0, SHM_RDONLY));
