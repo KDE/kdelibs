@@ -35,7 +35,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		ktabctl.h kstatusbar.h ktopwidget.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		kbutton.h knuminput.h kseparator.h klined.h krestrictedline.h \
-		kcolorbtn.h kiconloaderdialog.h kwmmapp.h kbuttonbox.h ktablistbox.h 
+		kcolorbtn.h kiconloaderdialog.h kwmmapp.h kbuttonbox.h ktablistbox.h \
 		kcontainer.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
 		kdbtn.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
