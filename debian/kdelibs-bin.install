@@ -29,7 +29,6 @@ debian/tmp/usr/bin/kinstalltheme
 debian/tmp/usr/bin/kio_http_cache_cleaner
 debian/tmp/usr/bin/kio_uiserver
 debian/tmp/usr/bin/kioslave
-debian/tmp/usr/bin/kgrantpty
 debian/tmp/usr/bin/klauncher
 debian/tmp/usr/bin/kmailservice
 debian/tmp/usr/bin/knotify
@@ -44,6 +43,7 @@ debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
 debian/tmp/usr/bin/xml2man
+debian/tmp/usr/bin/xmlizer
 debian/tmp/usr/lib/dcopserver.la
 debian/tmp/usr/lib/dcopserver.so
 debian/tmp/usr/lib/kaddprinterwizard.la

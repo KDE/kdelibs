@@ -21,16 +21,14 @@ debian/tmp/usr/lib/libkdefx.la
 debian/tmp/usr/lib/libkdefx.so
 debian/tmp/usr/lib/libkdeprint.la
 debian/tmp/usr/lib/libkdeprint.so
+debian/tmp/usr/lib/libkdeprint_management.la
 debian/tmp/usr/lib/libkdeprint_management.so
-debian/tmp/usr/lib/libkderesources.la
-debian/tmp/usr/lib/libkderesources.so
 debian/tmp/usr/lib/libkdesasl.la
 debian/tmp/usr/lib/libkdesasl.so
 debian/tmp/usr/lib/libkdesu.la
 debian/tmp/usr/lib/libkdesu.so
 debian/tmp/usr/lib/libkdeui.la
 debian/tmp/usr/lib/libkdeui.so
-debian/tmp/usr/lib/libkhtml.so
 debian/tmp/usr/lib/libkio.la
 debian/tmp/usr/lib/libkio.so
 debian/tmp/usr/lib/libkjava.la

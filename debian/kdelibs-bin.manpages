@@ -43,3 +43,4 @@ debian/make_driver_db_cups.1
 debian/make_driver_db_lpr.1
 debian/preparetips.1
 debian/xml2man.1
+debian/xmlizer.1
