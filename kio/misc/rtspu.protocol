@@ -1,7 +1,7 @@
 [Protocol]
-defaultMimetype=audio/x-pn-realaudio
+defaultMimetype=uri/rtspu
 exec=
-protocol=rtsp
+protocol=rtspu
 input=none
 output=none
 helper=true

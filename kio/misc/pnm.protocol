@@ -1,7 +1,7 @@
 [Protocol]
-defaultMimetype=audio/x-pn-realaudio
+defaultMimetype=uri/pnm
 exec=
-protocol=rtsp
+protocol=pnm
 input=none
 output=none
 helper=true

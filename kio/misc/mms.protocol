@@ -1,4 +1,7 @@
 [Protocol]
+helper=true
+exec=
+defaultMimetype=uri/mms
 protocol=mms
 input=none
 output=none
