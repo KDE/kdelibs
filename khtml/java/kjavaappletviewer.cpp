@@ -220,6 +220,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     setInstance (KJavaAppletViewerFactory::instance ());
     KParts::Part::setWidget (m_view);
     connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));
+    connect (applet->getContext(), SIGNAL(showDocument(const QString&, const QString&)), m_browserextension, SLOT(showDocument(const QString&, const QString&)));
     connect (applet->getContext(), SIGNAL(showStatus(const QString &)), this, SLOT(infoMessage(const QString &)));
 }
 
@@ -244,7 +245,7 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
         AppletParameterDialog (m_view).exec ();
         applet->setSize (m_view->sizeHint());
     }
-    // delay showApplet if size is unknown or if m_view already shown
+    // delay showApplet if size is unknown and if m_view already shown
     if (applet->size().width() > 0 || m_view->isVisible())
         m_view->showApplet ();
     emit started (0L);
@@ -322,6 +323,14 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
         viewer->view ()->showApplet ();
 }
 
+void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
+                                                      const QString & frame) {
+    KURL url (doc);
+    KParts::URLArgs args;
+    args.frameName = frame;
+    emit openURLRequestDelayed (url, args);
+}
+        
 //-----------------------------------------------------------------------------
 // TODO move this to kjavaappletwidget
 

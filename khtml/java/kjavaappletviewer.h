@@ -60,6 +60,8 @@ public:
     void setURLArgs (const KParts::URLArgs & args);
     void saveState (QDataStream & stream);
     void restoreState (QDataStream & stream);
+public slots:
+    void showDocument (const QString & doc, const QString & frame);
 };
 
 class KJavaAppletViewer : public KParts::ReadOnlyPart {

@@ -194,7 +194,7 @@ public final class KJASAppletStub
                 stateChange(INSTANCIATED);
                 app.setVisible(false);
                 panel.setApplet( app );
-                app.setSize(appletSize); 
+                app.setSize(appletSize.getWidth() > 0 ? appletSize : panel.getSize());
 
                 context.showStatus("Initializing Applet " + appletName + " ...");
 
@@ -255,6 +255,7 @@ public final class KJASAppletStub
                 };
                 appletThread.start();
             } else {
+                frame.validate();
                 app.start();
                 app.repaint();
             }
