@@ -28,6 +28,7 @@
 #include <qwhatsthis.h>
 #include <qwidget.h>
 
+#include <kaboutapplication.h>
 #include <kaboutdata.h>
 #include <kaboutkde.h>
 #include <kaction.h>
@@ -176,69 +177,9 @@ void KHelpMenu::aboutApplication()
   {
     if( mAboutApp == 0 )
     {
-      KAboutDialog *dlg = new KAboutDialog( KAboutDialog::AbtAppStandard,
-		kapp->caption(), KDialogBase::Ok, KDialogBase::Ok,
-		mParent, "about", false, true);
-      mAboutApp = dlg;
-      
-//      dlg->setTitle( aboutData->programName() + " " + aboutData->version());
-      dlg->setProduct( d->mAboutData->programName(), d->mAboutData->version(),
-		       QString::null, QString::null);
-
-      QString appPageText = d->mAboutData->shortDescription() + "\n";
-
-      if (!d->mAboutData->homepage().isEmpty())
-         appPageText += "\n" + d->mAboutData->homepage()+"\n";
-
-      if (!d->mAboutData->otherText().isEmpty())
-         appPageText += "\n" + d->mAboutData->otherText()+"\n";
-
-      if (!d->mAboutData->copyrightStatement().isEmpty())
-         appPageText += "\n" + d->mAboutData->copyrightStatement()+"\n";
-
-      KAboutContainer *appPage = dlg->addContainerPage( i18n("&About"));
- 
-      QLabel *appPageLabel = new QLabel( appPageText, 0 );
-      appPage->addWidget( appPageLabel );
-
-      int authorCount = d->mAboutData->authors().count();
-      if (authorCount)
-      {
-         QString authorPageTitle;
-         if (authorCount == 1)
-            authorPageTitle = i18n("A&uthor");
-         else
-            authorPageTitle = i18n("A&uthors");
-         KAboutContainer *authorPage = dlg->addContainerPage( authorPageTitle );
-         QValueList<KAboutPerson>::ConstIterator it;
-         for (it = d->mAboutData->authors().begin();
-              it != d->mAboutData->authors().end(); ++it)
-         {
-            authorPage->addPerson( (*it).name(), (*it).emailAddress(),
-                                   (*it).webAddress(), (*it).task() );
-         }
-      }
-
-      int creditsCount = d->mAboutData->credits().count();
-      if (creditsCount)
-      {
-         KAboutContainer *creditsPage = dlg->addContainerPage( i18n("&Thanks to") );
-         QValueList<KAboutPerson>::ConstIterator it;
-         for (it = d->mAboutData->credits().begin();
-              it != d->mAboutData->credits().end(); ++it)
-         {
-            creditsPage->addPerson( (*it).name(), (*it).emailAddress(),
-                                   (*it).webAddress(), (*it).task() );
-         }
-      }
-
-      if (!d->mAboutData->license().isEmpty())
-      {
-	 dlg->addTextPage( i18n("&License"), d->mAboutData->license());
-      }
- 
+      mAboutApp = new KAboutApplication( mParent, "about", false ); 
+      connect( mAboutApp, SIGNAL(hidden()), this, SLOT( dialogHidden()) );
     }
-
     mAboutApp->show();
   }
   else if( mAboutAppText.isEmpty() )
