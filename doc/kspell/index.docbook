@@ -1,0 +1,151 @@
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+ <!ENTITY kspell "<application>kspell</application>">
+ <!ENTITY % addindex "IGNORE">
+ <![ %addindex; [ <!ENTITY docindex SYSTEM "docindex.docbook"> ]]>
+]>
+<book lang="en">
+<bookinfo>
+<title>The KSpell Handbook</title>
+<authorgroup>
+<author>
+<surname>David Sweet, &lt;dsweet@chaos.umd.edu&gt;</surname>
+</author>
+</authorgroup>
+<date>Last updated 5 Oct 1999</date>
+<releaseinfo><!-- information about this particular version --></releaseinfo>
+<abstract>
+<para>KSpell is the spelling checker used by KDE applications such as KEdit,
+KMail, KRN, and KWord. It is a GUI frontend to International ISpell
+and ASpell. (If you do not have Ispell installed you can obtain it
+from the <ulink url="http://fmg-www.cs.ucla.edu/geoff/ispell.html">International ISpell home page</ulink>.  ASpell is available from the
+<ulink url="http://metalab.unc.edu/kevina/aspell/">ASpell home page</ulink>.)</para>
+<para>KSpell: Spelling checking for KDE.</para><!-- Merge this with the previous paragraph; it comes from <META NAME="description" CONTENT="..."> --></abstract>
+<keywordset>
+<keyword>kspell</keyword>
+<keyword>ispell</keyword>
+<keyword>KDE</keyword>
+<keyword>Linux</keyword>
+<keyword>spell</keyword>
+<keyword>check</keyword>
+</keywordset>
+</bookinfo>
+
+<chapter id="misspelled-word-dialog">
+<title>Misspelled Word Dialog</title>
+
+<sect1 id="general-use-">
+<title>General Use </title>
+
+<para>The top line in the dialog displays a misspelled word which was found in your
+document. KSpell attempts to find an appropriate replacement word. One or
+several may be found. The best guess is shown to the right of <emphasis>Replacement:.</emphasis>
+To accept this replacement, click on <emphasis remap="bf">Replace.</emphasis> You may also choose a word
+from the list of <emphasis remap="bf">Suggestions</emphasis> then click <emphasis remap="bf">Replace</emphasis> to replace the
+misspelled word with the chosen word.</para>
+
+<para>To keep your original spelling, click on <emphasis remap="bf">Ignore.</emphasis></para>
+
+<para>To stop the spell checking -- keeping the changes you've already made -- click
+on <emphasis remap="bf">Stop.</emphasis></para>
+
+<para>To stop the spell checking and cancel the changes you've already made, click on
+<emphasis remap="bf">Cancel.</emphasis></para>
+</sect1>
+
+<sect1 id="other-functions">
+<title>Other Functions</title>
+
+<para>Clicking on <emphasis remap="bf">Replace All</emphasis> will initially perform the same function as
+clicking on <emphasis remap="bf">Replace,</emphasis> but will automatically replace the misspelled word
+with the chosen replacement word if it appears again (at a later point) in your
+document.</para>
+
+<para>The <emphasis remap="bf">Ignore All</emphasis> button ignores this and all future occurrences of the
+misspelled word.</para>
+
+<para>Clicking on <emphasis remap="bf">Add</emphasis> will add the misspelled word to your personal dictionary
+(this is distinct from the original system dictionary, so the additions you make
+will not be seen by other users).</para>
+</sect1>
+</chapter>
+
+<chapter id="configuration-dialog-">
+<title>Configuration Dialog </title>
+
+<sect1 id="dictionaries">
+<title>Dictionaries</title>
+
+<para>You can choose the dictionary to use for spell checking from the list of
+installed dictionaries.</para>
+</sect1>
+
+<sect1 id="encodings">
+<title>Encodings</title>
+
+<para>The available character encodings are:
+<variablelist>
+<varlistentry>
+<term>7-Bit/ASCII</term>
+<listitem>
+<para>This is the character set used for English text.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>Latin1</term>
+<listitem>
+<para>This is used for Western European languages.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>Latin2</term>
+<listitem>
+<para>This is user for Eastern European languages.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<para>You should select the one that matches the character set you are using.
+In some cases, dictionaries will support more than one encoding.  A
+dictionary might, for example, accept accented characters when <emphasis>Latin1</emphasis> is
+selected, but accept email-style character combinations (like <emphasis>'a</emphasis> for an
+accented <emphasis>a</emphasis>) when <emphasis>7-Bit/ASCII</emphasis> is selected.  Please see
+your dictionary's disctribution for more information.</para>
+</sect1>
+
+<sect1 id="spell-checking-client">
+<title>Spell-checking client</title>
+
+<para>You may choose to use <emphasis>Ispell</emphasis> or <emphasis>Aspell</emphasis> as the spell-checking
+backend for <emphasis>KSpell</emphasis>.  <emphasis>Ispell</emphasis> is more widely available and may
+have better international support, but <emphasis>Aspell</emphasis> is gaining
+popularity as it claims to give better suggestions for word replacements.</para>
+</sect1>
+
+<sect1 id="other">
+<title>Other</title>
+
+<para>It is recommend that you do not change the first two options unless you have
+read the Interational ISpell man page.</para>
+</sect1>
+</chapter>
+
+<chapter id="contact-information">
+<title>Contact Information</title>
+
+<para>For more information about KSpell, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell">KSpell Home Page</ulink>. In
+particular, you will find information about programmng the KSpell C++ class.</para>
+
+<para>You mail email the author/maintainer with questions and/or comments at
+<ulink url="mailto:dsweet@kde.org">dsweet@kde.org</ulink>.</para>
+</chapter>
+<![ %addindex; [ &docindex; ]]>
+</book>
+<!--
+Local Variables:
+mode: sgml
+sgml-omittag: nil
+sgml-shorttag: t
+sgml-general-insert-case: lower
+End:
+-->
