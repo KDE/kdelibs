@@ -67,7 +67,11 @@ bool KSSLPeerInfo::certMatchesAddress() {
   QString cn = certinfo.getValue("CN");
   if (cn.startsWith("*")) {   // stupid wildcard cn
      QRegExp cnre(cn, false, true);
+#if QT_VERSION < 300
+     if (!cnre.match(d->host->nodeName())) return true;
+#else
      if (!cnre.search(d->host->nodeName())) return true;
+#endif
   } else {
 #if QT_VERSION < 300
      QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
