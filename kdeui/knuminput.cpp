@@ -234,7 +234,8 @@ void KIntNumInput::setSteps(int minor, int major)
 
 void KIntNumInput::setValue(int val)
 {
-    resetValueField(val);
+    int_value = val;
+    spin->setValue(val);
 }
 
 
