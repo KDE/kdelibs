@@ -443,6 +443,8 @@ int HTTPProtocol::openStream() {
     setMetaData("ssl_cipher_used_bits", tci);
     tci.sprintf("%d", m_ssl.connectionInfo().getCipherBits());
     setMetaData("ssl_cipher_bits", tci);
+    setMetaData("ssl_peer_ip", m_ssl_ip);
+
     return true;
   }
 #endif
@@ -707,6 +709,10 @@ HTTPProtocol::http_openConnection()
           return false;
         }
       }
+      #ifdef DO_SSL
+        m_ssl_ip = inet_ntoa(server_name.sin_addr);
+      #endif
+
     }
 
     // Set socket blocking.

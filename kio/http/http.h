@@ -303,6 +303,7 @@ protected: // Members
 #ifdef DO_SSL
   bool m_bUseSSL;
   KSSL m_ssl;
+  QString m_ssl_ip;
 #endif
 
 };
