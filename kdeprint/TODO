@@ -29,11 +29,6 @@ BUGS
 
 - Help buttons for "kprinter" and the wizard
 
-- Printer properties: "Advanced" should be changed to something like
-  "Driver Settings"
-
-- Printer filtering mechanisms should be ORed and not ANDed
-
 
 WISHES
 ------

@@ -439,3 +439,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 
 25/02/2002 Michael Goffioul <goffioul@imec.be>
   * LPR: added printer testing support
+
+26/02/2002 Michael Goffioul <goffioul@imec.be>
+  * general: printer filtering specs are now ORed instead of ANDed
+  * general: changed "Advanced" to "Driver Settings"
