@@ -89,6 +89,9 @@ public:
     void drawSliderGrooveMask(QPainter *p, int x, int y, int w, int h,
                               QCOORD, Orientation);
     int defaultFrameWidth() const {return(2);}
+
+    int popupMenuItemHeight(bool c, QMenuItem *mi, const QFontMetrics &fm);
+
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);

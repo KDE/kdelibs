@@ -944,3 +944,25 @@ void B3Style::drawFocusRect(QPainter *p, const QRect &r,
     else
         p->drawWinFocusRect( r );
 }
+
+int B3Style::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
+                                 const QFontMetrics &fm)
+{
+    if (mi->isSeparator())
+        return 2;
+
+    int h = 0;
+    if (mi->pixmap())
+        h = mi->pixmap()->height();
+
+    if (mi->iconSet())
+        h = QMAX(mi->iconSet()->
+                 pixmap(QIconSet::Small, QIconSet::Normal).height(), h);
+
+    h = QMAX(fm.height() + 4, h);
+
+    // we want a minimum size of 18
+    h = QMAX(h, 18);
+
+    return h;
+}
