@@ -339,6 +339,7 @@ if test -z "$show_help"; then
     # Only build a PIC object if we are building libtool libraries.
     if test "$build_libtool_libs" = yes; then
       # All platforms use -DPIC, to notify preprocessed assembler code.
+      fbsd_hideous_sh_bug=$base_compile # without this assignment, base_compile gets emptied
       $show "$base_compile$pic_flag -DPIC $srcfile"
       if $run eval "$base_compile\$pic_flag -DPIC \$srcfile"; then :
       else
