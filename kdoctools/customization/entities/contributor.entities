@@ -166,6 +166,8 @@
 <!ENTITY Jason.Harris.mail '<email>kstars@30doradus.org</email>'>
 <!ENTITY Simon.Hausmann '<personname><firstname>Simon</firstname><surname>Hausmann</surname></personname>'>
 <!ENTITY Simon.Hausmann.mail '<email>hausmann@kde.org</email>'>
+<!ENTITY Kurt.Hindenburg '<personname><firstname>Kurt</firstname><surname>Hindenburg</surname></personname>'>
+<!ENTITY Kurt.Hindenburg.mail '<email>kurt.hindenburg@kdemail.org</email>'>
 <!ENTITY Matthias.Hoelzer-Kluepfel '<personname><firstname>Matthias</firstname><surname>H&ouml;lzer-Kl&uuml;pfel</surname></personname>'>
 <!ENTITY Matthias.Hoelzer-Kluepfel.mail '<email>hoelzer@kde.org</email>'>
 <!ENTITY Rik.Hemsley '<personname><firstname>Rik</firstname><surname>Hemsley</surname></personname>'>
