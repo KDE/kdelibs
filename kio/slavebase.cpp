@@ -781,9 +781,17 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     // number of unnecessary calls to kdesud.
     if ( client.findGroup( grp_key ) )
     {
-        kdDebug(7019) << "Found match for group key: " << grp_key << endl;
         AuthKeysList list = client.getKeys(grp_key);
-        if ( list.count() > 0 )
+        int count = list.count();
+        // Hmmm... if we have only one match for now, we use it
+        // and if it fails the user will be prompted afterwards...
+        if ( count == 1 )
+        {
+            kdDebug(7019) << "SINGLE matching entry found for: " << auth_key << endl;
+            auth_key = list.first();
+            found = true;
+        }
+        else if ( count > 1 )
         {
             // Deal with protection space based authentications, namely HTTP.
             // It has by far the most complex scheme in terms of password
@@ -1028,7 +1036,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
             QString e = QString::fromUtf8( client.getVar(auth_key + "-extra") );
             if ( e != info.digestInfo )
             {
-                kdDebug(7019) << "Updated only digest value: "
+                kdDebug(7019) << "Updating digest info: "
                               << info.digestInfo << endl;
                 client.setVar( (auth_key + "-extra"), info.digestInfo.utf8(), 0, grp_key );
             }
