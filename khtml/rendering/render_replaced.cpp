@@ -62,14 +62,14 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
     if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-
     // overflow: hidden
     bool clipped = false;
-    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
+    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
         calcClip(p, _tx, _ty);
 	clipped = true;
     }
+
+    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 

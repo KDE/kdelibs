@@ -282,40 +282,40 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 
 void RenderBox::calcClip(QPainter* p, int tx, int ty)
 {
-    int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
-    int clipw = m_width-bl-br;
-    int cliph = m_height-bt-bb;
+    int clipw = m_width;
+    int cliph = m_height;
 
     bool rtl = (style()->direction() == RTL);
 
-    int clipleft = rtl ? clipw : 0;
-    int clipright = rtl ? 0 : clipw;
+    int clipleft = 0;
+    int clipright = clipw;
     int cliptop = 0;
-    int clipbottom = m_height-bt-bb;
+    int clipbottom = cliph;
 
-
-    if (!style()->clipLeft().isVariable()) {
-        int c = style()->clipLeft().width(clipw);
-	if ( rtl )
-	    clipleft = clipw - c;
-	else
-	    clipleft = c;
-    }
-    if (!style()->clipRight().isVariable()) {
-	int w = style()->clipRight().width(clipw);
-	if ( rtl ) {
-	    clipright = clipw - w;
-	} else {
-	    clipright = w;
+    if ( style()->clipSpecified() && style()->position() == ABSOLUTE ) {
+	// the only case we use the clip property according to CSS 2.1
+	if (!style()->clipLeft().isVariable()) {
+	    int c = style()->clipLeft().width(clipw);
+	    if ( rtl )
+		clipleft = clipw - c;
+	    else
+		clipleft = c;
 	}
+	if (!style()->clipRight().isVariable()) {
+	    int w = style()->clipRight().width(clipw);
+	    if ( rtl ) {
+		clipright = clipw - w;
+	    } else {
+		clipright = w;
+	    }
+	}
+	if (!style()->clipTop().isVariable())
+	    cliptop = style()->clipTop().width(cliph);
+	if (!style()->clipBottom().isVariable())
+	    clipbottom = style()->clipBottom().width(cliph);
     }
-    if (!style()->clipTop().isVariable())
-        cliptop = style()->clipTop().width(cliph);
-    if (!style()->clipBottom().isVariable())
-	clipbottom = style()->clipBottom().width(cliph);
-
-    int clipx = tx+bl + clipleft;
-    int clipy = ty+bt + cliptop;
+    int clipx = tx + clipleft;
+    int clipy = ty + cliptop;
     clipw = clipright-clipleft;
     cliph = clipbottom-cliptop;
 

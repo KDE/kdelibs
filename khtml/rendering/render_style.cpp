@@ -408,7 +408,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	 !(noninherited_flags._overflow == other->noninherited_flags._overflow) ||
 	 !(noninherited_flags._bg_repeat == other->noninherited_flags._bg_repeat) ||
 	 !(noninherited_flags._bg_attachment == other->noninherited_flags._bg_attachment) ||
-	 !(noninherited_flags._jsClipMode == other->noninherited_flags._jsClipMode) ||
+	 !(noninherited_flags._clipSpecified == other->noninherited_flags._clipSpecified) ||
 	 !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
 	 *background.get() != *other->background.get()
 	)

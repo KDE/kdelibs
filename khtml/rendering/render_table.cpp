@@ -360,7 +360,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
     bool clipped = false;
     // overflow: hidden
-    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
+    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
         calcClip(p, _tx, _ty);
 	clipped = true;
     }
@@ -1097,13 +1097,6 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
     tx += m_x;
     ty += m_y;
 
-    bool clipped = false;
-    // overflow: hidden
-    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
-        calcClip(p, tx, ty);
-	clipped = true;
-    }
-
     // check which rows and cols are visible and only print these
     // ### fixme: could use a binary search here
     unsigned int startrow = 0;
@@ -1145,13 +1138,6 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 	    cell->print( p, x, y, w, h, tx, ty);
 	}
     }
-
-    // overflow: hidden
-    // restore clip region
-    if ( clipped ) {
-	p->restore();
-    }
-
 }
 
 void RenderTableSection::recalcCells()

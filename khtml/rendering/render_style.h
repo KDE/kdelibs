@@ -556,7 +556,7 @@ protected:
         PseudoId _styleType : 3;
         bool _hasHover : 1;
         bool _hasActive : 1;
-        bool _jsClipMode : 1;
+        bool _clipSpecified : 1;
         EUnicodeBidi _unicodeBidi : 2;
     } noninherited_flags;
 
@@ -616,7 +616,7 @@ protected:
 	noninherited_flags._styleType = NOPSEUDO;
 	noninherited_flags._hasHover = false;
 	noninherited_flags._hasActive = false;
-	noninherited_flags._jsClipMode = false;
+	noninherited_flags._clipSpecified = false;
 	noninherited_flags._unicodeBidi = UBNormal;
     }
 
@@ -704,7 +704,7 @@ public:
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
-    bool jsClipMode() const { return noninherited_flags._jsClipMode; }
+    bool clipSpecified() const { return noninherited_flags._clipSpecified; }
 
     EUnicodeBidi unicodeBidi() const { return noninherited_flags._unicodeBidi; }
 
@@ -811,7 +811,7 @@ public:
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
     void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
     void setClip( Length top, Length right, Length bottom, Length left );
-    void setJsClipMode( bool b ) { noninherited_flags._jsClipMode = b; }
+    void setClipSpecified( bool b ) { noninherited_flags._clipSpecified = b; }
 
     void setUnicodeBidi( EUnicodeBidi b ) { noninherited_flags._unicodeBidi = b; }
 

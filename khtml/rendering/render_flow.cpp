@@ -165,19 +165,16 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
         relativePositionOffset(_tx, _ty);
 
 
-    // 1. print background, borders etc
-    if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
-        printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-
-
     bool clipped = false;
     // overflow: hidden
-    if (style()->overflow()==OHIDDEN || style()->jsClipMode() ) {
+    if (style()->overflow()==OHIDDEN || (style()->position() == ABSOLUTE && style()->clipSpecified()) ) {
         calcClip(p, _tx, _ty);
 	clipped = true;
     }
 
-
+    // 1. print background, borders etc
+    if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
+        printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. print contents
     RenderObject *child = firstChild();
