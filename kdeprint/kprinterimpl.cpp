@@ -454,7 +454,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 	{
 		if ( !printer->option( "kde-special-command" ).isEmpty() )
 		{
-			KXmlCommand *cmd = KXmlCommandManager::self()->loadCommand( printer->option( "kde-special-command" ) );
+			KXmlCommand *cmd = KXmlCommandManager::self()->loadCommand( printer->option( "kde-special-command" ), true );
 			if ( cmd )
 			{
 				mimeTypes = cmd->inputMimeTypes();
