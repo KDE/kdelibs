@@ -1,8 +1,8 @@
 /* This file is part of the KDE libraries
     Copyright  (C) 1997 Stephan Kulow (coolo@kde.org)
-               (C) 1997 Sven Radej (sven.radej@iname.com)
-               (C) 1997 Matthias Ettrich (ettrich@kde.org)
-			   (C) 1999 Chris Schlaeger (cs@kde.org)
+               (C) 1997-99 Sven Radej (sven.radej@iname.com)
+               (C) 1997-99 Matthias Ettrich (ettrich@kde.org)
+               (C) 1999 Chris Schlaeger (cs@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,25 +27,73 @@
 #include <kmenubar.h>
 #include <kwm.h>
 #include <ktmlayout.h>
+#include <qsessionmanager.h>
 //#include <qobjcoll.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
 
-KTMainWindow::KTMainWindow( const char *name )
-    : QWidget( 0L, name )
+static bool commitingData = false;
+
+class KTLWSessionManaged : public KSessionManaged
+{
+public:
+    KTLWSessionManaged()
+    {
+    };
+    ~KTLWSessionManaged()
+    {
+    }
+    bool saveState( QSessionManager& )
+    {
+	if ( KTMainWindow::memberList->first() ){
+	    // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
+	    // hook is usefull for better document orientation
+	    KTMainWindow::memberList->first()->saveData(kapp->getSessionConfig());
+	}
+
+	QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
+	int n = 0;
+	KConfig* config = KApplication::getKApplication()->getSessionConfig();
+	config->setGroup("Number");
+	config->writeEntry("NumberOfWindows", KTMainWindow::memberList->count());
+	for (it.toFirst(); it.current(); ++it){
+	    n++;
+	    it.current()->savePropertiesInternal(config, n);
+	}
+	return TRUE;
+    }
+
+    bool commitData( QSessionManager& sm )
+    {
+	// we do the Windows-thing here: close the windows step by
+	// step until it's cancelled.
+	
+	// not really a fast method but the only compatible one 
+	if ( sm.allowsInteraction() ) { 
+	    bool cancelled = false;
+	    commitingData = true;
+	    for ( KTMainWindow* it = KTMainWindow::memberList->first(); 
+		  it && !cancelled; 
+		  it = KTMainWindow::memberList->next() ) {
+		cancelled = !it->close();
+	    }
+	    commitingData = false;
+	    return !cancelled;
+	}
+    }
+};
+
+static KTLWSessionManaged* ksm = 0;
+
+
+KTMainWindow::KTMainWindow( const char *name, WFlags f )
+    : QWidget( 0L, name, f )
 {
     kmenubar = 0L;
     kmainwidget = 0L;
     kstatusbar = 0L;
     borderwidth = 0;
-
-    // set the specified icons
-    KWM::setIcon(winId(), kapp->getIcon());
-    KWM::setMiniIcon(winId(), kapp->getMiniIcon());
-    // set a short icon text
-    // TODO: try to make this as unicode compatible as possible
-    XSetIconName( qt_xdisplay(), winId(), kapp->getCaption().ascii() );
 
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
@@ -53,30 +101,21 @@ KTMainWindow::KTMainWindow( const char *name )
     kmainwidgetframe ->setLineWidth(0);
     kmainwidgetframe ->hide();
 
-    // If the application does not yet have a top widget, make it this one
-
-
-    // Enable session management (Matthias)
-    setUnsavedData(false);
-    if( !kapp->topWidget() ){
-      kapp->setTopWidget( this );
-      kapp->enableSessionManagement();
-      connect(kapp, SIGNAL(saveYourself()), SLOT(saveYourself()));
-    }
+    kapp->setTopWidget( this );
 
     // see if there already is a member list
     if( !memberList )
       memberList = new QList<KTMainWindow>;
+    
+    if ( !ksm )
+	ksm = new KTLWSessionManaged();
 
     // enter the widget in the list of all KTWs
     memberList->append( this );
 
-    // finally set the caption
-    setCaption(kapp->getCaption());
 
     localKill = false;
-
-	layoutMgr = 0;
+    layoutMgr = 0;
 }
 
 KTMainWindow::~KTMainWindow()
@@ -105,14 +144,6 @@ KTMainWindow::~KTMainWindow()
   }
 
 
-  // if this was the topWidget, find a new one to be it
-  if( kapp && kapp->topWidget() == this ){
-    KTMainWindow* pTemp = 0;
-    if( ( pTemp = memberList->getFirst() ) )
-	kapp->setTopWidget( pTemp );
-    else
-	kapp->setTopWidget( 0 );
-  }
   /* I'm not sure if the layoutMgr is deleted by Qt. So I leave it out until
    * I have some time to look at this further. */
 //  delete layoutMgr;
@@ -121,33 +152,18 @@ KTMainWindow::~KTMainWindow()
 }
 
 
-void KTMainWindow::deleteAll(){
-  KTMainWindow* w;
-  if (memberList){
-    for (w = memberList->first(); w; w = memberList->next()){
-      delete w;
-    }
-    memberList->clear();
-  }
-}
-
 void KTMainWindow::closeEvent ( QCloseEvent *e){
-  if (queryClose())
-  {
-    e->accept();
-    if (memberList->count() == 1) // last window close accepted?
-    {
-      if (queryExit())            // Yes, Quit app?
-      {
-		  /* I'm not sure this is a wise thing to do here. It's crashing the
-		   * app so I comment it out. We have to see if this is a memory leak
-		   * or not. CS */
-//        delete this;              // Yes, delete this...
-        kapp->quit();             // ...and quit aplication.
-      }                           //--------------------------------
-    }
-    else                         // It was not last window...
-      delete this;               // ...so only delete this. (sven)
+  if (queryClose()) {
+      e->accept();
+
+      if (memberList->count() == 1) { // last window close accepted?
+	  if ( commitingData || queryExit() ) {            // Yes, Quit app?
+	      kapp->quit();             // ...and quit aplication.
+	  }  else {
+	      // cancel closing, it's stupid to end up with no windows at all....
+	      e->ignore();
+	  }
+      }
   }
 }
 
@@ -297,31 +313,8 @@ void KTMainWindow::saveData(KConfig*)
 {
 }
 
-void KTMainWindow::saveYourself(){
-  // Do session management (Matthias)
-  if (kapp->topWidget() != this)
-    return;
-
-  // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
-  // hook is usefull for better document orientation
-
-  saveData(kapp->getSessionConfig());
-
-  QListIterator<KTMainWindow> it(*memberList);
-  int n = 0;
-  KConfig* config = KApplication::getKApplication()->getSessionConfig();
-  config->setGroup("Number");
-  config->writeEntry("NumberOfWindows", memberList->count());
-  for (it.toFirst(); it.current(); ++it){
-    n++;
-    it.current()->savePropertiesInternal(config, n);
-  }
-  // According to Jochen, config is synced in kapp already
-  // config->sync();
-}
 
 
-//Matthias
 void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
 {
     QString entry;
@@ -334,10 +327,10 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     s.prepend("WindowProperties");
     config->setGroup(s);
 
-    // store the className for later restorating (Matthias)
+    // store the className for later restorating 
     config->writeEntry("ClassName", className());
 
-    //use KWM for window properties (Matthias)
+    //use KWM for window properties 
     config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
     entryList.clear();
 
@@ -416,11 +409,8 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     saveProperties(config);
 }
 
-//Matthias
 bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 {
-    // All comments by sven
-
     QString entry;
     QStrList entryList;
     int n = 1; // Tolbar counter. toolbars are counted from 1,
@@ -435,7 +425,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	return FALSE;
       }
 
-    // Use KWM for window properties  (Matthias)
+    // Use KWM for window properties 
     QString geom = config->readEntry ("KTWGeometry");
     if (!geom.isEmpty()){
       setGeometry(KWM::setProperties(winId(), geom));
@@ -457,10 +447,10 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             //debug ("KTWreadProps: bad number of kmenubar args");
             return FALSE;
         }
-	bool showmenubar = false;  //Matthias
+	bool showmenubar = false; 
         entry = entryList.first();
         if (entry=="Enabled")
-	  showmenubar = True; //Matthias
+	  showmenubar = True;
         else
 	  kmenubar->hide();
 	
@@ -482,7 +472,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 		showmenubar = true;
 	    }
         entryList.clear();
-	if (showmenubar) //Matthias
+	if (showmenubar)
 	  kmenubar->show();
     }
     KToolBar *toolbar;
@@ -502,10 +492,10 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             return FALSE;
         }
 
-	bool showtoolbar = false;  //Matthias
+	bool showtoolbar = false;
         entry = entryList.first();
         if (entry=="Enabled")
-	  showtoolbar = true; //Matthias
+	  showtoolbar = true;
         else
 	  toolbar->enable(KToolBar::Hide);
 
@@ -527,7 +517,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	    toolbar->show();
         }
 	if (showtoolbar)
-	  toolbar->enable(KToolBar::Show); //Matthias
+	  toolbar->enable(KToolBar::Show);
         n++; // next toolbar
         entryList.clear();
     }
@@ -549,7 +539,6 @@ void KTMainWindow::setMaximumToolBarWraps(unsigned int wraps)
 	layoutMgr->setMaximumWraps(wraps);
 }
 
-//Matthias
 bool KTMainWindow::canBeRestored(int number){
   if (!kapp->isRestored())
     return false;
@@ -561,7 +550,6 @@ bool KTMainWindow::canBeRestored(int number){
   return (number >= 1 && number <= n);
 }
 
-//Matthias
 const QString KTMainWindow::classNameOfToplevel(int number){
   if (!kapp->isRestored())
     return "";
@@ -580,7 +568,6 @@ const QString KTMainWindow::classNameOfToplevel(int number){
 
 
 
-//Matthias
 bool KTMainWindow::restore(int number){
   if (!canBeRestored(number))
     return false;
@@ -591,16 +578,12 @@ bool KTMainWindow::restore(int number){
   }
   return false;
 }
-// Matthias
-void KTMainWindow::setUnsavedData( bool b){
-  KWM::setUnsavedDataHint(winId(), b);
-}
 
 bool KTMainWindow::event(QEvent* ev)
 {
 	/* We will get a layout hint when the view widget or a bar changes it's
 	 * size constraines. Since we might have to adjust the window size we
-	 * call updateGeometry. 
+	 * call updateGeometry.
 	 * It has been added thanks to Nicolas Hadacek's hint. CS */
     if (ev->type() == QEvent::LayoutHint)
 		updateRects();
@@ -639,7 +622,7 @@ KStatusBar *KTMainWindow::statusBar()
 void KTMainWindow::setStatusBar (KStatusBar *statusbar)
 {
   kstatusbar = statusbar;
-  if ( kstatusbar ) 
+  if ( kstatusbar )
     connect( kstatusbar, SIGNAL( moved() ), this, SLOT( updateRects() ) );
   updateRects ();
 }

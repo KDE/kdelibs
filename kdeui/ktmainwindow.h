@@ -90,6 +90,7 @@ class KTMainWindow : public QWidget {
     Q_OBJECT
 
         friend class KToolBar;
+        friend class KTLWSessionManaged;
 
 public:
     /**
@@ -97,24 +98,12 @@ public:
      * Note that for session management to work, KTMainWindow widget
      * must be created with 'new'.
      */
-    KTMainWindow( const char *name = 0L );
+    KTMainWindow( const char *name = 0L, WFlags f= WDestructiveClose );
     /**
      * Destructor. Will also destroy the toolbars, and menubar if
      * needed.
      */
     ~KTMainWindow();
-
-    /** Deletes all KTMainWindows. This is a good thing to call before
-	 * an applications wants to exit via kapp->quit(). Rationale: The
-	 * destructors of main windows may want to delete other widgets
-	 * as well. Now, if an application calls kapp->quit() then Qt
-	 * will destroy all widgets in a somewhat random order which may
-	 * result in double-free'ed memory (=segfault). Since not every
-	 * program checks for QApplication::closingDown() before deleting
-	 * a widget, calling KTMainWindow::deleteAll() before is a good
-	 * and proper solution.
-     */
-	static void deleteAll();
 
     /**
      * Add a toolbar to the widget.
@@ -128,7 +117,6 @@ public:
      * with @ref #toolBar (index) instead and the KTMainWindow will
      * create it for you. Anyway addToolBar() is usefull if you want
      * to pass additional arguments to the toolbar's constructor.
-     * (Matthias)
      */
     int addToolBar( KToolBar *toolbar, int index = -1 );
 
@@ -302,37 +290,22 @@ public:
      * @see #restore
      * @see #classNameOfToplevel
      *
-     *(Matthias)
      */
     static bool canBeRestored(int number);
 
     /**
      * Returns the className of the numberth toplevel window which
      * should be restored. This is only usefull if you application uses
-     * different kinds of toplevel windows. (Matthias)
+     * different kinds of toplevel windows.
      */
     static const QString classNameOfToplevel(int number);
- 
+
     /**
      * Restores the specified number. Returns "False" if this
      * fails, otherwise returns "True" and shows the window
      * You should call @ref canBeRestored first.
      */
     bool restore(int number);
-
-    /**
-     * Tells the session manager wether the window contains
-     * unsaved data which cannot be stored in temporary files
-     * during saveYourself. Note that this is somewhat bad style.
-     * A really good KDE application should store everything in
-     * temporary recover files. Kapplication has some nifty support
-     * for that.
-     *
-     * Default is False == No unsaved data.
-     * @see KApplication::tempSaveName
-     */
-    void setUnsavedData( bool );
-
 
 protected:
     /**
@@ -342,11 +315,11 @@ protected:
      */
     virtual void resizeEvent( QResizeEvent *e);
 
-	/**
-	 * We need to trap the layout hint. Otherwise we will miss when our
-	 * view widget or some bar changes the size constrains on it's own.
-	 */
-	virtual bool event(QEvent *);
+    /**
+     * We need to trap the layout hint. Otherwise we will miss when our
+     * view widget or some bar changes the size constrains on it's own.
+     */
+    virtual bool event(QEvent *);
 
     /**
      * Default implementation just calls repaint (FALSE); You may
@@ -361,9 +334,9 @@ protected:
     virtual void focusOutEvent ( QFocusEvent *);
 
     /**
-     * This is called when the widget is closed.
-     * The default implementation will also destroy the
-     * widget.(Matthias)
+     * Reimplemented to call the queryClose() and queryExit() handlers.
+     * Please do not reimplement closeEvent directly but use queryClose() 
+     * in your KDE applications. 
      */
     virtual void closeEvent ( QCloseEvent *);
 
@@ -376,18 +349,38 @@ protected:
      * achived by overloading the @ref #queryExit () method.  The default
      * implementation simply returns TRUE, which means that the
      * application will be quitted. FALSE will cancel the exiting
-     * process. (Matthias)
-     * Note, if you cancel exiting, your application will live on without
-     * windows (sven).
+     * process. 
+     *
+     * If you cancel exiting, your last window will remain visible.
      * @see #queryClose
      */
     virtual bool queryExit();
 
     /**
-     * Called before window is closed.
-     * Reimplement this function if you want to ignore/accept close event.
-     * Default implementation returns true. Returning false will ignore
-     * closing. (sven)
+     * Called before window is closed, either by the user or indirectely by
+     * the session manager in "safely quit all applications"-mode.
+     *
+     * Default implementation returns true. Returning false will cancel
+     * the closing.
+     *
+       Reimplement this function to prevent the user from loosing data. 
+       Example:
+       
+           switch ( QMessageBox::warning( this, "Appname",
+				   i18n("Save changes to Document Foo?"),
+				   i18n("&Yes"),
+				   i18n("&No"),
+				   i18n("Cancel"),
+				   0, 2) ) {
+           case 0: // yes
+	// save document here. If saving fails, return FALSE;
+	return TRUE;
+           case 1: // no
+	return TRUE;
+           default: // cancel
+	return FALSE;
+
+     *
      * @see #queryExit
      */
     virtual bool queryClose();
@@ -398,10 +391,9 @@ protected:
      * since KTMainWindow uses one group for each window.
      * Please overload these function in childclasses.
      *
-     * Note that any interaction or X calls are forbidden
+     * Note that no user interaction is possible
      * in these functions!
      *
-     * (Matthias)
      */
     virtual void saveProperties(KConfig*){};
 
@@ -434,11 +426,6 @@ protected slots:
    virtual void updateRects();
 
 private slots:
-   /**
-    * React on the request of the session manager (Matthias)
-    */
-   void saveYourself();
-
    /**
     * Notices when toolbar is deleted.
     */
@@ -495,8 +482,6 @@ private:
    bool localKill;
 
    KTMLayout* layoutMgr;
-
-   // Matthias
 
 protected:
 
