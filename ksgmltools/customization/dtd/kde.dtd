@@ -31,7 +31,7 @@
 
       <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
 
-    and use kde.cat as the catalogue file.
+    and use catalog as the catalogue file.
 -->
 
 
@@ -48,9 +48,7 @@
 <!NOTATION PNG		SYSTEM "PNG"				     >
 
 
-<!ENTITY % kde.compulsory.id "INCLUDE"				     >
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE"		     >
-<!ENTITY % kde.compulsory.fpi "IGNORE"                               >
 <!-- Modifications in hierarchy
      %rdbhier2; is called in the DocBook DTD
  -->

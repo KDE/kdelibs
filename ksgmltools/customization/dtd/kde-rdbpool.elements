@@ -25,22 +25,30 @@
 
     Refer to this DTD as
 
-      "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
+      "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN"
 
     For instance
 
       <!ENTITY % rdbpool PUBLIC
-       "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN">
+       "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN">
 
     It is recommended to use kde.cat as the catalogue file.
+
+    Set to IGNORE:                      to revert from KDE customisation for:
+    kde.remove.unused.elements          some elements unlikely to be used
 -->
 
-<!ENTITY % kde.rdbpool "INCLUDE">
-<![ %kde.rdbpool; [
-
+<!-- Elements which are unlikely to be useful in the KDE documentation,
+     because their purpose is either to markup already existing documents
+     or because there are automatic means of obtaining the same effect 
+ -->
+<!ENTITY % kde.remove.unused.elements "INCLUDE">
+<![ %kde.remove.unused.elements; [
 <!ENTITY % graphic.module "IGNORE">
 <!ENTITY % inlinegraphic.module "IGNORE">
 <!ENTITY % confgroup.content.module "IGNORE">
+<!ENTITY % graphicco.module "IGNORE">
+<!-- end of kde.remove.unused.elements -->]]>
 
 <!-- KDE Languages
      To keep the language tags conform to RFC 1766 
@@ -61,8 +69,6 @@
      personally, I speak a language, not a locale.
  -->
 <!ENTITY % lang.attrib
-        --Lang: Indicator of language in which element is written, for
-        translation, character set management, etc.; no default--
         "Lang           (af|bg|br|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
                         |es|et|eu|fi|fr|ga|he|hr|hu|id|is|it|ja|ko|lt
                         |mi|mk|nl|no|nb|nn|pl|pt|pt-BR|pt-PT|ro|ru|si
@@ -149,5 +155,3 @@ zh      Chinese
                 |%ndxterm.class;
                 %local.bibliocomponent.mix;">
 <!-- End of compulsory ReleaseInfo -->]]>
-
-<!-- End of kde.pool        -->]]>
