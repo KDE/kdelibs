@@ -43,8 +43,8 @@ class KConfig;
  *   if(KAutoConfigDialog::showDialog("settings"))
  *     return;
  *   KAutoConfigDialog *dialog = new KAutoConfigDialog(this, "settings");
- *   dialog->addPage(new General(0, "General"), i18n("General"), "General", "package_settings");
- *   dialog->addPage(new Appearance(0, "Appearance"), i18n("Appearance"), "Style", "style");
+ *   dialog->addPage(new General(0, "General"), i18n("General")", "package_settings");
+ *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance"), "style");
  *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(loadSettings()));
  *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(loadSettings()));
  *   dialog->show();
@@ -157,7 +157,7 @@ public:
 		                  const QString &pixmapName,
 				  const QString &header=QString::null,
 				  bool manage=true){
-  addPage( page, itemName, page->name(), pixmapName, header, manage);
+    addPage( page, itemName, page->name(), pixmapName, header, manage);
   }
 
 
