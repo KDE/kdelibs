@@ -39,6 +39,7 @@ public:
     }
     static bool isSynchronizing()
     {
+        init();
         return s_sync;
     }
 
@@ -48,6 +49,7 @@ public:
     }
     static bool implicitSelection()
     {
+        init();
         return s_implicitSelection;
     }
 
