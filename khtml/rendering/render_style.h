@@ -53,18 +53,18 @@ public:
     }
 
     const DATA* operator->() const
-    {    	
+    {
     	return data;
     }
-    
+
     const DATA* get() const
-    {    	
+    {
     	return data;
     }
 
 
     DATA* access()
-    {    	
+    {
     	if (!data->hasOneRef())
 	{
 	    data->deref();
@@ -91,7 +91,7 @@ public:
     	data = d.data;
 
 	data->ref();
-	
+
 	return *this;
     }
 
@@ -179,8 +179,8 @@ public:
 	width = 3; // medium is default value
 	style = BNONE;
     }
-    unsigned short width;
     QColor color;
+    unsigned short width : 12;
     EBorderStyle style : 4;
 
     bool nonZero() const { return width!=0 && style!=BNONE; }
@@ -202,7 +202,7 @@ public:
 
     bool hasBorder() const
     {
-    	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();	
+    	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();
     }
 
     bool operator==(const BorderData& o) const
@@ -228,7 +228,6 @@ public:
     LengthBox margin;
     LengthBox padding;
     BorderData border;
-
 };
 
 
@@ -401,7 +400,7 @@ public:
     void setDefaultValues()
     {
 	letter_spacing = 0;
-	word_spacing = 0;	
+	word_spacing = 0;
 	line_height = Length(100, Percent);
 	indent = Length(0, Fixed);
 	border_spacing = 0;
@@ -421,9 +420,8 @@ public:
 	font = o.font;
 	color = o.color;
 	decoration_color = o.decoration_color;
-//////////////// patched by S.G. Hwang /////////////////////
 	letter_spacing = 0;
-	word_spacing = 0;	
+	word_spacing = 0;
     }
 
     bool operator==(const StyleInheritedData& o) const
@@ -434,9 +432,6 @@ public:
     Length indent;
     Length line_height;
 
-//////////////// patched by S.G. Hwang /////////////////////
-    //unsigned int letter_spacing : 8;
-    //unsigned int word_spacing : 8;
     int letter_spacing : 8;
     int word_spacing : 8;
 
@@ -470,12 +465,12 @@ enum EListStyleType {
 };
 
 enum EListStylePosition { OUTSIDE, INSIDE };
-    	
+
 enum EVisiblity { VISIBLE, HIDDEN, COLLAPSE };
 
-enum ECursor { 
+enum ECursor {
     CURSOR_AUTO, CURSOR_DEFAULT, CURSOR_CROSS, CURSOR_POINTER, CURSOR_MOVE,
-    CURSOR_E_RESIZE, CURSOR_NE_RESIZE, CURSOR_NW_RESIZE, CURSOR_N_RESIZE, CURSOR_SE_RESIZE, CURSOR_SW_RESIZE, 
+    CURSOR_E_RESIZE, CURSOR_NE_RESIZE, CURSOR_NW_RESIZE, CURSOR_N_RESIZE, CURSOR_SE_RESIZE, CURSOR_SW_RESIZE,
     CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
 };
 
@@ -488,7 +483,7 @@ enum EDisplay {
     TABLE_COLUMN_GROUP, TABLE_COLUMN, TABLE_CELL,
     TABLE_CAPTION, NONE
 };
-    
+
 class RenderStyle
 {
 public:
@@ -496,7 +491,7 @@ public:
 
     // LINK is only used in the CSSStyleSelector, to get the pseudo style for :hover right.
     enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER, LINK };
-    
+
 protected:
 
     EDisplay _display : 5;
@@ -514,7 +509,7 @@ protected:
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
     ECursor _cursor : 4;
-    
+
     bool _htmlHacks :1;
 
 // don't inherit
@@ -529,7 +524,7 @@ protected:
     EFloat _floating : 2;
 
     bool _flowAroundFloats :1;
-    
+
     PseudoId _styleType:3;
 
     static RenderStyle* _default;
@@ -545,20 +540,20 @@ protected:
 
 // list of associated pseudo styles
     RenderStyle* pseudoStyle;
-    
+
     void setBitDefaults();
 
-public:        
-        
+public:
+
     RenderStyle();
     // used to create the default style.
     RenderStyle(bool _default);
     RenderStyle(const RenderStyle&);
     RenderStyle(const RenderStyle* inheritParent);
     ~RenderStyle();
-    
+
     PseudoId styleType() { return _styleType; }
-    
+
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
     void removePseudoStyle(PseudoId pi);
@@ -603,7 +598,7 @@ public:
     { if (surround->border.right.style == BNONE) return 0; return surround->border.right.width; }
     EBorderStyle    borderRightStyle() const {  return surround->border.right.style; }
     const QColor &  	    borderRightColor() const {  return surround->border.right.color; }
-    unsigned short  borderTopWidth() const 
+    unsigned short  borderTopWidth() const
     { if(surround->border.top.style == BNONE) return 0; return surround->border.top.width; }
     EBorderStyle    borderTopStyle() const {return surround->border.top.style; }
     const QColor &  borderTopColor() const {  return surround->border.top.color; }
@@ -673,7 +668,7 @@ public:
     Length paddingRight() const {  return surround->padding.right; }
 
     ECursor cursor() const { return _cursor; }
-    
+
 // attribute setter methods
 
     void setDisplay(EDisplay v) { _display = v; }
@@ -695,13 +690,13 @@ public:
 
     void setBorderLeftWidth(unsigned short v)   {  SET_VAR(surround,border.left.width,v) }
     void setBorderLeftStyle(EBorderStyle v)     {  SET_VAR(surround,border.left.style,v) }
-    void setBorderLeftColor(const QColor & v)   {  SET_VAR(surround,border.left.color,v) }    
+    void setBorderLeftColor(const QColor & v)   {  SET_VAR(surround,border.left.color,v) }
     void setBorderRightWidth(unsigned short v)  {  SET_VAR(surround,border.right.width,v) }
     void setBorderRightStyle(EBorderStyle v)    {  SET_VAR(surround,border.right.style,v) }
-    void setBorderRightColor(const QColor & v)  {  SET_VAR(surround,border.right.color,v) }    
+    void setBorderRightColor(const QColor & v)  {  SET_VAR(surround,border.right.color,v) }
     void setBorderTopWidth(unsigned short v)    {  SET_VAR(surround,border.top.width,v) }
     void setBorderTopStyle(EBorderStyle v)      {  SET_VAR(surround,border.top.style,v) }
-    void setBorderTopColor(const QColor & v)    {  SET_VAR(surround,border.top.color,v) }    
+    void setBorderTopColor(const QColor & v)    {  SET_VAR(surround,border.top.color,v) }
     void setBorderBottomWidth(unsigned short v) {  SET_VAR(surround,border.bottom.width,v) }
     void setBorderBottomStyle(EBorderStyle v)   {  SET_VAR(surround,border.bottom.style,v) }
     void setBorderBottomColor(const QColor & v) {  SET_VAR(surround,border.bottom.color,v) }
@@ -709,7 +704,7 @@ public:
     void setOverflow(EOverflow v) { _overflow = v; }
     void setVisiblity(EVisiblity v) { _visiblity = v; }
     void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
-    
+
     void setClipLeft(Length v) { SET_VAR(visual,clip.left,v) }
     void setClipRight(Length v) { SET_VAR(visual,clip.right,v) }
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
@@ -765,7 +760,7 @@ public:
     void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
     void setCursor( ECursor c ) { _cursor = c; }
-    
+
     bool htmlHacks() const { return _htmlHacks; }
     void setHtmlHacks(bool b=true) { _htmlHacks = b; }
 
@@ -774,9 +769,9 @@ public:
 
     int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }
-    
 
-    
+
+
 };
 
 } // namespace
