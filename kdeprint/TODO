@@ -10,14 +10,6 @@ BUGS
   ppdfile=/etc/foomatic/<queue_name>.ppd to the printcap entry (for
   use with gpr)
 
-- kdeprintfax improvement related to Hylafax:
-	. think about possibility to schedule the fax sending using
-	  the -a <time> flag
-	. add the possibility to add fax numbers to the ab instead of
-	  simply saying there's no fax number
-
-- Help buttons for "kprinter" and the wizard
-
 
 WISHES
 ------
@@ -59,3 +51,7 @@ WISHES
 - Should think about a plugin mechanism for LPR plugin so that 
   distro specific code could be added as separate packages without
   loosing the independemt character of KDE (ex: SuSE/Lpdfilter support)
+
+- allow preview with kprinter: may be useful for PS files coming from
+  other apps (GNOME). Ex: use a --with-preview option, and don't not
+  allow to preview non-PS files

@@ -475,3 +475,48 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 10/03/2002 Michael Goffioul <goffioul@imec.be>
   * CUPS: allow any integer value for RIPCache + don't upload the cupsd.conf
     with wrong settings
+
+(CeBIT) Michael Goffioul <goffioul@imec.be>
+  * Fix various crashes:
+  	. when changing the CUPS server (notify registered object before
+	  reloading)
+	. when building the driver DB: don't destroy the progress dlg
+  * job viewer: possibility to view only the jobs of the current user
+  * CUPS: "dynamic" changing of the text margins in the preview using
+    rubber bands
+  * general: started generealization of a margin widget to configure the
+    margins of the KPrinter object
+
+25/03/2002 Michael Goffioul <goffioul@imec.be>
+  * general: do not use pointers in various views, to avoid dangling
+    pointers (and crashes) when changing something (plugin, config file, ...).
+    This makes the aboutToReload functions quite useless, but it has to
+    be tested.
+  * general: finished the generic print margins widget to be used in non
+    full page mode. Requires a patched Qt (hope TrollTech will add the
+    missing setMargins soon) -> cannot be commited.
+  * general: added help button to the wizard and the print dialog. They
+    are connected to the main help (should probably add an anchor to go
+    directly to the associated part).
+  * kdeprintfax: more support/sync with standard addressbook:
+  	. possibility to start the ab editor from kdeprintfax
+	. make use of the "Organization" field as enterprise
+	. fix problem with empty phone number (ex: no business fax).
+
+26/03/2002 Michael Goffioul <goffioul@imec.be>
+  * kdeprintfax:
+  	. added support for Mgetty-sendfax
+  	. added support for page size in filters
+	. make use of the localized page size as default
+	. regrouped the options in the option dialog for more
+	  consistency
+	. added support for scheduling in HylaFax and Mgetty-sendfax
+	. bugfix in logview: behaves safely when closed using the title
+	  bar button
+
+27/03/2002 Michael Goffioul <goffioul@imec.be>
+  * general: created a separate "Fonts" section in the KDEPrint settings
+    dialog and removed the "Embed Fonts" option from the general section
+    (moved to the new section).
+  * kdeprintfax: fixed disabled background for "Comment" widget, use QBrush
+    instead of QColor. OK with styles like Liquid.
