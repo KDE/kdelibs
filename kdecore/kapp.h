@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 211
-#define KDE_VERSION_STRING "2.1.1 - CVS 20010306"
+#define KDE_VERSION_STRING "2.1.1"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 1
@@ -793,6 +793,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.210.2.2  2001/03/10 15:41:11  faure
+// Make kdeFonts always return false.
+//
 // Revision 1.210.2.1  2001/03/06 23:17:59  mueller
 // new version number to distinguish from 2.1 release
 //
