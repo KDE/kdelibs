@@ -109,7 +109,7 @@ QString KLocale::monthName(int i, bool _short) const
       case 2:   return translate("February", "Feb");
       case 3:   return translate("March", "Mar");
       case 4:   return translate("April", "Apr");
-      case 5:   return translate("May long", "May");
+      case 5:   return translate("May short", "May");
       case 6:   return translate("June", "Jun");
       case 7:   return translate("July", "Jul");
       case 8:   return translate("August", "Aug");
