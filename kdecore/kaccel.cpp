@@ -202,8 +202,12 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 		s += '\t';
 		s += k;
 	}
-	
-	menu->changeItem( s, id );
+
+	QPixmap *pp = menu->pixmap(id);
+	if(pp && !pp->isNull())
+	  menu->changeItem( *pp, s, id );
+	else
+	  menu->changeItem( s, id );
 }
 
 void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
