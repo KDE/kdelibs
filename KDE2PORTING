@@ -477,9 +477,8 @@ developer. (mirko@kde.org)
 ////////////////////////////////////////////////////////////////////////
 // * kcolorgroup.h / KColorGroup
 
-KColorGroup was at first not used in sources in the KDE CVS,  second its
-flibkdecore_la_METASOURCESunctionality is provided by Qt. It has been
-removed. (mirko@kde.org)
+KColorGroup was not used in sources in the KDE CVS, and its
+functionality is provided by Qt. It has been removed. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * kcharsets.h / KCharsets
@@ -562,4 +561,16 @@ subclass. This lead to many problems and misunderstandings in the
 past. KWinModule is now just an object that emits fancy signals (and
 provides some useful lists, like the list of all managed windows).
 (ettrich@kde.org)
+
+
+///////////////////////////////////////////////////////////////////////
+// * kDebug
+
+Use the kDebug* functions to log debug output, warnings and errors in a
+very flexible way. kdebug has been improved, and the API simplified.
+kdebug.h provides a small script for automating the conversion.
+Note that enabling/disabling debug output can now be done with kdebugdialog,
+which can be found in kdebase. The hidden dialog on C+S+F12 has disappeared.
+Also, consider using nana for assertions and debugger checks (see nana/*.h).
+(faure@kde.org)
 
