@@ -22,6 +22,8 @@
 #include <qlayout.h>
 #include <qaccel.h>
 #include <qhbox.h>
+#include <qsimplerichtext.h>
+#include <qstylesheet.h>
 
 #include <kapplication.h>
 #include <klineedit.h>
@@ -177,6 +179,47 @@ bool PasswordDialog::keepPassword() const
     return d->keep;
 }
 
+static void calculateLabelSize(QLabel *label)
+{
+   QString qt_text = label->text();
+      
+   int pref_width = 0;
+   int pref_height = 0;
+   // Calculate a proper size for the text.
+   {
+       QSimpleRichText rt(qt_text, label->font());
+       QRect d = KGlobalSettings::desktopGeometry(label->topLevelWidget());
+
+       pref_width = d.width() / 4;
+       rt.setWidth(pref_width-10);
+       int used_width = rt.widthUsed();
+       pref_height = rt.height();
+       if (used_width <= pref_width)
+       {
+          while(true)
+          {
+             int new_width = (used_width * 9) / 10;
+             rt.setWidth(new_width-10);
+             int new_height = rt.height();
+             if (new_height > pref_height)
+                break;
+             used_width = rt.widthUsed();
+             if (used_width > new_width)
+                break;
+          }
+          pref_width = used_width;
+       }
+       else
+       {
+          if (used_width > (pref_width *2))
+             pref_width = pref_width *2;
+          else
+             pref_width = used_width;
+       }
+    }
+    label->setFixedSize(QSize(pref_width+10, pref_height));
+}
+
 void PasswordDialog::addCommentLine( const QString& label,
                                      const QString comment )
 {
@@ -191,8 +234,7 @@ void PasswordDialog::addCommentLine( const QString& label,
     d->layout->addWidget( lbl, d->nRow+2, 0, Qt::AlignLeft );
     lbl = new QLabel( comment, main);
     lbl->setAlignment( Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak );
-    int w = QMIN( d->prompt->sizeHint().width(), 250 );
-    lbl->setFixedSize( w, lbl->heightForWidth(w) );
+    calculateLabelSize(lbl);
     d->layout->addWidget( lbl, d->nRow+2, 2, Qt::AlignLeft );
     d->layout->addRowSpacing( 3, 10 ); // Add a spacer
     d->nRow++;
@@ -203,11 +245,25 @@ void PasswordDialog::slotKeep( bool keep )
     d->keep = keep;
 }
 
+static QString qrichtextify( const QString& text )
+{
+  if ( text.isEmpty() || text[0] == '<' )
+    return text;
+
+  QStringList lines = QStringList::split('\n', text);
+  for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
+  {
+    *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
+  }
+
+  return lines.join(QString::null);
+}
+
 void PasswordDialog::setPrompt(const QString& prompt)
 {
-    d->prompt->setText(prompt);
-    int w = QMIN( d->prompt->sizeHint().width(), 250 );
-    d->prompt->setFixedSize( w, d->prompt->heightForWidth( w ) );
+    QString text = qrichtextify(prompt);
+    d->prompt->setText(text);
+    calculateLabelSize(d->prompt);
 }
 
 void PasswordDialog::setPassword(const QString &p)
