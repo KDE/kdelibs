@@ -254,13 +254,22 @@ void RenderSubmitButton::calcMinMaxWidth()
 
     bool empty = raw.isEmpty();
     if ( empty )
-        raw = QString::fromLatin1("XXXX");
+        raw = QString::fromLatin1(" ");
     QFontMetrics fm = pb->fontMetrics();
+    QSize ts = fm.size( ShowPrefix, raw);
+    QSize s(pb->style().sizeFromContents( QStyle::CT_PushButton, pb, ts )
+            .expandedTo(QApplication::globalStrut()));
     int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb) +
 		 pb->style().pixelMetric( QStyle::PM_DefaultFrameWidth, pb ) * 2;
-    QSize s = fm.size( ShowPrefix, raw);
-    // give a few px extra width
-    s = QSize( s.width() + margin + 4, s.height() + margin ).expandedTo(QApplication::globalStrut());
+    int w = ts.width() + margin;
+    int h = s.height();
+    if (pb->isDefault() || pb->autoDefault()) {
+	int dbw = pb->style().pixelMetric( QStyle::PM_ButtonDefaultIndicator, pb ) * 2;
+	w += dbw;
+    }
+
+    // add 30% margins to the width (heuristics to make it look similar to IE)
+    s = QSize( w*13/10, h ).expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
