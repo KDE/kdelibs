@@ -218,7 +218,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             int len = txt.length();
             QString keycode = e->text();
 
-            
+
             if ( txt != old_txt && len && cursorPosition() == len &&
                  ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
                    e->key() == Key_Backspace ) )
@@ -497,6 +497,13 @@ void KLineEdit::makeCompletionBox()
                  SLOT(setText( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(setText( const QString& )) );
+        
+        // Nice lil' hacklet ;) KComboBox doesn't know when the completionbox
+        // is created (childEvent() is even more hacky, IMHO), so we simply
+        // forward the completionbox' activated signal from here.
+        if ( parentWidget() && parentWidget()->inherits("KComboBox") )
+            connect( d->completionBox, SIGNAL( activated( const QString& )),
+                     parentWidget(), SIGNAL( activated( const QString & )));
     }
 }
 
