@@ -2218,7 +2218,7 @@ void KHTMLPart::slotViewPageInfo()
   QString editStr = QString::null;
 
   if (!d->m_pageServices.isEmpty()) 
-    editStr = "   " + i18n("<a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
+    editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
   dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
   dlg->_lastModified->setText(d->m_lastModified);
