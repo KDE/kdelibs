@@ -1,4 +1,4 @@
-kdelibs (4:2.2-alpha1-1) experimental; urgency=low
+kdelibs (4:2.2-0alpha1-1) experimental; urgency=low
  
   * New upstream alpha
   * Reseting all lintian overrides
