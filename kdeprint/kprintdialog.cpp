@@ -679,19 +679,6 @@ void KPrintDialog::done(int result)
 		KDialog::done(result);
 }
 
-static time_t qtToTime_t( const QDateTime& dt )
-{
-	struct tm t;
-	t.tm_sec = dt.time().second();
-	t.tm_min = dt.time().minute();
-	t.tm_hour = dt.time().hour();
-	t.tm_mday = dt.date().day();
-	t.tm_mon = dt.date().month();
-	t.tm_year = dt.date().year() - 1900;
-	t.tm_isdst = -1;
-	return mktime( &t );
-}
-
 bool KPrintDialog::checkOutputFile()
 {
 	bool	value(false);
@@ -709,9 +696,9 @@ bool KPrintDialog::checkOutputFile()
 			if (f.isWritable())
 			{
 				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absFilePath())) == KMessageBox::Yes);
-				time_t mtimeDest = qtToTime_t( f.lastModified() );
+				time_t mtimeDest = f.lastModified().toTime_t();
 				KIO::RenameDlg dlg( this, i18n( "Print" ), QString::null, d->m_file->lineEdit()->text(),
-						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, qtToTime_t( f.created() ), mtimeDest+1, mtimeDest, true );
+						KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest, true );
 				int result = dlg.exec();
 				switch ( result )
 				{
