@@ -252,6 +252,7 @@ public:
 
   /**
    * Starts a service based on the (translated) name of the service.
+   * E.g. "Web Browser"
    *
    * @param URL - if not empty this URL is passed to the service
    *
@@ -266,6 +267,7 @@ public:
                                  QCString &dcopService, QString &error );
   /**
    * Starts a service based on the desktop path of the service.
+   * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
    *
    * @param URL - if not empty this URL is passed to the service
    *
@@ -281,6 +283,7 @@ public:
 
   /**
    * Starts a service based on the desktop name of the service.
+   * E.g. "konqueror"
    *
    * @param URL - if not empty this URL is passed to the service
    *
@@ -623,6 +626,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.134  2000/02/23 17:11:12  waba
+// WABA: Moved KService::startServiceByXXX to KApplication.
+//
 // Revision 1.133  2000/01/12 02:39:35  dsweet
 // doc cleaning
 //
