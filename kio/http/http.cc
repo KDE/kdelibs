@@ -324,7 +324,7 @@ bool revmatch(const char *host, const char *nplist)
   return false;
 }
 
-/* 
+/*
 bool revmatch( const QString& host, const QString& nplist )
 {
     bool found = false;
@@ -1187,6 +1187,7 @@ bool HTTPProtocol::readHeader()
      kdDebug(7113) << "readHeader: returning mimetype " << buffer << endl;
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
      mimeType(m_strMimeType);
+     // TODO save charset in cache and set it here ?
      return true;
   }
 
@@ -1202,6 +1203,7 @@ bool HTTPProtocol::readHeader()
 
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
+  QString charsetStr;
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -1311,10 +1313,18 @@ bool HTTPProtocol::readHeader()
       // type is only applicable to the actual message-body!!
       m_strMimeType = trimLead(buffer + 13);
 
-      //HACK to get the right mimetype of returns like "text/html; charset foo-blah"
+      // This header can be something like "text/html; charset foo-blah"
       int semicolonPos = m_strMimeType.find( ';' );
       if ( semicolonPos != -1 )
+      {
+        int equalPos = m_strMimeType.find( '=' );
+        if ( equalPos != -1 )
+        {
+          charsetStr = m_strMimeType.mid( equalPos+1 );
+          kdDebug(7103) << "Found charset : " << charsetStr << endl;
+        }
         m_strMimeType = m_strMimeType.left( semicolonPos );
+      }
     }
 
     //
@@ -1667,6 +1677,14 @@ bool HTTPProtocol::readHeader()
   // incorrectly send Content-Type with a redirection response. (DA)
   if( locationStr.isEmpty() )
      mimeType(m_strMimeType);
+
+  // Set charset. Maybe charSet should be a class member, since
+  // this method is somewhat recursive....
+  if ( !charsetStr.isEmpty() )
+  {
+     kdDebug(7103) << "Setting charset metadata to " << charsetStr << endl;
+     setMetaData("charset", charsetStr);
+  }
 
   if (m_request.method == HTTP_HEAD)
      return true;
