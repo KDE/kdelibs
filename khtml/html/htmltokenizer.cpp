@@ -55,12 +55,12 @@
 
 using namespace khtml;
 
-static const QChar commentStart [] = { '<','!','-','-' };
-static const QChar commentEnd [] = { '-','-','>' };
-static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>' };
-static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>' };
-static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>' };
-static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>' };
+static const QChar commentStart [] = { '<','!','-','-', QChar::null };
+static const QChar commentEnd [] = { '-','-','>', QChar::null };
+static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>', QChar::null };
+static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>', QChar::null };
+static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>', QChar::null };
+static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>', QChar::null };
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
@@ -246,8 +246,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 #endif
 
     bool doScriptExec = false;
-    HTMLQuote quot = NoQuote;
-
     while ( src.length() )
     {
         // do we need to enlarge the buffer?
@@ -266,7 +264,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 
         char ch = src[0].latin1();
-        if ( (quot == NoQuote || comment) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( (tquote == NoQuote || comment) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -360,7 +358,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             {
                 ++src;
             }
-            else if ( cmp.lower() == searchFor[ searchCount ] )
+            else if ( searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
             {
                 searchBuffer[ searchCount++ ] = cmp;
                 ++src;
@@ -402,11 +400,12 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    }
 	    else {
                 if( !comment && ch == '\"')
-                    quot = (quot == NoQuote) ? DoubleQuote : (quot == SingleQuote) ? SingleQuote : NoQuote;
+                    tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
                 else if( !comment && ch == '\'')
-                    quot = (quot == NoQuote) ? SingleQuote : (quot == DoubleQuote) ? DoubleQuote : NoQuote;
-                else if (!comment && quot != NoQuote && (ch == '\r' || ch == '\n'))
-                    quot = NoQuote; // HACK!!! 
+                    tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
+                else if (!comment &&  tquote != NoQuote && (ch == '\r' || ch == '\n'))
+                    tquote = NoQuote; // HACK!!!
+
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
 	    }
@@ -425,7 +424,102 @@ void HTMLTokenizer::parseStyle(DOMStringIt &src)
 
 void HTMLTokenizer::parseComment(DOMStringIt &src)
 {
-    parseListing(src); // ### disabled temporarily - skips body attrs. if placed before <HTML>
+#ifdef TOKEN_DEBUG
+    kdDebug( 6036 ) << "HTMLTokenizer::parseComment()" << endl;
+#endif
+
+    while ( src.length() )
+    {
+        // do we need to enlarge the buffer?
+        checkBuffer();
+
+        // Allocate memory to store the script. We will write maximal
+        // 10 characers.
+        if ( scriptCodeSize + 10 > scriptCodeMaxSize )
+        {
+            int newsize = QMAX(scriptCodeMaxSize*2, scriptCodeMaxSize+1024);
+            QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
+            memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
+            QT_DELETE_QCHAR_VEC(scriptCode);
+            scriptCode = newbuf;
+            scriptCodeMaxSize = newsize;
+        }
+
+        char ch = src[0].latin1();
+        if (ch == '>' && searchFor[ searchCount ] == '>')
+        {
+            ++src;
+            scriptCode[ scriptCodeSize ] = 0;
+            scriptCode[ scriptCodeSize + 1 ] = 0;
+            currToken->id = ID_COMMENT;
+            addListing(DOMStringIt(scriptCode, scriptCodeSize));
+            processToken();
+            currToken->id = ID_COMMENT + ID_CLOSE_TAG;
+            processToken();
+            script = style = listing = comment = textarea = false;
+            scriptCode = 0;
+            return; // Finished parsing comment
+        }
+        // Find out wether we see an end tag without looking at
+        // any other then the current character, since further characters
+        // may still be on their way thru the web!
+        else if ( searchCount > 0 )
+        {
+            const QChar& cmp = src[0];
+            // broken HTML: "--->"
+            if (searchCount == 2 && cmp.latin1() == '-' && searchBuffer[0].latin1() != '<')
+            {
+                scriptCode[ scriptCodeSize++ ] = cmp;
+                ++src;
+            }
+            // broken HTML: "--!>"
+            else if (searchCount == 2 && cmp.latin1() == '!' && searchBuffer[0].latin1() != '<')
+            {
+                ++src;
+            }
+            // be tolerant: skip spaces before the ">", i.e "</script >"
+            else if (cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            {
+                ++src;
+            }
+            else if ( cmp.lower() == searchFor[ searchCount ] )
+            {
+                searchBuffer[ searchCount++ ] = cmp;
+                ++src;
+            }
+            // We were wrong => print all buffered characters and the current one;
+            else
+            {
+                searchBuffer[ searchCount ] = 0;
+		DOMStringIt pit(searchBuffer,searchCount);
+		while (pit.length()) {
+		    if (textarea && pit[0] == '&') {
+			QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+			++pit;
+			parseEntity(pit,scriptCodeDest,true);
+			scriptCodeSize = scriptCodeDest-scriptCode;
+		    }
+		    else {
+			scriptCode[ scriptCodeSize++ ] = pit[0];
+			++pit;
+		    }
+		}
+                searchCount = 0;
+            }
+        }
+        // Is this perhaps the start of the --> (end of comment)?
+        else if ( ch == '-' )
+        {
+            searchCount = 1;
+            searchBuffer[ 0 ] = src[0];
+            ++src;
+        }
+	else
+        {
+            scriptCode[ scriptCodeSize++ ] = src[0];
+            ++src;
+        }
+    }
 }
 
 void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
@@ -717,12 +811,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
 
                 curchar = src[0].latin1();
- 
-                // All these can end a tag. 
-                // 
-                if( curchar != '\t' && curchar != '\r' && 
-                    curchar != '\n' && curchar != ' ' && 
-                    curchar != '>' ) 
+
+                // All these can end a tag.
+                //
+                if( curchar != '\t' && curchar != '\r' &&
+                    curchar != '\n' && curchar != ' ' &&
+                    curchar != '>' )
                 {
                     // this is faster than QChar::lower()
                     if((curchar >= 'A') && (curchar <= 'Z'))
@@ -1132,6 +1226,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
                         scriptCodeSize = 0;
                         scriptCodeMaxSize = 1024;
+                        tquote = NoQuote;
                         parseScript(src);
 #ifdef TOKEN_DEBUG
                         kdDebug( 6036 ) << "end of script" << endl;
