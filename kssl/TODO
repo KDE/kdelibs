@@ -2,8 +2,6 @@
 - KSSLServer class needs to be written (in a separate lib!!) so that an app
   can act as an SSL server.
 
-- Friend certificates (for S/MIME) are not implemented
-
 - The certificate factory is not done.  This is needed to generate personal
   certificates (self signed) for users.
   This should be a separate app I guess, and can include a CA signer even.
@@ -13,5 +11,19 @@
 - CRL support (not much left to do?)
 
 - Code checking for OCX.  
+
+- Dialog boxes for personal certificates need to be queued so that a user
+  isn't prompted for a certificate when he already answered for a given site.
+
+- KSSLD should emit dcop signals to tell people when things change
+
+- <keygen> is not working.
+
+- kio_ftps and kio_nntps could be quite nice to have (ftp is quite a problem to
+  implement though)
+
+- X509v3 should use X509_PURPOSE instead of the bit checks.  This will be more
+  reliable and is quite easy to implement, really.
+
 
 
