@@ -19,8 +19,6 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-AM_CPPFLAGS = -DQT_NO_COMPAT
-
 INCLUDES= -I$(top_srcdir)/dcop $(all_includes)
 
 lib_LTLIBRARIES  = libkspell.la

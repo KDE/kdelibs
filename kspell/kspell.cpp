@@ -35,6 +35,7 @@
 #endif
 
 #include <qtextcodec.h>
+#include <qtimer.h>
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
