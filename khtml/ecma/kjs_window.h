@@ -17,54 +17,33 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DOM_CORE_H_
-#define _DOM_CORE_H_
-
-#include <dom_node.h>
-#include <dom_doc.h>
-#include <dom_element.h>
+#ifndef _KJS_WINDOW_H_
+#define _KJS_WINDOW_H_
 
 #include "global.h"
 #include "object.h"
 
+class KHTMLWidget;
+
 namespace KJS {
 
-  class DOMNode : public HostObject {
+  class Window : public HostObject {
   public:
-    DOMNode(DOM::Node n) : node(n) { }
+    Window(KHTMLWidget *w) : widget(w) { }
     virtual KJSO *get(const CString &p) const;
+    virtual void put(const CString &p, KJSO *v, int);
   private:
-    DOM::Node node;
+    KHTMLWidget *widget;
   };
 
-  class DOMNodeList : public HostObject {
+  class WindowFunc : public KJSInternalFunction {
   public:
-    DOMNodeList(DOM::NodeList l) : list(l) { }
-    virtual KJSO *get(const CString &p) const;
+    WindowFunc(KHTMLWidget *w, int i) : widget(w), id(i) { };
+    KJSO *execute(KJSContext *);
+    enum { Alert, Confirm };
   private:
-    DOM::NodeList list;
-  };
-
-  class DOMDocument : public HostObject {
-  public:
-    DOMDocument(DOM::Document d) : doc(d) { }
-    virtual KJSO *get(const CString &p) const;
-  private:
-    DOM::Document doc;
-  };
-
-  class DOMAttr : public HostObject {
-  public:
-    DOMAttr(DOM::Attr a) : attr(a) { }
-  private:
-    DOM::Attr attr;
-  };
-
-  class DOMElement : public HostObject {
-  public:
-    DOMElement(DOM::Element e) : element(e) { }
-  private:
-    DOM::Element element;
+    KHTMLWidget *widget;
+    int id;
   };
 
 }; // namespace

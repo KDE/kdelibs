@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <qstring.h>
 #include <html_element.h>
 #include <dom_string.h>
 
@@ -24,6 +25,7 @@
 #include "operations.h"
 #include "kjs_dom.h"
 #include "kjs_html.h"
+#include "kjs_window.h"
 
 #include <htmltags.h>
 
@@ -38,6 +40,7 @@ extern "C" {
 
     KJS::KJSGlobal *global = KJScript::global();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
+    global->put("window", zeroRef(new KJS::Window(0L)));
 
     script->setCurrent(0L);
     // this is somewhat ugly. But the only way I found to control the
@@ -66,6 +69,11 @@ UString::UString(const DOM::DOMString &d)
 DOM::DOMString UString::string() const
 {
   return DOM::DOMString((QChar*) s, l);
+}
+
+QString UString::qstring() const
+{
+  return QString((QChar*) s, l);
 }
 
 KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
