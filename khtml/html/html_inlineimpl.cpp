@@ -73,7 +73,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 
     // ### ev->noHref obsolete now ? ( Dirk )
     if ( inside && ev->url==0 && !ev->noHref
-         && (!(m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN)) )
+         && m_render && m_render->style() && m_render->style()->visiblity() != HIDDEN )
     {
         //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
         // set the url
@@ -91,7 +91,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     // ### KHTML_CLICK_EVENT??? why that?
     // port to DOMACTIVATE
-    if (evt->id() == EventImpl::KHTML_CLICK_EVENT && evt->isMouseEvent()) {
+    if (evt->id() == EventImpl::KHTML_CLICK_EVENT && evt->isMouseEvent() && href) {
         MouseEventImpl* e = static_cast<MouseEventImpl*>( evt );
         QString utarget;
         QString url;
@@ -101,8 +101,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 
         if ( e->button() == 2 ) return;
 
-        if ( href )
-            url = QConstString( href->s, href->l ).string();
+        url = QConstString( href->s, href->l ).string();
 
         if ( target )
             utarget = QConstString( target->s, target->l ).string();
