@@ -143,7 +143,6 @@ typedef struct
 
 
 /* CHUNK: Play options */
-/* !!! Not yet supported. Structure may change soon. */
 typedef struct
 {
   int32		repeats;	/* 0:forever, 1: 1 time, 2: 2 times, ..	*/
@@ -192,6 +191,7 @@ typedef struct
   EventCounter	posnew;		/* Event counter: Notification of pos_new change */
   uint32	pos_new;	/* Wished play position */
   uint32        pos_new_m;      /* Wished play position 1/1000 (milli) */
+  uint8         is_alive;       /* Master will write permanently "1" in here */
 } MdCh_KEYS;
 
 
