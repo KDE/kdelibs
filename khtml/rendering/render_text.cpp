@@ -90,7 +90,8 @@ void InlineTextBox::operator delete(void* ptr, size_t sz)
 inline bool hasSufficientContrast(const QColor &c1, const QColor &c2)
 {
 // New version from Germain Garand, better suited for contrast measurement
-#if 1
+// ### deems contrast between #111 and #fff not sufficient?
+#if 0
 
 #define HUE_DISTANCE 15
 #define CONTRAST_DISTANCE 10
@@ -107,7 +108,7 @@ inline bool hasSufficientContrast(const QColor &c1, const QColor &c2)
 #else	// orginal fast but primitive version by me (LS)
 
 // ### arbitrary value, to be adapted if necessary (LS)
-#define CONTRAST_DISTANCE 5
+#define CONTRAST_DISTANCE 32
 
   if (QABS(c1.red() - c2.red()) > CONTRAST_DISTANCE) return true;
   if (QABS(c1.green() - c2.green()) > CONTRAST_DISTANCE) return true;
@@ -848,7 +849,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
         // Now calculate startPos and endPos, for painting selection.
         // We paint selection while endPos > 0
-        int endPos = 0, startPos = 0;
+        int endPos, startPos;
         if (!isPrinting && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
                 //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
@@ -876,7 +877,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
 	const Font *font = &style()->htmlFont();
 
-        bool haveSelection = startPos != endPos && !isPrinting && selectionState() != SelectionNone;
+        bool haveSelection = !isPrinting && selectionState() != SelectionNone && startPos != endPos;
 
         // run until we find one that is outside the range, then we
         // know we can stop
