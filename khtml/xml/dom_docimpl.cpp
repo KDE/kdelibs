@@ -692,12 +692,16 @@ void DocumentImpl::attach(KHTMLView *w)
 
 void DocumentImpl::detach()
 {
+    RenderObject* render = m_render;
+
+    // start destruction mode
+    m_render = 0;
+
     NodeBaseImpl::detach();
 
-    if ( m_render )
-        m_render->detach();
+    if ( render )
+        render->detach();
 
-    m_render = 0;
     m_view = 0;
 }
 
@@ -1282,6 +1286,8 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::createSelector()
 {
+    if ( !m_render || !attached() ) return;
+
     QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     NodeImpl *n;
