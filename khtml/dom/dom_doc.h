@@ -59,6 +59,7 @@ class DocumentTypeImpl;
 class Event;
 class AbstractView;
 class CSSStyleDeclaration;
+class HTMLElementImpl;
 class HTMLFrameElement;
 class HTMLElementImpl;
 class HTMLIFrameElement;

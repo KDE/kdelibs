@@ -270,6 +270,7 @@ class TextImpl;
 class Text : public CharacterData
 {
     friend class Document;
+    friend class TextImpl;
 
 public:
     Text();
