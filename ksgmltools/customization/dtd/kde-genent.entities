@@ -48,7 +48,7 @@
   NDATA linespecific	   -- http://www.gnu.org/copyleft/gpl.html -->
 <!ENTITY GPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU General Public License Notice//EN"
-  CDATA SGML							     >
+  -- meant for inclusion, so no [CN]DATA SGML --		     >
 <!ENTITY LGPL-html	    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN" 
   NDATA SGML		-- http://www.gnu.org/copyleft/lesser.html -->
@@ -57,19 +57,14 @@
   NDATA linespecific	-- http://www.gnu.org/copyleft/lesser.html -->
 <!ENTITY LGPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU Lesser General Public License Notice//EN"
-  CDATA SGML							     >
+  -- meant for inclusion, so no [CN]DATA SGML --		     >
 <!ENTITY FDL-html           PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
   NDATA SGML               -- http://www.gnu.org/copyleft/fdl.html -->
 <!ENTITY FDL                PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
   NDATA linespecific       -- http://www.gnu.org/copyleft/fdl.html -->
-
-<!-- Use in a document prologue only; contains &FDLNotice;
-     See common/fdl-notice.docbook on how to use it
-<!ENTITY % FDLNotice        PUBLIC
-  "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"                 >
- -->
+<!-- FDLNotice is defined in kde-prologue.entities -->
 
 <!-- KDE olink specification -->
 <!ENTITY kde-modespec
@@ -80,3 +75,6 @@
      Scripts should generate the index in docindex.docbook in the same directory
  -->
 <!ENTITY kdedocindex SYSTEM "docindex.docbook">
+
+<!-- For entities that may be defined by the document author or that are
+     different for every document, see kde-prologue.entities. -->
