@@ -830,8 +830,7 @@ KAction *KStdAction::helpContents(const QObject *recvr, const char *slot,
 KAction *KStdAction::whatsThis(const QObject *recvr, const char *slot,
 						       QObject *parent, const char *name )
 {
-    return new KAction(i18n("What's &This?"),
-                       QWhatsThis::whatsThisButton(0)->iconSet(),
+    return new KAction(i18n("What's &This?"), "contexthelp",
                        KStdAccel::key(KStdAccel::WhatThis), recvr, slot,
                        parent, name ? name : stdName(WhatsThis));
 }
