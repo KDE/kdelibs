@@ -40,7 +40,8 @@ kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop \
 
 EXTRA_DIST = $(kde_mime_DATA)
 
-update_DATA = kioslave.upd useragent.pl proxytype.pl
+update_DATA = kioslave.upd
+update_SCRIPTS = useragent.pl proxytype.pl
 updatedir = $(kde_datadir)/kconf_update
 
 servicetype_DATA = renamedlgplugin.desktop
