@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import java.security.PrivilegedAction;
 import java.security.AccessController;
 import java.security.AccessControlContext;
+import java.security.ProtectionDomain;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -101,6 +102,7 @@ public final class KJASAppletStub
         private int request_state = CLASS_LOADED;
         private int current_state = UNKNOWN;
         private Vector actions = new Vector();
+        private AccessControlContext acc = null;
 
         RunThread() {
             super("KJAS-AppletStub-" + appletID + "-" + appletName);
@@ -177,6 +179,7 @@ public final class KJASAppletStub
                         } else
                             throw e;
                     }
+                    acc = new AccessControlContext(new ProtectionDomain[] {app.getClass().getProtectionDomain()});
                     requestState(INITIALIZED);
                     break;
                 }
@@ -225,7 +228,6 @@ public final class KJASAppletStub
          * RunThread run(), loop until state is TERMINATE
          */
         public void run() {
-            AccessControlContext acc = loader.getAccessControlContext();
             while (true) {
                 int nstate = getRequestState();
                 if (nstate >= TERMINATE)
