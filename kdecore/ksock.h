@@ -82,7 +82,6 @@ class KServerSocketPrivate;
  * was not successful.
  *
  * @author Torben Weis <weis@uni-frankfurt.de>
- * @version $Id$
  * @short A TCP/IP client socket.
  */
 class KDECORE_EXPORT KSocket : public QObject
@@ -247,7 +246,6 @@ private:
  * If socket() is -1 or less the socket was not created properly.
  *
  * @author Torben Weis <weis@stud.uni-frankfurt.de>
- * @version $Id$
 */
 class KDECORE_EXPORT KServerSocket : public QObject
 {

@@ -19,8 +19,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 #ifndef _KCONFIG_H
 #define _KCONFIG_H
 
@@ -39,7 +37,6 @@ class KConfigPrivate;
 * This class implements KDE's default configuration system.
 *
 * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
-* @version $Id$
 * @see KGlobal::config(), KConfigBase, KSimpleConfig
 * @short KDE Configuration Management class
 */

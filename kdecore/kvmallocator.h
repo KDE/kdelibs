@@ -35,7 +35,6 @@ class KVMAllocatorPrivate;
  * Memory is allocated block-wise in a tmp file.
  * 
  * @author Waldo Bastian <bastian@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KVMAllocator
 {

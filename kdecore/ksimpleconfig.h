@@ -17,7 +17,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-// $Id$
 
 #ifndef _KSIMPLECONFIG_H
 #define _KSIMPLECONFIG_H
@@ -36,7 +35,6 @@ class KSimpleConfigPrivate;
  * Whatever is in memory simply replaces what is on disk entirely.
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
- * @version $Id$
  * @see KConfigBase KConfig
  * @short KDE Configuration Management class with deletion ability
  */

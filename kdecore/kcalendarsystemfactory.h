@@ -31,7 +31,6 @@ class KLocale;
 /**
  * Factory class for calendar types
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @version $Id$
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemFactory

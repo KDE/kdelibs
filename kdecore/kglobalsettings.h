@@ -42,7 +42,6 @@ class KURL;
  * Access the KDE global configuration.
  *
  * @author David Faure <faure@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KGlobalSettings
 {

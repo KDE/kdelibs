@@ -17,7 +17,7 @@
  **/
 
 #ifndef __ksycocafactory_h__
-#define __ksycocafactory_h__ "$Id$"
+#define __ksycocafactory_h__
 
 #include "ksycocatype.h"
 #include "ksycocaentry.h"

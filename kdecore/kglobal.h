@@ -40,7 +40,6 @@ class QString;
  *
  * @see KStaticDeleterBase
  * @author Sirtaj Singh Kang (taj@kde.org)
- * @version $Id$
  */
 class KDECORE_EXPORT KGlobal
 {

@@ -39,7 +39,6 @@ class KCalendarSystemGregorianPrivate;
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
  * @license GNU-GPL v.2
- * @version $Id$
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemGregorian: public KCalendarSystem

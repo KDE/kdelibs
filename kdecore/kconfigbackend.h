@@ -42,7 +42,6 @@ class KConfigBackEndPrivate;
  *
  * @author Preston Brown <pbrown@kde.org>,
  *         Matthias Kalle Dalheimer <kalle@kde.org>
- * @version $Id$
  * @short KDE Configuration file loading/saving abstract base class
  */
 class KDECORE_EXPORT KConfigBackEnd
@@ -187,7 +186,6 @@ protected:
  *
  * @author Preston Brown <pbrown@kde.org>,
  *         Matthias Kalle Dalheimer <kalle@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KConfigINIBackEnd : public KConfigBackEnd
 {

@@ -42,7 +42,6 @@ class KPalettePrivate;
  * This class is totally unrelated to QPalette.
  *
  * @author Waldo Bastian (bastian@kde.org)
- * @version $Id$
  **/
 class KDECORE_EXPORT KPalette
 {

@@ -4,8 +4,6 @@
  *  Copyright (C) 2003 Oswald Buddenhagen <ossi@kde.org>
  *  Copyright (C) 2004 Jan Schaefer <j_schaef@informatik.uni-kl.de>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either

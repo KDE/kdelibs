@@ -1,7 +1,5 @@
 /****************************************************************************
 
- $Id$
-
  Copyright (C) 2001-2003 Lubos Lunak        <l.lunak@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,7 +42,6 @@ class KXMessagesPrivate;
  * instead.
  *
  * @author Lubos Lunak <l.lunak@kde.org>
- * @version $Id$
  */
 // KDE4 - make this internal for KStartupInfo only?
 class KDECORE_EXPORT KXMessages

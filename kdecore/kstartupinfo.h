@@ -1,7 +1,5 @@
 /****************************************************************************
 
- $Id$
-
  Copyright (C) 2001-2003 Lubos Lunak        <l.lunak@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -61,7 +59,6 @@ class KStartupInfoPrivate;
  * @see KStartupInfoData
  *
  * @author Lubos Lunak <l.lunak@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KStartupInfo
     : public QObject
@@ -389,7 +386,6 @@ class KStartupInfoIdPrivate;
  * @see KStartupInfoData
  *
  * @author Lubos Lunak <l.lunak@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KStartupInfoId
     {
@@ -463,7 +459,6 @@ class KStartupInfoDataPrivate;
  * @see KStartupInfoId
  *
  * @author Lubos Lunak <l.lunak@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KStartupInfoData
     {

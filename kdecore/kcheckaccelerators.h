@@ -18,8 +18,6 @@
     Boston, MA 02111-1307, USA.
         */
 
-// $Id$
-
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 

@@ -39,7 +39,6 @@ class KSharedConfig;
  * KGlobal.
  *
  * @author Torben Weis
- * @version $Id$
  */
 class KDECORE_EXPORT KInstance
 {

@@ -88,7 +88,6 @@ class KAccelPrivate;
  * @see KAccelShortcutList
  * @see KKeyChooser
  * @see KKeyDialog
- * @version $Id$
  */
 
 class KDECORE_EXPORT KAccel : public QAccel

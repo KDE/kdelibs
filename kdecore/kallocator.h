@@ -22,7 +22,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE Memory Allocator
-// $Id$
 
 #ifndef KALLOCATOR_H
 #define KALLOCATOR_H
@@ -43,7 +42,6 @@ class KZoneAllocatorPrivate;
  * on the exact usage pattern that might come at the expense of some
  * memory though.
  * @author Waldo Bastian <bastian@kde.org>, Michael Matz <matz@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KZoneAllocator
 {

@@ -33,7 +33,6 @@ class KMimeSourceFactoryPrivate;
  * Normally you don't have to instantiate this class at all, KApplication does that for
  * you automagically and sets QMimeSourceFactory::setDefaultFactory.
  *
- * @version $Id$
  * @author Peter Putzer <putzer@kde.org>
  */
 class KDECORE_EXPORT KMimeSourceFactory : public QMimeSourceFactory

@@ -16,8 +16,6 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-// $Id$
-
 #ifndef _KDESKTOPFILE_H
 #define _KDESKTOPFILE_H
 
@@ -30,7 +28,6 @@ class KDesktopFilePrivate;
  * KDE Desktop File Management.
  *
  * @author Pietro Iglio <iglio@kde.org>
- * @version $Id$
  * @see  KConfigBase  KConfig
  * @short KDE Desktop File Management class
  */

@@ -36,7 +36,6 @@
  * your class from KShared and forget about it.
  *
  * @author Waldo Bastian <bastian@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KShared {
 public:
@@ -96,7 +95,6 @@ private:
  * call delete on it, for instance) behind KSharedPtr's back.
  *
  * @author Waldo Bastian <bastian@kde.org>
- * @version $Id$
  */
 template< class T >
 class KSharedPtr

@@ -128,7 +128,6 @@ class QPopupMenu;
  *
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KCompletion : public QObject
 {

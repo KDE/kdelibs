@@ -116,7 +116,6 @@ class QWidget;
  * menu structure.
  *
  * @short Configurable key binding support.
- * @version $Id$
  */
 
 class KDECORE_EXPORT KAccelBase

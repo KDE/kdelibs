@@ -37,7 +37,6 @@ class KCalendarSystemPrivate;
  * Derived classes must be created through KCalendarFactory class
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @version $Id$
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystem

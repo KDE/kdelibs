@@ -42,7 +42,6 @@ class KRootPropPrivate;
 *
 * @see  KConfig::KConfig
 * @author Mark Donohoe (donohe@kde.org)
-* @version $Id$
 */
 class KDECORE_EXPORT KRootProp
 {

@@ -17,7 +17,7 @@
  **/
 
 #ifndef __ksycoca_h__
-#define __ksycoca_h__ "$Id$"
+#define __ksycoca_h__
 
 #include <dcopobject.h>
 #include <qobject.h>

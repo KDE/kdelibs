@@ -56,7 +56,6 @@ class KRegExpPrivate;
  * Please notice that KRegExp does @em not support unicode.
  *
  * @author Torben Weis <weis@kde.org>
- * @version $Id$
  */
 class KDECORE_EXPORT KDE_DEPRECATED KRegExp
 {

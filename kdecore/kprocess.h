@@ -879,7 +879,6 @@ class KShellProcessPrivate;
 *   @short A class derived from KProcess to start child
 *   	processes through a shell.
 *   @author Christian Czezatke <e9025461@student.tuwien.ac.at>
-*   @version $Id$
 */
 class KDECORE_EXPORT KShellProcess: public KProcess
 {

@@ -17,7 +17,7 @@
  **/
 
 #ifndef __ksycocadict_h__
-#define __ksycocadict_h__ "$Id$"
+#define __ksycocadict_h__
 
 #include <qstring.h>
 #include <qvaluelist.h>

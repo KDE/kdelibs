@@ -34,7 +34,6 @@ class KStandardDirsPrivate;
 /**
  * @short Site-independent access to standard KDE directories.
  * @author Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
- * @version $Id$
  *
  * This is one of the most central classes in kdelibs as
  * it provides a basic service: It knows where the files

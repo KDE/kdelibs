@@ -18,8 +18,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 #ifndef _KAPP_H
 #define _KAPP_H
 
@@ -92,7 +90,6 @@ class KApplicationPrivate;
 *
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
-* @version $Id$
 */
 class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 {

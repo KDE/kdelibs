@@ -42,7 +42,6 @@ class QTextCodec;
  * Aside from these, and the fact that start() takes different
  * parameters, use this class just like KProcess.
  *
- * @version $Id$
  * @author David Sweet
  * @short A slightly simpler interface to KProcess
  **/
