@@ -717,6 +717,9 @@ bool KHTMLPart::closeURL()
   if ( d && d->m_redirectionTimer.isActive() )
     d->m_redirectionTimer.stop();
 
+  // null node activated.
+  emit nodeActivated(Node());
+
   return true;
 }
 
@@ -3870,18 +3873,25 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
     d->m_extension->setExtensionProxy( KParts::BrowserExtension::childObject( d->m_activeFrame ) );
 }
 
-void KHTMLPart::slotActivateNode(const DOM::Node &node)
+void KHTMLPart::setActiveNode(const DOM::Node &node)
 {
-    DOM::NodeImpl *handle = node.handle();
-    if (!d->m_doc || !handle || !handle->isElementNode())
-	return;
-    DOM::ElementImpl *e = static_cast<DOM::ElementImpl *>(handle);
-    d->m_doc->setFocusNode(e);
-    if (!d->m_view)
-	return;
-    QRect rect  = handle->getRect();
+    if (!d->m_doc)
+        return;
+    // at the moment, only element nodes can receive focus.
+    DOM::ElementImpl *e = static_cast<DOM::ElementImpl *>(node.handle());
+    if (node.isNull() || e->isElementNode())
+	d->m_doc->setFocusNode(e);
+    if (!d->m_view || !e || e->ownerDocument()!=d->m_doc)
+        return;
+    QRect rect  = e->getRect();
+    kdDebug()<<"rect.x="<<rect.x()<<" rect.y="<<rect.y()<<" rect.width="<<rect.width()<<" rect.height="<<rect.height()<<endl;
     d->m_view->ensureVisible(rect.right(), rect.bottom());
     d->m_view->ensureVisible(rect.left(), rect.top());
+}
+
+DOM::Node KHTMLPart::activeNode() const
+{ 
+    return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
 #include "khtml_part.moc"

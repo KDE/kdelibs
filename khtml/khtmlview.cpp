@@ -327,7 +327,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
 
-    emit m_part->sigNodeActivated(mev.innerNode);
+    emit m_part->nodeActivated(mev.innerNode);
 }
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -673,7 +673,7 @@ bool KHTMLView::gotoLink(bool forward)
 	kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
 
 	m_part->xmlDocImpl()->setFocusNode(nextTarget);
-	emit m_part->sigNodeActivated(Node(nextTarget));
+	emit m_part->nodeActivated(Node(nextTarget));
     }
     else kdDebug(6000)<<"did not reach the link."<<endl;
     return true;

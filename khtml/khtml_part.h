@@ -185,6 +185,11 @@ public:
   DOM::Document document() const;
 
   /**
+   * Retrieve the node that has the keyboard focus
+   */
+  DOM::Node activeNode() const;
+
+  /**
    * Retrieve a pointer to the @ref KParts::BrowserExtension
    */
   KParts::BrowserExtension *browserExtension() const;
@@ -626,7 +631,7 @@ signals:
 
   void selectionChanged();
 
-  void sigNodeActivated(const DOM::Node &);
+  void nodeActivated(const DOM::Node &);
 
 
 protected:
@@ -690,7 +695,7 @@ protected:
 
 public slots:
 
-  void slotActivateNode(const DOM::Node &);
+  void setActiveNode(const DOM::Node &);
 
 protected slots:
   /**

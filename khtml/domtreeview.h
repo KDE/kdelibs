@@ -44,7 +44,7 @@ class DOMTreeView : public KListView
 
     private:
 	QPtrDict<QListViewItem> m_itemdict;
-	QPtrDict<DOM::NodeImpl> m_nodedict;
+	QPtrDict<DOM::Node> m_nodedict;
 	DOM::Node document;
 
 	KHTMLPart *part;
