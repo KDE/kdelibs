@@ -359,7 +359,8 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
   if( exec(old_filter) )
   {
       if( !(pix_name = canvas->getCurrent()).isNull() )
-	  pixmap = icon_loader->loadIcon( pix_name );
+          // David : give a full path to loadIcon
+	  pixmap = icon_loader->loadIcon( canvas->currentDir() + "/" + pix_name );
   }
   name = pix_name;
   return pixmap;

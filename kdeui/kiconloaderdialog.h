@@ -59,6 +59,7 @@ public:
 
   void loadDir(QString dirname, QString filter);
   QString getCurrent() { if(name_list.isEmpty()) return ""; return name_list[sel_id]; }
+  QString currentDir() { return dir_name; }
   void cancelLoad();
 
 signals:
