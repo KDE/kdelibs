@@ -34,12 +34,14 @@ public:
     KPanelExtensionPrivate() 
       : _size(KPanelExtension::SizeNormal), 
         _customMenu(0),
-        _customSize(58) 
+        _customSize(58),
+        _reserveStrut(true)
     {}
 
     KPanelExtension::Size _size;
     QPopupMenu* _customMenu;
     int _customSize;
+    bool _reserveStrut;
 };
 
 KPanelExtension::KPanelExtension(const QString& configFile, Type type,
@@ -144,6 +146,16 @@ QPopupMenu* KPanelExtension::customMenu() const
 void KPanelExtension::setCustomMenu(QPopupMenu* menu)
 {
     d->_customMenu = menu;
+}
+
+bool KPanelExtension::reserveStrut() const
+{
+    return position() == Floating || d->_reserveStrut;
+}
+
+void KPanelExtension::setReserveStrut(bool reserve)
+{
+    d->_reserveStrut = reserve;
 }
 
 void KPanelExtension::virtual_hook( int, void* )

@@ -105,7 +105,7 @@ public:
     enum Type { Normal = 0, Stretch };
     // KDE4: Merge these with KPanelApplet's enums
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
-    enum Position { Left = 0, Right, Top, Bottom };
+    enum Position { Left = 0, Right, Top, Bottom, Floating };
     enum Alignment { LeftTop = 0, Center, RightBottom };
     /// @since 3.1
     enum Size { SizeTiny = 0, SizeSmall, SizeNormal, SizeLarge, SizeCustom };
@@ -210,10 +210,18 @@ public:
 
     /**
      * @return the extension's custom menu, usually the same as the context menu, or 0 if none
-     * see setCustomMenu(QPopupMenu*)
+     * @see setCustomMenu(QPopupMenu*)
      * @since 3.4
      */
     QPopupMenu* customMenu() const;
+
+    /**
+     * @return whether or not to set a desktop geometry claiming strut for this panel
+     * defaults to true
+     * @see setReservetrut(bool)
+     * @since 3.4
+     */
+    bool reserveStrut() const;
 
 signals:
     /**
@@ -309,6 +317,12 @@ protected:
      */
     void setCustomMenu(QPopupMenu*);
 
+    /**
+     * Use this method to set the return value for reserveStrut
+     * @see reserveStrut
+     * @since 3.4
+     */
+    void setReserveStrut(bool shouldUseStrut);
 
 private:
     Type         		_type;
