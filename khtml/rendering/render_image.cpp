@@ -67,9 +67,6 @@ RenderImage::RenderImage(NodeImpl *_element)
 
 RenderImage::~RenderImage()
 {
-    assert( !image || image != oimage );
-    assert( !image || !image->canDelete() );
-    assert( !oimage || !oimage->canDelete() );
     if(image) image->deref(this);
     if (oimage) oimage->deref( this );
 }
@@ -103,6 +100,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         RenderReplaced::setPixmap(p, r, o);
         return;
     }
+
+    qDebug( "RenderImage::setPixmap!!" );
 
     bool iwchanged = false;
 
@@ -376,14 +375,7 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
             false,false);
     }
 
-    assert( image );
-    assert( !image->canDelete() );
-
     if ( image == finishedObj && oimage ) {
-        assert( image != oimage );
-        assert( oimage != finishedObj );
-        assert( !oimage->canDelete() );
-
         oimage->deref( this );
         oimage = 0;
     }
@@ -415,7 +407,6 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
 void RenderImage::updateImage(CachedImage* new_image)
 {
     CachedImage* tempimage = oimage;
-    assert( !tempimage || !tempimage->canDelete() );
     oimage = image;
     image = new_image;
     assert( image != oimage );
@@ -424,9 +415,6 @@ void RenderImage::updateImage(CachedImage* new_image)
     if ( tempimage && image != tempimage && oimage != tempimage )
         tempimage->deref(this);
 
-    assert( image );
-    assert( !image->canDelete() );
-    assert( !oimage || !oimage->canDelete() );
     berrorPic = image->isErrorImage();
 }
 

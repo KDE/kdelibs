@@ -1,3 +1,8 @@
+2004-01-16  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_image.cpp: remove some asserts that
+	noone needs anyway (#72739).
+
 2004-01-16  Stephan Kulow  <coolo@kde.org>
 
 	* html/htmltokenizer.cpp: fixing <pre> parsing (#58584)
