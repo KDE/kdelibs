@@ -260,6 +260,22 @@ void KConfig::setFileWriteMode(int mode)
   backEnd->setFileWriteMode(mode);
 }
 
+void KConfig::checkUpdate(const QString &id, const QString &updateFile)
+{
+  QString oldGroup = group();
+  setGroup("$Version");
+  QString cfg_id = updateFile+":"+id;
+  QStringList ids = readListEntry("update_info");
+  if (!ids.contains(cfg_id))
+  {
+     QStringList args;
+     args << "--check" << updateFile;
+     KApplication::kdeinitExecWait("kconf_update", args);
+     reparseConfiguration();
+  }
+  setGroup(oldGroup);
+}
+
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 

@@ -127,6 +127,19 @@ public:
    * @see #setForceGlobal
    */
   bool forceGlobal() const { return bForceGlobal; }
+
+  /**
+   * Checks whether the config file contains the update @p id
+   * as contained in @p updateFile. If not, it runs kconf_update
+   * to update the config file.
+   *
+   * If you install config update files with critical fixes
+   * you may wish to use this method to verify that a critical
+   * update has indeed been performed to catch the case where
+   * a user restores an old config file from backup that has
+   * not been updated yet.
+   */
+  void checkUpdate(const QString &id, const QString &updateFile);
     
 protected:
 
