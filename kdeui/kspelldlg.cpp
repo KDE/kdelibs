@@ -47,7 +47,7 @@ public:
 
 KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bool _modal )
   : KDialogBase(
-      parent, name, _modal, i18n("Check spelling"), Help|Cancel|User1,
+      parent, name, _modal, i18n("Check Spelling"), Help|Cancel|User1,
       Cancel, true, i18n("&Finished")
     ),
     progressbar( false )

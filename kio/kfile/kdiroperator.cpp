@@ -439,7 +439,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     if ( items.isEmpty() ) {
         KMessageBox::information( parent,
                                 i18n("You didn't select a file to delete."),
-                                i18n("Nothing to delete") );
+                                i18n("Nothing to Delete") );
         return 0L;
     }
 
