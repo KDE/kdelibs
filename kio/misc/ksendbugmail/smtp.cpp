@@ -6,7 +6,7 @@
 
 #include <kdebug.h>
 
-#include <smtp.h>
+#include "smtp.h"
 
 SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 {

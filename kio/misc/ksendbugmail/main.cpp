@@ -1,7 +1,7 @@
 // $Id$
 
 #include <sys/types.h>
-#include <main.h>
+#include "main.h"
 #include <pwd.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -16,7 +16,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 
-#include <smtp.h>
+#include "smtp.h"
 
 static KCmdLineOptions options[] = {
     { "subject <argument>", I18N_NOOP("Subject line"), 0 },
