@@ -637,8 +637,9 @@ KSSLCertificateHome::KSSLAuthAction aa;
      QDataStream arg(data, IO_WriteOnly);
      arg << ourHost;
      arg << certs;
+     arg << metaData("window-id").toInt();
      bool rc = d->dcc->call("kio_uiserver", "UIServer",
-                               "showSSLCertDialog(QString, QStringList)",
+                               "showSSLCertDialog(QString, QStringList,int)",
                                data, rettype, retval);
 
      if (rc && rettype == "KSSLCertDlgRet") {
@@ -917,8 +918,9 @@ int TCPSlaveBase::verifyCertificate()
                    QCString ignoretype;
                    QDataStream arg(data, IO_WriteOnly);
                    arg << theurl << mOutgoingMetaData;
+                   arg << metaData("window-id").toInt();
                         d->dcc->call("kio_uiserver", "UIServer",
-                                "showSSLInfoDialog(QString,KIO::MetaData)",
+                                "showSSLInfoDialog(QString,KIO::MetaData,int)",
                                 data, ignoretype, ignore);
                 }
              } while (result == KMessageBox::Yes);
@@ -1043,8 +1045,9 @@ int TCPSlaveBase::verifyCertificate()
                    QCString ignoretype;
                    QDataStream arg(data, IO_WriteOnly);
                    arg << theurl << mOutgoingMetaData;
+                   arg << metaData("window-id").toInt();
                         d->dcc->call("kio_uiserver", "UIServer",
-                                "showSSLInfoDialog(QString,KIO::MetaData)",
+                                "showSSLInfoDialog(QString,KIO::MetaData,int)",
                                 data, ignoretype, ignore);
                 }
           } while (result == KMessageBox::Yes);
@@ -1126,8 +1129,9 @@ int TCPSlaveBase::verifyCertificate()
           QCString ignoretype;
           QDataStream arg(data, IO_WriteOnly);
           arg << theurl << mOutgoingMetaData;
+          arg << metaData("window-id").toInt();
           d->dcc->call("kio_uiserver", "UIServer",
-                       "showSSLInfoDialog(QString,KIO::MetaData)",
+                       "showSSLInfoDialog(QString,KIO::MetaData,int)",
                        data, ignoretype, ignore);
       }
       } while (result != KMessageBox::No);

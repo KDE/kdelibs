@@ -349,10 +349,20 @@ k_dcop:
   /**
    * Show a SSL Information Dialog
    */
+  void showSSLInfoDialog(const QString &url, const KIO::MetaData &data, int mainwindow);
+
+  /**
+   * @deprecated
+   */
   void showSSLInfoDialog(const QString &url, const KIO::MetaData &data);
 
   /*
    * Show an SSL Certificate Selection Dialog
+   */
+  KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow);
+
+  /*
+   * @deprecated
    */
   KSSLCertDlgRet showSSLCertDialog(const QString& host, const QStringList& certList);
 

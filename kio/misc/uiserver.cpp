@@ -1171,6 +1171,11 @@ int UIServer::messageBox( int progressId, int type, const QString &text, const Q
 
 void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
 {
+    return showSSLInfoDialog(url,meta,0);
+}
+
+void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, int mainwindow)
+{
    KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
    KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].local8Bit());
    if (x) {
@@ -1200,6 +1205,8 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
                   meta["ssl_cipher_bits"].toInt(),
                   KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
       kdDebug(7024) << "Showing SSL Info dialog" << endl;
+      if( mainwindow != 0 )
+          KWin::setMainWindow( kid, mainwindow );
       kid->exec();
       delete x;
       kdDebug(7024) << "SSL Info dialog closed" << endl;
@@ -1212,6 +1219,11 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
 
 KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList)
 {
+    return showSSLCertDialog( host, certList, 0 );
+}
+
+KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringList& certList, int mainwindow)
+{
    KSSLCertDlgRet rc;
    rc.ok = false;
    if (!certList.isEmpty()) {
@@ -1219,6 +1231,8 @@ KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringLis
       kcd->setupDialog(certList);
       kcd->setHost(host);
       kdDebug(7024) << "Showing SSL certificate dialog" << endl;
+      if( mainwindow != 0 )
+          KWin::setMainWindow( kcd, mainwindow );
       kcd->exec();
       rc.ok = true;
       rc.choice = kcd->getChoice();
