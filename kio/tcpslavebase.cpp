@@ -274,6 +274,7 @@ int TCPSlaveBase::verifyCertificate()
 {
 int rc = 0;
 bool permacache = false;
+bool isChild = false;
 
    if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -322,7 +323,6 @@ bool permacache = false;
       if (ksv != KSSLCertificate::Ok) {
          if (cp == KSSLCertificateCache::Unknown || 
              cp == KSSLCertificateCache::Ambiguous) {
-            // FIXME: obtain the default bad-cert policy -- default to prompt
             cp = KSSLCertificateCache::Prompt;
          } else {
             // A policy was already set so let's honour that.
@@ -356,9 +356,11 @@ bool permacache = false;
              if (result == KMessageBox::Yes) {
                 setMetaData("ssl_action", "accept");
                 rc = 1;
+                cp = KSSLCertificateCache::Accept;
              } else {
                 setMetaData("ssl_action", "reject");
                 rc = -1;
+                cp = KSSLCertificateCache::Prompt;
              }
            }
           break;
@@ -374,15 +376,63 @@ bool permacache = false;
    } else {        // Child frame
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
-      
+      isChild = true;
    }
 
    // Things to check:
-   //  - entering SSL
-   //  - leaving SSL
-   //  - mixed SSL/nonSSL
    //  - posting unencrypted data  -- elsewhere?
+   //                 - transmitting any data unencrypted?  In the app??
+   //                         singleton in write()?
 
+   if (metaData("ssl_activate_warnings") == "TRUE") {
+   //  - entering SSL
+   if (metaData("ssl_was_in_use") != "TRUE" &&
+                                        d->kssl->settings()->warnOnEnter()) {
+      int result = messageBox( WarningYesNo,
+                             i18n("You are about to enter secure mode."
+                                  " All transmissions will be encrypted unless"
+                                  " otherwise noted.\nThis means that no third"
+                                  " party will be able to easily observe your"
+                                  " data in transfer."),
+                             i18n("Security information"),
+                             i18n("Display SSL Information"),
+                             i18n("Continue") );
+      if ( result == KMessageBox::Yes )
+      {
+         // Force sending of the metadata
+         sendMetaData();
+         messageBox( SSLMessageBox, m_sServiceName );
+      }
+   }
+
+   //  - leaving SSL
+   if (metaData("ssl_was_in_use") == "TRUE" &&
+                                         d->kssl->settings()->warnOnLeave()) {
+      int result = messageBox( WarningContinueCancel,
+                             i18n("You are about to leave secure mode."
+                                  " Transmissions will no longer be "
+                                  "encrypted.\nThis means that a "
+                                  "third party could observe your data "
+                                  "in transit."),
+                             i18n("Security information"),
+                             i18n("Continue Loading") );
+      if ( result == KMessageBox::Cancel )
+      {
+         // FIXME: fail here!!
+      }
+   }
+
+   //  - mixed SSL/nonSSL
+   // I assert that if any two portions of a loaded document are of opposite
+   // SSL status then either one of them must be different than the parent.
+   // Therefore we can only compare each child against the parent both here
+   // and in non-SSL mode
+   if (isChild && d->kssl->settings()->warnOnMixed() && 
+                                       metaData("ssl_was_in_use") != "TRUE") {
+
+   }
+
+   }   // if ssl_activate_warnings
 
 
 kdDebug() << "SSL connection information follows:" << endl
