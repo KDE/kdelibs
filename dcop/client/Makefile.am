@@ -1,7 +1,7 @@
 
 INCLUDES = $(all_includes)
 LDFLAGS   = $(all_libraries)
-DCOP_LIB = ../libdcop.la
+DCOP_LIB = ../libDCOP.la
 
 ####### Files
 
