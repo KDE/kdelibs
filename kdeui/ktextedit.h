@@ -22,6 +22,8 @@
 
 #include <qtextedit.h>
 
+#include <kdelibs.h>
+
 class KSpell;
 
 /**
@@ -37,7 +39,7 @@ class KSpell;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @since 3.1
  */
-class KTextEdit : public QTextEdit
+class KDEUI_EXPORT KTextEdit : public QTextEdit
 {
     Q_OBJECT
 

@@ -22,6 +22,8 @@
 
 #include <qpushbutton.h>
 
+#include <kdelibs.h>
+
 class KColorButtonPrivate;
 /**
 * This widget can be used to display or allow user selection of a color.
@@ -33,7 +35,7 @@ class KColorButtonPrivate;
 * @short A pushbutton to display or allow user selection of a color.
 * @version $Id$
 */
-class KColorButton : public QPushButton
+class KDEUI_EXPORT KColorButton : public QPushButton
 {
 	Q_OBJECT
 	Q_PROPERTY( QColor color READ color WRITE setColor )

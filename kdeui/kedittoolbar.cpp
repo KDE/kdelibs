@@ -19,10 +19,9 @@
 #include <kedittoolbar.h>
 
 #include <qdom.h>
-
 #include <qlayout.h>
-#include <kaction.h>
-
+#include <qdir.h>
+#include <qfile.h>
 #include <qheader.h>
 #include <qcombobox.h>
 #include <qdragobject.h>
@@ -30,7 +29,9 @@
 #include <qlabel.h>
 #include <qvaluelist.h>
 #include <qapplication.h>
+#include <qtextstream.h>
 
+#include <kaction.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kicontheme.h>
@@ -40,11 +41,8 @@
 #include <kseparator.h>
 #include <kconfig.h>
 #include <klistview.h>
-
-#include <qtextstream.h>
-#include <qfile.h>
 #include <kdebug.h>
-#include "kpushbutton.h"
+#include <kpushbutton.h>
 #include <kprocio.h>
 
 #define LINESEPARATORSTRING i18n("--- line separator ---")
@@ -239,7 +237,7 @@ public:
     QString xml_file = xmlFile(_xml_file);
     //kdDebug() << "loadXMLFile xml_file=" << xml_file << endl;
 
-    if ( xml_file[0] == '/' )
+    if ( !QDir::isRelativePath(xml_file) )
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
     else
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_instance);
@@ -1319,7 +1317,7 @@ void KEditToolbarWidget::slotChangeIcon()
   QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
   (*d->m_kdialogProcess) << kdialogExe;
   (*d->m_kdialogProcess) << "--embed";
-  (*d->m_kdialogProcess) << QString::number( topLevelWidget()->winId() );
+  (*d->m_kdialogProcess) << QString::number( (ulong)topLevelWidget()->winId() );
   (*d->m_kdialogProcess) << "--geticon";
   (*d->m_kdialogProcess) << "Toolbar";
   (*d->m_kdialogProcess) << "Actions";

@@ -643,20 +643,25 @@ void KAboutContainerBase::setImage( const QString &fileName )
 
 void KAboutContainerBase::setIcon( const QString &fileName )
 {
-  if( mIconLabel == 0 )
-  {
-    kdDebug(291) << "setIcon: " << "Invalid layout" << endl;
-    return;
-  }
   if( fileName.isNull() )
   {
     return;
   }
 
   QPixmap logo( fileName );
-  if( !logo.isNull() )
+  setIcon( logo );
+}
+
+void KAboutContainerBase::setIcon( const QPixmap &pixmap )
+{
+  if( mIconLabel == 0 )
   {
-    mIconLabel->setPixmap( logo );
+    kdDebug(291) << "setIcon: " << "Invalid layout" << endl;
+    return;
+  }
+  if( !pixmap.isNull() )
+  {
+    mIconLabel->setPixmap( pixmap );
   }
 }
 
@@ -1550,7 +1555,7 @@ void KAboutDialog::show( void )
 }
 
 
-void KAboutDialog::show( QWidget */*centerParent*/ )
+void KAboutDialog::show( QWidget * /*centerParent*/ )
 {
   adjust();
   if( mContainerBase != 0 ) { mContainerBase->show(); }
@@ -1629,7 +1634,7 @@ void KAboutDialog::openURLSlot(const QString& url)
 }
 
 
-void KAboutDialog::mouseTrackSlot( int /*mode*/, const QMouseEvent */*e*/ )
+void KAboutDialog::mouseTrackSlot( int /*mode*/, const QMouseEvent * /*e*/ )
 {
   // By default we do nothing. This method must be reimplemented.
 }
@@ -1699,10 +1704,15 @@ void KAboutDialog::setImage( const QString &fileName )
 
 void KAboutDialog::setIcon( const QString &fileName )
 {
-	if( mContainerBase == 0 ) { return; }
-	mContainerBase->setIcon( fileName );
+  if( mContainerBase == 0 ) { return; }
+  mContainerBase->setIcon( fileName );
 }
 
+void KAboutDialog::setIcon( const QPixmap &pixmap )
+{
+  if( mContainerBase == 0 ) { return; }
+  mContainerBase->setIcon( pixmap );
+}
 
 void KAboutDialog::setImageBackgroundColor( const QColor &color )
 {

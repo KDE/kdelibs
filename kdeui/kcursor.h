@@ -24,6 +24,7 @@
 #define _KCURSOR_H
 
 #include <qcursor.h>
+#include <kdelibs.h>
 
 class QWidget;
 
@@ -40,7 +41,7 @@ class QWidget;
  * @short A QCursor wrapper allowing "themed" cursors and auto-hiding cursors.
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KCursor : public Qt
+class KDEUI_EXPORT KCursor : public Qt
 {
 public:
     /**

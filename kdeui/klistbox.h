@@ -20,6 +20,8 @@
 
 #include <qlistbox.h>
 
+#include <kdelibs.h>
+
 /**
  * Extends the functionality of QListBox to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
@@ -35,7 +37,7 @@
  *
  * @short A variant of QListBox that honors KDE's system-wide settings.
  **/
-class KListBox : public QListBox
+class KDEUI_EXPORT KListBox : public QListBox
 {
     Q_OBJECT
 

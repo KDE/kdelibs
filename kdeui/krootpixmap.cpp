@@ -14,7 +14,6 @@
 #include <qrect.h>
 #include <qimage.h>
 
-#ifndef Q_WS_QWS //FIXME
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <kpixmapio.h>
@@ -38,7 +37,9 @@ class KRootPixmapData
 {
 public:
     QWidget *toplevel;
+#ifdef Q_WS_X11
     KWinModule *kwin;
+#endif
 };
 
 
@@ -58,19 +59,21 @@ void KRootPixmap::init()
 {
     d = new KRootPixmapData;
     m_Fade = 0;
-    m_pPixmap = new KSharedPixmap;
+    m_pPixmap = new KSharedPixmap; //ordinary KPixmap on win32
     m_pTimer = new QTimer( this );
     m_bInit = false;
     m_bActive = false;
     m_bCustomPaint = false;
 
     connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
-    connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
     connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
+#ifdef Q_WS_X11
+    connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
 
     d->kwin = new KWinModule( this );
     connect(d->kwin, SIGNAL(windowChanged(WId, unsigned int)), SLOT(desktopChanged(WId, unsigned int)));
     connect(d->kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged(int)));
+#endif
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
@@ -86,9 +89,14 @@ KRootPixmap::~KRootPixmap()
 
 int KRootPixmap::currentDesktop() const
 {
+#ifdef Q_WS_X11
     NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
     rinfo.activate();
     return rinfo.currentDesktop();
+#else
+    //OK?
+    return QApplication::desktop()->screenNumber(m_pWidget);
+#endif
 }
 
 
@@ -171,17 +179,21 @@ void KRootPixmap::desktopChanged(int desktop)
     if (wallpaperForDesktop(m_Desk) == wallpaperForDesktop(desktop) &&
 	!wallpaperForDesktop(m_Desk).isNull())
 	return;
-    
+
+#ifdef Q_WS_X11
     if (KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop() == NET::OnAllDesktops &&
 	pixmapName(m_Desk) != pixmapName(desktop))
+#endif
 	repaint(true);
 }
 
 void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 {
+#ifdef Q_WS_X11
     if( (properties & NET::WMDesktop) == 0 ||
 	(window != m_pWidget->topLevelWidget()->winId()))
 	return;
+#endif
 
     kdDebug() << k_funcinfo << endl;
     repaint(true);
@@ -213,31 +225,49 @@ void KRootPixmap::repaint(bool force)
 	return;
     }
     m_Rect = QRect(p1, p2);
+#ifdef Q_WS_X11
     m_Desk = KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop();
     if (m_Desk == NET::OnAllDesktops)
 	m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     m_pPixmap->loadFromShared(pixmapName(m_Desk), m_Rect);
+#else
+	m_Desk = currentDesktop();
+    // !x11 note: tile is not generated!
+    // TODO: pixmapName() is a nonsense now!
+    m_pPixmap->load( pixmapName(m_Desk) );
+    if (!m_pPixmap->isNull()) {
+        m_pPixmap->resize( m_Rect.size() );
+        slotDone(true);
+    }
+#endif
 }
 
 bool KRootPixmap::isAvailable() const
 {
+#ifdef Q_WS_X11
     return m_pPixmap->isAvailable(pixmapName(m_Desk));
+#else
+    return m_pPixmap->isNull();
+#endif
 }
 
 QString KRootPixmap::pixmapName(int desk) {
     QString pattern = QString("DESKTOP%1");
+#ifdef Q_WS_X11
     int screen_number = DefaultScreen(qt_xdisplay());
     if (screen_number) {
         pattern = QString("SCREEN%1-DESKTOP").arg(screen_number) + "%1";
     }
+#endif
     return pattern.arg( desk );
 }
 
 
 void KRootPixmap::enableExports()
 {
+#ifdef Q_WS_X11
     kdDebug(270) << k_lineinfo << "activating background exports.\n";
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -252,6 +282,7 @@ void KRootPixmap::enableExports()
         appname.sprintf("kdesktop-screen-%d", screen_number );
 
     client->send( appname, "KBackgroundIface", "setExport(int)", data );
+#endif
 }
 
 
@@ -299,4 +330,3 @@ void KRootPixmap::slotBackgroundChanged(int desk)
 }
 
 #include "krootpixmap.moc"
-#endif

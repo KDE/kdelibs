@@ -26,19 +26,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qpainter.h>
 #include <qvaluelist.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY // only used in kicker and kdesktop
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kwin.h> 
 #include <kwinmodule.h> 
-#endif
 
 #include <klocale.h>
 #include <kstringhandler.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS //FIXME
 #include <netwm.h> 
-#endif
 #include <kapplication.h>
 #include <kstyle.h>
 #include <dcopclient.h>
@@ -62,8 +56,6 @@ private:
 
 int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS //FIXME
     KWin::WindowInfo *i1 = static_cast<KWin::WindowInfo *>(s1);
     KWin::WindowInfo *i2 = static_cast<KWin::WindowInfo *>(s2);
     QString title1, title2;
@@ -72,7 +64,6 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
     if (i2)
         title2 = i2->visibleNameWithState().lower();
     return title1.compare(title2);
-#endif
 }
 
 } // namespace
@@ -80,10 +71,7 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
   : KPopupMenu(parent, name)
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS //FIXME
     kwin_module = new KWinModule(this);
-#endif
 
     connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
 }
@@ -113,8 +101,6 @@ void KWindowListMenu::init()
     int i, d;
     i = 0;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS //FIXME
     int nd = kwin_module->numberOfDesktops();
     int cd = kwin_module->currentDesktop();
     WId active_window = kwin_module->activeWindow();
@@ -208,22 +194,18 @@ void KWindowListMenu::init()
 
         setItemEnabled(insertItem(i18n("No windows")), false);
     }
-#endif
 
     adjustSize();
 }
 
 void KWindowListMenu::slotExec(int id)
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS //FIXME
     if (id == 2000)
         ; // do nothing
     else if (id > 1000)
         KWin::setCurrentDesktop(id - 1000);
     else if ( id >= 0 )
 	KWin::forceActiveWindow(map[id]);
-#endif
 }
 
 // This popup is much more useful from keyboard if it has the active
@@ -254,6 +236,4 @@ void KWindowListMenu::slotCascadeWindows()
 
 void KWindowListMenu::virtual_hook( int id, void* data )
 { KPopupMenu::virtual_hook( id, data ); }
-
-#endif
 

@@ -45,7 +45,7 @@
  * @author Aaron Seigo
  * @version $Id$
  */
-class KProgress : public QProgressBar
+class KDEUI_EXPORT KProgress : public QProgressBar
 {
   Q_OBJECT
 
@@ -186,7 +186,7 @@ private:
  * @short A dialog with a progress bar
  * @author Aaron J. Seigo
  */
-class KProgressDialog : public KDialogBase
+class KDEUI_EXPORT KProgressDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -383,7 +383,7 @@ class KProgressDialog : public KDialogBase
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
-        class KProgressDialogPrivate;
+        struct KProgressDialogPrivate;
         KProgressDialogPrivate *d;
 };
 

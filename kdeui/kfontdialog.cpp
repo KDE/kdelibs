@@ -53,7 +53,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <knuminput.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #include <X11/Xlib.h> 
 		    // not needed any more...
 #endif
@@ -653,7 +653,7 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     for (QStringList::Iterator it = lstSys.begin(); it != lstSys.end(); ++it)
     {
         if ((fontListCriteria & FixedWidthFonts) > 0 && !dbase.isFixedPitch(*it)) continue;
-        if ((fontListCriteria & (SmoothScalableFonts | ScalableFonts) == ScalableFonts) &&
+        if (((fontListCriteria & (SmoothScalableFonts | ScalableFonts)) == ScalableFonts) &&
                 !dbase.isBitmapScalable(*it)) continue;
         if ((fontListCriteria & SmoothScalableFonts) > 0 && !dbase.isSmoothlyScalable(*it)) continue;
         lstFonts.append(*it);

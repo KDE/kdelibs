@@ -61,7 +61,7 @@ class KSystemTrayPrivate;
  * @author Matthias Ettrich <ettrich@kde.org>
  * @short KDE System Tray Window class
  **/
-class KSystemTray : public QLabel
+class KDEUI_EXPORT KSystemTray : public QLabel
 {
     Q_OBJECT
 public:

@@ -21,6 +21,8 @@
 
 #include <qlabel.h>
 
+#include <kdelibs.h>
+
 /**
  * A label class that squeezes its text into the label
  *
@@ -42,7 +44,7 @@
 /*
  * QLabel
  */
-class KSqueezedTextLabel : public QLabel {
+class KDEUI_EXPORT KSqueezedTextLabel : public QLabel {
   Q_OBJECT
 
 public:

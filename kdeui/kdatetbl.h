@@ -26,6 +26,8 @@
 #include <qdatetime.h>
 #include <qcolor.h>
 
+#include <kdelibs.h>
+
 class KPopupMenu;
 
 /** Week selection widget.
@@ -33,7 +35,7 @@ class KPopupMenu;
 * @version $Id$
 * @author Stephan Binner
 */
-class KDateInternalWeekSelector : public QLineEdit
+class KDEUI_EXPORT KDateInternalWeekSelector : public QLineEdit
 {
   Q_OBJECT
 protected:
@@ -60,7 +62,7 @@ private:
 * @version $Id$
 * @author Tim Gilman, Mirko Boehm
 */
-class KDateInternalMonthPicker : public QGridView
+class KDEUI_EXPORT KDateInternalMonthPicker : public QGridView
 {
   Q_OBJECT
 protected:
@@ -133,7 +135,7 @@ private:
 * @version $Id$
 * @author Tim Gilman, Mirko Boehm
 */
-class KDateInternalYearSelector : public QLineEdit
+class KDEUI_EXPORT KDateInternalYearSelector : public QLineEdit
 {
   Q_OBJECT
 protected:
@@ -159,7 +161,7 @@ private:
  * @author Tim Gilman, Mirko Boehm
  * @version $Id$
  */
-class KPopupFrame : public QFrame
+class KDEUI_EXPORT KPopupFrame : public QFrame
 {
   Q_OBJECT
 protected:
@@ -225,7 +227,7 @@ private:
 /**
 * Validates user-entered dates.
 */
-class KDateValidator : public QValidator
+class KDEUI_EXPORT KDateValidator : public QValidator
 {
 public:
     KDateValidator(QWidget* parent=0, const char* name=0);
@@ -247,7 +249,7 @@ public:
  * @version $Id$
  * @author Tim Gilman, Mirko Boehm
  */
-class KDateTable : public QGridView
+class KDEUI_EXPORT KDateTable : public QGridView
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ getDate WRITE setDate )

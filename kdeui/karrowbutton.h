@@ -21,6 +21,8 @@
 
 #include <qpushbutton.h>
 
+#include <kdelibs.h>
+
 class KArrowButtonPrivate;
 /**
  * Draws a button which shows an arrow pointing into a certain direction. The
@@ -31,7 +33,7 @@ class KArrowButtonPrivate;
  * @short Draws a button with an arrow.
  * @author Frerich Raabe
  */
-class KArrowButton : public QPushButton
+class KDEUI_EXPORT KArrowButton : public QPushButton
 {
 	Q_OBJECT
 

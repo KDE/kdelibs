@@ -63,7 +63,7 @@ class KGuiItem;
  * @short Easy to use widget with many layouts
  * @author Espen Sand (espen@kde.org)
  */
-class KJanusWidget : public QWidget
+class KDEUI_EXPORT KJanusWidget : public QWidget
 {
   Q_OBJECT
 

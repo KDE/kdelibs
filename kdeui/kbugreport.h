@@ -39,7 +39,7 @@ class KBugReportPrivate;
  * @short A dialog box for sending bug reports.
  * @author David Faure <faure@kde.org>
  */
-class KBugReport : public KDialogBase
+class KDEUI_EXPORT KBugReport : public KDialogBase
 {
   Q_OBJECT
 public:

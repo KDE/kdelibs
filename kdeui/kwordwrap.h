@@ -24,6 +24,8 @@
 #include <qrect.h>
 #include <qstring.h>
 
+#include <kdelibs.h>
+
 /**
  * Word-wrap algorithm that takes into account beautifulness ;)
  * That means:
@@ -41,7 +43,7 @@
  * and not every time we want to know the bounding rect or draw the text.
  * @author David Faure <faure@kde.org>
  */
-class KWordWrap
+class KDEUI_EXPORT KWordWrap
 {
 public:
     /**

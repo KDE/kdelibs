@@ -32,7 +32,7 @@ class KStatusBar;
  *  Internal label class for use in KStatusBar
  *  @internal
  */
-class KStatusBarLabel : public QLabel
+class KDEUI_EXPORT KStatusBarLabel : public QLabel
 {
   Q_OBJECT
 
@@ -79,7 +79,7 @@ signals:
  *  @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <radej@kde.org>
  *  @version $Id$
  */
-class KStatusBar : public QStatusBar
+class KDEUI_EXPORT KStatusBar : public QStatusBar
 {
   Q_OBJECT
     

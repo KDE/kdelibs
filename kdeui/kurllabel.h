@@ -22,6 +22,8 @@
 
 #include <qlabel.h>
 
+#include <kdelibs.h>
+
 class QColor;
 class QCursor;
 class QPixmap;
@@ -61,7 +63,7 @@ class QPixmap;
  * @version $Id$
  *
  */
-class KURLLabel : public QLabel
+class KDEUI_EXPORT KURLLabel : public QLabel
 {
   Q_OBJECT
   Q_PROPERTY (QString url READ url WRITE setURL)

@@ -22,6 +22,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 class QCheckBox;
 class QComboBox;
 class QLabel;
@@ -78,7 +80,7 @@ enum KSpellClients {
  * @see KSpell
  */
 
-class KSpellConfig : public QWidget
+class KDEUI_EXPORT KSpellConfig : public QWidget
 {
   Q_OBJECT
 

@@ -71,6 +71,9 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   setProduct( aboutData->programName(), aboutData->version(),
 	      QString::null, QString::null );
 
+  if (!aboutData->programLogo().isNull())
+    setIcon( aboutData->programLogo() );
+
   QString appPageText = aboutData->shortDescription() + "\n";
 
   if (!aboutData->otherText().isEmpty())

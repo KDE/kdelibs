@@ -43,7 +43,7 @@ class KRootPixmapData;
  * @author Geert Jansen <jansen@kde.org>
  * @version $Id$
  */
-class KRootPixmap: public QObject
+class KDEUI_EXPORT KRootPixmap: public QObject
 {
     Q_OBJECT
 

@@ -28,6 +28,8 @@ class KContextMenuManagerPrivate;
 #include <qptrdict.h>
 #include <qkeysequence.h>
 
+#include <kdelibs.h>
+
 /**
 @short Convenience class to mangage context menus
 @author Matthias Ettrich <ettrich@kde.org>
@@ -74,7 +76,7 @@ If the popup menu is invoked with the keyboard shortcut, it's shown at
 the position of the micro focus hint of the widget ( QWidget::microFocusHint() ).
 */
 
-class KContextMenuManager : public QObject
+class KDEUI_EXPORT KContextMenuManager : public QObject
 {
     Q_OBJECT
 public:

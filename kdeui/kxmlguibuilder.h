@@ -23,6 +23,8 @@
 #include <qdom.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 class KXMLGUIBuilderPrivate;
 class QWidget;
 class KInstance;
@@ -34,7 +36,7 @@ class KXMLGUIClient;
  * the toplevel widget is a KMainWindow. Other implementations may appear
  * in the future (dialogs for instance)
  */
-class KXMLGUIBuilder
+class KDEUI_EXPORT KXMLGUIBuilder
 {
  public:
 

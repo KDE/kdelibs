@@ -25,7 +25,7 @@
  * the editor for a KListView.  please don't use this.
  * @internal
  **/
-class KListViewLineEdit : public KLineEdit
+class KDEUI_EXPORT KListViewLineEdit : public KLineEdit
 {
 Q_OBJECT
 public:

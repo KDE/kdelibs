@@ -24,6 +24,8 @@
 #include <qrect.h>
 #include <qlabel.h>
 
+#include <kdelibs.h>
+
 /**
  * KPixmapRegionSelectorWidget is a widget that shows a picture and provides the
  * user with a friendly way to select a rectangular subregion of the pixmap.
@@ -31,7 +33,7 @@
  * @author Antonio Larrosa <larrosa@kde.org>
  * @since 3.4
  */
-class KPixmapRegionSelectorWidget : public QWidget
+class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
 public:
    /**

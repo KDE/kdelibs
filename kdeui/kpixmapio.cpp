@@ -10,11 +10,8 @@
  * kpixmapio.cpp: Fast pixmap <-> image conversion.
  */
 
+#include "kpixmapio.h"
 #include "config.h"
-
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 
 #include <qimage.h>
 #include <qpixmap.h>
@@ -24,9 +21,14 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include "kpixmapio.h"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <sys/types.h>
+#ifdef Q_OS_UNIX
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#endif
+
+#ifdef Q_WS_X11
 #include <X11/X.h> 
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h> 
@@ -49,7 +51,7 @@ struct KPixmapIOPrivate
     int threshold;
     int bpp;
     int byteorder;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     XImage *ximage;
 #ifdef HAVE_MITSHM
     XShmSegmentInfo *shminfo;

@@ -29,8 +29,6 @@
 #undef Always
 #include <qdockwindow.h>
 #endif
-#include "ktoolbar.h"
-#include "kmainwindow.h"
 
 #include <string.h>
 
@@ -42,9 +40,12 @@
 #include <qobjectlist.h>
 #include <qtimer.h>
 #include <qstyle.h>
+#include <qlayout.h>
 
-#include "klineedit.h"
-#include "kseparator.h"
+#include <ktoolbar.h>
+#include <kmainwindow.h>
+#include <klineedit.h>
+#include <kseparator.h>
 #include <klocale.h>
 #include <kapplication.h>
 #include <kaction.h>
@@ -56,16 +57,10 @@
 #include <kpopupmenu.h>
 #include <kanimwidget.h>
 #include <kedittoolbar.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kipc.h>
-#endif
-
 #include <kwin.h>
 #include <kdebug.h>
-#include <qlayout.h>
-
-#include "ktoolbarbutton.h"
+#include <ktoolbarbutton.h>
 
 enum {
     CONTEXT_TOP = 0,
@@ -245,9 +240,7 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     if ( kapp ) { // may be null when started inside designer
         connect(kapp, SIGNAL(toolbarAppearanceChanged(int)), this, SLOT(slotAppearanceChanged()));
         // request notification of changes in icon style
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         kapp->addKipcEventMask(KIPC::IconChanged);
-#endif
         connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
     }
 

@@ -25,6 +25,8 @@
 
 #include <qwidget.h>
 
+#include <kdelibs.h>
+
 class QStringList;
 
 class KAboutData;
@@ -63,7 +65,7 @@ class KInstance;
  *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
  */
-class KCModule : public QWidget
+class KDEUI_EXPORT KCModule : public QWidget
 {
   Q_OBJECT
 

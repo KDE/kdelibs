@@ -22,6 +22,8 @@
 
 #include <qsplashscreen.h>
 
+#include <kdelibs.h>
+
 class QPixmap;
 
 /**
@@ -38,7 +40,7 @@ class QPixmap;
  *  @version $Id$
  *  @since 3.2
  */
-class KSplashScreen : public QSplashScreen
+class KDEUI_EXPORT KSplashScreen : public QSplashScreen
 {
   Q_OBJECT
     

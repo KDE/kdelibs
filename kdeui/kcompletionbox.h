@@ -38,7 +38,7 @@ class QEvent;
  * @short A helper widget for "completion-widgets" (KLineEdit, KComboBox))
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KCompletionBox : public KListBox
+class KDEUI_EXPORT KCompletionBox : public KListBox
 {
     Q_OBJECT
     Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )

@@ -34,7 +34,7 @@
  *
  * @author Holger Freyther <freyther@kde.org>
  */
-class KStdGuiItem
+class KDEUI_EXPORT KStdGuiItem
 {
 public:
     /**

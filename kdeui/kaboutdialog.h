@@ -47,7 +47,7 @@ class KAboutContainerPrivate;
 /**
  *  KAboutContainer can be used to make a application specific AboutDialog.
  */
-class KAboutContainer : public QFrame
+class KDEUI_EXPORT KAboutContainer : public QFrame
 {
   Q_OBJECT
 
@@ -89,7 +89,7 @@ class KAboutContributorPrivate;
  * Used internally by KAboutWidget
  * @internal
  */
-class KAboutContributor : public QFrame
+class KDEUI_EXPORT KAboutContributor : public QFrame
 {
   Q_OBJECT
 
@@ -147,7 +147,7 @@ class KAboutContributor : public QFrame
  *
  * It has a minimum size set.
  */
-class KAboutWidget : public QWidget
+class KDEUI_EXPORT KAboutWidget : public QWidget
 {
   Q_OBJECT
 
@@ -280,7 +280,7 @@ class KAboutDialogPrivate;
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espensa@online.no)
  * @see KDialogBase
  */
-class KAboutDialog : public KDialogBase
+class KDEUI_EXPORT KAboutDialog : public KDialogBase
 {
   Q_OBJECT
 
@@ -403,6 +403,19 @@ class KAboutDialog : public KDialogBase
    * @since 3.3
    */
   void setIcon( const QString &fileName );
+
+  /**
+   * (Constructor II only)
+   * Define an icon to be shown in the dialog.  Use this to override the
+   * default application icon.  For example, use this function if the 
+   * KAboutDialog is for a panel applet and you want to override the
+   * appletproxy icon with your own icon.
+   *
+   * @param pixmap The icon pixmap.
+   *
+   * @since 3.4
+   */
+  void setIcon( const QPixmap &pixmap );
 
   /**
    * (Constructor II only)

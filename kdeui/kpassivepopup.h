@@ -11,6 +11,8 @@
 
 #include <qframe.h>
 
+#include <kdelibs.h>
+
 class QBoxLayout;
 class QTimer;
 class QLabel;
@@ -57,7 +59,7 @@ class QVBox;
  * @since 3.1
  * @author Richard Moore, rich@kde.org
  */
-class KPassivePopup : public QFrame
+class KDEUI_EXPORT KPassivePopup : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )

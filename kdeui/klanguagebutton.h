@@ -29,6 +29,8 @@
 
 #include <qwidget.h>
 
+#include <kdelibs.h>
+
 class KLanguageButtonPrivate;
 
 /**
@@ -40,7 +42,7 @@ class KLanguageButtonPrivate;
  * Combined version of KTagCombo and KLanguageCombo but using a QPushButton
  * instead.
  */
-class KLanguageButton : public QWidget
+class KDEUI_EXPORT KLanguageButton : public QWidget
 {
   Q_OBJECT
 

@@ -21,6 +21,8 @@
 
 #include <qwidget.h>
 
+#include <kdelibs.h>
+
 class QListBox;
 class QListBoxItem;
 class QKeyEvent;

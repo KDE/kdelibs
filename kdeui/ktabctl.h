@@ -27,6 +27,8 @@
 #include <qtabbar.h>
 #include <qmemarray.h>
 
+#include <kdelibs.h>
+
 /**
  * Tabbed dialog with extended features.
  * KTabCtl is very similar to QTabDialog, with the following differences:
@@ -43,7 +45,7 @@
  * @author Alexander Sanda (alex@darkstar.ping.at)
  * @version $Id$
 */
-class KTabCtl : public QWidget
+class KDEUI_EXPORT KTabCtl : public QWidget
 {
     Q_OBJECT
 

@@ -36,7 +36,7 @@ class KColorComboInternal;
 /**
  * Combobox for colors.
  */
-class KColorCombo : public QComboBox
+class KDEUI_EXPORT KColorCombo : public QComboBox
 {
     Q_OBJECT
     Q_PROPERTY( QColor color READ color WRITE setColor )

@@ -34,7 +34,7 @@ class QListViewItem;
  * @since 3.3
  */
 
-class KListViewSearchLine : public KLineEdit
+class KDEUI_EXPORT KListViewSearchLine : public KLineEdit
 {
     Q_OBJECT
 

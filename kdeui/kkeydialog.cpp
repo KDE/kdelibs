@@ -54,7 +54,7 @@
 #include <kaboutdata.h>
 #include <kstaticdeleter.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
 #include <X11/Xlib.h>	// For x11Event()
@@ -70,7 +70,7 @@ const int XKeyRelease = KeyRelease;
 #undef FocusOut
 #undef FocusIn
 #endif // KEYPRESS
-#endif // Q_WX_X11 && ! K_WS_QTONLY
+#endif // Q_WX_X11
 
 //---------------------------------------------------------------------
 // KKeyChooserItem

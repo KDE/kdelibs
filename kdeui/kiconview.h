@@ -21,6 +21,8 @@
 #include <qcursor.h>
 #include <qiconview.h>
 
+#include <kdelibs.h>
+
 /**
  * This Widget extends the functionality of QIconView to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
@@ -36,7 +38,7 @@
  *
  * @short A variant of QIconView that honors KDE's system-wide settings.
  **/
-class KIconView : public QIconView
+class KDEUI_EXPORT KIconView : public QIconView
 {
   friend class KIconViewItem;
   Q_OBJECT
@@ -204,7 +206,7 @@ class KWordWrap;
  * @short A variant of QIconViewItem that wraps words better.
  * @author David Faure <david@mandrakesoft.com>
  */
-class KIconViewItem : public QIconViewItem
+class KDEUI_EXPORT KIconViewItem : public QIconViewItem
 {
 public:
     // Need to redefine all the constructors - I want Java !
@@ -255,7 +257,7 @@ protected:
 
 private:
     KWordWrap* m_wordWrap;
-    class KIconViewItemPrivate;
+    struct KIconViewItemPrivate;
     KIconViewItemPrivate *d;
 };
 

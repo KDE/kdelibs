@@ -31,11 +31,7 @@
 #include <kconfig.h>
 #include <kcursor.h>
 #include <kapplication.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kipc.h> 
-#endif
-
 #include <kdebug.h>
 
 #include "klistview.h"
@@ -425,9 +421,7 @@ KListView::KListView( QWidget *parent, const char *name )
   if (kapp)
   {
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     kapp->addKipcEventMask( KIPC::SettingsChanged );
-#endif
   }
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
@@ -582,17 +576,11 @@ void KListView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-  // FIXME(E): Implement for Qt Embedded
   uint keybstate = KApplication::keyboardModifiers();
-#endif
 
   QListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
 
-//#ifndef Q_WS_QWS
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-  // FIXME(E): Implement for Qt Embedded
   if( d->pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & KApplication::ShiftModifier) ) {
@@ -646,7 +634,6 @@ void KListView::slotAutoSelect()
   }
   else
     kdDebug() << "KListView::slotAutoSelect: That´s not supposed to happen!!!!" << endl;
-#endif
 }
 
 void KListView::slotHeaderChanged()
@@ -673,9 +660,6 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
         }
         else
         {
-//#ifndef Q_WS_QWS
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-	    // FIXME(E): Implement for Qt Embedded
             uint keybstate = KApplication::keyboardModifiers();
 
             d->autoSelect.stop();
@@ -686,7 +670,6 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
                 emit executed( item );
                 emit executed( item, pos, c );
             }
-#endif
         }
     }
 }

@@ -26,6 +26,8 @@
 
 #include <qvalidator.h>
 
+#include <kdelibs.h>
+
 class QWidget;
 class QString;
 
@@ -39,7 +41,7 @@ class QString;
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1
 */
-class KIntValidator : public QValidator {
+class KDEUI_EXPORT KIntValidator : public QValidator {
 
   public:
     /**
@@ -103,7 +105,7 @@ class KFloatValidatorPrivate;
   @author Glen Parker <glenebob@nwlink.com>
   @version 0.0.1
 */
-class KFloatValidator : public QValidator {
+class KDEUI_EXPORT KFloatValidator : public QValidator {
 
   public:
     /**
@@ -175,7 +177,7 @@ class KFloatValidator : public QValidator {
    @since 3.1
 **/
 
-class KDoubleValidator : public QDoubleValidator {
+class KDEUI_EXPORT KDoubleValidator : public QDoubleValidator {
   Q_OBJECT
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
 public:

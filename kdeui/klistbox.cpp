@@ -22,11 +22,7 @@
 #include <kglobalsettings.h>
 #include <kcursor.h>
 #include <kapplication.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kipc.h> 
-#endif
-
 #include <kdebug.h>
 
 #include "klistbox.h"
@@ -42,9 +38,7 @@ KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     if (kapp)
     {
         connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         kapp->addKipcEventMask( KIPC::SettingsChanged );
-#endif
     }
 
     m_pCurrentItem = 0L;
@@ -122,26 +116,20 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   uint keybstate = KApplication::keyboardModifiers();
-#endif
 
   QListBoxItem* previousItem = item( currentItem() ); 
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
     //Shift pressed?
     if( (keybstate & KApplication::ShiftModifier) ) {
-#endif
       bool block = signalsBlocked();
       blockSignals( true );
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
       //No Ctrl? Then clear before!
       if( !(keybstate & KApplication::ControlModifier) )  
 	clearSelection(); 
-#endif
 
       bool select = !m_pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
@@ -170,10 +158,8 @@ void KListBox::slotAutoSelect()
       if( selectionMode() == QListBox::Single )
 	emit selectionChanged( m_pCurrentItem );
     }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
     else if( (keybstate & KApplication::ControlModifier) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
-#endif
     else {
       bool block = signalsBlocked();
       blockSignals( true );
@@ -185,30 +171,22 @@ void KListBox::slotAutoSelect()
 
       setSelected( m_pCurrentItem, true );
     }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   }
   else
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
-#endif
 }
 
 void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   uint keybstate = KApplication::keyboardModifiers();
-#endif
     
   m_pAutoSelect->stop();
   
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
-#endif
     emit executed( item );
     emit executed( item, pos );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   }
-#endif
 }
 
 //

@@ -136,7 +136,7 @@ class KURL;
  * @short An enhanced combo box.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KComboBox : public QComboBox, public KCompletionBase
+class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase
 {
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
@@ -524,7 +524,7 @@ class KPixmapProvider;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A combobox for offering a history and completion
  */
-class KHistoryCombo : public KComboBox
+class KDEUI_EXPORT KHistoryCombo : public KComboBox
 {
     Q_OBJECT
     Q_PROPERTY( QStringList historyItems READ historyItems WRITE setHistoryItems )

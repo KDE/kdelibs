@@ -14,13 +14,13 @@
 #ifndef __KSharedPixmap_h_Included__
 #define __KSharedPixmap_h_Included__
 
+#include <kpixmap.h>
+
+#ifdef Q_WS_X11
+
 #include <qstring.h>
 #include <qpixmap.h>
 #include <qwidget.h>
-
-#if defined  Q_WS_X11 && ! defined K_WS_QTONLY
-   // FIXME: Implement for Qt Embedded
-#include <kpixmap.h>
 
 class KSharedPixmapPrivate;
 
@@ -107,8 +107,8 @@ private:
 
     KSharedPixmapPrivate *d;
 };
-#else
-// Qt Embedded... Let's simply assume KPixmap will do for now. Yes, I know that's broken.
+#else // WIN32, Qt Embedded
+// Let's simply assume KPixmap will do for now. Yes, I know that's broken.
 #define KSharedPixmap KPixmap
 #endif
 

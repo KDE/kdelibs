@@ -29,6 +29,8 @@
 #include <qpoint.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 class QFont;
 class QFontDatabase;
 class QMouseEvent;
@@ -45,7 +47,7 @@ class KCharSelectPrivate;
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KCharSelectTable : public QGridView
+class KDEUI_EXPORT KCharSelectTable : public QGridView
 {
     Q_OBJECT
 
@@ -132,7 +134,7 @@ private:
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KCharSelect : public QVBox
+class KDEUI_EXPORT KCharSelect : public QVBox
 {
     Q_OBJECT
     Q_PROPERTY( QString fontFamily READ font WRITE setFont )

@@ -49,7 +49,7 @@ class KPanelMenuPrivate;
  * @short Base class to build dynamically loaded menu entries for the K-menu, or the panel.
  * @author The kicker maintainer, Michael Goffioul <kdeprint@swing.be>
  */
-class KPanelMenu : public KPopupMenu
+class KDEUI_EXPORT KPanelMenu : public KPopupMenu
 {
     Q_OBJECT
 

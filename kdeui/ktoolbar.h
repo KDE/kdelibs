@@ -29,10 +29,11 @@
 #include <qcombobox.h>
 #include <qmap.h>
 #include <qptrlist.h>
-#include <kglobal.h>
 #include <qguardedptr.h>
 #include <qframe.h>
 #include <qiconset.h>
+
+#include <kglobal.h>
 
 class QDomElement;
 class QSize;
@@ -54,7 +55,7 @@ class KXMLGUIClient;
 
 class KToolBarPrivate;
 
-class KToolBarSeparator : public QFrame
+class KDEUI_EXPORT KToolBarSeparator : public QFrame
 {
     Q_OBJECT
 public:
@@ -100,7 +101,7 @@ private:
   * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
   */
 
-class KToolBar : public QToolBar
+class KDEUI_EXPORT KToolBar : public QToolBar
 {
     Q_OBJECT
     Q_ENUMS( IconText BarPosition )

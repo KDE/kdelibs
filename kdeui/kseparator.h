@@ -22,13 +22,15 @@
 
 #include <qframe.h>
 
+#include <kdelibs.h>
+
 /**
  * Standard horizontal or vertical separator.
  *
  * @author Michael Roth <mroth@wirlweb.de>
  * @version $Id$
 */
-class KSeparator : public QFrame
+class KDEUI_EXPORT KSeparator : public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( int orientation READ orientation WRITE setOrientation )

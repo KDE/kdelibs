@@ -43,7 +43,7 @@ class KInputDialogPrivate;
  * @since 3.2
  * @author Nadeem Hasan <nhasan@kde.org>
  */
-class KInputDialog : public KDialogBase
+class KDEUI_EXPORT KInputDialog : public KDialogBase
 {
   Q_OBJECT
 

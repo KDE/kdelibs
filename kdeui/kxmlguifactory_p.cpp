@@ -127,7 +127,7 @@ ContainerNode *ContainerNode::findContainer( const QString &_name, bool tag )
  */
 ContainerNode *ContainerNode::findContainer( const QString &name, const QString &tagName,
                                              const QPtrList<QWidget> *excludeList,
-                                             KXMLGUIClient */*currClient*/ )
+                                             KXMLGUIClient * /*currClient*/ )
 {
     ContainerNode *res = 0L;
     ContainerNodeListIt nIt( children );
@@ -289,7 +289,7 @@ void ContainerNode::unplugActionList( BuildState &state, const MergingIndexList:
 
     lIt.data().unplug( container );
 
-    adjustMergingIndices( -lIt.data().count(), mergingIdxIt );
+    adjustMergingIndices( -int(lIt.data().count()), mergingIdxIt );
 
     client->actionLists.remove( lIt );
 }
@@ -429,7 +429,7 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
     MergingIndexList::Iterator mergingIt = findIndex( client->mergingName );
 
-    adjustMergingIndices( - ( client->actions.count()
+    adjustMergingIndices( - int( client->actions.count()
                           + client->customElements.count() ),
                           mergingIt );
 
@@ -450,7 +450,7 @@ void ContainerNode::unplugClient( ContainerClient *client )
         if ( mIt == mergingIndices.end() )
             continue;
 
-        adjustMergingIndices( - alIt.data().count(), mIt );
+        adjustMergingIndices( -int(alIt.data().count()), mIt );
 
         // remove the actionlists' merging index
         // ### still needed? we clean up below anyway?

@@ -29,7 +29,7 @@
 // FIXME(E): Do we need the KColorDialog extra functionality in Qt Embedded?
 #include <qcolordialog.h>
 #define KColorDialog QColorDialog
-#else
+#else //UNIX, WIN32
 #include <kdialogbase.h>
 #include <qframe.h>
 #include <qpixmap.h>
@@ -55,7 +55,7 @@ class KColorCells;
  * @author Martin Jones (mjones@kde.org)
  * @version $Id$
 */
-class KHSSelector : public KXYSelector
+class KDEUI_EXPORT KHSSelector : public KXYSelector
 {
   Q_OBJECT
 
@@ -100,7 +100,7 @@ class KValueSelectorPrivate;
  * @author Martin Jones (mjones@kde.org)
  * @version $Id$
  */
-class KValueSelector : public KSelector
+class KDEUI_EXPORT KValueSelector : public KSelector
 {
   Q_OBJECT
 
@@ -159,7 +159,7 @@ private:
  * errors when working in the HSV color space.
  * @author Waldo Bastian <bastian@kde.org>
  **/
-class KColor : public QColor
+class KDEUI_EXPORT KColor : public QColor
 {
 public:
   KColor();
@@ -193,7 +193,7 @@ private:
  * @author Waldo Bastian <bastian@kde.org>
  * @version $Id$
  **/
-class KPaletteTable : public QWidget
+class KDEUI_EXPORT KPaletteTable : public QWidget
 {
   Q_OBJECT
 public:
@@ -246,7 +246,7 @@ private:
 * @author Martin Jones <mjones@kde.org>
 * @version $Id$
 */
-class KColorCells : public QGridView
+class KDEUI_EXPORT KColorCells : public QGridView
 {
   Q_OBJECT
 public:
@@ -303,7 +303,7 @@ private:
  *
  * @short A color displayer.
  */
-class KColorPatch : public QFrame
+class KDEUI_EXPORT KColorPatch : public QFrame
 {
   Q_OBJECT
 public:
@@ -370,7 +370,7 @@ private:
  *
  * @short A color selection dialog.
  **/
-class KColorDialog : public KDialogBase
+class KDEUI_EXPORT KColorDialog : public KDialogBase
 {
   Q_OBJECT
 
@@ -487,6 +487,6 @@ class KColorDialog : public KDialogBase
     KColorDialogPrivate *d;
 };
 
-#endif		// Q_WS_QWS
+#endif		// !Q_WS_QWS
 #endif		// __KCOLORDIALOG_H__
 

@@ -20,8 +20,9 @@
 #define KWHATSTHISMANAGER_P_H
 
 #include <qwhatsthis.h>
-#include <kdialogbase.h>
 #include <qapplication.h>
+
+#include <kdialogbase.h>
 
 class QToolButton;
 class QPopupMenu;
@@ -42,7 +43,7 @@ class QTextEdit;
  * @see QWhatsThis
  * @author Peter Rockai (mornfall) <mornfall@danill.sk>
  **/
-class KWhatsThisManager : public QObject
+class KDEUI_EXPORT KWhatsThisManager : public QObject
 {
     Q_OBJECT
     public:

@@ -36,7 +36,7 @@ namespace KXMLGUI
 
 struct BuildState;
 
-class ActionList : public QPtrList<KAction>
+class KDEUI_EXPORT ActionList : public QPtrList<KAction>
 {
 public:
     ActionList() {}
@@ -77,7 +77,7 @@ struct ContainerClient
 typedef QPtrList<ContainerClient> ContainerClientList;
 typedef QPtrListIterator<ContainerClient> ContainerClientListIt;
 
-class ContainerNode;
+struct ContainerNode;
 
 struct MergingIndex
 {
@@ -107,7 +107,7 @@ typedef QValueList<MergingIndex> MergingIndexList;
  * position.
  * (used when no merging index is used for a certain action, custom element or sub-container)
  */
-struct ContainerNode
+struct KDEUI_EXPORT ContainerNode
 {
     ContainerNode( QWidget *_container, const QString &_tagName, const QString &_name,
                    ContainerNode *_parent = 0L, KXMLGUIClient *_client = 0L,
@@ -178,7 +178,7 @@ struct ContainerNode
 typedef QPtrList<ContainerNode> ContainerNodeList;
 typedef QPtrListIterator<ContainerNode> ContainerNodeListIt;
 
-class BuildHelper
+class KDEUI_EXPORT BuildHelper
 {
 public:
     BuildHelper( BuildState &state, 
@@ -220,7 +220,7 @@ private:
     ContainerNode *parentNode;
 };
 
-struct BuildState
+struct KDEUI_EXPORT BuildState
 {
     BuildState() : guiClient( 0 ), builder( 0 ), clientBuilder( 0 ) {}
 

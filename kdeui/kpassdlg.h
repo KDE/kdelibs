@@ -35,7 +35,7 @@ class QWidget;
  * The widget uses the user's global "echo mode" setting.
  */
 
-class KPasswordEdit
+class KDEUI_EXPORT KPasswordEdit
     : public QLineEdit
 {
     Q_OBJECT
@@ -142,7 +142,7 @@ private:
  * @author Geert Jansen <jansen@kde.org>
  */
 
-class KPasswordDialog
+class KDEUI_EXPORT KPasswordDialog
     : public KDialogBase
 {
     Q_OBJECT

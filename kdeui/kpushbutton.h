@@ -34,7 +34,7 @@ class QDragObject;
  * @short A QPushButton with drag-support and KGuiItem support
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KPushButton : public QPushButton
+class KDEUI_EXPORT KPushButton : public QPushButton
 {
     Q_OBJECT
 

@@ -25,6 +25,8 @@ class QLayoutItem;
 
 #include <qdialog.h>
 
+#include <kdelibs.h>
+
 /**
  * Dialog with extended nonmodal support and methods for KDE standard
  * compliance.
@@ -48,7 +50,7 @@ class QLayoutItem;
  * @author Thomas Tanghus <tanghus@earthling.net>, Espen Sand <espensa@online.no>
  * @version 0.1.2
 */
-class KDialog : public QDialog
+class KDEUI_EXPORT KDialog : public QDialog
 {
   Q_OBJECT
 
@@ -186,7 +188,7 @@ class KDialog : public QDialog
   * @version 0.1
   */
 class KDialogQueuePrivate;
-class KDialogQueue : public QObject
+class KDEUI_EXPORT KDialogQueue : public QObject
 {
       Q_OBJECT
 

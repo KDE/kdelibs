@@ -60,7 +60,7 @@ void KTextBrowser::setSource( const QString& name )
     return;
   }
 
-  if( name.contains('@') == true )
+  if( name.find('@') > -1 )
   {
     if( mNotifyClick == false )
     {

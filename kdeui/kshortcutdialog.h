@@ -28,7 +28,7 @@ class KPushButton;
 class KShortcutDialogSimple;
 class KShortcutDialogAdvanced;
 
-class KShortcutDialog : public KDialogBase
+class KDEUI_EXPORT KShortcutDialog : public KDialogBase
 {
 	Q_OBJECT
 public:

@@ -200,7 +200,7 @@ class KMainWindow;
  *
  * @see KStdAction
  */
-class KAction : public QObject
+class KDEUI_EXPORT KAction : public QObject
 {
   friend class KActionCollection;
   Q_OBJECT

@@ -30,7 +30,7 @@ namespace KDEPrivate
 {
 
 /// @since 3.1
-class ToolBarHandler : public QObject,
+class KDEUI_EXPORT ToolBarHandler : public QObject,
                        public KXMLGUIClient
 {
     Q_OBJECT

@@ -34,7 +34,7 @@ class QPopupMenu;
  * The abstract base class for all Commands. Commands are used to
  * store information needed for Undo/Redo functionality...
  */
-class KCommand
+class KDEUI_EXPORT KCommand
 {
 protected:
     /**
@@ -75,7 +75,7 @@ protected:
  * It is more memory-efficient to use KCommand and to implement the name() method,
  * but in some cases it's more simple or more flexible to store the name at creation time.
  */
-class KNamedCommand : public KCommand
+class KDEUI_EXPORT KNamedCommand : public KCommand
 {
 protected:
     /**
@@ -107,7 +107,7 @@ protected:
  * It will appear as one to the user and in the command history,
  * but it can use the implementation of multiple commands internally.
  */
-class KMacroCommand : public KNamedCommand
+class KDEUI_EXPORT KMacroCommand : public KNamedCommand
 {
 public:
     /**
@@ -153,7 +153,7 @@ protected:
  * undo/redo actions in the menu and changes the text according
  * to the name of the command.
  */
-class KCommandHistory : public QObject {
+class KDEUI_EXPORT KCommandHistory : public QObject {
     Q_OBJECT
 public:
     /**

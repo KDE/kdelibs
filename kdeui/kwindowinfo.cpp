@@ -72,10 +72,12 @@ void KWindowInfo::message( const QString &text, const QPixmap &pix, int timeout 
 
 void KWindowInfo::permanent( const QString &text )
 {
+#ifdef Q_WS_X11
     oldMiniIcon = KWin::icon( win->winId(), 16, 16, true );
     oldIcon = KWin::icon( win->winId(), 34, 34, false );
     if ( oldIcon.isNull() )
 	oldIcon = KWin::icon( win->winId(), 32, 32, true );
+#endif
 
     permanent( text, oldIcon );
 }
@@ -115,7 +117,9 @@ void KWindowInfo::display( const QString &text, const QPixmap &pix )
 
     win->setCaption( text );
     win->setIcon( icon );
+#ifdef Q_WS_X11
     KWin::setIcons( win->winId(), icon, icon );
+#endif
 }
 
 void KWindowInfo::save()
@@ -131,10 +135,12 @@ void KWindowInfo::save()
     }
 
     oldText = win->caption();
+#ifdef Q_WS_X11
     oldMiniIcon = KWin::icon( win->winId(), 16, 16, true );
     oldIcon = KWin::icon( win->winId(), 34, 34, false );
     if ( oldIcon.isNull() )
 	oldIcon = KWin::icon( win->winId(), 32, 32, true );
+#endif
 
     if ( oldIcon.isNull() ) {
 	const QPixmap *px = win->icon();
@@ -156,7 +162,9 @@ void KWindowInfo::restore()
     }
 
     win->setIcon( oldIcon );
+#ifdef Q_WS_X11
     KWin::setIcons( win->winId(), oldIcon, oldMiniIcon );
+#endif
     win->setCaption( oldText );
     oldText = QString::null;
 

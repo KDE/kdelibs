@@ -26,6 +26,8 @@
 #include <qdom.h>
 #include <qvaluelist.h>
 
+#include <kdelibs.h>
+
 class KAction;
 class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
@@ -35,8 +37,8 @@ class KInstance;
 namespace KXMLGUI
 {
 struct MergingIndex;
-class ContainerNode;
-class ContainerClient;
+struct ContainerNode;
+struct ContainerClient;
 class BuildHelper;
 }
 
@@ -57,7 +59,7 @@ class BuildHelper;
  * according to the XML and the merging rules of previously inserted clients. Container widgets
  * are built via a KXMLGUIBuilder , which has to be provided with the KXMLGUIFactory constructor.
  */
-class KXMLGUIFactory : public QObject
+class KDEUI_EXPORT KXMLGUIFactory : public QObject
 {
   friend class KXMLGUI::BuildHelper;
   Q_OBJECT

@@ -49,7 +49,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 #include <netwm.h>
 #endif
 
@@ -281,9 +281,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
     assert ( !kapp->geometryArgument().isNull() );
     assert ( d->care_about_geometry );
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS
-    // FIXME: (E) Implement something similar for Qt Embedded (or decide we don't need it)
+#if defined Q_WS_X11
     int x, y;
     int w, h;
     int m = XParseGeometry( kapp->geometryArgument().latin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
@@ -579,8 +577,7 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 void KMainWindow::setPlainCaption( const QString &caption )
 {
     QMainWindow::setCaption( caption );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS
+#if defined Q_WS_X11
     NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
     info.setName( caption.utf8().data() );
 #endif
@@ -889,20 +886,22 @@ void KMainWindow::finalizeGUI( bool force )
 
 void KMainWindow::saveWindowSize( KConfig * config ) const
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
+  int w, h;
+#if defined Q_WS_X11
   // save maximalization as desktop size + 1 in that direction
   KWin::WindowInfo info = KWin::windowInfo( winId(), NET::WMState );
-  int w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
-  int h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
-  QRect size( desk.width(), w, desk.height(), h );
+  w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
+  h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
 #else
-  int w = 500;
-  int h = 500;
-  QRect desk( 100, 100, 200, 200 ); // fixme
-  QRect size( 100, 100, 200, 200 ); // fixme
+  if (isMaximized()) {
+    w = desk.width() + 1;
+    h = desk.height() + 1;
+  }
+  //TODO: add "Maximized" property instead "+1" hack
 #endif
+  QRect size( desk.width(), w, desk.height(), h );
   bool defaultSize = (size == d->defaultWindowSize);
   QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
   QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
@@ -940,6 +939,7 @@ void KMainWindow::restoreWindowSize( KConfig * config )
             }
         }
         if ( !size.isEmpty() ) {
+#ifdef Q_WS_X11
             int state = ( size.width() > desk.width() ? NET::MaxHoriz : 0 )
                         | ( size.height() > desk.height() ? NET::MaxVert : 0 );
             if(( state & NET::Max ) == NET::Max )
@@ -952,6 +952,12 @@ void KMainWindow::restoreWindowSize( KConfig * config )
                 resize( size );
             // QWidget::showMaximized() is both insufficient and broken
             KWin::setState( winId(), state );
+#else
+            if (size.width() > desk.width() || size.height() > desk.height())
+              setWindowState( WindowMaximized );
+            else
+              resize( size );
+#endif
         }
     }
 }

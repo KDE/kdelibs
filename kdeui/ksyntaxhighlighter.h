@@ -29,12 +29,14 @@
 #include <qcolor.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 class QAccel;
 class QTimer;
 class KSpell;
 class KSpellConfig;
 
-class KSyntaxHighlighter : public QSyntaxHighlighter
+class KDEUI_EXPORT KSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
     enum SyntaxMode {
@@ -83,7 +85,7 @@ private:
     KSpellingHighlighterPrivate *d;
 };
 
-class KDictSpellingHighlighter : public QObject, public KSpellingHighlighter
+class KDEUI_EXPORT KDictSpellingHighlighter : public QObject, public KSpellingHighlighter
 {
 Q_OBJECT
 

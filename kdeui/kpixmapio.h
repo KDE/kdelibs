@@ -11,11 +11,13 @@
 #ifndef __KPixmapIO_h_Included__
 #define __KPixmapIO_h_Included__
 
+#include <kdelibs.h>
+
 class QPixmap;
 class QImage;
 class QPoint;
 class QRect;
-class KPixmapIOPrivate;
+struct KPixmapIOPrivate;
 /**
  * @short Fast QImage to/from QPixmap conversion.
  * @author Geert Jansen <jansen@kde.org>
@@ -82,7 +84,7 @@ class KPixmapIOPrivate;
  * point in using it.
  */
 
-class KPixmapIO
+class KDEUI_EXPORT KPixmapIO
 {
 public:
     KPixmapIO();

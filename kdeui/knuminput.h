@@ -46,7 +46,7 @@ class KIntSpinBox;
  * for a different variable type
  *
  */
-class KNumInput : public QWidget
+class KDEUI_EXPORT KNumInput : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QString label READ label WRITE setLabel )
@@ -183,7 +183,7 @@ private:
  * @version $Id$
  */
 
-class KIntNumInput : public KNumInput
+class KDEUI_EXPORT KIntNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( int value READ value WRITE setValue )
@@ -427,7 +427,7 @@ class KDoubleLine;
  * @short An input control for real numbers, consisting of a spinbox and a slider.
  */
 
-class KDoubleNumInput : public KNumInput
+class KDEUI_EXPORT KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( double value READ value WRITE setValue )
@@ -699,7 +699,7 @@ private:
  *
  *  @short A QSpinBox with support for arbitrary base numbers.
  */
-class KIntSpinBox : public QSpinBox
+class KDEUI_EXPORT KIntSpinBox : public QSpinBox
 {
     Q_OBJECT
     Q_PROPERTY( int base READ base WRITE setBase )
@@ -825,7 +825,7 @@ private:
    @since 3.1
 **/
 
-class KDoubleSpinBox : public QSpinBox {
+class KDEUI_EXPORT KDoubleSpinBox : public QSpinBox {
   Q_OBJECT
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
   Q_OVERRIDE( double maxValue READ maxValue WRITE setMaxValue )

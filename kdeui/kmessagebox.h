@@ -20,10 +20,10 @@
 #define _KMESSAGEBOX_H_
 
 #include <qstring.h>
+#include <qmessagebox.h>
 
 #include <kguiitem.h>
 #include <kstdguiitem.h>
-#include <qmessagebox.h>
 
 class QWidget;
 class QStringList;

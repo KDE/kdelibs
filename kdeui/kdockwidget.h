@@ -236,7 +236,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDockWidgetHeader : public KDockWidgetAbstractHeader
+class EXPORT_DOCKCLASS KDockWidgetHeader : public KDockWidgetAbstractHeader
 {
   Q_OBJECT
 public:

@@ -35,7 +35,7 @@ class QIconViewItem;
  *
  * @since 3.3
  */
-class KIconViewSearchLine : public KLineEdit
+class KDEUI_EXPORT KIconViewSearchLine : public KLineEdit
 {
   Q_OBJECT
 

@@ -48,7 +48,7 @@ class KIntNumInput;
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
-class KFontChooser : public QWidget
+class KDEUI_EXPORT KFontChooser : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QFont font READ font WRITE setFont )
@@ -321,7 +321,7 @@ private:
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
-class KFontDialog : public KDialogBase  {
+class KDEUI_EXPORT KFontDialog : public KDialogBase  {
     Q_OBJECT
 
 public:

@@ -22,6 +22,8 @@
 #include <qwidget.h>
 #include <qdatetime.h>
 
+#include <kdelibs.h>
+
 /**
  * This widget can be used to display or allow user selection of date and time.
  *
@@ -34,7 +36,7 @@
  * @version $Id$
  * @since 3.2
  */
-class KDateTimeWidget : public QWidget
+class KDEUI_EXPORT KDateTimeWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QDateTime dateTime READ dateTime WRITE setDateTime )

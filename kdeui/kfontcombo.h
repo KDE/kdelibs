@@ -34,7 +34,7 @@
  * @author Malte Starostik <malte@kde.org>
  * @version $Id$
  */
-class KFontCombo : public KComboBox
+class KDEUI_EXPORT KFontCombo : public KComboBox
 {
     Q_OBJECT
     Q_PROPERTY(QString family READ currentFont WRITE setCurrentFont)

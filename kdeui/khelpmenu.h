@@ -25,6 +25,8 @@
 #include <qobject.h>
 #include <qstring.h>
 
+#include <kdelibs.h>
+
 class KActionCollection;
 class KPopupMenu;
 class QWidget;
@@ -126,7 +128,7 @@ class KHelpMenuPrivate;
  * @version $Id$
  */
 
-class KHelpMenu : public QObject
+class KDEUI_EXPORT KHelpMenu : public QObject
 {
   Q_OBJECT
 

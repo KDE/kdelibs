@@ -23,6 +23,8 @@
 
 #include <qtabbar.h>
 
+#include <kdelibs.h>
+
 class QTimer;
 class QPushButton;
 class KTabBarPrivate;
@@ -30,7 +32,7 @@ class KTabBarPrivate;
 /**
  * @since 3.2
  */
-class KTabBar: public QTabBar
+class KDEUI_EXPORT KTabBar: public QTabBar
 {
     Q_OBJECT
 

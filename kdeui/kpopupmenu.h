@@ -35,7 +35,7 @@
  * @author Daniel M. Duley <mosfet@kde.org>
  * @short KPopupMenu title widget.
  */
-class KPopupTitle : public QWidget
+class KDEUI_EXPORT KPopupTitle : public QWidget
 {
     Q_OBJECT
 
@@ -119,7 +119,7 @@ private:
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KPopupMenu : public QPopupMenu {
+class KDEUI_EXPORT KPopupMenu : public QPopupMenu {
     Q_OBJECT
 public:
     /**

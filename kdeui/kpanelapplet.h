@@ -96,7 +96,7 @@ class QPopupMenu;
  * @author Matthias Elter <elter@kde.org>
  * @short KDE Panel Applet class
  **/
-class KPanelApplet : public QFrame
+class KDEUI_EXPORT KPanelApplet : public QFrame
 {
     Q_OBJECT
 

@@ -19,7 +19,7 @@
 #include <kglobalsettings.h>
 
 #include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #include <netwm.h> 
 #endif
 
@@ -166,7 +166,7 @@ void KPassivePopup::hideEvent( QHideEvent * )
 
 QRect KPassivePopup::defaultArea() const
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     NETRootInfo info( qt_xdisplay(),
                       NET::NumberOfDesktops |
                       NET::CurrentDesktop |
@@ -188,7 +188,7 @@ void KPassivePopup::positionSelf()
 {
     QRect target;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if ( window == 0L ) {
         target = defaultArea();
     }

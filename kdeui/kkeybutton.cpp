@@ -30,7 +30,7 @@
 #include <klocale.h>
 
 #include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
 #include <X11/Xlib.h>	// For x11Event() 
@@ -46,7 +46,7 @@ const int XKeyRelease = KeyRelease;
 #undef FocusOut
 #undef FocusIn
 #endif // KeyPress
-#endif // Q_WS_X11 && ! K_WS_QTONLY
+#endif // Q_WS_X11
 
 //static const char* psTemp[] = { 
 //  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key") 

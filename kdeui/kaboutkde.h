@@ -37,7 +37,7 @@
  * @version $Id:
  */
 
-class KAboutKDE : public KAboutDialog
+class KDEUI_EXPORT KAboutKDE : public KAboutDialog
 {
   public:
     /**

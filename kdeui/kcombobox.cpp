@@ -556,7 +556,7 @@ void KHistoryCombo::rotateDown()
         }
         else { // bottom of history
             if ( myIterateIndex == -2 ) {
-                KNotifyClient::event( winId(), KNotifyClient::notification,
+                KNotifyClient::event( (int)winId(), KNotifyClient::notification,
                                       i18n("No further item in the history."));
             }
 

@@ -42,7 +42,7 @@ class QColor;
  *
  * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
  */
-class KLed : public QWidget
+class KDEUI_EXPORT KLed : public QWidget
 {
     Q_OBJECT
     Q_ENUMS( State Shape Look )

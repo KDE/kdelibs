@@ -24,6 +24,8 @@
 #include <qfont.h>
 #include <qstring.h>
 
+#include <kdelibs.h>
+
 class QLabel;
 class QPushButton;
 
@@ -39,7 +41,7 @@ class QPushButton;
  * @author Nadeem Hasan <nhasan@kde.org>
  *
  */
-class KFontRequester : public QWidget
+class KDEUI_EXPORT KFontRequester : public QWidget
 {
   Q_OBJECT
 

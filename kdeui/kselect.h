@@ -27,6 +27,8 @@
 #include <qrangecontrol.h>
 #include <qpixmap.h>
 
+#include <kdelibs.h>
+
 /**
  * KXYSelector is the base class for other widgets which
  * provides the ability to choose from a two-dimensional
@@ -38,7 +40,7 @@
  * A custom drawing routine for the widget surface has
  * to be provided by the subclass.
  */
-class KXYSelector : public QWidget
+class KDEUI_EXPORT KXYSelector : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( int xValue READ xValue WRITE setXValue )
@@ -154,7 +156,7 @@ private:
  * A custom drawing routine for the widget surface has
  * to be provided by the subclass.
  */
-class KSelector : public QWidget, public QRangeControl
+class KDEUI_EXPORT KSelector : public QWidget, public QRangeControl
 {
   Q_OBJECT
   Q_PROPERTY( int value READ value WRITE setValue )
@@ -288,7 +290,7 @@ private:
  * \image html kgradientselector.png "KDE Gradient Selector Widget"
  *
  **/
-class KGradientSelector : public KSelector
+class KDEUI_EXPORT KGradientSelector : public KSelector
 {
   Q_OBJECT
 

@@ -24,7 +24,7 @@
 
 #include <qwidget.h>
 
-#ifndef Q_WS_QWS
+#ifdef Q_WS_X11
 
 class QXEmbedData;
 

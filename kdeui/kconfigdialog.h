@@ -68,7 +68,7 @@ class KConfigDialogManager;
  * @see KConfigSkeleton
  * @since 3.2
  */
-class KConfigDialog : public KDialogBase {
+class KDEUI_EXPORT KConfigDialog : public KDialogBase {
 Q_OBJECT
 
 signals:

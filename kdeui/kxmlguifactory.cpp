@@ -25,6 +25,7 @@
 
 #include <assert.h>
 
+#include <qdir.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qwidget.h>
@@ -105,7 +106,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     const KInstance *instance = _instance ? _instance : KGlobal::instance();
     QString xml_file;
 
-    if (filename[0] == '/')
+    if (!QDir::isRelativePath(filename))
         xml_file = filename;
     else
     {
@@ -144,7 +145,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     const KInstance *instance = _instance ? _instance : KGlobal::instance();
     QString xml_file(filename);
 
-    if (xml_file[0] != '/')
+    if (QDir::isRelativePath(xml_file))
         xml_file = locateLocal("data", QString::fromLatin1( instance->instanceName() + '/' )
                                + filename);
 

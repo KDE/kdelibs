@@ -39,7 +39,7 @@
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
  */
-class KKeyButton: public QPushButton
+class KDEUI_EXPORT KKeyButton: public QPushButton
 {
 	Q_OBJECT
 

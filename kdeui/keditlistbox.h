@@ -23,6 +23,8 @@
 #include <qgroupbox.h>
 #include <qlistbox.h>
 
+#include <kdelibs.h>
+
 class KLineEdit;
 class KComboBox;
 class QPushButton;
@@ -39,7 +41,7 @@ class KEditListBoxPrivate;
  * \image html keditlistbox.png "KDE Edit List Box Widget"
  *
  */
-class KEditListBox : public QGroupBox
+class KDEUI_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 

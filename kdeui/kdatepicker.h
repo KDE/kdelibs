@@ -47,7 +47,7 @@ class KDateTable;
  *
  * @short A date selection widget.
  **/
-class KDatePicker: public QFrame
+class KDEUI_EXPORT KDatePicker: public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)

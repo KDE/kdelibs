@@ -23,6 +23,8 @@
 #include <qstring.h>
 #include <qwidget.h>
 
+#include <kdelibs.h>
+
 class QHBoxLayout;
 class QLabel;
 class KAuthIconPrivate;
@@ -41,7 +43,7 @@ class KAuthIconPrivate;
  * @see KRootPermsIcon, KWritePermsIcon
  * @author Preston Brown <pbrown@kde.org>
  */
-class KAuthIcon : public QWidget
+class KDEUI_EXPORT KAuthIcon : public QWidget
 {
   Q_OBJECT
 
@@ -96,7 +98,7 @@ class KRootPermsIconPrivate;
  * @see KAuthIcon
  * @author Preston Brown <pbrown@kde.org>
  */
-class KRootPermsIcon : public KAuthIcon
+class KDEUI_EXPORT KRootPermsIcon : public KAuthIcon
 {
   Q_OBJECT
 
@@ -128,7 +130,7 @@ class KWritePermsIconPrivate;
  * @see KAuthIcon
  * @author Preston Brown <pbrown@kde.org>
  */
-class KWritePermsIcon : public KAuthIcon
+class KDEUI_EXPORT KWritePermsIcon : public KAuthIcon
 {
   Q_OBJECT
   Q_PROPERTY( QString fileName READ fileName WRITE setFileName )

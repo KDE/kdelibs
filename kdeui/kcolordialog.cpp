@@ -65,7 +65,7 @@
 #include <kdebug.h>
 
 #include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #include <X11/Xlib.h> 
 
 // defined in qapplication_x11.cpp
@@ -906,7 +906,7 @@ public:
     QCheckBox *cbDefaultColor;
     KColor defaultColor;
     KColor selColor;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     QX11EventFilter oldfilter;
 #endif
 };
@@ -920,7 +920,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d = new KColorDialogPrivate;
   d->bRecursion = true;
   d->bColorPicking = false;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
   d->oldfilter = 0;
 #endif
   d->cbDefaultColor = 0L;
@@ -1154,7 +1154,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 
 KColorDialog::~KColorDialog()
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if (d->bColorPicking)
         qt_set_x11_event_filter(d->oldfilter);
 #endif
@@ -1460,7 +1460,7 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
 
 static QWidget *kde_color_dlg_widget = 0;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 static int kde_color_dlg_handler(XEvent *event)
 {
     if (event->type == ButtonRelease)
@@ -1477,7 +1477,7 @@ void
 KColorDialog::slotColorPicker()
 {
     d->bColorPicking = true;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     d->oldfilter = qt_set_x11_event_filter(kde_color_dlg_handler);
 #endif
     kde_color_dlg_widget = this;
@@ -1491,7 +1491,7 @@ KColorDialog::mouseReleaseEvent( QMouseEvent *e )
   if (d->bColorPicking)
   {
      d->bColorPicking = false;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
      qt_set_x11_event_filter(d->oldfilter);
      d->oldfilter = 0;
 #endif
@@ -1520,7 +1520,7 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
      if (e->key() == Key_Escape)
      {
         d->bColorPicking = false;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
         qt_set_x11_event_filter(d->oldfilter);
         d->oldfilter = 0;
 #endif

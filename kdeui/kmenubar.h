@@ -27,6 +27,8 @@
 
 #include <qmenubar.h>
 
+#include <kdelibs.h>
+
 /**
  * KDE Style-able menubar.
  *
@@ -37,7 +39,7 @@
  * @version $Id$
 */
 
-class KMenuBar : public QMenuBar
+class KDEUI_EXPORT KMenuBar : public QMenuBar
 {
     Q_OBJECT
 
@@ -88,7 +90,9 @@ protected:
     virtual void showEvent( QShowEvent* );
     virtual void resizeEvent( QResizeEvent* );
     virtual bool eventFilter(QObject *, QEvent *);
+#ifdef Q_WS_X11
     virtual bool x11Event( XEvent* );
+#endif
     virtual void closeEvent( QCloseEvent* );
     virtual void drawContents( QPainter* );
 private slots:

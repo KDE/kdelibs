@@ -103,7 +103,7 @@ void KPixmapRegionSelectorWidget::updatePixmap()
      painter.end();
 
      QImage image=m_linedPixmap.convertToImage();
-     image=KImageEffect::fade(image, 0.4, QColor(0,0,0));
+     image=KImageEffect::fade(image, (float)0.4, QColor(0,0,0));
      m_linedPixmap.convertFromImage(image);
    } 
 

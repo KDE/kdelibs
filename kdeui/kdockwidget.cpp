@@ -43,7 +43,7 @@
 #include <kglobalsettings.h>
 
 #include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #include <X11/X.h> 
 #include <X11/Xlib.h> 
 #endif
@@ -819,7 +819,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
     move(p);
 
 #ifndef NO_KDE2
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 
@@ -829,7 +829,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 #else
     KWin::setType( winId(), d->windowType );
 #endif // BORDERLESS_WINDOW
-#endif // Q_WS_X11 && ! K_WS_QTONLY
+#endif // Q_WS_X11
 #endif
 
   }

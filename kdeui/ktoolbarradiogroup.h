@@ -24,6 +24,8 @@
 
 #include <qobject.h>
 
+#include <kdelibs.h>
+
 class KToolBar;
 class KToolBarButtonList;
 class KToolBarRadioGroupPrivate;
@@ -43,7 +45,7 @@ class KToolBarRadioGroupPrivate;
   * @author Sven Radej <radej@kde.org>
   * @short Class for group of radio butons in toolbar.
   */
-class KToolBarRadioGroup : public QObject
+class KDEUI_EXPORT KToolBarRadioGroup : public QObject
 {
   Q_OBJECT
 

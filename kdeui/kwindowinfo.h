@@ -13,6 +13,8 @@
 #include <qpixmap.h>
 #include <qstring.h>
 
+#include <kdelibs.h>
+
 /**
  * Displays messages in the window icon and title. The message is usually
  * transient with the original title and icon being restored automatically
@@ -36,7 +38,7 @@
  * @author Richard Moore, rich@kde.org
  * @since 3.1
 */
-class KWindowInfo : public QObject
+class KDEUI_EXPORT KWindowInfo : public QObject
 {
     Q_OBJECT
 

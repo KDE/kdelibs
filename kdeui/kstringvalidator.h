@@ -25,6 +25,8 @@
 #include <qvalidator.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 /** 
  * This validator allows you to accept only certain or to accept all
  * but certain strings.
@@ -54,7 +56,7 @@
  * @short A QValidator to (dis)allow certain strings
  * @author Marc Mutz <mutz@kde.org>
  **/
-class KStringListValidator : public QValidator {
+class KDEUI_EXPORT KStringListValidator : public QValidator {
   Q_OBJECT
   Q_PROPERTY( QStringList stringList READ stringList WRITE setStringList )
   Q_PROPERTY( bool rejecting READ isRejecting WRITE setRejecting )
@@ -112,7 +114,7 @@ private:
  * @short A QValidator for mime types.
  * @author Marc Mutz <mutz@kde.org>
  **/
-class KMimeTypeValidator : public QValidator
+class KDEUI_EXPORT KMimeTypeValidator : public QValidator
 {
   Q_OBJECT
 public:
@@ -133,7 +135,5 @@ public:
 private:
   class KMimeTypeValidator* d;
 };
-
-
 
 #endif // __KSTRINGVALIDATOR_H__

@@ -20,16 +20,17 @@
 #ifndef __KPIXMAPREGIONSELECTORDIALOG_H__
 #define __KPIXMAPREGIONSELECTORDIALOG_H__
 
-#include <kdialogbase.h>
-#include "kpixmapregionselectorwidget.h"
 #include <qimage.h>
+
+#include <kdialogbase.h>
+#include <kpixmapregionselectorwidget.h>
 
 /**
  * A dialog that uses a KPixmapRegionSelectorWidget to allow the user
  * to select a region of an image. If you want to use special features
  * like forcing the selected area to have a fixed aspect ratio, you can use
  * @see pixmapRegionSelectorWidget() to get the pointer to the 
- * pixmapRegionSelectorWidget object and set the desired options there.
+ * KPixmapRegionSelectorWidget object and set the desired options there.
  * 
  * There are some convenience methods that allow to easily show a dialog
  * for the user to select a region of an image, and just care about the selected
@@ -38,7 +39,7 @@
  * @author Antonio Larrosa <larrosa@kde.org>
  * @since 3.4
  */ 
-class KPixmapRegionSelectorDialog : public KDialogBase
+class KDEUI_EXPORT KPixmapRegionSelectorDialog : public KDialogBase
 {
 public:
    /**

@@ -30,10 +30,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kipc.h> 
-#endif
 
 #include <kcursor.h>
 #include <kpixmap.h>
@@ -70,9 +67,7 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     slotSettingsChanged( KApplication::SETTINGS_MOUSE );
     if ( kapp ) { // maybe null when used inside designer
         connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         kapp->addKipcEventMask( KIPC::SettingsChanged );
-#endif
     }
 
     m_pCurrentItem = 0L;
@@ -171,16 +166,12 @@ void KIconView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-  //FIXME(E): Implement for Qt Embedded
   uint keybstate = KApplication::keyboardModifiers();
   QIconViewItem* previousItem = currentItem();
-#endif
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
     //Shift pressed?
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
     if( (keybstate & KApplication::ShiftModifier) ) {
       //Temporary implementation of the selection until QIconView supports it
       bool block = signalsBlocked();
@@ -237,14 +228,10 @@ void KIconView::slotAutoSelect()
     else if( (keybstate & KApplication::ControlModifier) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
     else
-#endif
       setSelected( m_pCurrentItem, true );
   }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-   //FIXME: Remove #if as soon as the stuff above is implemented
   else
     kdDebug() << "KIconView: That's not supposed to happen!!!!" << endl;
-#endif
 }
 
 void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
@@ -255,21 +242,17 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
     return;
   }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   uint keybstate = KApplication::keyboardModifiers();
-#endif
 
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
     setSelected( item, false );
     viewport()->unsetCursor();
     emit executed( item );
     emit executed( item, pos );
   }
-#endif
 }
 
 void KIconView::focusOutEvent( QFocusEvent *fe )

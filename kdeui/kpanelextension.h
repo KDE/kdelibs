@@ -29,6 +29,8 @@ class KPanelExtensionPrivate;
 
 #include <qframe.h>
 
+#include <kdelibs.h>
+
 /**
  * Implements a panel extension.
  *
@@ -93,7 +95,7 @@ class KPanelExtensionPrivate;
  * @author Matthias Elter <elter@kde.org>
  * @short KDE Panel Extension class
  **/
-class KPanelExtension : public QFrame
+class KDEUI_EXPORT KPanelExtension : public QFrame
 {
     Q_OBJECT
 

@@ -34,7 +34,7 @@ class KHistoryCombo;
 class KIntNumInput;
 class QVButtonGroup;
 
-class KEdGotoLine : public KDialogBase
+class KDEUI_EXPORT KEdGotoLine : public KDialogBase
 {
     Q_OBJECT
 
@@ -56,7 +56,7 @@ private:
 };
 
 ///
-class KEdFind : public KDialogBase
+class KDEUI_EXPORT KEdFind : public KDialogBase
 {
     Q_OBJECT
     Q_PROPERTY( QString text READ getText WRITE setText )
@@ -106,7 +106,7 @@ private:
 };
 
 ///
-class KEdReplace : public KDialogBase
+class KDEUI_EXPORT KEdReplace : public KDialogBase
 {
     Q_OBJECT
 
@@ -168,7 +168,7 @@ private:
  * @author Bernd Johannes Wuebben <wuebben@math.cornell.edu>, Waldo Bastian <bastian@kde.org>
  **/
 
-class KDE_DEPRECATED KEdit : public QMultiLineEdit
+class KDEUI_EXPORT_DEPRECATED KEdit : public QMultiLineEdit
 {
     Q_OBJECT
 

@@ -22,6 +22,8 @@
 
 #include <qtextbrowser.h>
 
+#include <kdelibs.h>
+
 /**
  * An extended QTextBrowser.
  *
@@ -37,7 +39,7 @@
  * @version $Id$
  */
 
-class KTextBrowser : public QTextBrowser
+class KDEUI_EXPORT KTextBrowser : public QTextBrowser
 {
   Q_OBJECT
   Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )

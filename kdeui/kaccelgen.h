@@ -21,6 +21,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include <kdelibs.h>
+
 /**
  * Provides functions that, given a collection of QStrings, will
  * automatically and intelligently assign menu accelerators to the
@@ -81,7 +83,7 @@ namespace KAccelGen
  * Static dereference class, for use as a template parameter.
  */
 template <class Iter>
-class Deref
+class KDEUI_EXPORT Deref
 {
 public:
     static QString deref(Iter i) { return *i; }
@@ -92,7 +94,7 @@ public:
  * target; for use as a template parameter.
  */
 template <class Iter>
-class Deref_Key
+class KDEUI_EXPORT Deref_Key
 {
 public:
     static QString deref(Iter i) { return i.key(); }
@@ -158,7 +160,7 @@ loadPredefined(Iter begin, Iter end, QMap<QChar,bool>& keys)
  * @param target collection to store generated strings
  */
 template <class Iter, class Iter_Deref >
-void
+KDEUI_EXPORT void
 generate(Iter begin, Iter end, QStringList& target)
 {
     // Will keep track of used accelerator chars

@@ -20,6 +20,8 @@
 
 #include <qframe.h>
 
+#include <kdelibs.h>
+
 class QStringList;
 class QPainter;
 class QMouseEvent;
@@ -53,7 +55,7 @@ class KAnimWidgetPrivate;
  * @short Widget animated using individual icons
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KAnimWidget : public QFrame
+class KDEUI_EXPORT KAnimWidget : public QFrame
 {
   Q_OBJECT
 public:	

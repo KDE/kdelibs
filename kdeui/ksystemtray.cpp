@@ -26,17 +26,14 @@
 #include "kapplication.h"
 #include "klocale.h"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #include <kwin.h> 
 #include <kwinmodule.h> 
+#include <qxembed.h> 
 #endif
 
 #include <kiconloader.h>
 #include <kconfig.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <qxembed.h> 
-#endif
 
 #include <qapplication.h>
 
@@ -60,20 +57,18 @@ public:
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     QXEmbed::initialize();
 #endif
     
     d = new KSystemTrayPrivate;
     d->actionCollection = new KActionCollection(this);
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifndef Q_WS_QWS
-    // FIXME(E): Talk with QWS
+#ifdef Q_WS_X11
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
+#endif
     setBackgroundMode(X11ParentRelative);
     setBackgroundOrigin(WindowOrigin);
-#endif
     hasQuit = 0;
     menu = new KPopupMenu( this );
     menu->insertTitle( kapp->miniIcon(), kapp->caption() );
@@ -86,9 +81,11 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
         new KAction(i18n("Minimize"), KShortcut(),
                     this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 	KWin::WindowInfo info = KWin::windowInfo( parentWidget()->winId());
 	d->on_all_desktops = info.onAllDesktops();
+#else
+	d->on_all_desktops = false;
 #endif
     }
     else
@@ -211,7 +208,7 @@ void KSystemTray::activateOrHide()
     if ( !pw )
 	return;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     KWin::WindowInfo info1 = KWin::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
@@ -255,12 +252,10 @@ void KSystemTray::minimizeRestore( bool restore )
     QWidget* pw = parentWidget();
     if( !pw )
 	return;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     KWin::WindowInfo info = KWin::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
     if ( restore )
     {
-//#ifndef Q_WS_QWS //FIXME
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	if( d->on_all_desktops )
 	    KWin::setOnAllDesktops( pw->winId(), true );
 	else

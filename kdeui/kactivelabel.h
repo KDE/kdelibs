@@ -21,6 +21,8 @@
 
 #include <qtextbrowser.h>
 
+#include <kdelibs.h>
+
 // ### inherit KTextBrowser in KDE4
 
 class KActiveLabelPrivate;
@@ -32,7 +34,7 @@ class KActiveLabelPrivate;
   * @author Waldo Bastian (bastian@kde.org)
   * @version $Id$
   */
-class KActiveLabel : public QTextBrowser
+class KDEUI_EXPORT KActiveLabel : public QTextBrowser
 {
     Q_OBJECT
 public:

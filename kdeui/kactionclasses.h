@@ -64,7 +64,7 @@ class KMainWindow;
  *
  *  @short Checkbox like action.
  */
-class KToggleAction : public KAction
+class KDEUI_EXPORT KToggleAction : public KAction
 {
     Q_OBJECT
     Q_PROPERTY( bool checked READ isChecked WRITE setChecked )
@@ -224,7 +224,7 @@ private:
  * An action that operates like a radio button. At any given time
  * only a single action from the group will be active.
  */
-class KRadioAction : public KToggleAction
+class KDEUI_EXPORT KRadioAction : public KToggleAction
 {
   Q_OBJECT
 public:
@@ -323,7 +323,7 @@ private:
  *
  *  @short Action for selecting one of several items
  */
-class KSelectAction : public KAction
+class KDEUI_EXPORT KSelectAction : public KAction
 {
     Q_OBJECT
     Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem )
@@ -565,7 +565,7 @@ private:
 /**
  * @deprecated Use KSelectAction instead.
  */
-class KDE_DEPRECATED KListAction : public KSelectAction
+class KDEUI_EXPORT_DEPRECATED KListAction : public KSelectAction
 {
     Q_OBJECT
 public:
@@ -679,7 +679,7 @@ private:
  *  @author Michael Koch
  *  @short Recent files action
  */
-class KRecentFilesAction : public KListAction  // TODO public KSelectAction
+class KDEUI_EXPORT KRecentFilesAction : public KListAction  // TODO public KSelectAction
 {
   Q_OBJECT
   Q_PROPERTY( uint maxItems READ maxItems WRITE setMaxItems )
@@ -862,7 +862,7 @@ private:
   KRecentFilesActionPrivate *d;
 };
 
-class KFontAction : public KSelectAction
+class KDEUI_EXPORT KFontAction : public KSelectAction
 {
     Q_OBJECT
     Q_PROPERTY( QString font READ font WRITE setFont )
@@ -912,7 +912,7 @@ private:
     KFontActionPrivate *d;
 };
 
-class KFontSizeAction : public KSelectAction
+class KDEUI_EXPORT KFontSizeAction : public KSelectAction
 {
     Q_OBJECT
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
@@ -970,7 +970,7 @@ private:
  * If you want a submenu for selecting one tool among many (without icons), see KSelectAction.
  * See also setDelayed about the main action.
  */
-class KActionMenu : public KAction
+class KDEUI_EXPORT KActionMenu : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
@@ -1043,7 +1043,7 @@ private:
  * that has more detail in a toolbar than in a menu (e.g. tool chooser
  * with "Other" leading to a dialog...).
  */
-class KToolBarPopupAction : public KAction
+class KDEUI_EXPORT KToolBarPopupAction : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
@@ -1165,7 +1165,7 @@ private:
  * visibility has changed, whenever it changes.
  * @since 3.1
  */
-class KToggleToolBarAction : public KToggleAction
+class KDEUI_EXPORT KToggleToolBarAction : public KToggleAction
 {
     Q_OBJECT
 public:
@@ -1211,7 +1211,7 @@ private:
  * still needs to explicitly set the window state though.
  * @since 3.2
  */
-class KToggleFullScreenAction : public KToggleAction
+class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
 {
     Q_OBJECT
 public:
@@ -1255,7 +1255,7 @@ private:
  * An action that automatically embeds a widget into a
  * toolbar.
  */
-class KWidgetAction : public KAction
+class KDEUI_EXPORT KWidgetAction : public KAction
 {
     Q_OBJECT
 public:
@@ -1299,7 +1299,7 @@ private:
     KWidgetActionPrivate *d;
 };
 
-class KActionSeparator : public KAction
+class KDEUI_EXPORT KActionSeparator : public KAction
 {
     Q_OBJECT
 public:
@@ -1325,7 +1325,7 @@ private:
  *
  * @since 3.2
  */
-class KPasteTextAction: public KAction
+class KDEUI_EXPORT KPasteTextAction: public KAction
 {
     Q_OBJECT
 public:

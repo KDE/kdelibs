@@ -25,6 +25,8 @@
 
 #include <qwizard.h>
 
+#include <kdelibs.h>
+
 /**
 * General-purpose multi-page dialog.
 *
@@ -41,7 +43,7 @@
 * @author Harri Porten <porten@kde.org>
 * @version 0.3 
 */
-class KWizard : public QWizard
+class KDEUI_EXPORT KWizard : public QWizard
 {
   Q_OBJECT
 public:

@@ -20,7 +20,7 @@
 #include <qwindowdefs.h>
 #include <qwidget.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 
 #include <kapplication.h>
 #include <krootprop.h>

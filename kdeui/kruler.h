@@ -68,7 +68,7 @@
  * @short A ruler widget.
  * @author Jörg Habenicht
  */
-class KRuler : public QFrame
+class KDEUI_EXPORT KRuler : public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( int minValue READ minValue WRITE setMinValue )

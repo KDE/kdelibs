@@ -140,7 +140,7 @@ QString KXMLGUIClient::localXMLFile() const
   if ( !d->m_localXMLFile.isEmpty() )
     return d->m_localXMLFile;
 
-  if ( d->m_xmlFile[0] == '/' )
+  if ( !QDir::isRelativePath(d->m_xmlFile) )
       return QString::null; // can't save anything here
 
   return locateLocal( "data", QString::fromLatin1( instance()->instanceName() + '/' ) + d->m_xmlFile );
@@ -174,7 +174,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
     return;
 
   QString file = _file;
-  if ( file[0] != '/' )
+  if ( QDir::isRelativePath(file) )
   {
     QString doc;
 

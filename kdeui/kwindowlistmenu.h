@@ -28,10 +28,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kpopupmenu.h>
 #include <qmap.h>
 
+#ifdef Q_WS_X11 // not yet available for non-X11
+
 class KWinModule;
 class KWindowListMenuPrivate;
 
-class KWindowListMenu : public KPopupMenu
+class KDEUI_EXPORT KWindowListMenu : public KPopupMenu
 {
     Q_OBJECT
 
@@ -62,5 +64,7 @@ protected:
 private:
     KWindowListMenuPrivate *d;
 };
+
+#endif // Q_WS_X11
 
 #endif

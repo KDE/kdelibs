@@ -23,12 +23,14 @@
 
 #include <qtabwidget.h>
 
+#include <kdelibs.h>
+
 class KTabWidgetPrivate;
 
 /**
  * @since 3.2
  */
-class KTabWidget : public QTabWidget
+class KDEUI_EXPORT KTabWidget : public QTabWidget
 {
     Q_OBJECT
     Q_PROPERTY( bool tabReorderingEnabled READ isTabReorderingEnabled WRITE setTabReorderingEnabled )

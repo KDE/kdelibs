@@ -190,7 +190,7 @@ class KDialogBaseTile;
  * @short A dialog base class with standard buttons and predefined layouts.
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
  */
-class KDialogBase : public KDialog
+class KDEUI_EXPORT KDialogBase : public KDialog
 {
   Q_OBJECT
 

@@ -41,7 +41,7 @@ class QPainter;
  * KToolBar methods instead.
  * @internal
  */
-class KToolBarButton : public QToolButton
+class KDEUI_EXPORT KToolBarButton : public QToolButton
 {
   Q_OBJECT
 
@@ -305,7 +305,7 @@ private:
 * @internal
 * @version $Id$
 */
-class KToolBarButtonList : public QIntDict<KToolBarButton>
+class KDEUI_EXPORT KToolBarButtonList : public QIntDict<KToolBarButton>
 {
 public:
    KToolBarButtonList();

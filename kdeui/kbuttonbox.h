@@ -20,6 +20,8 @@
 #ifndef __KBUTTONBOX__H__
 #define __KBUTTONBOX__H__
 
+#include <kdelibs.h>
+
 #include <qwidget.h>
 class QPushButton;
 class KGuiItem;
@@ -37,7 +39,7 @@ class KButtonBoxPrivate;
  * @version $Id$
  **/
 
-class KButtonBox : public QWidget
+class KDEUI_EXPORT KButtonBox : public QWidget
 {
   Q_OBJECT
 
