@@ -85,7 +85,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   mAddresseeEdit->completionObject()->setIgnoreCase( true );
   listLayout->addWidget( mAddresseeEdit );
 
-  resize( 450, 300 );
+  setInitialSize( QSize( 450, 300 ) );
 
   if ( mMultiple ) {
     QBoxLayout *selectedLayout = new QVBoxLayout;
@@ -110,7 +110,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     connect( mAddresseeList, SIGNAL( clicked( QListViewItem * ) ),
              SLOT( addSelected( QListViewItem * ) ) );
 
-    resize( 650, 350 );
+    setInitialSize( QSize( 650, 350 ) );
   }
 
   mAddressBook = StdAddressBook::self( true );
