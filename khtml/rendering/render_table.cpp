@@ -2380,8 +2380,12 @@ void RenderTableCell::paintObject(PaintInfo& pI, int _tx, int _ty)
 void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
     RenderTable* tableElt = table();
+    bool drawBorders = true;
+    // Moz paints bgcolor/bgimage on <td>s in quirks mode even if
+    // empty-cells are on. Fixes regression on #43426, attachment #354
     if (!tableElt->collapseBorders() && style()->emptyCells() == HIDE && !firstChild())
-        return;
+        drawBorders = false;
+    if (!style()->htmlHacks() && !drawBorders) return;
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
@@ -2433,7 +2437,7 @@ void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
     if ( bg || c.isValid() )
 	paintBackground(pI.p, c, bg, my, mh, _tx, _ty, w, h);
 
-    if (style()->hasBorder() && !tableElt->collapseBorders())
+    if (drawBorders && style()->hasBorder() && !tableElt->collapseBorders())
         paintBorder(pI.p, _tx, _ty, w, h, style());
 }
 
