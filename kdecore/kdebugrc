@@ -80,6 +80,10 @@ InfoOutput=4
 [5006]
 InfoOutput=2
 
+# KitchenSync (Syncing Algorithm)
+[5250]
+InfoOutput=4
+
 # calendarsystem debug info off
 [5400]
 InfoOutput=4

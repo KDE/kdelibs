@@ -138,6 +138,7 @@
 5229	    kitchensync Datebook
 5230	    kitchensync SyncEntry
 5231	    kitchensync SyncUI
+5250        kitchensync (Syncing Algorithm)
 5300        libkdepim
 5400        calendarsystem
 5500        knotes
