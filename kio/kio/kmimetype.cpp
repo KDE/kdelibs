@@ -361,23 +361,51 @@ KMimeType::~KMimeType()
 QPixmap KMimeType::pixmap( KIcon::Group _group, int _force_size, int _state,
                            QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ),
-	_group, _force_size, _state, _path, false );
+  KIconLoader *iconLoader=KGlobal::iconLoader();
+  QString iconName=icon( QString::null, false );
+  if (!iconLoader->extraDesktopThemesAdded())
+  {
+    QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
+    if (!pixmap.isNull() ) return pixmap;
+
+    iconLoader->addExtraDesktopThemes();
+  }
+
+  return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
 }
 
 QPixmap KMimeType::pixmap( const KURL& _url, KIcon::Group _group, int _force_size,
                            int _state, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ),
-	_group, _force_size, _state, _path, false );
+  KIconLoader *iconLoader=KGlobal::iconLoader();
+  QString iconName=icon( _url, _url.isLocalFile() );
+  if (!iconLoader->extraDesktopThemesAdded())
+  {
+    QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
+    if (!pixmap.isNull() ) return pixmap;
+
+    iconLoader->addExtraDesktopThemes();
+  }
+
+  return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
 }
 
 QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode, KIcon::Group _group,
                                  int _force_size, int _state, QString * _path )
 {
-    QString i = iconForURL( _url, _mode );
-    return KGlobal::iconLoader()->loadIcon( i, _group, _force_size, _state,
-					    _path, false );
+  KIconLoader *iconLoader=KGlobal::iconLoader();
+  QString iconName = iconForURL( _url, _mode );
+
+  if (!iconLoader->extraDesktopThemesAdded())
+  {
+    QPixmap pixmap=iconLoader->loadIcon( iconName, _group, _force_size, _state, _path, true );
+    if (!pixmap.isNull() ) return pixmap;
+
+    iconLoader->addExtraDesktopThemes();
+  }
+
+  return iconLoader->loadIcon( iconName , _group, _force_size, _state, _path, false );
+  
 }
 
 QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
