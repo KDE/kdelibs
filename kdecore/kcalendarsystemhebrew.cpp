@@ -212,7 +212,7 @@ KCalendarSystemHebrew::~KCalendarSystemHebrew()
 }
 
 // Ok
-class hdate * toHebrew(const QDate & date)
+static class hdate * toHebrew(const QDate & date)
 {
   class hdate *sd;
   sd = hdate(date.year(), date.month(), date.day());
