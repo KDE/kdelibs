@@ -312,7 +312,7 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
 #ifdef DEBUG_GZIP
     kdDebug(7005) << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
 #endif
-    int result = deflate(&d->zStream, finish ? Z_FINISH : Z_SYNC_FLUSH);
+    int result = deflate(&d->zStream, finish ? Z_FINISH : Z_NO_FLUSH);
 #ifdef DEBUG_GZIP
     if ( result != Z_OK && result != Z_STREAM_END )
         kdDebug(7005) << "  deflate returned " << result << endl;
