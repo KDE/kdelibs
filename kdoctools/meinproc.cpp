@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 
         QString catalogs;
         catalogs += locate( "dtd", "customization/catalog" );
-        catalogs += ":";
+        catalogs += " ";
         catalogs += locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
 
         setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
