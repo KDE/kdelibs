@@ -51,6 +51,7 @@ class KServerSocketPrivate;
  *   QString service = "http";
  *   KServerSocket *ss = new KServerSocket(service);
  *   connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()));
+ *   connect(ss, SIGNAL(gotError(int)), this, SLOT(slotSocketError(int)));
  *   ss->listen();
  * \endcode
  * 
@@ -84,10 +85,11 @@ class KServerSocketPrivate;
  *     //Couldn't connect to any port.
  *   } else {
  *     connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()));
+ *     connect(ss, SIGNAL(gotError(int)), this, SLOT(slotSocketError(int)));
  *     ss->listen();
  *   }
  * \endcode
- * The called slot, slotReadyAccept(), is responsible for calling
+ * The called slot slotReadyAccept() is responsible for calling
  * @ref accept.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
