@@ -8,18 +8,24 @@
 #include<qmultilinedit.h>
 #include<qpopupmenu.h>
 #include<qmenubar.h>
-#include<qapplication.h>
 #include<qnamespace.h>
+#include<qmainwindow.h>
+
+#include<kapp.h>
+#include<kconfigbase.h>
+#include<kconfig.h>
+#include<kglobal.h>
 
 #include<kuiactions.h>
 #include<kactmenubuilder.h>
+#include<kactconfigwidget.h>
 
 /**
 * Test harness for KAction and KUIAction
 * @author Sirtaj Singh Kang (taj@kde.org)
 * @version $Id$
 */
-class KActTest : public QWidget
+class KActTest : public QMainWindow
 {
 	Q_OBJECT
 
@@ -32,35 +38,49 @@ public:
 	/**
 	* KActTest Destructor
 	*/
-	virtual ~KActTest() {}
+	virtual ~KActTest();
 	
 public slots:
 	void save();
 	void load();
 	void saveToggle();
 
+	void saveCfg();
+
 private:
 	KActTest& operator=( const KActTest& );
 	KActTest( const KActTest& );
 
-	QMultiLineEdit *_mlined;
+	KActionConfigWidget *_cfgw;
 	KUIActions *_act;
 };
 
 KActTest::KActTest( QWidget *parent )
-	: QWidget( parent )
+	: QMainWindow( parent )
 {
 	// actions
 	_act = new KUIActions( this );
 	debug( "created act" );
 
-	_act->newAction( "Save", "Bachaa", this, SLOT(save()), CTRL + Key_S );
-	_act->newAction( "Load", "Khol", this, SLOT(load()), CTRL + Key_L );
+	_act->newAction( "Save", "Save", this, SLOT(save()), CTRL + Key_S );
+	_act->newAction( "Update", "Update", this, SLOT(saveCfg()), 
+			CTRL + Key_U );
 	_act->newAction( "SaveEn", "Toggle Save", this, SLOT(saveToggle()),
 			CTRL + Key_T );
 	_act->newAction( "Quit", "Band Kar", qApp, 
 			SLOT(quit()), CTRL + Key_Q );
+
+	_act->action( "Save" )->setIcon( "save.xpm" );
+	_act->action( "Update" )->setIcon( "fileopen.xpm" );
+	_act->action( "Quit" )->setIcon( "quit.xpm" );
+
 	debug( "created actions" );
+
+	KConfigBase *cfg = KGlobal::config();
+	_act->readConfig( *cfg );
+
+//	connect( _act->action( "Quit" ), SIGNAL(activate()), 
+//		this, SLOT(saveCfg()) );
 	
 	// menus
 	QMenuBar *mymenu = new QMenuBar( this );
@@ -68,15 +88,26 @@ KActTest::KActTest( QWidget *parent )
 	mymenu->insertItem( "File", file );
 	
 	KActionMenuBuilder mb( _act );
-	mb.setMenu( file, KActionMenuBuilder::Text );
+	mb.setMenu( file, KActionMenuBuilder::Text 
+		| KActionMenuBuilder::Icon );
 
-	mb << "Save" << "Load" << "Quit" << "SaveEn";
+	mb << "Save" << "Update" << "SaveEn" << "Quit";
 
 	debug( "connected actions" );
 
-	_mlined = new QMultiLineEdit( this );
-	_mlined->setGeometry( 0, mymenu->height(), width(), 
-		height() - mymenu->height() );
+	_cfgw = new KActionConfigWidget( _act, this );
+
+	setCentralWidget( _cfgw );
+}
+
+void KActTest::saveCfg()
+{
+	_act->writeConfig( *KGlobal::config() );
+	KGlobal::config()->sync();
+}
+
+KActTest::~KActTest()
+{
 }
 
 void KActTest::saveToggle()
@@ -85,18 +116,17 @@ void KActTest::saveToggle()
 }
 void KActTest::save()
 {
-	_mlined->append( "Save!" );
+	_cfgw->listSync();
 }
 
 void KActTest::load()
 {
-	_mlined->append( "Load!" );
 	_act->action( "Load" )->setAccel( CTRL + Key_K );
 }
 
 int main( int argc, char **argv )
 {
-	QApplication app( argc, argv );
+	KApplication app( argc, argv );
 	debug( "created app" );
 
 	KActTest tester;
