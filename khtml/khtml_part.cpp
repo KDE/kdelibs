@@ -3234,8 +3234,9 @@ void KHTMLPart::updateFontSize( int add )
 
 void KHTMLPart::slotLoadImages()
 {
-  khtml::Cache::autoloadImages( !khtml::Cache::autoloadImages() );
-  khtml::Cache::autoloadImages( d->m_settings->autoLoadImages() );
+  bool autoload = khtml::Cache::autoloadImages();
+  khtml::Cache::autoloadImages( !autoload );
+  khtml::Cache::autoloadImages( autoload );
 }
 
 void KHTMLPart::reparseConfiguration()
