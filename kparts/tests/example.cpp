@@ -80,12 +80,12 @@ void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
   if ( newPart )
   {
     KPartGUIServant partServant( newPart );
-    KXMLGUIFactory::createGUI( m_builder, &partServant, m_builder );
+    m_builder->createGUI( &partServant );
   }
   else
   {
     KNullGUIServant nullServant;
-    KXMLGUIFactory::createGUI( m_builder, &nullServant, m_builder );
+    m_builder->createGUI( &nullServant );
   }
 
   setUpdatesEnabled( true );
