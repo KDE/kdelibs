@@ -135,7 +135,8 @@ public:
 	/**
 	 * Replaces username and/or environment variables, depending on the
 	 * current settings and returns the filtered url. Only works with
-	 * local files.
+	 * local files, i.e. returns back the original string for non-local
+         * urls.
 	 */
 	QString replacedPath( const QString& text );
 

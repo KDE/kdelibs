@@ -415,7 +415,7 @@ bool DirLister::listBatch()
 class KURLCompletionPrivate
 {
 public:
-	KURLCompletionPrivate() : dir_lister(0L), 
+	KURLCompletionPrivate() : dir_lister(0L),
 	                          url_auto_completion(true) {};
 	~KURLCompletionPrivate();
 
@@ -427,11 +427,11 @@ public:
 	QStringList man_pages;
 	
 	// urlCompletion() in Auto/Popup mode?
-	bool url_auto_completion; 
+	bool url_auto_completion;
 	
 	// Append '/' to directories in Popup mode?
 	// Doing that stat's all files and is slower
-	bool popup_append_slash; 
+	bool popup_append_slash;
 };
 
 KURLCompletionPrivate::~KURLCompletionPrivate()
@@ -835,7 +835,7 @@ static QStringList getManDirectories()
 	const char* default_path[] = { "/usr/local/man",
 	                               "/usr/share/man",
 	                               "/usr/X11R6/man",
-	                               "/usr/man", 
+	                               "/usr/man",
 	                               0L };
 
 	for ( int i = 0; default_path[i] != 0L; i++ )
@@ -862,7 +862,7 @@ static QStringList getManDirectories()
 	// And some default sections
 	//
 	const char* default_sect[] =
-		{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "n", 0L }; 
+		{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "n", 0L };
 
 	for ( int i = 0; default_sect[i] != 0L; i++ )
 		if ( mansect.findIndex( QString( default_sect[i] ) ) == -1 )
@@ -1174,7 +1174,7 @@ void KURLCompletion::addMatches( QStringList *matches )
 			else if ( name.find(".z", -2, false) != -1 )
 				pos -= 2;
 
-			if ( pos > 0 ) 
+			if ( pos > 0 )
 				pos = name.findRev('.', pos-1);
 
 //			if ( pos > 0 && name.startsWith( m_last_file_listed ) )
@@ -1510,8 +1510,11 @@ void KURLCompletion::postProcessMatches( QStringList * /*matches*/ )
 QString KURLCompletion::replacedPath( const QString& text )
 {
     MyURL url( text );
+    if ( !url.kurl()->isLocalFile() )
+        return text;
+    
     url.filter();
-    return url.dir();
+    return url.dir() + url.file();
 }
 
 /////////////////////////////////////////////////////////
