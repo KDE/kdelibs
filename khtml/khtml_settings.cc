@@ -18,6 +18,7 @@
 */
 
 #include <qfontdatabase.h>
+#include <qregexp.h>
 
 #include "khtml_settings.h"
 #include "khtmldefaults.h"
@@ -476,7 +477,16 @@ QString KHTMLSettings::availableFamilies() const
 {
     if ( d->availFamilies.isEmpty() ) {
         QFontDatabase db;
-        QStringList s = db.families();
+        QStringList families = db.families();
+        QStringList s;
+        QRegExp foundryExp(" \\[.+\\]");
+
+        //remove foundry info
+        for ( QStringList::Iterator f = families.begin(); f != families.end(); ++f ) {
+                (*f).replace( foundryExp, "");
+                if (!s.contains(*f))
+                        s << *f;
+        }
         s.sort();
 
         d->availFamilies = s.join(",");

@@ -2244,6 +2244,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	QString available = s->availableFamilies();
 	QFont f = style->font();
 	QString family;
+	bool isUserPref;
 	//kdDebug(0) << "searching for font... available:" << available << endl;
         for(int i = 0; i < len; i++)
         {
@@ -2256,18 +2257,37 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    // a languge tag is often added in braces at the end. Remove it.
 	    face = face.replace(QRegExp(" \\(.*\\)$"), "");
             //kdDebug(0) << "searching for face '" << face << "'" << endl;
-            if(face == "serif")
+	    isUserPref = false;
+            if(face == "serif") {
                 face = s->serifFontName();
-            else if(face == "sans-serif")
+                isUserPref = true;
+            }
+            else if(face == "sans-serif") {
                 face = s->sansSerifFontName();
-            else if( face == "cursive")
+                isUserPref = true;
+            }
+            else if( face == "cursive") {
                 face = s->cursiveFontName();
-            else if( face == "fantasy")
+                isUserPref = true;
+            }
+            else if( face == "fantasy") {
                 face = s->fantasyFontName();
-            else if( face == "monospace")
+                isUserPref = true;
+            }
+            else if( face == "monospace") {
                 face = s->fixedFontName();
-            else if( face == "konq_default")
+                isUserPref = true;
+            }
+            else if( face == "konq_default") {
                 face = s->stdFontName();
+                isUserPref = true;
+            }
+
+	    if (isUserPref) {
+		f.setFamily( face );
+                style->setFont(f);
+                return;
+	    }
 
 	    int pos;
 	    if( (pos = available.find( face, 0, false)) == -1 ) {
