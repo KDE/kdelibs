@@ -30,8 +30,12 @@ int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
         {
 		if (strncmp (buf, BBOX, BBOX_LEN) == 0)
 		{
-			if ( sscanf (buf, "%s %d %d %d %d", dummy,
-				x1, y1, x2, y2) == 5) {
+			// Some EPS files have non-integer values for the bbox
+			// We don't support that currently, but at least we parse it
+			float _x1, _y1, _x2, _y2;
+			if ( sscanf (buf, "%s %f %f %f %f", dummy,
+				&_x1, &_y1, &_x2, &_y2) == 5) {
+				*x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
 				ret = TRUE;
 				break;
 			}
