@@ -608,6 +608,7 @@ const ClassInfo ShadowImp::info = {"Shadow", 0, 0, 0};
 
 void ShadowImp::mark()
 {
+  ObjectImp::mark();
   if (!obj->marked())
     obj->mark();
 }
