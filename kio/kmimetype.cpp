@@ -702,14 +702,19 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
   return result;
 }
 
+// For BC purposes only - remove for KDE 3.0
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const KURL& _url )
+{
+  if ( !_url.isLocalFile() )
+    return QValueList<Service>();
+  return userDefinedServices( _url.path(), true );
+}
+
+QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const QString& path, bool bLocalFiles )
 {
   QValueList<Service> result;
 
-  if ( !_url.isLocalFile() )
-    return result;
-
-  KSimpleConfig cfg( _url.path(), true );
+  KSimpleConfig cfg( path, true );
 
   cfg.setDesktopGroup();
 
@@ -740,13 +745,17 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
         bInvalidMenu = true;
       else
       {
-        Service s;
-        s.m_strName = cfg.readEntry( "Name" );
-        s.m_strIcon = cfg.readEntry( "Icon" );
-        s.m_strExec = cfg.readEntry( "Exec" );
-	s.m_type = ST_USER_DEFINED;
-        s.m_display = !cfg.readBoolEntry( "NoDisplay" );
-	result.append( s );
+        QString exec = cfg.readEntry( "Exec" );
+        if ( bLocalFiles || exec.contains("%U") || exec.contains("%u") )
+        {
+          Service s;
+          s.m_strName = cfg.readEntry( "Name" );
+          s.m_strIcon = cfg.readEntry( "Icon" );
+          s.m_strExec = exec;
+	  s.m_type = ST_USER_DEFINED;
+          s.m_display = !cfg.readBoolEntry( "NoDisplay" );
+	  result.append( s );
+        }
       }
     }
     else
@@ -754,7 +763,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
     if ( bInvalidMenu )
     {
-      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( *it );
+      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( path ).arg( *it );
       KMessageBoxWrapper::error( 0, tmp );
     }
   }

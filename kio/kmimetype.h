@@ -340,7 +340,12 @@ public:
   /**
    * @return a list of services defined by the user as possible actions
    * on the given .desktop file.
+   * @param path the path to the desktop file describing the services
+   * @param bLocalFiles true if those services are to be applied to local files only
+   * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
    */
+  static QValueList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
+  // For BC purposes only, remove for KDE 3.0
   static QValueList<Service> userDefinedServices( const KURL& _url );
 
   /**
