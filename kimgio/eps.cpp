@@ -81,7 +81,7 @@ void kimgio_eps_read (QImageIO *image)
 	tmp.setNum( y2 );
 	cmdBuf += "x";
 	cmdBuf += tmp;
-	cmdBuf += " -dNOPAUSE -sDEVICE=ppm -c "
+	cmdBuf += " -dSAFER -dPARANOIDSAFER -dNOPAUSE -sDEVICE=ppm -c "
 		"0 0 moveto "
 		"1000 0 lineto "
 		"1000 1000 lineto "
