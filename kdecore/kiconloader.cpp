@@ -50,7 +50,7 @@ public:
 struct KIconLoaderPrivate
 {
     QString dbgString;
-    int defOldSize;
+    QStringList appDirs;
 };
 
 /*
@@ -70,16 +70,6 @@ KIconLoader::KIconLoader(QString appname)
     d = new KIconLoaderPrivate;
     KConfig *config = KGlobal::config();
     mpEffect = new KIconEffect;
-
-    // SCI (Source compatibility issue)
-    config->setGroup("KDE");
-    QString tmp = config->readEntry("KDEIconStyle");
-    if (tmp == "Large")
-	d->defOldSize = 48;
-    else if (tmp == "Small")
-	d->defOldSize = 16;
-    else
-	d->defOldSize = 32;
 
     mpDirs = KGlobal::dirs();
     config->setGroup("Icons");
@@ -155,6 +145,10 @@ KIconLoader::~KIconLoader()
 
 void KIconLoader::addAppDir(QString appname)
 {
+    if (d->appDirs.contains(appname))
+	return;
+    d->appDirs += appname;
+
     mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
 		appname + "/pics/");
     mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
@@ -175,6 +169,17 @@ void KIconLoader::addIconTheme(KIconTheme *theme, KIconThemeNode *node)
 	mThemeTree += *it;
 	addIconTheme(new KIconTheme(*it), n);
 	node->links.append(n);
+    }
+}
+
+void KIconLoader::addIcons(QStringList *result, int size, int context,
+	KIconThemeNode *node)
+{
+    *result += node->theme->queryIcons(size, context);
+    KIconThemeNode *n;
+    for (n=node->links.first(); n!=0L; n=node->links.next())
+    {
+	addIcons(result, size, context, n);
     }
 }
 
@@ -246,37 +251,19 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
     }
 
     QString path;
-    bool sci = false;  // Source compatibility with older apps
-    switch (group_or_size)
+    if (group_or_size == KIcon::User)
     {
-    case KIconLoader::Small:
-	group_or_size = -16;
-	sci = true;
-	break;
-    case KIconLoader::Medium:
-	group_or_size = -32;
-	sci = true;
-	break;
-    case KIconLoader::Large:
-	group_or_size = -48;
-	sci = true;
-	break;
-    case KIconLoader::Default:
-	group_or_size = -d->defOldSize;
-	sci = true;
-	break;
-    case KIcon::User:
 	path = mpDirs->findResource("appicon", name + ".png");
 	if (path.isEmpty())
 	     path = mpDirs->findResource("appicon", name + ".xpm");
 	return path;
     }
-
     if (group_or_size >= KIcon::LastGroup)
     {
 	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
 	return path;
     }
+
     int size;
     if (group_or_size >= 0)
 	size = mpGroups[group_or_size].size;
@@ -329,60 +316,17 @@ KIcon KIconLoader::iconPath2(QString name, int size,
     return icon;
 }
 
-QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
-	QString *path_store, bool canReturnNull)
-{
-    return loadIcon(name, group_or_size, KIcon::DefaultState,
-	    path_store, canReturnNull);
-}
-
-QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
+QPixmap KIconLoader::loadIcon(QString name, int group, int size,
 	int state, QString *path_store, bool canReturnNull)
 {
     QPixmap pix;
     if (mpThemeRoot == 0L)
 	return pix;
-    if (state >= KIcon::LastState)
-    {
-	kdDebug(264) << "Illegal icon state: " << state << "\n";
-	state = KIcon::DefaultState;
-    }
-    if (name.at(0) == '/')
-    {
-	pix.load(name);
-	return pix;
-    }
 
-    QString ext = name.right(4);
-    if ((ext == ".png") || (ext == ".xpm"))
+    // Special case for "User" icons.
+    if (group == KIcon::User)
     {
-	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
-		<< " loads icon with extension.\n";
-	name = name.left(name.length() - 4);
-    }
-
-    QString path;
-    bool sci = false;
-    switch (group_or_size)
-    {
-    case KIconLoader::Small:
-	group_or_size = -16;
-	sci = true;
-	break;
-    case KIconLoader::Medium:
-	group_or_size = -32;
-	sci = true;
-	break;
-    case KIconLoader::Large:
-	group_or_size = -48;
-	sci = true;
-	break;
-    case KIconLoader::Default:
-	group_or_size = -d->defOldSize;
-	sci = true;
-	break;
-    case KIcon::User:
-	path = iconPath(name, KIcon::User, canReturnNull);
+	QString path = iconPath(name, KIcon::User, canReturnNull);
 	if (path.isEmpty())
 	    return pix;
 	pix.load(path);
@@ -391,17 +335,40 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
 	return pix;
     }
 
-    if (group_or_size >= KIcon::LastGroup)
+    if ((group < -1) || (group >= KIcon::LastGroup))
     {
-	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
-	return path;
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	group = 0;
+    }
+    if ((state < 0) || (state >= KIcon::LastState))
+    {
+	kdDebug(264) << "Illegal icon state: " << state << "\n";
+	state = 0;
+    }
+    if ((size == 0) && (group < 0))
+    {
+	kdDebug(264) << "No size nor group specified!\n";
+	group = 0;
     }
 
-    int size;
-    if (group_or_size >= 0)
-	size = mpGroups[group_or_size].size;
-    else
-	size = -group_or_size;
+    if (name.at(0) == '/')
+    {
+	pix.load(name);
+	return pix;
+    }
+    QString ext = name.right(4);
+    if ((ext == ".png") || (ext == ".xpm"))
+    {
+	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
+		<< " loads icon with extension.\n";
+	name = name.left(name.length() - 4);
+    }
+
+    if (size == 0)
+    {
+	size = mpGroups[group].size;
+    }
+
     QString key = "$kico_";
     key += name;
     key += "_";
@@ -410,18 +377,11 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
     if (inCache && (path_store == 0L))
 	return pix;
 
-    if (sci)
-    {
-	kdDebug(264) << "Application " << KGlobal::instance()->instanceName() 
-		<< " requests to load legacy icon " << name << " of size "
-		<< size << "\n";
-    }
-
     KIcon icon = iconPath2(name, size);
     if (!icon.isValid())
     {
 	// Try "User" icon too.
-	pix = loadIcon(name, KIcon::User, state, path_store, canReturnNull);
+	pix = loadIcon(name, KIcon::User, size, state, path_store, canReturnNull);
 	if (!pix.isNull() || canReturnNull)
 	    return pix;
 
@@ -433,8 +393,6 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
 	    return pix;
 	}
     }
-    if (sci)
-	kdDebug(264) << "Icon resolved to " << icon.path << "\n";
 
     if (path_store != 0L)
 	*path_store = icon.path;
@@ -450,15 +408,15 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
     {
 	img = img.smoothScale(size, size);
     }
-    if ((group_or_size >= 0) && mpGroups[group_or_size].dblPixels)
+    if ((group >= 0) && mpGroups[group].dblPixels)
     {
 	img = mpEffect->doublePixels(img);
     }
 
     // Apply effects
-    if ((group_or_size >= 0) && (state >= 0))
+    if (group >= 0)
     {
-	img = mpEffect->apply(img, group_or_size, state);
+	img = mpEffect->apply(img, group, state);
     }
 
     pix.convertFromImage(img);
@@ -518,47 +476,65 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context)
     return res2;
 }
 
-void KIconLoader::addIcons(QStringList *result, int size, int context,
-	KIconThemeNode *node)
-{
-    *result += node->theme->queryIcons(size, context);
-    KIconThemeNode *n;
-    for (n=node->links.first(); n!=0L; n=node->links.next())
-    {
-	addIcons(result, size, context, n);
-    }
-}
-
 // Easy access functions
 
-QPixmap DesktopIcon(QString name, int state, KInstance *instace)
+QPixmap DesktopIcon(QString name, int force_size, int state, 
+	KInstance *instace)
 {
     KIconLoader *loader = instace->iconLoader();
-    return loader->loadIcon(name, KIcon::Desktop, state);
+    return loader->loadIcon(name, KIcon::Desktop, force_size, state);
 }
 
-QPixmap BarIcon(QString name, int state, KInstance *instace)
+QPixmap DesktopIcon(QString name, KInstance *instance)
+{
+    return DesktopIcon(name, 0, KIcon::DefaultState, instance);
+}
+
+QPixmap BarIcon(QString name, int force_size, int state, 
+	KInstance *instace)
 {
     KIconLoader *loader = instace->iconLoader();
-    return loader->loadIcon(name, KIcon::Toolbar, state);
+    return loader->loadIcon(name, KIcon::Toolbar, force_size, state);
 }
 
-QPixmap SmallIcon(QString name, int state, KInstance *instance)
+QPixmap BarIcon(QString name, KInstance *instance)
 {
-    KIconLoader *loader = instance->iconLoader();
-    return loader->loadIcon(name, KIcon::Small, state);
+    return BarIcon(name, 0, KIcon::DefaultState, instance);
 }
 
-QPixmap MainBarIcon(QString name, int state, KInstance *instance)
+QPixmap SmallIcon(QString name, int force_size, int state, 
+	KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
-    return loader->loadIcon(name, KIcon::MainToolbar, state);
+    return loader->loadIcon(name, KIcon::Small, force_size, state);
+}
+
+QPixmap SmallIcon(QString name, KInstance *instance)
+{
+    return SmallIcon(name, 0, KIcon::DefaultState, instance);
+}
+
+QPixmap MainBarIcon(QString name, int force_size, int state, 
+	KInstance *instance)
+{
+    KIconLoader *loader = instance->iconLoader();
+    return loader->loadIcon(name, KIcon::MainToolbar, force_size, state);
+}
+
+QPixmap MainBarIcon(QString name, KInstance *instance)
+{
+    return MainBarIcon(name, 0, KIcon::DefaultState, instance);
 }
 
 QPixmap UserIcon(QString name, int state, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
-    return loader->loadIcon(name, KIcon::User, state);
+    return loader->loadIcon(name, KIcon::User, 0, state);
+}
+
+QPixmap UserIcon(QString name, KInstance *instance)
+{
+    return UserIcon(name, KIcon::DefaultState, instance);
 }
 
 int IconSize(int group, KInstance *instance)
@@ -567,36 +543,3 @@ int IconSize(int group, KInstance *instance)
     return loader->currentSize(group);
 }
 
-// Funtion provided for source compatibility with the old iconloader
-// Please don't use them
-
-QPixmap DesktopIcon(QString name, KInstance *instance)
-{
-    return DesktopIcon(name, KIcon::DefaultState, instance);
-}
-
-QPixmap BarIcon(QString name, KInstance *instance)
-{
-    return BarIcon(name, KIcon::DefaultState, instance);
-}
-
-QPixmap BarIcon(QString name, KIconLoader::Size size, KInstance *instance)
-{
-    KIconLoader *loader = instance->iconLoader();
-    return loader->loadIcon(name, size, KIcon::DefaultState);
-}
-
-QPixmap SmallIcon(QString name, KInstance *instance)
-{
-    return SmallIcon(name, KIcon::DefaultState, instance);
-}
-
-QPixmap MainBarIcon(QString name, KInstance *instance)
-{
-    return MainBarIcon(name, KIcon::DefaultState, instance);
-}
-
-QPixmap UserIcon(QString name, KInstance *instance)
-{
-    return UserIcon(name, KIcon::DefaultState, instance);
-}

@@ -42,8 +42,8 @@ public:
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
     enum Types { Fixed, Scalable };
     enum MatchType { MatchExact, MatchBest };
-    enum Group { Desktop, Toolbar, MainToolbar, Small, LastGroup, User };
-    enum StdSizes { SizeSmall=-16, SizeMedium=-32, SizeLarge=-48 };
+    enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small, LastGroup, User };
+    enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
     enum States { DefaultState, ActiveState, DisabledState, LastState };
 
     /** The size in pixels of the icon. */
