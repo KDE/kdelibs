@@ -73,7 +73,9 @@ void KFilePreview::setFileView( KFileView *view )
     left=view;
 }
 
-void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u)
+// this url parameter is useless... it's the url of the current directory.
+// what for?
+void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &)
 {
     left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 
@@ -96,7 +98,6 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u)
     preview->reparent((QSplitter*)this, 0, QPoint(0, 0), true);
     preview->resize(preview->sizeHint());
     preview->show();
-    emit showPreview(u);
 }
 
 void KFilePreview::insertItem(KFileViewItem *item) {
@@ -106,7 +107,7 @@ void KFilePreview::insertItem(KFileViewItem *item) {
 void KFilePreview::clearView() {
     left->clearView();
     if(preview)
-        preview->erase();
+        emit showPreview( KURL() );
 }
 
 void KFilePreview::updateView(bool b) {
@@ -124,6 +125,7 @@ void KFilePreview::removeItem(const KFileViewItem *i) {
     KFileView::removeItem( i );
 }
 
+// huh, I don't think we need this....
 void KFilePreview::clear() {
     KFileView::clear();
     left->KFileView::clear();
@@ -153,7 +155,7 @@ void KFilePreview::selectDir(const KFileViewItem* item) {
 }
 
 void KFilePreview::highlightFile(const KFileViewItem* item) {
-    emit showPreview(item->url());
+    emit showPreview(item ? item->url() : KURL());
 
     sig->highlightFile(item);
     // the preview widget appears and takes some space of the left view,

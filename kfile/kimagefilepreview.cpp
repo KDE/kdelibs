@@ -1,8 +1,9 @@
 /*
  * This file is part of the KDE project
  * Copyright (C) 2001 Martin R. Jones <mjones@kde.org>
+ *               2001 Carsten Pfeiffer <pfeiffer@kde.org>
  *
- * You can Freely distribute this program under the GNU General Public
+ * You can Freely distribute this program under the GNU Library General Public
  * License. See the file "COPYING" for the exact licensing terms.
  */
 
@@ -21,16 +22,21 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kfiledialog.h>
-#include <kimageio.h>
+#include <kfileitem.h>
+#include <kio/previewjob.h>
 
 #include "kimagefilepreview.h"
+#include "config-kfile.h"
 
 /**** KImageFilePreview ****/
 
 KImageFilePreview::KImageFilePreview( KFileDialog *parent )
-    : KPreviewWidgetBase( parent )
+    : KPreviewWidgetBase( parent ),
+      m_job( 0L )
 {
-    autoMode = FALSE;
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs( config, ConfigGroup );
+    autoMode = config->readBoolEntry( "Automatic Preview", true );
 
     QVBoxLayout *vb = new QVBoxLayout( this, KDialog::marginHint() );
 
@@ -40,44 +46,65 @@ KImageFilePreview::KImageFilePreview( KFileDialog *parent )
     imageLabel->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred ) );
     vb->addWidget( imageLabel, 1 );
 
-    infoLabel = new QLabel( this );
-    vb->addWidget( infoLabel );
-
     QHBoxLayout *hb = new QHBoxLayout( vb );
 
     autoPreview = new QCheckBox( i18n("&Automatic preview"), this );
+    autoPreview->setChecked( autoMode );
     hb->addWidget( autoPreview );
     connect( autoPreview, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
     previewButton = new QPushButton( i18n("&Preview"), this );
     hb->addWidget( previewButton );
-    connect( previewButton, SIGNAL(clicked()), SLOT(updatePreview()) );
+    connect( previewButton, SIGNAL(clicked()), SLOT(showPreview()) );
 
     timer = new QTimer( this );
-    connect( timer, SIGNAL(timeout()), SLOT(showImage()) );
+    connect( timer, SIGNAL(timeout()), SLOT(showPreview()) );
 }
 
-void KImageFilePreview::showPreview( const KURL &url )
+KImageFilePreview::~KImageFilePreview()
 {
-    if ( url != currentURL )
+    if ( m_job )
+        m_job->kill();
+
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs( config, ConfigGroup );
+    config->writeEntry( "Automatic Preview", autoPreview->isChecked() );
+}
+
+// called via KPreviewWidgetBase interface
+void KImageFilePreview::showPreview( const KURL& url )
+{
+    showPreview( url, false );
+}
+
+void KImageFilePreview::showPreview( const KURL &url, bool force )
+{
+    if ( url != currentURL || force )
     {
-	currentURL = url;
-	currentImage = QImage();
-	if ( autoMode )
-	{
-	    if ( currentURL.isLocalFile() )
-		currentImage.load( currentURL.path() );
-	}
-	    
-	timer->start( 20, true );
-    }
-}
+        imageLabel->setPixmap( QPixmap() );
+        if ( m_job ) {
+            m_job->kill();
+            m_job = 0L;
+        }
 
-void KImageFilePreview::updatePreview()
-{
-    if ( currentURL.isLocalFile() )
-	currentImage.load( currentURL.path() );
-    timer->start( 0, true );
+	currentURL = url;
+
+	if ( !url.isMalformed() && (autoMode || force) )
+	{
+            int w = imageLabel->contentsRect().width() - 4;
+            int h = imageLabel->contentsRect().height() - 4;
+
+            m_job =  createJob( url, w, h );
+            connect( m_job, SIGNAL( result( KIO::Job * )),
+                     this, SLOT( slotResult( KIO::Job * )));
+            connect( m_job, SIGNAL( gotPreview( const KFileItem*, 
+                                                const QPixmap& )),
+                     SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
+
+            connect( m_job, SIGNAL( failed( const KFileItem* )),
+                     this, SLOT( slotFailed( const KFileItem* ) ));
+	}
+    }
 }
 
 void KImageFilePreview::toggleAuto( bool a )
@@ -85,13 +112,13 @@ void KImageFilePreview::toggleAuto( bool a )
     autoMode = a;
     if ( autoMode )
     {
-	updatePreview();
+	showPreview( currentURL, true );
     }
 }
 
 void KImageFilePreview::resizeEvent( QResizeEvent * )
 {
-    timer->start( 100, true );
+    timer->start( 100, true ); // forces a new preview
 }
 
 QSize KImageFilePreview::sizeHint() const
@@ -99,31 +126,30 @@ QSize KImageFilePreview::sizeHint() const
     return QSize( 20, 200 ); // otherwise it ends up huge???
 }
 
-void KImageFilePreview::showImage()
+KIO::PreviewJob * KImageFilePreview::createJob( const KURL& url, int w, int h )
 {
-    QPixmap pm;
-    if ( !currentImage.isNull() ) {
-	infoLabel->setText( i18n( "%1bpp image, %2 x %3 pixels" )
-	    .arg(currentImage.depth()).arg(currentImage.width())
-	    .arg(currentImage.height()) );
-	double hscale = double(imageLabel->contentsRect().width()-4) /
-			currentImage.width();
-	double vscale = double(imageLabel->contentsRect().height()-4) /
-			currentImage.height();
-	if ( hscale < 1.0 || vscale < 1.0 )
-	{
-	    double scale = QMIN( hscale, vscale );
-	    int w = int(currentImage.width() * scale);
-	    int h = int(currentImage.height() * scale);
-	    pm.convertFromImage( currentImage.smoothScale( w, h ) );
-	}
-	else
-	    pm.convertFromImage( currentImage );
-    }
-    if ( pm.isNull() )
-	infoLabel->clear();
-    imageLabel->setPixmap( pm );
+    KURL::List urls;
+    urls.append( url );
+    return KIO::filePreview( urls, w, h, 0, 0, true, false );   
+}
+
+void KImageFilePreview::gotPreview( const KFileItem* item, const QPixmap& pm )
+{
+    if ( item->url() == currentURL ) // should always be the case
+        imageLabel->setPixmap( pm );
+}
+
+void KImageFilePreview::slotFailed( const KFileItem* item )
+{
+    if ( item->url() == currentURL ) // should always be the case
+        imageLabel->setPixmap( SmallIcon( "file_broken", KIcon::SizeLarge, 
+                                          KIcon::DisabledState ));
+}
+
+void KImageFilePreview::slotResult( KIO::Job *job )
+{
+    if ( job == m_job )
+        m_job = 0L;
 }
 
 #include "kimagefilepreview.moc"
-

@@ -29,6 +29,7 @@
 #include <qstringlist.h>
 #include <qwidget.h>
 
+#include <kdirselectdialog.h>
 #include <kfiledialog.h>
 #include <kfileiconview.h>
 #include <kmessagebox.h>
@@ -56,57 +57,74 @@ int main(int argc, char **argv)
 	op->show();
 	a.setMainWidget(op);
 	a.exec();
-    } else if (argv1 == QString::fromLatin1("justone")) {
+    }
+
+    else if (argv1 == QString::fromLatin1("justone")) {
         QString name = KFileDialog::getOpenFileName();
         qDebug("filename=%s",name.latin1());
-    } else if (argv1 == QString::fromLatin1("preselect")) {
+    }
+
+    else if (argv1 == QString::fromLatin1("preview")) {
+        KURL u =  KFileDialog::getImageOpenURL();
+        qDebug("filename=%s", u.url().latin1());
+    }
+
+    else if (argv1 == QString::fromLatin1("preselect")) {
         names = KFileDialog::getOpenFileNames(QString::fromLatin1("/etc/passwd"));
         QStringList::Iterator it = names.begin();
         while ( it != names.end() ) {
             qDebug("selected file: %s", (*it).latin1());
             ++it;
         }
-/*
-  } else if (argv1 == QString::fromLatin1("widget")) {
-  KFileWidget *widget = new KFileWidget(KFileWidget::Simple);
-  // widget->setURL(QString::fromLatin1("ftp://localhost"));
-  // widget->setURL(QString::fromLatin1("smb://without.penguinpowered.com/)");
-  // widget->setURL(QString::fromLatin1("smb://redwood203.marin.k12.ca.us"),false);
-  widget->show();
-  a.setMainWidget(widget);
-  a.exec();
-*/
-    } else if (argv1 == QString::fromLatin1("dirs"))
+    }
+
+    else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();
+
     else if (argv1 == QString::fromLatin1("heap")) {
 	KFileDialog *dlg = new KFileDialog( QString::null, QString::null, 0L,
 					    "file dialog", true );
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
     }
+
     else if (argv1 == QString::fromLatin1("save")) {
         KURL u = KFileDialog::getSaveURL();
 //          QString(QDir::homeDirPath() + QString::fromLatin1("/testfile")),
 //          QString::null, 0L);
         name1 = u.url();
     }
+
     else if (argv1 == QString::fromLatin1("icon")) {
     	KIconDialog dlg;
 	QString icon = dlg.selectIcon();
 	kdDebug() << icon << endl;
-    } else {
+    }
+
+//     else if ( argv1 == QString::fromLatin1("dirselect") ) {
+//         KURL url;
+//         url.setPath( "/" );
+//         KURL selected = KDirSelectDialog::selectDirectory( url );
+//         name1 = selected.url();
+//         qDebug("*** selected: %s", selected.url().latin1());
+//     }
+
+    else {
 	KFileDialog dlg(QString::null,
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
-    QStringList filter;
-    filter << "text/plain" << "text/html" << "image/png";
-    dlg.setMimeFilter( filter );
+	dlg.setMode( (KFile::Mode) (KFile::Files |
+                                    KFile::Directory |
+                                    KFile::ExistingOnly |
+                                    KFile::LocalOnly) );
+        QStringList filter;
+        filter << "text/plain" << "text/html" << "image/png";
+        dlg.setMimeFilter( filter );
 //    KMimeType::List types;
 //    types.append( KMimeType::mimeType( "text/plain" ) );
 //    types.append( KMimeType::mimeType( "text/html" ) );
 //    dlg.setFilterMimeType( "Filetypes:", types, types.first() );
-	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();
 	    KURL::List::ConstIterator it = list.begin();

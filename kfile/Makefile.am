@@ -35,7 +35,6 @@ include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
 
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h krecentdirs.h 
 
-kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfilereader.cpp kfileviewitem.cpp booktoken.cpp \
 	kfileview.cpp kfileiconview.cpp kfilefilter.cpp \
@@ -44,6 +43,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp
+#	kdirselect.cpp kdirselectdialog.cpp
 
 EXTRA_DIST = NOTES
 
@@ -53,7 +53,13 @@ libkfile_la_LIBADD =  $(LIB_KSYCOCA)
 servicetype_DATA = kpropsdlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)
 
-check_PROGRAMS = kfstest
+check_PROGRAMS = kfstest kurlrequestertest
+
+kfstest_SOURCES =  kfstest.cpp
+kurlrequestertest_SOURCES =  kurlrequestertest.cpp
+
 kfstest_LDFLAGS = $(KDE_RPATH)
 kfstest_LDADD = libkfile.la
 
+kurlrequestertest_LDFLAGS = $(KDE_RPATH)
+kurlrequestertest_LDADD = libkfile.la

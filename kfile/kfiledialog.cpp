@@ -55,6 +55,7 @@
 #include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <kio/job.h>
+#include <kio/previewjob.h>
 #include <kio/scheduler.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -84,6 +85,7 @@
 #include <kstaticdeleter.h>
 #include <kimagefilepreview.h>
 #include <kimageio.h>
+
 
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
@@ -263,6 +265,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "forward" )->plugAccel( accel );
     coll->action( "home" )->plugAccel( accel );
     coll->action( "reload" )->plugAccel( accel );
+    coll->action( "delete" )->plugAccel( accel );
 
     bookmarks= new KFileBookmarkManager();
     CHECK_PTR( bookmarks );
@@ -418,6 +421,26 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
     types.append( QString::fromLatin1( "inode/directory" ));
     ops->fileReader()->setNameFilter( QString::null );
     ops->fileReader()->setMimeFilter( types );
+
+    // check if we can enable the preview automatically
+    KConfig *kc = KGlobal::config();
+    KConfigGroupSaver cs( kc, ConfigGroup );
+    if ( kc->readBoolEntry( "Show Default Preview" ), true ) {
+        QStringList previewMimes = KIO::PreviewJob::supportedMimeTypes();
+        QStringList::Iterator it = previewMimes.begin();
+        QRegExp r;
+        r.setWildcard( true ); // the "mimetype" can be "image/*"
+
+        for ( ; it != previewMimes.end(); ++it ) {
+            r.setPattern( *it );
+            QStringList result = mimeTypes.grep( r );
+            if ( !result.isEmpty() ) { // matches! -> we want previews
+                KImageFilePreview *preview = new KImageFilePreview( this );
+                setPreviewWidget( preview );
+                return;
+            }
+        }
+    }
 }
 
 void KFileDialog::clearFilter()
@@ -611,6 +634,11 @@ void KFileDialog::slotOk()
 	}
 
 	else { // FIXME: remote directory, should we allow that?
+//             qDebug( "**** Selected remote directory: %s", d->url.url().latin1());
+//             d->filenames = QString::null;
+//             d->urlList.clear();
+//             d->urlList.append( d->url );
+//             accept();
 	}
 
 	if ( done )

@@ -1,58 +1,71 @@
-/* 
+/*
  *
  * This file is part of the KDE project.
  * Copyright (C) 2001 Martin R. Jones <mjones@kde.org>
- * 
- * You can Freely distribute this program under the GNU General Public
+ *               2001 Carsten Pfeiffer <pfeiffer@kde.org>
+ *
+ * You can Freely distribute this program under the GNU Library General Public
  * License. See the file "COPYING" for the exact licensing terms.
  */
 
 #ifndef KIMAGEFILEPREVIEW_H
 #define KIMAGEFILEPREVIEW_H
 
-#include <qimage.h>
+#include <qpixmap.h>
 
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>
 
-class KFileDialog;
 class QCheckBox;
 class QPushButton;
 class QLabel;
 class QTimer;
 
+class KFileDialog;
+class KFileItem;
+namespace KIO { class PreviewJob; }
+
 /**
  * Image preview widget for the file dialog.
  */
-class KImageFilePreview : public KPreviewWidgetBase 
+class KImageFilePreview : public KPreviewWidgetBase
 {
 	Q_OBJECT
 
 	public:
 		KImageFilePreview(KFileDialog *parent);
+		~KImageFilePreview();
 
 		virtual QSize sizeHint() const;
 
 	public slots:
-		void showPreview(const KURL &url);
+		virtual void showPreview(const KURL &url);
 
 	protected slots:
-		void showImage();
-		void updatePreview();
+		void showPreview() { showPreview( currentURL, true ); }
+		void showPreview( const KURL& url, bool force );
+
 		void toggleAuto(bool);
+		virtual void gotPreview( const KFileItem*, const QPixmap& );
 
 	protected:
 		virtual void resizeEvent(QResizeEvent *e);
+		virtual KIO::PreviewJob * createJob( const KURL& url, 
+                                                     int w, int h );
+
+	private slots:
+		void slotResult( KIO::Job * );
+		virtual void slotFailed( const KFileItem* );
 
 	private:
 		bool autoMode;
 		KURL currentURL;
-		QImage currentImage;
 		QTimer *timer;
 		QLabel *imageLabel;
 		QLabel *infoLabel;
 		QCheckBox *autoPreview;
 		QPushButton *previewButton;
+		KIO::PreviewJob *m_job;
                 class KImageFilePreviewPrivate;
                 KImageFilePreviewPrivate *d;
 };
