@@ -1,8 +1,9 @@
+#include "config.h"
+
 #ifdef HAVE_LIBAUDIOFILE
 
 #include "soundserver.h"
 #include "cachedwav.h"
-#include "config.h"
 #include "stdsynthmodule.h"
 #include "convert.h"
 
