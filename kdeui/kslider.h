@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
-	          (C) 1997 Christian Esken (chris@magicon.prima.ruhr)
+              (C) 1997 Christian Esken (esken@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,10 +18,10 @@
     Boston, MA 02111-1307, USA.
 */
 //-----------------------------------------------------------------------------
-// Slider control
+// Slider control V2.0
 //
 // V1.0 Copyright (C) Martin R. Jones 1997
-// V1.1 and following: Now maintained by Christian Esken <chris@magicon.prima.ruhr.de>
+// V1.1 and following: (C) 1997 Christian Esken (esken@kde.org)
 
 #ifndef __KSLIDER_H__
 #define __KSLIDER_H__

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
+              (C) 1997 Christian Esken (esken@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,14 +18,15 @@
     Boston, MA 02111-1307, USA.
 */
 //-----------------------------------------------------------------------------
-// KSlider control V1.3
+// KSlider control V2.0
 // KSlider now maintained by Christian Esken (chris@magicon.prima.ruhr.de)
 // Revision information.
 // 1.0 KSlider by Martin R. Jones
 // 1.1 All changes now by Christian Esken: sanity checks ( checkWidth() ).
 // 1.2 Implemented rangeChange()
 // 1.3 Reworked drawArrow(). For avoiding paint problems with some servers, I
-// am now painting the arrow with "precise" lines.
+//     am now painting the arrow with "precise" lines.
+// 2.0 Now KSlider is a derivation of QSlider
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
