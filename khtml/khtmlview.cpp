@@ -50,7 +50,7 @@
 #include <kimageio.h>
 #include <kdebug.h>
 
-#define PAINT_BUFFER_HEIGHT 64
+#define PAINT_BUFFER_HEIGHT 128
 
 template class QList<KHTMLView>;
 
