@@ -45,10 +45,13 @@ public:
 	 * Creates a color button with an initial color @p c.
 	 */
 	KColorButton( const QColor &c, QWidget *parent, const char *name = 0L );
+        KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent,
+                      const char *name=0L );
+
 	/**
 	 * Destructor.
 	 */
-	virtual ~KColorButton() {}
+        virtual ~KColorButton();
 
 	/**
 	 * Returns the currently chosen color.
@@ -99,6 +102,7 @@ private:
 protected:
 	virtual void virtual_hook( int id, void* data );
 private:
+        class KColorButtonPrivate;
 	KColorButtonPrivate *d;
 };
 

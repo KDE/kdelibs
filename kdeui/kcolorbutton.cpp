@@ -29,9 +29,19 @@
 #include "kcolorbutton.h"
 #include "kcolordrag.h"
 
+class KColorButton::KColorButtonPrivate
+{
+public:
+    bool m_bdefaultColor;
+    QColor m_defaultColor;
+};
+
 KColorButton::KColorButton( QWidget *parent, const char *name )
   : QPushButton( parent, name )
 {
+    d = new KColorButtonPrivate;
+    d->m_bdefaultColor = false;
+    d->m_defaultColor = QColor();
   setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
@@ -42,10 +52,31 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent,
 			    const char *name )
   : QPushButton( parent, name ), col(c)
 {
-  setAcceptDrops( true);
+    d = new KColorButtonPrivate;
+    d->m_bdefaultColor = false;
+    d->m_defaultColor = QColor();
+    setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
+}
+
+KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent,
+			    const char *name )
+  : QPushButton( parent, name ), col(c)
+{
+    d = new KColorButtonPrivate;
+    d->m_bdefaultColor = true;
+    d->m_defaultColor = defaultColor;
+    setAcceptDrops( true);
+
+  // 2000-10-15 (putzer): fixes broken keyboard usage
+  connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
+}
+
+KColorButton::~KColorButton()
+{
+    delete d;
 }
 
 void KColorButton::setColor( const QColor &c )
@@ -107,8 +138,8 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
     (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
     // Drag color object
-    KColorDrag *d = KColorDrag::makeDrag( color(), this);
-    d->dragCopy();
+    KColorDrag *dg = KColorDrag::makeDrag( color(), this);
+    dg->dragCopy();
     setDown(false);
   }
 }
@@ -116,8 +147,17 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
 void KColorButton::chooseColor()
 {
   QColor c = color();
-  if( KColorDialog::getColor( c, this ) != QDialog::Rejected ) {
-    setColor( c );
+  if ( d->m_bdefaultColor )
+  {
+      if( KColorDialog::getColor( c, d->m_defaultColor, this ) != QDialog::Rejected ) {
+          setColor( c );
+      }
+  }
+  else
+  {
+      if( KColorDialog::getColor( c, this ) != QDialog::Rejected ) {
+          setColor( c );
+      }
   }
 }
 
