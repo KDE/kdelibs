@@ -2066,12 +2066,17 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     // just wanted the base js handling code in cvs
     return Undefined();
 
-    QString question =
-       i18n("Do you want a bookmark pointing to the location \"%1\" %2to be added to your collection?")
-      .arg(url).arg(title.isEmpty()?"":i18n("titled \"%2\" ").arg(title));
+    QString question;
+    if ( title.isEmpty() )
+      question = i18n("Do you want a bookmark pointing to the location \"%1\" to be added to your collection?")
+                 .arg(url);
+    else
+      question = i18n("Do you want a bookmark pointing to the location \"%1\" titled \"%2\" to be added to your collection?")
+                 .arg(url).arg(title);
+
     if (KMessageBox::warningYesNo(
           widget, question,
-          "JavaScript Attempted Bookmark Insert",
+          i18n("JavaScript Attempted Bookmark Insert"),
           i18n("Insert"), i18n("Disallow")) == KMessageBox::Yes)
     {
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
