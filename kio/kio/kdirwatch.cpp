@@ -436,6 +436,12 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
     e->dn_dirty = false;
     if (e->m_status == Normal) {
       int fd = open(QFile::encodeName(e->path).data(), O_RDONLY);
+      int fd2 = fcntl(fd, F_DUPFD, 128);
+      if (fd2 >= 0)
+      {
+        close(fd);
+        fd = fd2;
+      }
       if (fd<0) {
 	e->m_mode = UnknownMode;
 	return false;
