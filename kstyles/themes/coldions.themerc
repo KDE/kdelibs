@@ -9,6 +9,7 @@ Name[et]=Külmad ioonid
 Name[fi]=Kylmät ionit
 Name[hu]=Fagyos ionok
 Name[no]=Kalde ioner
+Name[ro]=Ioni reci
 Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
 Comment[ca]=Estil sense tema "Ions freds".
@@ -23,6 +24,7 @@ Comment[no]=Kalde ioner-stil uten tema
 Comment[no_NY]='Cold Ions'-stil utan tema
 Comment[pt]=Estilo Cold Ions
 Comment[pt_BR]=Estilo Cold Ions
+Comment[ro]=Stil fãrã temã Ioni reci
 Comment[sl]=Netematski slog mrzlih ionov
 [KDE]
 widgetStyle=coldionsstyle.la

@@ -227,12 +227,14 @@ Name[da]=System-serier
 Name[eo]=Sistem-Serioj
 Name[no]=System-serier
 Name[no_NY]=System-serie
+Name[ro]=Teme de sistem
 Name[sl]=Sistemske vrste
 Comment=System Style 001
 Comment[da]=System stil 001
 Comment[eo]=Sistemostilo 001
 Comment[no]=System-stil 001
 Comment[no_NY]=Systemstil 001
+Comment[ro]=Stil sistem 001
 Comment[sl]=Sistemski slog 001
 ScrollBarExtent=14
 
