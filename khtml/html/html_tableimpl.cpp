@@ -214,37 +214,65 @@ void HTMLTableElementImpl::deleteCaption(  )
 
 HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode )
 {
+    // Let's make sure we have at least one section
+    // The DOM requires it (cf DOM2TS HTMLTableElement31 test)
+    // but since we currently allow <TABLE><TR> in the DOM, the new row might
+    // not be created in that body element. Huh. The fact that we don't create
+    // a tbody when parsing <TABLE><TR> looks like a bug to me (DF).
+    if(!firstBody && !head && !foot)
+        setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY) );
+
     //kdDebug(6030) << k_funcinfo << index << endl;
     // IE treats index=-1 as default value meaning 'append after last'
     // This isn't in the DOM. So, not implemented yet.
     HTMLTableSectionElementImpl* section = 0L;
+    HTMLTableSectionElementImpl* lastSection = 0L;
     NodeImpl *node = firstChild();
-    for ( ; node ; node = node->nextSibling() )
+    for ( ; node && index >=0 ; node = node->nextSibling() )
     {
         if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
+            lastSection = section;
             //kdDebug(6030) << k_funcinfo << "section id=" << node->id() << " rows:" << section->numRows() << endl;
             if ( section->numRows() > index )
                 break;
             else
                 index -= section->numRows();
+            //kdDebug(6030) << "       index is now " << index << endl;
         }
         // Note: we now can have both TR and sections (THEAD/TBODY/TFOOT) as children of a TABLE
         else if ( node->id() == ID_TR )
         {
             section = 0L;
             //kdDebug(6030) << k_funcinfo << "row" << endl;
-            index--;
             if (!index)
-                break;
+            {
+                // Insert row right here, before "node"
+                HTMLTableRowElementImpl* row = new HTMLTableRowElementImpl(docPtr());
+                insertBefore(row, node, exceptioncode );
+                return row;
+            }
+            index--;
+            //kdDebug(6030) << "       index is now " << index << endl;
         }
+        section = 0L;
     }
-    if (!section) {
-        section = new HTMLTableSectionElementImpl(docPtr(), ID_TBODY);
-        setTBody( section );
+    // Index == 0 means "insert before first row in current section"
+    // or "append after last row" (if there's no current section anymore)
+    if ( !section && index == 0 )
+    {
+        section = lastSection;
+        index = section ? section->numRows() : 0;
     }
-    return section->insertRow( index, exceptioncode );
+    if ( section && index >= 0 ) {
+        //kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
+        return section->insertRow( index, exceptioncode );
+    } else {
+        // No more sections => index is too big
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return 0L;
+    }
 }
 
 void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
@@ -261,6 +289,7 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
             else
                 index -= section->numRows();
         }
+        section = 0L;
     }
     if ( section && index >= 0 && index < section->numRows() )
         section->deleteRow( index, exceptioncode );
@@ -553,8 +582,8 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& except
     HTMLTableRowElementImpl *r = 0L;
     NodeListImpl *children = childNodes();
     int numRows = children ? (int)children->length() : 0;
-    kdDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
-    if ( index > numRows ) {
+    //kdDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
+    if ( index < 0 || index > numRows ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     }
     else
