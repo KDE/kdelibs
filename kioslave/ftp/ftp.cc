@@ -1,8 +1,8 @@
 // $Id$
 
-#ifndef NDEBUG
-#define NDEBUG
-#endif
+//#ifndef NDEBUG
+//#define NDEBUG
+//#endif
 
 #include "ftp.h"
 
@@ -33,6 +33,7 @@ Ftp::Ftp()
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   m_bPersistent = true;
+  kdebug(KDEBUG_INFO, 0, "Ftp::Ftp()");
 }
 
 
@@ -119,14 +120,14 @@ bool Ftp::readresp(char c)
   if ( readline( rspbuf, 256, nControl ) == -1 )
   {
     if ( ftplib_debug > 1)
-      fprintf( stderr,"Could not read\n" );
+      kdebug( KDEBUG_ERROR, 0, "Could not read" );
 
     m_error = ERR_COULD_NOT_READ;
     m_errorText = "";
     return false;
   }
   if ( ftplib_debug > 1)
-    fprintf(stderr,"resp> %s",rspbuf);
+    kdebug(KDEBUG_INFO, 0, "resp> %s",rspbuf);
   if ( rspbuf[3] == '-' )  {
     strncpy( match, rspbuf, 3 );
     match[3] = ' ';
@@ -138,7 +139,7 @@ bool Ftp::readresp(char c)
 	return false;
       }
       if ( ftplib_debug > 1)
-	fprintf(stderr,"%s",rspbuf);
+	kdebug(KDEBUG_INFO, 0, "%s",rspbuf);
     }
     while ( strncmp( rspbuf, match, 4 ) );
   }
@@ -228,13 +229,13 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
   }
 
   if ( ftplib_debug > 2 )
-    fprintf( stderr, "Connected ....\n" );
+    kdebug(KDEBUG_INFO, 0, "Connected ...." );
 
   QString redirect = "";
   m_bLoggedOn = ftpLogin( user, passwd, redirect );
   if ( !m_bLoggedOn ) {
     if ( ftplib_debug > 2 )
-      fprintf( stderr, "Could not login\n" );
+      kdebug(KDEBUG_INFO, 0, "Could not login" );
 
     m_error = ERR_COULD_NOT_LOGIN;
     m_errorText = _host;
@@ -248,7 +249,7 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
     _path = redirect;
     
     if ( ftplib_debug > 2 )
-      fprintf( stderr, "REDIRECTION '%s'\n", redirect.ascii());
+      kdebug(KDEBUG_INFO, 0, "REDIRECTION '%s'", redirect.ascii());
   }
   
   m_bLoggedOn = true;
@@ -345,7 +346,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 
     if ( !ftpSendCmd( tempbuf, '3' ) ) {
       if ( ftplib_debug > 2 )
-	fprintf( stderr, "1> %s\n", rspbuf );
+	kdebug(KDEBUG_INFO, 0, "1> %s", rspbuf );
       
       if ( rspbuf[0] == '2' )
 	return true; /* no password required */
@@ -361,7 +362,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
       if ( !open_PassDlg( tmp, user, pass ) )
 	return false;
     }
-    kdebug(0, KDEBUG_INFO, "New pass is '%s'", pass.ascii());
+    kdebug( KDEBUG_INFO, 0, "New pass is '%s'", pass.ascii());
     
     tempbuf = "pass ";
     tempbuf += pass;
@@ -372,7 +373,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
     }
   }
   
-  kdebug(0, KDEBUG_INFO, "Login ok");
+  kdebug( KDEBUG_INFO, 0, "Login ok");
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
@@ -380,21 +381,20 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
       ftpSendCmd( "site dirstyle", '2' );                                                 
   else 
-fprintf(stderr,"syst failed\n");
+    kdebug(KDEBUG_WARN, 0, "syst failed");
 
   // Not interested in the current working directory ? => return with success
   if ( _redirect.isEmpty() )
     return true;
 
-fprintf(stderr,"Searching for pwd");
-  kdebug(0, KDEBUG_INFO, "Searching for pwd");
+  kdebug( KDEBUG_INFO, 0, "Searching for pwd");
 
   // Get the current working directory
   if ( !ftpSendCmd( "pwd", '2' ) )
     return false;
 
   if ( ftplib_debug > 2 )
-    fprintf( stderr, "2> %s\n", rspbuf );
+    kdebug(KDEBUG_INFO, 0, "2> %s", rspbuf );
   
   char *p = rspbuf;
   while ( isdigit( *p ) ) p++;
@@ -423,7 +423,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
   buf += "\r\n";
 
   if ( ftplib_debug > 2 )
-    fprintf( stderr, "%s\n", cmd.data() );
+    kdebug(KDEBUG_INFO, 0, "%s", cmd.data() );
 
   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
     m_error = ERR_COULD_NOT_WRITE;
@@ -663,11 +663,9 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
   // directory first to see whether it really is a directory.
   if ( strcmp( _command, "list" ) == 0 )
   {
-    assert( _path != 0L );
-
     tmp = "cwd ";
-    tmp += _path;
-      
+    tmp += ( _path ) ? _path : "/";
+
     if ( !ftpSendCmd( tmp.c_str(), '2' ) )
     {
       if ( !m_error && rspbuf[0] == '5' )
@@ -875,11 +873,11 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   static FtpEntry fe;
   m_error = 0;
 
-  kdebug(0, KDEBUG_INFO, "ftpStat : %s", _url.url().ascii());
+  kdebug( KDEBUG_INFO, 0, "ftpStat : %s", _url.url().ascii());
 
   QString path = _url.directory();
 
-  if ( path == "" || path == "/" ) {
+  if ( path.isEmpty() || path == "/" ) {
     fe.access = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     fe.type = S_IFDIR;
     fe.link = "";
@@ -892,7 +890,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   }
 
   if( !ftpOpenCommand( "list", path, 'A' ) ) {
-    kdebug(0, KDEBUG_ERROR, "COULD NOT LIST");
+    kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST");
     return 0L;
   }
 
@@ -900,7 +898,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   if( !dirfile )
     return 0L;
 
-  kdebug(0, KDEBUG_INFO, "Starting of list was ok");
+  kdebug(KDEBUG_INFO, 0, "Starting of list was ok");
 
   QString search = _url.filename();
   assert( search != "" && search != "/" );
@@ -910,7 +908,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   while( ( e = readdir() ) ) //&& !found ) !!! fix - when not at and, don't read any response
   {
     if ( m_error ) {
-      kdebug(0, KDEBUG_ERROR, "FAILED: Read %s %s", error(), errorText().ascii());
+      kdebug(KDEBUG_ERROR, 0, "FAILED: Read %s %s", error(), errorText().ascii());
       return 0L;
     }
 
@@ -919,7 +917,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
       fe = *e;
     }
     
-    kdebug(0, KDEBUG_INFO, "$#", e->name.ascii());
+    kdebug(KDEBUG_INFO, 0, "%s", e->name.ascii());
   }
 
   if ( !ftpCloseDir() )
@@ -948,7 +946,7 @@ bool Ftp::opendir( KURL& _url )
   else
     redirect = path;
 
-  kdebug(0, KDEBUG_INFO, "hunting for path '%s'", redirect.ascii());
+  kdebug(KDEBUG_INFO, 0, "hunting for path '%s'", redirect.ascii());
 
   KURL url( _url );
   url.setPath( redirect );
@@ -962,7 +960,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   QString path( _url.path(-1) );
 
   if( !ftpOpenCommand( "list", path, 'A' ) ) {
-    kdebug(0, KDEBUG_ERROR, "COULD NOT LIST %s %s", error(), errorText().ascii() );
+    kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST %s %s", error(), errorText().ascii() );
     return false;
   }
   
@@ -970,7 +968,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   if( !dirfile )
     return false;
 
-  kdebug(0, KDEBUG_INFO, "Starting of list was ok");
+  kdebug(KDEBUG_INFO, 0, "Starting of list was ok");
 
   return true;
 }
@@ -1093,10 +1091,10 @@ bool Ftp::closedir()
 
 bool Ftp::ftpCloseDir()
 {
-  kdebug(0, KDEBUG_INFO, "... closing");
+  kdebug(KDEBUG_INFO, 0, "... closing");
 
   if ( !readresp( '2' ) ) {
-    kdebug(0, KDEBUG_INFO, "Did not get transfer complete message");
+    kdebug(KDEBUG_INFO, 0, "Did not get transfer complete message");
     return false;
   }
 
@@ -1124,7 +1122,7 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
     if ( !ftpOpenCommand( "retr", _url.path(), 'I', offset ) ) {
       if ( ! m_error )
 	{
-	  kdebug(0, KDEBUG_WARN, "Can't open for reading");
+	  kdebug(KDEBUG_WARN, 0, "Can't open for reading");
 	  m_error = ERR_CANNOT_OPEN_FOR_READING;
 	  m_errorText = _url.url();
 	}
@@ -1171,14 +1169,14 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  kdebug(0, KDEBUG_INFO, "... closing");
+  kdebug(KDEBUG_INFO, 0, "... closing");
 
   // first close, then read response ( should be 226 )
 
   bool tmp = ftpCloseCommand();
 
   if ( !readresp( '2' ) ) {
-      kdebug(0, KDEBUG_INFO, "Did not get transfer complete message");
+      kdebug(KDEBUG_INFO, 0, "Did not get transfer complete message");
       return false;
     }
   
