@@ -52,16 +52,18 @@ JSEventListener::~JSEventListener()
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
   if (listener.implementsCall() && win->part() ) {
+    KJScript *scr = win->part()->jScript()->jScript();
     List args;
     args.append(getDOMEvent(evt));
 
-    win->part()->jScript()->jScript()->init(); // set a valid current interpreter
+    scr->init(); // set a valid current interpreter
     KJSO thisVal = getDOMNode(evt.currentTarget());
     List *scope = 0;
     if (thisVal.type() != NullType)
       scope = static_cast<DOMNode*>(thisVal.imp())->eventHandlerScope();
     Global::current().setExtra(win->part());
-    QVariant ret = KJSOToVariant(listener.executeCall(thisVal, &args, scope));
+    scr->call(listener, thisVal, args, *scope);
+    QVariant ret = KJSOToVariant(scr->returnValue());
     if (scope)
       delete scope;
     if (ret.type() == QVariant::Bool && ret.toBool() == false)
