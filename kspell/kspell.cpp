@@ -1214,6 +1214,8 @@ void KSpell::slotModalReady()
              this, SLOT( slotModalDone( const QString & ) ) );
     QObject::connect( this, SIGNAL( corrected( QString, QString, unsigned ) ),
                       this, SLOT( slotSpellCheckerCorrected( QString, QString, unsigned ) ) );
+     QObject::connect( this, SIGNAL( death() ),
+                      this, SLOT( slotModalSpellCheckerFinished( ) ) );
     check( modaltext );
 }
 
@@ -1227,6 +1229,12 @@ void KSpell::slotModalDone( const QString &/*_buffer*/ )
     //qApp->exit_loop();
 
     //modalWidgetHack->close(true);
+    slotModalSpellCheckerFinished();
+}
+
+void KSpell::slotModalSpellCheckerFinished( )
+{
+    modalreturn=(int)this->status();
 }
 
 QString KSpell::modaltext;

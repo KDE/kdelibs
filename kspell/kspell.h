@@ -402,15 +402,21 @@ private slots:
    * Used for @ref modalCheck().
    */
   void slotModalReady();
- /**
+
+  /**
    * Used for @ref modalCheck().
    */
   void slotModalDone( const QString & );
+
   /**
    * Used for @ref modalCheck().
    */
   void slotSpellCheckerCorrected( QString oldText, QString newText, unsigned );
 
+  /**
+   * Used for @ref modalCheck().
+   */
+  void  slotModalSpellCheckerFinished( );
 
 signals:
   void dialog3 ();
