@@ -1700,9 +1700,9 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
         yyTok = getToken();
         if ( matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight,
                            &ffamily) ) {
-            qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
+           /* qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
                     fvariant.latin1(), fweight.latin1(), fsize.latin1(),
-                    lheight.latin1() );
+                    lheight.latin1() ); */
             if(!fstyle.isNull())
                 parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(),
                            CSS_PROP_FONT_STYLE,
