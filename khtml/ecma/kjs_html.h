@@ -138,7 +138,7 @@ namespace KJS {
            TableCellWidth, TableCellCellIndex, TableCellChOff, TableCellBgColor,
            TableCellCh, TableCellVAlign, TableCellRowSpan, TableCellHeaders,
            TableCellAlign, TableCellAxis, TableCellScope, FrameSetCols,
-           FrameSetRows, FrameSrc, FrameFrameBorder, FrameScrolling,
+           FrameSetRows, FrameSrc, FrameLocation, FrameFrameBorder, FrameScrolling,
            FrameMarginWidth, FrameLongDesc, FrameMarginHeight, FrameName,
            FrameNoResize, IFrameLongDesc, IFrameDocument, IFrameAlign,
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,

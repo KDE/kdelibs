@@ -918,6 +918,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   noResize	KJS::HTMLElement::FrameNoResize			DontDelete
   scrolling	KJS::HTMLElement::FrameScrolling		DontDelete
   src		KJS::HTMLElement::FrameSrc			DontDelete
+  location	KJS::HTMLElement::FrameLocation			DontDelete
 ### new in DOM2: contentDocument
 @end
 @begin HTMLIFrameElementTable 11
@@ -2503,6 +2504,10 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       case FrameNoResize:        { frameElement.setNoResize(value.toBoolean(exec)); return; }
       case FrameScrolling:       { frameElement.setScrolling(str); return; }
       case FrameSrc:             { frameElement.setSrc(str); return; }
+      case FrameLocation:        {
+                                   static_cast<DOM::HTMLFrameElementImpl *>(frameElement.handle())->setLocation(str);
+                                   return;
+                                 }
       //case FrameContentDocument: // new for DOM2 - not yet in khtml
       //return getDOMNode(exec,frameElement.contentDocument()); // type Document
       }

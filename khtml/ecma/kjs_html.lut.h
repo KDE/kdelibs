@@ -934,11 +934,12 @@ const struct HashEntry HTMLFrameElementTableEntries[] = {
    { "marginWidth", KJS::HTMLElement::FrameMarginWidth, DontDelete, 0, 0 },
    { "longDesc", KJS::HTMLElement::FrameLongDesc, DontDelete, 0, &HTMLFrameElementTableEntries[8] },
    { "marginHeight", KJS::HTMLElement::FrameMarginHeight, DontDelete, 0, &HTMLFrameElementTableEntries[10] },
-   { "name", KJS::HTMLElement::FrameName, DontDelete, 0, 0 },
-   { "noResize", KJS::HTMLElement::FrameNoResize, DontDelete, 0, 0 }
+   { "name", KJS::HTMLElement::FrameName, DontDelete, 0, &HTMLFrameElementTableEntries[11] },
+   { "noResize", KJS::HTMLElement::FrameNoResize, DontDelete, 0, 0 },
+   { "location", KJS::HTMLElement::FrameLocation, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLFrameElementTable = { 2, 11, HTMLFrameElementTableEntries, 8 };
+const struct HashTable HTMLFrameElementTable = { 2, 12, HTMLFrameElementTableEntries, 8 };
 
 }; // namespace
 
