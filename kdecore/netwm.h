@@ -135,13 +135,13 @@ public:
                 int screen = -1, bool doActivate = true);
 
     /**
-        @deprecated
         This constructor differs from the above one only in the way it accepts
         the list of supported properties. The properties argument is equivalent
-        to the first element of the properties array in the above constructor.
+        to the first element of the properties array in the above constructor,
+        and therefore you cannot read all root window properties using it.
     **/
     NETRootInfo(Display *display, unsigned long properties, int screen = -1,
-		bool doActivate = true) KDE_DEPRECATED;
+		bool doActivate = true);
 
     /**
        Creates a shared copy of the specified NETRootInfo object.
@@ -558,21 +558,23 @@ public:
        @param event the event
        @param properties properties that changed
        @param properties_size size of the passed properties array
+       @since 3.2
 
     **/
     void event( XEvent* event, unsigned long* properties, int properties_size );
     
     /**
-       @deprecated
        This function takes the passed XEvent and returns an OR'ed list of
        NETRootInfo properties that have changed.  The new information will be
-       read immediately by the class.
+       read immediately by the class. This overloaded version returns
+       only a single mask, and therefore cannot check state of all properties
+       like the other variant.
 
        @param event the event
 
        @return the properties
     **/
-    unsigned long event(XEvent *event) KDE_DEPRECATED;
+    unsigned long event(XEvent *event);
 
 
 protected:
@@ -1152,16 +1154,17 @@ public:
     void event( XEvent* event, unsigned long* properties, int properties_size );
 
     /**
-       @deprecated
        This function takes the pass XEvent and returns an OR'ed list of NETWinInfo
        properties that have changed.  The new information will be read
-       immediately by the class.
+       immediately by the class. This overloaded version returns
+       only a single mask, and therefore cannot check state of all properties
+       like the other variant.
 
        @param event the event
 
        @return the properties
     **/
-    unsigned long event(XEvent *event) KDE_DEPRECATED;
+    unsigned long event(XEvent *event);
 
     /**
        Sentinel value to indicate that the client wishes to be visible on
