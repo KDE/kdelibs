@@ -951,37 +951,6 @@ void KDirListerCache::slotResult( KIO::Job* j )
 
   if ( job->error() )
   {
-    bool archiveCase=false;
-
-    if ((job->error()==KIO::ERR_IS_FILE) && (jobUrl.isLocalFile())) {
-       		KURL u=jobUrl;
-                KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,false);
-                        if (ptr!=0) {
-                                if (ptr->is("inode/directory")) {
-                                        QString proto=ptr->property("X-KDE-LocalProtocol").toString();
-                                        if (!proto.isEmpty()) {
-                                                u.setProtocol(proto);
-						    for ( kdl = listers->first(); kdl; kdl = listers->next() )
-						    {
-						      uint numjobs=kdl->numJobs();
-						      kdl->jobDone(job);
-						      if ( kdl->numJobs() != numjobs )
-						      {
-							kdl->redirection(u);
-							kdl->redirection(jobUrl,u);
-							listDir( kdl, u, true,true); //kdl->_keep, kdl->_reload );
-						      }
-						    }
-
-						archiveCase=true;
-					}
-                                }
-                        }
-                
-        }
-
-    
-    if (!archiveCase)
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
       kdl->jobDone(job);
@@ -1216,6 +1185,7 @@ void KDirListerCache::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList&
 
 void KDirListerCache::slotUpdateResult( KIO::Job * j )
 {
+
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
@@ -1250,35 +1220,6 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   if ( job->error() )
   {
-    bool archiveCase=false;
-
-    if ((job->error()==KIO::ERR_IS_FILE) && (jobUrl.isLocalFile())) {
-       		KURL u=jobUrl;
-                KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,false);
-                        if (ptr!=0) {
-                                if (ptr->is("inode/directory")) {
-                                        QString proto=ptr->property("X-KDE-LocalProtocol").toString();
-                                        if (!proto.isEmpty()) {
-                                                u.setProtocol(proto);
-						    for ( kdl = listers->first(); kdl; kdl = listers->next() )
-						    {
-						      uint numjobs=kdl->numJobs();
-						      kdl->jobDone(job);
-						      if ( kdl->numJobs() != numjobs )
-						      {
-							kdl->redirection(u);
-							kdl->redirection(jobUrl,u);
-							listDir( kdl, u,true,true); //kdl->_url, kdl->_keep, kdl->_reload );
-						      }
-						    }
-						archiveCase=true;
-
-					}
-                                }
-                        }
-                
-    }
-    if (!archiveCase);
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
       kdl->jobDone(job);
@@ -1968,10 +1909,13 @@ bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters )
     return true;
 
   KMimeType::Ptr mimeptr = KMimeType::mimeType(mime);
+  //kdDebug(7004) << "doMimeFilter: investigating: "<<mimeptr->name()<<endl;
   QStringList::ConstIterator it = filters.begin();
   for ( ; it != filters.end(); ++it )
     if ( mimeptr->is(*it) )
       return true;
+    //else   kdDebug(7004) << "doMimeFilter: compared without result to  "<<*it<<endl;
+
 
   return false;
 }

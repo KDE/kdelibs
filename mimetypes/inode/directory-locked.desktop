@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Locked Folder
+Comment[ar]=مجلد مقفل
 Comment[az]=Qıfıllanmış Qovluq
 Comment[bg]=Заключена директория
 Comment[bn]=লক করা ফোল্ডার
@@ -58,4 +59,5 @@ Comment[zh_TW]=鎖住的資料夾
 Icon=folder_locked
 Type=MimeType
 MimeType=inode/directory-locked
+X-KDE-isAlso=inode/directory
 Patterns=

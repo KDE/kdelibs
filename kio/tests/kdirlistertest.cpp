@@ -41,14 +41,17 @@ KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
   QPushButton* startH = new QPushButton( "Start listing $HOME", this );
   QPushButton* startR= new QPushButton( "Start listing /", this );
   QPushButton* test = new QPushButton( "Many", this );
+  QPushButton* startT = new QPushButton( "tarfile", this );
 
   layout->addWidget( startH );
   layout->addWidget( startR );
+  layout->addWidget( startT );
   layout->addWidget( test );
   resize( layout->sizeHint() );
 
   connect( startR, SIGNAL( clicked() ), SLOT( startRoot() ) );
   connect( startH, SIGNAL( clicked() ), SLOT( startHome() ) );
+  connect( startT, SIGNAL( clicked() ), SLOT( startTar() ) );
   connect( test, SIGNAL( clicked() ), SLOT( test() ) );
 
   connect( lister, SIGNAL( started( const KURL & ) ),
@@ -105,6 +108,13 @@ void KDirListerTest::startHome()
 void KDirListerTest::startRoot()
 {
   KURL root( "file:/" );
+  lister->openURL( root, true, true );
+// lister->stop( root );
+}
+
+void KDirListerTest::startTar()
+{
+  KURL root( "file:/home/jowenn/aclocal_1.tgz" );
   lister->openURL( root, true, true );
 // lister->stop( root );
 }

@@ -108,6 +108,7 @@ public:
 public slots:
    void startRoot();
    void startHome();
+   void startTar();
    void test();
    void completed();
 

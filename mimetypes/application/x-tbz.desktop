@@ -71,3 +71,9 @@ MimeType=application/x-tbz
 Icon=tgz
 Type=MimeType
 Patterns=*.tar.bz;*.tar.bz2;
+
+X-KDE-IsAlso=inode/directory
+[Property::X-KDE-LocalProtocol]
+Type=QString
+Value=tar
+

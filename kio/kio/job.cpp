@@ -2001,12 +2001,11 @@ void ListJob::slotFinished()
 {
     if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error )
     {
-#if 0
 
 	if (m_error==KIO::ERR_IS_FILE) {
 		KURL u=m_url;
 		if (u.isLocalFile()) {
-			KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,false);
+			KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,true /*false*/);
 			if (ptr!=0) {
 				if (ptr->is("inode/directory")) {
 					QString proto=ptr->property("X-KDE-LocalProtocol").toString();
@@ -2029,7 +2028,6 @@ void ListJob::slotFinished()
 			}
 		}
 	}
-#endif
 
         // Return slave to the scheduler
         SimpleJob::slotFinished();

@@ -76,3 +76,8 @@ Comment[zu]=Umqulu we-Tar Elicindezelwe
 Icon=tgz
 Type=MimeType
 Patterns=*.tar.Z;
+X-KDE-IsAlso=inode/directory
+[Property::X-KDE-LocalProtocol]
+Type=QString
+Value=tar
+

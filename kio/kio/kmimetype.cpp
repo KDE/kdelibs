@@ -553,8 +553,10 @@ bool KMimeType::is( const QString& mimeTypeName ) const
   if ( name() == mimeTypeName )
       return true;
   QString st = parentMimeType();
+  //if (st.isEmpty()) kdDebug(7009)<<"Parent mimetype is empty"<<endl;
   while ( !st.isEmpty() )
   {
+      //kdDebug(7009)<<"Checking parent mime type: "<<st<<endl;
       KMimeType::Ptr ptr = KMimeType::mimeType( st );
       if (!ptr) return false; //error
       if ( ptr->name() == mimeTypeName )
