@@ -37,7 +37,7 @@ class KProcess;
  *
  * @brief Encapsulates a @ref KCModule for embedding.
  *
- * @description @ref KCModuleProxy is a wrapper for KCModule intended for cases where 
+ * @ref KCModuleProxy is a wrapper for KCModule intended for cases where 
  * modules are to be displayed. It ensures layout is consistent, handles 
  * root/administrator modules and in general takes care of the details 
  * needed for making a module available in an interface. A KCModuleProxy 
@@ -77,7 +77,7 @@ public:
 	 *
 	 * @param info The KCModuleInfo to construct the module from.
 	 *
-	 * @param withfallback If set to true and loading of the module fails, 
+	 * @param withFallback If set to true and loading of the module fails, 
 	 * a alternative will be tried, resulting in the module appearing in its 
 	 * own window, if at all.
 	 * The embedded module will be load()ed.
