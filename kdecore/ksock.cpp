@@ -50,7 +50,7 @@
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
-#include <cassert>
+#include <assert.h>
 
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>
