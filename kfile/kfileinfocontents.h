@@ -293,7 +293,14 @@ protected:
     int firstFile() const { return firstfile; }
 
     const KFileInfo *at( uint index ) const { return sortedList->at(index); }
-    
+
+    /**
+     * compares two items in the current context (sortMode and others) 
+     * returns -1, if i1 is before i2 and 1, if the other case is true
+     * in case, both are equal (in current context), the behaviour is undefined!
+     **/
+    int compareItems(const KFileInfo *fi1, const KFileInfo *fi2);
+
 private:
     int firstfile;
     bool useSingleClick;

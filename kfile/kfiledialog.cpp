@@ -97,6 +97,7 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 
     // Init flags
     finished = true;
+    debug("start %ld", time(0));
 
     filters = new QStrList( true );
     if (filter) {
@@ -482,6 +483,7 @@ QString KFileBaseDialog::dirPath()
 
 void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 {
+    debug("setDir %ld", time(0));
     filename_ = 0;
     QString pathstr = _pathstr;
     
@@ -591,6 +593,7 @@ QString KFileDialog::getSaveFileName(const char *dir, const char *filter,
 // Protected
 void KFileBaseDialog::pathChanged()
 {
+  debugC("changed %ld", time(0));
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
     
@@ -700,6 +703,7 @@ void KFileBaseDialog::slotDirEntry(KFileInfo *entry)
 
 void KFileBaseDialog::slotFinished()
 {
+    debug("finished %ld", time(0));
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = true;

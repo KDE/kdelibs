@@ -37,9 +37,10 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 {
     sortedList = new KFileInfoList;
     itemsList  = new KFileInfoList;
-    reversed   = false;
-    mySortMode = Increasing; // defaults
+    reversed   = false;        // defaults
+    mySortMode = Increasing;
     mySorting  = sorting; 
+    keepDirsFirst = true; 
 
     useSingleClick = use;
 
@@ -106,8 +107,8 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
 
 void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 {
-    QDir::SortSpec old_sort = static_cast<QDir::SortSpec>(this->sorting() & QDir::SortByMask);
-    QDir::SortSpec sortflags = static_cast<QDir::SortSpec>(this->sorting() & (~QDir::SortByMask));
+    QDir::SortSpec old_sort = static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
+    QDir::SortSpec sortflags = static_cast<QDir::SortSpec>(sorting() & (~QDir::SortByMask));
 
     if (mySortMode == Switching) {
 	if (new_sort == old_sort)
@@ -121,6 +122,11 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
    
     if (count() <= 1) // nothing to do in this case
 	return;
+
+    if ( mySorting & QDir::DirsFirst )
+        keepDirsFirst = true;
+    else
+        keepDirsFirst = false;
 
     setAutoUpdate(false);
     sortedList->clear();
@@ -170,6 +176,44 @@ void KFileInfoContents::connectFileSelected( QObject *receiver,
     sSelectFile->connect(receiver, member);
 }
 
+int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
+{
+   static int counter = 0;
+   counter++;
+   if (counter % 1000 == 0)
+     debugC("compare %d", counter);
+
+    bool bigger = true;
+
+    if (keepDirsFirst && (fi1->isDir() != fi2->isDir()))
+      bigger = fi1->isDir();
+    else {
+
+      QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
+      
+      if (fi1->isDir())
+	sort = QDir::Name;
+      
+      switch (sort) {
+      case QDir::Unsorted:
+	bigger = true;  // nothing
+	break;
+      case QDir::Size:
+	bigger = (fi1->size() > fi2->size());
+	break;
+      case QDir::Name:
+      default: 
+	bigger = (stricmp(fi1->fileName(),
+			  fi2->fileName()) > 0);
+      }
+    }
+    
+    if (reversed)
+      bigger = !bigger;
+    
+    return (bigger ? 1 : -1);
+}
+
 
 bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 {
@@ -179,49 +223,23 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
     {
 	bool found = false;
 	bool isDir = i->isDir();
-	bool keepDirsFirst;
-	QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
-
-	if (i->isDir())
-	    sort = QDir::Name;
-        
+	
         if (reversed)
-            isDir = !isDir;
+	    isDir = !isDir;
         
-        if ( mySorting & QDir::DirsFirst )
-            keepDirsFirst = true;
-        else
-            keepDirsFirst = false;
-
 	if ( keepDirsFirst ) {
             pos = isDir ? 0 : firstfile;
         } else {
             pos = 0;
         }
 	
-	
 	if (pos >= static_cast<int>(sortedList->count()))
 	    found = true;
             
-        if (keepDirsFirst && isDir && (pos == firstfile))
-            found = true;
-	
 	while (!found) {
 	    
-	    bool bigger;
-	    switch (sort) {
-	    case QDir::Size:
-		bigger = (i->size() > sortedList->at(pos)->size());
-		break;
-	    case QDir::Name:
-	    default: 
-		bigger = (stricmp(i->fileName(),
-				  sortedList->at(pos)->fileName()) > 0);
-	    }
-	    
-	    if (reversed)
-		bigger = !bigger;
-	    
+	    bool bigger = compareItems(i, sortedList->at(pos)) > 0;
+
 	    if (bigger)
 		pos++;
 	    else
