@@ -80,7 +80,7 @@ int MousePressEvent::offset()
 {
     int offset = 0;
     DOM::Node tempNode = 0;
-    m_innerNode.handle()->findSelectionNode( x(), y(), nodeAbsX(), nodeAbsY(), tempNode, offset );
+    innerNode().handle()->findSelectionNode( x(), y(), nodeAbsX(), nodeAbsY(), tempNode, offset );
     return offset;
 }
 
