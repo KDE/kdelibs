@@ -819,7 +819,11 @@ void RenderFlow::layoutInlineChildren()
 		    ++start;
 	    }
 	    end = findNextLineBreak(start);
-	    startEmbed = bidiReorderLine(status, start, end, startEmbed);
+	    if(end == start && start.obj->isText()  && start.current() == '\n') {
+		// empty line, somthing like <br><br>
+		m_height += start.obj->style()->font().pointSize();
+	    } else
+		startEmbed = bidiReorderLine(status, start, end, startEmbed);
 	    newLine();
 	    ++end;
 	}
