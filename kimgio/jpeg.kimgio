@@ -19,6 +19,6 @@ Name[sv]=Jpeg-bild
 Name[tr]=JPEG Resim Dosyası
 Read=true
 Write=true
-Suffices=jpeg,JPEG,jpg,JPG 
+Suffices=jpg,JPG,jpeg,JPEG 
 Mimetype=image/jpeg
 Library=
