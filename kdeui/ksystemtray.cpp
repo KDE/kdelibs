@@ -100,15 +100,7 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 
     switch ( e->button() ) {
     case LeftButton:
-	if ( parentWidget() ){
-
-	  if ( parentWidget()->isVisible() ) {
-	    parentWidget()->hide();
-	  } else {
-	    parentWidget()->show();
-	    KWin::setActiveWindow( parentWidget()->winId() );
-	  }
-	}
+        toggleMinimizeRestore();
 	break;
     case MidButton:
 	// fall through
