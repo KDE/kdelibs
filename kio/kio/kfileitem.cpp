@@ -150,6 +150,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_url( _url ),
   m_strName( _url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
+  m_pMimeType( 0 ),
   m_fileMode ( _mode ),
   m_permissions( _permissions ),
   m_bMarked( false ),
