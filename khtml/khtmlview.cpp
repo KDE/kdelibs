@@ -727,15 +727,10 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
-    qDebug("clickCount: %d, mL: %d",
-           d->clickCount, QPoint(d->clickX-xm,d->clickY-ym).manhattanLength());
-
     if (d->clickCount > 0 &&
-        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
-        qDebug( "dispatching CLICK EVENT" );
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	dispatchMouseEvent(EventImpl::CLICK_EVENT,mev.innerNode.handle(),true,
                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseRelease);
-    }
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
