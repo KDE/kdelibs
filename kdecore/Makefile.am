@@ -11,21 +11,22 @@ EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
 SUFFIXES = .moc
 CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
-COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
-	kprocess.h kprocctrl.h
+	kprocess.h kprocctrl.h klocale.h
+noinst_HEADERS = libintlP.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
-	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp
+	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
+	klocale.cpp libintl.c
 
 libkdecore_la_LIBADD = @MISCOBJS@
 libkdecore_la_DEPENDENCIES = @MISCOBJS@ 
 libkdecore_la_LDFLAGS = -version-info 0:10 -rpath $(libdir) 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
-	kprocctrl.h
+	kprocctrl.moc
 
 ksock.cpp: ksock.moc
 drag.cpp: drag.moc

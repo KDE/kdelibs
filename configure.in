@@ -25,8 +25,6 @@ AC_PROG_CPP
 test "$CCC" = "" && CCC="xlc DCC"
 AC_PROG_CXX
 AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
 dnl libtool is only for C, so I must force him
 dnl to find the correct flags for C++
 ac_save_cc=$CC
@@ -37,6 +35,11 @@ CC=$ac_save_cc
 dnl find out some variables (not supported yet)
 AC_AIX
 AC_MINIX
+
+dnl for NLS support. Call them in this order!
+dnl WITH_NLS is for the po files, GNU_GETTEXT for the sources
+AM_KDE_WITH_NLS
+AM_KDE_GNU_GETTEXT  
 
 dnl Checks for header files.
 AC_LANG_CPLUSPLUS
