@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Gzip compressed DVI File
+Comment[de]=Mit gzip komprimierte DVI-Datei
+Hidden=false
+Icon=tgz
+MimeType=application/x-gzdvi
+Patterns=*.dvi.gz
+Type=MimeType
+X-KDE-AutoEmbed=true
+X-KDE-IsAlso=application/x-gzip

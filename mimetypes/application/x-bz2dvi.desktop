@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Bzip2 compressed DVI File
+Comment[de]=Mit Bzip2 komprimierte DVI-Datei
+Hidden=false
+Icon=tgz
+MimeType=application/x-bz2dvi
+Patterns=*.dvi.bz2
+Type=MimeType
+X-KDE-AutoEmbed=true
+X-KDE-IsAlso=application/x-bzip2

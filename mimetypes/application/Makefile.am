@@ -1,5 +1,6 @@
 
-mimetypeapplicationdata_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
+mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
+	x-tex-gf.desktop x-gzip.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
 	x-core.desktop x-java.desktop x-java-applet.desktop \
