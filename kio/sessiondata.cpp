@@ -255,7 +255,7 @@ void KIO::SessionData::reset()
     delete cfg;
 
     // Get language settings...
-    QStringList languageList = KGlobal::locale()->languageList();
+    QStringList languageList = KGlobal::locale()->languagesTwoAlpha();
     QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
     if ( it != languageList.end() )
     {
