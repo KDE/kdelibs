@@ -9,10 +9,14 @@
     <Separator/>
     <Action name="file_save"/>
     <Action name="file_save_as"/>
+    <Action name="file_save_all"/>
     <MergeLocal name="save_merge"/>
     <Action name="file_revert"/>
+    <Action name="file_revert_all"/>
+    <MergeLocal name="revert_merge"/>
     <Separator/>
     <Action name="file_close"/>
+    <Action name="file_close_all"/>
     <MergeLocal name="close_merge"/>
     <Separator/>
     <Action name="file_print"/>
