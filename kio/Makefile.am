@@ -116,7 +116,7 @@ kioinclude_HEADERS = connection.h \
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	kimageiofactory.h \
+	kimageiofactory.h kdirwatch_dnotify.h \
 	kprotocolinfofactory.h # old stuff
 
 kde_mime_DATA = magic

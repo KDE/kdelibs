@@ -81,22 +81,59 @@ public:
 #endif
 #ifdef HAVE_DNOTIFY
   bool supports_dnotify;
-  bool sighandler_installed;
 #endif
 };
 
-
 #ifdef HAVE_DNOTIFY
-static int dnotify_pipe[2] = {0,0};
-static QSocketNotifier *dnotify_sn = 0;
+#include <kdirwatch_dnotify.h>
+#include <kdirwatch_dnotify.moc>
+
+static void dnotify_handler(int, siginfo_t *si, void *);
+
+KDirWatchNotifyHandler::KDirWatchNotifyHandler()
+{
+   pipe(mPipe);
+   mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
+   connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
+   connect(&mTimer, SIGNAL(timeout()), this, SIGNAL(activated()));
+   struct sigaction act;
+   act.sa_sigaction = dnotify_handler;
+   sigemptyset(&act.sa_mask);
+   act.sa_flags = SA_SIGINFO;
+#ifdef SA_RESTART
+   act.sa_flags |= SA_RESTART;
+#endif
+   sigaction(SIGRTMIN, &act, NULL);
+}
+
+void KDirWatchNotifyHandler::slotActivated()
+{
+   char dummy_buf[100];
+   read(mPipe[0], &dummy_buf, 100);
+   
+   if (!mTimer.isActive())
+      mTimer.start(200, true);
+}
+
+static KDirWatchNotifyHandler *kdirwatch_dnotify_handler = 0;
+
+static void dnotify_handler(int, siginfo_t *si, void *)
+{
+  KDirWatchPrivate::Entry* e = kdirwatch_dnotify_handler->fd_Entry.find(si->si_fd);
+
+  if(!e || e->dn_fd != si->si_fd) {
+    qDebug("fatal error in KDirWatch");
+  } else
+    e->dn_dirty = true;
+
+  char c;
+  write(kdirwatch_dnotify_handler->mPipe[1], &c, 1);
+}
 #endif
 
 #define NO_NOTIFY (time_t) 0
 
 KDirWatch* KDirWatch::s_pSelf = 0L;
-#ifdef HAVE_DNOTIFY
-static QIntDict<KDirWatchPrivate::Entry>* fd_Entry = 0L;
-#endif
 
  // CHANGES:
  // Mar 30, 2001 - Native support for Linux dir change notification.
@@ -146,15 +183,14 @@ KDirWatch::KDirWatch (int _freq)
 #else
   d->supports_dnotify = true; // not guilty until proven guilty
 #endif
-  if (d->supports_dnotify && (dnotify_sn == 0))
+  if (d->supports_dnotify)
   {
-     pipe(dnotify_pipe);
-     dnotify_sn = new QSocketNotifier( dnotify_pipe[0], QSocketNotifier::Read, this);
+     if (kdirwatch_dnotify_handler == 0)
+         kdirwatch_dnotify_handler = new KDirWatchNotifyHandler();
+
+     connect( kdirwatch_dnotify_handler, SIGNAL(activated()),
+              this, SLOT(slotRescan()) );
   }
-  connect( dnotify_sn, SIGNAL(activated(int)),
- 	     this, SLOT(slotRescan()) );
-  d->sighandler_installed = false;
-  if(!fd_Entry) fd_Entry = new QIntDict<KDirWatchPrivate::Entry>(31);
 #endif
 }
 
@@ -205,18 +241,6 @@ static void propagate_dirty(KDirWatchPrivate::Entry* e)
   }
 }
 
-static void dnotify_handler(int, siginfo_t *si, void *)
-{
-  KDirWatchPrivate::Entry* e = fd_Entry->find(si->si_fd);
-
-  if(!e || e->dn_fd != si->si_fd) {
-    qDebug("fatal error in KDirWatch");
-  } else
-    e->dn_dirty = true;
-
-  char c;
-  write(dnotify_pipe[1], &c, 1);
-}
 #endif
 
 void KDirWatch::addDir( const QString& _path )
@@ -294,17 +318,6 @@ void KDirWatch::addDir( const QString& _path, void *_entry )
 
 #ifdef HAVE_DNOTIFY
   if(d->supports_dnotify) {
-    if(!d->sighandler_installed) {
-      struct sigaction act;
-      act.sa_sigaction = dnotify_handler;
-      sigemptyset(&act.sa_mask);
-      act.sa_flags = SA_SIGINFO;
-#ifdef SA_RESTART
-      act.sa_flags |= SA_RESTART;
-#endif
-      sigaction(SIGRTMIN, &act, NULL);
-      d->sighandler_installed = true;
-    }
 
     KDirWatchPrivate::Entry* e = &d->m_mapDirs[path];
     e->dn_dirty = false;
@@ -322,7 +335,7 @@ void KDirWatch::addDir( const QString& _path, void *_entry )
        }
        else
        {
-          fd_Entry->replace(fd, e);
+          kdirwatch_dnotify_handler->fd_Entry.replace(fd, e);
           e->dn_fd = fd;
        }
     }
@@ -406,7 +419,7 @@ void KDirWatch::removeDir( const QString& _path, void *_entry )
   if ((*it).dn_fd)
   {
     ::close((*it).dn_fd);
-    fd_Entry->remove((*it).dn_fd);
+    kdirwatch_dnotify_handler->fd_Entry.remove((*it).dn_fd);
     (*it).dn_fd = 0;
   }
   if (path != "/")
@@ -538,11 +551,8 @@ void KDirWatch::slotRescan()
   QStringList del;
 
   KDirWatchPrivate::EntryMap::Iterator it;
+
 #ifdef HAVE_DNOTIFY
-
-  char dummy_buf[100];
-  read(dnotify_pipe[0], &dummy_buf, 100);
-
   it = d->m_mapDirs.begin();
   for( ; it != d->m_mapDirs.end(); ++it )
   {
@@ -559,6 +569,7 @@ void KDirWatch::slotRescan()
     // we know nothing has changed, no need to stat
     if(!(*it).dn_dirty)
       continue;
+    (*it).dn_dirty = false;
 #endif
 
     struct stat statbuff;
@@ -577,7 +588,7 @@ void KDirWatch::slotRescan()
          if ((*it).dn_fd)
          {
            ::close((*it).dn_fd);
-           fd_Entry->remove((*it).dn_fd);
+           kdirwatch_dnotify_handler->fd_Entry.remove((*it).dn_fd);
            (*it).dn_fd = 0;
          }
 #endif
@@ -596,9 +607,6 @@ void KDirWatch::slotRescan()
           emit dirty( path );
       }
     }
-#ifdef HAVE_DNOTIFY
-    (*it).dn_dirty = false;
-#endif
   }
 
   QStringList::Iterator it2;
