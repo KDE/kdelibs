@@ -492,6 +492,21 @@ public:
 	 * @see setPreviewOnly()
 	 */
 	bool previewOnly() const;
+	/**
+	 * Set the resolution of the current KPrinter object. The resolution is given in DPI. This
+	 * resolution mainly affects the accuracy for object positionning on the paint device, and
+	 * does not influence the real resolution that will be used by the printer (this should be
+	 * set in the driver settings). The resolution is usually defined in the constructor.
+	 * @param dpi the resolution in DPI
+	 * @see KPrinter(), resolution()
+	 */
+	void setResolution(int dpi);
+	/**
+	 * Resturns the resolution of the current KPrinter object. The resolution is given in DPI.
+	 * @returns resolution in DPI
+	 * @see setResolution(), KPrinter()
+	 */
+	int resolution() const;
 
 	/**
 	 * For internal use only.

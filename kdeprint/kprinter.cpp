@@ -257,6 +257,8 @@ void KPrinter::translateQtOptions()
 	d->m_wrapper->setOutputToFile(true);
 	d->m_wrapper->setOutputFileName(d->m_tmpbuffer);
 	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
+	//if (!option("kde-margin-top").isEmpty() && !option("kde-margin-left").isEmpty())
+	//	d->m_wrapper->setMargins(QSize(option("kde-margin-left").toInt(), option("kde-margin-top").toInt()));
 	// for special printers, copies are handled by Qt
 	if (option("kde-isspecial") == "1")
 		d->m_wrapper->setNumCopies(numCopies());
@@ -852,3 +854,9 @@ void KPrinter::setDocFileName(const QString& s)
 
 QString KPrinter::docFileName() const
 { return d->m_docfilename; }
+
+void KPrinter::setResolution(int dpi)
+{ d->m_wrapper->setResolution(dpi); }
+
+int KPrinter::resolution() const
+{ return d->m_wrapper->resolution(); }
