@@ -594,3 +594,15 @@ bool KProtocolInfo::canCopyToFile( const KURL &url )
 
   return prot->m_canCopyToFile;
 }
+
+QString KProtocolInfo::defaultMimetype( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    return QString::null;
+  }
+
+  return prot->m_defaultMimetype;
+}

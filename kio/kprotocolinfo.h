@@ -103,6 +103,10 @@ public:
   static bool supportsMoving( const KURL &url );
   static bool canCopyFromFile( const KURL &url );
   static bool canCopyToFile( const KURL &url );
+  /**
+   * @returns default mimetype for this URL based on the protocol
+   */
+  static QString defaultMimetype( const KURL& url );
 
   ////////////////////////// DEPRECATED /////////////////////////
   // The following methods are deprecated:
@@ -128,6 +132,7 @@ public:
   static bool supportsMoving( const QString& protocol );
   static bool canCopyFromFile( const QString& protocol );
   static bool canCopyToFile( const QString& protocol );
+  static QString defaultMimetype( const QString& protocol);
   //////////////////////// END DEPRECATED ///////////////////////
 
   /**
@@ -135,10 +140,6 @@ public:
    */
   static QString icon( const QString& protocol );
 
-  /**
-   * @returns default mimetype for this protocol
-   */
-  static QString defaultMimetype( const QString& protocol );
 
   static bool determineMimetypeFromExtension( const QString &protocol );
 

@@ -223,7 +223,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       // which mimetype this means. For HTTP we set unknown now, because
       // of redirections (e.g. freshmeat downloads).
       // Assume inode/directory otherwise.
-      QString def = KProtocolInfo::defaultMimetype( _url.protocol() );
+      QString def = KProtocolInfo::defaultMimetype( _url );
       return mimeType( def.isEmpty() ? QString::fromLatin1("inode/directory") : def );
     }
   }
