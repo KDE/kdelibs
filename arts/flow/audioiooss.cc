@@ -68,6 +68,7 @@ protected:
 	int requestedFragmentCount;
 
 	std::string findDefaultDevice();
+	int ossBits(int format);
 
 public:
 	AudioIOOSS();
@@ -104,6 +105,15 @@ string AudioIOOSS::findDefaultDevice()
 			return device[i];
 
 	return device[0];
+}
+
+int AudioIOOSS::ossBits(int format)
+{
+	arts_return_val_if_fail (format == AFMT_U8
+			              || format == AFMT_S16_LE
+						  || format == AFMT_S16_BE, 16);
+
+	return (format == AFMT_U8)?8:16;
 }
 
 AudioIOOSS::AudioIOOSS()
@@ -180,7 +190,7 @@ bool AudioIOOSS::open()
 		return false;
 	}  
 
-	if (_format && (gotFormat != requestedFormat))
+	if (_format && (ossBits(gotFormat) != ossBits(requestedFormat)))
 	{  
 		char details[80];
 		sprintf(details," (_format = %d, asked driver to give %d, got %d)",
