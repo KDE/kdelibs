@@ -375,8 +375,6 @@ protected:
   ProgressItem* findItem( int id );
 
   virtual void resizeEvent(QResizeEvent* e);
-  virtual void showEvent(QShowEvent*);
-  virtual void hideEvent(QHideEvent*);
   virtual bool queryClose();
 
   void setItemVisible( ProgressItem * item, bool visible );

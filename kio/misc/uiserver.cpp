@@ -483,27 +483,42 @@ ListProgress::~ListProgress() {
 
 void ListProgress::applySettings()
 {
-   //remove all but the first column
-   for (int i=columns()-1; i>=0; i--)
-      removeColumn(i);
+  int iEnabledCols=0;
 
-   for (int i=0; i<TB_MAX; i++)
-   {
-//      kdDebug()<<"createColumn() i: "<<i<<" width: "<<m_lpcc[i].width<<endl;
-      if (m_lpcc[i].enabled)
-      {
-         m_lpcc[i].index=addColumn(m_lpcc[i].title, m_fixedColumnWidths?m_lpcc[i].width:-1);
-         setColumnWidth(i, m_lpcc[i].width); //yes, this is required here, alexxx
-         if (m_fixedColumnWidths)
-            setColumnWidthMode(i, Manual);
-      }
-//      else
-//         m_lpcc[i].index=-1;
-   }
-  if (!m_showHeader)
-     header()->hide();
+  // Update listcolumns to show
+  for (int i=0; i<TB_MAX; i++)
+  {
+    if ( !m_lpcc[i].enabled )
+      continue;
+
+    iEnabledCols++;
+    
+    // Add new or reuse existing column
+    if ( iEnabledCols > columns() )
+      m_lpcc[i].index=addColumn(m_lpcc[i].title, m_fixedColumnWidths?m_lpcc[i].width:-1);
+    else
+    {
+      m_lpcc[i].index = iEnabledCols - 1;
+      setColumnText(m_lpcc[i].index, m_lpcc[i].title);
+    }
+    
+    setColumnWidth(m_lpcc[i].index, m_lpcc[i].width); //yes, this is required here, alexxx
+    if (m_fixedColumnWidths)
+        setColumnWidthMode(m_lpcc[i].index, Manual);
+  }
+
+  // Remove unused columns. However we must keep one column left
+  // Otherwise the listview will be emptied
+  while( iEnabledCols < columns() && columns() > 1 )
+     removeColumn( columns() - 1 );
+
+  if ( columns() == 0 )
+    addColumn( "" );
+
+  if ( !m_showHeader || iEnabledCols == 0 )
+    header()->hide();
   else
-     header()->show();
+    header()->show();
 }
 
 void ListProgress::readSettings() {
@@ -711,8 +726,9 @@ void UIServer::slotApplyConfig()
    for (int i=0; i<ListProgress::TB_MAX; i++)
       listProgress->m_lpcc[i].enabled=m_configDialog->isChecked(i);
 
+
    applySettings();
-   listProgress->applySettings();
+   listProgress->applySettings(); 
    writeSettings();
    listProgress->writeSettings();
 }
@@ -1186,7 +1202,7 @@ KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringLis
    rc.ok = false;
    if (!certList.isEmpty()) {
       KSSLCertDlg *kcd = new KSSLCertDlg(0L, 0L, true);
-      kcd->setup(certList);
+      kcd->setupDialog(certList);
       kcd->setHost(host);
       kdDebug(7024) << "Showing SSL certificate dialog" << endl;
       kcd->exec();
@@ -1308,20 +1324,6 @@ void UIServer::resizeEvent(QResizeEvent* e)
 {
    KMainWindow::resizeEvent(e);
    writeSettings();
-}
-
-void UIServer::showEvent(QShowEvent* e)
-{
-  KMainWindow::showEvent(e);
-  m_bShowList=true;
-  writeSettings();
-}
-
-void UIServer::hideEvent(QHideEvent* e)
-{
-  KMainWindow::hideEvent(e);
-  m_bShowList=false;
-  writeSettings();
 }
 
 bool UIServer::queryClose()
