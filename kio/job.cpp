@@ -1956,12 +1956,15 @@ void DeleteJob::slotResult( Job *job )
             UDSEntry entry = ((StatJob*)job)->statResult();
             bool bDir = false;
             bool bLink = false;
+            unsigned long size = 0L;
             UDSEntry::ConstIterator it2 = entry.begin();
             for( ; it2 != entry.end(); it2++ ) {
                 if ( ((*it2).m_uds) == UDS_FILE_TYPE )
                     bDir = S_ISDIR( (mode_t)(*it2).m_long );
                 else if ( ((*it2).m_uds) == UDS_LINK_DEST )
                     bLink = !((*it2).m_str.isEmpty());
+                else if ( ((*it2).m_uds) == UDS_SIZE )
+                    size = (*it2).m_long;
             }
 
             KURL url = ((SimpleJob*)job)->url();
@@ -1992,20 +1995,26 @@ void DeleteJob::slotResult( Job *job )
                 kdDebug(7007) << " Target is a file (or a symlink) " << endl;
                 // Remove it
 
+                emit deleting( this, url );
+                m_totalSize = size;
+                emit totalSize( this, size );
                 state = STATE_DELETING_FILES;
+                SimpleJob *newjob;
                 if ( m_shred && url.isLocalFile() && !bLink )
                 {
                     // KShred your KTie
                     KIO_ARGS << int(3) << url.path();
-                    SimpleJob *job = KIO::special(KURL("file:/"), packedArgs, false);
-                    addSubjob(job);
+                    newjob = KIO::special(KURL("file:/"), packedArgs, false);
+                    addSubjob(newjob);
                 }
                 else
                 {
                    // Normal deletion
-                   SimpleJob *job = KIO::file_delete(url, false/*no GUI*/);
-                   addSubjob( job );
+                   newjob = KIO::file_delete(url, false/*no GUI*/);
+                   addSubjob( newjob );
                 }
+                connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                         this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
             }
         }
         break;
@@ -2017,7 +2026,7 @@ void DeleteJob::slotResult( Job *job )
             }
             subjobs.remove( job );
             assert( subjobs.isEmpty() );
-            debug("totalSize: %ld files: %d dirs: %d", m_totalSize, files.count(), dirs.count());
+            kdDebug(7007) << "totalSize: " << m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
 
 	    // emit all signals for total numbers
 	    emit totalSize( this, m_totalSize );
