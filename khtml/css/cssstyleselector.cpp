@@ -335,13 +335,14 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
     {
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
-        if(sel->value == ":first-child")
-        {
+        if(sel->value == ":first-child") {
             if(e->parentNode()->firstChild() != e)
                 return false;
-        }
-        else
-            return false;
+        } else if(sel->value == ":link") {
+	    if( e->getAttribute(ATTR_HREF).isNull() )
+		return false;
+	} else 
+	    return false;
     }
     // ### add the rest of the checks...
     return true;
