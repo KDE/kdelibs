@@ -1694,7 +1694,7 @@ int KEdit::doSave()
 
   int result = 0;
 
-    if(filename == "Untitled") {
+    if(filename == i18n("Untitled")) {
       result = saveAs();
 
       if(result == KEDIT_OK)
