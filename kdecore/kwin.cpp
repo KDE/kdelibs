@@ -316,7 +316,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
     	QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(
 													className.lower(), KIcon::Small, iconWidth,
 													KIcon::DefaultState, 0, true );
-			if( scale )
+			if( scale && !pm.isNull() )
 				result.convertFromImage(
 													pm.convertToImage().smoothScale( width, height ) );
 			else
