@@ -1,7 +1,7 @@
 Begin4
 Title:          kdelibs
-Version:        3.0.5
-Entered-date:   2002-07-01
+Version:        3.0.7
+Entered-date:   2002-08-05
 Description:    libraries for the K Desktop Environment (KDE)
 Keywords:       KDE X11 desktop Qt 
 Author:         submit@bugs.kde.org (KDE Bugtracking System)
