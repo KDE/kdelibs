@@ -76,7 +76,11 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/vslider.png\
 	 pics/pushbutton-hov-tl.png pics/pushbutton-hov-tc.png pics/pushbutton-hov-tr.png\
 	 pics/pushbutton-hov-cl.png pics/pushbutton-hov-cc.png pics/pushbutton-hov-cr.png\
-	 pics/pushbutton-hov-bl.png pics/pushbutton-hov-bc.png pics/pushbutton-hov-br.png
+	 pics/pushbutton-hov-bl.png pics/pushbutton-hov-bc.png pics/pushbutton-hov-br.png\
+	 pics/title-close-tiny.png pics/title-close.png pics/title-iconify.png\
+	 pics/title-maximize.png pics/title-restore.png pics/titlebutton-pressed.png\
+	 pics/titlebutton.png
+
 
 pixmaps.keramik keramikrc.h: genembed
 	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 

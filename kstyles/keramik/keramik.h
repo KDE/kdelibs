@@ -122,6 +122,19 @@ public:
 protected:
 	mutable bool maskMode; //Ugly round trip flag to permit masking with little code;
 	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
+
+	enum TitleBarMode
+	{
+		None = 0,
+		Regular,
+		Maximized
+	};
+	
+	mutable TitleBarMode titleBarMode; //Set when passing back CC_TilteBar modes to handle
+	//PE_ButtonTool properly for them, as well as when handling CC_ToolButton from
+	//The maximized window controls.
+
+	
 	bool eventFilter( QObject* object, QEvent* event );
 	
 	Keramik::TilePainter::PaintMode pmode() const

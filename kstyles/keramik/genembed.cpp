@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <math.h>
 
-//Force-touch-embedded-revision: 1
+//Force-touch-embedded-revision: 2
 
 #include "keramikimage.h"
 

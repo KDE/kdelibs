@@ -212,17 +212,27 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 }
 
 
-// XXX what exactly does this do ?
-// Fix Qt's wacky image alignment
 QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 									const QWidget* widget,
 									const QStyleOption& opt) const
 {
     switch (stylepixmap) {
 		case SP_TitleBarMinButton:
-			return QPixmap((const char **)hc_minimize_xpm);
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_iconify, 
+				Qt::black, Qt::black, false, false);
+			//return qpixmap_from_bits( iconify_bits, "title-iconify.png" );
+		case SP_TitleBarMaxButton:
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_maximize, 
+				Qt::black, Qt::black, false, false);
 		case SP_TitleBarCloseButton:
-			return QPixmap((const char **)hc_close_xpm);
+			if (widget && widget->inherits("KDockWidgetHeader"))
+				return Keramik::PixmapLoader::the().pixmap(keramik_title_close_tiny, 
+				Qt::black, Qt::black, false, false);
+			else	return Keramik::PixmapLoader::the().pixmap(keramik_title_close, 
+				Qt::black, Qt::black, false, false);
+		case SP_TitleBarNormalButton:
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_restore, 
+				Qt::black, Qt::black, false, false);
 		default:
 			break;
 	}
@@ -235,7 +245,7 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 
 KeramikStyle::KeramikStyle()
 	:KStyle( AllowMenuTransparency | FilledFrameWorkaround /*| DisableMenuBlend*/, ThreeButtonScrollBar ), maskMode(false),
-		toolbarBlendWidget(0), kickerMode(false)
+		toolbarBlendWidget(0), titleBarMode(None), kickerMode(false)
 {
 	hoverWidget = 0;
 }
@@ -276,18 +286,7 @@ void KeramikStyle::polish(QWidget* widget)
 		widget->installEventFilter(this);
 		//widget->setBackgroundMode( NoBackground );
  	}
-	else if (kickerMode)
-	{
-		/*
-		if (QCString(widget->className()) == ("FittsLawFrame") )
-		{
-			QFrame* f = static_cast<QFrame*>(widget);
-			f->setFrameStyle(QFrame::Panel | QFrame::Raised);
-			f->setLineWidth(1);
-			f->setMidLineWidth(1);
-
-		}*/
-	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget ) ) {
+	else if ( !qstrcmp( widget->name(), kdeToolbarWidget ) ) {
 		widget->setBackgroundMode( NoBackground );
 		widget->installEventFilter(this);
 	}
@@ -318,17 +317,8 @@ void KeramikStyle::unPolish(QWidget* widget)
 		widget->clearMask();
 	} else if (widget->inherits("QToolBarExtensionWidget")) {
 		widget->removeEventFilter(this);
- 	}
-	else if (kickerMode)
-	{
-/*		if (QCString(widget->className()) == ("FittsLawFrame"))
-		{
-			QFrame* f = static_cast<QFrame*>(widget);
-			f->setFrameStyle(QFrame::Panel | QFrame::Raised);
-			f->setLineWidth(2);
-			f->setMidLineWidth(1);
-		}*/
-	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget ) ) {
+	}
+	else if ( !qstrcmp( widget->name(), kdeToolbarWidget ) ) {
 		widget->setBackgroundMode( PaletteBackground );
 		widget->removeEventFilter(this);
 	}
@@ -380,6 +370,33 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ButtonTool:
 		{
 //			bool sunken = on || down;
+
+			if (titleBarMode)
+			{
+				QRect nr;
+				if (titleBarMode == Maximized)
+				{
+					//### What should we draw at sides?
+					//nr = QRect(r.x(), r.y(),
+					//	QMIN(r.width(), r.height()), r.width() ) );
+					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );;
+						
+				}
+				else
+				{
+					int offX = (r.width() - 15)/2;
+					int offY = (r.height() - 15)/2;
+				
+					if (flags & Style_Down)
+						offY += 1;
+						
+					nr = QRect(r.x()+offX, r.y()+offY, 15, 15);
+				}
+				
+				Keramik::ScaledPainter(flags & Style_Down ? keramik_titlebutton_pressed : keramik_titlebutton, 
+										Keramik::ScaledPainter::Both).draw( p, nr, cg.button(), cg.background());
+				return;
+			}
 
 			int x2 = x+w-1;
 			int y2 = y+h-1;
@@ -1142,7 +1159,21 @@ void KeramikStyle::drawControl( ControlElement element,
 			QRect nr = r;
 
 			if (!onToolbar)
-				nr.setWidth(r.width()-2); //Account for shadow
+			{
+				if (widget->parentWidget() &&
+				 !qstrcmp(widget->parentWidget()->name(),"qt_maxcontrols" ) )
+				{
+					//Make sure we don't cut into the endline
+					if (!qstrcmp(widget->name(), "close"))
+					{
+						nr.addCoords(0,0,-1,0);
+						p->setPen(cg.dark());
+						p->drawLine(r.x() + r.width() - 1, r.y(),
+								r.x() + r.width() - 1, r.y() + r.height() - 1 );
+					}
+				}
+				else nr.setWidth(r.width()-2); //Account for shadow
+			}
 
 			KStyle::drawControl(element, p, widget, nr, cg, flags, opt);
 			break;
@@ -1713,6 +1744,17 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 			const QToolButton *toolbutton = (const QToolButton *) widget;
 			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
 			bool onExtender = !onToolbar && widget->parentWidget() && widget->parentWidget()->inherits( "QToolBarExtensionWidget" );
+			
+			bool onControlButtons = false;
+			if (!onToolbar && !onExtender && widget->parentWidget() &&
+				 !qstrcmp(widget->parentWidget()->name(),"qt_maxcontrols" ) )
+			{
+				onControlButtons = true;
+				titleBarMode = Maximized;
+			}
+				
+			
+				
 
 			QRect button, menuarea;
 			button   = querySubControlMetrics(control, widget, SC_ToolButton, opt);
@@ -1732,8 +1774,8 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 			if (controls & SC_ToolButton)
 			{
 				// If we're pressed, on, or raised...
-				if (bflags & (Style_Down | Style_On | Style_Raised))
-					drawPrimitive(onToolbar ? PE_ButtonTool : PE_ButtonCommand, p, button, cg,
+				if (bflags & (Style_Down | Style_On | Style_Raised) || onControlButtons)
+					drawPrimitive(onToolbar || onControlButtons ? PE_ButtonTool : PE_ButtonCommand, p, button, cg,
 					 bflags, opt);
 
 				// Check whether to draw a background pixmap
@@ -1778,13 +1820,19 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				fr.addCoords(3, 3, -3, -3);
 				drawPrimitive(PE_FocusRect, p, fr, cg);
 			}
+			
+			titleBarMode = None;
 
 			break;
 		}
-
+		
+		case CC_TitleBar:
+			titleBarMode = Regular; //Handle buttons on titlebar different from toolbuttons
 		default:
 			KStyle::drawComplexControl( control, p, widget,
 						r, cg, flags, controls, active, opt );
+						
+			titleBarMode = None;
 	}
 }
 
@@ -1858,6 +1906,9 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 
 		case PM_TabBarTabVSpace:
 			return 14;
+			
+		case PM_TitleBarHeight:
+			return 22;
 
 		default:
 			return KStyle::pixelMetric(m, widget);
