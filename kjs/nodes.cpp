@@ -2213,6 +2213,10 @@ Completion ForInNode::execute(ExecState *exec)
   }
 
   Value v = expr->evaluate(exec);
+  // for Null and Undefined, we want to make sure not to go through
+  // the loop at all, because their object wrappers will have a
+  // property list but will throw an exception if you attempt to
+  // access any property.
   if (v.isA(NullType) || v.isA(UndefinedType))
     return Completion(Normal, retval);
 
