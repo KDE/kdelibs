@@ -990,9 +990,9 @@ WebStyle::drawKBarHandle
 )
 {
   p->save();
-  p->setPen(g.dark());
-  p->setBrush(g.mid());
-  p->drawRect(x, y, w, h);
+  p->setPen(g.mid());
+  p->setBrush(g.background());
+  p->drawRect(x + 1, y + 1, w - 2, h - 2);
   p->restore();
 }
 
@@ -1078,7 +1078,7 @@ WebStyle::drawKToolBarButton
     }
     else
     {
-      borderColour  = g.mid();
+      borderColour  = g.background();
       fillColour    = g.background();
       textColour    = g.text();
     }
