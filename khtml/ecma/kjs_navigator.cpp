@@ -77,6 +77,8 @@ KJSO Navigator::get(const UString &p) const
     return String(userAgent.mid(userAgent.find('/') + 1));
   } else if (p == "userAgent") {
     return String(userAgent);
+  } else if (p == "platform") {
+    return String("Unix");
   } else if (p == "plugins")
     return KJSO(new Plugins());
   else
