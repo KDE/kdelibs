@@ -57,6 +57,7 @@ artsplay_SOURCES = artsplay.cc
 
 artswrapper_SOURCES = artswrapper.c
 artswrapper_INCLUDES = -I$(top_builddir) -DEXECUTE=\"$(artsdpath)\"
+artswrapper_LDADD = $(LIBPOSIX4)
 
 artsshell_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsshell_SOURCES = artsshell.cc
