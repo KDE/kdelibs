@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
+   Copyright (C) 2000 Falk Brettschneider <gigafalk@yahoo.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -15,6 +16,20 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
+/*
+   activities:
+   -----------
+   03/2000                   : class documentation added by Falk Brettschneider <gigafalk@yahoo.com>
+   10/1999 - 03/2000         : programmed by Max Judin <novaprint@mtu-net.ru>
+   
+   C++ classes in this file:
+   -------------------------
+   - KDockTabBar        - minor class (but the actual tab bar)
+   - KDockTabBarPainter - minor helper class
+   - KDockTabCtl        - helper class for a tab-bar mode of centered docked KDockWidgets
+*/
+
 #ifndef KDOCKTABCTL_H
 #define KDOCKTABCTL_H
 
@@ -31,9 +46,12 @@ struct KDockTabCtl_Private;
 struct KDockTabBar_Private;
 
 /**
- * The actual tab bar. This class is covered by its manager, KDockTabCtl.
+ * The actual tab bar. This class is covered by its manager, @ref KDockTabCtl.
  * It provides some set/get methods and managment
  * methods like insert, remove, activate for tab widgets.
+ *
+ * @author Max Judin (documentation: Falk Brettschneider).
+ * @version $Id$
  */
 class KDockTabBar : public QWidget
 {
@@ -45,6 +63,7 @@ public:
   
   /**
    * Constructs a tab bar widget.
+   * The parent and name argument are sent to the QWidget constructor.
    */
   KDockTabBar( QWidget * parent = 0, const char * name = 0 );
 
@@ -54,7 +73,7 @@ public:
   ~KDockTabBar();
 
   /**
-   * For setting (or asking for) the current tab page position.
+   * For clearer setting (or asking for) the current tab page position.
    */
   enum TabPos
   {
@@ -64,61 +83,88 @@ public:
 
   /**
    * Sets the position to tabpos and repaints this.
+   * @param tabpos either TAB_TOP or TAB_RIGHT, just where you want it to be
    */
   void setTabPos( TabPos tabpos);
 
   /**
-   * Inserts a new tab page.
+   * Inserts a new empty tab page to the tab bar.
+   * If id is not specified, the tab is simply added. Otherwise it's inserted at the specified position.
+   *
+   * @param label the title in the tab page header
+   * @param id an identification number for access operations
+   * @return the new allocated id
    */
   int insertTab( const QString &label, int id = -1 );
 
   /**
    * Sets an icon for the tab page with that id.
+   *
+   * @param id the identification number of that desired page
+   * @param pix the new pixmap
    */
   void setPixmap( int id, const QPixmap &pix );
 
   /**
-   * Sets the text color for the tab page with that id.
+   * Sets the text colour for the tab page with that id.
+   *
+   * @param id the identification number of that desired page
+   * @param color the new text colour
    */
   void setTextColor( int id, const QColor &color );
 
   /**
-   * Returns the text color for the tab page with that id.
+   * Returns the text colour for the tab page with that id.
+   *
+   * @param id the identification number of that desired tab page
+   * @return the current text colour of that tab page
    */
   const QColor& textColor( int id );
 
   /**
    * Removes the tab page with that id.
+   *
+   * @param id the identification number of that desired page
    */
   void removeTab( int id);
 
   /**
    * Returns the current tab page.
+   *
+   * @return the id of the tab page
    */
   int  currentTab(){ return _currentTab; }
 
   /**
    * Sets the current tab page to the page with that id.
+   *
+   * @param id the identification number of that desired page
+   * @param allowDisable disables the tab page
    */
   void setCurrentTab( int id, bool allowDisable = false );
 
   /**
    * Enables or disables the tab page with that id.
    */
-  void setTabEnabled( int, bool );
+  void setTabEnabled( int id, bool e);
 
   /**
    * Returns if the tab page with that id is enabled or disabled.
    */
-  bool isTabEnabled( int );
+  bool isTabEnabled( int id);
 
   /**
    * Sets the title of the tab page with that id.
+   *
+   * @param id the identification number of that desired page
+   * @param caption a string for the title
    */
   void setTabCaption( int id, const QString &caption );
 
   /**
    * Returns the title of the tab page with that id.
+   *
+   * @param id the identification number of that desired page
    */
   QString tabCaption( int id );
 
@@ -133,7 +179,7 @@ public:
   virtual void setFont( const QFont & );
 
   /**
-   * Shows the icons for the tab pages in the header.
+   * Shows or Hides the icons for the tab pages in the header.
    */
   void showTabIcon( bool );
 
@@ -146,11 +192,15 @@ signals:
 
   /**
    * Signals that a tab page with that id is selected.
+   *
+   * @param id the identification number of that desired page
    */
   void tabSelected( int id);
 
   /**
    * Signals that the right mouse buttons is pressed on the tab page with that id.
+   *
+   * @param id the identification number of that desired page
    */
   void rightButtonPress( int id, QPoint );
 
@@ -169,21 +219,28 @@ protected slots:
 protected:
 
   /**
-   * Draws this.
+   * Handles paint events for this widgets
+   * Reimplemented from QWidget
    */
   virtual void paintEvent( QPaintEvent* );
 
   /**
-   * Resizes this.
+   * Handles resize events for this widgets
+   * Reimplemented from QWidget
    */
   virtual void resizeEvent( QResizeEvent* );
 
 private:
+  /** For internal use */
   void setButtonPixmap();
+  /** For internal use */
   void updateHeight();
 
+  /** For internal use */
   KDockTabBar_Private* findData( int id );
+  /** For internal use */
   int tabsWidth();
+  /** For internal use */
   void tabsRecreate();
 
   TabPos tabPos;
@@ -205,7 +262,10 @@ private:
 };
 
 /**
- * The draw helper for the KDockTabBar.
+ * The draw helper for the @ref KDockTabBar. Minor importance for application programmers.
+ *
+ * @author Max Judin (documentation: Falk Brettschneider).
+ * @version $Id$
  */
 class KDockTabBarPainter : public QWidget
 {
@@ -227,29 +287,38 @@ private:
 protected:
   
   /**
-   *
+   * Handles mouse press events for this widgets
+   * Reimplemented from QWidget
    */
   virtual void mousePressEvent ( QMouseEvent * );
   
   /**
-   *
+   * Handles mouse release events for this widgets
+   * Reimplemented from QWidget
    */
   virtual void mouseReleaseEvent ( QMouseEvent * );
 
   /**
-   *
+   * Handles resize events for this widgets
+   * Reimplemented from QWidget
    */
   virtual void resizeEvent( QResizeEvent * );
   
   /**
-   *
+   * Handles paint events for this widgets
+   * Reimplemented from QWidget
    */
   virtual void paintEvent( QPaintEvent * );
 };
 
 /**
- * A manager for a single KDockTabBar. The dockwidgets ever use this class instead of 
+ * A manager for a single @ref KDockTabBar. The @ref KDockWidget class ever use this class instead of 
  * accessing the KDockTabBar directly.
+ *
+ * For some reasons it's more practical for the Dockwidget class set than @ref QTabBar or @ref KTabBar .
+ *
+ * @author Max Judin (documentation: Falk Brettschneider).
+ * @version $Id$
  */
 class KDockTabCtl : public QWidget
 {
@@ -268,7 +337,8 @@ public:
   ~KDockTabCtl();
 
   /**
-   * Calls setTabPos(..) of its KDockTabBar but does layout actions, additionally.
+   * Calls @ref KDockTabBar::setTabPos of its embedded tab bar but does layout actions, additionally.
+   *
    */
   void setTabPos( KDockTabBar::TabPos );
   
@@ -279,13 +349,22 @@ public:
 
   /**
    * Inserts a new tab page in the encapsulated docktabbar.
+   * Mainly it calls @ref KDockTabBar::insertTab and does additional management operations.
+   *
+   * @param w the widget that is inserted
+   * @param label the title for the caption bar of the tab page
+   * @return the id of the new inserted page
    */
-  int insertPage( QWidget *, const QString &label, int id = -1 );
+  int insertPage( QWidget * w, const QString &label, int id = -1 );
 
   /**
    * Sets the title of the tab page.
+   * Mainly it calls @ref KDockTabBar::setPageCaption but calls it internally by the page id.
+   * 
+   * @param w the widget we want to give a new caption
+   * @param s well, what the heck could that be? ;-)
    */
-  void setPageCaption( QWidget*, const QString & );
+  void setPageCaption( QWidget* w, const QString &s );
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -294,8 +373,12 @@ public:
 
   /**
    * Returns the title of the tab page.
+   * Mainly it calls @ref KDockTabBar::setPageCaption but calls it internally by the page id.
+   * 
+   * @param w the widget for that we want to know its caption
+   * @return a string containing the title of the page
    */
-  QString pageCaption( QWidget* );
+  QString pageCaption( QWidget* w);
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -304,8 +387,11 @@ public:
   
   /**
    * Sets an icon for the tab page (shown in the tab header).
+   * 
+   * @param w the widget we want to give a new icon
+   * @param pix the new icon
    */
-  void setPixmap( QWidget* , const QPixmap &pix );
+  void setPixmap( QWidget* w, const QPixmap &pix );
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -313,7 +399,11 @@ public:
   void setPixmap( int id, const QPixmap &pix ){ setPixmap( page(id), pix ); }
 
   /**
-   * Sets the text color of the tab page.
+   * Sets the text colour of the tab page.
+   * Mainly it calls @ref KDockTabBar::setTextColor but calls it internally by the page id.
+   * 
+   * @param w the widget we want to give a new text colour
+   * @param color the colour of the tab header
    */
   void setTabTextColor( QWidget*, const QColor &color );
 
@@ -323,9 +413,12 @@ public:
   void setTabTextColor( int id, const QColor &color ){ setTabTextColor( page(id), color ); }
 
   /**
-   * Returns the text color of the tab page.
+   * Returns the text colour of the tab page.
+   * Mainly it calls @ref KDockTabBar::textColor but calls it internally by the page id.
+   * 
+   * @param w the widget we want to ask for its text colour
    */
-  const QColor& tabTextColor( QWidget* );
+  const QColor& tabTextColor( QWidget* w);
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -334,8 +427,10 @@ public:
   
   /**
    * Returns if the tab page is enabled (if it can get the focus).
+   * 
+   * @param w the widget we want to ask if its page is enabled
    */
-  bool isPageEnabled( QWidget* );
+  bool isPageEnabled( QWidget* w);
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -344,8 +439,12 @@ public:
 
   /**
    * Enable or disable the tab page (whether it can get the focus or not).
+   * Mainly it calls @ref KDockTabBar::setPageEnabled but calls it internally by the page id.
+   * 
+   * @param w the widget that should be enabled
+   * @param e boolean value whether enabled or disabled
    */
-  void setPageEnabled( QWidget*, bool );
+  void setPageEnabled( QWidget* w, bool e);
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -354,19 +453,26 @@ public:
 /***********************************************************************/
 
   /**
-   * Returns the widget for a page number.
+   * Returns the widget that embedded in a page.
+   * 
+   * @param id the identification number of the page
    */
-  QWidget* page( int );
+  QWidget* page( int id);
 
   /**
    * Returns the widget's Id.
+   *
+   * @param w the widget that should return its id
    */
-  int id( QWidget* );
+  int id( QWidget* w);
 
   /**
    * Removes the tab page from the covered tab bar.
+   * Mainly it calls @ref KDockTabBar::removeTab but calls it internally by the page id.
+   * 
+   * @param w the tab page that should be removed
    */
-  void removePage( QWidget* );
+  void removePage( QWidget* w);
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
@@ -396,17 +502,19 @@ public:
 
   /**
    * Returns the font for the tab pages.
-   * It just calls the appropriate method of its KDockTabBar.
+   * It simply calls @ref KDockTabBar::tabFont .
    */
   QFont tabFont();
 
   /**
    * Enables or disables the showing of the icons for every tab page.
+   * It simply calls @ref KDockTabBar::showTabIcon .
    */
   void showTabIcon( bool );
 
   /**
    * Returns if the tab icon is shown.
+   * It simply calls @ref KDockTabBar::isShowTabIcon .
    */
   bool isShowTabIcon();
 
@@ -460,7 +568,8 @@ public slots:
 protected:
 
   /**
-   * Overrides the QWidget::paintEvent. Draws some additional lines.
+   * Handles paint events for this widgets
+   * Reimplemented from QWidget
    */
   void paintEvent(QPaintEvent *);
 
@@ -491,12 +600,12 @@ protected slots:
 protected:
 
   /**
-   * 
+   * Returns the appropriate data for the widget from the parameter list.
    */
   KDockTabCtl_Private* findData( QWidget* );
 
   /**
-   *
+   * Returns the appropriate data for the widget from the parameter list described by its id.
    */
   KDockTabCtl_Private* findData( int id );
 
@@ -506,22 +615,24 @@ protected:
   void showPage( QWidget*, bool allowDisable = false );
 
   /**
-   *
+   * a data structure that contains all embedded widgets.
    */
   QWidgetStack* stack;
 
   /**
-   *
+   * The layout manager for automatic positioning and resizing of the embedded tab pages.
    */
   QBoxLayout* layout;
 
   /**
-   *
+   * The layout manager for the widget stack.
    */
   QBoxLayout* stack_layout;
 
   /**
-   *
+   * An internal list for managing the tab pages. It stores data items for every tab page in the tab bar.
+   * An data item is of type KDockTabCtl_Private (a struct) that contains the widget, its id and information
+   * about whether it is enabled or disabled.
    */
   QList<KDockTabCtl_Private> *mainData;
 
