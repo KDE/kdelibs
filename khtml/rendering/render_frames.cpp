@@ -628,7 +628,7 @@ void RenderPartObject::setWidget( QWidget *w )
   RenderPart::setWidget( w );
 }
 
-bool RenderPartObject::isInline()
+bool RenderPartObject::isInline() const
 {
   return true;
 }
