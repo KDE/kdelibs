@@ -35,6 +35,7 @@ public:
 
     static void setSynchronizing( bool sync )
     {
+        init();
         s_sync = sync;
     }
     static bool isSynchronizing()
@@ -45,6 +46,7 @@ public:
 
     static void setImplicitSelection( bool enable )
     {
+        init();
         s_implicitSelection = enable;
     }
     static bool implicitSelection()
