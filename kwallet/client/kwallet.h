@@ -48,6 +48,7 @@ class Wallet : public QObject, public DCOPObject {
 		static bool isOpen(const QString& name);
 		static int closeWallet(const QString& name, bool force);
 		static int deleteWallet(const QString& name);
+		static bool disconnectApplication(const QString& wallet, const QCString& app);
 
 		static Wallet* openWallet(const QString& name);
 
@@ -118,6 +119,7 @@ class Wallet : public QObject, public DCOPObject {
 		ASYNC slotWalletClosed(int handle);
 		ASYNC slotFolderUpdated(const QString& wallet, const QString& folder);
 		ASYNC slotFolderListUpdated(const QString& wallet);
+		ASYNC slotApplicationDisconnected(const QString& wallet, const QCString& application);
 
 	private slots:
 		void slotAppUnregistered(const QCString&);

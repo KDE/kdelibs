@@ -265,7 +265,6 @@ KWallet::Backend *w = 0L;
 	}
 
 	if (w) {
-		// can refCount() ever be 0?
 		if (w->refCount() == 0 || force) {
 			invalidateHandle(handle);
 			_wallets.remove(handle);
@@ -288,17 +287,22 @@ return -1;
 int KWalletD::close(int handle, bool force) {
 DCOPClient *dc = callingDcopClient();
 KWallet::Backend *w = _wallets.find(handle);
+bool contains = false;
 
 	if (dc && w) { // the handle is valid and we have a client
 		if (_handles.contains(dc->senderId())) { // we know this app
 			if (_handles[dc->senderId()].contains(handle)) {
 				// the app owns this handle
 				_handles[dc->senderId()].remove(_handles[dc->senderId()].find(handle));
+				contains = true;
+				if (_handles[dc->senderId()].isEmpty()) {
+					_handles.remove(dc->senderId());
+				}
 			}
 		}
 
 		// watch the side effect of the deref()
-		if (w->deref() == 0 || force) {
+		if (contains && (w->deref() == 0 || force)) {
 			_wallets.remove(handle);
 			if (force) {
 				invalidateHandle(handle);
@@ -674,6 +678,37 @@ QStringList rc;
 	}
 
 return rc;
+}
+
+
+bool KWalletD::disconnectApplication(const QString& wallet, const QCString& application) {
+	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+						it.current();
+							++it) {
+		if (it.current()->walletName() == wallet) {
+			if (_handles[application].contains(it.currentKey())) {
+				_handles[application].remove(it.currentKey());
+
+				if (_handles[application].isEmpty()) {
+					_handles.remove(application);
+				}
+
+				if (it.current()->deref() == 0) {
+					close(it.current()->walletName(), true);
+				}
+
+				QByteArray data;
+				QDataStream ds(data, IO_WriteOnly);
+				ds << wallet;
+				ds << application;
+				emitDCOPSignal("applicationDisconnected(QString,QCString)", data);
+
+				return true;
+			}
+		}
+	}
+
+return false;
 }
 
 

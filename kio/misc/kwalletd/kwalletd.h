@@ -106,6 +106,9 @@ class KWalletD : public KDEDModule {
 		// Remove an entry.  rc=0 on success.
 		virtual int removeEntry(int handle, const QString& folder, const QString& key);
 
+		// Disconnect an app from a wallet
+		virtual bool disconnectApplication(const QString& wallet, const QCString& application);
+
 	private slots:
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();
