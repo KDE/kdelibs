@@ -200,14 +200,26 @@ void KFileDialog::setLocationLabel(const QString& text)
 
 void KFileDialog::setFilter(const QString& filter)
 {
-    if ( filter.contains( '/' )) { // mimetype filter!
+    int pos = filter.find('/');
+
+    // Check for an un-escaped '/', if found
+    // interpret as a MIME filter.
+
+    if (pos > 0 && filter[pos - 1] != '\\') {
         QStringList filters = QStringList::split( " ", filter );
         setMimeFilter( filters );
         return;
     }
 
+    // Strip the escape characters from
+    // escaped '/' characters.
+
+    QString copy (filter);
+    for (pos = 0; (pos = copy.find("\\/", pos)) != -1; ++pos)
+        copy.remove(pos, 1);
+
     ops->clearFilter();
-    filterWidget->setFilter(filter);
+    filterWidget->setFilter(copy);
     ops->setNameFilter(filterWidget->currentFilter());
     d->hasDefaultFilter = false;
     filterWidget->setEditable( true );

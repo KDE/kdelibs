@@ -272,11 +272,14 @@ public:
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
      *
-     * If the filter contains a '/', a mimetype-filter is assumed. You can
-     * specify multiple mimetypes like this (separated with space):
+     * If the filter contains an unescaped '/', a mimetype-filter is assumed.
+     * If you would like a '/' visible in your filter it can be escaped with
+     * a '\'. You can specify multiple mimetypes like this (separated with
+     * space):
      *
      * <code>
      * kfile->setFilter( "image/png text/html text/plain" );
+     * kfile->setFilter( "*.cue|CUE\\/BIN Files (*.cue)" );
      * </code>
      *
      * @see #filterChanged
