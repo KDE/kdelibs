@@ -31,6 +31,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -95,6 +98,9 @@ KCrash::defaultCrashHandler (int signal)
   }
   
   if (crashRecursionCounter < 3 && appName) {
+    pid_t pid = fork();
+
+    if (pid <= 0) {
       // this code is leaking, but this should not hurt cause we will do a
       // exec() afterwards. exec() is supposed to clean up.
       char * argv[16]; // don't forget to update this
@@ -122,6 +128,14 @@ KCrash::defaultCrashHandler (int signal)
       tmp.setNum(signal);
       argv[i++] = qstrdup("--signal");
       argv[i++] = qstrdup(tmp.data());
+
+      // pid number -- only include if this is the child
+      // the debug stuff will be disabled if we was not able to fork
+      if (pid == 0) {
+	tmp.setNum(getppid());
+	argv[i++] = qstrdup("--pid");
+	argv[i++] = qstrdup(tmp.data());
+      }
 
       const KInstance *instance = KGlobal::_instance;
       const KAboutData *about = instance ? instance->aboutData() : 0;
@@ -151,6 +165,13 @@ KCrash::defaultCrashHandler (int signal)
       // i = 0;
       // while (argv[i])
       //   free(argv[i++]);
+    }
+    else
+    {
+      // wait for child to exit
+      waitpid(pid, NULL, 0);
+      _exit(253);
+    }
   }
   else
     kdDebug(0) << "Unknown appname\n";
@@ -161,4 +182,3 @@ KCrash::defaultCrashHandler (int signal)
   }
   _exit(255);
 }
-
