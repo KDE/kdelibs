@@ -65,6 +65,7 @@ public:
     virtual void updateView( bool );
     virtual void updateView(const KFileItem*);
     virtual void removeItem( const KFileItem * );
+    virtual void listingCompleted();
 
     /**
      * Sets the view to be shown in the right. You need to call this before
@@ -98,8 +99,8 @@ protected:
     KFileView *right;
 
 protected slots:
-    void slotSortingChanged( QDir::SortSpec ); 
-    
+    void slotSortingChanged( QDir::SortSpec );
+
 private:
     class KCombiViewPrivate;
     KCombiViewPrivate *d;

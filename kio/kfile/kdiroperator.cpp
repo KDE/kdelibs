@@ -158,6 +158,7 @@ void KDirOperator::setSorting( QDir::SortSpec spec )
     updateSortActions();
 }
 
+// ### remove this method, the views determine mimetypes themselves now.
 void KDirOperator::readNextMimeType()
 {
     if (pendingMimeTypes.isEmpty()) {
@@ -878,7 +879,7 @@ void KDirOperator::connectView(KFileView *view)
         fileView->setSelectionMode( KFile::Extended );
     else
         fileView->setSelectionMode( KFile::Single );
- 
+
     updateViewActions();
     fileView->widget()->show();
     fileView->widget()->resize(size());
@@ -921,11 +922,14 @@ void KDirOperator::setView(KFileView *view)
 
 void KDirOperator::setDirLister( KDirLister *lister )
 {
+    if ( lister == dir ) // sanity check
+        return;
+
     delete dir;
     dir = lister;
 
     dir->setAutoUpdate( true );
-    
+
     connect( dir, SIGNAL( percent( unsigned long )),
              SLOT( slotProgress( unsigned long ) ));
     connect( dir, SIGNAL(started( const KURL& )), SLOT(slotStarted()));
@@ -959,13 +963,13 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 	    fileView->ensureItemVisible( (KFileItem*) item );
 	}
 	
-	if ( !item->isMimeTypeKnown() )
-	    pendingMimeTypes.append(static_cast<KFileItem*>(item));
+// 	if ( !item->isMimeTypeKnown() )
+// 	    pendingMimeTypes.append(static_cast<KFileItem*>(item));
 	++it;
     }
 
-    if ( !pendingMimeTypes.isEmpty() )
-        QTimer::singleShot(0, this, SLOT(readNextMimeType()));
+//     if ( !pendingMimeTypes.isEmpty() )
+//         QTimer::singleShot(0, this, SLOT(readNextMimeType()));
     QTimer::singleShot(200, this, SLOT(resetCursor()));
 }
 
@@ -1388,9 +1392,13 @@ void KDirOperator::slotIOFinished()
     progress->hide();
     emit finishedLoading();
     resetCursor();
+
+    if ( fileView )
+        fileView->listingCompleted();
 }
 
-KProgress * KDirOperator::progressBar() const {
+KProgress * KDirOperator::progressBar() const 
+{
     return progress;
 }
 

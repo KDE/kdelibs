@@ -101,10 +101,15 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 		 SLOT( highlighted( QListViewItem * ) ));
 
     setSorting( sorting() );
+
+
+    m_resolver = 
+        new KMimeTypeResolver<KFileListViewItem,KFileDetailView>( this );
 }
 
 KFileDetailView::~KFileDetailView()
 {
+    delete m_resolver;
 }
 
 void KFileDetailView::setSelected( const KFileItem *info, bool enable )
@@ -168,6 +173,7 @@ void KFileDetailView::slotActivateMenu (QListViewItem *item,const QPoint& pos )
 
 void KFileDetailView::clearView()
 {
+    m_resolver->m_lstPendingMimeIconItems.clear();
     KListView::clear();
 }
 
@@ -179,6 +185,9 @@ void KFileDetailView::insertItem( KFileItem *i )
                                                      i->text(),
                                                    i->pixmap(KIcon::SizeSmall),
                                                      i );
+
+    if ( !i->isMimeTypeKnown() )
+        m_resolver->m_lstPendingMimeIconItems.append( item );
 
     // see also setSorting()
     QDir::SortSpec spec = KFileView::sorting();
@@ -307,7 +316,10 @@ void KFileDetailView::removeItem( const KFileItem *i )
     if ( !i )
 	return;
 
-    delete (KFileListViewItem*) i->extraData( this );
+    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
+    m_resolver->m_lstPendingMimeIconItems.remove( item );
+    delete item;
+
     KFileView::removeItem( i );
 }
 
@@ -464,7 +476,7 @@ KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
 void KFileDetailView::keyPressEvent( QKeyEvent *e )
 {
     KListView::keyPressEvent( e );
-    
+
     if ( e->key() == Key_Return || e->key() == Key_Enter ) {
         if ( e->state() & ControlButton )
             e->ignore();
@@ -472,5 +484,25 @@ void KFileDetailView::keyPressEvent( QKeyEvent *e )
             e->accept();
     }
 }
+
+//
+// mimetype determination on demand
+//
+void KFileDetailView::mimeTypeDeterminationFinished()
+{
+    // anything to do?
+}
+
+void KFileDetailView::determineIcon( KFileListViewItem *item )
+{
+    (void) item->fileInfo()->determineMimeType();
+    updateView( item->fileInfo() );
+}
+
+void KFileDetailView::listingCompleted()
+{
+    m_resolver->start();
+}
+/////////////////////////////////////////////////////////////////
 
 #include "kfiledetailview.moc"

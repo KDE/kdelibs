@@ -81,7 +81,7 @@ void KCombiView::setRight(KFileView *view)
 void KCombiView::insertItem( KFileItem *item )
 {
     KFileView::insertItem( item );
-    
+
     if ( item->isDir() ) {
         left->updateNumbers( item );
         left->insertItem( item );
@@ -129,6 +129,13 @@ void KCombiView::removeItem( const KFileItem *i )
     if ( right )
         right->removeItem( i );
     KFileView::removeItem( i );
+}
+
+void KCombiView::listingCompleted()
+{
+    left->listingCompleted();
+    if ( right )
+        right->listingCompleted();
 }
 
 void KCombiView::clear()

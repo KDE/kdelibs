@@ -26,6 +26,8 @@ class QWidget;
 class QKeyEvent;
 
 #include <klistview.h>
+#include <kmimetyperesolver.h>
+
 #include "kfileview.h"
 
 /**
@@ -64,6 +66,13 @@ public:
 
     void setKey( const QString& key ) { m_key = key; }
 
+    QRect rect() const
+    {
+        QRect r = listView()->itemRect(this);
+        return QRect( listView()->viewportToContents( r.topLeft() ),
+                      QSize( r.width(), r.height() ) );
+    }
+
 private:
     KFileItem *inf;
     QString m_key;
@@ -99,6 +108,7 @@ public:
     virtual void updateView( bool );
     virtual void updateView(const KFileItem*);
     virtual void removeItem( const KFileItem *);
+    virtual void listingCompleted();
 
     virtual void setSelected(const KFileItem *, bool);
     virtual bool isSelected(const KFileItem *i) const;
@@ -119,10 +129,15 @@ public:
 
     void ensureItemVisible( const KFileItem * );
 
+    // for KMimeTypeResolver
+    void mimeTypeDeterminationFinished();
+    void determineIcon( KFileListViewItem *item );
+    QScrollView *scrollWidget() const { return (QScrollView*) this; }
+
 
 protected:
     virtual void keyPressEvent( QKeyEvent * );
-    
+
     int m_sortingCol;
 
 protected slots:
@@ -147,6 +162,7 @@ private:
     }
 
     bool m_blockSortingSignal;
+    KMimeTypeResolver<KFileListViewItem,KFileDetailView> *m_resolver;
 
     class KFileDetailViewPrivate;
     KFileDetailViewPrivate *d;

@@ -28,6 +28,7 @@ class QLabel;
 #include <kiconview.h>
 #include <kiconloader.h>
 #include <kfileview.h>
+#include <kmimetyperesolver.h>
 
 #include <kfile.h>
 
@@ -89,6 +90,8 @@ public:
     virtual void updateView(const KFileItem*);
     virtual void removeItem(const KFileItem*);
 
+    virtual void listingCompleted();
+
     virtual void insertItem( KFileItem *i );
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
@@ -126,6 +129,11 @@ public:
     virtual void readConfig( KConfig *, const QString& group = QString::null );
     virtual void writeConfig( KConfig *, const QString& group = QString::null);
 
+    // for KMimeTypeResolver
+    void mimeTypeDeterminationFinished();
+    void determineIcon( KFileIconViewItem *item );
+    QScrollView *scrollWidget() const { return (QScrollView*) this; }
+
 public slots:
     /**
      * Starts loading previews for all files shown and shows them. Switches
@@ -143,7 +151,7 @@ protected:
      * Reimplemented to remove an eventual tooltip
      */
     virtual void hideEvent( QHideEvent * );
-    
+
     // ### workaround for Qt3 bug (see #35080)
     virtual void showEvent( QShowEvent * );
 
@@ -164,6 +172,8 @@ private slots:
     void gotPreview( const KFileItem *item, const QPixmap& pix );
 
 private:
+    KMimeTypeResolver<KFileIconViewItem,KFileIconView> *m_resolver;
+
     QLabel *toolTip;
     int th;
     int myIconSize;

@@ -149,12 +149,17 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
 		 SLOT( highlighted( QIconViewItem * )));
 
+
+    // for mimetype resolving
+    m_resolver = new KMimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
+
 //###    readConfig();
 }
 
 KFileIconView::~KFileIconView()
 {
 // ###    writeConfig();
+    delete m_resolver;
     removeToolTip();
     delete d;
 }
@@ -236,9 +241,9 @@ void KFileIconView::hideEvent( QHideEvent *e )
 void KFileIconView::keyPressEvent( QKeyEvent *e )
 {
     KIconView::keyPressEvent( e );
-    
+
     // ignore Ctrl-Return so that the dialog can catch it.
-    if ( (e->state() & ControlButton) && 
+    if ( (e->state() & ControlButton) &&
          (e->key() == Key_Return || e->key() == Key_Enter) )
         e->ignore();
 }
@@ -272,6 +277,8 @@ void KFileIconView::invertSelection()
 
 void KFileIconView::clearView()
 {
+    m_resolver->m_lstPendingMimeIconItems.clear();
+
     KIconView::clear();
     if ( d->job ) {
         d->job->kill();
@@ -290,6 +297,9 @@ void KFileIconView::insertItem( KFileItem *i )
     KFileIconViewItem *item = new KFileIconViewItem( (QIconView*)this,
                                                      i->text(),
                                                      i->pixmap( size ), i);
+
+    if ( !i->isMimeTypeKnown() )
+        m_resolver->m_lstPendingMimeIconItems.append( item );
 
     // see also setSorting()
     QDir::SortSpec spec = KFileView::sorting();
@@ -423,7 +433,7 @@ void KFileIconView::updateView( const KFileItem *i )
     if ( item ) {
         int size = myIconSize;
         if ( d->previews->isChecked() && canPreview( i ) )
-            size = myIconSize;
+            size = d->previewIconSize;
 
         item->setPixmap( i->pixmap( size ) );
     }
@@ -433,7 +443,11 @@ void KFileIconView::removeItem( const KFileItem *i )
 {
     if ( !i )
 	return;
-    delete viewItem( i );
+
+    KFileIconViewItem *item = viewItem( i );
+    m_resolver->m_lstPendingMimeIconItems.remove( item );
+    delete item;
+
     KFileView::removeItem( i );
 }
 
@@ -616,6 +630,25 @@ void KFileIconView::setSorting( QDir::SortSpec spec )
     sort( !isReversed() );
 }
 
+//
+// mimetype determination on demand
+//
+void KFileIconView::mimeTypeDeterminationFinished()
+{
+    // anything to do?
+}
+
+void KFileIconView::determineIcon( KFileIconViewItem *item )
+{
+    (void) item->fileInfo()->determineMimeType();
+    updateView( item->fileInfo() );
+}
+
+void KFileIconView::listingCompleted()
+{
+    m_resolver->start( d->previews->isChecked() ? 0 : 10 );
+}
+/////////////////////////////////////////////////////////////////
 
 // ### workaround for Qt3 Bug
 void KFileIconView::showEvent( QShowEvent *e )

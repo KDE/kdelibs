@@ -348,6 +348,11 @@ void KFileView::removeItem( const KFileItem *item )
 	m_selectedList->removeRef( item );
 }
 
+void KFileView::listingCompleted()
+{
+    // empty default impl.
+}
+
 KActionCollection * KFileView::actionCollection() const
 {
     if ( !d->actions )

@@ -66,6 +66,7 @@ public:
     virtual void updateView( bool );
     virtual void updateView(const KFileItem*);
     virtual void removeItem(const KFileItem*);
+    virtual void listingCompleted();
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
@@ -92,7 +93,7 @@ public:
 
 protected slots:
     virtual void slotHighlighted( const KFileItem * );
-    
+
 signals:
     void showPreview(const KURL &);
     void clearPreview();

@@ -166,6 +166,11 @@ void KFilePreview::removeItem(const KFileItem *i)
     KFileView::removeItem( i );
 }
 
+void KFilePreview::listingCompleted()
+{
+    left->listingCompleted();
+}
+
 void KFilePreview::clear()
 {
     KFileView::clear();
