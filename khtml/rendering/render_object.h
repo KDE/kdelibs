@@ -181,7 +181,7 @@ public:
     bool isInline() const { return m_inline; }  // inline object
     bool mouseInside() const { return m_mouseInside; }
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
-    bool hasSpecialObjects() const { return m_paintSpecial; }
+    bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
     bool layouted() const   { return m_layouted; }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool overhangingContents() const { return m_overhangingContents; }
@@ -223,7 +223,7 @@ public:
     void setFloating(bool b=true) { m_floating = b; }
     void setInline(bool b=true) { m_inline = b; }
     void setMouseInside(bool b=true) { m_mouseInside = b; }
-    void setSpecialObjects(bool b=true) { m_paintSpecial = b; }
+    void setShouldPaintBackgroundOrBorder(bool b=true) { m_paintBackground = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
@@ -525,14 +525,15 @@ private:
     short m_verticalPosition;
 
     bool m_layouted                  : 1;
-    bool m_unused                   : 1;
+    bool m_unused                    : 1;
     bool m_minMaxKnown               : 1;
     bool m_floating                  : 1;
 
     bool m_positioned                : 1;
     bool m_overhangingContents : 1;
     bool m_relPositioned             : 1;
-    bool m_paintSpecial              : 1; // if the box has something special to print (background, border, etc)
+    bool m_paintBackground           : 1; // if the box has something to paint in the
+                                          // background painting phase (background, border, etc)
 
     bool m_isAnonymous               : 1;
     bool m_recalcMinMax 	     : 1;

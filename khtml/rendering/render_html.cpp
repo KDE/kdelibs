@@ -46,7 +46,7 @@ RenderHtml::~RenderHtml()
 void RenderHtml::setStyle(RenderStyle *style)
 {
     RenderFlow::setStyle(style);
-    setSpecialObjects(true);
+    setShouldPaintBackgroundOrBorder(true);
 }
 
 void RenderHtml::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,

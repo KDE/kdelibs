@@ -375,7 +375,7 @@ void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
     kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
-    if(style()->visibility() == VISIBLE)
+    if(paintPhase == BACKGROUND_PHASE && style()->visibility() == VISIBLE)
 	paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     RenderObject *child = firstChild();
@@ -1301,7 +1301,7 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   _col = -1;
   _row = -1;
   updateFromElement();
-  setSpecialObjects(true);
+  setShouldPaintBackgroundOrBorder(true);
   _topExtra = 0;
   _bottomExtra = 0;
 }
@@ -1393,7 +1393,7 @@ void RenderTableCell::setStyle( RenderStyle *style )
 {
     style->setDisplay(TABLE_CELL);
     RenderFlow::setStyle( style );
-    setSpecialObjects(true);
+    setShouldPaintBackgroundOrBorder(true);
 
     if (style->whiteSpace() == KONQ_NOWRAP) {
       // Figure out if we are really nowrapping or if we should just

@@ -232,13 +232,14 @@ void RenderListMarker::setStyle(RenderStyle *s)
 void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
                              int _tx, int _ty, RenderObject::PaintPhase paintPhase)
 {
-    paintObject(p, _x, _y, _w, _h, _tx, _ty,  paintPhase);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
 void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
 				   int _tx, int _ty, RenderObject::PaintPhase paintPhase)
 {
-    if (style()->visibility() != VISIBLE) return;
+    if (paintPhase != FOREGROUND_PHASE || style()->visibility() != VISIBLE) 
+        return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")" << endl;

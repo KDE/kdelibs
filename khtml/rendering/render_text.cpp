@@ -579,8 +579,9 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    //has to be outside the above if because of small caps.
 	    font = &_style->htmlFont();
 
-            if ((pseudoStyle && s->m_firstLine) ||
-                (!pseudoStyle && hasSpecialObjects() && parent()->isInline()))
+            if (shouldPaintBackgroundOrBorder() &&
+                ((pseudoStyle && s->m_firstLine) ||
+                (!pseudoStyle && parent()->isInline())))
                 s->paintBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
 
             if(_style->color() != p->pen().color())
@@ -650,7 +651,8 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 void RenderText::paint( QPainter *p, int x, int y, int w, int h,
                       int tx, int ty, RenderObject::PaintPhase paintPhase)
 {
-    if (style()->visibility() != VISIBLE) return;
+    if (paintPhase != FOREGROUND_PHASE || style()->visibility() != VISIBLE) 
+        return;
 
     int s = m_lines.count() - 1;
     if ( s < 0 ) return;

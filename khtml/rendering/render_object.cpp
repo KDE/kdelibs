@@ -121,7 +121,7 @@ m_floating( false ),
 m_positioned( false ),
 m_overhangingContents( false ),
 m_relPositioned( false ),
-m_paintSpecial( false ),
+m_paintBackground( false ),
 
 m_isAnonymous( false ),
 m_recalcMinMax( false ),
@@ -781,7 +781,7 @@ void RenderObject::dump(QTextStream *stream, QString ind) const
     if (isText()) { *stream << " text"; }
     if (isInline()) { *stream << " inline"; }
     if (isReplaced()) { *stream << " replaced"; }
-    if (hasSpecialObjects()) { *stream << " specialObjects"; }
+    if (shouldPaintBackgroundOrBorder()) { *stream << " paintBackground"; }
     if (layouted()) { *stream << " layouted"; }
     if (minMaxKnown()) { *stream << " minMaxKnown"; }
     if (overhangingContents()) { *stream << " overhangingContents"; }
@@ -815,7 +815,7 @@ void RenderObject::setStyle(RenderStyle *style)
     m_floating = false;
     m_positioned = false;
     m_relPositioned = false;
-    m_paintSpecial = false;
+    m_paintBackground = false;
     // no support for changing the display type dynamically... object must be
     // detached and re-attached as a different type
     //m_inline = true;
@@ -842,7 +842,9 @@ void RenderObject::setStyle(RenderStyle *style)
 	if(nb) nb->ref(this);
     }
 
-    setSpecialObjects( m_style->backgroundColor().isValid() || m_style->hasBorder() || nb );
+   
+    setShouldPaintBackgroundOrBorder(m_style->backgroundColor().isValid() || 
+                                        m_style->hasBorder() || nb ); 
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
     if ( d >= RenderStyle::Position && m_parent ) {

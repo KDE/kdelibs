@@ -187,7 +187,7 @@ void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
         relativePositionOffset(_tx, _ty);
 
     // 1. paint background, borders etc
-    if(hasSpecialObjects() && !isInline())
+    if(paintPhase == BACKGROUND_PHASE && shouldPaintBackgroundOrBorder() && !isInline())
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. paint contents
@@ -199,17 +199,13 @@ void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
         child = child->nextSibling();
     }
 
-    // 3. paint floats and other non-flow objects.
-    // we have to do that after the contents otherwise they would get obscured by background settings.
-    // it is anyway undefined if regular text is above fixed objects or the other way round.
-
+#ifdef BOX_DEBUG
     if (m_view)
     {
         _tx += m_view->contentsX();
         _ty += m_view->contentsY();
     }
 
-#ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty);
 #endif
 

@@ -223,7 +223,8 @@ void RenderFlow::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
         relativePositionOffset(_tx, _ty);
 
     // 1. paint background, borders etc
-    if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
+    if( paintPhase == BACKGROUND_PHASE && 
+        shouldPaintBackgroundOrBorder() && !isInline() && style()->visibility() == VISIBLE )
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. paint contents
@@ -232,10 +233,11 @@ void RenderFlow::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
             child->paint(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 
     // 3. paint floats
-    if(specialObjects)
-	paintFloats( p,  _x, _y, _w, _h, _tx , _ty);
+    if (paintPhase == FLOAT_PHASE)
+        paintFloats(p, _x, _y, _w, _h, _tx, _ty);
 
-    if(!isInline() && !childrenInline() && style()->outlineWidth())
+    if(paintPhase == BACKGROUND_PHASE &&
+        !isInline() && !childrenInline() && style()->outlineWidth())
         paintOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
