@@ -160,7 +160,7 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 
 void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 {
-    if( (properties & NET::ActionChangeDesktop) == 0 ||
+    if( (properties & NET::WMDesktop) == 0 ||
 	(window != m_pWidget->topLevelWidget()->winId()))
 	return;
 
