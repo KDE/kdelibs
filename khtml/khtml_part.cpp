@@ -358,6 +358,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
+  closeURL();
+
+  clear();
+  
   disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
 	      this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
   if ( d->m_view )
@@ -366,9 +370,6 @@ KHTMLPart::~KHTMLPart()
     d->m_view->viewport()->hide();
     d->m_view->m_part = 0;
   }
-  closeURL();
-
-  clear();
 
   delete d;
   khtml::Cache::deref();
