@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -265,8 +266,21 @@ KJSO DOMNodeList::tryGet(const UString &p) const
     long unsigned int idx = p.toULong(&ok);
     if (ok)
       result = getDOMNode(list.item(idx));
-    else
-      result = HostImp::get(p);
+    else {
+      DOM::HTMLElement e;
+      unsigned long l = list.length();
+      bool found = false;
+
+      for ( unsigned long i = 0; i < l; i++ )
+        if ( ( e = list.item( i ) ).id() == p.string() ) {
+          result = getDOMNode( list.item( i ) );
+          found = true;
+          break;
+        }
+
+      if ( !found )
+        result = HostImp::get(p);
+    }
   }
 
   return result;

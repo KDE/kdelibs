@@ -25,12 +25,12 @@
 #define HTML_MISCIMPL_H
 
 #include "html_elementimpl.h"
-//#include "dom_misc.h"
 
 namespace DOM {
 
 class Node;
 class DOMString;
+class HTMLCollection;
 
 class HTMLBaseFontElementImpl : public HTMLElementImpl
 {
@@ -50,6 +50,7 @@ public:
 
 class HTMLCollectionImpl : public DomShared
 {
+    friend class DOM::HTMLCollection;
 public:
     enum Type {
 	// from HTMLDocument

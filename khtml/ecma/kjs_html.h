@@ -105,7 +105,7 @@ namespace KJS {
   public:
     HTMLCollectionFunc(DOM::HTMLCollection c, int i) : coll(c), id(i) { };
     Completion tryExecute(const List &);
-    enum { Item, NamedItem };
+    enum { Item, NamedItem, Tags };
   private:
     DOM::HTMLCollection coll;
     int id;

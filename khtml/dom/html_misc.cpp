@@ -147,6 +147,17 @@ Node HTMLCollection::namedItem( const DOMString &name ) const
     return ((HTMLCollectionImpl *)impl)->namedItem( name );
 }
 
+Node HTMLCollection::base() const
+{
+    if ( !impl )
+        return 0;
+
+    if ( static_cast<HTMLCollectionImpl*>( impl )->type == HTMLCollectionImpl::DOC_ALL )
+        return static_cast<HTMLCollectionImpl*>( impl )->base->firstChild();
+
+    return static_cast<HTMLCollectionImpl*>( impl )->base;
+}
+
 HTMLCollectionImpl *HTMLCollection::handle() const
 {
     return impl;

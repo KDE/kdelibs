@@ -123,7 +123,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   case Close:
     // ### see khtmltests/ecma/tokenizer-script-recursion.html
     // for an explanation why this is commented out
-    //doc.close();
+    // doc.close();
     result = Undefined();
     break;
   case Write:
@@ -1523,6 +1523,8 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::Item);
   else if (p == "namedItem")
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::NamedItem);
+  else if ( p == "tags" )
+    result = new HTMLCollectionFunc( collection,  HTMLCollectionFunc::Tags );
   else if (p == "selectedIndex" &&
 	   collection.item(0).elementId() == ID_OPTION) {
     // NON-STANDARD options.selectedIndex
@@ -1558,15 +1560,19 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 {
   KJSO result;
 
-  assert(id == Item || id == NamedItem);
-
   switch (id) {
-    case Item:
-      result = getDOMNode(coll.item(args[0].toUInt32()));
-      break;
-    case NamedItem:
-      result = getDOMNode(coll.namedItem(args[0].toString().value().string()));
-      break;
+  case Item:
+    result = getDOMNode(coll.item(args[0].toUInt32()));
+    break;
+  case Tags:
+  {
+    DOM::HTMLElement e = coll.base();
+    result = getDOMNodeList( e.getElementsByTagName( args[0].toString().value().string() ) );
+    break;
+  }
+  case NamedItem:
+    result = getDOMNode(coll.namedItem(args[0].toString().value().string()));
+    break;
   }
 
   return Completion(ReturnValue, result);

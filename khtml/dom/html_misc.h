@@ -176,6 +176,7 @@ public:
      * @internal
      * not part of the DOM
      */
+    Node base() const;
     HTMLCollectionImpl *handle() const;
     bool isNull() const;
 
