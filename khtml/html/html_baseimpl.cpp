@@ -197,12 +197,10 @@ void HTMLBodyElementImpl::attach()
 {
     assert(!m_render);
     assert(parentNode());
-    if (!parentNode()->renderer())
-        return;
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
-    if (style->display() != NONE) {
+    if (parentNode()->renderer() && style->display() != NONE) {
         m_render = new RenderBody(this);
         m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
