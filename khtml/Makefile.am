@@ -102,5 +102,5 @@ parser:
 ## test program
 bin_PROGRAMS 	= testkhtml
 testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
-testkhtml_LDADD = $(LIB_KDEUI) -L../kimgio -lkimgio -L../kio -lkio \
-	-Ljava -lkjava -Lkjs -lkjs $(LIB_DMALLOC)
+testkhtml_LDADD = $(LIB_KDEUI) $(libkhtml_la_LIBADD)
+
