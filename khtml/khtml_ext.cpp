@@ -200,7 +200,8 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     if ( !metaData )
         return;
 
-    (m_extensionProxy->*(metaData->ptr))();
+    KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( m_extensionProxy ); 
+    (ext->*(metaData->ptr))();
 }
 
 void KHTMLPartBrowserExtension::updateEditActions()
