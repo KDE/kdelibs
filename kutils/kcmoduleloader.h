@@ -30,7 +30,7 @@ class KLibLoader;
 /**
  * @class Loads a KControl Module.
  *
- * @description KCModuleLoader tries in several ways 
+ * KCModuleLoader tries in several ways 
  * to locate and load a KCModule. If loading fails a 
  * zero pointer is returned. \n
  * It is very unlikely KCModuleLoader is what you want 

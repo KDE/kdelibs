@@ -33,7 +33,7 @@ class QStringList;
 /**
  * A class that provides information about a @ref KCModule
  *
- * @description KCModuleInfo provides various technical information, such as icon, library 
+ * KCModuleInfo provides various technical information, such as icon, library 
  * etc. about a KCModule.n
  * @note Any values set with the set* functions is not 
  * written back with KCModuleInfo it only reads value from the desktop file.
@@ -228,7 +228,7 @@ protected:
    * Sets the object's weight property which determines in what 
    * order modules will be displayed. Default is 100.
    *
-   * @param the new weight
+   * @param weight the new weight
    */
   void setWeight(int weight) { _weight = weight; };
 

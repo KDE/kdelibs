@@ -25,7 +25,7 @@
 /**
  * @class DCOP Interface for KCModule.
  * 
- * @description A module (which is loaded via KCModuleProxy) does always have 
+ * A module (which is loaded via KCModuleProxy) does always have 
  * this DCOP interface, whether it's in root mode or not.
  *
  * @since 3.4

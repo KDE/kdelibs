@@ -36,7 +36,7 @@ class KCModuleProxy;
 /**
  * @brief KCModuleContainer is a convenience class encapsulating several @ref KCModules.
  *
- * @description The @ref KCModuleContainer class is a convenience class for organizing a multiple set 
+ * The @ref KCModuleContainer class is a convenience class for organizing a multiple set 
  * of @ref KCModule. KCModuleContainer is a sub class of KCModule and builds an interface mainly 
  * consisting of a tab widget where each tab contains one of the modules specified via one of the 
  * constructors. KCModuleContainer can handle modules which requires root permissions. What you 
@@ -57,7 +57,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 * Creates a KCModuleContainer with tabs, each one containing one of the 
 		 * specified modules in @p mods.
 		 *
-		 * @param modules The list of KCModules to be loaded. The name of each 
+		 * @param mods The list of KCModules to be loaded. The name of each 
 		 * KCModule is its service name, that is the name of the desktop file without 
 		 * the ".desktop" part
 		 *
@@ -76,7 +76,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 * What you probably want is the KCMODULECONTAINER macro which builds an KCModule 
 		 * for you, taking the modules you want as argument.
 		 *
-		 * @param modules The modules to load
+		 * @param mods The modules to load
 		 * @return The KCModule containg the requested modules.
 		 */
 		KCModuleContainer( QWidget *parent, const char* name, const QString& mods = QString() ); 
