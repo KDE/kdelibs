@@ -169,7 +169,7 @@ protected slots:
   void slotRMBActionEditAt( int );
 
   void slotBookmarkSelected();
-  void slotAddBookmarkList();
+  void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
 

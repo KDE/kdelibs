@@ -382,20 +382,16 @@ void KBookmarkMenu::addAddBookmarksList()
   if (!kapp->authorizeKAction("bookmarks"))
      return;
   
-  QString title = i18n( "&Add Bookmarks List" );
-  int p;
-  while ( ( p = title.find( '&' ) ) >= 0 )
-    title.remove( p, 1 );
+  QString title = i18n( "Bookmark Tabs as Folder" );
 
   KAction * paAddBookmarksList = new KAction( title,
                                           "bookmarks_list_add",
                                           0,
                                           this,
-                                          SLOT( slotAddBookmarkList() ),
+                                          SLOT( slotAddBookmarksList() ),
                                           m_actionCollection, m_bIsRoot ? "add_bookmarks_list" : 0 );
 
-  // FIXME
-  paAddBookmarksList->setToolTip( i18n( "Add a bookmark for the current tabset" ) );
+  paAddBookmarksList->setToolTip( i18n( "Add a folder of bookmarks for all open tabs." ) );
 
   paAddBookmarksList->plug( m_parentMenu );
   m_actions.append( paAddBookmarksList );
@@ -597,7 +593,7 @@ void KBookmarkMenu::fillBookmarkMenu()
   }
 }
 
-void KBookmarkMenu::slotAddBookmarkList()
+void KBookmarkMenu::slotAddBookmarksList()
 {
     KExtendedBookmarkOwner *extOwner = dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
     if (!extOwner)
