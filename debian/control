@@ -46,6 +46,7 @@ Package: libkdefakes4
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
+Conflicts: kdelibs4 (<< 4:3.1.0)
 Description: KDE core library libkdefakes
  KDE core libraries library libkdefakes
  You need this library to run kde applications.
