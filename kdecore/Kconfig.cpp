@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.30  1997/09/13 08:33:02  kalle
+ * I'd really like to know why CVS thrashes comments now.
+ *
  * Revision 1.29  1997/09/13 05:51:39  kalle
  * new features in KDebug
  * - asserts
@@ -648,6 +651,7 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 	  // insert the new entry into group dictionary
 	  pCurrentGroupDict->insert( rKey.data(), pEntry );
 	}
+
 
   // the KConfig object is dirty now
   if( bPersistent )

@@ -12,6 +12,10 @@
 #include <syslog.h>
 #include <math.h> // pow
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 bool bAreaCalculated = false;
 QBitArray *pInfoArray = NULL, *pWarnArray = NULL,
   *pErrorArray = NULL, *pFatalArray = NULL;
@@ -141,7 +145,12 @@ void kdebug( ushort nLevel, ushort nArea,
 		QString aAppName = kapp->appName();
 		int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
 		va_start( arguments, pFormat );
+#ifdef HAVE_VSNPRINTF
+		// use the more secure version if we have it
+		int nSize = vsnprintf( buf, 4095, pFormat, arguments );
+#else
 		int nSize = vsprintf( buf, pFormat, arguments );
+#endif
 		if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
 		buf[nSize] = '\n';
 		buf[nSize+1] = '\0';
