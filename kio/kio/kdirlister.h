@@ -392,7 +392,7 @@ protected slots:
   void slotProcessedSize( KIO::Job *, KIO::filesize_t );
   void slotSpeed( KIO::Job *, unsigned long );
 
-  void slotCanceled( const KURL& );
+  void slotJobToBeKilled( const KURL& );
   void slotClearState();
 
 protected:

@@ -1122,7 +1122,8 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
 
   connect( this, SIGNAL( completed() ), SLOT( slotClearState() ) );
   connect( this, SIGNAL( canceled() ), SLOT( slotClearState() ) );
-  connect( this, SIGNAL( canceled( const KURL& ) ), SLOT( slotCanceled( const KURL& ) ) );
+  connect( this, SIGNAL( completed( const KURL& ) ), SLOT( slotJobToBeKilled( const KURL& ) ) );
+  connect( this, SIGNAL( canceled( const KURL& ) ), SLOT( slotJobToBeKilled( const KURL& ) ) );
 }
 
 KDirLister::~KDirLister()
@@ -1492,7 +1493,7 @@ void KDirLister::slotSpeed( KIO::Job *job, unsigned long spd )
   emit speed( result );
 }
 
-void KDirLister::slotCanceled( const KURL& url )
+void KDirLister::slotJobToBeKilled( const KURL& url )
 {
   KIO::ListJob *job;
   QMap< KIO::ListJob *, KDirListerPrivate::JobData >::Iterator dataIt = d->jobData.begin();
