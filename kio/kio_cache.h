@@ -569,18 +569,4 @@ protected:
     Step m_step;
 };
 
-#ifndef NO_KIO_COMPATABILITY
-
-/**
- * For backwards compatability, do NOT rely on the presence
- * of this typedef, convert your code to use KIOCachedJob instead.
- * To check if your code is ok, try compiling with NO_KIO_COMPATABILITY
- * defined.
- */
-typedef KIOCachedJob CachedKIOJob;
-
-#warning "KIO Compability is enabled, define NO_KIO_COMPATABILTY to test your code"
-
-#endif // NO_KIO_COMPATABILITY
-
 #endif

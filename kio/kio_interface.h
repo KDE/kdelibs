@@ -399,27 +399,4 @@ public:
   static void sigchld_handler(int);
 };
 
-#ifndef NO_KIO_COMPATABILITY
-
-/**
- * For backwards compatability, do NOT rely on the presence
- * of this typedef, convert your code to use KUDSAtom instead.
- * To check if your code is ok, try compiling with NO_KIO_COMPATABILITY
- * defined.
- */
-typedef KUDSAtom UDSAtom;
-typedef KIOProtocol IOProtocol;
-typedef KUDSEntry UDSEntry;
-typedef KIOConnection Connection;
-typedef KIOConnectionSignals ConnectionSignals;
-typedef KIOConnectionSlots ConnectionSlots;
-typedef class KIOJobBase IOJob;
-typedef class KIOSlave Slave;
-typedef class KIOFilter Filter;
-
-#warning "KIO Compatability is enabled, define NO_KIO_COMPATABILTY to test your code"
-
-#endif // NO_KIO_COMPATABILITY
-
-
 #endif

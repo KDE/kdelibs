@@ -64,17 +64,4 @@ private:
   static QString* s_trashPath;
 };
 
-#ifndef NO_KIO_COMPATABILITY
-
-/**
- * For backwards compatability, do NOT rely on the presence
- * of this typedef, convert your code to use KUserPaths instead.
- * To check if your code is ok, try compiling with NO_KIO_COMPATABILITY
- * defined.
- */
-typedef KUserPaths UserPaths;
-
-#endif // NO_KIO_COMPATABILITY
-
-
 #endif

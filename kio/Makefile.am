@@ -45,7 +45,7 @@ include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	krun.h kdirwatch.h kmimemagic.h kservices.h kmimetypes.h \
 	kio_cache.h kio_netaccess.h kpixmapcache.h kuserprofile.h \
 	kio_error.h kregfactories.h kio_job.h kregistry.h \
-	kio_paste.h kio_openwith.h userpaths.h kuserpaths.h \
+	kio_paste.h kio_openwith.h kuserpaths.h \
 	kservicetype.h ktar.h ktypecode.h
 
 magic_DATA = magic
