@@ -365,9 +365,7 @@ void KActionCollection::_clear()
 void KActionCollection::insert( KAction* action )   { _insert( action ); }
 void KActionCollection::remove( KAction* action )   { _remove( action ); }
 KAction* KActionCollection::take( KAction* action ) { return _take( action ); }
-#ifndef KDE_NO_COMPAT
 void KActionCollection::clear()                     { _clear(); }
-#endif
 KAccel* KActionCollection::accel()                  { return kaccel(); }
 const KAccel* KActionCollection::accel() const      { return kaccel(); }
 KAccel* KActionCollection::builderKAccel() const    { return d->m_builderKAccel; }

@@ -330,14 +330,16 @@ public:
   KActionCollection operator+ ( const KActionCollection& ) const;
   KActionCollection& operator= ( const KActionCollection& );
   KActionCollection& operator+= ( const KActionCollection& );
+#endif // !KDE_NO_COMPAT
 
+  // KDE4: clear() doesn't need to be a slot
 public slots:
   /**
    * Clears the entire actionCollection, deleting all actions.
    * @see remove
    */
   void clear();
-#endif // !KDE_NO_COMPAT
+
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
