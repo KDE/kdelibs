@@ -82,6 +82,7 @@ bool KMSpecialManager::savePrinters()
 		conf.writePathEntry("File",it.current()->option("kde-special-file"));
 		conf.writeEntry("Icon",it.current()->pixmap());
 		conf.writeEntry("Extension",it.current()->option("kde-special-extension"));
+		conf.writeEntry("Mimetype",it.current()->option("kde-special-mimetype"));
 		conf.writeEntry("Require",it.current()->option("kde-special-require"));
 		n++;
 	}
@@ -149,11 +150,12 @@ bool KMSpecialManager::loadDesktopFile(const QString& filename)
 		printer->setOption("kde-special-command",conf.readPathEntry("Command"));
 		printer->setOption("kde-special-file",conf.readPathEntry("File"));
 		printer->setOption("kde-special-extension",conf.readEntry("Extension"));
+		printer->setOption("kde-special-mimetype",conf.readEntry("Mimetype"));
 		printer->setOption("kde-special-require",conf.readEntry("Require"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));
 		printer->setType(KMPrinter::Special);
-		if ( !KdeprintChecker::check( &conf ) || 
-				!KXmlCommandManager::self()->checkCommand( printer->option( "kde-special-command" ), 
+		if ( !KdeprintChecker::check( &conf ) ||
+				!KXmlCommandManager::self()->checkCommand( printer->option( "kde-special-command" ),
 					KXmlCommandManager::None, KXmlCommandManager::None, 0 ) )
 			printer->addType(KMPrinter::Invalid);
 		printer->setState(KMPrinter::Idle);

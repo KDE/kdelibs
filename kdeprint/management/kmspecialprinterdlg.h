@@ -25,6 +25,8 @@
 class KMPrinter;
 class QLineEdit;
 class QCheckBox;
+class QComboBox;
+class QGroupBox;
 class KIconButton;
 class KXmlCommandSelector;
 
@@ -46,7 +48,9 @@ protected slots:
 
 private:
 	QLineEdit	*m_name, *m_description, *m_location, *m_extension;
-	QCheckBox	*m_usefile;
+	QComboBox	*m_mimetype;
+	QGroupBox	*m_usefile_gb;
+	QStringList	m_mimelist;
 	KIconButton	*m_icon;
 	KXmlCommandSelector	*m_command;
 };

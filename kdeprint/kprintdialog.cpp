@@ -230,7 +230,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 
 		d->m_extbtn->hide();
 		m_pbox->hide();
-		
+
 		expandDialog(true);
 	}
 	else
@@ -483,7 +483,7 @@ void KPrintDialog::done(int result)
 		opts["kde-preview"] = (d->m_preview->isChecked() ? "1" : "0");
 		opts["kde-isspecial"] = (prt->isSpecial() ? "1" : "0");
 		opts["kde-special-command"] = prt->option("kde-special-command");
-		
+
 		// merge options with KMPrinter object options
 		QMap<QString,QString>	popts = (prt->isEdited() ? prt->editedOptions() : prt->defaultOptions());
 		for (QMap<QString,QString>::ConstIterator it=popts.begin(); it!=popts.end(); ++it)
@@ -600,11 +600,12 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 		KURL url( d->m_file->url() );
 		QString f( url.fileName() );
 		int p = f.findRev( '.' );
-		if ( p != -1 )
+		// change "file.ext"; don't change "file", "file." or ".file" but do change ".file.ext"
+		if ( p > 0 && p != int (f.length () - 1) )
+		{
 			url.setFileName( f.left( p ) + "." + ext );
-		else
-			url.setFileName( f + "." + ext );
-		d->m_file->setURL( url.url() );
+			d->m_file->setURL( url.url() );
+		}
 	}
 }
 
@@ -709,15 +710,7 @@ void KPrintDialog::slotHelp()
 
 void KPrintDialog::slotOutputFileSelected(const QString& txt)
 {
-	KMPrinter	*prt = KMFactory::self()->manager()->findPrinter(d->m_printers->currentText());
-	if (prt && prt->isSpecial())
-	{
-		QString	ext("."+prt->option("kde-special-extension"));
-		if (ext.length() > 1 && txt.right(ext.length()) != ext)
-		{
-			d->m_file->lineEdit()->setText(txt+ext);
-		}
-	}
+	d->m_file->lineEdit()->setText(txt);
 }
 
 void KPrintDialog::init()
@@ -758,10 +751,28 @@ void KPrintDialog::enableDialogPage( int index, bool flag )
 
 void KPrintDialog::slotOpenFileDialog()
 {
-	d->m_file->fileDialog()->setCaption(i18n("Print to File"));
-	d->m_file->fileDialog()->setMode(d->m_file->fileDialog()->mode() &
-					~KFile::LocalOnly);
-	d->m_file->fileDialog()->setOperationMode( KFileDialog::Saving );
+	KFileDialog *dialog = d->m_file->fileDialog();
+
+	dialog->setCaption(i18n("Print to File"));
+	dialog->setMode(d->m_file->fileDialog()->mode() & ~KFile::LocalOnly);
+	dialog->setOperationMode( KFileDialog::Saving );
+
+	KMPrinter *prt = KMFactory::self()->manager()->findPrinter(d->m_printers->currentText());
+	if (prt)
+	{
+		QString	mimetype(prt->option("kde-special-mimetype"));
+		QString	ext(prt->option("kde-special-extension"));
+
+		if (!mimetype.isEmpty())
+		{
+			QStringList filter;
+			filter << mimetype;
+			filter << "all/allfiles";
+			dialog->setMimeFilter (filter, mimetype);
+		}
+		else if (!ext.isEmpty())
+			dialog->setFilter ("*." + ext + "\n*|" + i18n ("All Files"));
+	}
 }
 
 #include "kprintdialog.moc"

@@ -162,19 +162,39 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 		printer->setPrintProgram(option("kde-special-command"));
 		if (option("kde-special-file") == "1")
 		{
-			QString	ext = "*." + option("kde-special-extension") + "\n*|" + i18n("All Files");
-			QString	filename = KFileDialog::getSaveFileName(QString::fromLatin1("print.")+option("kde-special-extension"), ext, parent);
-			if (!filename.isEmpty())
+			KFileDialog *dialog = new KFileDialog (QString::fromLatin1("print.")+option("kde-special-extension"),
+								QString::null,
+								parent,
+								"filedialog",
+								true);
+			dialog->setOperationMode (KFileDialog::Saving);
+
+			QString	mimetype = option("kde-special-mimetype");
+			QString	ext = option("kde-special-extension");
+
+			if (!mimetype.isEmpty())
+			{
+				QStringList filter;
+				filter << mimetype;
+				filter << "all/allfiles";
+				dialog->setMimeFilter (filter, mimetype);
+			}
+			else if (!ext.isEmpty())
+				dialog->setFilter ("*." + ext + "\n*|" + i18n ("All Files"));
+
+			if (dialog->exec ())
 			{
 				printer->setOutputToFile(true);
-				printer->setOutputFileName(filename);
+				printer->setOutputFileName(dialog->selectedFile ());
 			}
 			else
+			{
 				// action cancelled
 				return false;
+			}
 		}
 	}
-	
+
 	return true;
 }
 
