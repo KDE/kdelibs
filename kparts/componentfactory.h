@@ -138,7 +138,7 @@ namespace KParts
             KLibFactory *factory = library->factory();
             if ( !factory )
             {
-                delete library;
+                library->unload();
                 if ( error )
                     *error = ErrNoFactory;
                 return 0;
@@ -146,7 +146,7 @@ namespace KParts
             T *res = createInstanceFromFactory<T>( factory, parent, name, args );
             if ( !res )
             {
-                delete library;
+                library->unload();
                 if ( error )
                     *error = ErrNoComponent;
             }
