@@ -1618,7 +1618,7 @@ void KToolBar::slotRepaint()
     resizeEvent(&ev);
     QApplication::sendPostedEvents( this, QEvent::LayoutHint );
     setUpdatesEnabled( TRUE );
-    repaint( FALSE );
+    repaint( TRUE );
 }
 
 void KToolBar::toolBarPosChanged( QToolBar *tb )
