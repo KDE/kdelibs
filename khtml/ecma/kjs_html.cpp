@@ -429,7 +429,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   {
     KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
     if ( view )
-      Window::retrieveWindow(view->part())->goURL(Window::retrieveActive(exec), value.toString(exec).qstring());
+      Window::retrieveWindow(view->part())->goURL(exec, value.toString(exec).qstring());
     break;
   }
   case BgColor:
