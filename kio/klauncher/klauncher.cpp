@@ -135,7 +135,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
 
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
    connect(kdeinitNotifier, SIGNAL( activated( int )),
-           this, SLOT( slotKInitData( int )));
+           this, SLOT( slotKDEInitData( int )));
    kdeinitNotifier->setEnabled( true );
    lastRequest = 0;
    bProcessingQueue = false;
@@ -285,7 +285,7 @@ read_socket(int sock, char *buffer, int len)
 
 
 void
-KLauncher::slotKInitData(int)
+KLauncher::slotKDEInitData(int)
 {
    klauncher_header request_header;
    QByteArray requestData;
@@ -293,7 +293,7 @@ KLauncher::slotKInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
-      kdDebug(7016) << "KLauncher: KInit communication error! Commiting suicide!" << endl;
+      kdDebug(7016) << "KLauncher: KDEInit communication error! Commiting suicide!" << endl;
       destruct(255); // Exit!
    }
    requestData.resize(request_header.arg_length);
@@ -341,7 +341,7 @@ KLauncher::slotKInitData(int)
      return;
    }
 
-   kdDebug(7016) << "Unexpected command from KInit (" << (unsigned int) request_header.cmd
+   kdDebug(7016) << "Unexpected command from KDEInit (" << (unsigned int) request_header.cmd
                  << ")" << endl;
 }
 
@@ -390,7 +390,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       DCOPresult.result = 1;
       DCOPresult.dcopName = "";
-      DCOPresult.error = i18n("KInit could not launch '%1'").arg(request->name);
+      DCOPresult.error = i18n("KDEInit could not launch '%1'").arg(request->name);
       DCOPresult.pid = 0;
    }
    if (request->transaction)
@@ -445,7 +445,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    // Wait for pid to return.
    lastRequest = request;
    do {
-      slotKInitData( kdeinitSocket );
+      slotKDEInitData( kdeinitSocket );
    }
    while (lastRequest != 0);
 }

@@ -124,7 +124,7 @@ protected:
    
 public slots:
    void slotDequeue();
-   void slotKInitData(int);
+   void slotKDEInitData(int);
    void slotAppRegistered(const QCString &appId);
    void acceptSlave( KSocket *);
    void slotSlaveGone();
