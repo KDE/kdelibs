@@ -23,6 +23,7 @@
 /* We really don't want to require X11 headers...  */
 
 #include "config.h"
+#include <qglobal.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <X11/Xlib.h>
 #include <X11/X.h>
