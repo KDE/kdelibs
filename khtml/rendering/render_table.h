@@ -355,6 +355,7 @@ public:
     // overrides
     virtual void calcMinMaxWidth();
     virtual void calcWidth();
+    virtual void setStyle( RenderStyle *style );
 
     void setRowHeight(int h) { rowHeight = h; }
 

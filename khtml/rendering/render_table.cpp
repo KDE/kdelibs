@@ -1812,7 +1812,11 @@ void RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
       yPos += _topExtra;
 }
 
-
+void RenderTableCell::setStyle( RenderStyle *style )
+{
+    RenderFlow::setStyle( style );
+    m_printSpecial = true;
+}
 
 void RenderTableCell::print(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
@@ -1865,7 +1869,8 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     if ( !bg && parent() && parent()->parent() )
         bg = parent()->parent()->backgroundImage();
 
-    printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+    if ( bg || c.isValid() )
+	printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(m_style->hasBorder())
         printBorder(p, _tx, _ty, w, h);
