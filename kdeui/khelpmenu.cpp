@@ -28,6 +28,7 @@
 
 #include <kaboutdialog.h>
 #include <kapp.h>
+#include <kbugreport.h>
 #include <khelpmenu.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -59,8 +60,8 @@ QPopupMenu* KHelpMenu::menu( void )
   if( mMenu == 0 )
   {
     //
-    // 1999-12-02 Espen Sand: 
-    // I use hardcoded menu id's here. Reason is to stay backward 
+    // 1999-12-02 Espen Sand:
+    // I use hardcoded menu id's here. Reason is to stay backward
     // compatible.
     //
 
@@ -68,7 +69,7 @@ QPopupMenu* KHelpMenu::menu( void )
     if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( BarIcon( "contents" ), i18n( "&Contents" ), 
+    mMenu->insertItem( BarIcon( "contents" ), i18n( "&Contents" ),
 		       menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
     mMenu->setAccel( KStdAccel::help(), menuHelpContents );
@@ -84,7 +85,7 @@ QPopupMenu* KHelpMenu::menu( void )
 
     mMenu->insertSeparator();
 
-    mMenu->insertItem( kapp->miniIcon(), 
+    mMenu->insertItem( kapp->miniIcon(),
       i18n( "&About" ) + " " + kapp->name() + "...", menuAboutApp );
     mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
@@ -201,11 +202,8 @@ void KHelpMenu::aboutKDE( void )
 
 void KHelpMenu::reportBug( void )
 {
-  QString msg = ""
-    "The bug report dialog box is ready, but it must\n"
-    "be moved to kdeui before it can be used\n\n"
-    "2000-01-02 Espen";
-  KMessageBox::sorry( mParent, msg, "Report Bugs");
+  KBugReport bugReport( 0L );
+  bugReport.exec();
 }
 
 
