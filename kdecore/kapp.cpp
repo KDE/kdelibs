@@ -1267,14 +1267,6 @@ void KApplication::invokeBrowser( const QString &url )
 
 }
 
-#ifndef HAVE_HSTRERROR
-char *hstrerror(int)
-{
-    static char c = '\0';
-    return &c;
-}
-#endif
-
 QCString
 KApplication::launcher()
 {
@@ -1286,7 +1278,7 @@ KApplication::launcher()
    // Try to resolve to FQDN
    struct hostent *h = gethostbyname(host);
    if (h == 0L) {
-      kdDebug(101) << "gethostbyname(): " << hstrerror(h_errno) << "\n";
+      kdDebug(101) << "gethostbyname() returned with an error!\n";
    } else {
       if (strlen(h->h_name) < 200)
          strcpy(host, h->h_name);
