@@ -25,7 +25,7 @@ lib_LTLIBRARIES  = libkfile.la
 
 DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 	kfiledialogconf.moc kfiledetaillist.moc kfilesimpleview.moc \
-	kcombiview.moc kpreview.moc kfilepreview.moc kfileinfocontents.moc
+	kcombiview.moc kpreview.moc kfilepreview.moc kfileinfocontents.moc \
 	kfilefilter.moc
 
 include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
