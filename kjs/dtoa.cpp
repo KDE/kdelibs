@@ -180,9 +180,6 @@
 #endif
 #define INFNAN_CHECK
 #include "dtoa.h"
-#define strtod kjs_strtod
-#define dtoa kjs_dtoa
-#define freedtoa kjs_freedtoa
 
 
 
@@ -1530,7 +1527,7 @@ hexnan
 #endif /* INFNAN_CHECK */
 
  double
-strtod
+kjs_strtod
 #ifdef KR_headers
 	(s00, se) CONST char *s00; char **se;
 #else
@@ -2588,9 +2585,9 @@ nrv_alloc(CONST char *s, char **rve, int n)
 
  void
 #ifdef KR_headers
-freedtoa(s) char *s;
+kjs_freedtoa(s) char *s;
 #else
-freedtoa(char *s)
+kjs_freedtoa(char *s)
 #endif
 {
 	Bigint *b = (Bigint *)((int *)s - 1);
@@ -2637,7 +2634,7 @@ freedtoa(char *s)
  */
 
  char *
-dtoa
+kjs_dtoa
 #ifdef KR_headers
 	(d, mode, ndigits, decpt, sign, rve)
 	double d; int mode, ndigits, *decpt, *sign; char **rve;
@@ -2699,7 +2696,7 @@ dtoa
 
 #ifndef MULTIPLE_THREADS
 	if (dtoa_result) {
-		freedtoa(dtoa_result);
+		kjs_freedtoa(dtoa_result);
 		dtoa_result = 0;
 		}
 #endif
