@@ -90,7 +90,7 @@ protected:
 	 *
 	 * @returns a valid connection, or a 0 pointer on error
 	 */
-	Connection *connectUrl(const string& url);
+	Connection *connectUrl(const std::string& url);
 
 public:
 	enum StartServer {
