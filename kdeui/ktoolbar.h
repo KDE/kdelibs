@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.64  1999/09/21 11:03:55  waba
+// WABA: Clean up interface
+//
 // Revision 1.63  1999/07/26 19:42:45  pbrown
 // fixed for qcombobox.
 //
@@ -156,7 +159,7 @@ class KToolBoxManager;
   * automatic full-width resize for each widget except buttons. Buttons 
   * can also be connected to popup menus with a delay option.
   * 
-  * KToolBar can be used as a standalone widget, but @ref KTopLevelWidget 
+  * KToolBar can be used as a standalone widget, but @ref KTMainWindow 
   * provides easy factories and management of one or more toolbars.
   * Once you have a KToolBar object, you can insert items into it with the 
   * insert... methods, or remove them with the @ref removeItem method. This
@@ -619,9 +622,9 @@ public:
   /**
    * Sets maximal height of vertical (Right or Left) toolbar. You normaly
    * do not have to call it, since it's called from
-   * @ref KTopLevelWidget#updateRects
-   * If you reimplement @ref KTopLevelWidget#resizeEvent or
-   * KTopLevelWidget#updateRects,
+   * @ref KTMainWindow#updateRects
+   * If you reimplement @ref KTMainWindow#resizeEvent or
+   * KTMainWindow#updateRects,
    * be sure to call this function with maximal height toolbar can have.
    * In 0xFE cases out of 0xFF you don't need to use this function.
    * @see #updateRects
@@ -778,10 +781,10 @@ signals:
     /**
      * Emits when toolbar changes its position, or when
      * item is removed from toolbar. This is normaly connected to
-     * @ref KTopLevelWidget::updateRects.
-     * If you subclass @ref KTopLevelWidget and reimplement
-     * @ref KTopLevelWidget::resizeEvent or
-     * @ref KTopLevelWidget::updateRects, be sure to connect to
+     * @ref KTMainWindow::updateRects.
+     * If you subclass @ref KTMainWindow and reimplement
+     * @ref KTMainWindow::resizeEvent or
+     * @ref KTMainWindow::updateRects, be sure to connect to
      * this signal. You can connect this signal to slot that
      * doesn't take parameter.
      * @see #updateRects

@@ -32,7 +32,7 @@ libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
 include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
-		ktabctl.h kstatusbar.h ktopwidget.h \
+		ktabctl.h kstatusbar.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klined.h \
 		krestrictedline.h kcolorbtn.h kiconloaderdialog.h \
@@ -55,7 +55,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		klined.cpp kledlamp.cpp kprogress.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
-		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
+		kstatusbar.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcontrol.cpp kcolorbtn.cpp kapplet.cpp kwmmapp.cpp \
@@ -76,7 +76,7 @@ libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
 	kkeydialog.moc kled.moc kledlamp.moc klined.moc kmenubar.moc \
 	kpopmenu.moc kprogress.moc krestrictedline.moc kruler.moc \
 	kselect.moc kstatusbar.moc ktabbar.moc ktabctl.moc ktablistbox.moc \
-	ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc ktopwidget.moc \
+	ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
 	kurllabel.moc kwizard.moc kapplet.moc kwmmapp.moc kaccelmenu.moc \
 	klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc knuminput.moc \

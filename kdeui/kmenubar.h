@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.26  1999/08/16 21:14:44  mkoch
+//fixed kdoc documentation
+//
 //Revision 1.25  1999/07/25 09:24:05  kulow
 //good news - the workaround is not needed anymore. I left a
 //comment in the Makefile for now
@@ -80,7 +83,7 @@ protected:
 
 /**
  * Floatable menu bar. It can be set to float, Top, or Bottom
- * of KTopLevelWidget. It can be used without KTopLevelWidget, but
+ * of KTMainWindow. It can be used without KTMainWindow, but
  * then you should maintain items (toolbars, menubar, statusbar)
  * yourself.
  *

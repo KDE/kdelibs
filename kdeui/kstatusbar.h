@@ -98,8 +98,8 @@ signals:
 /**
  *  KStatusBar is widget for displaying status messages. You can insert
  *  text labels or custom widgets. Managing of items is internal. KStatusBar
- *  resizes itself, but positioning is left to KTopLevelWidget (or to you, if
- *  you don't use KTopLevelWidget).
+ *  resizes itself, but positioning is left to KTMainWindow (or to you, if
+ *  you don't use KTMainWindow).
  *
  *  Special type of item is a message, a temporary text-message or custom
  *  widget which is displayed on top of other items in full-width. Messages
@@ -268,10 +268,10 @@ signals:
   /**
    *  Emits when toolbar changes its position (not implemented!), or when
    *  item is removed from toolbar. This is normaly connected to
-   *  @ref KTopLevelWidget::updateRects.
-   *  If you subclass @ref KTopLevelWidget and reimplement
-   *  @ref KTopLevelWidget::resizeEvent or
-   *  @ref KTopLevelWidget::updateRects, be sure to connect to
+   *  @ref KTMainWindow::updateRects.
+   *  If you subclass @ref KTMainWindow and reimplement
+   *  @ref KTMainWindow::resizeEvent or
+   *  @ref KTMainWindow::updateRects, be sure to connect to
    *  this signal.
    */
   void moved();

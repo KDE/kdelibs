@@ -1,6 +1,9 @@
 #ifndef _KTOPWIDGET_H
 #define _KTOPWIDGET_H
 
+#error THIS FILE IS OBSOLETE.
+#error Use KTMainWindow instead of KTopLevelWidget.
+
 #include <ktmainwindow.h>
 
 /**
@@ -11,7 +14,7 @@
  *
  * The only difference is that KTMainWindow is per default created with
  * the WDestructiveClose flag. This means, it is automatically 
- * deleted when the widget accepts a close event. A KTopLevelWidget
+ * deleted when the widget accepts a close event. A KTMainWindow
  * needs to be deleted manually ( it is basically a just a KTMainWindow( "name", 0 ); )
  *
  *
@@ -20,7 +23,7 @@
  * @author Stephan Kulow (coolo@kde.org), was maintained by Sven Radej (radej@kde.org)
  */
 
-class KTopLevelWidget : public KTMainWindow {
+class KTMainWindow : public KTMainWindow {
     Q_OBJECT
 
      friend class KToolBar;
@@ -29,11 +32,11 @@ public:
     /**
      * Constructor.
      */
-    KTopLevelWidget( const char *name = 0L );
+    KTMainWindow( const char *name = 0L );
     /**
      * Destructor.
      */
-    ~KTopLevelWidget();
+    ~KTMainWindow();
 
 protected:
 

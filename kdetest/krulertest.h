@@ -42,7 +42,7 @@ private:
 };
 
 
-class KRulerTest : public KTopLevelWidget
+class KRulerTest : public KTMainWindow
 {
 Q_OBJECT
 public:

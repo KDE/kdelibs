@@ -15,7 +15,7 @@
 #include "kstatusbartest.h"
 
 testWindow::testWindow (QWidget *, const char *name)
-    : KTopLevelWidget (name)
+    : KTMainWindow (name)
  {
     // Setup Menus
     menuBar = new KMenuBar (this);

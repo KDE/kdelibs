@@ -37,7 +37,7 @@ extern "C" {
   * data. A standard procedure looks like this example:
   *
   * // Class definition
-  * class DemoClient : public KTopLevelWidget
+  * class DemoClient : public KTMainWindow
   * {
   *  Q_OBJECT
   * 

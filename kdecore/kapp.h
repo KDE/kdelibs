@@ -409,9 +409,9 @@ public:
 	* your application. Cleanups could be done after shutDown()
 	* (see below)
 	*
-	* Note: You should not use this if you are using the KTopLevelWidget.
-	*       Overload @ref KTopLevelWidget::saveProperties and
-	*	@ref KTopLevelWidget::readProperties in that case.
+	* Note: You should not use this if you are using the KTMainWindow.
+	*       Overload @ref KTMainWindow::saveProperties and
+	*	@ref KTMainWindow::readProperties in that case.
 	*	This allows you to simply handle applications with multiple
 	* toplevel windows.  */
   void saveYourself();
@@ -473,6 +473,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.104  1999/10/05 21:52:02  espensa
+// Added invokeMailer() and invokeBrowser(). I have hardcoded kmail
+// and kfmclient for now.
+//
 // Revision 1.103  1999/09/21 10:34:50  waba
 // WABA: Made destructor of KSessionManaged virtual.
 //

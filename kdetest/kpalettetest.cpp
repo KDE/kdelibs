@@ -35,7 +35,7 @@ int main( int argc, char **argv )
     }
 
 #if 0
-    KTopLevelWidget ktw;
+    KTMainWindow ktw;
     QWidget qw;
     QTimer t_toggle, t_color, t_look;
     //KLed l(KLed::red, &qw);				// create lamp

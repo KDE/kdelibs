@@ -8,7 +8,7 @@
 
 class QMultiLineEdit;
 
-class testWindow  : public KTopLevelWidget
+class testWindow  : public KTMainWindow
 {
     Q_OBJECT
 
