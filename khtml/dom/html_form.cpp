@@ -1193,7 +1193,7 @@ bool HTMLOptionElement::selected() const
 
 void HTMLOptionElement::setSelected(bool _selected) {
     if(!impl) return;
-    return ((HTMLOptionElementImpl *)impl)->setSelected(_selected);
+    ((HTMLOptionElementImpl *)impl)->setSelected(_selected);
 }
 
 DOMString HTMLOptionElement::value() const
