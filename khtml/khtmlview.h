@@ -74,7 +74,7 @@ public:
     // is visible.
     bool gotoNextLink();
     bool gotoPrevLink();
-    void activateActLink();
+    void toggleActLink(bool);
 
     /**
      * Sets the cursor to use when the cursor is on a link.
@@ -156,7 +156,6 @@ private:
 
     bool gotoLink();
 
-    //history functions
     void followLink();
 
     // ------------------------------------- member variables ------------------------------------

@@ -98,8 +98,8 @@ public:
     virtual tagStatus startTag() { return AREAStartTag; }
     virtual tagStatus endTag() { return AREAEndTag; }
 
-    long tabIndex() const;
-    void setTabIndex( long );
+    virtual long tabIndex() const;
+    virtual void setTabIndex( long );
 
     void parseAttribute(khtml::Attribute *attr);
 
@@ -120,6 +120,9 @@ protected:
     QRegion region;
 
     int lastw, lasth;
+
+    bool has_tabindex;
+    long tabindex;
 };
 
 

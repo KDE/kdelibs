@@ -82,6 +82,9 @@ public:
 	underMouse = 0;
 	linkPressed = false;
 	currentNode = 0;
+ 	originalNode= 0;
+ 	tabIndex=-1;
+
     }
     NodeImpl *selectionStart;
     int startOffset;
@@ -91,7 +94,10 @@ public:
     NodeImpl *underMouse;
 
     NodeImpl *currentNode;
+    NodeImpl *originalNode;
+
     bool linkPressed;
+    short tabIndex;
 
     QPoint m_dragStartPos;
 
@@ -708,12 +714,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         break;
     case Key_Enter:
     case Key_Return:
-        if (!d->linkPressed)
-	  {
-	    activateActLink();
-	  }
-        else
-	    followLink();
+        toggleActLink(false);
         break;
     default:
 	QScrollView::keyPressEvent( _ke );
@@ -723,7 +724,15 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 {
     if(m_part->keyReleaseHook(_ke)) return;
+     switch(_ke->key())
+       {
+       case Key_Enter:
+       case Key_Return:
+	 toggleActLink(true);
+	 break;
+       default:
     QScrollView::keyReleaseEvent( _ke);
+       }
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
@@ -766,8 +775,15 @@ bool KHTMLView::gotoNextLink()
 {
     if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
 
+    if (d->tabIndex!=-1)
+      {
+	d->tabIndex++;
+	if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
+	  d->tabIndex=0;
+      }
     // find next link
     NodeImpl *n = d->currentNode;
+    NodeImpl *begin = 0;
     if(!n) n = m_part->docImpl()->body();
     while(n) {
 	// find next Node
@@ -788,8 +804,27 @@ bool KHTMLView::gotoNextLink()
 	    n = next;
 	}
 	if(n->id() == ID_A) {
-	    d->currentNode = n;
-	    return gotoLink();
+	    //here, additional constraints for the previous link are checked.
+	    HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
+	    if ((d->tabIndex==-1)||((a->tabIndex()==d->tabIndex)))
+	      {
+		d->currentNode = n;
+		return gotoLink();
+	      }
+	    else if (!begin)
+	      {
+		begin=n;
+	      }
+	    else if (begin==n)
+	      {
+		if (d->tabIndex<m_part->docImpl()->findHighestTabIndex())
+		  d->tabIndex=-1;
+		else
+		  {
+		    d->currentNode=n;
+		    return gotoLink();
+		  }
+	      }
 	}
     }
     return false;
@@ -800,10 +835,28 @@ bool KHTMLView::gotoPrevLink()
     if(d->currentNode) d->currentNode->setKeyboardFocus(DOM::ActivationOff);
 
     // ###
-    //if(!d->tabindex) {
+    if(d->tabIndex!=-1)
+      {
+	d->tabIndex--;
+	if (d->tabIndex==-1)
+	  {
+	    //<tobias>
+	    //in case execution reaches this point, the highest tabindex of the
+	    //document needs to be determined. this is a function that IMO
+	    //should be implemented in HTMLDocumentImpl. i placed it there
+	    //under the name "findHighestTabIndex()".
+	    //Lars: is that desirable?
+	    //if so, remove this comment.
+	    //please remove the function itself and the call in any other case.
+	    //</tobias>
+	    d->tabIndex=m_part->docImpl()->findHighestTabIndex();
+	  }
+      }
     // find next link
     NodeImpl *n = d->currentNode;
+    NodeImpl *begin=0;
     if(!n) n = m_part->docImpl()->body();
+
     while(n) {
 	// find next Node
 	if(n->lastChild())
@@ -824,39 +877,34 @@ bool KHTMLView::gotoPrevLink()
 	}
 	// ### add handling of form elements here!
 	if(n->id() == ID_A) {
-	    d->currentNode = n;
-	    return gotoLink();
-	}
+	    //here, additional constraints for the previous link are checked.
+	    HTMLAreaElementImpl *a=static_cast<HTMLAreaElementImpl *>(n);
+	    if ((d->tabIndex==-1)||(a->tabIndex()==d->tabIndex))
+	      {
+		d->currentNode = n;
+		return gotoLink();
+	      }
+	    else if (!begin)
+	      {
+		begin=n;
+	      }
+	    else if (begin==n)
+	      {
+		if (d->tabIndex>0)
+		  d->tabIndex--;
+		else // if (d->tabIndex==0)
+		  {
+		    d->currentNode=n;
+		    return gotoLink();
+		  }
+	      }
+    }
     }
     return false;
     //} else {
+    //  NodeImpl *n=d->currentNode;
     // ### insert search for tabindex here
     //}
-}
-
-void KHTMLView::activateActLink()
-{
-  if ( d->currentNode && !d->linkPressed )
-    {
-      d->currentNode->setKeyboardFocus(DOM::ActivationActive);
-      d->linkPressed=true;
-    }
-}
-
-void KHTMLView::followLink()
-{
-  d->linkPressed=false;
-  if (!d->currentNode) {
-      gotoNextLink(); // show first link
-  } else {
-      d->currentNode->setKeyboardFocus(DOM::ActivationOff);
-
-      //retrieve url
-      HTMLAnchorElementImpl *actLink = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
-      KURL href = KURL(m_part->url(),actLink->areaHref().string());
-
-      m_part->openURL(href);
-  }
 }
 
 void KHTMLView::print()
@@ -938,4 +986,32 @@ void KHTMLView::setDNDEnabled( bool b )
 bool KHTMLView::dndEnabled() const
 {
   return d->m_bDnd;
+}
+
+ 
+void KHTMLView::toggleActLink(bool actState)
+{
+  if ( d->currentNode )
+    {
+      if (!actState) // inactive->active
+	{
+	  d->currentNode->setKeyboardFocus(DOM::ActivationActive);
+	  d->originalNode=d->currentNode;
+	  d->linkPressed=true;
+	}
+      else //active->inactive
+	{
+	  d->currentNode->setKeyboardFocus(DOM::ActivationOff);
+	  d->linkPressed=false;
+	  if (d->currentNode==d->originalNode)
+	    {
+	      //retrieve url
+	      HTMLAnchorElementImpl *actLink = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
+	      d->currentNode=0;
+	      KURL href = KURL(m_part->url(),actLink->areaHref().string());
+	      m_part->openURL(href);
+	    }
+	  d->originalNode=0;
+	}
+     }
 }

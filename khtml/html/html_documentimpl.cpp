@@ -33,6 +33,7 @@
 
 #include "dom_exception.h"
 #include "html_headimpl.h"
+#include "html_imageimpl.h"
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -398,3 +399,41 @@ void HTMLDocumentImpl::clearSelection()
     static_cast<RenderRoot*>(m_render)
     	->clearSelection();
 }
+
+int HTMLDocumentImpl::findHighestTabIndex()
+{
+  NodeImpl *n=body();
+  NodeImpl *next=0;
+  HTMLAreaElementImpl *a;
+  int retval=-1;
+  int tmpval;
+  while(n)
+    {
+      //find out tabindex of current element, if availiable
+      if (n->id()==ID_A)
+	{
+	  a=static_cast<HTMLAreaElementImpl *>(n);
+	  tmpval=a->tabIndex();
+	  if (tmpval>retval)
+	    retval=tmpval;
+	}
+      //iterate to next element.
+      if (n->firstChild())
+	n=n->firstChild();
+      else if (n->nextSibling())
+	n=n->nextSibling();
+      else
+	{
+	  while(!next)
+	    {
+	      n=n->parentNode();
+	      if (!n)
+		return retval;
+	      next=n->nextSibling();
+	    }
+	  n=next;
+	}
+    }
+  return retval;
+}
+

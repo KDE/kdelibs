@@ -317,6 +317,15 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     href = 0;
     target = 0;
     shape = Unknown;
+
+     DOMString indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
+     if (indexstring.length()) {
+         has_tabindex=true;
+         tabindex=atoi(indexstring.string().latin1());
+     } else {
+         has_tabindex=false;
+         tabindex=0;
+     }
 }
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
@@ -339,13 +348,16 @@ ushort HTMLAreaElementImpl::id() const
 
 long HTMLAreaElementImpl::tabIndex() const
 {
-    // ###
-    return 0;
+  if (has_tabindex)
+    return tabindex;
+  else
+    return -1;
 }
 
-void HTMLAreaElementImpl::setTabIndex( long  )
+void HTMLAreaElementImpl::setTabIndex( long _tabindex )
 {
-    // ###
+  has_tabindex=true;
+  tabindex=_tabindex;
 }
 
 void HTMLAreaElementImpl::parseAttribute(Attribute *attr)

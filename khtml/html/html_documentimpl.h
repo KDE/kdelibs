@@ -79,6 +79,8 @@ public:
     // internal
     NodeImpl *findElement( int id );
 
+    int findHighestTabIndex();
+
     // oeverrides NodeImpl
     virtual NodeImpl *addChild(NodeImpl *newChild);
 

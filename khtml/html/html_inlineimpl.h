@@ -45,9 +45,7 @@ public:
 
     virtual tagStatus startTag() { return AStartTag; }
     virtual tagStatus endTag() { return AEndTag; }
-    long tabIndex() const;
 
-    void setTabIndex( long );
     void blur (  );
     void focus (  );
 
@@ -57,6 +55,8 @@ public:
                              NodeImpl *&innerNode, long &offset);
 
     void getAnchorPosition(int &xPos, int &yPos);
+
+    //virtual void attach(KHTMLView *);
 };
 
 // -------------------------------------------------------------------------
