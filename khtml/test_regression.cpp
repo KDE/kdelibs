@@ -165,6 +165,12 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
             break;
         }
 	case CheckOutput: {
+            DOM::DocumentImpl* docimpl = static_cast<DOM::DocumentImpl*>( m_regTest->m_part->document().handle() );
+            if ( docimpl && docimpl->view() && docimpl->renderer() )
+            {
+                docimpl->updateRendering();
+                docimpl->view()->layout();
+            }
             QString filename = args[0].toString(exec).qstring();
 	    filename = RegressionTest::curr->m_currentCategory+"/"+filename;
             if ( m_regTest->m_genOutput ) {
