@@ -37,9 +37,10 @@
 #if HAVE_SYS_TIMEB_H
 #include <sys/timeb.h>
 #endif
-#ifdef BSD
-#include <sys/param.h>
-#endif
+
+#ifdef HAVE_SYS_PARAM_H
+#  include <sys/param.h>
+#endif // HAVE_SYS_PARAM_H
 
 #include <math.h>
 #include <string.h>
