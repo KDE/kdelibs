@@ -22,7 +22,6 @@
 #include "kio/connection.h"
 
 #include <kdebug.h>
-#include <kdebug2.h>
 
 using namespace KIO;
 

@@ -66,7 +66,6 @@
 #include <kdebug.h>
 #include <config-kfile.h>
 #include <kdebug.h>
-#include <kdebug2.h>
 
 template class QList<QRegExp>;
 

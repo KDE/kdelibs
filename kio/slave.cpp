@@ -2,7 +2,6 @@
 #include <ksock.h>
 #include <time.h>
 #include <kdebug.h>
-#include <kdebug2.h>
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kio/global.h>

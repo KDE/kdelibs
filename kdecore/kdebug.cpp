@@ -28,7 +28,6 @@
 #undef NDEBUG
 #endif
 #include "kdebug.h"
-#include "kdebug2.h"
 #ifdef NODEBUG
 #define NDEBUG
 #undef NODEBUG
@@ -139,10 +138,8 @@ enum DebugLevels {
     KDEBUG_FATAL=   3
 };
 
-void kDebugBackend( unsigned short nLevel, unsigned short nArea, bool linefeed,
-                    const char * pFormat, va_list arguments )
+static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const char *data)
 {
-
   static KConfig * pConfig = 0L;
   if ( !pConfig && KGlobal::_instance )
   {
@@ -226,15 +223,12 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea, bool linefeed,
                 QString aOutputFileName = pConfig->readEntry(aKey, "kdebug.dbg");
 
                 char buf[4096] = "";
-                int nPrefix = 0;
+		int nSize;
                 if ( !aAreaName.isEmpty() )
-                  nPrefix = sprintf( buf, "%s: ", aAreaName.ascii() );
-                unsigned int nSize = vsnprintf( buf, sizeof(buf)-1, pFormat, arguments );
-		nSize = QMIN(nSize, sizeof(buf)-2-nPrefix);
-		if (linefeed) {
-		    buf[nSize] = '\n';
-		    buf[nSize+1] = '\0';
-		}
+		    nSize = sprintf( buf, "%s: %s", aAreaName.ascii(), data);
+		else
+		    nSize = sprintf( buf, "%s", data);
+
                 QFile aOutputFile( aOutputFileName );
                 aOutputFile.open( IO_WriteOnly );
                 aOutputFile.writeBlock( buf, nSize+1 );
@@ -245,37 +239,19 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea, bool linefeed,
           {
                 // Since we are in kdecore here, we cannot use KMsgBox and use
                 // QMessageBox instead
-                char buf[4096]; // constants are evil, but this is evil code anyway
-                int nSize = vsprintf( buf, pFormat, arguments );
-                if( nSize > 4094 ) nSize = 4094;
-		if (linefeed) {
-		    buf[nSize] = '\n';
-		    buf[nSize+1] = '\0';
-		}
-                if ( !aAreaName.isEmpty() ) aCaption += QString("(")+aAreaName+")";
-                QMessageBox::warning( 0L, aCaption, buf, i18n("&OK") );
-                break;
+	      if ( !aAreaName.isEmpty() ) aCaption += QString("(")+aAreaName+")";
+	      QMessageBox::warning( 0L, aCaption, data, i18n("&OK") );
+	      break;
           }
         case 2: // Shell
           {
-                if ( !aAreaName.isEmpty() ) fprintf( stderr, "%s: ", aAreaName.ascii() );
-                vfprintf( stderr, pFormat, arguments );
-                if (linefeed)
-		    fprintf( stderr, "\n" );
-                break;
+	      if ( !aAreaName.isEmpty() ) fprintf( stderr, "%s: ", aAreaName.ascii() );
+	      fputs(  data, stderr);
+	      break;
           }
         case 3: // syslog
           {
-                char buf[4096] = "";
-                int nPrefix = 0;
-                if ( !aAreaName.isEmpty() ) nPrefix = sprintf( buf, "%s: ", aAreaName.ascii() );
-                int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
-                if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
-		if (linefeed) {
-		    buf[nSize] = '\n';
-		    buf[nSize+1] = '\0';
-		}
-                syslog( nPriority, buf );
+	      syslog( nPriority, data);
           }
         case 4: // nothing
           {
@@ -293,11 +269,24 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea, bool linefeed,
 #endif
 }
 
+static void kDebugBackend2( unsigned short nLevel, unsigned short nArea, const char* fmt, ... )
+{
+    va_list arguments;
+    va_start( arguments, fmt );
+    char buf[4096] = "";
+    int nSize = vsprintf( buf, fmt, arguments );
+    if( nSize > 4094 ) nSize = 4094;
+    buf[nSize] = '\n';
+    buf[nSize+1] = '\0';
+    kDebugBackend( nLevel, nArea, buf);
+    va_end( arguments );
+}
+
 void kDebugInfo( const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_INFO, 0, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_INFO, 0, fmt, arguments );
     va_end( arguments );
 }
 
@@ -305,7 +294,7 @@ void kDebugInfo( unsigned short area, const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_INFO, area, true, fmt, arguments  );
+    kDebugBackend2( KDEBUG_INFO, area, fmt, arguments  );
     va_end( arguments );
 }
 
@@ -315,7 +304,7 @@ void kDebugInfo( bool cond, unsigned short area, const char* fmt, ... )
     {
       va_list arguments;
       va_start( arguments, fmt );
-      kDebugBackend( KDEBUG_INFO, area, true, fmt, arguments );
+      kDebugBackend2( KDEBUG_INFO, area, fmt, arguments );
       va_end( arguments );
     }
 }
@@ -324,7 +313,7 @@ void kDebugWarning( const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_WARN, 0, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_WARN, 0, fmt, arguments );
     va_end( arguments );
 }
 
@@ -332,7 +321,7 @@ void kDebugWarning( unsigned short area, const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_WARN, area, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_WARN, area, fmt, arguments );
     va_end( arguments );
 }
 
@@ -342,7 +331,7 @@ void kDebugWarning( bool cond, unsigned short area, const char* fmt, ... )
     {
       va_list arguments;
       va_start( arguments, fmt );
-      kDebugBackend( KDEBUG_INFO, area, true, fmt, arguments );
+      kDebugBackend2( KDEBUG_INFO, area, fmt, arguments );
       va_end( arguments );
     }
 }
@@ -351,7 +340,7 @@ void kDebugError( const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_ERROR, 0, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_ERROR, 0, fmt, arguments );
     va_end( arguments );
 }
 
@@ -359,7 +348,7 @@ void kDebugError( unsigned short area, const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_ERROR, area, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_ERROR, area, fmt, arguments );
     va_end( arguments );
 }
 
@@ -369,7 +358,7 @@ void kDebugError( bool cond, unsigned short area, const char* fmt, ... )
     {
       va_list arguments;
       va_start( arguments, fmt );
-      kDebugBackend( KDEBUG_INFO, area, true, fmt, arguments );
+      kDebugBackend2( KDEBUG_INFO, area, fmt, arguments );
       va_end( arguments );
     }
 }
@@ -378,7 +367,7 @@ void kDebugFatal(const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_FATAL, 0, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_FATAL, 0, fmt, arguments );
     va_end( arguments );
 }
 
@@ -386,7 +375,7 @@ void kDebugFatal(unsigned short area, const char* fmt, ... )
 {
     va_list arguments;
     va_start( arguments, fmt );
-    kDebugBackend( KDEBUG_FATAL, area, true, fmt, arguments );
+    kDebugBackend2( KDEBUG_FATAL, area, fmt, arguments );
     va_end( arguments );
 }
 
@@ -396,7 +385,7 @@ void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... )
     {
       va_list arguments;
       va_start( arguments, fmt );
-      kDebugBackend( KDEBUG_INFO, area, true, fmt, arguments );
+      kDebugBackend2( KDEBUG_INFO, area, fmt, arguments );
       va_end( arguments );
     }
 }
@@ -419,7 +408,7 @@ void kDebugPError( unsigned short area, const char* fmt, ... )
     kDebugError( area, "%s: %s", buf, strerror(errno) );
 }
 
-kdbgstream &perror( kdbgstream &s) { return s << " " << strerror(errno) << endl; }
+kdbgstream &perror( kdbgstream &s) { return s << " " << strerror(errno); }
 kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
 kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
 
@@ -428,8 +417,13 @@ kdbgstream kdError(int area) { return kdbgstream(area, KDEBUG_ERROR); }
 void kdbgstream::flush() {
     if (output.isEmpty() || !print)
 	return;
-    va_list arguments;
-    kDebugBackend( level, area, false, output.local8Bit().data(), arguments );
-    va_end( arguments );
+    kDebugBackend( level, area, output.local8Bit().data() );
     output = QString::null;
+}
+
+kdbgstream::~kdbgstream() {
+    if (!output.isEmpty()) {
+	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
+	*this << "\n";
+    }
 }

@@ -72,7 +72,6 @@
 #include <kfilebookmark.h>
 #include <kdiroperator.h>
 #include <kio/job.h>
-#include <kdebug2.h>
 
 enum Buttons { HOTLIST_BUTTON,
 	       PATH_COMBO, CONFIGURE_BUTTON };

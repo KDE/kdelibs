@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <kdebug2.h>
 
 using namespace KIO;
 

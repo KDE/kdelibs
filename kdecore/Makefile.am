@@ -26,18 +26,16 @@ SUBDIRS = . tests
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
-	kdesktopfile.h \
+	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
 	kconfigbackend.h kapp.h kuniqueapp.h kcharsets.h \
-	kurl.h ksock.h \
-	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	kdebug2.h \
+	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h \
 	kstdaccel.h kwinmodule.h kwm.h kwin.h krootprop.h kpixmap.h dither.h \
-	kaccel.h kglobalaccel.h  \
-	kprotocolmanager.h kregexp.h kstyle.h \
+	kaccel.h kglobalaccel.h kcompletion_private.h kprotocolmanager.h \
+	kregexp.h kstyle.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h \
 	kstartparams.h kallocator.h kautoarray.h ksharedpixmap.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
-	krandomsequence.h knana.h kstringhandler.h kcompletion.h \
-	kcompletion_private.h kcmdlineargs.h kaboutdata.h
+	krandomsequence.h knana.h kstringhandler.h
 
 noinst_HEADERS = kckey.h kregpriv.h
 

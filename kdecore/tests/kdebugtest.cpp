@@ -1,11 +1,11 @@
 #include <kdebug.h>
-#include <kdebug2.h>
 #include <kapp.h>
 
 int main()
 {
-    kdDebug(150) << 17 << endl;
-    kdDebug() << k_lineinfo << 18 << endl;
+    QString test = "%20C this is a string";
+    kdDebug(150) << test << endl;
+    kdDebug() << k_lineinfo << "error on this line" << endl;
     kdDebug(2 == 2) << "this is right " << perror << endl;
     kdDebug() << "Before instance creation" << endl;
     kDebugInfo(1202,"Before instance creation");
