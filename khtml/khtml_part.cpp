@@ -1143,7 +1143,7 @@ void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 
   KParts::URLArgs args;
   args.serviceType = serviceType;
-  requestObject( &(*it), completeURL( url ) );
+  requestObject( &(*it), completeURL( url ), args );
 }
 
 void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
@@ -1256,8 +1256,8 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   child->m_part->openURL( url );
 }
 
-KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName, 
-					     QObject *parent, const char *name, const QString &mimetype, 
+KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,
+					     QObject *parent, const char *name, const QString &mimetype,
 					     QString &serviceName, QStringList &serviceTypes,
 					     const QStringList &params )
 {
