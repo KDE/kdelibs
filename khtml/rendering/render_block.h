@@ -145,7 +145,7 @@ public:
     int leftRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, bool inside=false);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
     virtual void calcMinMaxWidth();
     void calcInlineMinMaxWidth();
@@ -217,7 +217,7 @@ protected:
     int m_overflowWidth;
 };
 
-}; // namespace
+} // namespace
 
 #endif // RENDER_BLOCK_H
 

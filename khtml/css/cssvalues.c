@@ -822,5 +822,5 @@ DOMString getValueName(unsigned short id)
       return DOMString();
     else
       return DOMString(valueList[id]);
-};
+}
 

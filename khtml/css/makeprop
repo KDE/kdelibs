@@ -52,6 +52,6 @@ print "    if(id >= CSS_PROP_TOTAL || id == 0)"; \
 print "      return DOMString();";\
 print "    else";\
 print "      return DOMString(propertyList[id]);"; \
-print "};"; \
+print "}"; \
 print ""; \
 }' >> cssproperties.c

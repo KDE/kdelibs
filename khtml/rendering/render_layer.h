@@ -226,5 +226,5 @@ protected:
     void collectLayers(QValueVector<PositionedLayer> *, int tx, int ty, int &idx);
 };
 
-}; // namespace
+} // namespace
 #endif

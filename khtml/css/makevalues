@@ -52,7 +52,7 @@ print "    if(id >= CSS_VAL_TOTAL || id == 0)"; \
 print "      return DOMString();";\
 print "    else";\
 print "      return DOMString(valueList[id]);"; \
-print "};"; \
+print "}"; \
 print ""; \
 }' >> cssvalues.c
 

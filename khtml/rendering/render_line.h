@@ -251,6 +251,6 @@ protected:
     int m_bottomOverflow;
 };
 
-}; //namespace
+} //namespace
 
 #endif
