@@ -128,9 +128,13 @@ public:
 
     operator bool() const
     {
-	return !isNull();
+        return !isNull ();
     }
 
+    operator bool()
+    {
+        return (priv->object() != 0);
+    }
 
 private:
     void ref()
