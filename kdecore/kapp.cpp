@@ -291,7 +291,7 @@ void KApplication::init(bool GUIenabled)
 
     kdisplaySetStyle();
     kdisplaySetFont();
-    kdisplaySetPalette();
+//    kdisplaySetPalette(); done by kdisplaySetStyle
     propagateSettings(SETTINGS_QT);
 
     // "patch" standard QStyleSheet to follow our fonts
@@ -989,6 +989,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             setStyle(pKStyle);
             styleHandle=0;
             connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
+            kdisplaySetPalette(); // Don't forget to set palette though
             return;
         }
 
@@ -1039,9 +1040,8 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     if(pKStyle)
         connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
 
-    // WABA: Hack to get the button background right.
-    QApplication::setPalette(palette(), true);
-    // WABA: End-hack
+    // WABA: Reread palette from config file.
+    kdisplaySetPalette();
 }
 
 // in case someone calls QApplication::setStyle(), our kstyle would get deleted
