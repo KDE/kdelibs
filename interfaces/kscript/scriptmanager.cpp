@@ -22,7 +22,7 @@ ScriptInfo::ScriptInfo()
 	scriptMethod = "";
 }
 KScriptManager::KScriptManager(QObject *parent, char *name) :
-	KScriptClientInterface(),QObject(parent,name)
+	QObject(parent,name), KScriptClientInterface()
 {
 
 }
