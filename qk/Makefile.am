@@ -18,7 +18,7 @@
 
 INCLUDES = $(all_includes)
 
-lib_LTLIBRARIES = libqk.la
+noinst_LTLIBRARIES = libqk.la
 
 include_HEADERS = qaction.h qdom.h qvariant.h qxml.h
 libqk_la_SOURCES = qaction.cpp qdom.cpp qvariant.cpp qxml.cpp qaction.moc.cpp

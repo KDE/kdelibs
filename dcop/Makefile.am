@@ -27,7 +27,7 @@ LDFLAGS = $(all_libraries)
 bin_PROGRAMS = dcopserver
 
 lib_LTLIBRARIES  = libDCOP.la
-libDCOP_la_LIBADD = $(ICE_RLIB) $(LIB_QT)
+libDCOP_la_LIBADD = $(ICE_RLIB) ../qk/libqk.la
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries)
 
 include_HEADERS = dcopclient.h dcopserver.h dcopobject.h dcopglobal.h dcopstub.h dcopref.h

@@ -168,7 +168,7 @@ else
   TUTORIALS=""
 fi
 
-all_includes='-I$(top_srcdir)/kdecore/qk -I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
+all_includes='-I$(top_srcdir)/qk -I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
 AC_SUBST(all_includes)
 
 AC_SUBST(EXTRA_SUBDIRS)
