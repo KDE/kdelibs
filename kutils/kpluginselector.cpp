@@ -170,7 +170,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
             item->setText( 2, ( *it )->author()  );
             item->setText( 3, ( *it )->version() );
             item->setText( 4, ( *it )->license() );
-            item->setOn( ( *it )->pluginEnabled() );
+            item->setOn( ( *it )->isPluginEnabled() );
             d->pluginInfoMap.insert( item, *it );
         }
     }
@@ -185,12 +185,12 @@ KPluginSelectionWidget::~KPluginSelectionWidget()
     delete d;
 }
 
-bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginname ) const
+bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginName ) const
 {
     for( QMap<QCheckListItem*, KPluginInfo*>::ConstIterator it =
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
-        if( it.data()->pluginname() == pluginname )
-            return it.data()->pluginEnabled();
+        if( it.data()->pluginName() == pluginName )
+            return it.data()->isPluginEnabled();
     return false;
 }
 
@@ -230,7 +230,7 @@ void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool ch
 
         int id = d->widgetstack->addWidget( tabwidget );
         d->kps->configPage( id );
-        d->widgetIDs[ plugininfo->pluginname() ] = id;
+        d->widgetIDs[ plugininfo->pluginName() ] = id;
 
         for( QValueList<KService::Ptr>::ConstIterator it =
                 plugininfo->kcmServices().begin();
@@ -255,7 +255,7 @@ void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool ch
 
             int id = d->widgetstack->addWidget( module );
             d->kps->configPage( id );
-            d->widgetIDs[ plugininfo->pluginname() ] = id;
+            d->widgetIDs[ plugininfo->pluginName() ] = id;
         }
     }
     QApplication::restoreOverrideCursor();
@@ -275,7 +275,7 @@ void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
     }
 
     // if no widget exists for the plugin (yet)
-    if( !d->widgetIDs.contains( plugininfo->pluginname() ) )
+    if( !d->widgetIDs.contains( plugininfo->pluginName() ) )
     {
         if( !plugininfo->kcmServices().empty() )
             embeddPluginKCMs( plugininfo, checked );
@@ -286,7 +286,7 @@ void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
     else
     {
         // the page already exists
-        int id = d->widgetIDs[ plugininfo->pluginname() ];
+        int id = d->widgetIDs[ plugininfo->pluginName() ];
         d->kps->configPage( id );
         d->widgetstack->widget( id )->setEnabled( checked );
     }
@@ -309,13 +309,10 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
     kdDebug( 702 ) << k_funcinfo << endl;
     if( item == 0 )
         return;
+
+    // FIXME: Why not a dynamic_cast? - Martijn
     if( item->rtti() != 1 ) //check for a QCheckListItem
         return;
-
-    //FIXME:
-    ++d->changed;
-    if( d->changed == 1 )
-        emit changed( true );
 
     QCheckListItem * citem = static_cast<QCheckListItem *>( item );
     bool checked = citem->isOn();
@@ -325,7 +322,18 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
     KPluginInfo * info = d->pluginInfoMap[ citem ];
     if( info->isHidden() )
         kdFatal( 702 ) << "bummer" << endl;
-    checkDependencies( info );
+
+    if ( info->isPluginEnabled() != checked )
+    {
+        kdDebug( 702 ) << "Item changed state, emitting changed()" << endl;
+
+        //FIXME:
+        ++d->changed;
+        if ( d->changed == 1 )
+            emit changed( true );
+
+        checkDependencies( info );
+    }
 
     updateConfigPage( info, checked );
 }
@@ -339,7 +347,7 @@ void KPluginSelectionWidget::load()
     {
         KPluginInfo * info = it.data();
         info->load( d->config );
-        it.key()->setOn( info->pluginEnabled() );
+        it.key()->setOn( info->isPluginEnabled() );
     }
     updateConfigPage( d->currentplugininfo, d->currentchecked );
     // TODO: update changed state
@@ -387,7 +395,7 @@ void KPluginSelectionWidget::defaults()
             d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
     {
         it.data()->defaults();
-        it.key()->setOn( it.data()->pluginEnabled() );
+        it.key()->setOn( it.data()->isPluginEnabled() );
     }
     updateConfigPage( d->currentplugininfo, d->currentchecked );
     // TODO: update changed state
@@ -403,7 +411,7 @@ void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
         for( QMap<QCheckListItem*,
                 KPluginInfo*>::Iterator infoIt = d->pluginInfoMap.begin();
                 infoIt != d->pluginInfoMap.end(); ++infoIt )
-            if( infoIt.data()->pluginname() == *it )
+            if( infoIt.data()->pluginName() == *it )
             {
                 if( !infoIt.key()->isOn() )
                 {

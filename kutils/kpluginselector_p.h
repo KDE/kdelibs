@@ -119,7 +119,7 @@ class KPluginSelectionWidget : public QWidget
         /**
          * @return whether the plugin is enabled in the ListView or not.
          */
-        bool pluginChecked( const QString & pluginname ) const;
+        bool pluginChecked( const QString & pluginName ) const;
 
     signals:
         /**
@@ -145,7 +145,7 @@ class KPluginSelectionWidget : public QWidget
          *
          * @return Whether the plugin is loaded.
          */
-        virtual bool pluginIsLoaded( const QString & pluginname ) const;
+        virtual bool pluginIsLoaded( const QString & pluginName ) const;
 
     private slots:
         /**

@@ -135,7 +135,7 @@ void Dialog::addPluginInfos( const QValueList<KPluginInfo*> & plugininfos )
 {
 	for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
-		d->plugininfomap[ ( *it )->pluginname() ] = *it;
+		d->plugininfomap[ ( *it )->pluginName() ] = *it;
 }
 
 void Dialog::show()
@@ -214,7 +214,7 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 //X 			if( pinfo->config() )
 //X 				pinfo->config()->reparseConfiguration();
 		pinfo->load();
-		enabled = pinfo->pluginEnabled();
+		enabled = pinfo->isPluginEnabled();
 		kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
 		// if it is enabled we're done for this KCModuleInfo
 		if( enabled )

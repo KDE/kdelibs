@@ -140,7 +140,7 @@ class KPluginSelector : public QWidget
          * Load the state of the plugins (selected or not) from the KPluginInfo
          * objects. For KParts plugins everything should work automatically. For
          * your own type of plugins you might need to reimplement the
-         * KPluginInfo::pluginEnabled() method. If that doesn't fit your needs
+         * KPluginInfo::isPluginEnabled() method. If that doesn't fit your needs
          * you can also reimplement this method.
          */
         void load();

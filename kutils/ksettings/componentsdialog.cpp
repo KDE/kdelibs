@@ -108,7 +108,7 @@ void ComponentsDialog::show()
                 QCheckListItem::CheckBox );
         if( ! ( *it )->icon().isEmpty() )
             item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
-        item->setOn( ( *it )->pluginEnabled() );
+        item->setOn( ( *it )->isPluginEnabled() );
         d->plugininfomap[ item ] = ( *it );
     }
     KDialogBase::show();

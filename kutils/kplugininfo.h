@@ -66,7 +66,7 @@ class KPluginInfo
          * The "X-KDE-PluginInfo" keys you may add further entries which
          * will be available using property(). The Website,Category,Require
          * keys are optional.
-         * For EnabledByDefault look at pluginEnabledByDefault.
+         * For EnabledByDefault look at isPluginEnabledByDefault.
          *
          * @param filename  The filename of the .desktop file.
          * If filename is relative, you need to specify a resource type
@@ -143,7 +143,7 @@ class KPluginInfo
          *
          * You might need to reimplement this method for special needs.
          *
-         * @see pluginEnabled()
+         * @see isPluginEnabled()
          * @see save()
          */
         virtual void setPluginEnabled( bool enabled );
@@ -156,14 +156,14 @@ class KPluginInfo
          * @see setPluginEnabled()
          * @see load()
          */
-        virtual bool pluginEnabled() const;
+        virtual bool isPluginEnabled() const;
 
         /**
          * @return The default value whether the plugin is enabled or not.
          * Defaults to the value set in the desktop file, or if that isn't set
          * to false.
          */
-        bool pluginEnabledByDefault() const;
+        bool isPluginEnabledByDefault() const;
 
         /**
          * @return The value associated the the @p key. You can use it if you
@@ -222,7 +222,7 @@ class KPluginInfo
          * @return The internal name of the plugin (for KParts Plugins this is
          * the same name as set in the .rc file).
          */
-        const QString & pluginname() const;
+        const QString & pluginName() const;
 
         /**
          * @return The version of the plugin.
@@ -242,7 +242,7 @@ class KPluginInfo
 
         /**
          * @return A list of plugins required for this plugin to be enabled. Use
-         *         the pluginname in this list.
+         *         the pluginName in this list.
          */
         const QStringList & dependencies() const;
 
