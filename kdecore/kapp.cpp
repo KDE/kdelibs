@@ -20,6 +20,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// last time I forgot two functions kde_mimedir() and kde_confdir()
+// I will move this functions very soon to static functions of a new
+// class KPaths. Kapplication is not the optimal class to contain this
+// functions, since I need a DISPLAY to find out the paths. But I think,
+// we can create some inline methods in kapp then
 //
 // Revision 1.77  1997/12/13 15:08:56  jacek
 // KCharsets support added
@@ -233,6 +238,16 @@ void KApplication::init()
   if( (pHome = getenv( "HOME" )) )
 	aConfigName = pHome;
   pTopWidget = NULL;
+	aConfigName = "."; // use current dir if $HOME is not set
+  aConfigName += "/.kde/share/config/";
+  aConfigName += aAppName;
+  aConfigName += "rc";
+
+  QFile aConfigFile( aConfigName );
+
+  // Open the application-specific config file. It will be created if
+  // it does not exist yet.
+  
   if( !bSuccess )
 	{
 	  // try to open at least read-only
@@ -521,8 +536,6 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
       if (aMiniIconPixmap.isNull()){
 		if (argv[i+1][0] == '/')
-  unregisterTopWidget();
-
 		  aMiniIconPixmap = aIconPixmap;
 		else
 		  aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
@@ -1208,9 +1221,10 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
       fontlist->append( s );
   }
 
-  unregisterTopWidget();
   fontfile.close();
-  registerTopWidget();
+
+  return true;
+}
 
 
 const char* KApplication::tempSaveName( const char* pFilename )
@@ -1221,122 +1235,11 @@ const char* KApplication::tempSaveName( const char* pFilename )
 	{
 	  KDEBUG( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
 	  aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
-  if( topWidget() ) {
-	
-    int ID=0;
-    QString IDstr;
-
-    // set the specified icons
-    KWM::setIcon(topWidget()->winId(), getIcon());
-    KWM::setMiniIcon(topWidget()->winId(), getMiniIcon());
-	
-
-    ID = (int) topWidget()->winId();
-    IDstr.sprintf("0x%x", ID);
-	
-    Atom type;
-    int format;
-    unsigned long nitems;
-    unsigned long bytes_after;
-    char *buf;
-	
-    Display *kde_display = KApplication::desktop()->x11Display();
-    int screen = DefaultScreen(kde_display);
-    Window root = RootWindow(kde_display, screen);
-	
-    Atom at = XInternAtom( kde_display, "_DT_APP_WINDOWS", False);
-	
-    QString s;
-    do {
-      XGetWindowProperty( kde_display, root, at, 0, 256,
-			  False, XA_STRING, &type, &format, &nitems, 
-			  &bytes_after,
-			  (unsigned char **)&buf);
-      
-      s =  buf;
-      
-      // write in new top widget ID
-      if ( s.length() > 0) s += ",";
-      s += IDstr;
-	
-      // write back to property
-      XChangeProperty(kde_display, root, at,
-		      XA_STRING, 8, PropModeReplace,
-		      (unsigned char *)s.data(), s.length());
-      XSync(kde_display, False);
-
-      // make a check wether we really managed to write this
-      // property. But that is still NOT sufficient.
-      // If you do stuff like this you have to protect it
-      // with a mutex! (Matthias)
-      XGetWindowProperty( kde_display, root, at, 0, 256,
-			  False, XA_STRING, &type, &format, &nitems, 
-			  &bytes_after,
-			  (unsigned char **)&buf);
-    } while (s != buf); 
-  }
 	}
   else
 	aFilename = pFilename;
 
-  if( topWidget() ) {
-	
-    int ID=0;
-    QString IDstr;
-	
-    ID = (int) topWidget()->winId();
-    IDstr.sprintf("%x", ID);
-	IDstr.prepend("0x");
-	
-    Atom type;
-    int format;
-    unsigned long nitems;
-    unsigned long bytes_after;
-    char *buf;
-	
-    Display *kde_display = KApplication::desktop()->x11Display();
-    int screen = DefaultScreen(kde_display);
-    Window root = RootWindow(kde_display, screen);
-	
-    Atom at = XInternAtom( kde_display, "_DT_APP_WINDOWS", False);
-
-    QString s;
-    do {
-      XGetWindowProperty( kde_display, root, at, 0, 256,
-			  False, XA_STRING, &type, &format, &nitems, 
-			  &bytes_after,
-			  (unsigned char **)&buf);
-      
-      s = buf;
-      
-      // cut out current top widget ID if there is a current top widget
-      
-      if( ID ) {
-	int i = s.find( IDstr );
-	if ( i > 0 )
-	  s.remove( i-1, IDstr.length()+1 ); // cut out comma in front
-	else if ( i == 0 )
-	  s.remove( i, IDstr.length()+1 ); // cut out comma behind
-      }
-      
-      // write back to property
-      
-      XChangeProperty(kde_display, root, at,
-		      XA_STRING, 8, PropModeReplace,
-		      (unsigned char *)s.data(), s.length());
   QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
-      XSync(kde_display, False);
-      
-      // make a check wether we really managed to write this
-      // property. But that is still NOT sufficient.
-      // If you do stuff like this you have to protect it
-      // with a mutex! (Matthias)
-      XGetWindowProperty( kde_display, root, at, 0, 256,
-			  False, XA_STRING, &type, &format, &nitems, 
-			  &bytes_after,
-			  (unsigned char **)&buf);
-    } while (s != buf); 
-  }
   if( !aAutosaveDir.exists() )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )

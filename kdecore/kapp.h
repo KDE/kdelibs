@@ -19,6 +19,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+//
+// Revision 1.39  1997/12/28 21:32:15  kulow
+// last time I forgot two functions kde_mimedir() and kde_confdir()
+// I will move this functions very soon to static functions of a new
 // class KPaths. Kapplication is not the optimal class to contain this
 // functions, since I need a DISPLAY to find out the paths. But I think,
 // we can create some inline methods in kapp then
@@ -246,18 +250,11 @@ class KApplication : public QApplication
 
   /**
     * Get a KLocale object for the application. If it does not yet exist,
-  /** Sets the main widget of the application 
-	*
-	* The special thing about the main widget is that destroying it will
-	* leave the main event loop and exit the application.
-	* 
-	* Further, this function automatically unregisters an existing main widget 
-	* from the _DT_APP_WINDOWS root window property and registers the new main
-	* widget.
-	*
-	* @see #registerTopWidget
-	* @see #unregisteTopWidget
-	*/
+    * create one.
+    * @return a pointer to the KLocale object of the application
+    * @see KLocale
+    */
+  KLocale* getLocale();
 
   /**
     * Get a KCharsets object for the application. 
@@ -265,27 +262,10 @@ class KApplication : public QApplication
     * @see KCharsets
     */
   KCharsets* getCharsets()const
-  /** Adds window ID of the main widget to _DT_APP_WINDOWS property on root.
-	*
-	* The window ID of the top widget is appended to the string held in the
-	* _DT_APP_WINDOWS property on the root window. This property contains
-	* the IDs of all windows that understand the KDE style change messaging
-	* protocol
-	*
-	* @see #unregisterTopWidget
-	*/
+	{ return pCharsets; }
+     
   /**
-
-  /** Removes window ID of the main widget from _DT_APP_WINDOWS property on 
-	* root.
-	*
-	* If a top widget exists its window ID is removed from the string held
-	* in the _DT_APP_WINDOWS property on the root window. This property
-	* contains the IDs of all windows that understand the KDE style change
-	* messaging protocol.
-	*
-	* @see #registerTopWidget
-	*/
+	* Get the icon for the application.
 	* @return a QPixmap with the icon.
 	* @see QPixmap
 	*/
