@@ -195,7 +195,7 @@ bool KSocket::connect( const char *_path )
  */
 bool KSocket::connect( const QString& _host, unsigned short int _port )
 {
-  KExtendedSocket ks(_host, _port);
+  KExtendedSocket ks(_host, _port, KExtendedSocket::inetSocket);
   ks.setTimeout(timeOut, 0);
 
   ks.connect();
@@ -342,7 +342,8 @@ bool KServerSocket::init( unsigned short int _port )
 {
   d->port = _port;
   KExtendedSocket *ks;
-  ks = new KExtendedSocket(QString::null, _port, KExtendedSocket::passiveSocket);
+  ks = new KExtendedSocket(QString::null, _port, KExtendedSocket::passiveSocket |
+			   KExtendedSocket::inetSocket);
   d->ks = ks;
 
   if (d->bind)
