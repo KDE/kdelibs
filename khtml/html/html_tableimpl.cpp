@@ -589,6 +589,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 	    RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
 	    cell->setRowSpan(rSpan);
 	    cell->setColSpan(cSpan);
+            cell->setNoWrap(nWrap);
 	}
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
     }

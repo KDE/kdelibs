@@ -351,6 +351,9 @@ public:
 
     long rowSpan() const { return rSpan; }
     void setRowSpan( long r ) { rSpan = r; }
+    
+    bool noWrap() const { return nWrap; }
+    void setNoWrap(bool nw) { nWrap = nw; }
 
     int col() { return _col; }
     void setCol(int col) { _col = col; }
