@@ -357,7 +357,7 @@ void KSSL::setPeerInfo(int sock) {
 #ifdef HAVE_SSL
   if (!d->proxying) {
     ksockaddr_in sa;
-    socklen_t nl = sizeof(ksockaddr_in);
+    ksocklen_t nl = sizeof(ksockaddr_in);
     int rc = KSocks::self()->getpeername(sock, (sockaddr *)&sa, &nl);
 
     if (rc != -1) {
