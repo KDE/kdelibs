@@ -425,11 +425,13 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   emit lister->clear();
 }
 
-void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool notify )
+void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool notify )
 {
-  kdDebug(7004) << k_funcinfo << lister << " url: " << url << endl;
+  kdDebug(7004) << k_funcinfo << lister << " _url: " << _url << endl;
 
-  QString urlStr = url.url(-1);
+  KURL url( _url );
+  url.adjustPath( -1 );
+  QString urlStr = url.url();
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
   Q_ASSERT( holders );
   holders->removeRef( lister );
@@ -463,7 +465,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool noti
 
       if ( notify )
       {
-        lister->d->lstDirs.remove( urlStr );
+        lister->d->lstDirs.remove( url );
         emit lister->clear( url );
       }
 
@@ -731,9 +733,10 @@ void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
   // (Note that looking into itemsInUse isn't good enough. One could rename a subdir in a view.)
   renameDir( src, dst );
 
-  QString oldUrl = src.url(-1);
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
-  KFileItem* fileitem = findByURL( 0, oldUrl );
+  KURL oldurl( src );
+  oldurl.adjustPath( -1 );
+  KFileItem* fileitem = findByURL( 0, oldurl );
   if ( fileitem )
   {
     fileitem->setURL( dst );
@@ -1051,7 +1054,7 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
   {
     goNext = true;
     DirItem* dir = itu.current();
-    KURL oldDirUrl = itu.currentKey();
+    KURL oldDirUrl ( itu.currentKey() );
     //kdDebug(7004) << "itemInUse: " << oldDirUrl.prettyURL() << endl;
     // Check if this dir is oldUrl, or a subfolder of it
     if ( oldUrl.isParentOf( oldDirUrl ) )
@@ -1414,7 +1417,7 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
   QDictIterator<DirItem> itu( itemsInUse );
   while ( itu.current() )
   {
-    KURL deletedUrl = itu.currentKey();
+    KURL deletedUrl ( itu.currentKey() );
     if ( dirUrl.isParentOf( deletedUrl ) )
     {
       // stop all jobs for deletedUrl
@@ -1493,7 +1496,7 @@ void KDirListerCache::printDebug()
   QDictIterator<DirItem> itu( itemsInUse );
   for ( ; itu.current() ; ++itu ) {
       kdDebug(7004) << "   " << itu.currentKey() << "  URL: " << itu.current()->url
-                    << " rootItem: " << ( itu.current()->rootItem ? itu.current()->rootItem->url() : QString("NULL") )
+                    << " rootItem: " << ( itu.current()->rootItem ? itu.current()->rootItem->url() : KURL() )
                     << " autoUpdates refcount: " << itu.current()->autoUpdates
                     << " complete: " << itu.current()->complete
                   << ( itu.current()->lstItems ? QString(" with %1 items.").arg(itu.current()->lstItems->count()) : QString(" lstItems=NULL") ) << endl;
