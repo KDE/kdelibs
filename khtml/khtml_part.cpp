@@ -1359,6 +1359,29 @@ void KHTMLPart::checkCompleted()
     // We might want to add a message to the statusbar when we are not i18n-frozen.
   }
 
+  // check for a <link rel="SHORTCUT ICON" href="url to icon">,
+  // IE extension to set an icon for this page to use in
+  // bookmarks and the locationbar
+  if (!parentPart() && d->m_doc && d->m_doc->isHTMLDocument())
+  {
+      DOM::TagNodeListImpl links(d->m_doc, "LINK");
+      for (unsigned long i = 0; i < links.length(); ++i)
+          if (links.item(i)->isElementNode())
+          {
+              DOM::ElementImpl *link = static_cast<DOM::ElementImpl *>(links.item(i));
+              kdDebug() << "Checking..." << endl;
+              if (link->getAttribute("REL").string().upper() == "SHORTCUT ICON")
+              {
+                  KURL iconURL(d->m_baseURL, link->getAttribute("HREF").string());
+                  if (!iconURL.isEmpty())
+                  {
+                      emit d->m_extension->setIconURL(iconURL);
+                      break;
+                  }
+              }
+          }
+  }
+  
   emit completed();
   emit setStatusBarText( i18n("Loading complete") );
 }
