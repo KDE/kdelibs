@@ -81,7 +81,8 @@ KDE_SendXMapRequestNotification()
   QByteArray param;
   QDataStream str(param, IO_WriteOnly);
 
-  str << getpid();
+  int pid = (int) getpid();
+  str << pid;
 
   if (c.send("kicker", "TaskbarApplet", "clientMapped(int)", param)) {
 
