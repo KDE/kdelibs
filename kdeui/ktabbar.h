@@ -47,6 +47,7 @@ signals:
     void mouseDoubleClick( const int );
     void mouseMiddleClick( const int );
     void dragInitiated( const int );
+    void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
     void receivedDropEvent( const int, QDropEvent * );
     void moveTab( const int, const int );
     void closeRequest( const int );

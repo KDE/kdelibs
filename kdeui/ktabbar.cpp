@@ -172,7 +172,11 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 {
     QTab *tab = selectTab( e->pos() );
     if( tab!= 0L ) {
-        e->accept( true );  // How to make it conditional?
+        bool accept = false;
+        // The receivers of the testCanDecode() signal has to adjust
+        // 'accept' accordingly.
+        emit testCanDecode( e, accept);
+        e->accept( accept );
         return;
     }
     e->accept( false );

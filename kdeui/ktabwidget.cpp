@@ -33,6 +33,7 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     connect(tabBar(), SIGNAL(mouseDoubleClick( const int )), SLOT(mouseDoubleClick( const int )));
     connect(tabBar(), SIGNAL(mouseMiddleClick( const int )), SLOT(mouseMiddleClick( const int )));
     connect(tabBar(), SIGNAL(dragInitiated( const int )), SLOT(dragInitiated( const int )));
+    connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
     connect(tabBar(), SIGNAL(receivedDropEvent( const int, QDropEvent * )), SLOT(receivedDropEvent( const int, QDropEvent * )));
     connect(tabBar(), SIGNAL(moveTab( const int, const int )), SLOT(moveTab( const int, const int )));
     connect(tabBar(), SIGNAL(closeRequest( const int )), SLOT(closeRequest( const int )));
@@ -63,7 +64,11 @@ bool KTabWidget::isTabReorderingEnabled() const
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
 {
     if ( isEmptyTabbarSpace( e->pos() ) ) {
-        e->accept( true );  // How to make it conditional?
+        bool accept = false;
+        // The receivers of the testCanDecode() signal has to adjust
+        // 'accept' accordingly.
+        emit testCanDecode( e, accept);
+        e->accept( accept );
         return;
     }
     e->accept( false );

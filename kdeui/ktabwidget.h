@@ -47,7 +47,12 @@ public:
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
 
-    void setHoverCloseButton( bool );
+/*!
+    If \a enable is TRUE, a close button will be shown on mouse hover
+    over tab icons which will emit signal closeRequest( QWidget * )
+    when pressed.
+*/
+    void setHoverCloseButton( bool enable );
     bool hoverCloseButton() const;
 
 protected slots:
@@ -65,6 +70,7 @@ protected slots:
 
 signals:
     void tabbarContextMenu( const QPoint & );
+    void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
     void receivedDropEvent( QDropEvent * );
     void receivedDropEvent( QWidget *, QDropEvent * );
     void dragInitiated( QWidget * );

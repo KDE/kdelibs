@@ -25,6 +25,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), SLOT(mouseDoubleClick( QWidget * )));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
   connect( mWidget, SIGNAL( closeRequest( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
+  connect( mWidget, SIGNAL( testCanDecode(const QDragMoveEvent *, bool & )), SLOT(testCanDecode(const QDragMoveEvent *, bool & )));
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( dragInitiated( QWidget * )), SLOT(dragInitiated( QWidget * )));
@@ -88,6 +89,12 @@ void Test::currentChanged(QWidget* w)
 void Test::addTab()
 {
   mWidget->addTab( new QWidget( mWidget ), SmallIcon( "konsole" ), QString("Tab %1").arg( mWidget->count()+1 ) );
+}
+
+void Test::testCanDecode(const QDragMoveEvent *e, bool &accept /* result */)
+{
+  if ( QTextDrag::canDecode(e) )    // don't accept=false if it cannot be decoded!
+    accept = true;
 }
 
 void Test::receivedDropEvent( QDropEvent *e )
