@@ -676,11 +676,10 @@ QPtrList<Entry> Backend::readEntryList(const QString& key) {
 
 	QRegExp re(key, true, true);
 
-	for (FolderMap::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
-		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
-			if (re.exactMatch(j.key())) {
-				rc.append(j.data());
-			}
+	const EntryMap& map = _entries[_folder];
+	for (EntryMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
+		if (re.exactMatch(i.key())) {
+			rc.append(i.data());
 		}
 	}
 	return rc;
