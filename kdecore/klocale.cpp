@@ -68,10 +68,9 @@ char *k_bindtextdomain (const char *__domainname,
 
 KLocale::KLocale( const char *_catalogue ) 
 {
-
 #ifdef HAVE_SETLOCALE
-    /* Set locale via LC_ALL.  */
-    setlocale (LC_ALL, "C");
+    /* Set locale via LC_ALL according to environment variables  */
+    setlocale (LC_ALL, "");
 #endif
     chset="us-ascii";
     if ( ! _catalogue )
@@ -94,7 +93,13 @@ KLocale::KLocale( const char *_catalogue )
     } else
       languages = g_lang;
     
+#ifdef HAVE_SETLOCALE
+// setlocale reads variables LC_* and LANG, and it may use aliasses,
+// so we don't have to do it
+    g_lang = setlocale(LC_MESSAGES,0);
+#else   
     g_lang = getenv("LANG");
+#endif
 
     if (languages.isEmpty() || (languages == "C")) {
 	if (g_lang)
@@ -103,6 +108,7 @@ KLocale::KLocale( const char *_catalogue )
 	    languages = "C";
     } else 
 	languages += ":C";
+
     
     QString directory = KApplication::kde_localedir();
     
@@ -136,6 +142,7 @@ KLocale::KLocale( const char *_catalogue )
     /* Set the text message domain.  */
     k_bindtextdomain ( catalogue , directory);
     k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
+    
     QFile f(directory+"/"+lang+"/charset");   
     if (f.exists() && f.open(IO_ReadOnly)){
        char *buf=new char[256];
