@@ -153,7 +153,7 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
   if (dialog)
     {
       dialog->addTab(page, name);
-      helpNames.append(help_name.data());
+      helpNames.append(help_name.ascii());
       // set the default size
       dialog->resize(QMAX(dialog->sizeHint().width(), minimum_width_), dialog->height());
     }
