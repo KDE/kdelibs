@@ -220,6 +220,16 @@ QString KStandardDirs::kfsstnd_prefixes()
    return prefixes.join(":");
 }
 
+QString KStandardDirs::kfsstnd_xdg_conf_prefixes()
+{
+   return d->xdgconf_prefixes.join(":");
+}
+
+QString KStandardDirs::kfsstnd_xdg_data_prefixes()
+{
+   return d->xdgdata_prefixes.join(":");
+}
+
 bool KStandardDirs::addResourceType( const char *type,
 				     const QString& relativename )
 {
@@ -639,6 +649,21 @@ KStandardDirs::realPath(const QString &dirname)
     }
 
     return dirname;
+}
+
+QString
+KStandardDirs::realFilePath(const QString &filename)
+{
+    char realpath_buffer[MAXPATHLEN + 1];
+    memset(realpath_buffer, 0, MAXPATHLEN + 1);
+
+    /* If the path contains symlinks, get the real name */
+    if (realpath( QFile::encodeName(filename).data(), realpath_buffer) != 0) {
+        // succes, use result from realpath
+        return QFile::decodeName(realpath_buffer);
+    }
+
+    return filename;
 }
 
 void KStandardDirs::createSpecialResource(const char *type)
