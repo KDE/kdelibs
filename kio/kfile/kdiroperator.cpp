@@ -378,7 +378,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     QStringList files;
     KFileItemListIterator it( items );
 
-    for ( ; it; ++it ) {
+    for ( ; it.current(); ++it ) {
         KURL url = (*it)->url();
         urls.append( url );
         if ( url.isLocalFile() )
@@ -406,8 +406,11 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         doIt = (ret == KMessageBox::Continue);
     }
 
-    if ( doIt )
-        return KIO::del( urls, false, showProgress );
+    if ( doIt ) {
+        KIO::DeleteJob *job = KIO::del( urls, false, showProgress );
+        job->setAutoErrorHandlingEnabled( true, parent );
+        return job;
+    }
 
     return 0L;
 }
