@@ -66,15 +66,15 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // isPlainHostName(host)
             // true if host does not contain a domain.
             if (args.size() == 1)
-                result = Boolean(args[0].toString(exec).value().find(".") == -1);
+                result = Boolean(args[0].toString(exec).find(".") == -1);
             break;
         case DNSDomainIs:
             // dnsDomainIs(host, domain)
             // true is host ends in domain
             if (args.size() == 2)
             {
-                QString host = args[0].toString(exec).value().qstring().lower();
-                QString domain = args[1].toString(exec).value().qstring().lower();
+                QString host = args[0].toString(exec).qstring().lower();
+                QString domain = args[1].toString(exec).qstring().lower();
                 int p = host.find(domain);
                 if (p >= 0)
                     result = Boolean(host.mid(p) == domain);
@@ -87,12 +87,12 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // true if host ends in domain or does not contain any dots.
             if (args.size() == 2)
             {
-                QString host = args[0].toString(exec).value().qstring().lower();
+                QString host = args[0].toString(exec).qstring().lower();
                 if (host.find(".") == -1)
                     result = Boolean(true);
                 else
                 {
-                    QString domain = args[1].toString(exec).value().qstring().lower();
+                    QString domain = args[1].toString(exec).qstring().lower();
                     int p = host.find(domain);
                     if (p >= 0)
                         result = Boolean(host.mid(p) == domain);
@@ -105,7 +105,7 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // isResolvable(host)
             // true if host can be resolved to an IP
             if (args.size() == 1)
-                result = Boolean(!dnsResolve(args[0].toString(exec).value()).isNull());
+                result = Boolean(!dnsResolve(args[0].toString(exec)).isNull());
             break;
         case IsInNet:
             // isInNet(host, pattern, mask)
@@ -113,7 +113,7 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // given by pattern/mask, both dotted quads
             if (args.size() == 3)
             {
-                UString host = dnsResolve(args[0].toString(exec).value());
+                UString host = dnsResolve(args[0].toString(exec));
                 if (host.isNull())
                     result = Boolean(false);
                 else
@@ -121,8 +121,8 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
                     unsigned long ip, pattern = 0, mask = 0;
                     // unfortunately inet_aton is not available on Solaris (malte)
                     if ((ip = inet_addr(host.ascii())) == INADDR_NONE
-                        || (pattern = inet_addr(args[1].toString(exec).value().ascii())) == INADDR_NONE
-                        || (mask = inet_addr(args[2].toString(exec).value().ascii())) == INADDR_NONE)
+                        || (pattern = inet_addr(args[1].toString(exec).ascii())) == INADDR_NONE
+                        || (mask = inet_addr(args[2].toString(exec).ascii())) == INADDR_NONE)
                         result = Boolean(false);
                     else
                         result = Boolean((ip & mask) == (pattern & mask));
@@ -134,7 +134,7 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // returns the IP of host
             if (args.size() == 1)
             {
-                UString addr = dnsResolve(args[0].toString(exec).value());
+                UString addr = dnsResolve(args[0].toString(exec));
                 if (addr.isNull())
                     result = Undefined();
                 else
@@ -160,7 +160,7 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // counts the dots in host
             if (args.size() == 1)
             {
-                UString host = args[0].toString(exec).value();
+                UString host = args[0].toString(exec);
                 int p = -1, count = 0;
                 while ((p = host.find(".", p+1)) != -1)
                     count++;
@@ -172,8 +172,8 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             // true if string matches the shell-glob-like pattern glob
             if (args.size() == 2)
             {
-                QRegExp rex(args[1].toString(exec).value().qstring(), true, true);
-                result = Boolean(rex.search(args[0].toString(exec).value().qstring(), 0) != -1);
+                QRegExp rex(args[1].toString(exec).qstring(), true, true);
+                result = Boolean(rex.search(args[0].toString(exec).qstring(), 0) != -1);
             }
             break;
         case WeekdayRange:
@@ -185,11 +185,11 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             if (args.size() >= 1 && args.size() <= 3)
             {
                 static const char *weekdays[] = {"son", "mon", "tue", "wed", "thu", "fri", "sat", 0};
-                int day1 = findString(args[0].toString(exec).value().qstring().lower(), weekdays);
+                int day1 = findString(args[0].toString(exec).qstring().lower(), weekdays);
                 if (day1 == -1)
                     break;
                 int day2 = args.size() > 1 ?
-                    findString(args[1].toString(exec).value().qstring().lower(), weekdays) : -1;
+                    findString(args[1].toString(exec).qstring().lower(), weekdays) : -1;
                 if (day2 == -1)
                     day2 = day1;
                 const struct tm *now = getTime(exec,args);
@@ -219,9 +219,9 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
                 for (int i = 0; i < 6 && i < args.size(); ++i)
                 {
                     if (args[i].isA(NumberType))
-                        values[i] = (args[i].toInteger(exec).intValue());
+                        values[i] = (args[i].toInteger(exec));
                     else
-                        values[i] = findString(args[i].toString(exec).value().qstring().lower(), months);
+                        values[i] = findString(args[i].toString(exec).qstring().lower(), months);
                 }
                 int min, max, current;
                 const struct tm *now = getTime(exec,args);
@@ -270,7 +270,7 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
                 {
                     if (!args[i].isA(NumberType))
                         break;
-                    values[i] = (args[i].toInteger(exec).intValue());
+                    values[i] = (args[i].toInteger(exec));
                 }
                 if (values[0] == -1)
                     break;
@@ -315,7 +315,7 @@ const UString KProxyFunc::dnsResolve(const UString &host) const
 const struct tm *KProxyFunc::getTime(ExecState *exec, const List &args) const
 {
     time_t now = time(0);
-    return args[args.size() -1].toString(exec).value().qstring().lower() == "gmt" ?
+    return args[args.size() -1].toString(exec).qstring().lower() == "gmt" ?
         gmtime(&now) : localtime(&now);
 }
 

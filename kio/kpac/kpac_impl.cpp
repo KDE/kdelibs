@@ -76,7 +76,7 @@ QString KPACImpl::proxyForURL(const KURL &url)
     }
     else if (comp.complType() == ReturnValue)
     {
-        QString val = comp.value().toString(m_interpreter->globalExec()).value().qstring();
+        QString val = comp.value().toString(m_interpreter->globalExec()).qstring();
         QStringList proxies = QStringList::split(';', val);
         if (!proxies.count())
         {
