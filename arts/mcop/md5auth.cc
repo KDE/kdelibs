@@ -64,8 +64,8 @@ static char *md5_to_ascii_overwrite(char *md5)
 	result = strdup(outascii);
 
 	// try to zero out traces
-	bzero(md5,16);
-	bzero(outascii,33);
+	memset(md5,0,16);
+	memset(outascii,0,33);
 
 	// well, here it is
 	return result;
@@ -79,7 +79,7 @@ char *md5_auth_mangle(const char *cookie)
 	strcat(mangle,cookie);
 
 	MD5sum((unsigned char *)mangle,MD5_COOKIE_LEN*2,out);
-	bzero(mangle,MD5_COOKIE_LEN*2);
+	memset(mangle,0,MD5_COOKIE_LEN*2);
 
 	return md5_to_ascii_overwrite(out);
 }
@@ -90,7 +90,7 @@ char *md5_auth_mkcookie()
 	char out[16];
 	int rndfd;
 
-	bzero(&r,sizeof(struct random_info));
+	memset(&r,0,sizeof(struct random_info));
 
 	// collect some "random" system information
 	gettimeofday(&r.tv,0);
@@ -118,7 +118,7 @@ char *md5_auth_mkcookie()
 	MD5sum((unsigned char *)&r,sizeof(struct random_info),out);
 
 	// zero out traces and return
-	bzero(&r,sizeof(struct random_info));
+	memset(&r,0,sizeof(struct random_info));
 	return md5_to_ascii_overwrite(out);
 }
 
@@ -167,7 +167,7 @@ void md5_auth_init(const char *authname, const char *seedname)
 	if(fd != -1) {
 		cookie = md5_auth_mkcookie();
 		write(fd,cookie,strlen(cookie));
-		bzero(cookie,strlen(cookie));
+		memset(cookie,0,strlen(cookie));
 		free(cookie);
 		close(fd);
 	}
@@ -196,7 +196,7 @@ void md5_auth_init(const char *authname, const char *seedname)
 			if(fd != -1) {
 				cookie = md5_auth_mkcookie();
 				write(fd,cookie,strlen(cookie));
-				bzero(cookie,strlen(cookie));
+				memset(cookie,0,strlen(cookie));
 				free(cookie);
 				close(fd);
 			}
