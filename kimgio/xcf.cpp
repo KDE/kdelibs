@@ -41,6 +41,7 @@ void kimgio_xcf_read(QImageIO *io)
 
 void kimgio_xcf_write(QImageIO *io)
 {
+	kdDebug(399) << "XCF: write support not implemented" << endl;
 	io->setStatus(-1);
 }
 
