@@ -71,7 +71,6 @@
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <kservice.h>
-#include <konqfileitem.h>
 #include <kglobal.h>
 #include <kcompletion.h>
 #include <klineedit.h>
