@@ -39,6 +39,7 @@
  *
  * @short Allowing to automatically synchronize the X11 Clipboard and Selection buffers.
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ * @since 3.1
  */
 class KClipboard : public QObject
 {

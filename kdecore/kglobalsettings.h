@@ -98,6 +98,7 @@ class KGlobalSettings
      * This enum describes the return type for insertTearOffHandle() wether to insert
      * a handle or not. Applications who independently want to use handles in their popup menus
      * should test for Application level before calling the appropriate function in KPopupMenu.
+     * @since 3,1
      **/
     enum TearOffHandle {
       Disable = 0, ///< disable tear-off handles
@@ -108,6 +109,7 @@ class KGlobalSettings
     /**
      * Returns whether tear-off handles are inserted in @ref KPopupMenus.
      * @return whether tear-off handles are inserted in KPopupMenus.
+     * @since 3.1
      **/
     static TearOffHandle insertTearOffHandle();
 
@@ -371,6 +373,7 @@ class KGlobalSettings
      * Returns a font of approx. 48 pt. capable of showing @p text.
      * @param text the text to test
      * @return the font that is capable to show the text with 48 pt
+     * @since 3.1
      */
     static QFont largeFont(const QString &text = QString::null);
 
@@ -392,6 +395,7 @@ class KGlobalSettings
      * with Ctrl-wheelscroll.
      * @return true if the user wishes to zoom with the mouse wheel,
      *         false for scrolling
+     * @since 3.1
      */
     static bool wheelMouseZooms();
 

@@ -801,6 +801,7 @@ public:
    * @param baseURL The url where the action originates from
    * @param destURL The object of the action
    * @return true when the action is authorized, false otherwise.
+   * @since 3.1
    */
   bool authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL);
                    
@@ -822,6 +823,7 @@ public:
    * But it can be useful to query for the status of the modifiers at another moment
    * (e.g. some KDE apps do that upon a drop event).
    * @return the keyboard modifiers
+   * @since 3.1
    */
   static uint keyboardModifiers();
 
@@ -838,6 +840,7 @@ public:
    * But it can be useful to query for the status of the mouse buttons at another moment.
    * To query for the mouse pointer position, use @ref QCursor::pos().
    * @return the currently pressed mouse buttons 
+   * @since 3.1
    */
   static uint mouseState();
 

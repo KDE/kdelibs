@@ -78,6 +78,7 @@ public:
    * See README.kiosk for more information.
    * @param path the file to check
    * @return true if the user is authorized to run the file
+   * @since 3.1
    */
   static bool isAuthorizedDesktopFile(const QString& path);
 
@@ -197,6 +198,7 @@ public:
   /**
    * Returns the value of the "DocPath=" entry.
    * @return The value of the "DocPath=" entry.
+   * @since 3.1
    */
   QString readDocPath() const;
 

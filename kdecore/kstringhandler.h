@@ -297,6 +297,7 @@ public:
      * will display the URL correctly.
      * @param text the string which may contain URLs
      * @return the resulting text
+     * @since 3.1
      */
     static QString tagURLs( const QString& text );
 

@@ -132,8 +132,8 @@ namespace KNotifyClient
 		Messagebox = 2,
 		Logfile = 4,
 		Stderr = 8,
-		PassivePopup = 16,
-		Execute = 32
+		PassivePopup = 16, ///< @since 3.1
+		Execute = 32       ///< @since 3.1
 	};
 
 	/**

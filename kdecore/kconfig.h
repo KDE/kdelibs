@@ -144,6 +144,7 @@ public:
    * not been updated yet.
    * @param id the update to check
    * @param updateFile the file containing the update
+   * @since 3.1
    */
   void checkUpdate(const QString &id, const QString &updateFile);
     

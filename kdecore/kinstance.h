@@ -130,8 +130,10 @@ protected:
 
     /**
      * Set name of default config file.
+     * @param name the name of the default config file
+     * @since 3.1
      */
-    void setConfigName(const QString &);
+    void setConfigName(const QString &name);
 
 private:
     mutable KStandardDirs       *_dirs;

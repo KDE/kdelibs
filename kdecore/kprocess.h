@@ -450,6 +450,7 @@ public:
    * @param useShell true if the command should be started via a shell
    * @param shell the path to the shell that will execute the process, or
    *              0 to use the standard shell
+   * @since 3.1
    */
   void setUseShell(bool useShell, const char *shell = 0);
 
@@ -460,6 +461,7 @@ public:
    * It also prevents expansion of wild cards and environment variables.
    * @param arg the argument to quite
    * @return the quoted argument
+   * @since 3.1
    */
   static QString quote(const QString &arg);
 
@@ -751,12 +753,14 @@ private:
    *    not listed in /etc/shells will not used.
    *
    *    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
+   * @since 3.1
    */
   QCString searchShell();
 
   /**
    * Used by @ref searchShell in order to find out whether the shell found
    * is actually executable at all.
+   * @since 3.1
    */
   bool isExecutable(const QCString &filename);
 

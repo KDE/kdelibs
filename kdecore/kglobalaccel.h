@@ -98,6 +98,7 @@ class KGlobalAccel : public QObject
          * Removes the accelerator action identified by the name.
          * Remember to also call updateConnections().
 	 * @param sAction the name of the action to remove
+	 * @since 3.1
          */
         void remove( const QString& sAction );
         
@@ -177,6 +178,7 @@ class KGlobalAccel : public QObject
 	 * @param pConfig the configuration file to read from, or 0 for the application
 	 *                 configuration file
 	 * @return true if successful, false otherwise
+	 * @since 3.1
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 	// BCI: merge these two writeSettings methods in KDE 4.0

@@ -220,6 +220,7 @@ public:
 	 * @param relPath A relative path in the resource.
 	 *
 	 * @return True if the resource is restricted.
+	 * @since 3.1
 	 */
 	bool isRestrictedResource( const char *type,
 			      const QString& relPath=QString::null ) const;

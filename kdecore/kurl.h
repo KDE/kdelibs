@@ -633,6 +633,7 @@ public:
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
+   * @since 3.1
    */
   bool equals( const KURL &u, bool ignore_trailing = false ) const;
 

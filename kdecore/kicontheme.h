@@ -211,6 +211,7 @@ public:
     /** 
      * Returns the name of this theme's share overlay. 
      * @return the name of the share overlay
+     * @since 3.1
      */
     QString shareOverlay () const;
 
@@ -294,10 +295,15 @@ public:
      */
     static QString current();
 
+    /**
+     * Reconfigure the theme.
+     */
     static void reconfigure();
 
     /**
      * Returns the default icon theme.
+     * @return the name of the default theme name
+     * @since 3.1
      */
     static QString defaultThemeName();
 

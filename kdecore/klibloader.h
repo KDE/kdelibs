@@ -94,6 +94,7 @@ public:
      * so if the symbol might or might not exist, better use hasSymbol() before symbol().
      * @param name the name of the symbol to check
      * @return true if the symbol exists
+     * @since 3.1
      */
     bool hasSymbol( const char* name ) const;
 

@@ -52,7 +52,7 @@ public:
      */
     enum Message { PaletteChanged=0, FontChanged, StyleChanged,
                    BackgroundChanged, SettingsChanged, IconChanged, ToolbarStyleChanged,
-                   ClipboardConfigChanged,
+                   ClipboardConfigChanged, /// @since 3.1
                    UserMessage=32 };
 
     /**

@@ -410,6 +410,7 @@ public:
    * read-only (no setter function)
    *
    * @return If nouns are declined
+   * @since 3.1
    */
    bool nounDeclension() const;
 
@@ -429,6 +430,7 @@ public:
    * name is preferred ("of January" rather than "January")
    *
    * @return If possessive form should be used
+   * @since 3.1
   */
   bool dateMonthNamePossessive() const;
 
@@ -466,6 +468,7 @@ public:
    * Use this to determine which day is the first day of the week.
    *
    * @return an integer (Monday=1..Sunday=7)
+   * @since 3.1
    */
   int weekStartDay() const;
 
@@ -488,6 +491,7 @@ public:
    * @param shortName we will return the short version of the string.
    *
    * @return The possessive form of the name of the month
+   * @since 3.1
   */
   QString monthNamePossessive(int i, bool shortName = false) const;
 
@@ -707,6 +711,7 @@ public:
    * Changes the form of month name used in dates.
    *
    * @param possessive True if possessive forms should be used
+   * @since 3.1
    */
   void setDateMonthNamePossessive(bool possessive);
   /**
@@ -737,6 +742,7 @@ public:
    * Changes how KLocale defines the first day in week.
    *
    * @param start True if Monday is the first day in the week
+   * @since 3.1
    */
   void setWeekStartsMonday(bool start); //### remove for KDE 4.0
   /**
@@ -909,6 +915,7 @@ public:
    * Translates a message as a QTranslator is supposed to.
    * The parameters are similar to i18n(), but the result
    * value has other semantics (it can be QString::null)
+   * @since 3.1
    **/
   QString translateQt(const char *context,
 		      const char *sourceText,
@@ -917,6 +924,7 @@ public:
   /**
    * Returns list of all known ISO 639-1 codes.
    * @return a list of all language codes
+   * @since 3.1
    */
   QStringList allLanguagesTwoAlpha() const;
 
@@ -924,12 +932,14 @@ public:
    * Convert a ISO 639-1 code to a human readable form.
    * @param code the language ISO 639-1 code
    * @return the human readable form
+   * @since 3.1
    */
   QString twoAlphaToLanguageName(const QString &code) const;
 
   /**
    * Returns list of all known country codes.
    * @return a list of all country codes
+   * @since 3.1
    */
   QStringList allCountriesTwoAlpha() const;
 
@@ -937,6 +947,7 @@ public:
    * Convert a country code to a human readable form.
    * @param code the country code
    * @return the human readable form of the country name
+   * @since 3.1
    */
   QString twoAlphaToCountryName(const QString &code) const;
 

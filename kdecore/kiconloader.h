@@ -139,6 +139,7 @@ public:
      * been found.
      * @return the icon set. Can be null when not found, depending on
      *          @p canReturnNull.
+     * @since 3.1
      */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
                          bool canReturnNull);
@@ -236,6 +237,7 @@ public:
      * given directory.
      * @param iconsDir the directory to search in
      * @return A QStringList containing the icon paths
+     * @since 3.1
      */
     QStringList queryIconsByDir( const QString& iconsDir ) const;
 
@@ -317,12 +319,14 @@ public:
     /**
      * @internal
      * return the path for the unknown icon in that size
+     * @since 3.1
      */
     QString unknownIconPath( int size ) const;
 
     /**
      * Checks if name ends in one of the supported icon formats (i.e. .png)
      * and returns the name without the extension if it does.
+     * @since 3.1
      */
     QString removeIconExtension(const QString &name) const;
 

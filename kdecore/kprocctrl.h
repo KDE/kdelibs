@@ -97,8 +97,10 @@ public:
    * starting an event loop.
    * This function may cause KProcess to emit any of its signals.
    *
+   * @param timeout the timeout in seconds
    * @return true if a process exited, false
    *         if no process exited within @p timeout seconds.
+   * @since 3.1
    */
   bool waitForProcessExit(int timeout);
 

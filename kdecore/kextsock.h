@@ -176,6 +176,7 @@ public:
   /**
    * Resets the socket, disconnecting if still connected and
    * freeing any related resources still being kept.
+   * @since 3.1
    */
   void reset();
 
