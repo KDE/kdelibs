@@ -309,7 +309,7 @@ QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs,
      return execpath;
 }
 
-static pid_t launch(int argc, const char *_name, const char *args, 
+static pid_t launch(int argc, const char *_name, const char *args,
                     const char *cwd=0, int envc=0, const char *envs=0,
                     bool reset_env = false,
                     const char *tty=0, bool avoid_loops = false,
@@ -319,7 +319,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   QCString lib;
   QCString name;
   QCString exec;
-  
+
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
       * instead of calling 'main(argc, argv)',
@@ -391,7 +391,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
      if( reset_env ) // KWRAPPER/SHELL
      {
-         
+
          QStrList unset_envs;
          for( int tmp_env_count = 0;
               environ[tmp_env_count];
@@ -407,7 +407,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
                  unsetenv( tmp.left( pos ));
          }
      }
-     
+
      for (int i = 0;  i < envc; i++)
      {
         putenv((char *)envs);
@@ -475,9 +475,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
         // We set the close on exec flag.
         // Closing of d.fd[1] indicates that the execvp succeeded!
         fcntl(d.fd[1], F_SETFD, FD_CLOEXEC);
-        
+
         setup_tty( tty );
-        
+
         execvp(execpath.data(), d.argv);
         d.result = 1; // Error
         write(d.fd[1], &d.result, 1);
@@ -510,14 +510,14 @@ static pid_t launch(int argc, const char *_name, const char *args,
         {
            fprintf(stderr, "kdeinit: Suspending process\n"
                            "kdeinit: 'gdb kdeinit %d' to debug\n"
-                           "kdeinit: 'kill -SIGCONT %d' to continue\n", 
+                           "kdeinit: 'kill -SIGCONT %d' to continue\n",
                            getpid(), getpid());
            kill(getpid(), SIGSTOP);
         }
         else
             setup_tty( tty );
-        
-        exit( d.func( argc, d.argv)); /* Launch! */
+
+	exit( d.func(argc, d.argv)); /* Launch! */
      }
      else
      {
@@ -955,7 +955,7 @@ static void handle_launcher_request(int sock = -1)
          avoid_loops = l;
          arg_n += sizeof( long );
      }
-     
+
      if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
          || request_header.cmd == LAUNCHER_EXT_EXEC )
      {
@@ -969,7 +969,7 @@ static void handle_launcher_request(int sock = -1)
        fprintf(stderr, "kdeinit: EXEC request has invalid format.\n");
 #endif
        free(request_data);
-       d.debug_wait = false;	
+       d.debug_wait = false;
        return;
      }
 
@@ -1160,8 +1160,11 @@ static void handle_requests(pid_t waitForPid)
       {
         if(FD_ISSET(X11fd,&rd_set))
         {
-          XEvent event_return;
-          if (X11display != 0) XNextEvent(X11display, &event_return);
+          if (X11display != 0) {
+	    XEvent event_return;
+	    while (XPending(X11display))
+	      XNextEvent(X11display, &event_return);
+	  }
         }
       }
 #endif
@@ -1174,19 +1177,19 @@ static void kdeinit_library_path()
      QStringList::split(':', QFile::decodeName(getenv("LTDL_LIBRARY_PATH")));
    QStringList ld_library_path =
      QStringList::split(':', QFile::decodeName(getenv("LD_LIBRARY_PATH")));
-                        
+
    QCString extra_path;
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
         it++)
    {
-      QString d = *it;      
+      QString d = *it;
       if (ltdl_library_path.contains(d))
           continue;
       if (ld_library_path.contains(d))
           continue;
-      if (d[d.length()-1] == '/') 
+      if (d[d.length()-1] == '/')
       {
          d.truncate(d.length()-1);
          if (ltdl_library_path.contains(d))
@@ -1394,13 +1397,13 @@ int main(int argc, char **argv, char **envp)
          exit(1);
       }
    }
- 
+
    if (!suicide)
    {
       QString konq = locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())
       {
-         lt_dlhandle result = lt_dlopen(QFile::encodeName(konq).data());
+	  lt_dlhandle result = lt_dlopen(QFile::encodeName(konq).data());
       }
    }
 
