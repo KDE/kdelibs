@@ -132,23 +132,26 @@ style="position : absolute;
                 background-image : url('common/bottom1.png');
                 background-repeat : repeat-x;
                 background-color : transparent;
+		margin-left: 0px;
+		margin-right: 0px;
                 z-index : 25;">
     <img src="common/bottom2.png" 
 	 align="right" 
          height="59" 
          width="227" 
          alt="KDE Logo"></img>
-    <div id="navtable2"
-         style="position : relative;
-                width : 100%;
-                top: 60px;
-                left: 0px;
-                z-index : 15;
+	 <div id="navtable2"
+         style="width : 100%;
+		margin-left: 0px;
+	        margin-right: 0px;     
+                z-index : 15;	
                 background-color : transparent;">
-
     
-    <table width="100%" border="0" cellpadding="0" cellspacing="0">
-    <tr>
+    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+	style="position: absolute;
+	       top: 70px;
+	       left: 0px;">	
+	<tr>
           <td width="33%" align="left" valign="top">
             <xsl:if test="count($prev)>0">
               <a>
