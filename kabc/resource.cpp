@@ -216,7 +216,11 @@ Resource::Iterator Resource::begin()
 Resource::ConstIterator Resource::begin() const
 {
   ConstIterator it;
+#if QT_VERSION >= 0x030200
   it.d->mIt = mAddressees.constBegin();
+#else
+  it.d->mIt = mAddressees.begin();
+#endif
 
   return it;
 }
@@ -232,7 +236,11 @@ Resource::Iterator Resource::end()
 Resource::ConstIterator Resource::end() const
 {
   ConstIterator it;
+#if QT_VERSION >= 0x030200
   it.d->mIt = mAddressees.constEnd();
+#else
+  it.d->mIt = mAddressees.end();
+#endif
 
   return it;
 }
