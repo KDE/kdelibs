@@ -24,7 +24,11 @@
 #ifndef _DOM_NodeImpl_h_
 #define _DOM_NodeImpl_h_
 
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
+#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+
 #include "dom/dom_misc.h"
+#include <qstring.h>
 
 class QPainter;
 class KHTMLView;
@@ -204,6 +208,11 @@ public:
     
     virtual DOMString toHTML(DOMString _string);
     virtual DOMString innerHTML(DOMString _string);
+
+    virtual QString toHTML();
+    virtual void recursive( QChar *htmlText, long &currentLength, long &offset, int stdInc );
+    virtual int increaseStringLength( QChar *htmlText, long &currentLength, long offset, int stdInc );
+
     virtual void applyChanges();
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
     
@@ -212,6 +221,11 @@ protected:
     unsigned short flags;
     khtml::RenderStyle *m_style;
     khtml::RenderObject *m_render;
+private:
+    static const QChar LT;
+    static const QChar MT;
+    static const QChar SLASH;
+    static const QChar SPACE;
 };
 
 // this class implements nodes, which can have a parent but no children:
