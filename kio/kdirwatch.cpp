@@ -40,6 +40,9 @@
 
 #ifdef HAVE_DNOTIFY
 #include <qintdict.h>
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <fcntl.h>
 // appeared in 2.4.0, but we need the #defines here in case
 // code is compiled on an older kernel and later run on a newer
