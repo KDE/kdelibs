@@ -37,3 +37,8 @@ entrydir = $(kde_datadir)/kdeprint/plugins
 
 misc_DATA = preview.png preview-mini.png
 miscdir = $(kde_datadir)/kdeprint
+
+EXTRA_DIST = postscript.ppd.gz
+
+model_DATA = @CUPS_MODEL@
+modeldir = @CUPS_MODELDIR@
