@@ -23,3 +23,4 @@
 	added to the search path of jpeg/giflib KDEDIR/lib
 	updated khtmlw to 0.5.3
 	added some Q_OBJECT to drag.h
+0.8.1: added QTINC and QTLIB
