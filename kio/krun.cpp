@@ -341,7 +341,6 @@ pid_t KRun::run( const QString& _cmd )
 bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
-  int argvSize = 0;
 
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
@@ -354,8 +353,7 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
     int pid;
     if ( ( pid = fork() ) == 0 )
     {
-	argvSize = _urls.count() + 3;
-	argv = new char*[ argvSize ];
+	argv = new char*[ _urls.count() + 3 ];
 	argv[ 0 ] = qstrdup(kfmexec.latin1());
 	
 	int i = 1;
@@ -379,13 +377,12 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
       int pid;
       if ( ( pid = fork() ) == 0 )
       {
-	  argvSize = 3;
-	  argv = new char*[ argvSize ];
+	  argv = new char*[ 3 ];
 	  argv[ 0 ] = qstrdup(kfmexec.latin1());
 	  argv[ 1 ] = qstrdup(app.latin1());
 	  argv[ 2 ] = qstrdup((*it).url().latin1());
 	  argv[ 3 ] = 0;
-	  
+	
 	  execvp( argv[0], argv );
 	  _exit(1);
       }
