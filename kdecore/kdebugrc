@@ -40,6 +40,10 @@ InfoOutput=4
 [172]
 InfoOutput=4
 
+# KLocale debug info off
+[173]
+InfoOutput=4
+
 # KMainWindow debug info off
 [200]
 InfoOutput=4
