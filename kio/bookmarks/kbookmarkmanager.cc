@@ -19,6 +19,7 @@
 
 #include "kbookmarkmanager.h"
 #include "kbookmarkmenu.h"
+#include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
 #include <kdebug.h>
 #include <krun.h>
@@ -553,6 +554,26 @@ KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
    static QString bookmarksFile = locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
    return KBookmarkManager::managerForFile( bookmarksFile );
+}
+
+KBookmarkSettings* KBookmarkSettings::s_self = 0;
+
+void KBookmarkSettings::readSettings() 
+{
+   KConfig config("kbookmarkrc", false, false);
+   config.setGroup("Bookmarks");
+   s_self->m_advanced = config.readBoolEntry("AdvancedAddBookmark", false);
+   s_self->m_filteredtoolbar = config.readBoolEntry("FilteredToolbar", false);
+}
+
+KBookmarkSettings *KBookmarkSettings::self() 
+{
+   if (!s_self)
+   {
+      s_self = new KBookmarkSettings;
+      readSettings();
+   }
+   return s_self;
 }
 
 #undef dptr

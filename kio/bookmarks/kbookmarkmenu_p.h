@@ -161,25 +161,14 @@ public:
   static QString selectedAddress( QListView* );
 };
 
-class KBookmarkSettings {
+class KBookmarkSettings 
+{
 public:
     bool m_advanced;
     bool m_filteredtoolbar;
     static KBookmarkSettings *s_self;
-    static void readSettings() {
-        KConfig config("kbookmarkrc", false, false);
-        config.setGroup("Bookmarks");
-        s_self->m_advanced = config.readBoolEntry("AdvancedAddBookmark", false);
-        s_self->m_filteredtoolbar = config.readBoolEntry("FilteredToolbar", false);
-    }
-    static KBookmarkSettings *self() {
-        if (!s_self)
-        {
-            s_self = new KBookmarkSettings;
-            readSettings();
-        }
-        return s_self;
-    }
+    static void readSettings();
+    static KBookmarkSettings *self();
 };
 
 #endif

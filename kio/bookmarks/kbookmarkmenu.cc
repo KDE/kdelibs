@@ -68,8 +68,6 @@
 
 template class QPtrList<KBookmarkMenu>;
 
-KBookmarkSettings* KBookmarkSettings::s_self = 0;
-
 /********************************************************************
  *
  * KBookmarkMenu
