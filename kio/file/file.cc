@@ -909,7 +909,9 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   if ( stat( udest.path(), &buff ) != -1 ) {
 
-    if ( buff.st_size == _size ) {
+    // If the given file size is 0 and the downloaded size is not 0,
+    // then we assume we got the whole file.
+    if ( buff.st_size == _size || ( buff.st_size && !_size ) ) {
 
       // after full download rename the file back to original name
       if ( m_bMarkPartial ) {
