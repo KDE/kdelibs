@@ -1045,7 +1045,7 @@ int KExtendedSocket::listen(int N)
   if ((d->flags & passiveSocket) == 0 || d->status >= listening)
     return -2;
   if (d->status < lookupDone)
-    if (lookup() < 0)
+    if (lookup() != 0)
       return -2;		// error!
 
   addrinfo *p;
@@ -1181,7 +1181,7 @@ int KExtendedSocket::connect()
   if (d->flags & passiveSocket || d->status >= connected)
     return -2;
   if (d->status < lookupDone)
-    if (lookup() < 0)
+    if (lookup() != 0)
       return -2;
 
   addrinfo *p, *q;
@@ -1452,7 +1452,7 @@ bool KExtendedSocket::open(int mode)
 
 void KExtendedSocket::close()
 {
-  if (sockfd == -1)
+  if (sockfd == -1 || d->status >= closing)
     return;			// nothing to close
 
   // LOCK BUFFER MUTEX
@@ -1486,16 +1486,14 @@ void KExtendedSocket::close()
 
 void KExtendedSocket::closeNow()
 {
-  d->status = done;
-
-  if (sockfd == -1)
+  if (sockfd == -1 || d->status >= done)
     return;			// nothing to close
 
+  d->status = done;
+
   // close the socket
-  if (d->qsnIn)
-    delete d->qsnIn;
-  if (d->qsnOut)
-    delete d->qsnOut;
+  delete d->qsnIn;
+  delete d->qsnOut;
   d->qsnIn = d->qsnOut = NULL;
 
   ::close(sockfd);

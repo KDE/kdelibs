@@ -103,6 +103,8 @@ void kde_freeaddrinfo(struct kde_addrinfo *ai)
   if (ai->origin == KAI_LOCALUNIX)
     {
       struct addrinfo *p, *last = NULL;
+      /* We've added one AF_UNIX socket in here, to the
+       * tail of the linked list. We have to find it */
       for (p = ai->data; p; p = p->ai_next)
 	{
 	  if (p->ai_family == AF_UNIX)
@@ -353,7 +355,8 @@ int kde_getaddrinfo(const char *name, const char *service,
     *result = res;
   else
     {
-      freeaddrinfo(res->data);
+      if (res->data != NULL)
+	freeaddrinfo(res->data);
       free(res);
     }
   return err;
