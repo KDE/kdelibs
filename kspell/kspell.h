@@ -39,9 +39,6 @@
 
 class QTextCodec;
 
-// Can be removed once kdelibs-2.2-final has been released
-#define KSPELL_HAS_IGNORE_UPPER_WORD
-
 class KSpell : public QObject
 {
   Q_OBJECT
