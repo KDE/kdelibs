@@ -853,8 +853,8 @@ void RenderBox::calcAbsoluteHorizontal()
         //1. solve left & width.
         if (l==AUTO && w==AUTO && r!=AUTO) 
         {
-            l = 0;
-            w = cw - ( r + l + ml + mr + pab);      
+            w = m_maxWidth;
+            l = cw - ( r + w + ml + mr + pab);       
         } 
         else
 
@@ -878,8 +878,8 @@ void RenderBox::calcAbsoluteHorizontal()
         //3. solve width & right. 
         if (l!=AUTO && w==AUTO && r==AUTO) 
         {
-            r = 0; 
-            w = cw - ( r + l + ml + mr + pab); 
+            w = m_maxWidth;
+            r = cw - ( l + w + ml + mr + pab); 
         } 
         else
 
