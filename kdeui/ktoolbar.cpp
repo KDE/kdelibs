@@ -176,6 +176,9 @@ KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
 
 KToolBar::~KToolBar()
 {
+    for ( QWidget *w = widgets.first(); w; w = widgets.next() )
+	disconnect( w, SIGNAL( destroyed() ),
+		    this, SLOT( widgetDestroyed() ) );
     delete d;
 }
 
@@ -1333,9 +1336,10 @@ void KToolBar::childEvent( QChildEvent *e )
     int dummy = -1;
     if ( e->child()->isWidgetType() ) {
 	if ( e->type() == QEvent::ChildInserted ) {
-	    insertWidgetInternal( (QWidget*)e->child(), dummy, -1 );
-	    if ( !e->child()->inherits( "QPopupMenu" ) )
+	    if ( !e->child()->inherits( "QPopupMenu" ) ) {
+		insertWidgetInternal( (QWidget*)e->child(), dummy, -1 );
 		( (QWidget*)e->child() )->show();
+	    }
 	} else {
 	    widgets.removeRef( (QWidget*)e->child() );
 	}
@@ -1347,12 +1351,20 @@ void KToolBar::childEvent( QChildEvent *e )
 
 void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
 {
+    // prevent items that have been explicitly inserted by insert*() from
+    // being inserted again
     if ( inserted.findRef( w ) != -1 )
         return;
+
     if ( widgets.findRef( w ) != -1 )
             widgets.removeRef( w );
-    if ( index == -1 || index > (int)widgets.count() )
+
+    connect( w, SIGNAL( destroyed() ),
+	     this, SLOT( widgetDestroyed() ) );
+    if ( index == -1 || index > (int)widgets.count() ) {
         widgets.append( w );
+	index = (int)widgets.count();
+    }
     else
         widgets.insert( index, w );
     if ( id == -1 )
@@ -1975,6 +1987,16 @@ void KToolBar::slotContextAboutToShow()
       break;
   default: break;
   }
+}
+
+void KToolBar::widgetDestroyed()
+{
+  widgets.removeRef( (QWidget*)sender() );
+  QMap< QWidget*, int >::Iterator it = widget2id.find( (QWidget*)sender());
+  if ( it == widget2id.end() )
+    return;
+  widget2id.remove( it );
+  id2widget.remove( *it );
 }
 
 #include "ktoolbar.moc"

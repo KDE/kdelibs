@@ -998,6 +998,7 @@ private slots:
     void slotRepaint();
     void toolBarPosChanged( QToolBar *tb );
     void slotContextAboutToShow();
+    void widgetDestroyed();
 
 private:
     void init( bool readConfig = true, bool honorStyle = false );
