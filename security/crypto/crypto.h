@@ -21,6 +21,10 @@
 #ifndef _CRYPTO_H
 #define _CRYPTO_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <kcmodule.h>
 
 #include <qtabwidget.h>

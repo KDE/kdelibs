@@ -367,6 +367,15 @@ void KCryptoConfig::save()
 {
   KConfig *config = new KConfig("cryptodefaults");
 
+  if (!mUseTLS->isChecked() &&
+      !mUseSSLv2->isChecked() &&
+      !mUseSSLv3->isChecked())
+    KMessageBox::information(this, i18n("If you don't select at least one"
+                                       " SSL algorithm, either SSL will not"
+                                       " work or the application may be"
+                                       " forced to choose a suitable default."),
+                                   i18n("SSL"));
+
   config->setGroup("TLSv1");
   config->writeEntry("Enabled", mUseTLS->isChecked());
 
@@ -394,7 +403,7 @@ void KCryptoConfig::save()
     } else config->writeEntry(ciphername, false);
   }
 
-  if (ciphercount == 0)
+  if (mUseSSLv2->isChecked() && ciphercount == 0)
     KMessageBox::information(this, i18n("If you don't select at least one"
                                        " cipher, SSLv2 will not work."),
                                    i18n("SSLv2 Ciphers"));
@@ -410,7 +419,7 @@ void KCryptoConfig::save()
     } else config->writeEntry(ciphername, false);
   }
 
-  if (ciphercount == 0)
+  if (mUseSSLv3->isChecked() && ciphercount == 0)
     KMessageBox::information(this, i18n("If you don't select at least one"
                                        " cipher, SSLv3 will not work."),
                                    i18n("SSLv3 Ciphers"));
