@@ -912,13 +912,24 @@ int RenderBox::calcPercentageHeight(const Length& height)
     else if (cb->style()->height().isPercent())
         // We need to recur and compute the percentage height for our containing block.
         result = cb->calcPercentageHeight(cb->style()->height());
-    else if (cb->isCanvas() || (cb->isBody() && style()->htmlHacks())) {
+    else if (cb->isCanvas() || ( cb->isBody() && style()->htmlHacks() && 
+                                 cb->style()->height().isVariable() && !cb->isFloatingOrPositioned())) {
         // Don't allow this to affect the block' m_height member variable, since this
         // can get called while the block is still laying out its kids.
         int oldHeight = cb->height();
         cb->calcHeight();
         result = cb->contentHeight();
         cb->setHeight(oldHeight);
+        if (cb->isBody()) {
+            // In quirk mode, percentages of body apply at least to the canvas's visible height (minus pbm)
+            int margins = cb->collapsedMarginTop() + cb->collapsedMarginBottom();
+            int visHeight = canvas()->view()->visibleHeight();
+            RenderObject* p = cb->parent();
+            result = kMax(result, visHeight - 
+                        (margins + p->marginTop() + p->marginBottom() + 
+                         p->borderTop() + p->borderBottom() +
+                         p->paddingTop() + p->paddingBottom()));
+        }
     }
     if (result != -1) {
         result = height.width(result);
