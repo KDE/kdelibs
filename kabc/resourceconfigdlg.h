@@ -21,14 +21,14 @@
 #ifndef RESOURCECONFIGDLG_H
 #define RESOURCECONFIGDLG_H
 
-#include <qcheckbox.h>
-
-#include <kbuttonbox.h>
 #include <kdialog.h>
-#include <kconfig.h>
-#include <klineedit.h>
 
 #include "resourceconfigwidget.h"
+
+class QPushButton;
+class KLineEdit;
+class KConfig;
+class QCheckBox;
 
 class ResourceConfigDlg : KDialog
 {
@@ -49,7 +49,7 @@ public slots:
   void setReadOnly( bool value );
   void setFast( bool value );
   void setResourceName( const QString &name );
-
+    void slotNameChanged( const QString &text);
 protected slots:
   void accept();
 
@@ -57,10 +57,10 @@ private:
   KABC::ResourceConfigWidget *mConfigWidget;
   KConfig *mConfig;
 
-  KButtonBox *mButtonBox;
   KLineEdit *mName;
   QCheckBox *mReadOnly;
   QCheckBox *mFast;
+    QPushButton *mbuttonOk;
 };
 
 #endif

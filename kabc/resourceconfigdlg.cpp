@@ -25,6 +25,10 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <kbuttonbox.h>
+#include <klineedit.h>
+#include <kconfig.h>
+#include <qcheckbox.h>
 
 #include "resourcefactory.h"
 #include "resourceconfigdlg.h"
@@ -39,7 +43,7 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
   resize( 250, 240 );
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
-    
+
   QGroupBox *generalGroupBox = new QGroupBox( 2, Qt::Horizontal,  this );
   generalGroupBox->setTitle( i18n( "General Settings" ) );
 
@@ -72,15 +76,23 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
     connect( mConfigWidget, SIGNAL( setFast( bool ) ), SLOT( setFast( bool ) ) );
   }
 
-  mButtonBox = new KButtonBox( this );
+  KButtonBox *mButtonBox = new KButtonBox( this );
 
-  mButtonBox->addStretch();    
-  mButtonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) )->setFocus();
+  mButtonBox->addStretch();
+  mbuttonOk = mButtonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
+  mbuttonOk->setFocus();
   mButtonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
   mButtonBox->layout();
-
+  connect( mName, SIGNAL( textChanged ( const QString & )),this, SLOT( slotNameChanged( const QString &)));
   mainLayout->addWidget( mButtonBox );
+  slotNameChanged( mName->text());
 }
+
+void ResourceConfigDlg::slotNameChanged( const QString &text)
+{
+    mbuttonOk->setEnabled( !text.isEmpty() );
+}
+
 
 int ResourceConfigDlg::exec()
 {

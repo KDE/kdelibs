@@ -18,16 +18,15 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qcombobox.h>
 #include <qstringlist.h>
 #include <qwidget.h>
 
 #include <kcmodule.h>
-#include <klineedit.h>
-#include <klistview.h>
-#include <kpushbutton.h>
 
 class KAboutData;
+class KLineEdit;
+class KListView;
+
 
 #ifndef KCMKABC_H
 #define KCMKABC_H
@@ -42,7 +41,7 @@ public:
   void load();
   void save();
   void defaults();
- 
+
 
 public slots:
   void slotAdd();

@@ -32,6 +32,9 @@
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 #include <kaboutdata.h>
+#include <kbuttonbox.h>
+#include <klineedit.h>
+#include <klistview.h>
 
 #include "kcmkabc.h"
 
