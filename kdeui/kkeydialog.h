@@ -72,11 +72,14 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	KKeyChooser( QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 	/**
 	 * \overload
- 	 * @param parent parent widget
+	 * @param parent parent widget
 	 * @param coll the KActionCollection to configure
-	 */
+	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
+     *  keys ('A', '1', etc.) are not permissible shortcuts.
+     */
 	KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts = true );
-	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
+
+    KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KGlobalAccel* actions, QWidget* parent );
 	KKeyChooser( KShortcutList*, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 
@@ -106,7 +109,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 	/**
 	 * This commits and then saves the actions to disk.
 	 * Any KActionCollection objects with the xmlFile() value set
-	 * will be written to an xml file.  All other will be written
+	 * will be written to an XML file.  All other will be written
 	 * to the application's rc file.
 	 */
 	void save();
@@ -121,7 +124,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
          * @param warnUser if true, the user will be warned about a conflict and given a chance
          *        to reassign the shortcut
          * @param parent parent widget for the warning dialog
-         * 
+         *
          * @since 3.2
          */
         static bool checkGlobalShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
@@ -136,7 +139,7 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
          * @param warnUser if true, the user will be warned about a conflict and given a chance
          *        to reassign the shortcut
          * @param parent parent widget for the warning dialog
-         * 
+         *
          * @since 3.2
          */
         static bool checkStandardShortcutsConflict( const KShortcut& cut, bool warnUser, QWidget* parent );
@@ -215,8 +218,8 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
             const QMap< QString, KShortcut >& map, const QString& ignoreAction );
         // Remove the key sequences contained in cut from this item
         bool removeShortcut( const QString& name, const KShortcut &cut );
-        
- private slots:
+
+private slots:
         void captureCurrentItem();
 
 #ifndef KDE_NO_COMPAT
