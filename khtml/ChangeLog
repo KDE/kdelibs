@@ -1,5 +1,13 @@
 2003-10-24  Dirk Mueller  <mueller@kde.org>
 
+	* css/html4.css (marquee): don't set display: none, it might
+	contain useful text (its used on ebay.com for every second article).
+
+	* html/html_formimpl.cpp/h: revert this commit:
+  	     * remove lot's of addCSSProperty calls and moved the
+               definitions to the default style sheet. This made
+               it possible to remove quite some code in html_formimpl.cpp
+
 	* rendering/render_form.cpp (updateFromElement): Fix coolo's commit (#61347)
 
 2003-10-24  Germain Garand  <germain@ebooksfrance.org>

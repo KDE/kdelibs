@@ -375,7 +375,6 @@ FIELDSET {
         padding: 0.75em 0.625em;
 	margin: 1.0em auto;
         border: 2px groove ThreeDFace;
-	background-color: 0x808080;
 } 
 
 BUTTON {
@@ -410,16 +409,7 @@ PARAM  {
 	display: none; 
 }
 
-SELECT { 
-	display: block; 
-	font-size: medium; 
-	color: windowtext; 
-}
-
-TEXTAREA {
-	color: windowtext;
-	font-family: monospace;	
-}
+SELECT { display: block; font-size: medium; }
 
 /*
  * inline elements
@@ -557,8 +547,12 @@ wbr {
         white-space: normal;
 }
 
+/* yeah, thats a joke. but it is better than display: none for now */
 marquee {
-        display: none;
+        display: block;
+        height: 1.2em;
+        position: relative;
+        overflow:hidden;
 }
 
 /* noscript is handled internally, as it depends on the html settings */

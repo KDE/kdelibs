@@ -210,7 +210,9 @@ public:
     virtual ~HTMLFieldSetElementImpl();
 
     virtual Id id() const;
+    virtual void attach();
     virtual NodeImpl *addChild(NodeImpl *child);
+    virtual void parseAttribute(AttributeImpl *attr);
 
 protected:
     NodeImpl *m_legend;
@@ -327,6 +329,7 @@ public:
     virtual ~HTMLLegendElementImpl();
 
     virtual Id id() const;
+    virtual void attach();
     virtual void parseAttribute(AttributeImpl *attr);
 };
 
@@ -380,6 +383,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
 
+    virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     // get the actual listbox index of the optionIndexth option
@@ -508,6 +512,7 @@ public:
     void select (  );
 
     virtual void parseAttribute(AttributeImpl *attr);
+    virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();
     DOMString value();
