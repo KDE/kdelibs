@@ -51,7 +51,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
     str << "*****************************************************************************/" << endl;
     str << endl;
 
-    str << "#include <" << header  << ">" << endl;
+    str << "#include \"" << header  << "\"" << endl;
     str << "#include <dcopclient.h>" << endl << endl;
     str << "#include <kdatastream.h>" << endl << endl;
 
@@ -165,7 +165,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << "\tsetStatus( CallFailed );" << endl;
 			str << "\treturn;" << endl;
 			str << "    }" << endl;
-		    
+		
 			str << "    QByteArray data;" << endl;
 			if ( !args.isEmpty() ) {
 			    str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
