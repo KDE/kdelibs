@@ -53,6 +53,7 @@ debian/tmp/usr/lib/kde3/kabc_ldapkio.*
 debian/tmp/usr/lib/kde3/kabc_net.*
 debian/tmp/usr/lib/kde3/kabcformat_binary.*
 debian/tmp/usr/lib/kde3/kabcformat_vcard2.*
+debian/tmp/usr/lib/kde3/kaddprinterwizard.*
 debian/tmp/usr/lib/kde3/kbuildsycoca.*
 debian/tmp/usr/lib/kde3/kbzip2filter.*
 debian/tmp/usr/lib/kde3/kcm_kresources.*
@@ -92,6 +93,7 @@ debian/tmp/usr/lib/kde3/kio_metainfo.*
 debian/tmp/usr/lib/kde3/kio_uiserver.*
 debian/tmp/usr/lib/kde3/kjavaappletviewer.*
 debian/tmp/usr/lib/kde3/klauncher.*
+debian/tmp/usr/lib/kde3/knotify.*
 debian/tmp/usr/lib/kde3/ktexteditor_insertfile.*
 debian/tmp/usr/lib/kde3/ktexteditor_isearch.*
 debian/tmp/usr/lib/kde3/ktexteditor_kdatatool.*
