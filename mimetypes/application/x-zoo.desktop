@@ -1,0 +1,22 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-zoo
+Icon=tgz
+Patterns=*.zoo;*.ZOO;
+Comment=Zoo archive
+Comment[ca]=Arxiu zoo
+Comment[cs]=Zoo archív
+Comment[de]=Zoo-Archiv
+Comment[eo]=Zoo-arĥivo
+Comment[fi]=Zoo-pakkaus
+Comment[fr]=Archive Zoo
+Comment[hu]=Zoo arhívum
+Comment[it]=Archivio Zoo
+Comment[ja]=Zooアーカイブ
+Comment[no]=Zoo-arkiv
+Comment[no_NY]=Zoo-arkiv
+Comment[pt]=Arquivo ZOO
+Comment[ro]=Fişier arhivă ZOO
+Comment[sl]=Arhiv ZOO
+Comment[sv]=Filarkiv i zoo-format
+DefaultApp=ark

@@ -1,0 +1,22 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-rar
+Icon=tgz
+Patterns=*.rar;*.RAR;
+Comment=Rar archive
+Comment[ca]=Arxiu rar
+Comment[cs]=Rar archív
+Comment[de]=Rar-Archiv
+Comment[eo]=Rar-arĥivo
+Comment[fi]=Rar-pakkaus
+Comment[fr]=Archive Rar
+Comment[hu]=Rar arhívum
+Comment[it]=Archivio Rar
+Comment[ja]=Rarアーカイブ
+Comment[no]=Rar-arkiv
+Comment[no_NY]=Rar-arkiv
+Comment[pt]=Arquivo RAR
+Comment[ro]=Fişier arhivă RAR
+Comment[sl]=Arhiv RAR
+Comment[sv]=Filarkiv i rar-format
+DefaultApp=ark

@@ -1,0 +1,22 @@
+[Desktop Entry]
+MimeType=application/x-tzo
+Comment=Lzopped Tar Archive
+Comment[ca]=Arxius tar lzopats
+Comment[cs]=Lzopovaný archív
+Comment[de]=Tar-Archive, die mit lzop komprimiert wurden
+Comment[eo]=Lzop-Tar-arĥivo
+Comment[fi]=Lzop-paketti
+Comment[fr]=Archive Tar compressée par lzop
+Comment[hu]=Lzoppelt tar arhívum
+Comment[it]=Archivio Tar-Lzop
+Comment[ja]=LzopされたTarアーカイブ
+Comment[no]=Lzoppet tar-akriver
+Comment[no_NY]=Lzoppa tar-arkiv
+Comment[pt]=Arquivos Lzop
+Comment[ro]=Fişier arhivă TAR comprimat cu LZOP
+Comment[sl]=Z lzop-om stisnjeni arhiv tar
+Comment[sv]=Filarkiv i tar-format komprimerat med lzop
+DefaultApp=ark
+Icon=tgz
+Type=MimeType
+Patterns=*.tar.lzo;*.tzo;

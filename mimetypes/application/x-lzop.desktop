@@ -1,0 +1,7 @@
+[Desktop Entry]
+MimeType=application/x-lzop
+Comment=Lzopped File
+DefaultApp=ark
+Icon=tgz
+Type=MimeType
+Patterns=*.lzo
