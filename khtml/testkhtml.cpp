@@ -22,9 +22,9 @@
 #define protected public
 #include "khtml_factory.h"
 #undef protected
-#include <css/cssstyleselector.h>
-#include <html/html_imageimpl.h>
-#include <rendering/render_style.h>
+#include "css/cssstyleselector.h"
+#include "html/html_imageimpl.h"
+#include "rendering/render_style.h"
 #include <kmainwindow.h>
 #include <kcmdlineargs.h>
 #include <kaction.h>
@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 
     doc->setJScriptEnabled(true);
     doc->setJavaEnabled(true);
+    doc->setPluginsEnabled( true );
     doc->setURLCursor(QCursor(Qt::PointingHandCursor));
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
