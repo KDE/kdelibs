@@ -43,11 +43,15 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
 
 KFilePreview::~KFilePreview()
 {
+    // don't delete the view's actions (inserted into our collection)!
+    for ( uint i = 0; i < left->actionCollection()->count(); i++ )
+        actionCollection()->take( left->actionCollection()->action( i ));
+
+    // don't delete the preview, we can reuse it
+    // (it will get deleted by ~KDirOperator)
     if ( preview && preview->parentWidget() == this ) {
         preview->reparent(0L, 0, QPoint(0, 0), false);
     }
-    // don't delete the preview, we can reuse it
-    // (it will get deleted by ~KDirOperator)
 }
 
 void KFilePreview::init( KFileView *view )
