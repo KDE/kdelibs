@@ -7,6 +7,7 @@
 static KCmdLineOptions options[] =
 {
   { "+query", "the query", 0 },
+  { "+[genericServiceType]", "Application (default), or KParts/ReadOnlyPart", 0 },
   { "+[constraint]", "constraint", 0 },
   { "+[preference]", "preference", 0 },
   { 0, 0, 0 }
@@ -24,20 +25,24 @@ int main( int argc, char **argv )
   
   QString query = QString::fromLocal8Bit( args->arg( 0 ) );
 
-  QString constraint, preference;
+  QString genericServiceType, constraint, preference;
 
   if ( args->count() >= 2 )
-    constraint = QString::fromLocal8Bit( args->arg( 1 ) );
+    genericServiceType = QString::fromLocal8Bit( args->arg( 1 ) );
 
-  if ( args->count() == 3 )
-    preference = QString::fromLocal8Bit( args->arg( 2 ) );
+  if ( args->count() >= 3 )
+    constraint = QString::fromLocal8Bit( args->arg( 2 ) );
+
+  if ( args->count() == 4 )
+    preference = QString::fromLocal8Bit( args->arg( 3 ) );
 
 
   kdDebug() << "query is : " << query << endl;
+  kdDebug() << "genericServiceType is : " << genericServiceType << endl;
   kdDebug() << "constraint is : " << constraint << endl;
   kdDebug() << "preference is : " << preference << endl;
   
-  KTrader::OfferList offers = KTrader::self()->query( query, constraint, preference );
+  KTrader::OfferList offers = KTrader::self()->query( query, genericServiceType, constraint, preference );
   
   kdDebug() << "got " << offers.count() << " offers." << endl;
   
