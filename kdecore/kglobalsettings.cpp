@@ -530,24 +530,5 @@ bool KGlobalSettings::isMultiHead()
     if (!multiHead.isEmpty()) {
         return (multiHead.lower() == "true");
     }
-    bool isActive = false;
-    if (ScreenCount(qt_xdisplay()) > 1) {
-        // this function is very often called before anything within
-        // the application is up and running. So we have to be careful
-        if (!KGlobal::_instance) {
-            // if there is no instance yet and no environment
-            // variable set, we can't know and use the default
-            // value
-            return true;
-        }
-        KConfig config("kcmdisplayrc", true, true);
-        config.setGroup("X11");
-        if ( config.readBoolEntry( "disableMultihead", false ) ) {
-            putenv(strdup("KDE_MULTIHEAD=false"));
-        } else {
-            putenv(strdup("KDE_MULTIHEAD=true"));
-            isActive = true;
-        }
-    }
-    return isActive;
+    return false;
 }
