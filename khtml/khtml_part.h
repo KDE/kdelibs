@@ -87,6 +87,7 @@ namespace KJS {
 namespace KParts
 {
   class PartManager;
+  class LiveConnectExtension;
 };
 
 /**
