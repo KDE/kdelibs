@@ -472,8 +472,11 @@ void AutoTableLayout::fullRecalc()
 		qDebug("    col element %d (eff=%d): Length=%d(%d), span=%d, effColSpan=%d",  cCol, cEffCol, w.value, w.type, span, table->spanOfEffCol(cEffCol ) );
 #endif
 		if ( (int)w.type != Variable && span == 1 && cEffCol < nEffCols ) {
-		    if ( table->spanOfEffCol( cEffCol ) == 1 )
+		    if ( table->spanOfEffCol( cEffCol ) == 1 ) {
 			layoutStruct[cEffCol].width = w;
+                        if (w.isFixed() && layoutStruct[cEffCol].maxWidth < w.value)
+                            layoutStruct[cEffCol].maxWidth = w.value;
+                    }
 		}
 		cCol += span;
 	    }
@@ -535,7 +538,7 @@ void AutoTableLayout::calcMinMaxWidth()
     maxWidth += bs;
 
     Length tw = table->style()->width();
-    if ( tw.isFixed() ) {
+    if ( tw.isFixed() && tw.value > 0 ) {
 	minWidth = kMax( minWidth, int( tw.value ) );
 	maxWidth = minWidth;
     }
@@ -827,11 +830,6 @@ void AutoTableLayout::layout()
 	    if ( width.type == Percent ) {
                 int w = kMax ( int( layoutStruct[i].minWidth ), width.minWidth( tableWidth ) );
 		totalAllocated += w;
-#if 0
-		if ( !htmlHacks )
-		    // we need to add paddings to the width (at least mozilla does it)
-		    w += cell->paddings
-#endif
 		available += layoutStruct[i].calcWidth - w;
 		layoutStruct[i].calcWidth = w;
 	    }

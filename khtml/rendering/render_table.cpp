@@ -180,7 +180,7 @@ void RenderTable::calcWidth()
     int availableWidth = cb->contentWidth();
 
     LengthType widthType = style()->width().type;
-    if(widthType > Relative) {
+    if(widthType > Relative && style()->width().value > 0) {
 	// Percent or fixed table
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
