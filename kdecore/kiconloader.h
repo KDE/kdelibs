@@ -176,12 +176,13 @@ public:
    *
    * These function should be used if you are loading the
    * application icons. Normally KApplication does this for
-   * you, but special programs like kpanel or kmenuedit
-   * need to load the application icons of foreign applications.
+   * you, but special programs like kicker need to load the
+   * application icons of foreign applications.
    *
    * @see loadIcon, loadApplicationMiniIcon
    */
-  QPixmap loadApplicationIcon( const QString& name, Size size = Medium, QString *path_store = 0);
+  QPixmap loadApplicationIcon( const QString& name, Size size = Medium,
+                               QString *path_store = 0, bool canReturnNull = true);
 
   /**
 	Get the complete path for an icon name.
