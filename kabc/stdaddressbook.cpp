@@ -65,12 +65,12 @@ StdAddressBook *StdAddressBook::self()
   return mSelf;
 }
 
-StdAddressBook *StdAddressBook::self( bool onlyFastResources )
+StdAddressBook *StdAddressBook::self( bool asynchronous )
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
-    addressBookDeleter.setObject( mSelf, new StdAddressBook( onlyFastResources ) );
+    addressBookDeleter.setObject( mSelf, new StdAddressBook( asynchronous ) );
 
   return mSelf;
 }
@@ -83,12 +83,12 @@ StdAddressBook::StdAddressBook()
   init( false );
 }
 
-StdAddressBook::StdAddressBook( bool onlyFastResources )
+StdAddressBook::StdAddressBook( bool asynchronous )
   : AddressBook( "kabcrc" )
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook( bool )" << endl;
 
-  init( onlyFastResources );
+  init( asynchronous );
 }
 
 StdAddressBook::~StdAddressBook()
@@ -97,7 +97,7 @@ StdAddressBook::~StdAddressBook()
     save();
 }
 
-void StdAddressBook::init( bool )
+void StdAddressBook::init( bool asynchronous )
 {
   KRES::Manager<Resource> *manager = resourceManager();
 
@@ -120,7 +120,10 @@ void StdAddressBook::init( bool )
   setStandardResource( res );
   manager->writeConfig();
 
-  load();
+  if ( asynchronous )
+    asyncLoad();
+  else
+    load();
 }
 
 bool StdAddressBook::save()

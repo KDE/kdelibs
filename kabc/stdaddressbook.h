@@ -68,10 +68,12 @@ class StdAddressBook : public AddressBook
       This is the same as above, but with specified
       behaviour of resource loading.
 
-      @param onlyFastResource Only resources marked as 'fast' should be loaded
+      @param asynchronous When true, the resources are loaded asynchronous, that
+                          means you have the data foremost the addressBookChanged()
+                          signal has been emitted. So connect to this signal when
+                          using this method!
     */
-    // FIXME for KDE4 return StdAddressBook and merge with the metod above -zecke
-    static StdAddressBook *self( bool onlyFastResources );
+    static StdAddressBook *self( bool asyncronous );
 
     /**
       Save the standard address book to disk.
@@ -130,9 +132,9 @@ class StdAddressBook : public AddressBook
 
   protected:
     StdAddressBook();
-    StdAddressBook( bool onlyFastResources );
+    StdAddressBook( bool asynchronous );
 
-    void init( bool onlyFastResources );
+    void init( bool asynchronous );
 
   private:
     static StdAddressBook *mSelf;
@@ -140,4 +142,6 @@ class StdAddressBook : public AddressBook
 };
 
 }
+
 #endif
+
