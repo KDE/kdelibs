@@ -117,7 +117,7 @@ void PartBase::setXMLFile( const QString & file )
   } else
     fullPath = file;
 
-  QString xml = XMLGUIFactory::readConfigFile( file );
+  QString xml = XMLGUIFactory::readConfigFile( fullPath );
   setXML( xml );
 }
 

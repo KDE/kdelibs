@@ -45,6 +45,7 @@ MainWindow::MainWindow( const char *name, WFlags f )
 {
   d = new MainWindowPrivate();
   m_factory = new XMLGUIFactory( this );
+  setInstance( KGlobal::instance() );
 }
 
 MainWindow::~MainWindow()
