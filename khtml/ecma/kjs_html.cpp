@@ -1390,8 +1390,8 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     case ObjectUseMap:          return getString(object.useMap());
     case ObjectVspace:          return getString(object.vspace());
     case ObjectWidth:           return getString(object.width());
-      //case ObjectContentDocument: // new for DOM2 - not yet in khtml
-      //return getDOMNode(exec,object.contentDocument()); // type Document
+    //case ObjectContentDocument: // new for DOM2 - not yet in khtml
+    //return getDOMNode(exec,object.contentDocument()); // type Document
     }
   }
   break;
@@ -1579,8 +1579,8 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     case FrameNoResize:        return Boolean(frameElement.noResize());
     case FrameScrolling:       return getString(frameElement.scrolling());
     case FrameSrc:             return getString(frameElement.src());
-     //case FrameContentDocument: // new for DOM2 - not yet in khtml
-     //return getDOMNode(exec,frameElement.contentDocument()); // type Document
+    //case FrameContentDocument: // new for DOM2 - not yet in khtml
+    //return getDOMNode(exec,frameElement.contentDocument()); // type Document
     }
   }
   break;
@@ -1824,195 +1824,257 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
   return Undefined();
 }
 
-void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v, int attr)
+void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
-  DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString(exec).string();
-  DOM::Node n = (new DOMNode(exec, KJS::toNode(v)))->toNode();
+#ifdef KJS_VERBOSE
+  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString(0) : value.toString(exec).string();
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  kdDebug(6070) << "KJS::HTMLElement::tryPut " << propertyName.qstring()
+                << " thisTag=" << element.tagName().string()
+                << " str=" << str.string() << endl;
+#endif
+  const HashTable* table = classInfo()->propHashTable; // get the right hashtable
+  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  if (entry) {
+    if (entry->attr & Function) // function: put as override property
+    {
+      ObjectImp::put(exec, propertyName, value, attr);
+      return;
+    }
+    else if ((entry->attr & ReadOnly) == 0) // let DOMObjectLookupPut print the warning if not
+    {
+      putValue(exec, entry->value, value, attr);
+      return;
+    }
+  }
+  DOMObjectLookupPut<KJS::HTMLElement, DOMObject>(exec, propertyName, value, attr, &KJS::HTMLElementTable, this);
+}
+
+void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, int)
+{
+  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString(0) : value.toString(exec).string();
+  DOM::Node n = (new DOMNode(exec, KJS::toNode(value)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLElement::tryPut " << p.qstring() << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
+  kdDebug(6070) << "KJS::HTMLElement::putValue "
+                << " thisTag=" << element.tagName().string()
+                << " token=" << token << endl;
 #endif
 
   switch (element.elementId()) {
-    case ID_HTML: {
+  case ID_HTML: {
       DOM::HTMLHtmlElement html = element;
-      if      (p == "version")         { html.setVersion(str); return; }
+      switch (token) {
+      case HtmlVersion:         { html.setVersion(str); return; }
+      }
+  }
+  break;
+  case ID_HEAD: {
+    DOM::HTMLHeadElement head = element;
+    switch (token) {
+    case HeadProfile:         { head.setProfile(str); return; }
     }
-    break;
-    case ID_HEAD: {
-      DOM::HTMLHeadElement head = element;
-      if      (p == "profile")         { head.setProfile(str); return; }
-    }
-    break;
-    case ID_LINK: {
-      DOM::HTMLLinkElement link = element;
-      if      (p == "disabled")        { link.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "charset")         { link.setCharset(str); return; }
-      else if (p == "href")            { link.setHref(str); return; }
-      else if (p == "hreflang")        { link.setHreflang(str); return; }
-      else if (p == "media")           { link.setMedia(str); return; }
-      else if (p == "rel")             { link.setRel(str); return; }
-      else if (p == "rev")             { link.setRev(str); return; }
-      else if (p == "target")          { link.setTarget(str); return; }
-      else if (p == "type")            { link.setType(str); return; }
+  }
+  break;
+  case ID_LINK: {
+    DOM::HTMLLinkElement link = element;
+    switch (token) {
+      case LinkDisabled:        { link.setDisabled(value.toBoolean(exec)); return; }
+      case LinkCharset:         { link.setCharset(str); return; }
+      case LinkHref:            { link.setHref(str); return; }
+      case LinkHrefLang:        { link.setHreflang(str); return; }
+      case LinkMedia:           { link.setMedia(str); return; }
+      case LinkRel:             { link.setRel(str); return; }
+      case LinkRev:             { link.setRev(str); return; }
+      case LinkTarget:          { link.setTarget(str); return; }
+      case LinkType:            { link.setType(str); return; }
+      }
     }
     break;
     case ID_TITLE: {
       DOM::HTMLTitleElement title = element;
-      if (p == "text")                 { title.setText(str); return; }
+      switch (token) {
+      case TitleText:                 { title.setText(str); return; }
+      }
     }
     break;
     case ID_META: {
       DOM::HTMLMetaElement meta = element;
-      if      (p == "content")         { meta.setContent(str); return; }
-      else if (p == "httpEquiv")       { meta.setHttpEquiv(str); return; }
-      else if (p == "name")            { meta.setName(str); return; }
-      else if (p == "scheme")          { meta.setScheme(str); return; }
+      switch (token) {
+      case MetaContent:         { meta.setContent(str); return; }
+      case MetaHttpEquiv:       { meta.setHttpEquiv(str); return; }
+      case MetaName:            { meta.setName(str); return; }
+      case MetaScheme:          { meta.setScheme(str); return; }
+      }
     }
     break;
     case ID_BASE: {
       DOM::HTMLBaseElement base = element;
-      if      (p == "href")            { base.setHref(str); return; }
-      else if (p == "target")          { base.setTarget(str); return; }
+      switch (token) {
+      case BaseHref:            { base.setHref(str); return; }
+      case BaseTarget:          { base.setTarget(str); return; }
+      }
     }
     break;
     case ID_ISINDEX: {
       DOM::HTMLIsIndexElement isindex = element;
+      switch (token) {
       // read-only: form
-      if (p == "prompt")               { isindex.setPrompt(str); return; }
+      case IsIndexPrompt:               { isindex.setPrompt(str); return; }
+      }
     }
     break;
     case ID_STYLE: {
       DOM::HTMLStyleElement style = element;
-      if      (p == "disabled")        { style.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "media")           { style.setMedia(str); return; }
-      else if (p == "type")            { style.setType(str); return; }
+      switch (token) {
+      case StyleDisabled:        { style.setDisabled(value.toBoolean(exec)); return; }
+      case StyleMedia:           { style.setMedia(str); return; }
+      case StyleType:            { style.setType(str); return; }
+      }
     }
     break;
     case ID_BODY: {
       DOM::HTMLBodyElement body = element;
-      if      (p == "aLink")           { body.setALink(str); return; }
-      else if (p == "background")      { body.setBackground(str); return; }
-      else if (p == "bgColor")         { body.setBgColor(str); return; }
-      else if (p == "link")            { body.setLink(str); return; }
-      else if (p == "text")            { body.setText(str); return; }
-      else if (p == "vLink")           { body.setVLink(str); return; }
+      switch (token) {
+      case BodyALink:           { body.setALink(str); return; }
+      case BodyBackground:      { body.setBackground(str); return; }
+      case BodyBgColor:         { body.setBgColor(str); return; }
+      case BodyLink:            { body.setLink(str); return; }
+      case BodyText:            { body.setText(str); return; }
+      case BodyVLink:           { body.setVLink(str); return; }
+      }
     }
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
+      switch (token) {
       // read-only: elements
       // read-only: length
-      if (p == "name")                 { form.setName(str); return; }
-      else if (p == "acceptCharset")   { form.setAcceptCharset(str); return; }
-      else if (p == "action")          { form.setAction(str.string()); return; }
-      else if (p == "enctype")         { form.setEnctype(str); return; }
-      else if (p == "method")          { form.setMethod(str); return; }
-      else if (p == "target")          { form.setTarget(str); return; }
+      case FormName:            { form.setName(str); return; }
+      case FormAcceptCharset:   { form.setAcceptCharset(str); return; }
+      case FormAction:          { form.setAction(str.string()); return; }
+      case FormEncType:         { form.setEnctype(str); return; }
+      case FormMethod:          { form.setMethod(str); return; }
+      case FormTarget:          { form.setTarget(str); return; }
+      }
     }
     break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
+      switch (token) {
       // read-only: type
-      if (p == "selectedIndex")        { select.setSelectedIndex(v.toInteger(exec)); return; }
-      else if (p == "value")           { select.setValue(str); return; }
-      else if (p == "length")          { // read-only according to the NS spec, but webpages need it writeable
+      case SelectSelectedIndex:   { select.setSelectedIndex(value.toInteger(exec)); return; }
+      case SelectValue:           { select.setValue(str); return; }
+      case SelectLength:          { // read-only according to the NS spec, but webpages need it writeable
                                          Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
                                          if ( !coll.isNull() )
-                                           coll.put(exec,p,v);
+                                           coll.put(exec,"length",value);
                                          return;
                                        }
       // read-only: form
       // read-only: options
-      else if (p == "disabled")        { select.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "multiple")        { select.setMultiple(v.toBoolean(exec)); return; }
-      else if (p == "name")            { select.setName(str); return; }
-      else if (p == "size")            { select.setSize(v.toInteger(exec)); return; }
-      else if (p == "tabIndex")        { select.setTabIndex(v.toInteger(exec)); return; }
+      case SelectDisabled:        { select.setDisabled(value.toBoolean(exec)); return; }
+      case SelectMultiple:        { select.setMultiple(value.toBoolean(exec)); return; }
+      case SelectName:            { select.setName(str); return; }
+      case SelectSize:            { select.setSize(value.toInteger(exec)); return; }
+      case SelectTabIndex:        { select.setTabIndex(value.toInteger(exec)); return; }
+      }
     }
     break;
     case ID_OPTGROUP: {
       DOM::HTMLOptGroupElement optgroup = element;
-      if      (p == "disabled")        { optgroup.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "label")           { optgroup.setLabel(str); return; }
+      switch (token) {
+      case OptGroupDisabled:        { optgroup.setDisabled(value.toBoolean(exec)); return; }
+      case OptGroupLabel:           { optgroup.setLabel(str); return; }
+      }
     }
     break;
     case ID_OPTION: {
       DOM::HTMLOptionElement option = element;
+      switch (token) {
       // read-only: form
-      if (p == "defaultSelected")      { option.setDefaultSelected(v.toBoolean(exec)); return; }
+      case OptionDefaultSelected: { option.setDefaultSelected(value.toBoolean(exec)); return; }
       // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
       // So, we'll do it here and not add it to our DOM headers.
-      else if (p == "text")            { DOM::NodeList nl(option.childNodes());
+      case OptionText:            { DOM::NodeList nl(option.childNodes());
                                          for (unsigned int i = 0; i < nl.length(); i++) {
                                              if (nl.item(i).nodeType() == DOM::Node::TEXT_NODE) {
                                                  static_cast<DOM::Text>(nl.item(i)).setData(str);
                                                  return;
                                              }
                                          }
-                                         kdWarning() << "HTMLElement::tryPut failed, no text node in option" << endl;
+                                         kdWarning() << "HTMLElement::putValue OptionText, put failed, no text node in option" << endl;
                                          return;
       }
       // read-only: index
-      else if (p == "disabled")        { option.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "label")           { option.setLabel(str); return; }
-      else if (p == "selected")        { option.setSelected(v.toBoolean(exec)); return; }
-      else if (p == "value")           { option.setValue(str); return; }
+      case OptionDisabled:        { option.setDisabled(value.toBoolean(exec)); return; }
+      case OptionLabel:           { option.setLabel(str); return; }
+      case OptionSelected:        { option.setSelected(value.toBoolean(exec)); return; }
+      case OptionValue:           { option.setValue(str); return; }
+      }
     }
     break;
     case ID_INPUT: {
       DOM::HTMLInputElement input = element;
-      if      (p == "defaultValue")    { input.setDefaultValue(str); return; }
-      else if (p == "defaultChecked")  { input.setDefaultChecked(v.toBoolean(exec)); return; }
+      switch (token) {
+      case InputDefaultValue:    { input.setDefaultValue(str); return; }
+      case InputDefaultChecked:  { input.setDefaultChecked(value.toBoolean(exec)); return; }
       // read-only: form
-      else if (p == "accept")          { input.setAccept(str); return; }
-      else if (p == "accessKey")       { input.setAccessKey(str); return; }
-      else if (p == "align")           { input.setAlign(str); return; }
-      else if (p == "alt")             { input.setAlt(str); return; }
-      else if (p == "checked")         { input.setChecked(v.toBoolean(exec)); return; }
-      else if (p == "disabled")        { input.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "maxLength")       { input.setMaxLength(v.toInteger(exec)); return; }
-      else if (p == "name")            { input.setName(str); return; }
-      else if (p == "readOnly")        { input.setReadOnly(v.toBoolean(exec)); return; }
-      else if (p == "size")            { input.setSize(str); return; }
-      else if (p == "src")             { input.setSrc(str); return; }
-      else if (p == "tabIndex")        { input.setTabIndex(v.toInteger(exec)); return; }
+      case InputAccept:          { input.setAccept(str); return; }
+      case InputAccessKey:       { input.setAccessKey(str); return; }
+      case InputAlign:           { input.setAlign(str); return; }
+      case InputAlt:             { input.setAlt(str); return; }
+      case InputChecked:         { input.setChecked(value.toBoolean(exec)); return; }
+      case InputDisabled:        { input.setDisabled(value.toBoolean(exec)); return; }
+      case InputMaxLength:       { input.setMaxLength(value.toInteger(exec)); return; }
+      case InputName:            { input.setName(str); return; }
+      case InputReadOnly:        { input.setReadOnly(value.toBoolean(exec)); return; }
+      case InputSize:            { input.setSize(str); return; }
+      case InputSrc:             { input.setSrc(str); return; }
+      case InputTabIndex:        { input.setTabIndex(value.toInteger(exec)); return; }
       // read-only: type
-      else if (p == "useMap")          { input.setUseMap(str); return; }
-      else if (p == "value")           { input.setValue(str); return; }
+      case InputUseMap:          { input.setUseMap(str); return; }
+      case InputValue:           { input.setValue(str); return; }
+      }
     }
     break;
     case ID_TEXTAREA: {
       DOM::HTMLTextAreaElement textarea = element;
-      if      (p == "defaultValue")    { textarea.setDefaultValue(str); return; }
+      switch (token) {
+      case TextAreaDefaultValue:    { textarea.setDefaultValue(str); return; }
       // read-only: form
-      else if (p == "accessKey")       { textarea.setAccessKey(str); return; }
-      else if (p == "cols")            { textarea.setCols(v.toInteger(exec)); return; }
-      else if (p == "disabled")        { textarea.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "name")            { textarea.setName(str); return; }
-      else if (p == "readOnly")        { textarea.setReadOnly(v.toBoolean(exec)); return; }
-      else if (p == "rows")            { textarea.setRows(v.toInteger(exec)); return; }
-      else if (p == "tabIndex")        { textarea.setTabIndex(v.toInteger(exec)); return; }
+      case TextAreaAccessKey:       { textarea.setAccessKey(str); return; }
+      case TextAreaCols:            { textarea.setCols(value.toInteger(exec)); return; }
+      case TextAreaDisabled:        { textarea.setDisabled(value.toBoolean(exec)); return; }
+      case TextAreaName:            { textarea.setName(str); return; }
+      case TextAreaReadOnly:        { textarea.setReadOnly(value.toBoolean(exec)); return; }
+      case TextAreaRows:            { textarea.setRows(value.toInteger(exec)); return; }
+      case TextAreaTabIndex:        { textarea.setTabIndex(value.toInteger(exec)); return; }
       // read-only: type
-      else if (p == "value")           { textarea.setValue(str); return; }
+      case TextAreaValue:           { textarea.setValue(str); return; }
+      }
     }
     break;
     case ID_BUTTON: {
       DOM::HTMLButtonElement button = element;
+      switch (token) {
       // read-only: form
-      if (p == "accessKey")            { button.setAccessKey(str); return; }
-      else if (p == "disabled")        { button.setDisabled(v.toBoolean(exec)); return; }
-      else if (p == "name")            { button.setName(str); return; }
-      else if (p == "tabIndex")        { button.setTabIndex(v.toInteger(exec)); return; }
+      case ButtonAccessKey:       { button.setAccessKey(str); return; }
+      case ButtonDisabled:        { button.setDisabled(value.toBoolean(exec)); return; }
+      case ButtonName:            { button.setName(str); return; }
+      case ButtonTabIndex:        { button.setTabIndex(value.toInteger(exec)); return; }
       // read-only: type
-      else if (p == "value")           { button.setValue(str); return; }
+      case ButtonValue:           { button.setValue(str); return; }
+      }
     }
     break;
     case ID_LABEL: {
       DOM::HTMLLabelElement label = element;
+      switch (token) {
       // read-only: form
-      if (p == "accessKey")            { label.setAccessKey(str); return; }
-      else if (p == "htmlFor")         { label.setHtmlFor(str); return; }
+      case LabelAccessKey:       { label.setAccessKey(str); return; }
+      case LabelHtmlFor:         { label.setHtmlFor(str); return; }
+      }
     }
     break;
 //    case ID_FIELDSET: {
@@ -2022,53 +2084,71 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
 //    break;
     case ID_LEGEND: {
       DOM::HTMLLegendElement legend = element;
+      switch (token) {
       // read-only: form
-      if (p == "accessKey")            { legend.setAccessKey(str); return; }
-      else if (p == "align")           { legend.setAlign(str); return; }
+      case LegendAccessKey:       { legend.setAccessKey(str); return; }
+      case LegendAlign:           { legend.setAlign(str); return; }
+      }
     }
     break;
     case ID_UL: {
       DOM::HTMLUListElement uList = element;
-      if      (p == "compact")         { uList.setCompact(v.toBoolean(exec)); return; }
-      else if (p == "type")            { uList.setType(str); return; }
+      switch (token) {
+      case UListCompact:         { uList.setCompact(value.toBoolean(exec)); return; }
+      case UListType:            { uList.setType(str); return; }
+      }
     }
     break;
     case ID_OL: {
       DOM::HTMLOListElement oList = element;
-      if      (p == "compact")         { oList.setCompact(v.toBoolean(exec)); return; }
-      else if (p == "start")           { oList.setStart(v.toInteger(exec)); return; }
-      else if (p == "type")            { oList.setType(str); return; }
+      switch (token) {
+      case OListCompact:         { oList.setCompact(value.toBoolean(exec)); return; }
+      case OListStart:           { oList.setStart(value.toInteger(exec)); return; }
+      case OListType:            { oList.setType(str); return; }
+      }
     }
     break;
     case ID_DL: {
       DOM::HTMLDListElement dList = element;
-      if      (p == "compact")         { dList.setCompact(v.toBoolean(exec)); return; }
+      switch (token) {
+      case DListCompact:         { dList.setCompact(value.toBoolean(exec)); return; }
+      }
     }
     break;
     case ID_DIR: {
       DOM::HTMLDirectoryElement directory = element;
-      if      (p == "compact")         { directory.setCompact(v.toBoolean(exec)); return; }
+      switch (token) {
+      case DirectoryCompact:     { directory.setCompact(value.toBoolean(exec)); return; }
+      }
     }
     break;
     case ID_MENU: {
       DOM::HTMLMenuElement menu = element;
-      if      (p == "compact")         { menu.setCompact(v.toBoolean(exec)); return; }
+      switch (token) {
+      case MenuCompact:         { menu.setCompact(value.toBoolean(exec)); return; }
+      }
     }
     break;
     case ID_LI: {
       DOM::HTMLLIElement li = element;
-      if      (p == "type")            { li.setType(str); return; }
-      else if (p == "value")           { li.setValue(v.toInteger(exec)); return; }
+      switch (token) {
+      case LIType:            { li.setType(str); return; }
+      case LIValue:           { li.setValue(value.toInteger(exec)); return; }
+      }
     }
     break;
     case ID_DIV: {
       DOM::HTMLDivElement div = element;
-      if      (p == "align")           { div.setAlign(str); return; }
+      switch (token) {
+      case DivAlign:           { div.setAlign(str); return; }
+      }
     }
     break;
     case ID_P: {
       DOM::HTMLParagraphElement paragraph = element;
-      if      (p == "align")           { paragraph.setAlign(str); return; }
+      switch (token) {
+      case ParagraphAlign:     { paragraph.setAlign(str); return; }
+      }
     }
     break;
     case ID_H1:
@@ -2078,297 +2158,359 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
     case ID_H5:
     case ID_H6: {
       DOM::HTMLHeadingElement heading = element;
-      if      (p == "align")           { heading.setAlign(str); return; }
+      switch (token) {
+      case HeadingAlign:         { heading.setAlign(str); return; }
+      }
     }
     break;
     case ID_BLOCKQUOTE: {
       DOM::HTMLBlockquoteElement blockquote = element;
-      if      (p == "cite")            { blockquote.setCite(str); return; }
+      switch (token) {
+      case BlockQuoteCite:       { blockquote.setCite(str); return; }
+      }
     }
+    break;
     case ID_Q: {
       DOM::HTMLQuoteElement quote = element;
-      if      (p == "cite")            { quote.setCite(str); return; }
+      switch (token) {
+      case QuoteCite:            { quote.setCite(str); return; }
+      }
     }
     break;
     case ID_PRE: {
       DOM::HTMLPreElement pre = element;
-      if      (p == "width")           { pre.setWidth(v.toInteger(exec)); return; }
+      switch (token) {
+      case PreWidth:           { pre.setWidth(value.toInteger(exec)); return; }
+      }
     }
     break;
     case ID_BR: {
       DOM::HTMLBRElement br = element;
-      if      (p == "clear")           { br.setClear(str); return; }
+      switch (token) {
+      case BRClear:           { br.setClear(str); return; }
+      }
     }
     break;
     case ID_BASEFONT: {
       DOM::HTMLBaseFontElement baseFont = element;
-      if      (p == "color")           { baseFont.setColor(str); return; }
-      else if (p == "face")            { baseFont.setFace(str); return; }
-      else if (p == "size")            { baseFont.setSize(str); return; }
+      switch (token) {
+      case BaseFontColor:           { baseFont.setColor(str); return; }
+      case BaseFontFace:            { baseFont.setFace(str); return; }
+      case BaseFontSize:            { baseFont.setSize(str); return; }
+      }
     }
     break;
     case ID_FONT: {
       DOM::HTMLFontElement font = element;
-      if      (p == "color")           { font.setColor(str); return; }
-      else if (p == "face")            { font.setFace(str); return; }
-      else if (p == "size")            { font.setSize(str); return; }
+      switch (token) {
+      case FontColor:           { font.setColor(str); return; }
+      case FontFace:            { font.setFace(str); return; }
+      case FontSize:            { font.setSize(str); return; }
+      }
     }
     break;
     case ID_HR: {
       DOM::HTMLHRElement hr = element;
-      if      (p == "align")           { hr.setAlign(str); return; }
-      else if (p == "noShade")         { hr.setNoShade(v.toBoolean(exec)); return; }
-      else if (p == "size")            { hr.setSize(str); return; }
-      else if (p == "width")           { hr.setWidth(str); return; }
+      switch (token) {
+      case HRAlign:           { hr.setAlign(str); return; }
+      case HRNoShade:         { hr.setNoShade(value.toBoolean(exec)); return; }
+      case HRSize:            { hr.setSize(str); return; }
+      case HRWidth:           { hr.setWidth(str); return; }
+      }
     }
     break;
     case ID_INS:
     case ID_DEL: {
       DOM::HTMLModElement mod = element;
-      if      (p == "cite")            { mod.setCite(str); return; }
-      else if (p == "dateTime")        { mod.setDateTime(str); return; }
+      switch (token) {
+      case ModCite:            { mod.setCite(str); return; }
+      case ModDateTime:        { mod.setDateTime(str); return; }
+      }
     }
     break;
     case ID_A: {
       DOM::HTMLAnchorElement anchor = element;
-      if      (p == "accessKey")       { anchor.setAccessKey(str); return; }
-      else if (p == "charset")         { anchor.setCharset(str); return; }
-      else if (p == "coords")          { anchor.setCoords(str); return; }
-      else if (p == "href")            { anchor.setHref(str); return; }
-      else if (p == "hreflang")        { anchor.setHreflang(str); return; }
-      else if (p == "name")            { anchor.setName(str); return; }
-      else if (p == "rel")             { anchor.setRel(str); return; }
-      else if (p == "rev")             { anchor.setRev(str); return; }
-      else if (p == "shape")           { anchor.setShape(str); return; }
-      else if (p == "tabIndex")        { anchor.setTabIndex(v.toInteger(exec)); return; }
-      else if (p == "target")          { anchor.setTarget(str); return; }
-      else if (p == "type")            { anchor.setType(str); return; }
+      switch (token) {
+      case AnchorAccessKey:       { anchor.setAccessKey(str); return; }
+      case AnchorCharset:         { anchor.setCharset(str); return; }
+      case AnchorCoords:          { anchor.setCoords(str); return; }
+      case AnchorHref:            { anchor.setHref(str); return; }
+      case AnchorHrefLang:        { anchor.setHreflang(str); return; }
+      case AnchorName:            { anchor.setName(str); return; }
+      case AnchorRel:             { anchor.setRel(str); return; }
+      case AnchorRev:             { anchor.setRev(str); return; }
+      case AnchorShape:           { anchor.setShape(str); return; }
+      case AnchorTabIndex:        { anchor.setTabIndex(value.toInteger(exec)); return; }
+      case AnchorTarget:          { anchor.setTarget(str); return; }
+      case AnchorType:            { anchor.setType(str); return; }
+      }
     }
     break;
     case ID_IMG: {
       DOM::HTMLImageElement image = element;
-      if      (p == "lowSrc")          { image.setLowSrc(str); return; }
-      else if (p == "name")            { image.setName(str); return; }
-      else if (p == "align")           { image.setAlign(str); return; }
-      else if (p == "alt")             { image.setAlt(str); return; }
-      else if (p == "border")          { image.setBorder(str); return; }
-      else if (p == "height")          { image.setHeight(str); return; }
-      else if (p == "hspace")          { image.setHspace(str); return; }
-      else if (p == "isMap")           { image.setIsMap(v.toBoolean(exec)); return; }
-      else if (p == "longDesc")        { image.setLongDesc(str); return; }
-      else if (p == "src")             { image.setSrc(str); return; }
-      else if (p == "useMap")          { image.setUseMap(str); return; }
-      else if (p == "vspace")          { image.setVspace(str); return; }
-      else if (p == "width")           { image.setWidth(str); return; }
+      switch (token) {
+      case ImageLowSrc:          { image.setLowSrc(str); return; }
+      case ImageName:            { image.setName(str); return; }
+      case ImageAlign:           { image.setAlign(str); return; }
+      case ImageAlt:             { image.setAlt(str); return; }
+      case ImageBorder:          { image.setBorder(str); return; }
+      case ImageHeight:          { image.setHeight(str); return; }
+      case ImageHspace:          { image.setHspace(str); return; }
+      case ImageIsMap:           { image.setIsMap(value.toBoolean(exec)); return; }
+      case ImageLongDesc:        { image.setLongDesc(str); return; }
+      case ImageSrc:             { image.setSrc(str); return; }
+      case ImageUseMap:          { image.setUseMap(str); return; }
+      case ImageVspace:          { image.setVspace(str); return; }
+      case ImageWidth:           { image.setWidth(str); return; }
+      }
     }
     break;
     case ID_OBJECT: {
       DOM::HTMLObjectElement object = element;
+      switch (token) {
       // read-only: form
-      if (p == "code")                 { object.setCode(str); return; }
-      else if (p == "align")           { object.setAlign(str); return; }
-      else if (p == "archive")         { object.setArchive(str); return; }
-      else if (p == "border")          { object.setBorder(str); return; }
-      else if (p == "codeBase")        { object.setCodeBase(str); return; }
-      else if (p == "codeType")        { object.setCodeType(str); return; }
-      else if (p == "data")            { object.setData(str); return; }
-      else if (p == "declare")         { object.setDeclare(v.toBoolean(exec)); return; }
-      else if (p == "height")          { object.setHeight(str); return; }
-      else if (p == "hspace")          { object.setHspace(str); return; }
-      else if (p == "name")            { object.setName(str); return; }
-      else if (p == "standby")         { object.setStandby(str); return; }
-      else if (p == "tabIndex")        { object.setTabIndex(v.toInteger(exec)); return; }
-      else if (p == "type")            { object.setType(str); return; }
-      else if (p == "useMap")          { object.setUseMap(str); return; }
-      else if (p == "vspace")          { object.setVspace(str); return; }
-      else if (p == "width")           { object.setWidth(str); return; }
-//      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(exec,object.contentDocument()); // type Document
+      case ObjectCode:                 { object.setCode(str); return; }
+      case ObjectAlign:           { object.setAlign(str); return; }
+      case ObjectArchive:         { object.setArchive(str); return; }
+      case ObjectBorder:          { object.setBorder(str); return; }
+      case ObjectCodeBase:        { object.setCodeBase(str); return; }
+      case ObjectCodeType:        { object.setCodeType(str); return; }
+      case ObjectData:            { object.setData(str); return; }
+      case ObjectDeclare:         { object.setDeclare(value.toBoolean(exec)); return; }
+      case ObjectHeight:          { object.setHeight(str); return; }
+      case ObjectHspace:          { object.setHspace(str); return; }
+      case ObjectName:            { object.setName(str); return; }
+      case ObjectStandby:         { object.setStandby(str); return; }
+      case ObjectTabIndex:        { object.setTabIndex(value.toInteger(exec)); return; }
+      case ObjectType:            { object.setType(str); return; }
+      case ObjectUseMap:          { object.setUseMap(str); return; }
+      case ObjectVspace:          { object.setVspace(str); return; }
+      case ObjectWidth:           { object.setWidth(str); return; }
+      //case ObjectContentDocument: // new for DOM2 - not yet in khtml
+      //return getDOMNode(exec,object.contentDocument()); // type Document
+      }
     }
     break;
     case ID_PARAM: {
       DOM::HTMLParamElement param = element;
-      if      (p == "name")            { param.setName(str); return; }
-      else if (p == "type")            { param.setType(str); return; }
-      else if (p == "value")           { param.setValue(str); return; }
-      else if (p == "valueType")       { param.setValueType(str); return; }
+      switch (token) {
+      case ParamName:            { param.setName(str); return; }
+      case ParamType:            { param.setType(str); return; }
+      case ParamValue:           { param.setValue(str); return; }
+      case ParamValueType:       { param.setValueType(str); return; }
+      }
     }
     break;
     case ID_APPLET: {
       DOM::HTMLAppletElement applet = element;
-      if      (p == "align")           { applet.setAlign(str); return; }
-      else if (p == "alt")             { applet.setAlt(str); return; }
-      else if (p == "archive")         { applet.setArchive(str); return; }
-      else if (p == "code")            { applet.setCode(str); return; }
-      else if (p == "codeBase")        { applet.setCodeBase(str); return; }
-      else if (p == "height")          { applet.setHeight(str); return; }
-      else if (p == "hspace")          { applet.setHspace(str); return; }
-      else if (p == "name")            { applet.setName(str); return; }
-      else if (p == "object")          { applet.setObject(str); return; }
-      else if (p == "vspace")          { applet.setVspace(str); return; }
-      else if (p == "width")           { applet.setWidth(str); return; }
+      switch (token) {
+      case AppletAlign:           { applet.setAlign(str); return; }
+      case AppletAlt:             { applet.setAlt(str); return; }
+      case AppletArchive:         { applet.setArchive(str); return; }
+      case AppletCode:            { applet.setCode(str); return; }
+      case AppletCodeBase:        { applet.setCodeBase(str); return; }
+      case AppletHeight:          { applet.setHeight(str); return; }
+      case AppletHspace:          { applet.setHspace(str); return; }
+      case AppletName:            { applet.setName(str); return; }
+      case AppletObject:          { applet.setObject(str); return; }
+      case AppletVspace:          { applet.setVspace(str); return; }
+      case AppletWidth:           { applet.setWidth(str); return; }
+      }
     }
     break;
     case ID_MAP: {
       DOM::HTMLMapElement map = element;
+      switch (token) {
       // read-only: areas
-      if (p == "name")                 { map.setName(str); return; }
+      case MapName:                 { map.setName(str); return; }
+     }
     }
     break;
     case ID_AREA: {
       DOM::HTMLAreaElement area = element;
-      if      (p == "accessKey")       { area.setAccessKey(str); return; }
-      else if (p == "alt")             { area.setAlt(str); return; }
-      else if (p == "coords")          { area.setCoords(str); return; }
-      else if (p == "href")            { area.setHref(str); return; }
-      else if (p == "noHref")          { area.setNoHref(v.toBoolean(exec)); return; }
-      else if (p == "shape")           { area.setShape(str); return; }
-      else if (p == "tabIndex")        { area.setTabIndex(v.toInteger(exec)); return; }
-      else if (p == "target")          { area.setTarget(str); return; }
+      switch (token) {
+      case AreaAccessKey:       { area.setAccessKey(str); return; }
+      case AreaAlt:             { area.setAlt(str); return; }
+      case AreaCoords:          { area.setCoords(str); return; }
+      case AreaHref:            { area.setHref(str); return; }
+      case AreaNoHref:          { area.setNoHref(value.toBoolean(exec)); return; }
+      case AreaShape:           { area.setShape(str); return; }
+      case AreaTabIndex:        { area.setTabIndex(value.toInteger(exec)); return; }
+      case AreaTarget:          { area.setTarget(str); return; }
+      }
     }
     break;
     case ID_SCRIPT: {
       DOM::HTMLScriptElement script = element;
-      if      (p == "text")            { script.setText(str); return; }
-      else if (p == "htmlFor")         { script.setHtmlFor(str); return; }
-      else if (p == "event")           { script.setEvent(str); return; }
-      else if (p == "charset")         { script.setCharset(str); return; }
-      else if (p == "defer")           { script.setDefer(v.toBoolean(exec)); return; }
-      else if (p == "src")             { script.setSrc(str); return; }
-      else if (p == "type")            { script.setType(str); return; }
+      switch (token) {
+      case ScriptText:            { script.setText(str); return; }
+      case ScriptHtmlFor:         { script.setHtmlFor(str); return; }
+      case ScriptEvent:           { script.setEvent(str); return; }
+      case ScriptCharset:         { script.setCharset(str); return; }
+      case ScriptDefer:           { script.setDefer(value.toBoolean(exec)); return; }
+      case ScriptSrc:             { script.setSrc(str); return; }
+      case ScriptType:            { script.setType(str); return; }
+      }
     }
     break;
     case ID_TABLE: {
       DOM::HTMLTableElement table = element;
-      if      (p == "caption")         { table.setCaption(n); return; } // type HTMLTableCaptionElement
-      else if (p == "tHead")           { table.setTHead(n); return; } // type HTMLTableSectionElement
-      else if (p == "tFoot")           { table.setTFoot(n); return; } // type HTMLTableSectionElement
+      switch (token) {
+      case TableCaption:         { table.setCaption(n); return; } // type HTMLTableCaptionElement
+      case TableTHead:           { table.setTHead(n); return; } // type HTMLTableSectionElement
+      case TableTFoot:           { table.setTFoot(n); return; } // type HTMLTableSectionElement
       // read-only: rows
       // read-only: tbodies
-      else if (p == "align")           { table.setAlign(str); return; }
-      else if (p == "bgColor")         { table.setBgColor(str); return; }
-      else if (p == "border")          { table.setBorder(str); return; }
-      else if (p == "cellPadding")     { table.setCellPadding(str); return; }
-      else if (p == "cellSpacing")     { table.setCellSpacing(str); return; }
-      else if (p == "frame")           { table.setFrame(str); return; }
-      else if (p == "rules")           { table.setRules(str); return; }
-      else if (p == "summary")         { table.setSummary(str); return; }
-      else if (p == "width")           { table.setWidth(str); return; }
+      case TableAlign:           { table.setAlign(str); return; }
+      case TableBgColor:         { table.setBgColor(str); return; }
+      case TableBorder:          { table.setBorder(str); return; }
+      case TableCellPadding:     { table.setCellPadding(str); return; }
+      case TableCellSpacing:     { table.setCellSpacing(str); return; }
+      case TableFrame:           { table.setFrame(str); return; }
+      case TableRules:           { table.setRules(str); return; }
+      case TableSummary:         { table.setSummary(str); return; }
+      case TableWidth:           { table.setWidth(str); return; }
+      }
     }
     break;
     case ID_CAPTION: {
       DOM::HTMLTableCaptionElement tableCaption;
-      if      (p == "align")           { tableCaption.setAlign(str); return; }
+      switch (token) {
+      case TableAlign:           { tableCaption.setAlign(str); return; }
+      }
     }
     break;
     case ID_COL: {
       DOM::HTMLTableColElement tableCol = element;
-      if      (p == "align")           { tableCol.setAlign(str); return; }
-      else if (p == "ch")              { tableCol.setCh(str); return; }
-      else if (p == "chOff")           { tableCol.setChOff(str); return; }
-      else if (p == "span")            { tableCol.setSpan(v.toInteger(exec)); return; }
-      else if (p == "vAlign")          { tableCol.setVAlign(str); return; }
-      else if (p == "width")           { tableCol.setWidth(str); return; }
+      switch (token) {
+      case TableColAlign:           { tableCol.setAlign(str); return; }
+      case TableColCh:              { tableCol.setCh(str); return; }
+      case TableColChOff:           { tableCol.setChOff(str); return; }
+      case TableColSpan:            { tableCol.setSpan(value.toInteger(exec)); return; }
+      case TableColVAlign:          { tableCol.setVAlign(str); return; }
+      case TableColWidth:           { tableCol.setWidth(str); return; }
+      }
     }
     break;
     case ID_THEAD:
     case ID_TBODY:
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
-      if      (p == "align")           { tableSection.setAlign(str); return; }
-      else if (p == "ch")              { tableSection.setCh(str); return; }
-      else if (p == "chOff")           { tableSection.setChOff(str); return; }
-      else if (p == "vAlign")          { tableSection.setVAlign(str); return; }
+      switch (token) {
+      case TableSectionAlign:           { tableSection.setAlign(str); return; }
+      case TableSectionCh:              { tableSection.setCh(str); return; }
+      case TableSectionChOff:           { tableSection.setChOff(str); return; }
+      case TableSectionVAlign:          { tableSection.setVAlign(str); return; }
       // read-only: rows
+      }
     }
     break;
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
+      switch (token) {
       // read-only: rowIndex
       // read-only: sectionRowIndex
       // read-only: cells
-      if      (p == "align")           { tableRow.setAlign(str); return; }
-      else if (p == "bgColor")         { tableRow.setBgColor(str); return; }
-      else if (p == "ch")              { tableRow.setCh(str); return; }
-      else if (p == "chOff")           { tableRow.setChOff(str); return; }
-      else if (p == "vAlign")          { tableRow.setVAlign(str); return; }
+      case TableRowAlign:           { tableRow.setAlign(str); return; }
+      case TableRowBgColor:         { tableRow.setBgColor(str); return; }
+      case TableRowCh:              { tableRow.setCh(str); return; }
+      case TableRowChOff:           { tableRow.setChOff(str); return; }
+      case TableRowVAlign:          { tableRow.setVAlign(str); return; }
+      }
     }
     break;
     case ID_TH:
     case ID_TD: {
       DOM::HTMLTableCellElement tableCell = element;
+      switch (token) {
       // read-only: cellIndex
-      if      (p == "abbr")            { tableCell.setAbbr(str); return; }
-      else if (p == "align")           { tableCell.setAlign(str); return; }
-      else if (p == "axis")            { tableCell.setAxis(str); return; }
-      else if (p == "bgColor")         { tableCell.setBgColor(str); return; }
-      else if (p == "ch")              { tableCell.setCh(str); return; }
-      else if (p == "chOff")           { tableCell.setChOff(str); return; }
-      else if (p == "colSpan")         { tableCell.setColSpan(v.toInteger(exec)); return; }
-      else if (p == "headers")         { tableCell.setHeaders(str); return; }
-      else if (p == "height")          { tableCell.setHeight(str); return; }
-      else if (p == "noWrap")          { tableCell.setNoWrap(v.toBoolean(exec)); return; }
-      else if (p == "rowSpan")         { tableCell.setRowSpan(v.toInteger(exec)); return; }
-      else if (p == "scope")           { tableCell.setScope(str); return; }
-      else if (p == "vAlign")          { tableCell.setVAlign(str); return; }
-      else if (p == "width")           { tableCell.setWidth(str); return; }
+      case TableCellAbbr:            { tableCell.setAbbr(str); return; }
+      case TableCellAlign:           { tableCell.setAlign(str); return; }
+      case TableCellAxis:            { tableCell.setAxis(str); return; }
+      case TableCellBgColor:         { tableCell.setBgColor(str); return; }
+      case TableCellCh:              { tableCell.setCh(str); return; }
+      case TableCellChOff:           { tableCell.setChOff(str); return; }
+      case TableCellColSpan:         { tableCell.setColSpan(value.toInteger(exec)); return; }
+      case TableCellHeaders:         { tableCell.setHeaders(str); return; }
+      case TableCellHeight:          { tableCell.setHeight(str); return; }
+      case TableCellNoWrap:          { tableCell.setNoWrap(value.toBoolean(exec)); return; }
+      case TableCellRowSpan:         { tableCell.setRowSpan(value.toInteger(exec)); return; }
+      case TableCellScope:           { tableCell.setScope(str); return; }
+      case TableCellVAlign:          { tableCell.setVAlign(str); return; }
+      case TableCellWidth:           { tableCell.setWidth(str); return; }
+      }
     }
     break;
     case ID_FRAMESET: {
       DOM::HTMLFrameSetElement frameSet = element;
-      if      (p == "cols")            { frameSet.setCols(str); return; }
-      else if (p == "rows")            { frameSet.setRows(str); return; }
+      switch (token) {
+      case FrameSetCols:            { frameSet.setCols(str); return; }
+      case FrameSetRows:            { frameSet.setRows(str); return; }
+      }
     }
     break;
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
-      if (p == "frameBorder")          { frameElement.setFrameBorder(str); return; }
-      else if (p == "longDesc")        { frameElement.setLongDesc(str); return; }
-      else if (p == "marginHeight")    { frameElement.setMarginHeight(str); return; }
-      else if (p == "marginWidth")     { frameElement.setMarginWidth(str); return; }
-      else if (p == "name")            { frameElement.setName(str); return; }
-      else if (p == "noResize")        { frameElement.setNoResize(v.toBoolean(exec)); return; }
-      else if (p == "scrolling")       { frameElement.setScrolling(str); return; }
-      else if (p == "src")             { frameElement.setSrc(str); return; }
-//      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(exec,frameElement.contentDocument()); // type Document
+      switch (token) {
+      case FrameFrameBorder:     { frameElement.setFrameBorder(str); return; }
+      case FrameLongDesc:        { frameElement.setLongDesc(str); return; }
+      case FrameMarginHeight:    { frameElement.setMarginHeight(str); return; }
+      case FrameMarginWidth:     { frameElement.setMarginWidth(str); return; }
+      case FrameName:            { frameElement.setName(str); return; }
+      case FrameNoResize:        { frameElement.setNoResize(value.toBoolean(exec)); return; }
+      case FrameScrolling:       { frameElement.setScrolling(str); return; }
+      case FrameSrc:             { frameElement.setSrc(str); return; }
+      //case FrameContentDocument: // new for DOM2 - not yet in khtml
+      //return getDOMNode(exec,frameElement.contentDocument()); // type Document
+      }
     }
     break;
     case ID_IFRAME: {
       DOM::HTMLIFrameElement iFrame = element;
-      if (p == "align")                { iFrame.setAlign(str); return; }
-      else if (p == "frameBorder")     { iFrame.setFrameBorder(str); return; }
-      else if (p == "height")          { iFrame.setHeight(str); return; }
-      else if (p == "longDesc")        { iFrame.setLongDesc(str); return; }
-      else if (p == "marginHeight")    { iFrame.setMarginHeight(str); return; }
-      else if (p == "marginWidth")     { iFrame.setMarginWidth(str); return; }
-      else if (p == "name")            { iFrame.setName(str); return; }
-      else if (p == "scrolling")       { iFrame.setScrolling(str); return; }
-      else if (p == "src")             { iFrame.setSrc(str); return; }
-      else if (p == "width")           { iFrame.setWidth(str); return; }
-//      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(exec,iFrame.contentDocument); // type Document
+      switch (token) {
+      case IFrameAlign:           { iFrame.setAlign(str); return; }
+      case IFrameFrameBorder:     { iFrame.setFrameBorder(str); return; }
+      case IFrameHeight:          { iFrame.setHeight(str); return; }
+      case IFrameLongDesc:        { iFrame.setLongDesc(str); return; }
+      case IFrameMarginHeight:    { iFrame.setMarginHeight(str); return; }
+      case IFrameMarginWidth:     { iFrame.setMarginWidth(str); return; }
+      case IFrameName:            { iFrame.setName(str); return; }
+      case IFrameScrolling:       { iFrame.setScrolling(str); return; }
+      case IFrameSrc:             { iFrame.setSrc(str); return; }
+      case IFrameWidth:           { iFrame.setWidth(str); return; }
+      //case IFrameContentDocument: // new for DOM2 - not yet in khtml
+      //return getDOMNode(exec,iFrame.contentDocument); // type Document
+      }
+      break;
     }
-    break;
   }
 
   // generic properties
-  if (p == "id")
+  switch (token) {
+  case ElementId:
     element.setId(str);
-  else if (p == "title")
+    return;
+  case ElementTitle:
     element.setTitle(str);
-  else if (p == "lang")
+    return;
+  case ElementLang:
     element.setLang(str);
-  else if (p == "dir")
+    return;
+  case ElementDir:
     element.setDir(str);
-  else if (p == "className")
+    return;
+  case ElementClassName:
     element.setClassName(str);
-  else if ( p == "innerHTML")
+    return;
+  case ElementInnerHTML:
     element.setInnerHTML(str);
-  else if ( p == "innerText")
+    return;
+  case ElementInnerText:
     element.setInnerText(str);
-  else
-    DOMElement::tryPut(exec,p,v,attr);
+    return;
+  default:
+    kdWarning() << "KJS::HTMLElement::putValue unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
+  }
 }
 
 // -------------------------------------------------------------------------

@@ -712,12 +712,17 @@ void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Valu
   const HashEntry* entry = Lookup::findEntry(table, propertyName);
   if (entry) {
     if (entry->attr & Function) // function: put as override property
+    {
       ObjectImp::put(exec, propertyName, value, attr);
-    else if (entry->attr & ReadOnly == 0) // let DOMObjectLookupPut print the warning if not
+      return;
+    }
+    else if ((entry->attr & ReadOnly) == 0) // let DOMObjectLookupPut print the warning if not
+    {
       putValue(exec, entry->value, value, attr);
-    return;
+      return;
+    }
   }
-  DOMObjectLookupPut<DOMCSSRule, DOMObject>(exec, propertyName, value, attr, table, this);
+  DOMObjectLookupPut<DOMCSSRule, DOMObject>(exec, propertyName, value, attr, &DOMCSSRuleTable, this);
 }
 
 void DOMCSSRule::putValue(ExecState *exec, int token, const Value& value, int)
