@@ -22,10 +22,10 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
-#include <qinputdialog.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 
+#include <kinputdialog.h>
 #include <klocale.h>
 #include <kdebug.h>
 
@@ -192,11 +192,11 @@ void DistributionListEditor::slotSelectionEntryViewChanged()
 void DistributionListEditor::newList()
 {
   bool ok = false;
-  QString name = QInputDialog::getText( i18n("New Distribution List"),
+  QString name = KInputDialog::getText( i18n("New Distribution List"),
                                         i18n("Please enter name:"),
-                                        QLineEdit::Normal, QString::null, &ok,
-                                        this );
-  if ( !ok || name.isEmpty() ) return;
+                                        QString::null, &ok, this );
+  if ( !ok )
+    return;
 
   new DistributionList( mManager, name );
 
