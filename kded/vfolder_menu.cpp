@@ -872,19 +872,9 @@ VFolderMenu::loadApplications(const QString &dir, const QString &relDir)
             continue;
             
          KService *service = 0;
-kdDebug(7021) << "Found " << pathfn << " (" << (relDir+fn) << ")" << endl;
          emit newService(pathfn, &service); 
          if (service)
-         {
             addApplication(relDir+fn, service);
-         }
-         else
-         {
-// This is not an error!
-kdDebug(7021) << "Could not load " << pathfn << endl;
-         }
-         // list.append( pathfn );
-         // relList.append( relPart + fn );
       }
     }
     closedir( dp );
