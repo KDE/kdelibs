@@ -50,6 +50,8 @@ AC_CACHE_VAL(ac_cv_have_pcsc,
   if test "$ac_pcsc_includes" = NO || test "$ac_pcsc_libraries" = NO; then
     have_pcsc=no
   else
+    PCSC_INCLUDES="-I$ac_pcsc_includes ";
+    PCSC_LDFLAGS="-L$ac_pcsc_libraries -lpcsclite";
     have_pcsc=yes;
   fi
 
