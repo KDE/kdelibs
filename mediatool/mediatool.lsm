@@ -5,11 +5,11 @@ Version:        0.53
 Entered-date:   10AUG97
 Description:    Mediatool library
 Keywords:       media kmedia tracker sidplay playmidi sound Linux X11 Qt KDE
-Author:         chris@magicon.prima.ruhr.de (chris@magicon.prima.ruhr.de)
-Maintained-by:  chris@magicon.prima.ruhr.de (chris@magicon.prima.ruhr.de)
-Primary-site:   ftp://fiwi02.wiwi.uni-tuebingen.de/pub/kde/apps/multimedia/KSoundSystem
-Alternate-site: http://www.prima.ruhr.de/home/magicon/mediatool.html
-Original-site:  http://www.prima.ruhr.de/home/magicon/mediatool.html
-Platform:       Linux and possibly other Unices
+Author:         Christian Esken (esken@kde.org)
+Maintained-by:  Christian Esken (esken@kde.org)
+Primary-site:   ftp://ftp.kde.org/pub/kde
+Alternate-site: http://wallace.free.de/~chris/mediatool.html
+Original-site:  http://wallace.free.de/~chris/mediatool.html
+Platform:       Linux, FreeBSD, IRIX and possibly other Unices
 Copying-policy: LGPL
 End
