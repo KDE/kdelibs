@@ -90,7 +90,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
     {
         QDomElement topLevel = m_doc.createElement("xbel");
         m_doc.appendChild( topLevel );
-        m_doc.insertBefore( m_doc.createProcessingInstruction( "xbel", PI_DATA), topLevel );
+        m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
         if ( bImportDesktopFiles )
             importDesktopFiles();
         m_docIsLoaded = true;
@@ -161,14 +161,13 @@ void KBookmarkManager::parse() const
         if ( n.isProcessingInstruction() )
         {
             QDomProcessingInstruction pi = n.toProcessingInstruction();
-            pi.setData( PI_DATA );
+            kdDebug() << pi.parentNode().isNull() << endl;
+            pi.parentNode().removeChild(pi);
         }
-        else
-        {
-            QDomProcessingInstruction pi;
-            pi = m_doc.createProcessingInstruction( "xbel", PI_DATA );
-            m_doc.insertBefore( pi, docElem );
-        }
+
+        QDomProcessingInstruction pi;
+        pi = m_doc.createProcessingInstruction( "xml", PI_DATA );
+        m_doc.insertBefore( pi, docElem );
     }
 
     file.close();
