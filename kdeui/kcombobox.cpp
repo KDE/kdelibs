@@ -68,7 +68,7 @@ KComboBox::~KComboBox()
 void KComboBox::init()
 {
 	// Do not put text in the list, but do not loose
-	// it either when rotating up. NOTE: Does not yet work!!
+	// it either when rotating up.
 	m_strCurrentText = QString::null;
 	
     // Permanently set some parameters in the parent object.
@@ -119,17 +119,17 @@ void KComboBox::makeCompletion( const QString& text )
     	int pos = cursorPosition();
 		KCompletion *comp = completionObject();
     	KGlobalSettings::Completion mode = completionMode();
-/*    	
+
     	if( mode == KGlobalSettings::CompletionShell &&
     		comp->hasMultipleMatches() && text != comp->lastMatch() )
 	    	match = comp->nextMatch();
 	    else
-*/
-		match = comp->makeCompletion( text );
+	    	match = comp->makeCompletion( text );
  	
         // If no match or the same text simply return without completing.
         if( match.isNull() || match == text )  return;
 
+		
 		int index = ( match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
 		if( index > -1 )  setCurrentItem( index );
 			
@@ -153,9 +153,11 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 {
     if( m_pEdit != 0 )
     {
-    	// Support for rotating through highlighted text!!  This means
-    	// a person can rotate through all combinations of car, class,
-    	// coffee, cookie, club by just pressing the rotation keys.
+    	// Support for rotating through highlighted text!  This means
+		// that if there are multiple matches for the portion of text
+		// entered into the combo box,  one can simply rotate through
+		// all the other possible matches using the previous/next match
+		// keys.
 		KCompletion* comp = completionObject();
 		if( comp &&
 			( type == KCompletionBase::PrevCompletionMatch ||
@@ -172,50 +174,65 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
         }
         else
         {
-        	QString input = m_pEdit->text();
+        	// History list rotation feature:  The code below supports
+        	// *nix shell like history list rotation.  This feature is
+        	// only available when the insertion policy into the listbox
+        	// of the combo widget it set to either "AtTop" or "AtBottom".
+        	// Other insertion cannot support save the last written text
+        	// feature of *nix like shells.        	
+        	int index = -1;        	
 			QComboBox::Policy policy = insertionPolicy();
-			// Workaround a Qt bug!! findItem in QListBox returns
-			// the first element even if the argument is an empty
-			// string.  This is not correct according their documentations.			
-			int index = ( input.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( input ) );
-			if( index == -1 )
+			if( m_strCurrentText.isNull() &&
+				( policy == QComboBox::AtTop ||
+				  policy == QComboBox::AtBottom ) )
 			{
-				// Only allow a previous match key press
-				// match since we do not yet have a next
-				// match at this point yet.
 				if( type == KCompletionBase::RotateUp )
 				{
 					if( policy == QComboBox::AtTop )
 						index = 0;
 					else if( policy == QComboBox::AtBottom )
-						index = listBox()->count() - 1;
-					else
-						// TODO: Figure out what to do with other insertion policies
-						// For now just start from the currently selected item.
-						index = currentItem();
+						index = count() - 1;
+				}
+                debug( "Current item is : %i\tTotal items in list : %i", index, count() );
+				if( index == 0 || index == count() - 1 )
+				{
+					m_strCurrentText = m_pEdit->text();  //Store the current text.
+				    debug( "Storing the current text : %s ", m_strCurrentText.latin1() );					
 				}
 			}
-			else
+			else			
 			{
 				if( type == KCompletionBase::RotateUp )
 				{
-					if( policy == QComboBox::AtBottom )
-						index -= 1;
+					if( policy == QComboBox::AtTop )
+						index = currentItem() + 1;
 					else
-						index += 1;
+						index = currentItem() - 1;
 				}
 				else if( type == KCompletionBase::RotateDown )
 				{
-					if( policy == QComboBox::AtBottom )
-						index += 1;
+					if( policy == QComboBox::AtTop )
+						index = currentItem() - 1;
 					else
-						index -= 1;
+						index = currentItem() + 1;
 				}
 			
 			}	
-			// List is made so that it will not iterate back through			
-			if( index > -1 && index < (int)listBox()->count() )
+			if( index > -1 && index < count() )
+			{			
 				setCurrentItem( index );
+			}
+			else
+			{
+				if( !m_strCurrentText.isNull() &&
+					( ( policy == QComboBox::AtTop && index < 0 ) ||
+					  ( policy == QComboBox::AtBottom && index >= count() ) ) )
+				{
+				    debug( "Setting the text editor to : %s", m_strCurrentText.latin1() );
+					m_pEdit->setText( m_strCurrentText );
+					m_strCurrentText = QString::null;				
+				}
+			}
         }
     }
 }

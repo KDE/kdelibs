@@ -286,14 +286,19 @@ signals:
 public slots:
 
     /**
-    * Iterates through all possible matches of the completed text or
-    * the history list.
+    * Iterates through all possible matches of the completed text
+    * or the history list.
     *
-    * Depending on the argument this function either iterates through
-    * the history list of this widget or the all possible matches in
-    * whenever multiple matches result from a text completion request.
-    * This function will have no effect if the previous completion
-    * resulted in a single match.
+    * Depending on the value of the argument, this function either
+    * iterates through the history list of this widget or the all
+    * possible matches in whenever multiple matches result from a
+    * text completion request.  Note that the all possible match
+    * iteration will not work if there are no previous matches, i.e.
+    * no text has been completed and the *nix shell history list
+    * rotation is only available if the insertion policy for this
+    * widget is set either @p QComobBox::AtTop or @p QComboBox::AtBottom.
+    * For other insertion modes whatever has been typed by the user
+    * when the rotation event was initiated will be lost.
     *
     * @param type the key-binding invoked.
     */
