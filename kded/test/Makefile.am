@@ -1,5 +1,4 @@
 # $Id$
-# Makefile.am of kdebase/kioslave/http
 
 INCLUDES= -I$(srcdir)/.. $(all_includes) 
 
