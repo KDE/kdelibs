@@ -43,10 +43,10 @@ namespace KABC {
   {
   public:
 
-    typedef struct _Extension {
+    struct Extension {
       QString value;
       bool critical;
-    } Extension;
+    };
     
     typedef enum Scope { Base, One, Sub };
 
