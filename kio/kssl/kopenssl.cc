@@ -1,15 +1,15 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -107,7 +107,7 @@ static int (*K_PKCS12_newpass) (PKCS12*, char*, char*) = 0L;
 static PKCS12* (*K_d2i_PKCS12_fp) (FILE*, PKCS12**) = 0L;
 static PKCS12* (*K_PKCS12_new) (void) = 0L;
 static void (*K_PKCS12_free) (PKCS12 *) = 0L;
-static int (*K_PKCS12_parse) (PKCS12*, const char *, EVP_PKEY**, 
+static int (*K_PKCS12_parse) (PKCS12*, const char *, EVP_PKEY**,
                                              X509**, STACK_OF(X509)**) = 0L;
 static void (*K_EVP_PKEY_free) (EVP_PKEY *) = 0L;
 static EVP_PKEY* (*K_EVP_PKEY_new) () = 0L;
@@ -277,7 +277,7 @@ KConfig *cfg;
          _cryptoLib = ll->globalLibrary(libname.latin1());
    }
 #else
-   libpaths 
+   libpaths
             #ifdef _AIX
             << "/opt/freeware/lib/"
 	    #endif
@@ -291,7 +291,7 @@ KConfig *cfg;
             << "";
 
 // FIXME: #define here for the various OS types to optimize
-   libnamess 
+   libnamess
 	     #ifdef hpux
              << "libssl.sl"
              #elif defined(_AIX)
@@ -301,14 +301,14 @@ KConfig *cfg;
 	     << "libssl.0.9.dylib"
              #else
              #ifdef SHLIB_VERSION_NUMBER
-             << "libssl.so." SHLIB_VERSION_NUMBER 
+             << "libssl.so." SHLIB_VERSION_NUMBER
              #endif
              << "libssl.so"
 	     << "libssl.so.0"
              #endif
 	     ;
 
-   libnamesc 
+   libnamesc
              #ifdef hpux
              << "libcrypto.sl"
              #elif defined(_AIX)
@@ -318,7 +318,7 @@ KConfig *cfg;
 	     << "libcrypto.0.9.dylib"
 	     #else
              #ifdef SHLIB_VERSION_NUMBER
-             << "libcrypto.so." SHLIB_VERSION_NUMBER 
+             << "libcrypto.so." SHLIB_VERSION_NUMBER
              #endif
              << "libcrypto.so"
 	     << "libcrypto.so.0"
@@ -346,7 +346,7 @@ KConfig *cfg;
 #endif
 
    if (_cryptoLib) {
-#ifdef KSSL_HAVE_SSL 
+#ifdef KSSL_HAVE_SSL
       K_X509_free = (void (*) (X509 *)) _cryptoLib->symbol("X509_free");
       K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
       K_RAND_load_file = (int (*)(const char *, long)) _cryptoLib->symbol("RAND_load_file");
@@ -375,7 +375,7 @@ KConfig *cfg;
       K_BIO_new_fp = (BIO* (*)(FILE*, int)) _cryptoLib->symbol("BIO_new_fp");
       K_BIO_new_mem_buf = (BIO* (*)(void *, int)) _cryptoLib->symbol("BIO_new_mem_buf");
       K_BIO_free = (int (*)(BIO*)) _cryptoLib->symbol("BIO_free");
-      K_BIO_ctrl = (long (*) (BIO *,int,long,void *)) _cryptoLib->symbol("BIO_ctrl"); 
+      K_BIO_ctrl = (long (*) (BIO *,int,long,void *)) _cryptoLib->symbol("BIO_ctrl");
       K_BIO_write = (int (*) (BIO *b, const void *data, int len)) _cryptoLib->symbol("BIO_write");
       K_PEM_ASN1_write_bio = (int (*)(int (*)(), const char *,BIO*, char*, const EVP_CIPHER *, unsigned char *, int, pem_password_cb *, void *)) _cryptoLib->symbol("PEM_ASN1_write_bio");
       K_X509_asn1_meth = (ASN1_METHOD* (*)(void)) _cryptoLib->symbol("X509_asn1_meth");
@@ -490,12 +490,12 @@ KConfig *cfg;
 #endif
 
    if (_sslLib) {
-#ifdef KSSL_HAVE_SSL 
+#ifdef KSSL_HAVE_SSL
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
       K_SSL_accept = (int (*)(SSL *)) _sslLib->symbol("SSL_accept");
       K_SSL_read = (int (*)(SSL *, void *, int)) _sslLib->symbol("SSL_read");
-      K_SSL_write = (int (*)(SSL *, const void *, int)) 
+      K_SSL_write = (int (*)(SSL *, const void *, int))
                             _sslLib->symbol("SSL_write");
       K_SSL_new = (SSL* (*)(SSL_CTX *)) _sslLib->symbol("SSL_new");
       K_SSL_free = (void (*)(SSL *)) _sslLib->symbol("SSL_free");
@@ -507,9 +507,9 @@ KConfig *cfg;
       K_SSL_CTX_set_cipher_list = (int (*)(SSL_CTX *, const char *))
                                   _sslLib->symbol("SSL_CTX_set_cipher_list");
       K_SSL_CTX_set_verify = (void (*)(SSL_CTX*, int, int (*)(int, X509_STORE_CTX*))) _sslLib->symbol("SSL_CTX_set_verify");
-      K_SSL_use_certificate = (int (*)(SSL*, X509*)) 
+      K_SSL_use_certificate = (int (*)(SSL*, X509*))
                                   _sslLib->symbol("SSL_CTX_use_certificate");
-      K_SSL_get_current_cipher = (SSL_CIPHER *(*)(SSL *)) 
+      K_SSL_get_current_cipher = (SSL_CIPHER *(*)(SSL *))
                                   _sslLib->symbol("SSL_get_current_cipher");
       K_SSL_ctrl = (long (*)(SSL * ,int, long, char *))
                                   _sslLib->symbol("SSL_ctrl");
@@ -565,16 +565,16 @@ KConfig *cfg;
 
 
 KOpenSSLProxy* KOpenSSLProxy::_me = 0L;
-static KStaticDeleter<KOpenSSLProxy> med;
+static KStaticDeleter<KOpenSSLProxy> medProxy;
 
 
 
 KOpenSSLProxy::~KOpenSSLProxy() {
-   if (_sslLib) 
+   if (_sslLib)
 	_sslLib->unload();
    if (_cryptoLib)
 	_cryptoLib->unload();
-   med.setObject(0);
+   medProxy.setObject(0);
 }
 
 
@@ -583,7 +583,7 @@ KOpenSSLProxy::~KOpenSSLProxy() {
 KOpenSSLProxy *KOpenSSLProxy::self() {
 #ifdef KSSL_HAVE_SSL
    if (!_me) {
-      _me = med.setObject(_me, new KOpenSSLProxy);
+      _me = medProxy.setObject(_me, new KOpenSSLProxy);
    }
 #endif
    return _me;
@@ -916,7 +916,7 @@ ASN1_METHOD *KOpenSSLProxy::X509_asn1_meth(void) {
 
 
 int KOpenSSLProxy::ASN1_i2d_fp(FILE *out,unsigned char *x) {
-   if (K_ASN1_i2d_fp && K_i2d_ASN1_HEADER) 
+   if (K_ASN1_i2d_fp && K_i2d_ASN1_HEADER)
         return (K_ASN1_i2d_fp)((int (*)())K_i2d_ASN1_HEADER, out, x);
    else return -1;
 }
@@ -933,13 +933,13 @@ PKCS12 *KOpenSSLProxy::d2i_PKCS12_fp(FILE *fp, PKCS12 **p12) {
    else return 0L;
 }
 
- 
+
 int KOpenSSLProxy::PKCS12_newpass(PKCS12 *p12, char *oldpass, char *newpass) {
    if (K_PKCS12_newpass) return (K_PKCS12_newpass)(p12, oldpass, newpass);
    else return -1;
 }
 
- 
+
 int KOpenSSLProxy::i2d_PKCS12(PKCS12 *p12, unsigned char **p) {
    if (K_i2d_PKCS12) return (K_i2d_PKCS12)(p12, p);
    else return -1;
@@ -1026,7 +1026,7 @@ int KOpenSSLProxy::sk_num(STACK *s) {
    else return -1;
 }
 
- 
+
 char *KOpenSSLProxy::sk_pop(STACK *s) {
    if (K_sk_pop) return (K_sk_pop)(s);
    else return 0L;
@@ -1217,7 +1217,7 @@ int KOpenSSLProxy::i2d_PKCS7_fp(FILE *fp,PKCS7 *p7) {
    if (K_i2d_PKCS7_fp) return (K_i2d_PKCS7_fp)(fp,p7);
    else return -1;
 }
- 
+
 
 PKCS7 *KOpenSSLProxy::d2i_PKCS7_fp(FILE *fp,PKCS7 **p7) {
    if (K_d2i_PKCS7_fp) return (K_d2i_PKCS7_fp)(fp,p7);
