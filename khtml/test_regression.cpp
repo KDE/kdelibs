@@ -1401,18 +1401,13 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     return result;
 }
 
-bool RegressionTest::reportIgnored( const QString & description )
-{
-    printf("IGNORED: ");
-    printDescription( description );
-    return true; // no error
-}
-
 bool RegressionTest::reportResult(CheckResult result, const QString & description)
 {
-    if ( result == Ignored )
-        return reportIgnored( description );
-    else
+    if ( result == Ignored ) {
+        //printf("IGNORED: ");
+        //printDescription( description );
+        return true; // no error
+    } else
         return reportResult( result == Success, description );
 }
 

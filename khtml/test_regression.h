@@ -142,7 +142,6 @@ public:
     CheckResult checkPaintdump( const QString& againstFilename);
     enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8, JSFailure = 16};
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
-    bool reportIgnored( const QString & description = QString::null );
     bool reportResult( bool passed, const QString & description = QString::null );
     bool reportResult(CheckResult result, const QString & description = QString::null );
     void createMissingDirs(const QString &path);
