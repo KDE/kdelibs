@@ -659,6 +659,8 @@ int KTMainWindow::addToolBar( KToolBar *toolbar, int index )
 {
     int id = idBarMap.count();
     idBarMap.insert( id, toolbar );
+    if ( index == -1 )
+	index = toolBars( (ToolBarDock)toolbar->barPos() ).count();
     moveToolBar( toolbar, (ToolBarDock)toolbar->barPos(), FALSE, index );
     return id;
 }

@@ -810,7 +810,16 @@ void KToolBar::setBarPos (BarPosition bpos)
 {
     if ( !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
 	return;
-    ( (QMainWindow*)parentWidget() )->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
+    if ( d->hasRealPos ) {
+	if ( d->realPos != (QMainWindow::ToolBarDock)bpos ) {
+	    d->realPos = (QMainWindow::ToolBarDock)bpos;
+	    d->realOffset = -1;
+	    d->realIndex = 0;
+	    d->realNl = FALSE;
+	}
+    } else {
+	( (QMainWindow*)parentWidget() )->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
+    }
 }
 
 
@@ -822,8 +831,11 @@ KToolBar::BarPosition KToolBar::barPos() const
     int dm1, dm2;
     bool dm3;
     ( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
-    if ( dock == QMainWindow::Unmanaged )
+    if ( dock == QMainWindow::Unmanaged ) {
+	if ( d->hasRealPos )
+	    return (KToolBar::BarPosition)d->realPos;
 	return (KToolBar::BarPosition)QMainWindow::Top;
+    }
     return (BarPosition)dock;
 }
 
