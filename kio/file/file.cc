@@ -55,6 +55,7 @@
 #endif
 
 #include <kio/ioslave_defaults.h>
+#include <kglobal.h>
 
 using namespace KIO;
 
@@ -66,7 +67,9 @@ extern "C" { int kdemain(int argc, char **argv); }
 
 int kdemain( int argc, char **argv )
 {
+  KLocale::setMainCatalogue("kdelibs");
   KInstance instance( "kio_file" );
+  ( void ) KGlobal::locale();
 
   kdDebug(7101) << "Starting " << getpid() << endl;
 
