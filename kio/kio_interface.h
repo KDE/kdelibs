@@ -134,7 +134,7 @@ public:
     // Used to transfer the sources of an upcoming CMD_COPY call
     // This hack is needed, since a parameter can not be as big as it wants to.
     CMD_SOURCE = 14,
-    CMD_GET_SIZE = 15,
+    CMD_GET_SIZE = 15
   };
 
   /**
@@ -191,7 +191,7 @@ public:
  * Any file or URL can be represented by the UDSEntry type below
  * A UDSEntry is a list of atoms
  * Each atom contains a specific bit of information for the file
- * 
+ *
  * The following UDS constants represent the different possible values
  * for m_uds in the UDS atom structure below
  *
@@ -231,7 +231,7 @@ public:
   virtual ~KIOConnectionSignals() { };
 
   void setConnection( KIOConnection* _conn );
-  
+
   ///////////
   // Command Signals
   ///////////
@@ -258,7 +258,7 @@ public:
 
   virtual bool unmount( const char *_point );
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
-  
+
   ///////////
   // Message Signals
   ///////////
@@ -292,7 +292,7 @@ public:
   virtual bool mimeType( const char *_type );
   virtual bool gettingFile( const char *_url );
   virtual bool deletingFile( const char *_url );
-  
+
 protected:
   virtual bool source( const char *_url );
 
@@ -304,7 +304,7 @@ class KIOConnectionSlots : public KIO
 public:
   KIOConnectionSlots( KIOConnection *_conn );
   virtual ~KIOConnectionSlots() { };
-  
+
   void setConnection( KIOConnection *_conn );
 
   ///////////
@@ -327,7 +327,7 @@ public:
 
   virtual void slotUnmount( const char * ) { };
   virtual void slotMount( bool, const char *, const char* , const char *) { };
-  
+
   ///////////
   // Messages
   ///////////
@@ -342,7 +342,7 @@ public:
   virtual void slotIsFile() { };
   virtual void slotRenamed( const char* ) { };
   virtual void slotCanResume( bool ) { };
-  
+
   ///////////
   // Infos
   ///////////
@@ -369,14 +369,14 @@ public:
 
   virtual bool dispatch();
   virtual void dispatchLoop();
-  
+
 protected:
   virtual void source( const char ) { };
 
 
   virtual void dispatch( KIOCommand _cmd, void *_p, int _len );
 
-  KIOConnection *m_pConnection;  
+  KIOConnection *m_pConnection;
 
   QStringList m_lstSource;
 };
@@ -391,7 +391,7 @@ class KIOProtocol : public KIOConnectionSignals, public KIOConnectionSlots
 public:
   KIOProtocol( KIOConnection *_conn );
   virtual ~KIOProtocol() { }
-  
+
   void setConnection( KIOConnection* _conn );
 
   static void sigsegv_handler(int);
