@@ -5,6 +5,7 @@
 #include <kinstance.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 PluginSpellCheck::PluginSpellCheck( QObject* parent, const char* name )
     : Plugin( parent, name )
@@ -35,6 +36,11 @@ KPluginFactory::KPluginFactory( QObject* parent, const char* name )
   : KLibFactory( parent, name )
 {
   s_instance = new KInstance("KPluginFactory");
+}
+
+KPluginFactory::~KPluginFactory()
+{
+  delete s_instance;
 }
 
 QObject* KPluginFactory::create( QObject* parent, const char* name, const char*, const QStringList & )

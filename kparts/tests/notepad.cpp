@@ -9,6 +9,7 @@
 #include <qmultilinedit.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 #include <kaction.h>
 #include <klocale.h>
 #include <kstatusbar.h>
@@ -45,7 +46,7 @@ void NotepadPart::setReadWrite( bool rw )
 
 bool NotepadPart::openFile()
 {
-  debug("NotepadPart: opening %s", m_file.ascii());
+  kdDebug() << "NotepadPart: opening " << m_file << endl;
   // Hehe this is from a tutorial I did some time ago :)
   QFile f(m_file);
   QString s;

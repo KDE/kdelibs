@@ -3,6 +3,7 @@
 #include <klocale.h>
 #include <kstddirs.h>
 #include <kinstance.h>
+#include <kdebug.h>
 #include <kaboutdata.h>
 #include <assert.h>
 
