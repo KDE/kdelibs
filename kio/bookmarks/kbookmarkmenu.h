@@ -20,14 +20,20 @@
 #ifndef __kbookmarkmenu_h__
 #define __kbookmarkmenu_h__
 
+#include <sys/types.h>
+
 #include <qptrlist.h>
 #include <qptrstack.h>
 #include <qobject.h>
-#include <sys/types.h>
+
+#include <kdialogbase.h>
+
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
 
 class QString;
+class QGridLayout;
+class KLineEdit;
 class KBookmark;
 class KAction;
 class KActionMenu;
@@ -174,5 +180,29 @@ protected:
     KActionCollection * m_actionCollection;
     KBookmarkManager* m_pManager;
 };
+
+class BookmarkEditDialog
+    : public KDialogBase
+{
+    Q_OBJECT
+
+public:
+    BookmarkEditDialog(QString title, QString url, QWidget *parent=0, const char *name=0);
+    virtual ~BookmarkEditDialog();
+
+    KLineEdit *ed1;
+    KLineEdit *ed2;
+
+protected slots:
+    void slotOk();
+    void slotCancel();
+
+private:
+    void init(QString title, QString url);
+
+    QGridLayout *m_pGrid;
+    QWidget *m_pMain;
+};
+
 
 #endif
