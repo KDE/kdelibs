@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Pascal sources
+Comment[is_IS]=Pascal forritstextar
 Comment[cs]=Zdrojový kód v jazyku Pascal
 Comment[es]=Código pascal
 Comment[de]=Pascal Quelldatei

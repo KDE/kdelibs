@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=text/english
 Comment=English Text
+Comment[is_IS]=Enskur texti
 Comment[cs]=Anglický text
 Comment[es]=Texto en inglés
 Comment[de]=Englischer Text   

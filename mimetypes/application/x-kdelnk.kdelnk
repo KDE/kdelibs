@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=KDE config file
+Comment[is_IS]=KDE stillingaskrá
 Comment[cs]=Konfiguraèní soubor KDE
 Comment[de]=KDE Konfigurationsdatei
 Comment[no]=KDE-konfigurasjonfil

@@ -5,6 +5,7 @@ MimeType=audio/x-wav
 Icon=sound.xpm
 Patterns=*.wav;*.WAV;
 Comment=Wav file
+Comment[is_IS]=Wav hljóðskrá
 Commnet[cs]=Zvukový soubor ve formátu Wav
 Comment[es]=Archivo de sonido WAV
 Comment[de]=WAV Dokument

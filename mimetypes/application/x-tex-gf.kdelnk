@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Generic Font files
+Comment[is_IS]=Almennar stafaskrár
 Comment[cs]=Obecné znakové sady
 Comment[es]=Archivo genérico de fuentes
 Comment[de]=Allgemeine Fontdateien

@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Block Device
+Comment[is_IS]=Blokkatæki
 Comment[cs]=Blokové zaøízení
 Comment[es]=Dispositivo de Bloques
 Comment[de]=Block-Orientiertes Gerät

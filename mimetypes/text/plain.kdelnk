@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=text/plain
 Comment=Plain Text
+Comment[is_IS]=Texti
 Comment[cs]=Prostý text
 Comment[es]=Archivo de sólo texto
 Comment[de]=einfacher Text   

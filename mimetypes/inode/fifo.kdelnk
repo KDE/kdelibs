@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Pipe
+Comment[is_IS]=Pípa
 Comment[cs]=FIFO roura
 Comment[es]=Tubería
 Comment[de]=Pipe

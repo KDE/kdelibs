@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=C++ headers
+Comment[is_IS]=C++ skilgreiningar
 Comment[cs]=Hlavièkový soubor C++
 Comment[es]=Cabecera C++
 Comment[de]=C++ Header

@@ -5,6 +5,7 @@ MimeType=image/jpeg
 Icon=image.xpm
 Patterns=*.jpeg;*.jpg;*.JPG;
 Comment=Jpeg images
+Comment[is_IS]=Jpeg mynd(ir)
 Comment[cs]=Obrázek ve formátu JPEG
 Comment[es]=Imagen JPEG
 Comment[de]=Jpeg Bild

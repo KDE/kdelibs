@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Packed Font file
+Comment[is_IS]=Þjöppuð leturskrá
 Comment[cs]=Sbalené znakové sady pro TeX
 Comment[es]=Fuente comprimida
 Comment[de]=Komprimierte Fontdatei

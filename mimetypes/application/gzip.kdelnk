@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=application/x-gzip
 Comment=Gzip file
+Comment[is_IS]=Þjöppuð skrá ( gzip )
 Comment[cs]=Soubor komprimovaný gzipem
 Comment[es]=Fichero comprimido con gzip
 Comment[fr]=Fichier compressé par gzip

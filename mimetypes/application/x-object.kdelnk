@@ -5,6 +5,7 @@ MimeType=application/x-object
 Icon=binary.xpm
 Patterns=*.o;
 Comment=Object Code
+Comment[is_IS]=Vélamál ( object code )
 Comment[cs]=Objektový kód
 Comment[es]=Código objeto
 Comment[de]=Objektcode

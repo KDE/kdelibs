@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=text/x-moc
 Comment=Qt Meta Object File
+Comment[is_IS]=Qt Meta Object File
 Comment[cs]=Meta-objektový soubor Qt
 Comment[es]=Fichero Meta-Objeto de QT
 Comment[de]=Qt Meta Object Datei   

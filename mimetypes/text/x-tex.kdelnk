@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX file
+Comment[is_IS]=TeX skjal
 Comment[cs]=Dokument sázecího systému TeX
 Comment[es]=Documento TeX
 Comment[de]=TeX Dokument

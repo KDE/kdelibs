@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=C sources
+Comment[is_IS]=C forritstexti
 Comment[cs]=Zdrojový kód v jazyku C
 Comment[es]=Código C
 Comment[de]=C Quelldatei
