@@ -165,7 +165,7 @@ KFontCombo::KFontCombo(QWidget *parent, const char *name)
 {
     init();
     QStringList families;
-    KFontChooser::getFontList(families, false);
+    KFontChooser::getFontList(families, 0);
     setFonts(families);
 }
 
