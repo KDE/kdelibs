@@ -79,7 +79,7 @@ libkio_la_SOURCES = \
 	statusbarprogress.cpp \
 	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
 	observer.cpp uiserver.stub observer.skel \
-	kmdcodec.cpp kemailsettings.cpp authinfo.cpp
+	kemailsettings.cpp authinfo.cpp
 
 kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
@@ -101,7 +101,7 @@ kioinclude_HEADERS = connection.h \
 	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
 	renamedlg.h skipdlg.h slave.h \
 	observer.h chmodjob.h \
-        kpac.h kmdbase.h kmdcodec.h authinfo.h
+        kpac.h kmdbase.h authinfo.h
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
