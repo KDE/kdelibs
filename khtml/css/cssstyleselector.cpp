@@ -290,7 +290,9 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
         case CSSSelector::Sibling:
         {
             n = n->previousSibling();
-            if(!n || !n->isElementNode()) return false;
+	    while( n && !n->isElementNode() )
+		n = n->previousSibling();
+            if( !n ) return false;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
             if(!checkOneSelector(sel, elem)) return false;
             break;

@@ -2125,14 +2125,14 @@ int CSSSelector::specificity()
     case Exact:
         if(attr == ATTR_ID)
         {
-            s += 100;
+            s += 10000;
             break;
         }
     case Set:
     case List:
     case Hyphen:
     case Pseudo:
-        s += 10;
+        s += 100;
     case None:
         break;
     }
