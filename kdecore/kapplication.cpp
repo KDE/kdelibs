@@ -72,6 +72,7 @@
 #include "kcheckaccelerators.h"
 #include <qptrdict.h>
 #include <kmacroexpander.h>
+#include <kshell.h>
 
 #include <kstartupinfo.h>
 
@@ -1971,15 +1972,9 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    if (config.readBoolEntry("TerminalClient", false))
       command = "konsole -e " + command;
 
-   // WARNING: This will only work as long as the path of the
-   // email client doesn't contain spaces (this is currently
-   // impossible due to an evil hack in kcmemail but should
-   // be changed after KDE 2.0!). - Frerich
-   QStringList cmdTokens = QStringList::split(' ', command.simplifyWhiteSpace());
+   QStringList cmdTokens = KShell::splitArgs(command);
    QString cmd = cmdTokens[0];
    cmdTokens.remove(cmdTokens.begin());
-   QString lastToken;
-   QStringList newTokens;
 
    QMap<QChar, QString> keyMap;
    keyMap.insert('t', to);
@@ -1988,35 +1983,38 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    keyMap.insert('b', bcc);
    keyMap.insert('B', body);
 
-   for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); ++it)
+   for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); )
    {
-     *it = KMacroExpander::expandMacros(*it, keyMap);
-
-     if ((*it).find("%A") >= 0)
+     if (*it == "%A")
      {
+         if (it == cmdTokens.begin()) // better safe than sorry ...
+             continue;
          QStringList::ConstIterator urlit = attachURLs.begin();
          QStringList::ConstIterator urlend = attachURLs.end();
          if ( urlit != urlend )
          {
-             (*it).replace("%A", (*urlit));
-             ++urlit;
-             QStringList::Iterator nextit = it; nextit++;
-             for ( ; urlit != urlend ; ++urlit )
+             QStringList::Iterator previt = it;
+             --previt;
+             *it = *urlit;
+             ++it;
+             while ( ++urlit != urlend )
              {
-                 it = cmdTokens.insert( nextit, lastToken );
-                 it = cmdTokens.insert( nextit, (*urlit) );
+                 cmdTokens.insert( it, *previt );
+                 cmdTokens.insert( it, *urlit );
              }
-         } else
-             (*it).replace("%A", QString::null);
+         } else {
+             --it;
+             it = cmdTokens.remove( cmdTokens.remove( it ) );
+         }
+     } else {
+         *it = KMacroExpander::expandMacros(*it, keyMap);
+         ++it;
      }
-     lastToken = (*it);
    }
-   QString error;
 
+   QString error;
    if (kdeinitExec(cmd, cmdTokens, &error))
-   {
       kdWarning() << "Could not launch mail client:\n" << error << endl;
-   }
 }
 
 
