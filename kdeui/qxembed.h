@@ -176,7 +176,21 @@ public:
 
     bool eventFilter( QObject *, QEvent * );
 
+    /**
+     * Sets the flag indicating what shoud be done with the embedded window
+     * when the embedding window is destroyed.  When the flag is true, the
+     * embedded window stays alive and receives a WM_DELETE_WINDOW message
+     * that causes most applications to exit cleanly.  This is the default.
+     * Otherwise, the destruction of the QXEmbed object simply destroys the
+     * embedded window. 
+     */
     void setAutoDelete( bool );
+
+    /**
+     * Returns the value of flag indicating what shoud be done with the
+     * embedded window when the embedding window is destroyed.
+     * \sa setAutoDelete()
+     */
     bool autoDelete() const;
 
     bool customWhatsThis() const;

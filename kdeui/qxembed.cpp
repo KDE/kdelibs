@@ -51,6 +51,26 @@
 
 #include "qxembed.h"
 
+/* WARNING: 
+   Breaking QXEmbed breaks most of KDE.
+   To make things worse, QXEmbed is a very 
+   intricate code with inadequate comments.
+
+   Suggested readings:
+   - Xlib Reference Manual  
+       (sections about focus, reparenting, window management)
+   - ICCCM Manual
+       (window management)
+   - XEMBED specification 
+       (http://www.freedesktop.org/Standards/xembed-spec)
+   - XPLAIN and XEMBED.
+       <http://lists.kde.org/?w=2&r=1&s=qxembed+variants&q=t>
+   - Accumulated community knowledge.
+       <http://lists.kde.org/?w=2&r=1&s=qxembed&q=t>
+       <http://lists.kde.org/?l=kde-devel&w=2&r=1&s=qxembed&q=b>
+       <http://lists.kde.org/?l=kfm-devel&w=2&r=1&s=qxembed&q=b>
+*/
+
 #ifndef XK_ISO_Left_Tab
 #define XK_ISO_Left_Tab                                 0xFE20
 #endif
@@ -492,27 +512,24 @@ QXEmbed::~QXEmbed()
   if ( d && d->xgrab)
     XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, winId() );
   
-  if ( window != 0 ) {
-        if ( autoDelete() )
-            XUnmapWindow( qt_xdisplay(), window );
-        
-        XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
-        XSync(qt_xdisplay(), false);
+  if ( window && autoDelete() ) 
+      {
+          XUnmapWindow( qt_xdisplay(), window );
+          XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
+          XSync(qt_xdisplay(), false);
+          
+          XEvent ev;
+          memset(&ev, 0, sizeof(ev));
+          ev.xclient.type = ClientMessage;
+          ev.xclient.window = window;
+          ev.xclient.message_type = qt_wm_protocols;
+          ev.xclient.format = 32;
+          ev.xclient.data.s[0] = qt_wm_delete_window;
+          XSendEvent(qt_xdisplay(), window, false, NoEventMask, &ev);
+          XFlush( qt_xdisplay() );
+      }
 
-        if ( autoDelete() ) {
-            XEvent ev;
-            memset(&ev, 0, sizeof(ev));
-            ev.xclient.type = ClientMessage;
-            ev.xclient.window = window;
-            ev.xclient.message_type = qt_wm_protocols;
-            ev.xclient.format = 32;
-            ev.xclient.data.s[0] = qt_wm_delete_window;
-            XSendEvent(qt_xdisplay(), window, false, NoEventMask, &ev);
-        }
-        XFlush( qt_xdisplay() );
-     }
   window = 0;
-  
   Window focus;
   int revert;
   XGetInputFocus( qt_xdisplay(), &focus, &revert );
@@ -678,6 +695,7 @@ void QXEmbed::focusOutEvent( QFocusEvent * ){
         send_xembed_message( window, XEMBED_FOCUS_OUT );
     }
     if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
+      if ( qApp->activeWindow() == topLevelWidget() )
         XSetInputFocus( qt_xdisplay(), d->focusProxy->winId(), 
                         RevertToParent, qt_x_time );
 }
@@ -735,15 +753,15 @@ void QXEmbed::embed(WId w)
     kdDebug() << "************************** Embed "<< QString("0x%1").arg(w, 0, 16) << " into " << QString("0x%1").arg(winId(), 0, 16) << " window=" << QString("0x%1").arg(window, 0, 16) << " **********" << endl; 
     if (!w)
         return;
-    XAddToSaveSet( qt_xdisplay(), w );
-    bool has_window =  w == window;
+
+    bool has_window =  (w == window);
     window = w;
     if ( !has_window ) {
         if ( !wstate_withdrawn(window) ) {
             XWithdrawWindow(qt_xdisplay(), window, qt_xscreen());
             QApplication::flushX();
             while (!wstate_withdrawn(window))
-                ;
+                USLEEP(1000);
         }
         Window parent;
         get_parent(w, &parent);
@@ -758,28 +776,6 @@ void QXEmbed::embed(WId w)
             kdDebug() << QString(">>> Loop %1: reparent of 0x%2 into 0x%3 failed").arg(i).arg(w, 0, 16).arg(winId(), 0, 16) << endl;
             USLEEP(1000);
         }
-        QApplication::syncX();
-    }
-
-    XResizeWindow(qt_xdisplay(), w, width(), height());
-    XMapRaised(qt_xdisplay(), window);
-    sendSyntheticConfigureNotifyEvent();
-    extraData()->xDndProxy = w;
-
-    if ( parent() ) {
-        QEvent * layoutHint = new QEvent( QEvent::LayoutHint );
-        QApplication::postEvent( parent(), layoutHint );
-    }
-    windowChanged( window );
-    if (d->xplain) {
-        checkGrab();
-        if ( hasFocus() )
-            sendFocusMessage(window, XFocusIn, NotifyNormal, NotifyPointer );
-    } else {
-        send_xembed_message( window, XEMBED_EMBEDDED_NOTIFY, 0, (long) winId() );
-        send_xembed_message( window, isActiveWindow() ? XEMBED_WINDOW_ACTIVATE : XEMBED_WINDOW_DEACTIVATE );
-        if ( hasFocus() )
-            send_xembed_message( window, XEMBED_FOCUS_IN );
     }
 }
 
@@ -829,7 +825,29 @@ bool QXEmbed::x11Event( XEvent* e)
         } else if ( e->xreparent.parent == winId() ){
             // we got a window
             window = e->xreparent.window;
-            embed( window );
+            // finish the embedding process
+            XResizeWindow(qt_xdisplay(), window, width(), height());
+            XMapRaised(qt_xdisplay(), window);
+            sendSyntheticConfigureNotifyEvent();
+            extraData()->xDndProxy = window;
+            if ( parent() ) {
+                QEvent * layoutHint = new QEvent( QEvent::LayoutHint );
+                QApplication::postEvent( parent(), layoutHint );
+            }
+            windowChanged( window );
+            if (d->xplain) {
+                checkGrab();
+                if ( hasFocus() )
+                    sendFocusMessage(window, XFocusIn, NotifyNormal, NotifyPointer );
+            } else {
+                 send_xembed_message( window, XEMBED_EMBEDDED_NOTIFY, 0, (long) winId() );
+                 if (isActiveWindow())
+                     send_xembed_message( window, XEMBED_WINDOW_ACTIVATE);
+                 else
+                     send_xembed_message( window, XEMBED_WINDOW_DEACTIVATE);
+                 if ( hasFocus() )
+                     send_xembed_message( window, XEMBED_FOCUS_IN );
+            }
         }
         break;
     case ButtonPress:
@@ -1016,10 +1034,24 @@ QSize QXEmbed::minimumSizeHint() const
     return QSize( minw, minh );
 }
 
+/*!  
+   Sets the flag indicating what shoud be done with the embedded window when
+   the embedding window is destroyed.  When the flag is true, the embedded
+   window stays alive and receives a WM_DELETE_WINDOW message that causes most
+   applications to exit cleanly.  This is the default.  Otherwise, the
+   destruction of the QXEmbed object simply destroys the embedded window.
+*/
+
 void QXEmbed::setAutoDelete( bool b)
 {
     d->autoDelete = b;
 }
+
+/*!
+   Returns the value of flag indicating what shoud be done with the
+   embedded window when the embedding window is destroyed.
+   \sa setAutoDelete()
+ */
 
 bool QXEmbed::autoDelete() const
 {
