@@ -75,8 +75,9 @@ void CSSStyleDeclaration::setCssText( const DOMString &value )
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 {
     if(!impl) return DOMString();
-    CSSValue v(getPropertyCSSValue(propertyName));
-    return v.cssText();
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if (!id) return DOMString();
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue(id);
 }
 
 CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName )
