@@ -172,6 +172,10 @@
 25004	Kafka (kafkaobjectmgr)
 25005	Kafka (kafkadom)
 
+# libkscan / kooka
+28000   Kooka
+29000   libkscan
+
 # 30001-40000 are for KOffice
 30001	koffice (lib koml)
 30002	koffice (lib store)
