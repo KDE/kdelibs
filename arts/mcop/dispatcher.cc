@@ -313,16 +313,16 @@ void Dispatcher::generateServerID()
 string Dispatcher::objectToString(long objectID)
 {
 	Buffer b;
-	ObjectReference or;
+	ObjectReference oref;
 
-	or.serverID = serverID;
-	or.objectID = objectID;
+	oref.serverID = serverID;
+	oref.objectID = objectID;
 
 	// prefer a unix domainsocket connection over a plain tcp connection
-	if(unixServer) or.urls.push_back(unixServer->url());
-	if(tcpServer) or.urls.push_back(tcpServer->url());
+	if(unixServer) oref.urls.push_back(unixServer->url());
+	if(tcpServer) oref.urls.push_back(tcpServer->url());
 
-	or.writeType(b);
+	oref.writeType(b);
 
 	return b.toString("MCOP-Object");
 }
