@@ -87,7 +87,16 @@ int main(int argc, char *argv[])
    addCookies(arg1, arg2);
 
    arg1 = "http://www.somehost.com/acme/index.html";
-   printf("Looking up cookies for %s\n", arg1.ascii());
+   printf("Looking up cookies for %s\n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.ascii() ? result.ascii() : "<NULL>");
+   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+
+   arg1 = "http://www.peacefire.org%2fsecurity%2fiecookies%2fshowcookie.html%3F.amazon.com";
+   result = findCookies(arg1);
+   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+
+   arg1 = "http://www.amazon.com/acme/index.html";
+   result = findCookies(arg1);
+   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+
 }
