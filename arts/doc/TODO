@@ -66,6 +66,9 @@ currently mostly done. Remaining issues are:
   slightly unlogic accesses from outside
 - recording, full duplex
 - try to fix autoSuspend in conjunction with full duplex
+- take care of people who try to start artsd without /dev/dsp - either don't
+  start at all, or silently delete the output (which could make sense, since
+  you maybe just want to view a video)
 
 3. To have more fun
 
