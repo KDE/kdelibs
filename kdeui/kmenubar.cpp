@@ -115,8 +115,6 @@ void KMenuBar::slotReadConfig()
 void KMenuBar::drawContents(QPainter *p)
 {
 // From Qt's spacing
-static const int motifBarFrame          = 2;    // menu bar frame width
-static const int motifBarHMargin        = 2;    // menu bar hor margin to item
 static const int motifItemHMargin       = 5;    // menu item hor text margin
 static const int motifItemVMargin       = 4;    // menu item ver text margin
     KStyle *stylePtr = kapp->kstyle();
