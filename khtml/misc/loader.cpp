@@ -32,8 +32,6 @@
 #define MAXCACHEABLE 40*1024
 // default cache size
 #define DEFCACHESIZE 512*1024
-// maximum number of files the loader will try to load in parallel
-#define MAX_REQUEST_JOBS 4
 
 #include <qasyncio.h>
 #include <qasyncimageio.h>
@@ -47,6 +45,7 @@
 #include <kimageio.h>
 #include <kcharsets.h>
 #include <kiconloader.h>
+#include <scheduler.h>
 #include <kdebug.h>
 #include "khtml_factory.h"
 #include "khtml_part.h"
@@ -885,8 +884,6 @@ void Loader::load(CachedObject *object, const DOMString &baseURL, bool increment
 
 void Loader::servePendingRequests()
 {
-  if ( m_requestsLoading.count() >= MAX_REQUEST_JOBS )
-    return;
   if ( m_requestsPending.count() == 0 )
       return;
 
@@ -906,6 +903,8 @@ void Loader::servePendingRequests()
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
            SLOT( slotData( KIO::Job*, const QByteArray &)));
+
+  KIO::Scheduler::scheduleJob( job );
 
   m_requestsLoading.insert(job, req);
 }
