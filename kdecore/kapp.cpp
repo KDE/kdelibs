@@ -950,7 +950,15 @@ void KApplication::readSettings(bool reparse)
   if ( num > 2000 ) num = 2000;
   setCursorFlashTime(num);
 
-	
+  // Single click / doucle click
+  doubleClick_ = config->readBoolEntry( "doubleClicks", false);
+
+  // Completion mode
+  num = config->readNumEntry( "completionMode", 0);
+  if ((num < (int) CompletionNone) || (num > (int) CompletionEOL))
+     num = (int) CompletionEOL; // Default
+
+  completionMode_ = (Completion) num;
 }
 
 
@@ -1377,6 +1385,16 @@ int KApplication::contrast() const
     return contrast_;
 }
 
+bool KApplication::useDoubleClicks() const
+{
+    return doubleClick_;
+}
+
+KApplication::Completion
+KApplication::completionMode() const
+{
+    return completionMode_;
+}
 
 
 #include "kapp.moc"
