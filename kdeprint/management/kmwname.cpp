@@ -47,7 +47,7 @@ bool KMWName::isValid(QString& msg)
 {
 	if (text(0).isEmpty())
 	{
-		msg = i18n("You must supply at least a name !");
+		msg = i18n("You must supply at least a name!");
 		return false;
 	}
 	else if (text(0).find(QRegExp("\\s")) != -1)

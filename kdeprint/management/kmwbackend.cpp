@@ -64,7 +64,7 @@ bool KMWBackend::isValid(QString& msg)
 {
 	if (!m_buttons->selected())
 	{
-		msg = i18n("You must select a backend !");
+		msg = i18n("You must select a backend!");
 		return false;
 	}
 	return true;

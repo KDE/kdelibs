@@ -169,7 +169,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	filename_ = filename;
 	if (!conf_->loadFromFile(filename_))
 	{
-		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS Configuration Error"));
+		KMessageBox::error(this, i18n("Error while loading configuration file!"), i18n("CUPS Configuration Error"));
 		return false;
 	}
 	if (conf_->unknown_.count() > 0)

@@ -61,7 +61,7 @@ bool KMWDriverSelect::isValid(QString& msg)
 {
 	if (m_list->currentItem() == -1)
 	{
-		msg = i18n("You must select a driver !");
+		msg = i18n("You must select a driver!");
 		return false;
 	}
 	return true;

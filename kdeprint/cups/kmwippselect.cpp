@@ -48,7 +48,7 @@ bool KMWIppSelect::isValid(QString& msg)
 {
 	if (m_list->currentItem() == -1)
 	{
-		msg = i18n("You must select a printer !");
+		msg = i18n("You must select a printer!");
 		return false;
 	}
 	return true;

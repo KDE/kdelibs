@@ -53,7 +53,7 @@ bool KMWLpd::isValid(QString& msg)
 {
 	if (text(0).isEmpty() || text(1).isEmpty())
 	{
-		msg = i18n("Some information is missing !");
+		msg = i18n("Some information is missing!");
 		return false;
 	}
 

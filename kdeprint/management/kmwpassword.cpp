@@ -80,7 +80,7 @@ bool KMWPassword::isValid(QString& msg)
 {
 	if (!m_guest->isChecked() && m_login->text().isEmpty())
 	{
-		msg = i18n("User name is empty !");
+		msg = i18n("User name is empty!");
 		return false;
 	}
 	return true;

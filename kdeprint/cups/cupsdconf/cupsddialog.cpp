@@ -187,7 +187,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	filename_ = filename;
 	if (!conf_->loadFromFile(filename_))
 	{
-		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS Configuration Error"));
+		KMessageBox::error(this, i18n("Error while loading configuration file!"), i18n("CUPS Configuration Error"));
 		return false;
 	}
 	bool	ok(true);
@@ -231,7 +231,7 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 	QFileInfo	fi(fn);
 	QString		errormsg;
 	// check existence
-	if (!fi.exists()) errormsg = i18n("File \"%1\" doesn't exist !").arg(fn);
+	if (!fi.exists()) errormsg = i18n("File \"%1\" doesn't exist!").arg(fn);
 	// check read state
 	else if (!fi.isReadable()) errormsg = i18n("Can't open file \"%1\" !\nCheck file permissions.").arg(fn);
 	// check write state

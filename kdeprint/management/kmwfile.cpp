@@ -59,13 +59,13 @@ bool KMWFile::isValid(QString& msg)
 	QFileInfo	fi(m_url->url());
 	if (fi.fileName().isEmpty())
 	{
-		msg = i18n("Empty file name !");
+		msg = i18n("Empty file name!");
 		return false;
 	}
 
 	if (!fi.dir().exists())
 	{
-		msg = i18n("Directory does not exist !");
+		msg = i18n("Directory does not exist!");
 		return false;
 	}
 

@@ -97,7 +97,7 @@ bool KMWSocket::isValid(QString& msg)
 {
 	if (m_printer->text().isEmpty())
 	{
-		msg = i18n("You must enter a printer address !");
+		msg = i18n("You must enter a printer address!");
 		return false;
 	}
 	QString	port(m_port->text());
@@ -108,14 +108,14 @@ bool KMWSocket::isValid(QString& msg)
 		p = port.toInt(&ok);
 		if (!ok)
 		{
-			msg = i18n("Wrong port number !");
+			msg = i18n("Wrong port number!");
 			return false;
 		}
 	}
 
 	if (!m_scanner->checkPrinter(m_printer->text(),p))
 	{
-		msg = i18n("No printer found at this address/port !");
+		msg = i18n("No printer found at this address/port!");
 		return false;
 	}
 	return true;
