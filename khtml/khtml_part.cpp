@@ -658,6 +658,8 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
 
+  // Tell the slave if we are the main frame
+  d->m_job->addMetaData( "main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
   // Tell the slave where we come from (SSL or not)
   d->m_job->addMetaData( "ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   // Tell the slave to activate warnings about entering/leaving SSL
