@@ -131,49 +131,6 @@ static double newMoon(long n)
   return (jd);
 }
 
-/**
- * @internal
- * Converts a gregorian date to a julian day.
- */
-static int getJulianDay(long day, long month, long year)
-{
-  double jy, jm;
-
-  if( year == 0 ) {
-    return -1;
-  }
-
-  if( year == 1582 && month == 10 && day > 4 && day < 15 ) {
-    return -1;
-  }
-
-  if( month > 2 )
-  {
-    jy = year;
-    jm = month + 1;
-  }
-  else
-  {
-    jy = year - 1;
-    jm = month + 13;
-  }
-
-  long intgr = (long)((long)(365.25 * jy) + (long)(30.6001 * jm)
-    + day + 1720995 );
-
-  //check for switch to Gregorian calendar
-  double gregcal = 15 + 31 * ( 10 + 12 * 1582 );
-
-  if( day + 31 * (month + 12 * year) >= gregcal )
-  {
-    double ja;
-    ja = (long)(0.01 * jy);
-    intgr += (long)(2 - ja + (long)(0.25 * ja));
-  }
-
-  return intgr;
-}
-
 /*
  * @internal
  * Compute general hijri date structure from gregorian date
@@ -191,9 +148,10 @@ static SDATE * gregorianToHijri(long day, long month, long year)
   long synmonth;
 
   // Get Julian Day from Gregorian
-  julday = getJulianDay(day, month, year);
+  julday = QDate::gregorianToJulian(year, day, month);
 
-  /* obtain approx. of how many Synodic months since the beginning
+  /*
+   * obtain approx. of how many Synodic months since the beginning
    * of the year 1900
    */
   synmonth = (long)(0.5 + (julday - jd1900)/SynPeriod);
