@@ -1,3 +1,4 @@
+debian/tmp/etc/kde3/khotnewstuffrc
 debian/tmp/usr/bin/artsmessage
 debian/tmp/usr/bin/cupsdconf
 debian/tmp/usr/bin/cupsdoprint
@@ -10,6 +11,9 @@ debian/tmp/usr/bin/dcopref
 debian/tmp/usr/bin/dcopserver
 debian/tmp/usr/bin/dcopserver_shutdown
 debian/tmp/usr/bin/dcopstart
+debian/tmp/usr/bin/filesharelist
+debian/tmp/usr/bin/fileshareset
+debian/tmp/usr/bin/ghns
 debian/tmp/usr/bin/imagetops
 debian/tmp/usr/bin/kab2kabc
 debian/tmp/usr/bin/kaddprinterwizard
@@ -28,6 +32,7 @@ debian/tmp/usr/bin/kdontchangethehostname
 debian/tmp/usr/bin/kfile
 debian/tmp/usr/bin/kfmexec
 debian/tmp/usr/bin/kgrantpty
+debian/tmp/usr/bin/khotnewstuff
 debian/tmp/usr/bin/kimage_concat
 debian/tmp/usr/bin/kinstalltheme
 debian/tmp/usr/bin/kio_http_cache_cleaner
@@ -46,6 +51,7 @@ debian/tmp/usr/bin/kwrapper
 debian/tmp/usr/bin/lnusertemp
 debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
+debian/tmp/usr/bin/makekdewidgets
 debian/tmp/usr/bin/meinproc
 debian/tmp/usr/bin/preparetips
 debian/tmp/usr/lib/kde3/cupsdconf.la

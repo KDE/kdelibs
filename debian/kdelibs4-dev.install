@@ -1,4 +1,3 @@
-debian/debiandirs	usr/share/doc/kdelibs4-dev/dh-make/
 debian/dh-make/*	usr/share/doc/kdelibs4-dev/dh-make/
 debian/tmp/usr/bin/checkXML
 debian/tmp/usr/bin/dcopidl
@@ -67,6 +66,9 @@ debian/tmp/usr/include/kde/kabc/formatplugin.h
 debian/tmp/usr/include/kde/kabc/geo.h
 debian/tmp/usr/include/kde/kabc/key.h
 debian/tmp/usr/include/kde/kabc/ldapclient.h
+debian/tmp/usr/include/kde/kabc/ldapconfigwidget.h
+debian/tmp/usr/include/kde/kabc/ldapurl.h
+debian/tmp/usr/include/kde/kabc/ldif.h
 debian/tmp/usr/include/kde/kabc/ldifconverter.h
 debian/tmp/usr/include/kde/kabc/lock.h
 debian/tmp/usr/include/kde/kabc/locknull.h
@@ -99,6 +101,7 @@ debian/tmp/usr/include/kde/kaccelmanager.h
 debian/tmp/usr/include/kde/kaction.h
 debian/tmp/usr/include/kde/kactionclasses.h
 debian/tmp/usr/include/kde/kactioncollection.h
+debian/tmp/usr/include/kde/kactionselector.h
 debian/tmp/usr/include/kde/kactionshortcutlist.h
 debian/tmp/usr/include/kde/kactivelabel.h
 debian/tmp/usr/include/kde/kallocator.h
@@ -129,6 +132,7 @@ debian/tmp/usr/include/kde/kbookmarkmanager.h
 debian/tmp/usr/include/kde/kbookmarkmenu.h
 debian/tmp/usr/include/kde/kbookmarknotifier.h
 debian/tmp/usr/include/kde/kbufferedio.h
+debian/tmp/usr/include/kde/kbufferedsocket.h
 debian/tmp/usr/include/kde/kbugreport.h
 debian/tmp/usr/include/kde/kbuttonbox.h
 debian/tmp/usr/include/kde/kcalendarsystem.h
@@ -136,6 +140,7 @@ debian/tmp/usr/include/kde/kcalendarsystemfactory.h
 debian/tmp/usr/include/kde/kcatalogue.h
 debian/tmp/usr/include/kde/kcharselect.h
 debian/tmp/usr/include/kde/kcharsets.h
+debian/tmp/usr/include/kde/kclientsocketbase.h
 debian/tmp/usr/include/kde/kclipboard.h
 debian/tmp/usr/include/kde/kcmdlineargs.h
 debian/tmp/usr/include/kde/kcmenumngr.h
@@ -166,6 +171,7 @@ debian/tmp/usr/include/kde/kcpuinfo.h
 debian/tmp/usr/include/kde/kcrash.h
 debian/tmp/usr/include/kde/kcursor.h
 debian/tmp/usr/include/kde/kcustommenueditor.h
+debian/tmp/usr/include/kde/kdatagramsocket.h
 debian/tmp/usr/include/kde/kdatastream.h
 debian/tmp/usr/include/kde/kdatatool.h
 debian/tmp/usr/include/kde/kdatepicker.h
@@ -271,6 +277,7 @@ debian/tmp/usr/include/kde/khtml_part.h
 debian/tmp/usr/include/kde/khtml_settings.h
 debian/tmp/usr/include/kde/khtmldefaults.h
 debian/tmp/usr/include/kde/khtmlview.h
+debian/tmp/usr/include/kde/khttpproxysocketdevice.h
 debian/tmp/usr/include/kde/kicondialog.h
 debian/tmp/usr/include/kde/kiconeffect.h
 debian/tmp/usr/include/kde/kiconloader.h
@@ -280,6 +287,9 @@ debian/tmp/usr/include/kde/kidna.h
 debian/tmp/usr/include/kde/kimageeffect.h
 debian/tmp/usr/include/kde/kimagefilepreview.h
 debian/tmp/usr/include/kde/kimageio.h
+debian/tmp/usr/include/kde/kimiface.h
+debian/tmp/usr/include/kde/kimproxy.h
+debian/tmp/usr/include/kde/kimproxyiface.h
 debian/tmp/usr/include/kde/kinputdialog.h
 debian/tmp/usr/include/kde/kinstance.h
 debian/tmp/usr/include/kde/kio/authinfo.h
@@ -339,6 +349,7 @@ debian/tmp/usr/include/kde/kjs/value.h
 debian/tmp/usr/include/kde/kkeybutton.h
 debian/tmp/usr/include/kde/kkeydialog.h
 debian/tmp/usr/include/kde/kkeynative.h
+debian/tmp/usr/include/kde/klanguagebutton.h
 debian/tmp/usr/include/kde/klargefile.h
 debian/tmp/usr/include/kde/kled.h
 debian/tmp/usr/include/kde/klibloader.h
@@ -346,7 +357,9 @@ debian/tmp/usr/include/kde/klineedit.h
 debian/tmp/usr/include/kde/klineeditdlg.h
 debian/tmp/usr/include/kde/klistbox.h
 debian/tmp/usr/include/kde/klistview.h
+debian/tmp/usr/include/kde/klistviewsearchline.h
 debian/tmp/usr/include/kde/klocale.h
+debian/tmp/usr/include/kde/klockfile.h
 debian/tmp/usr/include/kde/kmacroexpander.h
 debian/tmp/usr/include/kde/kmainwindow.h
 debian/tmp/usr/include/kde/kmainwindowiface.h
@@ -371,10 +384,23 @@ debian/tmp/usr/include/kde/kmessagebox.h
 debian/tmp/usr/include/kde/kmimemagic.h
 debian/tmp/usr/include/kde/kmimesourcefactory.h
 debian/tmp/usr/include/kde/kmimetype.h
+debian/tmp/usr/include/kde/kmimetypechooser.h
 debian/tmp/usr/include/kde/kmimetyperesolver.h
 debian/tmp/usr/include/kde/kmountpoint.h
+debian/tmp/usr/include/kde/kmulticastsocket.h
+debian/tmp/usr/include/kde/kmulticastsocketdevice.h
 debian/tmp/usr/include/kde/kmultipledrag.h
 debian/tmp/usr/include/kde/kmultitabbar.h
+debian/tmp/usr/include/kde/knetworkinterface.h
+debian/tmp/usr/include/kde/knewstuff/downloaddialog.h
+debian/tmp/usr/include/kde/knewstuff/engine.h
+debian/tmp/usr/include/kde/knewstuff/entry.h
+debian/tmp/usr/include/kde/knewstuff/knewstuff.h
+debian/tmp/usr/include/kde/knewstuff/knewstuffgeneric.h
+debian/tmp/usr/include/kde/knewstuff/provider.h
+debian/tmp/usr/include/kde/knewstuff/providerdialog.h
+debian/tmp/usr/include/kde/knewstuff/uploaddialog.h
+debian/tmp/usr/include/kde/knfsshare.h
 debian/tmp/usr/include/kde/knotifyclient.h
 debian/tmp/usr/include/kde/knotifydialog.h
 debian/tmp/usr/include/kde/knotifywidgetbase.h
@@ -428,8 +454,10 @@ debian/tmp/usr/include/kde/krandomsequence.h
 debian/tmp/usr/include/kde/krecentdocument.h
 debian/tmp/usr/include/kde/kregexp.h
 debian/tmp/usr/include/kde/kregexpeditorinterface.h
+debian/tmp/usr/include/kde/kremoteencoding.h
 debian/tmp/usr/include/kde/kreplace.h
 debian/tmp/usr/include/kde/kreplacedialog.h
+debian/tmp/usr/include/kde/kresolver.h
 debian/tmp/usr/include/kde/kresources/configdialog.h
 debian/tmp/usr/include/kde/kresources/configpage.h
 debian/tmp/usr/include/kde/kresources/configwidget.h
@@ -440,11 +468,13 @@ debian/tmp/usr/include/kde/kresources/managerimpl.h
 debian/tmp/usr/include/kde/kresources/resource.h
 debian/tmp/usr/include/kde/kresources/selectdialog.h
 debian/tmp/usr/include/kde/krestrictedline.h
+debian/tmp/usr/include/kde/kreverseresolver.h
 debian/tmp/usr/include/kde/krfcdate.h
 debian/tmp/usr/include/kde/krootpixmap.h
 debian/tmp/usr/include/kde/krootprop.h
 debian/tmp/usr/include/kde/kruler.h
 debian/tmp/usr/include/kde/krun.h
+debian/tmp/usr/include/kde/ksambashare.h
 debian/tmp/usr/include/kde/ksavefile.h
 debian/tmp/usr/include/kde/kscan.h
 debian/tmp/usr/include/kde/ksconfig.h
@@ -452,6 +482,7 @@ debian/tmp/usr/include/kde/kscreensaver.h
 debian/tmp/usr/include/kde/kscreensaver_vroot.h
 debian/tmp/usr/include/kde/kselect.h
 debian/tmp/usr/include/kde/kseparator.h
+debian/tmp/usr/include/kde/kserversocket.h
 debian/tmp/usr/include/kde/kservice.h
 debian/tmp/usr/include/kde/kservicegroup.h
 debian/tmp/usr/include/kde/kservicetype.h
@@ -470,9 +501,23 @@ debian/tmp/usr/include/kde/ksimpleconfig.h
 debian/tmp/usr/include/kde/ksmimecrypto.h
 debian/tmp/usr/include/kde/ksock.h
 debian/tmp/usr/include/kde/ksockaddr.h
+debian/tmp/usr/include/kde/ksocketaddress.h
+debian/tmp/usr/include/kde/ksocketbase.h
+debian/tmp/usr/include/kde/ksocketdevice.h
 debian/tmp/usr/include/kde/ksocks.h
+debian/tmp/usr/include/kde/ksockssocketdevice.h
 debian/tmp/usr/include/kde/ksortablevaluelist.h
 debian/tmp/usr/include/kde/kspell.h
+debian/tmp/usr/include/kde/kspell2/backgroundchecker.h
+debian/tmp/usr/include/kde/kspell2/broker.h
+debian/tmp/usr/include/kde/kspell2/configdialog.h
+debian/tmp/usr/include/kde/kspell2/configwidget.h
+debian/tmp/usr/include/kde/kspell2/defaultdictionary.h
+debian/tmp/usr/include/kde/kspell2/dialog.h
+debian/tmp/usr/include/kde/kspell2/dictionary.h
+debian/tmp/usr/include/kde/kspell2/filter.h
+debian/tmp/usr/include/kde/kspell2/highlighter.h
+debian/tmp/usr/include/kde/kspell2/settings.h
 debian/tmp/usr/include/kde/kspelldlg.h
 debian/tmp/usr/include/kde/ksplashscreen.h
 debian/tmp/usr/include/kde/ksqueezedtextlabel.h
@@ -506,6 +551,7 @@ debian/tmp/usr/include/kde/kstdaccel.h
 debian/tmp/usr/include/kde/kstdaction.h
 debian/tmp/usr/include/kde/kstddirs.h
 debian/tmp/usr/include/kde/kstdguiitem.h
+debian/tmp/usr/include/kde/kstreamsocket.h
 debian/tmp/usr/include/kde/kstringhandler.h
 debian/tmp/usr/include/kde/kstringvalidator.h
 debian/tmp/usr/include/kde/kstyle.h
@@ -550,6 +596,7 @@ debian/tmp/usr/include/kde/ktexteditor/selectioninterfaceext.h
 debian/tmp/usr/include/kde/ktexteditor/sessionconfiginterface.h
 debian/tmp/usr/include/kde/ktexteditor/texthintinterface.h
 debian/tmp/usr/include/kde/ktexteditor/undointerface.h
+debian/tmp/usr/include/kde/ktexteditor/variableinterface.h
 debian/tmp/usr/include/kde/ktexteditor/view.h
 debian/tmp/usr/include/kde/ktexteditor/viewcursorinterface.h
 debian/tmp/usr/include/kde/ktexteditor/viewstatusmsginterface.h
@@ -660,6 +707,8 @@ debian/tmp/usr/lib/libkdeui.la
 debian/tmp/usr/lib/libkdeui.so
 debian/tmp/usr/lib/libkhtml.la
 debian/tmp/usr/lib/libkhtml.so
+debian/tmp/usr/lib/libkimproxy.la
+debian/tmp/usr/lib/libkimproxy.so
 debian/tmp/usr/lib/libkio.la
 debian/tmp/usr/lib/libkio.so
 debian/tmp/usr/lib/libkjava.la
@@ -672,6 +721,8 @@ debian/tmp/usr/lib/libkmediaplayer.la
 debian/tmp/usr/lib/libkmediaplayer.so
 debian/tmp/usr/lib/libkmid.la
 debian/tmp/usr/lib/libkmid.so
+debian/tmp/usr/lib/libknewstuff.la
+debian/tmp/usr/lib/libknewstuff.so
 debian/tmp/usr/lib/libkparts.la
 debian/tmp/usr/lib/libkparts.so
 debian/tmp/usr/lib/libkresources.la
@@ -682,6 +733,8 @@ debian/tmp/usr/lib/libkscript.la
 debian/tmp/usr/lib/libkscript.so
 debian/tmp/usr/lib/libkspell.la
 debian/tmp/usr/lib/libkspell.so
+debian/tmp/usr/lib/libkspell2.la
+debian/tmp/usr/lib/libkspell2.so
 debian/tmp/usr/lib/libktexteditor.la
 debian/tmp/usr/lib/libktexteditor.so
 debian/tmp/usr/lib/libkutils.la
