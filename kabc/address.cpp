@@ -288,16 +288,16 @@ QString Address::typeLabel( int type )
       return i18n("Parcel");
       break;
     case Home:
-      return i18n("Home Address");
+      return i18n("Home Address", "Home");
       break;
     case Work:
-      return i18n("Work Address");
+      return i18n("Work Address", "Work");
       break;
     case Pref:
       return i18n("Preferred Address");
       break;
     default:
-      return i18n("Unknown");
+      return i18n("Other");
       break;
   }
 }

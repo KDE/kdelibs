@@ -135,7 +135,7 @@ QString PhoneNumber::typeLabel( int type )
       return i18n("Home phone", "Home");
       break;
     case Work:
-      return i18n("Work");
+      return i18n("Work phone", "Work");
       break;
     case Msg:
       return i18n("Messenger");
