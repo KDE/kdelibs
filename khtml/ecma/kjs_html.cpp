@@ -969,8 +969,20 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       if (ok)
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
-    default:
-      break;
+  case ID_FRAME:
+  case ID_IFRAME: {
+      DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
+      if ( doc && doc->view() ) {
+        KHTMLPart* part = doc->view()->part();
+        if ( part ) {
+          Object globalObject = Window::retrieve( part );
+          if ( globalObject.hasProperty( exec, propertyName ) )
+            return globalObject.get( exec, propertyName );
+        }
+      }
+  }
+  default:
+    break;
   }
 
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
