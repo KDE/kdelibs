@@ -192,7 +192,7 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	
 	int i = s.find('\t');
 	
-	QString k = keyToString( currentKey( action) );
+	QString k = keyToString( currentKey( action), true );
 	if( !k ) return;
 	
 	if ( i >= 0 )
