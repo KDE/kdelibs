@@ -6,7 +6,9 @@
 set -e
 
 case "$1" in
-    install|upgrade)
+    install)
+    ;;
+    upgrade)
       if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
         if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
           rm -rf /usr/share/applnk > /dev/null 2>&1
