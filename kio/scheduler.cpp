@@ -17,6 +17,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include "sessiondata.h"
 #include "slaveconfig.h"
 #include "scheduler.h"
 #include "slave.h"
@@ -39,32 +40,6 @@ using namespace KIO;
 template class QDict<KIO::Scheduler::ProtocolInfo>;
 
 Scheduler *Scheduler::instance = 0;
-
-/*
-* Structure to cache authorization info from io-slaves.
-*/
-struct KIO::AuthKey
-{
-  AuthKey() {}
-
-  AuthKey(const QCString& k, const QCString& g, bool p) {
-    key = k;
-    group = g;
-    persist = p;
-  }
-
-  bool isKeyMatch( const QCString& val ) {
-    return (val==key);
-  }
-
-  bool isGroupMatch( const QCString& val ) {
-    return (val==group);
-  }
-
-  QCString key;
-  QCString group;
-  bool persist;
-};
 
 class KIO::SlaveList: public QList<Slave>
 {
@@ -147,21 +122,17 @@ Scheduler::Scheduler()
     idleSlaves = new SlaveList;
     coIdleSlaves = new SlaveList;
     extraJobData = new ExtraJobData;
+    sessionData = new SessionData;
     slaveConfig = SlaveConfig::self();
     connect(&slaveTimer, SIGNAL(timeout()), SLOT(startStep()));
     connect(&coSlaveTimer, SIGNAL(timeout()), SLOT(slotScheduleCoSlave()));
     connect(&cleanupTimer, SIGNAL(timeout()), SLOT(slotCleanIdleSlaves()));
     busy = false;
-    cachedAuthKeys.setAutoDelete( true );
 }
 
 Scheduler::~Scheduler()
 {
     //fprintf(stdout, "Destructing KIO::Scheduler...\n");
-
-    // Delete any stored authorization info now...
-    if( !cachedAuthKeys.isEmpty() )
-      delCachedAuthKeys( cachedAuthKeys );
 
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
@@ -487,8 +458,13 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
                 SLOT(slotSlaveDied(KIO::Slave *)));
       connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                 SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
-      connect(slave,SIGNAL(authorizationKey(const QCString&, const QCString&, bool)),
-                SLOT(slotAuthorizationKey(const QCString&, const QCString&, bool)));
+
+      QObject::connect(slave,SIGNAL(authData(const QCString&, const QCString&, bool)),
+              sessionData,SLOT(slotAuthData(const QCString&, const QCString&, bool)));
+      QObject::connect(slave,SIGNAL(delAuthData(const QCString&, const QCString&, bool)),
+              sessionData,SLOT(slotDelAuthData(const QCString&, const QCString&, bool)));
+      QObject::connect(slave,SIGNAL(sessionCookieData(const QCString&, const QCString&, bool)),
+              sessionData,SLOT(slotSessionCookieData(const QCString&, const QCString&, bool)));      
    }
    else
    {
@@ -551,106 +527,6 @@ if (!jobData)
     if (protInfo->joblist.count())
     {
        slaveTimer.start(0, true);
-    }
-}
-
-void Scheduler::slotAuthorizationKey( const QCString& key,
-                                      const QCString& group,
-                                      bool keep )
-{
-    AuthKey* auth_key = cachedAuthKeys.first();
-    for( ; auth_key !=0 ; auth_key=cachedAuthKeys.next() )
-    {
-        if( auth_key->isKeyMatch(key) )
-            return ;
-    }
-
-    cachedAuthKeys.append( new AuthKey (key, group, keep) );
-    regCachedAuthKey( key, group );
-}
-
-void Scheduler::slotDelAuthorization( const QCString& grpkey )
-{
-    AuthKey* key = cachedAuthKeys.first();
-    for( ; key !=0 ; key=cachedAuthKeys.next() )
-    {
-        if( key->isGroupMatch(grpkey) )
-        {
-            AuthKeyList list;
-            list.append(key);
-            delCachedAuthKeys( list );
-            cachedAuthKeys.remove();
-            break;
-        }
-    }
-}
-
-bool Scheduler::pingCacheDaemon() const
-{
-    KDEsuClient client;
-    int sucess = client.ping();
-    if( sucess == -1 )
-    {
-        sucess = client.startServer();
-        if( sucess == -1 )
-            return false;
-    }
-    return true;
-}
-
-bool Scheduler::regCachedAuthKey( const QCString& key, const QCString& group )
-{
-    if( !pingCacheDaemon() )
-        return false;
-
-    bool ok;
-    KDEsuClient client;
-    QCString ref_key = key.copy() + "-refcount";
-    int count = client.getVar(ref_key).toInt( &ok );
-    if( ok )
-    {
-        QCString val;
-        val.setNum( count+1 );
-        client.setVar( ref_key, val, 0, group);
-    }
-    else
-    {
-        if( client.setVar( ref_key, "1", 0, group ) == -1 )
-            return false;
-    }
-    return true;
-}
-
-void Scheduler::delCachedAuthKeys( const AuthKeyList& list )
-{
-    if ( !list.isEmpty() && pingCacheDaemon() )
-    {
-        bool ok;
-        int count;
-        KDEsuClient client;
-        QCString val, ref_key;
-        AuthKeyIterator it( list );
-        for ( ; it.current(); ++it )
-        {
-            AuthKey* auth_key = it.current();
-            // Do not delete passwords that are supposed
-            // to be persistent
-            if ( auth_key->persist )
-                continue;
-
-            ref_key = auth_key->key.copy() + "-refcount";
-            count = client.getVar( ref_key ).toInt( &ok );
-            if ( ok )
-            {
-                if ( count > 1 )
-                {
-                    val.setNum(count-1);
-                    client.setVar( ref_key, val, 0, auth_key->group );
-                }
-                else
-                    client.delVars(auth_key->key);
-            }
-        }
     }
 }
 

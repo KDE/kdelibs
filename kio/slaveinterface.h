@@ -175,22 +175,42 @@ signals:
     void connectFinished();
 
     /**
-     * @deprecated.  Use @ref #authorizationKey instead.
+     * @deprecated.  Use @ref authData instead.
      *
-     * NOTE: Do not connect to both this and #authorizationKey.
-     * at the same time.
+     * NOTE: Do not connect to both this and @ref authorizationKey.
+     * @ref authData at the same time!
      */
+     // BC: Remove me in KDE 3.0
     void authenticationKey( const QCString &, const QCString & );
 
     /**
-     * Signal emitted whenever a new password is cached or a cached
-     * one is found for use in the io-slaves.
+     * @deprecated.  Use @ref authData instead.
      *
+     * NOTE: Do not connect to both this and @ref authenticationKey or
+     * @ref authData at the same time!
+     */
+     // BC: Remove me in KDE 3.0
+    void authorizationKey( const QCString&, const QCString&, bool );
+
+    /**
+     * @deprecated.  Use @ref delAuthData instead.
+     *
+     * NOTE: Do not connect to both this and @ref delAuthData
+     * at the same time!
+     */
+     // BC: Remove me in KDE 3.0
+    void delAuthorization( const QCString& grpkey );
+
+    /**
+     * Emitted whenever login (username/password) information
+     * needs to be cached.
+     *
+     * NOTE: this signal is also emitted whenever a 
      * @param key     token under which authorization is stored.
      * @param grpkey  group token under which authorization is stored.
      * @param keep    if true, user requested password to be cached for entire KDE session.
      */
-    void authorizationKey( const QCString & key, const QCString & grpkey, bool keep );
+    void authData( const QCString & key, const QCString & grpkey, bool keep );
 
     /**
      * Emitted when an io-slave requests cached password to be
@@ -198,7 +218,15 @@ signals:
      *
      * @param grpkey     group token under which authorization is stored.
      */
-    void delAuthorization( const QCString& grpkey );
+    void delAuthData( const QCString& grpkey );
+
+    /**
+     * Emitted when
+     *
+     * @param domain
+     * @param winId
+     */
+    void sessionCookieData( const QString& domain, int winId );
 
 protected:
     /////////////////

@@ -34,8 +34,8 @@ namespace KIO {
     class Slave;
     class SlaveList;
     class SlaveConfig;
-    struct AuthKey;
-
+    class SessionData;
+    
     /**
      * The KIO::Scheduler manages io-slaves for the application.
      * It also queues jobs and assigns the job to a slave when one
@@ -200,8 +200,6 @@ namespace KIO {
         void slotSlaveConnected();
         void slotSlaveError(int error, const QString &errorMsg);
         void slotScheduleCoSlave();
-        void slotAuthorizationKey( const QCString&, const QCString&, bool keep );
-        void slotDelAuthorization( const QCString& );
 
     public:
 	class JobData;
@@ -233,38 +231,6 @@ namespace KIO {
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
 
-	/**
-	 * Checks whether the password daemon kdesud is
-	 * running or if it can be started if it is not.
-	 *
-	 * @return true if password daemon is/can be started successfully.
-	 */
-	bool pingCacheDaemon() const;
-
-	/**
-	 * Increments the reference count for application using the
-	 * give authorization key.
-	 *
-	 * The reference counting is used by @ref delCachedAuthentication
-	 * to determine when it is safe to delete the key from the cache.
-	 *
-	 * A call to this function will fail, i.e. return false, if there
-	 * is no entry for the given @p groupname value and/or the cache
-	 * deamon, @p kdesud, cannot be contacted.
-	 *
-	 * @return true if the registration succeeds.
-	 */
-	bool regCachedAuthKey( const QCString&, const QCString& );
-
-	typedef QList<AuthKey> AuthKeyList;
-	typedef QListIterator<AuthKey> AuthKeyIterator;
-	/**
-	 * Deletes any cached keys for the given list.
-	 *
-	 * @param list list of cached authentication key to be deleted.
-	 */
-	void delCachedAuthKeys( const AuthKeyList& list );
-
 	QTimer slaveTimer;
 	QTimer coSlaveTimer;
 	QTimer cleanupTimer;
@@ -279,13 +245,12 @@ namespace KIO {
 	Slave *slaveOnHold;
 	KURL urlOnHold;
 
-	AuthKeyList cachedAuthKeys;
-
 	JobList newJobs;
 
 	QPtrDict<JobList> coSlaves;
 	ExtraJobData *extraJobData;
-	SlaveConfig *slaveConfig;  
+	SlaveConfig *slaveConfig;
+        SessionData *sessionData;
 };
 
 };
