@@ -43,7 +43,7 @@ void kimgio_krl_read( QImageIO *iio )
 	Q_INT16 w = LOCAL_ENDIAN( buffer[ 35 ], buffer[ 34 ] );
 	Q_INT16 h = LOCAL_ENDIAN( buffer[ 37 ], buffer[ 36 ] );
 
-	Q_UINT32 samples = (int)(w*h);
+	Q_UINT32 samples = w*h;
 
 	//debug( "kimgio_krl_read: image w: %d, h: %d samples: %d",
 	//		(int)w, (int)h, samples );
