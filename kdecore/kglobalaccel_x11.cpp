@@ -286,7 +286,7 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 		disconnect( this, SIGNAL(activated(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
 		connect( this, SIGNAL(activated(const QString&, const QString&, const KKeySequence&)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-		emit activated( pAction->name(), pAction->desc(), seq );
+		emit activated( pAction->name(), pAction->label(), seq );
 		disconnect( this, SIGNAL(activated(const QString&, const QString&, const KKeySequence&)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
 	} else {
 		connect( this, SIGNAL(activated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );

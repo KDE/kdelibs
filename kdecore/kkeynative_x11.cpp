@@ -57,10 +57,10 @@ struct ModInfo
 
 ModInfo g_rgModInfo[KKey::MOD_FLAG_COUNT] =
 {
-	{ KKey::SHIFT, Qt::SHIFT, ShiftMask },
-	{ KKey::CTRL,  Qt::CTRL,  ControlMask },
-	{ KKey::ALT,   Qt::ALT,   Mod1Mask },
-	{ KKey::WIN,   0,         Mod4Mask }
+	{ KKey::SHIFT, Qt::SHIFT,   ShiftMask },
+	{ KKey::CTRL,  Qt::CTRL,    ControlMask },
+	{ KKey::ALT,   Qt::ALT,     Mod1Mask },
+	{ KKey::WIN,   KKey::QtWIN, Mod4Mask }
 };
 
 static KKeyNative* gx_pkey = 0;
@@ -109,7 +109,7 @@ void KKeyNative::Variations::init( const KKey& key, bool bQt )
 //---------------------------------------------------------------------
 
 KKeyNative::KKeyNative()                        { clear(); }
-KKeyNative::KKeyNative( const KKey& spec )  { init( spec ); }
+KKeyNative::KKeyNative( const KKey& key )       { init( key ); }
 KKeyNative::KKeyNative( const KKeyNative& key ) { init( key ); }
 KKeyNative::KKeyNative( const XEvent* pEvent )  { init( pEvent ); }
 KKeyNative::~KKeyNative()

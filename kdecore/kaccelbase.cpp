@@ -695,7 +695,7 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 					bInsertSeparator = false;
 				}
 
-				QString sLabel = pAction->desc();
+				QString sLabel = pAction->label();
 				if( seq.count() < seqAction.count() ) {
 					sLabel += "\t&";
 					for( uint iKey = seq.count(); iKey < seqAction.count(); iKey++ ) {
