@@ -64,7 +64,6 @@ namespace khtml
     QGuardedPtr<KParts::LiveConnectExtension> m_liveconnect;
     QString m_serviceName;
     QString m_serviceType;
-    QStringList m_services;
     bool m_bCompleted;
     QString m_name;
     KParts::URLArgs m_args;
