@@ -37,7 +37,8 @@
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
 KCrash::HandlerType KCrash::_crashHandler = 0;
-
+QString KCrash::appName = QString::null;
+QString KCrash::appPath = QString::null;
 
 // This function sets the function which should be called when the 
 // application crashes and the
