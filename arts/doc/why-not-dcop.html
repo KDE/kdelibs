@@ -140,6 +140,30 @@ each app, you need 20 connections in DCOP, and 200 with MCOP. However in
 the multimedia case, this is not supposed to be the usual setting.
 <p>
 <hr>
+<tr><td><b>speed III: hard data</b><td>
+<p>
+I tried to compare MCOP and DCOP, doing an invocation like adding two
+numbers. I modified testdcop to achieve this. However, the test may
+not have been precise on the DCOP side. I invoked the method in the
+same process that did the call for DCOP, and I didn't know how to get
+rid of one debugging message, so I used output redirection.
+<p>
+The test only used one object and one function, expect DCOPs results
+to decrease with more objects and functions, while MCOPs results should
+stay the same. Also, the "dcopserver" process wasn't connected to other
+applications, it might be that if many applications are connected, the
+routing performance decreases.
+<p>
+The result I got was that while DCOP got slightly more than 2000
+invocations per second, MCOP got slightly more than 8000 invocations
+per second. That makes a factor of 4. I know that MCOP isn't tuned
+to the maximum possible, yet. (Comparision: CORBA, as implemented with
+mico, does something between 1000 and 1500 invocations per second).
+<p>
+If you want "harder" data, consider writing some small benchmark app for
+DCOP and send it to me.
+<p>
+<hr>
 <tr><td><b>transparency</b><td>
 <p>
 CORBA had the nice feature that you could use objects you implemented once,
