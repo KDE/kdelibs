@@ -24,10 +24,12 @@
 #define css_helper_h
 
 #include <qcolor.h>
+#include <qfont.h>
 
 #include "dom/dom_string.h"
 
 class QPaintDeviceMetrics;
+class KHTMLSettings;
 
 namespace DOM
 {
@@ -50,10 +52,18 @@ namespace khtml
      */
     int computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics );
 
+    float khtml::computeLengthFloat(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics );
+
     /*
      * mostly just removes the url("...") brace
      */
     DOM::DOMString parseURL(const DOM::DOMString &url);
+
+    /*
+      Sets the font to the size closest to the requested one while trying not to use a scaled bitmap font
+    */
+    void setFontSize(  QFont &f,  float pointSize, const KHTMLSettings *s );
+
 };
 
 

@@ -40,6 +40,7 @@ using namespace DOM;
 #include "misc/khtmllayout.h"
 #include "khtml_settings.h"
 #include "misc/htmlhashes.h"
+#include "misc/helper.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -94,7 +95,8 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 
     buildLists();
 
-//     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
+    kdDebug() << "number of style sheets in document " << authorStyleSheets.count();
+     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
 
@@ -233,7 +235,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
-    if(e->styleRules()) 
+    if(e->styleRules())
 	addInlineDeclarations( e->styleRules(), propsToApply );
 
     propsToApply->sort();
@@ -286,7 +288,7 @@ void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
     QList<CSSProperty> *values = decl->values();
     if(!values) return;
     int len = values->count();
-    
+
     if ( inlineProps.size() < (uint)len )
 	inlineProps.resize( len+1 );
 
@@ -1804,7 +1806,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_FONT_SIZE:
     {
         QFont f = style->font();
-        QFontDatabase db;
         int oldSize;
         float size = 0;
         int minFontSize = e->ownerDocument()->view()->part()->settings()->minFontSize();
@@ -1856,9 +1857,10 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
             int type = primitiveValue->primitiveType();
             RenderStyle *parentStyle = style; // use the current style as fallback in case we have no parent
-            if(e->parentNode()) parentStyle = e->parentNode()->style();
+            if(e->parentNode())
+                parentStyle = e->parentNode()->style();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                size = computeLength(primitiveValue, parentStyle, paintDeviceMetrics);
+                size = computeLengthFloat(primitiveValue, parentStyle, paintDeviceMetrics);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                                   * parentStyle->font().pixelSize()) / 100;
@@ -1866,11 +1868,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 return;
 	    // size is now in pixels, for the font we need it in points
 
-            int dpiY = 72; // fallback
+            float dpiY = 72.; // fallback
             if ( paintDeviceMetrics )
                 dpiY = paintDeviceMetrics->logicalDpiY();
-
-	    size = ( size * 72 + 36 ) / dpiY;
+            if ( !khtml::printpainter && dpiY < 96 )
+                dpiY = 96.;
+            size = size * 72.  / dpiY;
         }
 
         if(size <= 0) return;
@@ -1880,38 +1883,10 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
-        // ok, now some magic to get a nice unscaled font
-        // ### all other font properties should be set before this one!!!!
-        // ####### make it use the charset needed!!!!
-	const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
-	QFont::CharSet cs = s->charset();
-	QString charset = KGlobal::charsets()->xCharsetName( cs );
-        if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
-        {
-            QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
-            // lets see if we find a nice looking font, which is not too far away
-            // from the requested one.
+        const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 
-            QValueList<int>::Iterator it;
-            float diff = 1; // ### 100% deviation
-            int bestSize = 0;
-            for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
-            {
-                float newDiff = ((*it) - size)/size;
-                //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
-                if(newDiff < 0) newDiff = -newDiff;
-                if(newDiff < diff)
-                {
-                    diff = newDiff;
-                    bestSize = *it;
-                }
-            }
-            //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
-            if(diff < .15) // 15% deviation, otherwise we use a scaled font...
-                size = bestSize;
-        }
-	//qDebug(" -->>> using %f point font", size);
-        f.setPointSize(QMAX(int(size), minFontSize));
+        setFontSize( f, size, s );
+
         //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
         style->setFont(f);
         return;

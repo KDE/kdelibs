@@ -36,6 +36,8 @@
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
+#include "misc/helper.h"
+#include "css/csshelper.h"
 
 #include <qstring.h>
 #include <qstack.h>
@@ -594,21 +596,31 @@ void DocumentImpl::recalcStyle()
     m_style->setDisplay(BLOCK);
     m_style->setVisuallyOrdered( visuallyOrdered );
     // ### make the font stuff _really_ work!!!!
-    
-    QFont f = KGlobalSettings::generalFont();      
+
+    QFont f = KGlobalSettings::generalFont();
     if (m_view)
     {
         const KHTMLSettings *settings = m_view->part()->settings();
-        QValueList<int> fs = settings->fontSizes();        
-        int size = fs[3];                
+        f.setFamily(settings->stdFontName());
+
+        QValueList<int> fs = settings->fontSizes();
+        float size = fs[3];
         if(size < settings->minFontSize())
             size = settings->minFontSize();
-        f.setFamily(settings->stdFontName()); 
-        f.setPointSize(size);
+
+        // the hack below is to scale the point size a bit in case the xserver has less than 96 dpi.
+        float dpiY = 72.; // fallback
+        if ( !khtml::printpainter )
+            dpiY = QPaintDevice::x11AppDpiY();
+        size /= dpiY;
+        if ( !khtml::printpainter && dpiY < 96 )
+            dpiY = 96.;
+        size *= dpiY;
+        khtml::setFontSize( f,  size,  settings );
         KGlobal::charsets()->setQFont(f, settings->charset());
     }
-    
-    //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;    
+
+    //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
     m_style->setFont(f);
 
     if ( parseMode() != Strict )

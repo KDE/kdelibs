@@ -26,23 +26,35 @@
 #include <qfontinfo.h>
 #include <qpaintdevice.h>
 #include <qpaintdevicemetrics.h>
+#include <qfontdatabase.h>
+
+#include <kcharsets.h>
+#include <kglobal.h>
 
 #include "rendering/render_style.h"
 #include "css_valueimpl.h"
 #include "dom/css_value.h"
 #include "misc/helper.h"
 #include "xml/dom_stringimpl.h"
+#include "khtml_settings.h"
 
 using namespace DOM;
 using namespace khtml;
 
 int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics )
 {
+    return ( int ) computeLengthFloat( val, style, devMetrics );
+}
+
+float khtml::computeLengthFloat(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics )
+{
     unsigned short type = val->primitiveType();
 
-    int dpiY = 72; // fallback
+    float dpiY = 72.; // fallback
     if ( devMetrics )
         dpiY = devMetrics->logicalDpiY();
+    if ( !khtml::printpainter && dpiY < 96 )
+        dpiY = 96.;
 
     float factor = 1.;
     switch(type)
@@ -78,7 +90,7 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QP
     default:
         return -1;
     }
-    return (int)(val->getFloatValue(type)*factor);
+    return val->getFloatValue(type)*factor;
 }
 
 DOMString khtml::parseURL(const DOMString &url)
@@ -123,4 +135,46 @@ DOMString khtml::parseURL(const DOMString &url)
     j->l = nl;
 
     return j;
+}
+
+
+void khtml::setFontSize(  QFont &f,  float size, const KHTMLSettings *s )
+{
+        QFontDatabase db;
+
+        // ok, now some magic to get a nice unscaled font
+        // ### all other font properties should be set before this one!!!!
+        // ####### make it use the charset needed!!!!
+	QFont::CharSet cs = s->charset();
+	QString charset = KGlobal::charsets()->xCharsetName( cs );
+        if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
+        {
+            QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
+            // lets see if we find a nice looking font, which is not too far away
+            // from the requested one.
+
+            QValueList<int>::Iterator it;
+            float diff = 1; // ### 100% deviation
+            int bestSize = 0;
+            for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
+            {
+                float newDiff = ((*it) - size)/size;
+                //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
+                if(newDiff < 0) newDiff = -newDiff;
+                if(newDiff < diff)
+                {
+                    diff = newDiff;
+                    bestSize = *it;
+                }
+            }
+            //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
+            if ( bestSize != 0 ) // 15% deviation, otherwise we use a scaled font...
+                size = bestSize;
+        }
+
+//        size *= zoomFactor;
+
+        //qDebug(" -->>> using %f point font", size);
+        f.setPointSize( ( int )size );
+
 }
