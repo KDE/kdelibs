@@ -22,6 +22,7 @@
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qobjectlist.h>
+#include <qstrlist.h>
 
 #ifndef NO_KDE2
 #include <kapp.h>
