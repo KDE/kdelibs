@@ -50,6 +50,7 @@ KIconEffect::KIconEffect()
 KIconEffect::~KIconEffect()
 {
     delete d;
+    d = 0L;
 }
 
 void KIconEffect::init()
