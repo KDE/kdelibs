@@ -52,6 +52,10 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further confirmation can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
   * @param notify  Emit a @ref KNotify event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
@@ -66,7 +70,9 @@ public:
                           const QString &text,
                           const QString &caption = QString::null,
                           const QString &buttonYes = QString::null,  
-                          const QString &buttonNo = QString::null, bool notify=true);
+                          const QString &buttonNo = QString::null, 
+                          const QString &dontAskAgainName = QString::null,
+                          bool notify=true);
  /**
   * Display a "question" dialog with a listbox to show information to the user 
   *
@@ -82,6 +88,10 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further confirmation can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
   * @param notify  Emit a KNotify event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
@@ -99,7 +109,9 @@ public:
                           const QStringList &strlist,
                           const QString &caption = QString::null,
                           const QString &buttonYes = QString::null,
-                          const QString &buttonNo = QString::null, bool notify=true);
+                          const QString &buttonNo = QString::null, 
+                          const QString &dontAskAgainName = QString::null,
+                          bool notify=true);
  /**
   * Display a "warning" dialog. 
   *
@@ -113,6 +125,10 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further confirmation can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
   * @param notify  Emit a KNotify event.
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
@@ -127,7 +143,9 @@ public:
                          const QString &text,
                          const QString &caption = QString::null,
                          const QString &buttonYes = QString::null,  
-                         const QString &buttonNo = QString::null, bool notify=true);
+                         const QString &buttonNo = QString::null, 
+                         const QString &dontAskAgainName = QString::null,
+                         bool notify=true);
 
  /**
   * Display a "warning" dialog. 
@@ -157,18 +175,11 @@ public:
   */
  static int warningContinueCancel(QWidget *parent, 
                          const QString &text,
-                         const QString &caption,
-                         const QString &buttonContinue, 
-                         const QString &dontAskAgainName,
-                         bool notify);
+                         const QString &caption = QString::null,
+                         const QString &buttonContinue = QString::null, 
+                         const QString &dontAskAgainName = QString::null,
+                         bool notify=true );
 
- /**
-  * Provided for binary compatibility
-  */
- static int warningContinueCancel(QWidget *parent, 
-                         const QString &text,
-                         const QString &caption,
-                         const QString &buttonContinue, bool notify=true);
 
  /**
   * Display a "warning" dialog with a listbox to show information to the user. 
@@ -204,9 +215,9 @@ public:
  static int warningContinueCancelList(QWidget *parent, 
                          const QString &text,
                          const QStringList &strlist,
-                         const QString &caption,
-                         const QString &buttonContinue, 
-                         const QString &dontAskAgainName=QString::null,
+                         const QString &caption = QString::null,
+                         const QString &buttonContinue = QString::null,
+                         const QString &dontAskAgainName = QString::null,
                          bool notify=true);
 
 
@@ -247,14 +258,8 @@ public:
                                 const QString &text,
                                 const QString &caption = QString::null,
                                 const QString &buttonYes = QString::null,  
-                                const QString &buttonNo = QString::null, bool notify=true);
-
-  static int warningYesNoCancel(QWidget *parent,
-                                const QString &text,
-                                const QString &caption,
-                                const QString &buttonYes,  
-                                const QString &buttonNo, 
-                                const QString &dontAskAgainName,
+                                const QString &buttonNo = QString::null, 
+                                const QString &dontAskAgainName = QString::null,
                                 bool notify=true);
 
  /**
@@ -404,7 +409,8 @@ public:
   static void information(QWidget *parent, 
                           const QString &text, 
                           const QString &caption = QString::null,
-                          const QString &dontShowAgainName = QString::null, bool notify=true);
+                          const QString &dontShowAgainName = QString::null, 
+                          bool notify=true);
 
   /**
    * Enable all messages which have been turned off with the
