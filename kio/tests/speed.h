@@ -3,6 +3,7 @@
 #define _SPEED_H
 
 #include <kio/global.h>
+#include <kurl.h>
 
 namespace KIO {
     class Job;
@@ -12,7 +13,7 @@ class SpeedTest : public QObject {
     Q_OBJECT
 
 public:
-    SpeedTest();
+    SpeedTest(const KURL & url);
 
 private slots:
     void entries( KIO::Job *, const KIO::UDSEntryList& );

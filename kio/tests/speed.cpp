@@ -1,18 +1,18 @@
-#include <kurl.h>
 #include <kdebug.h>
 #include <kapp.h>
 #include <time.h>
 #include "speed.h"
 #include <kio/job.h>
+#include <kcmdlineargs.h>
 #include <qdir.h>
 
 using namespace KIO;
 
-SpeedTest::SpeedTest()
+SpeedTest::SpeedTest( const KURL & url )
     : QObject(0, "speed")
 {
-    // Job *job = listRecursive( KURL("file:" + QDir::currentDirPath()) );
-    Job *job = del( KURL("file:" + QDir::currentDirPath()) );
+    Job *job = listRecursive( url );
+    //Job *job = del( KURL("file:" + QDir::currentDirPath()) ); DANGEROUS !
     connect(job, SIGNAL( result( KIO::Job*)),
 	    SLOT( finished( KIO::Job* ) ));
     /*connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
@@ -35,13 +35,33 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
 
 void SpeedTest::finished(Job*) {
     kdDebug() << "job finished" << endl;
+    kapp->quit();
 }
+
+static KCmdLineOptions options[] =
+{
+  { "+[URL]", "the URL to list", 0 },
+  { 0, 0, 0 }
+};
 
 int main(int argc, char **argv) {
 
-    KApplication app(argc, argv, "speedapp");
+    KCmdLineArgs::init( argc, argv, "speedapp", "A KIO::listRecursive testing tool", "0.0" );
+ 
+    KCmdLineArgs::addCmdLineOptions( options );
 
-    SpeedTest test;
+    KApplication app;
+ 
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs(); 
+
+    KURL url;
+    if ( args->count() == 1 )
+      url = args->url(0);
+    else
+      url = "file:" + QDir::currentDirPath();
+    args->clear();
+
+    SpeedTest test( url );
     app.exec();
 
 }
