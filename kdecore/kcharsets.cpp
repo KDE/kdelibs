@@ -419,7 +419,7 @@ QString KCharsets::resolveEntities( const QString &input )
     bool scanForSemicolon = false;
 
     for ( ; p < end; ++p ) {
-        QChar ch = *p;
+        const QChar ch = *p;
 
         if ( ch == '&' ) {
             ampersand = p;
@@ -436,15 +436,15 @@ QString KCharsets::resolveEntities( const QString &input )
 
         const QChar *entityBegin = ampersand + 1;
 
-        uint entityLength = p - entityBegin;
+        const uint entityLength = p - entityBegin;
         if ( entityLength == 0 )
             continue;
 
-        QChar entityValue = KCharsets::fromEntity( QConstString( entityBegin, entityLength ).string() );
+        const QChar entityValue = KCharsets::fromEntity( QConstString( entityBegin, entityLength ).string() );
         if ( entityValue.isNull() )
             continue;
 
-        uint ampersandPos = ampersand - text.unicode();
+        const uint ampersandPos = ampersand - text.unicode();
 
         text[ ampersandPos ] = entityValue;
         text.remove( ampersandPos + 1, entityLength + 1 );
