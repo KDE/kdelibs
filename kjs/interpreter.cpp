@@ -355,6 +355,7 @@ void ExecState::setException(const Value &e)
 
 void ExecState::clearException()
 {
+  terminate_request = false;
   rep->exception = Value();
 }
 
@@ -363,8 +364,12 @@ Value ExecState::exception() const
   return rep->exception;
 }
 
+bool ExecState::terminate_request = false;
+
 bool ExecState::hadException() const
 {
+  if (terminate_request)
+      rep->exception = Error::create((ExecState*)this);
   return !rep->exception.isNull();
 }
 
