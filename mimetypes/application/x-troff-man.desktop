@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Troff document with manpage macros
+Icon=mimetypes/man
+Type=MimeType
+MimeType=application/x-troff-man
+Patterns=*.man;*.1;*.2;*.3;*.4;*.5;*.6;*.7;*.8;

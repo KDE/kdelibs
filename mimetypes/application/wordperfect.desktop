@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/wordperfect
+Icon=mimetypes/document
+Patterns=*.wpd;*.WPD;
+Comment=WordPerfect document

@@ -8,7 +8,8 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
 	x-executable.desktop x-ar.desktop x-lha.desktop \
 	x-tbz.desktop x-pn-realaudio.desktop x-awk.desktop \
 	x-perl.desktop x-compress.desktop x-cpio.desktop \
-	x-rpm.desktop msword.desktop x-sharedlib.desktop
+	x-rpm.desktop msword.desktop x-sharedlib.desktop \
+	wordperfect.desktop x-troff.desktop x-troff-man.desktop
 
 datadir = $(kde_mimedir)/application
 

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Troff document
+Icon=mimetypes/man
+Type=MimeType
+MimeType=application/x-troff
+Patterns=*.tr;*.roff;
