@@ -20,6 +20,7 @@
 
 #include "config.h"
 #include "kaction.h"
+#include "kmessagebox.h"
 #include "kshortcut.h"
 #include "ksystemtray.h"
 #include "kpopupmenu.h"
@@ -91,8 +92,8 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     }
     else
     {
-        connect(quitAction, SIGNAL(activated()), qApp, SLOT(closeAllWindows()));
-	d->on_all_desktops = false;
+        connect(quitAction, SIGNAL(activated()), SLOT(confirmQuit()));
+        d->on_all_desktops = false;
     }
     setCaption( KGlobal::instance()->aboutData()->programName());
 }
@@ -182,6 +183,26 @@ void KSystemTray::minimizeRestoreAction()
     if ( parentWidget() ) {
         bool restore = !( parentWidget()->isVisible() );
 	minimizeRestore( restore );
+    }
+}
+
+bool KSystemTray::confirmQuit()
+{
+    QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>")
+                        .arg(kapp->caption());
+    return KMessageBox::warningContinueCancel(this, query,
+                                     i18n("Confirm Quit From System Tray"),
+                                     KStdGuiItem::quit(),
+                                     QString("systemtrayquit%1")
+                                            .arg(kapp->caption())) ==
+           KMessageBox::Continue;
+}
+
+void KSystemTray::maybeQuit()
+{
+    if (confirmQuit())
+    {
+        qApp->closeAllWindows();
     }
 }
 

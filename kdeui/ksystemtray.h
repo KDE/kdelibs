@@ -119,6 +119,15 @@ public:
      */
     static QPixmap loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
 
+    /**
+     * A convenience function to use when a quit is launched from the system tray. Provides
+     * a consistent set of verbage for the user and should be used by all system tray using
+     * apps for this consistency.
+     * @return returns true if the user confirms the quit, or false if they cancel it
+     * @since 3.4
+     */
+    bool confirmQuit();
+
 signals:
     /**
       Emitted when quit is selected in the menu. If you want to perform any other
@@ -186,6 +195,8 @@ protected:
 
 private slots:
     void minimizeRestoreAction();
+    void maybeQuit();
+
 private:
     void activateOrHide();
     void minimizeRestore( bool restore );
