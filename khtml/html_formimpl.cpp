@@ -586,7 +586,8 @@ void HTMLButtonElementImpl::slotSubmit()
     if(form()) _form->slotSubmit();
 }
 
-void HTMLButtonElementImpl::print(QPainter *painter, int _x, int _y, int _w, int _h, int tx, int ty)
+void HTMLButtonElementImpl::print(QPainter */*painter*/, int /*_x*/, int /*_y*/,
+				  int /*_w*/, int /*_h*/, int tx, int ty)
 {
   // hack!!!
   int oldascent = ascent;

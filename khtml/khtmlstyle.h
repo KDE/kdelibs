@@ -198,13 +198,6 @@ public:
     int          clear;
 };
 
-class CSSProp;
-typedef QList<CSSProp> CSSPropList;
-
-class CSSSelec;
-typedef QList<CSSSelec> CSSSelecList;
-
-
 /**
  * @internal
  */
@@ -215,7 +208,6 @@ public:
     CSSStyleSheet(const HTMLSettings *);
     ~CSSStyleSheet();
 
-    void test(void);
     /*
      * newStyle
      *
@@ -237,18 +229,6 @@ public:
 
 protected:
     const HTMLSettings *settings;
-
-    const QChar *parseSpace(const QChar *curP, const QChar *endP);
-    const QChar *parseToChar(const QChar *curP, const QChar *endP,
-                            QChar c, bool chkws);
-    const QChar *parseAt(const QChar *curP, const QChar *endP);
-    CSSSelec *parseSelector2(const QChar *curP, const QChar *endP);
-    CSSSelec *parseSelector1(const QChar *curP, const QChar *endP);
-    CSSSelecList *parseSelector(const QChar *curP, const QChar *endP);
-    CSSProp *parseProperty(const QChar *curP, const QChar *endP);
-    CSSPropList *parseProperties(const QChar *curP, const QChar *endP);
-    const QChar *parseRule(const QChar *curP, const QChar *endP);
-    void parseSheet(const QChar *src, int len);
 };
 
 #endif // HTMLSTYLE_H
