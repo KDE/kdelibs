@@ -44,9 +44,9 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    :KListBox( parent, name, WType_Popup )
+ :KListBox( parent, name, WType_Popup ), d(new KCompletionBoxPrivate)
 {
-    d = new KCompletionBoxPrivate;
+
     d->m_parent        = parent;
     d->tabHandling     = true;
     d->down_workaround = false;
@@ -83,7 +83,9 @@ KCompletionBox::~KCompletionBox()
 QStringList KCompletionBox::items() const
 {
     QStringList list;
-    for ( uint i = 0; i < count(); i++ ) {
+    const uint itemCount = count();
+
+    for ( uint i = 0; itemCount; ++i ) {
         list.append( text( i ) );
     }
     return list;
@@ -476,9 +478,13 @@ void KCompletionBox::setItems( const QStringList& items )
         //so we can avoid a repaint for identical updates,
         //to reduce flicker
         bool dirty = false;
-        for ( QStringList::ConstIterator it = items.begin(); it != items.end(); it++) {
+
+        QStringList::ConstIterator it = items.constBegin();
+        const QStringList::ConstIterator itEnd = items.constEnd();
+
+        for ( ; it != itEnd; ++it) {
             if ( item ) {
-                bool changed = ((KCompletionBoxItem*)item)->reuse( *it );
+                const bool changed = ((KCompletionBoxItem*)item)->reuse( *it );
                 dirty = dirty || changed;
                 item = item->next();
             }

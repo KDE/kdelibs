@@ -220,7 +220,7 @@ protected:
 
 private:
     class KCompletionBoxPrivate;
-    KCompletionBoxPrivate* d;
+    KCompletionBoxPrivate* const d;
 };
 
 
