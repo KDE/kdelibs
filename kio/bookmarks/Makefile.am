@@ -27,8 +27,10 @@ METASOURCES = AUTO
 
 include_HEADERS = \
 	kbookmark.h kbookmarkbar.h kbookmarkdrag.h kbookmarkexporter.h \
-	kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h
+	kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h \
+	kbookmarkimporter_crash.h kbookmarkimporter_opera.h kbookmarkimporter_ie.h
 libkbookmarks_la_SOURCES = \
 	kbookmark.cc kbookmarkbar.cc kbookmarkdrag.cc kbookmarkexporter.cc \
 	kbookmarkimporter.cc kbookmarkmanager.cc kbookmarkmenu.cc \
-	kbookmarkmanager.skel kbookmarknotifier.skel 
+	kbookmarkimporter_crash.cc kbookmarkimporter_opera.cc kbookmarkimporter_ie.cc \
+	kbookmarkmanager.skel kbookmarknotifier.skel
