@@ -103,6 +103,7 @@ public:
     if ( m_extension )
       delete m_extension;
     delete m_settings;
+    delete m_jscript;
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;
@@ -375,9 +376,7 @@ void KHTMLPart::clear()
   d->m_decoder = 0;
 
   if ( d->m_jscript )
-    delete d->m_jscript;
-
-  d->m_jscript = 0;
+    d->m_jscript->clear();
 
   if ( d->m_view )
     d->m_view->clear();
