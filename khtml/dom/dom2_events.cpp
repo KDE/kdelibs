@@ -256,6 +256,48 @@ long UIEvent::detail() const
     return static_cast<UIEventImpl*>(impl)->detail();
 }
 
+int UIEvent::keyCode() const
+{
+    if ( !impl ) throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    if( impl->isTextEvent() )
+        return static_cast<TextEventImpl*>( impl )->keyVal();
+
+    return 0;
+}
+
+int UIEvent::layerX() const
+{
+    if( !impl )
+        throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    if( impl->isMouseEvent() )
+        return static_cast<MouseEventImpl*>( impl )->layerX();
+    return 0;
+}
+
+int UIEvent::layerY() const
+{
+    if( !impl ) 
+        throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    if( impl->isMouseEvent() )
+        return static_cast<MouseEventImpl*>( impl )->layerY();
+    return 0;
+}
+
+int UIEvent::which() const
+{
+    if( !impl ) throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    if( impl->isMouseEvent() )
+        return static_cast<MouseEventImpl*>( impl )->button() + 1;
+    else if( impl->isTextEvent() )
+        return static_cast<TextEventImpl*>( impl )->keyVal();
+
+    return 0;
+}
+
 void UIEvent::initUIEvent(const DOMString &typeArg,
                                  bool canBubbleArg,
                                  bool cancelableArg,

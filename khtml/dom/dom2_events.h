@@ -329,6 +329,22 @@ public:
      */
     long detail() const;
 
+    /**
+     * IE extension
+     */
+    int keyCode() const;
+
+    /**
+     * Netscape extension. only returns something useful when the mouse
+     * was involved. Otherwise its 0
+     */
+    int layerX() const;
+    int layerY() const;
+
+    /**
+     * Non-standard Netscape style "which" extension
+    */
+    int which() const;
 
     /**
      * The initUIEvent method is used to initialize the value of a UIEvent
