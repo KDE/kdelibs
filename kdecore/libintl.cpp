@@ -719,10 +719,10 @@ k_bindtextdomain (const char *domainname, const char *dirname)
 }
 
 # if !defined HAVE_GETCWD
-char *getwd ();
+char *getwd (char *buf);
 #  define getcwd(buf, max) getwd (buf)
 # else
-char *getcwd ();
+char *getcwd (char *buf, size_t size);
 # endif
 
 /* Prototypes for local functions.  */
