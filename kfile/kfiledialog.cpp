@@ -752,6 +752,8 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
+    dlg.exec();
+
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
         KRecentDocument::add(filename, false);
@@ -767,6 +769,8 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
     dlg.setMode(Directory);
 
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
+
+    dlg.exec();
 
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
@@ -806,6 +810,8 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+
+    dlg.exec();
 
     QString filename = dlg.selectedFile();
     if (!filename.isEmpty())
