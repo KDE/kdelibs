@@ -641,7 +641,7 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
   // passed to sourceParsed()
   Object valueObj = Object::dynamicCast(value);
   Object syntaxError = exec->interpreter()->builtinSyntaxError();
-  if (valueObj.isValid() && valueObj.get(exec,"constructor") == syntaxError) {
+  if (valueObj.isValid() && valueObj.get(exec,"constructor").imp() == syntaxError.imp()) {
     Value sidValue = valueObj.get(exec,"sid");
     if (sidValue.isA(NumberType)) { // sid is not set for Function() constructor
       int sourceId = (int)sidValue.toNumber(exec);

@@ -170,7 +170,7 @@ namespace KJS {
     ~ScheduledAction();
     void execute(Window *window);
 
-    ObjectImp func;
+    Object func;
     List args;
     QString code;
     bool isFunction;
