@@ -82,6 +82,8 @@ public:
 
 	inline std::string cookie() { return _cookie; }
 	void setCookie(std::string c) { _cookie = c; }
+	void setHints(const std::vector<std::string>& hints);
+	std::string findHint(const std::string& name);
 
 	inline ConnectionState connState() { return _connState; };
 	virtual void drop() = 0;

@@ -85,6 +85,13 @@ protected:
 	mcop_sighandler orig_sigpipe;		// original signal handler for SIG_PIPE
 	Connection *_activeConnection;		// internal use only (for refcounting)
 
+	/**
+	 * connects to a given URL
+	 *
+	 * @returns a valid connection, or a 0 pointer on error
+	 */
+	Connection *connectUrl(const string& url);
+
 public:
 	enum StartServer {
 		noServer = 0,					// don't be a server

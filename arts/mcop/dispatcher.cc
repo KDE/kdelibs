@@ -222,10 +222,30 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	 * reason for startup priorities as since this is required for cookie&co,
 	 * no communication is possible without that
 	 */
-	string globalCommName
-			= MCOPUtils::readConfigEntry("GlobalComm","Arts::TmpGlobalComm");
 
-	d->globalComm = GlobalComm(SubClass(globalCommName));
+	
+	char *env = getenv("ARTS_SERVER");
+	bool envOk = false;
+	if(env)
+	{
+		string url = "tcp:"; url += env;
+		Connection *conn = connectUrl(url);
+		arts_debug("connection to %s for globalComm", url.c_str());
+		if(conn)
+		{
+			arts_debug("hint %s", conn->findHint("GlobalComm").c_str());
+			d->globalComm = Reference(conn->findHint("GlobalComm"));
+			envOk = true;
+			arts_debug("using globalcomm from env variable");
+		}
+	}
+
+	if(!envOk)
+	{
+		string globalCommName
+			= MCOPUtils::readConfigEntry("GlobalComm","Arts::TmpGlobalComm");
+		d->globalComm = GlobalComm(SubClass(globalCommName));
+	}
 
 	// --- initialize MD5auth ---
 	/*
@@ -704,6 +724,7 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #endif
 
 				conn->setConnState(Connection::established);
+				conn->setHints(a.hints);
 				d->serverConnectCondition.wakeAll();
 				return;		/* everything ok - leave here */
 			}
@@ -826,46 +847,54 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 	}
 
 	/* try to connect the server */
-	bool isMainThread = SystemThreads::the()->isMainThread();
-
 	vector<string>::iterator ui;
 	for(ui = reference.urls.begin(); ui != reference.urls.end(); ui++)
 	{
-		Connection *conn = 0;
-		if(strncmp(ui->c_str(),"tcp:",4) == 0)
-		{
-			conn = new TCPConnection(*ui);
-		}
-		else if(strncmp(ui->c_str(),"unix:",5) == 0)
-		{
-			conn = new UnixConnection(*ui);
-		}
-
+		Connection *conn = connectUrl(*ui);
 		if(conn)
 		{
-			conn->setConnState(Connection::expectServerHello);
+			assert(conn->isConnected(reference.serverID));	// FIXME
+			return conn;
+		}	
+	}
+	return 0;
+}
 
-			while((conn->connState() != Connection::established)
-			       && !conn->broken())
-			{
-				if(isMainThread)
-					_ioManager->processOneEvent(true);
-				else
-					d->serverConnectCondition.wait(d->mutex);
-			}
+Connection *Dispatcher::connectUrl(const string& url)
+{
+	Connection *conn = 0;
+	bool isMainThread = SystemThreads::the()->isMainThread();
 
-			if(conn->connState() == Connection::established)
-			{
-				connections.push_back(conn);
+	if(strncmp(url.c_str(),"tcp:",4) == 0)
+	{
+		conn = new TCPConnection(url);
+	}
+	else if(strncmp(url.c_str(),"unix:",5) == 0)
+	{
+		conn = new UnixConnection(url);
+	}
 
-				assert(conn->isConnected(reference.serverID));	// FIXME
-				return conn;
-			}
-			arts_debug("bad luck: connecting server didn't work");
-			
-			// well - bad luck (connecting that server failed)
-			conn->_release();
+	if(conn)
+	{
+		conn->setConnState(Connection::expectServerHello);
+
+		while((conn->connState() != Connection::established)
+		       && !conn->broken())
+		{
+			if(isMainThread)
+				_ioManager->processOneEvent(true);
+			else
+				d->serverConnectCondition.wait(d->mutex);
 		}
+
+		if(conn->connState() == Connection::established)
+		{
+			connections.push_back(conn);
+			return conn;
+		}
+			
+		// well - bad luck (building a connection failed)
+		conn->_release();
 	}
 	return 0;
 }

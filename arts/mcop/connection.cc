@@ -42,6 +42,7 @@ public:
 	};
 
 	queue<Data> incoming;
+	map<string,string> hints;
 };
 };
 
@@ -169,4 +170,26 @@ void Connection::receive(unsigned char *newdata, long newlen)
 	} while(!d->incoming.empty());
 
 	_release();
+}
+
+void Connection::setHints(const vector<string>& hints)
+{
+	vector<string>::const_iterator i;
+
+	for(i = hints.begin(); i != hints.end(); i++)
+	{
+		string key;
+		vector<string> values;
+
+		if(MCOPUtils::tokenize(*i, key, values))
+		{
+			if(values.size() == 1)
+				d->hints[key] = values[0];
+		}
+	}
+}
+
+string Connection::findHint(const string& hint)
+{
+	return d->hints[hint];
 }
