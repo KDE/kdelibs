@@ -149,9 +149,8 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Name");
   if ( m_strName.isEmpty() )
   {
-    kdWarning(7012) << "The desktop entry file " << entryPath()
-                    <<  " has no Name" << endl;
-    m_strName = name;
+    m_bValid = false;
+    return;
   }
 
   m_strIcon = config->readEntry( "Icon", "unknown" );
