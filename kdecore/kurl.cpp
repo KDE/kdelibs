@@ -25,24 +25,13 @@
 #include <qregexp.h>
 #include <stdlib.h>
 
-#if 0
-#define debugC debug
-#else
-inline void debugC(const char *,...) {};
-#endif
-
 void KURL::encodeURL( QString& _url ) {
-
-    static int count = 0;
-    debugC("encode %d",++count);
 
     int old_length = _url.length();
 
     
     if (!old_length)
 	return;
-   
-    debugC("encode %s", _url.data());
    
     // a worst case approximation
     char *new_url = new char[ old_length * 3 + 1 ];
@@ -83,13 +72,11 @@ static uchar hex2int( char _char ) {
 }
 
 void KURL::decodeURL( QString& _url ) {
-    static int count = 0;
-    
+
     int old_length = _url.length();
     if (!old_length)
 	return;
     
-    debugC("decode %s %d", _url.data(), ++count);
     int new_length = 0;
 
     // make a copy of the old one
@@ -125,7 +112,6 @@ KURL::detach()
 
 KURL::KURL() 
 { 
-    debugC("c1 %p", this);
     malformed = true;
     protocol_part = "";
     host_part = ""; 
@@ -137,7 +123,6 @@ KURL::KURL()
 
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
-    debugC("c2 %p", this);
     malformed = _base_url.malformed;
     protocol_part = _base_url.protocol_part;
     host_part = _base_url.host_part;
@@ -159,15 +144,11 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
 
 KURL::KURL( const char* _url)
 {
-    debugC("c3 %p", this);
     parse( _url );
 }
 
 void KURL::parse( const char * _url )
 {
-    static uint count = 0;
-    debugC("parse() %d %s",++count, _url);
-
     QString url(_url);
     // defaults
     malformed = false;
@@ -320,7 +301,6 @@ void KURL::parse( const char * _url )
 KURL::KURL( const char* _protocol, const char* _host, 
 			const char* _path, const char* _ref)
 {
-    debugC("c4 %p",this);
     protocol_part = _protocol;
     host_part = _host;
     path_part = _path;
@@ -365,14 +345,11 @@ const char* KURL::host() const
 }
 
 KURL::~KURL() {
-    debugC("~ %p",this);
+
 }
 
 const char* KURL::path() const
 { 
-    static uint count = 0;
-    debugC("path() %d",++count);
-
     if (path_part.isNull()) 
 	return "";
     else {
@@ -381,7 +358,6 @@ const char* KURL::path() const
 	    that->path_part_decoded = path_part.copy();
 	    KURL::decodeURL(that->path_part_decoded);
 	}
-	debugC("path return \"%s\"",path_part_decoded.data());
 	return path_part_decoded.data();
     }
 }
@@ -469,8 +445,6 @@ const char* KURL::directoryURL( bool _trailing )
 
 QString KURL::url() const
 {
-    static int count = 0;
-    debugC("url() %d",++count);
 
     QString url = protocol_part.copy();
 
@@ -590,7 +564,6 @@ KURL& KURL::operator=( const KURL &u)
 
 KURL& KURL::operator=( const char *_url )
 {
-    debugC("= %p", this);
     parse( _url );
     return *this;
 }
