@@ -88,7 +88,8 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 						" </p>"
 						" </qt>" );
 
-	QString whatsThisFilterchainListView = i18n( " <qt> <b>Filtering Chain</b>"
+	QString whatsThisFilterchainListView = i18n( " <qt> <b>Filtering Chain</b> (if enabled, is run <em>before</em> actual "
+						" job submission to print system)"
 						" <p>This field shows which filters are currently selected to act as 'pre-filters' "
 						" for KDEPrint. Pre-filters are processing the print files <em>before</em> they are "
 						" send downstream to your real print subsystem. </p> "
@@ -103,7 +104,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 						" through this inteface. </p> "
 						" <p>KDEPrint ships preconfigured with support for a selection of common filters. These "
 						" filters however need to be "
-						" installed independently from KDEPrint. These pre-filters work for all</em> print subsystems"
+						" installed independently from KDEPrint. These pre-filters work <em>for all</em> print subsystems"
 						" supported by KDEPrint (such as CUPS, LPRng and LPD), because they are not depending on these.</p> "
 						".<p> Amongst the pre-configured filters shipping with KDEPrint are: </p> "
 						" <ul> "
