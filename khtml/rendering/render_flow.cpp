@@ -276,7 +276,10 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
  	}
 #ifdef FLOAT_DEBUG
 	p->save();
-	p->setPen( Qt::magenta );
+	if ( r->node->isPositioned() )
+	    p->setPen( QPen( Qt::red, 4) );
+	else
+	    p->setPen( QPen( Qt::magenta, 4) );
 	p->setBrush( QPainter::NoBrush );
 	qDebug("(%p): special object at (%d/%d-%d/%d)", this, r->left, r->startY, r->width, r->endY - r->startY );
 	p->drawRect( QRect( r->left+tx, r->startY+ty, r->width, r->endY - r->startY) );
@@ -1125,7 +1128,7 @@ void RenderFlow::calcMinMaxWidth()
 
     // ## maybe we should replace the noWrap stuff in RenderTable by CSS.
     bool nowrap = style()->whiteSpace() == NOWRAP ||
-		  ( isTableCell() && static_cast<RenderTableCell *>(this)->noWrap() );
+		  ( tableCell && static_cast<RenderTableCell *>(this)->noWrap() );
 
     // non breaking space
     const QChar nbsp = 0xa0;
