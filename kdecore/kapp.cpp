@@ -994,7 +994,7 @@ void KApplication::dcopFailure(const QString &msg)
   }
   if (failureCount == 2)
   {
-     QString msgStr(i18n("There was some error setting up inter-process\n"
+     QString msgStr(i18n("There was an error setting up inter-process\n"
                       "communications for KDE.  The message returned\n"
                       "by the system was:\n\n"));
      msgStr += msg;
@@ -1012,7 +1012,7 @@ static const KCmdLineOptions qt_options[] =
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'."), 0},
    { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'."), 0},
    { "cmap", I18N_NOOP("Causes the application to install a private color\nmap on an 8-bit display."), 0},
-   { "ncols <count>", I18N_NOOP("Limits the number of colors allocated in the color\ncube on a 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification."), 0},
+   { "ncols <count>", I18N_NOOP("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification."), 0},
    { "nograb", I18N_NOOP("tells Qt to never grab the mouse or the keyboard."), 0},
    { "dograb", I18N_NOOP("running under a debugger can cause an implicit\n-nograb, use -dograb to override."), 0},
    { "sync", I18N_NOOP("switches to synchronous mode for debugging."), 0},
