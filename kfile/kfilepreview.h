@@ -47,15 +47,27 @@ class KFilePreview : public QSplitter, public KFileView
 
 public:
     KFilePreview(QWidget *parent, const char *name);
+    KFilePreview(KFileView *view, QWidget *parent, const char *name);
     virtual ~KFilePreview();
 
     virtual QWidget *widget() { return this; }
     virtual void clearView();
 
+    /**
+     * Delets the current view and sets the view to the given @p view.
+     * The view is reparented to have this as parent, if necessary.
+     */
+    void setFileView(KFileView *view);
+
+    /**
+     * @returns the current fileview
+     */
+    KFileView* fileView() const { return left; }
+
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
     virtual void removeItem(const KFileViewItem*);
-    
+
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
     virtual void clearSelection();
@@ -79,6 +91,8 @@ protected slots:
     void selectFile(const KFileViewItem*);
 
 private:
+    void init( KFileView *view );
+
     bool deleted, previewMode;
     KFileView *left;
     QWidget *preview;

@@ -625,8 +625,14 @@ void KDirOperator::setView( KFile::FileView view )
         else if ( (view & KFile::Detail) == KFile::Detail && !preview )
             new_view = new KFileDetailView( this, "detail view" );
 
-        else { // FIXME: make Preview and Detail possible?
-            KFilePreview *tmp = new KFilePreview(this, "preview");
+        else { // preview
+	    KFileView *v; // will get reparented by KFilePreview
+	    if ( (view & KFile::Simple ) == KFile::Simple )
+	        v = new KFileIconView( 0L, "simple view" );
+	    else
+	        v = new KFileDetailView( 0L, "detail view" );
+	    
+            KFilePreview *tmp = new KFilePreview(v, this, "preview");
            tmp->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
             tmp->setPreviewWidget(myPreview, url());
             new_view=tmp;

@@ -22,14 +22,26 @@
 #include <kfilepreview.h>
 #include <kfilepreview.moc>
 
-KFilePreview::KFilePreview(QWidget *parent, const char *name) :
-                           QSplitter(parent, name), KFileView() {
+KFilePreview::KFilePreview(KFileView *view, QWidget *parent, const char *name)
+  : QSplitter(parent, name), KFileView()
+{
+    if ( view )
+        init( view );
+    else
+        init( new KFileIconView( (QSplitter*) this, "left" ));
+}
 
-    // only default stuff for now
-    KFileIconView *files = new KFileIconView((QSplitter*)this, "left");
-    files->KFileView::setViewMode(All);
-    left=files;
-    files->setOperator(this);
+
+KFilePreview::KFilePreview(QWidget *parent, const char *name) :
+                           QSplitter(parent, name), KFileView()
+{
+    init( new KFileIconView((QSplitter*)this, "left") );
+}
+
+void KFilePreview::init( KFileView *view )
+{
+    left = 0L;
+    setFileView( view );
 
     preview=new QWidget((QSplitter*)this, "preview");
     QString tmp=i18n("Sorry, no preview available.");
@@ -48,6 +60,17 @@ KFilePreview::~KFilePreview() {
         delete preview;
         preview=0L;
     }
+}
+
+void KFilePreview::setFileView( KFileView *view )
+{
+    ASSERT( view );
+
+    delete left;
+    view->widget()->reparent( this, QPoint(0,0) );
+    view->KFileView::setViewMode(All);
+    view->setOperator(this);
+    left=view;
 }
 
 void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u)
