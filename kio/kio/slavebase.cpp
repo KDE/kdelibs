@@ -129,14 +129,6 @@ long SlaveBase::s_seqNr = 0;
 
 static volatile bool slaveWriteError = false;
 
-void sigalarm_handler(int sigNumber)
-{
-   signal(sigNumber,SIG_IGN);
-   //I don't think we can have the same problem here as in the sigsegv handler
-   kdDebug()<<"kioslave : exiting due to alarm signal "<<endl;
-   exit(2);
-}
-
 void genericsig_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
@@ -146,7 +138,7 @@ void genericsig_handler(int sigNumber)
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
       globalSlave->setKillFlag();
-   signal(SIGALRM,&sigalarm_handler);
+   signal(SIGALRM,SIG_DFL);
    alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
 }
 
@@ -185,7 +177,11 @@ SlaveBase::SlaveBase( const QCString &protocol,
 #endif
     }
         
-    signal( SIGPIPE, sigpipe_handler );
+    struct sigaction act;
+    act.sa_handler = sigpipe_handler;
+    sigemptyset( &act.sa_mask );
+    act.sa_flags = 0;
+    sigaction( SIGPIPE, &act, 0 );
 
     signal(SIGINT,&genericsig_handler);
     signal(SIGQUIT,&genericsig_handler);
@@ -664,6 +660,11 @@ void SlaveBase::delCachedAuthentication( const QString& key )
 void SlaveBase::sigsegv_handler(int sig)
 {
     signal(sig,SIG_DFL); // Next one kills
+
+    //Kill us if we deadlock
+    signal(SIGALRM,SIG_DFL);
+    alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
+
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
     char buffer[80];
@@ -674,14 +675,13 @@ void SlaveBase::sigsegv_handler(int sig)
 
 void SlaveBase::sigpipe_handler (int)
 {
-    signal(SIGPIPE,SIG_IGN);
     // We ignore a SIGPIPE in slaves.
     // A SIGPIPE can happen in two cases:
     // 1) Communication error with application.
     // 2) Communication error with network.
-    kdDebug(7019) << "SIGPIPE" << endl;
-    signal(SIGPIPE,&sigpipe_handler);
     slaveWriteError = true;
+    
+    // Don't add anything else here, especially no debug output
 }
 
 void SlaveBase::setHost(QString const &, int, QString const &, QString const &)
