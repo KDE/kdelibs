@@ -793,24 +793,9 @@ void KURL::parse( const QString& _url, int encoding_hint )
   m_bIsMalformed = false; // Valid URL
 
   //kdDebug()<<"Prot="<<m_strProtocol<<"\nUser="<<m_strUser<<"\nPass="<<m_strPass<<"\nHost="<<m_strHost<<"\nPath="<<m_strPath<<"\nQuery="<<m_strQuery_encoded<<"\nRef="<<m_strRef_encoded<<"\nPort="<<m_iPort<<endl;
-  if (m_strProtocol.isEmpty() || (m_strProtocol == fileProt))
+  if (m_strProtocol.isEmpty())
   {
     m_strProtocol = fileProt;
-    if (!m_strHost.isEmpty())
-    {
-      // File-protocol has a host name..... hmm?
-      if (m_strHost == "localhost")
-      {
-        m_strHost = QString::null; // We can ignore localhost
-      }
-      else {
-        // Pass the hostname as part of the path. Perhaps system calls
-        // just handle it.
-        m_strPath = "//"+m_strHost+m_strPath;
-        m_strPath_encoded = QString::null;
-        m_strHost = QString::null;
-      }
-    }
   }
   return;
 

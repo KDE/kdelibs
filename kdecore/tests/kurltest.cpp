@@ -431,7 +431,7 @@ int main(int argc, char *argv[])
   check("Broken stuff #2 directory(true, false)", waba1.directory(true, false), "a");
   check("Broken stuff #2 directory(false, true)", waba1.directory(true, true), "");
 
-
+#if 0
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
   check("UNC, with localhost", unc1.path(), "/home/root");
@@ -449,6 +449,7 @@ int main(int argc, char *argv[])
      KURL url3("file:////atlas/dfaure");
      check("KURL::host()", url3.path(), "//atlas/dfaure"); // says Waba
   }
+#endif
 
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
