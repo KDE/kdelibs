@@ -260,6 +260,10 @@ class KGlobalSettings
     static QFont menuFont();
     static QFont windowTitleFont();
     static QFont taskbarFont();
+    /**
+     * Returns a font of approx. 48 pt. capable of showing @p text
+     */
+    static QFont largeFont(const QString &text = QString::null);
 
     /**
      * Returns if the user specified multihead. In case the display
@@ -301,6 +305,7 @@ private:
     static QFont *_menuFont;
     static QFont *_windowTitleFont;
     static QFont *_taskbarFont;
+    static QFont *_largeFont;
     static QColor * kde2Gray;
     static QColor * kde2Blue;
     static QColor * kde2AlternateColor;

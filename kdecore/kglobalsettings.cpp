@@ -20,6 +20,8 @@
 
 #include <qdir.h>
 #include <qpixmap.h>
+#include <qfontdatabase.h>
+
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kapplication.h>
@@ -50,6 +52,7 @@ QFont *KGlobalSettings::_toolBarFont = 0;
 QFont *KGlobalSettings::_menuFont = 0;
 QFont *KGlobalSettings::_windowTitleFont = 0;
 QFont *KGlobalSettings::_taskbarFont = 0;
+QFont *KGlobalSettings::_largeFont = 0;
 QColor *KGlobalSettings::kde2Blue = 0;
 QColor *KGlobalSettings::kde2Gray = 0;
 QColor *KGlobalSettings::kde2AlternateColor = 0;
@@ -366,6 +369,47 @@ QFont KGlobalSettings::taskbarFont()
     *_taskbarFont = c->readFontEntry("taskbarFont", _taskbarFont);
 
     return *_taskbarFont;
+}
+
+
+QFont KGlobalSettings::largeFont(const QString &text)
+{
+    QFontDatabase db;
+    QStringList fam = db.families();
+    if (_largeFont)
+        fam.prepend(_largeFont->family());
+    for(QStringList::ConstIterator it = fam.begin(); 
+        it != fam.end(); ++it)
+    {
+        if (db.isSmoothlyScalable(*it) && !db.isFixedPitch(*it))
+        {
+            QFont font(*it);
+            font.setPixelSize(75);
+            QFontMetrics metrics(font);
+            int h = metrics.height();
+            if ((h < 60) || ( h > 90))
+                continue;
+
+            bool ok = true;
+            for(unsigned int i = 0; i < text.length(); i++)
+            {
+                if (!metrics.inFont(text[i]))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            if (!ok)
+                continue;
+
+            font.setPointSize(48);
+            _largeFont = new QFont(font);
+            return *_largeFont;
+        }
+    }
+    _largeFont = new QFont(KGlobalSettings::generalFont());
+    _largeFont->setPointSize(48);
+    return *_largeFont;
 }
 
 void KGlobalSettings::initStatic() // should be called initPaths(). Don't put anything else here.
