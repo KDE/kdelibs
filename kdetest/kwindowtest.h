@@ -10,6 +10,7 @@
 #include <ktmainwindow.h>
 
 class QMultiLineEdit;
+class KToolBarRadioGroup;
 
 class testWindow  : public KTMainWindow
 {
