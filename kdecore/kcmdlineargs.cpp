@@ -984,7 +984,7 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
 }
 
 QCString
-KCmdLineArgs::getOption(const char *_opt)
+KCmdLineArgs::getOption(const char *_opt) const
 {
    QCString *value = 0;
    if (parsedOptionList)
@@ -1016,7 +1016,7 @@ KCmdLineArgs::getOption(const char *_opt)
 }
 
 QCStringList
-KCmdLineArgs::getOptionList(const char *_opt)
+KCmdLineArgs::getOptionList(const char *_opt) const
 {
    QCStringList result;
    if (!parsedOptionList)
@@ -1046,7 +1046,7 @@ KCmdLineArgs::getOptionList(const char *_opt)
 }
 
 bool
-KCmdLineArgs::isSet(const char *_opt)
+KCmdLineArgs::isSet(const char *_opt) const
 {
    // Look up the default.
    const char *opt_name;
@@ -1089,7 +1089,7 @@ KCmdLineArgs::isSet(const char *_opt)
 }
 
 int
-KCmdLineArgs::count()
+KCmdLineArgs::count() const
 {
    if (!parsedArgList)
       return 0;
@@ -1097,7 +1097,7 @@ KCmdLineArgs::count()
 }
 
 const char *
-KCmdLineArgs::arg(int n)
+KCmdLineArgs::arg(int n) const
 {
    if (!parsedArgList || (n >= (int) parsedArgList->count()))
    {
@@ -1113,7 +1113,7 @@ KCmdLineArgs::arg(int n)
 }
 
 KURL
-KCmdLineArgs::url(int n)
+KCmdLineArgs::url(int n) const
 {
    return makeURL( arg(n) );
 }

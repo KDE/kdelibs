@@ -345,7 +345,7 @@ public:
    *          If the option was present more than the value of the
    *          last occurence is used.
    */
-  QCString getOption(const char *option);
+  QCString getOption(const char *option) const;
 
   /**
    *  Read out all occurences of a string option.
@@ -355,7 +355,7 @@ public:
    *  @return A list of all option values. If no option was present
    *          on the command line, an empty list is returned.
    */
-  QCStringList getOptionList(const char *option);
+  QCStringList getOptionList(const char *option) const;
 
   /**
    *  Read out a boolean option or check for the presence of string option.
@@ -374,7 +374,7 @@ public:
    *          and @p false otherwise.
    *
    */
-  bool isSet(const char *option);
+  bool isSet(const char *option) const;
 
   /**
    *  Read the number of arguments that aren't options (but,
@@ -382,8 +382,8 @@ public:
    *
    *  @return The number of arguments that aren't options
    */
-  int count();
-  
+  int count() const;
+ 
   /**
    *  Read out an argument.
    *
@@ -392,7 +392,7 @@ public:
    *
    *  @return A @p const @p char @p * pointer to the n'th argument.
    */
-  const char *arg(int n);
+  const char *arg(int n) const;
 
   /**
    *  Read out an argument representing a URL.
@@ -407,7 +407,7 @@ public:
    *
    *  @return a @p URL representing the n'th argument.
    */
-  KURL url(int n);
+  KURL url(int n) const;
 
   /**
    * Used by @ref url
