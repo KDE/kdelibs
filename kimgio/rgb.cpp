@@ -532,7 +532,11 @@ bool SGIImage::writeImage(QImage& img)
 	if (img.hasAlphaBuffer())
 		m_dim = 3, m_zsize++;
 
-	img.convertDepth(32);
+	img = img.convertDepth(32);
+	if (img.isNull()) {
+		kdDebug(399) << "can't convert this image to depth 32" << endl;
+		return false;
+	}
 
 	m_bpc = 1;
 	m_xsize = img.width();
