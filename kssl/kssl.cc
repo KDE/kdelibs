@@ -58,11 +58,11 @@ public:
 
   bool lastInitTLS;
   KSSLCertificate::KSSLValidation m_cert_vfy_res;
-  #ifdef HAVE_SSL
+#ifdef HAVE_SSL
     SSL *m_ssl;
     SSL_CTX *m_ctx;
     SSL_METHOD *m_meth;
-  #endif
+#endif
   KOSSL *kossl;
 };
 
@@ -72,7 +72,9 @@ KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
+#ifdef HAVE_SSL  
   d->m_ssl = NULL;
+#endif  
 
  if (init) initialize();
 }
