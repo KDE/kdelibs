@@ -14,20 +14,18 @@
 
 #include <config.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <qglobal.h>
 #include <qcstring.h>
+#include <qdatastream.h>
 
+#include <kapp.h>
 #include <kdebug.h>
+#include <dcopclient.h>
 
 #include "stub.h"
 #include "kcookie.h"
-
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "StubProcess: "
-#endif
 
 
 StubProcess::StubProcess()
@@ -85,6 +83,7 @@ int StubProcess::ConverseStub(bool check_only)
 	line = readLine();
 	if (line.isNull())
 	    return -1;
+
 	if (line == "kdesu_stub") 
 	{
 	    // This makes parsing a lot easier.
@@ -108,20 +107,54 @@ int StubProcess::ConverseStub(bool check_only)
 	} else if (line == "user") {
 	    writeLine(m_User);
 	} else if (line == "priority") {
-	    writeLine(tmp.setNum(m_Priority));
+	    tmp.setNum(m_Priority);
+	    writeLine(tmp);
 	} else if (line == "scheduler") {
 	    if (m_Scheduler == SchedRealtime) writeLine("realtime");
 	    else writeLine("normal");
 	} else if (line == "build_sycoca") {
 	    if (m_bXOnly) writeLine("no");
 	    else writeLine("yes");
+	} else if (line == "app_start_pid") {
+	    tmp.setNum(getpid());
+	    writeLine(tmp);
+	} else if (line == "libmapnotify") {
+	    writeLine(KApplication::libmapnotify().local8Bit());
 	} else if (line == "end") {
 	    return 0;
-	} else {
-	    kdWarning(900) << ID << "Unknown request: -->" << line << "<--\n";
+	} else 
+	{
+	    kdWarning(900) << k_lineinfo << "Unknown request: -->" << line 
+		           << "<--\n";
 	    return -1;
 	}
     }
+
     return 0;
 }
 
+
+void StubProcess::notifyTaskbar(QString suffix)
+{
+    QString exec, icon;
+    int sp = m_Command.find(" ");
+    if (sp != -1) 
+	exec = m_Command.left(sp);
+    else
+	exec = m_Command;
+    icon = exec;
+    if (!suffix.isEmpty())
+    {
+	exec += " ";
+	exec += suffix;
+    }
+
+    QByteArray params;
+    QDataStream stream(params, IO_WriteOnly);
+    stream << exec << icon << getpid();
+    DCOPClient *client = kapp->dcopClient();
+    if (!client->isAttached())
+	client->attach();
+    client->send( "kicker", "TaskbarApplet",
+	          "clientStarted(QString,QString,pid_t)", params );
+}

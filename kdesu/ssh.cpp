@@ -31,18 +31,13 @@
 #include <qglobal.h>
 #include <qcstring.h>
 
+#include <krun.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kstddirs.h>
 
 #include "ssh.h"
 #include "kcookie.h"
-
-
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "SshProcess: "
-#endif
 
 
 SshProcess::SshProcess(QCString host, QCString user, QCString command)
@@ -85,7 +80,7 @@ int SshProcess::exec(const char *password, int check)
 	QCString fwd = dcopForward();
 	if (fwd.isEmpty()) 
 	{
-	    kdError(900) << ID << "Could not get DCOP forward\n";
+	    kdError(900) << k_lineinfo << "Could not get DCOP forward\n";
 	    return -1;
 	}
 	args += "-R"; args += fwd;
@@ -100,7 +95,7 @@ int SshProcess::exec(const char *password, int check)
     int ret = ConverseSsh(password, check);
     if (ret < 0) 
     {
-	kdError(900) << ID << "Conversation with ssh failed\n";
+	kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
 	return -1;
     } 
     if (m_bErase) 
@@ -109,13 +104,20 @@ int SshProcess::exec(const char *password, int check)
 	for (unsigned i=0; i<strlen(password); i++)
 	    ptr[i] = '\000';
     }
+
     setExitString("Waiting for forwarded connections to terminate");
     if (ret == 0) 
     {
 	if (ConverseStub(check) < 0) 
 	{
-	    kdError(900) << ID << "Converstation with kdesu_stub failed\n";
+	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
 	    kill(m_Pid, SIGTERM);
+	}
+	if (!check)
+	{
+	    // Notify the taskbar that an app has been started.
+	    QString suffix = i18n("(as %1@%2)").arg(m_User).arg(m_Host);
+	    notifyTaskbar(suffix);
 	}
 	ret = waitForChild();
     } else 
@@ -192,7 +194,8 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	switch (state) {
 	case 0:
 	    // Check for "kdesu_stub" header.
-	    if (line == "kdesu_stub") {
+	    if (line == "kdesu_stub") 
+	    {
 		// We don't want this echoed back.
 		enableLocalEcho(false);
 		if (check > 0)
@@ -204,16 +207,20 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	    }
 
 	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
-	    for (i=0,j=0,colon=0; i<line.length(); i++) {
-		if (line[i] == ':') {
+	    for (i=0,j=0,colon=0; i<line.length(); i++) 
+	    {
+		if (line[i] == ':') 
+		{
 		    j = i; colon++;
 		    continue;
 		}
 		if (!isspace(line[i]))
 		    j++;
 	    }
-	    if ((colon == 1) && (line[j] == ':')) {
-		if ((check > 1) || (password == 0L)) {
+	    if ((colon == 1) && (line[j] == ':')) 
+	    {
+		if ((check > 1) || (password == 0L)) 
+		{
 		    m_Prompt = line;
 		    return 1;
 		}
@@ -228,7 +235,8 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	    break;
 
 	case 1:
-	    if (line.isEmpty()) {
+	    if (line.isEmpty()) 
+	    {
 		state++;
 		break;
 	    }

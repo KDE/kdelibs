@@ -59,11 +59,6 @@ extern "C" char * ptsname(int fd);
 extern "C" int unlockpt(int fd);
 #endif
 
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "PTY: "
-#endif
 
 PTY::PTY()
 {
@@ -143,7 +138,7 @@ linux_out:
     // Other systems ??
 
     ptyfd = -1;
-    kdDebug(900) << ID << "Unknown system or all methods failed.\n";
+    kdDebug(900) << k_lineinfo << "Unknown system or all methods failed.\n";
     return -1;
 
 #endif // HAVE_GETPT
@@ -169,7 +164,7 @@ int PTY::grantpt()
     // Use konsole_grantpty:
     if (KStandardDirs::findExe("konsole_grantpty").isEmpty())
     {
-	kdError(900) << ID << "konsole_grantpty not found.\n";
+	kdError(900) << k_lineinfo << "konsole_grantpty not found.\n";
 	return -1;
     }
 
@@ -179,7 +174,7 @@ int PTY::grantpt()
     pid_t pid;
     if ((pid = fork()) == -1)
     {
-	kdError(900) << ID << "fork(): " << perror << "\n";
+	kdError(900) << k_lineinfo << "fork(): " << perror << "\n";
 	return -1;
     }
 
@@ -190,7 +185,7 @@ int PTY::grantpt()
 	waitpid(pid, &ret, 0);
     	if (WIFEXITED(ret) && !WEXITSTATUS(ret))
 	    return 0;
-	kdError(900) << ID << "konsole_grantpty returned with error: "
+	kdError(900) << k_lineinfo << "konsole_grantpty returned with error: "
 		     << WEXITSTATUS(ret) << "\n";
 	return -1;
     } else
@@ -199,7 +194,7 @@ int PTY::grantpt()
 	if (ptyfd != pty_fileno && dup2(ptyfd, pty_fileno) < 0)
 	    _exit(1);
 	execlp("konsole_grantpty", "konsole_grantpty", "--grant", NULL);
-	kdError(900) << ID << "exec(): " << perror << "\n";
+	kdError(900) << k_lineinfo << "exec(): " << perror << "\n";
 	_exit(1);
     }
 

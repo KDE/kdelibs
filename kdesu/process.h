@@ -25,8 +25,8 @@ typedef QValueList<QCString> QCStringList;
  * Synchronous communication with tty programs.
  *
  * PtyProcess provides synchronous communication with tty based programs. 
- * The communications channel used is a pseudo tty (instead of a pipe, what
- * is normally used). This means that programs which require a terminal will work.
+ * The communications channel used is a pseudo tty (as opposed to a pipe) 
+ * This means that programs which require a terminal will work.
  */
 
 class PtyProcess
@@ -37,7 +37,7 @@ public:
 
     /**
      * Fork off and execute a command. The command's standard in and output 
-     * are connected to a pseudo tty. They are accessible with @ref #readLine 
+     * are connected to the pseudo tty. They are accessible with @ref #readLine 
      * and @ref #writeLine.
      * @param command The command to execute.
      * @param args The arguments to the command.
@@ -71,9 +71,9 @@ public:
     int waitForChild();
 
     /**
-     * Wait until the terminal has cleared the ECHO flag. This is usefull 
-     * when programs write a password prompt before they disable ECHO,
-     * because disabling it might flush the terminal I/O queues.
+     * Wait until the pty has cleared the ECHO flag. This is usefull 
+     * when programs write a password prompt before they disable ECHO.
+     * Disabling it might flush any input that was written.
      */
     int WaitSlave();
 

@@ -68,6 +68,9 @@ protected:
     /** Exchange all parameters with kdesu_stub. */
     int ConverseStub(bool check_only);
 
+    /** Notify the taskbar that a new application has been started. */
+    void notifyTaskbar(QString suffix);
+
     /** 
      * This virtual function can be overloaded when special behaviour is
      * desired. By default, it returns the value returned by @ref #KCookie.

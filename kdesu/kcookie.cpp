@@ -25,11 +25,6 @@
 #include <kdebug.h>
 #include "kcookie.h"
 
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "KCookie: "
-#endif
 
 KCookie::KCookie()
 {
@@ -77,7 +72,7 @@ void KCookie::getXCookie()
     m_Display = getenv("DISPLAY");
     if (m_Display.isEmpty()) 
     {
-	kdError(900) << ID << "$DISPLAY is not set.\n";
+	kdError(900) << k_lineinfo << "$DISPLAY is not set.\n";
 	return;
     }
     QCString cmd;
@@ -85,14 +80,14 @@ void KCookie::getXCookie()
     blockSigChild(); // pclose uses waitpid()
     if (!(f = popen(cmd, "r"))) 
     {
-	kdError(900) << ID << "popen(): " << perror << "\n";
+	kdError(900) << k_lineinfo << "popen(): " << perror << "\n";
 	unblockSigChild();
 	return;
     }
     QCString output = fgets(buf, 1024, f);
     if (pclose(f) < 0) 
     {
-	kdError(900) << ID << "Could not run xauth.\n";
+	kdError(900) << k_lineinfo << "Could not run xauth.\n";
 	unblockSigChild();
 	return;
     }
@@ -101,7 +96,7 @@ void KCookie::getXCookie()
     QCStringList lst = split(output, ' ');
     if (lst.count() != 3) 
     {
-	kdError(900) << ID << "parse error.\n";
+	kdError(900) << k_lineinfo << "parse error.\n";
 	return;
     }
     m_DisplayAuth = (lst[1] + ' ' + lst[2]);
@@ -118,12 +113,12 @@ void KCookie::getICECookie()
 	QCString home = getenv("HOME");
 	if (home.isEmpty()) 
 	{
-	    kdWarning(900) << ID << "Cannot find DCOP server.\n";
+	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
 	    return;
 	}
 	if (!(f = fopen(home + "/.DCOPserver", "r"))) 
 	{
-	    kdWarning(900) << ID << "Cannot open ~/.DCOPserver.\n";
+	    kdWarning(900) << k_lineinfo << "Cannot open ~/.DCOPserver.\n";
 	    return;
 	}
 	dcopsrv = fgets(buf, 1024, f);
@@ -133,7 +128,7 @@ void KCookie::getICECookie()
     m_DCOPSrv = split(dcopsrv, ',');
     if (m_DCOPSrv.count() == 0) 
     {
-	kdError(900) << ID << "No DCOP servers found.\n";
+	kdError(900) << k_lineinfo << "No DCOP servers found.\n";
 	return;
     }
 
@@ -145,7 +140,7 @@ void KCookie::getICECookie()
 	blockSigChild();
 	if (!(f = popen(cmd, "r"))) 
 	{
-	    kdError(900) << ID << "popen(): " << perror << "\n";
+	    kdError(900) << k_lineinfo << "popen(): " << perror << "\n";
 	    unblockSigChild();
 	    break;
 	}
@@ -154,7 +149,7 @@ void KCookie::getICECookie()
 	    output += buf;
 	if (pclose(f) < 0) 
 	{
-	    kdError(900) << ID << "Could not run iceauth.\n";
+	    kdError(900) << k_lineinfo << "Could not run iceauth.\n";
 	    unblockSigChild();
 	    break;
 	}
@@ -173,7 +168,7 @@ void KCookie::getICECookie()
 	    else if (lst[0] == "ICE")
 		m_ICEAuth += (lst[3] + ' ' + lst[4]);
 	    else 
-		kdError(900) << ID << "unknown protocol: " << lst[0] << "\n";
+		kdError(900) << k_lineinfo << "unknown protocol: " << lst[0] << "\n";
 	}
     }
 }

@@ -28,18 +28,13 @@
 #include <qcstring.h>
 #include <qfile.h>
 
+#include <krun.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kstddirs.h>
 
 #include "su.h"
 #include "kcookie.h"
-
-
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "SuProcess: "
-#endif
 
 
 #ifndef __PATH_SU
@@ -86,7 +81,7 @@ int SuProcess::exec(const char *password, int check)
     
     if (ConverseSU(password) < 0) 
     {
-	kdError(900) << ID << "Conversation with su failed\n";
+	kdError(900) << k_lineinfo << "Conversation with su failed\n";
 	return -1;
     } 
     if (m_bErase) 
@@ -97,9 +92,17 @@ int SuProcess::exec(const char *password, int check)
     }
     if (ConverseStub(check) < 0) 
     {
-	kdError(900) << ID << "Converstation with kdesu_stub failed\n";
+	kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
 	return -1;
     }
+    
+    if (!check)
+    {
+	// Notify the taskbar that an app has been started. 
+	QString suffix = i18n("(as %1)").arg(m_User);
+	notifyTaskbar(suffix);
+    }
+
     int ret = waitForChild();
     return ret;
 }

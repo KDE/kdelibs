@@ -33,11 +33,6 @@
 
 #include "client.h"
 
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "KDEsuClient: "
-#endif
 
 #ifndef SUN_LEN
 #define SUN_LEN(ptr) ((ksize_t) (((struct sockaddr_un *) 0)->sun_path) \
@@ -50,7 +45,7 @@ KDEsuClient::KDEsuClient()
     char *dpy = getenv("DISPLAY");
     if (dpy == 0L) 
     {
-	kdWarning(900) << ID << "$DISPLAY is not set\n";
+	kdWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
 	return;
     }
     sock.sprintf("/tmp/kdesud_%d_%s", (int) getuid(), dpy);
@@ -77,7 +72,7 @@ int KDEsuClient::connect()
     sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (sockfd < 0) 
     {
-	kdWarning(900) << ID << "socket(): " << perror << "\n";
+	kdWarning(900) << k_lineinfo << "socket(): " << perror << "\n";
 	return -1;
     }
     struct sockaddr_un addr;
@@ -86,7 +81,7 @@ int KDEsuClient::connect()
 
     if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) 
     {
-	kdWarning(900) << ID << "connect():" << perror << "\n";
+	kdWarning(900) << k_lineinfo << "connect():" << perror << "\n";
 	close(sockfd); sockfd = -1;
 	return -1;
     }
@@ -128,7 +123,7 @@ int KDEsuClient::command(QCString cmd, QCString *result)
     int nbytes = recv(sockfd, buf, 1023, 0);
     if (nbytes <= 0) 
     {
-	kdWarning(900) << ID << "no reply from daemon\n";
+	kdWarning(900) << k_lineinfo << "no reply from daemon\n";
 	return -1;
     }
     buf[nbytes] = '\000';
@@ -251,14 +246,14 @@ bool KDEsuClient::isServerSGID()
     QString daemon = KStandardDirs::findExe("kdesud");
     if (daemon.isEmpty())
     {
-	kdWarning(900) << ID << "daemon not found\n";
+	kdWarning(900) << k_lineinfo << "daemon not found\n";
 	return false;
     }
 
     struct stat sbuf;
     if (stat(daemon.latin1(), &sbuf) < 0) 
     {
-	kdWarning(900) << ID << "stat(): " << perror << "\n";
+	kdWarning(900) << k_lineinfo << "stat(): " << perror << "\n";
 	return false;
     } 
     return (sbuf.st_mode & S_ISGID);
@@ -267,7 +262,7 @@ bool KDEsuClient::isServerSGID()
 int KDEsuClient::startServer()
 {
     if (!isServerSGID())
-	kdWarning(900) << ID << "kdesud not setgid!\n";
+	kdWarning(900) << k_lineinfo << "kdesud not setgid!\n";
 
     // kdesud only forks to the background after it is accepting
     // connections.

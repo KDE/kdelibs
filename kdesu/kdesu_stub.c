@@ -26,6 +26,8 @@
  * - user            Target user         string
  * - priority        Process priority    0 <= int <= 100
  * - scheduler       Process scheduler   "fifo" | "normal"
+ * - kappstart_pid   PID the app uses    int
+ *                   for _NET_WM_PID
  */
 
 #include <config.h>
@@ -53,24 +55,28 @@
  * Params sent by the peer.
  */
 
-struct param_struct {
-  const char *name;
-  const char *value;
+struct param_struct 
+{
+    const char *name;
+    const char *value;
 };
 
-struct param_struct params[] = {
-    {"kdesu_stub", 0L},
-    {"display", 0L},
-    {"display_auth", 0L},
-    {"dcopserver", 0L},
-    {"dcop_auth", 0L},
-    {"ice_auth", 0L},
-    {"command", 0L},
-    {"path", 0L},
-    {"build_sycoca", 0L},
-    {"user", 0L},
-    {"priority", 0L},
-    {"scheduler", 0L},
+struct param_struct params[] = 
+{
+    { "kdesu_stub", 0L },
+    { "display", 0L },
+    { "display_auth", 0L },
+    { "dcopserver", 0L },
+    { "dcop_auth", 0L },
+    { "ice_auth", 0L },
+    { "command", 0L },
+    { "path", 0L },
+    { "build_sycoca", 0L },
+    { "user", 0L },
+    { "priority", 0L },
+    { "scheduler", 0L },
+    { "app_start_pid", 0L },
+    { "libmapnotify", 0L }
 };
 
 #define P_HEADER 0
@@ -85,7 +91,9 @@ struct param_struct params[] = {
 #define P_USER 9
 #define P_PRIORITY 10
 #define P_SCHEDULER 11
-#define P_LAST 12
+#define P_APP_START_PID 12
+#define P_LIBMAPNOTIFY 13
+#define P_LAST 14
 
 /* Prototypes */
 char *xmalloc(size_t);
@@ -149,7 +157,8 @@ char **xstrsep(const char *str)
     int i = 0, size = 10;
     char **list = (char **) xmalloc(size * sizeof(char *));
     char *ptr = str, *nptr;
-    while ((nptr = strchr(ptr, ',')) != 0L) {
+    while ((nptr = strchr(ptr, ',')) != 0L) 
+    {
 	if (i > size-2)
 	    list = realloc(list, (size *= 2) * sizeof(char *));
 	*nptr = '\000';
@@ -179,17 +188,20 @@ int main()
 
     /* Get startup parameters. */
 
-    for (i=0; i<P_LAST; i++) {
+    for (i=0; i<P_LAST; i++) 
+    {
 	printf("%s\n", params[i].name);
 	fflush(stdout);
-	if (fgets(buf, 1024, stdin) == 0L) {
+	if (fgets(buf, 500, stdin) == 0L) 
+	{
 	    printf("end\n"); fflush(stdout);
 	    perror("kdesu_stub: fgets()");
 	    exit(1);
 	}
 	params[i].value = xstrdup(buf);
 	/* Installation check? */
-	if ((i == 0) && !strcmp(params[i].value, "stop")) {
+	if ((i == 0) && !strcmp(params[i].value, "stop")) 
+	{
 	    printf("end\n");
 	    exit(0);
 	}
@@ -198,11 +210,13 @@ int main()
     fflush(stdout);
 
     xsetenv("PATH", params[P_PATH].value);
+    xsetenv("KDE_APP_START_PID", params[P_APP_START_PID].value);
 
     /* Do we need to change uid? */
 
     pw = getpwnam(params[P_USER].value);
-    if (pw == 0L) {
+    if (pw == 0L) 
+    {
 	printf("kdesu_stub: user %s does not exist!\n", params[P_USER].value);
 	exit(1);
     }
@@ -210,7 +224,8 @@ int main()
     /* Set scheduling/priority */
 
     prio = atoi(params[P_PRIORITY].value);
-    if (!strcmp(params[P_SCHEDULER].value, "realtime")) {
+    if (!strcmp(params[P_SCHEDULER].value, "realtime")) 
+    {
 #ifdef POSIX1B_SCHEDULING
 	struct sched_param sched;
 	int min = sched_get_priority_min(SCHED_FIFO);
@@ -220,25 +235,30 @@ int main()
 #else
 	printf("kdesu_stub: realtime scheduling not supported\n");
 #endif
-    } else {
+    } else 
+    {
 	int val = 20 - (int) (((double) prio) * 40 / 100 + 0.5);
 	setpriority(PRIO_PROCESS, getpid(), val);
     }
 
     /* Drop privileges (this is permanent) */
 
-    if (getuid() != pw->pw_uid) {
-	if (setgid(pw->pw_gid) == -1) {
+    if (getuid() != pw->pw_uid) 
+    {
+	if (setgid(pw->pw_gid) == -1) 
+	{
 	    perror("kdesu_stub: setgid()");
 	    exit(1);
 	}
 #ifdef HAVE_INITGROUPS
-	if (initgroups(pw->pw_name, pw->pw_gid) == -1) {
+	if (initgroups(pw->pw_name, pw->pw_gid) == -1) 
+	{
 	    perror("kdesu_stub: initgroups()");
 	    exit(1);
 	}
 #endif
-	if (setuid(pw->pw_uid) == -1) {
+	if (setuid(pw->pw_uid) == -1) 
+	{
 	    perror("kdesu_stub: setuid()");
 	    exit(1);
 	}
@@ -247,12 +267,15 @@ int main()
 
     /* Handle display */
 
-    if (strcmp(params[P_DISPLAY].value, "no")) {
+    if (strcmp(params[P_DISPLAY].value, "no")) 
+    {
 	xsetenv("DISPLAY", params[P_DISPLAY].value);
-	if (params[P_DISPLAY_AUTH].value[0]) {
+	if (params[P_DISPLAY_AUTH].value[0]) 
+	{
 	    fname = tmpnam(0L);
 	    fout = fopen(fname, "w");
-	    if (!fout) {
+	    if (!fout) 
+	    {
 		perror("kdesu_stub: fopen()");
 		exit(1);
 	    }
@@ -271,14 +294,17 @@ int main()
 
     /* Handle DCOP */
 
-    if (strcmp(params[P_DCOPSERVER].value, "no")) {
+    if (strcmp(params[P_DCOPSERVER].value, "no")) 
+    {
 	xsetenv("DCOPSERVER", params[P_DCOPSERVER].value);
 	host = xstrsep(params[P_DCOPSERVER].value);
 	auth = xstrsep(params[P_ICE_AUTH].value);
-	if (host[0]) {
+	if (host[0]) 
+	{
 	    fname = tmpnam(0L);
 	    fout = fopen(fname, "w");
-	    if (!fout) {
+	    if (!fout) 
+	    {
 		perror("kdesu_stub: fopen()");
 		exit(1);
 	    }
@@ -304,7 +330,7 @@ int main()
 
      xsetenv("SESSION_MANAGER", "none");
 
-    /* Rebuild ksycoca */
+    /* Rebuild the sycoca */
 
     if (strcmp(params[P_SYCOCA].value, "no") && system("kded --check"))
 	printf("kdesu_stub: unable to create sycoca\n");
@@ -316,16 +342,20 @@ int main()
     /* Execute the command */
 
     pid = fork();
-    if (pid == -1) {
+    if (pid == -1) 
+    {
 	perror("kdesu_stub: fork()");
 	exit(1);
     }
-    if (pid) {
+    if (pid) 
+    {
 	/* Parent: wait for child, delete tempfiles and return. */
 	int ret, state, xit = 1;
-	while (1) {
+	while (1) 
+	{
 	    ret = waitpid(pid, &state, 0);
-	    if (ret == -1) {
+	    if (ret == -1) 
+	    {
 		if (errno == EINTR)
 		    continue;
 		perror("kdesu_stub: waitpid()");
@@ -338,10 +368,12 @@ int main()
 	unlink(xauthority);
 	unlink(iceauthority);
 	exit(xit);
-
-    } else {
+    } else 
+    {
 	/* Child: exec command. */
-	execl("/bin/sh", "sh", "-c", params[P_COMMAND].value, 0L);
+	sprintf(buf, "LD_PRELOAD=%s %s", params[P_LIBMAPNOTIFY].value,
+		params[P_COMMAND].value);
+	execl("/bin/sh", "sh", "-c", buf, 0L);
 	perror("kdesu_stub: exec()");
 	_exit(1);
     }
