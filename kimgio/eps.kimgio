@@ -3,6 +3,7 @@ Type=EPS
 Header=^\%!PS-Adobe
 Name=Encapsulated PostScript Image
 Name[be]=Малюнкі Encapsulated PostScript
+Name[cs]=Obrázek ve formátu Encapsulated PostScript
 Name[da]=Encapsulated PostScript-billede
 Name[es]=Imagen PostScript encapsulada
 Name[eu]=Encapsulated PostScript Irudia
