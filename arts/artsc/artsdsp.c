@@ -43,11 +43,12 @@ static int (*orig_open)(const char *pathname, int flags, mode_t mode);
 static int (*orig_close)(int fd);
 #ifdef HAVE_IOCTL_INT_INT_DOTS
 static int (*orig_ioctl)(int fd, int request, ...);
-#endif
+#else
 #ifdef HAVE_IOCTL_INT_ULONG_DOTS
 static int (*orig_ioctl)(int fd, unsigned long request, ...);
 #else
 #error Unknown ioctl type
+#endif
 #endif
 static ssize_t (*orig_write)(int fd, const void *buf, size_t count);
 static int orig_init = 0;
