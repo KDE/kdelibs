@@ -114,7 +114,6 @@ public:
     /**
      * Updates the bookmarks access metadata
      * Call when a user accesses the bookmark
-     * 
      * @since 3.2
      */
     void updateAccessMetadata();
@@ -205,8 +204,8 @@ public:
 
     /**
      * Create a new bookmark folder, as the last child of this group
-     * @p text for the folder. If empty, the user will be queried for it.
-     * Note: emits KBookmarkNotifier related signals
+     * @param text for the folder. If empty, the user will be queried for it.
+     * @emitSignal iff true emit KBookmarkNotifier signal
      */
     KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString::null, bool emitSignal = true );
     /**
@@ -217,7 +216,7 @@ public:
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      * if this bookmark was added interactively.
-     * Note: emits KBookmarkNotifier related signals
+     * @emitSignal iff true emit KBookmarkNotifier signal
      */
     KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon = QString::null, bool emitSignal = true );
 
