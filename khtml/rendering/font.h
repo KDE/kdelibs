@@ -42,7 +42,7 @@ class FontDef
 {
 public:
     FontDef()
-        : size( 0 ), italic( false ), smallCaps( false ), weight( 50 ) {}
+        : size( 0 ), italic( false ), smallCaps( false ), weight( 50 ), hasNbsp( true ) {}
     bool operator == ( const FontDef &other ) const {
         return ( family == other.family &&
                  size == other.size &&
@@ -56,6 +56,7 @@ public:
     bool italic 		: 1;
     bool smallCaps 		: 1;
     unsigned int weight 		: 8;
+    mutable bool hasNbsp : 1;
 };
 
 
