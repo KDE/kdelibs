@@ -50,7 +50,7 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Backend;
-	m_title = i18n("Backend selection");
+	m_title = i18n("Backend Selection");
 
 	m_buttons = new QButtonGroup(this);
 	m_buttons->hide();

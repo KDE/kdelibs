@@ -31,7 +31,7 @@
 KMWSmb::KMWSmb(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("SMB printer settings");
+	m_title = i18n("SMB Printer Settings");
 	m_ID = KMWizard::SMB;
 	m_nextpage = KMWizard::Driver;
 
@@ -39,9 +39,9 @@ KMWSmb::KMWSmb(QWidget *parent, const char *name)
 	QPushButton	*m_scan = new KPushButton(KGuiItem(i18n("Scan"), "viewmag"), this);
 	QPushButton	*m_abort = new KPushButton(KGuiItem(i18n("Abort"), "stop"), this);
 	m_abort->setEnabled(false);
-	QLabel		*m_worklabel = new QLabel(i18n("Workgroup"), this);
-	QLabel		*m_serverlabel = new QLabel(i18n("Server"), this);
-	QLabel		*m_printerlabel = new QLabel(i18n("Printer"), this);
+	QLabel		*m_worklabel = new QLabel(i18n("Workgroup:"), this);
+	QLabel		*m_serverlabel = new QLabel(i18n("Server:"), this);
+	QLabel		*m_printerlabel = new QLabel(i18n("Printer:"), this);
 	m_work = new QLineEdit(this);
 	m_server = new QLineEdit(this);
 	m_printer = new QLineEdit(this);

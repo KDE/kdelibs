@@ -34,7 +34,7 @@ KMWFile::KMWFile(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::File;
-	m_title = i18n("File selection");
+	m_title = i18n("File Selection");
 	m_nextpage = KMWizard::Driver;
 
 	m_url = new KURLRequester(this);

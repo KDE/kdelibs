@@ -40,7 +40,7 @@ KMWLpd::KMWLpd(QWidget *parent, const char *name)
 : KMWInfoBase(2,parent,name)
 {
 	m_ID = KMWizard::LPD;
-	m_title = i18n("LPD queue information");
+	m_title = i18n("LPD Queue Information");
 	m_nextpage = KMWizard::Driver;
 
 	setInfo(i18n("<p>Enter the information concerning the remote LPD queue. "

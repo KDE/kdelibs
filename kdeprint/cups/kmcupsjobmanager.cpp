@@ -401,7 +401,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 	dlg.addPage(new KPTagsPage(true, &dlg));
 	dlg.setOptions(opts);
 	dlg.enableSaveButton(false);
-	dlg.setCaption(i18n("Attributes of job %1@%2 (%3)").arg(j->id()).arg(j->printer()).arg(j->name()));
+	dlg.setCaption(i18n("Attributes of Job %1@%2 (%3)").arg(j->id()).arg(j->printer()).arg(j->name()));
 	if (dlg.exec())
 	{
 		opts.clear();

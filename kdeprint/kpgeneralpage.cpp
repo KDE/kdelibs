@@ -101,10 +101,10 @@ static const char*	default_size[] = {
 };
 #define	DEFAULT_SOURCE	8
 static const char*	default_source[] = {
-	"Upper", I18N_NOOP("Upper tray"),
-	"Lower", I18N_NOOP("Lower tray"),
-	"MultiPurpose", I18N_NOOP("Multi-purpose tray"),
-	"LargeCapacity", I18N_NOOP("Large capacity tray")
+	"Upper", I18N_NOOP("Upper Tray"),
+	"Lower", I18N_NOOP("Lower Tray"),
+	"MultiPurpose", I18N_NOOP("Multi-Purpose Tray"),
+	"LargeCapacity", I18N_NOOP("Large Capacity Tray")
 };
 #define	DEFAULT_TYPE	4
 static const char*	default_type[] = {

@@ -36,7 +36,7 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::DriverSelect;
-	m_title = i18n("Driver selection");
+	m_title = i18n("Driver Selection");
 	m_nextpage = KMWizard::DriverTest;
 	m_entries = NULL;
 
@@ -45,7 +45,7 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent, const char *name)
 	l1->setText(i18n("<p>Several drivers have been detected for this model. Select the driver "
 			 "you want to use. You will have the opportunity to test it as well as to "
 			 "change it if necessary.</p>"));
-	m_drivercomment = new KPushButton(i18n("Driver information"), this);
+	m_drivercomment = new KPushButton(i18n("Driver Information"), this);
 	connect(m_drivercomment, SIGNAL(clicked()), SLOT(slotDriverComment()));
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);

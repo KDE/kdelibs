@@ -38,7 +38,7 @@ PortDialog::PortDialog(QWidget *parent, const char *name)
 	address_ = new QLineEdit(dummy);
 	port_ = new QSpinBox(0, 9999, 1, dummy);
 	port_->setValue(631);
-	usessl_ = new QCheckBox(i18n("Use SSL Encryption"), dummy);
+	usessl_ = new QCheckBox(i18n("Use SSL encryption"), dummy);
 
 	QLabel	*l1 = new QLabel(i18n("Address:"), dummy);
 	QLabel	*l2 = new QLabel(i18n("Port:"), dummy);

@@ -9,7 +9,7 @@
 RichPage::RichPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
 {
-	m_title = "Rich text options";
+	m_title = "Rich Text Options";
 
 	margin_ = new QSpinBox(this);
 	margin_->setRange(1,999);

@@ -35,7 +35,7 @@
 KMWLocal::KMWLocal(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("Local port selection");
+	m_title = i18n("Local Port Selection");
 	m_ID = KMWizard::Local;
 	m_nextpage = KMWizard::Driver;
 	m_initialized = false;

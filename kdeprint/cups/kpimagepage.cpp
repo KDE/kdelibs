@@ -45,16 +45,16 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	QGroupBox	*positionbox = new QGroupBox(0, Qt::Vertical, i18n("Image Position"), this);
 
 	m_brightness = new KIntNumInput(100, colorbox);
-	m_brightness->setLabel(i18n("&Brightness"));
+	m_brightness->setLabel(i18n("&Brightness:"));
 	m_brightness->setRange(0, 200, 20, true);
 	m_hue = new KIntNumInput(m_brightness, 0, colorbox);
-	m_hue->setLabel(i18n("&Hue (Color Rotation)"));
+	m_hue->setLabel(i18n("&Hue (Color rotation):"));
 	m_hue->setRange(-360, 360, 36, true);
 	m_saturation = new KIntNumInput(m_brightness, 100, colorbox);
-	m_saturation->setLabel(i18n("&Saturation"));
+	m_saturation->setLabel(i18n("&Saturation:"));
 	m_saturation->setRange(0, 200, 20, true);
 	m_gamma = new KIntNumInput(m_saturation, 1000, colorbox);
-	m_gamma->setLabel(i18n("&Gamma (Color Correction)"));
+	m_gamma->setLabel(i18n("&Gamma (Color correction):"));
 	m_gamma->setRange(1, 3000, 100, true);
 	connect(m_brightness, SIGNAL(valueChanged(int)), SLOT(slotImageSettingsChanged()));
 	connect(m_hue, SIGNAL(valueChanged(int)), SLOT(slotImageSettingsChanged()));
@@ -87,7 +87,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	connect(m_sizetype, SIGNAL(activated(int)), SLOT(slotSizeTypeChanged(int)));
 	m_sizetype->setCurrentItem(0);
 	slotSizeTypeChanged(0);
-	QLabel	*lab = new QLabel(i18n("&Image Size Type"), sizebox);
+	QLabel	*lab = new QLabel(i18n("&Image size type:"), sizebox);
 	lab->setBuddy(m_sizetype);
 
 	m_position = new ImagePosition(positionbox);

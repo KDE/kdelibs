@@ -35,7 +35,7 @@ KMWIppSelect::KMWIppSelect(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::IPPSelect;
-	m_title = i18n("Remote IPP printer selection");
+	m_title = i18n("Remote IPP Printer Selection");
 	m_nextpage = KMWizard::Driver;
 
 	m_list = new KListBox(this);

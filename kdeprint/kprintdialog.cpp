@@ -124,7 +124,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
 	d->m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
-	d->m_file->fileDialog()->setCaption(i18n("Print to file"));
+	d->m_file->fileDialog()->setCaption(i18n("Print to File"));
 	d->m_file->setEnabled(false);
 	d->m_filelabel->setBuddy(d->m_file);
 	d->m_cmdlabel = new QLabel(i18n("Print co&mmand:"), m_pbox);

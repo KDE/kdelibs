@@ -31,7 +31,7 @@ KMWDriver::KMWDriver(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Driver;
-	m_title = i18n("Printer model selection");
+	m_title = i18n("Printer Model Selection");
 	m_nextpage = KMWizard::DriverTest;
 
 	m_widget = new KMDriverDbWidget(this);

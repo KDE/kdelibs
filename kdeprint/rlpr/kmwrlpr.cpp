@@ -47,7 +47,7 @@ KMWRlpr::KMWRlpr(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Custom+1;
-	m_title = i18n("Remote LPD queue settings");
+	m_title = i18n("Remote LPD Queue Settings");
 	m_nextpage = KMWizard::Name;
 
 	m_view = new KListView(this);

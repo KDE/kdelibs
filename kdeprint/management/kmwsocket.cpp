@@ -37,7 +37,7 @@
 KMWSocket::KMWSocket(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("Network printer information");
+	m_title = i18n("Network Printer Information");
 	m_ID = KMWizard::TCP;
 	m_nextpage = KMWizard::Driver;
 

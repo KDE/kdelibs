@@ -33,7 +33,7 @@ KMWUsers::KMWUsers(QWidget *parent, const char *name)
 : KMWizardPage(parent, name)
 {
 	m_ID = KMWizard::Custom+4;
-	m_title = i18n("Users access settings");
+	m_title = i18n("Users Access Settings");
 	m_nextpage = KMWizard::Name;
 
 	m_users = new KEditListBox(i18n("Users"), this, 0, false, KEditListBox::Add|KEditListBox::Remove);

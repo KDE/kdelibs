@@ -76,7 +76,7 @@ KMWQuota::KMWQuota(QWidget *parent, const char *name)
 : KMWizardPage(parent, name)
 {
 	m_ID = KMWizard::Custom+3;
-	m_title = i18n("Printer quota settings");
+	m_title = i18n("Printer Quota Settings");
 	m_nextpage = KMWizard::Custom+4;
 
 	m_period = new QSpinBox(this);

@@ -81,7 +81,7 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 {
 	d = new NetworkScannerPrivate( port );
 	d->bar = new QProgressBar( 256, this );
-	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );
+	d->settings = new KPushButton( KGuiItem( i18n( "&Settings..." ), "configure" ), this );
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
 	d->timer = new QTimer( this );
 	d->socket = new QSocket( this );

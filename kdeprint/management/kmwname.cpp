@@ -33,7 +33,7 @@ KMWName::KMWName(QWidget *parent, const char *name)
 : KMWInfoBase(3,parent,name)
 {
 	m_ID = KMWizard::Name;
-	m_title = i18n("General information");
+	m_title = i18n("General Information");
 	m_nextpage = KMWizard::End;
 
 	setInfo(i18n("<p>Enter the information concerning your printer or class. <b>Name</b> is mandatory, "

@@ -35,7 +35,7 @@
 KMWPassword::KMWPassword(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("User identification");
+	m_title = i18n("User Identification");
 	m_ID = KMWizard::Password;
 	m_nextpage = KMWizard::SMB;
 

@@ -31,7 +31,7 @@ KMWOther::KMWOther(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Custom+5;
-	m_title = i18n("URI selection");
+	m_title = i18n("URI Selection");
 	m_nextpage = KMWizard::Driver;
 
 	m_uri = new QLineEdit(this);

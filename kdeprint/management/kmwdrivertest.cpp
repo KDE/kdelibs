@@ -39,7 +39,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::DriverTest;
-	m_title = i18n("Printer test");
+	m_title = i18n("Printer Test");
 	m_nextpage = KMWizard::Name;
 	m_driver = 0;
 	m_printer = 0;
@@ -53,7 +53,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 	QLabel	*l3 = new QLabel(i18n("<b>Description:</b>"), this);
 
 	m_test = new KPushButton(KGuiItem(i18n("&Test"), "kdeprint_testprinter"), this);
-	m_settings = new KPushButton(KGuiItem(i18n("&Settings"), "configure"), this);
+	m_settings = new KPushButton(KGuiItem(i18n("&Settings..."), "configure"), this);
 
 	QLabel	*l0 = new QLabel(this);
 	l0->setText(i18n("<p>Now you can test the printer before finishing installation. "

@@ -42,7 +42,7 @@
 KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("IPP printer information");
+	m_title = i18n("IPP Printer Information");
 	m_ID = KMWizard::Custom+1;
 	m_nextpage = KMWizard::Driver;
 
@@ -215,7 +215,7 @@ void KMWIppPrinter::slotIppReport()
 		req.addURI(IPP_TAG_OPERATION, "printer-uri", uri);
 		if (req.doRequest("/ipp/"))
 		{
-			QString	caption = i18n("IPP report for %1").arg(item->text(0));
+			QString	caption = i18n("IPP Report for %1").arg(item->text(0));
 			static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_PRINTER, caption);
 		}
 		else

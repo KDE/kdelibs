@@ -50,7 +50,7 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	m_lpi->setLabel(i18n("&Lines per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_lpi->setRange(1, 999, 1, false);
 	m_columns = new KIntNumInput(m_lpi, 1, formatbox);
-	m_columns->setLabel(i18n("C&olumns"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_columns->setLabel(i18n("C&olumns:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_columns->setRange(1, 10, 1, false);
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, formatbox);
 	connect(m_columns, SIGNAL(valueChanged(int)), SLOT(slotColumnsChanged(int)));

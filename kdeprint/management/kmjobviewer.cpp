@@ -240,7 +240,7 @@ void KMJobViewer::initActions()
 	connect(uact, SIGNAL(toggled(bool)), m_userfield, SLOT(setEnabled(bool)));
 	m_userfield->setEnabled(false);
 	m_userfield->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-	KWidgetAction	*ufact = new KWidgetAction(m_userfield, i18n("User name"), 0, 0, 0, actionCollection(), "view_username");
+	KWidgetAction	*ufact = new KWidgetAction(m_userfield, i18n("User Name"), 0, 0, 0, actionCollection(), "view_username");
 
 	if (!m_pop)
 	{

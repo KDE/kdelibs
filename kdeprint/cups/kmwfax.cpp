@@ -34,7 +34,7 @@ KMWFax::KMWFax(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Custom+2;
-	m_title = i18n("Fax serial device");
+	m_title = i18n("Fax Serial Device");
 	m_nextpage = KMWizard::Driver;
 
 	QLabel	*lab = new QLabel(this);

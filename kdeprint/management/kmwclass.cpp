@@ -36,7 +36,7 @@ KMWClass::KMWClass(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Class;
-	m_title = i18n("Class composition");
+	m_title = i18n("Class Composition");
 	m_nextpage = KMWizard::Name;
 
 	m_list1 = new KListBox(this);
@@ -51,8 +51,8 @@ KMWClass::KMWClass(QWidget *parent, const char *name)
 	connect(add,SIGNAL(clicked()),SLOT(slotAdd()));
 	connect(remove,SIGNAL(clicked()),SLOT(slotRemove()));
 
-	QLabel	*l1 = new QLabel(i18n("Available printers"), this);
-	QLabel	*l2 = new QLabel(i18n("Class printers"), this);
+	QLabel	*l1 = new QLabel(i18n("Available printers:"), this);
+	QLabel	*l2 = new QLabel(i18n("Class printers:"), this);
 
         QHBoxLayout	*lay1 = new QHBoxLayout(this, 0, 15);
         QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 20);
