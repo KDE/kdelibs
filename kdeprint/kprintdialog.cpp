@@ -147,12 +147,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" would also print for you in a <em>konsole</em> window. <br>"
 						" <b>Example:</b> <pre>a2ps -P &lt;printername&gt; --medium=A3</pre>."
 						" </qt>" );
-	QString whatsThisExpandCollapse = i18n( " <qt>This button expands or reduces the KDE"
-						" printing dialog."
-						" KDEPrint will remember what you do here; next time, it will"
-						" start this dialog 'expanded' or 'collapsed', depending"
-						" on the mode you are using this time...."
-						" </qt>" );
+	QString whatsThisOptions = i18n( " <qt>This button shows or hides additional printing options.</qt>" );
 	QString whatsThisSystemOptions = i18n(  " <qt> This button starts a new dialog where you can adjust various"
   						" settings of your printing system. Amongst them:"
 						" <ul><li> Should KDE"
@@ -319,7 +314,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_plugin = new PluginComboBox(this);
 	d->m_extbtn = new KPushButton(this);
 	QToolTip::add(d->m_extbtn, i18n("Show/hide advanced options"));
-	QWhatsThis::add(d->m_extbtn, whatsThisExpandCollapse);
+	QWhatsThis::add(d->m_extbtn, whatsThisOptions);
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
         QWhatsThis::add( d->m_persistent, whatsThisKeepDialogOpenCheckbox);
 	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
@@ -862,7 +857,7 @@ void KPrintDialog::expandDialog(bool on)
 				d->m_plugin->show();
 		}
 		d->m_extbtn->setIconSet(SmallIconSet("up"));
-		d->m_extbtn->setText(i18n("Collaps&e"));
+		d->m_extbtn->setText(i18n("&Options <<"));
 		d->m_reduced = false;
 	}
 	else
@@ -875,7 +870,7 @@ void KPrintDialog::expandDialog(bool on)
 				d->m_plugin->hide();
 		}
 		d->m_extbtn->setIconSet(SmallIconSet("down"));
-		d->m_extbtn->setText(i18n("&Expand"));
+		d->m_extbtn->setText(i18n("&Options >>"));
 		d->m_reduced = true;
 	}
 
