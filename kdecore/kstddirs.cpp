@@ -157,15 +157,31 @@ QStringList KStandardDirs::findAllResources( const QString& type,
     QStringList candidates = getResourceDirs(type);
     QDir testdir;
 
+    enum { Empty, PathName, RegExp } filterType;
+    if (filter.isEmpty())
+	filterType = Empty;
+    else {
+	// TODO: RegExp
+	filterType = PathName;
+    }
+
     QStringList entries;
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) {
 	testdir.setPath(*it);
 	entries = testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
-	for (QStringList::ConstIterator it2 = entries.begin();
-	     it2 != entries.end(); it2++) {
-	  if (filter.isEmpty() || (*it2) == filter)
-	    list.append(*it + *it2);
+	switch (filterType) {
+	case Empty:
+	    for (QStringList::ConstIterator it2 = entries.begin();
+		 it2 != entries.end(); it2++)
+		list.append(*it + *it2);
+	    break;
+	case PathName:
+	    if (!access(*it + filter, F_OK|R_OK))
+		list.append(*it + filter);
+	    break;
+	default:
+	    break;
 	}
     }
     return list;
