@@ -263,8 +263,11 @@ void KHTMLPartBrowserExtension::searchProvider()
         KDesktopFile file("searchproviders/google.desktop", true, "services");
         data.setData(file.readEntry("Query").replace("\\{@}", m_part->selectedText()));
     }
+    
+    KParts::URLArgs args;
+    args.frameName = "_blank";
 
-    emit m_part->browserExtension()->openURLRequest( data.uri() );
+    emit m_part->browserExtension()->openURLRequest( data.uri(), args );
 }
 
 void KHTMLPartBrowserExtension::paste()
