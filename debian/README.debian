@@ -1,17 +1,3 @@
-===============
-konqueror notes
-===============
-
-kdelibs needs to be built with openssl support in order for https support
-to be active in konqueror.  Since the https support is extremely new and
-buggy and potentially insecure (doesn't ask for cert verification or
-anything like that...) I'm not building kdelibs with it.  It also requires
-the package to be built external to the US (where I live)...so once
-the support get's a bit more stable (KDE 2.1) we'll turn it on and get 
-it installed into non-us and all...
-
-------
-
 As you all may or may not know, Debian and KDE (and Troll) have been going
 rounds for a while now dealing with licensing.  In the old days of KDE 1.1
 and qt1 we have the non-free license of QT that caused KDE not to be

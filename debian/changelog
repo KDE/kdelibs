@@ -1,4 +1,4 @@
-kdelibs (4:2.0-20000905-0) unstable; urgency=low
+kdelibs-nossl (4:2.0-20000905-0) unstable; urgency=low
 
   * More Upstream fixes
   * Adding in a version number for libqt2.2 dependency
