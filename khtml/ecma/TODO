@@ -1,9 +1,8 @@
 Has to be done
 ==============
-- frame[] correct search and sorting order
-- preload pixmap if src property of an Image type is set
+- frame[] correct search and sorting order (DONE ?)
 - optional error message output
-- set this.form in event handlers of form elements
+- set this.form in event handlers of form elements (DONE ?)
 - change KParts::WindowArgs && friends 
   that we can detect if a locationbar is on/or not
 
