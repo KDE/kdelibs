@@ -58,7 +58,7 @@ Resource::Resource( const KConfig* config )
     d->mIdentifier = config->readEntry( "ResourceIdentifier" );
   } else {
     d->mType = "type";
-    d->mName = "Default resource";
+    d->mName = i18n("resource");
     d->mReadOnly = false;
     d->mActive = true;
     d->mIdentifier = KApplication::randomString( 10 );
