@@ -330,7 +330,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       }
     }
     break;
-  case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/string.htm#1194366
+  case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/string.htm#1194366 or 15.5.4.13
     {
         // The arg processing is very much like ArrayProtoFunc::Slice
         // We return a new array
@@ -352,7 +352,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         result = String(s.substr(begin, end-begin));
         break;
     }
-    case Split: {
+    case Split: { // 15.5.4.14
     Object constructor = exec->interpreter()->builtinArray();
     Object res = Object::dynamicCast(constructor.construct(exec,List::empty()));
     result = res;
