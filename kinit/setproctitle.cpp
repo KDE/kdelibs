@@ -204,10 +204,6 @@ setproctitle(const char *fmt, ...)
 
 	p = buf;
 
-	/* print kdeinit: heading for grep */
-	(void) strcpy(p, "kdeinit: ");
-	p += strlen(p);
-
 	/* print the argument string */
 	va_start(ap, fmt);
 	(void) vsnprintf(p, SPACELEFT(buf, p), fmt, ap);
