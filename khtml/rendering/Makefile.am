@@ -53,5 +53,5 @@ srcdoc:
 
 ## maintainer: regen loading icon
 loading-icon:
-	bin2c -sploading_icon $(srcdir)/../pics/img-loading.png > $(srcdir)/loading_icon.cpp
+	bin2c -sploading_icon $(srcdir)/img-loading.png > $(srcdir)/loading_icon.cpp
 
