@@ -39,6 +39,7 @@
 #include <kurlpixmapprovider.h>
 #include <kinputdialog.h>
 #include <kio/netaccess.h>
+#include <kio/renamedlg.h>
 #include <kmessagebox.h>
 
 #include "kfiletreeview.h"
@@ -395,9 +396,13 @@ void KDirSelectDialog::slotMkdir()
 {
     bool ok;
     QString where = url().prettyURL( +1, KURL::StripFileProtocol );
+    QString name = i18n( "New Folder" );
+    if ( url().isLocalFile() && QFileInfo( url().path(+1) + name ).exists() )
+        name = KIO::RenameDlg::suggestName( url(), name );
+   
     QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ).arg( where ),
-                                         i18n("New Folder"), &ok, this));
+                                         name, &ok, this));
     if (!ok)
       return;
       
