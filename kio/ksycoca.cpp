@@ -170,12 +170,11 @@ bool KSycoca::checkVersion(bool abortOnError)
    m_str->device()->at(0);
    Q_INT32 aVersion;
    (*m_str) >> aVersion;
-   if ( aVersion != KSYCOCA_VERSION )
+   if ( aVersion < KSYCOCA_VERSION )
    {
       if (!abortOnError) return false;
-      // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
       kdError(7011) << "Outdated database ! Stop kded and restart it !" << endl;
-      kdError(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << "." << endl;
+      kdError(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << " or higher." << endl;
       abort();
    }
    return true;

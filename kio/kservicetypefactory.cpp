@@ -185,12 +185,21 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
    KMimeType::List list;
    if (!m_str) return list;
 
-   int offset = m_beginEntryOffset;
-   KServiceType *newServiceType;
-   while ( offset < m_endEntryOffset )
+   // Assume we're NOT building a database
+
+   m_str->device()->at(m_endEntryOffset);
+   Q_INT32 entryCount;
+   (*m_str) >> entryCount;
+
+   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   for(int i = 0; i < entryCount; i++)
    {
-      newServiceType = createServiceType(offset);
-      offset = m_str->device()->at();
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KServiceType *newServiceType = createServiceType(offsetList[i]);
 
       // We don't want service types, but we have to build them
       // anyway, to skip their info
@@ -199,9 +208,8 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
          KMimeType * mimeType = (KMimeType *) newServiceType;
          list.append( KMimeType::Ptr( mimeType ) );
       }
-
    }
-   assert(offset == m_endEntryOffset);
+   delete [] offsetList;
    return list;
 }
 
@@ -211,16 +219,25 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
    KServiceType::List list;
    if (!m_str) return list;
 
-   int offset = m_beginEntryOffset;
-   KServiceType *newServiceType;
-   while ( offset < m_endEntryOffset )
-   {
-      newServiceType = createServiceType(offset);
-      offset = m_str->device()->at();
+   // Assume we're NOT building a database
 
+   m_str->device()->at(m_endEntryOffset);
+   Q_INT32 entryCount;
+   (*m_str) >> entryCount;
+
+   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   for(int i = 0; i < entryCount; i++)
+   {
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KServiceType *newServiceType = createServiceType(offsetList[i]);
       if (newServiceType)
          list.append( KServiceType::Ptr( newServiceType ) );
    }
+   delete [] offsetList;
    return list;
 }
 

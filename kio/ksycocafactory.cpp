@@ -99,19 +99,35 @@ KSycocaFactory::save(QDataStream &str)
    m_beginEntryOffset = str.device()->at();
 
    // Write all entries.
+   int entryCount = 0;
    for(QDictIterator<KSycocaEntry> it ( *m_entryDict ); 
        it.current(); 
        ++it)
    {
-      if ( !it.current()->isDeleted() )
+      if ( !it.current()->isDeleted() ) 
+      {
          it.current()->save(str);
+         entryCount++;
+      }
    }
 
    m_endEntryOffset = str.device()->at();
 
    // Write indices...
-   m_sycocaDictOffset = str.device()->at();      
+   // Linear index
+   str << (Q_INT32) entryCount;
+   for(QDictIterator<KSycocaEntry> it ( *m_entryDict ); 
+       it.current(); 
+       ++it)
+   {
+      if ( !it.current()->isDeleted() )
+      {
+         str << (Q_INT32) it.current()->offset(); 
+      }
+   }
 
+   // Dictionary index
+   m_sycocaDictOffset = str.device()->at();      
    m_sycocaDict->save(str);
 
    int endOfFactoryData = str.device()->at();

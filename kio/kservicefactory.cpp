@@ -177,15 +177,23 @@ KService::List KServiceFactory::allServices()
 
    // Assume we're NOT building a database
 
-   int offset = m_beginEntryOffset;
-   KService *newService;
-   while ( offset < m_endEntryOffset )
+   m_str->device()->at(m_endEntryOffset);
+   Q_INT32 entryCount;
+   (*m_str) >> entryCount;
+
+   Q_INT32 *offsetList = new Q_INT32[entryCount];
+   for(int i = 0; i < entryCount; i++)
    {
-      newService = createService(offset);
+      (*m_str) >> offsetList[i];
+   }
+
+   for(int i = 0; i < entryCount; i++)
+   {
+      KService *newService = createService(offsetList[i]);
       if (newService)
          list.append( KService::Ptr( newService ) );
-      offset = m_str->device()->at();
    }
+   delete [] offsetList;
    return list;
 }
 

@@ -141,6 +141,10 @@ int main(int argc, char *argv[])
    mtl  = KMimeType::allMimeTypes( );
    assert( mtl.count() );
    debug(QString("Found %1 mime types.").arg(mtl.count()));
+   for(int i = 0; i < mtl.count(); i++)
+   {
+      debug(QString("Mime type %1: %2.").arg(i).arg(mtl[i]->name()));
+   }
 
    KService::List sl;
 

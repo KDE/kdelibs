@@ -222,7 +222,8 @@ void KService::save( QDataStream& s )
   Q_INT8 term = m_bTerminal, suid = m_bSuid;
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
 
-  // Warning adding/removing fields here involves a binary incompatible change - update version 
+  // !! This data structure should remain binary compatible at all times !!
+  // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
   s << m_strType << m_strName << m_strExec << m_strIcon 
     << term << m_strTerminalOptions
