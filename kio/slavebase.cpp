@@ -746,7 +746,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
     // we need to do further tests to find a matching
     // stored authentication key and hence reduce the
     // number of unnecessary calls to kdesud.
-    if( client.findGroup(grp_key) )
+    if ( client.findGroup(grp_key) )
     {
         kdDebug(7019) << "Found match for group key: " << grp_key << endl;
         AuthKeysList list = client.getKeys(grp_key);
@@ -880,7 +880,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
         }
 
         // If we have no match then return false!!
-        if( !found )
+        if ( !found )
         {
             kdDebug(7019) << "NO cached Authorization found!" << endl;
             return false;
@@ -892,16 +892,16 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
         QString u = QString::fromUtf8(client.getVar( auth_key + "-user") );
         if( ( user.isEmpty() || (!user.isEmpty() && u == user)) )
         {
-            if( user.isEmpty() ) { user = u; }
+            if ( user.isEmpty() ) { user = u; }
             passwd = QString::fromUtf8(client.getVar( auth_key + "-pass" ) );
             if( realm.isEmpty() ) { realm = QString::fromUtf8( client.getVar(auth_key + "-realm") ); }
             extra = QString::fromUtf8( client.getVar( auth_key + "-extra") );
-            kdDebug(7019) << "Found cached authorization: " << endl
-                          << "  Key= " << auth_key << endl
-                          << "  Group= " << grp_key << endl
+            kdDebug(7019) << "Found cached authorization for: " << auth_key << endl
+                          << "  User= " << user << endl
                           << "  Password= [hidden]" << endl
-                          << "  Key = " << auth_key << endl
+                          << "  Realm= " << realm << endl
                           << "  Extra= " << extra << endl;
+
             sendAuthenticationKey( auth_key, grp_key );
             return true;
         }
@@ -956,7 +956,7 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
         // match, then we overwrite the previously cached authentication info
         // with the newer one!  That is the last username used to access the
         // "Realm" (protection space) wins.
-        if( isCached )
+        if ( isCached )
         {
             stored_value = QString::fromUtf8( client.getVar(auth_key + "-user") );
             if( user != stored_value )
@@ -1009,9 +1009,7 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
         if( !extra.isEmpty() )
             client.setVar( (auth_key + "-extra"), extra.utf8(), 0, grp_key );
 
-        kdDebug(7019) << "Cached NEW Authorization entry: " << endl
-                      << "  Key= " << auth_key << endl
-                      << "  Group= " << grp_key << endl
+        kdDebug(7019) << "Cached NEW Authorization entry for: " << auth_key << endl
                       << "  User= " << user << endl
                       << "  Password= [hidden]" << endl
                       << "  Realm= " << realm << endl
