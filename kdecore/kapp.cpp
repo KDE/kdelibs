@@ -288,8 +288,6 @@ void KApplication::init(bool GUIenabled)
     display = desktop()->x11Display();
     kipcCommAtom = XInternAtom(display, "KIPC_COMM_ATOM", false);
 
-    // GJ: Work around a bug in kconfig or kinstance.
-    KGlobal::config()->reparseConfiguration();
     kdisplaySetStyle();
     kdisplaySetFont();
     kdisplaySetPalette();
