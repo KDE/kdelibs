@@ -236,7 +236,7 @@ private:
     
     KURL m_pURI; 
     URITypes m_iType;
-    KURIFilterPrivate *d; // BCI    
+    KURIFilterPrivate *d;
 };
 
 
