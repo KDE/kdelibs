@@ -441,6 +441,11 @@ public:
    * blocking mode, this function will block until a connection is received.
    * Otherwise, it might return with error. The sock parameter will be
    * initialised with the newly created socket.
+   *
+   * Upon successful acception (i.e., this function returns 0), the newly
+   * created socket will be already connected. The socket will be unbuffered
+   * and readyRead() and readyWrite() signals will be disabled.
+   *
    * Returns 0 on success, -1 on system error (errno set) and -2 if this is
    * not a passiveSocket and -3 if this took too long (time out)
    * @param sock	a pointer to an KExtendedSocket variable
@@ -456,6 +461,18 @@ public:
    *   bind address or that an asynchronous connection attempt is already
    *   in progress.
    * @li -3: connection timed out
+   *
+   * After successful connection (return value 0), the socket will be ready
+   * for I/O operations. Note, however, that not all signals may be enabled
+   * for emission by this socket:
+   * @li @ref readyRead and @ref readyWrite signals will be enabled only if
+   *    @ref enableRead or @ref enableWrite were called. You can still enable
+   *    them by calling those functions, of course.
+   * @li @ref closed will only be sent if we are indeed reading from the input
+   *    stream. That is, if this socket is buffering the input. See @ref setBufferSize
+   *
+   * Note that, in general, functions inherited/overriden from KBufferedIO will only
+   * work on buffered sockets, like bytesAvailable and bytesToWrite.
    */
   virtual int connect();
 
@@ -645,6 +662,16 @@ public:
   virtual int unreadBlock(const char *data, uint len);
 
   /**
+   * Returns the number of available bytes yet to be read via @ref readBlock
+   * and family of functions. Returns -1 on error or -2 if this call is invalid
+   * in the current state.
+   *
+   * Note: as of now, this only works on input-buffered sockets. This will
+   * change in the future
+   */
+  virtual int bytesAvailable() const;
+
+  /**
    * Waits @p msec milliseconds for more data to be available (use 0 to
    * wait forever). The return value is the amount of data available for
    * read in the read buffer.
@@ -713,6 +740,12 @@ signals:
    * @param error	the errno code of the last connection attempt
    */
   void connectionFailed(int error);
+
+  /**
+   * This signal is emitted whenever this socket is ready to accept another
+   * socket. @see accept
+   */
+  void readyAccept();
 
 protected:
   int sockfd;			// file descriptor of the socket

@@ -838,6 +838,18 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 
   setFlags((mode() & ~IO_Raw) | ((d->flags & bufferedSocket) ? 0 : IO_Raw));
 
+  // check we didn't turn something off we shouldn't
+  if (d->emitRead && d->qsnIn == NULL)
+    {
+      d->qsnIn = new QSocketNotifier(sockfd, QSocketNotifier::Read);
+      QObject::connect(d->qsnIn, SIGNAL(activated(int)), this, SLOT(socketActivityRead()));
+    }
+  if (d->emitWrite && d->qsnOut == NULL)
+    {
+      d->qsnOut = new QSocketNotifier(sockfd, QSocketNotifier::Write);
+      QObject::connect(d->qsnOut, SIGNAL(activated(int)), this, SLOT(socketActivityWrite()));
+    }
+
   return true;
 }
 
@@ -1065,12 +1077,18 @@ int KExtendedSocket::listen(int N)
       return -1;
     }
 
-  d->status = listening;
+  d->status = bound;
   setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
 
   int retval = KSocks::self()->listen(sockfd, N);
   if (retval == -1)
     setError(IO_ListenError, errno);
+  else
+    {
+      d->status = listening;
+      d->qsnIn = new QSocketNotifier(sockfd, QSocketNotifier::Read);
+      QObject::connect(d->qsnIn, SIGNAL(activated(int)), this, SLOT(socketActivityRead()));
+    }
   return retval == -1 ? -1 : 0;
 }
 
@@ -1149,7 +1167,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
 int KExtendedSocket::connect()
 {
   cleanError();
-  if (d->flags & passiveSocket)
+  if (d->flags & passiveSocket || d->status >= connected)
     return -2;
   if (d->status < lookupDone)
     if (lookup() < 0)
@@ -1315,6 +1333,7 @@ int KExtendedSocket::connect()
 	    }
 
 	  // getting here means it connected
+	  // setBufferSize() takes care of creating the socket notifiers
 	  setBlockingMode(true);
 	  d->status = connected;
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
@@ -1625,6 +1644,8 @@ Q_LONG KExtendedSocket::writeBlock(const char *data, Q_ULONG len)
       retval = KSocks::self()->write(sockfd, data, len);
       if (retval == -1)
 	setError(IO_WriteError, errno);
+      else
+	emit bytesWritten(retval);
     }
   else
     {
@@ -1680,6 +1701,19 @@ int KExtendedSocket::unreadBlock(const char *, uint)
   return -1;
 }
 
+int KExtendedSocket::bytesAvailable() const
+{
+  if (d->status < connected || d->status >= closing || d->flags & passiveSocket)
+    return -2;
+
+  // as of now, we don't do any extra processing
+  // we only work in input-buffered sockets
+  if (d->flags * inputBufferedSocket)
+    return KBufferedIO::bytesAvailable();
+
+  return 0;			// TODO: FIONREAD ioctl
+}
+
 int KExtendedSocket::waitForMore(int msecs)
 {
   cleanError();
@@ -1709,9 +1743,9 @@ int KExtendedSocket::waitForMore(int msecs)
 
 int KExtendedSocket::getch()
 {
-  char c;
+  unsigned char c;
   int retval;
-  retval = readBlock(&c, sizeof(c));
+  retval = readBlock((char*)&c, sizeof(c));
 
   if (retval < 0)
     return retval;
@@ -1720,8 +1754,8 @@ int KExtendedSocket::getch()
 
 int KExtendedSocket::putch(int ch)
 {
-  char c = (char)ch;
-  return writeBlock(&c, sizeof(ch));
+  unsigned char c = (char)ch;
+  return writeBlock((char*)&c, sizeof(c));
 }
 
 int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo &hint,
@@ -1789,7 +1823,10 @@ void KExtendedSocket::enableWrite(bool enable)
 void KExtendedSocket::socketActivityRead()
 {
   if (d->flags & passiveSocket)
-    return;
+    {
+      emit readyAccept();
+      return;
+    }
   if (d->status == connecting)
     {
       connectionEvent();
