@@ -159,6 +159,7 @@ void KComboBox::rotateText( const QString& input, int dir )
         else
         {
             QStringList list = comp->items();
+            if( list.count() == 0 ) return;
             int index = list.findIndex( m_pEdit->text() );
             if( index == -1 )
             {
