@@ -326,6 +326,7 @@ Z &RArray<Z>::operator[](int index) {
     return d[index];
 }
 
+template class RArray<NETRect>;
 
 // Construct a new NETRootInfo object.
 
