@@ -65,24 +65,24 @@ private:
   bool bLocaleInitialized;
   bool bReadOnly; // currently only used by KSimpleConfig
 
-    aGroupDict( 37, FALSE )
+  QDict<KEntryDict> aGroupDict;
 
-  aGroupDict.setAutoDelete( TRUE );
+#ifndef NDEBUG
   QString aFile;
-  bDirty = FALSE;
-  bLocaleInitialized = FALSE;
+#endif
+  
 public:
   KConfigBaseData();
   KConfigBaseData( const char* pGlobalAppFile, const char* pLocalAppFile );
   KGroupIterator* groupIterator( void );
-    aGroupDict( 37, FALSE )
+};
 
-  aGroupDict.setAutoDelete( TRUE );
+inline KConfigBaseData::KConfigBaseData() :
     aGroupDict( 37, false )
 {
   aGroupDict.setAutoDelete( true );
-  bDirty = FALSE;
-  bLocaleInitialized = FALSE;
+  aGroup = "<default>";
+  bDirty = false;
   bLocaleInitialized = false;
   bReadOnly = false;
 }

@@ -136,7 +136,7 @@ protected:
 	* configuration object, open the files and call
 	* parseOneConfigFile() for each one of them.
 	*/
-								   bool bGlobal = FALSE );
+  virtual void parseConfigFiles() = 0;
 
   /** Parse one configuration file.
 	*
@@ -149,7 +149,7 @@ protected:
 	* @param bGlobal
 	*/
   virtual void parseOneConfigFile( QFile& rFile, 
-  virtual bool writeConfigFile( QFile& rFile, bool bGlobal = FALSE ) = 0; 
+								   KGroupDict* pGroup = 0L,
 								   bool bGlobal = false );
 
   /** Write configuration file back.
@@ -267,8 +267,8 @@ public:
 	*
 	* This is stored to the most specific config file when destroying the
 	* config object or when calling Sync().
-						  bool bPersistent = TRUE, bool bGlobal = FALSE,
-						  bool bNLS = FALSE );
+	*
+	*  @param pKey		The key to write.
 	*  @param pValue	The value to write.
 	*  @param bPersistent	If bPersistent is false, the entry's dirty
 	*			flag will not be set and thus the entry will 
@@ -290,8 +290,8 @@ public:
 	* Note: Unlike the other writeEntry() functions, the old value is 
 	* _not_ returned here!
 	*
-					bool bPersistent = TRUE, bool bGlobal = FALSE,
-					bool bNLS = FALSE ); 
+	* @param pKey		The key to write
+	* @param list		The list to write
 	* @param sep		The list separator
 	* @param bPersistent	If bPersistent is false, the entry's dirty flag 
 	*			will not be set and thus the entry will not be 
@@ -308,8 +308,8 @@ public:
 					bool bNLS = false ); 
   
   /** Write the key value pair.
-						  bool bPersistent = TRUE, bool bGlobal = FALSE,
-						  bool bNLS = FALSE ); 
+	* Same as above, but write a numerical value.
+	* @param pKey The key to write.
 	* @param nValue The value to write.
 	* @param bPersistent If bPersistent is false, the entry's dirty
 	* flag will not be set and thus the entry will not be written to
@@ -326,8 +326,8 @@ public:
 						  bool bNLS = false ); 
   
   /** Write the key value pair.
-						  bool bPersistent = TRUE, bool bGlobal = FALSE,
-						  bool bNLS = FALSE );
+	* Same as above, but write a font
+	* @param pKey The key to write.
 	* @param rFont The font value to write.
 	* @param bPersistent If bPersistent is false, the entry's dirty
 	* flag will not be set and thus the entry will not be written to
@@ -344,8 +344,8 @@ public:
 						  bool bNLS = false );
 
   /** Write the key value pair.
-						  bool bPersistent = TRUE, bool bGlobal = FALSE,
-						  bool bNLS = FALSE );
+	* Same as above, but write a color
+	* @param pKey The key to write.
 	* @param rValue The color value to write.
 	* @param bPersistent If bPersistent is false, the entry's dirty
 	* flag will not be set and thus the entry will not be written to
@@ -357,7 +357,7 @@ public:
 	* @return The old value for this key. If this key did not
 	*  exist, a null string is returned.	  
 	*/
-  virtual void rollback( bool bDeep = TRUE );
+  const char* writeEntry( const char* pKey, const QColor& rColor, 
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
   //}

@@ -69,7 +69,7 @@ class KConfig : public KConfigBase
   Q_OBJECT
 
   // copy-construction and assignment are not allowed
-  bool writeConfigFile( QFile& rFile, bool bGlobal = FALSE );
+  KConfig( const KConfig& );
   KConfig& operator= ( const KConfig& rConfig );
 
 protected:
