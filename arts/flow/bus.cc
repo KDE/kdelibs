@@ -1,26 +1,28 @@
-	/*
+    /*
 
-	Copyright (C) 1998-1999 Stefan Westerfeld
+    Copyright (C) 1998-2000 Stefan Westerfeld
                             stefan@space.twc.de
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+  
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+   
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 
     */
 
 #include "bus.h"
 #include "flowsystem.h"
+#include "debug.h"
 #include <iostream>
 #include <set>
 
@@ -140,7 +142,7 @@ void BusManager::erase(BusClient *busclient)
 			if(bus->clients.empty() && bus->servers.empty())
 			{
 				// obsolete bus, remove
-				cout << "removing obsolete bus " << bus->name << endl;
+				artsdebug("removing obsolete bus %s\n",bus->name.c_str());
 				_busList.erase(bi);
 				delete bus;
 			}
@@ -207,19 +209,15 @@ Synth_BUS_UPLINK_impl::Synth_BUS_UPLINK_impl() :running(false)
 
 void Synth_BUS_UPLINK_impl::streamInit()
 {
-	cout << "+ streamInit()" << endl;
-
 	assert(!running);
 	running = true;
 	active = relink = false;
 
 	connect();	// connect to the BusManager
-	cout << "- streamInit()" << endl;
 }
 
 void Synth_BUS_UPLINK_impl::busname(const string& newname)
 {
-	cout << "+ busname(" << newname << ")" << endl;
 	_busname = newname;
 
 	/* TODO */
@@ -229,52 +227,43 @@ void Synth_BUS_UPLINK_impl::busname(const string& newname)
 		relink = true;
 		CallBack();
 	}
-	cout << "- busname(" << newname << ")" << endl;
 }
 
 void Synth_BUS_UPLINK_impl::connect()
 {
-	cout << "+ connect()" << endl;
 	assert(active == false);
 	if(_busname != "")
 	{
 		active = true;
 		bm->addClient(_busname, this);
 	}
-	cout << "- connect()" << endl;
 }
 
 void Synth_BUS_UPLINK_impl::disconnect()
 {
-	cout << "+ disconnect()" << endl;
 	if(active == true)
 	{
 		bm->removeClient(this);
 		active = false;
 	}
-	cout << "- disconnect()" << endl;
 }
 
 void Synth_BUS_UPLINK_impl::CallBack()
 {
-	cout << "+ CallBack()" << endl;
 	if(relink)
 	{
 		disconnect();
 		connect();
 		relink = false;
 	}
-	cout << "- CallBack()" << endl;
 }
 
 void Synth_BUS_UPLINK_impl::streamEnd()
 {
-	cout << "+ disconnect()" << endl;
 	disconnect();
 
 	assert(running);
 	running = false;
-	cout << "- disconnect()" << endl;
 }
 
 SynthModule Synth_BUS_UPLINK_impl::module()
