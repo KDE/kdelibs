@@ -5,7 +5,7 @@
 #include <kinstance.h>
 #include <klibloader.h>
 
-//class QImage;
+class QImage;
 
 // baseclass for scan-dialogs
 class KScanDialog : public KDialogBase
@@ -20,20 +20,10 @@ public:
 protected:
     KScanDialog( QWidget *parent=0L, const char *name=0, bool modal=false );
 
-//    int id() const { return m_currentId; }
-//    int nextId() { return ++m_currentId; }
-
 signals:
-    // we need an id so that applications can distinguish between new
-    // scans and redone scans!
-//    void preview( const QImage&, int id ); Needed ?
+    void finalImage( const QImage& );
 
-    void finalImage( const QString& ); //, int id );
-
-    void textRecognized( const QString& ); //, int id );
-
-//private:
-//    int m_currentId;
+    void textRecognized( const QString& );
 
 };
 
