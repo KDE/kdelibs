@@ -541,7 +541,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   {
     job->showErrorDialog();
     d->m_job = 0L;
-    emit canceled( job->errorString() ); 
+    emit canceled( job->errorString() );
     // TODO: what else ?
     return;
   }
@@ -1315,7 +1315,9 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
 
   KTrader::OfferList offers = KTrader::self()->query( mimetype, constr );
 
-  assert( offers.count() >= 1 );
+  //  assert( offers.count() >= 1 );
+  if ( offers.count() == 0 )
+    return 0L;
 
   KService::Ptr service = *offers.begin();
 
