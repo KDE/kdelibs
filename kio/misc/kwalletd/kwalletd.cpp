@@ -36,6 +36,7 @@
 #include <kpassdlg.h>
 #include <kstddirs.h>
 #include <kwalletentry.h>
+#include <kwin.h>
 
 #include <qdir.h>
 #include <qregexp.h>
@@ -320,6 +321,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		const char *p = 0L;
 		while (!b->isOpen()) {
 			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
+			KWin::setState( kpd->winId(), NET::KeepAbove );
 			if (kpd->exec() == KDialog::Accepted) {
 				p = kpd->password();
 				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
