@@ -24,6 +24,7 @@
 #include "kjs.h"
 #include "object.h"
 #include "nodes.h"
+#include "math_object.h"
 
 namespace KJS {
   const double NaN = 0.0/0.;
@@ -52,6 +53,7 @@ KJSO *KJSO::executeCall(KJSO *, KJSArgList *args)
       break;
     default:
       assert(!"KJSO::executeCall(): unhandled switch case");
+      exit(1);
   }
 
   KJSWorld::context = new KJSContext(ctype, save, func, args);
@@ -180,6 +182,8 @@ KJSGlobal::KJSGlobal()
 {
   put("NaN", new KJSNumber(NaN));
   put("Infinity", new KJSNumber(Inf));
+
+  put("Math", new KJSMath(), DontEnum);
 
   // TODO: add function properties
   put("eval", new KJSInternalFunction(&eval));
@@ -337,8 +341,7 @@ void KJSFunction::processParameters(KJSArgList *args)
   }
 }
 
-KJSDeclaredFunction::KJSDeclaredFunction(const CString &i, KJSParamList *p,
-					 StatementNode *b)
+KJSDeclaredFunction::KJSDeclaredFunction(KJSParamList *p, StatementNode *b)
   : block(b)
 {
   param = p;

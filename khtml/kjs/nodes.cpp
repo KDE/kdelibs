@@ -172,7 +172,6 @@ KJSO *FunctionCallNode::evaluate()
     assert(!"FunctionCallNode::evaluate(): Runtime Error I");
   }
 
-  cout << "TYPE " << (int) v->type() << endl;
   if (!v->implementsCall()) {
     /* TODO: Runtime Error */
     assert(!"FunctionCallNode::evaluate(): Runtime Error II");
@@ -631,7 +630,7 @@ void FuncDeclNode::processFuncDecl()
   for(int i = 0; i < num; i++, p = p->nextParam())
     plist->insert(num - i - 1, p->ident());
 
-  KJSO *f = new KJSDeclaredFunction(ident, plist, block);
+  KJSO *f = new KJSDeclaredFunction(plist, block);
 
   /* TODO: decide between global and activation object */
   KJSWorld::global->put(ident, f);

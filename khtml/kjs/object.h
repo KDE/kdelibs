@@ -55,7 +55,7 @@ public:
   Class getClass() const { return cl; }
   KJSO *get(const CString &p) const;
   bool hasProperty(const CString &p) const;
-  void put(const CString &p, KJSO *v, Attribute a = None);
+  void put(const CString &p, KJSO *v, int attr = None);
   bool canPut(const CString &p) const;
   void deleteProperty(const CString &p);
   KJSO defaultValue(Hint hint = NoneHint);
@@ -107,12 +107,12 @@ protected:
 
 class KJSProperty {
 public:
-  KJSProperty(const CString &n, KJSO *o, Attribute a = None);
+  KJSProperty(const CString &n, KJSO *o, int attr = None);
   ~KJSProperty();
   Type type() const { return Property; }
 public:
   CString name;
-  Attribute attribute;
+  int attribute;
   KJSO *object;
   KJSProperty *next;
 };
@@ -179,7 +179,7 @@ private:
 
 class KJSDeclaredFunction : public KJSFunction {
 public:
-  KJSDeclaredFunction(const CString &i, KJSParamList *p, StatementNode *b);
+  KJSDeclaredFunction(KJSParamList *p, StatementNode *b);
   Type type() const { return DeclaredFunction; }
   KJSO* execute();
 private:

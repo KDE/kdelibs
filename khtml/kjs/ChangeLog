@@ -1,3 +1,8 @@
+1999-10-20  Harri Porten  <porten@kde.org>
+
+	* math_object.cpp: seperated Math object and put in sample E and
+	sin() properties.
+
 1999-10-17  Harri Porten  <porten@kde.org>
 
 	* implemented argument passing for declared function

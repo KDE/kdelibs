@@ -22,12 +22,12 @@ INCLUDES = $(all_includes)
 lib_LTLIBRARIES = libkjs.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
-	operations.cpp property.cpp kjsstring.cpp
+	operations.cpp property.cpp kjsstring.cpp math_object.cpp
 
 include_HEADERS = kjs.h
 
 noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
-	kjsstring.h grammar.h
+	kjsstring.h grammar.h math_object.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
 libkjs_la_LIBADD = $(LIB_KDECORE)

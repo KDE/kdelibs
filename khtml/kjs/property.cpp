@@ -26,11 +26,11 @@
 
 using namespace KJS;
 
-KJSProperty::KJSProperty(const CString &n, KJSO *o, Attribute a)
+KJSProperty::KJSProperty(const CString &n, KJSO *o, int attr)
 {
   name = n;
   object = o;
-  attribute = a;
+  attribute = attr;
 }
 
 KJSProperty::~KJSProperty()
@@ -55,7 +55,7 @@ KJSO *KJSO::get(const CString &p) const
 }
 
 // ECMA 8.6.2.2
-void KJSO::put(const CString &p, KJSO *v, Attribute a)
+void KJSO::put(const CString &p, KJSO *v, int attr)
 {
   if (!canPut(p))
     return;
@@ -67,7 +67,7 @@ void KJSO::put(const CString &p, KJSO *v, Attribute a)
     while (pr) {
       if (pr->name == p) {
 	pr->object = v;
-	pr->attribute = a;
+	pr->attribute = attr;
 	return;
       }
       pr = pr->next;
@@ -75,7 +75,7 @@ void KJSO::put(const CString &p, KJSO *v, Attribute a)
   }
 
   // add new property
-  pr = new KJSProperty(p, v, a);
+  pr = new KJSProperty(p, v, attr);
   pr->next = prop;
   prop = pr;
 }
