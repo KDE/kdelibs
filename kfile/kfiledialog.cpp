@@ -321,7 +321,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     readRecentFiles( KGlobal::config() );
 
     adjustSize();
-    
+
     // we set the completionLock to avoid entering pathComboChanged() when
     // inserting the list of URLs into the combo.
     d->completionLock = true;
@@ -754,16 +754,12 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 // Protected
 void KFileDialog::urlEntered(const KURL& url)
 {
-    QString filename;
-    if (!locationEdit->lineEdit()->edited())
-       filename = locationEdit->currentText();
-
+    QString filename = locationEdit->currentText();
     d->selection = QString::null;
 
     if ( d->pathCombo->count() != 0 ) { // little hack
         d->pathCombo->setURL( url );
     }
-    //const QString urlstr = url.url(1);
 
     locationEdit->blockSignals( true );
     locationEdit->setCurrentItem( 0 );
