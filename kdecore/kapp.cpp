@@ -1,6 +1,14 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.30  1997/09/19 16:28:42  mark
+// MD: Implemented reading of the colour scheme contrast variable. This allows
+// you to choose the highlights and lowlights used to draw widgets and has been
+// part of the colour scheme specification for some time
+//
+// Sorry if this breaks anything; it is the last of the binary incompatible
+// changes that Kalle announced yesterday.
+//
 // Revision 1.29  1997/09/13 05:51:40  kalle
 // new features in KDebug
 // - asserts
@@ -468,9 +476,21 @@ void KApplication::restoreTopLevelGeometry() const
     pLocale = new KLocale();
 
   return pLocale;
-  for( int i = 0; i < argc; i++ )
-	if( !strcmp( argv[i], "-caption" ) )
-	  aCaption = argv[i+1];
+  //  for( int i = 0; i < argc; i++ )
+  int i = 0;
+  while( i < argc )
+	{
+	  if( !strcmp( argv[i], "-caption" ) )
+		{
+		  aCaption = argv[i+1];
+		  
+		  for( int j = i;  j < argc-2; j++ )
+			strcpy( argv[j], argv[j+2] );
+
+		  argc -=2 ;
+		}
+	  i++;
+	}
 }  
 
         aIconPixmap = QPixmap(argv[i+1]);
