@@ -556,10 +556,10 @@ protected:
     struct InheritedFlags {
     // 32 bit inherited, don't add to the struct, or the operator will break.
 	bool operator==( const InheritedFlags &other ) const {
-	    return *((uint *)this) == *((uint *)&other);
+	    return *((Q_UINT32 *)this) == *((Q_UINT32 *)&other);
 	}
 	bool operator!=( const InheritedFlags &other ) const {
-	    return *((uint *)this) != *((uint *)&other);
+	    return *((Q_UINT32 *)this) != *((Q_UINT32 *)&other);
 	}
 
 	bool _border_collapse : 1 ;
