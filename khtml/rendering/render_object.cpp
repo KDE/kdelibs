@@ -569,6 +569,7 @@ QString RenderObject::information() const
     if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
        << " [" << minWidth() << "-" << maxWidth() << "]"
+       << " { mT: " << marginTop() << " mB: " << marginBottom() << "}"
 	<< (isTableCell() ?
 	    ( QString::fromLatin1(" [r=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
