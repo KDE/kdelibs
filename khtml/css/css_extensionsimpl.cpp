@@ -61,8 +61,6 @@ void CSS2AzimuthImpl::setIdentifier( const DOMString &identifier, const bool &be
 
 
 
-#include "DOMException.h"
-#include "DOMString.h"
 
 #include "CSS2BackgroundPositionImpl.h"
 CSS2BackgroundPositionImpl::CSS2BackgroundPositionImpl(DocumentImpl *doc) : CSSValueImpl(doc)
@@ -112,7 +110,6 @@ void CSS2BackgroundPositionImpl::setPositionIdentifier( const DOMString &horizon
 
 
 
-#include "DOMException.h"
 
 #include "CSS2BorderSpacingImpl.h"
 CSS2BorderSpacingImpl::CSS2BorderSpacingImpl(DocumentImpl *doc) : CSSValueImpl(doc)
@@ -154,8 +151,6 @@ void CSS2BorderSpacingImpl::setInherit()
 
 
 
-#include "DOMException.h"
-#include "DOMString.h"
 
 #include "CSS2CounterIncrementImpl.h"
 CSS2CounterIncrementImpl::CSS2CounterIncrementImpl(DocumentImpl *doc)
@@ -177,8 +172,6 @@ void CSS2CounterIncrementImpl::setIncrement( const short & )
 
 
 
-#include "DOMException.h"
-#include "DOMString.h"
 
 #include "CSS2CounterResetImpl.h"
 CSS2CounterResetImpl::CSS2CounterResetImpl(DocumentImpl *doc)
@@ -201,9 +194,6 @@ void CSS2CounterResetImpl::setReset( const short & )
 
 
 #include "CSSValueList.h"
-#include "DOMException.h"
-#include "DOMString.h"
-
 #include "CSS2CursorImpl.h"
 CSS2CursorImpl::CSS2CursorImpl(DocumentImpl *doc) : CSSValueImpl(doc)
 {
@@ -225,12 +215,6 @@ CSSValueList CSS2CursorImpl::uris() const
 {
 }
 
-
-
-
-#include "DOMException.h"
-#include "DOMString.h"
-
 #include "CSS2FontFaceSrcImpl.h"
 CSS2FontFaceSrcImpl::CSS2FontFaceSrcImpl(DocumentImpl *doc)
 {
@@ -247,9 +231,6 @@ CSSValueList CSS2FontFaceSrcImpl::format() const
 
 
 
-#include "DOMException.h"
-#include "DOMString.h"
-
 #include "CSS2FontFaceWidthsImpl.h"
 CSS2FontFaceWidthsImpl::CSS2FontFaceWidthsImpl(DocumentImpl *doc)
 {
@@ -265,9 +246,6 @@ CSSValueList CSS2FontFaceWidthsImpl::numbers() const
 
 
 
-
-#include "DOMException.h"
-#include "DOMString.h"
 
 #include "CSS2PageSizeImpl.h"
 CSS2PageSizeImpl::CSS2PageSizeImpl(DocumentImpl *doc) : CSSValueImpl(doc)
@@ -313,9 +291,6 @@ void CSS2PageSizeImpl::setIdentifier( const DOMString &identifier )
 
 
 
-#include "DOMException.h"
-#include "DOMString.h"
-
 #include "CSS2PlayDuringImpl.h"
 CSS2PlayDuringImpl::CSS2PlayDuringImpl(DocumentImpl *doc) : CSSValueImpl(doc)
 {
@@ -348,7 +323,6 @@ void CSS2PlayDuringImpl::setRepeat( const bool & )
 
 
 
-#include "DOMString.h"
 
 #include "CSS2PropertiesImpl.h"
 CSS2PropertiesImpl::CSS2PropertiesImpl(DocumentImpl *doc)
