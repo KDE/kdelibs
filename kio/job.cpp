@@ -251,14 +251,13 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
 
     if (m_url.hasSubURL())
     {
-kdDebug(7007) << "Original URL = "  << m_url.url() << endl;
        KURL::List list = KURL::split(m_url);
        KURL::List::Iterator it = list.fromLast();
        m_url = *it;
        list.remove(it);
        m_subUrl = KURL::join(list);
-kdDebug(7007) << "New URL = "  << m_url.url() << endl;
-kdDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
+       //kdDebug(7007) << "New URL = "  << m_url.url() << endl;
+       //kdDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
     }
 
     Scheduler::doJob(this);
@@ -611,11 +610,11 @@ void TransferJob::slotRedirection( const KURL &url)
 
 void TransferJob::slotFinished()
 {
-   kdDebug(7007) << "TransferJob::slotFinished(" << this << ", " << m_url.prettyURL() << ")" << endl;
+   //kdDebug(7007) << "TransferJob::slotFinished(" << this << ", " << m_url.prettyURL() << ")" << endl;
     if (m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
         SimpleJob::slotFinished();
     else {
-        kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        //kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
         // Honour the redirection
         // We take the approach of "redirecting this same job"
         // Another solution would be to create a subjob, but the same problem
@@ -750,8 +749,6 @@ void TransferJob::resume()
 
 void TransferJob::start(Slave *slave)
 {
-    kdDebug(7007) << "TransferJob::start" << endl;
-
     assert(slave);
     connect( slave, SIGNAL( data( const QByteArray & ) ),
              SLOT( slotData( const QByteArray & ) ) );
@@ -792,10 +789,10 @@ void TransferJob::start(Slave *slave)
 
     if (!m_outgoingMetaData.isEmpty())
     {
-       kdDebug(7007) << "TransferJob::start : Sending metadata :" << endl;
-       MetaData::Iterator mapit;
-       for ( mapit = m_outgoingMetaData.begin() ; mapit != m_outgoingMetaData.end() ; ++mapit )
-           kdDebug(7007) << "   " << mapit.key() << "=" << mapit.data() << endl;
+       //kdDebug(7007) << "TransferJob::start : Sending metadata :" << endl;
+       //MetaData::Iterator mapit;
+       //for ( mapit = m_outgoingMetaData.begin() ; mapit != m_outgoingMetaData.end() ; ++mapit )
+       //    kdDebug(7007) << "   " << mapit.key() << "=" << mapit.data() << endl;
        KIO_ARGS << m_outgoingMetaData;
        slave->connection()->send( CMD_META_DATA, packedArgs );
     }
