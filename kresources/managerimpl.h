@@ -80,6 +80,8 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
       mListener = listener;
     }
 
+    void load();
+
   public slots:
     void resourceChanged( Resource *resource );
 
@@ -90,7 +92,6 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     void dcopResourceDeleted( QString identifier );
 
   private:
-    void load();
     void save();
     Resource *loadResource( const QString& identifier, bool checkActive );
     void saveResource( Resource *resource, bool checkActive );

@@ -292,6 +292,11 @@ class ResourceManager : private ManagerImplListener
       }
     }
 
+    void load()
+    {
+      mManager->load();
+    }
+
   private:
     ResourceManagerImpl *mManager;
     ResourceFactory *mFactory;

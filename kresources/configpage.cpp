@@ -132,6 +132,8 @@ void ResourcesConfigPage::load()
 
   delete mManager;
   mManager = new ResourceManager<Resource>( mFamily );
+  mManager->load();
+
   if ( !mManager )
     kdDebug(5650) << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
 

@@ -42,8 +42,6 @@ ResourceManagerImpl::ResourceManagerImpl( const QString& family ) :
   mStandard = 0;
   mFactory = 0;
 
-  load();
-
   // Register with DCOP
   if ( !kapp->dcopClient()->isRegistered() ) {
     kapp->dcopClient()->registerAs( "resourcemanager" );
@@ -72,7 +70,7 @@ ResourceManagerImpl::~ResourceManagerImpl()
   for ( it = mResources.begin(); it != mResources.end(); ++it ) {
     delete *it;
   }
-  
+ 
   delete mConfig;
 }
 
@@ -105,6 +103,9 @@ void ResourceManagerImpl::remove( Resource *resource, bool useDCOP )
   mResources.remove( resource );
 
   if ( useDCOP ) signalResourceDeleted( resource->identifier() );
+
+  if ( resource )
+    delete resource;
 
   kdDebug(5650) << "Finished REsourceManagerImpl::remove()" << endl;
 }
