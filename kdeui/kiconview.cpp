@@ -171,3 +171,17 @@ void KIconView::focusOutEvent( QFocusEvent *fe )
 
   QIconView::focusOutEvent( fe );
 }
+
+void KIconView::contentsMousePressEvent( QMouseEvent *e )
+{
+  if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
+    bool block = signalsBlocked();
+    blockSignals( true );
+
+    clearSelection();
+
+    blockSignals( block );
+  }
+
+  QIconView::contentsMousePressEvent( e );
+}
