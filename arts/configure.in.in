@@ -393,11 +393,8 @@ fi
 
 dnl check whether we want to use gsl
 AC_ARG_ENABLE(arts-gsl,
-[  --enable-arts-gsl       use aRts GSL style scheduling (experimental)],
-[if test "$enableval" = yes; then
-  arts_want_gsl="yes"
-fi
-], [arts_want_gsl="no"])
+[  --disable-arts-gsl      disable new aRts GSL style scheduling],
+[arts_want_gsl="$enableval"],[arts_want_gsl="yes"])
 
 if test "$arts_want_gsl" = "yes"; then
   ARTS_GSL_SOURCES="gslschedule.cc"
