@@ -783,6 +783,8 @@ DCOPServer::DCOPServer(bool _only_local)
 
     m_timer =  new QTimer(this);
     connect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
+    m_deadConnectionTimer = new QTimer(this);
+    connect( m_deadConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCleanDeadConnections()) );
 }
 
 DCOPServer::~DCOPServer()
@@ -815,16 +817,27 @@ DCOPConnection* DCOPServer::findApp( const QCString& appId )
 }
 
 /*!
+  Called by timer after write errors.
+ */
+void DCOPServer::slotCleanDeadConnections()
+{
+qWarning("DCOP Cleaning up dead connections.");
+    while(!deadConnections.isEmpty())
+    {
+       IceConn iceConn = deadConnections.take(0);
+       IceSetShutdownNegotiation (iceConn, False);
+       (void) IceCloseConnection( iceConn );
+    }
+}
+
+/*!
   Called from our IceIoErrorHandler
  */
 void DCOPServer::ioError( IceConn iceConn  )
 {
-    DCOPConnection* conn = clients.find( iceConn );
-    if ( !conn ) {
-	return;
-    }
-    IceSetShutdownNegotiation (iceConn, False);
-    (void) IceCloseConnection( iceConn );
+    deadConnections.removeRef(iceConn);
+    deadConnections.prepend(iceConn);
+    m_deadConnectionTimer->start(0, true);
 }
 
 
@@ -833,6 +846,9 @@ void DCOPServer::processData( int /*socket*/ )
     IceConn iceConn = static_cast<const DCOPConnection*>(sender())->iceConn;
     IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
     if ( status == IceProcessMessagesIOError ) {
+        deadConnections.removeRef(iceConn);
+        if (deadConnections.isEmpty())
+           m_deadConnectionTimer->stop();
 	IceSetShutdownNegotiation (iceConn, False);
 	(void) IceCloseConnection( iceConn );
     }
@@ -854,6 +870,7 @@ void DCOPServer::newClient( int /*socket*/ )
 	    qWarning ("IO error opening ICE Connection!\n");
 	else
 	    qWarning ("ICE Connection rejected!\n");
+        deadConnections.removeRef(iceConn);
 	(void) IceCloseConnection (iceConn);
     }
 }

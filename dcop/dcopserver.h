@@ -113,6 +113,7 @@ private slots:
     void newClient( int socket );
     void processData( int socket );
     void slotTerminate();
+    void slotCleanDeadConnections();
 
 private:
     int majorOpcode;
@@ -122,7 +123,9 @@ private:
     QPtrDict<DCOPConnection> clients;
     DCOPSignals *dcopSignals;
     int currentClientNumber;
-    QTimer * m_timer;
+    QTimer *m_timer;
+    QTimer *m_deadConnectionTimer;
+    QList<_IceConn> deadConnections;
 };
 
 extern DCOPServer* the_server;
