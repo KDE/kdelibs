@@ -5,9 +5,12 @@
 #include <qpoint.h>
 #include <qpointarray.h>
 #include <qpainter.h>
+#include <qtextstream.h>
 
+#include <kinstance.h>
 #include <klibloader.h>
 #include <kio_job.h>
+#include <kstddirs.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -237,6 +240,10 @@ KPartGUIServant::KPartGUIServant( KPart *part )
   : QObject( part )
 {
   m_part = part;
+  
+  m_doc.setContent( part->config() );
+  
+  mergePluginActions();
 }
 
 QAction *KPartGUIServant::action( const QDomElement &element )
@@ -259,9 +266,46 @@ QAction *KPartGUIServant::action( const QDomElement &element )
 
 QDomDocument KPartGUIServant::document()
 {
-  QDomDocument doc;
-  doc.setContent( m_part->config() );
-  return doc;
+  return m_doc;
+}
+
+void KPartGUIServant::mergePluginActions()
+{
+  //TODO: don't merge each time the GUI is constructed! (Simon) 
+ 
+  KInstance *instance = m_part->instance();
+
+  if ( !instance )
+    return;
+
+#warning FIX THIS WHEN MOVING TO KDELIBS
+  QStringList pluginDocuments = instance->dirs()->findAllResources( "appdata", "*", true, false );
+  
+  if ( pluginDocuments.count() == 0 )
+  {
+    qDebug( "no plugins found for %s", instance->instanceName().data() );
+    return;
+  }
+    
+  QStringList::ConstIterator pluginIt = pluginDocuments.begin();
+  QStringList::ConstIterator pluginEnd = pluginDocuments.end();
+
+  QDomDocument pluginDoc;
+  pluginDoc.setContent( KXMLGUIFactory::readConfigFile( *pluginIt ) );
+  
+  pluginIt++;
+
+  for (; pluginIt != pluginEnd; ++pluginIt )
+  {
+    QDomDocument tempDoc;
+    tempDoc.setContent( KXMLGUIFactory::readConfigFile( *pluginIt ) );
+    
+    QDomElement docElement = tempDoc.documentElement();
+    if ( !docElement.isNull() )
+      KXMLGUIFactory::mergeXML( pluginDoc.documentElement(), tempDoc.documentElement() );
+  }
+
+  KXMLGUIFactory::mergeXML( m_doc.documentElement(), pluginDoc.documentElement() );
 }
 
 #include "kpart.moc"

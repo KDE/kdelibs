@@ -47,12 +47,15 @@ public:
   Part1( QWidget * parentWidget );
   virtual ~Part1();
 
+  virtual KInstance *instance();
+
 protected:
   virtual bool openFile();
 
 protected:
   virtual QString configFile() const;
   QMultiLineEdit * m_edit;
+  KInstance *m_instance;
 };
 
 class Part2 : public KPart
@@ -62,8 +65,12 @@ public:
   Part2( QWidget * parentWidget );
   virtual ~Part2();
 
+  virtual KInstance *instance();
+
 protected:
   virtual QString configFile() const;
+
+  KInstance *m_instance;
 };
 
 #endif

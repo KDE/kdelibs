@@ -1,0 +1,11 @@
+<!DOCTYPE kpartplugin>
+<kpartplugin>
+<MenuBar>
+ <Menu name="File">
+  <Action name="searchreplace"/>
+ </Menu>
+ <Menu name="woohoo"><text>fun</text>
+  <Action name="searchreplace"/>
+ </Menu>
+</MenuBar>
+</kpartplugin>

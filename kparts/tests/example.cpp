@@ -112,6 +112,7 @@ void Shell::slotFileEdit()
 Part1::Part1( QWidget * parentWidget )
  : KReadOnlyPart( "Part1" )
 {
+  m_instance = new KInstance( "part1" ); 
   m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
 
@@ -120,7 +121,13 @@ Part1::Part1( QWidget * parentWidget )
 
 Part1::~Part1()
 {
+  delete m_instance; 
 }
+
+KInstance *Part1::instance()
+{
+  return m_instance; 
+} 
 
 bool Part1::openFile()
 {
@@ -161,11 +168,18 @@ QString Part1::configFile() const
 Part2::Part2( QWidget * parentWidget )
  : KPart( "Part2" )
 {
+  m_instance = new KInstance( "part2" ); 
   setWidget( new QWidget( parentWidget, "Part2Widget" ) );
 }
 
 Part2::~Part2()
 {
+  delete m_instance; 
+}
+
+KInstance *Part2::instance()
+{
+  return m_instance;
 }
 
 QString Part2::configFile() const

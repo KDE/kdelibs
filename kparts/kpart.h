@@ -10,6 +10,7 @@
 
 class KPartHost;
 class KPlugin;
+class KInstance;
 class QWidget;
 class QAction;
 class QActionCollection;
@@ -42,6 +43,8 @@ public:
 
     void setHost( KPartHost *host ) { m_host = host; }
     KPartHost *host() { return m_host; }
+
+    virtual KInstance *instance() = 0;
 
 protected:
     /**
@@ -197,7 +200,11 @@ class KPartGUIServant : public QObject, public KXMLGUIServant
   virtual QDomDocument document();
 
  private:
+
+  virtual void mergePluginActions();
+
   KPart *m_part;
+  QDomDocument m_doc;
 };
 
 #endif

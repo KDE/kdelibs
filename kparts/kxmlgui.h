@@ -53,6 +53,9 @@ class KNullGUIServant : public KXMLGUIServant
 class KXMLGUIFactory
 {
  public:
+
+  static void mergeXML( QDomElement base, QDomElement additive );
+
   static QString readConfigFile( const QString &filename );
 
   static void createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXMLGUIBuilder *builder );
@@ -64,7 +67,7 @@ class KXMLGUIFactory
                        const QDomElement &partElement,
                        QObject *parent = 0L );
 
-  QDomElement findMatchingElement( const QDomElement &shellElement, const QDomElement &partElement );
+  static QDomElement findMatchingElement( const QDomElement &shellElement, const QDomElement &partElement );
 
   KXMLGUIServant *m_shellServant;
   KXMLGUIServant *m_partServant;

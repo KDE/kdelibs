@@ -19,6 +19,8 @@ public:
 
   virtual bool save();
 
+  virtual KInstance *instance();
+
 protected:
   virtual bool openFile();
 
@@ -26,6 +28,7 @@ protected:
   virtual QString configFile() const;
   QMultiLineEdit * m_edit;
   bool m_bModified;
+  KInstance *m_instance;
 };
 
 #endif

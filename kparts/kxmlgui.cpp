@@ -24,6 +24,36 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
   return text;
 }
 
+void KXMLGUIFactory::mergeXML( QDomElement base, QDomElement additive )
+{
+  QDomElement e = base.firstChild().toElement();
+  for (; !e.isNull(); e = e.nextSibling().toElement() )
+  {
+    QDomElement matchingElement = findMatchingElement( e, additive );
+
+    if ( !matchingElement.isNull() )
+      mergeXML( e, matchingElement );
+      
+  }
+
+  e = additive.firstChild().toElement();
+  while ( !e.isNull() )
+  {
+    QDomElement matchingElement = findMatchingElement( e, base );
+    
+    if ( matchingElement.isNull() )
+    {
+      QDomElement newChild = e;
+      e = e.nextSibling().toElement();
+      base.appendChild( newChild );
+    }
+    else
+      e = e.nextSibling().toElement();
+    
+  }
+
+}
+
 void KXMLGUIFactory::createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXMLGUIBuilder *builder )
 {
 
@@ -77,7 +107,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
     if ( e.tagName() == "Part" && servant == m_shellServant )
     {
       QDomElement p = findMatchingElement( e.parentNode().toElement(),
-                                           partElement.parentNode().toElement().firstChild().toElement() );
+                                           partElement.parentNode().toElement() );
 
       buildRecursive( QDomElement(), p, parent );
     }
@@ -101,7 +131,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
 
       if ( servant == m_shellServant )
         buildRecursive( e,
-                        findMatchingElement( e, partElement.firstChild().toElement() ),
+                        findMatchingElement( e, partElement ),
                         container );
       else
 	buildRecursive( QDomElement(), e, container );
@@ -121,7 +151,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
 	if ( !container )
 	  return;
 
-	buildRecursive( QDomElement(), e );
+	buildRecursive( QDomElement(), e, container );
       }
   }
 
@@ -130,7 +160,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
 QDomElement KXMLGUIFactory::findMatchingElement( const QDomElement &shellElement, const QDomElement &partElement )
 {
   QDomElement p;
-  QDomElement i = partElement;
+  QDomElement i = partElement.firstChild().toElement();
 
   QString name = shellElement.attribute( "name" );
 
