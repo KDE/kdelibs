@@ -2170,7 +2170,9 @@ void KHTMLPart::slotViewFrameSource()
 {
   // ### frames
   //emit d->m_extension->openURLRequest( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
-  (void) KRun::runURL( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), QString::fromLatin1("text/plain") );
+  KParts::ReadOnlyPart *frame = static_cast<KParts::ReadOnlyPart *>( partManager()->activePart() );
+  if ( frame )
+    (void) KRun::runURL( frame->url(), QString::fromLatin1("text/plain") );
 }
 
 void KHTMLPart::slotSaveBackground()
