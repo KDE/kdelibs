@@ -175,6 +175,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         setHTMLEventListener(EventImpl::LOAD_EVENT,
 	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
+    case ATTR_NAME:
     case ATTR_NOSAVE:
 	break;
     default:

@@ -26,6 +26,7 @@
 //#define DEBUG_LAYOUT
 //#define PAR_DEBUG
 //#define EVENT_DEBUG
+//#define UNSUPPORTED_ATTR
 #include "dtd.h"
 #include "html_elementimpl.h"
 #include "html_documentimpl.h"
@@ -148,6 +149,10 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
         break;
 // other misc attributes
     default:
+#ifdef UNSUPPORTED_ATTR	
+	kdDebug(6030) << "UATTR: <" << this->nodeName().string() << "> [" 
+		      << attr->name().string() << "]=[" << attr->value().string() << "]" << endl;
+#endif
         break;
     }
 }
