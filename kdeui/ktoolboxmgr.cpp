@@ -31,6 +31,12 @@ template class QList<QRect>;
 
  // $Id$
  // $Log$
+ // Revision 1.20  2000/06/16 11:40:38  coolo
+ // removing the #ifdef HAVE_CONFIG_H stuff. This isn't logical anymore now we
+ // define even prototypes within config.h. someone I know tried kdevelop to setup
+ // a little C++ project and the first line of code was #ifdef HAVE_CONFIG_H and
+ // asked me what this does. And the only valid answer one can have is "it's historical"
+ //
  // Revision 1.19  2000/06/08 16:49:48  ettrich
  //
  // Progress on the NET_WM window manager front
@@ -172,10 +178,11 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   hotspot_static = hot_static;
 
   QRect rr = widget->frameGeometry();
-  QPoint p(rr.topLeft());
+  QPoint p( widget->parentWidget()->mapToGlobal( rr.topLeft()) );
 
-  offX = QCursor::pos().x() - p.x();
-  offY = QCursor::pos().y() - p.y();
+  QPoint cp = QCursor::pos();
+  offX = cp.x() - p.x();
+  offY = cp.y() - p.y();
 
   xp = p.x();
   yp = p.y();
