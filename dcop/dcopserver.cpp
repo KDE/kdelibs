@@ -1268,6 +1268,7 @@ int main( int argc, char* argv[] )
 	QFile f(fName);
 	f.open(IO_ReadOnly);
 	QTextStream t(&f);
+	t.setEncoding( QTextStream::Latin1 );
 	t.readLine(); // skip over connection list
 	bool ok = false;
 	pid_t pid = t.readLine().toUInt(&ok);
