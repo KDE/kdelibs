@@ -480,7 +480,7 @@ rule_N=<action>,<referingURL_protocol>,<referingURL_host>,<referingURL_path>,<UR
 
 The following actions are supported:
 redirect - e.g. a html-page obtained via HTTP could redirect itself to file:/path/some-file. This
-           is disabled by default but could be explicitly disabled for a specific HTTP host.
+           is disabled by default but could be explicitly enabled for a specific HTTP host.
            Example: rule_1=redirect,http,myhost.acme.com,,file,,,true
 
            IMPLEMENTATION NOTE: "redirect" is not yet fully implemented!!
