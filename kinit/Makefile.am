@@ -19,15 +19,15 @@ INCLUDES = -I$(srcdir)/../libltdl/ -I$(srcdir)/../kio/klauncher/ $(all_includes)
 
 SUBDIRS = .
 
-bin_PROGRAMS = kinit kinit_wrapper
+bin_PROGRAMS = kdeinit kdeinit_wrapper
 
-kinit_SOURCES = kinit.cpp setproctitle.cpp
+kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
-kinit_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)  $(KDE_RPATH)
-kinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KIO) $(LIB_KIMGIO) $(LIB_KDECORE) $(LIBUTIL)
+kdeinit_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)  $(KDE_RPATH)
+kdeinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KIO) $(LIB_KIMGIO) $(LIB_KDECORE) $(LIBUTIL)
 
-kinit_METASOURCES = AUTO
+kdeinit_METASOURCES = AUTO
 
-kinit_wrapper_SOURCES = wrapper.c
-kinit_wrapper_LDADD = $(LIBSOCKET)
+kdeinit_wrapper_SOURCES = wrapper.c
+kdeinit_wrapper_LDADD = $(LIBSOCKET)
 
