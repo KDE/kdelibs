@@ -36,12 +36,12 @@ class KTextEdit::KTextEditPrivate
 public:
     KTextEditPrivate()
         : customPalette( false ),
-	  highlighter( 0 ),
-	  spell( 0 )
+          highlighter( 0 ),
+          spell( 0 )
     {}
     ~KTextEditPrivate() {
-	delete highlighter;
-	delete spell;
+        delete highlighter;
+        delete spell;
     }
 
     bool customPalette;
@@ -76,27 +76,27 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
     if ( KStdAccel::copy().contains( key ) ) {
         copy();
         e->accept();
-	return;
+        return;
     }
     else if ( KStdAccel::paste().contains( key ) ) {
         paste();
         e->accept();
-	return;
+        return;
     }
     else if ( KStdAccel::cut().contains( key ) ) {
         cut();
         e->accept();
-	return;
+        return;
     }
     else if ( KStdAccel::undo().contains( key ) ) {
         undo();
         e->accept();
-	return;
+        return;
     }
     else if ( KStdAccel::redo().contains( key ) ) {
         redo();
         e->accept();
-	return;
+        return;
     }
     else if ( KStdAccel::deleteWordBack().contains( key ) )
     {
@@ -120,7 +120,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
         e->accept();
         return;
     }
-    
+
     // ignore Ctrl-Return so that KDialogs can close the dialog
     else if ( e->state() == ControlButton &&
               (e->key() == Key_Return || e->key() == Key_Enter) &&
@@ -153,12 +153,12 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 
     if ( checkSpellingEnabled() ) {
 
-	menu->insertSeparator();
-	int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling..." ), 
-				   this, SLOT( checkSpelling() ) );
+        menu->insertSeparator();
+        int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling..." ),
+                                   this, SLOT( checkSpelling() ) );
 
-	if( text().isEmpty() )
-	    menu->setItemEnabled( id, false );
+        if( text().isEmpty() )
+            menu->setItemEnabled( id, false );
     }
 
     return menu;
@@ -188,17 +188,17 @@ void KTextEdit::setPalette( const QPalette& palette )
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
     if ( ( check && d->highlighter ) || ( !check && !d->highlighter ) )
-	return;
+        return;
 
     // From the above statment we know know that if we're turning checking
     // on that we need to create a new highlighter and if we're turning it
     // off we should remove the old one.
 
     if ( check )
-	d->highlighter = new KDictSpellingHighlighter( this );
+        d->highlighter = new KDictSpellingHighlighter( this );
     else {
-	delete d->highlighter;
-	d->highlighter = 0;
+        delete d->highlighter;
+        d->highlighter = 0;
     }
 }
 
@@ -245,17 +245,17 @@ void KTextEdit::virtual_hook( int, void* )
 void KTextEdit::checkSpelling()
 {
     delete d->spell;
-    d->spell = new KSpell( this, i18n( "Spell Checking" ), 
-			  this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+    d->spell = new KSpell( this, i18n( "Spell Checking" ),
+                          this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
 
-    connect( d->spell, SIGNAL( death() ), 
-	     this, SLOT( spellCheckerFinished() ) );
+    connect( d->spell, SIGNAL( death() ),
+             this, SLOT( spellCheckerFinished() ) );
 
     connect( d->spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),
-	     this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
+             this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
 
     connect( d->spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),
-	     this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
+             this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
 }
 
 void KTextEdit::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos )
@@ -278,7 +278,7 @@ void KTextEdit::spellCheckerCorrected( const QString &oldWord, const QString &ne
 void KTextEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
 {
     for ( line = 0; line < static_cast<uint>( lines() ) && col <= pos; line++ )
-	col += paragraphLength( line ) + 1;
+        col += paragraphLength( line ) + 1;
 
     line--;
     col = pos - col + paragraphLength( line ) + 1;
@@ -299,7 +299,7 @@ void KTextEdit::slotSpellCheckReady( KSpell *s )
 void KTextEdit::slotSpellCheckDone( const QString &s )
 {
     if ( s != text() )
-	setText( s );
+        setText( s );
 }
 
 
