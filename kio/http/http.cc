@@ -1003,15 +1003,41 @@ bool HTTPProtocol::readHeader()
          }
       }
     }
-    // oh no.. i think we're about to get a page not found
-    else if (strncasecmp(buffer, "HTTP/1.0 ", 9) == 0) {
-      m_HTTPrev = HTTP_10;
-      m_bKeepAlive = false;
+    // We got the header
+    else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
+      if (strncmp(buffer+5, "1.0 ",4) == 0)      
+      {
+         m_HTTPrev = HTTP_10;
+         m_bKeepAlive = false;
+      }
+      else // Assume everything else to be 1.1 or higher....
+      {
+         m_HTTPrev = HTTP_11;
+         Authentication = AUTH_None;
+#ifdef DO_SSL
+        // Don't do persistant connections with SSL.
+        if (!m_bUseSSL)
+           m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
+#else
+           m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
+#endif
+      }
+      int code = atoi(buffer+9); 
 
       // unauthorized access
-      if (strncmp(buffer + 9, "401", 3) == 0) {
+      if ((code == 401) || (code == 407)) {
 	unauthorized = true;
-      } else if (buffer[9] == '4' || buffer[9] == '5') {
+      } 
+      // server side errors
+      else if ((code >= 500) && (code <= 599)) {
+        if (m_request.method == HTTP_HEAD) {
+           // Ignore error
+        } else {
+           errorPage();
+        }
+      }
+      // client errors
+      else if ((code >= 400) && (code <= 499)) {
 #if 0
 #warning To be fixed! error terminates the job!
 	// Let's first send an error message
@@ -1020,37 +1046,13 @@ bool HTTPProtocol::readHeader()
 #endif
 	// Tell that we will only get an error page here.
 	errorPage();
-
-	return false;
       }
-    }
-		
-    // this is probably not a good sign either... sigh
-    else if (strncasecmp(buffer, "HTTP/1.1 ", 9) == 0) {
-      m_HTTPrev = HTTP_11;
-      Authentication = AUTH_None;
-#ifdef DO_SSL
-      // Don't do persistant connections with SSL.
-      if (!m_bUseSSL)
-          m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
-#else
-      m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
-#endif
-
-      // Unauthorized access
-      if ((strncmp(buffer + 9, "401", 3) == 0) || (strncmp(buffer + 9, "407", 3) == 0)) {
-	unauthorized = true;
-      }
-      else if (buffer[9] == '4' || buffer[9] == '5') {
-	// Tell that we will only get an error page here.
-	errorPage();
-      }
-      else if (strncmp(buffer + 9, "100", 3) == 0) {
+      else if (code == 100)
+      {
 	// We got 'Continue' - ignore it
-	cont = true;
+        cont = true;
       }
-      else if ((strncmp(buffer + 9, "301", 3) == 0) ||
-               (strncmp(buffer + 9, "307", 3) == 0))
+      else if ((code == 301) || (code == 307))
       {
 	// 301 Moved permanently
         // 307 Temporary Redirect
@@ -1060,8 +1062,7 @@ bool HTTPProtocol::readHeader()
            noRedirect = true;
         }
       }
-      else if ((strncmp(buffer + 9, "302", 3) == 0) ||
-               (strncmp(buffer + 9, "303", 3) == 0))
+      else if ((code == 302) || (code == 303))
       {
 	// 302 Found
         // 303 See Other
@@ -1072,7 +1073,6 @@ bool HTTPProtocol::readHeader()
         }
       }
     }
-
     // In fact we should do redirection only if we got redirection code
     else if (strncmp(buffer, "Location:", 9) == 0 ) {
       locationStr = trimLead(buffer+9);
