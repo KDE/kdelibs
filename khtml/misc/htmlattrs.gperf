@@ -18,6 +18,7 @@ align, ATTR_ALIGN
 alink, ATTR_ALINK
 alt, ATTR_ALT
 archive, ATTR_ARCHIVE
+autocomplete, ATTR_AUTOCOMPLETE
 axis, ATTR_AXIS
 background, ATTR_BACKGROUND
 bgcolor, ATTR_BGCOLOR
