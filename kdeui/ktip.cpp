@@ -187,7 +187,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 	l->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
 	resize(550, 230);
-        QSize sh = sizeHint();
+        QSize sh = size();
 	QRect rect = KApplication::desktop()->screenGeometry();
         move(rect.x() + (rect.width() - sh.width())/2,
 		rect.y() + (rect.height() - sh.height())/2);
