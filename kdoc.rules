@@ -18,7 +18,7 @@ kdecore_FILES = *.h
 kdecore_LIBS = -lqk -ldcop -lqt
 
 kdeui_FILES = *.h
-kdeui_LIBS = -lkdecore -lqk -lqt
+kdeui_LIBS = -lkdecore -lqk -ldcop -lqt
 
 kab_FILES = kabapi.h
 kab_LIBS = -lkdecore -lkdeui -lqt
@@ -37,7 +37,7 @@ kjs_PATH = khtml/kjs
 kjs_LIBS = -lkdecore -lkdeui -lkimgio -lqt
 
 kio_FILES = *.h
-kio_LIBS = -lkdecore -lkdeui -lqt
+kio_LIBS = -lkdecore -lkdeui -ldcop -lqt
 
 kimgio_FILES = kimgio.h
 kimgio_LIBS = -lqt
