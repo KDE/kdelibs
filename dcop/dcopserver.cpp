@@ -1602,10 +1602,7 @@ int main( int argc, char* argv[] )
                // Test whether we are functional.
                DCOPClient client;
                if (client.attach())
-               {
-                  qWarning("DCOPServer up and running.");
                   return 0;
-               }
             }
             qWarning("DCOPServer self-test failed.");
             system(findDcopserverShutdown()+" --kill");
