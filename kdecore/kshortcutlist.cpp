@@ -85,7 +85,7 @@ bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pCon
 	for( uint i = 0; i < nSize; i++ ) {
 		if( isConfigurable(i) ) {
 			QString sEntry = pConfig->readEntry( name(i) );
-			if( !sEntry.isNull() ) {
+			if( !sEntry.isEmpty() ) {
 				if( sEntry == "none" )
 					setShortcut( i, KShortcut() );
 				else
