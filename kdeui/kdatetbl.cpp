@@ -1,7 +1,7 @@
 /*  -*- C++ -*-
     This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
-              (C) 1998, 1999 Mirko Sucker (mirko@kde.org)
+              (C) 1998-2001 Mirko Boehm (mirko@kde.org)
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 /////////////////// KDateTable widget class //////////////////////
 //
 // Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998, 1999 Mirko Sucker
+//           (C) 1998-2001 Mirko Boehm
 // Written using Qt (http://www.troll.no) for the
 // KDE project (http://www.kde.org)
 //

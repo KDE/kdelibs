@@ -1,9 +1,9 @@
 /* -*- C++ -*-
  * This file shows an example for the KDE about dialog.
  *
- * copyright:  (C) Mirko Sucker, 1999
+ * copyright:  (C) Mirko Boehm, 1999
  * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko@kde.org>
+ * mail to:    Mirko Boehm <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 1.4
  * $Revision$
  */
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
   about.setHelp("kdehelp/intro.html", "intro");
   // ----- set the application author:
   about.setAuthor
-    ("Mirko Sucker", "mirko@kde.org", "", "Initial developer.");
+    ("Mirko Boehm", "mirko@kde.org", "", "Initial developer.");
   // ----- set the application maintainer:
   about.setMaintainer("Any One", // name
 		      "anyone@kde.org", // email address

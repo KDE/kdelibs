@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE Libraries
- *  Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and 
+ *  Copyright (C) 1999-2001 Mirko Boehm (mirko@kde.org) and 
  *  Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
@@ -199,7 +199,7 @@ class KDialogBaseTile : public QObject
  * inspiration you should study the code for these.
  *
  * @short A dialog base class which standard buttons and predefined layouts.
- * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espen@kde.org)
+ * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
  */
 class KDialogBase : public KDialog
 {

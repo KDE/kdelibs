@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE Libraries
- *  Copyright (C) 1999 Mirko Sucker <mirko@kde.org> and
+ *  Copyright (C) 1999-2001 Mirko Boehm <mirko@kde.org> and
  *  Espen Sand <espensa@online.no>
  *
  *  This library is free software; you can redistribute it and/or

@@ -1,5 +1,5 @@
 This file records changes made to the KDatePicker and KDateTable class.
-It is maintained by Mirko Sucker (mirko.sucker@unibw-hamburg.de).
+It is maintained by Mirko Boehm (mirko@kde.org).
 
 February 25 1998:
 The buttons that switch the month no more display "<--" and "-->" but 
@@ -26,5 +26,5 @@ Sep 25 1999:
 The new implementation has been committed. It fits more into the overall
 KDE style.
 
-last change: Sep 25 1999			Mirko Sucker.
+last change: Sep 25 1999			Mirko Boehm.
 
