@@ -851,6 +851,79 @@ void RenderFlow::layoutInlineChildren()
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
+#if 1
+BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
+{
+    BidiIterator lBreak = start;
+    BidiIterator current = start;
+    BidiIterator last = start;
+
+    int width = lineWidth(m_height);
+#ifdef DEBUG_LINEBREAKS
+    kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
+#endif
+    int w = 0;
+    int tmpW = 0;
+    while( 1 ) {
+	RenderObject *o = current.obj;
+	if(!o) {
+#ifdef DEBUG_LINEBREAKS
+	    kdDebug(6041) << "reached end sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
+#endif
+	    return current;
+	}
+	if(o->isBR()) {
+	    //check the clear status
+	    EClear clear = o->style()->clear();
+	    if(clear != CNONE) {
+		//kdDebug( 6040 ) << "setting clear to " << clear << endl;
+		m_clearStatus = (EClear) (m_clearStatus | clear);
+	    }	
+	}
+	if( o->isSpecial() ) {
+	    // add to special objects...
+	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed
+	    specialHandler(o);
+	    width = lineWidth(m_height);
+#ifdef DEBUG_LINEBREAKS
+	    kdDebug(6041) << "inserted special object, line width now " << width << endl;
+#endif
+	} else if( current.direction() == QChar::DirWS ) {
+	    lBreak = current;
+	    w += tmpW;
+	    tmpW = static_cast<RenderText *>(o)->width(current.pos, 1);
+	} else if( current.current() == QChar('\n') ) {
+#ifdef DEBUG_LINEBREAKS
+	    kdDebug(6041) << "\\n sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
+#endif
+	    return last;
+	} else if( o->isText() )
+	    tmpW += static_cast<RenderText *>(o)->width(current.pos, 1);
+	if( !o->isSpecial() )
+	    tmpW += o->width();
+	if( w + tmpW > width ) {
+	    // if we have floats, try to get below them.
+	    int fb = floatBottom();
+	    if(!w && m_height < fb) {
+		m_height = fb;
+		width = lineWidth(m_height);
+	    } else if( !w && current != start ) {
+#ifdef DEBUG_LINEBREAKS
+		kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << last.obj << " " << last.pos << "   width=" << w << endl;
+#endif
+		return last;
+	    } else {
+#ifdef DEBUG_LINEBREAKS
+		kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+#endif
+		return lBreak;
+	    }
+	}
+	last = current;
+	++current;
+    }
+}
+#else
 BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 {
     BidiIterator lBreak = start;
@@ -997,6 +1070,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     }
     return lBreak;
 }
+#endif
 
 
 RenderObject *RenderFlow::first()
