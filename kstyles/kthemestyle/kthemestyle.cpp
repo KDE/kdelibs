@@ -1052,7 +1052,6 @@ void KThemeStyle::drawControl( ControlElement element,
                                const QStyleOption& opt ) const
 {
     bool handled = false;
-    bool sunken = ( how & Style_Sunken );
     int x, y, w, h;
     r.rect( &x, &y, &w, &h );
 
@@ -1567,7 +1566,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 if ( mi->popup() )
                 {
                     PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
-                    int dim = 8 -  itemFrame; //We're not very useful to inherit off, so just hardcode..
+                    int dim = 10 -  itemFrame; //We're not very useful to inherit off, so just hardcode..
                     QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
                                                   y + h / 2 - dim / 2, dim, dim ), r );
 
