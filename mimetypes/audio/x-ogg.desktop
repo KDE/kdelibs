@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+Comment=Ogg Vorbis audio
+MimeType=audio/x-ogg
+Icon=sound
+Patterns=*.ogg;*.OGG;
