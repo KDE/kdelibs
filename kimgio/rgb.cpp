@@ -444,16 +444,12 @@ void SGIImage::writeHeader()
 	kdDebug(399) << "Description: " << desc << endl;
 	desc.truncate(79);
 
-	char id[] = "KDE kimgio", *s = id;
 	for (i = 0; i < desc.length(); i++)
 		m_imagename[i] = desc.latin1()[i];
 	for (; i < 80; i++)
 		m_imagename[i] = '\0';
-	if (desc.length() < 68)
-		for (i = 69; *s; i++)
-			m_imagename[i] = *s++;
-
 	m_stream.writeRawBytes(m_imagename, 80);
+
 	m_stream << m_colormap;
 	for (i = 0; i < 404; i++)
 		m_stream << Q_UINT8(0);
