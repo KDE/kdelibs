@@ -6,11 +6,11 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@imag.fr
+ * daniel@veillard.com
  * Bjorn Reese <breese@users.sourceforge.net> for number formatting
  */
 
-#include "xsltconfig.h"
+#include "libxslt.h"
 
 #include <string.h>
 
@@ -43,6 +43,12 @@
 #define WITH_XSLT_DEBUG_FUNCTION
 #endif
 
+/*
+ * Some versions of DocBook XSL use the vendor string to detect
+ * supporting chunking, this is a workaround to be considered
+ * in the list of decent XSLT processors <grin/>
+ */
+#define DOCBOOK_XSL_HACK
 
 /************************************************************************
  *									*
@@ -137,7 +143,8 @@ xsltDocumentFunction(xmlXPathParserContextPtr ctxt, int nargs){
     if (obj->stringval == NULL) {
 	valuePush(ctxt, xmlXPathNewNodeSet(NULL));
     } else {
-	if ((obj2 != NULL) && (obj2->nodesetval != NULL)) {
+	if ((obj2 != NULL) && (obj2->nodesetval != NULL) &&
+	      (obj2->nodesetval->nodeNr > 0)) {
 	    xmlNodePtr target;
 
 	    target = obj2->nodesetval->nodeTab[0];
@@ -490,14 +497,42 @@ xsltSystemPropertyFunction(xmlXPathParserContextPtr ctxt, int nargs){
 	    }
 	}
 
-	if (!xmlStrcmp(nsURI, XSLT_NAMESPACE)) {
-	    if (!xmlStrcmp(name, (const xmlChar *)"version")) {
+	if (xmlStrEqual(nsURI, XSLT_NAMESPACE)) {
+#ifdef DOCBOOK_XSL_HACK
+	    if (xmlStrEqual(name, (const xmlChar *)"vendor")) {
+		xsltStylesheetPtr sheet;
+		xsltTransformContextPtr tctxt;
+
+		tctxt = (xsltTransformContextPtr)ctxt->context->extra;
+		if ((tctxt != NULL) && (tctxt->inst != NULL) &&
+		    (xmlStrEqual(tctxt->inst->name, BAD_CAST "variable")) &&
+		    (tctxt->inst->parent != NULL) &&
+		    (xmlStrEqual(tctxt->inst->parent->name,
+				 BAD_CAST "template")))
+		    sheet = tctxt->style;
+		else
+		    sheet = NULL;
+		if ((sheet != NULL) && (sheet->doc != NULL) &&
+		    (sheet->doc->URL != NULL) &&
+		    (xmlStrstr(sheet->doc->URL, "chunk") != NULL)) {
+		    valuePush(ctxt, xmlXPathNewString(
+			(const xmlChar *)"libxslt (SAXON 6.2 compatible)"));
+
+		} else {
+		    valuePush(ctxt, xmlXPathNewString(
+			(const xmlChar *)XSLT_DEFAULT_VENDOR));
+		}
+	    } else
+#else
+	    if (xmlStrEqual(name, (const xmlChar *)"vendor")) {
+		valuePush(ctxt, xmlXPathNewString(
+			  (const xmlChar *)XSLT_DEFAULT_VENDOR));
+	    } else
+#endif
+	    if (xmlStrEqual(name, (const xmlChar *)"version")) {
 		valuePush(ctxt, xmlXPathNewString(
 		    (const xmlChar *)XSLT_DEFAULT_VERSION));
-	    } else if (!xmlStrcmp(name, (const xmlChar *)"vendor")) {
-		valuePush(ctxt, xmlXPathNewString(
-		    (const xmlChar *)XSLT_DEFAULT_VENDOR));
-	    } else if (!xmlStrcmp(name, (const xmlChar *)"vendor-url")) {
+	    } else if (xmlStrEqual(name, (const xmlChar *)"vendor-url")) {
 		valuePush(ctxt, xmlXPathNewString(
 		    (const xmlChar *)XSLT_DEFAULT_URL));
 	    } else {

@@ -51,7 +51,7 @@
 
 <xsl:template name="user.head.content">
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
-   <meta name="GENERATOR" content="KDE XSL Stylesheet 1.03 using libxslt"/>
+   <meta name="GENERATOR" content="KDE XSL Stylesheet 1.04 using libxslt"/>
 </xsl:template>
 
 <!-- libxslt has problems with customizing this one, so 

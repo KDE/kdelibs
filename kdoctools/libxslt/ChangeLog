@@ -1,3 +1,157 @@
+Fri Jun 29 23:32:37 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/pattern.c libxslt/preproc.c libxslt/transform.c
+	  libxslt/xslt.c libxslt/xsltutils.[ch]: added xsltGetQNameURI()
+	  and cleaned up the way URI for QNames were computed through
+	  the code, serious cleanup.
+	* libxslt/xsltInternals.h libxslt/xslt.c: moved cdata-sections
+	  in their own hash table, implementation not yet finished.
+
+Thu Jun 28 23:01:14 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/keys.c libxslt/templates.c libxslt/transform.c
+	  libxslt/variables.c libxslt/xsltutils.c: hum seems I forgot
+	  to save/restore some XPath context, bug raised by
+	  Steve Cheng
+
+Thu Jun 28 15:48:06 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/xsltwin32config.h[.in]: added configuration/version
+	  informations for Windows/MSC
+	* libxslt/libxslt.h libxslt/*.c: internal header to centralize
+	  includes switches
+	* libxslt/Makefile.am: added libxslt.h and xsltwin32config.h[.in]
+	* libxslt/*.[ch] libxslt/*.in: quite a bit of cleanup, especially
+	  the email addresses
+	* AUTHORS: added William
+
+Tue Jun 26 18:45:38 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* configure.in doc/xslt.html: releasing 0.13.0
+	* doc/Makefile.am: don't index the win32 include
+	* doc/html/*: rebuilt the docs
+
+Mon Jun 25 15:30:30 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/xsltproc.c: John Fleck found a typo in usage()
+	* libxslt/xslt.c: avoid warning if version="1.1" is used
+	* libxslt/transform.c: forgot to initialize cur->outputFile
+	* libxslt/functions.c: DOCBOOK_XSL_HACK some versions of DocBook XSL
+	  use the vendor string to detect supporting chunking, this
+	  is a workaround to be considered in the list of decent XSLT
+	  processors <grin/>
+
+Mon Jun 25 12:41:30 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/transform.[ch] libxslt/xslt.c libxslt/xsltInternals.h:
+	  added a new interface xsltRunStylesheet() for a more flexible
+	  handling of the output and trying to adhere to xsl:document
+	  filename generation semantic if one knows the URL of the output,
+	  also add IObuf capacity and SAX for output but is currently not
+	  implemented.
+	* libxslt/xsltproc.c: added a -o or --output filename argument
+	  to test xsltRunStylesheet() or provide a base when generating
+	  multiple outputs
+	* tests/docbook/Makefile.am tests/docbook/result/xtchunk/html/*:
+	  updated tests to add DocBook xt:document based chunking
+	* tests/multiple/Makefile.am: cleaned up the makefile a bit
+	* tests/multiple/out/*.html: the new xt:document now generate
+	  the DOCTYPE if available as is the case for HTML
+
+Mon Jun 25 08:45:00 HKT 2001 William Brack <wbrack@mmm.com.hk>
+
+	* Removed some redundant code in xsltDefaultProcessOneNode
+	  and revised the default processing of an attribute node
+
+Sun Jun 24 14:40:00 HKT 2001 William Brack <wbrack@mmm.com.hk>
+
+	* Enhanced ApplyTemplates and ForEach to allow multiple
+	  documents within a nodelist.
+	* Repaired small bug in xsltDocument function which caused
+	  a crash if invalid second argument was provided.
+
+Sat Jun 23 15:44:00 MDT 2001 John Fleck <jfleck@inkstain.net>
+
+	* doc/tutorial/libxslttutorial.xml, libxslttutorial.html
+	  updating tutorial with explanation of xsltSave vs. xmlSave
+	  functions 
+
+Sat Jun 23 19:04:27 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* test/docbook: updated to docbook-xsl-1.4, regenerated results
+
+Sat Jun 23 15:32:25 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* Makefile.am libxslt/Makefile.am libxslt/numbers.c 
+	  libxslt/win32config.h libxslt/xsltconfig.h.in libxslt/xsltproc.c:
+	  Patches for Windows mostly contributed by Yon Derek
+	* win32/libxslt/libxslt.def win32/libxslt/libxslt.dsw
+	  win32/libxslt/libxslt_so.dsp win32/libxslt/xsltproc.dsp:
+	  Project file for Mircrosoft C provided by Yon Derek
+
+Sat Jun 23 14:20:01 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/pattern.c: closing bug #56517, fixed a number of
+	  problems in the patterns compilations, priorities and debug
+	* libxslt/transform.c: improved the template debug message
+	* tests/docs/Makefile.am tests/general/Makefile.am
+	  tests/general/bug-39-* tests/docs/bug-39-*: added a specific
+	  regression test for #56517
+
+Fri Jun 22 16:17:23 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/xslt.c: avoid a stupid bug when compiling with
+	  libxml < 2.3.11 and without LIBXML_DEBUG_ENABLED
+
+Fri Jun 22 00:11:18 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/numbers.c: fix of a small bug
+	* libxslt/transform.c libxslt/variables.c libxslt/xslt.c: cleanups
+	  while bug-hunting
+
+Tue Jun 19 16:13:49 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* tests/docbook/Makefile.am: added XHTML and XSL FO to the
+	  regression tests
+	* tests/docbook/xhtml/*: added XHTML stylesheets
+	* tests/docbook/fo/*: added XSL FO stylesheets
+	* tests/docbook/result/xhtml/*: added XHTML results
+	* tests/docbook/result/fo/*: added XSL FO results
+
+Tue Jun 19 00:20:32 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* HACKING: fixed, added William
+
+Mon Jun 18 18:36:36 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/xsltutils.c: forgot to flush in xsltSaveTo() in html and
+	  xml cases, and fixed text output to be recursive in text nodes
+	  lookups
+
+Mon Jun 18 15:44:51 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* configure.in: patch from Tony Graham to cleanup libxml2 detection
+
+Sun Jun 17 17:42:33 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* libxslt/xsltutils.[ch]: fixed xsltGetNsProp, i always forget
+	  'namespace' is a reserved C++ identifier
+
+Sun Jun 17 17:08:30 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* doc/xslt.html: adding 0.12.0 release
+
+Sun Jun 17 13:15:48 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* configure.in: preparing 0.12.0 release
+	* libxslt/transform.c: a bit of cleanup on the XInclude defaults
+	* libxslt/xsltconfig.h.in: added doc inline comment
+	* libxslt/xslt.[ch] libxslt/xsltproc.c: added more version informations
+	  and enriched xsltproc --version to show them
+	* doc/html/*.html: rebuilt the docs
+	* doc/Makefile.am libxslt.spec.in: try to make sure John Fleck
+	  tutorial ends up in the tars and RPMs
+
 Sat Jun 16 23:58:57 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
 
 	* libxslt.spec.in: updated the descriptions

@@ -3,7 +3,7 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@w3.org
+ * daniel@veillard.com
  */
 
 #ifndef __XML_XSLTUTILS_H__
@@ -59,7 +59,7 @@ extern "C" {
  */
 xmlChar *	 xsltGetNsProp			(xmlNodePtr node,
 						 const xmlChar *name,
-						 const xmlChar *nspace);
+						 const xmlChar *nameSpace);
 
 /*
  * XSLT specific error and debug reporting functions
@@ -78,13 +78,21 @@ void		xsltSetGenericDebugFunc		(void *ctx,
 						 xmlGenericErrorFunc handler);
 
 /*
- * Sorting ... this is definitely a temporary interface !
+ * Sorting
  */
 
 void		xsltDocumentSortFunction	(xmlNodeSetPtr list);
 void		xsltDoSortFunction		(xsltTransformContextPtr ctxt,
 						 xmlNodePtr *sorts,
 						 int nbsorts);
+
+/*
+ * QNames handling
+ */
+
+const xmlChar * xsltGetQNameURI			(xmlNodePtr node,
+						 xmlChar **name);
+
 /*
  * Output, reuse libxml I/O buffers
  */

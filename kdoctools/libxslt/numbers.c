@@ -6,11 +6,11 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@imag.fr
+ * daniel@veillard.com
  * Bjorn Reese <breese@users.sourceforge.net>
  */
 
-#include "xsltconfig.h"
+#include "libxslt.h"
 
 #include <math.h>
 #include <limits.h>
@@ -84,6 +84,8 @@ xsltIsDigitZero(xmlChar ch)
 }
 
 #ifndef isnan
+#ifndef HAVE_ISNAN
+
 /*
  * NaN (Not-A-Number)
  *
@@ -101,9 +103,11 @@ isnan(volatile double number)
 {
     return (!(number < 0.0 || number > 0.0) && (number != 0.0));
 }
-#endif
+#endif /* !HAVE_ISNAN */
+#endif /* !isnan */
 
 #ifndef isinf
+#ifndef HAVE_ISINF
 /*
  * Infinity (positive and negative)
  *
@@ -118,7 +122,8 @@ isinf(double number)
     return FALSE;
 # endif
 }
-#endif
+#endif /* !HAVE_ISINF */
+#endif /* !isinf */
 
 static void
 xsltNumberFormatDecimal(xmlBufferPtr buffer,
@@ -165,7 +170,7 @@ xsltNumberFormatAlpha(xmlBufferPtr buffer,
     *(--pointer) = 0;
     alpha_list = (is_upper) ? alpha_upper_list : alpha_lower_list;
     
-    for (i = 1; i < (int)sizeof(buffer); i++) {
+    for (i = 1; i < (int)sizeof(temp_string); i++) {
 	number--;
 	*(--pointer) = alpha_list[((int)fmod(number, alpha_size))];
 	number /= alpha_size;

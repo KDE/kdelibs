@@ -6,15 +6,14 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@imag.fr
+ * daniel@veillard.com
  */
 
-#include "xsltconfig.h"
+#include "libxslt.h"
 
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <libxml/xmlversion.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/tree.h>
 #include <libxml/HTMLtree.h>
@@ -35,7 +34,7 @@
  * xsltGetNsProp:
  * @node:  the node
  * @name:  the attribute name
- * @namespace:  the URI of the namespace
+ * @nameSpace:  the URI of the namespace
  *
  * Similar to xmlGetNsProp() but with a slightly different semantic
  *
@@ -51,7 +50,7 @@
  *     It's up to the caller to free the memory.
  */
 xmlChar *
-xsltGetNsProp(xmlNodePtr node, const xmlChar *name, const xmlChar *namespace) {
+xsltGetNsProp(xmlNodePtr node, const xmlChar *name, const xmlChar *nameSpace) {
     xmlAttrPtr prop;
     xmlDocPtr doc;
     xmlNsPtr ns;
@@ -60,7 +59,7 @@ xsltGetNsProp(xmlNodePtr node, const xmlChar *name, const xmlChar *namespace) {
 	return(NULL);
 
     prop = node->properties;
-    if (namespace == NULL)
+    if (nameSpace == NULL)
 	return(xmlGetProp(node, name));
     while (prop != NULL) {
 	/*
@@ -70,9 +69,9 @@ xsltGetNsProp(xmlNodePtr node, const xmlChar *name, const xmlChar *namespace) {
 	 */
         if ((xmlStrEqual(prop->name, name)) &&
 	    (((prop->ns == NULL) && (node->ns != NULL) &&
-	      (xmlStrEqual(node->ns->href, namespace))) ||
+	      (xmlStrEqual(node->ns->href, nameSpace))) ||
 	     ((prop->ns != NULL) &&
-	      (xmlStrEqual(prop->ns->href, namespace))))) {
+	      (xmlStrEqual(prop->ns->href, nameSpace))))) {
 	    xmlChar *ret;
 
 	    ret = xmlNodeListGetString(node->doc, prop->children, 1);
@@ -100,7 +99,7 @@ xsltGetNsProp(xmlNodePtr node, const xmlChar *name, const xmlChar *namespace) {
 		 * The DTD declaration only allows a prefix search
 		 */
 		ns = xmlSearchNs(doc, node, attrDecl->prefix);
-		if ((ns != NULL) && (xmlStrEqual(ns->href, namespace)))
+		if ((ns != NULL) && (xmlStrEqual(ns->href, nameSpace)))
 		    return(xmlStrdup(attrDecl->defaultValue));
 	    }
 	}
@@ -256,6 +255,91 @@ xsltSetGenericDebugFunc(void *ctx, xmlGenericErrorFunc handler) {
 
 /************************************************************************
  * 									*
+ * 				QNames					*
+ * 									*
+ ************************************************************************/
+
+/**
+ * xsltGetQNameURI:
+ * @node:  the node holding the QName
+ * @name:  pointer to the initial QName value
+ *
+ * This function analyze @name, if the name contains a prefix,
+ * the function seaches the associated namespace in scope for it.
+ * It will also replace @name value with the NCName, the old value being
+ * freed.
+ * Errors in the prefix lookup are signalled by setting @name to NULL.
+ *
+ * NOTE: the namespace returned is a pointer to the place where it is
+ *       defined and hence has the same lifespan as the document holding it.
+ *
+ * Returns the namespace URI if there is a prefix, or NULL if @name is
+ *         not prefixed.
+ */
+const xmlChar *
+xsltGetQNameURI(xmlNodePtr node, xmlChar ** name)
+{
+    int len = 0;
+    xmlChar *qname;
+    xmlNsPtr ns;
+
+    if (name == NULL)
+	return(NULL);
+    qname = *name;
+    if ((qname == NULL) || (*qname == 0))
+	return(NULL);
+    if (node == NULL) {
+	xsltGenericError(xsltGenericErrorContext,
+		         "QName: no element for namespace lookup %s\n",
+			 qname);
+	xmlFree(qname);
+	*name = NULL;
+	return(NULL);
+    }
+
+    /* nasty but valid */
+    if (qname[0] == ':')
+	return(NULL);
+
+    /*
+     * we are not trying to validate but just to cut, and yes it will
+     * work even if this is as set of UTF-8 encoded chars
+     */
+    while ((qname[len] != 0) && (qname[len] != ':')) 
+	len++;
+    
+    if (qname[len] == 0)
+	return(NULL);
+
+    /*
+     * handle xml: separately, this one is magical
+     */
+    if ((qname[0] == 'x') && (qname[1] == 'm') &&
+        (qname[2] == 'l') && (qname[3] == ':')) {
+	if (qname[4] == 0)
+	    return(NULL);
+        *name = xmlStrdup(&qname[4]);
+	xmlFree(qname);
+	return(XML_XML_NAMESPACE);
+    }
+
+    qname[len] = 0;
+    ns = xmlSearchNs(node->doc, node, qname);
+    if (ns == NULL) {
+	xsltGenericError(xsltGenericErrorContext,
+		"%s:%s : no namespace bound to prefix %s\n",
+		         qname, &qname[len + 1]);
+	*name = NULL;
+	xmlFree(qname);
+	return(NULL);
+    }
+    *name = xmlStrdup(&qname[len + 1]);
+    xmlFree(qname);
+    return(ns->href);
+}
+
+/************************************************************************
+ * 									*
  * 				Sorting					*
  * 									*
  ************************************************************************/
@@ -310,6 +394,8 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     xmlNodePtr oldNode;
     xmlNodePtr oldInst;
     int	oldPos, oldSize ;
+    int oldNsNr;
+    xmlNsPtr *oldNamespaces;
 
     comp = sort->_private;
     if (comp == NULL) {
@@ -342,6 +428,8 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     oldInst = ctxt->inst;
     oldPos = ctxt->xpathCtxt->proximityPosition;
     oldSize = ctxt->xpathCtxt->contextSize;
+    oldNsNr = ctxt->xpathCtxt->nsNr;
+    oldNamespaces = ctxt->xpathCtxt->namespaces;
     for (i = 0;i < len;i++) {
 	ctxt->inst = sort;
 	ctxt->xpathCtxt->contextSize = len;
@@ -386,6 +474,8 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
     ctxt->inst = oldInst;
     ctxt->xpathCtxt->contextSize = oldSize;
     ctxt->xpathCtxt->proximityPosition = oldPos;
+    ctxt->xpathCtxt->nsNr = oldNsNr;
+    ctxt->xpathCtxt->namespaces = oldNamespaces;
 
     return(results);
 }
@@ -611,6 +701,7 @@ xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	    htmlSetMetaEncoding(result, (const xmlChar *) "UTF-8");
 	}
 	htmlDocContentDumpOutput(buf, result, (const char *) encoding);
+	xmlOutputBufferFlush(buf);
     } else if ((method != NULL) &&
 	(xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
 	if (encoding != NULL) {
@@ -619,6 +710,7 @@ xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	    htmlSetMetaEncoding(result, (const xmlChar *) "UTF-8");
 	}
 	htmlDocContentDumpOutput(buf, result, (const char *) encoding);
+	xmlOutputBufferFlush(buf);
     } else if ((method != NULL) &&
 	       (xmlStrEqual(method, (const xmlChar *) "text"))) {
 	xmlNodePtr cur;
@@ -627,8 +719,38 @@ xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	while (cur != NULL) {
 	    if (cur->type == XML_TEXT_NODE)
 		xmlOutputBufferWriteString(buf, (const char *) cur->content);
-	    cur = cur->next;
+
+	    /*
+	     * Skip to next node
+	     */
+	    if (cur->children != NULL) {
+		if ((cur->children->type != XML_ENTITY_DECL) &&
+		    (cur->children->type != XML_ENTITY_REF_NODE) &&
+		    (cur->children->type != XML_ENTITY_NODE)) {
+		    cur = cur->children;
+		    continue;
+		}
+	    }
+	    if (cur->next != NULL) {
+		cur = cur->next;
+		continue;
+	    }
+	    
+	    do {
+		cur = cur->parent;
+		if (cur == NULL)
+		    break;
+		if (cur == (xmlNodePtr) style->doc) {
+		    cur = NULL;
+		    break;
+		}
+		if (cur->next != NULL) {
+		    cur = cur->next;
+		    break;
+		}
+	    } while (cur != NULL);
 	}
+	xmlOutputBufferFlush(buf);
     } else {
 	int omitXmlDecl;
 	int standalone;

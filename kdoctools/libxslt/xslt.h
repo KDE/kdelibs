@@ -3,7 +3,7 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@imag.fr
+ * daniel@veillard.com
  */
 
 #ifndef __XML_XSLT_H__
@@ -51,11 +51,26 @@ extern "C" {
 extern int xsltMaxDepth;
 
 /**
- * xslEngineVersion:
+ * xsltEngineVersion:
  *
  * The version string for libxslt
  */
 extern const char *xsltEngineVersion;
+
+/**
+ * xsltLibxsltVersion:
+ *
+ * The version of libxslt compiled
+ */
+extern const int xsltLibxsltVersion;
+
+/**
+ * xsltLibxmlVersion:
+ *
+ * The version of libxml libxslt was compiled against
+ */
+extern const int xsltLibxmlVersion;
+
 #ifdef __cplusplus
 }
 #endif

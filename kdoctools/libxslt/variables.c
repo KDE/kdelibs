@@ -6,10 +6,10 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@imag.fr
+ * daniel@veillard.com
  */
 
-#include "xsltconfig.h"
+#include "libxslt.h"
 
 #include <string.h>
 
@@ -21,7 +21,6 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/parserInternals.h>
-#include <libxml/xmlversion.h>
 #include "xslt.h"
 #include "xsltInternals.h"
 #include "xsltutils.h"
@@ -282,6 +281,10 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr elem,
 	         xsltStylePreCompPtr precomp) {
     xmlXPathObjectPtr result = NULL;
     int oldProximityPosition, oldContextSize;
+    xmlNodePtr oldInst;
+    int oldNsNr;
+    xmlNsPtr *oldNamespaces;
+
     if ((ctxt == NULL) || (elem == NULL))
 	return(NULL);
 
@@ -302,6 +305,9 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr elem,
 	oldProximityPosition = ctxt->xpathCtxt->proximityPosition;
 	oldContextSize = ctxt->xpathCtxt->contextSize;
 	ctxt->xpathCtxt->node = (xmlNodePtr) ctxt->node;
+	oldInst = ctxt->inst;
+	oldNsNr = ctxt->xpathCtxt->nsNr;
+	oldNamespaces = ctxt->xpathCtxt->namespaces;
 	if (precomp != NULL) {
 	    ctxt->inst = precomp->inst;
 	    ctxt->xpathCtxt->namespaces = precomp->nsList;
@@ -314,6 +320,9 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr elem,
 	result = xmlXPathCompiledEval(comp, ctxt->xpathCtxt);
 	ctxt->xpathCtxt->contextSize = oldContextSize;
 	ctxt->xpathCtxt->proximityPosition = oldProximityPosition;
+	ctxt->xpathCtxt->nsNr = oldNsNr;
+	ctxt->xpathCtxt->namespaces = oldNamespaces;
+	ctxt->inst = oldInst;
 	if ((precomp == NULL) || (precomp->comp == NULL))
 	    xmlXPathFreeCompExpr(comp);
 	if (result == NULL) {
@@ -383,6 +392,8 @@ xsltEvalGlobalVariable(xsltStackElemPtr elem, xsltTransformContextPtr ctxt) {
     xsltStylePreCompPtr precomp;
     int oldProximityPosition, oldContextSize;
     xmlNodePtr oldInst;
+    int oldNsNr;
+    xmlNsPtr *oldNamespaces;
 
     if ((ctxt == NULL) || (elem == NULL))
 	return(NULL);
@@ -409,6 +420,8 @@ xsltEvalGlobalVariable(xsltStackElemPtr elem, xsltTransformContextPtr ctxt) {
 	oldProximityPosition = ctxt->xpathCtxt->proximityPosition;
 	oldContextSize = ctxt->xpathCtxt->contextSize;
 	oldInst = ctxt->inst;
+	oldNsNr = ctxt->xpathCtxt->nsNr;
+	oldNamespaces = ctxt->xpathCtxt->namespaces;
 	if (precomp != NULL) {
 	    ctxt->inst = precomp->inst;
 	    ctxt->xpathCtxt->namespaces = precomp->nsList;
@@ -423,6 +436,8 @@ xsltEvalGlobalVariable(xsltStackElemPtr elem, xsltTransformContextPtr ctxt) {
 	ctxt->xpathCtxt->contextSize = oldContextSize;
 	ctxt->xpathCtxt->proximityPosition = oldProximityPosition;
 	ctxt->inst = oldInst;
+	ctxt->xpathCtxt->nsNr = oldNsNr;
+	ctxt->xpathCtxt->namespaces = oldNamespaces;
 	if ((precomp == NULL) || (precomp->comp == NULL))
 	    xmlXPathFreeCompExpr(comp);
 	if (result == NULL) {
@@ -515,12 +530,12 @@ xsltEvalGlobalVariables(xsltTransformContextPtr ctxt) {
 	
 #ifdef WITH_XSLT_DEBUG_VARIABLE
 	if ((style->doc != NULL) && (style->doc->URL != NULL)) {
-
 	    xsltGenericDebug(xsltGenericDebugContext,
-		"Registering global variables from %s\n",
+			     "Registering global variables from %s\n",
 		             style->doc->URL);
 	}
 #endif
+
 	while (elem != NULL) {
 	    xsltStackElemPtr def;
 
@@ -595,6 +610,7 @@ xsltRegisterGlobalVariable(xsltStylesheetPtr style, const xmlChar *name,
 	xsltGenericDebug(xsltGenericDebugContext,
 			 "Defining global variable %s\n", name);
 #endif
+
     elem = xsltNewStackElem();
     if (elem == NULL)
 	return(-1);
@@ -642,6 +658,8 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
     xmlXPathCompExprPtr comp;
     xmlXPathObjectPtr result;
     int oldProximityPosition, oldContextSize;
+    int oldNsNr;
+    xmlNsPtr *oldNamespaces;
 
     if (ctxt == NULL)
 	return(-1);
@@ -659,6 +677,7 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 	xsltGenericDebug(xsltGenericDebugContext,
 	    "Evaluating user parameter %s=%s\n", name, value);
 #endif
+
 	/*
 	 * Name lookup
 	 */
@@ -672,7 +691,7 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 			         prefix);
 		if (ns == NULL) {
 		    xsltGenericError(xsltGenericErrorContext,
-			"user param : no namespace bound to prefix %s\n", prefix);
+		    "user param : no namespace bound to prefix %s\n", prefix);
 		    href = NULL;
 		} else {
 		    href = ns->href;
@@ -701,11 +720,15 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 	     * There is really no in scope namespace for parameters on the
 	     * command line.
 	     */
+	    oldNsNr = ctxt->xpathCtxt->nsNr;
+	    oldNamespaces = ctxt->xpathCtxt->namespaces;
 	    ctxt->xpathCtxt->namespaces = NULL;
 	    ctxt->xpathCtxt->nsNr = 0;
 	    result = xmlXPathCompiledEval(comp, ctxt->xpathCtxt);
 	    ctxt->xpathCtxt->contextSize = oldContextSize;
 	    ctxt->xpathCtxt->proximityPosition = oldProximityPosition;
+	    ctxt->xpathCtxt->nsNr = oldNsNr;
+	    ctxt->xpathCtxt->namespaces = oldNamespaces;
 	    xmlXPathFreeCompExpr(comp);
 	}
 	if (result == NULL) {
@@ -723,6 +746,7 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 					result, 0);
 #endif
 #endif
+
 	    elem = xsltNewStackElem();
 	    if (elem != NULL) {
 		elem->name = xmlStrdup(ncname);
@@ -777,6 +801,7 @@ xsltBuildVariable(xsltTransformContextPtr ctxt, xsltStylePreCompPtr comp,
 			 " select %s", comp->select);
     xsltGenericDebug(xsltGenericDebugContext, "\n");
 #endif
+
     elem = xsltNewStackElem();
     if (elem == NULL)
 	return(NULL);
@@ -941,11 +966,11 @@ xsltParseStylesheetCallerParam(xsltTransformContextPtr ctxt, xmlNodePtr cur) {
 	    "xsl:param : missing name attribute\n");
 	return(NULL);
     }
+
 #ifdef WITH_XSLT_DEBUG_VARIABLE
     xsltGenericDebug(xsltGenericDebugContext,
 	    "Handling param %s\n", comp->name);
 #endif
-
 
     if (comp->select == NULL) {
 	tree = cur->children;

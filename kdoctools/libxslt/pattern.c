@@ -6,7 +6,7 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel.Veillard@imag.fr
+ * daniel@veillard.com
  */
 
 /*
@@ -14,7 +14,7 @@
  * TODO: detect [number] at compilation, optimize accordingly
  */
 
-#include "xsltconfig.h"
+#include "libxslt.h"
 
 #include <string.h>
 
@@ -79,6 +79,7 @@ struct _xsltStepOp {
 struct _xsltCompMatch {
     struct _xsltCompMatch *next; /* siblings in the name hash */
     float priority;              /* the priority */
+    const xmlChar *pattern;       /* the pattern */
     const xmlChar *mode;         /* the mode */
     const xmlChar *modeURI;      /* the mode URI */
     xsltTemplatePtr template;    /* the associated template */
@@ -145,6 +146,8 @@ xsltFreeCompMatch(xsltCompMatchPtr comp) {
 
     if (comp == NULL)
 	return;
+    if (comp->pattern != NULL)
+	xmlFree((xmlChar *)comp->pattern);
     if (comp->mode != NULL)
 	xmlFree((xmlChar *)comp->mode);
     if (comp->modeURI != NULL)
@@ -231,7 +234,7 @@ xsltFreeParserContext(xsltParserContextPtr ctxt) {
  */
 static int
 xsltCompMatchAdd(xsltCompMatchPtr comp, xsltOp op, xmlChar *value,
-	           xmlChar *value2) {
+	         xmlChar *value2) {
     if (comp->nbStep >= 20) {
         xsltGenericError(xsltGenericErrorContext,
 		"xsltCompMatchAddOp: overflow\n");
@@ -1123,13 +1126,14 @@ error:
 static void
 xsltCompileStepPattern(xsltParserContextPtr ctxt, xmlChar *token) {
     xmlChar *name = NULL;
-    xmlChar *prefix = NULL;
-    xmlChar *ncname = NULL;
+    const xmlChar *URI = NULL;
     xmlChar *URL = NULL;
     int level;
 
     SKIP_BLANKS;
     if ((token == NULL) && (CUR == '@')) {
+	xmlChar *prefix = NULL;
+
 	NEXT;
 	if (CUR == '*') {
 	    NEXT;
@@ -1202,23 +1206,14 @@ xsltCompileStepPattern(xsltParserContextPtr ctxt, xmlChar *token) {
 		ctxt->error = 1;
 		goto error;
 	    }
-	    ncname = xmlSplitQName2(name, &prefix);
-	    if (ncname != NULL) {
-		if (prefix != NULL) {
-		    xmlNsPtr ns;
-
-		    ns = xmlSearchNs(ctxt->doc, ctxt->elem, prefix);
-		    if (ns == NULL) {
-			xsltGenericError(xsltGenericErrorContext,
-			    "xsl: pattern, no namespace bound to prefix %s\n",
-			                 prefix);
-		    } else {
-			URL = xmlStrdup(ns->href);
-		    }
-		    xmlFree(prefix);
-		}
-		xmlFree(name);
-		name = ncname;
+	    URI = xsltGetQNameURI(ctxt->elem, &token);
+	    if (token == NULL) {
+		ctxt->error = 1;
+		goto error;
+	    } else {
+		name = xmlStrdup(token);
+		if (URI != NULL)
+		    URL = xmlStrdup(URI);
 	    }
 	    PUSH(XSLT_OP_CHILD, name, URL);
 	} else if (xmlStrEqual(token, (const xmlChar *) "attribute")) {
@@ -1229,23 +1224,14 @@ xsltCompileStepPattern(xsltParserContextPtr ctxt, xmlChar *token) {
 		ctxt->error = 1;
 		goto error;
 	    }
-	    ncname = xmlSplitQName2(name, &prefix);
-	    if (ncname != NULL) {
-		if (prefix != NULL) {
-		    xmlNsPtr ns;
-
-		    ns = xmlSearchNs(ctxt->doc, ctxt->elem, prefix);
-		    if (ns == NULL) {
-			xsltGenericError(xsltGenericErrorContext,
-			    "xsl: pattern, no namespace bound to prefix %s\n",
-			                 prefix);
-		    } else {
-			URL = xmlStrdup(ns->href);
-		    }
-		    xmlFree(prefix);
-		}
-		xmlFree(name);
-		name = ncname;
+	    URI = xsltGetQNameURI(ctxt->elem, &token);
+	    if (token == NULL) {
+		ctxt->error = 1;
+		goto error;
+	    } else {
+		name = xmlStrdup(token);
+		if (URI != NULL)
+		    URL = xmlStrdup(URI);
 	    }
 	    PUSH(XSLT_OP_ATTR, name, URL);
 	} else {
@@ -1259,24 +1245,13 @@ xsltCompileStepPattern(xsltParserContextPtr ctxt, xmlChar *token) {
 	NEXT;
 	PUSH(XSLT_OP_ALL, token, NULL);
     } else {
-	ncname = xmlSplitQName2(token, &prefix);
-	if (ncname != NULL) {
-	    if (prefix != NULL) {
-		xmlNsPtr ns;
-
-		ns = xmlSearchNs(ctxt->doc, ctxt->elem, prefix);
-		if (ns == NULL) {
-		    xsltGenericError(xsltGenericErrorContext,
-			"xsl: pattern, no namespace bound to prefix %s\n",
-				     prefix);
-		} else {
-		    URL = xmlStrdup(ns->href);
-		}
-		xmlFree(prefix);
-	    }
-	    xmlFree(token);
-	    token = ncname;
+	URI = xsltGetQNameURI(ctxt->elem, &token);
+	if (token == NULL) {
+	    ctxt->error = 1;
+	    goto error;
 	}
+	if (URI != NULL)
+	    URL = xmlStrdup(URI);
 	PUSH(XSLT_OP_ELEM, token, URL);
     }
 parse_predicate:
@@ -1459,11 +1434,6 @@ xsltCompilePattern(const xmlChar *pattern, xmlDocPtr doc, xmlNodePtr node) {
 	return(NULL);
     }
 
-#ifdef WITH_XSLT_DEBUG_PATTERN
-    xsltGenericDebug(xsltGenericDebugContext,
-		     "xsltCompilePattern : parsing '%s'\n", pattern);
-#endif
-
     ctxt = xsltNewParserContext();
     if (ctxt == NULL)
 	return(NULL);
@@ -1494,10 +1464,17 @@ xsltCompilePattern(const xmlChar *pattern, xmlDocPtr doc, xmlNodePtr node) {
 
 	ctxt->comp = element;
 	ctxt->base = xmlStrndup(&pattern[start], end - start);
+	if (ctxt->base == NULL)
+	    goto error;
 	ctxt->cur = &(ctxt->base)[current - start];
+	element->pattern = ctxt->base;
+
+#ifdef WITH_XSLT_DEBUG_PATTERN
+	xsltGenericDebug(xsltGenericDebugContext,
+			 "xsltCompilePattern : parsing '%s'\n",
+			 element->pattern);
+#endif
 	xsltCompileLocationPathPattern(ctxt);
-	if (ctxt->base)
-	    xmlFree((xmlChar *)ctxt->base);
 	if (ctxt->error)
 	    goto error;
 
@@ -1514,9 +1491,11 @@ xsltCompilePattern(const xmlChar *pattern, xmlDocPtr doc, xmlNodePtr node) {
 	    (element->steps[0].value != NULL) &&
 	    (element->steps[1].op == XSLT_OP_END)) {
 	    element->priority = 0;
+#if 0
 	} else if ((element->steps[0].op == XSLT_OP_ROOT) &&
 		   (element->steps[1].op == XSLT_OP_END)) {
 	    element->priority = 0;
+#endif
 	} else if ((element->steps[0].op == XSLT_OP_PI) &&
 		   (element->steps[0].value != NULL) &&
 		   (element->steps[1].op == XSLT_OP_END)) {
@@ -1544,6 +1523,11 @@ xsltCompilePattern(const xmlChar *pattern, xmlDocPtr doc, xmlNodePtr node) {
 	} else {
 	    element->priority = 0.5;
 	}
+#ifdef WITH_XSLT_DEBUG_PATTERN
+	xsltGenericDebug(xsltGenericDebugContext,
+		     "xsltCompilePattern : parsed %s, default priority %f\n",
+			 element->pattern, element->priority);
+#endif
 	if (pattern[end] == '|')
 	    end++;
 	current = end;
@@ -1587,24 +1571,25 @@ xsltAddTemplate(xsltStylesheetPtr style, xsltTemplatePtr cur,
 	        const xmlChar *mode, const xmlChar *modeURI) {
     xsltCompMatchPtr pat, list, *top = NULL, next;
     const xmlChar *name = NULL;
+    float priority;              /* the priority */
 
     if ((style == NULL) || (cur == NULL) || (cur->match == NULL))
 	return(-1);
 
+    priority = cur->priority;
     pat = xsltCompilePattern(cur->match, style->doc, cur->elem);
     while (pat) {
 	next = pat->next;
 	pat->next = NULL;
+	name = NULL;
 	
 	pat->template = cur;
 	if (mode != NULL)
 	    pat->mode = xmlStrdup(mode);
 	if (modeURI != NULL)
 	    pat->modeURI = xmlStrdup(modeURI);
-	if (cur->priority == XSLT_PAT_NO_PRIORITY)
-	    cur->priority = pat->priority;
-	else
-	    pat->priority = cur->priority;
+	if (priority != XSLT_PAT_NO_PRIORITY)
+	    pat->priority = priority;
 
 	/*
 	 * insert it in the hash table list corresponding to its lookup name
@@ -1726,11 +1711,11 @@ xsltAddTemplate(xsltStylesheetPtr style, xsltTemplatePtr cur,
 	if (mode)
 	    xsltGenericDebug(xsltGenericDebugContext,
 			 "added pattern : '%s' mode '%s' priority %f\n",
-			     pat->template->match, pat->mode, pat->priority);
+			     pat->pattern, pat->mode, pat->priority);
 	else
 	    xsltGenericDebug(xsltGenericDebugContext,
 			 "added pattern : '%s' priority %f\n",
-			     pat->template->match, pat->priority);
+			     pat->pattern, pat->priority);
 #endif
 
 	pat = next;
@@ -1756,6 +1741,7 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
     xsltTemplatePtr ret = NULL;
     const xmlChar *name = NULL;
     xsltCompMatchPtr list = NULL;
+    float priority;
 
     if ((ctxt == NULL) || (node == NULL))
 	return(NULL);
@@ -1767,6 +1753,7 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
     }
 
     while ((curstyle != NULL) && (curstyle != style)) {
+	priority = XSLT_PAT_NO_PRIORITY;
 	/* TODO : handle IDs/keys here ! */
 	if (curstyle->templatesHash != NULL) {
 	    /*
@@ -1813,6 +1800,7 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    if (xsltTestCompMatch(ctxt, list, node,
 			          ctxt->mode, ctxt->modeURI)) {
 		ret = list->template;
+		priority = list->priority;
 		break;
 	    }
 	    list = list->next;
@@ -1861,7 +1849,7 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 
 	}
 	while ((list != NULL) &&
-	       ((ret == NULL)  || (list->priority > ret->priority))) {
+	       ((ret == NULL)  || (list->priority > priority))) {
 	    if (xsltTestCompMatch(ctxt, list, node,
 			          ctxt->mode, ctxt->modeURI)) {
 		ret = list->template;
@@ -1872,7 +1860,7 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	if (node->_private != NULL) {
 	    list = curstyle->keyMatch;
 	    while ((list != NULL) &&
-		   ((ret == NULL)  || (list->priority > ret->priority))) {
+		   ((ret == NULL)  || (list->priority > priority))) {
 		if (xsltTestCompMatch(ctxt, list, node,
 				      ctxt->mode, ctxt->modeURI)) {
 		    ret = list->template;
