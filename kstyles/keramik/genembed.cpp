@@ -36,6 +36,8 @@ DEALINGS IN THE SOFTWARE.
 #include <cstring>
 #include <cmath>
 
+//Force-touch-embedded-revision: 1
+
 using namespace std;
 
 #include "keramikimage.h"

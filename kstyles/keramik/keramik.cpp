@@ -367,6 +367,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			if ( sunken ) id  = keramik_pushbutton_default_pressed;
 				else id = keramik_pushbutton_default;
 				
+			if (flags & Style_MouseOver && id == keramik_pushbutton_default )
+				id = keramik_pushbutton_default_hov;
+
+				
 			//p->fillRect( r, cg.background() );
 			Keramik::RectTilePainter( id, false ).draw(p, r, cg.button(), cg.background(), disabled,  pmode() );
 			break;
@@ -443,6 +447,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			
 			if (flags & Style_MouseOver && name == keramik_pushbutton )
 				name = keramik_pushbutton_hov;
+				
 				
 				
 			//p->fillRect( r, cg.background() );
@@ -729,6 +734,25 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// -------------------------------------------------------------------
 		case PE_Panel:
 		{
+			if (kickerMode)
+			{
+				if (p->device() && p->device()->devType() == QInternal::Widget &&
+											 QCString(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame" )
+				{
+					int x2 = x + r.width() - 1;
+					int y2 = y + r.height() - 1;
+					p->setPen(cg.dark());
+					p->drawLine(x+1,y2,x2-1,y2);
+					p->drawLine(x2,y+1,x2,y2);
+					
+					p->setPen( cg.light() );
+					p->drawLine(x, y, x2, y);
+					p->drawLine(x, y, x, y2);
+
+					
+					return;
+				}
+			}
 			KStyle::drawPrimitive(pe, p, r, cg, flags, opt);
 			break;
 		}
@@ -939,12 +963,16 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			{
 				const QSlider* slider = static_cast< const QSlider* >( widget );		
 				bool horizontal = slider->orientation() == Horizontal;
+				
+				QColor hl = cg.highlight();
+				if (!disabled && flags & Style_Active)
+					hl = Keramik::ColorUtil::lighten(cg.highlight(),110);
 
 				if (horizontal)
-					Keramik::ScaledPainter( keramik_slider ).draw( p, r, disabled ? cg.button() : cg.highlight(), 
+					Keramik::ScaledPainter( keramik_slider ).draw( p, r, disabled ? cg.button() : hl, 
 						Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend );
 				else
-					Keramik::ScaledPainter( keramik_vslider ).draw( p, r, disabled ? cg.button() : cg.highlight(), 
+					Keramik::ScaledPainter( keramik_vslider ).draw( p, r, disabled ? cg.button() : hl, 
 						Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend );
 				break;
 			}
@@ -1772,6 +1800,12 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return loader.size( keramik_slider ).height() - 4;
 		case PM_SliderThickness:
 			return loader.size( keramik_slider ).height();
+			
+		case PM_ButtonShiftHorizontal:		
+			return 0;
+		case PM_ButtonShiftVertical: // Offset by 1
+			return 1;
+
 
 		// CHECKBOXES / RADIO BUTTONS
 		// -------------------------------------------------------------------

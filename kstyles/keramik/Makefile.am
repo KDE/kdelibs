@@ -27,6 +27,9 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/listview-tr.png pics/pushbutton-bc.png pics/pushbutton-bl.png pics/pushbutton-br.png pics/pushbutton-cc.png\
 	 pics/pushbutton-cl.png pics/pushbutton-cr.png pics/pushbutton-default-bc.png pics/pushbutton-default-bl.png\
 	 pics/pushbutton-default-br.png pics/pushbutton-default-cc.png pics/pushbutton-default-cl.png pics/pushbutton-default-cr.png\
+	 pics/pushbutton-default-hov-tl.png pics/pushbutton-default-hov-tc.png pics/pushbutton-default-hov-tr.png\
+	 pics/pushbutton-default-hov-cl.png pics/pushbutton-default-hov-cc.png pics/pushbutton-default-hov-cr.png\
+	 pics/pushbutton-default-hov-bl.png pics/pushbutton-default-hov-bc.png pics/pushbutton-default-hov-br.png\
 	 pics/pushbutton-default-pressed-bc.png pics/pushbutton-default-pressed-bl.png pics/pushbutton-default-pressed-br.png\
 	 pics/pushbutton-default-pressed-cc.png pics/pushbutton-default-pressed-cl.png pics/pushbutton-default-pressed-cr.png\
 	 pics/pushbutton-default-pressed-tc.png pics/pushbutton-default-pressed-tl.png pics/pushbutton-default-pressed-tr.png\
