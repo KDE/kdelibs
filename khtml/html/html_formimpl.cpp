@@ -70,8 +70,7 @@ ushort HTMLFormElementImpl::id() const
 
 long HTMLFormElementImpl::length() const
 {
-    // ###
-    return 0;
+    return formElements.count();
 }
 
 QCString HTMLFormElementImpl::encodeByteArray(const QByteArray& e)
