@@ -135,6 +135,8 @@ private slots:
     void slotOutputReady(int socket );
 
 private:
+    void broadcastApplicationRegistration( DCOPConnection* conn, const QCString type,
+        const QString& data );
     bool suicide;
     int majorOpcode;
     int currentClientNumber;

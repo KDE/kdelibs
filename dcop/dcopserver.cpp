@@ -1190,29 +1190,7 @@ void DCOPServer::removeConnection( void* data )
 
 	appIds.remove( conn->appId );
 
-	QPtrDictIterator<DCOPConnection> it( clients );
-	QByteArray data;
-	QDataStream datas( data, IO_WriteOnly );
-	datas << conn->appId;
-	QByteArray ba;
-	QDataStream ds( ba, IO_WriteOnly );
-	ds << QCString("DCOPServer") << QCString("")
-	   << QCString("") << QCString("applicationRemoved(QCString)") << data;
-	int datalen = ba.size();
-	DCOPMsg *pMsg = 0;
-	while ( it.current() ) {
-	    DCOPConnection* c = it.current();
-	    ++it;
-	    if ( c->notifyRegister && (c != conn) ) {
-		IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
-			      sizeof(DCOPMsg), DCOPMsg, pMsg );
-		pMsg->key = 1;
-		pMsg->length += datalen;
-                _DCOPIceSendBegin(c->iceConn);
-		DCOPIceSendData(c->iceConn, ba);
-                _DCOPIceSendEnd();
-	    }
-	}
+        broadcastApplicationRegistration( conn, "applicationRemoved(QCString)", conn->appId );
     }
 
     delete conn;
@@ -1312,6 +1290,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 
 		}
 
+                QCString oldAppId;
 		if ( conn->appId.isNull() )
                 {
                     currentClientNumber++;
@@ -1322,7 +1301,10 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
                 }
 #ifndef NDEBUG
 		else
+                {
+                    oldAppId = conn->appId;
 		    qDebug("DCOP:  '%s' now known as '%s'", conn->appId.data(), app2.data() );
+                }
 #endif
 
 		conn->appId = app2;
@@ -1345,29 +1327,11 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    conn->plainAppId = conn->appId.left( c );
 		else
 		    conn->plainAppId = conn->appId;
-
-		QPtrDictIterator<DCOPConnection> it( clients );
-		QByteArray data;
-		QDataStream datas( data, IO_WriteOnly );
-		datas << conn->appId;
-		QByteArray ba;
-		QDataStream ds( ba, IO_WriteOnly );
-		ds <<QCString("DCOPServer") <<  QCString("") << QCString("")
-		   << QCString("applicationRegistered(QCString)") << data;
-		int datalen = ba.size();
-		DCOPMsg *pMsg = 0;
-		while ( it.current() ) {
-		    DCOPConnection* c = it.current();
-		    ++it;
-		    if ( c->notifyRegister && (c != conn) ) {
-			IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
-				      sizeof(DCOPMsg), DCOPMsg, pMsg );
-			pMsg->length += datalen;
-                        _DCOPIceSendBegin(c->iceConn);
-			DCOPIceSendData( c->iceConn, ba );
-                        _DCOPIceSendEnd();
-		    }
-		}
+                
+                if( !oldAppId.isEmpty())
+                    broadcastApplicationRegistration( conn,
+                        "applicationRemoved(QCString)", oldAppId );
+                broadcastApplicationRegistration( conn, "applicationRegistered(QCString)", conn->appId );
 	    }
 	    replyType = "QCString";
 	    reply << conn->appId;
@@ -1447,6 +1411,34 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
     }
 
     return FALSE;
+}
+
+void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const QCString type,
+    const QString& appId )
+{
+    QByteArray data;
+    QDataStream datas( data, IO_WriteOnly );
+    datas << conn->appId;
+    QPtrDictIterator<DCOPConnection> it( clients );
+    QByteArray ba;
+    QDataStream ds( ba, IO_WriteOnly );
+    ds <<QCString("DCOPServer") <<  QCString("") << QCString("")
+       << type << data;
+    int datalen = ba.size();
+    DCOPMsg *pMsg = 0;
+    while ( it.current() ) {
+        DCOPConnection* c = it.current();
+        ++it;
+        if ( c->notifyRegister && (c != conn) ) {
+            IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
+	      sizeof(DCOPMsg), DCOPMsg, pMsg );
+            pMsg->key = 1;
+	    pMsg->length += datalen;
+            _DCOPIceSendBegin(c->iceConn);
+	    DCOPIceSendData( c->iceConn, ba );
+            _DCOPIceSendEnd();
+	    }
+    }
 }
 
 void
