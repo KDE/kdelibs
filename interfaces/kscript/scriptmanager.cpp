@@ -84,6 +84,10 @@ void KScriptManager::clear()
 void KScriptManager::runScript( const QString &scriptName, QObject *context, const QVariant &arg)
 {
 	ScriptInfo *newScript = m_scripts[scriptName];
+	if(!newScript) {
+		KMessageBox::sorry(0, i18n("Script %1 not found.").arg(scriptName), i18n("KScript Error"));
+		return;
+	}
 	QString scriptType = "([X-KDE-Script-Runner] == '" + newScript->scriptType + "')";
         kdDebug()<<"running script, type = '"<<scriptType<<"'"<<endl;
 	if (newScript)
