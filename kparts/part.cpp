@@ -291,7 +291,8 @@ bool ReadOnlyPart::openURL( const KURL &url )
     emit started( 0 );
     m_file = m_url.path();
     bool ret = openFile();
-    emit completed();
+    if (ret)
+        emit completed();
     return ret;
   }
   else
