@@ -8,6 +8,7 @@ Name[eu]=X BitMap Irudia
 Name[ga]=Íomhá "X BitMap"
 Name[hu]=X BitMap kép
 Name[pt_BR]=Imagem Bitmap X
+Name[sv]=X bitmapp-bild
 Read=true
 Write=true
 Suffices=xbm,XBM

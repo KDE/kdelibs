@@ -7,6 +7,7 @@ Name[eu]=Pixmap Irudi Eramangarria
 Name[ga]=Íomhá "Portable Pixmap"
 Name[hu]=Portable Pixmap kép
 Name[pt_BR]=Imagem Pixmap Portável
+Name[sv]=Flyttbart pixmappfilformat
 Read=true
 Write=true
 Suffices=PPM,ppmraw,PPMRAW,pnm,PNM

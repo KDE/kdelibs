@@ -8,6 +8,7 @@ Name[eu]=JPEG Irudia
 Name[ga]=Íomhá JPEG
 Name[hu]=JPEG kép
 Name[pt_BR]=Imagem JPEG
+Name[sv]=Jpeg-bild
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

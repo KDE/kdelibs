@@ -7,6 +7,7 @@ Name[eu]=Portable Graymap Irudia
 Name[ga]=Íomhá "Portable Graymap"
 Name[hu]=Portable Graymap kép
 Name[pt_BR]=Imagem de Mapas de Escalas de Cinza Portável
+Name[sv]=Flyttbart gråskalefilformat
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

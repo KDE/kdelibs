@@ -8,6 +8,7 @@ Name[eu]=TIFF irudia
 Name[ga]=Íomhá TIFF
 Name[hu]=TIFF kép
 Name[pt_BR]=Imagem TIFF
+Name[sv]=Tiff-bild
 Read=true
 Write=false
 Suffices=tiff,TIFF,tif,TIF 

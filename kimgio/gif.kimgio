@@ -8,6 +8,7 @@ Name[eu]=GIF Irudia
 Name[ga]=Íomhá GIF
 Name[hu]=GIF kép
 Name[pt_BR]=Imagem GIF
+Name[sv]=Gif-bild
 Read=true
 Write=false
 Suffices=gif,GIF

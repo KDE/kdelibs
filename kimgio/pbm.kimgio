@@ -7,6 +7,7 @@ Name[eu]=Bitmap Irudi Eramangarria
 Name[ga]=Íomhá PBM (Portable Bitmap)
 Name[hu]=Portable Bitmap kép
 Name[pt_BR]=Imagem Bitmap Portável
+Name[sv]=Flyttbart bitmappsformat
 Read=true
 Write=true
 Suffices=pbm,PBM,pbmraw,PBMRAW

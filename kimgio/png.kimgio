@@ -8,6 +8,7 @@ Name[eu]=PNG Irudia
 Name[ga]=Íomhá PNG
 Name[hu]=PNG kép
 Name[pt_BR]=Imagem PNG
+Name[sv]=Png-bild
 Read=true
 Write=true
 Suffices=png,PNG
