@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
-    library is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
@@ -85,10 +85,10 @@ void KPushButton::init( const KGuiItem &item )
         readSettings();
         initialized = true;
     }
-    
+
     if ( needIcons() )
         setIconSet( d->item.iconSet() );
-    
+
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
     if (kapp)
