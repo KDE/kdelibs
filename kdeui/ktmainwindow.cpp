@@ -674,7 +674,6 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
         {
             case KMenuBar::Flat:   //ignore
             case KMenuBar::Top:
-            case KMenuBar::FloatingSystem:
                 entryList.append("Top");
                 break;
             case KMenuBar::Bottom:
@@ -684,6 +683,9 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 entryList.append("Floating");
                 entryList.append(KWM::getProperties(kmenubar->winId()));
                 break;
+            case KMenuBar::FloatingSystem:
+                entryList.append("FloatingSystem");
+	  break;
         }
         config->writeEntry("MenuBar", entryList, ';');
         entryList.clear();
@@ -787,8 +789,13 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
             kmenubar->setMenuBarPos(KMenuBar::Floating);
             entry=entryList.next();
             kmenubar->setGeometry(KWM::setProperties(kmenubar->winId(), entry));
-	    kmenubar->show();
+            showmenubar = true;
         }
+        else if (entry == "FloatingSystem")
+	    {
+		kmenubar->setMenuBarPos(KMenuBar::FloatingSystem);
+		showmenubar = true;
+	    }
         entryList.clear();
 	if (showmenubar) //Matthias
 	  kmenubar->show();
