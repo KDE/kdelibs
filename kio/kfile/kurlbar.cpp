@@ -678,7 +678,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
         return;
 
     KURLBarItem *item = dynamic_cast<KURLBarItem*>( _item );
-    
+
     static const int IconSize   = 10;
     static const int AddItem    = 20;
     static const int EditItem   = 30;
@@ -692,16 +692,21 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
                        i18n("&Large Icons") : i18n("&Small Icons"),
                        IconSize );
     popup->insertSeparator();
-    
+
     if (item != 0L && item->isPersistent())
     {
         popup->insertItem(SmallIconSet("edit"), i18n("&Edit Entry..."), EditItem);
-        popup->insertSeparator();
+    }
+
+    popup->insertSeparator();
+    popup->insertItem(SmallIconSet("filenew"), i18n("&Add Entry..."), AddItem);
+
+    if (item != 0L && item->isPersistent())
+    {
         popup->insertItem( SmallIconSet("editdelete"), i18n("&Remove Entry"),
                           RemoveItem );
     }
-    popup->insertItem(SmallIconSet("filenew"), i18n("&Add Entry..."), AddItem);
-    
+
     int result = popup->exec( pos );
     switch ( result ) {
         case IconSize:
