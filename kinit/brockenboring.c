@@ -1,9 +1,7 @@
 /*
   This file is part of the KDE libraries
-  Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
-            (c) 1999 Mario Weilguni <mweilguni@sime.com>
-            (c) 2001 Lubos Lunak <l.lunak@kde.org>
-	    (c) 2003 Stephan Kulow <coolo@kde.org>
+  Copyright (c) 2003 Stephan Kulow <coolo@kde.org>
+		2003 Michael Matz <matz@kde.org>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -20,7 +18,6 @@
   Boston, MA 02111-1307, USA.
 */
 
-#include <config.h>
 #include <limits.h>
 #include "ltdl.h"
 #include <unistd.h>
@@ -34,21 +31,63 @@ int main(int argc, char **argv)
     char target[PATH_MAX + 1];
     char *p;
 
-    if (argv[0][0] != '/')
-    {
+    if (!strchr (argv[0], '/'))
+      {
+        /* Name without any dirs.  Search $PATH.  */
+	char *dirs = getenv ("PATH");
+	char *d = dirs;
+	path[0] = 0;
+	/* So, it's slow with all the strcpy and strcats.  Who cares?  */
+	while (d)
+	  {
+	    dirs = d;
+	    d = strchr (dirs, ':');
+	    if (d == dirs  /* "::" or ':' at begin --> search pwd */
+	        || !*dirs) /* ':' at end --> ditto */
+	      strncpy (path, argv[0], PATH_MAX); 
+	    else
+	      {
+		if (d)
+		  {
+		    strncpy (path, dirs, d - dirs);
+		    path[d - dirs] = '/';
+		    path[d - dirs + 1] = 0;
+		  }
+		else
+		  {
+		    strncpy (path, dirs, PATH_MAX);
+		    strncat (path, "/", PATH_MAX);
+		  }
+		strncat (path, argv[0], PATH_MAX);
+	      }
+	    path[PATH_MAX] = 0;
+	    if (!access (path, X_OK))
+	      break;
+	    if (d)
+	      d++;
+	  }
+      }
+    else
+      strncpy (path, argv[0], PATH_MAX);
+
+    if (path[0] != '/')
+      {
+        /* Relative path, prepend pwd.  */
 	if (getcwd(path, PATH_MAX)) 
-	{
+	  {
 	    strncat(path, "/", PATH_MAX);
 	    strncat(path, argv[0], PATH_MAX);
-	} else {
+	  } else {
 	    perror("getpwd");
 	    return 1;
-	}
-    } 
-    else 
-    {
-	strncpy(path, argv[0], PATH_MAX);
-    }
+	  }
+      }
+
+    if (!*path || access (path, X_OK))
+      {
+	fprintf(stderr, "Can't find myself (I'm %s).\n", argv[0]);
+	return 1;
+      }
 
     p = path + strlen(path);
     while (p > path)
@@ -65,9 +104,8 @@ int main(int argc, char **argv)
     strncat(path, "/../lib/kde3/", PATH_MAX);
     strncat(path, target, PATH_MAX);
     strncat(path, ".la", PATH_MAX);
-    
+
     if (!access(path, R_OK)) {
-	
 	lt_dlhandle handle;
 	lt_ptr sym;
 	int (*func)(int, char *[]);
@@ -76,7 +114,7 @@ int main(int argc, char **argv)
 	if (lt_dlinit())
 	{
 	    const char * errMsg = lt_dlerror();
-	    fprintf(stderr, "can't initialize dynamic loading: %s\n", 
+	    fprintf(stderr, "can't initialize dynamic loading: %s\n",
 		    errMsg ? errMsg : "(null)" );
 	}
 
@@ -88,7 +126,7 @@ int main(int argc, char **argv)
 	    fprintf(stderr, "Can't open %s - error: %s\n",
 		    path, errMsg ? errMsg : "(null)");
 	    return 1;
-	} 	
+	}
 	sym = lt_dlsym( handle, "kdemain");
 	if (!sym )
         {
@@ -101,7 +139,6 @@ int main(int argc, char **argv)
 	ret = func(argc, argv);
 	lt_dlexit();
 	return ret;
-
     } else {
 	fprintf(stderr, "Can't access %s\n", path);
 	return 1;
@@ -109,4 +146,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-   
