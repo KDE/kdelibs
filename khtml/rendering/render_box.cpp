@@ -343,6 +343,8 @@ void RenderBox::updateSize()
 
     if ((isInline() || isFloating()) && parent())
     {
+        if (!isInline())
+            setLayouted(false);
     	parent()->updateSize();
 	return;
     }
@@ -594,6 +596,10 @@ void RenderBox::calcHeight()
     kdDebug( 6040 ) << "RenderBox::calcHeight()" << endl;
 #endif
 
+    //cell height is managed by table
+    if (isTableCell())
+        return;               
+    
     if (isPositioned())
     	calcAbsoluteVertical();
     else
@@ -617,7 +623,7 @@ void RenderBox::calcHeight()
 	    m_marginBottom = bm.minWidth(ch.value);		
 	else
 	    m_marginBottom = 0;
-	
+        
 	if (h.isFixed())
     	    m_height = MAX (h.value + borderTop() + paddingTop()
 		+ borderBottom() + paddingBottom() , m_height);
@@ -738,7 +744,7 @@ void RenderBox::calcAbsoluteHorizontal()
     m_width = w + pab;
     m_marginLeft = ml+l;
     m_marginRight = mr+r;
-    m_x = l + ml + containingBlock()->paddingLeft() + containingBlock()->borderLeft();
+    m_x = l + ml + containingBlock()->borderLeft();
 	
 //    printf("h: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 }
@@ -831,8 +837,7 @@ void RenderBox::calcAbsoluteVertical()
     // care about it anyway
     m_marginTop = mt+t;
     m_marginBottom = mb+b;    
-    m_y = t + mt +
-    	containingBlock()->paddingTop() + containingBlock()->borderTop();
+    m_y = t + mt + containingBlock()->borderTop();
 	
 //    printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
     	
