@@ -174,13 +174,17 @@ public:
 
   /**
    * This is generally only called for the KBugReport.
-   * Override and have it return a pointer to a constant.
+   * If you override you should  have it return a pointer to a constant.
    *
-   * @note it is mandatory to implement this function.
    *
    * @returns the KAboutData for this module
    */
-  virtual const KAboutData *aboutData() const { return 0; }
+  virtual const KAboutData *aboutData() const;
+  
+  /**
+   * This sets the KAboutData returned by aboutData()
+   */
+   void setAboutData( KAboutData* about );
 
   /**
    * Indicate which buttons will be used.

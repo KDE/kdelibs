@@ -23,6 +23,7 @@
 
 #include <qlayout.h>
 
+#include <kaboutdata.h>
 #include <kconfigskeleton.h> 
 #include <kconfigdialogmanager.h>
 #include <kdebug.h>
@@ -37,11 +38,13 @@ class KCModulePrivate
 {
 public:
     KCModulePrivate():
+        _about( 0 ),
         _useRootOnlyMsg( true ),
         _hasOwnInstance( true )
         { }
 
     KInstance *_instance;
+    KAboutData *_about;
     QString _rootOnlyMsg;
     bool _useRootOnlyMsg;
     bool _hasOwnInstance;
@@ -90,6 +93,7 @@ KCModule::~KCModule()
 {
     if (d->_hasOwnInstance)
        delete d->_instance;
+    delete d->_about;
     delete d;
 }
 
@@ -114,6 +118,16 @@ void KCModule::defaults()
         manager->updateWidgetsDefault();
 }
 
+const KAboutData *KCModule::aboutData() const
+{
+    return d->_about;
+}
+
+void KCModule::setAboutData( KAboutData* about )
+{
+    delete d->_about;
+    d->_about = about;
+}
 
 void KCModule::setRootOnlyMsg(const QString& msg)
 {
