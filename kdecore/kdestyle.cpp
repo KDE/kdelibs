@@ -266,11 +266,14 @@ bool KDEStyle::eventFilter(QObject *obj, QEvent *ev)
 {
     if(ev->type() == QEvent::Enter){
         QWidget *btn = (QWidget *)obj;
-        QPalette pal = btn->palette();
-        pal.setColor(QColorGroup::Highlight,
-                     pal.active().color(QColorGroup::Midlight));
-        btn->setPalette(pal);
-        btn->repaint(false);
+        if (btn->isEnabled())
+        {
+            QPalette pal = btn->palette();
+            pal.setColor(QColorGroup::Highlight,
+                         pal.active().color(QColorGroup::Midlight));
+            btn->setPalette(pal);
+            btn->repaint(false);
+        }
     }
     else if(ev->type() == QEvent::Leave){
         QWidget *btn = (QWidget *)obj;
