@@ -21,8 +21,8 @@
 #define __KDIRECTIONBUTTON_H__
 
 #include <qdrawutil.h>
+#include <qbutton.h>
 
-class QButton;
 class QPainter;
 class QWidget;
 
