@@ -21,13 +21,14 @@
 
 #include "kconfigdialogmanager.h"
 
-#include <qlabel.h>
-#include <qobjectlist.h>
 #include <qbuttongroup.h>
 #include <qcombobox.h>
-#include <qtimer.h>
-#include <qsqlpropertymap.h>
+#include <qlabel.h>
 #include <qmetaobject.h>
+#include <qobjectlist.h>
+#include <qsqlpropertymap.h>
+#include <qtimer.h>
+#include <qwhatsthis.h>
 
 #include <kapplication.h>
 #include <kconfigskeleton.h>
@@ -133,6 +134,11 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
   {
     if (widget->metaObject()->findProperty("maxValue", true) != -1)
        widget->setProperty("maxValue", maxValue);
+  }
+  QString whatsThis = item->whatsThis();
+  if ( !whatsThis.isEmpty() )
+  {
+    QWhatsThis::add( widget, whatsThis );
   }
 }
 
