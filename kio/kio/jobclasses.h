@@ -178,6 +178,23 @@ namespace KIO {
         bool isAutoErrorHandlingEnabled() const;
 
         /**
+         * Enable or disable the message display from the job.
+         *
+         * The default is true.
+         * @param enable enable or disable message display
+         * @since 3.4.1
+         */
+        void setInteractive(bool enable);
+	
+        /**
+         * Returns whether message display is enabled or disabled.
+         * See also setInteractive .
+         * @return true if message display is enabled
+         * @see setInteractive()
+         * @since 3.4.1
+         */
+        bool isInteractive() const;
+        /**
          * Associate this job with a window given by @p window.
 	 * @param window the window to associate to
 	 * @see window()
@@ -1486,6 +1503,8 @@ namespace KIO {
          * rename dialog is shown.
          * If the program doesn't want CopyJob to show dialogs, but to simply fail on error,
          * call setInteractive( false ).
+         *
+         * KDE4: remove, already in Job
          * @since 3.4
          */
         void setInteractive( bool b );

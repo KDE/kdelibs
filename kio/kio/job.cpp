@@ -81,11 +81,12 @@ template class QPtrList<KIO::Job>;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_autoErrorHandling( false ), m_parentJob( 0L ), m_extraFlags(0),
+    JobPrivate() : m_autoErrorHandling( false ), m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0),
                    m_processedSize(0)
                    {}
 
     bool m_autoErrorHandling;
+    bool m_interactive;
     QGuardedPtr<QWidget> m_errorParentWidget;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
@@ -309,6 +310,16 @@ void Job::setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget )
 bool Job::isAutoErrorHandlingEnabled() const
 {
   return d->m_autoErrorHandling;
+}
+
+void Job::setInteractive(bool enable)
+{
+  d->m_interactive = enable;
+}
+
+bool Job::isInteractive() const
+{
+  return d->m_interactive;
 }
 
 void Job::setWindow(QWidget *window)
@@ -549,6 +560,8 @@ void SimpleJob::slotError( int error, const QString & errorText )
 
 void SimpleJob::slotWarning( const QString & errorText )
 {
+    if (!isInteractive()) return;
+
     static uint msgBoxDisplayed = 0;
     if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
     {
@@ -2592,7 +2605,8 @@ void CopyJob::statCurrentSrc()
         // if the file system doesn't support deleting, we do not even stat
         if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
             QGuardedPtr<CopyJob> that = this;
-            KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
+            if (isInteractive())
+                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
             if (that)
                 statNextSrc(); // we could use a loop instead of a recursive call :)
             return;
@@ -3910,7 +3924,8 @@ void DeleteJob::statNextSrc()
         if (!KProtocolInfo::supportsDeleting(m_currentURL)) {
             QGuardedPtr<DeleteJob> that = this;
             ++m_currentStat;
-            KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
+            if (isInteractive())
+                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
             if (that)
                 statNextSrc();
             return;
