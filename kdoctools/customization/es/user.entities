@@ -26,3 +26,10 @@
 <!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
 <!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
 <!ENTITY kmenu  "menú <guimenu>K</guimenu>">
+<!ENTITY kicon  "<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>El icono K de &kde;</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+   </guiicon> icon"><!-- if image is localised, then entityref should be used instead of fileref -->
