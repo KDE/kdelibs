@@ -221,6 +221,7 @@ void XMLGUIFactory::addServant( XMLGUIServant *servant )
   d->m_genId = 0;
 
   buildRecursive( docElement, d->m_rootNode );
+  pruneContainers( d->m_rootNode );
 
   servant->setFactory( this );
 
@@ -580,4 +581,31 @@ XMLGUIContainerNode *XMLGUIFactory::findContainerNode( XMLGUIContainerNode *pare
       return it.current();
 
   return 0L;
+}
+
+void XMLGUIFactory::pruneContainers( XMLGUIContainerNode *node)
+{
+  if (node->tagName.lower() == "menu")
+  {
+    // if our menu is empty, we nuke it
+    if (((QPopupMenu*)node->container)->count() == 0)
+    {
+      removeRecursive(node);
+      return;
+    }
+  }
+
+  if (node->tagName.lower() == "toolbar")
+  {
+    if (((KToolBar*)node->container)->count() == 0)
+    {
+      removeRecursive(node);
+      return;
+    }
+  }
+
+  QListIterator<XMLGUIContainerNode> it( node->children );
+
+  for (; it.current(); ++it)
+    pruneContainers( it.current() );
 }

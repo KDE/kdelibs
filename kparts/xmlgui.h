@@ -147,6 +147,8 @@ class XMLGUIFactory
   bool calcMergingIndex( XMLGUIContainerNode *node, QMap<QString,int>::Iterator &it );
   void adjustMergingIndices( XMLGUIContainerNode *node, int idx, int val, const QMap<QString,int>::Iterator &it );
 
+  void pruneContainers( XMLGUIContainerNode *node );
+
   XMLGUIContainerNode *findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> *excludeList );
 
   XMLGUIContainerNode *findContainerNode( XMLGUIContainerNode *parentNode, QObject *container );
