@@ -54,10 +54,10 @@ void PixmapLoader::colorize( QImage &img )
 	int newh, news, newv;
 	m_color.hsv( &newh, &news, &newv );
 
-	for ( register unsigned int y = 0; y < img.height(); ++y )
+	for ( register int y = 0; y < img.height(); ++y )
 	{
 		Q_UINT32* data = reinterpret_cast< Q_UINT32* >( img.scanLine( y ) );
-		for ( register unsigned int x = 0; x < img.width(); ++x )
+		for ( register int x = 0; x < img.width(); ++x )
 		{
 			QColor c( *data );
 			int h, s, v;
@@ -169,13 +169,44 @@ QString RectTilePainter::tileName( unsigned int column, unsigned int row ) const
 	return QString( r.mid( row, 1 ) + c.mid( column, 1 ) );
 }
 
-unsigned int TabPainter::columns() const
+ActiveTabPainter::ActiveTabPainter( bool bottom )
+	: RectTilePainter( QString( "tab-" ) + ( bottom ? "bottom-" : "top-" ) + "active" ),
+	  m_bottom( bottom )
+{
+}
+
+TilePainter::TileMode ActiveTabPainter::rowMode( unsigned int row ) const
+{
+	if ( m_bottom ) return ( row == 1 ) ? Fixed : Scaled;
+	return ( row == 1 ) ? Scaled : Fixed;
+}
+
+QString ActiveTabPainter::tileName( unsigned int column, unsigned int row ) const
+{
+	if ( m_bottom )
+		return RectTilePainter::tileName( column, row + 1 );
+	return RectTilePainter::tileName( column, row );
+}
+
+InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
+	: RectTilePainter( QString( "tab-" ) + ( bottom ? "bottom-" : "top-" ) + "inactive" ),
+	  m_mode( mode ), m_bottom( bottom )
+{
+}
+
+unsigned int InactiveTabPainter::columns() const
 {
 	Mode check = QApplication::reverseLayout() ? First : Last;
 	return m_mode == check ? 3 : 2;
 }
 
-QString TabPainter::tileName( unsigned int column, unsigned int row ) const
+TilePainter::TileMode InactiveTabPainter::rowMode( unsigned int row ) const
+{
+	if ( m_bottom ) return ( row == 1 ) ? Fixed : Scaled;
+	return ( row == 1 ) ? Scaled : Fixed;
+}
+
+QString InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
 	Mode check = QApplication::reverseLayout() ? Last : First;
 	if ( column == 0 && m_mode != check ) return "separator";

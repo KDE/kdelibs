@@ -142,17 +142,32 @@ namespace Keramik
 		unsigned int m_rows;
 	};
 
-	class TabPainter : public RectTilePainter
+	class ActiveTabPainter : public RectTilePainter
+	{
+	public:
+		ActiveTabPainter( bool bottom );
+		virtual ~ActiveTabPainter() {};
+	
+	protected:
+		virtual unsigned int rows() const { return 2; }
+		virtual TileMode rowMode( unsigned int row ) const;
+		virtual QString tileName( unsigned int column, unsigned int row ) const;
+
+	private:
+		bool m_bottom;
+	};
+
+	class InactiveTabPainter : public RectTilePainter
 	{
 	public:
 		enum Mode { First, Middle, Last };
-		TabPainter( const QString& name, Mode mode, bool bottom )
-			: RectTilePainter( name ), m_mode( mode ), m_bottom( bottom ) {};
-		virtual ~TabPainter() {};
+		InactiveTabPainter( Mode mode, bool bottom );
+		virtual ~InactiveTabPainter() {};
 
 	protected:
 		virtual unsigned int columns() const;
 		virtual unsigned int rows() const { return 2; }
+		virtual TileMode rowMode( unsigned int row ) const;
 		virtual QString tileName( unsigned int column, unsigned int row ) const;
 
 	private:

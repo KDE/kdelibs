@@ -1026,22 +1026,28 @@ void KeramikStyle::drawControl( ControlElement element,
 			QString name;
 			bool bottom = tabBar->shape() == QTabBar::RoundedBelow ||
 			              tabBar->shape() == QTabBar::TriangularBelow;
-			if ( bottom ) name = "tab-bottom-";
-			else name = "tab-top-";
 
 			if ( flags & Style_Selected )
-				Keramik::RectTilePainter( name + "active", 3, 3 ).draw( p, x, y, w, h+1 );
+				Keramik::ActiveTabPainter( bottom ).draw( p, x, y, w, h );
 			else
 			{
-				Keramik::TabPainter::Mode mode;
+				Keramik::InactiveTabPainter::Mode mode;
 				int index = tabBar->indexOf( opt.tab()->identifier() );
-				if ( index == 0 ) mode = Keramik::TabPainter::First;
-				else if ( index == tabBar->count() - 1 ) mode = Keramik::TabPainter::Last;
-				else mode = Keramik::TabPainter::Middle;
+				if ( index == 0 ) mode = Keramik::InactiveTabPainter::First;
+				else if ( index == tabBar->count() - 1 ) mode = Keramik::InactiveTabPainter::Last;
+				else mode = Keramik::InactiveTabPainter::Middle;
 				if ( bottom )
-					Keramik::TabPainter( name + "inactive", mode, bottom ).draw( p, x, y, w, h - 4 );
+				{
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - 4 );
+					p->setPen( cg.dark() );
+					p->drawLine( x, y, x + w, y );
+				}
 				else
-					Keramik::TabPainter( name + "inactive", mode, bottom ).draw( p, x, y + 4, w, h - 4 );
+				{
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + 4, w, h - 4 );
+					p->setPen( cg.light() );
+					p->drawLine( x, y + h - 1, x + w, y + h - 1 );
+				}
 			}
 
 			break;
