@@ -624,8 +624,8 @@ static void handle_launcher_request(int sock = -1)
 
       QCString olddisplay = getenv("DISPLAY");
       QCString kdedisplay = getenv("KDE_DISPLAY");
-      bool reset_display = (! olddisplay.isNull() &&
-                            ! kdedisplay.isNull() &&
+      bool reset_display = (! olddisplay.isEmpty() &&
+                            ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
 
       if (reset_display)
