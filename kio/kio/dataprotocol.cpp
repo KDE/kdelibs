@@ -257,6 +257,7 @@ DataProtocol::~DataProtocol() {
 /* --------------------------------------------------------------------- */
 
 void DataProtocol::get(const KURL& url) {
+  ref();
   //kdDebug() << "===============================================================================================================================================================================" << endl;
   kdDebug() << "kio_data@"<<this<<"::get(const KURL& url)" << endl ;
 
@@ -311,23 +312,26 @@ void DataProtocol::get(const KURL& url) {
   //kdDebug() << "emit sendMetaData@"<<this << endl ;
   sendMetaData();
   //kdDebug() << "^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C^[[C" << endl;
-  //kdDebug() << "queue size " << dispatchQueue.size() << endl;
+//   kdDebug() << "(1) queue size " << dispatchQueue.size() << endl;
   // empiric studies have shown that this shouldn't be queued & dispatched
   /*DISPATCH*/(data(outData));
-  //kdDebug() << "queue size " << dispatchQueue.size() << endl;
+//   kdDebug() << "(2) queue size " << dispatchQueue.size() << endl;
   DISPATCH(data(QByteArray()));
-  //kdDebug() << "queue size " << dispatchQueue.size() << endl;
+//   kdDebug() << "(3) queue size " << dispatchQueue.size() << endl;
   DISPATCH(finished());
-  //kdDebug() << "queue size " << dispatchQueue.size() << endl;
+//   kdDebug() << "(4) queue size " << dispatchQueue.size() << endl;
+  deref();
 }
 
 /* --------------------------------------------------------------------- */
 
 void DataProtocol::mimetype(const KURL &url) {
+  ref();
   DataHeader hdr;
   parseDataHeader(url,hdr);
   mimeType(hdr.mime_type);
   finished();
+  deref();
 }
 
 /* --------------------------------------------------------------------- */
