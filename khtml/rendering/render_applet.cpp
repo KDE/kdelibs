@@ -64,6 +64,8 @@ RenderApplet::RenderApplet(HTMLElementImpl *applet, const QMap<QString, QString>
 
 RenderApplet::~RenderApplet()
 {
+    delete m_widget;
+    m_widget = 0L;
 }
 
 short RenderApplet::intrinsicWidth() const
