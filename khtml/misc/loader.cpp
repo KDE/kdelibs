@@ -766,6 +766,8 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         assert(!eof);
 
         formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
+        if ( formatType && strcmp( formatType, "PNG" ) == 0 )
+            formatType = 0; // Some png files contain multiple images, we want to show only the first one
 
         typeChecked = true;
 
