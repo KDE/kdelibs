@@ -5,7 +5,7 @@
   Copyright:
   (C) 2002-2003 by José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
   (C) 2003-2004 by Olaf Schmidt <ojschmidt@kde.org>
-  (C) 2004 by Gary Cramblitt <garycramblitt@comcast.net>
+  (C) 2004-2005 by Gary Cramblitt <garycramblitt@comcast.net>
   -------------------
   Original author: José Pablo Ezequiel "Pupeno" Fernández
  ******************************************************************************/
@@ -29,7 +29,7 @@
  *
  * kspeech - the KDE Text-to-Speech API.
  *
- * @version 1.0 Draft 7
+ * @version 1.0 Draft 8
  *
  * @since KDE 3.4
  *
@@ -54,14 +54,12 @@
  *
  * @section Requirements
  *
- * You must install the kdeaccessibility package for KTTS to function.
+ * You may build any KDE application to use kspeech, since the interface is in kdelibs, but
+ * the kdeaccessibility package must be installed for KTTS to function.
  *
- * You will need a speech synthesis engine, such as Festival.  Festival can be
- * obtained from 
- * <a href="http://www.cstr.ed.ac.uk/projects/festival/">http://www.cstr.ed.ac.uk/projects/festival/</a>.
- * Festival is distributed with most Linux distros.  Check your distro CDs.  Also works
- * with Festival Lite (flite), Hadifix (mbrola and txt2pho), FreeTTS, Epos, or any
- * command that can speak text.  Additional plugins are being developed.
+ * You will need a speech synthesis engine, such as Festival.  See the KTTS Handbook
+ * for the latest information on installing and configuring speech engines and voices
+ * with KTTS.
  *
  * @section goals Design Goals
  *
@@ -77,9 +75,6 @@
  *   - Applications need not be concerned about contention over the speech device.
  *   - Provide limited support for speech markup languages, such as Sable,
  *     Java %Speech Markup Language (JSML), and %Speech Markup Meta-language (SMML).
- *     Basically, the goal is for %KTTSD to permit pass-thru
- *     of markup to the speech engine.  Generation and transformation of markup is
- *     left to higher layers or individual applications.
  *   - Provide limited support for embedded speech markers.
  *   - Asynchronous to prevent system blocking.
  *   - Plugin-based audio architecture.  Currently supports aRts but will support
@@ -107,7 +102,7 @@
         speech engine
    @endverbatim
  *
- * The %KTTSD Plugin API is documented in @ref PluginConf
+ * The %KTTSD Plugin API is documented in @ref PluginConf in the kdeaccessibility module.
  *
  * There is a separate GUI application, called kttsmgr, for providing %KTTSD
  * configuration and job management.
@@ -178,7 +173,15 @@
  *
  * @section programming Calling KTTSD from a Program
  *
- * To make DCOP calls from your program, follow these steps:
+ * There are two methods of making DCOP calls from your application to %KTTSD.
+ *
+ *   - Manually code them using dcopClient object.  See kdebase/konqueror/kttsplugin/khtmlkttsd.cpp
+ *     for an example.  This method is recommended if you want to make a few simple calls to KTTSD.
+ *   - Use kspeech_stub as described below.  This method generates the marshalling code for you
+ *     and is recommended for a more complex speech-enabled applications.  kcmkttsmgr in the
+ *     kdeaccessibility module is an example that uses this method.
+ *
+ * To make DCOP calls from your program using kspeech_stub, follow these steps:
  *
  * 1.  Include kspeech_stub.h in your code.  Derive an object from the kspeech_stub interface.
  *     For example, suppose you are developing a KPart and want to call %KTTSD.
@@ -443,72 +446,6 @@
  * - If there is still a tie, the one nearest the top of the kttsmgr display
  *   (first configured) will be chosen.
  *
- * This is best explained using examples.  Suppose the user has configured the
- * following talkers.
- *
-  @verbatim
-  #  lang synthesizer      gender    name   volume  rate
-  -  ---- ---------------- -------   ------ ------- -------
-  1   en  Festival Lite    male      Kal    medium  medium
-  2   en  Festival Lite    female    Us1    soft    medium
-  3   en  Festival Int     male      Kal    medium  slow
-  4   de  Hadifix          male      de1    medium  medium
-  @endverbatim
- *
- * In this example, the user has specified that his default language code is en,
- * He prefers to use the Festival Lite synthesizer. If not specified, text is
- * assumed to be encoded using his desktop encoding. American Male (Kal) is the
- * preferred gender and voice, and medium volume and rate are preferred.
- * The numbers in the table above are to make the following discussion simpler.
- *
- * Given the table above, a setText call with the following talker codes
- * would use the indicated numbered talker for synthesis:
- *
-  @verbatim
-  setText talker code             plugin #  explanation
-  ------------------------------- --------  -------------------------
-  0 (none)                        1         None match, #1 is user preference.
-                                            
-  lang="en"                       1         #1 thru #3 match, #1 is user preference.
-                                            
-  gender="male"                   1         #1 and #3 match, #1 is user preference.
-                                            #4 has the wrong language code.
-                                            
-  lang="de"                       4         Single match on language.
-  
-  gender="female"                 2         Single match on gender.
-  
-  synthesizer="Festival Int"      3         #2 and #3 partially match.
-  gender="female"                           User preference order takes precedence.
-                                            
-  synthesizer="Festival Int"      2         #2 with two matches wins over #3 with
-  gender="female" volume="soft"             only one match.
-                                            
-  lang="es" synthesizer="Epos"    1         None of the talkers match at all. KTTSD
-                                            attempted to configure a Spanish plugin
-                                            but none were found.  User preference chosen.
-                                            
-  gender="*female"                2         #2 is the only one that matches priority
-  volume="medium" rate="slow"               attribute
-                                            
-  gender="*male" rate="slow"      3         Three match priority attribute, but #3
-                                            also matches preferred attribute.
-                                            
-  name="de1" volume="medium"      1         Since language was not specified, it
-                                            defaulted to en, thereby eliminating #4,
-                                            and #1 is user preference.
-                                            
-  lang="cz"                       -         KTTSD automatically loaded and configured
-                                            the Epos plugin to speak Czech.
-  
-  @endverbatim
- *
- * (Note: Not yet implemented).
- * When picking a talker, %KTTSD will automatically determine if text contains
- * markup and pick a talker that supports that markup, if available.  This
- * overrides all other attributes, i.e, it is treated as an automatic "top priority"
- * attribute.
- *
  * Language codes actually consist of two parts, a language code and an optional
  * country code.  For example, en_GB is English (United Kingdom).  The language code is
  * treated as a priority attribute, but the country code (if specified) is treated
@@ -595,19 +532,17 @@
  * @ref setText, @ref appendText, @ref sayMessage, and
  * @ref sayWarning -- may contain speech markup,
  * provided that the plugin the user has configured supports that markup.  The markup
- * languages currently supported by plugins are:
+ * languages and plugins currently supported are:
  *
- *   - Sable 2.0: Festival
- *   - Java %Speech Markup Language (JSML): Festival (partial)
  *   - %Speech Synthesis Markup language (SSML): Festival and Hadifix.
  *
- * TODO: Issue: Does FreeTTS support markup?
+ * This may change in the future as synthesizers improve.
  *
  * Before including markup in the text sent to kttsd, the application should
  * query whether the currently-configured plugin 
  * supports the markup language by calling @ref supportsMarkup.
  *
- * It it does not support the markup, it will be stripped out the text.
+ * It it does not support the markup, it will be stripped out of the text.
  *
  * @section markers Support for Markers
  *
@@ -674,7 +609,7 @@ class kspeech : virtual public DCOPObject {
             jsPaused = 3,                /**< Job has been paused. */
             jsFinished = 4               /**< Job is finished and is deleteable. */
         };
-        
+
         /**
         * @enum kttsdMarkupType
         * %Speech markup language types.
@@ -686,11 +621,11 @@ class kspeech : virtual public DCOPObject {
             mtSsml = 2,                  /**< %Speech Synthesis Markup Language */
             mtSable = 3                  /**< Sable 2.0 */
         };
-    
+
     k_dcop:
         /** @name DCOP Methods */
         //@{
-        
+
         /**
         * Determine whether the currently-configured speech plugin supports a speech markup language.
         * @param talker         Code for the talker to do the speaking.  Example "en".
@@ -701,7 +636,7 @@ class kspeech : virtual public DCOPObject {
         * @see kttsdMarkupType
         */
         virtual bool supportsMarkup(const QString &talker=NULL, const uint markupType = 0) = 0;
-        
+
         /**
         * Determine whether the currently-configured speech plugin supports markers in speech markup.
         * @param talker         Code for the talker to do the speaking.  Example "en".
@@ -710,7 +645,7 @@ class kspeech : virtual public DCOPObject {
         *                       talker supports markers.
         */
         virtual bool supportsMarkers(const QString &talker=NULL) = 0;
-        
+
         /**
         * Say a message as soon as possible, interrupting any other speech in progress.
         * IMPORTANT: This method is reserved for use by Screen Readers and should not be used
@@ -725,7 +660,7 @@ class kspeech : virtual public DCOPObject {
         * replaced with this new message.
         */
         virtual ASYNC sayScreenReaderOutput(const QString &msg, const QString &talker=NULL) = 0;
-        
+
         /**
         * Say a warning.  The warning will be spoken when the current sentence
         * stops speaking and takes precedence over Messages and regular text.  Warnings should only
@@ -779,7 +714,7 @@ class kspeech : virtual public DCOPObject {
         * @see sentenceparsing
         */
         virtual ASYNC setSentenceDelimiter(const QString &delimiter) = 0;
-        
+
         /**
         * Queue a text job.  Does not start speaking the text.
         * @param text           The message to be spoken.
@@ -805,7 +740,7 @@ class kspeech : virtual public DCOPObject {
         * @see startText
         */
         virtual uint setText(const QString &text, const QString &talker=NULL) = 0;
-        
+
         /**
         * Adds another part to a text job.  Does not start speaking the text.
         * @param text           The message to be spoken.
@@ -822,7 +757,7 @@ class kspeech : virtual public DCOPObject {
         * @see startText.
         */
         virtual int appendText(const QString &text, const uint jobNum=0) = 0;
-        
+
         /**
         * Queue a text job from the contents of a file.  Does not start speaking the text.
         * @param filename       Full path to the file to be spoken.  May be a URL.
@@ -874,19 +809,19 @@ class kspeech : virtual public DCOPObject {
         * @see isSpeakingText
         */
         virtual uint getCurrentTextJob() = 0;
-        
+
         /**
         * Get the number of jobs in the text job queue.
         * @return               Number of text jobs in the queue.  0 if none.
         */
         virtual uint getTextJobCount() = 0;
-        
+
         /**
         * Get a comma-separated list of text job numbers in the queue.
         * @return               Comma-separated list of text job numbers in the queue.
         */
         virtual QString getTextJobNumbers() = 0;
-        
+
         /**
         * Get the state of a text job.
         * @param jobNum         Job number of the text job.
@@ -897,7 +832,7 @@ class kspeech : virtual public DCOPObject {
         * @see kttsdJobState
         */
         virtual int getTextJobState(const uint jobNum=0) = 0;
-        
+
         /**
         * Get information about a text job.
         * @param jobNum         Job number of the text job.
@@ -937,9 +872,9 @@ class kspeech : virtual public DCOPObject {
                     stream >> partNum;
                     stream >> partCount;
                 @endverbatim
-        */
+         */
         virtual QByteArray getTextJobInfo(const uint jobNum=0) = 0;
-        
+
         /**
         * Given a Talker Code, returns the Talker ID of the talker that would speak
         * a text job with that Talker Code.
@@ -947,7 +882,7 @@ class kspeech : virtual public DCOPObject {
         * @return               Talker ID of the talker that would speak the text job.
         */
         virtual QString talkerCodeToTalkerId(const QString& talkerCode) = 0;
-        
+
         /**
         * Return a sentence of a job.
         * @param jobNum         Job number of the text job.
@@ -958,13 +893,13 @@ class kspeech : virtual public DCOPObject {
         *                       job or sentence, returns "".
         */
         virtual QString getTextJobSentence(const uint jobNum=0, const uint seq=0) = 0;
-       
+
         /**
         * Determine if kttsd is currently speaking any text jobs.
         * @return               True if currently speaking any text jobs.
         */
         virtual bool isSpeakingText() = 0;
-        
+
         /**
         * Remove a text job from the queue.
         * @param jobNum         Job number of the text job.
@@ -1058,7 +993,7 @@ class kspeech : virtual public DCOPObject {
         * @see pauseText
         */
         virtual ASYNC resumeText(const uint jobNum=0) = 0;
-        
+
         /**
         * Get a list of the talkers configured in KTTS.
         * @return               A QStringList of fully-specified talker codes, one
@@ -1067,7 +1002,7 @@ class kspeech : virtual public DCOPObject {
         * @see talkers
         */
         virtual QStringList getTalkers() = 0;
-        
+
         /**
         * Change the talker for a text job.
         * @param jobNum         Job number of the text job.
@@ -1079,7 +1014,7 @@ class kspeech : virtual public DCOPObject {
         *                       defaults to the closest matching talker.
         */
         virtual ASYNC changeTextTalker(const uint jobNum=0, const QString &talker=NULL) = 0;
-        
+
         /**
         * Get the user's default talker.
         * @return               A fully-specified talker code.
@@ -1088,7 +1023,7 @@ class kspeech : virtual public DCOPObject {
         * @see getTalkers
         */
         virtual QString userDefaultTalker() = 0;
-        
+
         /**
         * Move a text job down in the queue so that it is spoken later.
         * @param jobNum         Job number of the text job.
@@ -1114,7 +1049,7 @@ class kspeech : virtual public DCOPObject {
         * Does not affect the current speaking/not-speaking state of the job.
         */
         virtual int jumpToTextPart(const int partNum, const uint jobNum=0) = 0;
-        
+
         /**
         * Advance or rewind N sentences in a text job.
         * @param n              Number of sentences to advance (positive) or rewind (negative) in the job.
@@ -1134,7 +1069,7 @@ class kspeech : virtual public DCOPObject {
         * Add the clipboard contents to the text queue and begin speaking it.
         */
         virtual ASYNC speakClipboard() = 0;
-        
+
         /**
         * Displays the %KTTS Manager dialog.  In this dialog, the user may backup or skip forward in
         * any text job by sentence or part, rewind jobs, pause or resume jobs, or
@@ -1152,13 +1087,13 @@ class kspeech : virtual public DCOPObject {
         */
         virtual void reinit() = 0;
         //@}
-        
+
     k_dcop_signals:
         void ignoreThis();
-    
+
         /** @name DCOP Signals */
         //@{
-        
+
         /**
         * This signal is emitted when KTTSD starts or restarts after a call to reinit.
         */
@@ -1191,16 +1126,16 @@ class kspeech : virtual public DCOPObject {
         * @param seq            Sequence number of the text.
         *
         * @see getTextCount
-        */        
+        */
         void sentenceFinished(const QCString& appId, const uint jobNum, const uint seq);
-        
+
         /**
         * This signal is emitted whenever a new text job is added to the queue.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
         void textSet(const QCString& appId, const uint jobNum);
-        
+
         /**
         * This signal is emitted whenever a new part is appended to a text job.
         * @param appId          The DCOP senderId of the application that created the job.
@@ -1209,7 +1144,7 @@ class kspeech : virtual public DCOPObject {
         *                       at 1.
         */
         void textAppended(const QCString& appId, const uint jobNum, const int partNum);
-    
+
         /**
         * This signal is emitted whenever speaking of a text job begins.
         * @param appId          The DCOP senderId of the application that created the job.
