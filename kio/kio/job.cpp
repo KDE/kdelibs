@@ -3066,12 +3066,53 @@ void CopyJob::slotResult( Job *job )
             {
                 m_currentSrcURL=*m_currentStatSrc;
                 m_currentDestURL=m_dest;
-                kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
-                Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
-                //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
-                state = STATE_STATING;
-                addSubjob(job);
-                m_bOnlyRenames = false;
+
+                if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
+                {
+                    if (m_reportTimer)
+                        m_reportTimer->stop();
+
+                    QString newPath;
+                    RenameDlg_Mode mode = M_SINGLE;
+                    RenameDlg_Result r = Observer::self()->open_RenameDlg( this,
+                                         err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
+                                         m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
+                                         m_currentDestURL.prettyURL(0, KURL::StripFileProtocol),
+                                         mode, newPath );
+                    if (m_reportTimer)
+                        m_reportTimer->start(REPORT_TIMEOUT,false);
+
+                    switch ( r )
+                    {
+                        case R_CANCEL:
+                        {
+                            m_error = ERR_USER_CANCELED;
+                            emitResult();
+                            return;
+                        }
+                        case R_RENAME:
+                        {
+                            m_dest.setPath( newPath );
+                            KIO::Job* job = KIO::stat( m_dest, false, 2, false );
+                            state = STATE_STATING;
+                            destinationState = DEST_NOT_STATED;
+                            addSubjob(job);
+                            break;
+                        }
+                        default:
+                            //assert( 0 );
+                            break;
+                    }
+                }
+                else
+                {
+                    kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
+                    //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL.prettyURL() << endl;
+                    KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
+                    state = STATE_STATING;
+                    addSubjob(job);
+                    m_bOnlyRenames = false;
+                }
             }
             else
             {
