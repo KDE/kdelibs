@@ -665,11 +665,11 @@ bool KPasswordDialog::allowEmptyPasswords() const {
 void KPasswordDialog::setMinimumPasswordLength(int minLength) {
     d->minimumPasswordLength = minLength;
     enableOkBtn();
-};
+}
 
 int KPasswordDialog::minimumPasswordLength() const {
     return d->minimumPasswordLength;
-};
+}
 
 void KPasswordDialog::setMaximumPasswordLength(int maxLength) {
 
@@ -681,21 +681,21 @@ void KPasswordDialog::setMaximumPasswordLength(int maxLength) {
     m_pEdit->setMaxPasswordLength(maxLength);
     if (m_pEdit2) m_pEdit2->setMaxPasswordLength(maxLength);
 
-};
+}
 
 int KPasswordDialog::maximumPasswordLength() const {
     return d->maximumPasswordLength;
-};
+}
 
 
 void KPasswordDialog::setPasswordStrengthWarningLevel(int warningLevel) {
     if (warningLevel < 0) warningLevel = 0;
     if (warningLevel > 99) warningLevel = 99;
     d->passwordStrengthWarningLevel = warningLevel;
-};
+}
 
 int KPasswordDialog::passwordStrengthWarningLevel() const {
     return d->passwordStrengthWarningLevel;
-};
+}
 
 #include "kpassdlg.moc"
