@@ -1,16 +1,16 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 2003 Joseph Wenninger <jowenn@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -35,7 +35,7 @@ class KTempDirPrivate;
  * writable directory like /tmp without being vulnerable to so called
  * symlink attacks.
  *
- * KDE applications, however, shouldn't create files or directories in /tmp in the first 
+ * KDE applications, however, shouldn't create files or directories in /tmp in the first
  * place but use the "tmp" resource instead. The standard KTempDir
  * constructor will do that by default.
  *
@@ -59,16 +59,16 @@ public:
     *
     * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname"
     * @param directoryPrefix the prefix of the file name, or
-    *        QString::null for the default value 
+    *        QString::null for the default value
     * @param mode the file permissions,
     * almost always in octal. The first digit selects permissions for
     * the user who owns the file: read (4), write (2), and execute
     * (1); the second selects permissions for other users in the
     * file's group, with the same values; and the fourth for other
-    * users not in the file's group, with the same values. 
+    * users not in the file's group, with the same values.
     *
     **/
-   KTempDir(QString directoryPrefix=QString::null, 
+   KTempDir(QString directoryPrefix=QString::null,
              int mode = 0700 );
 
 
@@ -85,10 +85,10 @@ public:
    void setAutoDelete(bool autoDelete) { bAutoDelete = autoDelete; }
 
    /**
-    * Returns the status of the directory creation  based on errno. (see errno.h) 
+    * Returns the status of the directory creation  based on errno. (see errno.h)
     * 0 means OK.
     *
-    * You should check the status after object creation to check 
+    * You should check the status after object creation to check
     * whether a directory could be created in the first place.
     *
     * @return the errno status, 0 means ok
@@ -96,24 +96,24 @@ public:
    int status() const;
 
    /**
-    * Returns the full path and name of the directory.
-    * @return The name of the file, or QString::null if creating the
+    * Returns the full path and name of the directory, including a trailing '/'.
+    * @return The name of the directory, or QString::null if creating the
     *         directory has failed or the directory has been unlinked
     **/
    QString name() const;
-   
-   
+
+
    /**
     * Returns the QDir* of the temporary directory.
     * @return QDir directory information of the directory or 0 if their is no managed directory
-    * The caller has to free the pointer open for writing to the 
+    * The caller has to free the pointer open for writing to the
     **/
    QDir *qDir();
 
    /**
     * Deletes the directory recursively
     **/
-   void unlink();   
+   void unlink();
 
    /**
     * @return true if a temporary directory has successfully been created and not been unlinked yet
@@ -132,7 +132,7 @@ protected:
    bool create(const QString &directoryPrefix,  int mode);
 
    /**
-    * Sets the errno value 
+    * Sets the errno value
     * @param error the value to set the status to.
     */
    void setError(int error) { mError = error; }

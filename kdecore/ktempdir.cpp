@@ -87,8 +87,7 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    // got a return value != 0
    QCString realNameStr(realName);
    mTmpName = QFile::decodeName(realNameStr)+"/";
-   kdDebug()<<"KTempDir: Temporary directory created :"<<realNameStr<<endl;
-   kdDebug()<<"KTempDir: Temporary directory created :"<<mTmpName<<endl;
+   kdDebug(180) << "KTempDir: Temporary directory created :" << mTmpName << endl;
    mode_t tmp = 0;
    mode_t umsk = umask(tmp);
    umask(umsk);
