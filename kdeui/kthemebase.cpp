@@ -841,6 +841,8 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
         prop.writeEntry("ShadeStyle", (int)Motif);
     else if(tmpStr == "Next")
         prop.writeEntry("ShadeStyle", (int)Next);
+    else if(tmpStr == "KDE")
+        prop.writeEntry("ShadeStyle", (int)KDE);
     else
         prop.writeEntry("ShadeStyle", (int)Windows);
 

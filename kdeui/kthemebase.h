@@ -199,7 +199,7 @@ public:
     /**
      * The default frame shading styles. 
      */
-    enum ShadeStyle{Motif, Windows, Next};
+    enum ShadeStyle{Motif, Windows, Next, KDE};
     /**
      * The default scrollbar button layout. BottomLeft is like what Next
      * uses, BottomRight is like Platinum, and Opposite it like Windows and

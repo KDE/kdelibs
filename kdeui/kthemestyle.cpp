@@ -27,6 +27,7 @@
 #include <qtabbar.h>
 #include <qglobal.h>
 #include <kglobalsettings.h>
+#include <kdrawutil.h>
 
 #include <limits.h>
 
@@ -170,6 +171,18 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
         p->setPen(g.text());
         for(i=0; i < borderWidth(type); ++i, ++x, ++y, w-=2, h-=2)
             p->drawRect(x, y, w, h);
+    }
+    // same with KDE style borders
+    else if(!borderPixmap(type) && shade() == KDE){
+        kDrawBeButton(p, x, y, w, h, g, sunken);
+        if(isPixmap(type))
+            p->drawTiledPixmap(x+4, y+4, w-6, h-6,
+                               *scalePixmap(w-6, h-6,
+                                            type));
+            else
+                p->fillRect(x+4, y+4, w-6, h-offset*6,
+                            g.brush(QColorGroup::Button));
+
     }
     else{
         if((w-offset*2) > 0 && (h-offset*2) > 0){
